@@ -11,28 +11,34 @@ import type { Route } from "./+types/root";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
+  // Favicon para o tema claro (light)
   {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
+    rel: "icon",
+    href: "/favicon-light.png",
+    sizes: "32x32",
+    type: "image/png",
+    media: "(prefers-color-scheme: light)",
   },
+  // Favicon para o tema escuro (dark)
   {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    rel: "icon",
+    href: "/favicon-dark.png",
+    sizes: "32x32",
+    type: "image/png",
+    media: "(prefers-color-scheme: dark)",
   },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-br ">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="antialiased">
         {children}
         <ScrollRestoration />
         <Scripts />
