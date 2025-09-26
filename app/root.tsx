@@ -9,6 +9,7 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import "/object-sans/object-sans.css?url";
 
 export const links: Route.LinksFunction = () => [
   // Favicon para o tema claro (light)
