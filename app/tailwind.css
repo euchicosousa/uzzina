@@ -44,6 +44,13 @@
   --font-sans:
     "PP Object Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --color-error: var(--color-error);
+  --color-error-foreground: var(--color-error-foreground);
+  --color-warning: var(--color-warning);
+  --color-warning-foreground: var(--color-warning-foreground);
+  --color-success: var(--color-success);
+  --color-success-foreground: var(--color-success-foreground);
 }
 
 :root {
@@ -79,9 +86,18 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* UZZINA COLORS */
+  --color-error: oklch(63.752% 0.24787 26.587);
+  --color-error-foreground: oklch(100% 0 0);
+  --color-warning: oklch(80.107% 0.15644 84.166);
+  --color-warning-foreground: oklch(100% 0 0);
+  --color-success: oklch(64.426% 0.1231 170.129);
+  --color-success-foreground: oklch(100% 0 0);
 }
 
-.dark {
+.dark,
+:root[class~="dark"] {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -121,6 +137,24 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  h1 {
+    @apply text-5xl font-bold leading-none pb-8 tracking-tighter;
+  }
+  h2 {
+    @apply text-4xl font-bold leading-none pb-6 tracking-tighter;
+  }
+  h3 {
+    @apply text-3xl font-bold leading-none pb-4 tracking-tighter;
+  }
+  h4 {
+    @apply text-2xl font-bold leading-none pb-4  tracking-tighter;
+  }
+  h5 {
+    @apply text-xl font-bold leading-none pb-4 tracking-tighter;
   }
 }
 
