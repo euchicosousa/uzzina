@@ -148,13 +148,13 @@
     @apply text-4xl font-bold leading-none pb-6 tracking-tighter;
   }
   h3 {
-    @apply text-3xl font-bold leading-none pb-4 tracking-tighter;
+    @apply text-3xl font-semibold leading-none pb-4 tracking-tighter;
   }
   h4 {
-    @apply text-2xl font-bold leading-none pb-4  tracking-tighter;
+    @apply text-2xl font-semibold leading-none pb-2  tracking-tight;
   }
   h5 {
-    @apply text-xl font-bold leading-none pb-4 tracking-tighter;
+    @apply text-xl font-medium leading-none pb-2 tracking-tight;
   }
 }
 

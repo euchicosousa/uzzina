@@ -26,7 +26,7 @@ export default function Home() {
             {
               title: "UZZINA",
               description: "App de gestão da Agência CNVT®",
-              href: "/dashboard",
+              href: "/app",
             },
             {
               title: "LINK",

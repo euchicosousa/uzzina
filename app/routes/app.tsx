@@ -50,7 +50,7 @@ export default function Dashboard() {
       <div className="border_after relative flex items-center p-4 justify-between">
         <div className="flex gap-2 items-center">
           <UzzinaLogo className="h-8" />
-          <UBadge size="sm" value={17} />
+          <UBadge size="sm" value={17} isDynamic />
           <Button variant="ghost" size="icon" className="rounded-full">
             <SearchIcon />
           </Button>

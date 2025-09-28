@@ -9,13 +9,18 @@ export const UBadge = ({
   size = "md",
   isDynamic = false,
   isRounded = false,
+  prefix,
+  suffix,
   value,
+  className,
   ...props
 }: Omit<React.ComponentProps<typeof Badge>, "children"> & {
   size?: TSize;
   isDynamic?: boolean;
   isRounded?: boolean;
   value: number;
+  prefix?: string;
+  suffix?: string;
 }) => {
   const sizeClasses = isRounded
     ? { sm: "size-4", md: "size-6", lg: "size-8" }[size]
@@ -40,11 +45,17 @@ export const UBadge = ({
         sizeClasses,
         paddingClasses,
         dynamicClasses,
-        textClasses
+        textClasses,
+        className
       )}
       {...props}
     >
-      {value}
+      {prefix}
+      {value.toLocaleString("pt-BR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 3,
+      })}
+      {suffix}
     </Badge>
   );
 };

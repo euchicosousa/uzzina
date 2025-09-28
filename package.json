@@ -10,6 +10,7 @@
     "gentypes": "npx supabase gen types typescript --project-id dfepmjcozszswocwvdpq --schema public > types/database.ts"
   },
   "dependencies": {
+    "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-toggle": "^1.1.10",
     "@radix-ui/react-toggle-group": "^1.1.11",
