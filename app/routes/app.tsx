@@ -1,15 +1,20 @@
-import { HandshakeIcon, PlusIcon, SearchIcon } from "lucide-react";
+import { ReactLenis, useLenis } from "lenis/react";
 import {
+  Outlet,
   redirect,
   useLoaderData,
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "react-router";
-import { UzzinaLogo } from "~/components/logo";
-import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
-import { UBadge } from "~/components/uzzina/UBadge";
+import invariant from "tiny-invariant";
+import { Header } from "~/components/layout/Header";
 import { createSupabaseClient } from "~/lib/supabase";
+
+export type AppLoaderData = {
+  people: Person[];
+  person: Person;
+  partners: Partner[];
+};
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { supabase } = await createSupabaseClient(request);
@@ -22,13 +27,23 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   const user_id = data.claims.sub;
 
-  const [{ data: people }] = await Promise.all([
-    supabase.from("people").select("*"),
+  const [{ data: people }, { data: partners }] = await Promise.all([
+    supabase.from("people").select("*").order("name", { ascending: true }),
+    supabase
+      .from("partners")
+      .select("*")
+      .eq("archived", false)
+      .contains("users_ids", [user_id])
+      .order("title", { ascending: true }),
   ]);
 
   const person = people?.find((person) => person.user_id === user_id)!;
 
-  return { people, person };
+  invariant(person, "Person not found");
+  invariant(people, "People not found");
+  invariant(partners, "Partners not found");
+
+  return { people, person, partners } as AppLoaderData;
 };
 
 export const meta: MetaFunction = () => {
@@ -43,30 +58,25 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Dashboard() {
-  const loaderData = useLoaderData<typeof loader>();
+  const { person } = useLoaderData<typeof loader>();
+  const lenis = useLenis();
 
   return (
-    <div>
-      <div className="border_after relative flex items-center p-4 justify-between">
-        <div className="flex gap-2 items-center">
-          <UzzinaLogo className="h-8" />
-          <UBadge size="sm" value={17} isDynamic />
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <SearchIcon />
-          </Button>
+    <div id="app" className="flex h-screen flex-col">
+      <Header person={person} />
+
+      <ReactLenis className="flex h-full overflow-y-auto">
+        <div className="flex h-full">
+          <div className="h-full min-w-8 border-r"></div>
+          <div className="flex h-full w-full shrink flex-col">
+            {/* HEADER */}
+            <div className="">
+              <Outlet />
+            </div>
+          </div>
+          <div className="h-full min-w-8 border-l"></div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="secondary" size="icon" className="rounded-full">
-            <PlusIcon />
-          </Button>
-          <Button variant="secondary" size="icon" className="rounded-full">
-            <HandshakeIcon />
-          </Button>
-          <p className="text-sm font-medium">{loaderData.person.name}</p>
-        </div>
-      </div>
-      {/* HEADER */}
-      {/* BODY */}
+      </ReactLenis>
     </div>
   );
 }

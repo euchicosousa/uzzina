@@ -10,7 +10,7 @@ export default function UITestingPage() {
   return (
     <div className="container mx-auto  px-8">
       {/* Header */}
-      <div className="border_after relative py-8 flex items-center justify-between">
+      <div className="border_after  py-8 flex items-center justify-between">
         <h1 className="p-0">UI Testing Page</h1>
 
         <div>
@@ -37,7 +37,7 @@ export default function UITestingPage() {
         </div>
       </div>
       {/* Headings */}
-      <div className="py-8 border_after relative">
+      <div className="py-8 border_after ">
         <div className="">
           <h2>Headings</h2>
         </div>
@@ -50,7 +50,7 @@ export default function UITestingPage() {
         </div>
       </div>
       {/* Badges */}
-      <div className="py-8 border_after relative">
+      <div className="py-8 border_after ">
         <div>
           <h2>Badges</h2>
         </div>
@@ -100,7 +100,7 @@ export default function UITestingPage() {
         </div>
       </div>
       {/* Avatars */}
-      <div className="py-8 border_after relative">
+      <div className="py-8 border_after ">
         <div>
           <h2>Avatars</h2>
         </div>

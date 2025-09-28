@@ -10,7 +10,7 @@ type UAvatarGroupProps = {
 type UAvatarItem = {
   id?: string;
   fallback: string;
-  image?: string;
+  image?: string | null;
   alt?: string;
   className?: string;
   size?: (typeof SIZES)[keyof typeof SIZES];
@@ -47,7 +47,7 @@ export const UAvatar = ({
 }: {
   id?: string;
   fallback: string;
-  image?: string;
+  image?: string | null;
   alt?: string;
   className?: string;
   size?: (typeof SIZES)[keyof typeof SIZES];
@@ -91,14 +91,14 @@ export const UAvatar = ({
         <AvatarImage src={image} alt={alt || ""} />
       ) : (
         <AvatarFallback className="bg-muted grid place-content-center text-muted-foreground text-center">
-          {getFallbackText(fallbackText)}
+          {getShortText(fallbackText)}
         </AvatarFallback>
       )}
     </Avatar>
   );
 };
 
-function getFallbackText(text: string) {
+export function getShortText(text: string) {
   return text.length <= 3 ? (
     text
   ) : (

@@ -156,32 +156,65 @@
   h5 {
     @apply text-xl font-medium leading-none pb-2 tracking-tight;
   }
+
+  p {
+    @apply leading-relaxed mb-4;
+  }
+
+  .lead {
+    @apply leading-normal text-xl tracking-tight;
+  }
 }
 
 .border_after {
-  @apply after:bg-border after:absolute after:bottom-0 after:-left-[100vw] after:h-px after:w-[200vw] dark:after:bg-white/10;
+  @apply relative after:bg-border after:absolute after:bottom-0 after:-left-[100vw] after:h-px after:w-[200vw] dark:after:bg-white/10;
 }
 
 .border_before {
-  @apply before:bg-border before:absolute before:top-0 before:-left-[100vw] before:h-px before:w-[200vw] dark:before:bg-white/10;
+  @apply relative before:bg-border before:absolute before:top-0 before:-left-[100vw] before:h-px before:w-[200vw] dark:before:bg-white/10;
 }
 
 .debug-1 {
-  @apply outline-2 outline-red-500;
+  @apply border-2 border-red-500;
 }
 
 .debug-2 {
-  @apply outline-2 outline-yellow-500;
+  @apply border-2 border-yellow-500;
 }
 
 .debug-3 {
-  @apply outline-2 outline-green-500;
+  @apply border-2 border-green-500;
 }
 
 .debug-4 {
-  @apply outline-2 outline-blue-500;
+  @apply border-2 border-blue-500;
 }
 
 .debug-5 {
-  @apply outline-2 outline-purple-500;
+  @apply border-2 border-indigo-500;
+}
+
+.debug-6 {
+  @apply border-2 border-purple-500;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+.lenis.lenis-autoToggle {
+  transition-property: overflow;
+  transition-duration: 1ms;
+  transition-behavior: allow-discrete;
 }
