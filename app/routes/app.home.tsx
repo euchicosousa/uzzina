@@ -17,7 +17,7 @@ import { Button } from "~/components/ui/button";
 import { getShortText } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { STATE } from "~/lib/CONSTANTS";
-import { getUserId } from "~/lib/helpers";
+import { getLateActions, getUserId } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "./app";
 export type AppHomeLoaderData = {
@@ -58,13 +58,11 @@ const PartnersHomeComponent = () => {
   const partnersWithActionsLength = partners.map((partner) => {
     return {
       ...partner,
-      actionsLength: actions
-        .filter((action) => action.partners.find((p) => p === partner.slug))
-        .filter((action) => {
-          return (
-            action.state !== STATE.finished && isBefore(action.date, new Date())
-          );
-        }).length,
+      actionsCount: getLateActions(
+        actions.filter((action) =>
+          action.partners.find((p) => p === partner.slug),
+        ),
+      ).length,
     };
   });
 
@@ -90,7 +88,7 @@ const PartnersHomeComponent = () => {
               {getShortText(partner.short)}
 
               <div className="absolute -top-2 -right-6 flex">
-                <UBadge isDynamic value={partner.actionsLength} size="sm" />
+                <UBadge isDynamic value={partner.actionsCount} size="sm" />
               </div>
             </div>
           </Link>

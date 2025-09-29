@@ -4,8 +4,12 @@ import { Button } from "../ui/button";
 import { UBadge } from "../uzzina/UBadge";
 import { UAvatar } from "../uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
+import { getLateActions } from "~/lib/helpers";
+import { useMatches } from "react-router";
+import type { AppHomeLoaderData } from "~/routes/app.home";
 
 export function Header({ person }: { person: Person }) {
+  const { actions } = useMatches()[2].loaderData as AppHomeLoaderData;
   return (
     <div className="border_after flex w-full items-center justify-between px-8">
       <div className="flex items-center gap-2 py-4">
@@ -24,7 +28,7 @@ export function Header({ person }: { person: Person }) {
 
           <UBadge
             size="sm"
-            value={17}
+            value={getLateActions(actions).length}
             isDynamic
             className="absolute -top-2 -right-2"
           />
