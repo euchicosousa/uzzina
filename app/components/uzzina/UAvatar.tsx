@@ -1,6 +1,6 @@
 import { useId } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { SIZES } from "~/lib/CONSTANTS";
+import { SIZE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 
 type UAvatarGroupProps = {
@@ -13,12 +13,12 @@ type UAvatarItem = {
   image?: string | null;
   alt?: string;
   className?: string;
-  size?: (typeof SIZES)[keyof typeof SIZES];
+  size?: (typeof SIZE)[keyof typeof SIZE];
 };
 
 export const UAvatarGroup = ({ avatars }: UAvatarGroupProps) => {
   const id = useId();
-  const size = avatars[0].size || SIZES.md;
+  const size = avatars[0].size || SIZE.md;
   const sizeClasses = {
     xs: "-space-x-1 *:data-[slot=avatar]:ring-4",
     sm: "-space-x-2 *:data-[slot=avatar]:ring-4",
@@ -50,12 +50,12 @@ export const UAvatar = ({
   image?: string | null;
   alt?: string;
   className?: string;
-  size?: (typeof SIZES)[keyof typeof SIZES];
+  size?: (typeof SIZE)[keyof typeof SIZE];
 }) => {
   const fallbackText = (
-    size === SIZES.xs
+    size === SIZE.xs
       ? fallback[0]
-      : size === SIZES.sm
+      : size === SIZE.sm
         ? fallback.substring(0, 2)
         : fallback
   ).toUpperCase();
@@ -90,7 +90,7 @@ export const UAvatar = ({
       {image ? (
         <AvatarImage src={image} alt={alt || ""} />
       ) : (
-        <AvatarFallback className="bg-muted grid place-content-center text-muted-foreground text-center">
+        <AvatarFallback className="bg-muted text-muted-foreground grid place-content-center text-center">
           {getShortText(fallbackText)}
         </AvatarFallback>
       )}

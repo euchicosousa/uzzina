@@ -3,14 +3,14 @@ import { UzzinaLogo } from "../logo";
 import { Button } from "../ui/button";
 import { UBadge } from "../uzzina/UBadge";
 import { UAvatar } from "../uzzina/UAvatar";
-import { SIZES } from "~/lib/CONSTANTS";
+import { SIZE } from "~/lib/CONSTANTS";
 
 export function Header({ person }: { person: Person }) {
   return (
-    <div className="border_after flex items-center p-4 justify-between">
-      <div className="flex gap-2 items-center">
+    <div className="border_after flex w-full items-center justify-between px-8">
+      <div className="flex items-center gap-2 py-4">
         <UzzinaLogo className="h-8" />
-        <UBadge size="sm" value={17} isDynamic />
+
         <Button variant="ghost" size="icon" className="rounded-full">
           <SearchIcon />
         </Button>
@@ -19,10 +19,17 @@ export function Header({ person }: { person: Person }) {
         <Button variant="ghost" size="icon" className="rounded-full">
           <PlusIcon />
         </Button>
-        <Button variant="ghost" size="icon" className="rounded-full">
+        <Button variant="ghost" size="icon" className="relative rounded-full">
           <HandshakeIcon />
+
+          <UBadge
+            size="sm"
+            value={17}
+            isDynamic
+            className="absolute -top-2 -right-2"
+          />
         </Button>
-        <UAvatar size={SIZES.sm} fallback={person.short} image={person.image} />
+        <UAvatar size={SIZE.sm} fallback={person.short} image={person.image} />
       </div>
     </div>
   );

@@ -1,9 +1,9 @@
 import type React from "react";
 import { Badge } from "../ui/badge";
 import { cn } from "~/lib/utils";
-import type { SIZES } from "~/lib/CONSTANTS";
+import type { SIZE } from "~/lib/CONSTANTS";
 
-type TSize = Extract<keyof typeof SIZES, "sm" | "md" | "lg">;
+type TSize = Extract<keyof typeof SIZE, "sm" | "md" | "lg">;
 
 export const UBadge = ({
   size = "md",
@@ -18,10 +18,13 @@ export const UBadge = ({
   size?: TSize;
   isDynamic?: boolean;
   isRounded?: boolean;
+
   value: number;
   prefix?: string;
   suffix?: string;
 }) => {
+  if (value === 0) return null;
+
   const sizeClasses = isRounded
     ? { sm: "size-4", md: "size-6", lg: "size-8" }[size]
     : { sm: "h-4 min-w-4", md: "h-6 min-w-6 ", lg: "h-8 min-w-8" }[size];
@@ -46,7 +49,7 @@ export const UBadge = ({
         paddingClasses,
         dynamicClasses,
         textClasses,
-        className
+        className,
       )}
       {...props}
     >

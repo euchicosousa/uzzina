@@ -1,105 +1,158 @@
-import { Link, useMatches } from "react-router";
-import type { AppLoaderData } from "./app";
+import { endOfMonth, isBefore, isToday, startOfMonth } from "date-fns";
+import {
+  ClockIcon,
+  ComponentIcon,
+  Grid3X3Icon,
+  KanbanIcon,
+} from "lucide-react";
+import { useState } from "react";
+import {
+  Link,
+  useLoaderData,
+  useMatches,
+  type LoaderFunctionArgs,
+} from "react-router";
+import KanbanComponent from "~/components/layout/KanbanComponent";
+import { Button } from "~/components/ui/button";
 import { getShortText } from "~/components/uzzina/UAvatar";
+import { UBadge } from "~/components/uzzina/UBadge";
+import { STATE } from "~/lib/CONSTANTS";
+import { getUserId } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
+import type { AppLoaderData } from "./app";
+export type AppHomeLoaderData = {
+  actions: Action[];
+};
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const { user_id, supabase } = await getUserId(request);
+
+  const interval = [startOfMonth(new Date()), endOfMonth(new Date())];
+
+  const { data: actions } = await supabase.rpc("get_user_actions", {
+    user_id_param: user_id,
+    //@ts-ignore
+    start_date: interval[0],
+    //@ts-ignore
+    end_date: interval[1],
+  });
+
+  return {
+    actions,
+  } as AppHomeLoaderData;
+};
 
 export default function AppHome() {
   return (
-    <div>
-      <Partners />
+    <div className="w-full">
+      <PartnersHomeComponent />
+      <TodayHomeComponent />
     </div>
   );
 }
 
-const Partners = () => {
+const PartnersHomeComponent = () => {
   const { partners } = useMatches()[1].loaderData as AppLoaderData;
+  const { actions } = useLoaderData<typeof loader>();
+
+  const partnersWithActionsLength = partners.map((partner) => {
+    return {
+      ...partner,
+      actionsLength: actions
+        .filter((action) => action.partners.find((p) => p === partner.slug))
+        .filter((action) => {
+          return (
+            action.state !== STATE.finished && isBefore(action.date, new Date())
+          );
+        }).length,
+    };
+  });
+
   return (
-    <div className="border_after">
-      <div className="border_after">
-        <h3 className="p-8">Parcerias</h3>
-      </div>
+    <HomeComponentWrapper title="Parceiros">
       <div
         className={cn(
           "grid grid-cols-3 text-center text-xl leading-none font-bold uppercase sm:grid-cols-4 md:grid-cols-6 lg:text-3xl",
-          Math.ceil(partners.length / 2) === 7
+          Math.ceil(partnersWithActionsLength.length / 2) === 7
             ? "md:grid-cols-7"
-            : Math.ceil(partners.length / 2) === 8
+            : Math.ceil(partnersWithActionsLength.length / 2) === 8
               ? "md:grid-cols-8"
               : "",
         )}
       >
-        {partners.map((partner) => (
+        {partnersWithActionsLength.map((partner) => (
           <Link
             to={`/partner/${partner.id}`}
             key={partner.id}
-            className="bg-muted grid place-content-center p-8"
+            className="hover:bg-muted grid place-content-center p-8"
           >
-            {getShortText(partner.short)}
+            <div className="relative">
+              {getShortText(partner.short)}
+
+              <div className="absolute -top-2 -right-6 flex">
+                <UBadge isDynamic value={partner.actionsLength} size="sm" />
+              </div>
+            </div>
           </Link>
         ))}
       </div>
+    </HomeComponentWrapper>
+  );
+};
 
-      <div>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab voluptatem
-          animi asperiores, id libero recusandae sint suscipit necessitatibus
-          amet nulla blanditiis corrupti iste voluptate incidunt unde nesciunt
-          quaerat! Ipsa, minima?
-        </p>
-        <p>
-          Itaque labore animi aperiam iusto ad facilis! Dolores porro
-          perspiciatis quia harum vitae assumenda velit rerum nemo beatae modi?
-          Odio ullam sit placeat officiis deleniti dicta voluptates quod atque
-          iste!
-        </p>
-        <p>
-          Libero nostrum tenetur ex eos consequatur itaque optio blanditiis,
-          aliquam, odit iusto accusamus delectus nihil commodi qui in
-          perspiciatis dolorem corrupti quod? Error impedit voluptates sint quae
-          quod deserunt obcaecati.
-        </p>
-        <p>
-          Iusto necessitatibus repellendus nostrum architecto quos. Rerum quam
-          fugit ad mollitia ipsam delectus! Dolorem ratione, rerum minus
-          repellendus voluptatem laborum maiores, est fugit eius corrupti nihil
-          similique ut reprehenderit enim?
-        </p>
-        <p>
-          Et fugiat quo consequuntur esse alias ab perspiciatis iusto? At
-          consectetur nemo quasi, libero enim assumenda commodi voluptatibus
-          minima. Reprehenderit ipsum ipsam tenetur alias minima atque maxime
-          autem quam ad?
-        </p>
-        <p>
-          Soluta, ab temporibus enim reiciendis aliquam nam atque, nulla
-          corporis sit optio tenetur neque facere labore voluptas dicta!
-          Suscipit nihil quaerat assumenda amet maiores quis molestias laborum
-          sed reprehenderit deleniti.
-        </p>
-        <p>
-          Corporis officia alias, ut, pariatur, enim quas velit animi vero
-          officiis necessitatibus aliquid. Praesentium autem in distinctio ullam
-          atque repellendus perspiciatis, perferendis nulla saepe totam
-          dignissimos architecto exercitationem possimus suscipit!
-        </p>
-        <p>
-          Doloremque officia tempora quos maxime. Quisquam animi iste minus
-          corrupti. A vitae nobis magnam. Quia modi commodi iusto dolores
-          blanditiis rerum eos nesciunt incidunt? Dolores voluptatem laboriosam
-          fuga quaerat atque.
-        </p>
-        <p>
-          Consectetur quisquam facilis iure ut debitis officiis cupiditate eius
-          nihil incidunt dicta? Earum totam amet provident ex a hic quas eos.
-          Maxime, sunt praesentium! Eum omnis repudiandae neque soluta et.
-        </p>
-        <p>
-          Expedita voluptatem asperiores exercitationem consequatur est alias
-          nesciunt, consectetur praesentium quaerat reiciendis, repudiandae
-          facere dolore excepturi facilis porro harum. Esse in quas illo ad
-          magnam maxime alias! Aspernatur, modi nemo!
-        </p>
+const TodayHomeComponent = () => {
+  let { actions } = useLoaderData<typeof loader>();
+
+  actions = actions.filter((action) => {
+    return isToday(action.date);
+  });
+
+  const [view, setView] = useState<"kanban" | "hours" | "feed" | "categories">(
+    "kanban",
+  );
+
+  return (
+    <HomeComponentWrapper
+      title="Hoje"
+      OptionsComponent={
+        <div className="flex items-center gap-2">
+          <Button variant={"ghost"}>
+            <KanbanIcon />
+          </Button>
+          <Button variant={"ghost"}>
+            <ClockIcon />
+          </Button>
+          <Button variant={"ghost"}>
+            <Grid3X3Icon />
+          </Button>
+          <Button variant={"ghost"}>
+            <ComponentIcon />
+          </Button>
+        </div>
+      }
+    >
+      {/* <ActionContainer actions={actions} /> */}
+      <KanbanComponent actions={actions} />
+    </HomeComponentWrapper>
+  );
+};
+
+const HomeComponentWrapper = ({
+  children,
+  title,
+  OptionsComponent,
+}: {
+  children: React.ReactNode;
+  OptionsComponent?: React.ReactNode;
+  title: string;
+}) => {
+  return (
+    <div className="border_after">
+      <div className="border_after flex items-center justify-between gap-4">
+        <h3 className="p-8">{title}</h3>
+        <div className="px-8">{OptionsComponent}</div>
       </div>
+      {children}
     </div>
   );
 };

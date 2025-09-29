@@ -25,7 +25,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   } = await supabase.auth.signInWithPassword({ email, password });
 
   if (user) {
-    return redirect("/dashboard", { headers });
+    return redirect("/app", { headers });
   } else {
     return { errors: { email: "Verifique o email ou a senha usada." } };
   }
@@ -49,7 +49,7 @@ const Login = () => {
     <div className="grid h-screen grid-cols-[2rem_20rem_2rem] justify-center overflow-x-hidden md:grid-cols-[2rem_30rem_2rem]">
       <div className="border-r"></div>
 
-      <div className="my-auto relative p-8 border_after border_before">
+      <div className="border_after border_before relative my-auto p-8">
         <div className="mb-12">
           <UzzinaLogo className="h-12" />
         </div>

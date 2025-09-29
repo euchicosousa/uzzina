@@ -3,14 +3,14 @@ import { Theme, useTheme } from "remix-themes";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
-import { SIZES } from "~/lib/CONSTANTS";
+import { SIZE } from "~/lib/CONSTANTS";
 
 export default function UITestingPage() {
   const [, setTheme] = useTheme();
   return (
-    <div className="container mx-auto  px-8">
+    <div className="container mx-auto px-8">
       {/* Header */}
-      <div className="border_after  py-8 flex items-center justify-between">
+      <div className="border_after flex items-center justify-between py-8">
         <h1 className="p-0">UI Testing Page</h1>
 
         <div>
@@ -37,7 +37,7 @@ export default function UITestingPage() {
         </div>
       </div>
       {/* Headings */}
-      <div className="py-8 border_after ">
+      <div className="border_after py-8">
         <div className="">
           <h2>Headings</h2>
         </div>
@@ -50,103 +50,103 @@ export default function UITestingPage() {
         </div>
       </div>
       {/* Badges */}
-      <div className="py-8 border_after ">
+      <div className="border_after py-8">
         <div>
           <h2>Badges</h2>
         </div>
         <div className="grid grid-cols-2 gap-8">
-          <div className="flex gap-4 items-center flex-wrap">
+          <div className="flex flex-wrap items-center gap-4">
             <h5 className="w-full">Badge comum</h5>
-            <UBadge size={SIZES.sm} value={12} />
-            <UBadge size={SIZES.md} value={17} />
-            <UBadge size={SIZES.lg} value={22} />
+            <UBadge size={SIZE.sm} value={12} />
+            <UBadge size={SIZE.md} value={17} />
+            <UBadge size={SIZE.lg} value={22} />
           </div>
-          <div className="flex gap-4 items-center flex-wrap">
+          <div className="flex flex-wrap items-center gap-4">
             <h5 className="w-full">Badge dinâmico</h5>
-            <UBadge size={SIZES.sm} value={2} isDynamic />
-            <UBadge size={SIZES.md} value={6} isDynamic />
-            <UBadge size={SIZES.lg} value={22998.8} isDynamic />
+            <UBadge size={SIZE.sm} value={2} isDynamic />
+            <UBadge size={SIZE.md} value={6} isDynamic />
+            <UBadge size={SIZE.lg} value={22998.8} isDynamic />
           </div>
-          <div className="flex gap-4 items-center flex-wrap">
+          <div className="flex flex-wrap items-center gap-4">
             <h5 className="w-full">Badge arredondado</h5>
 
-            <UBadge size={SIZES.sm} value={3} isRounded />
-            <UBadge size={SIZES.md} value={6} isRounded />
-            <UBadge size={SIZES.lg} value={22} isRounded />
+            <UBadge size={SIZE.sm} value={3} isRounded />
+            <UBadge size={SIZE.md} value={6} isRounded />
+            <UBadge size={SIZE.lg} value={22} isRounded />
           </div>
-          <div className="flex gap-4 items-center flex-wrap">
+          <div className="flex flex-wrap items-center gap-4">
             <h5 className="w-full">Badge pers. com sufixo e prefixo</h5>
 
             <UBadge
-              size={SIZES.sm}
+              size={SIZE.sm}
               value={3}
               prefix="+"
               suffix="pts"
               className="bg-success text-success-foreground"
             />
             <UBadge
-              size={SIZES.md}
+              size={SIZE.md}
               value={36}
               suffix="º"
-              className="bg-pink-400 rounded-none text-pink-200"
+              className="rounded-none bg-pink-400 text-pink-200"
             />
             <UBadge
-              size={SIZES.lg}
+              size={SIZE.lg}
               value={221.39}
               prefix="R$ "
-              className=" bg-amber-100 border border-amber-200 text-amber-600 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200"
+              className="border border-amber-200 bg-amber-100 text-amber-600 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200"
             />
           </div>
         </div>
       </div>
       {/* Avatars */}
-      <div className="py-8 border_after ">
+      <div className="border_after py-8">
         <div>
           <h2>Avatars</h2>
         </div>
         <div className="grid grid-cols-2 gap-8">
           <div className="flex flex-wrap gap-4">
             <h5 className="w-full">Avatar com fallback 2</h5>
-            <UAvatar fallback="cs" size={SIZES.xs} />
-            <UAvatar fallback="cs" size={SIZES.sm} />
-            <UAvatar fallback="cs" size={SIZES.md} />
-            <UAvatar fallback="cs" size={SIZES.lg} />
-            <UAvatar fallback="cs" size={SIZES.xl} />
+            <UAvatar fallback="cs" size={SIZE.xs} />
+            <UAvatar fallback="cs" size={SIZE.sm} />
+            <UAvatar fallback="cs" size={SIZE.md} />
+            <UAvatar fallback="cs" size={SIZE.lg} />
+            <UAvatar fallback="cs" size={SIZE.xl} />
           </div>
           <div className="flex flex-wrap gap-4">
             <h5 className="w-full">Avatar com fallback 2+</h5>
-            <UAvatar fallback="chico" size={SIZES.xs} />
-            <UAvatar fallback="smart" size={SIZES.sm} />
-            <UAvatar fallback="cnvt" size={SIZES.md} />
-            <UAvatar fallback="ana" size={SIZES.lg} />
-            <UAvatar fallback="videre" size={SIZES.xl} />
+            <UAvatar fallback="chico" size={SIZE.xs} />
+            <UAvatar fallback="smart" size={SIZE.sm} />
+            <UAvatar fallback="cnvt" size={SIZE.md} />
+            <UAvatar fallback="ana" size={SIZE.lg} />
+            <UAvatar fallback="videre" size={SIZE.xl} />
           </div>
           <div className="flex flex-wrap gap-4">
             <h5 className="w-full">Avatar com Imagens</h5>
             <UAvatar
               fallback="CN"
               image="https://github.com/shadcn.png"
-              size={SIZES.xs}
+              size={SIZE.xs}
             />
             <UAvatar
               fallback="CN"
               image="https://github.com/shadcn.png"
-              size={SIZES.sm}
+              size={SIZE.sm}
             />
             <UAvatar
               fallback="CN"
               image="https://github.com/shadcn.png"
-              size={SIZES.md}
+              size={SIZE.md}
             />
             <UAvatar
               fallback="CN"
               image="https://github.com/shadcn.png"
-              size={SIZES.lg}
+              size={SIZE.lg}
             />
             <UAvatar
               fallback="CN"
               image="https://github.com/shadcn.png"
-              size={SIZES.xl}
+              size={SIZE.xl}
             />
           </div>
 
@@ -156,25 +156,25 @@ export default function UITestingPage() {
               avatars={[
                 {
                   fallback: "AC",
-                  size: SIZES.xs,
+                  size: SIZE.xs,
                 },
                 {
                   fallback: "CN",
-                  size: SIZES.xs,
+                  size: SIZE.xs,
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "CN",
-                  size: SIZES.xs,
+                  size: SIZE.xs,
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "CS",
-                  size: SIZES.xs,
+                  size: SIZE.xs,
                 },
                 {
                   fallback: "CN",
-                  size: SIZES.xs,
+                  size: SIZE.xs,
                   image: "https://github.com/shadcn.png",
                 },
               ]}
@@ -186,25 +186,25 @@ export default function UITestingPage() {
               avatars={[
                 {
                   fallback: "AC",
-                  size: SIZES.sm,
+                  size: SIZE.sm,
                 },
                 {
                   fallback: "CN",
-                  size: SIZES.sm,
+                  size: SIZE.sm,
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "CN",
-                  size: SIZES.sm,
+                  size: SIZE.sm,
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "CS",
-                  size: SIZES.sm,
+                  size: SIZE.sm,
                 },
                 {
                   fallback: "CN",
-                  size: SIZES.sm,
+                  size: SIZE.sm,
                   image: "https://github.com/shadcn.png",
                 },
               ]}
@@ -241,25 +241,25 @@ export default function UITestingPage() {
               avatars={[
                 {
                   fallback: "CN",
-                  size: SIZES.lg,
+                  size: SIZE.lg,
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "AC",
-                  size: SIZES.lg,
+                  size: SIZE.lg,
                 },
                 {
                   fallback: "CN",
-                  size: SIZES.lg,
+                  size: SIZE.lg,
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "CS",
-                  size: SIZES.lg,
+                  size: SIZE.lg,
                 },
                 {
                   fallback: "CN",
-                  size: SIZES.lg,
+                  size: SIZE.lg,
                   image: "https://github.com/shadcn.png",
                 },
               ]}
@@ -271,25 +271,25 @@ export default function UITestingPage() {
               avatars={[
                 {
                   fallback: "AC",
-                  size: SIZES.xl,
+                  size: SIZE.xl,
                 },
                 {
                   fallback: "CN",
-                  size: SIZES.xl,
+                  size: SIZE.xl,
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "CN",
-                  size: SIZES.xl,
+                  size: SIZE.xl,
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "CS",
-                  size: SIZES.xl,
+                  size: SIZE.xl,
                 },
                 {
                   fallback: "CN",
-                  size: SIZES.xl,
+                  size: SIZE.xl,
                   image: "https://github.com/shadcn.png",
                 },
               ]}
