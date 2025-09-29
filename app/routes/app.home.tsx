@@ -52,17 +52,15 @@ export default function AppHome() {
 }
 
 const PartnersHomeComponent = () => {
-  const { partners } = useMatches()[1].loaderData as AppLoaderData;
+  const { partners, states } = useMatches()[1].loaderData as AppLoaderData;
   const { actions } = useLoaderData<typeof loader>();
 
   const partnersWithActionsLength = partners.map((partner) => {
     return {
       ...partner,
-      actionsCount: getLateActions(
-        actions.filter((action) =>
-          action.partners.find((p) => p === partner.slug),
-        ),
-      ).length,
+      actions: actions.filter((action) =>
+        action.partners.find((p) => p === partner.slug),
+      ),
     };
   });
 
@@ -82,14 +80,30 @@ const PartnersHomeComponent = () => {
           <Link
             to={`/partner/${partner.id}`}
             key={partner.id}
-            className="hover:bg-muted grid place-content-center p-8"
+            className="group/partner relative grid place-content-center p-8"
           >
-            <div className="relative">
+            <div className="group-hover/partner: relative transition-[opacity,scale] duration-500 group-hover/partner:scale-80 group-hover/partner:opacity-0">
               {getShortText(partner.short)}
 
               <div className="absolute -top-2 -right-6 flex">
-                <UBadge isDynamic value={partner.actionsCount} size="sm" />
+                <UBadge
+                  isDynamic
+                  value={getLateActions(partner.actions).length}
+                  size="sm"
+                />
               </div>
+            </div>
+            <div className="absolute top-1/2 left-0 flex h-1 w-full origin-left -translate-y-1/2 scale-x-0 p-2 transition-[scale] duration-1000 group-hover/partner:scale-x-100">
+              {states.map((state) => (
+                <div
+                  key={state.id}
+                  className="h-1 w-full"
+                  style={{
+                    backgroundColor: state.color,
+                    width: `${(partner.actions.filter((action) => action.state === state.slug).length / partner.actions.length) * 100}%`,
+                  }}
+                ></div>
+              ))}
             </div>
           </Link>
         ))}
