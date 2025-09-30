@@ -1,4 +1,4 @@
-import { endOfMonth, isBefore, isToday, startOfMonth } from "date-fns";
+import { endOfMonth, isToday, startOfMonth } from "date-fns";
 import {
   ClockIcon,
   ComponentIcon,
@@ -16,7 +16,6 @@ import KanbanComponent from "~/components/layout/KanbanComponent";
 import { Button } from "~/components/ui/button";
 import { getShortText } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
-import { STATE } from "~/lib/CONSTANTS";
 import { getLateActions, getUserId } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "./app";
@@ -43,10 +42,88 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export default function AppHome() {
+  const { actions } = useLoaderData<typeof loader>();
+  const actionsMap = new Map();
+  actions.map((action) => actionsMap.set(action.id, action));
+
   return (
     <div className="w-full">
       <PartnersHomeComponent />
       <TodayHomeComponent />
+      <div>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem
+          praesentium cum sed fuga quae modi, possimus recusandae, ratione
+          inventore architecto ab temporibus illo, corrupti deserunt corporis
+          voluptates sequi saepe perspiciatis.
+        </p>
+        <p>
+          Ea odio earum iusto illo eligendi est sunt aut quibusdam quasi vel
+          voluptatum similique explicabo quia animi vitae fuga totam voluptate
+          quam necessitatibus consectetur, voluptatibus reprehenderit quae quo!
+          Nulla, inventore!
+        </p>
+        <p>
+          Dignissimos eius itaque veniam aliquam odit eveniet, tempora omnis
+          nesciunt repellendus dolores deserunt sint nihil voluptates ipsam
+          perferendis, dicta eum, explicabo consequuntur! Pariatur aperiam
+          eligendi fugit sunt natus placeat sit.
+        </p>
+        <p>
+          Officia expedita voluptatem ea velit voluptatum quam nobis quos?
+          Aspernatur vitae qui non repellendus? Laudantium earum quam quo magni
+          saepe animi, quidem dolore similique velit. Dolorum ad perspiciatis
+          suscipit porro.
+        </p>
+        <p>
+          Excepturi, voluptatibus molestiae minus corporis obcaecati culpa porro
+          non consequatur, velit dolorem ad, doloribus doloremque aut.
+          Praesentium laudantium vitae, corporis atque quod voluptate
+          dignissimos modi voluptates dolorum in dolores voluptatum.
+        </p>
+        <p>
+          Dolor nostrum eaque animi eveniet ducimus cumque at expedita dolorum
+          reprehenderit. Beatae commodi recusandae vero et? Voluptatibus debitis
+          aliquam, architecto veniam ut est harum numquam, cupiditate, expedita
+          quo atque! Fugit.
+        </p>
+        <p>
+          Est placeat alias nostrum quod necessitatibus sint dicta eius
+          doloremque asperiores assumenda iusto hic consequatur mollitia ullam,
+          dolorum ad aliquid sed voluptates! Cum in corrupti dicta eaque aliquam
+          illum necessitatibus!
+        </p>
+        <p>
+          Eaque saepe facere placeat consequuntur deleniti eligendi sit quae,
+          et, tenetur expedita praesentium fuga itaque consequatur minus unde
+          ratione nesciunt tempore veniam possimus? Odio magnam repellendus
+          omnis veritatis! Nisi, perferendis.
+        </p>
+        <p>
+          Molestiae, amet accusantium? Veniam animi expedita minima harum
+          delectus tempore itaque quas nulla repellat? Quisquam assumenda atque
+          tempore enim sit quae, magnam ab sapiente, dolores ipsum accusamus
+          fuga, accusantium minima.
+        </p>
+        <p>
+          Tenetur, tempore sapiente aut id quam sed numquam maiores,
+          perspiciatis suscipit delectus repellendus distinctio, quia hic non
+          libero nulla molestias? Cum quisquam amet debitis! Vel, voluptates
+          excepturi! Illum, sequi sint?
+        </p>
+        <p>
+          Earum laborum autem, possimus inventore illo, ducimus dolores nisi
+          laudantium fugiat numquam perspiciatis. Voluptas minima mollitia in
+          tempora quod molestiae beatae, dignissimos quia fugiat! Impedit
+          distinctio animi incidunt quo excepturi!
+        </p>
+        <p>
+          Eligendi explicabo vel, nam error placeat minus sunt sed libero sit
+          animi, facere fuga aut, voluptatem recusandae alias cum maiores
+          quaerat? Laborum architecto doloribus sed amet earum exercitationem
+          provident in.
+        </p>
+      </div>
     </div>
   );
 }
@@ -93,7 +170,7 @@ const PartnersHomeComponent = () => {
                 />
               </div>
             </div>
-            <div className="absolute top-1/2 left-0 flex h-1 w-full origin-left -translate-y-1/2 scale-x-0 p-2 transition-[scale] duration-1000 group-hover/partner:scale-x-100">
+            <div className="absolute top-1/2 left-0 flex h-1 w-full origin-left -translate-y-1/2 scale-x-0 p-2 transition-[scale] duration-500 group-hover/partner:scale-x-100">
               {states.map((state) => (
                 <div
                   key={state.id}

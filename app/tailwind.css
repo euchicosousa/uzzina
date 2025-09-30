@@ -152,7 +152,7 @@
   --color-success-background: oklch(91.253% 0.08852 177.13);
   --color-success-foreground: oklch(46.164% 0.08148 171.818);
   --color-info: oklch(63.59% 0.09968 241.813);
-  --color-info-background: oklch(51.811% 0.02504 235.501);
+  --color-info-background: oklch(34.433% 0.02012 233.814);
   --color-info-foreground: oklch(70.658% 0.01268 231.972);
 }
 
@@ -192,11 +192,11 @@
 }
 
 .border_after {
-  @apply after:bg-border relative after:absolute after:bottom-0 after:-left-[100vw] after:h-px after:w-[200vw] dark:after:bg-white/10;
+  @apply after:bg-border relative after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-[100vw] after:-translate-x-1/2 dark:after:bg-white/10;
 }
 
 .border_before {
-  @apply before:bg-border relative before:absolute before:top-0 before:-left-[100vw] before:h-px before:w-[200vw] dark:before:bg-white/10;
+  @apply before:bg-border relative before:absolute before:top-0 before:left-1/2 before:h-px before:w-[100vw] before:-translate-x-1/2 dark:before:bg-white/10;
 }
 
 .debug-1 {

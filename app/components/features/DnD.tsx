@@ -9,12 +9,18 @@ import { cn } from "~/lib/utils";
 export const Droppable = ({
   id,
   children,
+  className,
 }: {
   id: UniqueIdentifier;
   children: (isOver: boolean) => React.ReactNode;
+  className?: string;
 }) => {
   const { isOver, setNodeRef } = useDroppable({ id });
-  return <div ref={setNodeRef}>{children(isOver)}</div>;
+  return (
+    <div ref={setNodeRef} className={cn(className)}>
+      {children(isOver)}
+    </div>
+  );
 };
 
 export const Draggable = ({

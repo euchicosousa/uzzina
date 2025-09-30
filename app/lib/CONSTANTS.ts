@@ -22,3 +22,8 @@ export const VARIANT = {
   content: "content",
   hour: "hour",
 } as const;
+
+export const INTENT = {
+  create_action: "create-action",
+  update_action: "update-action",
+} as const;

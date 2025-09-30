@@ -6,18 +6,19 @@ import {
   useSensors,
   type DragEndEvent,
   type DragStartEvent,
-  type UniqueIdentifier,
 } from "@dnd-kit/core";
 import { useState } from "react";
-import { useMatches } from "react-router";
+import { useMatches, useSubmit } from "react-router";
+import { INTENT } from "~/lib/CONSTANTS";
+import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "~/routes/app";
 import { ActionItem } from "../features/ActionItem";
 import { Draggable, Droppable } from "../features/DnD";
-import { cn } from "~/lib/utils";
 
 export default function KanbanComponent({ actions }: { actions: Action[] }) {
   const { states } = useMatches()[1].loaderData as AppLoaderData;
-  const [activeId, setActiveId] = useState<UniqueIdentifier>();
+  const submit = useSubmit();
+  const [activeAction, setActiveAction] = useState<Action>();
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
@@ -25,44 +26,62 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
   );
 
   const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id);
+    setActiveAction(actions.find((action) => action.id === event.active.id)!);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
-    if (event.over) {
-      setActiveId(undefined);
-      console.log(event.over.id);
+    if (event.over && activeAction) {
+      handleAction({
+        ...activeAction,
+        intent: INTENT.update_action,
+        state: event.over.id,
+      });
     }
+    setActiveAction(undefined);
+  };
+
+  const handleAction = (data: any) => {
+    submit(
+      {
+        ...data,
+      },
+      {
+        method: "post",
+        action: "/action/handle-action",
+        navigate: false,
+      },
+    );
   };
 
   return (
-    <div className="p-4">
+    <div className="overflow-x-hidden p-4">
       <h4 className="px-4">Kanban</h4>
-      <div className="grid grid-cols-7">
-        <DndContext
-          sensors={sensors}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        >
-          {states.map((state) => (
-            <KanbanColumn
-              id={state.slug}
-              state={state}
-              key={state.id}
-              actions={actions.filter((action) => action.state === state.slug)}
-            />
-          ))}
-          <DragOverlay
-            className="z-100"
-            style={{ transition: "transform 100ms ease" }}
+      <div className="overflow-x-auto">
+        <div className="grid min-w-5xl grid-cols-7">
+          <DndContext
+            id={"kanban"}
+            sensors={sensors}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
           >
-            {activeId ? (
-              <ActionItem
-                action={actions.find((action) => action.id === activeId)!}
+            {states.map((state) => (
+              <KanbanColumn
+                id={state.slug}
+                state={state}
+                key={state.id}
+                actions={actions.filter(
+                  (action) => action.state === state.slug,
+                )}
               />
-            ) : null}
-          </DragOverlay>
-        </DndContext>
+            ))}
+            <DragOverlay
+              className="z-100"
+              style={{ transition: "transform 100ms ease" }}
+            >
+              {activeAction ? <ActionItem action={activeAction} /> : null}
+            </DragOverlay>
+          </DndContext>
+        </div>
       </div>
     </div>
   );
