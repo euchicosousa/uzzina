@@ -57,7 +57,7 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
   return (
     <div className="w-full max-w-full overflow-hidden">
       <h5 className="p-8 pb-4">Kanban</h5>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto pb-2">
         <div className="grid min-w-7xl grid-cols-7 overflow-hidden px-8">
           <DndContext
             id={"kanban"}
@@ -114,7 +114,7 @@ const KanbanColumn = ({
               {state.title}
             </div>
 
-            <div className="flex h-full flex-col gap-1 overflow-y-auto">
+            <div className="flex h-full flex-col gap-1 overflow-y-auto pr-1">
               <div className="flex flex-col gap-1">
                 {actions.map((action) => (
                   <Draggable id={action.id} key={action.id}>
