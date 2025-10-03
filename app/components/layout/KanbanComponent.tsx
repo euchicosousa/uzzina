@@ -14,6 +14,7 @@ import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "~/routes/app";
 import { ActionItem } from "../features/ActionItem";
 import { Draggable, Droppable } from "../features/DnD";
+import ReactLenis from "lenis/react";
 
 export default function KanbanComponent({ actions }: { actions: Action[] }) {
   const { states } = useMatches()[1].loaderData as AppLoaderData;
@@ -54,10 +55,10 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
   };
 
   return (
-    <div className="overflow-x-hidden p-4">
-      <h4 className="px-4">Kanban</h4>
+    <div className="w-full max-w-full overflow-hidden">
+      <h5 className="p-8 pb-4">Kanban</h5>
       <div className="overflow-x-auto">
-        <div className="grid min-w-5xl grid-cols-7">
+        <div className="grid min-w-7xl grid-cols-7 overflow-hidden px-8">
           <DndContext
             id={"kanban"}
             sensors={sensors}
@@ -78,7 +79,9 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
               className="z-100"
               style={{ transition: "transform 100ms ease" }}
             >
-              {activeAction ? <ActionItem action={activeAction} /> : null}
+              {activeAction ? (
+                <ActionItem action={activeAction} isDragging />
+              ) : null}
             </DragOverlay>
           </DndContext>
         </div>
@@ -97,12 +100,12 @@ const KanbanColumn = ({
   state: State;
 }) => {
   return (
-    <Droppable id={id}>
+    <Droppable id={id} className="flex max-h-[30vh] flex-col overflow-hidden">
       {(isOver) => {
         return (
           <div
             className={cn(
-              "h-full border-t-4 p-1 transition-colors",
+              "flex h-full flex-col overflow-hidden border-t-4 p-1 transition-colors",
               isOver && "bg-muted/50",
             )}
             style={{ borderTopColor: state.color }}
@@ -110,12 +113,15 @@ const KanbanColumn = ({
             <div className="my-2 pb-2 text-xs font-bold tracking-wider uppercase">
               {state.title}
             </div>
-            <div className="flex flex-col gap-1">
-              {actions.map((action) => (
-                <Draggable id={action.id} key={action.id}>
-                  <ActionItem action={action} />
-                </Draggable>
-              ))}
+
+            <div className="flex h-full flex-col gap-1 overflow-y-auto">
+              <div className="flex flex-col gap-1">
+                {actions.map((action) => (
+                  <Draggable id={action.id} key={action.id}>
+                    <ActionItem action={action} showLate />
+                  </Draggable>
+                ))}
+              </div>
             </div>
           </div>
         );

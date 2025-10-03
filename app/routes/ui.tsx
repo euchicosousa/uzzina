@@ -49,6 +49,84 @@ export default function UITestingPage() {
           <h5>h5 – Lorem ipsum dolor sit amet consectetur adipisicing elit.</h5>
         </div>
       </div>
+      <div className="border_after py-8">
+        <h2>Colors</h2>
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+          {[
+            {
+              background: "bg-background",
+              text: "text-foreground",
+            },
+            {
+              background: "bg-card",
+              text: "text-card-foreground",
+            },
+            {
+              background: "bg-popover",
+              text: "text-popover-foreground",
+            },
+            {
+              background: "bg-primary",
+              text: "text-primary-foreground",
+            },
+            {
+              background: "bg-secondary",
+              text: "text-secondary-foreground",
+            },
+            {
+              background: "bg-muted",
+              text: "text-muted-foreground",
+            },
+            {
+              background: "bg-accent",
+              text: "text-accent-foreground",
+            },
+            {
+              background: "bg-input",
+              text: "text-foreground",
+            },
+            {
+              background: "bg-error-background",
+              text: "text-error",
+            },
+            {
+              background: "bg-warning-background",
+              text: "text-warning",
+            },
+            {
+              background: "bg-success-background",
+              text: "text-success",
+            },
+            {
+              background: "bg-info-background",
+              text: "text-info",
+            },
+            {
+              background: "bg-error",
+              text: "text-error-background",
+            },
+            {
+              background: "bg-warning",
+              text: "text-warning-background",
+            },
+            {
+              background: "bg-success",
+              text: "text-success-background",
+            },
+            {
+              background: "bg-info",
+              text: "text-info-background",
+            },
+          ].map((colors) => (
+            <div
+              className={`${colors.background} ${colors.text} flex flex-col gap-2 border p-8`}
+            >
+              <code>.{colors.background}</code>
+              <code>.{colors.text}</code>
+            </div>
+          ))}
+        </div>
+      </div>
       {/* Badges */}
       <div className="border_after py-8">
         <div>

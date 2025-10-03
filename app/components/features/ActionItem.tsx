@@ -2,17 +2,34 @@ import { format } from "date-fns";
 import { useState } from "react";
 import { useMatches } from "react-router";
 import { VARIANT } from "~/lib/CONSTANTS";
+import { isAlmostLateAction, isLateAction } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "~/routes/app";
 
 type ActionItemProps = {
   action: Action;
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
+  showLate?: boolean;
+  className?: string;
+  isDragging?: boolean;
 };
 
-export const ActionItem = ({ action, variant }: ActionItemProps) => {
+export const ActionItem = ({
+  action,
+  variant,
+  showLate,
+  className,
+  isDragging,
+}: ActionItemProps) => {
   const { states } = useMatches()[1].loaderData as AppLoaderData;
   const currentState = states.find((state) => state.slug === action.state)!;
+  const lateClasses = showLate
+    ? isLateAction(action)
+      ? "bg-error-background/50 text-error-foreground hover:bg-error-background"
+      : isAlmostLateAction(action)
+        ? "bg-warning-background/50 text-warning-foreground hover:bg-warning-background"
+        : "bg-card hover:bg-card"
+    : "bg-card hover:bg-card";
 
   const renderActionVariant = () => {
     switch (variant) {
@@ -31,7 +48,13 @@ export const ActionItem = ({ action, variant }: ActionItemProps) => {
 
   return (
     <div
-      className={cn("bg-card flex overflow-hidden rounded border-l-4 p-2")}
+      className={cn(
+        "group/action relative flex overflow-hidden rounded border-l-4 p-2 transition-colors",
+        lateClasses,
+        variant === VARIANT.block ? "flex-col gap-2" : "",
+        className,
+        isDragging ? "cursor-grabbing" : "",
+      )}
       style={{ borderLeftColor: currentState.color }}
     >
       {renderActionVariant()}
@@ -39,7 +62,13 @@ export const ActionItem = ({ action, variant }: ActionItemProps) => {
   );
 };
 
-const ActionTitleInput = ({ title }: { title: string }) => {
+const ActionTitleInput = ({
+  title,
+  isDragging,
+}: {
+  title: string;
+  isDragging?: boolean;
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [localTItle, setLocalTitle] = useState(title);
 
@@ -56,7 +85,10 @@ const ActionTitleInput = ({ title }: { title: string }) => {
       ) : (
         <button
           onClick={() => setIsEditing(true)}
-          className="overflow-hidden text-ellipsis whitespace-nowrap"
+          className={cn(
+            "cursor-text overflow-hidden text-ellipsis whitespace-nowrap",
+            isDragging ? "cursor-grabbing" : "",
+          )}
         >
           {title}
         </button>

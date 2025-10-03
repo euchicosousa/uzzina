@@ -56,19 +56,18 @@ export default function Dashboard() {
   const { person } = useLoaderData<typeof loader>();
 
   return (
-    <div id="app" className="flex h-screen flex-col">
+    <div id="app" className="flex h-screen flex-col overflow-x-hidden">
       {/* HEADER */}
       <Header person={person} />
-
-      <ReactLenis className="flex h-full flex-col overflow-x-hidden overflow-y-auto">
-        <div className="flex h-full shrink grow">
-          <div className="h-full min-w-8 border-r"></div>
+      <div className="overflow-x-hidden overflow-y-auto">
+        <div className="flex h-full grow">
+          <div className="min-h-full w-8 shrink-0 border-r"></div>
           <div className="flex h-full w-full shrink flex-col">
             <Outlet />
           </div>
-          <div className="h-full min-w-8 border-l"></div>
+          <div className="min-h-full w-8 shrink-0 border-l"></div>
         </div>
-      </ReactLenis>
+      </div>
     </div>
   );
 }
