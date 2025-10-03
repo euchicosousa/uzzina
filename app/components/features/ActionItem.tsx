@@ -25,9 +25,9 @@ export const ActionItem = ({
   const currentState = states.find((state) => state.slug === action.state)!;
   const lateClasses = showLate
     ? isLateAction(action)
-      ? "bg-error-background/50 text-error-foreground hover:bg-error-background"
+      ? "bg-error-background/50 text-error hover:bg-error-background"
       : isAlmostLateAction(action)
-        ? "bg-warning-background/50 text-warning-foreground hover:bg-warning-background"
+        ? "bg-warning-background/50 text-warning hover:bg-warning-background"
         : "bg-card hover:bg-card"
     : "bg-card hover:bg-card";
 

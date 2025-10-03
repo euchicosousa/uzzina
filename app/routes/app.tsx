@@ -60,9 +60,9 @@ export default function Dashboard() {
       {/* HEADER */}
       <Header person={person} />
       <div className="overflow-x-hidden overflow-y-auto">
-        <div className="flex h-full grow">
+        <div className="flex min-h-full grow">
           <div className="min-h-full w-8 shrink-0 border-r"></div>
-          <div className="flex h-full w-full shrink flex-col">
+          <div className="flex min-h-full w-full shrink flex-col">
             <Outlet />
           </div>
           <div className="min-h-full w-8 shrink-0 border-l"></div>

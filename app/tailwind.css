@@ -104,18 +104,36 @@
   --sidebar-border: oklch(0.94 0 0);
   --sidebar-ring: oklch(0.707 0.022 261.325);
 
+  --error-hue: 25;
+  --warning-hue: 80;
+  --success-hue: 180;
+  --info-hue: 250;
+
+  --luminosity: 0.7;
+  --luminosity-background: 0.97;
+  --chroma: 0.25;
+  --chroma-background: 0.05;
+
   /* UZZINA COLORS */
-  --color-error: oklch(0.6 0.2 20);
-  --color-error-background: oklch(0.98 0.1 5);
+  --color-error: oklch(var(--luminosity) var(--chroma) var(--error-hue));
+  --color-error-background: oklch(
+    var(--luminosity-background) var(--chroma-background) var(--error-hue)
+  );
 
-  --color-warning: oklch(0.7 0.1 90);
-  --color-warning-background: oklch(0.98 0.07 70);
+  --color-warning: oklch(var(--luminosity) var(--chroma) var(--warning-hue));
+  --color-warning-background: oklch(
+    var(--luminosity-background) var(--chroma-background) var(--warning-hue)
+  );
 
-  --color-success: oklch(0.7 0.1 160);
-  --color-success-background: oklch(0.95 0.07 160);
+  --color-success: oklch(var(--luminosity) var(--chroma) var(--success-hue));
+  --color-success-background: oklch(
+    var(--luminosity-background) var(--chroma-background) var(--success-hue)
+  );
 
-  --color-info: oklch(63.59% 0.09968 241.813);
-  --color-info-background: oklch(0.96 0 0.1);
+  --color-info: oklch(var(--luminosity) var(--chroma) var(--info-hue));
+  --color-info-background: oklch(
+    var(--luminosity-background) var(--chroma-background) var(--info-hue)
+  );
 }
 
 .dark,
@@ -152,18 +170,32 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 
-  --color-error: oklch(63.752% 0.24787 26.587);
-  --color-error-foreground: oklch(88.645% 0.04634 17.943);
-  --color-error-background: oklch(25.089% 0.07891 24.858);
-  --color-warning: oklch(80.107% 0.15644 84.166);
-  --color-warning-foreground: oklch(96.973% 0.08026 102.463);
-  --color-warning-background: oklch(44.531% 0.07324 76.293);
-  --color-success: oklch(64.426% 0.1231 170.129);
-  --color-success-background: oklch(91.253% 0.08852 177.13);
-  --color-success-foreground: oklch(46.164% 0.08148 171.818);
-  --color-info: oklch(63.59% 0.09968 241.813);
-  --color-info-background: oklch(34.433% 0.02012 233.814);
-  --color-info-foreground: oklch(70.658% 0.01268 231.972);
+  --warning-hue: 90;
+
+  --luminosity: 0.7;
+  --luminosity-background: 0.3;
+  /* --chroma: 0.2; */
+  --chroma-background: 0.1;
+
+  --color-error: oklch(var(--luminosity) var(--chroma) var(--error-hue));
+  --color-error-background: oklch(
+    var(--luminosity-background) var(--chroma-background) var(--error-hue)
+  );
+
+  --color-warning: oklch(var(--luminosity) var(--chroma) var(--warning-hue));
+  --color-warning-background: oklch(
+    var(--luminosity-background) var(--chroma-background) var(--warning-hue)
+  );
+
+  --color-success: oklch(var(--luminosity) var(--chroma) var(--success-hue));
+  --color-success-background: oklch(
+    var(--luminosity-background) var(--chroma-background) var(--success-hue)
+  );
+
+  --color-info: oklch(var(--luminosity) var(--chroma) var(--info-hue));
+  --color-info-background: oklch(
+    var(--luminosity-background) var(--chroma-background) var(--info-hue)
+  );
 }
 
 @layer base {

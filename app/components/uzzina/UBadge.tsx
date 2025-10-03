@@ -36,15 +36,15 @@ export const UBadge = ({
 
   const dynamicClasses = isDynamic
     ? value > 7
-      ? "bg-error-background text-error-foreground border-error/20"
+      ? "bg-error-background text-error border-error/20"
       : value >= 3
-        ? "bg-warning-background text-warning-foreground border-warning/20"
+        ? "bg-warning-background text-warning border-warning/20"
         : undefined
     : undefined;
   return (
     <Badge
       className={cn(
-        "bg-info-background text-info-foreground border-info/20 rounded-full",
+        "bg-info-background text-info border-info/20 rounded-full",
         sizeClasses,
         paddingClasses,
         dynamicClasses,
