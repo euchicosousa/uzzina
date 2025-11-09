@@ -1,5 +1,6 @@
 @import "tailwindcss";
-@import "tw-animate-css";
+
+/* @import "tw-animate-css"; */
 
 @custom-variant dark (&:is(.dark *));
 
@@ -288,4 +289,8 @@
 
 .debug-6 {
   @apply border-2 border-purple-500;
+}
+
+.teste {
+  @apply divide-y;
 }

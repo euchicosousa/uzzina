@@ -4,8 +4,9 @@ export default [
   index("routes/home.tsx"),
   route("app", "routes/app.tsx", [
     index("routes/app.home.tsx"),
-    route("partner/:slug", "routes/app.partner.id.tsx"),
+    route("partner/:slug", "routes/app.partner.slug.tsx"),
   ]),
+  route("teste", "routes/teste.tsx"),
   route("login", "routes/login.tsx"),
   route("ui", "routes/ui.tsx"),
   route("action/set-theme", "routes/action.set-theme.ts"),

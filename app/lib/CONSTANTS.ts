@@ -38,3 +38,9 @@ export const INTENT = {
   create_action: "create-action",
   update_action: "update-action",
 } as const;
+
+export const PRIORITY = {
+  low: "low",
+  medium: "medium",
+  high: "high",
+} as const;

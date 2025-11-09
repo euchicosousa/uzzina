@@ -1,7 +1,15 @@
 import { useLoaderData, type LoaderFunctionArgs } from "react-router";
 import { getUserId } from "~/lib/helpers";
 import invariant from "tiny-invariant";
-import { CalendarIcon, ListIcon } from "lucide-react";
+import {
+  CalendarIcon,
+  HandshakeIcon,
+  ListIcon,
+  MenuIcon,
+  SignalHighIcon,
+  TagIcon,
+  UsersIcon,
+} from "lucide-react";
 import { UToggle } from "~/components/uzzina/UToggle";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import {
@@ -15,6 +23,8 @@ import {
   startOfWeek,
 } from "date-fns";
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
+import { Toggle } from "~/components/ui/toggle";
+import { useState } from "react";
 
 export const runtime = "edge";
 
@@ -70,6 +80,16 @@ export default function PartnerPage() {
   const currentActions: Action[] = [];
   actionsMap.forEach((action) => currentActions.push(action));
 
+  const [viewOptions, setViewOptions] = useState({
+    list: true,
+    calendar: false,
+    responsibles: true,
+    priority: false,
+    category: true,
+    late: true,
+    partner: false,
+  });
+
   return (
     <div>
       <div className="border_after">
@@ -86,11 +106,54 @@ export default function PartnerPage() {
             </UToggle>
           </div>
         </div>
+        <div className="flex justify-end gap-1 px-4 py-1">
+          <Toggle
+            className="grid place-content-center p-0"
+            pressed={viewOptions.responsibles}
+            onPressedChange={(value) =>
+              setViewOptions({ ...viewOptions, responsibles: value })
+            }
+          >
+            <UsersIcon />
+          </Toggle>
+          <Toggle
+            pressed={viewOptions.priority}
+            onPressedChange={(value) =>
+              setViewOptions({ ...viewOptions, priority: value })
+            }
+            className="grid place-content-center p-0"
+          >
+            <SignalHighIcon />
+          </Toggle>
+          <Toggle
+            pressed={viewOptions.category}
+            onPressedChange={(value) =>
+              setViewOptions({ ...viewOptions, category: value })
+            }
+            className="grid place-content-center p-0"
+          >
+            <TagIcon />
+          </Toggle>
+          <Toggle
+            pressed={viewOptions.partner}
+            onPressedChange={(value) =>
+              setViewOptions({ ...viewOptions, partner: value })
+            }
+            className="grid place-content-center p-0"
+          >
+            <HandshakeIcon />
+          </Toggle>
+        </div>
       </div>
       <div className="p-4">
         <ActionContainer
           actions={actions || []}
           dateTimeDisplay={DATE_TIME_DISPLAY.DateTime}
+          showCategory={viewOptions.category}
+          showPartner={viewOptions.partner}
+          showResponsibles={viewOptions.responsibles}
+          showLate={viewOptions.late}
+          showPriority={viewOptions.priority}
         />
       </div>
     </div>

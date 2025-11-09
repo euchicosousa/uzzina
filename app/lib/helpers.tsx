@@ -67,7 +67,7 @@ export function isInstagramFeed(category: string, stories = false) {
   );
 }
 
-export function getFormattedDate(
+export function getFormattedDateTime(
   date: Date | string,
   option?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY],
   preffix?: string,
@@ -105,4 +105,8 @@ export function getFormattedDate(
   }
 
   return format(date, formatString, { locale: ptBR });
+}
+
+export function getFormattedPartnersName(partners: Partner[]) {
+  return partners.map((partner) => partner.title).join(", ");
 }

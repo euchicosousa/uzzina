@@ -27,10 +27,11 @@ import KanbanComponent from "~/components/layout/KanbanComponent";
 import { getShortText } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { UToggle } from "~/components/uzzina/UToggle";
-import { STATE } from "~/lib/CONSTANTS";
-import { getLateActions, getUserId } from "~/lib/helpers";
+import { STATE, VARIANT } from "~/lib/CONSTANTS";
+import { getLateActions, getUserId, isInstagramFeed } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "./app";
+import FeedComponent from "~/components/layout/FeedComponent";
 export type AppHomeLoaderData = {
   actions: Action[];
   actionsChart: Action[];
@@ -212,13 +213,20 @@ const PartnersHomeComponent = ({ actions }: { actions: Action[] }) => {
 };
 
 const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
-  actions = actions.filter((action) => {
-    return isToday(action.date);
-  });
-
   const [view, setView] = useState<"kanban" | "hours" | "feed" | "categories">(
-    "kanban",
+    "feed",
   );
+
+  actions =
+    view === "feed"
+      ? actions.filter((action) => {
+          return (
+            isToday(action.instagram_date) && isInstagramFeed(action.category)
+          );
+        })
+      : actions.filter((action) => {
+          return isToday(action.date);
+        });
 
   return (
     <HomeComponentWrapper
@@ -246,7 +254,10 @@ const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
         </div>
       }
     >
-      <KanbanComponent actions={actions} />
+      {view === "kanban" && <KanbanComponent actions={actions} />}
+      {/* {view === "hours" && <HoursComponent actions={actions} />} */}
+      {view === "feed" && <FeedComponent actions={actions} />}
+      {/* {view === "categories" && <CategoriesComponent actions={actions} />} */}
     </HomeComponentWrapper>
   );
 };
@@ -256,7 +267,14 @@ const LateHomeComponent = ({ actions }: { actions: Action[] }) => {
   return (
     <HomeComponentWrapper title="Atrasados">
       <div className="p-8">
-        <ActionContainer actions={actions} columns={6} />
+        <ActionContainer
+          // variant={VARIANT.block}
+          actions={actions}
+          columns={3}
+          showPartner
+          showCategory
+          showPriority
+        />
       </div>
     </HomeComponentWrapper>
   );

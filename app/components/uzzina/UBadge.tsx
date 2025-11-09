@@ -3,7 +3,7 @@ import { Badge } from "../ui/badge";
 import { cn } from "~/lib/utils";
 import type { SIZE } from "~/lib/CONSTANTS";
 
-type TSize = Extract<keyof typeof SIZE, "sm" | "md" | "lg">;
+export type TSize = Extract<keyof typeof SIZE, "sm" | "md" | "lg">;
 
 export const UBadge = ({
   size = "md",

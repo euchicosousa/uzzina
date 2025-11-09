@@ -89,6 +89,81 @@ export type Database = {
         }
         Relationships: []
       }
+      actions_backup_20251109: {
+        Row: {
+          archived: boolean | null
+          category: string | null
+          color: string | null
+          content_files: string[] | null
+          created_at: string | null
+          date: string | null
+          description: string | null
+          id: string | null
+          instagram_caption: string | null
+          instagram_content: string | null
+          instagram_date: string | null
+          partners: string[] | null
+          priority: string | null
+          responsibles: string[] | null
+          sprints: string[] | null
+          state: string | null
+          time: number | null
+          title: string | null
+          topics: number[] | null
+          updated_at: string | null
+          user_id: string | null
+          work_files: string[] | null
+        }
+        Insert: {
+          archived?: boolean | null
+          category?: string | null
+          color?: string | null
+          content_files?: string[] | null
+          created_at?: string | null
+          date?: string | null
+          description?: string | null
+          id?: string | null
+          instagram_caption?: string | null
+          instagram_content?: string | null
+          instagram_date?: string | null
+          partners?: string[] | null
+          priority?: string | null
+          responsibles?: string[] | null
+          sprints?: string[] | null
+          state?: string | null
+          time?: number | null
+          title?: string | null
+          topics?: number[] | null
+          updated_at?: string | null
+          user_id?: string | null
+          work_files?: string[] | null
+        }
+        Update: {
+          archived?: boolean | null
+          category?: string | null
+          color?: string | null
+          content_files?: string[] | null
+          created_at?: string | null
+          date?: string | null
+          description?: string | null
+          id?: string | null
+          instagram_caption?: string | null
+          instagram_content?: string | null
+          instagram_date?: string | null
+          partners?: string[] | null
+          priority?: string | null
+          responsibles?: string[] | null
+          sprints?: string[] | null
+          state?: string | null
+          time?: number | null
+          title?: string | null
+          topics?: number[] | null
+          updated_at?: string | null
+          user_id?: string | null
+          work_files?: string[] | null
+        }
+        Relationships: []
+      }
       areas: {
         Row: {
           created_at: string
@@ -125,16 +200,18 @@ export type Database = {
           order: number
           shortcut: string
           slug: string
+          tag: string
           title: string
         }
         Insert: {
           area: string
-          color?: string
-          created_at?: string
-          id?: string
+          color: string
+          created_at: string
+          id: string
           order: number
-          shortcut?: string
+          shortcut: string
           slug: string
+          tag: string
           title: string
         }
         Update: {
@@ -145,6 +222,7 @@ export type Database = {
           order?: number
           shortcut?: string
           slug?: string
+          tag?: string
           title?: string
         }
         Relationships: []
@@ -410,6 +488,12 @@ export type Database = {
           user_id: string
           work_files: string[] | null
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "actions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       get_user_actions: {
         Args: { end_date: string; start_date: string; user_id_param: string }
@@ -437,6 +521,12 @@ export type Database = {
           user_id: string
           work_files: string[] | null
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "actions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       get_user_actions_chart: {
         Args: { user_id_param: string }
@@ -464,11 +554,14 @@ export type Database = {
           user_id: string
           work_files: string[] | null
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "actions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
-      is_user_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      is_user_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       sow: "marketing" | "socialmedia" | "demand"

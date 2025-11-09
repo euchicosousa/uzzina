@@ -72,16 +72,16 @@ export const UAvatar = ({
     fallbackText.length <= 2
       ? {
           xs: "text-[10px]",
-          sm: "text-[12px]",
-          md: "text-[18px]",
-          lg: "text-[24px]",
-          xl: "text-[36px]",
+          sm: "text-[10px]",
+          md: "text-[12px]",
+          lg: "text-[18px]",
+          xl: "text-[28px]",
         }[size]
       : {
           xs: "",
           sm: "",
-          md: "text-[12px]",
-          lg: "text-[18px]",
+          md: "text-[10px]",
+          lg: "text-[16px]",
           xl: "text-[24px]",
         }[size];
 
@@ -93,16 +93,15 @@ export const UAvatar = ({
       className={cn(
         sizeClasses,
         textClasses,
-        "border",
         className,
-        "p-0 leading-none",
+        "border-foreground/10 border p-0 leading-none font-bold",
       )}
     >
       {image ? (
         <AvatarImage src={image} alt={alt || ""} />
       ) : (
         <AvatarFallback
-          className="bg-muted text-muted-foreground grid place-content-center text-center"
+          className="bg-secondary text-secondary-foreground grid place-content-center text-center"
           style={styles}
         >
           {getShortText(fallbackText)}

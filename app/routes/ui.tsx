@@ -268,21 +268,16 @@ export default function UITestingPage() {
                   fallback: "AC",
                 },
                 {
-                  fallback: "CN",
-
-                  image: "https://github.com/shadcn.png",
+                  fallback: "CSS",
                 },
                 {
-                  fallback: "CN",
-
-                  image: "https://github.com/shadcn.png",
+                  fallback: "CNVT",
                 },
                 {
                   fallback: "CS",
                 },
                 {
                   fallback: "CN",
-
                   image: "https://github.com/shadcn.png",
                 },
               ]}
@@ -297,12 +292,10 @@ export default function UITestingPage() {
                   fallback: "AC",
                 },
                 {
-                  fallback: "CN",
-                  image: "https://github.com/shadcn.png",
+                  fallback: "CSS",
                 },
                 {
-                  fallback: "CN",
-                  image: "https://github.com/shadcn.png",
+                  fallback: "CNVT",
                 },
                 {
                   fallback: "CS",
@@ -322,12 +315,10 @@ export default function UITestingPage() {
                   fallback: "AC",
                 },
                 {
-                  fallback: "CN",
-                  image: "https://github.com/shadcn.png",
+                  fallback: "CSS",
                 },
                 {
-                  fallback: "CN",
-                  image: "https://github.com/shadcn.png",
+                  fallback: "CNVT",
                 },
                 {
                   fallback: "CS",
@@ -345,15 +336,13 @@ export default function UITestingPage() {
               size={SIZE.lg}
               avatars={[
                 {
-                  fallback: "CN",
-                  image: "https://github.com/shadcn.png",
-                },
-                {
                   fallback: "AC",
                 },
                 {
-                  fallback: "CN",
-                  image: "https://github.com/shadcn.png",
+                  fallback: "CSS",
+                },
+                {
+                  fallback: "CNVT",
                 },
                 {
                   fallback: "CS",
@@ -374,12 +363,10 @@ export default function UITestingPage() {
                   fallback: "AC",
                 },
                 {
-                  fallback: "CN",
-                  image: "https://github.com/shadcn.png",
+                  fallback: "CSS",
                 },
                 {
-                  fallback: "CN",
-                  image: "https://github.com/shadcn.png",
+                  fallback: "CNVT",
                 },
                 {
                   fallback: "CS",
