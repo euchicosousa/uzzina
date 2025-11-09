@@ -14,22 +14,31 @@ export type AppLoaderData = {
   person: Person;
   partners: Partner[];
   states: State[];
+  categories: Category[];
+  priorities: Priority[];
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { user_id, supabase } = await getUserId(request);
 
-  const [{ data: people }, { data: partners }, { data: states }] =
-    await Promise.all([
-      supabase.from("people").select("*").order("name", { ascending: true }),
-      supabase
-        .from("partners")
-        .select("*")
-        .eq("archived", false)
-        .contains("users_ids", [user_id])
-        .order("title", { ascending: true }),
-      supabase.from("states").select("*").order("order", { ascending: true }),
-    ]);
+  const [
+    { data: people },
+    { data: partners },
+    { data: states },
+    { data: categories },
+    { data: priorities },
+  ] = await Promise.all([
+    supabase.from("people").select("*").order("name", { ascending: true }),
+    supabase
+      .from("partners")
+      .select("*")
+      .eq("archived", false)
+      .contains("users_ids", [user_id])
+      .order("title", { ascending: true }),
+    supabase.from("states").select("*").order("order", { ascending: true }),
+    supabase.from("categories").select("*").order("order", { ascending: true }),
+    supabase.from("priorities").select("*").order("order", { ascending: true }),
+  ]);
 
   const person = people?.find((person) => person.user_id === user_id)!;
 
@@ -37,8 +46,17 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   invariant(people, "People not found");
   invariant(partners, "Partners not found");
   invariant(states, "States not found");
+  invariant(categories, "Categories not found");
+  invariant(priorities, "Priorities not found");
 
-  return { people, person, partners, states } as AppLoaderData;
+  return {
+    people,
+    person,
+    partners,
+    states,
+    categories,
+    priorities,
+  } as AppLoaderData;
 };
 
 export const meta: MetaFunction = () => {

@@ -7,6 +7,7 @@ import {
   type MetaFunction,
 } from "react-router";
 import { UzzinaLogo } from "~/components/logo";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { createSupabaseClient } from "~/lib/supabase";
@@ -54,16 +55,24 @@ const Login = () => {
           <UzzinaLogo className="h-12" />
         </div>
         {actionData && (
-          <div className="my-8 flex items-center gap-4 rounded-lg bg-rose-600 p-4 leading-none text-rose-50">
-            <AlertCircleIcon className="size-10" />
-            <div>{actionData.errors.email}</div>
-          </div>
+          <Alert
+            variant={"destructive"}
+            className="bg-error-background border-error/50 mb-8"
+          >
+            <AlertCircleIcon />
+            <AlertTitle>Erro ao fazer login</AlertTitle>
+            <AlertDescription>{actionData.errors.email}</AlertDescription>
+          </Alert>
+          // <div className="my-8 flex items-center gap-4 rounded-lg bg-rose-600 p-4 leading-none text-rose-50">
+          //   <AlertCircleIcon className="size-10" />
+          //   <div>{actionData.errors.email}</div>
+          // </div>
         )}
 
         <form method="post">
           <div className="mb-4">
             <span className="mb-2 block w-full font-medium">E-mail</span>
-            <Input type="email" name="email" className="border" />
+            <Input type="email" name="email" className="border-border border" />
           </div>
 
           <div className="relative mb-4">
@@ -71,7 +80,7 @@ const Login = () => {
             <Input
               type={showPassword ? "text" : "password"}
               name="password"
-              className="border pr-12"
+              className="border-border border pr-12"
             />
             <Button
               size={"icon"}

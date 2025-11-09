@@ -6,6 +6,17 @@ export const SIZE = {
   xl: "xl",
 } as const;
 
+export const DATE_TIME_DISPLAY = {
+  Relative: 1,
+  DateTime: 2,
+  DateMonthTime: 3,
+  DayDateMonthTime: 4,
+  DayDate: 5,
+  TimeOnly: 6,
+  DateOnly: 7,
+  Null: 8,
+} as const;
+
 export const STATE = {
   idea: "idea",
   do: "do",

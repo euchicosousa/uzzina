@@ -11,36 +11,39 @@ export const UBadge = ({
   isRounded = false,
   prefix,
   suffix,
-  value,
+  text,
+  value = 0,
   className,
   ...props
 }: Omit<React.ComponentProps<typeof Badge>, "children"> & {
   size?: TSize;
   isDynamic?: boolean;
   isRounded?: boolean;
-
-  value: number;
+  text?: string;
+  value?: number;
   prefix?: string;
   suffix?: string;
 }) => {
-  if (value === 0) return null;
+  if (!text && !value) return null;
 
   const sizeClasses = isRounded
-    ? { sm: "size-4", md: "size-6", lg: "size-8" }[size]
-    : { sm: "h-4 min-w-4", md: "h-6 min-w-6 ", lg: "h-8 min-w-8" }[size];
-  const textClasses = { sm: "text-[10px]", md: "text-sm", lg: "text-base" }[
+    ? { sm: "size-4", md: "size-5", lg: "size-7" }[size]
+    : { sm: "h-4 min-w-4", md: "h-5 min-w-5 ", lg: "h-7 min-w-7" }[size];
+  const textClasses = { sm: "text-[10px]", md: "text-xs", lg: "text-base" }[
     size
   ];
 
-  const paddingClasses = { sm: "px-1", md: "px-2", lg: "px-3" }[size];
+  const paddingClasses = { sm: "px-1.5", md: "px-2", lg: "px-3" }[size];
 
-  const dynamicClasses = isDynamic
-    ? value > 7
-      ? "bg-error-background text-error border-error/20"
-      : value >= 3
-        ? "bg-warning-background text-warning border-warning/20"
-        : undefined
-    : undefined;
+  const dynamicClasses = text
+    ? undefined
+    : isDynamic
+      ? value > 7
+        ? "bg-error-background text-error border-error/20"
+        : value >= 3
+          ? "bg-warning-background text-warning border-warning/20"
+          : undefined
+      : undefined;
   return (
     <Badge
       className={cn(
@@ -53,12 +56,12 @@ export const UBadge = ({
       )}
       {...props}
     >
-      {prefix}
-      {value.toLocaleString("pt-BR", {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 3,
-      })}
-      {suffix}
+      {text
+        ? text
+        : `${prefix || ""}${value.toLocaleString("pt-BR", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 3,
+          })}${suffix || ""}`}
     </Badge>
   );
 };

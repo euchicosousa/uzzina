@@ -1,4 +1,4 @@
-import type { VARIANT } from "~/lib/CONSTANTS";
+import type { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
 import { ActionItem } from "./ActionItem";
 import { cn } from "~/lib/utils";
 
@@ -7,6 +7,8 @@ type ActionContainerProps = {
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
   columns?: 1 | 2 | 3 | 4 | 6;
   showLate?: boolean;
+  showPartner?: boolean;
+  dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
 };
 
 export const ActionContainer = ({
@@ -14,6 +16,8 @@ export const ActionContainer = ({
   variant,
   columns = 1,
   showLate = false,
+  showPartner = true,
+  dateTimeDisplay,
 }: ActionContainerProps) => {
   const columnsClasses =
     columns === 2
@@ -34,6 +38,8 @@ export const ActionContainer = ({
           key={action.id}
           variant={variant}
           showLate={showLate}
+          showPartner={showPartner}
+          dateTimeDisplay={dateTimeDisplay}
         />
       ))}
     </div>

@@ -1,10 +1,18 @@
 import { redirect } from "react-router";
 import { createSupabaseClient } from "./supabase";
-import { STATE } from "./CONSTANTS";
-import { addMinutes, isBefore, subMinutes } from "date-fns";
+import { DATE_TIME_DISPLAY, STATE } from "./CONSTANTS";
+import {
+  addMinutes,
+  format,
+  formatDistance,
+  formatDistanceToNow,
+  isBefore,
+  subMinutes,
+} from "date-fns";
 import { MoonIcon, SunIcon, ComputerIcon } from "lucide-react";
 import { cn } from "./utils";
 import { Theme } from "remix-themes";
+import { ptBR } from "date-fns/locale";
 
 export async function getUserId(request: Request) {
   const { supabase } = await createSupabaseClient(request);
@@ -21,13 +29,18 @@ export async function getUserId(request: Request) {
 }
 
 export function getLateActions(actions: Action[]) {
-  return actions.filter((action) => {
+  const count = actions.filter((action) => {
     return isLateAction(action);
   });
+
+  return count;
 }
 
 export function isLateAction(action: Action) {
-  return action.state !== STATE.finished && isBefore(action.date, new Date());
+  const isLate =
+    action.state !== STATE.finished && isBefore(action.date, new Date());
+
+  return isLate;
 }
 
 export function isAlmostLateAction(action: Action, minutes = 5) {
@@ -47,3 +60,49 @@ export const getThemeIcon = (theme: Theme | null, className?: string) => {
       return <ComputerIcon className={cn(className)} />;
   }
 };
+
+export function isInstagramFeed(category: string, stories = false) {
+  return ["post", "reels", "carousel", stories ? "stories" : null].includes(
+    category,
+  );
+}
+
+export function getFormattedDate(
+  date: Date | string,
+  option?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY],
+  preffix?: string,
+) {
+  if (option === undefined || option === DATE_TIME_DISPLAY.Null) {
+    return null;
+  } else if (option === DATE_TIME_DISPLAY.Relative) {
+    return `${preffix || ""} ${formatDistanceToNow(date, { addSuffix: true, locale: ptBR })}`;
+  }
+
+  const showYear =
+    new Date(date).getFullYear() !== new Date().getFullYear()
+      ? option === 4
+        ? " 'de' yyyy"
+        : "/yy"
+      : "";
+  let formatString = `dd/MM${showYear}`; //DATE_TIME_DISPLAY.DateOnly
+
+  switch (option) {
+    case DATE_TIME_DISPLAY.DateTime:
+      formatString = `dd/MM${showYear} 'às' HH'h'mm`;
+      break;
+    case 3:
+      formatString = `dd 'de' MMM${showYear}, HH'h'mm`;
+      break;
+    case 4:
+      formatString = `E, dd 'de' MMMM${showYear} 'às' HH'h'mm`;
+      break;
+    case 5:
+      formatString = `eeeeee, d/MM${showYear}`;
+      break;
+    case 6:
+      formatString = `HH'h'mm`;
+      break;
+  }
+
+  return format(date, formatString, { locale: ptBR });
+}

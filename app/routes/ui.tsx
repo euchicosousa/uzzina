@@ -1,20 +1,51 @@
 import { ComputerIcon, MoonIcon, SunIcon } from "lucide-react";
 import { Theme, useTheme } from "remix-themes";
-import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
+import { Button } from "~/components/ui/button";
 import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { SIZE } from "~/lib/CONSTANTS";
 
+export const meta = () => {
+  return [
+    {
+      title: "UI UZZINA",
+    },
+  ];
+};
+
 export default function UITestingPage() {
-  const [, setTheme] = useTheme();
+  const [theme, setTheme] = useTheme();
   return (
     <div className="container mx-auto px-8">
       {/* Header */}
       <div className="border_after flex items-center justify-between py-8">
         <h1 className="p-0">UI Testing Page</h1>
 
-        <div>
-          <ToggleGroup
+        <div className="flex items-center gap-1">
+          <Button
+            onClick={() => setTheme(Theme.LIGHT)}
+            variant={Theme.LIGHT === theme ? "outline" : "ghost"}
+          >
+            <SunIcon />
+          </Button>
+          <Button
+            onClick={() => setTheme(Theme.DARK)}
+            variant={Theme.DARK === theme ? "outline" : "ghost"}
+          >
+            <MoonIcon />
+          </Button>
+          <Button
+            onClick={() => setTheme(null)}
+            variant={
+              ![Theme.DARK, Theme.LIGHT].find((t) => t === theme)
+                ? "outline"
+                : "ghost"
+            }
+          >
+            <ComputerIcon />
+          </Button>
+
+          {/* <ToggleGroup
             type="single"
             onValueChange={(value) => {
               if (value === "system") {
@@ -33,7 +64,7 @@ export default function UITestingPage() {
             <ToggleGroupItem value={"system"}>
               <ComputerIcon />
             </ToggleGroupItem>
-          </ToggleGroup>
+          </ToggleGroup> */}
         </div>
       </div>
       {/* Headings */}
@@ -231,28 +262,27 @@ export default function UITestingPage() {
           <div className="flex flex-wrap gap-4">
             <h5 className="w-full">Grupo de Avatares xs</h5>
             <UAvatarGroup
+              size={SIZE.xs}
               avatars={[
                 {
                   fallback: "AC",
-                  size: SIZE.xs,
                 },
                 {
                   fallback: "CN",
-                  size: SIZE.xs,
+
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "CN",
-                  size: SIZE.xs,
+
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "CS",
-                  size: SIZE.xs,
                 },
                 {
                   fallback: "CN",
-                  size: SIZE.xs,
+
                   image: "https://github.com/shadcn.png",
                 },
               ]}
@@ -261,35 +291,31 @@ export default function UITestingPage() {
           <div className="flex flex-wrap gap-4">
             <h5 className="w-full">Grupo de Avatares sm</h5>
             <UAvatarGroup
+              size={SIZE.sm}
               avatars={[
                 {
                   fallback: "AC",
-                  size: SIZE.sm,
                 },
                 {
                   fallback: "CN",
-                  size: SIZE.sm,
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "CN",
-                  size: SIZE.sm,
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "CS",
-                  size: SIZE.sm,
                 },
                 {
                   fallback: "CN",
-                  size: SIZE.sm,
                   image: "https://github.com/shadcn.png",
                 },
               ]}
             />
           </div>
           <div className="flex flex-wrap gap-4">
-            <h5 className="w-full">Grupo de Avatares sm</h5>
+            <h5 className="w-full">Grupo de Avatares md</h5>
             <UAvatarGroup
               avatars={[
                 {
@@ -316,28 +342,24 @@ export default function UITestingPage() {
           <div className="flex flex-wrap gap-4">
             <h5 className="w-full">Grupo de Avatares lg</h5>
             <UAvatarGroup
+              size={SIZE.lg}
               avatars={[
                 {
                   fallback: "CN",
-                  size: SIZE.lg,
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "AC",
-                  size: SIZE.lg,
                 },
                 {
                   fallback: "CN",
-                  size: SIZE.lg,
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "CS",
-                  size: SIZE.lg,
                 },
                 {
                   fallback: "CN",
-                  size: SIZE.lg,
                   image: "https://github.com/shadcn.png",
                 },
               ]}
@@ -346,28 +368,24 @@ export default function UITestingPage() {
           <div className="flex flex-wrap gap-4">
             <h5 className="w-full">Grupo de Avatares xl</h5>
             <UAvatarGroup
+              size={SIZE.xl}
               avatars={[
                 {
                   fallback: "AC",
-                  size: SIZE.xl,
                 },
                 {
                   fallback: "CN",
-                  size: SIZE.xl,
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "CN",
-                  size: SIZE.xl,
                   image: "https://github.com/shadcn.png",
                 },
                 {
                   fallback: "CS",
-                  size: SIZE.xl,
                 },
                 {
                   fallback: "CN",
-                  size: SIZE.xl,
                   image: "https://github.com/shadcn.png",
                 },
               ]}

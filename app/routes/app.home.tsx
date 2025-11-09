@@ -1,4 +1,13 @@
-import { endOfMonth, isToday, startOfMonth } from "date-fns";
+import {
+  addMonths,
+  endOfDay,
+  endOfMonth,
+  endOfWeek,
+  format,
+  isToday,
+  startOfMonth,
+  startOfWeek,
+} from "date-fns";
 import {
   ClockIcon,
   ComponentIcon,
@@ -12,34 +21,84 @@ import {
   useMatches,
   type LoaderFunctionArgs,
 } from "react-router";
+import invariant from "tiny-invariant";
+import { ActionContainer } from "~/components/features/ActionContainer";
 import KanbanComponent from "~/components/layout/KanbanComponent";
-import { Button } from "~/components/ui/button";
 import { getShortText } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
+import { UToggle } from "~/components/uzzina/UToggle";
+import { STATE } from "~/lib/CONSTANTS";
 import { getLateActions, getUserId } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "./app";
-import { ActionContainer } from "~/components/features/ActionContainer";
-import { UToggle } from "~/components/uzzina/UToggle";
 export type AppHomeLoaderData = {
   actions: Action[];
+  actionsChart: Action[];
 };
+
+export const runtime = "edge";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { user_id, supabase } = await getUserId(request);
 
-  const interval = [startOfMonth(new Date()), endOfMonth(new Date())];
+  const [{ data: people }, { data: partners }, { data: archivedPartners }] =
+    await Promise.all([
+      supabase.from("people").select("*").match({ user_id: user_id }),
+      supabase.from("partners").select("slug").match({ archived: false }),
+      supabase.from("partners").select("slug").match({ archived: true }),
+    ]);
 
-  const { data: actions } = await supabase.rpc("get_user_actions", {
-    user_id_param: user_id,
-    //@ts-ignore
-    start_date: interval[0],
-    //@ts-ignore
-    end_date: interval[1],
-  });
+  invariant(people);
+  invariant(partners);
+  invariant(archivedPartners);
+
+  const person = people[0];
+
+  // const interval = [startOfMonth(new Date()), endOfMonth(new Date())];
+
+  let start = startOfWeek(startOfMonth(new Date()));
+  let end = endOfDay(endOfWeek(endOfMonth(addMonths(new Date(), 1))));
+
+  const [{ data: actions }, { data: actionsChart }] = await Promise.all([
+    // supabase.rpc("get_user_actions", {
+    //   user_id_param: user_id,
+    //   //@ts-ignore
+    //   start_date: interval[0],
+    //   //@ts-ignore
+    //   end_date: interval[1],
+    // }),
+    supabase
+      .from("actions")
+      .select("*")
+      .is("archived", false)
+      .contains("responsibles", person.admin ? [] : [user_id])
+      .containedBy("partners", partners.map((p) => p.slug)!)
+      .gte("date", format(start, "yyyy-MM-dd HH:mm:ss"))
+      .lte("date", format(end, "yyyy-MM-dd HH:mm:ss"))
+      .order("title", { ascending: true }),
+
+    supabase
+      .from("actions")
+      .select("*")
+      .is("archived", false)
+      .not("state", "eq", STATE.finished)
+      .contains("responsibles", person.admin ? [] : [user_id])
+      .containedBy("partners", partners.map((p) => p.slug)!)
+      .lte("date", format(endOfDay(new Date()), "yyyy-MM-dd HH:mm:ss"))
+      .order("date", { ascending: true }),
+
+    // .gte("date", interval[0])
+    // .lte("date", interval[1]),
+    // supabase
+    //   .rpc("get_user_actions_chart", {
+    //     user_id_param: user_id,
+    //   })
+    //   .select("id, date, instagram_date, state, partners, category"),
+  ]);
 
   return {
     actions,
+    actionsChart,
   } as AppHomeLoaderData;
 };
 
@@ -53,8 +112,40 @@ export default function AppHome() {
 
   return (
     <>
-      <PartnersHomeComponent actions={currentActions} />
+      {/* <pre>{JSON.stringify(actionsChart[0], null, 2)}</pre>
+      <pre>
+        {JSON.stringify(actionsChart[actionsChart.length - 1], null, 2)}
+      </pre> */}
+      {/* {
+        <table>
+          <thead>
+            <tr className="[&>th]:p-4">
+              <th>ID</th>
+              <th>Title</th>
+              <th>Partners</th>
+              <th>Date</th>
+              <th>Instagram Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {getLateActions(actionsChart).map((action, i) => (
+              <tr key={action.id} className="border-t [&>td]:p-4">
+                <td>{i + 1}</td>
+                <td>{action.title}</td>
+                <td>{action.partners.join(", ")}</td>
+                <td className="w-48">
+                  {format(action.date, "dd/MM/yyyy HH:mm")}
+                </td>
+                <td className="w-48">
+                  {format(action.instagram_date, "dd/MM/yyyy HH:mm")}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      } */}
       <TodayHomeComponent actions={currentActions} />
+      <PartnersHomeComponent actions={currentActions} />
       <LateHomeComponent actions={currentActions} />
     </>
   );
@@ -86,11 +177,11 @@ const PartnersHomeComponent = ({ actions }: { actions: Action[] }) => {
       >
         {partnersWithActionsLength.map((partner) => (
           <Link
-            to={`/partner/${partner.id}`}
+            to={`/app/partner/${partner.slug}`}
             key={partner.id}
             className="group/partner relative grid place-content-center p-8"
           >
-            <div className="group-hover/partner: relative transition-[opacity,scale] duration-500 group-hover/partner:scale-80 group-hover/partner:opacity-0">
+            <div className="relative transition-[opacity] duration-500 group-hover/partner:opacity-10">
               {getShortText(partner.short)}
 
               <div className="absolute -top-2 -right-6 flex">

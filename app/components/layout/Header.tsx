@@ -5,7 +5,7 @@ import { UBadge } from "../uzzina/UBadge";
 import { UAvatar } from "../uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
 import { getLateActions } from "~/lib/helpers";
-import { useMatches } from "react-router";
+import { Link, useMatches } from "react-router";
 import type { AppHomeLoaderData } from "~/routes/app.home";
 import {
   DropdownMenu,
@@ -21,11 +21,14 @@ import { Theme, useTheme } from "remix-themes";
 import { getThemeIcon } from "~/lib/helpers";
 
 export function Header({ person }: { person: Person }) {
-  const { actions } = useMatches()[2].loaderData as AppHomeLoaderData;
+  const { actionsChart } = useMatches()[2].loaderData as AppHomeLoaderData;
+
   return (
     <div className="border_after flex w-full items-center justify-between px-8">
       <div className="flex items-center gap-2 py-4">
-        <UzzinaLogo className="h-8" />
+        <Link to="/app">
+          <UzzinaLogo className="h-8" />
+        </Link>
 
         <Button variant="ghost" size="icon" className="rounded-full">
           <SearchIcon />
@@ -37,13 +40,14 @@ export function Header({ person }: { person: Person }) {
         </Button>
         <Button variant="ghost" size="icon" className="relative rounded-full">
           <HandshakeIcon />
-
-          <UBadge
-            size="sm"
-            value={getLateActions(actions).length}
-            isDynamic
-            className="absolute -top-2 -right-2"
-          />
+          {actionsChart && actionsChart.length > 0 ? (
+            <UBadge
+              size="sm"
+              value={getLateActions(actionsChart).length}
+              isDynamic
+              className="absolute -top-2 -right-2"
+            />
+          ) : null}
         </Button>
         <HeaderMenu person={person} />
       </div>

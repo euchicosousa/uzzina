@@ -5,4 +5,6 @@ declare global {
   type Partner = Tables<"partners">;
   type Action = Tables<"actions">;
   type State = Tables<"states">;
+  type Category = Tables<"categories">;
+  type Priority = Tables<"priorities">;
 }

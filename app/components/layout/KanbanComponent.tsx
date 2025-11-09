@@ -14,7 +14,6 @@ import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "~/routes/app";
 import { ActionItem } from "../features/ActionItem";
 import { Draggable, Droppable } from "../features/DnD";
-import ReactLenis from "lenis/react";
 
 export default function KanbanComponent({ actions }: { actions: Action[] }) {
   const { states } = useMatches()[1].loaderData as AppLoaderData;
