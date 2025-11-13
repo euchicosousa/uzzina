@@ -62,15 +62,18 @@ export const ActionItem = ({
     (category) => category.slug === action.category,
   )!;
 
-  const bgClasses = isEditing
-    ? "bg-input ring-foreground focus-within:ring-2 ring-offset-2 ring-offset-background"
-    : showLate
-      ? isLateAction(action)
-        ? "bg-error-background/50 border-error/50 text-error hover:bg-error-background"
-        : isAlmostLateAction(action)
-          ? "bg-warning-background/50 text-warning hover:bg-warning-background border-warning/50"
-          : "hover:bg-card"
-      : "hover:bg-card";
+  const bgClasses =
+    variant === VARIANT.content
+      ? ""
+      : isEditing
+        ? "bg-input ring-foreground focus-within:ring-2 ring-offset-2 ring-offset-background"
+        : showLate
+          ? isLateAction(action)
+            ? "bg-error-background/50 border-error/50 text-error hover:bg-error-background"
+            : isAlmostLateAction(action)
+              ? "bg-warning-background/50 text-warning hover:bg-warning-background border-warning/50"
+              : "hover:bg-input/35"
+          : "hover:bg-input/35";
 
   const renderActionVariant = () => {
     switch (variant) {
@@ -152,28 +155,13 @@ export const ActionItem = ({
     }
   };
 
-  return variant === VARIANT.content ? (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-2 overflow-hidden">
-        <ActionItemPartners
-          action={action}
-          partners={currentPartners}
-          size={SIZE.md}
-        />
-        <div className="w-full overflow-hidden leading-none font-medium tracking-tight text-ellipsis whitespace-nowrap">
-          {getFormattedPartnersName(currentPartners)}
-        </div>
-        <div
-          className="size-3 shrink-0 rounded-full"
-          style={{ backgroundColor: currentState.color }}
-        ></div>
-      </div>
-      {renderActionVariant()}
-    </div>
-  ) : (
+  return (
     <div
       className={cn(
-        "group/action @container relative flex cursor-pointer overflow-hidden border-l-4 px-4 py-2 transition-colors @xs:p-2",
+        "group/action @container relative flex cursor-pointer overflow-hidden",
+        variant === VARIANT.content
+          ? "flex-col gap-2"
+          : "border-l-4 px-4 py-2 transition-colors @xs:p-2",
 
         bgClasses,
         variant === VARIANT.block ? "flex-col gap-2" : "",
@@ -191,6 +179,23 @@ export const ActionItem = ({
         }
       }}
     >
+      {variant === VARIANT.content && (
+        <div className="flex items-center gap-2 overflow-hidden">
+          <ActionItemPartners
+            action={action}
+            partners={currentPartners}
+            size={SIZE.md}
+          />
+          <div className="w-full overflow-hidden leading-none font-medium tracking-tight text-ellipsis whitespace-nowrap">
+            {getFormattedPartnersName(currentPartners)}
+          </div>
+          <div
+            className="size-3 shrink-0 rounded-full"
+            style={{ backgroundColor: currentState.color }}
+          ></div>
+        </div>
+      )}
+
       {renderActionVariant()}
     </div>
   );
@@ -222,7 +227,11 @@ export const ActionItemTitleInput = ({
         />
       ) : (
         <button
-          onClick={() => setIsEditing(true)}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            setIsEditing(true);
+          }}
           className={cn(
             "w-full cursor-text overflow-hidden text-left text-ellipsis whitespace-nowrap",
             isDragging ? "cursor-grabbing" : "",
