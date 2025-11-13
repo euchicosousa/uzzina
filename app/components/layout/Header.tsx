@@ -3,7 +3,7 @@ import { UzzinaLogo } from "../logo";
 import { Button } from "../ui/button";
 import { UBadge } from "../uzzina/UBadge";
 import { UAvatar } from "../uzzina/UAvatar";
-import { SIZE } from "~/lib/CONSTANTS";
+import { PRIORITY, SIZE, STATE } from "~/lib/CONSTANTS";
 import { getLateActions } from "~/lib/helpers";
 import { Link, useMatches } from "react-router";
 import type { AppHomeLoaderData } from "~/routes/app.home";
@@ -20,7 +20,13 @@ import {
 import { Theme, useTheme } from "remix-themes";
 import { getThemeIcon } from "~/lib/helpers";
 
-export function Header({ person }: { person: Person }) {
+export function Header({
+  person,
+  setBaseAction,
+}: {
+  person: Person;
+  setBaseAction: (action: any) => void;
+}) {
   const { actionsChart } = useMatches()[2].loaderData as AppHomeLoaderData;
 
   return (
@@ -35,7 +41,24 @@ export function Header({ person }: { person: Person }) {
         </Button>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="rounded-full">
+        <Button
+          onClick={() =>
+            setBaseAction({
+              title: "",
+              description: "",
+              state: STATE.idea,
+              priority: PRIORITY.medium,
+              category: "post",
+              responsibles: [person.user_id],
+              topics: null,
+              color: "#999",
+              date: new Date(),
+              instagram_date: new Date(),
+              partners: [],
+            })
+          }
+        >
+          Nova Ação
           <PlusIcon />
         </Button>
         <Button variant="ghost" size="icon" className="relative rounded-full">

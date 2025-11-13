@@ -1,6 +1,8 @@
+import Color from "color";
 import { SignalHighIcon } from "lucide-react";
 import { useState } from "react";
-import { useMatches } from "react-router";
+import { useMatches, useOutletContext } from "react-router";
+import { Theme, useTheme } from "remix-themes";
 import { DATE_TIME_DISPLAY, PRIORITY, SIZE, VARIANT } from "~/lib/CONSTANTS";
 import {
   getFormattedDateTime,
@@ -13,8 +15,6 @@ import type { AppLoaderData } from "~/routes/app";
 import { UAvatarGroup } from "../uzzina/UAvatar";
 import { UBadge, type TSize } from "../uzzina/UBadge";
 import { Content } from "./Content";
-import Color from "color";
-import { Theme, useTheme } from "remix-themes";
 
 type ActionItemProps = {
   action: Action;
@@ -27,6 +27,7 @@ type ActionItemProps = {
   showResponsibles?: boolean;
   showPriority?: boolean;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
+  onClick?: (action: Action) => void;
 };
 
 export const ActionItem = ({
@@ -40,11 +41,15 @@ export const ActionItem = ({
   showResponsibles,
   showPriority,
   dateTimeDisplay,
+  onClick,
 }: ActionItemProps) => {
   const { states, people, partners, categories } = useMatches()[1]
     .loaderData as AppLoaderData;
 
   const [isEditing, setIsEditing] = useState(false);
+  const { setBaseAction } = useOutletContext<{
+    setBaseAction: (action: Action | null) => void;
+  }>();
 
   const currentState = states.find((state) => state.slug === action.state)!;
   const currentPartners = action.partners.map((partner) => {
@@ -168,13 +173,23 @@ export const ActionItem = ({
   ) : (
     <div
       className={cn(
-        "group/action @container relative flex overflow-hidden border-l-4 px-4 py-2 transition-colors @xs:p-2",
+        "group/action @container relative flex cursor-pointer overflow-hidden border-l-4 px-4 py-2 transition-colors @xs:p-2",
+
         bgClasses,
         variant === VARIANT.block ? "flex-col gap-2" : "",
         className,
         isDragging ? "cursor-grabbing" : "",
       )}
       style={{ borderLeftColor: currentState.color }}
+      onClick={() => {
+        if (!isEditing) {
+          if (onClick) {
+            onClick(action);
+          } else {
+            setBaseAction(action);
+          }
+        }
+      }}
     >
       {renderActionVariant()}
     </div>
@@ -319,7 +334,7 @@ export const ActionItemCategory = ({
 
   return text ? (
     <UBadge
-      className="@xs:hidden"
+      className="uppercase @xs:hidden"
       text={text}
       size={size || "sm"}
       style={{
@@ -331,7 +346,7 @@ export const ActionItemCategory = ({
   ) : (
     <>
       <UBadge
-        className="@xs:hidden"
+        className="uppercase @xs:hidden"
         text={category.tag[0] || ""}
         size={size || "sm"}
         style={{
@@ -341,7 +356,7 @@ export const ActionItemCategory = ({
         }}
       />
       <UBadge
-        className="hidden w-12 items-center text-center @xs:flex @sm:hidden"
+        className="hidden w-12 items-center text-center uppercase @xs:flex @sm:hidden"
         text={category.tag || ""}
         size={size || "sm"}
         style={{
@@ -351,7 +366,7 @@ export const ActionItemCategory = ({
         }}
       />
       <UBadge
-        className="bg-secondary text-secondary-foreground hidden w-36 items-center @sm:flex"
+        className="bg-secondary text-secondary-foreground hidden w-30 items-center tracking-wider uppercase @sm:flex"
         text={category.title}
         size={size || "sm"}
         style={{

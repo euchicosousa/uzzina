@@ -1,4 +1,4 @@
-import { ReactLenis } from "lenis/react";
+import { useState } from "react";
 import {
   Outlet,
   useLoaderData,
@@ -8,6 +8,7 @@ import {
 import invariant from "tiny-invariant";
 import { Header } from "~/components/layout/Header";
 import { getUserId } from "~/lib/helpers";
+import { CreateAndEditAction } from "./CreateAndEditAction";
 
 export type AppLoaderData = {
   people: Person[];
@@ -72,19 +73,30 @@ export const meta: MetaFunction = () => {
 
 export default function Dashboard() {
   const { person } = useLoaderData<typeof loader>();
+  const [BaseAction, setBaseAction] = useState<Action | null>(null);
 
   return (
     <div id="app" className="flex h-screen flex-col">
       {/* HEADER */}
-      <Header person={person} />
-      <div className="custom-scrollbars overflow-x-hidden overflow-y-auto">
-        <div className="flex min-h-full grow">
-          <div className="min-h-full w-8 shrink-0 border-r"></div>
-          <div className="flex min-h-full w-[calc(100%-4rem)] shrink flex-col">
-            <Outlet />
+
+      <Header person={person} setBaseAction={setBaseAction} />
+      <div className="flex h-full w-full overflow-hidden">
+        <div className="custom-scrollbars grow overflow-x-hidden overflow-y-auto">
+          <div className="flex min-h-full grow">
+            <div className="min-h-full w-8 shrink-0 border-r"></div>
+            <div className="flex min-h-full w-[calc(100%-4rem)] shrink flex-col">
+              <Outlet context={{ BaseAction, setBaseAction }} />
+            </div>
+            <div className="min-h-full w-8 shrink-0 border-l"></div>
           </div>
-          <div className="min-h-full w-8 shrink-0 border-l"></div>
         </div>
+
+        {BaseAction ? (
+          <CreateAndEditAction
+            BaseAction={BaseAction}
+            onClose={() => setBaseAction(null)}
+          />
+        ) : null}
       </div>
     </div>
   );

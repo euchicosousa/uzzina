@@ -113,38 +113,6 @@ export default function AppHome() {
 
   return (
     <>
-      {/* <pre>{JSON.stringify(actionsChart[0], null, 2)}</pre>
-      <pre>
-        {JSON.stringify(actionsChart[actionsChart.length - 1], null, 2)}
-      </pre> */}
-      {/* {
-        <table>
-          <thead>
-            <tr className="[&>th]:p-4">
-              <th>ID</th>
-              <th>Title</th>
-              <th>Partners</th>
-              <th>Date</th>
-              <th>Instagram Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {getLateActions(actionsChart).map((action, i) => (
-              <tr key={action.id} className="border-t [&>td]:p-4">
-                <td>{i + 1}</td>
-                <td>{action.title}</td>
-                <td>{action.partners.join(", ")}</td>
-                <td className="w-48">
-                  {format(action.date, "dd/MM/yyyy HH:mm")}
-                </td>
-                <td className="w-48">
-                  {format(action.instagram_date, "dd/MM/yyyy HH:mm")}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      } */}
       <TodayHomeComponent actions={currentActions} />
       <PartnersHomeComponent actions={currentActions} />
       <LateHomeComponent actions={currentActions} />
@@ -214,7 +182,7 @@ const PartnersHomeComponent = ({ actions }: { actions: Action[] }) => {
 
 const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
   const [view, setView] = useState<"kanban" | "hours" | "feed" | "categories">(
-    "feed",
+    "kanban",
   );
 
   actions =

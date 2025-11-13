@@ -9,7 +9,7 @@ import {
 } from "@dnd-kit/core";
 import { useState } from "react";
 import { useMatches, useSubmit } from "react-router";
-import { INTENT } from "~/lib/CONSTANTS";
+import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "~/routes/app";
 import { ActionItem } from "../features/ActionItem";
@@ -56,8 +56,8 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
   return (
     <div className="w-full max-w-full overflow-hidden">
       <h5 className="p-8 pb-4">Kanban</h5>
-      <div className="overflow-x-auto pb-2">
-        <div className="grid min-w-7xl grid-cols-7 overflow-hidden px-8">
+      <div className="overflow-x-auto pb-8">
+        <div className="grid min-w-[1500px] grid-cols-7 overflow-hidden px-8">
           <DndContext
             id={"kanban"}
             sensors={sensors}
@@ -79,7 +79,14 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
               style={{ transition: "transform 100ms ease" }}
             >
               {activeAction ? (
-                <ActionItem action={activeAction} isDragging />
+                <ActionItem
+                  action={activeAction}
+                  isDragging
+                  showLate
+                  showPartner
+                  // showCategory
+                  dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+                />
               ) : null}
             </DragOverlay>
           </DndContext>
@@ -104,20 +111,26 @@ const KanbanColumn = ({
         return (
           <div
             className={cn(
-              "flex h-full flex-col overflow-hidden border-t-4 p-1 transition-colors",
+              "flex h-full flex-col overflow-hidden border-t-4 transition-colors",
               isOver && "bg-muted/50",
             )}
             style={{ borderTopColor: state.color }}
           >
-            <div className="my-2 pb-2 text-xs font-bold tracking-wider uppercase">
+            <div className="px-1 py-2 text-lg font-medium tracking-tight">
               {state.title}
             </div>
 
-            <div className="flex h-full flex-col gap-1 overflow-y-auto pr-1">
-              <div className="flex flex-col gap-1">
+            <div className="flex h-full flex-col overflow-y-auto p-1">
+              <div className="flex flex-col">
                 {actions.map((action) => (
                   <Draggable id={action.id} key={action.id}>
-                    <ActionItem action={action} showLate />
+                    <ActionItem
+                      action={action}
+                      showLate
+                      showPartner
+                      // showCategory
+                      dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+                    />
                   </Draggable>
                 ))}
               </div>

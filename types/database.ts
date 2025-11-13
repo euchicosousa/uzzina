@@ -201,6 +201,7 @@ export type Database = {
           shortcut: string
           slug: string
           tag: string
+          tag_min: string | null
           title: string
         }
         Insert: {
@@ -212,6 +213,7 @@ export type Database = {
           shortcut: string
           slug: string
           tag: string
+          tag_min?: string | null
           title: string
         }
         Update: {
@@ -223,6 +225,7 @@ export type Database = {
           shortcut?: string
           slug?: string
           tag?: string
+          tag_min?: string | null
           title?: string
         }
         Relationships: []
