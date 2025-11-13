@@ -7,6 +7,8 @@ import {
 import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { motion } from "motion/react";
+import { cn } from "~/lib/utils";
+import { UBadge } from "~/components/uzzina/UBadge";
 
 export function CreateAndEditAction({
   BaseAction,
@@ -30,7 +32,7 @@ export function CreateAndEditAction({
       initial={{ x: "100%" }}
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
-      transition={{ duration: 1, ease: "circInOut" }}
+      transition={{ duration: 0.4, ease: "circInOut" }}
       className="bg-background fixed top-17 right-0 bottom-0 z-10 flex max-h-full shrink-0 flex-col overflow-hidden border-l md:w-md lg:w-xl"
     >
       <div className="flex shrink-0 divide-x">
@@ -61,17 +63,29 @@ export function CreateAndEditAction({
           </button>
         </div>
       </div>
-      <div className="flex grow flex-col gap-8 overflow-y-auto p-4">
-        <textarea
-          value={RawAction.title}
-          onChange={(e) =>
-            setRawAction({ ...RawAction, title: e.target.value })
-          }
-          placeholder="Título"
-          className="w-full resize-none overflow-hidden py-4 text-5xl font-medium tracking-tighter outline-none focus:underline"
-          //   @ts-ignore
-          style={{ fieldSizing: "content" }}
-        />
+      <div className="relative flex grow flex-col gap-8 overflow-y-auto p-4">
+        <div className="relative">
+          <textarea
+            value={RawAction.title}
+            onChange={(e) =>
+              setRawAction({ ...RawAction, title: e.target.value })
+            }
+            placeholder="Título"
+            className={cn(
+              "w-full shrink-0 resize-none overflow-hidden py-4 font-medium tracking-tighter outline-none focus:underline",
+              RawAction.title.length > 70 ? "text-error text-4xl" : "text-5xl",
+            )}
+            //   @ts-ignore
+            style={{ fieldSizing: "content" }}
+            autoFocus
+            maxLength={100}
+          />
+          {RawAction.title.length > 70 && (
+            <div className="absolute right-0 bottom-0">
+              <UBadge isDynamic value={RawAction.title.length} />
+            </div>
+          )}
+        </div>
         <textarea
           value={RawAction.description || ""}
           onChange={(e) =>

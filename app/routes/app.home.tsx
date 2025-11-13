@@ -237,6 +237,7 @@ const LateHomeComponent = ({ actions }: { actions: Action[] }) => {
       <div className="p-8">
         <ActionContainer
           // variant={VARIANT.block}
+          showDivider={true}
           actions={actions}
           columns={3}
           showPartner

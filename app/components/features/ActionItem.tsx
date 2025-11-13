@@ -47,9 +47,7 @@ export const ActionItem = ({
     .loaderData as AppLoaderData;
 
   const [isEditing, setIsEditing] = useState(false);
-  const { setBaseAction } = useOutletContext<{
-    setBaseAction: (action: Action | null) => void;
-  }>();
+  const { setBaseAction } = useOutletContext<OutletContext>();
 
   const currentState = states.find((state) => state.slug === action.state)!;
   const currentPartners = action.partners.map((partner) => {
@@ -215,7 +213,12 @@ export const ActionItemTitleInput = ({
   const [localTItle, setLocalTitle] = useState(title);
 
   return (
-    <div className="flex w-full overflow-hidden text-sm @md:w-auto">
+    <div
+      className={cn(
+        "flex w-full overflow-hidden text-sm",
+        !isEditing && "@md:w-auto",
+      )}
+    >
       {isEditing ? (
         <input
           autoFocus

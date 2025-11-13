@@ -7,4 +7,5 @@ declare global {
   type State = Tables<"states">;
   type Category = Tables<"categories">;
   type Priority = Tables<"priorities">;
+  type OutletContext = { BaseAction: Action | null, setBaseAction: (action: Action | null) => void };
 }
