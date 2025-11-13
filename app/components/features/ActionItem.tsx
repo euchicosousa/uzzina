@@ -1,12 +1,20 @@
 import Color from "color";
 import { SignalHighIcon } from "lucide-react";
-import { useState } from "react";
-import { useMatches, useOutletContext } from "react-router";
+import { useEffect, useState } from "react";
+import { useMatches, useOutletContext, useSubmit } from "react-router";
 import { Theme, useTheme } from "remix-themes";
-import { DATE_TIME_DISPLAY, PRIORITY, SIZE, VARIANT } from "~/lib/CONSTANTS";
+import {
+  DATE_TIME_DISPLAY,
+  INTENT,
+  PRIORITY,
+  SIZE,
+  STATE,
+  VARIANT,
+} from "~/lib/CONSTANTS";
 import {
   getFormattedDateTime,
   getFormattedPartnersName,
+  handleAction,
   isAlmostLateAction,
   isLateAction,
 } from "~/lib/helpers";
@@ -47,6 +55,7 @@ export const ActionItem = ({
     .loaderData as AppLoaderData;
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const { setBaseAction } = useOutletContext<OutletContext>();
 
   const currentState = states.find((state) => state.slug === action.state)!;
@@ -167,6 +176,8 @@ export const ActionItem = ({
         isDragging ? "cursor-grabbing" : "",
       )}
       style={{ borderLeftColor: currentState.color }}
+      onMouseOver={() => setIsHovered(true)}
+      onMouseOut={() => setIsHovered(false)}
       onClick={() => {
         if (!isEditing) {
           if (onClick) {
@@ -193,8 +204,8 @@ export const ActionItem = ({
           ></div>
         </div>
       )}
-
       {renderActionVariant()}
+      {isHovered && <ShortcutActions action={action} />}
     </div>
   );
 };
@@ -407,4 +418,51 @@ export const ActionItemPriority = ({
     default:
       return <SignalHighIcon className="text-success size-4" />;
   }
+};
+
+const ShortcutActions = ({ action }: { action: Action }) => {
+  const submit = useSubmit();
+
+  function keyDown(e: KeyboardEvent) {
+    const code = e.code;
+
+    // let status = Object.entries(STATE).reduce(
+    //   (acc, [key, value]) => {
+    //     acc[key] = value;
+    //     return acc;
+    //   },
+    //   {} as Record<string, string>,
+    // );
+
+    // console.log({ status });
+    let status: Record<string, (typeof STATE)[keyof typeof STATE]> = {
+      KeyI: STATE.idea,
+      KeyF: STATE.do,
+      KeyZ: STATE.doing,
+      KeyA: STATE.review,
+      KeyP: STATE.approved,
+      KeyT: STATE.done,
+      KeyC: STATE.finished,
+    };
+
+    //Atalhos de status
+    if (status[code]) {
+      handleAction(
+        {
+          ...action,
+          intent: INTENT.update_action,
+          state: status[code],
+        },
+        submit,
+      );
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener("keydown", keyDown);
+
+    return () => document.removeEventListener("keydown", keyDown);
+  }, []);
+
+  return <></>;
 };

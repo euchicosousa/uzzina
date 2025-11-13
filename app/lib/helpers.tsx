@@ -1,4 +1,4 @@
-import { redirect } from "react-router";
+import { redirect, type SubmitFunction } from "react-router";
 import { createSupabaseClient } from "./supabase";
 import { DATE_TIME_DISPLAY, ORDER_BY, STATE } from "./CONSTANTS";
 import {
@@ -155,3 +155,16 @@ export function sortActions(
 
   return actions;
 }
+
+export const handleAction = (data: any, submit: SubmitFunction) => {
+  submit(
+    {
+      ...data,
+    },
+    {
+      method: "post",
+      action: "/action/handle-action",
+      navigate: false,
+    },
+  );
+};

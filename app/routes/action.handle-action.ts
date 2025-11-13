@@ -36,14 +36,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         partners: String(values.partners).split(","),
       };
 
-      console.log(valuesToUpdate);
+      // console.log(valuesToUpdate);
 
       const { data, error } = await supabase
         .from("actions")
         .update({ ...valuesToUpdate })
         .eq("id", String(id));
 
-      console.log(data, error);
+      // console.log(data, error);
     }
   }
 

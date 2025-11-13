@@ -14,6 +14,7 @@ import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "~/routes/app";
 import { ActionItem } from "../features/ActionItem";
 import { Draggable, Droppable } from "../features/DnD";
+import { handleAction } from "~/lib/helpers";
 
 export default function KanbanComponent({ actions }: { actions: Action[] }) {
   const { states } = useMatches()[1].loaderData as AppLoaderData;
@@ -31,26 +32,16 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
 
   const handleDragEnd = (event: DragEndEvent) => {
     if (event.over && activeAction) {
-      handleAction({
-        ...activeAction,
-        intent: INTENT.update_action,
-        state: event.over.id,
-      });
+      handleAction(
+        {
+          ...activeAction,
+          intent: INTENT.update_action,
+          state: event.over.id,
+        },
+        submit,
+      );
     }
     setActiveAction(undefined);
-  };
-
-  const handleAction = (data: any) => {
-    submit(
-      {
-        ...data,
-      },
-      {
-        method: "post",
-        action: "/action/handle-action",
-        navigate: false,
-      },
-    );
   };
 
   return (

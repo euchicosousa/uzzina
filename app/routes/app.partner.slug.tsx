@@ -8,6 +8,7 @@ import { getUserId } from "~/lib/helpers";
 import invariant from "tiny-invariant";
 import {
   ArrowDownAZIcon,
+  ArrowDownIcon,
   ArrowUpAZIcon,
   CalendarIcon,
   ClockIcon,
@@ -98,6 +99,7 @@ interface ViewOptions {
   instagram: boolean;
   order: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending: boolean;
+  finishedOnEnd: boolean;
 }
 
 export default function PartnerPage() {
@@ -120,6 +122,7 @@ export default function PartnerPage() {
     instagram: false,
     order: ORDER_BY.date,
     ascending: true,
+    finishedOnEnd: true,
   });
 
   return (
@@ -129,7 +132,7 @@ export default function PartnerPage() {
           <div className="flex items-center gap-2 p-4">
             <h2 className="p-0">{partner.title}</h2>
           </div>
-
+          {/* Tab de páginas */}
           <div className="flex items-center gap-2">
             <UToggle
               checked={viewOptions.list}
@@ -149,9 +152,38 @@ export default function PartnerPage() {
             </UToggle>
           </div>
         </div>
+        {/* Organização */}
         <div className="flex justify-end gap-8 px-4 py-1">
           <div className="flex justify-end gap-1">
+            {/* Organizar pela Data do Instagram */}
             <Toggle
+              title="Organizar pela Data do Instagram"
+              pressed={viewOptions.instagram}
+              onPressedChange={(value) =>
+                setViewOptions({ ...viewOptions, instagram: value })
+              }
+              className="grid place-content-center p-0"
+            >
+              <InstagramIcon />
+            </Toggle>
+            {/* Colocar ações concluídas no final */}
+            <Toggle
+              title="Colocar ações concluídas no final"
+              pressed={viewOptions.finishedOnEnd}
+              onPressedChange={(value) =>
+                setViewOptions({ ...viewOptions, finishedOnEnd: value })
+              }
+              className="grid place-content-center p-0"
+            >
+              <ArrowDownIcon />
+            </Toggle>
+          </div>
+          <div className="flex justify-end gap-1">
+            {/* Ordem Crescente ou Descencente */}
+            <Toggle
+              title={
+                viewOptions.ascending ? "Ordem Crescente" : "Ordem Descencente"
+              }
               pressed={viewOptions.ascending}
               onPressedChange={(pressed) =>
                 setViewOptions({
@@ -163,7 +195,9 @@ export default function PartnerPage() {
             >
               {viewOptions.ascending ? <ArrowDownAZIcon /> : <ArrowUpAZIcon />}
             </Toggle>
+            {/* Ordem por Data  */}
             <Toggle
+              title="Ordem por Data"
               pressed={viewOptions.order === ORDER_BY.date}
               onPressedChange={(pressed) =>
                 setViewOptions({
@@ -175,7 +209,9 @@ export default function PartnerPage() {
             >
               <ClockIcon />
             </Toggle>
+            {/* Ordem por Status */}
             <Toggle
+              title="Ordem por Status"
               pressed={viewOptions.order === ORDER_BY.state}
               onPressedChange={(pressed) =>
                 setViewOptions({
@@ -186,15 +222,6 @@ export default function PartnerPage() {
               className="grid place-content-center p-0"
             >
               <SquareCheckIcon />
-            </Toggle>
-            <Toggle
-              pressed={viewOptions.instagram}
-              onPressedChange={(value) =>
-                setViewOptions({ ...viewOptions, instagram: value })
-              }
-              className="grid place-content-center p-0"
-            >
-              <InstagramIcon />
             </Toggle>
           </div>
           <div className="flex justify-end gap-1">
@@ -263,19 +290,54 @@ function ActionListPartnerPage({
   viewOptions: any;
 }) {
   return (
-    <div className="w-full overflow-y-auto p-4">
-      <ActionContainer
-        actions={actions || []}
-        dateTimeDisplay={DATE_TIME_DISPLAY.DateTime}
-        showCategory={viewOptions.category}
-        showPartner={viewOptions.partner}
-        showResponsibles={viewOptions.responsibles}
-        showLate={viewOptions.late}
-        showPriority={viewOptions.priority}
-        showDivider={true}
-        orderBy={viewOptions.order}
-        ascending={viewOptions.ascending}
-      />
+    <div className="w-full overflow-y-auto">
+      {viewOptions.finishedOnEnd ? (
+        <div className="flex flex-col">
+          <h4 className="border-b p-4">Ações em andamento</h4>
+          <ActionContainer
+            actions={
+              actions.filter((action) => action.state !== "finished") || []
+            }
+            dateTimeDisplay={DATE_TIME_DISPLAY.DateTime}
+            showCategory={viewOptions.category}
+            showPartner={viewOptions.partner}
+            showResponsibles={viewOptions.responsibles}
+            showLate={viewOptions.late}
+            showPriority={viewOptions.priority}
+            showDivider={true}
+            orderBy={viewOptions.order}
+            ascending={viewOptions.ascending}
+          />
+          <h4 className="border-y p-4">Ações concluídas</h4>
+          <ActionContainer
+            actions={
+              actions.filter((action) => action.state === "finished") || []
+            }
+            dateTimeDisplay={DATE_TIME_DISPLAY.DateTime}
+            showCategory={viewOptions.category}
+            showPartner={viewOptions.partner}
+            showResponsibles={viewOptions.responsibles}
+            showLate={viewOptions.late}
+            showPriority={viewOptions.priority}
+            showDivider={true}
+            orderBy={viewOptions.order}
+            ascending={viewOptions.ascending}
+          />
+        </div>
+      ) : (
+        <ActionContainer
+          actions={actions || []}
+          dateTimeDisplay={DATE_TIME_DISPLAY.DateTime}
+          showCategory={viewOptions.category}
+          showPartner={viewOptions.partner}
+          showResponsibles={viewOptions.responsibles}
+          showLate={viewOptions.late}
+          showPriority={viewOptions.priority}
+          showDivider={true}
+          orderBy={viewOptions.order}
+          ascending={viewOptions.ascending}
+        />
+      )}
     </div>
   );
 }
