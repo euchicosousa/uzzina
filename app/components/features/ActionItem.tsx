@@ -215,7 +215,7 @@ export const ActionItemTitleInput = ({
   const [localTItle, setLocalTitle] = useState(title);
 
   return (
-    <div className="flex w-full overflow-hidden text-sm">
+    <div className="flex w-full overflow-hidden text-sm @md:w-auto">
       {isEditing ? (
         <input
           autoFocus
