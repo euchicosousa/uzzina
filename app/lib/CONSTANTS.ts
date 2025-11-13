@@ -45,3 +45,11 @@ export const PRIORITY = {
   high: "high",
 } as const;
 
+
+export const ORDER_BY = {
+  date: "date",
+  instagram_date: "instagram_date",
+  priority: "priority",
+  state: "state",
+} as const;
+  

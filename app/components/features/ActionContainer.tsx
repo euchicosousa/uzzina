@@ -1,6 +1,7 @@
-import { VARIANT, type DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
+import { ORDER_BY, VARIANT, type DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import { ActionItem } from "./ActionItem";
 import { cn } from "~/lib/utils";
+import { sortActions } from "~/lib/helpers";
 
 type ActionContainerProps = {
   actions: Action[];
@@ -13,6 +14,8 @@ type ActionContainerProps = {
   showPriority?: boolean;
   showDivider?: boolean;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
+  orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
+  ascending?: boolean;
 };
 
 export const ActionContainer = ({
@@ -26,6 +29,8 @@ export const ActionContainer = ({
   showPriority,
   showDivider,
   dateTimeDisplay,
+  orderBy,
+  ascending,
 }: ActionContainerProps) => {
   const columnsClasses =
     columns === 2
@@ -49,6 +54,8 @@ export const ActionContainer = ({
           : columns === 6
             ? `grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] ${[VARIANT.block, VARIANT.content].find((v) => v === variant) ? "gap-2" : "divide-y"}`
             : `flex flex-col ${showDivider ? "divide-y" : ""}`;
+
+  actions = sortActions(actions, orderBy, ascending);
 
   return (
     <div className={cn(columnsClasses)}>

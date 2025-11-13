@@ -1,12 +1,13 @@
 import { redirect } from "react-router";
 import { createSupabaseClient } from "./supabase";
-import { DATE_TIME_DISPLAY, STATE } from "./CONSTANTS";
+import { DATE_TIME_DISPLAY, ORDER_BY, STATE } from "./CONSTANTS";
 import {
   addMinutes,
   format,
   formatDistance,
   formatDistanceToNow,
   isBefore,
+  parseISO,
   subMinutes,
 } from "date-fns";
 import { MoonIcon, SunIcon, ComputerIcon } from "lucide-react";
@@ -109,4 +110,48 @@ export function getFormattedDateTime(
 
 export function getFormattedPartnersName(partners: Partner[]) {
   return partners.map((partner) => partner.title).join(", ");
+}
+
+export function sortActions(
+  actions: Action[],
+  orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY],
+  ascending = true,
+) {
+  const priorities = ["low", "medium", "high"];
+  const states = [
+    "idea",
+    "do",
+    "doing",
+    "review",
+    "approved",
+    "done",
+    "finished",
+  ];
+
+  switch (orderBy) {
+    case ORDER_BY.priority:
+      actions.sort(
+        (a, b) =>
+          (priorities.indexOf(a.priority) - priorities.indexOf(b.priority)) *
+          (ascending ? 1 : -1),
+      );
+      break;
+    case ORDER_BY.state:
+      actions.sort(
+        (a, b) =>
+          (states.indexOf(a.state) - states.indexOf(b.state)) *
+          (ascending ? 1 : -1),
+      );
+      break;
+    case ORDER_BY.date:
+      actions.sort(
+        (a, b) =>
+          (parseISO(a.date).getTime() - parseISO(b.date).getTime()) *
+          (ascending ? 1 : -1),
+      );
+    default:
+      break;
+  }
+
+  return actions;
 }

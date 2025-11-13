@@ -7,12 +7,18 @@ import {
 import { getUserId } from "~/lib/helpers";
 import invariant from "tiny-invariant";
 import {
+  ArrowDownAZIcon,
+  ArrowUpAZIcon,
   CalendarIcon,
+  ClockIcon,
   HandshakeIcon,
+  InstagramIcon,
   ListIcon,
   MenuIcon,
   PlusIcon,
   SignalHighIcon,
+  SquareCheck,
+  SquareCheckIcon,
   TagIcon,
   UsersIcon,
 } from "lucide-react";
@@ -30,7 +36,7 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns";
-import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
+import { DATE_TIME_DISPLAY, ORDER_BY } from "~/lib/CONSTANTS";
 import { Toggle } from "~/components/ui/toggle";
 import { useState } from "react";
 import { ptBR } from "date-fns/locale";
@@ -81,6 +87,19 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return { partner, actions };
 };
 
+interface ViewOptions {
+  list: boolean;
+  calendar: boolean;
+  responsibles: boolean;
+  priority: boolean;
+  category: boolean;
+  late: boolean;
+  partner: boolean;
+  instagram: boolean;
+  order: (typeof ORDER_BY)[keyof typeof ORDER_BY];
+  ascending: boolean;
+}
+
 export default function PartnerPage() {
   let { partner, actions } = useLoaderData<typeof loader>();
 
@@ -90,7 +109,7 @@ export default function PartnerPage() {
   const currentActions: Action[] = [];
   actionsMap.forEach((action) => currentActions.push(action));
 
-  const [viewOptions, setViewOptions] = useState({
+  const [viewOptions, setViewOptions] = useState<ViewOptions>({
     list: true,
     calendar: false,
     responsibles: true,
@@ -98,6 +117,9 @@ export default function PartnerPage() {
     category: true,
     late: true,
     partner: false,
+    instagram: false,
+    order: ORDER_BY.date,
+    ascending: true,
   });
 
   return (
@@ -107,6 +129,7 @@ export default function PartnerPage() {
           <div className="flex items-center gap-2 p-4">
             <h2 className="p-0">{partner.title}</h2>
           </div>
+
           <div className="flex items-center gap-2">
             <UToggle
               checked={viewOptions.list}
@@ -126,43 +149,92 @@ export default function PartnerPage() {
             </UToggle>
           </div>
         </div>
-        <div className="flex justify-end gap-1 px-4 py-1">
-          <Toggle
-            className="grid place-content-center p-0"
-            pressed={viewOptions.responsibles}
-            onPressedChange={(value) =>
-              setViewOptions({ ...viewOptions, responsibles: value })
-            }
-          >
-            <UsersIcon />
-          </Toggle>
-          <Toggle
-            pressed={viewOptions.priority}
-            onPressedChange={(value) =>
-              setViewOptions({ ...viewOptions, priority: value })
-            }
-            className="grid place-content-center p-0"
-          >
-            <SignalHighIcon />
-          </Toggle>
-          <Toggle
-            pressed={viewOptions.category}
-            onPressedChange={(value) =>
-              setViewOptions({ ...viewOptions, category: value })
-            }
-            className="grid place-content-center p-0"
-          >
-            <TagIcon />
-          </Toggle>
-          <Toggle
-            pressed={viewOptions.partner}
-            onPressedChange={(value) =>
-              setViewOptions({ ...viewOptions, partner: value })
-            }
-            className="grid place-content-center p-0"
-          >
-            <HandshakeIcon />
-          </Toggle>
+        <div className="flex justify-end gap-8 px-4 py-1">
+          <div className="flex justify-end gap-1">
+            <Toggle
+              pressed={viewOptions.ascending}
+              onPressedChange={(pressed) =>
+                setViewOptions({
+                  ...viewOptions,
+                  ascending: pressed,
+                })
+              }
+              className="grid place-content-center p-0"
+            >
+              {viewOptions.ascending ? <ArrowDownAZIcon /> : <ArrowUpAZIcon />}
+            </Toggle>
+            <Toggle
+              pressed={viewOptions.order === ORDER_BY.date}
+              onPressedChange={(pressed) =>
+                setViewOptions({
+                  ...viewOptions,
+                  order: pressed ? ORDER_BY.date : ORDER_BY.instagram_date,
+                })
+              }
+              className="grid place-content-center p-0"
+            >
+              <ClockIcon />
+            </Toggle>
+            <Toggle
+              pressed={viewOptions.order === ORDER_BY.state}
+              onPressedChange={(pressed) =>
+                setViewOptions({
+                  ...viewOptions,
+                  order: pressed ? ORDER_BY.state : ORDER_BY.date,
+                })
+              }
+              className="grid place-content-center p-0"
+            >
+              <SquareCheckIcon />
+            </Toggle>
+            <Toggle
+              pressed={viewOptions.instagram}
+              onPressedChange={(value) =>
+                setViewOptions({ ...viewOptions, instagram: value })
+              }
+              className="grid place-content-center p-0"
+            >
+              <InstagramIcon />
+            </Toggle>
+          </div>
+          <div className="flex justify-end gap-1">
+            <Toggle
+              className="grid place-content-center p-0"
+              pressed={viewOptions.responsibles}
+              onPressedChange={(value) =>
+                setViewOptions({ ...viewOptions, responsibles: value })
+              }
+            >
+              <UsersIcon />
+            </Toggle>
+            <Toggle
+              pressed={viewOptions.priority}
+              onPressedChange={(value) =>
+                setViewOptions({ ...viewOptions, priority: value })
+              }
+              className="grid place-content-center p-0"
+            >
+              <SignalHighIcon />
+            </Toggle>
+            <Toggle
+              pressed={viewOptions.category}
+              onPressedChange={(value) =>
+                setViewOptions({ ...viewOptions, category: value })
+              }
+              className="grid place-content-center p-0"
+            >
+              <TagIcon />
+            </Toggle>
+            <Toggle
+              pressed={viewOptions.partner}
+              onPressedChange={(value) =>
+                setViewOptions({ ...viewOptions, partner: value })
+              }
+              className="grid place-content-center p-0"
+            >
+              <HandshakeIcon />
+            </Toggle>
+          </div>
         </div>
       </div>
       <div className="flex overflow-hidden">
@@ -201,6 +273,8 @@ function ActionListPartnerPage({
         showLate={viewOptions.late}
         showPriority={viewOptions.priority}
         showDivider={true}
+        orderBy={viewOptions.order}
+        ascending={viewOptions.ascending}
       />
     </div>
   );
@@ -228,59 +302,68 @@ function ActionCalendarPartnerPage({
   const { BaseAction, setBaseAction } = useOutletContext<OutletContext>();
 
   return (
-    <div className="flex w-full flex-col overflow-hidden">
-      <div className="grid grid-cols-7 border-b">
-        {calendar.slice(0, 7).map((day) => (
-          <div key={day.toISOString()} className="p-2 text-center xl:p-3">
-            <div className="text-sm leading-none font-medium capitalize xl:text-lg">
-              <span className="uppercase sm:hidden">
-                {format(day, "eeeeee", { locale: ptBR })}
-              </span>
-              <span className="hidden sm:block xl:hidden">
-                {format(day, "eee", { locale: ptBR })}
-              </span>
-              <span className="hidden xl:block">
-                {format(day, "eeee", { locale: ptBR })}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-7 overflow-y-auto">
-        {calendar.map((day) => (
-          <div key={day.toISOString()} className="group/column border-b pb-4">
-            <div className="flex items-center justify-between">
-              <div className="p-2 text-lg">{format(day, "d")}</div>
-              <div className="opacity-0 group-hover/column:opacity-100">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="cursor-pointer"
-                  onClick={() =>
-                    setBaseAction({
-                      ...(BaseAction as Action),
-                      date: format(day, "yyyy-MM-dd HH:mm:ss"),
-                      instagram_date: format(day, "yyyy-MM-dd HH:mm:ss"),
-                      partners: [partnerSlug],
-                    })
-                  }
-                >
-                  <PlusIcon className="size-4" />
-                </Button>
+    <div className="w-full overflow-x-auto overflow-y-hidden">
+      <div className="flex w-full min-w-[1200px] flex-col overflow-hidden">
+        <div className="grid grid-cols-7 border-b">
+          {calendar.slice(0, 7).map((day) => (
+            <div key={day.toISOString()} className="p-2 text-center xl:p-3">
+              <div className="text-sm leading-none font-medium capitalize xl:text-lg">
+                <span className="uppercase sm:hidden">
+                  {format(day, "eeeeee", { locale: ptBR })}
+                </span>
+                <span className="hidden sm:block xl:hidden">
+                  {format(day, "eee", { locale: ptBR })}
+                </span>
+                <span className="hidden xl:block">
+                  {format(day, "eeee", { locale: ptBR })}
+                </span>
               </div>
             </div>
-            <ActionContainer
-              actions={actions.filter((action) => isSameDay(action.date, day))}
-              dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
-              showCategory={viewOptions.category}
-              showPartner={viewOptions.partner}
-              showResponsibles={viewOptions.responsibles}
-              showLate={viewOptions.late}
-              showPriority={viewOptions.priority}
-              showDivider={true}
-            />
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className="grid h-[calc(100vh-220px)] grid-cols-7 overflow-y-auto">
+          {calendar.map((day) => (
+            <div key={day.toISOString()} className="group/column border-b pb-4">
+              <div className="flex items-center justify-between">
+                <div className="p-2 text-lg">{format(day, "d")}</div>
+                <div className="opacity-0 group-hover/column:opacity-100">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="cursor-pointer"
+                    onClick={() =>
+                      setBaseAction({
+                        ...(BaseAction as Action),
+                        date: format(day, "yyyy-MM-dd HH:mm:ss"),
+                        instagram_date: format(day, "yyyy-MM-dd HH:mm:ss"),
+                        partners: [partnerSlug],
+                      })
+                    }
+                  >
+                    <PlusIcon className="size-4" />
+                  </Button>
+                </div>
+              </div>
+              <ActionContainer
+                actions={actions.filter((action) =>
+                  isSameDay(
+                    viewOptions.instagram ? action.instagram_date : action.date,
+                    day,
+                  ),
+                )}
+                dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+                showCategory={viewOptions.category}
+                showPartner={viewOptions.partner}
+                showResponsibles={viewOptions.responsibles}
+                showLate={viewOptions.late}
+                showPriority={viewOptions.priority}
+                showDivider={true}
+                orderBy={viewOptions.order}
+                ascending={viewOptions.ascending}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
