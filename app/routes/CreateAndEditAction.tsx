@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
+import { motion } from "motion/react";
 
 export function CreateAndEditAction({
   BaseAction,
@@ -25,7 +26,13 @@ export function CreateAndEditAction({
   }, [BaseAction]);
 
   return (
-    <div className="bg-background fixed top-17 right-0 bottom-0 z-10 flex max-h-full shrink-0 flex-col overflow-hidden border-l md:w-md lg:w-xl">
+    <motion.div
+      initial={{ x: "100%" }}
+      animate={{ x: 0 }}
+      exit={{ x: "100%" }}
+      transition={{ duration: 1, ease: "circInOut" }}
+      className="bg-background fixed top-17 right-0 bottom-0 z-10 flex max-h-full shrink-0 flex-col overflow-hidden border-l md:w-md lg:w-xl"
+    >
       <div className="flex shrink-0 divide-x">
         <div
           className={`flex w-full cursor-pointer items-center justify-center gap-2 border-b p-4 text-sm font-medium ${view !== "essential" ? "bg-muted border-border" : "bg-background border-b-transparent"}`}
@@ -61,7 +68,7 @@ export function CreateAndEditAction({
             setRawAction({ ...RawAction, title: e.target.value })
           }
           placeholder="Título"
-          className="w-full resize-none overflow-hidden py-2 text-5xl font-medium tracking-tighter outline-none focus:underline"
+          className="w-full resize-none overflow-hidden py-4 text-5xl font-medium tracking-tighter outline-none focus:underline"
           //   @ts-ignore
           style={{ fieldSizing: "content" }}
         />
@@ -77,6 +84,6 @@ export function CreateAndEditAction({
           <Button>Salvar</Button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

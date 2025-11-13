@@ -9,6 +9,7 @@ import invariant from "tiny-invariant";
 import { Header } from "~/components/layout/Header";
 import { getUserId } from "~/lib/helpers";
 import { CreateAndEditAction } from "./CreateAndEditAction";
+import { AnimatePresence } from "motion/react";
 
 export type AppLoaderData = {
   people: Person[];
@@ -90,13 +91,14 @@ export default function Dashboard() {
             <div className="min-h-full w-8 shrink-0 border-l"></div>
           </div>
         </div>
-
-        {BaseAction ? (
-          <CreateAndEditAction
-            BaseAction={BaseAction}
-            onClose={() => setBaseAction(null)}
-          />
-        ) : null}
+        <AnimatePresence>
+          {BaseAction ? (
+            <CreateAndEditAction
+              BaseAction={BaseAction}
+              onClose={() => setBaseAction(null)}
+            />
+          ) : null}
+        </AnimatePresence>
       </div>
     </div>
   );
