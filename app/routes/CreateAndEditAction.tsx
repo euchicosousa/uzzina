@@ -33,7 +33,7 @@ export function CreateAndEditAction({
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ duration: 0.4, ease: "circInOut" }}
-      className="bg-background fixed top-17 right-0 bottom-0 z-10 flex max-h-full shrink-0 flex-col overflow-hidden border-l md:w-md lg:w-xl"
+      className="bg-background fixed top-17 right-0 bottom-0 z-10 flex h-full w-full shrink-0 flex-col overflow-hidden border-l md:w-2xl"
     >
       <div className="flex shrink-0 divide-x">
         <div

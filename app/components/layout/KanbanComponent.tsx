@@ -99,7 +99,7 @@ const KanbanColumn = ({
   state: State;
 }) => {
   return (
-    <Droppable id={id} className="flex max-h-[30vh] flex-col overflow-hidden">
+    <Droppable id={id} className="flex h-[30vh] flex-col overflow-hidden">
       {(isOver) => {
         return (
           <div

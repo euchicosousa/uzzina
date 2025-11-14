@@ -279,21 +279,19 @@ function ActionCalendarPartnerPage({
   const { BaseAction, setBaseAction } = useOutletContext<OutletContext>();
 
   return (
-    <div className="w-full overflow-x-auto overflow-y-hidden">
-      <CalendarActions
-        calendar={calendar}
-        actions={actions}
-        viewOptions={viewOptions}
-        onCreateAction={(day) => {
-          setBaseAction({
-            ...(BaseAction as Action),
-            date: format(day, "yyyy-MM-dd HH:mm:ss"),
-            instagram_date: format(day, "yyyy-MM-dd HH:mm:ss"),
-            partners: [partnerSlug],
-          });
-        }}
-      />
-    </div>
+    <CalendarActions
+      calendar={calendar}
+      actions={actions}
+      viewOptions={viewOptions}
+      onCreateAction={(day) => {
+        setBaseAction({
+          ...(BaseAction as Action),
+          date: format(day, "yyyy-MM-dd HH:mm:ss"),
+          instagram_date: format(day, "yyyy-MM-dd HH:mm:ss"),
+          partners: [partnerSlug],
+        });
+      }}
+    />
   );
 }
 

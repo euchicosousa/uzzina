@@ -368,7 +368,7 @@ const CalendarHomeComponent = ({ actions }: { actions: Action[] }) => {
         </div>
       }
     >
-      <div className="max-h-[50vh] overflow-hidden">
+      <div className="overflow-hidden">
         <CalendarActions
           calendar={calendar}
           actions={actions}
