@@ -151,7 +151,20 @@ export const ActionItem = ({
                 // <div className="flex justify-center overflow-hidden @md:w-[120px]">
                 // <ActionItemCategory category={currentCategory} />
                 // </div>
-                <Icons slug={currentCategory.slug} />
+                <Icons
+                  slug={currentCategory.slug}
+                  className="size-4"
+                  style={{
+                    color: Color(currentCategory.color)
+                      .alpha(0.7)
+                      .hsl()
+                      .toString(),
+                    fill: Color(currentCategory.color)
+                      .alpha(0.1)
+                      .hsl()
+                      .toString(),
+                  }}
+                />
               )}
 
               {/* Data */}

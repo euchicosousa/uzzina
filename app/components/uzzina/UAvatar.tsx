@@ -62,11 +62,11 @@ export const UAvatar = ({
         : fallback
   ).toUpperCase();
   const sizeClasses = {
-    xs: "size-4",
-    sm: "size-6",
-    md: "size-8",
-    lg: "size-12",
-    xl: "size-18",
+    xs: "size-4 ring-2",
+    sm: "size-6 ring-2",
+    md: "size-8 ring-3",
+    lg: "size-12 ring-4",
+    xl: "size-18 ring-6",
   }[size];
   const textClasses =
     fallbackText.length <= 2
@@ -102,7 +102,7 @@ export const UAvatar = ({
         sizeClasses,
         textClasses,
         className,
-        "border-foreground/10 border p-0 leading-none font-bold",
+        "ring-background p-0 leading-none font-bold",
       )}
     >
       {image ? (

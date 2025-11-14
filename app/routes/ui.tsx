@@ -4,6 +4,20 @@ import { Button } from "~/components/ui/button";
 import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { SIZE } from "~/lib/CONSTANTS";
+import type { LoaderFunctionArgs } from "react-router";
+import { createSupabaseClient } from "~/lib/supabase";
+import { useLoaderData } from "react-router";
+import { Icons } from "~/lib/helpers";
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const { supabase } = createSupabaseClient(request);
+
+  const { data: categories } = await supabase.from("categories").select("*");
+
+  return {
+    categories,
+  };
+};
 
 export const meta = () => {
   return [
@@ -14,6 +28,7 @@ export const meta = () => {
 };
 
 export default function UITestingPage() {
+  const { categories } = useLoaderData<typeof loader>();
   const [theme, setTheme] = useTheme();
   return (
     <div className="container mx-auto px-8">
@@ -378,6 +393,23 @@ export default function UITestingPage() {
               ]}
             />
           </div>
+        </div>
+      </div>
+      <div className="border_after py-8">
+        <div>
+          <h2>Ícones das Categorias</h2>
+        </div>
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          {categories?.map((category) => (
+            <div key={category.id} className="p-4 text-center">
+              <div className="mb-2 font-medium">{category.title}</div>
+              <div className="flex items-center justify-center gap-2">
+                <Icons slug={category.slug} className="size-4" />
+                <Icons slug={category.slug} className="size-6" />
+                <Icons slug={category.slug} className="size-8" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

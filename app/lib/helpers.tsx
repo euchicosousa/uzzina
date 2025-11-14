@@ -7,10 +7,27 @@ import {
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
+  BadgeCheckIcon,
+  BrainIcon,
+  CameraIcon,
+  CircleDollarSignIcon,
+  CircleFadingPlusIcon,
   ClipboardCheckIcon,
+  Code2Icon,
+  ComponentIcon,
   ComputerIcon,
+  GalleryHorizontalIcon,
+  GalleryThumbnailsIcon,
+  ImageIcon,
+  MegaphoneIcon,
   MoonIcon,
+  PenToolIcon,
+  PresentationIcon,
+  PrinterIcon,
+  SlidersHorizontalIcon,
+  SquarePlayIcon,
   SunIcon,
+  TangentIcon,
 } from "lucide-react";
 import { redirect, type SubmitFunction } from "react-router";
 import { Theme } from "remix-themes";
@@ -175,54 +192,56 @@ export const handleAction = (data: any, submit: SubmitFunction) => {
 export const Icons = ({
   slug,
   className,
+  style,
 }: {
   slug: string;
   className?: string;
+  style?: React.CSSProperties;
 }) => {
   switch (slug) {
     case "todo":
-      return <ClipboardCheckIcon className={cn(className)} />;
+      return <ClipboardCheckIcon className={cn(className)} style={style} />;
 
     case "post":
-      return <div>post</div>;
+      return <ImageIcon className={cn(className)} style={style} />;
 
     case "carousel":
-      return <div>carousel</div>;
+      return <GalleryThumbnailsIcon className={cn(className)} style={style} />;
 
     case "reels":
-      return <div>reels</div>;
+      return <SquarePlayIcon className={cn(className)} style={style} />;
 
     case "stories":
-      return <div>stories</div>;
+      return <CircleFadingPlusIcon className={cn(className)} style={style} />;
 
     case "sm":
-      return <div>sm</div>;
+      return <BadgeCheckIcon className={cn(className)} style={style} />;
 
     case "meeting":
-      return <div>meeting</div>;
+      return <PresentationIcon className={cn(className)} style={style} />;
 
     case "ads":
-      return <div>ads</div>;
+      return <MegaphoneIcon className={cn(className)} style={style} />;
 
     case "plan":
-      return <div>plan</div>;
+      return <BrainIcon className={cn(className)} style={style} />;
 
     case "finance":
-      return <div>finance</div>;
+      return <CircleDollarSignIcon className={cn(className)} style={style} />;
 
     case "design":
-      return <div>design</div>;
+      return <PenToolIcon className={cn(className)} style={style} />;
 
     case "print":
-      return <div>print</div>;
+      return <PrinterIcon className={cn(className)} style={style} />;
 
     case "dev":
-      return <div>dev</div>;
+      return <Code2Icon className={cn(className)} style={style} />;
 
     case "capture":
-      return <div>capture</div>;
+      return <CameraIcon className={cn(className)} style={style} />;
 
     default:
-      return <div>default</div>;
+      return <ComponentIcon className={cn(className)} style={style} />;
   }
 };
