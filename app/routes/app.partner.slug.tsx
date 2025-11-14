@@ -14,14 +14,15 @@ import {
   ArrowDownIcon,
   ArrowUpAZIcon,
   CalendarIcon,
-  ClockAlertIcon,
   ClockIcon,
   HandshakeIcon,
-  ImageIcon,
   InstagramIcon,
   ListIcon,
+  Rows2Icon,
+  Rows3Icon,
   SignalHighIcon,
   SquareCheckIcon,
+  SquareIcon,
   TagIcon,
   UsersIcon,
 } from "lucide-react";
@@ -35,9 +36,10 @@ import {
 import invariant from "tiny-invariant";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import { CalendarActions } from "~/components/features/Calendar";
+import { Button } from "~/components/ui/button";
 import { Toggle } from "~/components/ui/toggle";
 import { UToggle } from "~/components/uzzina/UToggle";
-import { DATE_TIME_DISPLAY, ORDER_BY } from "~/lib/CONSTANTS";
+import { DATE_TIME_DISPLAY, ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 import { getUserId } from "~/lib/helpers";
 
 export const runtime = "edge";
@@ -87,7 +89,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export type ViewOptions = {
   instagram?: boolean;
-  content?: boolean;
+  variant?: (typeof VARIANT)[keyof typeof VARIANT];
   responsibles?: boolean;
   priority?: boolean;
   category?: boolean;
@@ -98,7 +100,7 @@ export type ViewOptions = {
   finishedOnEnd?: boolean;
   showOptions: {
     instagram?: boolean;
-    content?: boolean;
+    variant?: boolean;
     responsibles?: boolean;
     priority?: boolean;
     category?: boolean;
@@ -127,13 +129,13 @@ export default function PartnerPage() {
     late: true,
     partner: false,
     instagram: false,
+    variant: VARIANT.line,
     order: ORDER_BY.date,
     ascending: true,
     finishedOnEnd: true,
-    content: false,
     showOptions: {
       instagram: true,
-      content: true,
+      variant: true,
       responsibles: true,
       priority: true,
       category: true,
@@ -305,7 +307,7 @@ export const ViewOptionsComponent = ({
   return (
     <div className="flex gap-8">
       {(viewOptions.showOptions.instagram ||
-        viewOptions.showOptions.content ||
+        viewOptions.showOptions.variant ||
         viewOptions.showOptions.finishedOnEnd) && (
         <div className="flex gap-1">
           {/* Organizar pela Data do Instagram */}
@@ -321,17 +323,31 @@ export const ViewOptionsComponent = ({
               <InstagramIcon />
             </Toggle>
           )}
-          {viewOptions.showOptions.content && (
-            <Toggle
-              title="Organizar pela Data do Instagram"
-              pressed={viewOptions.instagram}
-              onPressedChange={(value) =>
-                setViewOptions({ ...viewOptions, instagram: value })
+          {viewOptions.showOptions.variant && (
+            <Button
+              variant={"ghost"}
+              title={
+                viewOptions.variant === VARIANT.line
+                  ? "Ação em formato de linha"
+                  : viewOptions.variant === VARIANT.block
+                    ? "Ação em formato de bloco"
+                    : "Ação em formato de conteúdo"
               }
+              onClick={() => {
+                if (viewOptions.variant === VARIANT.line) {
+                  setViewOptions({ ...viewOptions, variant: VARIANT.block });
+                } else if (viewOptions.variant === VARIANT.block) {
+                  setViewOptions({ ...viewOptions, variant: VARIANT.content });
+                } else if (viewOptions.variant === VARIANT.content) {
+                  setViewOptions({ ...viewOptions, variant: VARIANT.line });
+                }
+              }}
               className="grid place-content-center p-0"
             >
-              <ImageIcon />
-            </Toggle>
+              {viewOptions.variant === VARIANT.line && <Rows3Icon />}
+              {viewOptions.variant === VARIANT.block && <Rows2Icon />}
+              {viewOptions.variant === VARIANT.content && <SquareIcon />}
+            </Button>
           )}
           {/* Colocar ações concluídas no final */}
           {viewOptions.showOptions.finishedOnEnd && (
@@ -453,17 +469,6 @@ export const ViewOptionsComponent = ({
               <HandshakeIcon />
             </Toggle>
           )}
-          {/* {typeof viewOptions.late !== "undefined" && (
-          <Toggle
-            pressed={viewOptions.late}
-            onPressedChange={(value) =>
-              setViewOptions({ ...viewOptions, late: value })
-            }
-            className="grid place-content-center p-0"
-          >
-            <ClockAlertIcon />
-          </Toggle>
-        )} */}
         </div>
       )}
     </div>

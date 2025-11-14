@@ -16,6 +16,7 @@ import {
   getFormattedDateTime,
   getFormattedPartnersName,
   handleAction,
+  Icons,
   isAlmostLateAction,
   isLateAction,
 } from "~/lib/helpers";
@@ -102,6 +103,7 @@ export const ActionItem = ({
               isEditing={isEditing}
               setIsEditing={setIsEditing}
               title={action.title}
+              className={"text-lg font-medium tracking-tight"}
             />
             <div className="text-xs">
               {getFormattedDateTime(action.date, dateTimeDisplay)}
@@ -147,8 +149,9 @@ export const ActionItem = ({
               )}
               {showCategory && (
                 // <div className="flex justify-center overflow-hidden @md:w-[120px]">
-                <ActionItemCategory category={currentCategory} />
+                // <ActionItemCategory category={currentCategory} />
                 // </div>
+                <Icons slug={currentCategory.slug} />
               )}
 
               {/* Data */}
@@ -221,11 +224,13 @@ export const ActionItemTitleInput = ({
   isDragging,
   isEditing,
   setIsEditing,
+  className,
 }: {
   title: string;
   isDragging?: boolean;
   isEditing?: boolean;
   setIsEditing: (value: boolean) => void;
+  className?: string;
 }) => {
   const [localTItle, setLocalTitle] = useState(title);
 
@@ -234,6 +239,7 @@ export const ActionItemTitleInput = ({
       className={cn(
         "flex w-full overflow-hidden text-sm",
         !isEditing && "@md:w-auto",
+        className,
       )}
     >
       {isEditing ? (

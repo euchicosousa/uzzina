@@ -1,5 +1,5 @@
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ORDER_BY, VARIANT, type DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
@@ -64,8 +64,13 @@ export const ActionContainer = ({
   actions = sortActions(actions, orderBy, ascending);
   const [showMore, setShowMore] = useState(isCompact);
 
+  useEffect(() => {
+    setShowMore(isCompact);
+  }, [isCompact]);
+
   return (
     <div className={cn(columnsClasses, "relative")}>
+      {/* <pre>{JSON.stringify(showMore, null, 2)}</pre> */}
       {(showMore ? actions.slice(0, 6) : actions).map((action) => (
         <ActionItem
           action={action}

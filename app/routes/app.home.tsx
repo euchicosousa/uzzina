@@ -368,7 +368,15 @@ const CalendarHomeComponent = ({ actions }: { actions: Action[] }) => {
         </div>
       }
     >
-      <div className="overflow-hidden">
+      {/* <div>
+        <pre>{JSON.stringify(period, null, 2)}</pre>
+      </div> */}
+      <div
+        className={cn(
+          "flex flex-col overflow-hidden",
+          period === "week" ? "h-[50vh]" : "",
+        )}
+      >
         <CalendarActions
           calendar={calendar}
           actions={actions}

@@ -1,11 +1,11 @@
-import { format, isSameDay, isSameMonth, isToday } from "date-fns";
+import { format, isSameDay, isSameMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { PlusIcon } from "lucide-react";
-import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
+import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
+import { cn } from "~/lib/utils";
 import type { ViewOptions } from "~/routes/app.partner.slug";
 import { Button } from "../ui/button";
 import { ActionContainer } from "./ActionContainer";
-import { cn } from "~/lib/utils";
 
 export const CalendarActions = ({
   calendar,
@@ -80,26 +80,34 @@ export const CalendarActions = ({
                   </div>
                 )}
               </div>
-
-              <ActionContainer
-                actions={actions.filter((action) =>
-                  isSameDay(
-                    viewOptions.instagram ? action.instagram_date : action.date,
-                    day,
-                  ),
+              <div
+                className={cn(
+                  viewOptions.variant === VARIANT.content ? "p-2" : "",
                 )}
-                dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
-                showCategory={viewOptions.category}
-                showPartner={viewOptions.partner}
-                showResponsibles={viewOptions.responsibles}
-                showLate={viewOptions.late}
-                showPriority={viewOptions.priority}
-                showDivider={true}
-                orderBy={viewOptions.order}
-                ascending={viewOptions.ascending}
-                isCompact={isCompact}
-                isInstagramDate={viewOptions.instagram}
-              />
+              >
+                <ActionContainer
+                  actions={actions.filter((action) =>
+                    isSameDay(
+                      viewOptions.instagram
+                        ? action.instagram_date
+                        : action.date,
+                      day,
+                    ),
+                  )}
+                  dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+                  showCategory={viewOptions.category}
+                  showPartner={viewOptions.partner}
+                  showResponsibles={viewOptions.responsibles}
+                  showLate={viewOptions.late}
+                  showPriority={viewOptions.priority}
+                  showDivider={true}
+                  orderBy={viewOptions.order}
+                  ascending={viewOptions.ascending}
+                  isCompact={isCompact}
+                  isInstagramDate={viewOptions.instagram}
+                  variant={viewOptions.variant}
+                />
+              </div>
             </div>
           ))}
         </div>

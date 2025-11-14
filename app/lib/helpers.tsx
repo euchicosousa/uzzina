@@ -1,19 +1,22 @@
-import { redirect, type SubmitFunction } from "react-router";
-import { createSupabaseClient } from "./supabase";
-import { DATE_TIME_DISPLAY, ORDER_BY, STATE } from "./CONSTANTS";
 import {
   addMinutes,
   format,
-  formatDistance,
   formatDistanceToNow,
   isBefore,
   parseISO,
-  subMinutes,
 } from "date-fns";
-import { MoonIcon, SunIcon, ComputerIcon } from "lucide-react";
-import { cn } from "./utils";
-import { Theme } from "remix-themes";
 import { ptBR } from "date-fns/locale";
+import {
+  ClipboardCheckIcon,
+  ComputerIcon,
+  MoonIcon,
+  SunIcon,
+} from "lucide-react";
+import { redirect, type SubmitFunction } from "react-router";
+import { Theme } from "remix-themes";
+import { DATE_TIME_DISPLAY, ORDER_BY, STATE } from "./CONSTANTS";
+import { createSupabaseClient } from "./supabase";
+import { cn } from "./utils";
 
 export async function getUserId(request: Request) {
   const { supabase } = await createSupabaseClient(request);
@@ -167,4 +170,59 @@ export const handleAction = (data: any, submit: SubmitFunction) => {
       navigate: false,
     },
   );
+};
+
+export const Icons = ({
+  slug,
+  className,
+}: {
+  slug: string;
+  className?: string;
+}) => {
+  switch (slug) {
+    case "todo":
+      return <ClipboardCheckIcon className={cn(className)} />;
+
+    case "post":
+      return <div>post</div>;
+
+    case "carousel":
+      return <div>carousel</div>;
+
+    case "reels":
+      return <div>reels</div>;
+
+    case "stories":
+      return <div>stories</div>;
+
+    case "sm":
+      return <div>sm</div>;
+
+    case "meeting":
+      return <div>meeting</div>;
+
+    case "ads":
+      return <div>ads</div>;
+
+    case "plan":
+      return <div>plan</div>;
+
+    case "finance":
+      return <div>finance</div>;
+
+    case "design":
+      return <div>design</div>;
+
+    case "print":
+      return <div>print</div>;
+
+    case "dev":
+      return <div>dev</div>;
+
+    case "capture":
+      return <div>capture</div>;
+
+    default:
+      return <div>default</div>;
+  }
 };
