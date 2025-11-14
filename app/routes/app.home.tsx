@@ -292,7 +292,6 @@ const LateHomeComponent = ({ actions }: { actions: Action[] }) => {
           columns={3}
           showPartner
           showCategory
-          showPriority
         />
       </div>
     </HomeComponentWrapper>

@@ -154,16 +154,7 @@ export const ActionItem = ({
                 <Icons
                   slug={currentCategory.slug}
                   className="size-4"
-                  style={{
-                    color: Color(currentCategory.color)
-                      .alpha(0.7)
-                      .hsl()
-                      .toString(),
-                    fill: Color(currentCategory.color)
-                      .alpha(0.1)
-                      .hsl()
-                      .toString(),
-                  }}
+                  color={currentCategory.color}
                 />
               )}
 
@@ -494,6 +485,20 @@ const ShortcutActions = ({
               : format(addDays(new Date(), 7), "yyyy-MM-dd'T'HH:mm:ss"),
             instagram_date: isInstagramDate
               ? format(addDays(new Date(), 7), "yyyy-MM-dd'T'HH:mm:ss")
+              : action.instagram_date,
+          },
+          submit,
+        );
+      } else if (code === "KeyM") {
+        handleAction(
+          {
+            ...action,
+            intent: INTENT.update_action,
+            date: isInstagramDate
+              ? action.date
+              : format(addDays(new Date(), 30), "yyyy-MM-dd'T'HH:mm:ss"),
+            instagram_date: isInstagramDate
+              ? format(addDays(new Date(), 30), "yyyy-MM-dd'T'HH:mm:ss")
               : action.instagram_date,
           },
           submit,

@@ -8,6 +8,7 @@ import type { LoaderFunctionArgs } from "react-router";
 import { createSupabaseClient } from "~/lib/supabase";
 import { useLoaderData } from "react-router";
 import { Icons } from "~/lib/helpers";
+import Color from "color";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { supabase } = createSupabaseClient(request);
@@ -404,9 +405,21 @@ export default function UITestingPage() {
             <div key={category.id} className="p-4 text-center">
               <div className="mb-2 font-medium">{category.title}</div>
               <div className="flex items-center justify-center gap-2">
-                <Icons slug={category.slug} className="size-4" />
-                <Icons slug={category.slug} className="size-6" />
-                <Icons slug={category.slug} className="size-8" />
+                <Icons
+                  slug={category.slug}
+                  className="size-4"
+                  color={category.color}
+                />
+                <Icons
+                  slug={category.slug}
+                  className="size-6"
+                  color={category.color}
+                />
+                <Icons
+                  slug={category.slug}
+                  className="size-8"
+                  color={category.color}
+                />
               </div>
             </div>
           ))}

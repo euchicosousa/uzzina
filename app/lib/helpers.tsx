@@ -34,6 +34,7 @@ import { Theme } from "remix-themes";
 import { DATE_TIME_DISPLAY, ORDER_BY, STATE } from "./CONSTANTS";
 import { createSupabaseClient } from "./supabase";
 import { cn } from "./utils";
+import Color from "color";
 
 export async function getUserId(request: Request) {
   const { supabase } = await createSupabaseClient(request);
@@ -193,11 +194,22 @@ export const Icons = ({
   slug,
   className,
   style,
+  color,
 }: {
   slug: string;
   className?: string;
   style?: React.CSSProperties;
+  color?: string;
 }) => {
+  style = style
+    ? style
+    : color
+      ? {
+          color: Color(color).desaturate(0.3).alpha(0.7).hsl().toString(),
+          fill: Color(color).desaturate(0.3).alpha(0.1).hsl().toString(),
+        }
+      : undefined;
+
   switch (slug) {
     case "todo":
       return <ClipboardCheckIcon className={cn(className)} style={style} />;

@@ -51,8 +51,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   invariant(categories, "Categories not found");
   invariant(priorities, "Priorities not found");
 
-  console.log(categories.map((c) => c.slug).join(", "));
-
   return {
     people,
     person,

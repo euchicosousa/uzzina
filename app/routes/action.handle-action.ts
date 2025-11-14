@@ -28,7 +28,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       }
       if(values.sprints === "null" || values.sprints === "") {
         delete values.sprints;
+      }else{
+        // @ts-ignore
+        values.sprints = String(values.sprints).split(",");
       }
+
+      
 
       let valuesToUpdate = {
         ...values,
