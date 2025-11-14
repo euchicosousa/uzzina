@@ -1,20 +1,27 @@
 import {
+  addDays,
   addMonths,
+  eachDayOfInterval,
   endOfDay,
   endOfMonth,
   endOfWeek,
   format,
+  isSameDay,
   isToday,
   startOfMonth,
   startOfWeek,
 } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import {
+  CalendarIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   ClockIcon,
   ComponentIcon,
   Grid3X3Icon,
   KanbanIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
   Link,
   useLoaderData,
@@ -23,15 +30,19 @@ import {
 } from "react-router";
 import invariant from "tiny-invariant";
 import { ActionContainer } from "~/components/features/ActionContainer";
+import { CalendarActions } from "~/components/features/Calendar";
+import FeedComponent from "~/components/layout/FeedComponent";
 import KanbanComponent from "~/components/layout/KanbanComponent";
+import { Button } from "~/components/ui/button";
+import { Toggle } from "~/components/ui/toggle";
 import { getShortText } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { UToggle } from "~/components/uzzina/UToggle";
-import { STATE, VARIANT } from "~/lib/CONSTANTS";
+import { ORDER_BY, STATE } from "~/lib/CONSTANTS";
 import { getLateActions, getUserId, isInstagramFeed } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "./app";
-import FeedComponent from "~/components/layout/FeedComponent";
+import { ViewOptionsComponent, type ViewOptions } from "./app.partner.slug";
 export type AppHomeLoaderData = {
   actions: Action[];
   actionsChart: Action[];
@@ -114,6 +125,7 @@ export default function AppHome() {
   return (
     <>
       <TodayHomeComponent actions={currentActions} />
+      <CalendarHomeComponent actions={currentActions} />
       <PartnersHomeComponent actions={currentActions} />
       <LateHomeComponent actions={currentActions} />
     </>
@@ -185,40 +197,78 @@ const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
     "kanban",
   );
 
+  const [currentDay, setCurrentDay] = useState(new Date());
+
   actions =
     view === "feed"
       ? actions.filter((action) => {
           return (
-            isToday(action.instagram_date) && isInstagramFeed(action.category)
+            isSameDay(action.instagram_date, currentDay) &&
+            isInstagramFeed(action.category)
           );
         })
       : actions.filter((action) => {
-          return isToday(action.date);
+          return isSameDay(action.date, currentDay);
         });
 
   return (
     <HomeComponentWrapper
-      title="Hoje"
+      title={
+        isToday(currentDay)
+          ? "Hoje"
+          : format(currentDay, "eeee, dd 'de' MMMM", {
+              locale: ptBR,
+            })[0].toUpperCase() +
+            format(currentDay, "eeee, dd 'de' MMMM", {
+              locale: ptBR,
+            }).slice(1)
+      }
       OptionsComponent={
-        <div className="flex items-center gap-2">
-          <UToggle
-            checked={view === "kanban"}
-            onClick={() => setView("kanban")}
-          >
-            <KanbanIcon />
-          </UToggle>
-          <UToggle checked={view === "hours"} onClick={() => setView("hours")}>
-            <ClockIcon />
-          </UToggle>
-          <UToggle checked={view === "feed"} onClick={() => setView("feed")}>
-            <Grid3X3Icon />
-          </UToggle>
-          <UToggle
-            checked={view === "categories"}
-            onClick={() => setView("categories")}
-          >
-            <ComponentIcon />
-          </UToggle>
+        <div className="flex items-center gap-8">
+          <div className="flex">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setCurrentDay(addDays(currentDay, -1));
+              }}
+            >
+              <ChevronLeftIcon />
+            </Button>
+            <Button variant="ghost" onClick={() => {}}>
+              <CalendarIcon />
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setCurrentDay(addDays(currentDay, 1));
+              }}
+            >
+              <ChevronRightIcon />
+            </Button>
+          </div>
+          <div className="flex gap-2">
+            <UToggle
+              checked={view === "kanban"}
+              onClick={() => setView("kanban")}
+            >
+              <KanbanIcon />
+            </UToggle>
+            <UToggle
+              checked={view === "hours"}
+              onClick={() => setView("hours")}
+            >
+              <ClockIcon />
+            </UToggle>
+            <UToggle checked={view === "feed"} onClick={() => setView("feed")}>
+              <Grid3X3Icon />
+            </UToggle>
+            <UToggle
+              checked={view === "categories"}
+              onClick={() => setView("categories")}
+            >
+              <ComponentIcon />
+            </UToggle>
+          </div>
         </div>
       }
     >
@@ -256,7 +306,7 @@ const HomeComponentWrapper = ({
 }: {
   children: React.ReactNode;
   OptionsComponent?: React.ReactNode;
-  title: string;
+  title: string | ReactNode;
 }) => {
   return (
     <div className="border_after">
@@ -266,5 +316,66 @@ const HomeComponentWrapper = ({
       </div>
       {children}
     </div>
+  );
+};
+
+const CalendarHomeComponent = ({ actions }: { actions: Action[] }) => {
+  const [period, setPeriod] = useState<"week" | "month">("week");
+  const calendar = eachDayOfInterval({
+    start:
+      period === "week"
+        ? startOfWeek(new Date())
+        : startOfWeek(startOfMonth(new Date())),
+    end:
+      period === "week"
+        ? endOfWeek(new Date())
+        : endOfWeek(endOfMonth(new Date())),
+  });
+  const [viewOptions, setViewOptions] = useState<ViewOptions>({
+    ascending: true,
+    category: true,
+    late: true,
+    partner: true,
+    order: ORDER_BY.date,
+    showOptions: {
+      ascending: true,
+      order: true,
+    },
+  });
+  return (
+    <HomeComponentWrapper
+      title="Calendário"
+      OptionsComponent={
+        <div className="flex items-center gap-8">
+          <div className="flex gap-1">
+            <Toggle
+              pressed={period === "week"}
+              onClick={() => setPeriod("week")}
+            >
+              Semana
+            </Toggle>
+            <Toggle
+              pressed={period === "month"}
+              onClick={() => setPeriod("month")}
+            >
+              Mês
+            </Toggle>
+          </div>
+          <ViewOptionsComponent
+            viewOptions={viewOptions}
+            setViewOptions={setViewOptions}
+          />
+        </div>
+      }
+    >
+      <div className="max-h-[50vh] overflow-hidden">
+        <CalendarActions
+          calendar={calendar}
+          actions={actions}
+          viewOptions={viewOptions}
+          isCompact={period === "month"}
+        />
+      </div>
+    </HomeComponentWrapper>
   );
 };

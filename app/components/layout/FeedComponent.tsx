@@ -11,6 +11,7 @@ export default function FeedComponent({ actions }: { actions: Action[] }) {
           actions={actions}
           variant={VARIANT.content}
           showCategory
+          isInstagramDate
         />
       </div>
     </div>

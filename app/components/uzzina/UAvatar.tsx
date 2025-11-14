@@ -77,13 +77,21 @@ export const UAvatar = ({
           lg: "text-[18px]",
           xl: "text-[28px]",
         }[size]
-      : {
-          xs: "",
-          sm: "",
-          md: "text-[10px]",
-          lg: "text-[16px]",
-          xl: "text-[24px]",
-        }[size];
+      : fallbackText.length <= 4
+        ? {
+            xs: "",
+            sm: "",
+            md: "text-[9px]",
+            lg: "text-[16px]",
+            xl: "text-[24px]",
+          }[size]
+        : {
+            xs: "",
+            sm: "",
+            md: "text-[8px]",
+            lg: "text-[15px]",
+            xl: "text-[20px]",
+          }[size];
 
   const styles =
     backgroundColor && color ? { backgroundColor, color } : undefined;

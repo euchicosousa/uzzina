@@ -15,10 +15,12 @@ import type { AppLoaderData } from "~/routes/app";
 import { ActionItem } from "../features/ActionItem";
 import { Draggable, Droppable } from "../features/DnD";
 import { handleAction } from "~/lib/helpers";
+import { UBadge } from "../uzzina/UBadge";
 
 export default function KanbanComponent({ actions }: { actions: Action[] }) {
   const { states } = useMatches()[1].loaderData as AppLoaderData;
   const submit = useSubmit();
+
   const [activeAction, setActiveAction] = useState<Action>();
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -107,8 +109,9 @@ const KanbanColumn = ({
             )}
             style={{ borderTopColor: state.color }}
           >
-            <div className="px-1 py-2 text-lg font-medium tracking-tight">
-              {state.title}
+            <div className="flex items-center justify-between px-1 py-2 text-lg font-medium tracking-tight">
+              <div>{state.title}</div>
+              <UBadge value={actions.length} />
             </div>
 
             <div className="flex h-full flex-col overflow-y-auto p-1">

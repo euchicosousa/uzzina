@@ -1,4 +1,5 @@
 import Color from "color";
+import { addDays, format } from "date-fns";
 import { SignalHighIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMatches, useOutletContext, useSubmit } from "react-router";
@@ -29,12 +30,14 @@ type ActionItemProps = {
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
   className?: string;
   isDragging?: boolean;
+  isInstagramDate?: boolean;
   showLate?: boolean;
   showPartner?: boolean;
   showCategory?: boolean;
   showResponsibles?: boolean;
   showPriority?: boolean;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
+
   onClick?: (action: Action) => void;
 };
 
@@ -44,6 +47,7 @@ export const ActionItem = ({
   showLate,
   className,
   isDragging,
+  isInstagramDate,
   showPartner,
   showCategory,
   showResponsibles,
@@ -205,7 +209,9 @@ export const ActionItem = ({
         </div>
       )}
       {renderActionVariant()}
-      {isHovered && <ShortcutActions action={action} />}
+      {isHovered && (
+        <ShortcutActions action={action} isInstagramDate={isInstagramDate} />
+      )}
     </div>
   );
 };
@@ -420,21 +426,18 @@ export const ActionItemPriority = ({
   }
 };
 
-const ShortcutActions = ({ action }: { action: Action }) => {
+const ShortcutActions = ({
+  action,
+  isInstagramDate,
+}: {
+  action: Action;
+  isInstagramDate?: boolean;
+}) => {
   const submit = useSubmit();
 
-  function keyDown(e: KeyboardEvent) {
-    const code = e.code;
+  function keyDown(event: KeyboardEvent) {
+    const code = event.code;
 
-    // let status = Object.entries(STATE).reduce(
-    //   (acc, [key, value]) => {
-    //     acc[key] = value;
-    //     return acc;
-    //   },
-    //   {} as Record<string, string>,
-    // );
-
-    // console.log({ status });
     let status: Record<string, (typeof STATE)[keyof typeof STATE]> = {
       KeyI: STATE.idea,
       KeyF: STATE.do,
@@ -446,7 +449,38 @@ const ShortcutActions = ({ action }: { action: Action }) => {
     };
 
     //Atalhos de status
-    if (status[code]) {
+    if (event.shiftKey) {
+      //Amanhã
+      if (code === "KeyA") {
+        handleAction(
+          {
+            ...action,
+            intent: INTENT.update_action,
+            date: isInstagramDate
+              ? action.date
+              : format(addDays(new Date(), 1), "yyyy-MM-dd'T'HH:mm:ss"),
+            instagram_date: isInstagramDate
+              ? format(addDays(new Date(), 1), "yyyy-MM-dd'T'HH:mm:ss")
+              : action.instagram_date,
+          },
+          submit,
+        );
+      } else if (code === "KeyS") {
+        handleAction(
+          {
+            ...action,
+            intent: INTENT.update_action,
+            date: isInstagramDate
+              ? action.date
+              : format(addDays(new Date(), 7), "yyyy-MM-dd'T'HH:mm:ss"),
+            instagram_date: isInstagramDate
+              ? format(addDays(new Date(), 7), "yyyy-MM-dd'T'HH:mm:ss")
+              : action.instagram_date,
+          },
+          submit,
+        );
+      }
+    } else if (status[code]) {
       handleAction(
         {
           ...action,

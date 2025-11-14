@@ -37,13 +37,19 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       };
 
       // console.log(valuesToUpdate);
+      
 
+      
       const { data, error } = await supabase
-        .from("actions")
-        .update({ ...valuesToUpdate })
-        .eq("id", String(id));
+      .from("actions")
+      .update({ ...valuesToUpdate })
+      .eq("id", String(id));
+      
+      if(error){
+          console.log(valuesToUpdate);
+          console.log(data, error);
+        }
 
-      // console.log(data, error);
     }
   }
 

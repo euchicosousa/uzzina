@@ -1,7 +1,9 @@
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { useState } from "react";
 import { ORDER_BY, VARIANT, type DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
-import { ActionItem } from "./ActionItem";
-import { cn } from "~/lib/utils";
 import { sortActions } from "~/lib/helpers";
+import { cn } from "~/lib/utils";
+import { ActionItem } from "./ActionItem";
 
 type ActionContainerProps = {
   actions: Action[];
@@ -16,6 +18,8 @@ type ActionContainerProps = {
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending?: boolean;
+  isCompact?: boolean;
+  isInstagramDate?: boolean;
 };
 
 export const ActionContainer = ({
@@ -31,6 +35,8 @@ export const ActionContainer = ({
   dateTimeDisplay,
   orderBy,
   ascending,
+  isCompact,
+  isInstagramDate,
 }: ActionContainerProps) => {
   const columnsClasses =
     columns === 2
@@ -52,14 +58,15 @@ export const ActionContainer = ({
         : columns === 4
           ? `grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 ${[VARIANT.block, VARIANT.content].find((v) => v === variant) ? "gap-2" : "divide-y"}`
           : columns === 6
-            ? `grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] ${[VARIANT.block, VARIANT.content].find((v) => v === variant) ? "gap-2" : "divide-y"}`
+            ? `grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] ${[VARIANT.block].find((v) => v === variant) ? "gap-2" : [VARIANT.content].find((v) => v === variant) ? "gap-x-4 gap-y-6" : "divide-y"}`
             : `flex flex-col ${showDivider ? "divide-y" : ""}`;
 
   actions = sortActions(actions, orderBy, ascending);
+  const [showMore, setShowMore] = useState(isCompact);
 
   return (
-    <div className={cn(columnsClasses)}>
-      {actions.map((action) => (
+    <div className={cn(columnsClasses, "relative")}>
+      {(showMore ? actions.slice(0, 6) : actions).map((action) => (
         <ActionItem
           action={action}
           key={action.id}
@@ -70,8 +77,23 @@ export const ActionContainer = ({
           showResponsibles={showResponsibles}
           showPriority={showPriority}
           dateTimeDisplay={dateTimeDisplay}
+          isInstagramDate={isInstagramDate}
         />
       ))}
+      {isCompact && actions.length > 6 && (
+        <button
+          className="bg-background absolute -bottom-3 left-1/2 grid size-6 -translate-x-1/2 cursor-pointer place-content-center rounded-full border"
+          onClick={() => {
+            setShowMore(!showMore);
+          }}
+        >
+          {showMore ? (
+            <ChevronDownIcon className="size-4" />
+          ) : (
+            <ChevronUpIcon className="size-4" />
+          )}
+        </button>
+      )}
     </div>
   );
 };

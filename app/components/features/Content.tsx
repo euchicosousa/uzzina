@@ -17,7 +17,9 @@ export function Content({
     ? "white"
     : Color(action.color).isLight()
       ? Color(action.color).darken(0.5).hex()
-      : Color(action.color).lighten(2).hex();
+      : Color(action.color).lightness() < 20
+        ? "white"
+        : Color(action.color).lighten(2).hex();
 
   return (
     <div className="relative">
@@ -30,7 +32,7 @@ export function Content({
           />
         ) : (
           <div
-            className="text-secondary-foreground grid h-full place-content-center p-2 text-center text-xl font-medium tracking-tighter"
+            className="text-secondary-foreground grid h-full place-content-center p-4 text-center text-xl leading-tight font-medium tracking-tighter"
             style={{
               backgroundColor: backgroundColor.hex(),
               color: foregroundColor,
