@@ -115,14 +115,13 @@ const KanbanColumn = ({
             </div>
 
             <div className="flex h-full flex-col overflow-y-auto p-1">
-              <div className="flex flex-col">
+              <div className="flex flex-col [&>div:last-child>*]:border-b-transparent [&>div>*]:border-b">
                 {actions.map((action) => (
                   <Draggable id={action.id} key={action.id}>
                     <ActionItem
                       action={action}
                       showLate
                       showPartner
-                      // showCategory
                       dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
                     />
                   </Draggable>

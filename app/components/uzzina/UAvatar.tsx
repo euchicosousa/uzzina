@@ -102,7 +102,7 @@ export const UAvatar = ({
         sizeClasses,
         textClasses,
         className,
-        "ring-background p-0 leading-none font-bold",
+        "ring-background border p-0 leading-none font-bold",
       )}
     >
       {image ? (

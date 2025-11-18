@@ -198,6 +198,17 @@ const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
   );
 
   const [currentDay, setCurrentDay] = useState(new Date());
+  const [viewOptions, setViewOptions] = useState<ViewOptions>({
+    ascending: true,
+    category: true,
+    late: true,
+    partner: true,
+    order: ORDER_BY.date,
+    showOptions: {
+      ascending: true,
+      order: true,
+    },
+  });
 
   actions =
     view === "feed"
@@ -246,6 +257,10 @@ const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
               <ChevronRightIcon />
             </Button>
           </div>
+          <ViewOptionsComponent
+            viewOptions={viewOptions}
+            setViewOptions={setViewOptions}
+          />
           <div className="flex gap-2">
             <UToggle
               checked={view === "kanban"}
@@ -274,7 +289,13 @@ const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
     >
       {view === "kanban" && <KanbanComponent actions={actions} />}
       {/* {view === "hours" && <HoursComponent actions={actions} />} */}
-      {view === "feed" && <FeedComponent actions={actions} />}
+      {view === "feed" && (
+        <FeedComponent
+          actions={actions}
+          orderBy={viewOptions.order}
+          ascending={viewOptions.ascending}
+        />
+      )}
       {/* {view === "categories" && <CategoriesComponent actions={actions} />} */}
     </HomeComponentWrapper>
   );

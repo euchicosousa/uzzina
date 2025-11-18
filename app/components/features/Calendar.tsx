@@ -1,4 +1,11 @@
-import { format, isSameDay, isSameMonth } from "date-fns";
+import {
+  eachDayOfInterval,
+  endOfWeek,
+  format,
+  isSameDay,
+  isSameMonth,
+  startOfWeek,
+} from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { PlusIcon } from "lucide-react";
 import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
@@ -23,30 +30,7 @@ export const CalendarActions = ({
   return (
     <div className="w-full overflow-x-auto overflow-y-hidden">
       <div className="flex h-full w-full min-w-[1600px] flex-col overflow-hidden">
-        <div className="grid grid-cols-7 border-b">
-          {calendar.slice(0, 7).map((day) => (
-            <div key={day.toISOString()} className="p-2 text-center xl:p-3">
-              <div
-                className={cn(
-                  "text-sm leading-none font-medium capitalize xl:text-lg",
-                  format(day, "i") === format(new Date(), "i")
-                    ? "font-bold underline"
-                    : "",
-                )}
-              >
-                <span className="uppercase sm:hidden">
-                  {format(day, "eeeeee", { locale: ptBR })}
-                </span>
-                <span className="hidden sm:block xl:hidden">
-                  {format(day, "eee", { locale: ptBR })}
-                </span>
-                <span className="hidden xl:block">
-                  {format(day, "eeee", { locale: ptBR })}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+        <WeekHeader />
         <div className="grid h-full shrink grid-cols-7 overflow-y-auto">
           {calendar.map((day) => (
             <div
@@ -112,6 +96,39 @@ export const CalendarActions = ({
           ))}
         </div>
       </div>
+    </div>
+  );
+};
+
+const WeekHeader = () => {
+  const week = eachDayOfInterval({
+    start: startOfWeek(new Date()),
+    end: endOfWeek(new Date()),
+  });
+  return (
+    <div className="grid grid-cols-7 border-b">
+      {week.slice(0, 7).map((day) => (
+        <div key={day.toISOString()} className="p-2 text-center xl:p-3">
+          <div
+            className={cn(
+              "text-sm leading-none font-medium capitalize xl:text-lg",
+              format(day, "i") === format(new Date(), "i")
+                ? "font-bold underline"
+                : "",
+            )}
+          >
+            <span className="uppercase sm:hidden">
+              {format(day, "eeeeee", { locale: ptBR })}
+            </span>
+            <span className="hidden sm:block xl:hidden">
+              {format(day, "eee", { locale: ptBR })}
+            </span>
+            <span className="hidden xl:block">
+              {format(day, "eeee", { locale: ptBR })}
+            </span>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

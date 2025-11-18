@@ -170,6 +170,13 @@ export function sortActions(
           (parseISO(a.date).getTime() - parseISO(b.date).getTime()) *
           (ascending ? 1 : -1),
       );
+    case ORDER_BY.instagram_date:
+      actions.sort(
+        (a, b) =>
+          (parseISO(a.instagram_date).getTime() -
+            parseISO(b.instagram_date).getTime()) *
+          (ascending ? 1 : -1),
+      );
     default:
       break;
   }

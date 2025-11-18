@@ -1,5 +1,5 @@
 import Color from "color";
-import { addDays, format } from "date-fns";
+import { addDays, addMinutes, format } from "date-fns";
 import { SignalHighIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMatches, useOutletContext, useSubmit } from "react-router";
@@ -94,6 +94,7 @@ export const ActionItem = ({
           <Content
             action={action}
             category={showCategory ? currentCategory : undefined}
+            isInstagramDate={isInstagramDate}
           />
         );
       case VARIANT.block:
@@ -175,6 +176,7 @@ export const ActionItem = ({
 
   return (
     <div
+      title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
       className={cn(
         "group/action @container relative flex cursor-pointer overflow-hidden",
         variant === VARIANT.content
@@ -204,7 +206,7 @@ export const ActionItem = ({
           <ActionItemPartners
             action={action}
             partners={currentPartners}
-            size={SIZE.md}
+            size={SIZE.sm}
           />
           <div className="w-full overflow-hidden leading-none font-medium tracking-tight text-ellipsis whitespace-nowrap">
             {getFormattedPartnersName(currentPartners)}
@@ -460,8 +462,22 @@ const ShortcutActions = ({
 
     //Atalhos de status
     if (event.shiftKey) {
-      //Amanhã
-      if (code === "KeyA") {
+      if (code === "KeyH") {
+        handleAction(
+          {
+            ...action,
+            intent: INTENT.update_action,
+            date: isInstagramDate
+              ? action.date
+              : format(addMinutes(new Date(), 30), "yyyy-MM-dd'T'HH:mm:ss"),
+            instagram_date: isInstagramDate
+              ? format(addMinutes(new Date(), 30), "yyyy-MM-dd'T'HH:mm:ss")
+              : action.instagram_date,
+          },
+          submit,
+        );
+      } else if (code === "KeyA") {
+        //Amanhã
         handleAction(
           {
             ...action,
