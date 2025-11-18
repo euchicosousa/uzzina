@@ -38,7 +38,7 @@ import { Toggle } from "~/components/ui/toggle";
 import { getShortText } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { UToggle } from "~/components/uzzina/UToggle";
-import { ORDER_BY, STATE } from "~/lib/CONSTANTS";
+import { DATE_TIME_DISPLAY, ORDER_BY, STATE } from "~/lib/CONSTANTS";
 import { getLateActions, getUserId, isInstagramFeed } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "./app";
@@ -302,17 +302,42 @@ const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
 };
 
 const LateHomeComponent = ({ actions }: { actions: Action[] }) => {
+  const [viewOptions, setViewOptions] = useState<ViewOptions>({
+    ascending: true,
+    partner: true,
+    category: true,
+    order: ORDER_BY.date,
+    showOptions: {
+      ascending: true,
+      order: true,
+      category: true,
+      partner: true,
+      responsibles: true,
+      variant: true,
+    },
+  });
   actions = getLateActions(actions);
   return (
-    <HomeComponentWrapper title="Atrasados">
+    <HomeComponentWrapper
+      title="Atrasados"
+      OptionsComponent={
+        <ViewOptionsComponent
+          viewOptions={viewOptions}
+          setViewOptions={setViewOptions}
+        />
+      }
+    >
       <div className="p-8">
         <ActionContainer
-          // variant={VARIANT.block}
+          orderBy={viewOptions.order}
+          ascending={viewOptions.ascending}
+          variant={viewOptions.variant}
           showDivider={true}
           actions={actions}
-          columns={3}
-          showPartner
-          showCategory
+          columns={viewOptions.variant != "content" ? 3 : 6}
+          showResponsibles={viewOptions.responsibles}
+          showPartner={viewOptions.partner}
+          showCategory={viewOptions.category}
         />
       </div>
     </HomeComponentWrapper>
@@ -402,6 +427,7 @@ const CalendarHomeComponent = ({ actions }: { actions: Action[] }) => {
           actions={actions}
           viewOptions={viewOptions}
           isCompact={period === "month"}
+          isScroll={period === "week"}
         />
       </div>
     </HomeComponentWrapper>

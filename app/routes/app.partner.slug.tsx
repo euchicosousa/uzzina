@@ -304,6 +304,7 @@ export const ViewOptionsComponent = ({
   viewOptions: ViewOptions;
   setViewOptions: (viewOptions: ViewOptions) => void;
 }) => {
+  viewOptions.variant ||= VARIANT.line;
   return (
     <div className="flex gap-8">
       {(viewOptions.showOptions.instagram ||
@@ -323,6 +324,7 @@ export const ViewOptionsComponent = ({
               <InstagramIcon />
             </Toggle>
           )}
+
           {viewOptions.showOptions.variant && (
             <Button
               variant={"ghost"}

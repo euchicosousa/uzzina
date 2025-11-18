@@ -20,12 +20,14 @@ export const CalendarActions = ({
   viewOptions,
   onCreateAction,
   isCompact,
+  isScroll,
 }: {
   calendar: Date[];
   actions: Action[];
   viewOptions: ViewOptions;
   onCreateAction?: (day: Date) => void;
   isCompact?: boolean;
+  isScroll?: boolean;
 }) => {
   return (
     <div className="w-full overflow-x-auto overflow-y-hidden">
@@ -67,6 +69,7 @@ export const CalendarActions = ({
               <div
                 className={cn(
                   viewOptions.variant === VARIANT.content ? "p-2" : "",
+                  isScroll ? "h-80" : "",
                 )}
               >
                 <ActionContainer
@@ -90,6 +93,7 @@ export const CalendarActions = ({
                   isCompact={isCompact}
                   isInstagramDate={viewOptions.instagram}
                   variant={viewOptions.variant}
+                  isScroll={isScroll}
                 />
               </div>
             </div>

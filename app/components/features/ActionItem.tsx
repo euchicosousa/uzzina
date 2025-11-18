@@ -202,19 +202,31 @@ export const ActionItem = ({
       }}
     >
       {variant === VARIANT.content && (
-        <div className="flex items-center gap-2 overflow-hidden">
+        <div className="flex items-center gap-1 overflow-hidden">
           <ActionItemPartners
             action={action}
             partners={currentPartners}
             size={SIZE.sm}
           />
-          <div className="w-full overflow-hidden leading-none font-medium tracking-tight text-ellipsis whitespace-nowrap">
+          <div className="w-full overflow-hidden text-xs leading-none font-medium text-ellipsis whitespace-nowrap">
             {getFormattedPartnersName(currentPartners)}
           </div>
+          {/* <div className="shrink-0">
+            <UBadge
+              text={currentState.title}
+              size="sm"
+              className="border-none text-white"
+              style={{ backgroundColor: currentState.color }}
+            />
+          </div> */}
           <div
-            className="size-3 shrink-0 rounded-full"
+            className="min-h-2 min-w-2 shrink-0 rounded-full"
             style={{ backgroundColor: currentState.color }}
-          ></div>
+          >
+            <div className="hidden px-1.5 text-[10px] font-medium tracking-wide text-white uppercase group-hover/action:block">
+              {currentState.title}
+            </div>
+          </div>
         </div>
       )}
       {renderActionVariant()}

@@ -19,6 +19,7 @@ type ActionContainerProps = {
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending?: boolean;
   isCompact?: boolean;
+  isScroll?: boolean;
   isInstagramDate?: boolean;
 };
 
@@ -36,6 +37,7 @@ export const ActionContainer = ({
   orderBy,
   ascending,
   isCompact,
+  isScroll,
   isInstagramDate,
 }: ActionContainerProps) => {
   const columnsClasses =
@@ -69,36 +71,38 @@ export const ActionContainer = ({
   }, [isCompact]);
 
   return (
-    <div className={cn(columnsClasses, "relative")}>
-      {/* <pre>{JSON.stringify(showMore, null, 2)}</pre> */}
-      {(showMore ? actions.slice(0, 6) : actions).map((action) => (
-        <ActionItem
-          action={action}
-          key={action.id}
-          variant={variant}
-          showLate={showLate}
-          showPartner={showPartner}
-          showCategory={showCategory}
-          showResponsibles={showResponsibles}
-          showPriority={showPriority}
-          dateTimeDisplay={dateTimeDisplay}
-          isInstagramDate={isInstagramDate}
-        />
-      ))}
-      {isCompact && actions.length > 6 && (
-        <button
-          className="bg-background absolute -bottom-3 left-1/2 grid size-6 -translate-x-1/2 cursor-pointer place-content-center rounded-full border"
-          onClick={() => {
-            setShowMore(!showMore);
-          }}
-        >
-          {showMore ? (
-            <ChevronDownIcon className="size-4" />
-          ) : (
-            <ChevronUpIcon className="size-4" />
-          )}
-        </button>
-      )}
+    <div className={cn(isScroll ? "h-full overflow-y-auto" : "")}>
+      <div className={cn(columnsClasses, "relative")}>
+        {/* <pre>{JSON.stringify(showMore, null, 2)}</pre> */}
+        {(showMore ? actions.slice(0, 6) : actions).map((action) => (
+          <ActionItem
+            action={action}
+            key={action.id}
+            variant={variant}
+            showLate={showLate}
+            showPartner={showPartner}
+            showCategory={showCategory}
+            showResponsibles={showResponsibles}
+            showPriority={showPriority}
+            dateTimeDisplay={dateTimeDisplay}
+            isInstagramDate={isInstagramDate}
+          />
+        ))}
+        {isCompact && actions.length > 6 && (
+          <button
+            className="bg-background absolute -bottom-3 left-1/2 grid size-6 -translate-x-1/2 cursor-pointer place-content-center rounded-full border"
+            onClick={() => {
+              setShowMore(!showMore);
+            }}
+          >
+            {showMore ? (
+              <ChevronDownIcon className="size-4" />
+            ) : (
+              <ChevronUpIcon className="size-4" />
+            )}
+          </button>
+        )}
+      </div>
     </div>
   );
 };
