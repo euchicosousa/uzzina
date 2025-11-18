@@ -181,7 +181,7 @@ export const ActionItem = ({
         "group/action @container relative flex cursor-pointer overflow-hidden",
         variant === VARIANT.content
           ? "flex-col gap-2"
-          : "border-l-4 px-4 py-2 transition-colors @xs:p-2",
+          : "border-l-4 px-3 py-2 transition-colors @xs:p-2",
 
         bgClasses,
         variant === VARIANT.block ? "flex-col gap-2" : "",
@@ -211,14 +211,7 @@ export const ActionItem = ({
           <div className="w-full overflow-hidden text-xs leading-none font-medium text-ellipsis whitespace-nowrap">
             {getFormattedPartnersName(currentPartners)}
           </div>
-          {/* <div className="shrink-0">
-            <UBadge
-              text={currentState.title}
-              size="sm"
-              className="border-none text-white"
-              style={{ backgroundColor: currentState.color }}
-            />
-          </div> */}
+
           <div
             className="min-h-2 min-w-2 shrink-0 rounded-full"
             style={{ backgroundColor: currentState.color }}
