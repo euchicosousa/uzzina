@@ -66,19 +66,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   const person = people[0];
 
-  // const interval = [startOfMonth(new Date()), endOfMonth(new Date())];
-
   let start = startOfWeek(startOfMonth(new Date()));
   let end = endOfDay(endOfWeek(endOfMonth(addMonths(new Date(), 1))));
 
   const [{ data: actions }, { data: actionsChart }] = await Promise.all([
-    // supabase.rpc("get_user_actions", {
-    //   user_id_param: user_id,
-    //   //@ts-ignore
-    //   start_date: interval[0],
-    //   //@ts-ignore
-    //   end_date: interval[1],
-    // }),
+
     supabase
       .from("actions")
       .select(
@@ -86,7 +78,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       )
       .is("archived", false)
       .contains("responsibles", person.admin ? [] : [user_id])
-      .containedBy("partners", partners.map((p) => p.slug)!)
+      .overlaps("partners", partners.map((p) => p.slug)!)
       .gte("date", format(start, "yyyy-MM-dd HH:mm:ss"))
       .lte("date", format(end, "yyyy-MM-dd HH:mm:ss"))
       .order("title", { ascending: true }),
@@ -99,7 +91,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       .is("archived", false)
       .not("state", "eq", STATE.finished)
       .contains("responsibles", person.admin ? [] : [user_id])
-      .containedBy("partners", partners.map((p) => p.slug)!)
+      .overlaps("partners", partners.map((p) => p.slug)!)
       .lte("date", format(endOfDay(new Date()), "yyyy-MM-dd HH:mm:ss"))
       .order("date", { ascending: true }),
 

@@ -78,7 +78,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       )
       .is("archived", false)
       .contains("responsibles", person.admin ? [] : [user_id])
-      .containedBy("partners", [params.slug])
+      .overlaps("partners", [params.slug])
       .gte("date", format(start, "yyyy-MM-dd HH:mm:ss"))
       .lte("date", format(end, "yyyy-MM-dd HH:mm:ss"))
       .order("date", { ascending: false }),
@@ -148,6 +148,7 @@ export default function PartnerPage() {
     },
   });
 
+
   return (
     <div className="flex h-[calc(100vh-68px)] flex-col overflow-hidden">
       <div className="border_after">
@@ -184,14 +185,15 @@ export default function PartnerPage() {
         </div>
       </div>
       <div className="flex overflow-hidden">
-        {view === "calendar" && (
-          <ActionCalendarPartnerPage
+
+        {view === "list" && (
+          <ActionListPartnerPage
             actions={actions || []}
             viewOptions={viewOptions}
           />
         )}
-        {view === "list" && (
-          <ActionListPartnerPage
+        {view === "calendar" && (
+          <ActionCalendarPartnerPage
             actions={actions || []}
             viewOptions={viewOptions}
           />
@@ -206,8 +208,9 @@ function ActionListPartnerPage({
   viewOptions,
 }: {
   actions: Action[];
-  viewOptions: any;
+  viewOptions: ViewOptions;
 }) {
+
   return (
     <div className="w-full overflow-y-auto">
       {viewOptions.finishedOnEnd ? (
@@ -241,6 +244,7 @@ function ActionListPartnerPage({
             showDivider={true}
             orderBy={viewOptions.order}
             ascending={viewOptions.ascending}
+
           />
         </div>
       ) : (
