@@ -25,6 +25,7 @@ import type { AppLoaderData } from "~/routes/app";
 import { UAvatarGroup } from "../uzzina/UAvatar";
 import { UBadge, type TSize } from "../uzzina/UBadge";
 import { Content } from "./Content";
+import { Draggable } from "./DnD";
 
 type ActionItemProps = {
   action: Action;
@@ -32,13 +33,13 @@ type ActionItemProps = {
   className?: string;
   isDragging?: boolean;
   isInstagramDate?: boolean;
+  isDraggable?: boolean;
   showLate?: boolean;
   showPartner?: boolean;
   showCategory?: boolean;
   showResponsibles?: boolean;
   showPriority?: boolean;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
-
   onClick?: (action: Action) => void;
 };
 
@@ -49,6 +50,7 @@ export const ActionItem = ({
   className,
   isDragging,
   isInstagramDate,
+  isDraggable,
   showPartner,
   showCategory,
   showResponsibles,
@@ -175,58 +177,60 @@ export const ActionItem = ({
   };
 
   return (
-    <div
-      title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
-      className={cn(
-        "group/action @container relative flex cursor-pointer overflow-hidden",
-        variant === VARIANT.content
-          ? "flex-col gap-2"
-          : "border-l-4 px-3 py-2 transition-colors @xs:p-2",
+    <Draggable id={action.id} >
+      <div
+        title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
+        className={cn(
+          "group/action @container relative flex cursor-pointer overflow-hidden",
+          variant === VARIANT.content
+            ? "flex-col gap-2"
+            : "border-l-4 px-3 py-2 transition-colors @xs:p-2",
 
-        bgClasses,
-        variant === VARIANT.block ? "flex-col gap-2" : "",
-        className,
-        isDragging ? "cursor-grabbing" : "",
-      )}
-      style={{ borderLeftColor: currentState.color }}
-      onMouseOver={() => setIsHovered(true)}
-      onMouseOut={() => setIsHovered(false)}
-      onClick={() => {
-        if (!isEditing) {
-          if (onClick) {
-            onClick(action);
-          } else {
-            setBaseAction(action);
+          bgClasses,
+          variant === VARIANT.block ? "flex-col gap-2" : "",
+          className,
+          isDragging ? "cursor-grabbing" : "",
+        )}
+        style={{ borderLeftColor: currentState.color }}
+        onMouseOver={() => setIsHovered(true)}
+        onMouseOut={() => setIsHovered(false)}
+        onClick={() => {
+          if (!isEditing) {
+            if (onClick) {
+              onClick(action);
+            } else {
+              setBaseAction(action);
+            }
           }
-        }
-      }}
-    >
-      {variant === VARIANT.content && (
-        <div className="flex items-center gap-1 overflow-hidden">
-          <ActionItemPartners
-            action={action}
-            partners={currentPartners}
-            size={SIZE.sm}
-          />
-          <div className="w-full overflow-hidden text-xs leading-none font-medium text-ellipsis whitespace-nowrap">
-            {getFormattedPartnersName(currentPartners)}
-          </div>
+        }}
+      >
+        {variant === VARIANT.content && (
+          <div className="flex items-center gap-1 overflow-hidden">
+            <ActionItemPartners
+              action={action}
+              partners={currentPartners}
+              size={SIZE.sm}
+            />
+            <div className="w-full overflow-hidden text-xs leading-none font-medium text-ellipsis whitespace-nowrap">
+              {getFormattedPartnersName(currentPartners)}
+            </div>
 
-          <div
-            className="min-h-2 min-w-2 shrink-0 rounded-full"
-            style={{ backgroundColor: currentState.color }}
-          >
-            <div className="hidden px-1.5 text-[10px] font-medium tracking-wide text-white uppercase group-hover/action:block">
-              {currentState.title}
+            <div
+              className="min-h-2 min-w-2 shrink-0 rounded-full"
+              style={{ backgroundColor: currentState.color }}
+            >
+              <div className="hidden px-1.5 text-[10px] font-medium tracking-wide text-white uppercase group-hover/action:block">
+                {currentState.title}
+              </div>
             </div>
           </div>
-        </div>
-      )}
-      {renderActionVariant()}
-      {isHovered && (
-        <ShortcutActions action={action} isInstagramDate={isInstagramDate} />
-      )}
-    </div>
+        )}
+        {renderActionVariant()}
+        {isHovered && (
+          <ShortcutActions action={action} isInstagramDate={isInstagramDate} />
+        )}
+      </div>
+    </Draggable>
   );
 };
 

@@ -75,7 +75,7 @@ export function CreateAndEditAction({
         partners.find((partner) => partner.slug === p),
       ) as Partner[],
     );
-    console.log({ currentPartners });
+    // console.log({ currentPartners });
   }, [RawAction]);
 
   return (

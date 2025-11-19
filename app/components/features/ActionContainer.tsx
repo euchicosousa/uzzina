@@ -21,6 +21,7 @@ type ActionContainerProps = {
   isCompact?: boolean;
   isScroll?: boolean;
   isInstagramDate?: boolean;
+  isDraggable?: boolean;
 };
 
 export const ActionContainer = ({
@@ -39,24 +40,25 @@ export const ActionContainer = ({
   isCompact,
   isScroll,
   isInstagramDate,
+  isDraggable,
 }: ActionContainerProps) => {
   const columnsClasses =
     columns === 2
       ? cn(
-          `grid grid-cols-2`,
+        `grid grid-cols-2`,
+        [VARIANT.block, VARIANT.content].find((v) => v === variant)
+          ? "gap-2"
+          : "",
+        showDivider ? "divide-y" : "",
+      )
+      : columns === 3
+        ? cn(
+          `grid grid-cols-2 sm:grid-cols-3`,
           [VARIANT.block, VARIANT.content].find((v) => v === variant)
             ? "gap-2"
             : "",
           showDivider ? "divide-y" : "",
         )
-      : columns === 3
-        ? cn(
-            `grid grid-cols-2 sm:grid-cols-3`,
-            [VARIANT.block, VARIANT.content].find((v) => v === variant)
-              ? "gap-2"
-              : "",
-            showDivider ? "divide-y" : "",
-          )
         : columns === 4
           ? `grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 ${[VARIANT.block, VARIANT.content].find((v) => v === variant) ? "gap-2" : "divide-y"}`
           : columns === 6
@@ -86,6 +88,7 @@ export const ActionContainer = ({
             showPriority={showPriority}
             dateTimeDisplay={dateTimeDisplay}
             isInstagramDate={isInstagramDate}
+            isDraggable={isDraggable}
           />
         ))}
         {isCompact && actions.length > 6 && (

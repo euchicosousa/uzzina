@@ -1,3 +1,4 @@
+import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
 import {
   eachDayOfInterval,
   endOfDay,
@@ -31,16 +32,18 @@ import {
   useLoaderData,
   useOutletContext,
   useParams,
+  useSubmit,
   type LoaderFunctionArgs,
 } from "react-router";
 import invariant from "tiny-invariant";
 import { ActionContainer } from "~/components/features/ActionContainer";
+import { ActionItem } from "~/components/features/ActionItem";
 import { CalendarActions } from "~/components/features/Calendar";
 import { Button } from "~/components/ui/button";
 import { Toggle } from "~/components/ui/toggle";
 import { UToggle } from "~/components/uzzina/UToggle";
-import { DATE_TIME_DISPLAY, ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
-import { getUserId } from "~/lib/helpers";
+import { DATE_TIME_DISPLAY, INTENT, ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
+import { getUserId, handleAction } from "~/lib/helpers";
 
 export const runtime = "edge";
 
@@ -116,6 +119,8 @@ export type ViewOptions = {
 export default function PartnerPage() {
   let { partner, actions } = useLoaderData<typeof loader>();
 
+  const submit = useSubmit();
+
   const actionsMap = new Map();
   actions?.map((action) => actionsMap.set(action.id, action));
 
@@ -147,6 +152,43 @@ export default function PartnerPage() {
       finishedOnEnd: true,
     },
   });
+
+  //Start DnD
+
+  const [activeAction, setActiveAction] = useState<Action>();
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    }),
+  );
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveAction(currentActions.find((action) => action.id === event.active.id)!);
+  };
+
+
+  const handleDragEnd = (event: DragEndEvent) => {
+
+    if (event.over && activeAction) {
+
+      const key = viewOptions.instagram ? "instagram_date" : "date";
+      const value = format(event.over.id, "yyyy-MM-dd").concat(format(activeAction[key], " HH:mm:ss"))
+
+      if (event.over && activeAction) {
+        handleAction(
+          {
+            ...activeAction,
+            intent: INTENT.update_action,
+            [key]: value,
+          },
+          submit,
+        );
+      }
+      setActiveAction(undefined);
+    }
+  };
+
+  //End DnD
 
 
   return (
@@ -193,10 +235,34 @@ export default function PartnerPage() {
           />
         )}
         {view === "calendar" && (
-          <ActionCalendarPartnerPage
-            actions={actions || []}
-            viewOptions={viewOptions}
-          />
+          <DndContext
+            id={"calendar"}
+            sensors={sensors}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            <ActionCalendarPartnerPage
+              actions={actions || []}
+              viewOptions={viewOptions}
+            />
+            <DragOverlay
+              className="z-100"
+              style={{ transition: "transform 100ms ease" }}
+            >
+              {activeAction ? (
+                <ActionItem
+                  action={activeAction}
+                  isDragging
+                  showLate={viewOptions.late}
+                  showPartner={viewOptions.partner}
+                  showCategory={viewOptions.category}
+                  showResponsibles={viewOptions.responsibles}
+                  showPriority={viewOptions.priority}
+                  dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+                />
+              ) : null}
+            </DragOverlay>
+          </DndContext>
         )}
       </div>
     </div>

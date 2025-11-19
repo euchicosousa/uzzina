@@ -21,6 +21,8 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
   const { states } = useMatches()[1].loaderData as AppLoaderData;
   const submit = useSubmit();
 
+  //Start DnD
+
   const [activeAction, setActiveAction] = useState<Action>();
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -31,6 +33,8 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
   const handleDragStart = (event: DragStartEvent) => {
     setActiveAction(actions.find((action) => action.id === event.active.id)!);
   };
+
+  //End DnD
 
   const handleDragEnd = (event: DragEndEvent) => {
     if (event.over && activeAction) {
