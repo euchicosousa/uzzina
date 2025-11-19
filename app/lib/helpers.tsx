@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import { redirect, type SubmitFunction } from "react-router";
 import { Theme } from "remix-themes";
-import { DATE_TIME_DISPLAY, ORDER_BY, STATE } from "./CONSTANTS";
+import { DATE_TIME_DISPLAY, ORDER_BY, PRIORITY, STATE } from "./CONSTANTS";
 import { createSupabaseClient } from "./supabase";
 import { cn } from "./utils";
 
@@ -209,9 +209,9 @@ export const Icons = ({
     ? style
     : color
       ? {
-          color: Color(color).desaturate(0.3).alpha(0.7).hsl().toString(),
-          fill: Color(color).desaturate(0.3).alpha(0.1).hsl().toString(),
-        }
+        color: Color(color).desaturate(0.3).alpha(0.7).hsl().toString(),
+        fill: Color(color).desaturate(0.3).alpha(0.1).hsl().toString(),
+      }
       : undefined;
 
   switch (slug) {
@@ -261,3 +261,18 @@ export const Icons = ({
       return <ComponentIcon className={cn(className)} style={style} />;
   }
 };
+
+
+export const getCleanAction = (user_id: string) => ({
+  title: "",
+  description: "",
+  state: STATE.idea,
+  priority: PRIORITY.medium,
+  category: "post",
+  responsibles: [user_id],
+  topics: null,
+  color: "#999",
+  date: new Date(),
+  instagram_date: new Date(),
+  partners: [],
+})

@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import { UBadge } from "../uzzina/UBadge";
 import { UAvatar } from "../uzzina/UAvatar";
 import { PRIORITY, SIZE, STATE } from "~/lib/CONSTANTS";
-import { getLateActions } from "~/lib/helpers";
+import { getCleanAction, getLateActions } from "~/lib/helpers";
 import { Link, useMatches } from "react-router";
 import type { AppHomeLoaderData } from "~/routes/app.home";
 import {
@@ -43,19 +43,7 @@ export function Header({
       <div className="flex items-center gap-2">
         <Button
           onClick={() =>
-            setBaseAction({
-              title: "",
-              description: "",
-              state: STATE.idea,
-              priority: PRIORITY.medium,
-              category: "post",
-              responsibles: [person.user_id],
-              topics: null,
-              color: "#999",
-              date: new Date(),
-              instagram_date: new Date(),
-              partners: [],
-            })
+            setBaseAction(getCleanAction(person.user_id))
           }
         >
           Nova Ação

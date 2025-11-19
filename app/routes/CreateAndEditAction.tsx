@@ -42,6 +42,9 @@ export function CreateAndEditAction({
 
   const [RawAction, setRawAction] = useState<Action>(BaseAction);
 
+  console.log({ RawAction });
+
+
   useEffect(() => {
     setRawAction(BaseAction);
   }, [BaseAction]);

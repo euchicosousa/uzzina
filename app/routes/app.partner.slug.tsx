@@ -30,6 +30,7 @@ import {
 import { useState } from "react";
 import {
   useLoaderData,
+  useMatches,
   useOutletContext,
   useParams,
   useSubmit,
@@ -43,7 +44,7 @@ import { Button } from "~/components/ui/button";
 import { Toggle } from "~/components/ui/toggle";
 import { UToggle } from "~/components/uzzina/UToggle";
 import { DATE_TIME_DISPLAY, INTENT, ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
-import { getUserId, handleAction } from "~/lib/helpers";
+import { getUserId, handleAction, getCleanAction } from "~/lib/helpers";
 
 export const runtime = "edge";
 
@@ -345,12 +346,17 @@ function ActionCalendarPartnerPage({
     end: endOfWeek(endOfMonth(date)),
   });
 
+  const { person } = useMatches()[1].loaderData as { person: Person };
+
   let params = useParams();
   const partnerSlug = params.slug;
 
   invariant(partnerSlug);
 
-  const { BaseAction, setBaseAction } = useOutletContext<OutletContext>();
+  const { setBaseAction } = useOutletContext<OutletContext>();
+
+
+
 
   return (
     <CalendarActions
@@ -359,7 +365,7 @@ function ActionCalendarPartnerPage({
       viewOptions={viewOptions}
       onCreateAction={(day) => {
         setBaseAction({
-          ...(BaseAction as Action),
+          ...getCleanAction(person.user_id) as unknown as Action,
           date: format(day, "yyyy-MM-dd HH:mm:ss"),
           instagram_date: format(day, "yyyy-MM-dd HH:mm:ss"),
           partners: [partnerSlug],
