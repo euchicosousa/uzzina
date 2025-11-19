@@ -26,6 +26,7 @@ import {
 import { cn } from "~/lib/utils";
 import { Tiptap } from "~/components/features/Tiptap";
 import { Content } from "~/components/features/Content";
+import { toast } from "sonner";
 
 export function CreateAndEditAction({
   BaseAction,
@@ -256,20 +257,31 @@ export function CreateAndEditAction({
         <div className="flex shrink-0 justify-end pt-2">
           <Button
             disabled={isPending}
-            onClick={(event) => {
+            onClick={async (event) => {
               event.preventDefault();
               event.stopPropagation();
 
-              handleAction(
+              if (!RawAction.title) {
+                toast.error("Erro", {
+                  description: "O título é obrigatório",
+                  position: "top-center",
+                });
+                return;
+              }
+
+              await handleAction(
                 {
                   ...RawAction,
-                  intent: INTENT.update_action,
+                  intent: RawAction.id
+                    ? INTENT.update_action
+                    : INTENT.create_action,
                 },
                 submit,
               );
             }}
           >
-            Salvar
+            {RawAction.id ? "Atualizar" : "Salvar"}
+
             {isPending ? (
               <LoaderCircleIcon className="animate-spin" />
             ) : (

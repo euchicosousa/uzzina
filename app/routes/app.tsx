@@ -10,6 +10,7 @@ import { Header } from "~/components/layout/Header";
 import { getUserId } from "~/lib/helpers";
 import { CreateAndEditAction } from "./CreateAndEditAction";
 import { AnimatePresence } from "motion/react";
+import { Toaster } from "sonner";
 
 export type AppLoaderData = {
   people: Person[];
@@ -91,6 +92,7 @@ export default function Dashboard() {
             <div className="min-h-full w-8 shrink-0 border-l"></div>
           </div>
         </div>
+        <Toaster />
         <AnimatePresence>
           {BaseAction ? (
             <CreateAndEditAction

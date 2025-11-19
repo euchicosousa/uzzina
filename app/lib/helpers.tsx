@@ -1,3 +1,4 @@
+import Color from "color";
 import {
   addMinutes,
   format,
@@ -16,7 +17,6 @@ import {
   Code2Icon,
   ComponentIcon,
   ComputerIcon,
-  GalleryHorizontalIcon,
   GalleryThumbnailsIcon,
   ImageIcon,
   MegaphoneIcon,
@@ -24,17 +24,14 @@ import {
   PenToolIcon,
   PresentationIcon,
   PrinterIcon,
-  SlidersHorizontalIcon,
   SquarePlayIcon,
-  SunIcon,
-  TangentIcon,
+  SunIcon
 } from "lucide-react";
 import { redirect, type SubmitFunction } from "react-router";
 import { Theme } from "remix-themes";
 import { DATE_TIME_DISPLAY, ORDER_BY, STATE } from "./CONSTANTS";
 import { createSupabaseClient } from "./supabase";
 import { cn } from "./utils";
-import Color from "color";
 
 export async function getUserId(request: Request) {
   const { supabase } = await createSupabaseClient(request);
@@ -184,8 +181,8 @@ export function sortActions(
   return actions;
 }
 
-export const handleAction = (data: any, submit: SubmitFunction) => {
-  submit(
+export const handleAction = async (data: any, submit: SubmitFunction) => {
+  await submit(
     {
       ...data,
     },
