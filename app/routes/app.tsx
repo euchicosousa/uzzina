@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import {
   Outlet,
   useLoaderData,
@@ -8,9 +8,15 @@ import {
 import invariant from "tiny-invariant";
 import { Header } from "~/components/layout/Header";
 import { getUserId } from "~/lib/helpers";
-import { CreateAndEditAction } from "./CreateAndEditAction";
+// import { CreateAndEditAction } from "./CreateAndEditAction";
 import { AnimatePresence } from "motion/react";
 import { Toaster } from "sonner";
+
+const CreateAndEditAction = lazy(() =>
+  import("./CreateAndEditAction").then((module) => ({
+    default: module.CreateAndEditAction,
+  })),
+);
 
 export type AppLoaderData = {
   people: Person[];
@@ -95,10 +101,12 @@ export default function Dashboard() {
         <Toaster />
         <AnimatePresence>
           {BaseAction ? (
-            <CreateAndEditAction
-              BaseAction={BaseAction}
-              onClose={() => setBaseAction(null)}
-            />
+            <Suspense fallback={null}>
+              <CreateAndEditAction
+                BaseAction={BaseAction}
+                onClose={() => setBaseAction(null)}
+              />
+            </Suspense>
           ) : null}
         </AnimatePresence>
       </div>

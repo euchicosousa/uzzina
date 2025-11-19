@@ -81,7 +81,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     // }),
     supabase
       .from("actions")
-      .select("*")
+      .select(
+        "id, title, date, state, partners, responsibles, category, instagram_date, archived, created_at, updated_at, description, instagram_caption, priority, color, content_files, instagram_content, sprints, work_files, time, topics, user_id",
+      )
       .is("archived", false)
       .contains("responsibles", person.admin ? [] : [user_id])
       .containedBy("partners", partners.map((p) => p.slug)!)
@@ -91,7 +93,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
     supabase
       .from("actions")
-      .select("*")
+      .select(
+        "id, title, date, state, partners, responsibles, category, instagram_date, archived, created_at, updated_at, description, instagram_caption, priority, color, content_files, instagram_content, sprints, work_files, time, topics, user_id",
+      )
       .is("archived", false)
       .not("state", "eq", STATE.finished)
       .contains("responsibles", person.admin ? [] : [user_id])
@@ -114,13 +118,18 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   } as AppHomeLoaderData;
 };
 
+import { useMemo } from "react";
+
 export default function AppHome() {
   let { actions } = useLoaderData<typeof loader>();
-  const actionsMap = new Map();
-  actions.map((action) => actionsMap.set(action.id, action));
 
-  const currentActions: Action[] = [];
-  actionsMap.forEach((action) => currentActions.push(action));
+  const currentActions = useMemo(() => {
+    const actionsMap = new Map();
+    actions.map((action) => actionsMap.set(action.id, action));
+    const result: Action[] = [];
+    actionsMap.forEach((action) => result.push(action));
+    return result;
+  }, [actions]);
 
   return (
     <>
@@ -135,14 +144,29 @@ export default function AppHome() {
 const PartnersHomeComponent = ({ actions }: { actions: Action[] }) => {
   const { partners, states } = useMatches()[1].loaderData as AppLoaderData;
 
-  const partnersWithActionsLength = partners.map((partner) => {
-    return {
-      ...partner,
-      actions: actions.filter((action) =>
-        action.partners.find((p) => p === partner.slug),
-      ),
-    };
-  });
+  const partnersWithActionsLength = useMemo(() => {
+    // Create a map of partner slug to actions for O(1) lookup or O(N) build
+    const actionsByPartner = new Map<string, Action[]>();
+
+    // Initialize map
+    partners.forEach(p => actionsByPartner.set(p.slug, []));
+
+    // Single pass through actions
+    actions.forEach(action => {
+      action.partners.forEach(partnerSlug => {
+        if (actionsByPartner.has(partnerSlug)) {
+          actionsByPartner.get(partnerSlug)?.push(action);
+        }
+      });
+    });
+
+    return partners.map((partner) => {
+      return {
+        ...partner,
+        actions: actionsByPartner.get(partner.slug) || [],
+      };
+    });
+  }, [partners, actions]);
 
   return (
     <HomeComponentWrapper title="Parceiros">
@@ -210,17 +234,18 @@ const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
     },
   });
 
-  actions =
-    view === "feed"
+  const filteredActions = useMemo(() => {
+    return view === "feed"
       ? actions.filter((action) => {
-          return (
-            isSameDay(action.instagram_date, currentDay) &&
-            isInstagramFeed(action.category)
-          );
-        })
+        return (
+          isSameDay(action.instagram_date, currentDay) &&
+          isInstagramFeed(action.category)
+        );
+      })
       : actions.filter((action) => {
-          return isSameDay(action.date, currentDay);
-        });
+        return isSameDay(action.date, currentDay);
+      });
+  }, [actions, view, currentDay]);
 
   return (
     <HomeComponentWrapper
@@ -228,11 +253,11 @@ const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
         isToday(currentDay)
           ? "Hoje"
           : format(currentDay, "eeee, dd 'de' MMMM", {
-              locale: ptBR,
-            })[0].toUpperCase() +
-            format(currentDay, "eeee, dd 'de' MMMM", {
-              locale: ptBR,
-            }).slice(1)
+            locale: ptBR,
+          })[0].toUpperCase() +
+          format(currentDay, "eeee, dd 'de' MMMM", {
+            locale: ptBR,
+          }).slice(1)
       }
       OptionsComponent={
         <div className="flex items-center gap-8">
@@ -245,7 +270,7 @@ const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
             >
               <ChevronLeftIcon />
             </Button>
-            <Button variant="ghost" onClick={() => {}}>
+            <Button variant="ghost" onClick={() => { }}>
               <CalendarIcon />
             </Button>
             <Button
@@ -287,16 +312,16 @@ const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
         </div>
       }
     >
-      {view === "kanban" && <KanbanComponent actions={actions} />}
-      {/* {view === "hours" && <HoursComponent actions={actions} />} */}
+      {view === "kanban" && <KanbanComponent actions={filteredActions} />}
+      {/* {view === "hours" && <HoursComponent actions={filteredActions} />} */}
       {view === "feed" && (
         <FeedComponent
-          actions={actions}
+          actions={filteredActions}
           orderBy={viewOptions.order}
           ascending={viewOptions.ascending}
         />
       )}
-      {/* {view === "categories" && <CategoriesComponent actions={actions} />} */}
+      {/* {view === "categories" && <CategoriesComponent actions={filteredActions} />} */}
     </HomeComponentWrapper>
   );
 };

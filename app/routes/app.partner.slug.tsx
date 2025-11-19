@@ -73,7 +73,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     supabase.from("partners").select("*").match({ slug: params.slug }).single(),
     supabase
       .from("actions")
-      .select("*")
+      .select(
+        "id, title, date, state, partners, responsibles, category, instagram_date, archived, created_at, updated_at, description, instagram_caption, priority, color, content_files, instagram_content, sprints, work_files, time, topics, user_id",
+      )
       .is("archived", false)
       .contains("responsibles", person.admin ? [] : [user_id])
       .containedBy("partners", [params.slug])
@@ -310,62 +312,62 @@ export const ViewOptionsComponent = ({
       {(viewOptions.showOptions.instagram ||
         viewOptions.showOptions.variant ||
         viewOptions.showOptions.finishedOnEnd) && (
-        <div className="flex gap-1">
-          {/* Organizar pela Data do Instagram */}
-          {viewOptions.showOptions.instagram && (
-            <Toggle
-              title="Organizar pela Data do Instagram"
-              pressed={viewOptions.instagram}
-              onPressedChange={(value) =>
-                setViewOptions({ ...viewOptions, instagram: value })
-              }
-              className="grid place-content-center p-0"
-            >
-              <InstagramIcon />
-            </Toggle>
-          )}
-
-          {viewOptions.showOptions.variant && (
-            <Button
-              variant={"ghost"}
-              title={
-                viewOptions.variant === VARIANT.line
-                  ? "Ação em formato de linha"
-                  : viewOptions.variant === VARIANT.block
-                    ? "Ação em formato de bloco"
-                    : "Ação em formato de conteúdo"
-              }
-              onClick={() => {
-                if (viewOptions.variant === VARIANT.line) {
-                  setViewOptions({ ...viewOptions, variant: VARIANT.block });
-                } else if (viewOptions.variant === VARIANT.block) {
-                  setViewOptions({ ...viewOptions, variant: VARIANT.content });
-                } else if (viewOptions.variant === VARIANT.content) {
-                  setViewOptions({ ...viewOptions, variant: VARIANT.line });
+          <div className="flex gap-1">
+            {/* Organizar pela Data do Instagram */}
+            {viewOptions.showOptions.instagram && (
+              <Toggle
+                title="Organizar pela Data do Instagram"
+                pressed={viewOptions.instagram}
+                onPressedChange={(value) =>
+                  setViewOptions({ ...viewOptions, instagram: value })
                 }
-              }}
-              className="grid place-content-center p-0"
-            >
-              {viewOptions.variant === VARIANT.line && <Rows3Icon />}
-              {viewOptions.variant === VARIANT.block && <Rows2Icon />}
-              {viewOptions.variant === VARIANT.content && <SquareIcon />}
-            </Button>
-          )}
-          {/* Colocar ações concluídas no final */}
-          {viewOptions.showOptions.finishedOnEnd && (
-            <Toggle
-              title="Colocar ações concluídas no final"
-              pressed={viewOptions.finishedOnEnd}
-              onPressedChange={(value) =>
-                setViewOptions({ ...viewOptions, finishedOnEnd: value })
-              }
-              className="grid place-content-center p-0"
-            >
-              <ArrowDownIcon />
-            </Toggle>
-          )}
-        </div>
-      )}
+                className="grid place-content-center p-0"
+              >
+                <InstagramIcon />
+              </Toggle>
+            )}
+
+            {viewOptions.showOptions.variant && (
+              <Button
+                variant={"ghost"}
+                title={
+                  viewOptions.variant === VARIANT.line
+                    ? "Ação em formato de linha"
+                    : viewOptions.variant === VARIANT.block
+                      ? "Ação em formato de bloco"
+                      : "Ação em formato de conteúdo"
+                }
+                onClick={() => {
+                  if (viewOptions.variant === VARIANT.line) {
+                    setViewOptions({ ...viewOptions, variant: VARIANT.block });
+                  } else if (viewOptions.variant === VARIANT.block) {
+                    setViewOptions({ ...viewOptions, variant: VARIANT.content });
+                  } else if (viewOptions.variant === VARIANT.content) {
+                    setViewOptions({ ...viewOptions, variant: VARIANT.line });
+                  }
+                }}
+                className="grid place-content-center p-0"
+              >
+                {viewOptions.variant === VARIANT.line && <Rows3Icon />}
+                {viewOptions.variant === VARIANT.block && <Rows2Icon />}
+                {viewOptions.variant === VARIANT.content && <SquareIcon />}
+              </Button>
+            )}
+            {/* Colocar ações concluídas no final */}
+            {viewOptions.showOptions.finishedOnEnd && (
+              <Toggle
+                title="Colocar ações concluídas no final"
+                pressed={viewOptions.finishedOnEnd}
+                onPressedChange={(value) =>
+                  setViewOptions({ ...viewOptions, finishedOnEnd: value })
+                }
+                className="grid place-content-center p-0"
+              >
+                <ArrowDownIcon />
+              </Toggle>
+            )}
+          </div>
+        )}
 
       {(viewOptions.showOptions.order || viewOptions.showOptions.ascending) && (
         <div className="flex gap-1">
@@ -426,53 +428,53 @@ export const ViewOptionsComponent = ({
         viewOptions.showOptions.priority ||
         viewOptions.showOptions.partner ||
         viewOptions.showOptions.category) && (
-        <div className="flex gap-1">
-          {viewOptions.showOptions.responsibles && (
-            <Toggle
-              className="grid place-content-center p-0"
-              pressed={viewOptions.responsibles}
-              onPressedChange={(value) =>
-                setViewOptions({ ...viewOptions, responsibles: value })
-              }
-            >
-              <UsersIcon />
-            </Toggle>
-          )}
-          {viewOptions.showOptions.priority && (
-            <Toggle
-              pressed={viewOptions.priority}
-              onPressedChange={(value) =>
-                setViewOptions({ ...viewOptions, priority: value })
-              }
-              className="grid place-content-center p-0"
-            >
-              <SignalHighIcon />
-            </Toggle>
-          )}
-          {viewOptions.showOptions.category && (
-            <Toggle
-              pressed={viewOptions.category}
-              onPressedChange={(value) =>
-                setViewOptions({ ...viewOptions, category: value })
-              }
-              className="grid place-content-center p-0"
-            >
-              <TagIcon />
-            </Toggle>
-          )}
-          {viewOptions.showOptions.partner && (
-            <Toggle
-              pressed={viewOptions.partner}
-              onPressedChange={(value) =>
-                setViewOptions({ ...viewOptions, partner: value })
-              }
-              className="grid place-content-center p-0"
-            >
-              <HandshakeIcon />
-            </Toggle>
-          )}
-        </div>
-      )}
+          <div className="flex gap-1">
+            {viewOptions.showOptions.responsibles && (
+              <Toggle
+                className="grid place-content-center p-0"
+                pressed={viewOptions.responsibles}
+                onPressedChange={(value) =>
+                  setViewOptions({ ...viewOptions, responsibles: value })
+                }
+              >
+                <UsersIcon />
+              </Toggle>
+            )}
+            {viewOptions.showOptions.priority && (
+              <Toggle
+                pressed={viewOptions.priority}
+                onPressedChange={(value) =>
+                  setViewOptions({ ...viewOptions, priority: value })
+                }
+                className="grid place-content-center p-0"
+              >
+                <SignalHighIcon />
+              </Toggle>
+            )}
+            {viewOptions.showOptions.category && (
+              <Toggle
+                pressed={viewOptions.category}
+                onPressedChange={(value) =>
+                  setViewOptions({ ...viewOptions, category: value })
+                }
+                className="grid place-content-center p-0"
+              >
+                <TagIcon />
+              </Toggle>
+            )}
+            {viewOptions.showOptions.partner && (
+              <Toggle
+                pressed={viewOptions.partner}
+                onPressedChange={(value) =>
+                  setViewOptions({ ...viewOptions, partner: value })
+                }
+                className="grid place-content-center p-0"
+              >
+                <HandshakeIcon />
+              </Toggle>
+            )}
+          </div>
+        )}
     </div>
   );
 };
