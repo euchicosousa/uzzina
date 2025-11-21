@@ -13,6 +13,7 @@ import {
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
+  AlertCircleIcon,
   CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -164,11 +165,11 @@ const PartnersHomeComponent = ({ actions }: { actions: Action[] }) => {
     <HomeComponentWrapper title="Parceiros">
       <div
         className={cn(
-          "grid grid-cols-3 text-center text-xl leading-none font-bold uppercase sm:grid-cols-4 md:grid-cols-6 lg:text-3xl",
+          "grid grid-cols-2 text-center text-5xl leading-none font-bold px-8 xl:px-16 uppercase sm:grid-cols-3 md:grid-cols-4 ",
           Math.ceil(partnersWithActionsLength.length / 2) === 7
-            ? "md:grid-cols-7"
+            ? "xl:grid-cols-7"
             : Math.ceil(partnersWithActionsLength.length / 2) === 8
-              ? "md:grid-cols-8"
+              ? "xl:grid-cols-8"
               : "",
         )}
       >
@@ -304,16 +305,28 @@ const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
         </div>
       }
     >
-      {view === "kanban" && <KanbanComponent actions={filteredActions} />}
-      {/* {view === "hours" && <HoursComponent actions={filteredActions} />} */}
-      {view === "feed" && (
-        <FeedComponent
-          actions={filteredActions}
-          orderBy={viewOptions.order}
-          ascending={viewOptions.ascending}
-        />
-      )}
-      {/* {view === "categories" && <CategoriesComponent actions={filteredActions} />} */}
+      <div className="px-8 xl:px-16">
+        {view === "kanban" && <KanbanComponent actions={filteredActions} />}
+        {view === "hours" && <div className="p-8 rounded-xl bg-muted text-muted-foreground flex items-center">
+          <AlertCircleIcon className="size-8 opacity-50 mr-4" />
+          <div>
+            Visualização por <strong className="underline">HORAS</strong> ainda não está disponível</div>
+        </div>
+        }
+        {view === "feed" && (
+          <FeedComponent
+            actions={filteredActions}
+            orderBy={viewOptions.order}
+            ascending={viewOptions.ascending}
+          />
+        )}
+        {view === "categories" && <div className="p-8 rounded-xl bg-muted text-muted-foreground flex items-center ">
+          <AlertCircleIcon className="size-8 opacity-50 mr-4" />
+          <div>
+            Visualização por <strong className="underline">CATEGORIAS</strong> ainda não está disponível</div>
+        </div>
+        }
+      </div>
     </HomeComponentWrapper>
   );
 };
@@ -344,7 +357,7 @@ const LateHomeComponent = ({ actions }: { actions: Action[] }) => {
         />
       }
     >
-      <div className="p-8">
+      <div className="p-8 xl:px-16">
         <ActionContainer
           orderBy={viewOptions.order}
           ascending={viewOptions.ascending}
@@ -361,25 +374,6 @@ const LateHomeComponent = ({ actions }: { actions: Action[] }) => {
   );
 };
 
-const HomeComponentWrapper = ({
-  children,
-  title,
-  OptionsComponent,
-}: {
-  children: React.ReactNode;
-  OptionsComponent?: React.ReactNode;
-  title: string | ReactNode;
-}) => {
-  return (
-    <div className="border_after">
-      <div className="border_after flex items-center justify-between gap-4">
-        <h3 className="p-8">{title}</h3>
-        <div className="px-8">{OptionsComponent}</div>
-      </div>
-      {children}
-    </div>
-  );
-};
 
 const CalendarHomeComponent = ({ actions }: { actions: Action[] }) => {
   const [period, setPeriod] = useState<"week" | "month">("week");
@@ -448,5 +442,28 @@ const CalendarHomeComponent = ({ actions }: { actions: Action[] }) => {
         />
       </div>
     </HomeComponentWrapper>
+  );
+};
+
+
+const HomeComponentWrapper = ({
+  children,
+  title,
+  OptionsComponent,
+}: {
+  children: React.ReactNode;
+  OptionsComponent?: React.ReactNode;
+  title: string | ReactNode;
+}) => {
+  return (
+    <div className="">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 p-8 xl:px-16">
+        <h1 className="text-9xl font-semibold">{title}</h1>
+        <div className="h-0.5 bg-foreground w-full hidden lg:block"></div>
+        {OptionsComponent &&
+          <div className="self-end lg:self-auto">{OptionsComponent}</div>}
+      </div>
+      {children}
+    </div>
   );
 };

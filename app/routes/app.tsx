@@ -91,11 +91,12 @@ export default function Dashboard() {
       <div className="flex h-full w-full overflow-hidden">
         <div className="custom-scrollbars grow overflow-x-hidden overflow-y-auto">
           <div className="flex min-h-full grow">
-            <div className="min-h-full w-8 shrink-0 border-r"></div>
-            <div className="flex min-h-full w-[calc(100%-4rem)] shrink flex-col">
+            {/* <div className="min-h-full w-8 shrink-0 border-r"></div> */}
+            {/* <div className="flex min-h-full w-[calc(100%-4rem)] shrink flex-col"> */}
+            <div className="flex min-h-full w-full shrink flex-col">
               <Outlet context={{ BaseAction, setBaseAction }} />
             </div>
-            <div className="min-h-full w-8 shrink-0 border-l"></div>
+            {/* <div className="min-h-full w-8 shrink-0 border-l"></div> */}
           </div>
         </div>
         <Toaster richColors />

@@ -13,8 +13,8 @@ export default function FeedComponent({
 }) {
   return (
     <div className="w-full max-w-full overflow-hidden">
-      <h5 className="p-8 pb-4">Feed do Instagram</h5>
-      <div className="px-8 pb-8">
+      <h5 className="pb-8">Feed do Instagram</h5>
+      <div className="pb-8">
         <ActionContainer
           columns={6}
           actions={actions}
