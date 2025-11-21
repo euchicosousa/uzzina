@@ -2,10 +2,13 @@ import { useId } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { SIZE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
+import { getFormattedPartnersName } from "~/lib/helpers";
 
 type UAvatarGroupProps = {
   avatars: UAvatarItem[];
   size?: (typeof SIZE)[keyof typeof SIZE];
+  clamp?: number
+  title?: string
 };
 
 type UAvatarItem = {
@@ -17,11 +20,14 @@ type UAvatarItem = {
   size?: (typeof SIZE)[keyof typeof SIZE];
   backgroundColor?: string;
   color?: string;
+
 };
 
 export const UAvatarGroup = ({
   avatars,
   size = SIZE.md,
+  clamp,
+  title
 }: UAvatarGroupProps) => {
   const sizeClasses = {
     xs: "-space-x-1",
@@ -35,11 +41,19 @@ export const UAvatarGroup = ({
     // lg: "-space-x-2 *:data-[slot=avatar]:ring-6",
     // xl: "-space-x-2 *:data-[slot=avatar]:ring-6",
   }[size];
+
+  clamp = clamp || avatars.length;
   return (
-    <div className={cn(sizeClasses, "flex")}>
-      {avatars.map((avatar) => (
+    <div className={cn(sizeClasses, "flex")} title={title || avatars.map((avatar) => avatar.fallback).join(", ")}>
+      {avatars.slice(0, clamp).map((avatar) => (
         <UAvatar key={`${avatar.id}`} {...avatar} size={size} />
       ))}
+      {clamp < avatars.length && (
+        <UAvatar
+          fallback={`+${avatars.length - clamp}`}
+          size={size}
+        />
+      )}
     </div>
   );
 };
@@ -71,27 +85,27 @@ export const UAvatar = ({
   const textClasses =
     fallbackText.length <= 2
       ? {
-          xs: "text-[10px]",
-          sm: "text-[10px]",
-          md: "text-[12px]",
-          lg: "text-[18px]",
-          xl: "text-[28px]",
-        }[size]
+        xs: "text-[10px]",
+        sm: "text-[10px]",
+        md: "text-[12px]",
+        lg: "text-[18px]",
+        xl: "text-[28px]",
+      }[size]
       : fallbackText.length <= 4
         ? {
-            xs: "",
-            sm: "",
-            md: "text-[9px]",
-            lg: "text-[16px]",
-            xl: "text-[24px]",
-          }[size]
+          xs: "",
+          sm: "",
+          md: "text-[9px]",
+          lg: "text-[16px]",
+          xl: "text-[24px]",
+        }[size]
         : {
-            xs: "",
-            sm: "",
-            md: "text-[8px]",
-            lg: "text-[15px]",
-            xl: "text-[20px]",
-          }[size];
+          xs: "",
+          sm: "",
+          md: "text-[8px]",
+          lg: "text-[15px]",
+          xl: "text-[20px]",
+        }[size];
 
   const styles =
     backgroundColor && color ? { backgroundColor, color } : undefined;

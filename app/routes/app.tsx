@@ -98,7 +98,7 @@ export default function Dashboard() {
             <div className="min-h-full w-8 shrink-0 border-l"></div>
           </div>
         </div>
-        <Toaster />
+        <Toaster richColors />
         <AnimatePresence>
           {BaseAction ? (
             <Suspense fallback={null}>

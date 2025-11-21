@@ -2,31 +2,34 @@ import { addMinutes, format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
   CalendarIcon,
-  CloudUploadIcon,
   HeartIcon,
   ImageUpIcon,
   InstagramIcon,
   LoaderCircleIcon,
   MessageCircleIcon,
+  PlusIcon,
   Trash2Icon,
-  XIcon,
+  UploadCloudIcon,
+  XIcon
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
-import { useMatches, useSubmit, useFetchers } from "react-router";
+import { useFetchers, useMatches, useSubmit } from "react-router";
+import { toast } from "sonner";
+import { Content } from "~/components/features/Content";
+import { PartnersCombobox } from "~/components/features/PartnersCombobox";
+import { Tiptap } from "~/components/features/Tiptap";
 import { Button } from "~/components/ui/button";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { DATE_TIME_DISPLAY, INTENT, SIZE } from "~/lib/CONSTANTS";
 import {
   getFormattedDateTime,
+  getFormattedPartnersName,
   handleAction,
   isInstagramFeed,
 } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
-import { Tiptap } from "~/components/features/Tiptap";
-import { Content } from "~/components/features/Content";
-import { toast } from "sonner";
 
 export function CreateAndEditAction({
   BaseAction,
@@ -39,10 +42,8 @@ export function CreateAndEditAction({
     "essential",
   );
   const { partners } = useMatches()[1].loaderData as { partners: Partner[] };
-
   const [RawAction, setRawAction] = useState<Action>(BaseAction);
 
-  console.log({ RawAction });
 
 
   useEffect(() => {
@@ -89,7 +90,7 @@ export function CreateAndEditAction({
       transition={{ duration: 0.4, ease: "circInOut" }}
       className={cn(
         "bg-background fixed top-17 right-0 bottom-0 z-10 flex w-full shrink-0 flex-col overflow-hidden border-l",
-        view === "instagram" ? "md:w-md" : "md:w-2xl",
+        view === "instagram" ? "md:w-5xl" : "md:w-2xl",
       )}
     >
       {/* Tabs */}
@@ -123,6 +124,7 @@ export function CreateAndEditAction({
       </div>
 
       <div className="relative flex h-full grow flex-col overflow-hidden p-4">
+        {/* Essencial */}
         {view === "essential" && (
           <>
             <div className="relative">
@@ -212,9 +214,11 @@ export function CreateAndEditAction({
         )}
         {view === "instagram" && (
           <>
-            <div className="flex gap-2">
-              <Content action={RawAction} />
-              <div className="flex flex-col gap-4">
+            <div className="flex h-full">
+              <div className="grow h-full w-1/2 shrink-0">
+                <Content action={RawAction} />
+              </div>
+              {/* <div className="flex flex-col gap-4">
                 <div className="text-sm font-bold">Conteúdo</div>
                 <div className="flex gap-1">
                   <Button variant={"secondary"}>
@@ -233,31 +237,48 @@ export function CreateAndEditAction({
                     <Trash2Icon />
                   </Button>
                 </div>
+              </div> */}
+              <div className="w-1/2 overflow-hidden">
+                <div className="border-b pl-8 py-4 flex gap-2 items-center">
+                  <UAvatarGroup avatars={currentPartners.map((partner) => ({ fallback: partner.short, backgroundColor: partner.colors[0], color: partner.colors[1] }))} />
+                  <div className="font-medium text-sm">
+                    {getFormattedPartnersName(currentPartners)}
+                  </div>
+                </div>
+                <div className="pl-8 h-full">
+                  <textarea
+                    autoFocus
+                    value={
+                      RawAction.instagram_caption ||
+                      ""
+                        .concat("\n\n")
+                        .concat(currentPartners[0].instagram_caption_tail || "")
+                    }
+                    onChange={(e) =>
+                      setRawAction({
+                        ...RawAction,
+                        instagram_caption: e.target.value,
+                      })
+                    }
+                    placeholder="Legenda"
+                    className="h-full w-full resize-none outline-none"
+                  />
+                </div>
               </div>
-            </div>
-            <div className="mt-4 grow overflow-hidden">
-              <textarea
-                autoFocus
-                value={
-                  RawAction.instagram_caption ||
-                  ""
-                    .concat("\n\n")
-                    .concat(currentPartners[0].instagram_caption_tail || "")
-                }
-                onChange={(e) =>
-                  setRawAction({
-                    ...RawAction,
-                    instagram_caption: e.target.value,
-                  })
-                }
-                placeholder="Legenda"
-                className="h-full w-full resize-none outline-none"
-              />
             </div>
           </>
         )}
         {view === "chat" && <></>}
-        <div className="flex shrink-0 justify-end pt-2">
+        {/* Criar e Atualizar */}
+        <div className="flex shrink-0 justify-between pt-2">
+          <div>
+            <PartnersCombobox selectedPartners={RawAction.partners} onSelect={(selected) => {
+              setRawAction({
+                ...RawAction,
+                partners: selected,
+              })
+            }} />
+          </div>
           <Button
             disabled={isPending}
             onClick={async (event) => {
@@ -265,8 +286,14 @@ export function CreateAndEditAction({
               event.stopPropagation();
 
               if (!RawAction.title) {
-                toast.error("Erro", {
-                  description: "O título é obrigatório",
+                toast.error("Erro / O título é obrigatório", {
+                  position: "top-center",
+                });
+                return;
+              }
+
+              if (RawAction.partners.length === 0) {
+                toast.error("Erro / Pelo menos um parceiro deve ser selecionado", {
                   position: "top-center",
                 });
                 return;
@@ -283,12 +310,15 @@ export function CreateAndEditAction({
               );
             }}
           >
-            {RawAction.id ? "Atualizar" : "Salvar"}
+
+
+
+            {RawAction.id ? "Atualizar" : "Criar Ação"}
 
             {isPending ? (
               <LoaderCircleIcon className="animate-spin" />
             ) : (
-              <CloudUploadIcon />
+              RawAction.id ? <UploadCloudIcon /> : <PlusIcon />
             )}
           </Button>
         </div>

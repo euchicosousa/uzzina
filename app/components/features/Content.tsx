@@ -1,15 +1,18 @@
 import Color from "color";
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import { getFormattedDateTime, Icons } from "~/lib/helpers";
+import { cn } from "~/lib/utils";
 
 export function Content({
   action,
   category,
   isInstagramDate,
+  className,
 }: {
   action: Action;
   category?: Category;
   isInstagramDate?: boolean;
+  className?: string;
 }) {
   const actionColor = action.color;
 
@@ -24,7 +27,7 @@ export function Content({
         : Color(actionColor).lighten(2).hex();
 
   return (
-    <div className="relative">
+    <div className={cn("relative", className)}>
       <div className="bg-secondary aspect-[4/5] overflow-hidden rounded-xl border transition-opacity duration-500 group-hover/action:opacity-50">
         {action.content_files?.length ? (
           <img
