@@ -1,5 +1,5 @@
 import { CheckIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMatches } from "react-router";
 import {
   Popover,
@@ -30,6 +30,25 @@ export const PartnersCombobox = ({
   let currentPartners = selected.map(
     (slug) => partners.find((partner) => partner.slug === slug)!,
   );
+
+  const isShiftPressedRef = useRef(false);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "Shift") isShiftPressedRef.current = true;
+    };
+    const up = (e: KeyboardEvent) => {
+      if (e.key === "Shift") isShiftPressedRef.current = false;
+    };
+
+    window.addEventListener("keydown", down);
+    window.addEventListener("keyup", up);
+
+    return () => {
+      window.removeEventListener("keydown", down);
+      window.removeEventListener("keyup", up);
+    };
+  }, []);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -68,18 +87,24 @@ export const PartnersCombobox = ({
                 key={partner.id}
                 className={cn("flex items-center gap-2")}
                 onSelect={() => {
-                  let newPartners = [...selected];
-                  if (selected.includes(partner.slug)) {
-                    newPartners = newPartners.filter(
-                      (slug) => slug !== partner.slug,
-                    );
+                  if (isShiftPressedRef.current) {
+                    setSelected([partner.slug]);
+                    onSelect?.([partner.slug]);
+                    setOpen(false);
                   } else {
-                    newPartners.push(partner.slug);
-                  }
+                    let newPartners = [...selected];
+                    if (selected.includes(partner.slug)) {
+                      newPartners = newPartners.filter(
+                        (slug) => slug !== partner.slug,
+                      );
+                    } else {
+                      newPartners.push(partner.slug);
+                    }
 
-                  setSelected(newPartners);
-                  onSelect?.(newPartners);
-                  setOpen(false);
+                    setSelected(newPartners);
+                    onSelect?.(newPartners);
+                    setOpen(false);
+                  }
                 }}
               >
                 <UAvatar

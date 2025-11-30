@@ -1,5 +1,5 @@
 import { CheckIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMatches } from "react-router";
 import {
   Popover,
@@ -42,11 +42,30 @@ export const ResponsiblesCombobox = ({
       .includes(true),
   );
 
+  const isShiftPressedRef = useRef(false);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "Shift") isShiftPressedRef.current = true;
+    };
+    const up = (e: KeyboardEvent) => {
+      if (e.key === "Shift") isShiftPressedRef.current = false;
+    };
+
+    window.addEventListener("keydown", down);
+    window.addEventListener("keyup", up);
+
+    return () => {
+      window.removeEventListener("keydown", down);
+      window.removeEventListener("keyup", up);
+    };
+  }, []);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className="cursor-pointer underline-offset-4 hover:underline"
+          className="cursor-pointer underline-offset-4 outline-none hover:underline"
           title={getFormattedPeopleName(currentResponsibles)}
         >
           <ActionResponsiblesDisplay
@@ -65,18 +84,24 @@ export const ResponsiblesCombobox = ({
                 key={person.id}
                 className={cn("flex items-center gap-2")}
                 onSelect={() => {
-                  let newResponsibles = [...selected];
-                  if (selected.includes(person.user_id)) {
-                    newResponsibles = newResponsibles.filter(
-                      (slug) => slug !== person.user_id,
-                    );
+                  if (isShiftPressedRef.current) {
+                    setSelected([person.user_id]);
+                    onSelect?.([person.user_id]);
+                    setOpen(false);
                   } else {
-                    newResponsibles.push(person.user_id);
-                  }
+                    let newResponsibles = [...selected];
+                    if (selected.includes(person.user_id)) {
+                      newResponsibles = newResponsibles.filter(
+                        (slug) => slug !== person.user_id,
+                      );
+                    } else {
+                      newResponsibles.push(person.user_id);
+                    }
 
-                  setSelected(newResponsibles);
-                  onSelect?.(newResponsibles);
-                  setOpen(false);
+                    setSelected(newResponsibles);
+                    onSelect?.(newResponsibles);
+                    setOpen(false);
+                  }
                 }}
               >
                 <UAvatar

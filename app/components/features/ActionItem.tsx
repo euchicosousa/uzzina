@@ -259,17 +259,15 @@ export const ActionItem = ({
         }}
       >
         {variant === VARIANT.content && (
-          <div className="flex items-center gap-1 overflow-hidden">
-            {/* <ActionItemPartners
+          <div className="flex items-center gap-2 overflow-hidden">
+            <ActionItemPartners
               action={action}
               partners={currentPartners}
               size={SIZE.sm}
-            /> */}
-            {/* <div className="w-full overflow-hidden text-xs leading-none font-medium text-ellipsis whitespace-nowrap">
+            />
+            <div className="w-full overflow-hidden text-xs leading-none font-medium text-ellipsis whitespace-nowrap">
               {getFormattedPartnersName(currentPartners || [])}
-            </div> */}
-
-            <pre>{JSON.stringify(currentPartners)}</pre>
+            </div>
 
             <div
               className="min-h-2 min-w-2 shrink-0 rounded-full"

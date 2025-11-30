@@ -1,5 +1,6 @@
 import Color from "color";
 import {
+  addHours,
   addMinutes,
   format,
   formatDistanceToNow,
@@ -255,7 +256,7 @@ export const Icons = ({
 export const getCleanAction = (user_id: string, date?: Date) => {
   date = date || new Date();
   let _date = format(
-    date.getHours() < 11 ? date.setHours(11, 0, 0) : date,
+    date.getHours() < 11 ? date.setHours(11, 0, 0) : addMinutes(date, 10),
     "yyyy-MM-dd HH:mm:ss",
   );
 
@@ -271,6 +272,7 @@ export const getCleanAction = (user_id: string, date?: Date) => {
     date: _date,
     instagram_date: format(addMinutes(_date, 10), "yyyy-MM-dd HH:mm:ss"),
     partners: [],
+    time: 10,
   };
 };
 

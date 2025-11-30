@@ -471,9 +471,11 @@ const CalendarHomeComponent = ({
   actions: Action[];
   setBaseAction: (action: Action | null) => void;
 }) => {
+  const { celebrations } = useMatches()[1].loaderData as AppLoaderData;
+
   const [period, setPeriod] = useState<"week" | "month">("week");
   const [currentDate, setCurrentDate] = useState(new Date());
-  const calendar = eachDayOfInterval({
+  const calendarDays = eachDayOfInterval({
     start:
       period === "week"
         ? startOfWeek(currentDate)
@@ -497,6 +499,16 @@ const CalendarHomeComponent = ({
   });
 
   const { person } = useMatches()[1].loaderData as { person: Person };
+
+  let calendar = calendarDays.map((day) => {
+    return {
+      date: day,
+      actions: actions.filter((action) => isSameDay(action.date, day)),
+      celebrations: celebrations.filter((celebration) =>
+        isSameDay(celebration.date, day),
+      ),
+    };
+  });
 
   return (
     <HomeComponentWrapper
@@ -540,7 +552,6 @@ const CalendarHomeComponent = ({
       >
         <CalendarActions
           calendar={calendar}
-          actions={actions}
           viewOptions={viewOptions}
           isCompact={period === "month"}
           isScroll={period === "week"}

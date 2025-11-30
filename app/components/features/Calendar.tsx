@@ -11,6 +11,7 @@ import {
   isSameDay,
   isSameMonth,
   isThisYear,
+  isToday,
   startOfWeek,
   startOfYear,
   subYears,
@@ -108,21 +109,26 @@ const CalendarDay = ({
       id={`day_${format(day, "yyyy-MM-dd")}`}
       key={format(day, "yyyy-MM-dd")}
       className={cn(
-        "group/column flex flex-col justify-between overflow-y-clip border-b pb-4",
-        !isSameMonth(day, currentDay || new Date()) ? "bg-secondary" : "",
+        "group/column flex flex-col justify-between border-b",
+        isScroll ? "h-96 overflow-hidden" : "",
       )}
     >
-      <div>
-        <div className="relative flex items-center justify-between">
+      <div className="flex h-full shrink flex-col overflow-hidden">
+        <div className="flex items-center justify-between">
           {/* <div
-          className={cn(
-            "absolute top-0 left-4 z-0 text-9xl",
-            isToday(day) ? "opacity-10" : "opacity-2",
-          )}
-        >
-          {format(day, "d")}
-        </div> */}
-          <div className="p-2">
+            className={cn(
+              "absolute top-0 left-4 z-0 text-9xl",
+              isToday(day) ? "opacity-10" : "opacity-5",
+            )}
+          >
+            {format(day, "d")}
+          </div> */}
+          <div
+            className={cn(
+              "p-2",
+              !isSameMonth(day, currentDay || new Date()) ? "opacity-25" : "",
+            )}
+          >
             <div
               className={cn(
                 "grid h-8 place-content-center text-lg font-medium",
@@ -149,9 +155,8 @@ const CalendarDay = ({
         </div>
         <div
           className={cn(
-            "z-10",
+            "h-full overflow-hidden",
             viewOptions.variant === VARIANT.content ? "p-2" : "",
-            isScroll ? "h-80" : "",
           )}
         >
           <ActionContainer
@@ -324,7 +329,7 @@ export const CelebrationContainer = ({
   celebrations: Celebration[];
 }) => {
   return (
-    <div className="flex flex-col gap-1 px-2 pt-4 text-xs">
+    <div className="flex shrink-0 flex-col gap-1 px-2 py-4 text-xs">
       {celebrations.map((celebration) => (
         <div key={celebration.id}>
           <div className="flex items-center gap-2">
