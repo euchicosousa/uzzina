@@ -79,9 +79,11 @@ export const ActionItem = ({
     })
     .filter((p) => p !== undefined);
 
-  const currentResponsibles = action.responsibles.map((person) => {
-    return people.find((p) => p.user_id === person)!;
-  });
+  const currentResponsibles = action.responsibles
+    .map((person) => {
+      return people.find((p) => p.user_id === person);
+    })
+    .filter((r) => r !== undefined);
 
   const currentCategory = categories.find(
     (category) => category.slug === action.category,
@@ -95,7 +97,8 @@ export const ActionItem = ({
         : showLate
           ? isLateAction(action)
             ? "bg-destructive/5 text-destructive hover:bg-destructive/10"
-            : "hover:bg-input bg-background text-foreground"
+            : // ? "bg-destructive/5 text-destructive hover:bg-destructive/10"
+              "hover:bg-input bg-background text-foreground"
           : "hover:bg-input bg-background text-foreground";
 
   const renderActionVariant = () => {
@@ -163,6 +166,10 @@ export const ActionItem = ({
       default:
         return (
           <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
+            <div
+              className="size-2 shrink-0 rounded-full"
+              style={{ backgroundColor: currentState.color }}
+            ></div>
             {!isEditing && <ActionItemSprint action={action} />}
             <ActionItemTitleInput
               isEditing={isEditing}
@@ -187,7 +194,7 @@ export const ActionItem = ({
               )}
             >
               {/* Parceiro */}
-              {showPartner && (
+              {(showPartner || currentPartners.length > 1) && (
                 <ActionItemPartners
                   action={action}
                   partners={currentPartners}
@@ -238,7 +245,7 @@ export const ActionItem = ({
           "group/action @container relative flex cursor-pointer overflow-hidden",
           variant === VARIANT.content
             ? "flex-col gap-2"
-            : "border-l-4 px-3 py-1 transition-colors @xs:p-1",
+            : "px-3 py-1 transition-colors @xs:p-1",
 
           bgClasses,
           variant === VARIANT.block ? "flex-col gap-2" : "",

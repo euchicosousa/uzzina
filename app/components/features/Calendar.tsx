@@ -109,23 +109,14 @@ const CalendarDay = ({
       id={`day_${format(day, "yyyy-MM-dd")}`}
       key={format(day, "yyyy-MM-dd")}
       className={cn(
-        "group/column flex flex-col justify-between border-b",
+        "group/column flex flex-col justify-between border-b p-2",
         isScroll ? "h-96 overflow-hidden" : "",
       )}
     >
-      <div className="flex h-full shrink flex-col overflow-hidden">
+      <div className="flex h-full shrink flex-col gap-2 overflow-hidden">
         <div className="flex items-center justify-between">
-          {/* <div
-            className={cn(
-              "absolute top-0 left-4 z-0 text-9xl",
-              isToday(day) ? "opacity-10" : "opacity-5",
-            )}
-          >
-            {format(day, "d")}
-          </div> */}
           <div
             className={cn(
-              "p-2",
               !isSameMonth(day, currentDay || new Date()) ? "opacity-25" : "",
             )}
           >
@@ -141,7 +132,7 @@ const CalendarDay = ({
             </div>
           </div>
           {onCreateAction && (
-            <div className="isolate pr-1 opacity-0 group-hover/column:opacity-100">
+            <div className="isolate opacity-0 group-hover/column:opacity-100">
               <button
                 className="bg-primary grid size-6 cursor-pointer place-content-center rounded-full text-white"
                 onClick={() => {

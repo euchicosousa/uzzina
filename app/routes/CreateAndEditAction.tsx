@@ -90,13 +90,25 @@ export function CreateAndEditAction({
 
   const [currentPartners, setCurrentPartners] = useState<Partner[]>([]);
 
+  async function updateAction(data?: { [key: string]: any }) {
+    if (RawAction.id) {
+      await handleAction(
+        {
+          ...RawAction,
+          ...data,
+          intent: INTENT.update_action,
+        },
+        submit,
+      );
+    }
+  }
+
   useEffect(() => {
     setCurrentPartners(
       RawAction.partners.map((p) =>
         partners.find((partner) => partner.slug === p),
       ) as Partner[],
     );
-    // console.log({ currentPartners });
   }, [RawAction]);
 
   return (
@@ -150,6 +162,9 @@ export function CreateAndEditAction({
                 onChange={(e) =>
                   setRawAction({ ...RawAction, title: e.target.value })
                 }
+                onBlur={async () => {
+                  await updateAction();
+                }}
                 placeholder="Título"
                 className={cn(
                   "w-full shrink-0 resize-none overflow-hidden pt-2 pb-1 leading-none font-semibold tracking-tighter outline-none",
@@ -339,11 +354,12 @@ export function CreateAndEditAction({
             <div className="overflow-hidden">
               <PartnersCombobox
                 selectedPartners={RawAction.partners}
-                onSelect={(selected) => {
+                onSelect={async (selected) => {
                   setRawAction({
                     ...RawAction,
                     partners: selected,
                   });
+                  await updateAction({ partners: selected });
                 }}
               />
             </div>
