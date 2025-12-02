@@ -7,11 +7,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = Object.fromEntries(await request.formData());
   const { intent, ...values } = formData;
 
+  let prompt = "";
+
   const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
 
   if (intent === INTENT.caption_ai) {
+    prompt = `Crie uma legenda para o post ${values.title} com essa abordagem ${values.description}. De acordo com o conteúdo e o contexto passado você deverá determinar se a legenda é curta ou longa. Se for curta, não deve ter mais de 25 palavras. Se for longa, não deve ter mais de 120 palavras.`;
   }
 
   const response = await client.responses.create({
@@ -19,13 +22,19 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     input: [
       {
         role: "system",
-        content:
-          "Você é um assistente de IA que ajuda a criar legendas para posts de redes sociais.",
+        content: `Você é um assistente de IA especializado em criação de conteúdo para redes sociais. Sua missão é ajudar os usuários a criar legendas para seus posts de redes sociais. Ao receber as informações do usuário você deve identificar qual a etapa do funil esse conteúdo está servindo se é topo meio ou fundo de funil, isso irá lhe ajudar a determinar o modelo a ser utilizado e o objetivo que o usuário quer. Sua abordagem é primariamente em Storytelling. Caso você sinta falta de alguma informação que você considere como crucial você deve ignorar o pedido do usuário e retornar a sua pergunta com os itens que você acredita que preciso para fazer um bom conteúdo. você deve ser breve na sua resposta e mandar tudo o que você precisa e justificar. 
+          
+          Considere também o contexto da marca para ajudar no tom de voz da escrita e no conteúdo. ${values.contexto}
+          
+          
+          Ao retornar antes da sua resposta você deve adicionar os pontos que você concluiu, para que o usuário concorde ou faça ajustes.`,
+      },
+      {
+        role: "user",
+        content: prompt,
       },
     ],
   });
 
-  console.log(response);
-
-  return null;
+  return { output: response.output_text, intent };
 };

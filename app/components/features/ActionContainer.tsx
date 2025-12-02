@@ -44,14 +44,18 @@ export const ActionContainer = ({
   isInstagramDate,
   isDraggable,
 }: ActionContainerProps) => {
+  console.log(variant, columns);
+
   const columnsClasses =
     columns === 1
-      ? `flex flex-col divide-y`
+      ? `flex flex-col`
       : [2, 3, 4, 5, 6].find((c) => c === columns)
-        ? `grid grid-cols-2 ${columns >= 3 ? "sm:grid-cols-3" : ""} ${columns >= 4 ? "md:grid-cols-4" : ""} ${columns === 5 ? "lg:grid-cols-5" : "lg:grid-cols-6"} gap-2`
-        : `grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] ${[VARIANT.block].find((v) => v === variant) ? "gap-2" : [VARIANT.content].find((v) => v === variant) ? "gap-x-4 gap-y-6" : "gap-1"}`;
+        ? `grid grid-cols-2 ${columns >= 3 ? "sm:grid-cols-3" : ""} ${columns >= 4 ? "md:grid-cols-4" : ""} ${columns === 5 ? "lg:grid-cols-5" : "lg:grid-cols-6"}`
+        : `grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))]`;
   actions = sortActions(actions, orderBy, ascending);
   const [showMore, setShowMore] = useState(isCompact);
+
+  const gapAndDividerClasses = `${[VARIANT.block].find((v) => v === variant) ? "gap-2" : [VARIANT.content].find((v) => v === variant) ? "gap-x-4 gap-y-6" : showDivider ? "divide-y" : "gap-1"}`;
 
   useEffect(() => {
     setShowMore(isCompact);
@@ -59,7 +63,7 @@ export const ActionContainer = ({
 
   return (
     <div className={cn(isScroll ? "h-full overflow-y-auto" : "")}>
-      <div className={cn(columnsClasses, "relative")}>
+      <div className={cn(columnsClasses, gapAndDividerClasses, "relative")}>
         {/* <pre>{JSON.stringify(showMore, null, 2)}</pre> */}
         {(showMore ? actions.slice(0, 6) : actions).map((action) => (
           <ActionItem

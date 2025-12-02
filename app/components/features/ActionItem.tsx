@@ -238,6 +238,9 @@ export const ActionItem = ({
                   <ActionItemDateTimeDisplay
                     action={action}
                     dateTimeDisplay={dateTimeDisplay}
+                    isInstagramDate={
+                      isInstagramDate && isInstagramFeed(action.category)
+                    }
                   />
                 </div>
               )}
@@ -378,13 +381,18 @@ export const ActionItemTitleInput = ({
 export const ActionItemDateTimeDisplay = ({
   action,
   dateTimeDisplay,
+  isInstagramDate = false,
 }: {
   action: Action;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
+  isInstagramDate?: boolean;
 }) => {
   return (
     <div className="text-xs whitespace-nowrap opacity-50">
-      {getFormattedDateTime(action.date, dateTimeDisplay)}
+      {getFormattedDateTime(
+        isInstagramDate ? action.instagram_date : action.date,
+        dateTimeDisplay,
+      )}
     </div>
   );
 };
@@ -516,8 +524,6 @@ const useActionShortcuts = (action: Action, isInstagramDate?: boolean) => {
         KeyC: STATE.finished,
       };
 
-      const isInsta = isInstagramDate && isInstagramFeed(action.category);
-
       //SHIFT
       //Atalhos de Data
       if (event.shiftKey) {
@@ -540,7 +546,7 @@ const useActionShortcuts = (action: Action, isInstagramDate?: boolean) => {
               ...getNewDateForAction(
                 action,
                 addMinutes(new Date(), 30),
-                isInsta,
+                isInstagramDate,
               ),
             },
             submit,
@@ -551,7 +557,11 @@ const useActionShortcuts = (action: Action, isInstagramDate?: boolean) => {
             {
               ...action,
               intent: INTENT.update_action,
-              ...getNewDateForAction(action, addDays(new Date(), 1), isInsta),
+              ...getNewDateForAction(
+                action,
+                addDays(new Date(), 1),
+                isInstagramDate,
+              ),
             },
             submit,
           );
@@ -564,12 +574,15 @@ const useActionShortcuts = (action: Action, isInstagramDate?: boolean) => {
               ...getNewDateForAction(
                 action,
                 isAfter(
-                  isInsta ? action.instagram_date : action.date,
+                  isInstagramDate ? action.instagram_date : action.date,
                   new Date(),
                 )
-                  ? addDays(isInsta ? action.instagram_date : action.date, 7)
+                  ? addDays(
+                      isInstagramDate ? action.instagram_date : action.date,
+                      7,
+                    )
                   : addDays(new Date(), 7),
-                isInsta,
+                isInstagramDate,
               ),
             },
             submit,
@@ -583,12 +596,15 @@ const useActionShortcuts = (action: Action, isInstagramDate?: boolean) => {
               ...getNewDateForAction(
                 action,
                 isAfter(
-                  isInsta ? action.instagram_date : action.date,
+                  isInstagramDate ? action.instagram_date : action.date,
                   new Date(),
                 )
-                  ? addDays(isInsta ? action.instagram_date : action.date, 30)
+                  ? addDays(
+                      isInstagramDate ? action.instagram_date : action.date,
+                      30,
+                    )
                   : addDays(new Date(), 30),
-                isInsta,
+                isInstagramDate,
               ),
             },
             submit,

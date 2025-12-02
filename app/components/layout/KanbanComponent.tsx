@@ -119,7 +119,7 @@ const KanbanColumn = ({
             </div>
 
             <div className="flex h-full flex-col overflow-y-auto p-1">
-              <div className="flex flex-col gap-px">
+              <div className="flex flex-col divide-y">
                 {actions.map((action) => (
                   <Draggable id={action.id} key={action.id}>
                     <ActionItem

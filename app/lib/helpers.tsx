@@ -283,10 +283,13 @@ export const getNewDateForAction = (
 ) => {
   const duration = action.time || 5; // Duration in minutes
 
+  // Rule: date <= instagram_date - duration
+
   if (isInstagramDate) {
-    // Changing posting date (instagram_date)
-    // Rule: date <= instagram_date - duration
-    // So max_start_date = newDate - duration
+    // Priority: Update instagram_date
+    // New instagram_date = newDateInput
+
+    // Calculate max allowed start date: new_instagram_date - duration
     const maxStartDate = addMinutes(newDateInput, -duration);
     const currentStartDate = parseISO(action.date);
 
@@ -295,14 +298,17 @@ export const getNewDateForAction = (
       ? maxStartDate
       : currentStartDate;
 
+    console.log({ newStartDate });
+
     return {
       date: format(newStartDate, "yyyy-MM-dd HH:mm:ss"),
       instagram_date: format(newDateInput, "yyyy-MM-dd HH:mm:ss"),
     };
   } else {
-    // Changing start date (date)
-    // Rule: instagram_date >= date + duration
-    // So min_instagram_date = newDate + duration
+    // Priority: Update date (start date)
+    // New date = newDateInput
+
+    // Calculate min allowed instagram date: new_date + duration
     const minInstagramDate = addMinutes(newDateInput, duration);
     const currentInstagramDate = parseISO(action.instagram_date);
 

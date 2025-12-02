@@ -225,7 +225,7 @@ const SprintHomeComponent = ({ actions }: { actions: Action[] }) => {
             showCategory={viewOptions.category}
             showPriority={viewOptions.priority}
             actions={actions}
-            columns={4}
+            columns={7}
             variant={VARIANT.block}
             showLate
           />

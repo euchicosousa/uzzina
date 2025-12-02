@@ -19,7 +19,14 @@ import {
   XIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useFetchers, useMatches, useSubmit } from "react-router";
+import {
+  useActionData,
+  useFetcher,
+  useFetchers,
+  useMatches,
+  useRouteLoaderData,
+  useSubmit,
+} from "react-router";
 import { toast } from "sonner";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { Content } from "~/components/features/Content";
@@ -57,7 +64,12 @@ export function CreateAndEditAction({
   const [view, setView] = useState<"essential" | "instagram" | "chat">(
     "essential",
   );
-  const { partners } = useMatches()[1].loaderData as { partners: Partner[] };
+  const { partners } = useRouteLoaderData("routes/app") as {
+    partners: Partner[];
+  };
+
+  const fetcher = useFetcher();
+
   const [RawAction, setRawAction] = useState<Action>(BaseAction);
 
   useEffect(() => {
@@ -110,6 +122,23 @@ export function CreateAndEditAction({
       ) as Partner[],
     );
   }, [RawAction]);
+
+  useEffect(() => {
+    if (fetcher.data) {
+      if (fetcher.data.intent === INTENT.caption_ai) {
+        setRawAction((prev) => ({
+          ...prev,
+          instagram_caption: fetcher.data.output.concat(
+            getCaptionTail(currentPartners[0].instagram_caption_tail),
+          ),
+        }));
+      }
+      // setRawAction((prev) => ({
+      //   ...prev,
+      //   description: fetcher.data as string,
+      // }));
+    }
+  }, [fetcher.data]);
 
   return (
     <div
@@ -309,17 +338,16 @@ export function CreateAndEditAction({
                 </div>
                 <Button
                   variant={"ghost"}
-                  onClick={async () => {
-                    await submit(
+                  onClick={() => {
+                    fetcher.submit(
                       {
                         intent: INTENT.caption_ai,
                         ...RawAction,
-                        context: currentPartners[0].context,
+                        context: `${currentPartners[0].context} — ${RawAction.category}`,
                       },
                       {
                         method: "post",
                         action: "/action/handle-ai",
-                        navigate: false,
                       },
                     );
                   }}
@@ -332,9 +360,7 @@ export function CreateAndEditAction({
                   autoFocus
                   value={
                     RawAction.instagram_caption ||
-                    ""
-                      .concat("\n\n")
-                      .concat(currentPartners[0].instagram_caption_tail || "")
+                    getCaptionTail(currentPartners[0].instagram_caption_tail)
                   }
                   onChange={(e) =>
                     setRawAction({
@@ -527,3 +553,7 @@ export const ActionDatePicker = ({
     </Popover>
   );
 };
+
+function getCaptionTail(instagram_caption_tail: string | null) {
+  return "".concat("\n\n").concat(instagram_caption_tail || "");
+}
