@@ -4,7 +4,6 @@ import { ORDER_BY, VARIANT, type DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import { ActionItem } from "./ActionItem";
-import Color from "color";
 
 type ActionContainerProps = {
   actions: Action[];
@@ -47,10 +46,10 @@ export const ActionContainer = ({
 }: ActionContainerProps) => {
   const columnsClasses =
     columns === 1
-      ? `flex flex-col ${showDivider ? "divide-y" : ""}`
+      ? `flex flex-col divide-y`
       : [2, 3, 4, 5, 6].find((c) => c === columns)
-        ? `grid grid-cols-2 ${columns >= 3 ? "sm:grid-cols-3" : ""} ${columns >= 4 ? "md:grid-cols-4" : ""} ${columns === 5 ? "lg:grid-cols-5" : "lg:grid-cols-6"} ${[VARIANT.content].find((v) => v === variant) ? "gap-2" : showDivider && "divide-y"}`
-        : `grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] ${[VARIANT.block].find((v) => v === variant) ? "gap-2" : [VARIANT.content].find((v) => v === variant) ? "gap-x-4 gap-y-6" : showDivider && "divide-y"}`;
+        ? `grid grid-cols-2 ${columns >= 3 ? "sm:grid-cols-3" : ""} ${columns >= 4 ? "md:grid-cols-4" : ""} ${columns === 5 ? "lg:grid-cols-5" : "lg:grid-cols-6"} gap-2`
+        : `grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] ${[VARIANT.block].find((v) => v === variant) ? "gap-2" : [VARIANT.content].find((v) => v === variant) ? "gap-x-4 gap-y-6" : "gap-1"}`;
   actions = sortActions(actions, orderBy, ascending);
   const [showMore, setShowMore] = useState(isCompact);
 

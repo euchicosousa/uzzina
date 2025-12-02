@@ -1,9 +1,7 @@
-import Color from "color";
-import { addDays, addMinutes, isAfter } from "date-fns";
+import { addDays, addMinutes, format, isAfter } from "date-fns";
 import { CalendarIcon, InstagramIcon, SignalHighIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useMatches, useOutletContext, useSubmit } from "react-router";
-import { Theme, useTheme } from "remix-themes";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useOutletContext, useRouteLoaderData, useSubmit } from "react-router";
 import {
   DATE_TIME_DISPLAY,
   INTENT,
@@ -25,10 +23,8 @@ import {
 import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "~/routes/app";
 import { UAvatarGroup } from "../uzzina/UAvatar";
-import { UBadge, type TSize } from "../uzzina/UBadge";
 import { Content } from "./Content";
 import { Draggable } from "./DnD";
-import { format } from "date-fns";
 
 type ActionItemProps = {
   action: Action;
@@ -63,8 +59,9 @@ export const ActionItem = ({
   dateTimeDisplay,
   onClick,
 }: ActionItemProps) => {
-  const { states, people, partners, categories, person } = useMatches()[1]
-    .loaderData as AppLoaderData;
+  const { states, people, partners, categories, person } = useRouteLoaderData(
+    "routes/app",
+  ) as AppLoaderData;
 
   const sumbit = useSubmit();
 
@@ -72,34 +69,47 @@ export const ActionItem = ({
   const [isHovered, setIsHovered] = useState(false);
   const { setBaseAction } = useOutletContext<OutletContext>();
 
-  const currentState = states.find((state) => state.slug === action.state)!;
-  const currentPartners = action.partners
-    .map((partner) => {
-      return partners.find((p) => p.slug === partner)!;
-    })
-    .filter((p) => p !== undefined);
+  const currentState = useMemo(
+    () => states.find((state) => state.slug === action.state)!,
+    [action.state, states],
+  );
 
-  const currentResponsibles = action.responsibles
-    .map((person) => {
-      return people.find((p) => p.user_id === person);
-    })
-    .filter((r) => r !== undefined);
+  const currentPartners = useMemo(
+    () =>
+      action.partners
+        .map((partner) => partners.find((p) => p.slug === partner)!)
+        .filter((p) => p !== undefined),
+    [action.partners, partners],
+  );
 
-  const currentCategory = categories.find(
-    (category) => category.slug === action.category,
-  )!;
+  const currentResponsibles = useMemo(
+    () =>
+      action.responsibles
+        .map((person) => people.find((p) => p.user_id === person))
+        .filter((r) => r !== undefined),
+    [action.responsibles, people],
+  );
 
-  const bgClasses =
-    variant === VARIANT.content
-      ? ""
-      : isEditing
-        ? "bg-background ring-foreground focus-within:ring-2 ring-offset-2 ring-offset-background z-100 text-foreground"
-        : showLate
-          ? isLateAction(action)
-            ? "bg-destructive/5 text-destructive hover:bg-destructive/10"
-            : // ? "bg-destructive/5 text-destructive hover:bg-destructive/10"
-              "hover:bg-input bg-background text-foreground"
-          : "hover:bg-input bg-background text-foreground";
+  const currentCategory = useMemo(
+    () => categories.find((category) => category.slug === action.category)!,
+    [action.category, categories],
+  );
+
+  const bgClasses = useMemo(() => {
+    if (variant === VARIANT.content) return "";
+
+    if (isEditing) {
+      return "ring-foreground focus-within:ring-2 ring-offset-2 ring-offset-background z-100 text-foreground";
+    }
+
+    if (showLate && isLateAction(action)) {
+      return "bg-destructive/5 text-destructive hover:bg-destructive/10";
+    }
+
+    return variant === VARIANT.block
+      ? "hover:bg-card bg-card text-card-foreground"
+      : "hover:bg-card bg-background text-card-foreground";
+  }, [variant, isEditing, showLate, action]);
 
   const renderActionVariant = () => {
     switch (variant) {
@@ -120,7 +130,7 @@ export const ActionItem = ({
                 isEditing={isEditing}
                 setIsEditing={setIsEditing}
                 title={action.title}
-                className={"h-7 text-xl tracking-tight"}
+                className={"h-7 text-xl font-medium tracking-tight"}
                 InputButtonClassName="w-auto"
                 lines={1}
               />
@@ -245,7 +255,9 @@ export const ActionItem = ({
           "group/action @container relative flex cursor-pointer overflow-hidden",
           variant === VARIANT.content
             ? "flex-col gap-2"
-            : "px-3 py-1 transition-colors @xs:p-1",
+            : variant === VARIANT.block
+              ? "px-5 py-3"
+              : "px-3 py-1 transition-colors @xs:p-1",
 
           bgClasses,
           variant === VARIANT.block ? "flex-col gap-2" : "",
@@ -314,7 +326,11 @@ export const ActionItemTitleInput = ({
   lines?: 1 | 2;
   onChange?: (title: string) => void;
 }) => {
-  const [localTItle, setLocalTitle] = useState(title);
+  const [localTitle, setLocalTitle] = useState(title);
+
+  useEffect(() => {
+    setLocalTitle(title);
+  }, [title]);
 
   return (
     <div
@@ -328,12 +344,12 @@ export const ActionItemTitleInput = ({
         <input
           autoFocus
           type="text"
-          value={localTItle}
+          value={localTitle}
           onChange={(e) => setLocalTitle(e.target.value)}
           className={cn("w-full outline-none", InputButtonClassName)}
           onBlur={() => {
             if (onChange) {
-              onChange(localTItle);
+              onChange(localTitle);
             }
             setIsEditing(false);
           }}
@@ -352,7 +368,7 @@ export const ActionItemTitleInput = ({
             InputButtonClassName,
           )}
         >
-          {localTItle}
+          {localTitle}
         </button>
       )}
     </div>
@@ -464,7 +480,7 @@ export const ActionItemSprint = ({
   action: Action;
   className?: string;
 }) => {
-  const { person } = useMatches()[1].loaderData as AppLoaderData;
+  const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
 
   return isSprint(action, person) ? (
     <Icons slug="sprint" className={cn("size-4 shrink-0", className)} />
@@ -478,163 +494,159 @@ const ShortcutActions = ({
   action: Action;
   isInstagramDate?: boolean;
 }) => {
+  useActionShortcuts(action, isInstagramDate);
+  return <></>;
+};
+
+const useActionShortcuts = (action: Action, isInstagramDate?: boolean) => {
   const submit = useSubmit();
-  const { person } = useMatches()[1].loaderData as AppLoaderData;
+  const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
 
-  function keyDown(event: KeyboardEvent) {
-    const code = event.code;
+  const keyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const code = event.code;
 
-    let status: Record<string, (typeof STATE)[keyof typeof STATE]> = {
-      KeyI: STATE.idea,
-      KeyF: STATE.do,
-      KeyZ: STATE.doing,
-      KeyA: STATE.review,
-      KeyP: STATE.approved,
-      KeyT: STATE.done,
-      KeyC: STATE.finished,
-    };
+      let status: Record<string, (typeof STATE)[keyof typeof STATE]> = {
+        KeyI: STATE.idea,
+        KeyF: STATE.do,
+        KeyZ: STATE.doing,
+        KeyA: STATE.review,
+        KeyP: STATE.approved,
+        KeyT: STATE.done,
+        KeyC: STATE.finished,
+      };
 
-    isInstagramDate = isInstagramDate && isInstagramFeed(action.category);
+      const isInsta = isInstagramDate && isInstagramFeed(action.category);
 
-    //SHIFT
-    //Atalhos de Data
-    if (event.shiftKey) {
-      // Hoje em 30 minutos
-      if (code === "KeyD") {
-        handleAction(
-          {
-            ...action,
-            intent: INTENT.create_action,
-            created_at: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
-            updated_at: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
-          },
-          submit,
-        );
-      } else if (code === "KeyH") {
-        handleAction(
-          {
-            ...action,
-            intent: INTENT.update_action,
-            ...getNewDateForAction(
-              action,
-              addMinutes(new Date(), 30),
-              isInstagramDate,
-            ),
-          },
-          submit,
-        );
-      } else if (code === "KeyA") {
-        //Amanhã
-        handleAction(
-          {
-            ...action,
-            intent: INTENT.update_action,
-            ...getNewDateForAction(
-              action,
-              addDays(new Date(), 1),
-              isInstagramDate,
-            ),
-          },
-          submit,
-        );
-      } else if (code === "KeyS") {
-        // Em 7 dias
-        handleAction(
-          {
-            ...action,
-            intent: INTENT.update_action,
-            ...getNewDateForAction(
-              action,
-              isAfter(
-                isInstagramDate ? action.instagram_date : action.date,
-                new Date(),
-              )
-                ? addDays(
-                    isInstagramDate ? action.instagram_date : action.date,
-                    7,
-                  )
-                : addDays(new Date(), 7),
-              isInstagramDate,
-            ),
-          },
-          submit,
-        );
-      } else if (code === "KeyM") {
-        // Em 30 dias
-        handleAction(
-          {
-            ...action,
-            intent: INTENT.update_action,
-            ...getNewDateForAction(
-              action,
-              isAfter(
-                isInstagramDate ? action.instagram_date : action.date,
-                new Date(),
-              )
-                ? addDays(
-                    isInstagramDate ? action.instagram_date : action.date,
-                    30,
-                  )
-                : addDays(new Date(), 30),
-              isInstagramDate,
-            ),
-          },
-          submit,
-        );
-      } else if (code === "KeyU") {
-        // Coloca ou retira do sprint
-        let sprints = null;
-        if (action.sprints) {
-          if (action.sprints.find((sprint) => sprint === person.user_id)) {
-            sprints = action.sprints.filter(
-              (sprint) => sprint !== person.user_id,
-            );
-          } else {
-            sprints = [...action.sprints, person.user_id];
-          }
-        } else {
-          sprints = [person.user_id];
-        }
-
-        sprints = sprints.length > 0 ? sprints : null;
-
-        handleAction(
-          {
-            ...action,
-            intent: INTENT.update_action,
-            sprints,
-          },
-          submit,
-        );
-      } else if (code === "KeyX") {
-        if (confirm("Tem certeza que deseja arquivar esta ação?")) {
+      //SHIFT
+      //Atalhos de Data
+      if (event.shiftKey) {
+        // Hoje em 30 minutos
+        if (code === "KeyD") {
+          handleAction(
+            {
+              ...action,
+              intent: INTENT.create_action,
+              created_at: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
+              updated_at: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
+            },
+            submit,
+          );
+        } else if (code === "KeyH") {
           handleAction(
             {
               ...action,
               intent: INTENT.update_action,
-              archived: true,
+              ...getNewDateForAction(
+                action,
+                addMinutes(new Date(), 30),
+                isInsta,
+              ),
             },
             submit,
           );
+        } else if (code === "KeyA") {
+          //Amanhã
+          handleAction(
+            {
+              ...action,
+              intent: INTENT.update_action,
+              ...getNewDateForAction(action, addDays(new Date(), 1), isInsta),
+            },
+            submit,
+          );
+        } else if (code === "KeyS") {
+          // Em 7 dias
+          handleAction(
+            {
+              ...action,
+              intent: INTENT.update_action,
+              ...getNewDateForAction(
+                action,
+                isAfter(
+                  isInsta ? action.instagram_date : action.date,
+                  new Date(),
+                )
+                  ? addDays(isInsta ? action.instagram_date : action.date, 7)
+                  : addDays(new Date(), 7),
+                isInsta,
+              ),
+            },
+            submit,
+          );
+        } else if (code === "KeyM") {
+          // Em 30 dias
+          handleAction(
+            {
+              ...action,
+              intent: INTENT.update_action,
+              ...getNewDateForAction(
+                action,
+                isAfter(
+                  isInsta ? action.instagram_date : action.date,
+                  new Date(),
+                )
+                  ? addDays(isInsta ? action.instagram_date : action.date, 30)
+                  : addDays(new Date(), 30),
+                isInsta,
+              ),
+            },
+            submit,
+          );
+        } else if (code === "KeyU") {
+          // Coloca ou retira do sprint
+          let sprints = null;
+          if (action.sprints) {
+            if (action.sprints.find((sprint) => sprint === person.user_id)) {
+              sprints = action.sprints.filter(
+                (sprint) => sprint !== person.user_id,
+              );
+            } else {
+              sprints = [...action.sprints, person.user_id];
+            }
+          } else {
+            sprints = [person.user_id];
+          }
+
+          sprints = sprints.length > 0 ? sprints : null;
+
+          handleAction(
+            {
+              ...action,
+              intent: INTENT.update_action,
+              sprints,
+            },
+            submit,
+          );
+        } else if (code === "KeyX") {
+          if (confirm("Tem certeza que deseja arquivar esta ação?")) {
+            handleAction(
+              {
+                ...action,
+                intent: INTENT.update_action,
+                archived: true,
+              },
+              submit,
+            );
+          }
         }
+      } else if (status[code]) {
+        handleAction(
+          {
+            ...action,
+            intent: INTENT.update_action,
+            state: status[code],
+          },
+          submit,
+        );
       }
-    } else if (status[code]) {
-      handleAction(
-        {
-          ...action,
-          intent: INTENT.update_action,
-          state: status[code],
-        },
-        submit,
-      );
-    }
-  }
+    },
+    [action, isInstagramDate, person.user_id, submit],
+  );
 
   useEffect(() => {
     document.addEventListener("keydown", keyDown);
 
     return () => document.removeEventListener("keydown", keyDown);
-  }, []);
-
-  return <></>;
+  }, [keyDown]);
 };
