@@ -35,19 +35,18 @@ export const UBadge = ({
 
   const paddingClasses = { sm: "px-1.5", md: "px-2", lg: "px-3" }[size];
 
-  const dynamicClasses = text
-    ? undefined
-    : isDynamic
-      ? value > 7
-        ? "bg-destructive text-white border-destructive"
-        : value >= 3
-          ? "bg-yellow-500 text-black border-yellow-500"
-          : undefined
-      : undefined;
+  const dynamicClasses = isDynamic
+    ? value > 7
+      ? "bg-destructive text-white border-destructive"
+      : value >= 3
+        ? "bg-yellow-500 text-black border-yellow-500"
+        : "bg-secondary text-secondary-foreground border-secondary"
+    : "bg-secondary text-secondary-foreground border-secondary";
+
   return (
     <Badge
       className={cn(
-        "bg-info-background text-info border-info/20 rounded-full",
+        "rounded-full",
         sizeClasses,
         paddingClasses,
         dynamicClasses,

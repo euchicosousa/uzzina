@@ -1,14 +1,13 @@
 import { ComputerIcon, MoonIcon, SunIcon } from "lucide-react";
+import type { LoaderFunctionArgs } from "react-router";
+import { useLoaderData } from "react-router";
 import { Theme, useTheme } from "remix-themes";
 import { Button } from "~/components/ui/button";
 import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { SIZE } from "~/lib/CONSTANTS";
-import type { LoaderFunctionArgs } from "react-router";
-import { createSupabaseClient } from "~/lib/supabase";
-import { useLoaderData } from "react-router";
 import { Icons } from "~/lib/helpers";
-import Color from "color";
+import { createSupabaseClient } from "~/lib/supabase";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { supabase } = createSupabaseClient(request);
@@ -131,38 +130,6 @@ export default function UITestingPage() {
             {
               background: "bg-input",
               text: "text-foreground",
-            },
-            {
-              background: "bg-error-background",
-              text: "text-error",
-            },
-            {
-              background: "bg-warning-background",
-              text: "text-warning",
-            },
-            {
-              background: "bg-success-background",
-              text: "text-success",
-            },
-            {
-              background: "bg-info-background",
-              text: "text-info",
-            },
-            {
-              background: "bg-error",
-              text: "text-error-background",
-            },
-            {
-              background: "bg-warning",
-              text: "text-warning-background",
-            },
-            {
-              background: "bg-success",
-              text: "text-success-background",
-            },
-            {
-              background: "bg-info",
-              text: "text-info-background",
             },
           ].map((colors) => (
             <div

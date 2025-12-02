@@ -67,7 +67,13 @@ import { Toggle } from "~/components/ui/toggle";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { UToggle } from "~/components/uzzina/UToggle";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
-import { DATE_TIME_DISPLAY, INTENT, ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
+import {
+  DATE_TIME_DISPLAY,
+  INTENT,
+  ORDER_BY,
+  SIZE,
+  VARIANT,
+} from "~/lib/CONSTANTS";
 import {
   getCleanAction,
   getLateActions,
@@ -77,6 +83,7 @@ import {
   isInstagramFeed,
 } from "~/lib/helpers";
 import type { AppLoaderData } from "./app";
+import { UAvatar } from "~/components/uzzina/UAvatar";
 
 export const runtime = "edge";
 
@@ -195,6 +202,12 @@ export default function PartnerPage() {
     <div className="flex h-[calc(100vh-68px)] flex-col overflow-hidden">
       <div className="flex items-center justify-between gap-4 p-8">
         <div className="flex items-center gap-2">
+          <UAvatar
+            fallback={partner.short}
+            backgroundColor={partner.colors[0]}
+            color={partner.colors[1]}
+            size={SIZE.lg}
+          />
           <h2 className="p-0">{partner.title}</h2>
           <UBadge value={getLateActions(currentActions).length} isDynamic />
         </div>

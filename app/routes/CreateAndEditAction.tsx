@@ -201,10 +201,13 @@ export function CreateAndEditAction({
                 <div className="flex items-center gap-1">
                   <CalendarIcon className="size-3" />
                   <ActionDatePicker
-                    onSelect={(date) => {
+                    onSelect={async (date) => {
                       setRawAction({
                         ...RawAction,
-                        // date: format(date, "yyyy-MM-dd HH:mm:ss")
+                        ...getNewDateForAction(RawAction, date),
+                      });
+                      await updateAction({
+                        ...RawAction,
                         ...getNewDateForAction(RawAction, date),
                       });
                     }}
@@ -215,12 +218,12 @@ export function CreateAndEditAction({
                   <div className="flex items-center gap-1">
                     <InstagramIcon className="size-3" />
                     <ActionDatePicker
-                      onSelect={(date) => {
-                        // console.log(setRawAction({
-                        //   ...RawAction,
-                        //   ...getNewDateForAction(RawAction, date),
-                        // }))
+                      onSelect={async (date) => {
                         setRawAction({
+                          ...RawAction,
+                          ...getNewDateForAction(RawAction, date, true),
+                        });
+                        await updateAction({
                           ...RawAction,
                           ...getNewDateForAction(RawAction, date, true),
                         });
@@ -367,22 +370,24 @@ export function CreateAndEditAction({
             <div className="">
               <StatesCombobox
                 selectedState={RawAction.state}
-                onSelect={(selected) => {
+                onSelect={async (selected) => {
                   setRawAction({
                     ...RawAction,
                     state: selected,
                   });
+                  await updateAction({ state: selected });
                 }}
               />
             </div>
             <div className="">
               <CategoriesCombobox
                 selectedCategory={RawAction.category}
-                onSelect={(selected) => {
+                onSelect={async (selected) => {
                   setRawAction({
                     ...RawAction,
                     category: selected,
                   });
+                  await updateAction({ category: selected });
                 }}
               />
             </div>
