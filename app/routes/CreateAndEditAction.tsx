@@ -1,7 +1,9 @@
+import Color from "color";
 import {
   addMinutes,
   format,
   formatDistanceToNow,
+  isValid,
   parse,
   parseISO,
 } from "date-fns";
@@ -12,18 +14,16 @@ import {
   InstagramIcon,
   LoaderCircleIcon,
   MessageCircleIcon,
+  PaletteIcon,
   PlusIcon,
   UploadCloudIcon,
   Wand2Icon,
-  WandIcon,
   XIcon,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  useActionData,
   useFetcher,
   useFetchers,
-  useMatches,
   useRouteLoaderData,
   useSubmit,
 } from "react-router";
@@ -36,6 +36,12 @@ import { StatesCombobox } from "~/components/features/StatesCombobox";
 import { Tiptap } from "~/components/features/Tiptap";
 import { Button } from "~/components/ui/button";
 import { Calendar } from "~/components/ui/calendar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
 import {
   Popover,
@@ -44,12 +50,14 @@ import {
 } from "~/components/ui/popover";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
-import { DATE_TIME_DISPLAY, INTENT, SIZE } from "~/lib/CONSTANTS";
+import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
 import {
   getFormattedDateTime,
   getFormattedPartnersName,
+  getFullPartner,
   getNewDateForAction,
   handleAction,
+  isColorValid,
   isInstagramFeed,
 } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
@@ -243,7 +251,10 @@ export function CreateAndEditAction({
                     date={parseISO(RawAction.date)}
                   />
                 </div>
-                {isInstagramFeed(RawAction.category) && (
+                {isInstagramFeed(
+                  RawAction.category,
+                  RawAction.category === "stories",
+                ) && (
                   <div className="flex items-center gap-1">
                     <InstagramIcon className="size-3" />
                     <ActionDatePicker
@@ -360,7 +371,11 @@ export function CreateAndEditAction({
                   autoFocus
                   value={
                     RawAction.instagram_caption ||
-                    getCaptionTail(currentPartners[0].instagram_caption_tail)
+                    getCaptionTail(
+                      currentPartners.length > 0
+                        ? currentPartners[0].instagram_caption_tail
+                        : "",
+                    )
                   }
                   onChange={(e) =>
                     setRawAction({
@@ -380,6 +395,7 @@ export function CreateAndEditAction({
         <div className="w-fulld flex shrink-0 justify-between overflow-hidden border-t">
           {/* Coisas */}
           <div className="flex items-center divide-x overflow-hidden">
+            {/* Parceiros Partners Combobox */}
             <div className="overflow-hidden">
               <PartnersCombobox
                 selectedPartners={RawAction.partners}
@@ -392,7 +408,7 @@ export function CreateAndEditAction({
                 }}
               />
             </div>
-
+            {/* Estados States Combobox */}
             <div className="">
               <StatesCombobox
                 selectedState={RawAction.state}
@@ -405,6 +421,7 @@ export function CreateAndEditAction({
                 }}
               />
             </div>
+            {/* Categorias Categories Combobox */}
             <div className="">
               <CategoriesCombobox
                 selectedCategory={RawAction.category}
@@ -414,6 +431,16 @@ export function CreateAndEditAction({
                     category: selected,
                   });
                   await updateAction({ category: selected });
+                }}
+              />
+            </div>
+            <div>
+              <ActionColorDropdown
+                action={RawAction}
+                partners={currentPartners}
+                onSelect={async (color) => {
+                  setRawAction({ ...RawAction, color });
+                  await updateAction({ color });
                 }}
               />
             </div>
@@ -556,4 +583,80 @@ export const ActionDatePicker = ({
 
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
+}
+
+function ActionColorDropdown({
+  action,
+  partners,
+  onSelect,
+}: {
+  action: Action;
+  partners: Partner[];
+  onSelect?: (color: string) => void;
+}) {
+  const [selected, setSelected] = useState(action.color);
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="hover:bg-secondary flex items-center gap-2 p-6 text-sm outline-none">
+          <div
+            className="size-5 rounded-full border border-black/5"
+            style={{ backgroundColor: action.color }}
+          ></div>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="grid w-40 grid-cols-3 gap-2 p-2">
+        {[
+          ...new Set(
+            (partners.length > 0
+              ? partners.map((partner) =>
+                  partner.colors.map((color) => Color(color).hex()),
+                )
+              : [
+                  Color(action.color).lighten(0.4).hex(),
+                  action.color,
+                  Color(action.color).darken(0.4).hex(),
+                ]
+            ).flat(),
+          ),
+        ].map((color, index) => (
+          <DropdownMenuItem
+            key={index}
+            className="cursor-pointer p-0 hover:opacity-50"
+            onSelect={() => {
+              setSelected(color);
+              onSelect?.(color);
+            }}
+          >
+            <div
+              className="aspect-[4/5] w-12 rounded border border-black/5"
+              style={{ backgroundColor: color }}
+            ></div>
+          </DropdownMenuItem>
+        ))}
+        <div className="col-span-3 flex w-full items-center gap-2">
+          <Input
+            value={selected}
+            onChange={(e) => {
+              setSelected(e.target.value);
+              if (!isColorValid(e.target.value)) {
+                return;
+              }
+              onSelect?.(e.target.value);
+            }}
+            className="w-auto"
+          />
+          <div
+            className="size-6 shrink-0 rounded-full border"
+            style={{
+              backgroundColor: isColorValid(selected)
+                ? Color(selected).hex()
+                : action.color,
+            }}
+          ></div>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }

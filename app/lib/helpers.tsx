@@ -1,12 +1,10 @@
 import Color from "color";
 import {
-  addHours,
   addMinutes,
   format,
   formatDistanceToNow,
   isAfter,
   isBefore,
-  parse,
   parseISO,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -31,11 +29,16 @@ import {
   SquarePlayIcon,
   SunIcon,
 } from "lucide-react";
-import { redirect, useMatches, type SubmitFunction } from "react-router";
+import {
+  redirect,
+  type SubmitFunction,
+  useRouteLoaderData,
+} from "react-router";
 import { Theme } from "remix-themes";
 import { DATE_TIME_DISPLAY, ORDER_BY, PRIORITY, STATE } from "./CONSTANTS";
 import { createSupabaseClient } from "./supabase";
 import { cn } from "./utils";
+import type { AppLoaderData } from "~/routes/app";
 
 export async function getUserId(request: Request) {
   const { supabase } = await createSupabaseClient(request);
@@ -326,4 +329,16 @@ export const getNewDateForAction = (
 
 export const isSprint = (action: Action, person: Person) => {
   return action.sprints?.find((sprint) => sprint === person.user_id);
+};
+
+export function getFullPartner(partner: string) {
+  const { partners } = useRouteLoaderData("routes/app") as AppLoaderData;
+
+  const fullPartner = partners.find((p) => p.slug === partner);
+
+  return fullPartner;
+}
+
+export const isColorValid = (color: string) => {
+  return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
 };

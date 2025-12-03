@@ -208,8 +208,12 @@ export default function PartnerPage() {
             color={partner.colors[1]}
             size={SIZE.lg}
           />
+          <UBadge
+            value={getLateActions(currentActions).length}
+            isDynamic
+            className="isolate -mt-8 -ml-4"
+          />
           <h2 className="line-clamp-2 p-0">{partner.title}</h2>
-          <UBadge value={getLateActions(currentActions).length} isDynamic />
         </div>
 
         <CalendarButtons
