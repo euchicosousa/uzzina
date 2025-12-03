@@ -8,7 +8,7 @@ import {
 } from "react-router";
 import invariant from "tiny-invariant";
 import { Header } from "~/components/layout/Header";
-import { getUserId } from "~/lib/helpers";
+import { getCleanAction, getUserId } from "~/lib/helpers";
 // import { CreateAndEditAction } from "./CreateAndEditAction";
 
 import { Toaster } from "sonner";
@@ -40,8 +40,6 @@ export type AppLoaderData = {
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { user_id, supabase } = await getUserId(request);
-
-  // console.log(format(new Date().getHours() < 16 ? new Date().setHours(11, 0, 0) : new Date(), "yyyy-MM-dd HH:m:ss"))
 
   const [
     { data: people },
@@ -109,15 +107,24 @@ export default function Dashboard() {
   const [openCmdK, setOpenCmdK] = useState(false);
 
   useEffect(() => {
-    function keyDown(event: KeyboardEvent) {
+    function keyDownCmdK(event: KeyboardEvent) {
       if (event.key === "k" && event.metaKey) {
         setOpenCmdK(!openCmdK);
       }
     }
-    document.addEventListener("keydown", keyDown);
+    function keyDownNewAction(event: KeyboardEvent) {
+      if (event.code === "KeyA" && event.altKey && event.shiftKey) {
+        setBaseAction({
+          ...(getCleanAction(person.user_id) as unknown as Action),
+        });
+      }
+    }
+    document.addEventListener("keydown", keyDownCmdK);
+    document.addEventListener("keydown", keyDownNewAction);
 
     return () => {
-      document.removeEventListener("keydown", keyDown);
+      document.removeEventListener("keydown", keyDownCmdK);
+      document.removeEventListener("keydown", keyDownNewAction);
     };
   }, []);
 

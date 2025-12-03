@@ -44,8 +44,6 @@ export const ActionContainer = ({
   isInstagramDate,
   isDraggable,
 }: ActionContainerProps) => {
-  console.log(variant, columns);
-
   const columnsClasses =
     columns === 1
       ? `flex flex-col`
