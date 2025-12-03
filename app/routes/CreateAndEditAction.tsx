@@ -18,7 +18,7 @@ import {
   WandIcon,
   XIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   useActionData,
   useFetcher,
@@ -343,7 +343,7 @@ export function CreateAndEditAction({
                       {
                         intent: INTENT.caption_ai,
                         ...RawAction,
-                        context: `${currentPartners[0].context} — ${RawAction.category}`,
+                        contexto: `${currentPartners[0].context} — ${RawAction.category}`,
                       },
                       {
                         method: "post",

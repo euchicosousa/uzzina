@@ -208,7 +208,7 @@ export default function PartnerPage() {
             color={partner.colors[1]}
             size={SIZE.lg}
           />
-          <h2 className="p-0">{partner.title}</h2>
+          <h2 className="line-clamp-2 p-0">{partner.title}</h2>
           <UBadge value={getLateActions(currentActions).length} isDynamic />
         </div>
 
@@ -418,7 +418,7 @@ function ActionCalendarPartnerPage({
       ),
     ),
     celebrations: celebrations.filter((celebration) =>
-      isSameDay(celebration.date, date),
+      isSameDay(parseISO(celebration.date), date),
     ),
   }));
 

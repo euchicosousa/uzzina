@@ -99,7 +99,7 @@ export const ActionItem = ({
     if (variant === VARIANT.content) return "";
 
     if (isEditing) {
-      return "ring-foreground focus-within:ring-2 ring-offset-2 ring-offset-background z-100 text-foreground";
+      return "ring-foreground focus-within:ring-2 z-100 text-foreground";
     }
 
     if (showLate && isLateAction(action)) {
