@@ -1,6 +1,7 @@
 import Color from "color";
+import { useRouteLoaderData } from "react-router";
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
-import { getFormattedDateTime, Icons } from "~/lib/helpers";
+import { getFormattedDateTime, Icons, isSprint } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 
 export function Content({
@@ -14,6 +15,10 @@ export function Content({
   isInstagramDate?: boolean;
   className?: string;
 }) {
+  const { person } = useRouteLoaderData("routes/app") as {
+    person: Person;
+  };
+
   const actionColor = action.color;
 
   const hasFiles = action.content_files && action.content_files?.length;
@@ -48,22 +53,29 @@ export function Content({
           </div>
         )}
       </div>
-      <div className="absolute inset-0 flex items-end justify-between gap-4 p-2">
-        {category && (
-          <Icons
-            slug={category.slug}
-            className="size-4"
-            color={foregroundColor}
-          />
-        )}
-        <div
-          className={`overflow-hidden text-xs font-medium text-ellipsis whitespace-nowrap ${hasFiles ? "drop-shadow-[0px_1px_1px_#00000050]" : ""}`}
-          style={{ color: foregroundColor }}
-        >
-          {getFormattedDateTime(
-            isInstagramDate ? action.instagram_date : action.date,
-            DATE_TIME_DISPLAY.TimeOnly,
+      <div className="absolute inset-0 flex flex-col justify-between p-2">
+        <div>
+          {isSprint(action, person) && (
+            <Icons slug="sprint" className="size-4" color={foregroundColor} />
           )}
+        </div>
+        <div className="flex items-center justify-between gap-2">
+          {category && (
+            <Icons
+              slug={category.slug}
+              className="size-4"
+              color={foregroundColor}
+            />
+          )}
+          <div
+            className={`overflow-hidden text-xs font-medium text-ellipsis whitespace-nowrap ${hasFiles ? "drop-shadow-[0px_1px_1px_#00000050]" : ""}`}
+            style={{ color: foregroundColor }}
+          >
+            {getFormattedDateTime(
+              isInstagramDate ? action.instagram_date : action.date,
+              DATE_TIME_DISPLAY.TimeOnly,
+            )}
+          </div>
         </div>
       </div>
     </div>
