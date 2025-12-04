@@ -259,7 +259,7 @@ export const ActionItem = ({
           variant === VARIANT.content
             ? "flex-col gap-2"
             : variant === VARIANT.block
-              ? "px-5 py-3"
+              ? "border-l-4 px-5 py-3"
               : "px-3 py-1 transition-colors @xs:p-1",
 
           bgClasses,

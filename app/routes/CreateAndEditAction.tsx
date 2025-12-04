@@ -434,16 +434,18 @@ export function CreateAndEditAction({
                 }}
               />
             </div>
-            <div>
-              <ActionColorDropdown
-                action={RawAction}
-                partners={currentPartners}
-                onSelect={async (color) => {
-                  setRawAction({ ...RawAction, color });
-                  await updateAction({ color });
-                }}
-              />
-            </div>
+            {isInstagramFeed(RawAction.category) && (
+              <div>
+                <ActionColorDropdown
+                  action={RawAction}
+                  partners={currentPartners}
+                  onSelect={async (color) => {
+                    setRawAction({ ...RawAction, color });
+                    await updateAction({ color });
+                  }}
+                />
+              </div>
+            )}
           </div>
           {/* Botão de criar e atualizar */}
           <div className="p-4">
