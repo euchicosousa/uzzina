@@ -3,7 +3,6 @@ import {
   addMinutes,
   format,
   formatDistanceToNow,
-  isValid,
   parse,
   parseISO,
 } from "date-fns";
@@ -14,7 +13,6 @@ import {
   InstagramIcon,
   LoaderCircleIcon,
   MessageCircleIcon,
-  PaletteIcon,
   PlusIcon,
   UploadCloudIcon,
   Wand2Icon,
@@ -54,7 +52,6 @@ import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
 import {
   getFormattedDateTime,
   getFormattedPartnersName,
-  getFullPartner,
   getNewDateForAction,
   handleAction,
   isColorValid,
@@ -124,12 +121,19 @@ export function CreateAndEditAction({
   }
 
   useEffect(() => {
+    if (RawAction.partners.length === 0) return;
     setCurrentPartners(
       RawAction.partners.map((p) =>
         partners.find((partner) => partner.slug === p),
       ) as Partner[],
     );
-  }, [RawAction]);
+  }, [RawAction.partners]);
+
+  useEffect(() => {
+    if (currentPartners.length > 0) {
+      setRawAction({ ...RawAction, color: currentPartners[0].colors[0] });
+    }
+  }, [currentPartners]);
 
   useEffect(() => {
     if (fetcher.data) {

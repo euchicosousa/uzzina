@@ -45,7 +45,7 @@ type ActionItemProps = {
 
 export const ActionItem = ({
   action,
-  variant,
+  variant = VARIANT.line,
   showLate,
   className,
   isDragging,
@@ -94,6 +94,11 @@ export const ActionItem = ({
     () => categories.find((category) => category.slug === action.category)!,
     [action.category, categories],
   );
+
+  variant =
+    !isInstagramFeed(action.category) && variant === VARIANT.content
+      ? VARIANT.line
+      : variant;
 
   const bgClasses = useMemo(() => {
     if (variant === VARIANT.content) return "";

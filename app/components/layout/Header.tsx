@@ -98,6 +98,18 @@ export function Header({
                       color={partner.colors[1]}
                     />
                     <span>{partner.title}</span>
+                    {getLateActions(actionsChart).length > 0 ? (
+                      <UBadge
+                        size="sm"
+                        value={
+                          getLateActions(actionsChart).filter((action) =>
+                            action.partners.includes(partner.slug),
+                          ).length
+                        }
+                        isDynamic
+                        className="absolute -top-2 -right-2"
+                      />
+                    ) : null}
                   </CommandItem>
                 ))}
               </CommandList>
