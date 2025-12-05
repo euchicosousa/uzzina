@@ -47,6 +47,7 @@ import {
   useNavigate,
   useOutletContext,
   useParams,
+  useRouteLoaderData,
   useSubmit,
   type LoaderFunctionArgs,
 } from "react-router";
@@ -57,6 +58,7 @@ import {
   CalendarActions,
   CalendarButtons,
 } from "~/components/features/Calendar";
+import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { Button } from "~/components/ui/button";
 import {
   InputGroup,
@@ -64,6 +66,7 @@ import {
   InputGroupInput,
 } from "~/components/ui/input-group";
 import { Toggle } from "~/components/ui/toggle";
+import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { UToggle } from "~/components/uzzina/UToggle";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
@@ -83,7 +86,6 @@ import {
   isInstagramFeed,
 } from "~/lib/helpers";
 import type { AppLoaderData } from "./app";
-import { UAvatar } from "~/components/uzzina/UAvatar";
 
 export const runtime = "edge";
 
@@ -144,6 +146,9 @@ export type ViewOptions = {
   ascending?: boolean;
   finishedOnEnd?: boolean;
   sprint?: boolean;
+  filter_category?: string[];
+  filter_state?: string[];
+  filter_responsible?: string[];
   showOptions: {
     instagram?: boolean;
     variant?: boolean;
@@ -155,6 +160,9 @@ export type ViewOptions = {
     ascending?: boolean;
     finishedOnEnd?: boolean;
     sprint?: boolean;
+    filter_category?: boolean;
+    filter_state?: boolean;
+    filter_responsible?: boolean;
   };
 };
 
@@ -163,13 +171,6 @@ export default function PartnerPage() {
   let currentActions = useOptimisticActions(actions || []);
   const [currentDay, setCurrentDay] = useState(parseISO(date));
   const [query, setQuery] = useState("");
-
-  const filteredActions = currentActions.filter((action) => {
-    if (!query) return true;
-    return action.title?.toLowerCase().includes(query.toLowerCase());
-  });
-
-  const [view, setView] = useState<"list" | "calendar">("calendar");
 
   const [viewOptions, setViewOptions] = useState<ViewOptions>({
     responsibles: true,
@@ -193,8 +194,24 @@ export default function PartnerPage() {
       order: true,
       ascending: true,
       finishedOnEnd: true,
+      filter_category: true,
+      filter_state: true,
+      filter_responsible: true,
     },
   });
+
+  const filteredActions = currentActions
+    .filter((action) =>
+      viewOptions.filter_category
+        ? viewOptions.filter_category.includes(action.category)
+        : action,
+    )
+    .filter((action) => {
+      if (!query) return true;
+      return action.title?.toLowerCase().includes(query.toLowerCase());
+    });
+
+  const [view, setView] = useState<"list" | "calendar">("calendar");
 
   const navigate = useNavigate();
 
@@ -476,6 +493,9 @@ export const ViewOptionsComponent = ({
   setViewOptions: (viewOptions: ViewOptions) => void;
 }) => {
   viewOptions.variant ||= VARIANT.line;
+
+  const { categories } = useRouteLoaderData("routes/app") as AppLoaderData;
+
   return (
     <div className="flex gap-8">
       {(viewOptions.showOptions.instagram ||
@@ -641,6 +661,27 @@ export const ViewOptionsComponent = ({
             >
               <HandshakeIcon />
             </Toggle>
+          )}
+        </div>
+      )}
+
+      {(viewOptions.showOptions.filter_category ||
+        viewOptions.showOptions.filter_state ||
+        viewOptions.showOptions.filter_responsible) && (
+        <div className="flex gap-1">
+          {viewOptions.showOptions.filter_category && (
+            <CategoriesCombobox
+              isMulti
+              selectedCategories={viewOptions.filter_category || ["all"]}
+              onSelect={({ categories }) => {
+                setViewOptions({
+                  ...viewOptions,
+                  filter_category: categories,
+                });
+
+                console.log(categories);
+              }}
+            />
           )}
         </div>
       )}

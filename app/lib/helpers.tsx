@@ -55,11 +55,13 @@ export async function getUserId(request: Request) {
 }
 
 export function getLateActions(actions: Action[]) {
-  const count = actions.filter((action) => {
+  if (!actions) return [];
+
+  const lateActions = actions.filter((action) => {
     return isLateAction(action);
   });
 
-  return count;
+  return lateActions;
 }
 
 export function isLateAction(action: Action) {

@@ -27,6 +27,23 @@ export const STATE = {
   finished: "finished",
 } as const;
 
+export const CATEGORY = {
+  carousel: "carousel",
+  ads: "ads",
+  dev: "dev",
+  todo: "todo",
+  stories: "stories",
+  sm: "sm",
+  reels: "reels",
+  post: "post",
+  plan: "plan",
+  print: "print",
+  capture: "capture",
+  finance: "finance",
+  design: "design",
+  meeting: "meeting",
+} as const;
+
 export const VARIANT = {
   line: "line",
   block: "block",

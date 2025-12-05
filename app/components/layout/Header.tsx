@@ -44,6 +44,8 @@ export function Header({
   const { actionsChart } = useMatches()[2].loaderData as AppHomeLoaderData;
   const navigate = useNavigate();
 
+  const lateActions = getLateActions(actionsChart);
+
   return (
     <div className="border_after flex w-full items-center justify-between px-8">
       <div className="flex items-center gap-2 py-4">
@@ -71,47 +73,49 @@ export function Header({
               {actionsChart && actionsChart.length > 0 ? (
                 <UBadge
                   size="sm"
-                  value={getLateActions(actionsChart).length}
+                  value={lateActions.length}
                   isDynamic
                   className="absolute -top-2 -right-2"
                 />
               ) : null}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="p-0">
+          <PopoverContent className="mx-2 p-0">
             <Command>
               <CommandInput placeholder="Procurar parceiro..." />
               <CommandList className="p-2 outline-none">
                 <CommandEmpty>Nenumn parceiro encontrado.</CommandEmpty>
-                {partners.map((partner) => (
-                  <CommandItem
-                    key={partner.id}
-                    className="flex items-center gap-2"
-                    onSelect={() => {
-                      navigate(`/app/partner/${partner.slug}`);
-                    }}
-                  >
-                    <UAvatar
-                      size={SIZE.sm}
-                      fallback={partner.short}
-                      backgroundColor={partner.colors[0]}
-                      color={partner.colors[1]}
-                    />
-                    <span>{partner.title}</span>
-                    {getLateActions(actionsChart).length > 0 ? (
-                      <UBadge
-                        size="sm"
-                        value={
-                          getLateActions(actionsChart).filter((action) =>
-                            action.partners.includes(partner.slug),
-                          ).length
-                        }
-                        isDynamic
-                        className="absolute -top-2 -right-2"
-                      />
-                    ) : null}
-                  </CommandItem>
-                ))}
+                {partners.map((partner) => {
+                  const partnerLateActions = lateActions.filter((action) =>
+                    action.partners.includes(partner.slug),
+                  );
+                  return (
+                    <CommandItem
+                      key={partner.id}
+                      className="flex items-center justify-between gap-2"
+                      onSelect={() => {
+                        navigate(`/app/partner/${partner.slug}`);
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <UAvatar
+                          size={SIZE.sm}
+                          fallback={partner.short}
+                          backgroundColor={partner.colors[0]}
+                          color={partner.colors[1]}
+                        />
+                        <span>{partner.title}</span>
+                      </div>
+                      {partnerLateActions.length > 0 ? (
+                        <UBadge
+                          size="sm"
+                          value={partnerLateActions.length}
+                          isDynamic
+                        />
+                      ) : null}
+                    </CommandItem>
+                  );
+                })}
               </CommandList>
             </Command>
           </PopoverContent>
@@ -135,7 +139,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
 
         <UAvatar size={SIZE.md} fallback={person.short} image={person.image} />
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent className="mx-2">
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             {getThemeIcon(theme, "size-4 mr-2")} Mudar o tema

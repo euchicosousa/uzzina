@@ -428,13 +428,13 @@ export function CreateAndEditAction({
             {/* Categorias Categories Combobox */}
             <div className="">
               <CategoriesCombobox
-                selectedCategory={RawAction.category}
-                onSelect={async (selected) => {
+                selectedCategories={[RawAction.category]}
+                onSelect={async ({ category }) => {
                   setRawAction({
                     ...RawAction,
-                    category: selected,
+                    category,
                   });
-                  await updateAction({ category: selected });
+                  await updateAction({ category });
                 }}
               />
             </div>
