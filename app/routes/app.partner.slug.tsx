@@ -672,14 +672,14 @@ export const ViewOptionsComponent = ({
           {viewOptions.showOptions.filter_category && (
             <CategoriesCombobox
               isMulti
-              selectedCategories={viewOptions.filter_category || ["all"]}
+              showInstagramGroup
+              selectedCategories={viewOptions.filter_category || ["categories"]}
               onSelect={({ categories }) => {
                 setViewOptions({
                   ...viewOptions,
-                  filter_category: categories,
+                  filter_category:
+                    categories[0] === "categories" ? undefined : categories,
                 });
-
-                console.log(categories);
               }}
             />
           )}

@@ -16,7 +16,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (intent === INTENT.caption_ai) {
     prompt = `Crie uma legenda para o post ${values.title} com essa abordagem ${values.description}.`;
   }
-  console.log(values.contexto);
 
   const response = await client.responses.create({
     model: "gpt-5.1-chat-latest",

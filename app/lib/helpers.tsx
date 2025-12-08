@@ -18,14 +18,17 @@ import {
   Code2Icon,
   ComponentIcon,
   ComputerIcon,
+  FunnelIcon,
   GalleryThumbnailsIcon,
   ImageIcon,
+  InstagramIcon,
   MegaphoneIcon,
   MoonIcon,
   PenToolIcon,
   PresentationIcon,
   PrinterIcon,
   RabbitIcon,
+  ShapesIcon,
   SquarePlayIcon,
   SunIcon,
 } from "lucide-react";
@@ -252,6 +255,12 @@ export const Icons = ({
       return <ClipboardCheckIcon className={cn(className)} style={style} />;
     case "sprint":
       return <RabbitIcon className={cn(className)} style={style} />;
+    case "categories":
+      return <ShapesIcon className={cn(className)} style={style} />;
+    case "filter":
+      return <FunnelIcon className={cn(className)} style={style} />;
+    case "instagram":
+      return <InstagramIcon className={cn(className)} style={style} />;
 
     default:
       return <ComponentIcon className={cn(className)} style={style} />;
@@ -302,8 +311,6 @@ export const getNewDateForAction = (
     const newStartDate = isAfter(currentStartDate, maxStartDate)
       ? maxStartDate
       : currentStartDate;
-
-    console.log({ newStartDate });
 
     return {
       date: format(newStartDate, "yyyy-MM-dd HH:mm:ss"),

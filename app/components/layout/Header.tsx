@@ -5,6 +5,7 @@ import {
   useMatches,
   useNavigate,
   useNavigation,
+  useParams,
 } from "react-router";
 import { Theme, useTheme } from "remix-themes";
 import { SIZE } from "~/lib/CONSTANTS";
@@ -36,13 +37,16 @@ import { UBadge } from "../uzzina/UBadge";
 export function Header({
   person,
   setBaseAction,
+  setOpenCmdK,
 }: {
   person: Person;
   setBaseAction: (action: any) => void;
+  setOpenCmdK: (open: boolean) => void;
 }) {
   const { partners } = useMatches()[1].loaderData as { partners: Partner[] };
   const { actionsChart } = useMatches()[2].loaderData as AppHomeLoaderData;
   const navigate = useNavigate();
+  const params = useParams();
 
   const lateActions = getLateActions(actionsChart);
 
@@ -53,12 +57,24 @@ export function Header({
           <UzzinaLogo className="h-8" />
         </Link>
 
-        <Button variant="ghost" size="icon" className="rounded-full">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full"
+          onClick={() => setOpenCmdK(true)}
+        >
           <SearchIcon />
         </Button>
       </div>
       <div className="flex items-center gap-2">
-        <Button onClick={() => setBaseAction(getCleanAction(person.user_id))}>
+        <Button
+          onClick={() =>
+            setBaseAction({
+              ...getCleanAction(person.user_id),
+              partners: params.slug ? [params.slug] : [],
+            })
+          }
+        >
           Nova Ação
           <PlusIcon />
         </Button>

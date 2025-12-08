@@ -12,7 +12,6 @@ import { getCleanAction, getUserId } from "~/lib/helpers";
 // import { CreateAndEditAction } from "./CreateAndEditAction";
 
 import { Toaster } from "sonner";
-import { Dialog, DialogContent } from "~/components/ui/dialog";
 import {
   Command,
   CommandEmpty,
@@ -20,7 +19,7 @@ import {
   CommandItem,
   CommandList,
 } from "~/components/ui/command";
-import { format } from "date-fns";
+import { Dialog, DialogContent } from "~/components/ui/dialog";
 
 const CreateAndEditAction = lazy(() =>
   import("./CreateAndEditAction").then((module) => ({
@@ -113,7 +112,7 @@ export default function Dashboard() {
       }
     }
     function keyDownNewAction(event: KeyboardEvent) {
-      if (event.code === "KeyA" && event.altKey && event.shiftKey) {
+      if (event.code === "KeyA" && event.altKey && event.metaKey) {
         setBaseAction({
           ...(getCleanAction(person.user_id) as unknown as Action),
         });
@@ -134,7 +133,11 @@ export default function Dashboard() {
     <div id="app" className="flex h-screen flex-col">
       {/* HEADER */}
 
-      <Header person={person} setBaseAction={setBaseAction} />
+      <Header
+        person={person}
+        setBaseAction={setBaseAction}
+        setOpenCmdK={setOpenCmdK}
+      />
       <div className="flex h-full w-full overflow-hidden">
         <div className="custom-scrollbars grow overflow-x-hidden overflow-y-auto">
           <div className="flex min-h-full grow">

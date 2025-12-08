@@ -64,6 +64,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       console.log(valuesToInsert);
       console.log(data, error);
     }
+
+    return data;
   } else if (intent === INTENT.update_action) {
     if (id) {
       if (

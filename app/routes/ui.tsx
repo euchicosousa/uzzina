@@ -12,10 +12,14 @@ import { createSupabaseClient } from "~/lib/supabase";
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { supabase } = createSupabaseClient(request);
 
-  const { data: categories } = await supabase.from("categories").select("*");
+  const [{ data: categories }, { data: states }] = await Promise.all([
+    supabase.from("categories").select("*"),
+    supabase.from("states").select("*").order("order"),
+  ]);
 
   return {
     categories,
+    states,
   };
 };
 
@@ -28,7 +32,7 @@ export const meta = () => {
 };
 
 export default function UITestingPage() {
-  const { categories } = useLoaderData<typeof loader>();
+  const { categories, states } = useLoaderData<typeof loader>();
   const [theme, setTheme] = useTheme();
   return (
     <div className="container mx-auto px-8">
@@ -95,6 +99,7 @@ export default function UITestingPage() {
           <h5>h5 – Lorem ipsum dolor sit amet consectetur adipisicing elit.</h5>
         </div>
       </div>
+      {/* Cores */}
       <div className="border_after py-8">
         <h2>Colors</h2>
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
@@ -363,6 +368,7 @@ export default function UITestingPage() {
           </div>
         </div>
       </div>
+      {/* Categorias */}
       <div className="border_after py-8">
         <div>
           <h2>Ícones das Categorias</h2>
@@ -388,6 +394,38 @@ export default function UITestingPage() {
                   color={category.color}
                 />
               </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="border_after py-8">
+        <div>
+          <h2>State</h2>
+        </div>
+        <div className="flex gap-4">
+          {states?.map((state, index) => (
+            <div className="relative">
+              <svg
+                className="absolute top-0 left-0 size-4 stroke-4 opacity-10"
+                viewBox="0 0 20 20"
+                stroke="currentColor"
+              >
+                <circle cx="10" cy="10" r="8" fill="none" />
+              </svg>
+              <svg
+                className="size-4 -rotate-90 stroke-4"
+                style={{ color: state.color }}
+                viewBox="0 0 20 20"
+              >
+                <circle
+                  cx="10"
+                  cy="10"
+                  r="8"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeDasharray={`${Math.floor((index + 1) * 7.3)},51`}
+                />
+              </svg>
             </div>
           ))}
         </div>

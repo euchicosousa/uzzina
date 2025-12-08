@@ -78,7 +78,10 @@ export function CreateAndEditAction({
   const [RawAction, setRawAction] = useState<Action>(BaseAction);
 
   useEffect(() => {
-    setRawAction(BaseAction);
+    setRawAction((prev) => {
+      if (prev.id && !BaseAction.id) return prev;
+      return BaseAction;
+    });
   }, [BaseAction]);
 
   const submit = useSubmit();
@@ -88,6 +91,20 @@ export function CreateAndEditAction({
 
   useEffect(() => {
     setIsPending(fetchers.filter((f) => f.formData).length > 0);
+    fetchers.forEach((f) => {
+      if (f.formData && f.data) {
+        const intent = f.formData.get("intent");
+        if (intent === INTENT.create_action) {
+          const newId = f.data?.id;
+          if (newId) {
+            setRawAction((prev) => {
+              if (prev.id === newId) return prev;
+              return { ...prev, id: newId };
+            });
+          }
+        }
+      }
+    });
   }, [fetchers]);
 
   if (!RawAction.created_at) {
@@ -145,10 +162,7 @@ export function CreateAndEditAction({
           ),
         }));
       }
-      // setRawAction((prev) => ({
-      //   ...prev,
-      //   description: fetcher.data as string,
-      // }));
+      console.log(fetcher.data);
     }
   }, [fetcher.data]);
 
