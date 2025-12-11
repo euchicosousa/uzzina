@@ -38,7 +38,14 @@ import {
   useRouteLoaderData,
 } from "react-router";
 import { Theme } from "remix-themes";
-import { DATE_TIME_DISPLAY, ORDER_BY, PRIORITY, STATE } from "./CONSTANTS";
+import {
+  DATE_TIME_DISPLAY,
+  ORDER_BY,
+  PRIORITIES,
+  STATES,
+  type PRIORITY,
+  type STATE,
+} from "./CONSTANTS";
 import { createSupabaseClient } from "./supabase";
 import { cn } from "./utils";
 import type { AppLoaderData } from "~/routes/app";
@@ -69,7 +76,7 @@ export function getLateActions(actions: Action[]) {
 
 export function isLateAction(action: Action) {
   const isLate =
-    action.state !== STATE.finished && isBefore(action.date, new Date());
+    action.state !== STATES.finished.slug && isBefore(action.date, new Date());
 
   return isLate;
 }
@@ -145,29 +152,25 @@ export function sortActions(
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY],
   ascending = true,
 ) {
-  const priorities = ["low", "medium", "high"];
-  const states = [
-    "idea",
-    "do",
-    "doing",
-    "review",
-    "approved",
-    "done",
-    "finished",
-  ];
+  const priorities_order = Object.values(PRIORITIES).map(
+    (priority) => priority.slug,
+  );
+  const states_order = Object.values(STATES).map((state) => state.slug);
 
   switch (orderBy) {
     case ORDER_BY.priority:
       actions.sort(
         (a, b) =>
-          (priorities.indexOf(a.priority) - priorities.indexOf(b.priority)) *
+          (priorities_order.indexOf(a.priority as PRIORITY) -
+            priorities_order.indexOf(b.priority as PRIORITY)) *
           (ascending ? 1 : -1),
       );
       break;
     case ORDER_BY.state:
       actions.sort(
         (a, b) =>
-          (states.indexOf(a.state) - states.indexOf(b.state)) *
+          (states_order.indexOf(a.state as STATE) -
+            states_order.indexOf(b.state as STATE)) *
           (ascending ? 1 : -1),
       );
       break;
@@ -277,8 +280,8 @@ export const getCleanAction = (user_id: string, date?: Date) => {
   return {
     title: "",
     description: "",
-    state: STATE.idea,
-    priority: PRIORITY.medium,
+    state: STATES.idea.slug,
+    priority: PRIORITIES.medium.slug,
     category: "post",
     responsibles: [user_id],
     topics: null,

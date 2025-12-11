@@ -9,7 +9,13 @@ import {
 } from "@dnd-kit/core";
 import { useState } from "react";
 import { useMatches, useSubmit } from "react-router";
-import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
+import {
+  DATE_TIME_DISPLAY,
+  INTENT,
+  STATES,
+  type STATE,
+  type STATE_TYPE,
+} from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "~/routes/app";
 import { ActionItem } from "../features/ActionItem";
@@ -18,7 +24,6 @@ import { handleAction } from "~/lib/helpers";
 import { UBadge } from "../uzzina/UBadge";
 
 export default function KanbanComponent({ actions }: { actions: Action[] }) {
-  const { states } = useMatches()[1].loaderData as AppLoaderData;
   const submit = useSubmit();
 
   //Start DnD
@@ -61,11 +66,11 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            {states.map((state) => (
+            {Object.values(STATES).map((state) => (
               <KanbanColumn
                 id={state.slug}
                 state={state}
-                key={state.id}
+                key={state.slug}
                 actions={actions.filter(
                   (action) => action.state === state.slug,
                 )}
@@ -100,7 +105,7 @@ const KanbanColumn = ({
 }: {
   actions: Action[];
   id: string;
-  state: State;
+  state: STATE_TYPE;
 }) => {
   return (
     <Droppable id={id} className="flex h-[30vh] flex-col overflow-hidden">

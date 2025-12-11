@@ -251,3 +251,8 @@
 .tiptap.ProseMirror {
   @apply h-full overflow-y-auto outline-none;
 }
+
+.teste {
+  border-radius: 20px;
+  corner-shape: superellipse(1.5);
+}

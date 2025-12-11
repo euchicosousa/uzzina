@@ -23,10 +23,13 @@ export type Database = {
           created_at: string
           date: string
           description: string | null
+          genesis: string | null
+          goal: string | null
           id: string
           instagram_caption: string | null
           instagram_content: string | null
           instagram_date: string
+          misison: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -47,10 +50,13 @@ export type Database = {
           created_at: string
           date: string
           description?: string | null
+          genesis?: string | null
+          goal?: string | null
           id?: string
           instagram_caption?: string | null
           instagram_content?: string | null
           instagram_date: string
+          misison?: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -71,10 +77,13 @@ export type Database = {
           created_at?: string
           date?: string
           description?: string | null
+          genesis?: string | null
+          goal?: string | null
           id?: string
           instagram_caption?: string | null
           instagram_content?: string | null
           instagram_date?: string
+          misison?: string | null
           partners?: string[]
           priority?: string
           responsibles?: string[]
@@ -85,81 +94,6 @@ export type Database = {
           topics?: number[] | null
           updated_at?: string
           user_id?: string
-          work_files?: string[] | null
-        }
-        Relationships: []
-      }
-      actions_backup_20251109: {
-        Row: {
-          archived: boolean | null
-          category: string | null
-          color: string | null
-          content_files: string[] | null
-          created_at: string | null
-          date: string | null
-          description: string | null
-          id: string | null
-          instagram_caption: string | null
-          instagram_content: string | null
-          instagram_date: string | null
-          partners: string[] | null
-          priority: string | null
-          responsibles: string[] | null
-          sprints: string[] | null
-          state: string | null
-          time: number | null
-          title: string | null
-          topics: number[] | null
-          updated_at: string | null
-          user_id: string | null
-          work_files: string[] | null
-        }
-        Insert: {
-          archived?: boolean | null
-          category?: string | null
-          color?: string | null
-          content_files?: string[] | null
-          created_at?: string | null
-          date?: string | null
-          description?: string | null
-          id?: string | null
-          instagram_caption?: string | null
-          instagram_content?: string | null
-          instagram_date?: string | null
-          partners?: string[] | null
-          priority?: string | null
-          responsibles?: string[] | null
-          sprints?: string[] | null
-          state?: string | null
-          time?: number | null
-          title?: string | null
-          topics?: number[] | null
-          updated_at?: string | null
-          user_id?: string | null
-          work_files?: string[] | null
-        }
-        Update: {
-          archived?: boolean | null
-          category?: string | null
-          color?: string | null
-          content_files?: string[] | null
-          created_at?: string | null
-          date?: string | null
-          description?: string | null
-          id?: string | null
-          instagram_caption?: string | null
-          instagram_content?: string | null
-          instagram_date?: string | null
-          partners?: string[] | null
-          priority?: string | null
-          responsibles?: string[] | null
-          sprints?: string[] | null
-          state?: string | null
-          time?: number | null
-          title?: string | null
-          topics?: number[] | null
-          updated_at?: string | null
-          user_id?: string | null
           work_files?: string[] | null
         }
         Relationships: []
@@ -475,10 +409,13 @@ export type Database = {
           created_at: string
           date: string
           description: string | null
+          genesis: string | null
+          goal: string | null
           id: string
           instagram_caption: string | null
           instagram_content: string | null
           instagram_date: string
+          misison: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -508,10 +445,13 @@ export type Database = {
           created_at: string
           date: string
           description: string | null
+          genesis: string | null
+          goal: string | null
           id: string
           instagram_caption: string | null
           instagram_content: string | null
           instagram_date: string
+          misison: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -541,10 +481,13 @@ export type Database = {
           created_at: string
           date: string
           description: string | null
+          genesis: string | null
+          goal: string | null
           id: string
           instagram_caption: string | null
           instagram_content: string | null
           instagram_date: string
+          misison: string | null
           partners: string[]
           priority: string
           responsibles: string[]

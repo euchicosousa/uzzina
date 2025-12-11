@@ -494,8 +494,6 @@ export const ViewOptionsComponent = ({
 }) => {
   viewOptions.variant ||= VARIANT.line;
 
-  const { categories } = useRouteLoaderData("routes/app") as AppLoaderData;
-
   return (
     <div className="flex gap-8">
       {(viewOptions.showOptions.instagram ||
@@ -673,12 +671,12 @@ export const ViewOptionsComponent = ({
             <CategoriesCombobox
               isMulti
               showInstagramGroup
-              selectedCategories={viewOptions.filter_category || ["categories"]}
+              selectedCategories={viewOptions.filter_category || ["all"]}
               onSelect={({ categories }) => {
                 setViewOptions({
                   ...viewOptions,
                   filter_category:
-                    categories[0] === "categories" ? undefined : categories,
+                    categories[0] === "all" ? undefined : categories,
                 });
               }}
             />

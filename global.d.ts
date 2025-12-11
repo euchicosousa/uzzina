@@ -1,12 +1,10 @@
 import type { Tables } from "types/database";
+import { CATEGORIES } from "./CONSTANTS";
 
 declare global {
   type Person = Tables<"people">;
   type Partner = Tables<"partners">;
   type Action = Tables<"actions">;
-  type State = Tables<"states">;
-  type Category = Tables<"categories">;
-  type Priority = Tables<"priorities">;
   type Celebration = Tables<"celebrations">;
   type OutletContext = {
     BaseAction: Action | null;

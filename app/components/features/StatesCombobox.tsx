@@ -16,6 +16,7 @@ import {
   CommandList,
 } from "../ui/command";
 import { UBadge } from "../uzzina/UBadge";
+import { STATES, type STATE } from "~/lib/CONSTANTS";
 
 export const StatesCombobox = ({
   selectedState,
@@ -25,8 +26,7 @@ export const StatesCombobox = ({
   onSelect?: (state: string) => void;
 }) => {
   const [open, setOpen] = useState(false);
-  const { states } = useMatches()[1].loaderData as { states: State[] };
-  let currentState = states.find((state) => state.slug === selectedState)!;
+  let currentState = STATES[selectedState as STATE];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -44,9 +44,9 @@ export const StatesCombobox = ({
           <CommandInput placeholder="Procurar estado..." />
           <CommandEmpty>Nenhum estado encontrado.</CommandEmpty>
           <CommandList className="p-2 outline-none">
-            {states.map((state) => (
+            {Object.values(STATES).map((state) => (
               <CommandItem
-                key={state.id}
+                key={state.slug}
                 className={cn("flex items-center gap-2")}
                 onSelect={() => {
                   onSelect?.(state.slug);

@@ -9,7 +9,6 @@ import {
 import invariant from "tiny-invariant";
 import { Header } from "~/components/layout/Header";
 import { getCleanAction, getUserId } from "~/lib/helpers";
-// import { CreateAndEditAction } from "./CreateAndEditAction";
 
 import { Toaster } from "sonner";
 import {
@@ -31,60 +30,42 @@ export type AppLoaderData = {
   people: Person[];
   person: Person;
   partners: Partner[];
-  states: State[];
-  categories: Category[];
-  priorities: Priority[];
   celebrations: Celebration[];
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { user_id, supabase } = await getUserId(request);
 
-  const [
-    { data: people },
-    { data: partners },
-    { data: states },
-    { data: categories },
-    { data: priorities },
-    { data: celebrations },
-  ] = await Promise.all([
-    supabase
-      .from("people")
-      .select("*")
-      .eq("visible", true)
-      .order("name", { ascending: true }),
-    supabase
-      .from("partners")
-      .select("*")
-      .eq("archived", false)
-      .contains("users_ids", [user_id])
-      .order("title", { ascending: true }),
-    supabase.from("states").select("*").order("order", { ascending: true }),
-    supabase.from("categories").select("*").order("order", { ascending: true }),
-    supabase.from("priorities").select("*").order("order", { ascending: true }),
-    supabase
-      .from("celebrations")
-      .select("*")
-      .order("date", { ascending: true }),
-  ]);
+  const [{ data: people }, { data: partners }, { data: celebrations }] =
+    await Promise.all([
+      supabase
+        .from("people")
+        .select("*")
+        .eq("visible", true)
+        .order("name", { ascending: true }),
+      supabase
+        .from("partners")
+        .select("*")
+        .eq("archived", false)
+        .contains("users_ids", [user_id])
+        .order("title", { ascending: true }),
+      supabase
+        .from("celebrations")
+        .select("*")
+        .order("date", { ascending: true }),
+    ]);
 
   const person = people?.find((person) => person.user_id === user_id)!;
 
   invariant(person, "Person not found");
   invariant(people, "People not found");
   invariant(partners, "Partners not found");
-  invariant(states, "States not found");
-  invariant(categories, "Categories not found");
-  invariant(priorities, "Priorities not found");
   invariant(celebrations, "Priorities not found");
 
   return {
     people,
     person,
     partners,
-    states,
-    categories,
-    priorities,
     celebrations,
   } as AppLoaderData;
 };

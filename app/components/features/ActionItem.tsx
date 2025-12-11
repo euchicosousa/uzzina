@@ -3,12 +3,16 @@ import { CalendarIcon, InstagramIcon, SignalHighIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useOutletContext, useRouteLoaderData, useSubmit } from "react-router";
 import {
+  CATEGORIES,
   DATE_TIME_DISPLAY,
   INTENT,
-  PRIORITY,
   SIZE,
-  STATE,
+  type STATE,
+  STATES,
   VARIANT,
+  type CATEGORY,
+  type PRIORITY,
+  PRIORITIES,
 } from "~/lib/CONSTANTS";
 import {
   getFormattedDateTime,
@@ -59,7 +63,7 @@ export const ActionItem = ({
   dateTimeDisplay,
   onClick,
 }: ActionItemProps) => {
-  const { states, people, partners, categories, person } = useRouteLoaderData(
+  const { people, partners } = useRouteLoaderData(
     "routes/app",
   ) as AppLoaderData;
 
@@ -70,8 +74,8 @@ export const ActionItem = ({
   const { setBaseAction } = useOutletContext<OutletContext>();
 
   const currentState = useMemo(
-    () => states.find((state) => state.slug === action.state)!,
-    [action.state, states],
+    () => STATES[action.state as STATE],
+    [action.state],
   );
 
   const currentPartners = useMemo(
@@ -91,8 +95,8 @@ export const ActionItem = ({
   );
 
   const currentCategory = useMemo(
-    () => categories.find((category) => category.slug === action.category)!,
-    [action.category, categories],
+    () => CATEGORIES[action.category as CATEGORY],
+    [action.category],
   );
 
   variant =
@@ -190,6 +194,7 @@ export const ActionItem = ({
               isEditing={isEditing}
               setIsEditing={setIsEditing}
               title={action.title}
+              className="w-full"
               onChange={(title) => {
                 handleAction(
                   {
@@ -223,11 +228,7 @@ export const ActionItem = ({
                 />
               )}
               {showPriority && (
-                <ActionItemPriority
-                  priority={
-                    action.priority as (typeof PRIORITY)[keyof typeof PRIORITY]
-                  }
-                />
+                <ActionItemPriority priority={action.priority as PRIORITY} />
               )}
               {showCategory && (
                 <Icons
@@ -468,19 +469,15 @@ export const ActionItemResponsibles = ({
   );
 };
 
-export const ActionItemPriority = ({
-  priority,
-}: {
-  priority: (typeof PRIORITY)[keyof typeof PRIORITY];
-}) => {
+export const ActionItemPriority = ({ priority }: { priority: PRIORITY }) => {
   switch (priority) {
-    case PRIORITY.low:
+    case PRIORITIES.low.slug:
       return <SignalHighIcon className="text-info size-4" />;
 
-    case PRIORITY.high:
+    case PRIORITIES.high.slug:
       return <SignalHighIcon className="text-error size-4" />;
 
-    case PRIORITY.medium:
+    case PRIORITIES.medium.slug:
     default:
       return <SignalHighIcon className="text-success size-4" />;
   }
@@ -519,14 +516,14 @@ const useActionShortcuts = (action: Action, isInstagramDate?: boolean) => {
     (event: KeyboardEvent) => {
       const code = event.code;
 
-      let status: Record<string, (typeof STATE)[keyof typeof STATE]> = {
-        KeyI: STATE.idea,
-        KeyF: STATE.do,
-        KeyZ: STATE.doing,
-        KeyA: STATE.review,
-        KeyP: STATE.approved,
-        KeyT: STATE.done,
-        KeyC: STATE.finished,
+      let status: Record<string, string> = {
+        KeyI: STATES.idea.slug,
+        KeyF: STATES.do.slug,
+        KeyZ: STATES.doing.slug,
+        KeyA: STATES.review.slug,
+        KeyP: STATES.approved.slug,
+        KeyT: STATES.done.slug,
+        KeyC: STATES.finished.slug,
       };
 
       //SHIFT

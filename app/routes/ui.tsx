@@ -5,23 +5,9 @@ import { Theme, useTheme } from "remix-themes";
 import { Button } from "~/components/ui/button";
 import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
-import { SIZE } from "~/lib/CONSTANTS";
+import { CATEGORIES, SIZE, STATES } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
 import { createSupabaseClient } from "~/lib/supabase";
-
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { supabase } = createSupabaseClient(request);
-
-  const [{ data: categories }, { data: states }] = await Promise.all([
-    supabase.from("categories").select("*"),
-    supabase.from("states").select("*").order("order"),
-  ]);
-
-  return {
-    categories,
-    states,
-  };
-};
 
 export const meta = () => {
   return [
@@ -32,10 +18,10 @@ export const meta = () => {
 };
 
 export default function UITestingPage() {
-  const { categories, states } = useLoaderData<typeof loader>();
   const [theme, setTheme] = useTheme();
   return (
     <div className="container mx-auto px-8">
+      <div className="bg-foreground teste mt-12 w-40 p-4 text-white">TESTE</div>
       {/* Header */}
       <div className="border_after flex items-center justify-between py-8">
         <h1 className="p-0">UI Testing Page</h1>
@@ -374,8 +360,8 @@ export default function UITestingPage() {
           <h2>Ícones das Categorias</h2>
         </div>
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {categories?.map((category) => (
-            <div key={category.id} className="p-4 text-center">
+          {Object.values(CATEGORIES).map((category) => (
+            <div key={category.slug} className="p-4 text-center">
               <div className="mb-2 font-medium">{category.title}</div>
               <div className="flex items-center justify-center gap-2">
                 <Icons
@@ -403,7 +389,7 @@ export default function UITestingPage() {
           <h2>State</h2>
         </div>
         <div className="flex gap-4">
-          {states?.map((state, index) => (
+          {Object.values(STATES).map((state, index) => (
             <div className="relative">
               <svg
                 className="absolute top-0 left-0 size-4 stroke-4 opacity-10"

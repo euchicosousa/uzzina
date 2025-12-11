@@ -18,6 +18,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "../ui/command";
+import { CATEGORIES, type CATEGORY_TYPE } from "~/lib/CONSTANTS";
 
 export const CategoriesCombobox = ({
   selectedCategories,
@@ -39,35 +40,32 @@ export const CategoriesCombobox = ({
   className?: string;
 }) => {
   const [open, setOpen] = useState(false);
-  let { categories } = useMatches()[1].loaderData as {
-    categories: Category[];
-  };
 
-  categories = isMulti
+  const CATEGORIES_LIST = Object.values(CATEGORIES);
+
+  let categoriesList = isMulti
     ? [
         {
           color: "#666",
-          id: "categories",
-          slug: "categories",
+          slug: "all",
           title: "Todos as categorias",
-        } as Category,
-        ...categories,
+        },
+        ...CATEGORIES_LIST,
       ]
-    : categories;
+    : CATEGORIES_LIST;
 
-  categories = showInstagramGroup
+  categoriesList = showInstagramGroup
     ? [
         {
           color: "#666",
-          id: "instagram",
           slug: "instagram",
           title: "Feed do Instagram",
-        } as Category,
-        ...categories,
+        },
+        ...categoriesList,
       ]
-    : categories;
+    : categoriesList;
 
-  let currentCategories = categories.filter(
+  let currentCategories = categoriesList.filter(
     (category) =>
       selectedCategories.find((slug) => slug === category.slug) !== undefined,
   );
@@ -97,26 +95,25 @@ export const CategoriesCombobox = ({
         {isMulti ? (
           <Button
             variant={
-              currentCategories.filter((c) => c.slug !== "categories")
-                .length === 0
+              currentCategories.filter((c) => c.slug !== "all").length === 0
                 ? "ghost"
                 : "secondary"
             }
             className="flex gap-px"
             title={
-              currentCategories[0].slug === "categories"
+              currentCategories[0].slug === "all"
                 ? "Escolha a categoria"
                 : currentCategories
                     .map((category) => category.title)
                     .join(" • ")
             }
           >
-            {currentCategories[0].slug === "categories" ? (
+            {currentCategories[0].slug === "all" ? (
               <Icons color="#666" slug="categories" />
             ) : (
               currentCategories.map((category) => (
                 <Icons
-                  key={category.id}
+                  key={category.slug}
                   slug={category.slug}
                   color={category.color}
                 />
@@ -145,16 +142,16 @@ export const CategoriesCombobox = ({
           <CommandInput placeholder="Procurar estado..." />
           <CommandEmpty>Nenhum estado encontrado.</CommandEmpty>
           <CommandList className="p-1 outline-none">
-            {categories.map((category) => (
-              <Fragment key={category.id}>
+            {categoriesList.map((category) => (
+              <Fragment key={category.slug}>
                 <CommandItem
                   className={cn("flex items-center gap-2")}
                   onSelect={() => {
                     if (isMulti) {
                       let newCategories = selectedCategories;
 
-                      if (category.slug === "categories") {
-                        newCategories = ["categories"];
+                      if (category.slug === "all") {
+                        newCategories = ["all"];
                       } else if (category.slug === "instagram") {
                         newCategories = ["post", "reels", "carousel"];
                       } else {
@@ -162,7 +159,7 @@ export const CategoriesCombobox = ({
                           newCategories = [category.slug];
                         } else {
                           newCategories = selectedCategories.filter(
-                            (slug) => slug !== "categories",
+                            (slug) => slug !== "all",
                           );
 
                           if (newCategories.includes(category.slug)) {
@@ -175,9 +172,7 @@ export const CategoriesCombobox = ({
                         }
 
                         newCategories =
-                          newCategories.length === 0
-                            ? ["categories"]
-                            : newCategories;
+                          newCategories.length === 0 ? ["all"] : newCategories;
                       }
 
                       onSelect?.({
@@ -212,7 +207,7 @@ export const CategoriesCombobox = ({
                     )}
                   />
                 </CommandItem>
-                {["categories", "instagram"].includes(category.slug) && (
+                {["all", "instagram"].includes(category.slug) && (
                   <CommandSeparator className="my-1" />
                 )}
               </Fragment>

@@ -42,7 +42,7 @@ import { getShortText } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { UToggle } from "~/components/uzzina/UToggle";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
-import { ORDER_BY, PRIORITY, STATE, VARIANT } from "~/lib/CONSTANTS";
+import { ORDER_BY, PRIORITIES, STATES, VARIANT } from "~/lib/CONSTANTS";
 import {
   getCleanAction,
   getLateActions,
@@ -65,7 +65,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const [{ data: people }, { data: partners }, { data: archivedPartners }] =
     await Promise.all([
       supabase.from("people").select("*").match({ user_id: user_id }),
-      supabase.from("partners").select("slug").match({ archived: false }),
+      supabase
+        .from("partners")
+        .select("slug")
+        .eq("archived", false)
+        .contains("users_ids", [user_id]),
       supabase.from("partners").select("slug").match({ archived: true }),
     ]);
 
@@ -93,7 +97,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       .from("actions")
       .select("*")
       .is("archived", false)
-      .not("state", "eq", STATE.finished)
+      .not("state", "eq", STATES.finished.slug)
       .contains("responsibles", person.admin ? [] : [user_id])
       .overlaps("partners", partners.map((p) => p.slug)!)
       .lte("date", format(endOfDay(new Date()), "yyyy-MM-dd HH:mm:ss"))
@@ -109,9 +113,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 import { useMemo } from "react";
 
 export default function AppHome() {
-  let { actions } = useLoaderData<typeof loader>();
+  let { actions, actionsChart } = useLoaderData<typeof loader>();
   let { person } = useMatches()[1].loaderData as AppLoaderData;
   const currentActions = useOptimisticActions(actions);
+
+  const currentLateActions = useOptimisticActions(actionsChart);
 
   const sprintActions = useMemo(() => {
     return currentActions.filter(
@@ -134,7 +140,7 @@ export default function AppHome() {
         setBaseAction={setBaseAction}
       />
       <PartnersHomeComponent actions={currentActions} />
-      <LateHomeComponent actions={currentActions} />
+      <LateHomeComponent actions={currentLateActions} />
     </>
   );
 }
@@ -176,7 +182,7 @@ const SprintHomeComponent = ({ actions }: { actions: Action[] }) => {
                 showCategory={viewOptions.category}
                 showPriority={viewOptions.priority}
                 actions={actions.filter(
-                  (action) => action.priority === PRIORITY.low,
+                  (action) => action.priority === PRIORITIES.low.slug,
                 )}
                 variant={VARIANT.block}
                 showLate
@@ -195,7 +201,7 @@ const SprintHomeComponent = ({ actions }: { actions: Action[] }) => {
                 showCategory={viewOptions.category}
                 showPriority={viewOptions.priority}
                 actions={actions.filter(
-                  (action) => action.priority === PRIORITY.medium,
+                  (action) => action.priority === PRIORITIES.medium.slug,
                 )}
                 variant={VARIANT.block}
                 showLate
@@ -213,7 +219,7 @@ const SprintHomeComponent = ({ actions }: { actions: Action[] }) => {
                 showCategory={viewOptions.category}
                 showPriority={viewOptions.priority}
                 actions={actions.filter(
-                  (action) => action.priority === PRIORITY.high,
+                  (action) => action.priority === PRIORITIES.high.slug,
                 )}
                 variant={VARIANT.block}
                 showLate
@@ -236,7 +242,7 @@ const SprintHomeComponent = ({ actions }: { actions: Action[] }) => {
 };
 
 const PartnersHomeComponent = ({ actions }: { actions: Action[] }) => {
-  const { partners, states } = useMatches()[1].loaderData as AppLoaderData;
+  const { partners } = useMatches()[1].loaderData as AppLoaderData;
 
   const partnersWithActionsLength = useMemo(() => {
     // Create a map of partner slug to actions for O(1) lookup or O(N) build
@@ -291,18 +297,6 @@ const PartnersHomeComponent = ({ actions }: { actions: Action[] }) => {
                 />
               </div>
             </div>
-            {/* <div className="absolute top-1/2 left-0 flex h-1 w-full origin-left -translate-y-1/2 scale-x-0 p-2 transition-[scale] duration-500 group-hover/partner:scale-x-100">
-              {states.map((state) => (
-                <div
-                  key={state.id}
-                  className="h-1 w-full"
-                  style={{
-                    backgroundColor: state.color,
-                    width: `${(partner.actions.filter((action) => action.state === state.slug).length / partner.actions.length) * 100}%`,
-                  }}
-                ></div>
-              ))}
-            </div> */}
           </Link>
         ))}
       </div>
