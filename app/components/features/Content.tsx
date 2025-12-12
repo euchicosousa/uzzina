@@ -1,6 +1,6 @@
 import Color from "color";
 import { useRouteLoaderData } from "react-router";
-import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
+import { CATEGORIES, DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import { getFormattedDateTime, Icons, isSprint } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 
@@ -11,7 +11,7 @@ export function Content({
   className,
 }: {
   action: Action;
-  category?: Category;
+  category?: (typeof CATEGORIES)[keyof typeof CATEGORIES];
   isInstagramDate?: boolean;
   className?: string;
 }) {
@@ -33,7 +33,7 @@ export function Content({
 
   return (
     <div className={cn("relative", className)}>
-      <div className="bg-secondary aspect-[4/5] overflow-hidden rounded-xl border transition-opacity duration-500 group-hover/action:opacity-50">
+      <div className="bg-secondary squircle aspect-[4/5] overflow-hidden rounded-2xl border transition-opacity duration-500 group-hover/action:opacity-50">
         {action.content_files?.length ? (
           <img
             src={action.content_files[0]}

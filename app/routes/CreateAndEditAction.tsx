@@ -28,6 +28,7 @@ import {
 import { toast } from "sonner";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { Content } from "~/components/features/Content";
+import { GMGCombobox } from "~/components/features/GMGCombobox";
 import { PartnersCombobox } from "~/components/features/PartnersCombobox";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 import { StatesCombobox } from "~/components/features/StatesCombobox";
@@ -211,6 +212,7 @@ export function CreateAndEditAction({
 
         {view === "essential" && (
           <div className="flex h-full flex-col overflow-hidden p-6">
+            {/* Título */}
             <div className="relative">
               <textarea
                 value={RawAction.title}
@@ -238,7 +240,7 @@ export function CreateAndEditAction({
                 </div>
               )}
             </div>
-            {/* <pre>{JSON.stringify(RawAction, null, 2)}</pre> */}
+
             <div className="pb-6 text-sm">
               <div className="flex flex-wrap items-center gap-4 border-b py-2">
                 <div className="opacity-50">
@@ -247,13 +249,17 @@ export function CreateAndEditAction({
                 <ResponsiblesCombobox
                   selectedResponsibles={RawAction.responsibles}
                   currentPartners={currentPartners}
-                  onSelect={(responsibles) =>
-                    setRawAction({ ...RawAction, responsibles })
-                  }
+                  onSelect={async (responsibles) => {
+                    setRawAction({ ...RawAction, responsibles });
+                    await updateAction({
+                      ...RawAction,
+                      responsibles,
+                    });
+                  }}
                 />
               </div>
-              <div className="flex gap-8 border-b py-2 opacity-50">
-                <div className="flex items-center gap-1">
+              <div className="flex gap-8 border-b py-2">
+                <div className="flex items-center gap-1 opacity-50">
                   <CalendarIcon className="size-3" />
                   <ActionDatePicker
                     onSelect={async (date) => {
@@ -273,7 +279,7 @@ export function CreateAndEditAction({
                   RawAction.category,
                   RawAction.category === "stories",
                 ) && (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 opacity-50">
                     <InstagramIcon className="size-3" />
                     <ActionDatePicker
                       onSelect={async (date) => {
@@ -291,6 +297,32 @@ export function CreateAndEditAction({
                   </div>
                 )}
               </div>
+
+              {isInstagramFeed(
+                RawAction.category,
+                RawAction.category === "stories",
+              ) && (
+                <div className="flex gap-4 border-b text-sm">
+                  <div>
+                    <GMGCombobox
+                      gmg="genesis"
+                      className="py-2 underline-offset-4 opacity-50 hover:underline"
+                    />
+                  </div>
+                  <div>
+                    <GMGCombobox
+                      gmg="missions"
+                      className="py-2 underline-offset-4 opacity-50 hover:underline"
+                    />
+                  </div>
+                  <div>
+                    <GMGCombobox
+                      gmg="goals"
+                      className="py-2 underline-offset-4 opacity-50 hover:underline"
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* <div>Cor</div>
           <div>Categoria</div>

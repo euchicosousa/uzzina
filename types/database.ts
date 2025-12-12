@@ -29,7 +29,7 @@ export type Database = {
           instagram_caption: string | null
           instagram_content: string | null
           instagram_date: string
-          misison: string | null
+          mission: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -56,7 +56,7 @@ export type Database = {
           instagram_caption?: string | null
           instagram_content?: string | null
           instagram_date: string
-          misison?: string | null
+          mission?: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -83,7 +83,7 @@ export type Database = {
           instagram_caption?: string | null
           instagram_content?: string | null
           instagram_date?: string
-          misison?: string | null
+          mission?: string | null
           partners?: string[]
           priority?: string
           responsibles?: string[]
@@ -415,7 +415,7 @@ export type Database = {
           instagram_caption: string | null
           instagram_content: string | null
           instagram_date: string
-          misison: string | null
+          mission: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -451,7 +451,7 @@ export type Database = {
           instagram_caption: string | null
           instagram_content: string | null
           instagram_date: string
-          misison: string | null
+          mission: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -487,7 +487,7 @@ export type Database = {
           instagram_caption: string | null
           instagram_content: string | null
           instagram_date: string
-          misison: string | null
+          mission: string | null
           partners: string[]
           priority: string
           responsibles: string[]

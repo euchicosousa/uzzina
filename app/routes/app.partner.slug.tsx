@@ -118,9 +118,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     supabase.from("partners").select("*").match({ slug: params.slug }).single(),
     supabase
       .from("actions")
-      .select(
-        "id, title, date, state, partners, responsibles, category, instagram_date, archived, created_at, updated_at, description, instagram_caption, priority, color, content_files, instagram_content, sprints, work_files, time, topics, user_id",
-      )
+      .select("*")
       .is("archived", false)
       .contains("responsibles", person.admin ? [] : [user_id])
       .overlaps("partners", [params.slug])

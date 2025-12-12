@@ -265,7 +265,7 @@ export const ActionItem = ({
           variant === VARIANT.content
             ? "flex-col gap-2"
             : variant === VARIANT.block
-              ? "border-l-4 px-5 py-3"
+              ? "squircle rounded-4xl border-2 px-5 py-3"
               : "px-3 py-1 transition-colors @xs:p-1",
 
           bgClasses,
@@ -273,7 +273,7 @@ export const ActionItem = ({
           className,
           isDragging ? "cursor-grabbing" : "",
         )}
-        style={{ borderLeftColor: currentState.color }}
+        style={{ borderColor: currentState.color }}
         onMouseOver={() => setIsHovered(true)}
         onMouseOut={() => setIsHovered(false)}
         onClick={() => {

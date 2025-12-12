@@ -40,8 +40,8 @@ export const UBadge = ({
       ? "bg-destructive text-white border-destructive"
       : value >= 3
         ? "bg-yellow-500 text-black border-yellow-500"
-        : "bg-secondary text-secondary-foreground border-secondary"
-    : "bg-secondary text-secondary-foreground border-secondary";
+        : "bg-foreground text-background border-foreground"
+    : "bg-foreground text-background border-foreground";
 
   return (
     <Badge

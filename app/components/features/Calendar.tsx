@@ -103,6 +103,9 @@ const CalendarDay = ({
   const { setNodeRef } = useDroppable({
     id: `${format(day, "yyyy-MM-dd")}`,
   });
+
+  day.setHours(new Date().getHours(), new Date().getMinutes());
+
   return (
     <div
       ref={setNodeRef}

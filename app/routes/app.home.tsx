@@ -24,9 +24,11 @@ import {
 import { useState, type ReactNode } from "react";
 import {
   Link,
+  useInRouterContext,
   useLoaderData,
   useMatches,
   useOutletContext,
+  useRouteLoaderData,
   type LoaderFunctionArgs,
 } from "react-router";
 import invariant from "tiny-invariant";
@@ -139,7 +141,7 @@ export default function AppHome() {
         actions={currentActions}
         setBaseAction={setBaseAction}
       />
-      <PartnersHomeComponent actions={currentActions} />
+      <PartnersHomeComponent actions={currentLateActions} />
       <LateHomeComponent actions={currentLateActions} />
     </>
   );
@@ -242,7 +244,9 @@ const SprintHomeComponent = ({ actions }: { actions: Action[] }) => {
 };
 
 const PartnersHomeComponent = ({ actions }: { actions: Action[] }) => {
-  const { partners } = useMatches()[1].loaderData as AppLoaderData;
+  const { partners } = useRouteLoaderData("routes/app") as {
+    partners: Partner[];
+  };
 
   const partnersWithActionsLength = useMemo(() => {
     // Create a map of partner slug to actions for O(1) lookup or O(N) build
@@ -263,7 +267,9 @@ const PartnersHomeComponent = ({ actions }: { actions: Action[] }) => {
     return partners.map((partner) => {
       return {
         ...partner,
-        actions: actionsByPartner.get(partner.slug) || [],
+        lateActionsLength: getLateActions(
+          actionsByPartner.get(partner.slug) || [],
+        ).length,
       };
     });
   }, [partners, actions]);
@@ -290,11 +296,7 @@ const PartnersHomeComponent = ({ actions }: { actions: Action[] }) => {
               {getShortText(partner.short)}
 
               <div className="absolute -top-2 -right-6 flex">
-                <UBadge
-                  isDynamic
-                  value={getLateActions(partner.actions).length}
-                  size="sm"
-                />
+                <UBadge isDynamic value={partner.lateActionsLength} size="sm" />
               </div>
             </div>
           </Link>
@@ -572,7 +574,7 @@ const HomeComponentWrapper = ({
   return (
     <div>
       <div className="flex flex-col justify-between gap-8 p-8 lg:flex-row lg:items-center xl:px-16">
-        <h1 className="text-5xl font-semibold">{title}</h1>
+        <h1 className="py-12 text-5xl font-semibold">{title}</h1>
         <div className="bg-foreground hidden h-0.5 w-full lg:block"></div>
         {OptionsComponent && (
           <div className="self-end lg:self-auto">{OptionsComponent}</div>

@@ -123,7 +123,7 @@ export const CategoriesCombobox = ({
         ) : (
           <button
             className={cn(
-              "hover:bg-secondary flex items-center gap-2 p-6 text-sm outline-none",
+              "hover:bg-secondary flex items-center gap-2 overflow-hidden p-6 text-sm outline-none",
               className,
             )}
           >
@@ -133,7 +133,9 @@ export const CategoriesCombobox = ({
               color={currentCategories[0].color}
             />
 
-            <div>{currentCategories[0].title}</div>
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+              {currentCategories[0].title}
+            </div>
           </button>
         )}
       </PopoverTrigger>
