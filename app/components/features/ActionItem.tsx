@@ -29,6 +29,8 @@ import type { AppLoaderData } from "~/routes/app";
 import { UAvatarGroup } from "../uzzina/UAvatar";
 import { Content } from "./Content";
 import { Draggable } from "./DnD";
+import { UBadge } from "../uzzina/UBadge";
+import { StateIcon } from "./StateIcon";
 
 type ActionItemProps = {
   action: Action;
@@ -156,11 +158,22 @@ export const ActionItem = ({
                   className="size-4"
                   color={currentCategory.color}
                 />
+
+                <StateIcon state={currentState} />
+
+                {/* <UBadge
+                  text={currentState.title}
+                  style={{
+                    backgroundColor: currentState.color,
+                    border: "none",
+                  }}
+                /> */}
+                <ActionItemResponsibles
+                  action={action}
+                  responsibles={currentResponsibles}
+                />
               </div>
-              <ActionItemResponsibles
-                action={action}
-                responsibles={currentResponsibles}
-              />
+
               <div className="flex items-center gap-2 text-xs">
                 {(!isInstagramDate || !isInstagramFeed(action.category)) && (
                   <div className="flex items-center gap-1">
@@ -265,7 +278,7 @@ export const ActionItem = ({
           variant === VARIANT.content
             ? "flex-col gap-2"
             : variant === VARIANT.block
-              ? "squircle rounded-4xl border-2 px-5 py-3"
+              ? "squircle rounded-4xl px-5 py-3"
               : "px-3 py-1 transition-colors @xs:p-1",
 
           bgClasses,
@@ -273,7 +286,7 @@ export const ActionItem = ({
           className,
           isDragging ? "cursor-grabbing" : "",
         )}
-        style={{ borderColor: currentState.color }}
+        // style={{ borderColor: currentState.color }}
         onMouseOver={() => setIsHovered(true)}
         onMouseOut={() => setIsHovered(false)}
         onClick={() => {

@@ -5,6 +5,7 @@ export const STATES = {
     shortcut: "i",
     color: "#fb3",
     foreground: "#333",
+    order: 1,
   },
   do: {
     slug: "do",
@@ -12,6 +13,7 @@ export const STATES = {
     shortcut: "f",
     color: "#F75",
     foreground: "#fff",
+    order: 2,
   },
   doing: {
     slug: "doing",
@@ -19,6 +21,7 @@ export const STATES = {
     shortcut: "z",
     color: "#f49",
     foreground: "#fff",
+    order: 3,
   },
   review: {
     slug: "review",
@@ -26,6 +29,7 @@ export const STATES = {
     shortcut: "a",
     color: "#93e",
     foreground: "#fff",
+    order: 4,
   },
   approved: {
     slug: "approved",
@@ -33,6 +37,7 @@ export const STATES = {
     shortcut: "p",
     color: "#06f",
     foreground: "#fff",
+    order: 5,
   },
   done: {
     slug: "done",
@@ -40,6 +45,7 @@ export const STATES = {
     shortcut: "t",
     color: "#3cc",
     foreground: "#fff",
+    order: 6,
   },
   finished: {
     slug: "finished",
@@ -47,6 +53,7 @@ export const STATES = {
     shortcut: "c",
     color: "#7c3",
     foreground: "#fff",
+    order: 7,
   },
 } as const;
 

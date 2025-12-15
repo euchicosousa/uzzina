@@ -7,6 +7,7 @@ import {
   format,
   isSameDay,
   isToday,
+  parseISO,
   startOfMonth,
   startOfWeek,
 } from "date-fns";
@@ -501,7 +502,7 @@ const CalendarHomeComponent = ({
       date: day,
       actions: actions.filter((action) => isSameDay(action.date, day)),
       celebrations: celebrations.filter((celebration) =>
-        isSameDay(celebration.date, day),
+        isSameDay(parseISO(celebration.date), day),
       ),
     };
   });

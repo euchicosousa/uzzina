@@ -2,6 +2,7 @@ import { ComputerIcon, MoonIcon, SunIcon } from "lucide-react";
 import type { LoaderFunctionArgs } from "react-router";
 import { useLoaderData } from "react-router";
 import { Theme, useTheme } from "remix-themes";
+import { StateIcon } from "~/components/features/StateIcon";
 import { Button } from "~/components/ui/button";
 import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
@@ -390,29 +391,7 @@ export default function UITestingPage() {
         </div>
         <div className="flex gap-4">
           {Object.values(STATES).map((state, index) => (
-            <div className="relative">
-              <svg
-                className="absolute top-0 left-0 size-4 stroke-4 opacity-10"
-                viewBox="0 0 20 20"
-                stroke="currentColor"
-              >
-                <circle cx="10" cy="10" r="8" fill="none" />
-              </svg>
-              <svg
-                className="size-4 -rotate-90 stroke-4"
-                style={{ color: state.color }}
-                viewBox="0 0 20 20"
-              >
-                <circle
-                  cx="10"
-                  cy="10"
-                  r="8"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeDasharray={`${Math.floor((index + 1) * 7.3)},51`}
-                />
-              </svg>
-            </div>
+            <StateIcon key={state.slug} state={state} size={SIZE.xs} />
           ))}
         </div>
       </div>
