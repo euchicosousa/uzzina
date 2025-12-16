@@ -171,9 +171,9 @@ export default function PartnerPage() {
   const [query, setQuery] = useState("");
 
   const [viewOptions, setViewOptions] = useState<ViewOptions>({
-    responsibles: true,
+    responsibles: false,
     priority: false,
-    category: true,
+    category: false,
     late: true,
     partner: false,
     instagram: false,
