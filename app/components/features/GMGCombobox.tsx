@@ -31,8 +31,6 @@ export function GMGCombobox({
 
   const currentItem = items.find((item) => item.slug === selectedItem);
 
-  console.log({ currentItem });
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>

@@ -114,6 +114,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 import { useMemo } from "react";
+import { HoursComponent } from "~/components/features/HoursComponent";
 
 export default function AppHome() {
   let { actions, actionsChart } = useLoaderData<typeof loader>();
@@ -309,7 +310,7 @@ const PartnersHomeComponent = ({ actions }: { actions: Action[] }) => {
 
 const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
   const [view, setView] = useState<"kanban" | "hours" | "feed" | "categories">(
-    "kanban",
+    "hours",
   );
 
   const [currentDay, setCurrentDay] = useState(new Date());
@@ -389,13 +390,11 @@ const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
       <div className="px-8 xl:px-16">
         {view === "kanban" && <KanbanComponent actions={filteredActions} />}
         {view === "hours" && (
-          <div className="bg-muted text-muted-foreground flex items-center rounded-xl p-8">
-            <AlertCircleIcon className="mr-4 size-8 opacity-50" />
-            <div>
-              Visualização por <strong className="underline">HORAS</strong>{" "}
-              ainda não está disponível
-            </div>
-          </div>
+          <HoursComponent
+            actions={filteredActions}
+            date={currentDay}
+            viewOptions={viewOptions}
+          />
         )}
         {view === "feed" && (
           <FeedComponent

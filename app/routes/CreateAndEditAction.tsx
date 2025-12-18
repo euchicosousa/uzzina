@@ -163,7 +163,6 @@ export function CreateAndEditAction({
           ),
         }));
       }
-      console.log(fetcher.data);
     }
   }, [fetcher.data]);
 
@@ -383,7 +382,7 @@ export function CreateAndEditAction({
                   </Button>
                 </div>
               </div> */}
-            <div className="w-2/3 overflow-hidden">
+            <div className="flex w-2/3 flex-col overflow-hidden">
               <div className="flex items-center justify-between border-b px-4 py-4">
                 <div className="flex items-center gap-2">
                   <UAvatarGroup
