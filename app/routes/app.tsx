@@ -150,8 +150,8 @@ export default function Dashboard() {
         ) : null}
       </div>
       <Dialog open={openCmdK} onOpenChange={setOpenCmdK}>
-        <DialogContent className="p-0">
-          <Command>
+        <DialogContent className="squircle rounded-2xl p-0">
+          <Command className="squircle rounded-2xl">
             <CommandInput placeholder="Faça sua busca aqui" />
             <CommandList className="p-2 outline-none">
               <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>

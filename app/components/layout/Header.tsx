@@ -74,6 +74,7 @@ export function Header({
               partners: params.slug ? [params.slug] : [],
             })
           }
+          className="squircle rounded-2xl"
         >
           Nova Ação
           <PlusIcon />

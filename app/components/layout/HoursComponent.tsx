@@ -5,9 +5,9 @@ import {
   isSameHour,
   startOfDay,
 } from "date-fns";
-import { ActionContainer } from "./ActionContainer";
+import { ActionContainer } from "../features/ActionContainer";
 import type { ViewOptions } from "~/routes/app.partner.slug";
-import { VARIANT } from "~/lib/CONSTANTS";
+import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 
 export function HoursComponent({
@@ -67,6 +67,7 @@ export function HoursComponent({
                 ascending={viewOptions.ascending}
                 orderBy={viewOptions.order}
                 variant={VARIANT.block}
+                dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
               />
             </div>
           </div>
