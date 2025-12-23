@@ -9,6 +9,7 @@ import { ActionContainer } from "../features/ActionContainer";
 import type { ViewOptions } from "~/routes/app.partner.slug";
 import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
+import { ActionItem } from "../features/ActionItem";
 
 export function HoursComponent({
   actions,
@@ -62,13 +63,29 @@ export function HoursComponent({
                   {format(hour.date, "HH'h45'")}
                 </div>
               </div>
-              <ActionContainer
+              <div className="relative flex h-full flex-col gap-1">
+                {hour.actions.map((action) => (
+                  <div
+                    style={{
+                      marginLeft: `${Number(format(action.date, "mm")) < 40 ? Math.ceil((Number(format(action.date, "mm")) / 60) * 100) : 70}%`,
+                    }}
+                    key={action.id}
+                  >
+                    <ActionItem
+                      action={action}
+                      variant={VARIANT.hour}
+                      dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+                    />
+                  </div>
+                ))}
+              </div>
+              {/* <ActionContainer
                 actions={hour.actions}
                 ascending={viewOptions.ascending}
                 orderBy={viewOptions.order}
-                variant={VARIANT.block}
+                variant={VARIANT.hour}
                 dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
-              />
+              /> */}
             </div>
           </div>
         ))}

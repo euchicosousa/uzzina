@@ -34,10 +34,11 @@ import {
 } from "lucide-react";
 import {
   redirect,
-  type SubmitFunction,
   useRouteLoaderData,
+  type SubmitFunction,
 } from "react-router";
 import { Theme } from "remix-themes";
+import type { AppLoaderData } from "~/routes/app";
 import {
   DATE_TIME_DISPLAY,
   ORDER_BY,
@@ -48,7 +49,6 @@ import {
 } from "./CONSTANTS";
 import { createSupabaseClient } from "./supabase";
 import { cn } from "./utils";
-import type { AppLoaderData } from "~/routes/app";
 
 export async function getUserId(request: Request) {
   const { supabase } = await createSupabaseClient(request);
@@ -144,7 +144,10 @@ export function getFormattedPartnersName(partners: Partner[]) {
   return partners.map((partner) => partner.title).join(", ");
 }
 export function getFormattedPeopleName(people: Person[]) {
-  return people.map((person) => person.name).join(", ");
+  return people
+    .filter((p) => p)
+    .map((person) => person.name)
+    .join(", ");
 }
 
 export function sortActions(

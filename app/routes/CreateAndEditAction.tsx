@@ -89,12 +89,20 @@ export function CreateAndEditAction({
   const fetchers = useFetchers();
 
   const [isPending, setIsPending] = useState(false);
+  const [isAIProcessing, setIsAIProcessing] = useState(false);
 
   useEffect(() => {
     setIsPending(fetchers.filter((f) => f.formData).length > 0);
+
+    setIsAIProcessing(
+      fetchers.filter((f) => f.formData?.get("intent") === INTENT.caption_ai)
+        .length > 0,
+    );
+
     fetchers.forEach((f) => {
       if (f.formData && f.data) {
         const intent = f.formData.get("intent");
+
         if (intent === INTENT.create_action) {
           const newId = f.data?.id;
           if (newId) {
@@ -398,6 +406,8 @@ export function CreateAndEditAction({
                 </div>
                 <Button
                   variant={"ghost"}
+                  disabled={isAIProcessing}
+                  className="disabled:opacity-50"
                   onClick={() => {
                     fetcher.submit(
                       {
@@ -417,6 +427,7 @@ export function CreateAndEditAction({
               </div>
               <div className="flex h-full flex-col">
                 <textarea
+                  disabled={isAIProcessing}
                   autoFocus
                   value={
                     RawAction.instagram_caption ||
@@ -433,7 +444,7 @@ export function CreateAndEditAction({
                     })
                   }
                   placeholder="Legenda"
-                  className="h-full w-full resize-none p-4 outline-none"
+                  className="h-full w-full resize-none p-4 outline-none disabled:opacity-50"
                 />
               </div>
             </div>

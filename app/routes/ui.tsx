@@ -206,6 +206,63 @@ export default function UITestingPage() {
             <UAvatar fallback="videre" size={SIZE.xl} />
           </div>
           <div className="flex flex-wrap gap-4">
+            <h5 className="w-full">Avatar Squircle</h5>
+            <UAvatar
+              fallback="CN"
+              image="https://github.com/shadcn.png"
+              size={SIZE.xs}
+              isSquircle
+            />
+            <UAvatar
+              fallback="CN"
+              image="https://github.com/shadcn.png"
+              size={SIZE.sm}
+              isSquircle
+            />
+            <UAvatar
+              fallback="CN"
+              image="https://github.com/shadcn.png"
+              size={SIZE.md}
+              isSquircle
+            />
+            <UAvatar
+              fallback="CN"
+              image="https://github.com/shadcn.png"
+              size={SIZE.lg}
+              isSquircle
+            />
+            <UAvatar
+              fallback="CN"
+              image="https://github.com/shadcn.png"
+              size={SIZE.xl}
+              isSquircle
+            />
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <h5 className="w-full">Grupo de Avatares Squircle</h5>
+            <UAvatarGroup
+              isSquircle
+              avatars={[
+                {
+                  fallback: "AC",
+                },
+                {
+                  fallback: "CSS",
+                },
+                {
+                  fallback: "CNVT",
+                },
+                {
+                  fallback: "CS",
+                },
+                {
+                  fallback: "CN",
+                  image: "https://github.com/shadcn.png",
+                },
+              ]}
+            />
+          </div>
+          <div className="flex flex-wrap gap-4">
             <h5 className="w-full">Avatar com Imagens</h5>
             <UAvatar
               fallback="CN"

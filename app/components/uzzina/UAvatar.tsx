@@ -7,8 +7,9 @@ import { getFormattedPartnersName } from "~/lib/helpers";
 type UAvatarGroupProps = {
   avatars: UAvatarItem[];
   size?: (typeof SIZE)[keyof typeof SIZE];
-  clamp?: number
-  title?: string
+  clampAt?: number;
+  isSquircle?: boolean;
+  title?: string;
 };
 
 type UAvatarItem = {
@@ -20,14 +21,15 @@ type UAvatarItem = {
   size?: (typeof SIZE)[keyof typeof SIZE];
   backgroundColor?: string;
   color?: string;
-
+  isSquircle?: boolean;
 };
 
 export const UAvatarGroup = ({
   avatars,
   size = SIZE.md,
-  clamp,
-  title
+  clampAt,
+  isSquircle,
+  title,
 }: UAvatarGroupProps) => {
   const sizeClasses = {
     xs: "-space-x-1",
@@ -35,23 +37,27 @@ export const UAvatarGroup = ({
     md: "-space-x-2",
     lg: "-space-x-2",
     xl: "-space-x-2",
-    // xs: "-space-x-0.5 *:data-[slot=avatar]:ring-3",
-    // sm: "-space-x-1 *:data-[slot=avatar]:ring-4",
-    // md: "-space-x-2 *:data-[slot=avatar]:ring-5",
-    // lg: "-space-x-2 *:data-[slot=avatar]:ring-6",
-    // xl: "-space-x-2 *:data-[slot=avatar]:ring-6",
   }[size];
 
-  clamp = clamp || avatars.length;
+  clampAt = clampAt || avatars.length;
   return (
-    <div className={cn(sizeClasses, "flex")} title={title || avatars.map((avatar) => avatar.fallback).join(", ")}>
-      {avatars.slice(0, clamp).map((avatar) => (
-        <UAvatar key={`${avatar.id}`} {...avatar} size={size} />
-      ))}
-      {clamp < avatars.length && (
+    <div
+      className={cn(sizeClasses, "flex")}
+      title={title || avatars.map((avatar) => avatar.fallback).join(", ")}
+    >
+      {avatars.slice(0, clampAt).map((avatar) => (
         <UAvatar
-          fallback={`+${avatars.length - clamp}`}
+          key={`${avatar.id}`}
+          {...avatar}
           size={size}
+          isSquircle={isSquircle}
+        />
+      ))}
+      {clampAt < avatars.length && (
+        <UAvatar
+          fallback={`+${avatars.length - clampAt}`}
+          size={size}
+          isSquircle={isSquircle}
         />
       )}
     </div>
@@ -67,6 +73,7 @@ export const UAvatar = ({
   size = SIZE.md,
   backgroundColor,
   color,
+  isSquircle,
 }: UAvatarItem) => {
   const fallbackText = (
     size === SIZE.xs
@@ -76,36 +83,36 @@ export const UAvatar = ({
         : fallback
   ).toUpperCase();
   const sizeClasses = {
-    xs: "size-4 ring-2",
-    sm: "size-6 ring-2",
-    md: "size-8 ring-3",
-    lg: "size-12 ring-4",
-    xl: "size-18 ring-6",
+    xs: `size-4 ring-2`,
+    sm: `size-6 ring-2 `,
+    md: `size-8 ring-3 `,
+    lg: `size-12 ring-4 `,
+    xl: `size-18 ring-6 `,
   }[size];
   const textClasses =
     fallbackText.length <= 2
       ? {
-        xs: "text-[10px]",
-        sm: "text-[10px]",
-        md: "text-[12px]",
-        lg: "text-[18px]",
-        xl: "text-[28px]",
-      }[size]
+          xs: "text-[10px]",
+          sm: "text-[10px]",
+          md: "text-[12px]",
+          lg: "text-[18px]",
+          xl: "text-[28px]",
+        }[size]
       : fallbackText.length <= 4
         ? {
-          xs: "",
-          sm: "",
-          md: "text-[9px]",
-          lg: "text-[16px]",
-          xl: "text-[24px]",
-        }[size]
+            xs: "",
+            sm: "",
+            md: "text-[9px]",
+            lg: "text-[16px]",
+            xl: "text-[24px]",
+          }[size]
         : {
-          xs: "",
-          sm: "",
-          md: "text-[8px]",
-          lg: "text-[15px]",
-          xl: "text-[20px]",
-        }[size];
+            xs: "",
+            sm: "",
+            md: "text-[8px]",
+            lg: "text-[15px]",
+            xl: "text-[20px]",
+          }[size];
 
   const styles =
     backgroundColor && color ? { backgroundColor, color } : undefined;
@@ -115,6 +122,8 @@ export const UAvatar = ({
       className={cn(
         sizeClasses,
         textClasses,
+        isSquircle && "squircle",
+        "rounded-full",
         className,
         "ring-background border p-0 leading-none font-bold",
       )}
@@ -123,7 +132,10 @@ export const UAvatar = ({
         <AvatarImage src={image} alt={alt || ""} />
       ) : (
         <AvatarFallback
-          className="bg-secondary text-secondary-foreground grid place-content-center text-center"
+          className={cn(
+            "bg-secondary text-secondary-foreground grid place-content-center text-center",
+            isSquircle && "squircle",
+          )}
           style={styles}
         >
           {getShortText(fallbackText)}

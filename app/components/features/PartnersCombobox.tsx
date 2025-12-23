@@ -59,7 +59,7 @@ export const PartnersCombobox = ({
         >
           {selected.length > 0 ? (
             <UAvatarGroup
-              clamp={2}
+              clampAt={2}
               size="sm"
               avatars={currentPartners.map((partner) => ({
                 id: partner.id,

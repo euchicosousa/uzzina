@@ -117,13 +117,28 @@ export const ActionItem = ({
       return "bg-destructive/5 text-destructive hover:bg-destructive/10";
     }
 
-    return variant === VARIANT.block
+    return variant === VARIANT.block || variant === VARIANT.hour
       ? "hover:bg-card bg-card text-card-foreground"
       : "hover:bg-card bg-background text-card-foreground";
   }, [variant, isEditing, showLate, action]);
 
   const renderActionVariant = () => {
     switch (variant) {
+      case VARIANT.hour:
+        return (
+          <div className="flex items-center justify-between gap-1 overflow-hidden text-sm">
+            <div className="flex items-center gap-2 overflow-hidden">
+              <StateIcon state={currentState} />
+              <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                {action.title}
+              </div>
+            </div>
+
+            <div className="text-xs opacity-50">
+              {getFormattedDateTime(action.date, DATE_TIME_DISPLAY.TimeOnly)}
+            </div>
+          </div>
+        );
       case VARIANT.content:
         return (
           <Content
@@ -203,6 +218,7 @@ export const ActionItem = ({
               style={{ backgroundColor: currentState.color }}
             ></div>
             {!isEditing && <ActionItemSprint action={action} />}
+
             <ActionItemTitleInput
               isEditing={isEditing}
               setIsEditing={setIsEditing}
@@ -274,12 +290,14 @@ export const ActionItem = ({
       <div
         title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
         className={cn(
-          "group/action @container relative flex cursor-pointer overflow-hidden",
+          "group/action @container relative cursor-pointer overflow-hidden",
           variant === VARIANT.content
             ? "flex-col gap-2"
             : variant === VARIANT.block
               ? "squircle rounded-4xl px-5 py-3"
-              : "px-3 py-1 transition-colors @xs:p-1",
+              : variant === VARIANT.hour
+                ? "squircle w-auto rounded-xl px-3 py-2"
+                : "px-3 py-1 transition-colors @xs:p-1",
 
           bgClasses,
           variant === VARIANT.block ? "flex-col gap-2" : "",

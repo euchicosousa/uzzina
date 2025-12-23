@@ -19,6 +19,8 @@ import {
   CommandList,
 } from "~/components/ui/command";
 import { Dialog, DialogContent } from "~/components/ui/dialog";
+import { UAvatar } from "~/components/uzzina/UAvatar";
+import { SIZE } from "~/lib/CONSTANTS";
 
 const CreateAndEditAction = lazy(() =>
   import("./CreateAndEditAction").then((module) => ({
@@ -163,8 +165,16 @@ export default function Dashboard() {
                     navigate(`/app/partner/${partner.slug}`);
                     setOpenCmdK(false);
                   }}
+                  className="flex gap-2"
                 >
-                  {partner.title}
+                  <UAvatar
+                    fallback={partner.short}
+                    isSquircle
+                    size={SIZE.sm}
+                    backgroundColor={partner.colors[0]}
+                    color={partner.colors[1]}
+                  />
+                  <div>{partner.title}</div>
                 </CommandItem>
               ))}
             </CommandList>
