@@ -150,8 +150,8 @@ export function getShortText(text: string) {
     text
   ) : (
     <div>
-      <div>{text.substring(0, Math.ceil(text.length / 2))}</div>
-      <div>{text.substring(Math.ceil(text.length / 2))}</div>
+      <div>{text.substring(0, 2)}</div>
+      <div>{text.substring(text.length - 2)}</div>
     </div>
   );
 }

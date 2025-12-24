@@ -215,52 +215,58 @@ export default function PartnerPage() {
 
   return (
     <div className="flex h-[calc(100vh-68px)] flex-col overflow-hidden">
-      <div className="flex items-center justify-between gap-4 p-8">
-        <div className="flex items-center gap-2">
-          <UAvatar
-            fallback={partner.short}
-            backgroundColor={partner.colors[0]}
-            color={partner.colors[1]}
-            size={SIZE.lg}
+      <div className="flex flex-wrap items-center justify-between gap-4 p-8 2xl:flex-nowrap">
+        <div className="order-1 flex items-center gap-4">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <UAvatar
+              fallback={partner.short}
+              backgroundColor={partner.colors[0]}
+              color={partner.colors[1]}
+              size={SIZE.lg}
+              isSquircle
+            />
+            <UBadge
+              value={getLateActions(currentActions).length}
+              isDynamic
+              className="isolate -mt-8 -ml-4"
+            />
+            <h2 className="overflow-hidden p-0 py-2 text-ellipsis whitespace-nowrap">
+              {partner.title}
+            </h2>
+          </div>
+
+          <CalendarButtons
+            currentDay={currentDay}
+            setCurrentDay={(day) => {
+              setCurrentDay(day);
+              navigate(`?date=${format(day, "yyyy-MM-dd")}`);
+            }}
+            days={30}
+            showDate
+            mode="month"
           />
-          <UBadge
-            value={getLateActions(currentActions).length}
-            isDynamic
-            className="isolate -mt-8 -ml-4"
+
+          <InputGroup className="w-auto min-w-[300px]">
+            <InputGroupAddon>
+              <SearchIcon />
+            </InputGroupAddon>
+            <InputGroupInput
+              placeholder="Buscar ação..."
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          </InputGroup>
+        </div>
+        <div className="order-3 flex items-center 2xl:order-2">
+          {/* Organização */}
+          <ViewOptionsComponent
+            viewOptions={viewOptions}
+            setViewOptions={setViewOptions}
           />
-          <h2 className="line-clamp-2 p-0">{partner.title}</h2>
         </div>
 
-        <CalendarButtons
-          currentDay={currentDay}
-          setCurrentDay={(day) => {
-            setCurrentDay(day);
-            navigate(`?date=${format(day, "yyyy-MM-dd")}`);
-          }}
-          days={30}
-          showDate
-          mode="month"
-        />
-        {/* Organização */}
-
-        <InputGroup className="w-auto min-w-[300px]">
-          <InputGroupAddon>
-            <SearchIcon />
-          </InputGroupAddon>
-          <InputGroupInput
-            placeholder="Buscar ação..."
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-        </InputGroup>
-
-        <ViewOptionsComponent
-          viewOptions={viewOptions}
-          setViewOptions={setViewOptions}
-        />
-
         {/* Tab de páginas */}
-        <div className="flex items-center gap-2">
+        <div className="order-2 flex items-center gap-2 2xl:order-3">
           <UToggle
             checked={view === "list"}
             onClick={() => {

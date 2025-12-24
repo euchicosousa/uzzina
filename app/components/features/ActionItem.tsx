@@ -156,7 +156,7 @@ export const ActionItem = ({
                 isEditing={isEditing}
                 setIsEditing={setIsEditing}
                 title={action.title}
-                className={"h-7 text-xl font-medium tracking-tight"}
+                className={"h-5 text-xl font-medium tracking-tight"}
                 InputButtonClassName="w-auto"
                 lines={1}
               />
