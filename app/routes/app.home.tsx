@@ -51,6 +51,7 @@ import {
   getLateActions,
   getUserId,
   isInstagramFeed,
+  sortActions,
 } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "./app";
@@ -124,10 +125,13 @@ export default function AppHome() {
   const currentLateActions = useOptimisticActions(actionsChart);
 
   const sprintActions = useMemo(() => {
-    return currentActions.filter(
-      (action) =>
-        action.sprints?.length &&
-        action.sprints.filter((sprint) => sprint === person.user_id),
+    return sortActions(
+      currentActions.filter(
+        (action) =>
+          action.sprints?.length &&
+          action.sprints.filter((sprint) => sprint === person.user_id),
+      ),
+      ORDER_BY.state,
     );
   }, [currentActions]);
 

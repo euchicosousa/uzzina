@@ -91,6 +91,32 @@ export function CreateAndEditAction({
   const [isPending, setIsPending] = useState(false);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
 
+  const loadingMessages = [
+    "Fritando os neurônios digitais...",
+    "Consultando meus arquivos secretos...",
+    "Organizando a bagunça mental...",
+    "Ensinando novos truques aos algoritmos...",
+    "Conectando os pontos da sua ideia...",
+
+    "Afiando os lápis de cor virtuais...",
+    "Misturando as tintas da imaginação...",
+    "Dando as últimas pinceladas no canvas...",
+    "Buscando a iluminação perfeita...",
+    "Esboçando um futuro brilhante...",
+
+    "Calma, o melhor sempre leva tempo...",
+    "Estou caprichando para você!",
+    "Só mais um café e eu termino...",
+    "Segura a ansiedade, vai valer a pena...",
+    "Quase lá! Estamos nos detalhes finais.",
+
+    "Navegando pelo cosmos de dados...",
+    "Alinhando as estrelas para o seu projeto...",
+    "Traduzindo sinais de outra galáxia...",
+    "Explorando o vácuo das possibilidades...",
+    "Sincronizando o tempo-espaço digital...",
+  ];
+
   useEffect(() => {
     setIsPending(fetchers.filter((f) => f.formData).length > 0);
 
@@ -330,16 +356,6 @@ export function CreateAndEditAction({
                   </div>
                 </div>
               )}
-
-              {/* <div>Cor</div>
-          <div>Categoria</div>
-          <div>Prioridade</div>
-          <div>Tópicos</div>
-          <div>Arquivos</div>
-          <div>Sprint</div>
-          <div>parceiros</div>
-          <div>tempo</div>
-          <div>State</div> */}
             </div>
             {/* Descrição */}
             <div className="h-full overflow-hidden">
@@ -370,26 +386,7 @@ export function CreateAndEditAction({
             <div className="h-full max-w-[320px] shrink-0 grow">
               <Content action={RawAction} />
             </div>
-            {/* <div className="flex flex-col gap-4">
-                <div className="text-sm font-bold">Conteúdo</div>
-                <div className="flex gap-1">
-                  <Button variant={"secondary"}>
-                    <ImageUpIcon />
-                  </Button>
-                  <Button variant={"secondary"}>
-                    <Trash2Icon />
-                  </Button>
-                </div>
-                <div className="text-sm font-bold">Trabalho</div>
-                <div className="flex gap-1">
-                  <Button variant={"secondary"}>
-                    <ImageUpIcon />
-                  </Button>
-                  <Button variant={"secondary"}>
-                    <Trash2Icon />
-                  </Button>
-                </div>
-              </div> */}
+
             <div className="flex w-2/3 flex-col overflow-hidden">
               <div className="flex items-center justify-between border-b px-4 py-4">
                 <div className="flex items-center gap-2">
@@ -430,12 +427,16 @@ export function CreateAndEditAction({
                   disabled={isAIProcessing}
                   autoFocus
                   value={
-                    RawAction.instagram_caption ||
-                    getCaptionTail(
-                      currentPartners.length > 0
-                        ? currentPartners[0].instagram_caption_tail
-                        : "",
-                    )
+                    isAIProcessing
+                      ? loadingMessages[
+                          Math.floor(Math.random() * loadingMessages.length)
+                        ]
+                      : RawAction.instagram_caption ||
+                        getCaptionTail(
+                          currentPartners.length > 0
+                            ? currentPartners[0].instagram_caption_tail
+                            : "",
+                        )
                   }
                   onChange={(e) =>
                     setRawAction({

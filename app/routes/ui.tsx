@@ -20,9 +20,27 @@ export const meta = () => {
 
 export default function UITestingPage() {
   const [theme, setTheme] = useTheme();
+
+  const fontSize = 20;
+  const factor = 1.414;
+  const sizes = 10;
+  const lineHeight = 15;
+
+  const fontSizes = Array.from({ length: sizes }, (_, i) => {
+    let fs = Math.floor(fontSize * Math.pow(factor, i));
+    let lh = Math.ceil(fs / 15) * lineHeight;
+    return { fontSize: fs, lineHeight: lh === 45 ? 60 : lh === 60 ? 75 : lh };
+  });
+
+  const webFontSizes = fontSizes.map((fs) => {
+    return {
+      fontSize: Math.floor(fs.fontSize / 2.4),
+      lineHeight: Math.floor(fs.lineHeight / 2.4),
+    };
+  });
+
   return (
     <div className="container mx-auto px-8">
-      <div className="bg-foreground teste mt-12 w-40 p-4 text-white">TESTE</div>
       {/* Header */}
       <div className="border_after flex items-center justify-between py-8">
         <h1 className="p-0">UI Testing Page</h1>
@@ -73,8 +91,18 @@ export default function UITestingPage() {
           </ToggleGroup> */}
         </div>
       </div>
+      <div className="border_after flex items-center gap-8 py-4 *:underline-offset-2 *:hover:underline">
+        <a href="#headings">Headings</a>
+        <a href="#colors">Colors</a>
+        <a href="#badges">Badges</a>
+        <a href="#avatars">Avatars</a>
+        <a href="#categories">Categories</a>
+        <a href="#state">State</a>
+        <a href="#font-sizes">Font-sizes</a>
+      </div>
+
       {/* Headings */}
-      <div className="border_after py-8">
+      <div id="headings" className="border_after py-8">
         <div className="">
           <h2>Headings</h2>
         </div>
@@ -87,7 +115,7 @@ export default function UITestingPage() {
         </div>
       </div>
       {/* Cores */}
-      <div className="border_after py-8">
+      <div id="colors" className="border_after py-8">
         <h2>Colors</h2>
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {[
@@ -134,7 +162,7 @@ export default function UITestingPage() {
         </div>
       </div>
       {/* Badges */}
-      <div className="border_after py-8">
+      <div id="badges" className="border_after py-8">
         <div>
           <h2>Badges</h2>
         </div>
@@ -184,7 +212,7 @@ export default function UITestingPage() {
         </div>
       </div>
       {/* Avatars */}
-      <div className="border_after py-8">
+      <div id="avatars" className="border_after py-8">
         <div>
           <h2>Avatars</h2>
         </div>
@@ -413,7 +441,7 @@ export default function UITestingPage() {
         </div>
       </div>
       {/* Categorias */}
-      <div className="border_after py-8">
+      <div id="categories" className="border_after py-8">
         <div>
           <h2>Ícones das Categorias</h2>
         </div>
@@ -442,7 +470,8 @@ export default function UITestingPage() {
           ))}
         </div>
       </div>
-      <div className="border_after py-8">
+      {/* States */}
+      <div id="state" className="border_after py-8">
         <div>
           <h2>State</h2>
         </div>
@@ -451,6 +480,79 @@ export default function UITestingPage() {
             <StateIcon key={state.slug} state={state} size={SIZE.xs} />
           ))}
         </div>
+      </div>
+
+      <div id="font-sizes" className="border_after py-8">
+        <div>
+          <h2>Font-sizes</h2>
+        </div>
+        <div className="mb-12 grid grid-cols-2 gap-8">
+          {webFontSizes.map((fs, i) => {
+            return (
+              <div className="text-muted-foreground grid grid-cols-2 gap-4">
+                <div key={i}>
+                  <div className="text-foreground mb-2 text-xs font-medium">
+                    WEB
+                  </div>
+                  <div>Font-size: {fs.fontSize}px</div>
+                  <div>Line-height: {fs.lineHeight}px</div>
+                </div>
+                <div key={i}>
+                  <div className="text-foreground mb-2 text-xs font-medium">
+                    SOCIAL
+                  </div>
+                  <div>Font-size: {fontSizes[i].fontSize}px</div>
+                  <div>Line-height: {fontSizes[i].lineHeight}px</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        {webFontSizes.map((fs, i) => {
+          return (
+            <div key={i} className="grid grid-cols-2 gap-8">
+              <div>
+                <div className="flex justify-between gap-2 opacity-50">
+                  <p className="text-[12px]">Font-size: {fs.fontSize}px</p>
+                  <p className="text-[12px]">Line-height: {fs.lineHeight}px</p>
+                </div>
+                <div
+                  style={{
+                    fontSize: `${fs.fontSize}px`,
+                    lineHeight: `${fs.lineHeight}px`,
+                  }}
+                >
+                  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eum
+                  enim unde soluta eaque assumenda quae doloremque deleniti
+                  recusandae, ad voluptates ut, consequatur sunt dolor.
+                  Voluptatum officia laudantium porro. Odio, laborum.
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between gap-2 opacity-50">
+                  <p className="text-[12px]">
+                    Font-size: {fontSizes[i].fontSize}px
+                  </p>
+                  <p className="text-[12px]">
+                    Line-height: {fontSizes[i].lineHeight}px
+                  </p>
+                </div>
+                <div
+                  style={{
+                    fontSize: `${fontSizes[i].fontSize}px`,
+                    lineHeight: `${fontSizes[i].lineHeight}px`,
+                  }}
+                  className="line-clamp-3"
+                >
+                  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eum
+                  enim unde soluta eaque assumenda quae doloremque deleniti
+                  recusandae, ad voluptates ut, consequatur sunt dolor.
+                  Voluptatum officia laudantium porro. Odio, laborum.
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

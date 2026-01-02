@@ -10,6 +10,7 @@ import type { ViewOptions } from "~/routes/app.partner.slug";
 import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import { ActionItem } from "../features/ActionItem";
+import { sortActions } from "~/lib/helpers";
 
 export function HoursComponent({
   actions,
@@ -64,7 +65,11 @@ export function HoursComponent({
                 </div>
               </div>
               <div className="relative flex h-full flex-col gap-1">
-                {hour.actions.map((action) => (
+                {sortActions(
+                  hour.actions,
+                  viewOptions.order,
+                  viewOptions.ascending,
+                ).map((action) => (
                   <div
                     style={{
                       marginLeft: `${Number(format(action.date, "mm")) < 40 ? Math.ceil((Number(format(action.date, "mm")) / 60) * 100) : 70}%`,
