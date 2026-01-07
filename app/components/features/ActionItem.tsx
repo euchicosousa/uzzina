@@ -213,28 +213,30 @@ export const ActionItem = ({
       default:
         return (
           <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
-            <div
-              className="size-2 shrink-0 rounded-full"
-              style={{ backgroundColor: currentState.color }}
-            ></div>
-            {!isEditing && <ActionItemSprint action={action} />}
+            <div className="flex items-center gap-2">
+              <div
+                className="size-2 shrink-0 rounded-full"
+                style={{ backgroundColor: currentState.color }}
+              ></div>
+              {!isEditing && <ActionItemSprint action={action} />}
 
-            <ActionItemTitleInput
-              isEditing={isEditing}
-              setIsEditing={setIsEditing}
-              title={action.title}
-              className="w-full"
-              onChange={(title) => {
-                handleAction(
-                  {
-                    ...action,
-                    intent: INTENT.update_action,
-                    title,
-                  },
-                  sumbit,
-                );
-              }}
-            />
+              <ActionItemTitleInput
+                isEditing={isEditing}
+                setIsEditing={setIsEditing}
+                title={action.title}
+                className="w-full"
+                onChange={(title) => {
+                  handleAction(
+                    {
+                      ...action,
+                      intent: INTENT.update_action,
+                      title,
+                    },
+                    sumbit,
+                  );
+                }}
+              />
+            </div>
 
             <div
               className={cn(

@@ -42,12 +42,12 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import {
+  Link,
   useLoaderData,
   useMatches,
   useNavigate,
   useOutletContext,
   useParams,
-  useRouteLoaderData,
   useSubmit,
   type LoaderFunctionArgs,
 } from "react-router";
@@ -225,11 +225,12 @@ export default function PartnerPage() {
               size={SIZE.lg}
               isSquircle
             />
-            <UBadge
-              value={getLateActions(currentActions).length}
-              isDynamic
+            <Link
               className="isolate -mt-8 -ml-4"
-            />
+              to={`/app/late/${partner.slug}`}
+            >
+              <UBadge value={getLateActions(currentActions).length} isDynamic />
+            </Link>
             <h2 className="overflow-hidden p-0 py-2 text-ellipsis whitespace-nowrap">
               {partner.title}
             </h2>

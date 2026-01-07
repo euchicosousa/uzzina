@@ -5,6 +5,7 @@ import {
   formatDistanceToNow,
   isAfter,
   isBefore,
+  isToday,
   parseISO,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -276,9 +277,15 @@ export const Icons = ({
 export const getCleanAction = (user_id: string, date?: Date) => {
   date = date || new Date();
   let _date = format(
-    date.getHours() < 11 ? date.setHours(11, 0, 0) : addMinutes(date, 10),
+    isToday(date)
+      ? date.getHours() < 11
+        ? date.setHours(11, 0, 0)
+        : addMinutes(date, 10)
+      : date.setHours(11, 0, 0),
     "yyyy-MM-dd HH:mm:ss",
   );
+
+  console.log({ _date });
 
   return {
     title: "",

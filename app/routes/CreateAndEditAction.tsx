@@ -91,32 +91,6 @@ export function CreateAndEditAction({
   const [isPending, setIsPending] = useState(false);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
 
-  const loadingMessages = [
-    "Fritando os neurônios digitais...",
-    "Consultando meus arquivos secretos...",
-    "Organizando a bagunça mental...",
-    "Ensinando novos truques aos algoritmos...",
-    "Conectando os pontos da sua ideia...",
-
-    "Afiando os lápis de cor virtuais...",
-    "Misturando as tintas da imaginação...",
-    "Dando as últimas pinceladas no canvas...",
-    "Buscando a iluminação perfeita...",
-    "Esboçando um futuro brilhante...",
-
-    "Calma, o melhor sempre leva tempo...",
-    "Estou caprichando para você!",
-    "Só mais um café e eu termino...",
-    "Segura a ansiedade, vai valer a pena...",
-    "Quase lá! Estamos nos detalhes finais.",
-
-    "Navegando pelo cosmos de dados...",
-    "Alinhando as estrelas para o seu projeto...",
-    "Traduzindo sinais de outra galáxia...",
-    "Explorando o vácuo das possibilidades...",
-    "Sincronizando o tempo-espaço digital...",
-  ];
-
   useEffect(() => {
     setIsPending(fetchers.filter((f) => f.formData).length > 0);
 
@@ -199,6 +173,13 @@ export function CreateAndEditAction({
       }
     }
   }, [fetcher.data]);
+
+  useEffect(() => {
+    if (isAIProcessing) {
+      setTimeout(() => {}, 2000);
+    } else {
+    }
+  }, [isAIProcessing]);
 
   return (
     <div
@@ -423,20 +404,17 @@ export function CreateAndEditAction({
                 </Button>
               </div>
               <div className="flex h-full flex-col">
+                <AiProcessingMessage isAIProcessing={isAIProcessing} />
                 <textarea
                   disabled={isAIProcessing}
                   autoFocus
                   value={
-                    isAIProcessing
-                      ? loadingMessages[
-                          Math.floor(Math.random() * loadingMessages.length)
-                        ]
-                      : RawAction.instagram_caption ||
-                        getCaptionTail(
-                          currentPartners.length > 0
-                            ? currentPartners[0].instagram_caption_tail
-                            : "",
-                        )
+                    RawAction.instagram_caption ||
+                    getCaptionTail(
+                      currentPartners.length > 0
+                        ? currentPartners[0].instagram_caption_tail
+                        : "",
+                    )
                   }
                   onChange={(e) =>
                     setRawAction({
@@ -723,3 +701,96 @@ function ActionColorDropdown({
     </DropdownMenu>
   );
 }
+
+const loadingStates = {
+  initial: [
+    "Ouvindo com atenção...",
+    "Recebendo o briefing...",
+    "Entendido. Vamos lá!",
+    "Iniciando os motores...",
+    "Ativando neurônios...",
+    "Captando a ideia...",
+    "Abrindo os arquivos...",
+    "Analisando o pedido...",
+    "Preparando o ambiente...",
+    "Conectando os sinais...",
+  ],
+  loop: [
+    "Refinando os detalhes...",
+    "Polindo a resposta...",
+    "Conectando os pontos...",
+    "Mergulhando nos dados...",
+    "Tecendo conexões...",
+    "Ajustando o foco...",
+    "Lapidando a ideia...",
+    "Sincronizando...",
+    "Organizando o caos...",
+    "Calculando rotas...",
+    "Destilando informações...",
+    "Decifrando...",
+    "Customizando...",
+    "Alinhando conceitos...",
+    "Criando a mágica...",
+    "Buscando referências...",
+    "Estruturando...",
+    "Esculpindo...",
+    "Calibrando...",
+    "Finalizando o rascunho...",
+  ],
+};
+
+const AiProcessingMessage = ({
+  isAIProcessing,
+}: {
+  isAIProcessing: boolean;
+}) => {
+  const [currentMessage, setCurrentMessage] = useState("");
+
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let intervalId: ReturnType<typeof setInterval> | undefined;
+
+    if (isAIProcessing) {
+      // 1. Define uma mensagem inicial aleatória imediatamente
+      const randomInitial =
+        loadingStates.initial[
+          Math.floor(Math.random() * loadingStates.initial.length)
+        ];
+      setCurrentMessage(randomInitial);
+
+      // 2. Após 1 segundo (1000ms), inicia o loop das outras mensagens
+      timeoutId = setTimeout(() => {
+        // Função para pegar uma mensagem aleatória do loop
+        const setRandomLoopMessage = () => {
+          const randomLoop =
+            loadingStates.loop[
+              Math.floor(Math.random() * loadingStates.loop.length)
+            ];
+          setCurrentMessage(randomLoop);
+        };
+
+        setRandomLoopMessage(); // Dispara a primeira do loop logo após 1s
+
+        // Define o intervalo para trocar a mensagem a cada 3 segundos (tempo bom para leitura)
+        intervalId = setInterval(setRandomLoopMessage, 3000);
+      }, 1000);
+    } else {
+      // Se parou de processar, limpa a mensagem
+      setCurrentMessage("");
+    }
+
+    // Limpeza (Cleanup): Essencial para não vazar memória ou rodar processos em background
+    return () => {
+      clearTimeout(timeoutId);
+      clearInterval(intervalId);
+    };
+  }, [isAIProcessing]);
+
+  if (!isAIProcessing) return null;
+
+  return (
+    <div className="text-muted-foreground animate-pulse p-4 pb-0 font-mono text-xs">
+      {currentMessage}
+    </div>
+  );
+};

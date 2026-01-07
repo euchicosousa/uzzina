@@ -11,7 +11,6 @@ import {
   isSameDay,
   isSameMonth,
   isThisYear,
-  isToday,
   startOfWeek,
   startOfYear,
   subYears,
@@ -24,7 +23,6 @@ import {
   PlusIcon,
 } from "lucide-react";
 import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
-import { isInstagramFeed } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { ViewOptions } from "~/routes/app.partner.slug";
 import { Button } from "../ui/button";
@@ -188,7 +186,7 @@ const WeekHeader = () => {
   return (
     <div className="grid grid-cols-7 border-b">
       {week.slice(0, 7).map((day) => (
-        <div key={day.toISOString()} className="p-2 text-center xl:p-3">
+        <div key={day.toISOString()} className="p-2 xl:p-3">
           <div
             className={cn(
               "overflow-hidden text-sm leading-none font-medium text-ellipsis whitespace-nowrap capitalize xl:text-lg",
