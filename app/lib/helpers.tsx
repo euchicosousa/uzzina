@@ -285,8 +285,6 @@ export const getCleanAction = (user_id: string, date?: Date) => {
     "yyyy-MM-dd HH:mm:ss",
   );
 
-  console.log({ _date });
-
   return {
     title: "",
     description: "",

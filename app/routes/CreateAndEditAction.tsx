@@ -319,19 +319,19 @@ export function CreateAndEditAction({
                 <div className="flex gap-4 border-b text-sm">
                   <div>
                     <GMGCombobox
-                      gmg="genesis"
+                      gmg="origem"
                       className="py-2 underline-offset-4 opacity-50 hover:underline"
                     />
                   </div>
                   <div>
                     <GMGCombobox
-                      gmg="missions"
+                      gmg="funil"
                       className="py-2 underline-offset-4 opacity-50 hover:underline"
                     />
                   </div>
                   <div>
                     <GMGCombobox
-                      gmg="goals"
+                      gmg="objetivo"
                       className="py-2 underline-offset-4 opacity-50 hover:underline"
                     />
                   </div>

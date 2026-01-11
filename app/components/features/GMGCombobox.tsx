@@ -18,12 +18,12 @@ export function GMGCombobox({
 }: {
   className?: string;
   selected?: string;
-  gmg: "genesis" | "missions" | "goals";
+  gmg: "origem" | "funil" | "objetivo";
 }) {
   const items = {
-    genesis: Object.values(GENESIS),
-    missions: Object.values(MISSIONS),
-    goals: Object.values(GOALS),
+    origem: Object.values(GENESIS),
+    funil: Object.values(MISSIONS),
+    objetivo: Object.values(GOALS),
   }[gmg];
 
   const [selectedItem, setSelectedItem] = useState(selected);

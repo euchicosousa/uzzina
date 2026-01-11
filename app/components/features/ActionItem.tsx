@@ -213,7 +213,7 @@ export const ActionItem = ({
       default:
         return (
           <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
-            <div className="flex items-center gap-2">
+            <div className="flex w-full items-center gap-2 overflow-hidden">
               <div
                 className="size-2 shrink-0 rounded-full"
                 style={{ backgroundColor: currentState.color }}
@@ -240,7 +240,7 @@ export const ActionItem = ({
 
             <div
               className={cn(
-                "items-center gap-2",
+                "items-center gap-1",
                 isEditing ? "hidden @md:flex" : "flex",
               )}
             >
@@ -264,7 +264,7 @@ export const ActionItem = ({
               {showCategory && (
                 <Icons
                   slug={currentCategory.slug}
-                  className="size-4"
+                  className="size-4 shrink-0"
                   color={currentCategory.color}
                 />
               )}
@@ -320,7 +320,7 @@ export const ActionItem = ({
         }}
       >
         {variant === VARIANT.content && (
-          <div className="flex items-center gap-2 overflow-hidden">
+          <div className="mb-2 flex items-center gap-2 overflow-hidden">
             <ActionItemPartners
               action={action}
               partners={currentPartners}
@@ -405,7 +405,9 @@ export const ActionItemTitleInput = ({
           }}
           className={cn(
             "w-full cursor-text text-left leading-snug",
-            lines === 1 ? "line-clamp-1" : "line-clamp-2",
+            lines === 1
+              ? "overflow-hidden text-ellipsis whitespace-nowrap"
+              : "line-clamp-2",
             isDragging ? "cursor-grabbing" : "",
             InputButtonClassName,
           )}

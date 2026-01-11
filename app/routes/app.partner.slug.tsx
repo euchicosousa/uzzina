@@ -225,12 +225,17 @@ export default function PartnerPage() {
               size={SIZE.lg}
               isSquircle
             />
-            <Link
-              className="isolate -mt-8 -ml-4"
-              to={`/app/late/${partner.slug}`}
-            >
-              <UBadge value={getLateActions(currentActions).length} isDynamic />
-            </Link>
+            {getLateActions(currentActions).length > 0 && (
+              <Link
+                className="isolate -mt-8 -ml-4"
+                to={`/app/late/${partner.slug}`}
+              >
+                <UBadge
+                  value={getLateActions(currentActions).length}
+                  isDynamic
+                />
+              </Link>
+            )}
             <h2 className="overflow-hidden p-0 py-2 text-ellipsis whitespace-nowrap">
               {partner.title}
             </h2>
