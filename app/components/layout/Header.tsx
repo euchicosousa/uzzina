@@ -116,6 +116,7 @@ export function Header({
                     >
                       <div className="flex items-center gap-2">
                         <UAvatar
+                          isSquircle
                           size={SIZE.sm}
                           fallback={partner.short}
                           backgroundColor={partner.colors[0]}

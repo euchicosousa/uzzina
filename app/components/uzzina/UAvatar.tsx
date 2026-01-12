@@ -22,6 +22,7 @@ type UAvatarItem = {
   backgroundColor?: string;
   color?: string;
   isSquircle?: boolean;
+  isGroup?: boolean;
 };
 
 export const UAvatarGroup = ({
@@ -51,6 +52,7 @@ export const UAvatarGroup = ({
           {...avatar}
           size={size}
           isSquircle={isSquircle}
+          isGroup
         />
       ))}
       {clampAt < avatars.length && (
@@ -58,6 +60,7 @@ export const UAvatarGroup = ({
           fallback={`+${avatars.length - clampAt}`}
           size={size}
           isSquircle={isSquircle}
+          isGroup
         />
       )}
     </div>
@@ -74,6 +77,7 @@ export const UAvatar = ({
   backgroundColor,
   color,
   isSquircle,
+  isGroup,
 }: UAvatarItem) => {
   const fallbackText = (
     size === SIZE.xs
@@ -83,11 +87,11 @@ export const UAvatar = ({
         : fallback
   ).toUpperCase();
   const sizeClasses = {
-    xs: `size-4 ring-2`,
-    sm: `size-6 ring-2 `,
-    md: `size-8 ring-3 `,
-    lg: `size-12 ring-4 `,
-    xl: `size-18 ring-6 `,
+    xs: `size-4 ${isGroup && "ring-2"}`,
+    sm: `size-6 ${isGroup && "ring-2"}`,
+    md: `size-8 ${isGroup && "ring-3"}`,
+    lg: `size-12 ${isGroup && "ring-4"}`,
+    xl: `size-18 ${isGroup && "ring-6"}`,
   }[size];
   const textClasses =
     fallbackText.length <= 2
@@ -125,7 +129,8 @@ export const UAvatar = ({
         isSquircle && "squircle",
         "rounded-full",
         className,
-        "ring-background border p-0 leading-none font-bold",
+        "border p-0 leading-none font-bold",
+        isGroup && "ring-background",
       )}
     >
       {image ? (

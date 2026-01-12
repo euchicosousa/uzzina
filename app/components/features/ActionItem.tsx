@@ -6,13 +6,13 @@ import {
   CATEGORIES,
   DATE_TIME_DISPLAY,
   INTENT,
+  PRIORITIES,
   SIZE,
-  type STATE,
   STATES,
   VARIANT,
   type CATEGORY,
   type PRIORITY,
-  PRIORITIES,
+  type STATE,
 } from "~/lib/CONSTANTS";
 import {
   getFormattedDateTime,
@@ -29,7 +29,6 @@ import type { AppLoaderData } from "~/routes/app";
 import { UAvatarGroup } from "../uzzina/UAvatar";
 import { Content } from "./Content";
 import { Draggable } from "./DnD";
-import { UBadge } from "../uzzina/UBadge";
 import { StateIcon } from "./StateIcon";
 
 type ActionItemProps = {
@@ -389,6 +388,16 @@ export const ActionItemTitleInput = ({
           value={localTitle}
           onChange={(e) => setLocalTitle(e.target.value)}
           className={cn("w-full outline-none", InputButtonClassName)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              if (onChange) {
+                onChange(localTitle);
+              }
+              setIsEditing(false);
+            } else if (e.key === "Escape") {
+              setIsEditing(false);
+            }
+          }}
           onBlur={() => {
             if (onChange) {
               onChange(localTitle);
@@ -450,6 +459,7 @@ export const ActionItemPartners = ({
   return size ? (
     <UAvatarGroup
       size={size}
+      isSquircle
       avatars={partners.map((partner) => ({
         id: `${action.id}-${partner.id}`,
         fallback: partner.short,
@@ -462,6 +472,7 @@ export const ActionItemPartners = ({
       <div className="@xs:hidden">
         <UAvatarGroup
           size={SIZE.xs}
+          isSquircle
           avatars={partners.map((partner) => ({
             id: `${action.id}-${partner.id}`,
             fallback: partner.short,
@@ -472,6 +483,7 @@ export const ActionItemPartners = ({
       </div>
       <div className="hidden @xs:block">
         <UAvatarGroup
+          isSquircle
           size={SIZE.sm}
           avatars={partners.map((partner) => ({
             id: `${action.id}-${partner.id}`,
