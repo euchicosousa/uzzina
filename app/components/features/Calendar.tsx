@@ -10,6 +10,7 @@ import {
   format,
   isSameDay,
   isSameMonth,
+  isSameYear,
   isThisYear,
   startOfWeek,
   startOfYear,
@@ -110,8 +111,8 @@ const CalendarDay = ({
       id={`day_${format(day, "yyyy-MM-dd")}`}
       key={format(day, "yyyy-MM-dd")}
       className={cn(
-        "group/column flex flex-col justify-between border-b p-2",
-        isScroll ? "h-96 overflow-hidden" : "",
+        "group/column flex flex-col justify-between overflow-hidden border-b p-2",
+        isScroll ? "h-96" : "h-72",
       )}
     >
       <div className="flex h-full shrink flex-col gap-2 overflow-hidden">
@@ -272,7 +273,7 @@ export const CalendarButtons = ({
                       }}
                       className={cn(
                         "hover:bg-secondary h-8 w-full rounded-full leading-none tracking-tighter capitalize",
-                        isThisYear(year)
+                        isSameYear(year, currentDay)
                           ? "bg-primary hover:bg-primary/80 font-medium text-white"
                           : "",
                       )}
@@ -323,7 +324,7 @@ export const CelebrationContainer = ({
   return (
     <div className="flex shrink-0 flex-col gap-1 px-2 py-4 text-xs">
       {celebrations.map((celebration) => (
-        <div key={celebration.id}>
+        <div key={celebration.id} title={celebration.title}>
           <div className="flex items-center gap-2">
             <div className="bg-primary size-1 rounded-full"></div>
             <div className="line-clamp-1 opacity-50">{celebration.title}</div>

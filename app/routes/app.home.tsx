@@ -314,7 +314,7 @@ const PartnersHomeComponent = ({ actions }: { actions: Action[] }) => {
 
 const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
   const [view, setView] = useState<"kanban" | "hours" | "feed" | "categories">(
-    "hours",
+    "kanban",
   );
 
   const [currentDay, setCurrentDay] = useState(new Date());

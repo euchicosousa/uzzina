@@ -173,7 +173,7 @@ export default function PartnerPage() {
   const [viewOptions, setViewOptions] = useState<ViewOptions>({
     responsibles: false,
     priority: false,
-    category: false,
+    category: true,
     late: true,
     partner: false,
     instagram: false,

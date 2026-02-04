@@ -43,23 +43,23 @@ export const CategoriesCombobox = ({
 
   const CATEGORIES_LIST = Object.values(CATEGORIES);
 
-  let categoriesList = isMulti
-    ? [
-        {
-          color: "#666",
-          slug: "all",
-          title: "Todos as categorias",
-        },
-        ...CATEGORIES_LIST,
-      ]
-    : CATEGORIES_LIST;
-
-  categoriesList = showInstagramGroup
+  let categoriesList = showInstagramGroup
     ? [
         {
           color: "#666",
           slug: "instagram",
           title: "Feed do Instagram",
+        },
+        ...CATEGORIES_LIST,
+      ]
+    : CATEGORIES_LIST;
+
+  categoriesList = isMulti
+    ? [
+        {
+          color: "#666",
+          slug: "all",
+          title: "Todas as categorias",
         },
         ...categoriesList,
       ]

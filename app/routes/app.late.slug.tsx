@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useLoaderData, type LoaderFunctionArgs } from "react-router";
+import { Link, useLoaderData, type LoaderFunctionArgs } from "react-router";
 import invariant from "tiny-invariant";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 import { getLateActions, getUserId } from "~/lib/helpers";
+import type { ViewOptions } from "./app.partner.slug";
 
 export const runtime = "edge";
 
@@ -35,38 +36,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   actions = getLateActions(actions as Action[]);
 
   return { partner, actions };
-};
-
-export type ViewOptions = {
-  instagram?: boolean;
-  variant?: (typeof VARIANT)[keyof typeof VARIANT];
-  responsibles?: boolean;
-  priority?: boolean;
-  category?: boolean;
-  late?: boolean;
-  partner?: boolean;
-  order?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
-  ascending?: boolean;
-  finishedOnEnd?: boolean;
-  sprint?: boolean;
-  filter_category?: string[];
-  filter_state?: string[];
-  filter_responsible?: string[];
-  showOptions: {
-    instagram?: boolean;
-    variant?: boolean;
-    responsibles?: boolean;
-    priority?: boolean;
-    category?: boolean;
-    partner?: boolean;
-    order?: boolean;
-    ascending?: boolean;
-    finishedOnEnd?: boolean;
-    sprint?: boolean;
-    filter_category?: boolean;
-    filter_state?: boolean;
-    filter_responsible?: boolean;
-  };
 };
 
 export default function PartnerPage() {
@@ -116,7 +85,10 @@ export default function PartnerPage() {
   return (
     <div className="flex flex-col overflow-hidden">
       <h1 className="border_after flex justify-between p-8">
-        Ações atrasadas <span>{partner.title}</span>
+        Ações atrasadas{" "}
+        <Link to={`/app/partner/${partner.slug}`} className="hover:underline">
+          <span>{partner.title}</span>
+        </Link>
       </h1>
       <div>
         {filteredActions.length > 0 ? (
