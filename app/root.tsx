@@ -19,11 +19,11 @@ import {
 import { themeSessionResolver } from "./sessions.server";
 
 import "./tailwind.css";
-import "/object-sans/object-sans.css?url";
 import { cn } from "./lib/utils";
 import type { Action } from "~/models/actions.server";
 
 export const links: Route.LinksFunction = () => [
+  { rel: "stylesheet", href: "/object-sans/object-sans.css" },
   // Favicon para o tema claro (light)
   {
     rel: "icon",
