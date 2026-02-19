@@ -1,4 +1,5 @@
-import { Wand2Icon } from "lucide-react";
+import { Loader2, Sparkles, Wand2Icon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { type FetcherWithComponents } from "react-router";
 import { Button } from "~/components/ui/button";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
@@ -28,9 +29,14 @@ function getCaptionTail(instagram_caption_tail: string | null) {
 
 function AiProcessingMessage({ isAIProcessing }: { isAIProcessing: boolean }) {
   if (!isAIProcessing) return null;
+
   return (
-    <div className="bg-primary/10 text-primary flex w-full items-center justify-center py-1 text-xs font-medium">
-      Gerando legenda com IA...
+    <div className="border-primary/10 bg-primary/5 text-primary flex w-full items-center justify-center gap-2 border-b py-4 text-xs font-medium">
+      <div className="relative flex items-center justify-center">
+        <Loader2 className="absolute size-4 animate-spin opacity-50" />
+        <Wand2Icon className="size-3" />
+      </div>
+      <span className="animate-pulse">Gerando legenda com IA...</span>
     </div>
   );
 }

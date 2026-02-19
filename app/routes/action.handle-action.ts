@@ -6,6 +6,7 @@ import {
   getActionById,
   updateAction,
 } from "~/models/actions.server";
+import { ActionFormSchema } from "~/utils/validation";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = Object.fromEntries(await request.formData());
@@ -14,62 +15,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const { supabase } = await getUserId(request);
 
   if (intent === INTENT.create_action) {
-    if (
-      values.content_files === "" ||
-      values.content_files === "null" ||
-      !values.content_files
-    ) {
-      // @ts-ignore
-      values.content_files = null;
-    } else {
-      // @ts-ignore
-      values.content_files = String(values.content_files)
-        .split(",")
-        .filter(Boolean);
+    const result = ActionFormSchema.safeParse(values);
+    if (!result.success) {
+      console.error("Zod Validation Errors:", result.error.flatten());
+      return Response.json(
+        { errors: result.error.flatten().fieldErrors },
+        { status: 400 },
+      );
     }
-    if (
-      values.work_files === "" ||
-      values.work_files === "null" ||
-      !values.work_files
-    ) {
-      // @ts-ignore
-      values.work_files = null;
-    } else {
-      // @ts-ignore
-      values.work_files = String(values.work_files).split(",").filter(Boolean);
-    }
-    if (values.topics === "null" || values.topics === "") {
-      delete values.topics;
-    }
-    if (
-      values.instagram_content === "null" ||
-      values.instagram_content === ""
-    ) {
-      delete values.instagram_content;
-    }
-    if (
-      values.instagram_caption === "null" ||
-      values.instagram_caption === ""
-    ) {
-      delete values.instagram_caption;
-    }
-
-    if (values.sprints && values.sprints !== "null" && values.sprints !== "") {
-      //@ts-ignore
-      values.sprints = values.sprints.toString().split(",").filter(Boolean);
-    } else {
-      // @ts-ignore
-      values.sprints = null;
-    }
-
-    let valuesToInsert = {
-      ...values,
-      responsibles: String(values.responsibles).split(","),
-      partners: String(values.partners).split(","),
-    };
 
     try {
-      const data = await createAction(supabase, valuesToInsert);
+      const data = await createAction(supabase, result.data);
       return data;
     } catch (error) {
       console.error("Error creating action:", error);
@@ -77,67 +33,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
   } else if (intent === INTENT.update_action) {
     if (id) {
-      if (
-        values.content_files === "" ||
-        values.content_files === "null" ||
-        !values.content_files
-      ) {
-        values.content_files = null;
-      } else {
-        // @ts-ignore
-        values.content_files = String(values.content_files)
-          .split(",")
-          .filter(Boolean);
+      const result = ActionFormSchema.safeParse(values);
+      if (!result.success) {
+        console.error("Zod Validation Errors:", result.error.flatten());
+        return Response.json(
+          { errors: result.error.flatten().fieldErrors },
+          { status: 400 },
+        );
       }
-      if (
-        values.work_files === "" ||
-        values.work_files === "null" ||
-        !values.work_files
-      ) {
-        values.work_files = null;
-      } else {
-        // @ts-ignore
-        values.work_files = String(values.work_files)
-          .split(",")
-          .filter(Boolean);
-      }
-      if (values.topics === "null" || values.topics === "") {
-        delete values.topics;
-      }
-      if (
-        values.instagram_content === "null" ||
-        values.instagram_content === ""
-      ) {
-        delete values.instagram_content;
-      }
-      if (
-        values.instagram_caption === "null" ||
-        values.instagram_caption === ""
-      ) {
-        delete values.instagram_caption;
-      }
-      if (
-        values.sprints &&
-        values.sprints !== "null" &&
-        values.sprints !== ""
-      ) {
-        //@ts-ignore
-        values.sprints = values.sprints.toString().split(",").filter(Boolean);
-      } else {
-        // @ts-ignore
-        values.sprints = null;
-      }
-
-      // console.log(values);
-
-      let valuesToUpdate = {
-        ...values,
-        responsibles: String(values.responsibles).split(","),
-        partners: String(values.partners).split(","),
-      };
 
       try {
-        await updateAction(supabase, String(id), valuesToUpdate);
+        await updateAction(supabase, String(id), result.data);
       } catch (error) {
         console.error("Error updating action:", error);
       }
