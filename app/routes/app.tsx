@@ -33,6 +33,8 @@ export type AppLoaderData = {
   person: Person;
   partners: Partner[];
   celebrations: Celebration[];
+  cloudName: string;
+  uploadPreset: string;
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -69,6 +71,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     person,
     partners,
     celebrations,
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
+    uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET!,
   } as AppLoaderData;
 };
 

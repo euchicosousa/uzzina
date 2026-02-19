@@ -12,16 +12,26 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     if (
       values.content_files === "" ||
       values.content_files === "null" ||
-      values.content_files
+      !values.content_files
     ) {
-      delete values.content_files;
+      // @ts-ignore
+      values.content_files = null;
+    } else {
+      // @ts-ignore
+      values.content_files = String(values.content_files)
+        .split(",")
+        .filter(Boolean);
     }
     if (
       values.work_files === "" ||
       values.work_files === "null" ||
-      values.work_files
+      !values.work_files
     ) {
-      delete values.work_files;
+      // @ts-ignore
+      values.work_files = null;
+    } else {
+      // @ts-ignore
+      values.work_files = String(values.work_files).split(",").filter(Boolean);
     }
     if (values.topics === "null" || values.topics === "") {
       delete values.topics;
@@ -71,16 +81,26 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       if (
         values.content_files === "" ||
         values.content_files === "null" ||
-        values.content_files
+        !values.content_files
       ) {
-        delete values.content_files;
+        values.content_files = null;
+      } else {
+        // @ts-ignore
+        values.content_files = String(values.content_files)
+          .split(",")
+          .filter(Boolean);
       }
       if (
         values.work_files === "" ||
         values.work_files === "null" ||
-        values.work_files
+        !values.work_files
       ) {
-        delete values.work_files;
+        values.work_files = null;
+      } else {
+        // @ts-ignore
+        values.work_files = String(values.work_files)
+          .split(",")
+          .filter(Boolean);
       }
       if (values.topics === "null" || values.topics === "") {
         delete values.topics;

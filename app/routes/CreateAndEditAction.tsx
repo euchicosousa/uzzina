@@ -49,6 +49,8 @@ import {
 } from "~/components/ui/popover";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
+import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
+import type { AppLoaderData } from "~/routes/app";
 import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
 import {
   getFormattedDateTime,
@@ -70,9 +72,9 @@ export function CreateAndEditAction({
   const [view, setView] = useState<"essential" | "instagram" | "chat">(
     "essential",
   );
-  const { partners } = useRouteLoaderData("routes/app") as {
-    partners: Partner[];
-  };
+  const { partners, cloudName, uploadPreset } = useRouteLoaderData(
+    "routes/app",
+  ) as AppLoaderData & { partners: Partner[] };
 
   const fetcher = useFetcher();
 
@@ -132,6 +134,10 @@ export function CreateAndEditAction({
   }
 
   const [currentPartners, setCurrentPartners] = useState<Partner[]>([]);
+
+  const [workFiles, setWorkFiles] = useState<string[]>(
+    RawAction.work_files ?? [],
+  );
 
   async function updateAction(data?: { [key: string]: any }) {
     if (RawAction.id) {
@@ -337,6 +343,44 @@ export function CreateAndEditAction({
                   </div>
                 </div>
               )}
+              <div className="flex items-start gap-2 border-b py-1">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {workFiles.map((url, i) => (
+                    <WorkFileThumbnail
+                      key={url + i}
+                      url={url}
+                      onRemove={async () => {
+                        const next = workFiles.filter((_, idx) => idx !== i);
+                        setWorkFiles(next);
+                        setRawAction((prev) => ({ ...prev, work_files: next }));
+                        await updateAction({ work_files: next });
+                      }}
+                    />
+                  ))}
+                  <CloudinaryUpload
+                    cloudName={cloudName}
+                    uploadPreset={uploadPreset}
+                    folder="uzzina/work"
+                    resourceType="auto"
+                    multiple
+                    outputWidth={1200}
+                    onUpload={async (url) => {
+                      const next = [...workFiles, url];
+                      setWorkFiles(next);
+                      setRawAction((prev) => ({ ...prev, work_files: next }));
+                      await updateAction({ work_files: next });
+                    }}
+                    className={
+                      workFiles.length === 0
+                        ? "flex items-center gap-1.5 rounded-lg border border-dashed px-3 py-1.5 text-xs opacity-50 transition hover:opacity-100"
+                        : "flex size-10 shrink-0 items-center justify-center rounded-lg border border-dashed opacity-40 transition hover:opacity-100"
+                    }
+                  >
+                    <PlusIcon className="size-3" />
+                    {workFiles.length === 0 && <span>Adicionar arquivo</span>}
+                  </CloudinaryUpload>
+                </div>
+              </div>
             </div>
             {/* Descrição */}
             <div className="h-full overflow-hidden">
@@ -536,6 +580,59 @@ export function CreateAndEditAction({
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Thumbnail compacto para trabalho (work_files):
+ * - Imagens → preview real
+ * - Tudo mais (vídeo, áudio, doc, etc.) → badge com extensão (MP3, MP4, PDF…)
+ * Clicável para abrir em nova aba; hover mostra X para remover.
+ */
+function WorkFileThumbnail({
+  url,
+  onRemove,
+}: {
+  url: string;
+  onRemove: () => void;
+}) {
+  const isImage = url.includes("/image/upload/");
+  // Extrai a extensão do final da URL (antes de ? ou #)
+  const ext =
+    url.split("?")[0].split("#")[0].split(".").pop()?.toUpperCase() ?? "FILE";
+
+  return (
+    <div className="group relative size-10 shrink-0">
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block size-full"
+      >
+        {isImage ? (
+          <img
+            src={url}
+            alt=""
+            className="size-full rounded-lg border object-cover"
+          />
+        ) : (
+          <div className="bg-muted flex size-full items-center justify-center rounded-lg border text-[8px] font-bold tracking-wide uppercase opacity-70">
+            {ext.slice(0, 4)}
+          </div>
+        )}
+      </a>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onRemove();
+        }}
+        className="bg-destructive absolute -top-1.5 -right-1.5 hidden size-4 items-center justify-center rounded-full text-white group-hover:flex"
+      >
+        <XIcon className="size-2.5" />
+      </button>
     </div>
   );
 }

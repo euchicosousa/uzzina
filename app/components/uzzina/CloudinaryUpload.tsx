@@ -13,70 +13,72 @@ declare global {
             info: {
               secure_url: string;
               public_id: string;
-              // Coordenadas do crop selecionado pelo usuário: [[x, y, w, h]]
+              resource_type?: string;
+              format?: string;
               coordinates?: { custom?: number[][] };
             };
           },
         ) => void,
-      ) => { open: () => void };
+      ) => { open: () => void; destroy: () => void };
     };
   }
 }
 
 interface CloudinaryUploadProps {
-  /** Cloud name do Cloudinary (público, vem do loader) */
   cloudName: string;
-  /** Upload preset sem assinatura configurado no Cloudinary */
   uploadPreset: string;
-  /** Pasta de destino no Cloudinary */
   folder?: string;
   /**
    * Se true, força crop 1:1 (ideal para avatares).
-   * Se false ou omitido, não força crop — respeita a proporção original da imagem.
+   * Se false ou omitido, respeita a proporção original.
    */
   square?: boolean;
-  /** Largura máxima do output em pixels (padrão: 800) */
+  /**
+   * Tipo de recurso aceito pelo widget.
+   * "image" (padrão) | "video" | "auto" (qualquer arquivo)
+   */
+  resourceType?: "image" | "video" | "auto";
+  /**
+   * Se true, permite selecionar múltiplos arquivos por sessão.
+   * onUpload é chamado individualmente para cada arquivo.
+   */
+  multiple?: boolean;
+  /** Largura máxima do output (padrão: 800px, ignorado para não-imagem) */
   outputWidth?: number;
-  /** Callback chamado com a URL final após upload bem-sucedido */
-  onUpload: (url: string) => void;
-  /** Conteúdo clicável que abre o widget (avatar, botão, etc.) */
+  /** Chamado após cada upload com a URL final e metadados do arquivo */
+  onUpload: (
+    url: string,
+    meta: { resourceType: string; format: string },
+  ) => void;
   children: React.ReactNode;
-  /** Classes extras para o wrapper clicável */
   className?: string;
 }
 
-/**
- * Componente reutilizável que envolve o Cloudinary Upload Widget.
- *
- * Uso (avatar — crop quadrado):
- * ```tsx
- * <CloudinaryUpload cloudName={cloudName} uploadPreset={uploadPreset}
- *   folder="uzzina/people" square onUpload={(url) => setImageUrl(url)}>
- *   <UAvatar image={imageUrl} fallback="?" size="xxl" />
- * </CloudinaryUpload>
- * ```
- *
- * Uso (imagem livre — sem crop forçado):
- * ```tsx
- * <CloudinaryUpload cloudName={cloudName} uploadPreset={uploadPreset}
- *   folder="uzzina/actions" onUpload={(url) => setImageUrl(url)}>
- *   <img src={imageUrl} />
- * </CloudinaryUpload>
- * ```
- */
 export function CloudinaryUpload({
   cloudName,
   uploadPreset,
   folder = "uzzina",
   square = false,
+  resourceType = "image",
+  multiple = false,
   outputWidth = 800,
   onUpload,
   children,
   className,
 }: CloudinaryUploadProps) {
-  const widgetRef = useRef<{ open: () => void } | null>(null);
+  const widgetRef = useRef<{ open: () => void; destroy: () => void } | null>(
+    null,
+  );
 
-  // Carrega o script do Cloudinary Upload Widget uma vez (via id único)
+  // Mantém sempre a referência mais recente do onUpload.
+  // Isso resolve o problema de closure estale quando o widget é criado uma vez
+  // mas o conteúdo de onUpload muda entre renders (ex: workFiles atualiza).
+  const onUploadRef = useRef(onUpload);
+  useEffect(() => {
+    onUploadRef.current = onUpload;
+  });
+
+  // Carrega o script do widget uma única vez por página
   useEffect(() => {
     if (document.getElementById("cloudinary-widget-script")) return;
     const script = document.createElement("script");
@@ -96,7 +98,6 @@ export function CloudinaryUpload({
       return;
     }
 
-    // Reutiliza o widget já criado (evita múltiplas instâncias)
     if (widgetRef.current) {
       widgetRef.current.open();
       return;
@@ -107,13 +108,13 @@ export function CloudinaryUpload({
         cloudName,
         uploadPreset,
         folder,
-        // Crop 1:1 apenas quando square=true
-        cropping: square,
+        resourceType,
+        cropping: square && resourceType !== "auto",
         croppingAspectRatio: square ? 1 : undefined,
         showSkipCropButton: false,
         croppingShowDimensions: square,
-        multiple: false,
-        maxFileSize: 5_000_000, // 5MB
+        multiple,
+        maxFileSize: 50_000_000,
         sources: ["local", "url", "camera"],
         styles: {
           palette: {
@@ -135,26 +136,44 @@ export function CloudinaryUpload({
       },
       (error, result) => {
         if (!error && result.event === "success") {
-          const { public_id, coordinates } = result.info;
+          const {
+            secure_url,
+            public_id,
+            coordinates,
+            resource_type = "image",
+            format = "",
+          } = result.info;
 
           let finalUrl: string;
 
-          if (square) {
-            const crop = coordinates?.custom?.[0]; // [x, y, width, height]
+          if (square && resource_type === "image") {
+            // Crop 1:1 manual usando coordenadas selecionadas pelo usuário (avatar)
+            const ext = format ? `.${format}` : "";
+            const crop = coordinates?.custom?.[0];
             if (crop) {
-              // Aplica o crop exato que o usuário selecionou
               const [x, y, w, h] = crop;
-              finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/x_${x},y_${y},w_${w},h_${h},c_crop/w_${outputWidth},f_auto,q_auto/${public_id}`;
+              finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/x_${x},y_${y},w_${w},h_${h},c_crop/w_${outputWidth},q_auto/${public_id}${ext}`;
             } else {
-              // Fallback: crop automático centrado
-              finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_fill,ar_1:1,w_${outputWidth},f_auto,q_auto/${public_id}`;
+              finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_fill,ar_1:1,w_${outputWidth},q_auto/${public_id}${ext}`;
             }
           } else {
-            // Sem crop forçado — apenas otimiza e redimensiona preservando proporção
-            finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/w_${outputWidth},f_auto,q_auto/${public_id}`;
+            // Para todos os outros casos (work_files, content_files, etc.),
+            // usa a secure_url diretamente — ela já é a URL correta fornecida pelo Cloudinary
+            finalUrl = secure_url;
           }
 
-          onUpload(finalUrl);
+          // Usa ref para garantir que o onUpload mais recente seja chamado,
+          // mesmo que o widget tenha sido criado em um render anterior
+          onUploadRef.current(finalUrl, {
+            resourceType: resource_type,
+            format,
+          });
+        }
+        // Destrói o widget ao fechar para garantir sessão limpa na próxima abertura.
+        // Sem isso, o widget cached re-emite eventos `success` de sessões anteriores.
+        if (!error && result.event === "close") {
+          widgetRef.current?.destroy();
+          widgetRef.current = null;
         }
       },
     );
