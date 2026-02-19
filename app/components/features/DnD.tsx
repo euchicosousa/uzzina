@@ -27,23 +27,15 @@ export const Droppable = ({
 export const Draggable = ({
   id,
   children,
-  shouldFollow,
 }: {
   id: UniqueIdentifier;
   children: React.ReactElement<any>;
-  shouldFollow?: boolean;
 }) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id,
     });
 
-  // const style =
-  //   shouldFollow && transform
-  //     ? {
-  //         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-  //       }
-  //     : undefined;
   const style = {
     transform: CSS.Transform.toString(transform),
   };

@@ -8,16 +8,14 @@ import {
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { useState } from "react";
-import { useMatches, useSubmit } from "react-router";
+import { useSubmit } from "react-router";
 import {
   DATE_TIME_DISPLAY,
   INTENT,
   STATES,
-  type STATE,
   type STATE_TYPE,
 } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
-import type { AppLoaderData } from "~/routes/app";
 import { ActionItem } from "../features/ActionItem";
 import { Draggable, Droppable } from "../features/DnD";
 import { handleAction } from "~/lib/helpers";
@@ -26,9 +24,14 @@ import { UBadge } from "../uzzina/UBadge";
 export default function KanbanComponent({ actions }: { actions: Action[] }) {
   const submit = useSubmit();
 
-  //Start DnD
-
   const [activeAction, setActiveAction] = useState<Action>();
+
+  // Local override: maps action.id → new state slug
+  // Applied immediately on drop so the DOM is correct before drop animation runs.
+  const [stateOverrides, setStateOverrides] = useState<Record<string, string>>(
+    {},
+  );
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
@@ -39,21 +42,38 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
     setActiveAction(actions.find((action) => action.id === event.active.id)!);
   };
 
-  //End DnD
-
   const handleDragEnd = (event: DragEndEvent) => {
     if (event.over && activeAction) {
+      const newState = event.over.id as string;
+
+      // 1. Apply override locally RIGHT NOW so that in the same batched render
+      //    the item already appears in the new column — this is what the drop
+      //    animation will use to calculate the destination position.
+      setStateOverrides((prev) => ({ ...prev, [activeAction.id]: newState }));
+
+      // 2. Persist to server (async fetcher)
       handleAction(
         {
           ...activeAction,
           intent: INTENT.update_action,
-          state: event.over.id,
+          state: newState,
         },
         submit,
       );
     }
+
+    // 3. Clear overlay in the same render cycle as the override update above.
+    //    React batches these together, so the drop animation starts from the
+    //    correct (new) column position in the DOM.
     setActiveAction(undefined);
   };
+
+  // Apply local overrides on top of server-supplied actions
+  const actionsWithOverrides = actions.map((action) =>
+    stateOverrides[action.id]
+      ? { ...action, state: stateOverrides[action.id] }
+      : action,
+  );
 
   return (
     <div className="w-full max-w-full overflow-hidden">
@@ -71,14 +91,15 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
                 id={state.slug}
                 state={state}
                 key={state.slug}
-                actions={actions.filter(
+                actions={actionsWithOverrides.filter(
                   (action) => action.state === state.slug,
                 )}
               />
             ))}
             <DragOverlay
               className="z-100"
-              style={{ transition: "transform 100ms ease" }}
+              dropAnimation={{ duration: 150, easing: "ease-in-out" }}
+              adjustScale={false}
             >
               {activeAction ? (
                 <ActionItem

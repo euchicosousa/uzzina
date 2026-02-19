@@ -398,6 +398,11 @@ function ActionCalendarPartnerPage({
   const { setBaseAction } = useOutletContext<OutletContext>();
 
   const [activeAction, setActiveAction] = useState<Action>();
+  // Local override: maps action.id → updated date fields
+  // Applied immediately on drop so the DOM correct before drop animation runs.
+  const [dateOverrides, setDateOverrides] = useState<
+    Record<string, Partial<Action>>
+  >({});
   const submit = useSubmit();
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -418,29 +423,42 @@ function ActionCalendarPartnerPage({
         "yyyy-MM-dd",
       ).concat(format(activeAction[key], " HH:mm:ss"));
 
-      // console.log({ value, over: event.over });
+      const newDates = getNewDateForAction(
+        activeAction,
+        parseISO(value),
+        viewOptions.instagram && isInstagramFeed(activeAction.category),
+      );
 
+      // 1. Apply override locally RIGHT NOW so that in the same batched render
+      //    the item already appears in the new day — this is what the drop
+      //    animation uses to calculate the destination position.
+      setDateOverrides((prev) => ({ ...prev, [activeAction.id]: newDates }));
+
+      // 2. Persist to server (async fetcher)
       handleAction(
         {
           ...activeAction,
           intent: INTENT.update_action,
-          // [key]: value,
-          ...getNewDateForAction(
-            activeAction,
-            parseISO(value),
-            viewOptions.instagram && isInstagramFeed(activeAction.category),
-          ),
+          ...newDates,
         },
         submit,
       );
-
-      setActiveAction(undefined);
     }
+
+    // 3. Clear overlay in the same render cycle as the override update above.
+    setActiveAction(undefined);
   };
+
+  // Apply local date overrides on top of server-supplied actions
+  const actionsWithOverrides = actions.map((action) =>
+    dateOverrides[action.id]
+      ? { ...action, ...dateOverrides[action.id] }
+      : action,
+  );
 
   let calendar = calendarDates.map((date) => ({
     date,
-    actions: actions.filter((action) =>
+    actions: actionsWithOverrides.filter((action) =>
       isSameDay(
         viewOptions.instagram && isInstagramFeed(action.category)
           ? action.instagram_date
@@ -472,7 +490,7 @@ function ActionCalendarPartnerPage({
         }}
       />
       <DragOverlay
-        // className="z-100"
+        className="z-100"
         dropAnimation={{ duration: 150, easing: "ease-in-out" }}
         adjustScale={false}
       >

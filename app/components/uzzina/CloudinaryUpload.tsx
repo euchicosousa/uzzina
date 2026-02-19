@@ -117,20 +117,45 @@ export function CloudinaryUpload({
         maxFileSize: 50_000_000,
         sources: ["local", "url", "camera"],
         styles: {
-          palette: {
-            window: "hsl(var(--card))",
-            windowBorder: "hsl(var(--border))",
-            tabIcon: "hsl(var(--primary))",
-            menuIcons: "hsl(var(--muted-foreground))",
-            textDark: "hsl(var(--foreground))",
-            textLight: "hsl(var(--background))",
-            link: "hsl(var(--primary))",
-            action: "hsl(var(--primary))",
-            inactiveTabIcon: "hsl(var(--muted-foreground))",
-            error: "hsl(var(--destructive))",
-            inProgress: "hsl(var(--primary))",
-            complete: "hsl(var(--primary))",
-            sourceBg: "hsl(var(--background))",
+          palette: (() => {
+            const isDark = document.documentElement.classList.contains("dark");
+            return isDark
+              ? {
+                  window: "#09090b", // card / background dark
+                  sourceBg: "#18181b", // secondary dark
+                  windowBorder: "#27272a", // border dark
+                  tabIcon: "#fafafa", // primary foreground dark
+                  inactiveTabIcon: "#a1a1aa", // muted foreground dark
+                  menuIcons: "#a1a1aa", // muted foreground dark
+                  link: "#fafafa", // primary dark
+                  action: "#fafafa", // primary dark
+                  inProgress: "#fafafa", // primary dark
+                  complete: "#22c55e", // success (green-500)
+                  error: "#ef4444", // destructve (red-500)
+                  textDark: "#fafafa", // foreground dark
+                  textLight: "#09090b", // background dark (contrast)
+                }
+              : {
+                  window: "#ffffff", // card / background light
+                  sourceBg: "#f4f4f5", // secondary light
+                  windowBorder: "#e4e4e7", // border light
+                  tabIcon: "#18181b", // primary foreground light
+                  inactiveTabIcon: "#71717a", // muted foreground light
+                  menuIcons: "#71717a", // muted foreground light
+                  link: "#18181b", // primary light
+                  action: "#18181b", // primary light
+                  inProgress: "#18181b", // primary light
+                  complete: "#22c55e", // success (green-500)
+                  error: "#ef4444", // destructve (red-500)
+                  textDark: "#09090b", // foreground light
+                  textLight: "#ffffff", // background light (contrast)
+                };
+          })(),
+          fonts: {
+            "'Inter', sans-serif": {
+              url: "https://fonts.googleapis.com/css?family=Inter",
+              active: true,
+            },
           },
         },
       },
