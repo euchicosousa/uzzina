@@ -1,21 +1,12 @@
 import Color from "color";
+import { addMinutes, format, parse, parseISO } from "date-fns";
 import {
-  addMinutes,
-  format,
-  formatDistanceToNow,
-  parse,
-  parseISO,
-} from "date-fns";
-import { ptBR } from "date-fns/locale";
-import {
-  CalendarIcon,
   HeartIcon,
   InstagramIcon,
   LoaderCircleIcon,
   MessageCircleIcon,
   PlusIcon,
   UploadCloudIcon,
-  Wand2Icon,
   XIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -27,44 +18,20 @@ import {
 } from "react-router";
 import { toast } from "sonner";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
-import { Content } from "~/components/features/Content";
-import { GMGCombobox } from "~/components/features/GMGCombobox";
 import { PartnersCombobox } from "~/components/features/PartnersCombobox";
-import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 import { StatesCombobox } from "~/components/features/StatesCombobox";
-import { Tiptap } from "~/components/features/Tiptap";
 import { Button } from "~/components/ui/button";
-import { Calendar } from "~/components/ui/calendar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import { Input } from "~/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
-import { UAvatarGroup } from "~/components/uzzina/UAvatar";
-import { UBadge } from "~/components/uzzina/UBadge";
-import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
-import {
-  ContentFilesManager,
-  InstagramPreview,
-} from "~/components/uzzina/InstagramContent";
+import { ActionColorDropdown } from "~/components/features/ActionForm/ActionColorDropdown";
+import { EssentialsTab } from "~/components/features/ActionForm/EssentialsTab";
+import { InstagramTab } from "~/components/features/ActionForm/InstagramTab";
 import type { AppLoaderData } from "~/routes/app";
-import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
-import {
-  getFormattedDateTime,
-  getFormattedPartnersName,
-  getNewDateForAction,
-  handleAction,
-  isColorValid,
-  isInstagramFeed,
-} from "~/lib/helpers";
+import { INTENT } from "~/lib/CONSTANTS";
+import { handleAction, isInstagramFeed } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
+
+function getCaptionTail(instagram_caption_tail: string | null) {
+  return "".concat("\n\n").concat(instagram_caption_tail || "");
+}
 
 export function CreateAndEditAction({
   BaseAction,
@@ -244,254 +211,29 @@ export function CreateAndEditAction({
         {/* Essencial */}
 
         {view === "essential" && (
-          <div className="flex h-full flex-col overflow-hidden p-6">
-            {/* Título */}
-            <div className="relative">
-              <textarea
-                value={RawAction.title}
-                onChange={(e) =>
-                  setRawAction({ ...RawAction, title: e.target.value })
-                }
-                onBlur={async () => {
-                  await updateAction();
-                }}
-                placeholder="Título"
-                className={cn(
-                  "w-full shrink-0 resize-none overflow-hidden pt-2 pb-1 leading-none font-semibold tracking-tighter outline-none",
-                  RawAction.title.length > 70
-                    ? "text-error text-4xl"
-                    : "text-5xl",
-                )}
-                //   @ts-ignore
-                style={{ fieldSizing: "content" }}
-                autoFocus
-                maxLength={100}
-              />
-              {RawAction.title.length > 70 && (
-                <div className="absolute right-0 bottom-0">
-                  <UBadge isDynamic value={RawAction.title.length} />
-                </div>
-              )}
-            </div>
-
-            <div className="pb-6 text-sm">
-              <div className="flex flex-wrap items-center gap-4 border-b py-2">
-                <div className="opacity-50">
-                  <ActionCreatedUpdatedTimeDisplay action={RawAction} />
-                </div>
-                <ResponsiblesCombobox
-                  selectedResponsibles={RawAction.responsibles}
-                  currentPartners={currentPartners}
-                  onSelect={async (responsibles) => {
-                    setRawAction({ ...RawAction, responsibles });
-                    await updateAction({
-                      ...RawAction,
-                      responsibles,
-                    });
-                  }}
-                />
-              </div>
-              <div className="flex gap-8 border-b py-2">
-                <div className="flex items-center gap-1 opacity-50">
-                  <CalendarIcon className="size-3" />
-                  <ActionDatePicker
-                    onSelect={async (date) => {
-                      setRawAction({
-                        ...RawAction,
-                        ...getNewDateForAction(RawAction, date),
-                      });
-                      await updateAction({
-                        ...RawAction,
-                        ...getNewDateForAction(RawAction, date),
-                      });
-                    }}
-                    date={parseISO(RawAction.date)}
-                  />
-                </div>
-                {isInstagramFeed(
-                  RawAction.category,
-                  RawAction.category === "stories",
-                ) && (
-                  <div className="flex items-center gap-1 opacity-50">
-                    <InstagramIcon className="size-3" />
-                    <ActionDatePicker
-                      onSelect={async (date) => {
-                        setRawAction({
-                          ...RawAction,
-                          ...getNewDateForAction(RawAction, date, true),
-                        });
-                        await updateAction({
-                          ...RawAction,
-                          ...getNewDateForAction(RawAction, date, true),
-                        });
-                      }}
-                      date={parseISO(RawAction.instagram_date)}
-                    />
-                  </div>
-                )}
-              </div>
-
-              {isInstagramFeed(
-                RawAction.category,
-                RawAction.category === "stories",
-              ) && (
-                <div className="flex gap-4 border-b text-sm">
-                  <div>
-                    <GMGCombobox
-                      gmg="origem"
-                      className="py-2 underline-offset-4 opacity-50 hover:underline"
-                    />
-                  </div>
-                  <div>
-                    <GMGCombobox
-                      gmg="funil"
-                      className="py-2 underline-offset-4 opacity-50 hover:underline"
-                    />
-                  </div>
-                  <div>
-                    <GMGCombobox
-                      gmg="objetivo"
-                      className="py-2 underline-offset-4 opacity-50 hover:underline"
-                    />
-                  </div>
-                </div>
-              )}
-              <div className="flex items-start gap-2 border-b py-1">
-                <div className="flex flex-wrap items-center gap-1.5">
-                  {workFiles.map((url, i) => (
-                    <WorkFileThumbnail
-                      key={url + i}
-                      url={url}
-                      onRemove={async () => {
-                        const next = workFiles.filter((_, idx) => idx !== i);
-                        setWorkFiles(next);
-                        setRawAction((prev) => ({ ...prev, work_files: next }));
-                        await updateAction({ work_files: next });
-                      }}
-                    />
-                  ))}
-                  <CloudinaryUpload
-                    cloudName={cloudName}
-                    uploadPreset={uploadPreset}
-                    folder="uzzina/work"
-                    resourceType="auto"
-                    multiple
-                    outputWidth={1200}
-                    onUpload={async (url) => {
-                      const next = [...workFiles, url];
-                      setWorkFiles(next);
-                      setRawAction((prev) => ({ ...prev, work_files: next }));
-                      await updateAction({ work_files: next });
-                    }}
-                    className={`text-foreground/50 ${
-                      workFiles.length === 0
-                        ? "text-md flex items-center gap-1.5 py-1.5 underline-offset-2 hover:underline"
-                        : "squircle bg-secondary hover:bg-secondary/50 flex size-10 shrink-0 items-center justify-center rounded-xl transition"
-                    }`}
-                  >
-                    {workFiles.length === 0 && <span>Adicionar arquivo</span>}
-                    <PlusIcon className="size-3" />
-                  </CloudinaryUpload>
-                </div>
-              </div>
-            </div>
-            {/* Descrição */}
-            <div className="h-full overflow-hidden">
-              <Tiptap
-                content={RawAction.description || ""}
-                handleBlur={async (content) => {
-                  if (content === RawAction.description) {
-                    return;
-                  }
-
-                  setRawAction({ ...RawAction, description: content });
-                  await handleAction(
-                    {
-                      ...RawAction,
-                      description: content,
-                      intent: INTENT.update_action,
-                    },
-                    submit,
-                  );
-                }}
-                className="h-full w-full"
-              />
-            </div>
-          </div>
+          <EssentialsTab
+            RawAction={RawAction}
+            setRawAction={setRawAction}
+            updateAction={updateAction}
+            workFiles={workFiles}
+            setWorkFiles={setWorkFiles}
+            currentPartners={currentPartners}
+            cloudName={cloudName}
+            uploadPreset={uploadPreset}
+          />
         )}
         {view === "instagram" && (
-          <div className="flex h-full p-6 pr-0">
-            <div className="flex h-full max-w-[320px] shrink-0 grow flex-col">
-              <InstagramPreview files={contentFiles} />
-              <ContentFilesManager
-                files={contentFiles}
-                onChange={updateContentFiles}
-                cloudName={cloudName}
-                uploadPreset={uploadPreset}
-              />
-            </div>
-
-            <div className="flex w-2/3 flex-col overflow-hidden">
-              <div className="flex items-center justify-between border-b px-4 py-4">
-                <div className="flex items-center gap-2">
-                  <UAvatarGroup
-                    isSquircle
-                    avatars={currentPartners.map((partner) => ({
-                      fallback: partner.short,
-                      backgroundColor: partner.colors[0],
-                      color: partner.colors[1],
-                    }))}
-                  />
-                  <div className="text-sm font-medium">
-                    {getFormattedPartnersName(currentPartners)}
-                  </div>
-                </div>
-                <Button
-                  variant={"ghost"}
-                  disabled={isAIProcessing}
-                  className="disabled:opacity-50"
-                  onClick={() => {
-                    fetcher.submit(
-                      {
-                        intent: INTENT.caption_ai,
-                        ...RawAction,
-                        contexto: `${currentPartners[0].context} — ${RawAction.category}`,
-                      },
-                      {
-                        method: "post",
-                        action: "/action/handle-ai",
-                      },
-                    );
-                  }}
-                >
-                  <Wand2Icon />
-                </Button>
-              </div>
-              <div className="flex h-full flex-col">
-                <AiProcessingMessage isAIProcessing={isAIProcessing} />
-                <textarea
-                  disabled={isAIProcessing}
-                  autoFocus
-                  value={
-                    RawAction.instagram_caption ||
-                    getCaptionTail(
-                      currentPartners.length > 0
-                        ? currentPartners[0].instagram_caption_tail
-                        : "",
-                    )
-                  }
-                  onChange={(e) =>
-                    setRawAction({
-                      ...RawAction,
-                      instagram_caption: e.target.value,
-                    })
-                  }
-                  placeholder="Legenda"
-                  className="h-full w-full resize-none p-4 outline-none disabled:opacity-50"
-                />
-              </div>
-            </div>
-          </div>
+          <InstagramTab
+            RawAction={RawAction}
+            setRawAction={setRawAction}
+            contentFiles={contentFiles}
+            updateContentFiles={updateContentFiles}
+            currentPartners={currentPartners}
+            cloudName={cloudName}
+            uploadPreset={uploadPreset}
+            isAIProcessing={isAIProcessing}
+            fetcher={fetcher}
+          />
         )}
         {view === "chat" && <div className="h-full"></div>}
         {/* Criar e Atualizar */}
@@ -554,6 +296,7 @@ export function CreateAndEditAction({
           <div className="p-4">
             <Button
               disabled={isPending}
+              className="squircle rounded-2xl"
               onClick={async (event) => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -602,312 +345,3 @@ export function CreateAndEditAction({
     </div>
   );
 }
-
-/**
- * Thumbnail compacto para trabalho (work_files):
- * - Imagens → preview real
- * - Tudo mais (vídeo, áudio, doc, etc.) → badge com extensão (MP3, MP4, PDF…)
- * Clicável para abrir em nova aba; hover mostra X para remover.
- */
-function WorkFileThumbnail({
-  url,
-  onRemove,
-}: {
-  url: string;
-  onRemove: () => void;
-}) {
-  const isImage = url.includes("/image/upload/");
-  // Extrai a extensão do final da URL (antes de ? ou #)
-  const ext =
-    url.split("?")[0].split("#")[0].split(".").pop()?.toUpperCase() ?? "FILE";
-
-  return (
-    <div className="group relative size-10 shrink-0">
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block size-full"
-      >
-        {isImage ? (
-          <img
-            src={url}
-            alt=""
-            className="size-full rounded-lg border object-cover"
-          />
-        ) : (
-          <div className="bg-muted flex size-full items-center justify-center rounded-lg border text-[8px] font-bold tracking-wide uppercase opacity-70">
-            {ext.slice(0, 4)}
-          </div>
-        )}
-      </a>
-      <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onRemove();
-        }}
-        className="bg-destructive absolute -top-1.5 -right-1.5 hidden size-4 items-center justify-center rounded-full text-white group-hover:flex"
-      >
-        <XIcon className="size-2.5" />
-      </button>
-    </div>
-  );
-}
-
-const ActionCreatedUpdatedTimeDisplay = ({ action }: { action: Action }) => (
-  <div>
-    {action.created_at === action.updated_at
-      ? `Criada ${formatDistanceToNow(action.created_at, { addSuffix: true, locale: ptBR })}`
-      : `Atualizada ${formatDistanceToNow(action.updated_at, { addSuffix: true, locale: ptBR })}`}
-  </div>
-);
-
-export const ActionDatePicker = ({
-  onSelect,
-  date,
-}: {
-  onSelect?: (date: Date) => void;
-  date?: Date;
-}) => {
-  const [open, setOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(date);
-
-  useEffect(() => {
-    setSelectedDate(date);
-  }, [date]);
-
-  return (
-    <Popover
-      open={open}
-      onOpenChange={(isOpen) => {
-        setOpen(isOpen);
-        if (!isOpen && onSelect && selectedDate) {
-          onSelect(selectedDate);
-        }
-      }}
-    >
-      <PopoverTrigger asChild>
-        <button className="cursor-pointer underline-offset-4 hover:underline">
-          {date
-            ? getFormattedDateTime(date, DATE_TIME_DISPLAY.DayDateMonthTime)
-            : "Escolha a data"}
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="p-0">
-        <Calendar
-          className="w-full"
-          mode="single"
-          selected={selectedDate}
-          locale={ptBR}
-          onSelect={(date) => {
-            if (date) {
-              const newDate = selectedDate
-                ? new Date(selectedDate)
-                : new Date();
-              newDate.setFullYear(
-                date.getFullYear(),
-                date.getMonth(),
-                date.getDate(),
-              );
-              setSelectedDate(newDate);
-            }
-          }}
-        />
-        <div className="flex items-center justify-between gap-4 border-t p-4">
-          <div className="text-sm">Defina a hora</div>
-          <Input
-            type="time"
-            // step={1}
-
-            value={selectedDate ? format(selectedDate, "HH:mm") : ""}
-            // value={"13:00"}
-            className="w-auto appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-            onChange={(e) => {
-              if (selectedDate) {
-                const [hours, minutes] = e.target.value.split(":").map(Number);
-                const newDate = new Date(selectedDate);
-                newDate.setHours(hours || 0, minutes || 0);
-                setSelectedDate(newDate);
-              }
-            }}
-          />
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
-};
-
-function getCaptionTail(instagram_caption_tail: string | null) {
-  return "".concat("\n\n").concat(instagram_caption_tail || "");
-}
-
-export function ActionColorDropdown({
-  action,
-  partners,
-  onSelect,
-}: {
-  action: Action;
-  partners: Partner[];
-  onSelect?: (color: string) => void;
-}) {
-  const [selected, setSelected] = useState(action.color);
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button className="hover:bg-secondary flex items-center gap-2 p-6 text-sm outline-none">
-          <div
-            className="size-5 rounded-full border border-black/5"
-            style={{ backgroundColor: action.color }}
-          ></div>
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="grid w-40 grid-cols-3 gap-2 p-2">
-        {[
-          ...new Set(
-            (partners.length > 0
-              ? partners.map((partner) =>
-                  partner.colors.map((color) => Color(color).hex()),
-                )
-              : [
-                  Color(action.color).lighten(0.4).hex(),
-                  action.color,
-                  Color(action.color).darken(0.4).hex(),
-                ]
-            ).flat(),
-          ),
-        ].map((color, index) => (
-          <DropdownMenuItem
-            key={index}
-            className="cursor-pointer p-0 hover:opacity-50"
-            onSelect={() => {
-              setSelected(color);
-              onSelect?.(color);
-            }}
-          >
-            <div
-              className="aspect-[4/5] w-12 rounded border border-black/5"
-              style={{ backgroundColor: color }}
-            ></div>
-          </DropdownMenuItem>
-        ))}
-        <div className="col-span-3 flex w-full items-center gap-2">
-          <Input
-            value={selected}
-            onChange={(e) => {
-              setSelected(e.target.value);
-              if (!isColorValid(e.target.value)) {
-                return;
-              }
-              onSelect?.(e.target.value);
-            }}
-            className="w-auto"
-          />
-          <div
-            className="size-6 shrink-0 rounded-full border"
-            style={{
-              backgroundColor: isColorValid(selected)
-                ? Color(selected).hex()
-                : action.color,
-            }}
-          ></div>
-        </div>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
-
-const loadingStates = {
-  initial: [
-    "Ouvindo com atenção...",
-    "Recebendo o briefing...",
-    "Entendido. Vamos lá!",
-    "Iniciando os motores...",
-    "Ativando neurônios...",
-    "Captando a ideia...",
-    "Abrindo os arquivos...",
-    "Analisando o pedido...",
-    "Preparando o ambiente...",
-    "Conectando os sinais...",
-  ],
-  loop: [
-    "Refinando os detalhes...",
-    "Polindo a resposta...",
-    "Conectando os pontos...",
-    "Mergulhando nos dados...",
-    "Tecendo conexões...",
-    "Ajustando o foco...",
-    "Lapidando a ideia...",
-    "Sincronizando...",
-    "Organizando o caos...",
-    "Calculando rotas...",
-    "Destilando informações...",
-    "Decifrando...",
-    "Customizando...",
-    "Alinhando conceitos...",
-    "Criando a mágica...",
-    "Buscando referências...",
-    "Estruturando...",
-    "Esculpindo...",
-    "Calibrando...",
-    "Finalizando o rascunho...",
-  ],
-};
-
-const AiProcessingMessage = ({
-  isAIProcessing,
-}: {
-  isAIProcessing: boolean;
-}) => {
-  const [currentMessage, setCurrentMessage] = useState("");
-
-  useEffect(() => {
-    let timeoutId: ReturnType<typeof setTimeout> | undefined;
-    let intervalId: ReturnType<typeof setInterval> | undefined;
-
-    if (isAIProcessing) {
-      // 1. Define uma mensagem inicial aleatória imediatamente
-      const randomInitial =
-        loadingStates.initial[
-          Math.floor(Math.random() * loadingStates.initial.length)
-        ];
-      setCurrentMessage(randomInitial);
-
-      // 2. Após 1 segundo (1000ms), inicia o loop das outras mensagens
-      timeoutId = setTimeout(() => {
-        // Função para pegar uma mensagem aleatória do loop
-        const setRandomLoopMessage = () => {
-          const randomLoop =
-            loadingStates.loop[
-              Math.floor(Math.random() * loadingStates.loop.length)
-            ];
-          setCurrentMessage(randomLoop);
-        };
-
-        setRandomLoopMessage(); // Dispara a primeira do loop logo após 1s
-
-        // Define o intervalo para trocar a mensagem a cada 3 segundos (tempo bom para leitura)
-        intervalId = setInterval(setRandomLoopMessage, 3000);
-      }, 1000);
-    } else {
-      // Se parou de processar, limpa a mensagem
-      setCurrentMessage("");
-    }
-
-    // Limpeza (Cleanup): Essencial para não vazar memória ou rodar processos em background
-    return () => {
-      clearTimeout(timeoutId);
-      clearInterval(intervalId);
-    };
-  }, [isAIProcessing]);
-
-  if (!isAIProcessing) return null;
-
-  return (
-    <div className="text-muted-foreground animate-pulse p-4 pb-0 font-mono text-xs">
-      {currentMessage}
-    </div>
-  );
-};

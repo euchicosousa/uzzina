@@ -20,7 +20,7 @@ import { PartnerUsersSelector } from "~/components/features/PartnerUsersSelector
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
-import { getUserId } from "~/lib/helpers";
+import { getUserId } from "~/services/auth.server";
 
 export const meta: MetaFunction = () => {
   return [{ title: "ADMIN — Editar Parceiro" }];

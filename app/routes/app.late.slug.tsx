@@ -4,7 +4,8 @@ import invariant from "tiny-invariant";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
-import { getLateActions, getUserId } from "~/lib/helpers";
+import { getLateActions } from "~/lib/helpers";
+import { getUserId } from "~/services/auth.server";
 import type { ViewOptions } from "./app.partner.slug";
 
 export const runtime = "edge";

@@ -22,17 +22,16 @@ import {
   SignalLowIcon,
   SignalMediumIcon,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   Link,
-  useInRouterContext,
   useLoaderData,
   useMatches,
   useOutletContext,
   useRouteLoaderData,
   type LoaderFunctionArgs,
 } from "react-router";
-import invariant from "tiny-invariant";
+
 import { ActionContainer } from "~/components/features/ActionContainer";
 import {
   CalendarActions,
@@ -49,13 +48,15 @@ import { ORDER_BY, PRIORITIES, STATES, VARIANT } from "~/lib/CONSTANTS";
 import {
   getCleanAction,
   getLateActions,
-  getUserId,
   isInstagramFeed,
   sortActions,
 } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
+import { getUserId } from "~/services/auth.server";
 import type { AppLoaderData } from "./app";
 import { ViewOptionsComponent, type ViewOptions } from "./app.partner.slug";
+import { actionsCache } from "~/utils/cache";
+
 export type AppHomeLoaderData = {
   actions: Action[];
   actionsChart: Action[];
@@ -66,47 +67,36 @@ export const runtime = "edge";
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { user_id, supabase } = await getUserId(request);
 
-  const [{ data: people }, { data: partners }, { data: archivedPartners }] =
-    await Promise.all([
-      supabase.from("people").select("*").match({ user_id: user_id }),
-      supabase
-        .from("partners")
-        .select("slug")
-        .eq("archived", false)
-        .contains("users_ids", [user_id]),
-      supabase.from("partners").select("slug").match({ archived: true }),
-    ]);
-
-  invariant(people);
-  invariant(partners);
-  invariant(archivedPartners);
-
-  const person = people[0];
-
   let start = startOfWeek(startOfMonth(new Date()));
   let end = endOfDay(endOfWeek(endOfMonth(addMonths(new Date(), 1))));
+  let todayEnd = endOfDay(new Date());
 
-  const [{ data: actions }, { data: actionsChart }] = await Promise.all([
-    supabase
-      .from("actions")
-      .select("*")
-      .is("archived", false)
-      .contains("responsibles", person.admin ? [] : [user_id])
-      .overlaps("partners", partners.map((p) => p.slug)!)
-      .gte("date", format(start, "yyyy-MM-dd HH:mm:ss"))
-      .lte("date", format(end, "yyyy-MM-dd HH:mm:ss"))
-      .order("title", { ascending: true }),
+  // @ts-ignore
+  const { data: allActions, error } = await supabase.rpc("get_home_actions", {
+    p_user_id: user_id,
+    p_start_date: start.toISOString(),
+    p_end_date: end.toISOString(),
+    p_today_end: todayEnd.toISOString(),
+  });
 
-    supabase
-      .from("actions")
-      .select("*")
-      .is("archived", false)
-      .not("state", "eq", STATES.finished.slug)
-      .contains("responsibles", person.admin ? [] : [user_id])
-      .overlaps("partners", partners.map((p) => p.slug)!)
-      .lte("date", format(endOfDay(new Date()), "yyyy-MM-dd HH:mm:ss"))
-      .order("date", { ascending: true }),
-  ]);
+  if (error) {
+    console.error("Error fetching home actions:", error);
+    throw new Response("Error loading actions", { status: 500 });
+  }
+
+  const actions =
+    (allActions as Action[])?.filter(
+      (action: Action) =>
+        action.date >= format(start, "yyyy-MM-dd HH:mm:ss") &&
+        action.date <= format(end, "yyyy-MM-dd HH:mm:ss"),
+    ) || [];
+
+  const actionsChart =
+    (allActions as Action[])?.filter(
+      (action: Action) =>
+        action.state !== STATES.finished.slug &&
+        action.date <= format(todayEnd, "yyyy-MM-dd HH:mm:ss"),
+    ) || [];
 
   return {
     actions,
@@ -136,6 +126,15 @@ export default function AppHome() {
   }, [currentActions]);
 
   const { setBaseAction } = useOutletContext<OutletContext>();
+
+  useEffect(() => {
+    if (actions?.length || actionsChart?.length) {
+      const uniqueActions = new Map();
+      actions?.forEach((a) => uniqueActions.set(a.id, a));
+      actionsChart?.forEach((a) => uniqueActions.set(a.id, a));
+      actionsCache.set(Array.from(uniqueActions.values()));
+    }
+  }, [actions, actionsChart]);
 
   return (
     <>

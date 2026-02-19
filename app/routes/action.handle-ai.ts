@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from "react-router";
 import { INTENT } from "~/lib/CONSTANTS";
-import { getUserId } from "~/lib/helpers";
+import { getUserId } from "~/services/auth.server";
 import OpenAI from "openai";
 
 export const action = async ({ request }: ActionFunctionArgs) => {

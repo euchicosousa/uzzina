@@ -1,10 +1,10 @@
 import type { ActionFunctionArgs } from "react-router";
 import { INTENT } from "~/lib/CONSTANTS";
-import { getUserId } from "~/lib/helpers";
+import { getUserId } from "~/services/auth.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = Object.fromEntries(await request.formData());
-  const { intent, id, ...values } = formData;
+  const { intent, id, ...values } = formData as any;
 
   const { supabase } = await getUserId(request);
 

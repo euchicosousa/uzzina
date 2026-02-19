@@ -22,7 +22,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
-import { getUserId } from "~/lib/helpers";
+import { getUserId } from "~/services/auth.server";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Admin | Editar Usuário" }];

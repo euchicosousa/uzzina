@@ -8,7 +8,8 @@ import {
 } from "react-router";
 import invariant from "tiny-invariant";
 import { Header } from "~/components/layout/Header";
-import { getCleanAction, getUserId } from "~/lib/helpers";
+import { getCleanAction } from "~/lib/helpers";
+import { getUserId } from "~/services/auth.server";
 
 import { Toaster } from "sonner";
 import {
@@ -21,6 +22,7 @@ import {
 import { Dialog, DialogContent } from "~/components/ui/dialog";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
+import { partnersCache } from "~/utils/cache";
 
 const CreateAndEditAction = lazy(() =>
   import("./CreateAndEditAction").then((module) => ({
@@ -113,6 +115,12 @@ export default function Dashboard() {
       document.removeEventListener("keydown", keyDownNewAction);
     };
   }, []);
+
+  useEffect(() => {
+    if (partners?.length) {
+      partnersCache.set(partners);
+    }
+  }, [partners]);
 
   const navigate = useNavigate();
 

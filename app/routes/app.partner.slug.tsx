@@ -50,6 +50,7 @@ import {
   useParams,
   useSubmit,
   type LoaderFunctionArgs,
+  type ClientLoaderFunctionArgs,
 } from "react-router";
 import invariant from "tiny-invariant";
 import { ActionContainer } from "~/components/features/ActionContainer";
@@ -81,10 +82,11 @@ import {
   getCleanAction,
   getLateActions,
   getNewDateForAction,
-  getUserId,
   handleAction,
   isInstagramFeed,
 } from "~/lib/helpers";
+import { getUserId } from "~/services/auth.server";
+import { actionsCache, partnersCache } from "~/utils/cache";
 import type { AppLoaderData } from "./app";
 
 export const runtime = "edge";
@@ -94,6 +96,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   const searchParams = new URL(request.url).searchParams;
   let date = searchParams.get("date");
+  const skipActions = searchParams.get("skip_actions") === "true";
 
   if (!date) {
     date = format(new Date().setDate(15), "yyyy-MM-dd");
@@ -116,15 +119,17 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   const [{ data: partner }, { data: actions }] = await Promise.all([
     supabase.from("partners").select("*").match({ slug: params.slug }).single(),
-    supabase
-      .from("actions")
-      .select("*")
-      .is("archived", false)
-      .contains("responsibles", person.admin ? [] : [user_id])
-      .overlaps("partners", [params.slug])
-      .gte("date", format(start, "yyyy-MM-dd HH:mm:ss"))
-      .lte("date", format(end, "yyyy-MM-dd HH:mm:ss"))
-      .order("date", { ascending: false }),
+    skipActions
+      ? Promise.resolve({ data: [] })
+      : supabase
+          .from("actions")
+          .select("*")
+          .is("archived", false)
+          .contains("responsibles", person.admin ? [] : [user_id])
+          .overlaps("partners", [params.slug])
+          .gte("date", format(start, "yyyy-MM-dd HH:mm:ss"))
+          .lte("date", format(end, "yyyy-MM-dd HH:mm:ss"))
+          .order("date", { ascending: false }),
   ]);
 
   invariant(partner);
@@ -163,6 +168,45 @@ export type ViewOptions = {
     filter_responsible?: boolean;
   };
 };
+
+export const clientLoader = async ({
+  serverLoader,
+  request,
+  params,
+}: ClientLoaderFunctionArgs) => {
+  const url = new URL(request.url);
+  const dateParam = url.searchParams.get("date");
+
+  if (dateParam) {
+    return serverLoader();
+  }
+
+  const cachedActions = actionsCache.get();
+  const cachedPartners = partnersCache.get();
+  const partnerSlug = params.slug;
+
+  if (cachedActions && cachedPartners) {
+    const partner = cachedPartners.find((p: any) => p.slug === partnerSlug);
+
+    if (partner) {
+      const filteredActions = cachedActions
+        .filter((a: any) => a.partners?.includes(partnerSlug) && !a.archived)
+        .sort(
+          (a: any, b: any) =>
+            new Date(b.date).getTime() - new Date(a.date).getTime(),
+        );
+
+      return {
+        partner,
+        actions: filteredActions,
+        date: format(new Date().setDate(15), "yyyy-MM-dd"),
+      } as any;
+    }
+  }
+
+  return serverLoader();
+};
+clientLoader.hydrate = true;
 
 export default function PartnerPage() {
   let { partner, actions, date } = useLoaderData<typeof loader>();

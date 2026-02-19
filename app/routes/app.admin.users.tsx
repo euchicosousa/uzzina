@@ -9,7 +9,7 @@ import invariant from "tiny-invariant";
 import { Button } from "~/components/ui/button";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
-import { getUserId } from "~/lib/helpers";
+import { getUserId } from "~/services/auth.server";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Admin | Usuários" }];
