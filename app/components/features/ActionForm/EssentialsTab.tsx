@@ -1,21 +1,26 @@
 import { parseISO } from "date-fns";
 import { CalendarIcon, InstagramIcon, PlusIcon } from "lucide-react";
+import { Suspense, lazy } from "react";
+import { useSubmit } from "react-router";
 import { GMGCombobox } from "~/components/features/GMGCombobox";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
-import { Tiptap } from "~/components/features/Tiptap";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
-import { UBadge } from "~/components/uzzina/UBadge";
-import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
+import { INTENT } from "~/lib/CONSTANTS";
 import {
   getNewDateForAction,
   handleAction,
   isInstagramFeed,
 } from "~/lib/helpers";
-import { cn } from "~/lib/utils";
-import { useSubmit } from "react-router";
 import { ActionDatePicker } from "./ActionDatePicker";
-import { WorkFileThumbnail } from "./WorkFileThumbnail";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
+import { ActionTitleInput } from "./ActionTitleInput";
+import { WorkFileThumbnail } from "./WorkFileThumbnail";
+
+const Tiptap = lazy(() =>
+  import("~/components/features/Tiptap").then((module) => ({
+    default: module.Tiptap,
+  })),
+);
 
 interface EssentialsTabProps {
   RawAction: Action;
@@ -43,32 +48,16 @@ export function EssentialsTab({
   return (
     <div className="flex h-full flex-col overflow-hidden p-6">
       {/* Título */}
-      <div className="relative">
-        <textarea
-          value={RawAction.title}
-          onChange={(e) =>
-            // @ts-ignore
-            setRawAction({ ...RawAction, title: e.target.value })
-          }
-          onBlur={async () => {
-            await updateAction();
-          }}
-          placeholder="Título"
-          className={cn(
-            "w-full shrink-0 resize-none overflow-hidden pt-2 pb-1 leading-none font-semibold tracking-tighter outline-none",
-            RawAction.title.length > 70 ? "text-error text-4xl" : "text-5xl",
-          )}
-          //   @ts-ignore
-          style={{ fieldSizing: "content" }}
-          autoFocus
-          maxLength={100}
-        />
-        {RawAction.title.length > 70 && (
-          <div className="absolute right-0 bottom-0">
-            <UBadge isDynamic value={RawAction.title.length} />
-          </div>
-        )}
-      </div>
+      <ActionTitleInput
+        title={RawAction.title}
+        onUpdate={async (title) => {
+          // @ts-ignore
+          setRawAction({ ...RawAction, title });
+          await updateAction({
+            title,
+          });
+        }}
+      />
 
       <div className="pb-6 text-sm">
         <div className="flex flex-wrap items-center gap-4 border-b py-2">
@@ -198,26 +187,33 @@ export function EssentialsTab({
       </div>
       {/* Descrição */}
       <div className="h-full overflow-hidden">
-        <Tiptap
-          content={RawAction.description || ""}
-          handleBlur={async (content) => {
-            if (content === RawAction.description) {
-              return;
-            }
+        {/* Descrição */}
+        <div className="h-full overflow-hidden">
+          <Suspense
+            fallback={<div className="bg-muted h-full w-full animate-pulse" />}
+          >
+            <Tiptap
+              content={RawAction.description || ""}
+              handleBlur={async (content) => {
+                if (content === RawAction.description) {
+                  return;
+                }
 
-            // @ts-ignore
-            setRawAction({ ...RawAction, description: content });
-            await handleAction(
-              {
-                ...RawAction,
-                description: content,
-                intent: INTENT.update_action,
-              },
-              submit,
-            );
-          }}
-          className="h-full w-full"
-        />
+                // @ts-ignore
+                setRawAction({ ...RawAction, description: content });
+                await handleAction(
+                  {
+                    ...RawAction,
+                    description: content,
+                    intent: INTENT.update_action,
+                  },
+                  submit,
+                );
+              }}
+              className="h-full w-full"
+            />
+          </Suspense>
+        </div>
       </div>
     </div>
   );

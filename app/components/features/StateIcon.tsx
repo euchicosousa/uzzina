@@ -15,6 +15,7 @@ export function StateIcon({
     md: "size-6",
     lg: "size-8",
     xl: "size-10",
+    xxl: "size-12",
   }[size];
   return state.slug === STATES.finished.slug ? (
     <div

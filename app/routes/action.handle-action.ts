@@ -1,6 +1,11 @@
 import type { ActionFunctionArgs } from "react-router";
 import { INTENT } from "~/lib/CONSTANTS";
 import { getUserId } from "~/services/auth.server";
+import {
+  createAction,
+  updateAction,
+  getActionById,
+} from "~/models/actions.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = Object.fromEntries(await request.formData());
@@ -63,19 +68,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       partners: String(values.partners).split(","),
     };
 
-    const { data, error } = await supabase
-      .from("actions")
-      // @ts-ignore
-      .insert({ ...valuesToInsert })
-      .select()
-      .single();
-
-    if (error) {
-      console.log(valuesToInsert);
-      console.log(data, error);
+    try {
+      const data = await createAction(supabase, valuesToInsert);
+      return data;
+    } catch (error) {
+      console.error("Error creating action:", error);
+      return null;
     }
-
-    return data;
   } else if (intent === INTENT.update_action) {
     if (id) {
       if (
@@ -137,24 +136,20 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         partners: String(values.partners).split(","),
       };
 
-      // console.log(valuesToUpdate);
-
-      const { data, error } = await supabase
-        .from("actions")
-        .update({ ...valuesToUpdate })
-        .eq("id", String(id));
-
-      if (error) {
-        console.log(valuesToUpdate);
-        console.log(data, error);
+      try {
+        await updateAction(supabase, String(id), valuesToUpdate);
+      } catch (error) {
+        console.error("Error updating action:", error);
       }
     }
   } else if (intent === INTENT.duplicate_action) {
     if (id) {
-      const { data, error } = await supabase
-        .from("actions")
-        .select()
-        .eq("id", String(id));
+      try {
+        const data = await getActionById(supabase, String(id));
+        // TODO: implement actual duplication logic
+      } catch (error) {
+        console.error("Error fetching action for duplication:", error);
+      }
     }
   }
 

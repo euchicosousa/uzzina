@@ -10,6 +10,9 @@ import invariant from "tiny-invariant";
 import { Header } from "~/components/layout/Header";
 import { getCleanAction } from "~/lib/helpers";
 import { getUserId } from "~/services/auth.server";
+import { getAllCelebrations } from "~/models/celebrations.server";
+import { getPartnersByUserId } from "~/models/partners.server";
+import { getAllVisiblePeople } from "~/models/people.server";
 
 import { Toaster } from "sonner";
 import {
@@ -42,24 +45,11 @@ export type AppLoaderData = {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { user_id, supabase } = await getUserId(request);
 
-  const [{ data: people }, { data: partners }, { data: celebrations }] =
-    await Promise.all([
-      supabase
-        .from("people")
-        .select("*")
-        .eq("visible", true)
-        .order("name", { ascending: true }),
-      supabase
-        .from("partners")
-        .select("*")
-        .eq("archived", false)
-        .contains("users_ids", [user_id])
-        .order("title", { ascending: true }),
-      supabase
-        .from("celebrations")
-        .select("*")
-        .order("date", { ascending: true }),
-    ]);
+  const [people, partners, celebrations] = await Promise.all([
+    getAllVisiblePeople(supabase),
+    getPartnersByUserId(supabase, user_id),
+    getAllCelebrations(supabase),
+  ]);
 
   const person = people?.find((person) => person.user_id === user_id)!;
 

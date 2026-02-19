@@ -55,6 +55,7 @@ import { cn } from "~/lib/utils";
 import { getUserId } from "~/services/auth.server";
 import type { AppLoaderData } from "./app";
 import { ViewOptionsComponent, type ViewOptions } from "./app.partner.slug";
+import { getHomeActions } from "~/models/actions.server";
 import { actionsCache } from "~/utils/cache";
 
 export type AppHomeLoaderData = {
@@ -72,17 +73,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   let todayEnd = endOfDay(new Date());
 
   // @ts-ignore
-  const { data: allActions, error } = await supabase.rpc("get_home_actions", {
-    p_user_id: user_id,
-    p_start_date: start.toISOString(),
-    p_end_date: end.toISOString(),
-    p_today_end: todayEnd.toISOString(),
-  });
-
-  if (error) {
-    console.error("Error fetching home actions:", error);
-    throw new Response("Error loading actions", { status: 500 });
-  }
+  const allActions = await getHomeActions(
+    supabase,
+    user_id,
+    start.toISOString(),
+    end.toISOString(),
+    todayEnd.toISOString(),
+  );
 
   const actions =
     (allActions as Action[])?.filter(

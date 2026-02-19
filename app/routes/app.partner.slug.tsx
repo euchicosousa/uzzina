@@ -88,6 +88,9 @@ import {
 import { getUserId } from "~/services/auth.server";
 import { actionsCache, partnersCache } from "~/utils/cache";
 import type { AppLoaderData } from "./app";
+import { getActionsByPartner } from "~/models/actions.server";
+import { getPartnerBySlug } from "~/models/partners.server";
+import { getPersonByUserId } from "~/models/people.server";
 
 export const runtime = "edge";
 
@@ -109,27 +112,22 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const start = startOfDay(startOfWeek(startOfMonth(subDays(date, 30))));
   const end = endOfDay(endOfWeek(endOfMonth(addDays(date, 30))));
 
-  const { data: person } = await supabase
-    .from("people")
-    .select("*")
-    .match({ user_id: user_id })
-    .single();
+  const person = await getPersonByUserId(supabase, user_id);
 
   invariant(person);
 
-  const [{ data: partner }, { data: actions }] = await Promise.all([
-    supabase.from("partners").select("*").match({ slug: params.slug }).single(),
+  const [partner, actions] = await Promise.all([
+    getPartnerBySlug(supabase, params.slug!),
     skipActions
-      ? Promise.resolve({ data: [] })
-      : supabase
-          .from("actions")
-          .select("*")
-          .is("archived", false)
-          .contains("responsibles", person.admin ? [] : [user_id])
-          .overlaps("partners", [params.slug])
-          .gte("date", format(start, "yyyy-MM-dd HH:mm:ss"))
-          .lte("date", format(end, "yyyy-MM-dd HH:mm:ss"))
-          .order("date", { ascending: false }),
+      ? Promise.resolve([])
+      : getActionsByPartner(
+          supabase,
+          params.slug!,
+          user_id,
+          person.admin,
+          format(start, "yyyy-MM-dd HH:mm:ss"),
+          format(end, "yyyy-MM-dd HH:mm:ss"),
+        ),
   ]);
 
   invariant(partner);
