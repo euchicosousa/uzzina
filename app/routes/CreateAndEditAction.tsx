@@ -50,6 +50,10 @@ import {
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
+import {
+  ContentFilesManager,
+  InstagramPreview,
+} from "~/components/uzzina/InstagramContent";
 import type { AppLoaderData } from "~/routes/app";
 import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
 import {
@@ -138,6 +142,15 @@ export function CreateAndEditAction({
   const [workFiles, setWorkFiles] = useState<string[]>(
     RawAction.work_files ?? [],
   );
+  const [contentFiles, setContentFiles] = useState<string[]>(
+    RawAction.content_files ?? [],
+  );
+
+  function updateContentFiles(next: string[]) {
+    setContentFiles(next);
+    setRawAction((prev) => ({ ...prev, content_files: next }));
+    updateAction({ content_files: next });
+  }
 
   async function updateAction(data?: { [key: string]: any }) {
     if (RawAction.id) {
@@ -408,8 +421,14 @@ export function CreateAndEditAction({
         )}
         {view === "instagram" && (
           <div className="flex h-full p-6 pr-0">
-            <div className="h-full max-w-[320px] shrink-0 grow">
-              <Content action={RawAction} />
+            <div className="flex h-full max-w-[320px] shrink-0 grow flex-col">
+              <InstagramPreview files={contentFiles} />
+              <ContentFilesManager
+                files={contentFiles}
+                onChange={updateContentFiles}
+                cloudName={cloudName}
+                uploadPreset={uploadPreset}
+              />
             </div>
 
             <div className="flex w-2/3 flex-col overflow-hidden">
