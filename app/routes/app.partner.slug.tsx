@@ -215,7 +215,7 @@ export default function PartnerPage() {
 
   return (
     <div className="flex h-[calc(100vh-68px)] flex-col overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-4 p-8 2xl:flex-nowrap">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b p-2 2xl:flex-nowrap">
         <div className="order-1 flex items-center gap-4">
           <div className="flex items-center gap-2 overflow-hidden">
             <UAvatar

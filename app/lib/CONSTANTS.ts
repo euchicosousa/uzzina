@@ -367,6 +367,7 @@ export const SIZE = {
   md: "md",
   lg: "lg",
   xl: "xl",
+  xxl: "xxl",
 } as const;
 
 export const DATE_TIME_DISPLAY = {

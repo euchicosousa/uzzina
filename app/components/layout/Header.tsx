@@ -25,6 +25,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuPortal,
+  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -150,6 +151,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
     useFetchers().length > 0 || useNavigation().state !== "idle";
   return (
     <DropdownMenu>
+      {/* Perfil */}
       <DropdownMenuTrigger className="relative outline-none">
         {isLoading && (
           <div className="border-primary absolute top-0 left-0 size-11 -translate-1.5 animate-spin rounded-full border-4 border-b-transparent"></div>
@@ -173,6 +175,20 @@ const HeaderMenu = ({ person }: { person: Person }) => {
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link to="/app/admin/partners">Parceiros</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/app/admin/partner/new">Novo Parceiro</Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link to="/app/admin/users">Usuários</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/app/admin/user/new">Novo Usuário</Link>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -29,7 +29,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           Considere também o contexto da marca para ajudar no tom de voz da escrita e no conteúdo. ${values.contexto}
           
           
-          Ao retornar antes da sua resposta você deve adicionar os pontos que você concluiu, para que o usuário concorde ou faça ajustes. Coloque suas considerações sempre no início e nunca no final ou qualquer pergunta deve ficar sempre antes do texto da legenda.`,
+          Ao retornar antes da sua resposta você deve adicionar os pontos que você concluiu, para que o usuário concorde ou faça ajustes. Coloque suas considerações sempre no início e nunca no final ou qualquer pergunta deve ficar sempre antes do texto da legenda.
+          
+          NUNCA COLOQUE NADA APÓS O TEXTO DA LEGENDA. Nenhum observação ou questão sua. Tudo deve estar no início.`,
       },
       {
         role: "user",

@@ -38,6 +38,7 @@ export const UAvatarGroup = ({
     md: "-space-x-2",
     lg: "-space-x-2",
     xl: "-space-x-2",
+    xxl: "-space-x-2",
   }[size];
 
   clampAt = clampAt || avatars.length;
@@ -92,6 +93,7 @@ export const UAvatar = ({
     md: `size-8 ${isGroup && "ring-3"}`,
     lg: `size-12 ${isGroup && "ring-4"}`,
     xl: `size-18 ${isGroup && "ring-6"}`,
+    xxl: `size-24 ${isGroup && "ring-6"}`,
   }[size];
   const textClasses =
     fallbackText.length <= 2
@@ -101,6 +103,7 @@ export const UAvatar = ({
           md: "text-[12px]",
           lg: "text-[18px]",
           xl: "text-[28px]",
+          xxl: "text-[38px]",
         }[size]
       : fallbackText.length <= 4
         ? {
@@ -109,6 +112,7 @@ export const UAvatar = ({
             md: "text-[9px]",
             lg: "text-[16px]",
             xl: "text-[24px]",
+            xxl: "text-[34px]",
           }[size]
         : {
             xs: "",
@@ -116,6 +120,7 @@ export const UAvatar = ({
             md: "text-[8px]",
             lg: "text-[15px]",
             xl: "text-[20px]",
+            xxl: "text-[30px]",
           }[size];
 
   const styles =

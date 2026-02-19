@@ -111,8 +111,12 @@ const CalendarDay = ({
       id={`day_${format(day, "yyyy-MM-dd")}`}
       key={format(day, "yyyy-MM-dd")}
       className={cn(
-        "group/column flex flex-col justify-between overflow-hidden border-b p-2",
-        isScroll ? "h-96" : "h-72",
+        "group/column flex flex-col justify-between border-b p-2",
+        viewOptions.variant === VARIANT.content
+          ? ""
+          : isScroll
+            ? "h-96 overflow-hidden"
+            : "h-72 overflow-hidden",
       )}
     >
       <div className="flex h-full shrink flex-col gap-2 overflow-hidden">
@@ -167,7 +171,7 @@ const CalendarDay = ({
             isCompact={isCompact}
             isInstagramDate={viewOptions.instagram}
             variant={viewOptions.variant}
-            isScroll={isScroll}
+            isScroll={!(viewOptions.variant === VARIANT.content)}
             isDraggable
           />
         </div>

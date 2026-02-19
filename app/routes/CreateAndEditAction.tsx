@@ -627,7 +627,7 @@ function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
 }
 
-function ActionColorDropdown({
+export function ActionColorDropdown({
   action,
   partners,
   onSelect,

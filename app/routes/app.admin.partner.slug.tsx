@@ -1,0 +1,300 @@
+import {
+  ArchiveIcon,
+  BadgeCheckIcon,
+  MailCheckIcon,
+  MegaphoneIcon,
+} from "lucide-react";
+import {
+  Form,
+  Link,
+  useLoaderData,
+  useNavigation,
+  redirect,
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+  type MetaFunction,
+} from "react-router";
+import invariant from "tiny-invariant";
+import { ColorListEditor } from "~/components/features/ColorListEditor";
+import { PartnerUsersSelector } from "~/components/features/PartnerUsersSelector";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Textarea } from "~/components/ui/textarea";
+import { getUserId } from "~/lib/helpers";
+
+export const meta: MetaFunction = () => {
+  return [{ title: "ADMIN — Editar Parceiro" }];
+};
+
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
+  const { supabase } = await getUserId(request);
+  const { slug } = params;
+
+  const { data: people } = await supabase
+    .from("people")
+    .select("*")
+    .eq("visible", true)
+    .order("name", { ascending: true });
+
+  if (slug === "new" || !slug) {
+    return { partner: null, people: people || [] };
+  }
+
+  const { data } = await supabase
+    .from("partners")
+    .select("*")
+    .eq("slug", slug)
+    .single();
+
+  const partner = data as Partner;
+
+  invariant(partner, "Partner not found");
+  invariant(people, "People not found");
+
+  return { partner, people };
+};
+
+export const action = async ({ request, params }: ActionFunctionArgs) => {
+  const { supabase } = await getUserId(request);
+  const formData = await request.formData();
+  const updates = Object.fromEntries(formData);
+  const colors = formData.getAll("colors") as string[];
+
+  const { slug } = params;
+  const isNew = slug === "new";
+
+  const partnerData = {
+    title: updates.title as string,
+    slug: updates.slug as string,
+    colors: colors.length > 0 ? colors : ["#000000", "#ffffff"],
+    archived: updates.archived === "on",
+    users_ids: formData.getAll("users_ids") as string[],
+    // Provide default values for required fields that might be missing in form if not touched
+    short: (updates.short as string) || "",
+    // New fields
+    context: (updates.context as string) || null,
+    img: (updates.img as string) || null,
+    instagram_caption_tail: (updates.instagram_caption_tail as string) || null,
+    sow: (updates.sow as "marketing" | "socialmedia" | "demand") || "marketing",
+  };
+
+  if (isNew) {
+    const { data: existing } = await supabase
+      .from("partners")
+      .select("id")
+      .eq("slug", partnerData.slug)
+      .single();
+
+    if (existing) {
+      return { error: "Slug already exists" };
+    }
+
+    const { error } = await supabase.from("partners").insert(partnerData);
+    if (error) throw error;
+
+    return redirect(`/app/admin/partners/${partnerData.slug}`);
+  } else {
+    const { error } = await supabase
+      .from("partners")
+      .update(partnerData)
+      .eq("slug", slug!);
+    if (error) throw error;
+  }
+
+  return { success: true };
+};
+
+export default function AdminPartnerEditPage() {
+  const { partner, people } = useLoaderData<typeof loader>();
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
+
+  return (
+    <div className="mx-auto flex h-full w-full max-w-3xl flex-col p-8">
+      <div className="flex justify-between gap-8">
+        <h1 className="mb-8 text-2xl font-bold">
+          {partner ? `Editar ${partner.title}` : "Novo Parceiro"}
+        </h1>
+
+        <Link to="/app/admin/partners" className="font-medium hover:underline">
+          Parceiros
+        </Link>
+      </div>
+      <Form
+        method="post"
+        className="flex flex-col gap-8"
+        key={partner?.slug ?? "new"}
+      >
+        <div className="grid gap-8">
+          <div className="grid gap-4">
+            <label className="font-medium" htmlFor="title">
+              Nome
+            </label>
+            <Input
+              id="title"
+              name="title"
+              defaultValue={partner?.title}
+              required
+            />
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4">
+              <label className="font-medium" htmlFor="short">
+                Sigla (Short Name)
+              </label>
+              <Input
+                id="short"
+                name="short"
+                defaultValue={partner?.short}
+                required
+              />
+            </div>
+
+            <div className="grid gap-4">
+              <label className="font-medium" htmlFor="slug">
+                Slug
+              </label>
+              <Input
+                id="slug"
+                name="slug"
+                defaultValue={partner?.slug}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4">
+            <label className="font-medium" htmlFor="context">
+              Contexto
+            </label>
+            <Textarea
+              id="context"
+              name="context"
+              defaultValue={partner?.context || ""}
+              placeholder="Contexto sobre o parceiro..."
+              className="min-h-[100px]"
+            />
+          </div>
+
+          <div className="grid gap-4">
+            <label className="font-medium" htmlFor="instagram_caption_tail">
+              Assinatura do Instagram
+            </label>
+            <Textarea
+              id="instagram_caption_tail"
+              name="instagram_caption_tail"
+              defaultValue={partner?.instagram_caption_tail || ""}
+              placeholder="#hashtags @mentions..."
+              className="min-h-[80px]"
+            />
+          </div>
+
+          <div className="grid gap-4">
+            <label className="font-medium">Usuários Vinculados</label>
+            <PartnerUsersSelector
+              people={people}
+              initialSelectedUserIds={partner?.users_ids || []}
+            />
+          </div>
+
+          <div className="grid gap-4">
+            <label className="font-medium">Cores da Marca</label>
+            <ColorListEditor initialColors={partner?.colors || []} />
+          </div>
+          <div className="flex items-end justify-between gap-4">
+            <div className="grid gap-4">
+              <label className="font-medium">Escopo de Trabalho (SOW)</label>
+
+              <div className="flex items-center gap-4">
+                <div>
+                  <input
+                    type="radio"
+                    id="sow-marketing"
+                    name="sow"
+                    value="marketing"
+                    defaultChecked={
+                      partner?.sow === "marketing" || !partner?.sow
+                    }
+                    className="peer sr-only absolute size-0"
+                  />
+                  <label
+                    htmlFor="sow-marketing"
+                    className="hover:bg-opacity-100 peer-checked:bg-muted squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
+                  >
+                    <MegaphoneIcon className="size-4" />
+                    Marketing
+                  </label>
+                </div>
+
+                <div>
+                  <input
+                    type="radio"
+                    id="sow-socialmedia"
+                    name="sow"
+                    value="socialmedia"
+                    defaultChecked={partner?.sow === "socialmedia"}
+                    className="peer sr-only absolute size-0"
+                  />
+                  <label
+                    htmlFor="sow-socialmedia"
+                    className="hover:bg-opacity-100 peer-checked:bg-muted squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
+                  >
+                    <BadgeCheckIcon className="size-4" />
+                    Social Media
+                  </label>
+                </div>
+
+                <div>
+                  <input
+                    type="radio"
+                    id="sow-demand"
+                    name="sow"
+                    value="demand"
+                    defaultChecked={partner?.sow === "demand"}
+                    className="peer sr-only absolute size-0"
+                  />
+                  <label
+                    htmlFor="sow-demand"
+                    className="hover:bg-opacity-100 peer-checked:bg-muted squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
+                  >
+                    <MailCheckIcon className="size-4" />
+                    Demand
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-end">
+                  <input
+                    type="checkbox"
+                    id="archived"
+                    name="archived"
+                    defaultChecked={partner?.archived || false}
+                    className="peer sr-only absolute size-0"
+                  />
+                  <label
+                    htmlFor="archived"
+                    className="hover:bg-opacity-100 peer-checked:bg-destructive/10 peer-checked:text-destructive squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
+                  >
+                    <ArchiveIcon className="size-4" />
+                    Arquivado
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-4">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="squircle rounded-2xl"
+          >
+            {isSubmitting ? "Salvando..." : "Salvar"}
+          </Button>
+        </div>
+      </Form>
+    </div>
+  );
+}

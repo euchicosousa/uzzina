@@ -17,19 +17,19 @@ export const createSupabaseClient = (request: Request) => {
             (cookie) => ({
               name: cookie.name,
               value: cookie.value || "",
-            })
+            }),
           );
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) =>
             headers.append(
               "Set-Cookie",
-              serializeCookieHeader(name, value, options)
-            )
+              serializeCookieHeader(name, value, options),
+            ),
           );
         },
       },
-    }
+    },
   );
 
   return { supabase, headers };
