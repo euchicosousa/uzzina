@@ -383,14 +383,14 @@ export function CreateAndEditAction({
                       setRawAction((prev) => ({ ...prev, work_files: next }));
                       await updateAction({ work_files: next });
                     }}
-                    className={
+                    className={`text-foreground/50 ${
                       workFiles.length === 0
-                        ? "flex items-center gap-1.5 rounded-lg border border-dashed px-3 py-1.5 text-xs opacity-50 transition hover:opacity-100"
-                        : "flex size-10 shrink-0 items-center justify-center rounded-lg border border-dashed opacity-40 transition hover:opacity-100"
-                    }
+                        ? "text-md flex items-center gap-1.5 py-1.5 underline-offset-2 hover:underline"
+                        : "squircle bg-secondary hover:bg-secondary/50 flex size-10 shrink-0 items-center justify-center rounded-xl transition"
+                    }`}
                   >
-                    <PlusIcon className="size-3" />
                     {workFiles.length === 0 && <span>Adicionar arquivo</span>}
+                    <PlusIcon className="size-3" />
                   </CloudinaryUpload>
                 </div>
               </div>
