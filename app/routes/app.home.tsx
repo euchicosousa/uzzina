@@ -103,6 +103,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 import { useMemo } from "react";
 import { HoursComponent } from "~/components/layout/HoursComponent";
+import type { Action } from "~/models/actions.server";
 
 export default function AppHome() {
   let { actions, actionsChart } = useLoaderData<typeof loader>();

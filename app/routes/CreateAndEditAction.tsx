@@ -28,6 +28,7 @@ import type { AppLoaderData } from "~/routes/app";
 import { INTENT } from "~/lib/CONSTANTS";
 import { handleAction, isInstagramFeed } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
+import type { Action } from "~/models/actions.server";
 
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");

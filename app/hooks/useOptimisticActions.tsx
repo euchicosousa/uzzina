@@ -1,6 +1,7 @@
 import { useFetchers, useNavigation } from "react-router";
 import { useMemo } from "react";
 import { INTENT } from "~/lib/CONSTANTS";
+import type { Action } from "~/models/actions.server";
 
 export function useOptimisticActions(actions: Action[]): Action[] {
   const fetchers = useFetchers();

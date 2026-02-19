@@ -11,6 +11,7 @@ import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import { ActionItem } from "../features/ActionItem";
 import { sortActions } from "~/lib/helpers";
+import type { Action } from "~/models/actions.server";
 
 export function HoursComponent({
   actions,

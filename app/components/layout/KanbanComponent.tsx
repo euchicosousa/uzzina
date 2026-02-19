@@ -20,6 +20,7 @@ import { ActionItem } from "../features/ActionItem";
 import { Draggable, Droppable } from "../features/DnD";
 import { handleAction } from "~/lib/helpers";
 import { UBadge } from "../uzzina/UBadge";
+import type { Action } from "~/models/actions.server";
 
 export default function KanbanComponent({ actions }: { actions: Action[] }) {
   const submit = useSubmit();

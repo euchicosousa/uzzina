@@ -1,4 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Tables } from "types/database";
+
+export type Action = Tables<"actions">;
 
 /**
  * Get actions for a specific partner/slug

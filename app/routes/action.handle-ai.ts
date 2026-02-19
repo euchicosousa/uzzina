@@ -1,7 +1,6 @@
+import OpenAI from "openai";
 import type { ActionFunctionArgs } from "react-router";
 import { INTENT } from "~/lib/CONSTANTS";
-import { getUserId } from "~/services/auth.server";
-import OpenAI from "openai";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = Object.fromEntries(await request.formData());

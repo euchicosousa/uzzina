@@ -1,4 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Tables } from "types/database";
+
+export type Person = Tables<"people">;
 
 export async function getPersonByUserId(
   supabase: SupabaseClient,

@@ -4,6 +4,7 @@ import { ORDER_BY, VARIANT, type DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import { ActionItem } from "./ActionItem";
+import type { Action } from "~/models/actions.server";
 
 type ActionContainerProps = {
   actions: Action[];

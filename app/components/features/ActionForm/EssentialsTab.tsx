@@ -15,6 +15,7 @@ import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "./WorkFileThumbnail";
+import type { Action } from "~/models/actions.server";
 
 const Tiptap = lazy(() =>
   import("~/components/features/Tiptap").then((module) => ({

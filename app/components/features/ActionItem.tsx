@@ -30,6 +30,7 @@ import { UAvatarGroup } from "../uzzina/UAvatar";
 import { Content } from "./Content";
 import { Draggable } from "./DnD";
 import { StateIcon } from "./StateIcon";
+import type { Action } from "~/models/actions.server";
 
 type ActionItemProps = {
   action: Action;

@@ -1,5 +1,6 @@
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import type { Action } from "~/models/actions.server";
 
 export const ActionTimeDisplay = ({ action }: { action: Action }) => (
   <div>

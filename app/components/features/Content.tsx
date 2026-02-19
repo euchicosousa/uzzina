@@ -3,6 +3,7 @@ import { useRouteLoaderData } from "react-router";
 import { CATEGORIES, DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import { getFormattedDateTime, Icons, isSprint } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
+import type { Action } from "~/models/actions.server";
 
 export function Content({
   action,

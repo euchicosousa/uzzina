@@ -91,6 +91,7 @@ import type { AppLoaderData } from "./app";
 import { getActionsByPartner } from "~/models/actions.server";
 import { getPartnerBySlug } from "~/models/partners.server";
 import { getPersonByUserId } from "~/models/people.server";
+import type { Action } from "~/models/actions.server";
 
 export const runtime = "edge";
 

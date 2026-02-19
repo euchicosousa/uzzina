@@ -3,8 +3,8 @@ import { INTENT } from "~/lib/CONSTANTS";
 import { getUserId } from "~/services/auth.server";
 import {
   createAction,
-  updateAction,
   getActionById,
+  updateAction,
 } from "~/models/actions.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {

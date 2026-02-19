@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
+import type { Action } from "~/models/actions.server";
 
 export function ActionColorDropdown({
   action,

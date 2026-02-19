@@ -1,5 +1,6 @@
 import { addMinutes, format, isToday } from "date-fns";
 import { PRIORITIES, STATES } from "~/lib/CONSTANTS";
+import type { Action } from "~/models/actions.server";
 
 export const getCleanAction = (user_id: string, date?: Date) => {
   date = date || new Date();

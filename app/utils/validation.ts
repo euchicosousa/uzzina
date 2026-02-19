@@ -1,5 +1,6 @@
 import { isBefore } from "date-fns";
 import { STATES } from "~/lib/CONSTANTS";
+import type { Action } from "~/models/actions.server";
 
 export function isLateAction(action: Action) {
   const isLate =

@@ -34,6 +34,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { ActionContainer } from "./ActionContainer";
+import type { Action } from "~/models/actions.server";
 
 export type CalendarActionsType = {
   date: Date;

@@ -21,6 +21,7 @@ import { themeSessionResolver } from "./sessions.server";
 import "./tailwind.css";
 import "/object-sans/object-sans.css?url";
 import { cn } from "./lib/utils";
+import type { Action } from "~/models/actions.server";
 
 export const links: Route.LinksFunction = () => [
   // Favicon para o tema claro (light)

@@ -1,6 +1,7 @@
 import { VARIANT } from "~/lib/CONSTANTS";
 import { ActionContainer } from "../features/ActionContainer";
 import { ORDER_BY } from "~/lib/CONSTANTS";
+import type { Action } from "~/models/actions.server";
 
 export default function FeedComponent({
   actions,

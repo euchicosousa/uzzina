@@ -8,6 +8,7 @@ import {
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
+import type { Action } from "~/models/actions.server";
 
 export function getFormattedDateTime(
   date: Date | string,

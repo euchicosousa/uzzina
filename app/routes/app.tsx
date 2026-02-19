@@ -26,6 +26,7 @@ import { Dialog, DialogContent } from "~/components/ui/dialog";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
 import { partnersCache } from "~/utils/cache";
+import type { Action } from "~/models/actions.server";
 
 const CreateAndEditAction = lazy(() =>
   import("./CreateAndEditAction").then((module) => ({
