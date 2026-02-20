@@ -20,9 +20,11 @@ import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 export const PartnersCombobox = ({
   selectedPartners,
   onSelect,
+  tabIndex,
 }: {
   selectedPartners?: string[];
   onSelect?: (partners: string[]) => void;
+  tabIndex?: number;
 }) => {
   const [open, setOpen] = useState(false);
   const { partners } = useMatches()[1].loaderData as { partners: Partner[] };
@@ -54,8 +56,9 @@ export const PartnersCombobox = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className="hover:bg-secondary flex w-full items-center gap-2 overflow-hidden px-6 py-5.5 text-sm outline-none"
+          className="hover:bg-secondary focus:bg-secondary/50 flex w-full items-center gap-2 overflow-hidden px-6 py-5.5 text-sm outline-none"
           title={getFormattedPartnersName(currentPartners)}
+          tabIndex={tabIndex}
         >
           {selected.length > 0 ? (
             <UAvatarGroup

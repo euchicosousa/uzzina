@@ -245,6 +245,7 @@ export function CreateAndEditAction({
             <div className="overflow-hidden">
               <PartnersCombobox
                 selectedPartners={RawAction.partners}
+                tabIndex={3}
                 onSelect={async (selected) => {
                   setRawAction({
                     ...RawAction,
@@ -258,6 +259,7 @@ export function CreateAndEditAction({
             <div className="">
               <StatesCombobox
                 selectedState={RawAction.state}
+                tabIndex={4}
                 onSelect={async (selected) => {
                   setRawAction({
                     ...RawAction,
@@ -271,6 +273,7 @@ export function CreateAndEditAction({
             <div className="">
               <CategoriesCombobox
                 selectedCategories={[RawAction.category]}
+                tabIndex={5}
                 onSelect={async ({ category }) => {
                   setRawAction({
                     ...RawAction,
@@ -285,6 +288,7 @@ export function CreateAndEditAction({
                 <ActionColorDropdown
                   action={RawAction}
                   partners={currentPartners}
+                  tabIndex={6}
                   onSelect={async (color) => {
                     setRawAction({ ...RawAction, color });
                     await updateAction({ color });
@@ -298,6 +302,7 @@ export function CreateAndEditAction({
             <Button
               disabled={isPending}
               className="squircle rounded-2xl"
+              tabIndex={7}
               onClick={async (event) => {
                 event.preventDefault();
                 event.stopPropagation();

@@ -8,15 +8,21 @@ export const Tiptap = ({
   content,
   handleBlur,
   className,
+  tabIndex,
 }: {
   content: string;
   handleBlur: (content: string) => void;
   className?: string;
+  tabIndex?: number;
 }) => {
   const editor = useEditor({
     extensions: [StarterKit], // define your extension array
     content, // initial content
-
+    editorProps: {
+      attributes: {
+        tabindex: tabIndex?.toString() || "0",
+      },
+    },
     onBlur: (props) => {
       handleBlur(props.editor.getHTML());
     },

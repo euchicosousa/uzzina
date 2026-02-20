@@ -459,7 +459,10 @@ function ActionCalendarPartnerPage({
 
   const handleDragEnd = (event: DragEndEvent) => {
     if (event.over && activeAction) {
-      const key = viewOptions.instagram ? "instagram_date" : "date";
+      const key =
+        viewOptions.instagram && isInstagramFeed(activeAction.category)
+          ? "instagram_date"
+          : "date";
       // event.over.id is ISO string from Droppable id
       const value = format(
         parseISO(event.over.id as string),
@@ -548,7 +551,6 @@ function ActionCalendarPartnerPage({
             showResponsibles={viewOptions.responsibles}
             showPriority={viewOptions.priority}
             dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
-            showSprint={viewOptions.sprint}
           />
         ) : null}
       </DragOverlay>

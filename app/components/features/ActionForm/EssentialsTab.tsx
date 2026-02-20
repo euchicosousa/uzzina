@@ -47,10 +47,11 @@ export function EssentialsTab({
   const submit = useSubmit();
 
   return (
-    <div className="flex h-full flex-col overflow-hidden p-6">
+    <div className="flex h-full flex-col overflow-hidden">
       {/* Título */}
       <ActionTitleInput
         title={RawAction.title}
+        tabIndex={1}
         onUpdate={async (title) => {
           // @ts-ignore
           setRawAction({ ...RawAction, title });
@@ -60,8 +61,8 @@ export function EssentialsTab({
         }}
       />
 
-      <div className="pb-6 text-sm">
-        <div className="flex flex-wrap items-center gap-4 border-b py-2">
+      <div className="text-sm">
+        <div className="flex flex-wrap items-center gap-4 border-b px-4 py-2">
           <div className="opacity-50">
             <ActionTimeDisplay action={RawAction} />
           </div>
@@ -78,7 +79,7 @@ export function EssentialsTab({
             }}
           />
         </div>
-        <div className="flex gap-8 border-b py-2">
+        <div className="flex gap-8 border-b px-4 py-2">
           <div className="flex items-center gap-1 opacity-50">
             <CalendarIcon className="size-3" />
             <ActionDatePicker
@@ -124,7 +125,7 @@ export function EssentialsTab({
           RawAction.category,
           RawAction.category === "stories",
         ) && (
-          <div className="flex gap-4 border-b text-sm">
+          <div className="flex gap-4 border-b px-4 text-sm">
             <div>
               <GMGCombobox
                 gmg="origem"
@@ -145,7 +146,7 @@ export function EssentialsTab({
             </div>
           </div>
         )}
-        <div className="flex items-start gap-2 border-b py-1">
+        <div className="flex items-start gap-2 border-b px-4 py-1">
           <div className="flex flex-wrap items-center gap-1.5">
             {workFiles.map((url, i) => (
               <WorkFileThumbnail
@@ -187,7 +188,7 @@ export function EssentialsTab({
         </div>
       </div>
       {/* Descrição */}
-      <div className="h-full overflow-hidden">
+      <div className="focus-within:bg-secondary/50 h-full overflow-hidden p-4">
         {/* Descrição */}
         <div className="h-full overflow-hidden">
           <Suspense
@@ -195,6 +196,7 @@ export function EssentialsTab({
           >
             <Tiptap
               content={RawAction.description || ""}
+              tabIndex={2}
               handleBlur={async (content) => {
                 if (content === RawAction.description) {
                   return;

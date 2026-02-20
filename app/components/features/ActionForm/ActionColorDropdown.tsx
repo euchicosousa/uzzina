@@ -13,17 +13,22 @@ export function ActionColorDropdown({
   action,
   partners,
   onSelect,
+  tabIndex,
 }: {
   action: Action;
   partners: Partner[];
   onSelect?: (color: string) => void;
+  tabIndex?: number;
 }) {
   const [selected, setSelected] = useState(action.color);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="hover:bg-secondary flex items-center gap-2 p-6 text-sm outline-none">
+        <button
+          tabIndex={tabIndex}
+          className="hover:bg-secondary focus:bg-secondary/50 flex items-center gap-2 p-6 text-sm outline-none"
+        >
           <div
             className="size-5 rounded-full border border-black/5"
             style={{ backgroundColor: action.color }}

@@ -21,9 +21,11 @@ import { STATES, type STATE } from "~/lib/CONSTANTS";
 export const StatesCombobox = ({
   selectedState,
   onSelect,
+  tabIndex,
 }: {
   selectedState: string;
   onSelect?: (state: string) => void;
+  tabIndex?: number;
 }) => {
   const [open, setOpen] = useState(false);
   let currentState = STATES[selectedState as STATE];
@@ -31,7 +33,10 @@ export const StatesCombobox = ({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="hover:bg-secondary flex items-center gap-2 p-6 text-sm outline-none">
+        <button
+          tabIndex={tabIndex}
+          className="hover:bg-secondary focus:bg-secondary/50 flex items-center gap-2 p-6 text-sm outline-none"
+        >
           <div
             className="size-2 rounded-full"
             style={{ backgroundColor: currentState.color }}

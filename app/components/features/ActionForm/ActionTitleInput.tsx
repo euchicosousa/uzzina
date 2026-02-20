@@ -5,9 +5,14 @@ import { useEffect, useState } from "react";
 interface ActionTitleInputProps {
   title: string;
   onUpdate: (title: string) => void;
+  tabIndex?: number;
 }
 
-export function ActionTitleInput({ title, onUpdate }: ActionTitleInputProps) {
+export function ActionTitleInput({
+  title,
+  onUpdate,
+  tabIndex,
+}: ActionTitleInputProps) {
   const [localTitle, setLocalTitle] = useState(title);
 
   useEffect(() => {
@@ -15,7 +20,7 @@ export function ActionTitleInput({ title, onUpdate }: ActionTitleInputProps) {
   }, [title]);
 
   return (
-    <div className="relative">
+    <div className="focus-within:bg-secondary/50 relative px-4 py-2">
       <textarea
         value={localTitle}
         onChange={(e) => setLocalTitle(e.target.value)}
@@ -33,6 +38,7 @@ export function ActionTitleInput({ title, onUpdate }: ActionTitleInputProps) {
         style={{ fieldSizing: "content" }}
         autoFocus
         maxLength={100}
+        tabIndex={tabIndex}
       />
       {localTitle.length > 70 && (
         <div className="absolute right-0 bottom-0">

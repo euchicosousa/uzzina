@@ -26,6 +26,7 @@ export const CategoriesCombobox = ({
   isMulti,
   showInstagramGroup,
   className,
+  tabIndex,
 }: {
   selectedCategories: string[];
   onSelect?: ({
@@ -38,6 +39,7 @@ export const CategoriesCombobox = ({
   isMulti?: boolean;
   showInstagramGroup?: boolean;
   className?: string;
+  tabIndex?: number;
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -94,6 +96,7 @@ export const CategoriesCombobox = ({
       <PopoverTrigger asChild>
         {isMulti ? (
           <Button
+            tabIndex={tabIndex}
             variant={
               currentCategories.filter((c) => c.slug !== "all").length === 0
                 ? "ghost"
@@ -122,8 +125,9 @@ export const CategoriesCombobox = ({
           </Button>
         ) : (
           <button
+            tabIndex={tabIndex}
             className={cn(
-              "hover:bg-secondary flex items-center gap-2 overflow-hidden p-6 text-sm outline-none",
+              "hover:bg-secondary focus:bg-secondary/50 flex items-center gap-2 overflow-hidden p-6 text-sm outline-none",
               className,
             )}
           >

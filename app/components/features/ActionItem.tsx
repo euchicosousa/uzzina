@@ -44,7 +44,6 @@ type ActionItemProps = {
   showCategory?: boolean;
   showResponsibles?: boolean;
   showPriority?: boolean;
-  showSprint?: boolean;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
   onClick?: (action: Action) => void;
 };
@@ -61,7 +60,6 @@ export const ActionItem = ({
   showCategory,
   showResponsibles,
   showPriority,
-  showSprint,
   dateTimeDisplay,
   onClick,
 }: ActionItemProps) => {
@@ -117,9 +115,12 @@ export const ActionItem = ({
       return "bg-destructive/5 text-destructive hover:bg-destructive/10";
     }
 
-    return variant === VARIANT.block || variant === VARIANT.hour
+    // return variant === VARIANT.block || variant === VARIANT.hour
+    return variant === VARIANT.hour
       ? "hover:bg-card bg-card text-card-foreground"
-      : "hover:bg-card bg-background text-card-foreground";
+      : variant === VARIANT.block
+        ? "hover:bg-secondary/50 bg-secondary text-card-foreground transition"
+        : "hover:bg-card bg-background text-card-foreground";
   }, [variant, isEditing, showLate, action]);
 
   const renderActionVariant = () => {
@@ -296,7 +297,7 @@ export const ActionItem = ({
           variant === VARIANT.content
             ? "flex-col gap-2"
             : variant === VARIANT.block
-              ? "squircle rounded-4xl px-5 py-3"
+              ? "squircle rounded-2xl px-3 py-2"
               : variant === VARIANT.hour
                 ? "squircle w-auto rounded-xl px-3 py-2"
                 : "px-3 py-1 transition-colors @xs:p-1",
