@@ -95,13 +95,6 @@ import type { Action } from "~/models/actions.server";
 
 export const runtime = "edge";
 
-export const headers = () => {
-  return {
-    "Cache-Control":
-      "public, max-age=60, s-maxage=60, stale-while-revalidate=300",
-  };
-};
-
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { user_id, supabase } = await getUserId(request);
 
