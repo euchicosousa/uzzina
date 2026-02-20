@@ -30,6 +30,7 @@ import {
   useOutletContext,
   useRouteLoaderData,
   type LoaderFunctionArgs,
+  type ClientLoaderFunctionArgs,
 } from "react-router";
 
 import { ActionContainer } from "~/components/features/ActionContainer";
@@ -64,6 +65,13 @@ export type AppHomeLoaderData = {
 };
 
 export const runtime = "edge";
+
+export const headers = () => {
+  return {
+    "Cache-Control":
+      "public, max-age=60, s-maxage=60, stale-while-revalidate=300",
+  };
+};
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { user_id, supabase } = await getUserId(request);
@@ -100,6 +108,26 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     actionsChart,
   } as AppHomeLoaderData;
 };
+
+export const clientLoader = async ({
+  serverLoader,
+}: ClientLoaderFunctionArgs) => {
+  const cachedActions = actionsCache.get();
+
+  if (cachedActions) {
+    return {
+      actions: cachedActions,
+      actionsChart: cachedActions.filter(
+        (action: Action) =>
+          action.state !== STATES.finished.slug &&
+          new Date(action.date) <= endOfDay(new Date()),
+      ),
+    } as AppHomeLoaderData;
+  }
+
+  return serverLoader();
+};
+clientLoader.hydrate = true;
 
 import { useMemo } from "react";
 import { HoursComponent } from "~/components/layout/HoursComponent";
