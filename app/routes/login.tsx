@@ -34,7 +34,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "ʙússoʟa - Domine, Crie e Conquiste." },
+    { title: "UZZINA" },
     {
       name: "description",
       content:
