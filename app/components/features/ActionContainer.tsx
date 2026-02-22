@@ -54,7 +54,8 @@ export const ActionContainer = ({
   actions = sortActions(actions, orderBy, ascending);
   const [showMore, setShowMore] = useState(isCompact);
 
-  const gapAndDividerClasses = `${[VARIANT.block].find((v) => v === variant) ? "gap-2" : [VARIANT.content].find((v) => v === variant) ? "gap-x-4 gap-y-6" : showDivider ? "divide-y" : "gap-1"}`;
+  const gapAndDividerClasses = `${[VARIANT.block].find((v) => v === variant) ? "gap-2" : showDivider ? "divide-y" : "gap-1"}`;
+  // const gapAndDividerClasses = `${[VARIANT.block].find((v) => v === variant) ? "gap-2" : [VARIANT.content].find((v) => v === variant) ? "gap-x-4 gap-y-6" : showDivider ? "divide-y" : "gap-1"}`;
 
   useEffect(() => {
     setShowMore(isCompact);
@@ -74,7 +75,6 @@ export const ActionContainer = ({
             showCategory={showCategory}
             showResponsibles={showResponsibles}
             showPriority={showPriority}
-            showSprint={showSprint}
             dateTimeDisplay={dateTimeDisplay}
             isInstagramDate={isInstagramDate}
             isDraggable={isDraggable}

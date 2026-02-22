@@ -31,10 +31,9 @@ function AiProcessingMessage({ isAIProcessing }: { isAIProcessing: boolean }) {
   if (!isAIProcessing) return null;
 
   return (
-    <div className="border-primary/10 bg-primary/5 text-primary flex w-full items-center justify-center gap-2 border-b py-4 text-xs font-medium">
+    <div className="flex w-full items-center justify-center gap-2 border-b py-4 text-xs font-medium">
       <div className="relative flex items-center justify-center">
-        <Loader2 className="absolute size-4 animate-spin opacity-50" />
-        <Wand2Icon className="size-3" />
+        <Loader2 className="size-4 animate-spin opacity-50" />
       </div>
       <span className="animate-pulse">Gerando legenda com IA...</span>
     </div>
