@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
-import type { ViewOptions } from "~/routes/app.partner.slug";
+import type { ViewOptions } from "~/components/features/ViewOptions";
 import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar";
 import {

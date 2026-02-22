@@ -13,10 +13,22 @@ export function WorkFileThumbnail({
   url: string;
   onRemove: () => void;
 }) {
-  const isImage = url.includes("/image/upload/");
   // Extrai a extensão do final da URL (antes de ? ou #)
   const ext =
     url.split("?")[0].split("#")[0].split(".").pop()?.toUpperCase() ?? "FILE";
+  const isImage = [
+    "JPG",
+    "JPEG",
+    "PNG",
+    "GIF",
+    "WEBP",
+    "SVG",
+    "BMP",
+    "TIFF",
+    "ICO",
+    "HEIC",
+    "AVIF",
+  ].includes(ext);
 
   return (
     <div className="group relative size-10 shrink-0">

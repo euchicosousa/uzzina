@@ -6,7 +6,7 @@ import {
   startOfDay,
 } from "date-fns";
 import { ActionContainer } from "../features/ActionContainer";
-import type { ViewOptions } from "~/routes/app.partner.slug";
+import type { ViewOptions } from "~/components/features/ViewOptions";
 import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import { ActionItem } from "../features/ActionItem";

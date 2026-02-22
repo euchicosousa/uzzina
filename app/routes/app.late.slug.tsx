@@ -6,7 +6,7 @@ import { useOptimisticActions } from "~/hooks/useOptimisticActions";
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 import { getLateActions } from "~/lib/helpers";
 import { getUserId } from "~/services/auth.server";
-import type { ViewOptions } from "./app.partner.slug";
+import type { ViewOptions } from "~/components/features/ViewOptions";
 import type { Action } from "~/models/actions.server";
 
 export const runtime = "edge";
