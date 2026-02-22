@@ -7,30 +7,34 @@ import React from "react";
 import { cn } from "~/lib/utils";
 import { CSS } from "@dnd-kit/utilities";
 
-export const Droppable = ({
-  id,
-  children,
-  className,
-}: {
-  id: UniqueIdentifier;
-  children: (isOver: boolean) => React.ReactNode;
-  className?: string;
-}) => {
+export function Droppable(
+  {
+    id,
+    children,
+    className,
+  }: {
+    id: UniqueIdentifier;
+    children: (isOver: boolean) => React.ReactNode;
+    className?: string;
+  }
+) {
   const { isOver, setNodeRef } = useDroppable({ id });
   return (
     <div ref={setNodeRef} className={cn(className)}>
       {children(isOver)}
     </div>
   );
-};
+}
 
-export const Draggable = ({
-  id,
-  children,
-}: {
-  id: UniqueIdentifier;
-  children: React.ReactElement<any>;
-}) => {
+export function Draggable(
+  {
+    id,
+    children,
+  }: {
+    id: UniqueIdentifier;
+    children: React.ReactElement<any>;
+  }
+) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id,
@@ -55,4 +59,4 @@ export const Draggable = ({
       })}
     </div>
   );
-};
+}

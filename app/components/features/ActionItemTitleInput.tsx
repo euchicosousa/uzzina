@@ -1,25 +1,27 @@
 import { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
 
-export const ActionItemTitleInput = ({
-  title,
-  isDragging,
-  isEditing,
-  setIsEditing,
-  className,
-  InputButtonClassName,
-  lines = 1,
-  onChange,
-}: {
-  title: string;
-  isDragging?: boolean;
-  isEditing?: boolean;
-  setIsEditing: (value: boolean) => void;
-  className?: string;
-  InputButtonClassName?: string;
-  lines?: 1 | 2;
-  onChange?: (title: string) => void;
-}) => {
+export function ActionItemTitleInput(
+  {
+    title,
+    isDragging,
+    isEditing,
+    setIsEditing,
+    className,
+    InputButtonClassName,
+    lines = 1,
+    onChange,
+  }: {
+    title: string;
+    isDragging?: boolean;
+    isEditing?: boolean;
+    setIsEditing: (value: boolean) => void;
+    className?: string;
+    InputButtonClassName?: string;
+    lines?: 1 | 2;
+    onChange?: (title: string) => void;
+  }
+) {
   const [localTitle, setLocalTitle] = useState(title);
 
   useEffect(() => {
@@ -79,4 +81,4 @@ export const ActionItemTitleInput = ({
       )}
     </div>
   );
-};
+}

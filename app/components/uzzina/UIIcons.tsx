@@ -26,17 +26,19 @@ import {
 import { Theme } from "remix-themes";
 import { cn } from "~/lib/utils";
 
-export const Icons = ({
-  slug,
-  className,
-  style,
-  color,
-}: {
-  slug?: string;
-  className?: string;
-  style?: React.CSSProperties;
-  color?: string;
-}) => {
+export function Icons(
+  {
+    slug,
+    className,
+    style,
+    color,
+  }: {
+    slug?: string;
+    className?: string;
+    style?: React.CSSProperties;
+    color?: string;
+  }
+) {
   style = style
     ? style
     : color
@@ -87,7 +89,7 @@ export const Icons = ({
     default:
       return <ComponentIcon className={cn(className)} style={style} />;
   }
-};
+}
 
 export const getThemeIcon = (theme: Theme | null, className?: string) => {
   switch (theme) {

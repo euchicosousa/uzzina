@@ -9,7 +9,7 @@ import { getLateActions } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
-export const LateHomeComponent = ({ actions }: { actions: Action[] }) => {
+export function LateHomeComponent({ actions }: { actions: Action[] }) {
   const [viewOptions, setViewOptions] = useState<ViewOptions>({
     ascending: true,
     partner: true,
@@ -50,4 +50,4 @@ export const LateHomeComponent = ({ actions }: { actions: Action[] }) => {
       </div>
     </HomeComponentWrapper>
   );
-};
+}

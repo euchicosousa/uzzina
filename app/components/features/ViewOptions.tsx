@@ -50,13 +50,15 @@ export type ViewOptions = {
   };
 };
 
-export const ViewOptionsComponent = ({
-  viewOptions,
-  setViewOptions,
-}: {
-  viewOptions: ViewOptions;
-  setViewOptions: (viewOptions: ViewOptions) => void;
-}) => {
+export function ViewOptionsComponent(
+  {
+    viewOptions,
+    setViewOptions,
+  }: {
+    viewOptions: ViewOptions;
+    setViewOptions: (viewOptions: ViewOptions) => void;
+  }
+) {
   viewOptions.variant ||= VARIANT.line;
 
   return (
@@ -250,4 +252,4 @@ export const ViewOptionsComponent = ({
       )}
     </div>
   );
-};
+}

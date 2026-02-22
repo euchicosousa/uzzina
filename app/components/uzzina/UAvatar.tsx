@@ -23,13 +23,15 @@ type UAvatarItem = {
   isGroup?: boolean;
 };
 
-export const UAvatarGroup = ({
-  avatars,
-  size = SIZE.md,
-  clampAt,
-  isSquircle,
-  title,
-}: UAvatarGroupProps) => {
+export function UAvatarGroup(
+  {
+    avatars,
+    size = SIZE.md,
+    clampAt,
+    isSquircle,
+    title,
+  }: UAvatarGroupProps
+) {
   const sizeClasses = {
     xs: "-space-x-1",
     sm: "-space-x-1",
@@ -64,20 +66,22 @@ export const UAvatarGroup = ({
       )}
     </div>
   );
-};
+}
 
-export const UAvatar = ({
-  id,
-  fallback,
-  image,
-  alt,
-  className,
-  size = SIZE.md,
-  backgroundColor,
-  color,
-  isSquircle,
-  isGroup,
-}: UAvatarItem) => {
+export function UAvatar(
+  {
+    id,
+    fallback,
+    image,
+    alt,
+    className,
+    size = SIZE.md,
+    backgroundColor,
+    color,
+    isSquircle,
+    isGroup,
+  }: UAvatarItem
+) {
   const fallbackText = (
     size === SIZE.xs
       ? fallback[0]
@@ -151,7 +155,7 @@ export const UAvatar = ({
       )}
     </Avatar>
   );
-};
+}
 
 export function getShortText(text: string) {
   return text.length <= 3 ? (

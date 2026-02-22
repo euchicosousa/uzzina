@@ -48,21 +48,23 @@ type ActionItemProps = {
   onClick?: (action: Action) => void;
 };
 
-export const ActionItem = ({
-  action,
-  variant = VARIANT.line,
-  showLate,
-  className,
-  isDragging,
-  isInstagramDate,
-  isDraggable,
-  showPartner,
-  showCategory,
-  showResponsibles,
-  showPriority,
-  dateTimeDisplay,
-  onClick,
-}: ActionItemProps) => {
+export function ActionItem(
+  {
+    action,
+    variant = VARIANT.line,
+    showLate,
+    className,
+    isDragging,
+    isInstagramDate,
+    isDraggable,
+    showPartner,
+    showCategory,
+    showResponsibles,
+    showPriority,
+    dateTimeDisplay,
+    onClick,
+  }: ActionItemProps
+) {
   const { people, partners } = useRouteLoaderData(
     "routes/app",
   ) as AppLoaderData;
@@ -348,17 +350,19 @@ export const ActionItem = ({
       </div>
     </Draggable>
   );
-};
+}
 
-export const ActionItemDateTimeDisplay = ({
-  action,
-  dateTimeDisplay,
-  isInstagramDate = false,
-}: {
-  action: Action;
-  dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
-  isInstagramDate?: boolean;
-}) => {
+export function ActionItemDateTimeDisplay(
+  {
+    action,
+    dateTimeDisplay,
+    isInstagramDate = false,
+  }: {
+    action: Action;
+    dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
+    isInstagramDate?: boolean;
+  }
+) {
   return (
     <div className="text-xs whitespace-nowrap opacity-50">
       {getFormattedDateTime(
@@ -367,17 +371,19 @@ export const ActionItemDateTimeDisplay = ({
       )}
     </div>
   );
-};
+}
 
-export const ActionItemPartners = ({
-  action,
-  partners,
-  size,
-}: {
-  action: Action;
-  partners: Partner[];
-  size?: (typeof SIZE)[keyof typeof SIZE];
-}) => {
+export function ActionItemPartners(
+  {
+    action,
+    partners,
+    size,
+  }: {
+    action: Action;
+    partners: Partner[];
+    size?: (typeof SIZE)[keyof typeof SIZE];
+  }
+) {
   return size ? (
     <UAvatarGroup
       size={size}
@@ -417,15 +423,17 @@ export const ActionItemPartners = ({
       </div>
     </>
   );
-};
+}
 
-export const ActionItemResponsibles = ({
-  action,
-  responsibles,
-}: {
-  action: Action;
-  responsibles: Person[];
-}) => {
+export function ActionItemResponsibles(
+  {
+    action,
+    responsibles,
+  }: {
+    action: Action;
+    responsibles: Person[];
+  }
+) {
   return (
     <UAvatarGroup
       size={SIZE.sm}
@@ -436,9 +444,9 @@ export const ActionItemResponsibles = ({
       }))}
     />
   );
-};
+}
 
-export const ActionItemPriority = ({ priority }: { priority: PRIORITY }) => {
+export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
   switch (priority) {
     case PRIORITIES.low.slug:
       return <SignalHighIcon className="text-info size-4" />;
@@ -450,21 +458,23 @@ export const ActionItemPriority = ({ priority }: { priority: PRIORITY }) => {
     default:
       return <SignalHighIcon className="text-success size-4" />;
   }
-};
+}
 
-export const ActionItemSprint = ({
-  action,
-  className,
-}: {
-  action: Action;
-  className?: string;
-}) => {
+export function ActionItemSprint(
+  {
+    action,
+    className,
+  }: {
+    action: Action;
+    className?: string;
+  }
+) {
   const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
 
   return isSprint(action, person) ? (
     <Icons slug="sprint" className={cn("size-4 shrink-0", className)} />
   ) : null;
-};
+}
 
 const ShortcutActions = ({
   action,

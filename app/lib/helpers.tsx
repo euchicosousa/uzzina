@@ -6,7 +6,7 @@ export * from "~/utils/validation";
 export * from "~/utils/factory";
 export * from "~/utils/sort";
 // export * from "~/services/auth.server";
-export * from "~/components/uzzina/UZZIIcons";
+export * from "~/components/uzzina/UIIcons";
 
 import { actionsCache } from "~/utils/cache";
 

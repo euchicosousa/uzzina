@@ -15,7 +15,7 @@ import {
 } from "../ui/command";
 import { STATES, type STATE } from "~/lib/CONSTANTS";
 
-export const StatesCombobox = ({
+export function StatesCombobox({
   selectedState,
   onSelect,
   tabIndex,
@@ -23,12 +23,12 @@ export const StatesCombobox = ({
   selectedState: string;
   onSelect?: (state: string) => void;
   tabIndex?: number;
-}) => {
-  const [open, setOpen] = useState(false);
+}) {
+  const [isOpen, setIsOpen] = useState(false);
   let currentState = STATES[selectedState as STATE];
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <button
           tabIndex={tabIndex}
@@ -52,7 +52,7 @@ export const StatesCombobox = ({
                 className={cn("flex items-center gap-2")}
                 onSelect={() => {
                   onSelect?.(state.slug);
-                  setOpen(false);
+                  setIsOpen(false);
                 }}
               >
                 <div
@@ -73,4 +73,4 @@ export const StatesCombobox = ({
       </PopoverContent>
     </Popover>
   );
-};
+}

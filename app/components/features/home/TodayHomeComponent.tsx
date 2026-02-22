@@ -22,7 +22,7 @@ import { isInstagramFeed } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
-export const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
+export function TodayHomeComponent({ actions }: { actions: Action[] }) {
   const [view, setView] = useState<"kanban" | "hours" | "feed" | "categories">(
     "kanban",
   );
@@ -129,4 +129,4 @@ export const TodayHomeComponent = ({ actions }: { actions: Action[] }) => {
       </div>
     </HomeComponentWrapper>
   );
-};
+}

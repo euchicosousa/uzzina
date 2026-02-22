@@ -17,7 +17,7 @@ import {
 } from "../ui/command";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 
-export const PartnersCombobox = ({
+export function PartnersCombobox({
   selectedPartners,
   onSelect,
   tabIndex,
@@ -25,8 +25,8 @@ export const PartnersCombobox = ({
   selectedPartners?: string[];
   onSelect?: (partners: string[]) => void;
   tabIndex?: number;
-}) => {
-  const [open, setOpen] = useState(false);
+}) {
+  const [isOpen, setIsOpen] = useState(false);
   const { partners } = useMatches()[1].loaderData as { partners: Partner[] };
   const [selected, setSelected] = useState<string[]>(selectedPartners || []);
   let currentPartners = selected.map(
@@ -53,7 +53,7 @@ export const PartnersCombobox = ({
   }, []);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <button
           className="hover:bg-secondary focus:bg-secondary/50 flex w-full items-center gap-2 overflow-hidden px-6 py-5.5 text-sm outline-none"
@@ -94,7 +94,7 @@ export const PartnersCombobox = ({
                   if (isShiftPressedRef.current) {
                     setSelected([partner.slug]);
                     onSelect?.([partner.slug]);
-                    setOpen(false);
+                    setIsOpen(false);
                   } else {
                     let newPartners = [...selected];
                     if (selected.includes(partner.slug)) {
@@ -107,7 +107,7 @@ export const PartnersCombobox = ({
 
                     setSelected(newPartners);
                     onSelect?.(newPartners);
-                    setOpen(false);
+                    setIsOpen(false);
                   }
                 }}
               >
@@ -132,4 +132,4 @@ export const PartnersCombobox = ({
       </PopoverContent>
     </Popover>
   );
-};
+}

@@ -11,14 +11,14 @@ import {
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import { getFormattedDateTime } from "~/utils/date";
 
-export const ActionDatePicker = ({
+export function ActionDatePicker({
   onSelect,
   date,
 }: {
   onSelect?: (date: Date) => void;
   date?: Date;
-}) => {
-  const [open, setOpen] = useState(false);
+}) {
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(date);
 
   useEffect(() => {
@@ -27,10 +27,10 @@ export const ActionDatePicker = ({
 
   return (
     <Popover
-      open={open}
-      onOpenChange={(isOpen) => {
-        setOpen(isOpen);
-        if (!isOpen && onSelect && selectedDate) {
+      open={isOpen}
+      onOpenChange={(newIsOpen) => {
+        setIsOpen(newIsOpen);
+        if (!newIsOpen && onSelect && selectedDate) {
           onSelect(selectedDate);
         }
       }}
@@ -84,4 +84,4 @@ export const ActionDatePicker = ({
       </PopoverContent>
     </Popover>
   );
-};
+}

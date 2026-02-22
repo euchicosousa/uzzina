@@ -5,25 +5,27 @@ import type { SIZE } from "~/lib/CONSTANTS";
 
 export type TSize = Extract<keyof typeof SIZE, "sm" | "md" | "lg">;
 
-export const UBadge = ({
-  size = "md",
-  isDynamic = false,
-  isRounded = false,
-  prefix,
-  suffix,
-  text,
-  value = 0,
-  className,
-  ...props
-}: Omit<React.ComponentProps<typeof Badge>, "children"> & {
-  size?: TSize;
-  isDynamic?: boolean;
-  isRounded?: boolean;
-  text?: string;
-  value?: number;
-  prefix?: string;
-  suffix?: string;
-}) => {
+export function UBadge(
+  {
+    size = "md",
+    isDynamic = false,
+    isRounded = false,
+    prefix,
+    suffix,
+    text,
+    value = 0,
+    className,
+    ...props
+  }: Omit<React.ComponentProps<typeof Badge>, "children"> & {
+    size?: TSize;
+    isDynamic?: boolean;
+    isRounded?: boolean;
+    text?: string;
+    value?: number;
+    prefix?: string;
+    suffix?: string;
+  }
+) {
   if (!text && !value) return null;
 
   const sizeClasses = isRounded
@@ -63,4 +65,4 @@ export const UBadge = ({
           })}${suffix || ""}`}
     </Badge>
   );
-};
+}

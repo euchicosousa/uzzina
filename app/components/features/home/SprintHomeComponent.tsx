@@ -9,7 +9,7 @@ import { PRIORITIES, VARIANT } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
-export const SprintHomeComponent = ({ actions }: { actions: Action[] }) => {
+export function SprintHomeComponent({ actions }: { actions: Action[] }) {
   const [viewOptions, setViewOptions] = useState<ViewOptions>({
     showOptions: {
       priority: true,
@@ -103,4 +103,4 @@ export const SprintHomeComponent = ({ actions }: { actions: Action[] }) => {
       </div>
     </HomeComponentWrapper>
   );
-};
+}

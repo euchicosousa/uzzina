@@ -8,7 +8,7 @@ import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
-export const PartnersHomeComponent = ({ actions }: { actions: Action[] }) => {
+export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
   const { partners } = useRouteLoaderData("routes/app") as {
     partners: Partner[];
   };
@@ -69,4 +69,4 @@ export const PartnersHomeComponent = ({ actions }: { actions: Action[] }) => {
       </div>
     </HomeComponentWrapper>
   );
-};
+}

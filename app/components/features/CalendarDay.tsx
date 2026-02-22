@@ -8,25 +8,27 @@ import { ActionContainer } from "./ActionContainer";
 import type { Action } from "~/models/actions.server";
 import { getInstagramFeedActions, isInstagramFeed } from "~/utils/validation";
 
-export const CalendarDay = ({
-  currentDay,
-  day,
-  onCreateAction,
-  viewOptions,
-  actions,
-  celebrations,
-  isCompact,
-  isScroll,
-}: {
-  currentDay?: Date;
-  day: Date;
-  onCreateAction?: (day: Date) => void;
-  viewOptions: ViewOptions;
-  actions: Action[];
-  celebrations?: Celebration[];
-  isCompact?: boolean;
-  isScroll?: boolean;
-}) => {
+export function CalendarDay(
+  {
+    currentDay,
+    day,
+    onCreateAction,
+    viewOptions,
+    actions,
+    celebrations,
+    isCompact,
+    isScroll,
+  }: {
+    currentDay?: Date;
+    day: Date;
+    onCreateAction?: (day: Date) => void;
+    viewOptions: ViewOptions;
+    actions: Action[];
+    celebrations?: Celebration[];
+    isCompact?: boolean;
+    isScroll?: boolean;
+  }
+) {
   const { setNodeRef } = useDroppable({
     id: `${format(day, "yyyy-MM-dd")}`,
   });
@@ -154,13 +156,15 @@ export const CalendarDay = ({
       )}
     </div>
   );
-};
+}
 
-export const CelebrationContainer = ({
-  celebrations,
-}: {
-  celebrations: Celebration[];
-}) => {
+export function CelebrationContainer(
+  {
+    celebrations,
+  }: {
+    celebrations: Celebration[];
+  }
+) {
   return (
     <div className="flex shrink-0 flex-col gap-1 px-2 py-4 text-xs">
       {celebrations.map((celebration) => (
@@ -173,4 +177,4 @@ export const CelebrationContainer = ({
       ))}
     </div>
   );
-};
+}

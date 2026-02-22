@@ -12,21 +12,23 @@ export type CalendarActionsType = {
   celebrations?: Celebration[];
 };
 
-export const CalendarActions = ({
-  currentDay,
-  calendar,
-  viewOptions,
-  onCreateAction,
-  isCompact,
-  isScroll,
-}: {
-  currentDay?: Date;
-  calendar: CalendarActionsType[];
-  viewOptions: ViewOptions;
-  onCreateAction?: (day: Date) => void;
-  isCompact?: boolean;
-  isScroll?: boolean;
-}) => {
+export function CalendarActions(
+  {
+    currentDay,
+    calendar,
+    viewOptions,
+    onCreateAction,
+    isCompact,
+    isScroll,
+  }: {
+    currentDay?: Date;
+    calendar: CalendarActionsType[];
+    viewOptions: ViewOptions;
+    onCreateAction?: (day: Date) => void;
+    isCompact?: boolean;
+    isScroll?: boolean;
+  }
+) {
   return (
     <div className="w-full overflow-x-auto overflow-y-hidden">
       <div className="flex h-full w-full min-w-[1500px] flex-col overflow-hidden">
@@ -49,7 +51,7 @@ export const CalendarActions = ({
       </div>
     </div>
   );
-};
+}
 
 const WeekHeader = () => {
   const week = eachDayOfInterval({

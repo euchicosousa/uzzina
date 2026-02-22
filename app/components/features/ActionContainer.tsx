@@ -26,25 +26,27 @@ type ActionContainerProps = {
   isDraggable?: boolean;
 };
 
-export const ActionContainer = ({
-  actions,
-  variant = VARIANT.line,
-  columns = 1,
-  showLate = false,
-  showPartner,
-  showCategory,
-  showResponsibles,
-  showPriority,
-  showDivider,
-  showSprint,
-  dateTimeDisplay,
-  orderBy,
-  ascending,
-  isCompact,
-  isScroll,
-  isInstagramDate,
-  isDraggable,
-}: ActionContainerProps) => {
+export function ActionContainer(
+  {
+    actions,
+    variant = VARIANT.line,
+    columns = 1,
+    showLate = false,
+    showPartner,
+    showCategory,
+    showResponsibles,
+    showPriority,
+    showDivider,
+    showSprint,
+    dateTimeDisplay,
+    orderBy,
+    ascending,
+    isCompact,
+    isScroll,
+    isInstagramDate,
+    isDraggable,
+  }: ActionContainerProps
+) {
   const columnsClasses =
     columns === 1
       ? `flex flex-col`
@@ -97,4 +99,4 @@ export const ActionContainer = ({
       </div>
     </div>
   );
-};
+}

@@ -3,17 +3,19 @@ import StarterKit from "@tiptap/starter-kit";
 import { useMemo } from "react";
 import { cn } from "~/lib/utils";
 
-export const Tiptap = ({
-  content,
-  handleBlur,
-  className,
-  tabIndex,
-}: {
-  content: string;
-  handleBlur: (content: string) => void;
-  className?: string;
-  tabIndex?: number;
-}) => {
+export function Tiptap(
+  {
+    content,
+    handleBlur,
+    className,
+    tabIndex,
+  }: {
+    content: string;
+    handleBlur: (content: string) => void;
+    className?: string;
+    tabIndex?: number;
+  }
+) {
   const editor = useEditor({
     extensions: [StarterKit], // define your extension array
     content, // initial content
@@ -39,4 +41,4 @@ export const Tiptap = ({
       <BubbleMenu editor={editor}>This is the bubble menu</BubbleMenu> */}
     </EditorContext.Provider>
   );
-};
+}

@@ -18,7 +18,7 @@ import {
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
 
-export const ResponsiblesCombobox = ({
+export function ResponsiblesCombobox({
   selectedResponsibles,
   currentPartners,
   onSelect,
@@ -26,8 +26,8 @@ export const ResponsiblesCombobox = ({
   selectedResponsibles: string[];
   currentPartners: Partner[];
   onSelect?: (responsibles: string[]) => void;
-}) => {
-  const [open, setOpen] = useState(false);
+}) {
+  const [isOpen, setIsOpen] = useState(false);
   let { people } = useMatches()[1].loaderData as { people: Person[] };
   const [selected, setSelected] = useState<string[]>(
     selectedResponsibles || [],
@@ -62,7 +62,7 @@ export const ResponsiblesCombobox = ({
   }, []);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <button
           className="cursor-pointer underline-offset-4 outline-none hover:underline"
@@ -87,7 +87,7 @@ export const ResponsiblesCombobox = ({
                   if (isShiftPressedRef.current) {
                     setSelected([person.user_id]);
                     onSelect?.([person.user_id]);
-                    setOpen(false);
+                    setIsOpen(false);
                   } else {
                     let newResponsibles = [...selected];
                     if (selected.includes(person.user_id)) {
@@ -100,7 +100,7 @@ export const ResponsiblesCombobox = ({
 
                     setSelected(newResponsibles);
                     onSelect?.(newResponsibles);
-                    setOpen(false);
+                    setIsOpen(false);
                   }
                 }}
               >
@@ -125,15 +125,15 @@ export const ResponsiblesCombobox = ({
       </PopoverContent>
     </Popover>
   );
-};
+}
 
-export const ActionResponsiblesDisplay = ({
+export function ActionResponsiblesDisplay({
   responsibles: responsibles_,
   size = SIZE.md,
 }: {
   responsibles: string[];
   size?: (typeof SIZE)[keyof typeof SIZE];
-}) => {
+}) {
   const { people } = useMatches()[1].loaderData as { people: Person[] };
   const responsibles = responsibles_
     .map((r) => people.find((p) => p.user_id === r))
@@ -156,4 +156,4 @@ export const ActionResponsiblesDisplay = ({
       </div>
     </div>
   );
-};
+}

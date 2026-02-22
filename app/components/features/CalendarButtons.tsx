@@ -20,19 +20,21 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
-export const CalendarButtons = ({
-  currentDay,
-  setCurrentDay,
-  days = 1,
-  showDate,
-  mode = "day",
-}: {
-  currentDay: Date;
-  setCurrentDay: (day: Date) => void;
-  days?: number;
-  showDate?: boolean;
-  mode?: "day" | "month";
-}) => {
+export function CalendarButtons(
+  {
+    currentDay,
+    setCurrentDay,
+    days = 1,
+    showDate,
+    mode = "day",
+  }: {
+    currentDay: Date;
+    setCurrentDay: (day: Date) => void;
+    days?: number;
+    showDate?: boolean;
+    mode?: "day" | "month";
+  }
+) {
   return (
     <div className="flex">
       <Button
@@ -123,4 +125,4 @@ export const CalendarButtons = ({
       </Button>
     </div>
   );
-};
+}

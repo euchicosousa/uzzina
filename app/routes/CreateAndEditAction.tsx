@@ -44,10 +44,17 @@ export function CreateAndEditAction({
   const [RawAction, setRawAction] = useState<Action>(BaseAction);
 
   useEffect(() => {
-    setRawAction((prev) => {
-      if (prev.id && !BaseAction.id) return prev;
-      return BaseAction;
-    });
+    if (RawAction.id && !BaseAction.id) {
+      // Salva a ação atual antes de limpá-la para iniciar uma nova
+      handleAction(
+        {
+          ...RawAction,
+          intent: INTENT.update_action,
+        },
+        submit,
+      );
+    }
+    setRawAction(BaseAction);
   }, [BaseAction]);
 
   const submit = useSubmit();

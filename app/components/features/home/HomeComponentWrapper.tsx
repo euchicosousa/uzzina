@@ -1,14 +1,16 @@
 import type { ReactNode } from "react";
 
-export const HomeComponentWrapper = ({
-  children,
-  title,
-  OptionsComponent,
-}: {
-  children: ReactNode;
-  OptionsComponent?: ReactNode;
-  title: string | ReactNode;
-}) => {
+export function HomeComponentWrapper(
+  {
+    children,
+    title,
+    OptionsComponent,
+  }: {
+    children: ReactNode;
+    OptionsComponent?: ReactNode;
+    title: string | ReactNode;
+  }
+) {
   return (
     <div>
       <div className="flex flex-col justify-between gap-8 p-8 lg:flex-row lg:items-center xl:px-16">
@@ -21,4 +23,4 @@ export const HomeComponentWrapper = ({
       {children}
     </div>
   );
-};
+}

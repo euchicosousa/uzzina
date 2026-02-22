@@ -18,7 +18,7 @@ import {
 } from "../ui/command";
 import { CATEGORIES } from "~/lib/CONSTANTS";
 
-export const CategoriesCombobox = ({
+export function CategoriesCombobox({
   selectedCategories,
   onSelect,
   isMulti,
@@ -38,8 +38,8 @@ export const CategoriesCombobox = ({
   showInstagramGroup?: boolean;
   className?: string;
   tabIndex?: number;
-}) => {
-  const [open, setOpen] = useState(false);
+}) {
+  const [isOpen, setIsOpen] = useState(false);
 
   const CATEGORIES_LIST = Object.values(CATEGORIES);
 
@@ -90,7 +90,7 @@ export const CategoriesCombobox = ({
   }, []);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         {isMulti ? (
           <Button
@@ -186,7 +186,7 @@ export const CategoriesCombobox = ({
                     } else {
                       onSelect?.({ category: category.slug, categories: [] });
                     }
-                    setOpen(false);
+                    setIsOpen(false);
                   }}
                 >
                   <Icons
@@ -221,4 +221,4 @@ export const CategoriesCombobox = ({
       </PopoverContent>
     </Popover>
   );
-};
+}

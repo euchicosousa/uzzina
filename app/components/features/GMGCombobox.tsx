@@ -27,12 +27,12 @@ export function GMGCombobox({
   }[gmg];
 
   const [selectedItem, setSelectedItem] = useState(selected);
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const currentItem = items.find((item) => item.slug === selectedItem);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <button className={cn("flex items-center gap-2", className)}>
           {selectedItem ? currentItem?.title : `Selecione ${gmg}`}
@@ -48,7 +48,7 @@ export function GMGCombobox({
                 key={index}
                 onSelect={() => {
                   setSelectedItem(item.slug);
-                  setOpen(false);
+                  setIsOpen(false);
                 }}
                 className="flex justify-between"
               >

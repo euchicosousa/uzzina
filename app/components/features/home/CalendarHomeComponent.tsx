@@ -24,13 +24,15 @@ import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
-export const CalendarHomeComponent = ({
-  actions,
-  setBaseAction,
-}: {
-  actions: Action[];
-  setBaseAction: (action: Action | null) => void;
-}) => {
+export function CalendarHomeComponent(
+  {
+    actions,
+    setBaseAction,
+  }: {
+    actions: Action[];
+    setBaseAction: (action: Action | null) => void;
+  }
+) {
   const { celebrations } = useMatches()[1].loaderData as AppLoaderData;
 
   const [period, setPeriod] = useState<"week" | "month">("week");
@@ -124,4 +126,4 @@ export const CalendarHomeComponent = ({
       </div>
     </HomeComponentWrapper>
   );
-};
+}

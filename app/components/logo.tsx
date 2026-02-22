@@ -1,12 +1,14 @@
 import { cn } from "~/lib/utils";
 
-export const UzzinaLogo = ({
-  model,
-  className,
-}: {
-  model?: "logo" | "lettering" | "logotype";
-  className?: string;
-}) => {
+export function UzzinaLogo(
+  {
+    model,
+    className,
+  }: {
+    model?: "logo" | "lettering" | "logotype";
+    className?: string;
+  }
+) {
   return model === "logo" ? (
     <svg
       style={{
@@ -56,4 +58,4 @@ export const UzzinaLogo = ({
       />
     </svg>
   );
-};
+}
