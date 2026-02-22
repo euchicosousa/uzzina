@@ -23,15 +23,13 @@ type UAvatarItem = {
   isGroup?: boolean;
 };
 
-export function UAvatarGroup(
-  {
-    avatars,
-    size = SIZE.md,
-    clampAt,
-    isSquircle,
-    title,
-  }: UAvatarGroupProps
-) {
+export function UAvatarGroup({
+  avatars,
+  size = SIZE.md,
+  clampAt,
+  isSquircle,
+  title,
+}: UAvatarGroupProps) {
   const sizeClasses = {
     xs: "-space-x-1",
     sm: "-space-x-1",
@@ -68,20 +66,18 @@ export function UAvatarGroup(
   );
 }
 
-export function UAvatar(
-  {
-    id,
-    fallback,
-    image,
-    alt,
-    className,
-    size = SIZE.md,
-    backgroundColor,
-    color,
-    isSquircle,
-    isGroup,
-  }: UAvatarItem
-) {
+export function UAvatar({
+  id,
+  fallback,
+  image,
+  alt,
+  className,
+  size = SIZE.md,
+  backgroundColor,
+  color,
+  isSquircle,
+  isGroup,
+}: UAvatarItem) {
   const fallbackText = (
     size === SIZE.xs
       ? fallback[0]
@@ -111,18 +107,18 @@ export function UAvatar(
         ? {
             xs: "",
             sm: "",
-            md: "text-[9px]",
-            lg: "text-[16px]",
-            xl: "text-[24px]",
-            xxl: "text-[34px]",
+            md: "text-[9px] tracking-[1px]",
+            lg: "text-[16px] tracking-[2px]",
+            xl: "text-[24px] tracking-[2px]",
+            xxl: "text-[34px] tracking-[2px]",
           }[size]
         : {
             xs: "",
             sm: "",
-            md: "text-[8px]",
-            lg: "text-[15px]",
-            xl: "text-[20px]",
-            xxl: "text-[30px]",
+            md: "text-[8px] tracking-[1px]",
+            lg: "text-[15px] tracking-[2px]",
+            xl: "text-[20px] tracking-[2px]",
+            xxl: "text-[30px] tracking-[2px]",
           }[size];
 
   const styles =

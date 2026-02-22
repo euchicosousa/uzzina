@@ -11,22 +11,39 @@ export function useOptimisticActions(actions: Action[]): Action[] {
     const actionsMap = new Map(actions.map((action) => [action.id, action]));
 
     const pendingSubmissions = [...fetchers, navigation].filter(
-      (submission) => submission.formData,
+      (submission) => submission.formData || (submission as any).json,
     );
 
     for (const submission of pendingSubmissions) {
-      const formData = submission.formData!;
-      const intent = formData.get("intent");
+      // Normalize React Router v7 payloads (FormData vs JSON)
+      const dataPayload = {
+        get: (key: string) => {
+          if (submission.formData) return submission.formData.get(key);
+          if ((submission as any).json)
+            return (submission as any).json[key] ?? null;
+          return null;
+        },
+        getAll: (key: string) => {
+          if (submission.formData) return submission.formData.getAll(key);
+          if ((submission as any).json) {
+            const val = (submission as any).json[key];
+            return Array.isArray(val) ? val : val != null ? [val] : [];
+          }
+          return [];
+        },
+      };
+
+      const intent = dataPayload.get("intent");
 
       if (intent === INTENT.update_action) {
-        const id = String(formData.get("id"));
+        const id = String(dataPayload.get("id"));
 
         if (actionsMap.has(id)) {
           const action = actionsMap.get(id)!;
           const newAction = { ...action };
 
           const updateString = (key: keyof Action) => {
-            const value = formData.get(key as string);
+            const value = dataPayload.get(key as string);
             if (value !== null) {
               // @ts-ignore
               newAction[key] = String(value);
@@ -34,7 +51,7 @@ export function useOptimisticActions(actions: Action[]): Action[] {
           };
 
           const updateNumber = (key: keyof Action) => {
-            const value = formData.get(key as string);
+            const value = dataPayload.get(key as string);
             if (value !== null) {
               // @ts-ignore
               newAction[key] = Number(value);
@@ -42,15 +59,15 @@ export function useOptimisticActions(actions: Action[]): Action[] {
           };
 
           const updateBoolean = (key: keyof Action) => {
-            const value = formData.get(key as string);
+            const value = dataPayload.get(key as string);
             if (value !== null) {
               // @ts-ignore
-              newAction[key] = value === "true";
+              newAction[key] = value === "true" || value === true;
             }
           };
 
           const updateArray = (key: keyof Action) => {
-            const values = formData.getAll(key as string);
+            const values = dataPayload.getAll(key as string);
             const cleanValues = values
               .map(String)
               .filter((v) => v !== "" && v !== "null");
@@ -62,18 +79,16 @@ export function useOptimisticActions(actions: Action[]): Action[] {
               cleanValues.length === 1 &&
               cleanValues[0].includes(",")
             ) {
-              // Handle comma-separated string (backend compatibility)
               // @ts-ignore
               newAction[key] = cleanValues[0].split(",").filter(Boolean);
             } else {
-              // Standard FormData array
               // @ts-ignore
               newAction[key] = cleanValues;
             }
           };
 
           const updateNumberArray = (key: keyof Action) => {
-            const values = formData.getAll(key as string);
+            const values = dataPayload.getAll(key as string);
             const cleanValues = values
               .map(String)
               .filter((v) => v !== "" && v !== "null");
