@@ -20,6 +20,22 @@ export function getLateActions(actions: Action[]) {
   return lateActions;
 }
 
+export function getInstagramFeedActions(
+  actions: Action[],
+  isFeed = true,
+  stories = false,
+) {
+  if (!actions) return [];
+
+  const instagramFeedActions = actions.filter((action) => {
+    return isFeed
+      ? isInstagramFeed(action.category, stories)
+      : !isInstagramFeed(action.category, stories);
+  });
+
+  return instagramFeedActions;
+}
+
 export function isInstagramFeed(category: string, stories = false) {
   return ["post", "reels", "carousel", stories ? "stories" : null].includes(
     category,

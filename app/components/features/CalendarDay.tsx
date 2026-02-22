@@ -6,6 +6,7 @@ import { cn } from "~/lib/utils";
 import type { ViewOptions } from "~/components/features/ViewOptions";
 import { ActionContainer } from "./ActionContainer";
 import type { Action } from "~/models/actions.server";
+import { getInstagramFeedActions, isInstagramFeed } from "~/utils/validation";
 
 export const CalendarDay = ({
   currentDay,
@@ -80,27 +81,72 @@ export const CalendarDay = ({
         <div
           className={cn(
             "h-full overflow-hidden",
-            viewOptions.variant === VARIANT.content ? "p-2" : "",
+            // viewOptions.variant === VARIANT.content ? "p-2" : "",
           )}
         >
-          <ActionContainer
-            actions={actions}
-            dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
-            showCategory={viewOptions.category}
-            showPartner={viewOptions.partner}
-            showResponsibles={viewOptions.responsibles}
-            showLate={viewOptions.late}
-            showPriority={viewOptions.priority}
-            showDivider={true}
-            showSprint={viewOptions.sprint}
-            orderBy={viewOptions.order}
-            ascending={viewOptions.ascending}
-            isCompact={isCompact}
-            isInstagramDate={viewOptions.instagram}
-            variant={viewOptions.variant}
-            isScroll={!(viewOptions.variant === VARIANT.content)}
-            isDraggable
-          />
+          {viewOptions.variant === VARIANT.content ? (
+            <div className="flex flex-col gap-2">
+              {getInstagramFeedActions(actions).length > 0 && (
+                <ActionContainer
+                  actions={getInstagramFeedActions(actions)}
+                  dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+                  showCategory={viewOptions.category}
+                  showPartner={viewOptions.partner}
+                  showResponsibles={viewOptions.responsibles}
+                  showLate={viewOptions.late}
+                  showPriority={viewOptions.priority}
+                  showDivider={true}
+                  showSprint={viewOptions.sprint}
+                  orderBy={viewOptions.order}
+                  ascending={viewOptions.ascending}
+                  isCompact={isCompact}
+                  isInstagramDate={viewOptions.instagram}
+                  variant={viewOptions.variant}
+                  isScroll={!(viewOptions.variant === VARIANT.content)}
+                  isDraggable
+                />
+              )}
+              {getInstagramFeedActions(actions, false).length > 0 && (
+                <ActionContainer
+                  actions={getInstagramFeedActions(actions, false)}
+                  dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+                  showCategory={viewOptions.category}
+                  showPartner={viewOptions.partner}
+                  showResponsibles={viewOptions.responsibles}
+                  showLate={viewOptions.late}
+                  showPriority={viewOptions.priority}
+                  showDivider={true}
+                  showSprint={viewOptions.sprint}
+                  orderBy={viewOptions.order}
+                  ascending={viewOptions.ascending}
+                  isCompact={isCompact}
+                  isInstagramDate={viewOptions.instagram}
+                  variant={VARIANT.line}
+                  isScroll={!(viewOptions.variant === VARIANT.content)}
+                  isDraggable
+                />
+              )}
+            </div>
+          ) : (
+            <ActionContainer
+              actions={actions}
+              dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+              showCategory={viewOptions.category}
+              showPartner={viewOptions.partner}
+              showResponsibles={viewOptions.responsibles}
+              showLate={viewOptions.late}
+              showPriority={viewOptions.priority}
+              showDivider={true}
+              showSprint={viewOptions.sprint}
+              orderBy={viewOptions.order}
+              ascending={viewOptions.ascending}
+              isCompact={isCompact}
+              isInstagramDate={viewOptions.instagram}
+              variant={viewOptions.variant}
+              isScroll={isScroll}
+              isDraggable
+            />
+          )}
         </div>
       </div>
       {celebrations && celebrations.length > 0 && (
