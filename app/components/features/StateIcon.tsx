@@ -1,4 +1,4 @@
-import { CheckCircle2Icon, CheckIcon } from "lucide-react";
+import { CheckIcon } from "lucide-react";
 import { STATES, type SIZE, type STATE_TYPE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 

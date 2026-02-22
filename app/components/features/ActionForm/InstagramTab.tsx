@@ -1,5 +1,4 @@
-import { Loader2, Sparkles, Wand2Icon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Loader2, Wand2Icon } from "lucide-react";
 import { type FetcherWithComponents } from "react-router";
 import { Button } from "~/components/ui/button";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";

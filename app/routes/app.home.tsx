@@ -1,39 +1,23 @@
 import {
   addMonths,
-  eachDayOfInterval,
   endOfDay,
   endOfMonth,
   endOfWeek,
   format,
-  isSameDay,
-  isToday,
-  parseISO,
   startOfMonth,
   startOfWeek,
 } from "date-fns";
-import { ptBR } from "date-fns/locale";
+
+
+import { useEffect } from "react";
 import {
-  AlertCircleIcon,
-  ClockIcon,
-  ComponentIcon,
-  Grid3X3Icon,
-  KanbanIcon,
-  SignalHighIcon,
-  SignalLowIcon,
-  SignalMediumIcon,
-} from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
-import {
-  Link,
   useLoaderData,
   useMatches,
   useOutletContext,
-  useRouteLoaderData,
   type LoaderFunctionArgs,
   type ClientLoaderFunctionArgs,
 } from "react-router";
 
-import { ActionContainer } from "~/components/features/ActionContainer";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
 import { ORDER_BY, STATES } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
@@ -112,7 +96,6 @@ export const clientLoader = async ({
 clientLoader.hydrate = true;
 
 import { useMemo } from "react";
-import { HoursComponent } from "~/components/layout/HoursComponent";
 import type { Action } from "~/models/actions.server";
 
 export default function AppHome() {

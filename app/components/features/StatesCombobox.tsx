@@ -1,13 +1,11 @@
 import { CheckIcon } from "lucide-react";
 import { useState } from "react";
-import { useMatches } from "react-router";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { cn } from "~/lib/utils";
-import { Button } from "../ui/button";
 import {
   Command,
   CommandEmpty,
@@ -15,7 +13,6 @@ import {
   CommandItem,
   CommandList,
 } from "../ui/command";
-import { UBadge } from "../uzzina/UBadge";
 import { STATES, type STATE } from "~/lib/CONSTANTS";
 
 export const StatesCombobox = ({

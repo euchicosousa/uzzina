@@ -1,5 +1,4 @@
 import { useEditor, EditorContent, EditorContext } from "@tiptap/react";
-import { FloatingMenu, BubbleMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import { useMemo } from "react";
 import { cn } from "~/lib/utils";

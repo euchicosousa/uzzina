@@ -1,8 +1,6 @@
-import { useId } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { SIZE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
-import { getFormattedPartnersName } from "~/lib/helpers";
 
 type UAvatarGroupProps = {
   avatars: UAvatarItem[];

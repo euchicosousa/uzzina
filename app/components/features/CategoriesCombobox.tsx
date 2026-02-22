@@ -1,6 +1,5 @@
-import { CheckIcon, InstagramIcon } from "lucide-react";
+import { CheckIcon } from "lucide-react";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { useMatches } from "react-router";
 import {
   Popover,
   PopoverContent,
@@ -12,13 +11,12 @@ import { Button } from "../ui/button";
 import {
   Command,
   CommandEmpty,
-  CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
   CommandSeparator,
 } from "../ui/command";
-import { CATEGORIES, type CATEGORY_TYPE } from "~/lib/CONSTANTS";
+import { CATEGORIES } from "~/lib/CONSTANTS";
 
 export const CategoriesCombobox = ({
   selectedCategories,

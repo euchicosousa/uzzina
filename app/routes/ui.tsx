@@ -1,6 +1,4 @@
 import { ComputerIcon, MoonIcon, SunIcon } from "lucide-react";
-import type { LoaderFunctionArgs } from "react-router";
-import { useLoaderData } from "react-router";
 import { Theme, useTheme } from "remix-themes";
 import { StateIcon } from "~/components/features/StateIcon";
 import { Button } from "~/components/ui/button";
@@ -8,7 +6,6 @@ import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { CATEGORIES, SIZE, STATES } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
-import { createSupabaseClient } from "~/lib/supabase";
 
 export const meta = () => {
   return [

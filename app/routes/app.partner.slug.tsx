@@ -1,11 +1,9 @@
 import {
   addDays,
-  eachDayOfInterval,
   endOfDay,
   endOfMonth,
   endOfWeek,
   format,
-  isSameDay,
   isValid,
   parseISO,
   startOfDay,
@@ -14,32 +12,15 @@ import {
   subDays,
 } from "date-fns";
 import {
-  ArrowDownAZIcon,
-  ArrowDownIcon,
-  ArrowUpAZIcon,
   CalendarIcon,
-  ClockIcon,
-  HandshakeIcon,
-  InstagramIcon,
   ListIcon,
-  Rows2Icon,
-  Rows3Icon,
   SearchIcon,
-  SignalHighIcon,
-  SquareCheckIcon,
-  SquareIcon,
-  TagIcon,
-  UsersIcon,
 } from "lucide-react";
 import { useState } from "react";
 import {
   Link,
   useLoaderData,
-  useMatches,
   useNavigate,
-  useOutletContext,
-  useParams,
-  useSubmit,
   type LoaderFunctionArgs,
   type ClientLoaderFunctionArgs,
 } from "react-router";
@@ -47,39 +28,30 @@ import invariant from "tiny-invariant";
 import { ActionCalendarPartnerPage } from "~/components/features/ActionCalendarPartnerPage";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import { CalendarButtons } from "~/components/features/Calendar";
-import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import {
   ViewOptionsComponent,
   type ViewOptions,
 } from "~/components/features/ViewOptions";
-import { Button } from "~/components/ui/button";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "~/components/ui/input-group";
-import { Toggle } from "~/components/ui/toggle";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { UToggle } from "~/components/uzzina/UToggle";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
 import {
   DATE_TIME_DISPLAY,
-  INTENT,
   ORDER_BY,
   SIZE,
   VARIANT,
 } from "~/lib/CONSTANTS";
 import {
-  getCleanAction,
   getLateActions,
-  getNewDateForAction,
-  handleAction,
-  isInstagramFeed,
 } from "~/lib/helpers";
 import { getUserId } from "~/services/auth.server";
 import { actionsCache, partnersCache } from "~/utils/cache";
-import type { AppLoaderData } from "./app";
 import { getActionsByPartner } from "~/models/actions.server";
 import { getPartnerBySlug } from "~/models/partners.server";
 import { getPersonByUserId } from "~/models/people.server";

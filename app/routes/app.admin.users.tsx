@@ -1,4 +1,4 @@
-import { UserPlus, UserPlus2 } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import {
   Link,
   useLoaderData,
