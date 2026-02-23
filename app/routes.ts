@@ -17,4 +17,5 @@ export default [
   route("action/set-theme", "routes/action.set-theme.ts"),
   route("action/handle-action", "routes/action.handle-action.ts"),
   route("action/handle-ai", "routes/action.handle-ai.ts"),
+  route("api/search", "routes/api.search.ts"),
 ] satisfies RouteConfig;

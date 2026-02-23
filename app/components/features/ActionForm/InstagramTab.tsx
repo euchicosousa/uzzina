@@ -119,7 +119,7 @@ export function InstagramTab({
               })
             }
             placeholder="Legenda"
-            className="h-full w-full resize-none p-4 outline-none disabled:opacity-50"
+            className="font-inter h-full w-full resize-none p-4 outline-none disabled:opacity-50"
           />
         </div>
       </div>

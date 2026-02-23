@@ -1,4 +1,10 @@
-import { IconAlertCircle, IconEye, IconEyeOff, IconLogin } from "@tabler/icons-react";
+import {
+  IconAlertCircle,
+  IconEye,
+  IconEyeOff,
+  IconLogin,
+  IconLogin2,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import {
   redirect,
@@ -93,7 +99,7 @@ const Login = () => {
 
           <div className="flex justify-end">
             <Button type="submit">
-              Fazer Login <IconLogin className="ml-2 size-3" />
+              Fazer Login <IconLogin2 className="ml-2 size-3" />
             </Button>
           </div>
         </form>

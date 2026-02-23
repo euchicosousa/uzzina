@@ -1,9 +1,9 @@
+import { parseISO } from "date-fns";
 import {
-  IconBrandInstagram,
   IconCalendarEvent,
+  IconBrandInstagram,
   IconPlus,
 } from "@tabler/icons-react";
-import { parseISO } from "date-fns";
 import { Suspense, lazy } from "react";
 import { useSubmit } from "react-router";
 import { GMGCombobox } from "~/components/features/GMGCombobox";
@@ -15,11 +15,11 @@ import {
   handleAction,
   isInstagramFeed,
 } from "~/lib/helpers";
-import type { Action } from "~/models/actions.server";
 import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "./WorkFileThumbnail";
+import type { Action } from "~/models/actions.server";
 
 const Tiptap = lazy(() =>
   import("~/components/features/Tiptap").then((module) => ({
@@ -85,7 +85,10 @@ export function EssentialsTab({
         </div>
         <div className="flex gap-8 border-b px-4 py-2">
           <div className="flex items-center gap-1 opacity-50">
-            <IconCalendarEvent className="size-3" />
+            {isInstagramFeed(
+              RawAction.category,
+              RawAction.category === "stories",
+            ) && <IconCalendarEvent className="size-4" />}
             <ActionDatePicker
               onSelect={async (date) => {
                 // @ts-ignore
@@ -106,7 +109,7 @@ export function EssentialsTab({
             RawAction.category === "stories",
           ) && (
             <div className="flex items-center gap-1 opacity-50">
-              <IconBrandInstagram className="size-3" />
+              <IconBrandInstagram className="size-4" />
               <ActionDatePicker
                 onSelect={async (date) => {
                   // @ts-ignore

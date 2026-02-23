@@ -223,6 +223,7 @@ export type Database = {
           sow: Database["public"]["Enums"]["sow"]
           title: string
           users_ids: string[]
+          voice: string | null
         }
         Insert: {
           archived?: boolean
@@ -237,6 +238,7 @@ export type Database = {
           sow?: Database["public"]["Enums"]["sow"]
           title: string
           users_ids: string[]
+          voice?: string | null
         }
         Update: {
           archived?: boolean
@@ -251,6 +253,7 @@ export type Database = {
           sow?: Database["public"]["Enums"]["sow"]
           title?: string
           users_ids?: string[]
+          voice?: string | null
         }
         Relationships: []
       }
@@ -401,6 +404,47 @@ export type Database = {
     Functions: {
       buscar_actions: {
         Args: { query: string }
+        Returns: {
+          archived: boolean | null
+          category: string
+          color: string
+          content_files: string[] | null
+          created_at: string
+          date: string
+          description: string | null
+          genesis: string | null
+          goal: string | null
+          id: string
+          instagram_caption: string | null
+          instagram_content: string | null
+          instagram_date: string
+          mission: string | null
+          partners: string[]
+          priority: string
+          responsibles: string[]
+          sprints: string[] | null
+          state: string
+          time: number
+          title: string
+          topics: number[] | null
+          updated_at: string
+          user_id: string
+          work_files: string[] | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "actions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      get_home_actions: {
+        Args: {
+          p_end_date: string
+          p_start_date: string
+          p_today_end: string
+          p_user_id: string
+        }
         Returns: {
           archived: boolean | null
           category: string

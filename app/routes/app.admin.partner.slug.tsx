@@ -15,6 +15,7 @@ import {
   type MetaFunction,
 } from "react-router";
 import invariant from "tiny-invariant";
+import { Suspense, lazy, useState } from "react";
 import { ColorListEditor } from "~/components/features/ColorListEditor";
 import { PartnerUsersSelector } from "~/components/features/PartnerUsersSelector";
 import { Button } from "~/components/ui/button";
@@ -25,6 +26,12 @@ import { getUserId } from "~/services/auth.server";
 export const meta: MetaFunction = () => {
   return [{ title: "ADMIN — Editar Parceiro" }];
 };
+
+const Tiptap = lazy(() =>
+  import("~/components/features/Tiptap").then((module) => ({
+    default: module.Tiptap,
+  })),
+);
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { supabase } = await getUserId(request);
@@ -73,6 +80,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     short: (updates.short as string) || "",
     // New fields
     context: (updates.context as string) || null,
+    voice: (updates.voice as string) || null,
     img: (updates.img as string) || null,
     instagram_caption_tail: (updates.instagram_caption_tail as string) || null,
     sow: (updates.sow as "marketing" | "socialmedia" | "demand") || "marketing",
@@ -108,6 +116,9 @@ export default function AdminPartnerEditPage() {
   const { partner, people } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
+  const [contextValue, setContextValue] = useState(partner?.context || "");
+  // @ts-ignore (voice doesn't strictly exist on Partner type yet if types aren't regenerated)
+  const [voiceValue, setVoiceValue] = useState(partner?.voice || "");
 
   return (
     <div className="mx-auto flex h-full w-full max-w-3xl flex-col p-8">
@@ -167,13 +178,44 @@ export default function AdminPartnerEditPage() {
             <label className="font-medium" htmlFor="context">
               Contexto
             </label>
-            <Textarea
-              id="context"
-              name="context"
-              defaultValue={partner?.context || ""}
-              placeholder="Contexto sobre o parceiro..."
-              className="min-h-[100px]"
-            />
+            <input type="hidden" name="context" value={contextValue} />
+            <div className="border-input focus-within:border-ring focus-within:ring-ring/50 min-h-[100px] rounded-md border bg-transparent px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:ring-[3px] md:text-sm">
+              <Suspense
+                fallback={
+                  <div className="bg-muted h-full w-full animate-pulse" />
+                }
+              >
+                <Tiptap
+                  content={contextValue}
+                  handleBlur={(content) => {
+                    setContextValue(content);
+                  }}
+                  className="prose prose-sm dark:prose-invert font-inter h-full max-w-none focus:outline-none"
+                />
+              </Suspense>
+            </div>
+          </div>
+
+          <div className="grid gap-4">
+            <label className="font-medium" htmlFor="voice">
+              Tom de Voz
+            </label>
+            <input type="hidden" name="voice" value={voiceValue} />
+            <div className="border-input focus-within:border-ring focus-within:ring-ring/50 min-h-[100px] rounded-md border bg-transparent px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:ring-[3px] md:text-sm">
+              <Suspense
+                fallback={
+                  <div className="bg-muted h-full w-full animate-pulse" />
+                }
+              >
+                <Tiptap
+                  content={voiceValue}
+                  handleBlur={(content) => {
+                    setVoiceValue(content);
+                  }}
+                  className="prose prose-sm dark:prose-invert font-inter h-full max-w-none focus:outline-none"
+                />
+              </Suspense>
+            </div>
           </div>
 
           <div className="grid gap-4">
@@ -185,7 +227,7 @@ export default function AdminPartnerEditPage() {
               name="instagram_caption_tail"
               defaultValue={partner?.instagram_caption_tail || ""}
               placeholder="#hashtags @mentions..."
-              className="min-h-[80px]"
+              className="font-inter min-h-[80px]"
             />
           </div>
 

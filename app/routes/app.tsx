@@ -15,23 +15,10 @@ import { getPartnersByUserId } from "~/models/partners.server";
 import { getAllVisiblePeople } from "~/models/people.server";
 
 import { Toaster } from "sonner";
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "~/components/ui/command";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "~/components/ui/dialog";
-import { UAvatar } from "~/components/uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
 import { partnersCache } from "~/utils/cache";
 import type { Action } from "~/models/actions.server";
+import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
 
 const CreateAndEditAction = lazy(() =>
   import("./CreateAndEditAction").then((module) => ({
@@ -159,40 +146,12 @@ export default function Dashboard() {
           </Suspense>
         ) : null}
       </div>
-      <Dialog open={openCmdK} onOpenChange={setOpenCmdK}>
-        <DialogContent className="squircle rounded-2xl p-0">
-          <DialogTitle className="sr-only">Busca Global</DialogTitle>
-          <DialogDescription className="sr-only">
-            Pesquise e navegue entre seus parceiros
-          </DialogDescription>
-          <Command className="squircle rounded-2xl">
-            <CommandInput placeholder="Faça sua busca aqui" />
-            <CommandList className="p-2 outline-none">
-              <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
-              {partners.map((partner) => (
-                <CommandItem
-                  key={partner.id}
-                  value={[partner.title, partner.slug].join("")}
-                  onSelect={() => {
-                    navigate(`/app/partner/${partner.slug}`);
-                    setOpenCmdK(false);
-                  }}
-                  className="flex gap-2"
-                >
-                  <UAvatar
-                    fallback={partner.short}
-                    isSquircle
-                    size={SIZE.sm}
-                    backgroundColor={partner.colors[0]}
-                    color={partner.colors[1]}
-                  />
-                  <div>{partner.title}</div>
-                </CommandItem>
-              ))}
-            </CommandList>
-          </Command>
-        </DialogContent>
-      </Dialog>
+      <GlobalSearchCommand
+        open={openCmdK}
+        onOpenChange={setOpenCmdK}
+        partners={partners}
+        setBaseAction={setBaseAction}
+      />
     </div>
   );
 }
