@@ -16,7 +16,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { IconGripVertical, IconPlus, IconTrash } from "@tabler/icons-react";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
@@ -30,13 +30,27 @@ interface ColorListProps {
   initialColors?: string[];
 }
 
+// Helper to ensure 3-char hex like #fff becomes 6-char #ffffff for the native color input
+// Fallback to #000000 if completely invalid to avoid React warnings during typing.
+const normalizeHexColor = (color: string) => {
+  if (color && color.length === 4 && color.startsWith("#")) {
+    return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`;
+  }
+  if (color && color.length === 7 && color.startsWith("#")) {
+    return color;
+  }
+  return "#000000"; // Safe fallback while typing
+};
+
 export function ColorListEditor({ initialColors = [] }: ColorListProps) {
+  const dndId = useId();
+
   // Use unique IDs for dnd-kit, initialized from colors or empty
   const [items, setItems] = useState<ColorItem[]>(() =>
     initialColors && initialColors.length > 0
       ? initialColors.map((color) => ({
           id: crypto.randomUUID(),
-          value: color,
+          value: normalizeHexColor(color),
         }))
       : [
           { id: crypto.randomUUID(), value: "#000000" }, // Default primary
@@ -86,6 +100,7 @@ export function ColorListEditor({ initialColors = [] }: ColorListProps) {
   return (
     <div className="space-y-4">
       <DndContext
+        id={dndId}
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
@@ -181,13 +196,19 @@ function SortableColorItem({
           ></div>
           <input
             type="color"
-            value={value}
+            id={`color_${id}`}
+            name={`color_${id}`}
+            aria-label="Escolher cor visualmente"
+            value={normalizeHexColor(value)}
             onChange={(e) => onChange(e.target.value)}
             className="absolute inset-0 size-0 cursor-pointer p-0.5"
           />
         </label>
         <Input
           type="text"
+          id={`hex_${id}`}
+          name={`hex_${id}`}
+          aria-label="Código Hexadecimal da Cor"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="flex-1 font-mono uppercase"

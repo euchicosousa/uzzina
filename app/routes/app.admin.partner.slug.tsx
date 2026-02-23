@@ -3,6 +3,7 @@ import {
   IconRosetteDiscountCheck,
   IconMailCheck,
   IconSpeakerphone,
+  IconCloudUpload,
 } from "@tabler/icons-react";
 import {
   Form,
@@ -178,7 +179,12 @@ export default function AdminPartnerEditPage() {
             <label className="font-medium" htmlFor="context">
               Contexto
             </label>
-            <input type="hidden" name="context" value={contextValue} />
+            <input
+              type="hidden"
+              id="context"
+              name="context"
+              value={contextValue}
+            />
             <div className="border-input focus-within:border-ring focus-within:ring-ring/50 min-h-[100px] rounded-md border bg-transparent px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:ring-[3px] md:text-sm">
               <Suspense
                 fallback={
@@ -200,7 +206,7 @@ export default function AdminPartnerEditPage() {
             <label className="font-medium" htmlFor="voice">
               Tom de Voz
             </label>
-            <input type="hidden" name="voice" value={voiceValue} />
+            <input type="hidden" id="voice" name="voice" value={voiceValue} />
             <div className="border-input focus-within:border-ring focus-within:ring-ring/50 min-h-[100px] rounded-md border bg-transparent px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:ring-[3px] md:text-sm">
               <Suspense
                 fallback={
@@ -232,7 +238,7 @@ export default function AdminPartnerEditPage() {
           </div>
 
           <div className="grid gap-4">
-            <label className="font-medium">Usuários Vinculados</label>
+            <div className="font-medium">Usuários Vinculados</div>
             <PartnerUsersSelector
               people={people}
               initialSelectedUserIds={partner?.users_ids || []}
@@ -240,12 +246,12 @@ export default function AdminPartnerEditPage() {
           </div>
 
           <div className="grid gap-4">
-            <label className="font-medium">Cores da Marca</label>
+            <div className="font-medium">Cores da Marca</div>
             <ColorListEditor initialColors={partner?.colors || []} />
           </div>
           <div className="flex items-end justify-between gap-4">
             <div className="grid gap-4">
-              <label className="font-medium">Escopo de Trabalho (SOW)</label>
+              <div className="font-medium">Escopo de Trabalho (SOW)</div>
 
               <div className="flex items-center gap-4">
                 <div>
@@ -331,6 +337,7 @@ export default function AdminPartnerEditPage() {
             className="squircle rounded-2xl"
           >
             {isSubmitting ? "Salvando..." : "Salvar"}
+            <IconCloudUpload className="size-4" />
           </Button>
         </div>
       </Form>

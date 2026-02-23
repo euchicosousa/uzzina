@@ -1,4 +1,5 @@
 import {
+  IconBolt,
   IconBrain,
   IconBrandInstagram,
   IconCamera,
@@ -11,7 +12,6 @@ import {
   IconComponents,
   IconDeviceDesktop,
   IconFilter,
-  IconGhost,
   IconMoon,
   IconPencil,
   IconPhoto,
@@ -78,7 +78,7 @@ export function Icons({
     case "todo":
       return <IconClipboardCheck className={cn(className)} style={style} />;
     case "sprint":
-      return <IconGhost className={cn(className)} style={style} />;
+      return <IconBolt className={cn(className)} style={style} />;
     case "categories":
       return <IconCategory className={cn(className)} style={style} />;
     case "filter":
