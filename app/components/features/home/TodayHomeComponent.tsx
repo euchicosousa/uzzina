@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { format, isSameDay, isToday } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR } from "date-fns/locale/pt-BR";
 import {
   IconAlertCircle,
   IconClock,

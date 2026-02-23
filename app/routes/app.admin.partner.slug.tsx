@@ -280,7 +280,7 @@ export default function AdminPartnerEditPage() {
               className="hover:bg-opacity-100 peer-checked:bg-destructive/10 peer-checked:text-destructive squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
             >
               <IconArchive className="size-4" />
-              Arquivado
+              {partner?.archived ? "Arquivado" : "Visível"}
             </label>
           </div>
           <Button

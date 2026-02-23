@@ -9,8 +9,12 @@ import {
   startOfYear,
   subYears,
 } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { IconCalendarEvent, IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import { ptBR } from "date-fns/locale/pt-BR";
+import {
+  IconCalendarEvent,
+  IconChevronLeft,
+  IconChevronRight,
+} from "@tabler/icons-react";
 import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar";
@@ -20,21 +24,19 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
-export function CalendarButtons(
-  {
-    currentDay,
-    setCurrentDay,
-    days = 1,
-    showDate,
-    mode = "day",
-  }: {
-    currentDay: Date;
-    setCurrentDay: (day: Date) => void;
-    days?: number;
-    showDate?: boolean;
-    mode?: "day" | "month";
-  }
-) {
+export function CalendarButtons({
+  currentDay,
+  setCurrentDay,
+  days = 1,
+  showDate,
+  mode = "day",
+}: {
+  currentDay: Date;
+  setCurrentDay: (day: Date) => void;
+  days?: number;
+  showDate?: boolean;
+  mode?: "day" | "month";
+}) {
   return (
     <div className="flex">
       <Button

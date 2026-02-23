@@ -6,7 +6,7 @@ import {
   isBefore,
   parseISO,
 } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR } from "date-fns/locale/pt-BR";
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
 

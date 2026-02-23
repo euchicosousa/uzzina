@@ -1,5 +1,5 @@
 import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR } from "date-fns/locale/pt-BR";
 import type { Action } from "~/models/actions.server";
 
 export function ActionTimeDisplay({ action }: { action: Action }) {

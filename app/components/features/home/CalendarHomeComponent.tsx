@@ -9,7 +9,7 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR } from "date-fns/locale/pt-BR";
 import { useMatches } from "react-router";
 import { CalendarActions } from "~/components/features/Calendar";
 import {
@@ -24,15 +24,13 @@ import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
-export function CalendarHomeComponent(
-  {
-    actions,
-    setBaseAction,
-  }: {
-    actions: Action[];
-    setBaseAction: (action: Action | null) => void;
-  }
-) {
+export function CalendarHomeComponent({
+  actions,
+  setBaseAction,
+}: {
+  actions: Action[];
+  setBaseAction: (action: Action | null) => void;
+}) {
   const { celebrations } = useMatches()[1].loaderData as AppLoaderData;
 
   const [period, setPeriod] = useState<"week" | "month">("week");

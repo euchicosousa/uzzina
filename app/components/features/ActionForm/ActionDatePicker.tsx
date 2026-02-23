@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR } from "date-fns/locale/pt-BR";
 import { useEffect, useState } from "react";
 import { Calendar } from "~/components/ui/calendar";
 import { Input } from "~/components/ui/input";

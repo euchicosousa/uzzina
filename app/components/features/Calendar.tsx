@@ -1,5 +1,5 @@
 import { eachDayOfInterval, endOfWeek, format, startOfWeek } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR } from "date-fns/locale/pt-BR";
 import type { ViewOptions } from "~/components/features/ViewOptions";
 import { cn } from "~/lib/utils";
 import { CalendarDay } from "./CalendarDay";
@@ -12,23 +12,21 @@ export type CalendarActionsType = {
   celebrations?: Celebration[];
 };
 
-export function CalendarActions(
-  {
-    currentDay,
-    calendar,
-    viewOptions,
-    onCreateAction,
-    isCompact,
-    isScroll,
-  }: {
-    currentDay?: Date;
-    calendar: CalendarActionsType[];
-    viewOptions: ViewOptions;
-    onCreateAction?: (day: Date) => void;
-    isCompact?: boolean;
-    isScroll?: boolean;
-  }
-) {
+export function CalendarActions({
+  currentDay,
+  calendar,
+  viewOptions,
+  onCreateAction,
+  isCompact,
+  isScroll,
+}: {
+  currentDay?: Date;
+  calendar: CalendarActionsType[];
+  viewOptions: ViewOptions;
+  onCreateAction?: (day: Date) => void;
+  isCompact?: boolean;
+  isScroll?: boolean;
+}) {
   return (
     <div className="w-full overflow-x-auto overflow-y-hidden">
       <div className="flex h-full w-full min-w-[1500px] flex-col overflow-hidden">
