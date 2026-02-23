@@ -1,4 +1,8 @@
-import { IconCalendarEvent, IconBrandInstagram, IconAntennaBars5 } from "@tabler/icons-react";
+import {
+  IconCalendarEvent,
+  IconBrandInstagram,
+  IconAntennaBars5,
+} from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import { useOutletContext, useRouteLoaderData, useSubmit } from "react-router";
 import {
@@ -48,23 +52,21 @@ type ActionItemProps = {
   onClick?: (action: Action) => void;
 };
 
-export function ActionItem(
-  {
-    action,
-    variant = VARIANT.line,
-    showLate,
-    className,
-    isDragging,
-    isInstagramDate,
-    isDraggable,
-    showPartner,
-    showCategory,
-    showResponsibles,
-    showPriority,
-    dateTimeDisplay,
-    onClick,
-  }: ActionItemProps
-) {
+export function ActionItem({
+  action,
+  variant = VARIANT.line,
+  showLate,
+  className,
+  isDragging,
+  isInstagramDate,
+  isDraggable,
+  showPartner,
+  showCategory,
+  showResponsibles,
+  showPriority,
+  dateTimeDisplay,
+  onClick,
+}: ActionItemProps) {
   const { people, partners } = useRouteLoaderData(
     "routes/app",
   ) as AppLoaderData;
@@ -159,7 +161,7 @@ export function ActionItem(
                 isEditing={isEditing}
                 setIsEditing={setIsEditing}
                 title={action.title}
-                className={"h-5 text-xl font-medium tracking-tight"}
+                className={"h-6 text-xl"}
                 InputButtonClassName="w-auto"
                 lines={1}
               />
@@ -295,7 +297,7 @@ export function ActionItem(
       <div
         title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
         className={cn(
-          "group/action @container relative cursor-pointer overflow-hidden",
+          "group/action font-inter @container relative shrink-0 cursor-pointer overflow-hidden",
           variant === VARIANT.content
             ? "flex-col gap-2"
             : variant === VARIANT.block
@@ -352,17 +354,15 @@ export function ActionItem(
   );
 }
 
-export function ActionItemDateTimeDisplay(
-  {
-    action,
-    dateTimeDisplay,
-    isInstagramDate = false,
-  }: {
-    action: Action;
-    dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
-    isInstagramDate?: boolean;
-  }
-) {
+export function ActionItemDateTimeDisplay({
+  action,
+  dateTimeDisplay,
+  isInstagramDate = false,
+}: {
+  action: Action;
+  dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
+  isInstagramDate?: boolean;
+}) {
   return (
     <div className="text-xs whitespace-nowrap opacity-50">
       {getFormattedDateTime(
@@ -373,17 +373,15 @@ export function ActionItemDateTimeDisplay(
   );
 }
 
-export function ActionItemPartners(
-  {
-    action,
-    partners,
-    size,
-  }: {
-    action: Action;
-    partners: Partner[];
-    size?: (typeof SIZE)[keyof typeof SIZE];
-  }
-) {
+export function ActionItemPartners({
+  action,
+  partners,
+  size,
+}: {
+  action: Action;
+  partners: Partner[];
+  size?: (typeof SIZE)[keyof typeof SIZE];
+}) {
   return size ? (
     <UAvatarGroup
       size={size}
@@ -425,15 +423,13 @@ export function ActionItemPartners(
   );
 }
 
-export function ActionItemResponsibles(
-  {
-    action,
-    responsibles,
-  }: {
-    action: Action;
-    responsibles: Person[];
-  }
-) {
+export function ActionItemResponsibles({
+  action,
+  responsibles,
+}: {
+  action: Action;
+  responsibles: Person[];
+}) {
   return (
     <UAvatarGroup
       size={SIZE.sm}
@@ -460,15 +456,13 @@ export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
   }
 }
 
-export function ActionItemSprint(
-  {
-    action,
-    className,
-  }: {
-    action: Action;
-    className?: string;
-  }
-) {
+export function ActionItemSprint({
+  action,
+  className,
+}: {
+  action: Action;
+  className?: string;
+}) {
   const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
 
   return isSprint(action, person) ? (

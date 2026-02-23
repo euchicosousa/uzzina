@@ -1,44 +1,42 @@
-import Color from "color";
 import {
-  IconRosetteDiscountCheck,
   IconBrain,
+  IconBrandInstagram,
   IconCamera,
-  IconCoin,
+  IconCarouselHorizontal,
+  IconCategory,
   IconCirclePlus,
   IconClipboardCheck,
   IconCode,
+  IconCoin,
   IconComponents,
   IconDeviceDesktop,
   IconFilter,
-  IconLayoutCards,
-  IconPhoto,
-  IconBrandInstagram,
-  IconSpeakerphone,
+  IconGhost,
   IconMoon,
   IconPencil,
+  IconPhoto,
+  IconPlayerPlay,
   IconPresentation,
   IconPrinter,
-  IconGhost,
-  IconCategory,
-  IconPlayerPlay,
+  IconRosetteDiscountCheck,
+  IconSpeakerphone,
   IconSun,
 } from "@tabler/icons-react";
+import Color from "color";
 import { Theme } from "remix-themes";
 import { cn } from "~/lib/utils";
 
-export function Icons(
-  {
-    slug,
-    className,
-    style,
-    color,
-  }: {
-    slug?: string;
-    className?: string;
-    style?: React.CSSProperties;
-    color?: string;
-  }
-) {
+export function Icons({
+  slug,
+  className,
+  style,
+  color,
+}: {
+  slug?: string;
+  className?: string;
+  style?: React.CSSProperties;
+  color?: string;
+}) {
   style = style
     ? style
     : color
@@ -54,7 +52,7 @@ export function Icons(
     case "capture":
       return <IconCamera className={cn(className)} style={style} />;
     case "carousel":
-      return <IconLayoutCards className={cn(className)} style={style} />;
+      return <IconCarouselHorizontal className={cn(className)} style={style} />;
     case "design":
       return <IconPencil className={cn(className)} style={style} />;
     case "dev":
@@ -72,7 +70,9 @@ export function Icons(
     case "reels":
       return <IconPlayerPlay className={cn(className)} style={style} />;
     case "sm":
-      return <IconRosetteDiscountCheck className={cn(className)} style={style} />;
+      return (
+        <IconRosetteDiscountCheck className={cn(className)} style={style} />
+      );
     case "stories":
       return <IconCirclePlus className={cn(className)} style={style} />;
     case "todo":

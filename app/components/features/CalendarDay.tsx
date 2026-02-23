@@ -8,27 +8,25 @@ import { ActionContainer } from "./ActionContainer";
 import type { Action } from "~/models/actions.server";
 import { getInstagramFeedActions, isInstagramFeed } from "~/utils/validation";
 
-export function CalendarDay(
-  {
-    currentDay,
-    day,
-    onCreateAction,
-    viewOptions,
-    actions,
-    celebrations,
-    isCompact,
-    isScroll,
-  }: {
-    currentDay?: Date;
-    day: Date;
-    onCreateAction?: (day: Date) => void;
-    viewOptions: ViewOptions;
-    actions: Action[];
-    celebrations?: Celebration[];
-    isCompact?: boolean;
-    isScroll?: boolean;
-  }
-) {
+export function CalendarDay({
+  currentDay,
+  day,
+  onCreateAction,
+  viewOptions,
+  actions,
+  celebrations,
+  isCompact,
+  isScroll,
+}: {
+  currentDay?: Date;
+  day: Date;
+  onCreateAction?: (day: Date) => void;
+  viewOptions: ViewOptions;
+  actions: Action[];
+  celebrations?: Celebration[];
+  isCompact?: boolean;
+  isScroll?: boolean;
+}) {
   const { setNodeRef } = useDroppable({
     id: `${format(day, "yyyy-MM-dd")}`,
   });
@@ -80,12 +78,7 @@ export function CalendarDay(
             </div>
           )}
         </div>
-        <div
-          className={cn(
-            "h-full overflow-hidden",
-            // viewOptions.variant === VARIANT.content ? "p-2" : "",
-          )}
-        >
+        <div className={cn("h-full overflow-hidden")}>
           {viewOptions.variant === VARIANT.content ? (
             <div className="flex flex-col gap-2">
               {getInstagramFeedActions(actions).length > 0 && (
@@ -104,7 +97,7 @@ export function CalendarDay(
                   isCompact={isCompact}
                   isInstagramDate={viewOptions.instagram}
                   variant={viewOptions.variant}
-                  isScroll={!(viewOptions.variant === VARIANT.content)}
+                  isScroll={false}
                   isDraggable
                 />
               )}
@@ -124,7 +117,7 @@ export function CalendarDay(
                   isCompact={isCompact}
                   isInstagramDate={viewOptions.instagram}
                   variant={VARIANT.line}
-                  isScroll={!(viewOptions.variant === VARIANT.content)}
+                  isScroll={false}
                   isDraggable
                 />
               )}
@@ -145,7 +138,7 @@ export function CalendarDay(
               isCompact={isCompact}
               isInstagramDate={viewOptions.instagram}
               variant={viewOptions.variant}
-              isScroll={isScroll}
+              isScroll
               isDraggable
             />
           )}
@@ -158,13 +151,11 @@ export function CalendarDay(
   );
 }
 
-export function CelebrationContainer(
-  {
-    celebrations,
-  }: {
-    celebrations: Celebration[];
-  }
-) {
+export function CelebrationContainer({
+  celebrations,
+}: {
+  celebrations: Celebration[];
+}) {
   return (
     <div className="flex shrink-0 flex-col gap-1 px-2 py-4 text-xs">
       {celebrations.map((celebration) => (

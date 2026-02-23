@@ -152,9 +152,9 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /* VARIÁVEIS DA UZZINA  */
-  /* --font-sans:
+  --font-inter:
     "Inter Tight", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; */
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-sans:
     "PP Object Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";

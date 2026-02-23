@@ -1,5 +1,9 @@
+import {
+  IconBrandInstagram,
+  IconCalendarEvent,
+  IconPlus,
+} from "@tabler/icons-react";
 import { parseISO } from "date-fns";
-import { IconCalendarEvent, IconBrandInstagram, IconPlus } from "@tabler/icons-react";
 import { Suspense, lazy } from "react";
 import { useSubmit } from "react-router";
 import { GMGCombobox } from "~/components/features/GMGCombobox";
@@ -11,11 +15,11 @@ import {
   handleAction,
   isInstagramFeed,
 } from "~/lib/helpers";
+import type { Action } from "~/models/actions.server";
 import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "./WorkFileThumbnail";
-import type { Action } from "~/models/actions.server";
 
 const Tiptap = lazy(() =>
   import("~/components/features/Tiptap").then((module) => ({
@@ -213,7 +217,7 @@ export function EssentialsTab({
                   submit,
                 );
               }}
-              className="h-full w-full"
+              className="font-inter h-full w-full"
             />
           </Suspense>
         </div>

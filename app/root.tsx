@@ -22,7 +22,7 @@ import "./tailwind.css";
 import { cn } from "./lib/utils";
 
 export const links: Route.LinksFunction = () => [
-  { rel: "stylesheet", href: "/object-sans/object-sans.css" },
+  // { rel: "stylesheet", href: "/object-sans/object-sans.css" },
   // Favicon para o tema claro (light)
   {
     rel: "icon",
@@ -39,19 +39,19 @@ export const links: Route.LinksFunction = () => [
     type: "image/png",
     media: "(prefers-color-scheme: dark)",
   },
-  // {
-  //   rel: "preconnect",
-  //   href: "https://fonts.googleapis.com",
-  // },
-  // {
-  //   rel: "preconnect",
-  //   href: "https://fonts.gstatic.com",
-  //   crossOrigin: "anonymous",
-  // },
-  // {
-  //   rel: "stylesheet",
-  //   href: "https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap",
-  // },
+  {
+    rel: "preconnect",
+    href: "https://fonts.googleapis.com",
+  },
+  {
+    rel: "preconnect",
+    href: "https://fonts.gstatic.com",
+    crossOrigin: "anonymous",
+  },
+  {
+    rel: "stylesheet",
+    href: "https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap",
+  },
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {

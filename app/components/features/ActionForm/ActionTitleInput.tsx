@@ -31,7 +31,7 @@ export function ActionTitleInput({
         }}
         placeholder="Título"
         className={cn(
-          "w-full shrink-0 resize-none overflow-hidden pt-2 pb-1 leading-none font-bold tracking-tighter outline-none",
+          "font-inter w-full shrink-0 resize-none overflow-hidden pt-2 pb-1 leading-none font-medium outline-none",
           localTitle.length > 70 ? "text-error text-4xl" : "text-5xl",
         )}
         // @ts-ignore

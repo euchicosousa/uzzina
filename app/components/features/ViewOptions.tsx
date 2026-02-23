@@ -1,15 +1,15 @@
 import {
-  IconSortAscendingLetters,
+  IconAntennaBars5,
   IconArrowDown,
-  IconSortDescendingLetters,
+  IconBaselineDensityMedium,
+  IconBaselineDensitySmall,
+  IconBrandInstagram,
   IconClock,
   IconHeartHandshake,
-  IconBrandInstagram,
-  IconLayoutRows,
-  IconLayoutDistributeVertical,
-  IconAntennaBars5,
-  IconSquareCheck,
+  IconSortAscendingLetters,
+  IconSortDescendingLetters,
   IconSquare,
+  IconSquareCheck,
   IconTag,
   IconUsers,
 } from "@tabler/icons-react";
@@ -50,15 +50,13 @@ export type ViewOptions = {
   };
 };
 
-export function ViewOptionsComponent(
-  {
-    viewOptions,
-    setViewOptions,
-  }: {
-    viewOptions: ViewOptions;
-    setViewOptions: (viewOptions: ViewOptions) => void;
-  }
-) {
+export function ViewOptionsComponent({
+  viewOptions,
+  setViewOptions,
+}: {
+  viewOptions: ViewOptions;
+  setViewOptions: (viewOptions: ViewOptions) => void;
+}) {
   viewOptions.variant ||= VARIANT.line;
 
   return (
@@ -102,8 +100,12 @@ export function ViewOptionsComponent(
               }}
               className="grid place-content-center p-0"
             >
-              {viewOptions.variant === VARIANT.line && <IconLayoutDistributeVertical />}
-              {viewOptions.variant === VARIANT.block && <IconLayoutRows />}
+              {viewOptions.variant === VARIANT.line && (
+                <IconBaselineDensitySmall />
+              )}
+              {viewOptions.variant === VARIANT.block && (
+                <IconBaselineDensityMedium />
+              )}
               {viewOptions.variant === VARIANT.content && <IconSquare />}
             </Button>
           )}
@@ -140,7 +142,11 @@ export function ViewOptionsComponent(
               }
               className="grid place-content-center p-0"
             >
-              {viewOptions.ascending ? <IconSortAscendingLetters /> : <IconSortDescendingLetters />}
+              {viewOptions.ascending ? (
+                <IconSortAscendingLetters />
+              ) : (
+                <IconSortDescendingLetters />
+              )}
             </Toggle>
           )}
           {/* Ordem por Data  */}
