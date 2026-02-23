@@ -1,18 +1,18 @@
 import {
-  ArrowDownAZIcon,
-  ArrowDownIcon,
-  ArrowUpAZIcon,
-  ClockIcon,
-  HandshakeIcon,
-  InstagramIcon,
-  Rows2Icon,
-  Rows3Icon,
-  SignalHighIcon,
-  SquareCheckIcon,
-  SquareIcon,
-  TagIcon,
-  UsersIcon,
-} from "lucide-react";
+  IconSortAscendingLetters,
+  IconArrowDown,
+  IconSortDescendingLetters,
+  IconClock,
+  IconHeartHandshake,
+  IconBrandInstagram,
+  IconLayoutRows,
+  IconLayoutDistributeVertical,
+  IconAntennaBars5,
+  IconSquareCheck,
+  IconSquare,
+  IconTag,
+  IconUsers,
+} from "@tabler/icons-react";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { Button } from "~/components/ui/button";
 import { Toggle } from "~/components/ui/toggle";
@@ -77,7 +77,7 @@ export function ViewOptionsComponent(
               }
               className="grid place-content-center p-0"
             >
-              <InstagramIcon />
+              <IconBrandInstagram />
             </Toggle>
           )}
 
@@ -102,9 +102,9 @@ export function ViewOptionsComponent(
               }}
               className="grid place-content-center p-0"
             >
-              {viewOptions.variant === VARIANT.line && <Rows3Icon />}
-              {viewOptions.variant === VARIANT.block && <Rows2Icon />}
-              {viewOptions.variant === VARIANT.content && <SquareIcon />}
+              {viewOptions.variant === VARIANT.line && <IconLayoutDistributeVertical />}
+              {viewOptions.variant === VARIANT.block && <IconLayoutRows />}
+              {viewOptions.variant === VARIANT.content && <IconSquare />}
             </Button>
           )}
           {/* Colocar ações concluídas no final */}
@@ -117,7 +117,7 @@ export function ViewOptionsComponent(
               }
               className="grid place-content-center p-0"
             >
-              <ArrowDownIcon />
+              <IconArrowDown />
             </Toggle>
           )}
         </div>
@@ -140,7 +140,7 @@ export function ViewOptionsComponent(
               }
               className="grid place-content-center p-0"
             >
-              {viewOptions.ascending ? <ArrowDownAZIcon /> : <ArrowUpAZIcon />}
+              {viewOptions.ascending ? <IconSortAscendingLetters /> : <IconSortDescendingLetters />}
             </Toggle>
           )}
           {/* Ordem por Data  */}
@@ -156,7 +156,7 @@ export function ViewOptionsComponent(
               }
               className="grid place-content-center p-0"
             >
-              <ClockIcon />
+              <IconClock />
             </Toggle>
           )}
           {/* Ordem por Status */}
@@ -172,7 +172,7 @@ export function ViewOptionsComponent(
               }
               className="grid place-content-center p-0"
             >
-              <SquareCheckIcon />
+              <IconSquareCheck />
             </Toggle>
           )}
         </div>
@@ -191,7 +191,7 @@ export function ViewOptionsComponent(
                 setViewOptions({ ...viewOptions, responsibles: value })
               }
             >
-              <UsersIcon />
+              <IconUsers />
             </Toggle>
           )}
           {viewOptions.showOptions.priority && (
@@ -202,7 +202,7 @@ export function ViewOptionsComponent(
               }
               className="grid place-content-center p-0"
             >
-              <SignalHighIcon />
+              <IconAntennaBars5 />
             </Toggle>
           )}
           {viewOptions.showOptions.category && (
@@ -213,7 +213,7 @@ export function ViewOptionsComponent(
               }
               className="grid place-content-center p-0"
             >
-              <TagIcon />
+              <IconTag />
             </Toggle>
           )}
           {viewOptions.showOptions.partner && (
@@ -224,7 +224,7 @@ export function ViewOptionsComponent(
               }
               className="grid place-content-center p-0"
             >
-              <HandshakeIcon />
+              <IconHeartHandshake />
             </Toggle>
           )}
         </div>

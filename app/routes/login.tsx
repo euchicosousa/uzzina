@@ -1,4 +1,4 @@
-import { AlertCircleIcon, EyeIcon, EyeOffIcon, LogInIcon } from "lucide-react";
+import { IconAlertCircle, IconEye, IconEyeOff, IconLogin } from "@tabler/icons-react";
 import { useState } from "react";
 import {
   redirect,
@@ -59,7 +59,7 @@ const Login = () => {
             variant={"destructive"}
             className="bg-destructive/5 border-destructive/10 mb-8"
           >
-            <AlertCircleIcon />
+            <IconAlertCircle />
             <AlertTitle>Erro ao fazer login</AlertTitle>
             <AlertDescription>{actionData.errors.email}</AlertDescription>
           </Alert>
@@ -87,13 +87,13 @@ const Login = () => {
                 setShowPassword(!showPassword);
               }}
             >
-              {showPassword ? <EyeIcon /> : <EyeOffIcon />}
+              {showPassword ? <IconEye /> : <IconEyeOff />}
             </Button>
           </div>
 
           <div className="flex justify-end">
             <Button type="submit">
-              Fazer Login <LogInIcon className="ml-2 size-3" />
+              Fazer Login <IconLogin className="ml-2 size-3" />
             </Button>
           </div>
         </form>

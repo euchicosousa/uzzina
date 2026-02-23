@@ -1,6 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
 import { format, isSameDay, isSameMonth } from "date-fns";
-import { PlusIcon } from "lucide-react";
+import { IconPlus } from "@tabler/icons-react";
 import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import type { ViewOptions } from "~/components/features/ViewOptions";
@@ -75,7 +75,7 @@ export function CalendarDay(
                   onCreateAction(day);
                 }}
               >
-                <PlusIcon className="size-4" />
+                <IconPlus className="size-4" />
               </button>
             </div>
           )}

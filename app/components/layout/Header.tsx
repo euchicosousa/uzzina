@@ -1,4 +1,4 @@
-import { HandshakeIcon, PlusIcon, SearchIcon } from "lucide-react";
+import { IconHeartHandshake, IconPlus, IconSearch } from "@tabler/icons-react";
 import {
   Link,
   useFetchers,
@@ -64,7 +64,7 @@ export function Header({
           className="rounded-full"
           onClick={() => setOpenCmdK(true)}
         >
-          <SearchIcon />
+          <IconSearch />
         </Button>
       </div>
       <div className="flex items-center gap-2">
@@ -78,7 +78,7 @@ export function Header({
           className="squircle rounded-2xl"
         >
           Nova Ação
-          <PlusIcon />
+          <IconPlus />
         </Button>
         <Popover>
           <PopoverTrigger asChild>
@@ -87,7 +87,7 @@ export function Header({
               size="icon"
               className="relative rounded-full"
             >
-              <HandshakeIcon />
+              <IconHeartHandshake />
               {actionsChart && actionsChart.length > 0 ? (
                 <UBadge
                   size="sm"

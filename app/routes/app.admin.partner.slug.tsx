@@ -1,9 +1,9 @@
 import {
-  ArchiveIcon,
-  BadgeCheckIcon,
-  MailCheckIcon,
-  MegaphoneIcon,
-} from "lucide-react";
+  IconArchive,
+  IconRosetteDiscountCheck,
+  IconMailCheck,
+  IconSpeakerphone,
+} from "@tabler/icons-react";
 import {
   Form,
   Link,
@@ -221,7 +221,7 @@ export default function AdminPartnerEditPage() {
                     htmlFor="sow-marketing"
                     className="hover:bg-opacity-100 peer-checked:bg-muted squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
                   >
-                    <MegaphoneIcon className="size-4" />
+                    <IconSpeakerphone className="size-4" />
                     Marketing
                   </label>
                 </div>
@@ -239,7 +239,7 @@ export default function AdminPartnerEditPage() {
                     htmlFor="sow-socialmedia"
                     className="hover:bg-opacity-100 peer-checked:bg-muted squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
                   >
-                    <BadgeCheckIcon className="size-4" />
+                    <IconRosetteDiscountCheck className="size-4" />
                     Social Media
                   </label>
                 </div>
@@ -257,7 +257,7 @@ export default function AdminPartnerEditPage() {
                     htmlFor="sow-demand"
                     className="hover:bg-opacity-100 peer-checked:bg-muted squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
                   >
-                    <MailCheckIcon className="size-4" />
+                    <IconMailCheck className="size-4" />
                     Demand
                   </label>
                 </div>
@@ -276,7 +276,7 @@ export default function AdminPartnerEditPage() {
                     htmlFor="archived"
                     className="hover:bg-opacity-100 peer-checked:bg-destructive/10 peer-checked:text-destructive squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
                   >
-                    <ArchiveIcon className="size-4" />
+                    <IconArchive className="size-4" />
                     Arquivado
                   </label>
                 </div>

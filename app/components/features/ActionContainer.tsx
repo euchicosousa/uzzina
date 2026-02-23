@@ -1,4 +1,4 @@
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { ORDER_BY, VARIANT, type DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
@@ -90,9 +90,9 @@ export function ActionContainer(
             }}
           >
             {showMore ? (
-              <ChevronDownIcon className="size-4" />
+              <IconChevronDown className="size-4" />
             ) : (
-              <ChevronUpIcon className="size-4" />
+              <IconChevronUp className="size-4" />
             )}
           </button>
         )}

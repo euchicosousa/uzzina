@@ -1,4 +1,4 @@
-import { ComputerIcon, MoonIcon, SunIcon } from "lucide-react";
+import { IconDeviceDesktop, IconMoon, IconSun } from "@tabler/icons-react";
 import { Theme, useTheme } from "remix-themes";
 import { StateIcon } from "~/components/features/StateIcon";
 import { Button } from "~/components/ui/button";
@@ -47,13 +47,13 @@ export default function UITestingPage() {
             onClick={() => setTheme(Theme.LIGHT)}
             variant={Theme.LIGHT === theme ? "outline" : "ghost"}
           >
-            <SunIcon />
+            <IconSun />
           </Button>
           <Button
             onClick={() => setTheme(Theme.DARK)}
             variant={Theme.DARK === theme ? "outline" : "ghost"}
           >
-            <MoonIcon />
+            <IconMoon />
           </Button>
           <Button
             onClick={() => setTheme(null)}
@@ -63,7 +63,7 @@ export default function UITestingPage() {
                 : "ghost"
             }
           >
-            <ComputerIcon />
+            <IconDeviceDesktop />
           </Button>
 
           {/* <ToggleGroup
@@ -77,13 +77,13 @@ export default function UITestingPage() {
             }}
           >
             <ToggleGroupItem value={Theme.LIGHT}>
-              <SunIcon />
+              <IconSun />
             </ToggleGroupItem>
             <ToggleGroupItem value={Theme.DARK}>
-              <MoonIcon />
+              <IconMoon />
             </ToggleGroupItem>
             <ToggleGroupItem value={"system"}>
-              <ComputerIcon />
+              <IconDeviceDesktop />
             </ToggleGroupItem>
           </ToggleGroup> */}
         </div>

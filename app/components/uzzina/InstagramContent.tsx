@@ -1,4 +1,4 @@
-import { PlusIcon, Settings2Icon } from "lucide-react";
+import { IconPlus, IconAdjustments } from "@tabler/icons-react";
 import { useState } from "react";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { ContentReorderDialog } from "./ContentReorderDialog";
@@ -44,7 +44,7 @@ export function ContentFilesManager({
               onUpload={(url) => onChange([...files, url])}
               className="flex items-center gap-1.5 rounded-lg border border-dashed px-3 py-1.5 text-xs opacity-60 transition hover:opacity-100"
             >
-              <PlusIcon className="size-3.5" />
+              <IconPlus className="size-3.5" />
               Adicionar conteúdo
             </CloudinaryUpload>
           ) : (
@@ -64,7 +64,7 @@ export function ContentFilesManager({
           onClick={() => setDialogOpen(true)}
           className="hover:bg-muted flex items-center gap-1 rounded-lg px-2 py-1 text-xs opacity-50 transition hover:opacity-100"
         >
-          <Settings2Icon className="size-3.5" />
+          <IconAdjustments className="size-3.5" />
           {files.length === 0
             ? "Gerenciar"
             : `${files.length} arquivo${files.length !== 1 ? "s" : ""}`}

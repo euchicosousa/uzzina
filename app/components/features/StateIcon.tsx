@@ -1,4 +1,4 @@
-import { CheckIcon } from "lucide-react";
+import { IconCheck } from "@tabler/icons-react";
 import { STATES, type SIZE, type STATE_TYPE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 
@@ -22,7 +22,7 @@ export function StateIcon({
       className={cn("grid aspect-square place-content-center rounded-full")}
       style={{ backgroundColor: state.color }}
     >
-      <CheckIcon className={cn("scale-75 text-white", sizeClasses)} />
+      <IconCheck className={cn("scale-75 text-white", sizeClasses)} />
     </div>
   ) : (
     <div className="relative">

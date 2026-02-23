@@ -1,4 +1,4 @@
-import { LoaderCircleIcon, PlusIcon, UploadCloudIcon } from "lucide-react";
+import { IconLoader, IconPlus, IconCloudUpload } from "@tabler/icons-react";
 import type { SubmitFunction } from "react-router";
 import { toast } from "sonner";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
@@ -129,11 +129,11 @@ export function ActionFormFooter({
           {RawAction.id ? "Atualizar" : "Criar Ação"}
 
           {isPending ? (
-            <LoaderCircleIcon className="animate-spin" />
+            <IconLoader className="animate-spin" />
           ) : RawAction.id ? (
-            <UploadCloudIcon />
+            <IconCloudUpload />
           ) : (
-            <PlusIcon />
+            <IconPlus />
           )}
         </Button>
       </div>

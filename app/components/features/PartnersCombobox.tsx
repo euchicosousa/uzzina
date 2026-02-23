@@ -1,4 +1,4 @@
-import { CheckIcon } from "lucide-react";
+import { IconCheck } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { useMatches } from "react-router";
 import {
@@ -119,7 +119,7 @@ export function PartnersCombobox({
                   color={partner.colors[1]}
                 />
                 {partner.title}
-                <CheckIcon
+                <IconCheck
                   className={cn(
                     "ml-auto size-4",
                     selected?.includes(partner.slug) ? "visible" : "invisible",

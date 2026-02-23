@@ -1,10 +1,10 @@
 import {
-  EyeIcon,
-  EyeOffIcon,
-  SaveIcon,
-  UploadIcon,
-  UserIcon,
-} from "lucide-react";
+  IconEye,
+  IconEyeOff,
+  IconDeviceFloppy,
+  IconUpload,
+  IconUser,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import { Form } from "react-router";
 import { Button } from "~/components/ui/button";
@@ -63,7 +63,7 @@ export function AdminUserForm({
               size="xxl"
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
-              <UploadIcon className="size-6 text-white" />
+              <IconUpload className="size-6 text-white" />
             </div>
           </CloudinaryUpload>
 
@@ -173,9 +173,9 @@ export function AdminUserForm({
                 className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
               >
                 {showPassword ? (
-                  <EyeOffIcon className="size-4" />
+                  <IconEyeOff className="size-4" />
                 ) : (
-                  <EyeIcon className="size-4" />
+                  <IconEye className="size-4" />
                 )}
               </button>
             </div>
@@ -240,7 +240,7 @@ export function AdminUserForm({
                 htmlFor="admin"
                 className="peer-checked:bg-muted squircle flex cursor-pointer items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
               >
-                <UserIcon className="size-4" />
+                <IconUser className="size-4" />
                 Admin
               </label>
             </div>
@@ -254,7 +254,7 @@ export function AdminUserForm({
           disabled={isSubmitting}
           className="squircle rounded-2xl"
         >
-          <SaveIcon className="mr-2 size-4" />
+          <IconDeviceFloppy className="mr-2 size-4" />
           {isSubmitting ? "Salvando..." : "Salvar Usuário"}
         </Button>
       </div>

@@ -1,10 +1,10 @@
 import { addMinutes, format, parse } from "date-fns";
 import {
-  HeartIcon,
-  InstagramIcon,
-  MessageCircleIcon,
-  XIcon,
-} from "lucide-react";
+  IconHeart,
+  IconBrandInstagram,
+  IconMessageCircle,
+  IconX,
+} from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import {
   useFetcher,
@@ -180,28 +180,28 @@ export function CreateAndEditAction({
           className={`flex w-full cursor-pointer items-center justify-center gap-2 border-b p-4 text-sm font-medium ${view !== "essential" ? "bg-muted border-border" : "bg-background border-b-transparent"}`}
           onClick={() => setView("essential")}
         >
-          ESSENCIAL <HeartIcon className="size-4" />
+          ESSENCIAL <IconHeart className="size-4" />
         </div>
         {isInstagramFeed(RawAction.category) && (
           <div
             className={`flex w-full cursor-pointer items-center justify-center gap-2 border-b p-4 text-sm font-medium ${view !== "instagram" ? "bg-muted border-border" : "bg-background border-b-transparent"}`}
             onClick={() => setView("instagram")}
           >
-            INSTAGRAM <InstagramIcon className="size-4" />
+            INSTAGRAM <IconBrandInstagram className="size-4" />
           </div>
         )}
         <div
           className={`flex w-full cursor-pointer items-center justify-center gap-2 border-b p-4 text-sm font-medium ${view !== "chat" ? "bg-muted border-border" : "bg-background border-b-transparent"}`}
           onClick={() => setView("chat")}
         >
-          CHAT <MessageCircleIcon className="size-4" />
+          CHAT <IconMessageCircle className="size-4" />
         </div>
         <div>
           <button
             className="flex w-full cursor-pointer items-center justify-center gap-2 border-b p-5 text-sm font-medium"
             onClick={onClose}
           >
-            <XIcon className="size-4" />
+            <IconX className="size-4" />
           </button>
         </div>
       </div>

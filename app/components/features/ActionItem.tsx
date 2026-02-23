@@ -1,4 +1,4 @@
-import { CalendarIcon, InstagramIcon, SignalHighIcon } from "lucide-react";
+import { IconCalendarEvent, IconBrandInstagram, IconAntennaBars5 } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import { useOutletContext, useRouteLoaderData, useSubmit } from "react-router";
 import {
@@ -195,13 +195,13 @@ export function ActionItem(
               <div className="flex items-center gap-2 text-xs">
                 {(!isInstagramDate || !isInstagramFeed(action.category)) && (
                   <div className="flex items-center gap-1">
-                    <CalendarIcon className="size-3 opacity-50" />
+                    <IconCalendarEvent className="size-3 opacity-50" />
                     {getFormattedDateTime(action.date, dateTimeDisplay)}
                   </div>
                 )}
                 {isInstagramFeed(action.category) && (
                   <div className="flex items-center gap-1">
-                    <InstagramIcon className="size-3 opacity-50" />
+                    <IconBrandInstagram className="size-3 opacity-50" />
                     {getFormattedDateTime(
                       action.instagram_date,
                       dateTimeDisplay,
@@ -449,14 +449,14 @@ export function ActionItemResponsibles(
 export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
   switch (priority) {
     case PRIORITIES.low.slug:
-      return <SignalHighIcon className="text-info size-4" />;
+      return <IconAntennaBars5 className="text-info size-4" />;
 
     case PRIORITIES.high.slug:
-      return <SignalHighIcon className="text-error size-4" />;
+      return <IconAntennaBars5 className="text-error size-4" />;
 
     case PRIORITIES.medium.slug:
     default:
-      return <SignalHighIcon className="text-success size-4" />;
+      return <IconAntennaBars5 className="text-success size-4" />;
   }
 }
 

@@ -1,4 +1,4 @@
-import { CheckIcon } from "lucide-react";
+import { IconCheck } from "@tabler/icons-react";
 import { Fragment, useEffect, useRef, useState } from "react";
 import {
   Popover,
@@ -195,7 +195,7 @@ export function CategoriesCombobox({
                     color={category.color}
                   />
                   {category.title}
-                  <CheckIcon
+                  <IconCheck
                     className={cn(
                       "ml-auto size-4",
                       category.slug === "instagram"

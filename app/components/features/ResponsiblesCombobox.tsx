@@ -1,4 +1,4 @@
-import { CheckIcon } from "lucide-react";
+import { IconCheck } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { useMatches } from "react-router";
 import {
@@ -110,7 +110,7 @@ export function ResponsiblesCombobox({
                   image={person.image}
                 />
                 {person.name}
-                <CheckIcon
+                <IconCheck
                   className={cn(
                     "ml-auto size-4",
                     selected?.includes(person.user_id)

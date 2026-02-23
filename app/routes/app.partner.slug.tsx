@@ -12,10 +12,10 @@ import {
   subDays,
 } from "date-fns";
 import {
-  CalendarIcon,
-  ListIcon,
-  SearchIcon,
-} from "lucide-react";
+  IconCalendarEvent,
+  IconList,
+  IconSearch,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import {
   Link,
@@ -229,7 +229,7 @@ export default function PartnerPage() {
 
           <InputGroup className="w-auto min-w-[300px]">
             <InputGroupAddon>
-              <SearchIcon />
+              <IconSearch />
             </InputGroupAddon>
             <InputGroupInput
               placeholder="Buscar ação..."
@@ -254,7 +254,7 @@ export default function PartnerPage() {
               setView("list");
             }}
           >
-            <ListIcon />
+            <IconList />
           </UToggle>
           <UToggle
             checked={view === "calendar"}
@@ -262,7 +262,7 @@ export default function PartnerPage() {
               setView("calendar");
             }}
           >
-            <CalendarIcon />
+            <IconCalendarEvent />
           </UToggle>
         </div>
       </div>

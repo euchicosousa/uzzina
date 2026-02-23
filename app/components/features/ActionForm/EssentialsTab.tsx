@@ -1,5 +1,5 @@
 import { parseISO } from "date-fns";
-import { CalendarIcon, InstagramIcon, PlusIcon } from "lucide-react";
+import { IconCalendarEvent, IconBrandInstagram, IconPlus } from "@tabler/icons-react";
 import { Suspense, lazy } from "react";
 import { useSubmit } from "react-router";
 import { GMGCombobox } from "~/components/features/GMGCombobox";
@@ -81,7 +81,7 @@ export function EssentialsTab({
         </div>
         <div className="flex gap-8 border-b px-4 py-2">
           <div className="flex items-center gap-1 opacity-50">
-            <CalendarIcon className="size-3" />
+            <IconCalendarEvent className="size-3" />
             <ActionDatePicker
               onSelect={async (date) => {
                 // @ts-ignore
@@ -102,7 +102,7 @@ export function EssentialsTab({
             RawAction.category === "stories",
           ) && (
             <div className="flex items-center gap-1 opacity-50">
-              <InstagramIcon className="size-3" />
+              <IconBrandInstagram className="size-3" />
               <ActionDatePicker
                 onSelect={async (date) => {
                   // @ts-ignore
@@ -182,7 +182,7 @@ export function EssentialsTab({
               }`}
             >
               {workFiles.length === 0 && <span>Adicionar arquivo</span>}
-              <PlusIcon className="size-3" />
+              <IconPlus className="size-3" />
             </CloudinaryUpload>
           </div>
         </div>

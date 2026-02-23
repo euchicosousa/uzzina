@@ -1,4 +1,4 @@
-import { CheckIcon } from "lucide-react";
+import { IconCheck } from "@tabler/icons-react";
 import { useState } from "react";
 import {
   Popover,
@@ -60,7 +60,7 @@ export function StatesCombobox({
                   style={{ backgroundColor: state.color }}
                 ></div>
                 {state.title}
-                <CheckIcon
+                <IconCheck
                   className={cn(
                     "ml-auto size-4",
                     selectedState === state.slug ? "visible" : "invisible",

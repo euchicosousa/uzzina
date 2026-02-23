@@ -2,12 +2,12 @@ import { useState, useMemo } from "react";
 import { format, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
-  AlertCircleIcon,
-  ClockIcon,
-  ComponentIcon,
-  Grid3X3Icon,
-  KanbanIcon,
-} from "lucide-react";
+  IconAlertCircle,
+  IconClock,
+  IconComponents,
+  IconGridDots,
+  IconLayoutKanban,
+} from "@tabler/icons-react";
 import { CalendarButtons } from "~/components/features/Calendar";
 import {
   ViewOptionsComponent,
@@ -80,22 +80,22 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
               checked={view === "kanban"}
               onClick={() => setView("kanban")}
             >
-              <KanbanIcon />
+              <IconLayoutKanban />
             </UToggle>
             <UToggle
               checked={view === "hours"}
               onClick={() => setView("hours")}
             >
-              <ClockIcon />
+              <IconClock />
             </UToggle>
             <UToggle checked={view === "feed"} onClick={() => setView("feed")}>
-              <Grid3X3Icon />
+              <IconGridDots />
             </UToggle>
             <UToggle
               checked={view === "categories"}
               onClick={() => setView("categories")}
             >
-              <ComponentIcon />
+              <IconComponents />
             </UToggle>
           </div>
         </div>
@@ -119,7 +119,7 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
         )}
         {view === "categories" && (
           <div className="bg-muted text-muted-foreground flex items-center rounded-xl p-8">
-            <AlertCircleIcon className="mr-4 size-8 opacity-50" />
+            <IconAlertCircle className="mr-4 size-8 opacity-50" />
             <div>
               Visualização por <strong className="underline">CATEGORIAS</strong>{" "}
               ainda não está disponível

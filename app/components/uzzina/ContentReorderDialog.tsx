@@ -17,12 +17,12 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
-  GripVerticalIcon,
-  PlusIcon,
-  Settings2Icon,
-  Trash2Icon,
-  XIcon,
-} from "lucide-react";
+  IconGripVertical,
+  IconPlus,
+  IconAdjustments,
+  IconTrash,
+  IconX,
+} from "@tabler/icons-react";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { Button } from "~/components/ui/button";
 import {
@@ -75,7 +75,7 @@ function SortableThumbnail({
         {...listeners}
         className="absolute top-1 left-1 z-10 cursor-grab rounded bg-black/40 p-0.5 opacity-0 transition group-hover:opacity-100 active:cursor-grabbing"
       >
-        <GripVerticalIcon className="size-3 text-white" />
+        <IconGripVertical className="size-3 text-white" />
       </div>
 
       {/* Número de ordem */}
@@ -89,7 +89,7 @@ function SortableThumbnail({
         onClick={onRemove}
         className="bg-destructive absolute top-1 right-1 z-10 hidden size-4 items-center justify-center rounded-full text-white group-hover:flex"
       >
-        <XIcon className="size-2.5" />
+        <IconX className="size-2.5" />
       </button>
 
       {/* Preview */}
@@ -181,7 +181,7 @@ export function ContentReorderDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Settings2Icon className="size-4" />
+            <IconAdjustments className="size-4" />
             Gerenciar conteúdo
           </DialogTitle>
         </DialogHeader>
@@ -254,7 +254,7 @@ export function ContentReorderDialog({
               onUpload={handleAdd}
               className="hover:bg-muted flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm transition disabled:opacity-50"
             >
-              <PlusIcon className="size-4" />
+              <IconPlus className="size-4" />
               Adicionar
             </CloudinaryUpload>
 
@@ -268,7 +268,7 @@ export function ContentReorderDialog({
                   onChange([]);
                 }}
               >
-                <Trash2Icon className="size-4" />
+                <IconTrash className="size-4" />
                 Limpar
               </Button>
             )}
