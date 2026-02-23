@@ -1,27 +1,25 @@
 import { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
 
-export function ActionItemTitleInput(
-  {
-    title,
-    isDragging,
-    isEditing,
-    setIsEditing,
-    className,
-    InputButtonClassName,
-    lines = 1,
-    onChange,
-  }: {
-    title: string;
-    isDragging?: boolean;
-    isEditing?: boolean;
-    setIsEditing: (value: boolean) => void;
-    className?: string;
-    InputButtonClassName?: string;
-    lines?: 1 | 2;
-    onChange?: (title: string) => void;
-  }
-) {
+export function ActionItemTitleInput({
+  title,
+  isDragging,
+  isEditing,
+  setIsEditing,
+  className,
+  InputButtonClassName,
+  lines = 1,
+  onChange,
+}: {
+  title: string;
+  isDragging?: boolean;
+  isEditing?: boolean;
+  setIsEditing: (value: boolean) => void;
+  className?: string;
+  InputButtonClassName?: string;
+  lines?: 1 | 2;
+  onChange?: (title: string) => void;
+}) {
   const [localTitle, setLocalTitle] = useState(title);
 
   useEffect(() => {
@@ -31,7 +29,7 @@ export function ActionItemTitleInput(
   return (
     <div
       className={cn(
-        "flex min-h-6 w-full overflow-hidden text-sm",
+        "flex min-h-4 w-full overflow-hidden text-xs",
         !isEditing && "@md:w-auto",
         className,
       )}
