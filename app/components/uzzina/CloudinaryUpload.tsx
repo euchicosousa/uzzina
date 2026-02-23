@@ -15,6 +15,7 @@ declare global {
               public_id: string;
               resource_type?: string;
               format?: string;
+              original_filename?: string;
               coordinates?: { custom?: number[][] };
             };
           },
@@ -48,7 +49,7 @@ interface CloudinaryUploadProps {
   /** Chamado após cada upload com a URL final e metadados do arquivo */
   onUpload: (
     url: string,
-    meta: { resourceType: string; format: string },
+    meta: { resourceType: string; format: string; originalFilename?: string },
   ) => void;
   children: React.ReactNode;
   className?: string;
@@ -167,6 +168,7 @@ export function CloudinaryUpload({
             coordinates,
             resource_type = "image",
             format = "",
+            original_filename = "",
           } = result.info;
 
           let finalUrl: string;
@@ -192,6 +194,7 @@ export function CloudinaryUpload({
           onUploadRef.current(finalUrl, {
             resourceType: resource_type,
             format,
+            originalFilename: original_filename,
           });
         }
         // Destrói o widget ao fechar para garantir sessão limpa na próxima abertura.

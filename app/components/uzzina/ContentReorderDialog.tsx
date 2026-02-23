@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   DndContext,
   closestCenter,
@@ -129,14 +129,17 @@ export function ContentReorderDialog({
   uploadPreset,
 }: ContentReorderDialogProps) {
   // Estado interno com id único para o DnD
-  const [items, setItems] = useState<{ id: string; url: string }[]>(() =>
-    files.map((url, i) => ({ id: `${url}-${i}`, url })),
-  );
+  const [items, setItems] = useState<
+    { id: string; url: string; addedAt?: number; name?: string }[]
+  >(() => files.map((url, i) => ({ id: `${url}-${i}`, url })));
 
   // Sincroniza quando `files` prop muda externamente (ex: reset)
   useEffect(() => {
     setItems(files.map((url, i) => ({ id: `${url}-${i}`, url })));
   }, [files]);
+
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -165,14 +168,36 @@ export function ContentReorderDialog({
     });
   }
 
-  function handleAdd(url: string) {
-    if (items.length >= MAX_FILES) return;
-    const newItem = { id: `${url}-${Date.now()}`, url };
-    setItems((prev) => {
-      const next = [...prev, newItem];
-      onChange(next.map((i) => i.url));
-      return next;
-    });
+  function handleAdd(
+    url: string,
+    meta: { resourceType?: string; format?: string; originalFilename?: string },
+  ) {
+    if (itemsRef.current.length >= MAX_FILES) return;
+    const now = Date.now();
+    const newItem = {
+      id: `${url}-${now}-${Math.random().toString(36).substring(7)}`,
+      url,
+      name: meta.originalFilename || url,
+      addedAt: now,
+    };
+
+    let nextItems = [...itemsRef.current, newItem];
+
+    // Sort only the recently uploaded batch (last 5 seconds)
+    const splitIndex = nextItems.findIndex(
+      (i) => i.addedAt && i.addedAt > now - 5000,
+    );
+
+    if (splitIndex !== -1) {
+      const oldItems = nextItems.slice(0, splitIndex);
+      const recentItems = nextItems.slice(splitIndex);
+      recentItems.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+      nextItems = [...oldItems, ...recentItems];
+    }
+
+    itemsRef.current = nextItems;
+    setItems(nextItems);
+    onChange(nextItems.map((i) => i.url));
   }
 
   const postType = detectPostType(items.map((i) => i.url));

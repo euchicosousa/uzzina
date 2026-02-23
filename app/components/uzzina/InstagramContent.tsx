@@ -1,5 +1,5 @@
 import { IconPlus, IconAdjustments } from "@tabler/icons-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { ContentReorderDialog } from "./ContentReorderDialog";
 import { detectPostType } from "./InstagramHelpers";
@@ -29,6 +29,14 @@ export function ContentFilesManager({
   const [dialogOpen, setDialogOpen] = useState(false);
   const type = detectPostType(files);
 
+  const filesRef = useRef(files);
+  filesRef.current = files;
+
+  // Track metadata for the duration of the component to allow sorting new batches
+  const filesMetaRef = useRef<
+    Record<string, { name: string; addedAt: number }>
+  >({});
+
   return (
     <>
       <div className="flex items-center justify-between py-2">
@@ -41,7 +49,35 @@ export function ContentFilesManager({
               folder="uzzina/content"
               resourceType="auto"
               multiple
-              onUpload={(url) => onChange([...files, url])}
+              onUpload={(url, meta) => {
+                const now = Date.now();
+                filesMetaRef.current[url] = {
+                  name: meta.originalFilename || url,
+                  addedAt: now,
+                };
+
+                let next = [...filesRef.current, url];
+
+                // Sort only the recently uploaded batch (last 5 seconds) to prevent mixing with old files
+                const splitIndex = next.findIndex((u) => {
+                  const m = filesMetaRef.current[u];
+                  return m && m.addedAt > now - 5000;
+                });
+
+                if (splitIndex !== -1) {
+                  const oldUrls = next.slice(0, splitIndex);
+                  const recentUrls = next.slice(splitIndex);
+                  recentUrls.sort((a, b) => {
+                    const nameA = filesMetaRef.current[a]?.name || a;
+                    const nameB = filesMetaRef.current[b]?.name || b;
+                    return nameA.localeCompare(nameB);
+                  });
+                  next = [...oldUrls, ...recentUrls];
+                }
+
+                filesRef.current = next;
+                onChange(next);
+              }}
               className="flex items-center gap-1.5 rounded-lg border border-dashed px-3 py-1.5 text-xs opacity-60 transition hover:opacity-100"
             >
               <IconPlus className="size-3.5" />

@@ -4,7 +4,7 @@ import {
   IconBrandInstagram,
   IconPlus,
 } from "@tabler/icons-react";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useRef } from "react";
 import { useSubmit } from "react-router";
 import { GMGCombobox } from "~/components/features/GMGCombobox";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
@@ -49,6 +49,13 @@ export function EssentialsTab({
   uploadPreset,
 }: EssentialsTabProps) {
   const submit = useSubmit();
+
+  const workFilesRef = useRef(workFiles);
+  workFilesRef.current = workFiles;
+
+  const workFilesMetaRef = useRef<
+    Record<string, { name: string; addedAt: number }>
+  >({});
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -175,8 +182,32 @@ export function EssentialsTab({
               resourceType="auto"
               multiple
               outputWidth={1200}
-              onUpload={async (url) => {
-                const next = [...workFiles, url];
+              onUpload={async (url, meta) => {
+                const now = Date.now();
+                workFilesMetaRef.current[url] = {
+                  name: meta.originalFilename || url,
+                  addedAt: now,
+                };
+
+                let next = [...workFilesRef.current, url];
+
+                const splitIndex = next.findIndex((u) => {
+                  const m = workFilesMetaRef.current[u];
+                  return m && m.addedAt > now - 5000;
+                });
+
+                if (splitIndex !== -1) {
+                  const oldUrls = next.slice(0, splitIndex);
+                  const recentUrls = next.slice(splitIndex);
+                  recentUrls.sort((a, b) => {
+                    const nameA = workFilesMetaRef.current[a]?.name || a;
+                    const nameB = workFilesMetaRef.current[b]?.name || b;
+                    return nameA.localeCompare(nameB);
+                  });
+                  next = [...oldUrls, ...recentUrls];
+                }
+
+                workFilesRef.current = next;
                 setWorkFiles(next);
                 // @ts-ignore
                 setRawAction((prev) => ({ ...prev, work_files: next }));
