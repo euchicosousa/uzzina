@@ -22,7 +22,12 @@ import {
   CommandItem,
   CommandList,
 } from "~/components/ui/command";
-import { Dialog, DialogContent } from "~/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "~/components/ui/dialog";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
 import { partnersCache } from "~/utils/cache";
@@ -156,6 +161,10 @@ export default function Dashboard() {
       </div>
       <Dialog open={openCmdK} onOpenChange={setOpenCmdK}>
         <DialogContent className="squircle rounded-2xl p-0">
+          <DialogTitle className="sr-only">Busca Global</DialogTitle>
+          <DialogDescription className="sr-only">
+            Pesquise e navegue entre seus parceiros
+          </DialogDescription>
           <Command className="squircle rounded-2xl">
             <CommandInput placeholder="Faça sua busca aqui" />
             <CommandList className="p-2 outline-none">

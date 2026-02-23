@@ -262,30 +262,27 @@ export default function AdminPartnerEditPage() {
                   </label>
                 </div>
               </div>
-
-              <div>
-                <div className="flex items-center justify-end">
-                  <input
-                    type="checkbox"
-                    id="archived"
-                    name="archived"
-                    defaultChecked={partner?.archived || false}
-                    className="peer sr-only absolute size-0"
-                  />
-                  <label
-                    htmlFor="archived"
-                    className="hover:bg-opacity-100 peer-checked:bg-destructive/10 peer-checked:text-destructive squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
-                  >
-                    <IconArchive className="size-4" />
-                    Arquivado
-                  </label>
-                </div>
-              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex justify-end gap-4">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <input
+              type="checkbox"
+              id="archived"
+              name="archived"
+              defaultChecked={partner?.archived || false}
+              className="peer sr-only absolute size-0"
+            />
+            <label
+              htmlFor="archived"
+              className="hover:bg-opacity-100 peer-checked:bg-destructive/10 peer-checked:text-destructive squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
+            >
+              <IconArchive className="size-4" />
+              Arquivado
+            </label>
+          </div>
           <Button
             type="submit"
             disabled={isSubmitting}

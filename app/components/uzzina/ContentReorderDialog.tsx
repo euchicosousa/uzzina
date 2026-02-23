@@ -30,6 +30,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "~/components/ui/dialog";
 import { detectPostType, isImageUrl } from "./InstagramHelpers";
 
@@ -184,6 +185,9 @@ export function ContentReorderDialog({
             <IconAdjustments className="size-4" />
             Gerenciar conteúdo
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Selecione, reordene ou remova os arquivos de mídia desta ação.
+          </DialogDescription>
         </DialogHeader>
 
         {/* Info do tipo detectado */}
