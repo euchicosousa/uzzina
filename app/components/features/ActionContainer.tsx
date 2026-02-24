@@ -1,10 +1,10 @@
-import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { ORDER_BY, VARIANT, type DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import { ActionItem } from "./ActionItem";
 import type { Action } from "~/models/actions.server";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 type ActionContainerProps = {
   actions: Action[];
@@ -90,9 +90,9 @@ export function ActionContainer(
             }}
           >
             {showMore ? (
-              <IconChevronDown className="size-4" />
+              <ChevronDown className="size-4" />
             ) : (
-              <IconChevronUp className="size-4" />
+              <ChevronUp className="size-4" />
             )}
           </button>
         )}

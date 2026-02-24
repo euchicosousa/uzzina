@@ -1,8 +1,8 @@
-import { IconPlus, IconAdjustments } from "@tabler/icons-react";
 import { useState, useRef } from "react";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { ContentReorderDialog } from "./ContentReorderDialog";
 import { detectPostType } from "./InstagramHelpers";
+import { Plus, SlidersHorizontal } from "lucide-react";
 export { InstagramPreview } from "./InstagramPreview";
 
 // ---------------------------------------------------------------------------
@@ -80,7 +80,7 @@ export function ContentFilesManager({
               }}
               className="flex items-center gap-1.5 rounded-lg border border-dashed px-3 py-1.5 text-xs opacity-60 transition hover:opacity-100"
             >
-              <IconPlus className="size-3.5" />
+              <Plus className="size-3.5" />
               Adicionar conteúdo
             </CloudinaryUpload>
           ) : (
@@ -100,7 +100,7 @@ export function ContentFilesManager({
           onClick={() => setDialogOpen(true)}
           className="hover:bg-muted flex items-center gap-1 rounded-lg px-2 py-1 text-xs opacity-50 transition hover:opacity-100"
         >
-          <IconAdjustments className="size-3.5" />
+          <SlidersHorizontal className="size-3.5" />
           {files.length === 0
             ? "Gerenciar"
             : `${files.length} arquivo${files.length !== 1 ? "s" : ""}`}

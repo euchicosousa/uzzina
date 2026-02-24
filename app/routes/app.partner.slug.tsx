@@ -1,3 +1,4 @@
+import { CalendarDays, List, Search } from "lucide-react";
 import {
   addDays,
   endOfDay,
@@ -11,18 +12,13 @@ import {
   startOfWeek,
   subDays,
 } from "date-fns";
-import {
-  IconCalendarEvent,
-  IconList,
-  IconSearch,
-} from "@tabler/icons-react";
 import { useState } from "react";
 import {
   Link,
+  data,
   useLoaderData,
   useNavigate,
   type LoaderFunctionArgs,
-  type ClientLoaderFunctionArgs,
 } from "react-router";
 import invariant from "tiny-invariant";
 import { ActionCalendarPartnerPage } from "~/components/features/ActionCalendarPartnerPage";
@@ -41,21 +37,13 @@ import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { UToggle } from "~/components/uzzina/UToggle";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
-import {
-  DATE_TIME_DISPLAY,
-  ORDER_BY,
-  SIZE,
-  VARIANT,
-} from "~/lib/CONSTANTS";
-import {
-  getLateActions,
-} from "~/lib/helpers";
-import { getUserId } from "~/services/auth.server";
-import { actionsCache, partnersCache } from "~/utils/cache";
+import { DATE_TIME_DISPLAY, ORDER_BY, SIZE, VARIANT } from "~/lib/CONSTANTS";
+import { getLateActions } from "~/lib/helpers";
+import type { Action } from "~/models/actions.server";
 import { getActionsByPartner } from "~/models/actions.server";
 import { getPartnerBySlug } from "~/models/partners.server";
 import { getPersonByUserId } from "~/models/people.server";
-import type { Action } from "~/models/actions.server";
+import { getUserId } from "~/services/auth.server";
 
 export const runtime = "edge";
 
@@ -74,8 +62,10 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       : format(new Date().setDate(15), "yyyy-MM-dd");
   }
 
-  const start = startOfDay(startOfWeek(startOfMonth(subDays(date, 30))));
-  const end = endOfDay(endOfWeek(endOfMonth(addDays(date, 30))));
+  const start = startOfDay(
+    startOfWeek(startOfMonth(subDays(parseISO(date), 30))),
+  );
+  const end = endOfDay(endOfWeek(endOfMonth(addDays(parseISO(date), 30))));
 
   const person = await getPersonByUserId(supabase, user_id);
 
@@ -97,47 +87,11 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   invariant(partner);
 
-  return { partner, actions, date };
+  return data(
+    { partner, actions, date },
+    { headers: { "Cache-Control": "no-store" } },
+  );
 };
-
-export const clientLoader = async ({
-  serverLoader,
-  request,
-  params,
-}: ClientLoaderFunctionArgs) => {
-  const url = new URL(request.url);
-  const dateParam = url.searchParams.get("date");
-
-  if (dateParam) {
-    return serverLoader();
-  }
-
-  const cachedActions = actionsCache.get();
-  const cachedPartners = partnersCache.get();
-  const partnerSlug = params.slug;
-
-  if (cachedActions && cachedPartners) {
-    const partner = cachedPartners.find((p: any) => p.slug === partnerSlug);
-
-    if (partner) {
-      const filteredActions = cachedActions
-        .filter((a: any) => a.partners?.includes(partnerSlug) && !a.archived)
-        .sort(
-          (a: any, b: any) =>
-            new Date(b.date).getTime() - new Date(a.date).getTime(),
-        );
-
-      return {
-        partner,
-        actions: filteredActions,
-        date: format(new Date().setDate(15), "yyyy-MM-dd"),
-      } as any;
-    }
-  }
-
-  return serverLoader();
-};
-clientLoader.hydrate = true;
 
 export default function PartnerPage() {
   let { partner, actions, date } = useLoaderData<typeof loader>();
@@ -229,7 +183,7 @@ export default function PartnerPage() {
 
           <InputGroup className="w-auto min-w-[300px]">
             <InputGroupAddon>
-              <IconSearch />
+              <Search />
             </InputGroupAddon>
             <InputGroupInput
               placeholder="Buscar ação..."
@@ -254,7 +208,7 @@ export default function PartnerPage() {
               setView("list");
             }}
           >
-            <IconList />
+            <List />
           </UToggle>
           <UToggle
             checked={view === "calendar"}
@@ -262,7 +216,7 @@ export default function PartnerPage() {
               setView("calendar");
             }}
           >
-            <IconCalendarEvent />
+            <CalendarDays />
           </UToggle>
         </div>
       </div>

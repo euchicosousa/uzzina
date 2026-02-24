@@ -1,4 +1,4 @@
-import { IconFolderPlus } from "@tabler/icons-react";
+import { FolderPlus } from "lucide-react";
 import {
   Link,
   useLoaderData,
@@ -47,7 +47,7 @@ export default function AdminPartnersPage() {
         <h1 className="pb-0 text-2xl font-bold">Parceiros</h1>
         <Button variant={"secondary"} asChild className="squircle rounded-2xl">
           <Link to="/app/admin/partner/new">
-            Novo Parceiro <IconFolderPlus />
+            Novo Parceiro <FolderPlus />
           </Link>
         </Button>
       </div>

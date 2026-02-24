@@ -9,16 +9,14 @@ import {
 import invariant from "tiny-invariant";
 import { Header } from "~/components/layout/Header";
 import { getCleanAction } from "~/lib/helpers";
-import { getUserId } from "~/services/auth.server";
 import { getAllCelebrations } from "~/models/celebrations.server";
 import { getPartnersByUserId } from "~/models/partners.server";
 import { getAllVisiblePeople } from "~/models/people.server";
+import { getUserId } from "~/services/auth.server";
 
 import { Toaster } from "sonner";
-import { SIZE } from "~/lib/CONSTANTS";
-import { partnersCache } from "~/utils/cache";
-import type { Action } from "~/models/actions.server";
 import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
+import type { Action } from "~/models/actions.server";
 
 const CreateAndEditAction = lazy(() =>
   import("./CreateAndEditAction").then((module) => ({
@@ -98,12 +96,6 @@ export default function Dashboard() {
       document.removeEventListener("keydown", keyDownNewAction);
     };
   }, []);
-
-  useEffect(() => {
-    if (partners?.length) {
-      partnersCache.set(partners);
-    }
-  }, [partners]);
 
   const navigate = useNavigate();
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { IconAntennaBars5, IconAntennaBars1, IconAntennaBars3 } from "@tabler/icons-react";
 import { ActionContainer } from "~/components/features/ActionContainer";
+import { Signal, SignalMedium, SignalZero } from "lucide-react";
 import {
   ViewOptionsComponent,
   type ViewOptions,
@@ -36,8 +36,8 @@ export function SprintHomeComponent({ actions }: { actions: Action[] }) {
             <div className="flex flex-col">
               <div className="mb-4 flex items-center gap-1">
                 <div className="relative">
-                  <IconAntennaBars5 className="absolute top-0 left-0 size-6 opacity-20" />
-                  <IconAntennaBars1 className="size-6 text-green-500" />
+                  <Signal className="absolute top-0 left-0 size-6 opacity-20" />
+                  <SignalZero className="size-6 text-green-500" />
                 </div>
                 <h5 className="p-0"> LOW</h5>
               </div>
@@ -55,8 +55,8 @@ export function SprintHomeComponent({ actions }: { actions: Action[] }) {
             <div className="flex flex-col">
               <div className="mb-4 flex items-center gap-1">
                 <div className="relative">
-                  <IconAntennaBars5 className="absolute top-0 left-0 size-6 opacity-20" />
-                  <IconAntennaBars3 className="size-6 text-yellow-500" />
+                  <Signal className="absolute top-0 left-0 size-6 opacity-20" />
+                  <SignalMedium className="size-6 text-yellow-500" />
                 </div>
                 <h5 className="p-0"> MEDIUM</h5>
               </div>
@@ -74,7 +74,7 @@ export function SprintHomeComponent({ actions }: { actions: Action[] }) {
             <div className="flex flex-col">
               <div className="mb-4 flex items-center gap-1">
                 <div className="relative">
-                  <IconAntennaBars5 className="size-6 text-red-500" />
+                  <Signal className="size-6 text-red-500" />
                 </div>
                 <h5 className="p-0"> HIGH</h5>
               </div>

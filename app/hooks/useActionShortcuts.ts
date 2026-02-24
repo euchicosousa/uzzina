@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { useRouteLoaderData, useSubmit } from "react-router";
-import { addDays, addMinutes, format, isAfter } from "date-fns";
+import { addDays, addMinutes, format, isAfter, parseISO } from "date-fns";
 import { INTENT, STATES } from "~/lib/CONSTANTS";
 import { getNewDateForAction, handleAction } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
@@ -70,20 +70,19 @@ export const useActionShortcuts = (
           );
         } else if (code === "KeyS") {
           // Em 7 dias
+          const targetStr = isInstagramDate
+            ? action.instagram_date!
+            : action.date;
+          const targetDateObj = parseISO(targetStr.replace(" ", "T"));
+
           handleAction(
             {
               ...action,
               intent: INTENT.update_action,
               ...getNewDateForAction(
                 action,
-                isAfter(
-                  isInstagramDate ? action.instagram_date! : action.date,
-                  new Date(),
-                )
-                  ? addDays(
-                      isInstagramDate ? action.instagram_date! : action.date,
-                      7,
-                    )
+                isAfter(targetDateObj, new Date())
+                  ? addDays(targetDateObj, 7)
                   : addDays(new Date(), 7),
                 isInstagramDate,
               ),
@@ -92,20 +91,19 @@ export const useActionShortcuts = (
           );
         } else if (code === "KeyM") {
           // Em 30 dias
+          const targetStr = isInstagramDate
+            ? action.instagram_date!
+            : action.date;
+          const targetDateObj = parseISO(targetStr.replace(" ", "T"));
+
           handleAction(
             {
               ...action,
               intent: INTENT.update_action,
               ...getNewDateForAction(
                 action,
-                isAfter(
-                  isInstagramDate ? action.instagram_date! : action.date,
-                  new Date(),
-                )
-                  ? addDays(
-                      isInstagramDate ? action.instagram_date! : action.date,
-                      30,
-                    )
+                isAfter(targetDateObj, new Date())
+                  ? addDays(targetDateObj, 30)
                   : addDays(new Date(), 30),
                 isInstagramDate,
               ),

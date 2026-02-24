@@ -8,10 +8,7 @@ export * from "~/utils/sort";
 // export * from "~/services/auth.server";
 export * from "~/components/uzzina/UIIcons";
 
-import { actionsCache } from "~/utils/cache";
-
 export const handleAction = async (data: any, submit: SubmitFunction) => {
-  actionsCache.clear();
   await submit(
     {
       ...data,

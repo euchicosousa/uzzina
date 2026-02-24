@@ -1,6 +1,6 @@
-import { IconCheck } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { useMatches } from "react-router";
+import { Check } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -110,7 +110,7 @@ export function ResponsiblesCombobox({
                   image={person.image}
                 />
                 {person.name}
-                <IconCheck
+                <Check
                   className={cn(
                     "ml-auto size-4",
                     selected?.includes(person.user_id)

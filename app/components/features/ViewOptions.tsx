@@ -1,22 +1,23 @@
-import {
-  IconAntennaBars5,
-  IconArrowDown,
-  IconBaselineDensityMedium,
-  IconBaselineDensitySmall,
-  IconBrandInstagram,
-  IconClock,
-  IconHeartHandshake,
-  IconSortAscendingLetters,
-  IconSortDescendingLetters,
-  IconSquare,
-  IconSquareCheck,
-  IconTag,
-  IconUsers,
-} from "@tabler/icons-react";
+import { IconBrandInstagram } from "@tabler/icons-react";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { Button } from "~/components/ui/button";
 import { Toggle } from "~/components/ui/toggle";
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
+import {
+  AlignJustify,
+  ArrowDown,
+  ArrowDownAZ,
+  ArrowUpAZ,
+  Clock,
+  HeartHandshake,
+  Rows2,
+  Rows3,
+  Signal,
+  Square,
+  SquareCheck,
+  Tag,
+  Users,
+} from "lucide-react";
 
 export type ViewOptions = {
   instagram?: boolean;
@@ -100,13 +101,9 @@ export function ViewOptionsComponent({
               }}
               className="grid place-content-center p-0"
             >
-              {viewOptions.variant === VARIANT.line && (
-                <IconBaselineDensitySmall />
-              )}
-              {viewOptions.variant === VARIANT.block && (
-                <IconBaselineDensityMedium />
-              )}
-              {viewOptions.variant === VARIANT.content && <IconSquare />}
+              {viewOptions.variant === VARIANT.line && <Rows3 />}
+              {viewOptions.variant === VARIANT.block && <Rows2 />}
+              {viewOptions.variant === VARIANT.content && <Square />}
             </Button>
           )}
           {/* Colocar ações concluídas no final */}
@@ -119,7 +116,7 @@ export function ViewOptionsComponent({
               }
               className="grid place-content-center p-0"
             >
-              <IconArrowDown />
+              <ArrowDown />
             </Toggle>
           )}
         </div>
@@ -142,11 +139,7 @@ export function ViewOptionsComponent({
               }
               className="grid place-content-center p-0"
             >
-              {viewOptions.ascending ? (
-                <IconSortAscendingLetters />
-              ) : (
-                <IconSortDescendingLetters />
-              )}
+              {viewOptions.ascending ? <ArrowUpAZ /> : <ArrowDownAZ />}
             </Toggle>
           )}
           {/* Ordem por Data  */}
@@ -162,7 +155,7 @@ export function ViewOptionsComponent({
               }
               className="grid place-content-center p-0"
             >
-              <IconClock />
+              <Clock />
             </Toggle>
           )}
           {/* Ordem por Status */}
@@ -178,7 +171,7 @@ export function ViewOptionsComponent({
               }
               className="grid place-content-center p-0"
             >
-              <IconSquareCheck />
+              <SquareCheck />
             </Toggle>
           )}
         </div>
@@ -197,7 +190,7 @@ export function ViewOptionsComponent({
                 setViewOptions({ ...viewOptions, responsibles: value })
               }
             >
-              <IconUsers />
+              <Users />
             </Toggle>
           )}
           {viewOptions.showOptions.priority && (
@@ -208,7 +201,7 @@ export function ViewOptionsComponent({
               }
               className="grid place-content-center p-0"
             >
-              <IconAntennaBars5 />
+              <Signal />
             </Toggle>
           )}
           {viewOptions.showOptions.category && (
@@ -219,7 +212,7 @@ export function ViewOptionsComponent({
               }
               className="grid place-content-center p-0"
             >
-              <IconTag />
+              <Tag />
             </Toggle>
           )}
           {viewOptions.showOptions.partner && (
@@ -230,7 +223,7 @@ export function ViewOptionsComponent({
               }
               className="grid place-content-center p-0"
             >
-              <IconHeartHandshake />
+              <HeartHandshake />
             </Toggle>
           )}
         </div>

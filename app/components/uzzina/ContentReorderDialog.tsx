@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { GripVertical, Plus, SlidersHorizontal, Trash2, X } from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -16,13 +17,6 @@ import {
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import {
-  IconGripVertical,
-  IconPlus,
-  IconAdjustments,
-  IconTrash,
-  IconX,
-} from "@tabler/icons-react";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { Button } from "~/components/ui/button";
 import {
@@ -76,7 +70,7 @@ function SortableThumbnail({
         {...listeners}
         className="absolute top-1 left-1 z-10 cursor-grab rounded bg-black/40 p-0.5 opacity-0 transition group-hover:opacity-100 active:cursor-grabbing"
       >
-        <IconGripVertical className="size-3 text-white" />
+        <GripVertical className="size-3 text-white" />
       </div>
 
       {/* Número de ordem */}
@@ -90,7 +84,7 @@ function SortableThumbnail({
         onClick={onRemove}
         className="bg-destructive absolute top-1 right-1 z-10 hidden size-4 items-center justify-center rounded-full text-white group-hover:flex"
       >
-        <IconX className="size-2.5" />
+        <X className="size-2.5" />
       </button>
 
       {/* Preview */}
@@ -207,7 +201,7 @@ export function ContentReorderDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <IconAdjustments className="size-4" />
+            <SlidersHorizontal className="size-4" />
             Gerenciar conteúdo
           </DialogTitle>
           <DialogDescription className="sr-only">
@@ -283,7 +277,7 @@ export function ContentReorderDialog({
               onUpload={handleAdd}
               className="hover:bg-muted flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm transition disabled:opacity-50"
             >
-              <IconPlus className="size-4" />
+              <Plus className="size-4" />
               Adicionar
             </CloudinaryUpload>
 
@@ -297,7 +291,7 @@ export function ContentReorderDialog({
                   onChange([]);
                 }}
               >
-                <IconTrash className="size-4" />
+                <Trash2 className="size-4" />
                 Limpar
               </Button>
             )}

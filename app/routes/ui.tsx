@@ -1,4 +1,3 @@
-import { IconDeviceDesktop, IconMoon, IconSun } from "@tabler/icons-react";
 import { Theme, useTheme } from "remix-themes";
 import { StateIcon } from "~/components/features/StateIcon";
 import { Button } from "~/components/ui/button";
@@ -6,6 +5,7 @@ import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { CATEGORIES, SIZE, STATES } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
+import { Monitor, Moon, Sun } from "lucide-react";
 
 export const meta = () => {
   return [
@@ -47,13 +47,13 @@ export default function UITestingPage() {
             onClick={() => setTheme(Theme.LIGHT)}
             variant={Theme.LIGHT === theme ? "outline" : "ghost"}
           >
-            <IconSun />
+            <Sun />
           </Button>
           <Button
             onClick={() => setTheme(Theme.DARK)}
             variant={Theme.DARK === theme ? "outline" : "ghost"}
           >
-            <IconMoon />
+            <Moon />
           </Button>
           <Button
             onClick={() => setTheme(null)}
@@ -63,7 +63,7 @@ export default function UITestingPage() {
                 : "ghost"
             }
           >
-            <IconDeviceDesktop />
+            <Monitor />
           </Button>
 
           {/* <ToggleGroup
@@ -77,13 +77,13 @@ export default function UITestingPage() {
             }}
           >
             <ToggleGroupItem value={Theme.LIGHT}>
-              <IconSun />
+              <Sun />
             </ToggleGroupItem>
             <ToggleGroupItem value={Theme.DARK}>
-              <IconMoon />
+              <Moon />
             </ToggleGroupItem>
             <ToggleGroupItem value={"system"}>
-              <IconDeviceDesktop />
+              <Monitor />
             </ToggleGroupItem>
           </ToggleGroup> */}
         </div>

@@ -1,4 +1,3 @@
-import { IconLoader, IconPlus, IconCloudUpload } from "@tabler/icons-react";
 import type { SubmitFunction } from "react-router";
 import { toast } from "sonner";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
@@ -10,6 +9,7 @@ import { INTENT } from "~/lib/CONSTANTS";
 import { handleAction, isInstagramFeed } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
+import { CloudUpload, Loader, Plus } from "lucide-react";
 
 interface ActionFormFooterProps {
   RawAction: Action;
@@ -129,11 +129,11 @@ export function ActionFormFooter({
           {RawAction.id ? "Atualizar" : "Criar Ação"}
 
           {isPending ? (
-            <IconLoader className="animate-spin" />
+            <Loader className="animate-spin" />
           ) : RawAction.id ? (
-            <IconCloudUpload />
+            <CloudUpload />
           ) : (
-            <IconPlus />
+            <Plus />
           )}
         </Button>
       </div>

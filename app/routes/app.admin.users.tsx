@@ -1,4 +1,4 @@
-import { IconUserPlus } from "@tabler/icons-react";
+import { UserPlus } from "lucide-react";
 import {
   Link,
   useLoaderData,
@@ -48,7 +48,7 @@ export default function AdminUsersPage() {
         <h1 className="pb-0 text-2xl font-bold">Usuários</h1>
         <Button variant={"secondary"} asChild className="squircle rounded-2xl">
           <Link to="/app/admin/user/new">
-            Novo Usuário <IconUserPlus />
+            Novo Usuário <UserPlus />
           </Link>
         </Button>
       </div>

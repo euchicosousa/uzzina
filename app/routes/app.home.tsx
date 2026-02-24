@@ -8,29 +8,26 @@ import {
   startOfWeek,
 } from "date-fns";
 
-
-import { useEffect } from "react";
 import {
+  data,
   useLoaderData,
   useMatches,
   useOutletContext,
   type LoaderFunctionArgs,
-  type ClientLoaderFunctionArgs,
 } from "react-router";
 
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
 import { ORDER_BY, STATES } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
+import { getHomeActions } from "~/models/actions.server";
 import { getUserId } from "~/services/auth.server";
 import type { AppLoaderData } from "./app";
-import { getHomeActions } from "~/models/actions.server";
-import { actionsCache } from "~/utils/cache";
 
-import { SprintHomeComponent } from "~/components/features/home/SprintHomeComponent";
-import { PartnersHomeComponent } from "~/components/features/home/PartnersHomeComponent";
-import { TodayHomeComponent } from "~/components/features/home/TodayHomeComponent";
-import { LateHomeComponent } from "~/components/features/home/LateHomeComponent";
 import { CalendarHomeComponent } from "~/components/features/home/CalendarHomeComponent";
+import { LateHomeComponent } from "~/components/features/home/LateHomeComponent";
+import { PartnersHomeComponent } from "~/components/features/home/PartnersHomeComponent";
+import { SprintHomeComponent } from "~/components/features/home/SprintHomeComponent";
+import { TodayHomeComponent } from "~/components/features/home/TodayHomeComponent";
 
 export type AppHomeLoaderData = {
   actions: Action[];
@@ -69,31 +66,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         action.date <= format(todayEnd, "yyyy-MM-dd HH:mm:ss"),
     ) || [];
 
-  return {
-    actions,
-    actionsChart,
-  } as AppHomeLoaderData;
+  return data({ actions, actionsChart } as AppHomeLoaderData, {
+    headers: { "Cache-Control": "no-store" },
+  });
 };
-
-export const clientLoader = async ({
-  serverLoader,
-}: ClientLoaderFunctionArgs) => {
-  const cachedActions = actionsCache.get();
-
-  if (cachedActions) {
-    return {
-      actions: cachedActions,
-      actionsChart: cachedActions.filter(
-        (action: Action) =>
-          action.state !== STATES.finished.slug &&
-          new Date(action.date) <= endOfDay(new Date()),
-      ),
-    } as AppHomeLoaderData;
-  }
-
-  return serverLoader();
-};
-clientLoader.hydrate = true;
 
 import { useMemo } from "react";
 import type { Action } from "~/models/actions.server";
@@ -117,15 +93,6 @@ export default function AppHome() {
   }, [currentActions]);
 
   const { setBaseAction } = useOutletContext<OutletContext>();
-
-  useEffect(() => {
-    if (actions?.length || actionsChart?.length) {
-      const uniqueActions = new Map();
-      actions?.forEach((a) => uniqueActions.set(a.id, a));
-      actionsChart?.forEach((a) => uniqueActions.set(a.id, a));
-      actionsCache.set(Array.from(uniqueActions.values()));
-    }
-  }, [actions, actionsChart]);
 
   return (
     <>

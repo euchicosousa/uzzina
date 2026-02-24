@@ -1,3 +1,4 @@
+import { GripVertical, Plus, Trash2 } from "lucide-react";
 import {
   DndContext,
   KeyboardSensor,
@@ -15,7 +16,6 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { IconGripVertical, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useId, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -131,7 +131,7 @@ export function ColorListEditor({ initialColors = [] }: ColorListProps) {
         onClick={addColor}
         className="flex items-center gap-2"
       >
-        <IconPlus className="h-4 w-4" />
+        <Plus className="h-4 w-4" />
         Adicionar Cor
       </Button>
     </div>
@@ -183,7 +183,7 @@ function SortableColorItem({
         {...listeners}
         className="text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing"
       >
-        <IconGripVertical className="size-4" />
+        <GripVertical className="size-4" />
       </div>
 
       <div className="flex flex-1 items-center gap-2">
@@ -229,7 +229,7 @@ function SortableColorItem({
         className="text-muted-foreground hover:text-destructive h-9 w-9"
         title="Remover cor"
       >
-        <IconTrash className="h-4 w-4" />
+        <Trash2 className="h-4 w-4" />
       </Button>
     </div>
   );

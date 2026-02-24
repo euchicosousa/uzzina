@@ -1,12 +1,3 @@
-import { IconHeartHandshake, IconPlus, IconSearch } from "@tabler/icons-react";
-import {
-  Link,
-  useFetchers,
-  useMatches,
-  useNavigate,
-  useNavigation,
-  useParams,
-} from "react-router";
 import { Theme, useTheme } from "remix-themes";
 import { SIZE } from "~/lib/CONSTANTS";
 import { getCleanAction, getLateActions, getThemeIcon } from "~/lib/helpers";
@@ -34,6 +25,15 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { UAvatar } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
+import {
+  Link,
+  useFetchers,
+  useMatches,
+  useNavigate,
+  useNavigation,
+  useParams,
+} from "react-router";
+import { HeartHandshake, Plus, Search } from "lucide-react";
 
 export function Header({
   person,
@@ -64,7 +64,7 @@ export function Header({
           className="rounded-full"
           onClick={() => setOpenCmdK(true)}
         >
-          <IconSearch />
+          <Search />
         </Button>
       </div>
       <div className="flex items-center gap-2">
@@ -78,7 +78,7 @@ export function Header({
           className="squircle rounded-2xl"
         >
           Nova Ação
-          <IconPlus />
+          <Plus />
         </Button>
         <Popover>
           <PopoverTrigger asChild>
@@ -87,7 +87,7 @@ export function Header({
               size="icon"
               className="relative rounded-full"
             >
-              <IconHeartHandshake />
+              <HeartHandshake />
               {actionsChart && actionsChart.length > 0 ? (
                 <UBadge
                   size="sm"

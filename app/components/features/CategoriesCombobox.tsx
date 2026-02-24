@@ -1,5 +1,5 @@
-import { IconCheck } from "@tabler/icons-react";
 import { Fragment, useEffect, useRef, useState } from "react";
+import { Check } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -195,7 +195,7 @@ export function CategoriesCombobox({
                     color={category.color}
                   />
                   {category.title}
-                  <IconCheck
+                  <Check
                     className={cn(
                       "ml-auto size-4",
                       category.slug === "instagram"

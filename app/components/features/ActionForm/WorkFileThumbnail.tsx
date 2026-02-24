@@ -1,4 +1,4 @@
-import { IconX } from "@tabler/icons-react";
+import { X } from "lucide-react";
 
 /**
  * Thumbnail compacto para trabalho (work_files):
@@ -59,7 +59,7 @@ export function WorkFileThumbnail({
         }}
         className="bg-destructive absolute -top-1.5 -right-1.5 hidden size-4 items-center justify-center rounded-full text-white group-hover:flex"
       >
-        <IconX className="size-2.5" />
+        <X className="size-2.5" />
       </button>
     </div>
   );

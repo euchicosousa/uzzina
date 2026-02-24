@@ -1,10 +1,7 @@
-import {
-  IconCalendarEvent,
-  IconBrandInstagram,
-  IconAntennaBars5,
-} from "@tabler/icons-react";
+import { IconBrandInstagram } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import { useOutletContext, useRouteLoaderData, useSubmit } from "react-router";
+import { CalendarDays, Signal } from "lucide-react";
 import {
   CATEGORIES,
   DATE_TIME_DISPLAY,
@@ -33,8 +30,8 @@ import { Content } from "./Content";
 import { Draggable } from "./DnD";
 import { StateIcon } from "./StateIcon";
 import { ActionItemTitleInput } from "./ActionItemTitleInput";
-import { useActionShortcuts } from "~/hooks/useActionShortcuts";
 import type { Action } from "~/models/actions.server";
+import { useActionShortcuts } from "~/hooks/useActionShortcuts";
 
 type ActionItemProps = {
   action: Action;
@@ -197,7 +194,7 @@ export function ActionItem({
               <div className="flex items-center gap-2 text-xs">
                 {(!isInstagramDate || !isInstagramFeed(action.category)) && (
                   <div className="flex items-center gap-1">
-                    <IconCalendarEvent className="size-3 opacity-50" />
+                    <CalendarDays className="size-3 opacity-50" />
                     {getFormattedDateTime(action.date, dateTimeDisplay)}
                   </div>
                 )}
@@ -445,14 +442,14 @@ export function ActionItemResponsibles({
 export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
   switch (priority) {
     case PRIORITIES.low.slug:
-      return <IconAntennaBars5 className="text-info size-4" />;
+      return <Signal className="text-info size-4" />;
 
     case PRIORITIES.high.slug:
-      return <IconAntennaBars5 className="text-error size-4" />;
+      return <Signal className="text-error size-4" />;
 
     case PRIORITIES.medium.slug:
     default:
-      return <IconAntennaBars5 className="text-success size-4" />;
+      return <Signal className="text-success size-4" />;
   }
 }
 

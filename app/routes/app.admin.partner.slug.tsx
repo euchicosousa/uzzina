@@ -1,10 +1,10 @@
 import {
-  IconArchive,
-  IconRosetteDiscountCheck,
-  IconMailCheck,
-  IconSpeakerphone,
-  IconCloudUpload,
-} from "@tabler/icons-react";
+  Archive,
+  BadgeCheck,
+  CloudUpload,
+  MailCheck,
+  Megaphone,
+} from "lucide-react";
 import {
   Form,
   Link,
@@ -269,7 +269,7 @@ export default function AdminPartnerEditPage() {
                     htmlFor="sow-marketing"
                     className="hover:bg-opacity-100 peer-checked:bg-muted squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
                   >
-                    <IconSpeakerphone className="size-4" />
+                    <Megaphone className="size-4" />
                     Marketing
                   </label>
                 </div>
@@ -287,7 +287,7 @@ export default function AdminPartnerEditPage() {
                     htmlFor="sow-socialmedia"
                     className="hover:bg-opacity-100 peer-checked:bg-muted squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
                   >
-                    <IconRosetteDiscountCheck className="size-4" />
+                    <BadgeCheck className="size-4" />
                     Social Media
                   </label>
                 </div>
@@ -305,7 +305,7 @@ export default function AdminPartnerEditPage() {
                     htmlFor="sow-demand"
                     className="hover:bg-opacity-100 peer-checked:bg-muted squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
                   >
-                    <IconMailCheck className="size-4" />
+                    <MailCheck className="size-4" />
                     Demand
                   </label>
                 </div>
@@ -327,7 +327,7 @@ export default function AdminPartnerEditPage() {
               htmlFor="archived"
               className="hover:bg-opacity-100 peer-checked:bg-destructive/10 peer-checked:text-destructive squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
             >
-              <IconArchive className="size-4" />
+              <Archive className="size-4" />
               {partner?.archived ? "Arquivado" : "Visível"}
             </label>
           </div>
@@ -337,7 +337,7 @@ export default function AdminPartnerEditPage() {
             className="squircle rounded-2xl"
           >
             {isSubmitting ? "Salvando..." : "Salvar"}
-            <IconCloudUpload className="size-4" />
+            <CloudUpload className="size-4" />
           </Button>
         </div>
       </Form>

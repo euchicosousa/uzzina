@@ -1,15 +1,12 @@
 import { parseISO } from "date-fns";
-import {
-  IconCalendarEvent,
-  IconBrandInstagram,
-  IconPlus,
-} from "@tabler/icons-react";
+import { IconBrandInstagram } from "@tabler/icons-react";
 import { Suspense, lazy, useRef } from "react";
 import { useSubmit } from "react-router";
 import { GMGCombobox } from "~/components/features/GMGCombobox";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { INTENT } from "~/lib/CONSTANTS";
+import { CalendarDays, Plus } from "lucide-react";
 import {
   getNewDateForAction,
   handleAction,
@@ -95,7 +92,7 @@ export function EssentialsTab({
             {isInstagramFeed(
               RawAction.category,
               RawAction.category === "stories",
-            ) && <IconCalendarEvent className="size-4" />}
+            ) && <CalendarDays className="size-4" />}
             <ActionDatePicker
               onSelect={async (date) => {
                 // @ts-ignore
@@ -220,7 +217,7 @@ export function EssentialsTab({
               }`}
             >
               {workFiles.length === 0 && <span>Adicionar arquivo</span>}
-              <IconPlus className="size-3" />
+              <Plus className="size-3" />
             </CloudinaryUpload>
           </div>
         </div>

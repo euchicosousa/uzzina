@@ -67,7 +67,8 @@ export const getNewDateForAction = (
 
     // Calculate max allowed start date: new_instagram_date - duration
     const maxStartDate = addMinutes(newDateInput, -duration);
-    const currentStartDate = parseISO(action.date);
+    // Guard: action.date may be null for brand-new actions
+    const currentStartDate = action.date ? parseISO(action.date) : maxStartDate;
 
     // If current start date is after max start date, we must move it back
     const newStartDate = isAfter(currentStartDate, maxStartDate)
@@ -84,7 +85,10 @@ export const getNewDateForAction = (
 
     // Calculate min allowed instagram date: new_date + duration
     const minInstagramDate = addMinutes(newDateInput, duration);
-    const currentInstagramDate = parseISO(action.instagram_date);
+    // Guard: instagram_date may be null for non-Instagram actions
+    const currentInstagramDate = action.instagram_date
+      ? parseISO(action.instagram_date)
+      : minInstagramDate;
 
     // If current instagram date is before min instagram date, we must move it forward
     const newInstagramDate = isBefore(currentInstagramDate, minInstagramDate)

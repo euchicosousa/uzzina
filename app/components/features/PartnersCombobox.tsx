@@ -1,6 +1,6 @@
-import { IconCheck } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { useMatches } from "react-router";
+import { Check } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -119,7 +119,7 @@ export function PartnersCombobox({
                   color={partner.colors[1]}
                 />
                 {partner.title}
-                <IconCheck
+                <Check
                   className={cn(
                     "ml-auto size-4",
                     selected?.includes(partner.slug) ? "visible" : "invisible",

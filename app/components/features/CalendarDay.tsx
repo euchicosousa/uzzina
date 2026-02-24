@@ -1,12 +1,12 @@
 import { useDroppable } from "@dnd-kit/core";
 import { format, isSameDay, isSameMonth } from "date-fns";
-import { IconPlus } from "@tabler/icons-react";
 import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import type { ViewOptions } from "~/components/features/ViewOptions";
 import { ActionContainer } from "./ActionContainer";
 import type { Action } from "~/models/actions.server";
 import { getInstagramFeedActions, isInstagramFeed } from "~/utils/validation";
+import { Plus } from "lucide-react";
 
 export function CalendarDay({
   currentDay,
@@ -73,7 +73,7 @@ export function CalendarDay({
                   onCreateAction(day);
                 }}
               >
-                <IconPlus className="size-4" />
+                <Plus className="size-4" />
               </button>
             </div>
           )}
