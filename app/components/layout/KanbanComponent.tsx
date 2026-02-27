@@ -108,7 +108,7 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
                   isDragging
                   showLate
                   showPartner
-                  // showCategory
+                  showCategory
                   dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
                 />
               ) : null}
@@ -153,6 +153,7 @@ const KanbanColumn = ({
                       action={action}
                       showLate
                       showPartner
+                      showCategory
                       dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
                     />
                   </Draggable>

@@ -1,16 +1,16 @@
-import { useState, useMemo } from "react";
 import { format, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
-import { CalendarButtons } from "~/components/features/Calendar";
 import { Blocks, CircleAlert, Clock, Grid3x3, Kanban } from "lucide-react";
+import { useMemo, useState } from "react";
+import { CalendarButtons } from "~/components/features/Calendar";
 import {
   ViewOptionsComponent,
   type ViewOptions,
 } from "~/components/features/ViewOptions";
-import { UToggle } from "~/components/uzzina/UToggle";
-import KanbanComponent from "~/components/layout/KanbanComponent";
-import { HoursComponent } from "~/components/layout/HoursComponent";
 import FeedComponent from "~/components/layout/FeedComponent";
+import { HoursComponent } from "~/components/layout/HoursComponent";
+import KanbanComponent from "~/components/layout/KanbanComponent";
+import { UToggle } from "~/components/uzzina/UToggle";
 import { ORDER_BY } from "~/lib/CONSTANTS";
 import { isInstagramFeed } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";

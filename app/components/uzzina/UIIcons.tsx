@@ -23,6 +23,7 @@ import {
   Presentation,
   Printer,
   Rabbit,
+  SplinePointer,
   Sun,
   Zap,
 } from "lucide-react";
@@ -55,7 +56,7 @@ export function Icons({
     case "carousel":
       return <GalleryHorizontal className={cn(className)} style={style} />;
     case "design":
-      return <Pencil className={cn(className)} style={style} />;
+      return <SplinePointer className={cn(className)} style={style} />;
     case "dev":
       return <Code className={cn(className)} style={style} />;
     case "finance":

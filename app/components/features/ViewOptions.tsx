@@ -1,23 +1,22 @@
 import { IconBrandInstagram } from "@tabler/icons-react";
-import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
-import { Button } from "~/components/ui/button";
-import { Toggle } from "~/components/ui/toggle";
-import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 import {
-  AlignJustify,
   ArrowDown,
   ArrowDownAZ,
   ArrowUpAZ,
   Clock,
   HeartHandshake,
+  Image,
   Rows2,
   Rows3,
   Signal,
-  Square,
   SquareCheck,
   Tag,
   Users,
 } from "lucide-react";
+import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
+import { Button } from "~/components/ui/button";
+import { Toggle } from "~/components/ui/toggle";
+import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 
 export type ViewOptions = {
   instagram?: boolean;
@@ -103,7 +102,7 @@ export function ViewOptionsComponent({
             >
               {viewOptions.variant === VARIANT.line && <Rows3 />}
               {viewOptions.variant === VARIANT.block && <Rows2 />}
-              {viewOptions.variant === VARIANT.content && <Square />}
+              {viewOptions.variant === VARIANT.content && <Image />}
             </Button>
           )}
           {/* Colocar ações concluídas no final */}

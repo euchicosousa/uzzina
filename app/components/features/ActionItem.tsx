@@ -166,15 +166,20 @@ export function ActionItem({
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <ActionItemPartners
-                  action={action}
-                  partners={currentPartners}
-                />
-                <Icons
-                  slug={currentCategory.slug}
-                  className="size-4"
-                  color={currentCategory.color}
-                />
+                {showPartner && (
+                  <ActionItemPartners
+                    action={action}
+                    partners={currentPartners}
+                  />
+                )}
+
+                {showCategory && (
+                  <Icons
+                    slug={currentCategory.slug}
+                    className="size-4"
+                    color={currentCategory.color}
+                  />
+                )}
 
                 <StateIcon state={currentState} />
 
@@ -185,10 +190,13 @@ export function ActionItem({
                     border: "none",
                   }}
                 /> */}
-                <ActionItemResponsibles
-                  action={action}
-                  responsibles={currentResponsibles}
-                />
+
+                {showResponsibles && (
+                  <ActionItemResponsibles
+                    action={action}
+                    responsibles={currentResponsibles}
+                  />
+                )}
               </div>
 
               <div className="flex items-center gap-2 text-xs">
