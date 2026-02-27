@@ -34,8 +34,9 @@ export function SprintHomeComponent({ actions }: { actions: Action[] }) {
     >
       <div className="px-8 pb-8 xl:px-16">
         <ActionContainer
-          showCategory={viewOptions.category}
-          showPriority={viewOptions.priority}
+          showCategory
+          showPartner
+          showResponsibles
           actions={actions}
           columns={7}
           variant={viewOptions.variant}

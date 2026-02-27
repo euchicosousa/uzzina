@@ -183,18 +183,11 @@ export function ActionItem({
 
                 <StateIcon state={currentState} />
 
-                {/* <UBadge
-                  text={currentState.title}
-                  style={{
-                    backgroundColor: currentState.color,
-                    border: "none",
-                  }}
-                /> */}
-
                 {showResponsibles && (
                   <ActionItemResponsibles
                     action={action}
                     responsibles={currentResponsibles}
+                    size={SIZE.xs}
                   />
                 )}
               </div>
@@ -424,13 +417,15 @@ export function ActionItemPartners({
 export function ActionItemResponsibles({
   action,
   responsibles,
+  size,
 }: {
   action: Action;
   responsibles: Person[];
+  size?: (typeof SIZE)[keyof typeof SIZE];
 }) {
   return (
     <UAvatarGroup
-      size={SIZE.sm}
+      size={size || SIZE.sm}
       avatars={responsibles.map((person) => ({
         id: `${action.id}-${person.id}`,
         fallback: person.short,
