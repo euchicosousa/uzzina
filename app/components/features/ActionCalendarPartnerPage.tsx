@@ -17,7 +17,7 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useMatches,
   useOutletContext,
@@ -67,6 +67,14 @@ export function ActionCalendarPartnerPage({
   const [dateOverrides, setDateOverrides] = useState<
     Record<string, Partial<Action>>
   >({});
+
+  // Clear overrides once the server data (actions prop) is revalidated.
+  // The overrides exist only for smooth drop animations; once the loader
+  // delivers fresh data that already contains the persisted changes,
+  // keeping the overrides would cause stale values to shadow future updates.
+  useEffect(() => {
+    setDateOverrides({});
+  }, [actions]);
   const submit = useSubmit();
   const sensors = useSensors(
     useSensor(PointerSensor, {

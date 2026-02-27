@@ -7,7 +7,7 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSubmit } from "react-router";
 import {
   DATE_TIME_DISPLAY,
@@ -32,6 +32,14 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
   const [stateOverrides, setStateOverrides] = useState<Record<string, string>>(
     {},
   );
+
+  // Clear overrides once the server data (actions prop) is revalidated.
+  // The overrides exist only for smooth drop animations; once the loader
+  // delivers fresh data that already contains the persisted changes,
+  // keeping the overrides would cause stale values to shadow future updates.
+  useEffect(() => {
+    setStateOverrides({});
+  }, [actions]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

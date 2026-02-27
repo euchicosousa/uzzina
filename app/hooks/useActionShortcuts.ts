@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useRouteLoaderData, useSubmit } from "react-router";
 import { addDays, addMinutes, format, isAfter, parseISO } from "date-fns";
 import { INTENT, STATES } from "~/lib/CONSTANTS";
@@ -13,9 +13,20 @@ export const useActionShortcuts = (
   const submit = useSubmit();
   const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
 
+  // Use refs so the keyDown callback always reads the latest values,
+  // avoiding stale closures when shortcuts are pressed multiple times in a row.
+  const actionRef = useRef(action);
+  actionRef.current = action;
+
+  const isInstagramDateRef = useRef(isInstagramDate);
+  isInstagramDateRef.current = isInstagramDate;
+
   const keyDown = useCallback(
     (event: KeyboardEvent) => {
       const code = event.code;
+      // Always read from the ref to get the latest action value
+      const currentAction = actionRef.current;
+      const currentIsInstagramDate = isInstagramDateRef.current;
 
       let status: Record<string, string> = {
         KeyI: STATES.idea.slug,
@@ -34,7 +45,7 @@ export const useActionShortcuts = (
         if (code === "KeyD") {
           handleAction(
             {
-              ...action,
+              ...currentAction,
               intent: INTENT.create_action,
               created_at: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
               updated_at: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
@@ -44,12 +55,12 @@ export const useActionShortcuts = (
         } else if (code === "KeyH") {
           handleAction(
             {
-              ...action,
+              ...currentAction,
               intent: INTENT.update_action,
               ...getNewDateForAction(
-                action,
+                currentAction,
                 addMinutes(new Date(), 30),
-                isInstagramDate,
+                currentIsInstagramDate,
               ),
             },
             submit,
@@ -58,54 +69,54 @@ export const useActionShortcuts = (
           //Amanhã
           handleAction(
             {
-              ...action,
+              ...currentAction,
               intent: INTENT.update_action,
               ...getNewDateForAction(
-                action,
+                currentAction,
                 addDays(new Date(), 1),
-                isInstagramDate,
+                currentIsInstagramDate,
               ),
             },
             submit,
           );
         } else if (code === "KeyS") {
           // Em 7 dias
-          const targetStr = isInstagramDate
-            ? action.instagram_date!
-            : action.date;
+          const targetStr = currentIsInstagramDate
+            ? currentAction.instagram_date!
+            : currentAction.date;
           const targetDateObj = parseISO(targetStr.replace(" ", "T"));
 
           handleAction(
             {
-              ...action,
+              ...currentAction,
               intent: INTENT.update_action,
               ...getNewDateForAction(
-                action,
+                currentAction,
                 isAfter(targetDateObj, new Date())
                   ? addDays(targetDateObj, 7)
                   : addDays(new Date(), 7),
-                isInstagramDate,
+                currentIsInstagramDate,
               ),
             },
             submit,
           );
         } else if (code === "KeyM") {
           // Em 30 dias
-          const targetStr = isInstagramDate
-            ? action.instagram_date!
-            : action.date;
+          const targetStr = currentIsInstagramDate
+            ? currentAction.instagram_date!
+            : currentAction.date;
           const targetDateObj = parseISO(targetStr.replace(" ", "T"));
 
           handleAction(
             {
-              ...action,
+              ...currentAction,
               intent: INTENT.update_action,
               ...getNewDateForAction(
-                action,
+                currentAction,
                 isAfter(targetDateObj, new Date())
                   ? addDays(targetDateObj, 30)
                   : addDays(new Date(), 30),
-                isInstagramDate,
+                currentIsInstagramDate,
               ),
             },
             submit,
@@ -113,13 +124,15 @@ export const useActionShortcuts = (
         } else if (code === "KeyU") {
           // Coloca ou retira do sprint
           let sprints = null;
-          if (action.sprints) {
-            if (action.sprints.find((sprint) => sprint === person.user_id)) {
-              sprints = action.sprints.filter(
+          if (currentAction.sprints) {
+            if (
+              currentAction.sprints.find((sprint) => sprint === person.user_id)
+            ) {
+              sprints = currentAction.sprints.filter(
                 (sprint) => sprint !== person.user_id,
               );
             } else {
-              sprints = [...action.sprints, person.user_id];
+              sprints = [...currentAction.sprints, person.user_id];
             }
           } else {
             sprints = [person.user_id];
@@ -129,7 +142,7 @@ export const useActionShortcuts = (
 
           handleAction(
             {
-              ...action,
+              ...currentAction,
               intent: INTENT.update_action,
               sprints,
             },
@@ -139,7 +152,7 @@ export const useActionShortcuts = (
           if (confirm("Tem certeza que deseja arquivar esta ação?")) {
             handleAction(
               {
-                ...action,
+                ...currentAction,
                 intent: INTENT.update_action,
                 archived: true,
               },
@@ -150,7 +163,7 @@ export const useActionShortcuts = (
       } else if (status[code]) {
         handleAction(
           {
-            ...action,
+            ...currentAction,
             intent: INTENT.update_action,
             state: status[code],
           },
@@ -158,7 +171,9 @@ export const useActionShortcuts = (
         );
       }
     },
-    [action, isInstagramDate, person.user_id, submit],
+    // The callback only depends on stable values (submit, person.user_id).
+    // Action data is always read from the ref, which is kept up-to-date.
+    [submit, person.user_id],
   );
 
   useEffect(() => {

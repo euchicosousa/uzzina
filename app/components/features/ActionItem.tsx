@@ -340,14 +340,7 @@ export function ActionItem({
               {getFormattedPartnersName(currentPartners || [])}
             </div>
 
-            <div
-              className="min-h-2 min-w-2 shrink-0 rounded-full"
-              style={{ backgroundColor: currentState.color }}
-            >
-              <div className="hidden px-1.5 text-[10px] font-medium tracking-wide text-white uppercase group-hover/action:block">
-                {currentState.title}
-              </div>
-            </div>
+            <StateIcon state={currentState} />
           </div>
         )}
         {renderActionVariant()}
