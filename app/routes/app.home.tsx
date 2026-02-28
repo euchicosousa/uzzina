@@ -52,19 +52,21 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     todayEnd.toISOString(),
   );
 
+  const startTs = start.getTime();
+  const endTs = end.getTime();
+  const todayEndTs = todayEnd.getTime();
+
   const actions =
-    (allActions as Action[])?.filter(
-      (action: Action) =>
-        action.date >= format(start, "yyyy-MM-dd HH:mm:ss") &&
-        action.date <= format(end, "yyyy-MM-dd HH:mm:ss"),
-    ) || [];
+    (allActions as Action[])?.filter((action: Action) => {
+      const actionTime = new Date(action.date).getTime();
+      return actionTime >= startTs && actionTime <= endTs;
+    }) || [];
 
   const actionsChart =
-    (allActions as Action[])?.filter(
-      (action: Action) =>
-        action.state !== STATES.finished.slug &&
-        action.date <= format(todayEnd, "yyyy-MM-dd HH:mm:ss"),
-    ) || [];
+    (allActions as Action[])?.filter((action: Action) => {
+      const actionTime = new Date(action.date).getTime();
+      return action.state !== STATES.finished.slug && actionTime <= todayEndTs;
+    }) || [];
 
   return data({ actions, actionsChart } as AppHomeLoaderData, {
     headers: { "Cache-Control": "no-store" },
