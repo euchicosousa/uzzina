@@ -20,6 +20,7 @@ import { themeSessionResolver } from "./sessions.server";
 
 import "./tailwind.css";
 import { cn } from "./lib/utils";
+import { PALLETE } from "./lib/CONSTANTS";
 
 export const links: Route.LinksFunction = () => [
   // { rel: "stylesheet", href: "/object-sans/object-sans.css" },
@@ -86,6 +87,26 @@ export function App() {
         <Meta />
         <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
         <Links />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var palette = ${JSON.stringify(PALLETE)};
+                var idx = localStorage.getItem("uzzina-accent-color-index");
+                if (idx !== null && palette[idx]) {
+                  var p = palette[idx];
+                  var root = document.documentElement;
+                  root.style.setProperty("--accent-h", p.light.h);
+                  root.style.setProperty("--accent-c", p.light.c);
+                  root.style.setProperty("--accent-l", p.light.l);
+                  root.style.setProperty("--dark-accent-h", p.dark.h);
+                  root.style.setProperty("--dark-accent-c", p.dark.c);
+                  root.style.setProperty("--dark-accent-l", p.dark.l);
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
       </head>
       <body className="antialiased">
         <Outlet />

@@ -1,5 +1,5 @@
 import { Theme, useTheme } from "remix-themes";
-import { SIZE } from "~/lib/CONSTANTS";
+import { PALLETE, SIZE } from "~/lib/CONSTANTS";
 import { getCleanAction, getLateActions, getThemeIcon } from "~/lib/helpers";
 import type { AppHomeLoaderData } from "~/routes/app.home";
 import { UzzinaLogo } from "../logo";
@@ -25,6 +25,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { UAvatar } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
+import { useAccentColor } from "~/hooks/useAccentColor";
 import {
   Link,
   useFetchers,
@@ -34,6 +35,7 @@ import {
   useParams,
 } from "react-router";
 import { HeartHandshake, Plus, Search } from "lucide-react";
+import { set } from "date-fns";
 
 export function Header({
   person,
@@ -147,6 +149,7 @@ export function Header({
 
 const HeaderMenu = ({ person }: { person: Person }) => {
   const [theme, setTheme] = useTheme();
+  const { setColorIndex } = useAccentColor();
   const isLoading =
     useFetchers().length > 0 || useNavigation().state !== "idle";
   return (
@@ -160,21 +163,35 @@ const HeaderMenu = ({ person }: { person: Person }) => {
         <UAvatar size={SIZE.md} fallback={person.short} image={person.image} />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mx-2">
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            {getThemeIcon(theme, "size-4 mr-2")} Mudar o tema
-          </DropdownMenuSubTrigger>
-          <DropdownMenuPortal>
-            <DropdownMenuSubContent>
-              <DropdownMenuItem onClick={() => setTheme(Theme.DARK)}>
-                {getThemeIcon(Theme.DARK, "size-4")} Tema escuro
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme(Theme.LIGHT)}>
-                {getThemeIcon(Theme.LIGHT, "size-4")} Tema claro
-              </DropdownMenuItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuPortal>
-        </DropdownMenuSub>
+        {theme === Theme.DARK ? (
+          <DropdownMenuItem onClick={() => setTheme(Theme.LIGHT)}>
+            {getThemeIcon(Theme.LIGHT, "size-4")} Tema claro
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem onClick={() => setTheme(Theme.DARK)}>
+            {getThemeIcon(Theme.DARK, "size-4")} Tema escuro
+          </DropdownMenuItem>
+        )}
+        <div className="grid grid-cols-5 justify-between gap-1 p-2">
+          {PALLETE.map((paletteConfig, i) => {
+            const { light, dark } = paletteConfig;
+            const currentColors = theme === Theme.DARK ? dark : light;
+            return (
+              <button
+                onClick={() => {
+                  setColorIndex(i);
+                }}
+                style={{
+                  backgroundColor: `oklch(${currentColors.l} ${currentColors.c} ${currentColors.h})`,
+                }}
+                className="ring-border size-4 cursor-pointer rounded-lg hover:ring-2 focus:ring-4"
+                key={i}
+                title={paletteConfig.label}
+              ></button>
+            );
+          })}
+        </div>
+
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link to="/app/admin/partners">Parceiros</Link>

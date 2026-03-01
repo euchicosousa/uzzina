@@ -401,3 +401,56 @@ export const ORDER_BY = {
   priority: "priority",
   state: "state",
 } as const;
+
+export const PALLETE = [
+  {
+    label: "Azul (Padrão)",
+    light: { h: 264, c: 0.31, l: 0.45 },
+    dark: { h: 264, c: 0.31, l: 0.58 },
+  },
+  {
+    label: "Roxo",
+    light: { h: 280, c: 0.28, l: 0.54 },
+    dark: { h: 280, c: 0.28, l: 0.68 },
+  },
+  {
+    label: "Rosa",
+    light: { h: 340, c: 0.25, l: 0.65 },
+    dark: { h: 340, c: 0.25, l: 0.68 },
+  },
+  {
+    label: "Vermelho",
+    light: { h: 20, c: 0.25, l: 0.62 },
+    dark: { h: 20, c: 0.25, l: 0.68 },
+  },
+  {
+    label: "Laranja",
+    light: { h: 40, c: 0.22, l: 0.7 },
+    dark: { h: 40, c: 0.22, l: 0.75 },
+  },
+  {
+    label: "Amarelo",
+    light: { h: 100, c: 0.5, l: 0.8 },
+    dark: { h: 100, c: 0.4, l: 0.7 },
+  },
+  {
+    label: "Verde",
+    light: { h: 130, c: 0.2, l: 0.7 },
+    dark: { h: 130, c: 0.2, l: 0.65 },
+  },
+  {
+    label: "Ciano",
+    light: { h: 200, c: 0.2, l: 0.7 },
+    dark: { h: 200, c: 0.2, l: 0.65 },
+  },
+  {
+    label: "Azul Claro",
+    light: { h: 240, c: 0.22, l: 0.7 },
+    dark: { h: 240, c: 0.22, l: 0.65 },
+  },
+  {
+    label: "Magenta",
+    light: { h: 350, c: 0.4, l: 0.9 },
+    dark: { h: 350, c: 0.4, l: 0.8 },
+  },
+];
