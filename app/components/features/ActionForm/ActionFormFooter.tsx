@@ -16,6 +16,7 @@ interface ActionFormFooterProps {
   currentPartners: Partner[];
   isPending: boolean;
   handleSave: () => void;
+  handleClose: () => void;
 }
 
 export function ActionFormFooter({
@@ -25,6 +26,7 @@ export function ActionFormFooter({
   currentPartners,
   isPending,
   handleSave,
+  handleClose,
 }: ActionFormFooterProps) {
   return (
     <div className="w-fulld flex shrink-0 justify-between overflow-hidden border-t">
@@ -96,6 +98,9 @@ export function ActionFormFooter({
             event.preventDefault();
             event.stopPropagation();
             handleSave();
+            if (!event.shiftKey) {
+              handleClose();
+            }
           }}
         >
           {RawAction.id

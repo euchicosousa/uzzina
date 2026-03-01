@@ -200,6 +200,9 @@ export function CreateAndEditAction({
       } else if (event.key.toLocaleLowerCase() === "enter" && event.metaKey) {
         event.preventDefault();
         handleSaveRef.current();
+        if (!event.shiftKey) {
+          onClose();
+        }
       }
     }
     document.addEventListener("keydown", handleKeyDown);
@@ -283,6 +286,7 @@ export function CreateAndEditAction({
           currentPartners={currentPartners}
           isPending={isPending}
           handleSave={handleSave}
+          handleClose={onClose}
         />
       </div>
     </div>
