@@ -21,10 +21,12 @@ export function PartnersCombobox({
   selectedPartners,
   onSelect,
   tabIndex,
+  showText = true,
 }: {
   selectedPartners?: string[];
   onSelect?: (partners: string[]) => void;
   tabIndex?: number;
+  showText?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const { partners } = useMatches()[1].loaderData as { partners: Partner[] };
@@ -75,10 +77,11 @@ export function PartnersCombobox({
           ) : (
             <UAvatar size="sm" fallback="PR" />
           )}
-
-          <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-            {getFormattedPartnersName(currentPartners)}
-          </div>
+          {showText && (
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+              {getFormattedPartnersName(currentPartners)}
+            </div>
+          )}
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-[400px] p-0">

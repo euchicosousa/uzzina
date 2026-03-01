@@ -1,4 +1,4 @@
-import { CloudUpload, Loader, Plus } from "lucide-react";
+import { CloudUpload, Loader, Plus, Rabbit, Trash, X } from "lucide-react";
 import type { SubmitFunction } from "react-router";
 import { ActionColorDropdown } from "~/components/features/ActionForm/ActionColorDropdown";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
@@ -6,6 +6,7 @@ import { PartnersCombobox } from "~/components/features/PartnersCombobox";
 import { StatesCombobox } from "~/components/features/StatesCombobox";
 import { Button } from "~/components/ui/button";
 import { isInstagramFeed } from "~/lib/helpers";
+import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
 
@@ -37,6 +38,7 @@ export function ActionFormFooter({
           <PartnersCombobox
             selectedPartners={RawAction.partners}
             tabIndex={3}
+            showText={false}
             onSelect={async (selected) => {
               setRawAction({
                 ...RawAction,
@@ -51,6 +53,7 @@ export function ActionFormFooter({
           <StatesCombobox
             selectedState={RawAction.state}
             tabIndex={4}
+            showText={false}
             onSelect={async (selected) => {
               setRawAction({
                 ...RawAction,
@@ -65,6 +68,7 @@ export function ActionFormFooter({
           <CategoriesCombobox
             selectedCategories={[RawAction.category]}
             tabIndex={5}
+            showText={false}
             onSelect={async ({ category }) => {
               setRawAction({
                 ...RawAction,
@@ -87,6 +91,29 @@ export function ActionFormFooter({
             />
           </div>
         )}
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "p-6 outline-none" /* se não for sprint deve estar com opacity-50 */,
+          )}
+          onClick={() => {
+            //definir que vai para o sprint
+          }}
+        >
+          <Rabbit />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="p-6 text-sm outline-none"
+          onClick={() => {
+            //deletar a ação
+          }}
+        >
+          <Trash />
+        </Button>
       </div>
       {/* Botão de criar e atualizar */}
       <div className="p-4">

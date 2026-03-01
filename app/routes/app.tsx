@@ -124,7 +124,7 @@ export default function Dashboard() {
         {BaseAction ? (
           <Suspense fallback={null}>
             <div
-              className="fixed inset-0 top-17 z-10 flex w-full shrink-0 flex-col bg-black/20"
+              className="fixed inset-0 top-17 z-10 flex w-full shrink-0 flex-col bg-black/20 dark:bg-black/80"
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();

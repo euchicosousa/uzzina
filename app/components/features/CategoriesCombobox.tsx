@@ -25,6 +25,7 @@ export function CategoriesCombobox({
   showInstagramGroup,
   className,
   tabIndex,
+  showText = true,
 }: {
   selectedCategories: string[];
   onSelect?: ({
@@ -38,6 +39,7 @@ export function CategoriesCombobox({
   showInstagramGroup?: boolean;
   className?: string;
   tabIndex?: number;
+  showText?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -134,10 +136,11 @@ export function CategoriesCombobox({
               className="size-5"
               color={currentCategories[0].color}
             />
-
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-              {currentCategories[0].title}
-            </div>
+            {showText && (
+              <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                {currentCategories[0].title}
+              </div>
+            )}
           </button>
         )}
       </PopoverTrigger>

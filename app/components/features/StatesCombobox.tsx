@@ -14,15 +14,18 @@ import {
   CommandList,
 } from "../ui/command";
 import { STATES, type STATE } from "~/lib/CONSTANTS";
+import { StateIcon } from "./StateIcon";
 
 export function StatesCombobox({
   selectedState,
   onSelect,
   tabIndex,
+  showText = true,
 }: {
   selectedState: string;
   onSelect?: (state: string) => void;
   tabIndex?: number;
+  showText?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   let currentState = STATES[selectedState as STATE];
@@ -34,11 +37,17 @@ export function StatesCombobox({
           tabIndex={tabIndex}
           className="hover:bg-secondary focus:bg-secondary/50 flex items-center gap-2 p-6 text-sm outline-none"
         >
-          <div
-            className="size-2 rounded-full"
-            style={{ backgroundColor: currentState.color }}
-          ></div>
-          {currentState.title}
+          {!showText ? (
+            <StateIcon state={currentState} />
+          ) : (
+            <>
+              <div
+                className="size-2 rounded-full"
+                style={{ backgroundColor: currentState.color }}
+              ></div>
+              {currentState.title}
+            </>
+          )}
         </button>
       </PopoverTrigger>
       <PopoverContent className="p-0">

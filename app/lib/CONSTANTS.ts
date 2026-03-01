@@ -431,7 +431,7 @@ export const PALLETE = [
   {
     label: "Amarelo",
     light: { h: 100, c: 0.5, l: 0.8 },
-    dark: { h: 100, c: 0.4, l: 0.7 },
+    dark: { h: 100, c: 0.4, l: 0.8 },
   },
   {
     label: "Verde",
