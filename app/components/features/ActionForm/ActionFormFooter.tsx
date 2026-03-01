@@ -1,15 +1,13 @@
+import { CloudUpload, Loader, Plus } from "lucide-react";
 import type { SubmitFunction } from "react-router";
-import { toast } from "sonner";
+import { ActionColorDropdown } from "~/components/features/ActionForm/ActionColorDropdown";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { PartnersCombobox } from "~/components/features/PartnersCombobox";
 import { StatesCombobox } from "~/components/features/StatesCombobox";
 import { Button } from "~/components/ui/button";
-import { ActionColorDropdown } from "~/components/features/ActionForm/ActionColorDropdown";
-import { INTENT } from "~/lib/CONSTANTS";
-import { handleAction, isInstagramFeed } from "~/lib/helpers";
+import { isInstagramFeed } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
-import { CloudUpload, Loader, Plus } from "lucide-react";
 
 interface ActionFormFooterProps {
   RawAction: Action;
@@ -17,7 +15,7 @@ interface ActionFormFooterProps {
   updateAction: (data?: { [key: string]: any }) => Promise<void>;
   currentPartners: Partner[];
   isPending: boolean;
-  submit: SubmitFunction;
+  handleSave: () => void;
 }
 
 export function ActionFormFooter({
@@ -26,7 +24,7 @@ export function ActionFormFooter({
   updateAction,
   currentPartners,
   isPending,
-  submit,
+  handleSave,
 }: ActionFormFooterProps) {
   return (
     <div className="w-fulld flex shrink-0 justify-between overflow-hidden border-t">
@@ -94,39 +92,19 @@ export function ActionFormFooter({
           disabled={isPending}
           className="squircle rounded-2xl"
           tabIndex={7}
-          onClick={async (event) => {
+          onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
-
-            if (!RawAction.title) {
-              toast.error("Erro / O título é obrigatório", {
-                position: "top-center",
-              });
-              return;
-            }
-
-            if (RawAction.partners.length === 0) {
-              toast.error(
-                "Erro / Pelo menos um parceiro deve ser selecionado",
-                {
-                  position: "top-center",
-                },
-              );
-              return;
-            }
-
-            await handleAction(
-              {
-                ...RawAction,
-                intent: RawAction.id
-                  ? INTENT.update_action
-                  : INTENT.create_action,
-              },
-              submit,
-            );
+            handleSave();
           }}
         >
-          {RawAction.id ? "Atualizar" : "Criar Ação"}
+          {RawAction.id
+            ? isPending
+              ? "Atualizando..."
+              : "Atualizar"
+            : isPending
+              ? "Criando..."
+              : "Criar Ação"}
 
           {isPending ? (
             <Loader className="animate-spin" />

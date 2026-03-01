@@ -1,6 +1,6 @@
 import { addMinutes, format, parse } from "date-fns";
 import { IconBrandInstagram } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Heart, MessageCircle, X } from "lucide-react";
 import {
   useFetcher,
@@ -16,6 +16,7 @@ import { INTENT } from "~/lib/CONSTANTS";
 import { handleAction, isInstagramFeed } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
+import { toast } from "sonner";
 
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
@@ -36,8 +37,40 @@ export function CreateAndEditAction({
   ) as AppLoaderData & { partners: Partner[] };
 
   const fetcher = useFetcher();
+  const submit = useSubmit();
+  const fetchers = useFetchers();
 
   const [RawAction, setRawAction] = useState<Action>(BaseAction);
+
+  const handleSave = useCallback(async () => {
+    if (!RawAction.title) {
+      toast.error("Erro / O título é obrigatório", {
+        position: "top-center",
+      });
+      return;
+    }
+
+    if (RawAction.partners.length === 0) {
+      toast.error("Erro / Pelo menos um parceiro deve ser selecionado", {
+        position: "top-center",
+      });
+      return;
+    }
+
+    await handleAction(
+      {
+        ...RawAction,
+        intent: RawAction.id ? INTENT.update_action : INTENT.create_action,
+      },
+      submit,
+    );
+  }, [RawAction, submit]);
+
+  // Ref always points to the latest handleSave to avoid stale closures in event listeners
+  const handleSaveRef = useRef(handleSave);
+  useEffect(() => {
+    handleSaveRef.current = handleSave;
+  }, [handleSave]);
 
   useEffect(() => {
     if (RawAction.id && !BaseAction.id) {
@@ -52,9 +85,6 @@ export function CreateAndEditAction({
     }
     setRawAction(BaseAction);
   }, [BaseAction]);
-
-  const submit = useSubmit();
-  const fetchers = useFetchers();
 
   const [isPending, setIsPending] = useState(false);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
@@ -162,6 +192,20 @@ export function CreateAndEditAction({
     }
   }, [isAIProcessing]);
 
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key.toLocaleLowerCase() === "escape") {
+        event.preventDefault();
+        onClose();
+      } else if (event.key.toLocaleLowerCase() === "enter" && event.metaKey) {
+        event.preventDefault();
+        handleSaveRef.current();
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   return (
     <div
       className={cn(
@@ -238,7 +282,7 @@ export function CreateAndEditAction({
           updateAction={updateAction}
           currentPartners={currentPartners}
           isPending={isPending}
-          submit={submit}
+          handleSave={handleSave}
         />
       </div>
     </div>

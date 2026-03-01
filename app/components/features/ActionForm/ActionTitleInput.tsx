@@ -4,13 +4,15 @@ import { useEffect, useState } from "react";
 
 interface ActionTitleInputProps {
   title: string;
-  onUpdate: (title: string) => void;
+  onChange: (title: string) => void;
+  onBlur: (title: string) => void;
   tabIndex?: number;
 }
 
 export function ActionTitleInput({
   title,
-  onUpdate,
+  onBlur,
+  onChange,
   tabIndex,
 }: ActionTitleInputProps) {
   const [localTitle, setLocalTitle] = useState(title);
@@ -23,10 +25,13 @@ export function ActionTitleInput({
     <div className="focus-within:bg-secondary/50 relative px-4 py-2">
       <textarea
         value={localTitle}
-        onChange={(e) => setLocalTitle(e.target.value)}
+        onChange={(e) => {
+          onChange(e.target.value);
+          setLocalTitle(e.target.value);
+        }}
         onBlur={() => {
           if (localTitle !== title) {
-            onUpdate(localTitle);
+            onBlur(localTitle);
           }
         }}
         placeholder="Título"

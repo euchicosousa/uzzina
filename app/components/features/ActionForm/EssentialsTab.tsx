@@ -60,9 +60,10 @@ export function EssentialsTab({
       <ActionTitleInput
         title={RawAction.title}
         tabIndex={1}
-        onUpdate={async (title) => {
-          // @ts-ignore
+        onChange={async (title) => {
           setRawAction({ ...RawAction, title });
+        }}
+        onBlur={async (title) => {
           await updateAction({
             title,
           });
