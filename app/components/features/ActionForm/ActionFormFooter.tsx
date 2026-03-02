@@ -139,7 +139,7 @@ export function ActionFormFooter({
             event.preventDefault();
             event.stopPropagation();
             handleSave();
-            if (!event.shiftKey) {
+            if (event.shiftKey) {
               handleClose();
             }
           }}

@@ -80,30 +80,68 @@ export function ViewOptionsComponent({
           )}
 
           {viewOptions.showOptions.variant && (
-            <Button
-              variant={"ghost"}
-              title={
-                viewOptions.variant === VARIANT.line
-                  ? "Ação em formato de linha"
-                  : viewOptions.variant === VARIANT.block
-                    ? "Ação em formato de bloco"
-                    : "Ação em formato de conteúdo"
-              }
-              onClick={() => {
-                if (viewOptions.variant === VARIANT.line) {
-                  setViewOptions({ ...viewOptions, variant: VARIANT.block });
-                } else if (viewOptions.variant === VARIANT.block) {
-                  setViewOptions({ ...viewOptions, variant: VARIANT.content });
-                } else if (viewOptions.variant === VARIANT.content) {
-                  setViewOptions({ ...viewOptions, variant: VARIANT.line });
+            <div className="flex">
+              <Button
+                variant={
+                  viewOptions.variant === VARIANT.line ? "outline" : "ghost"
                 }
-              }}
-              className="grid place-content-center p-0"
-            >
-              {viewOptions.variant === VARIANT.line && <Rows3 />}
-              {viewOptions.variant === VARIANT.block && <Rows2 />}
-              {viewOptions.variant === VARIANT.content && <Image />}
-            </Button>
+                title="Ação em formato de linha"
+                onClick={() => {
+                  setViewOptions({ ...viewOptions, variant: VARIANT.line });
+                }}
+              >
+                <Rows3 />
+              </Button>
+              <Button
+                variant={
+                  viewOptions.variant === VARIANT.block ? "outline" : "ghost"
+                }
+                title="Ação em formato de bloco"
+                onClick={() => {
+                  setViewOptions({ ...viewOptions, variant: VARIANT.block });
+                }}
+              >
+                <Rows2 />
+              </Button>
+              <Button
+                variant={
+                  viewOptions.variant === VARIANT.content ? "outline" : "ghost"
+                }
+                title="Ação em formato de conteúdo"
+                onClick={() => {
+                  setViewOptions({ ...viewOptions, variant: VARIANT.content });
+                }}
+              >
+                <Image />
+              </Button>
+              {/* <Button
+                variant={"ghost"}
+                title={
+                  viewOptions.variant === VARIANT.line
+                    ? "Ação em formato de linha"
+                    : viewOptions.variant === VARIANT.block
+                      ? "Ação em formato de bloco"
+                      : "Ação em formato de conteúdo"
+                }
+                onClick={() => {
+                  if (viewOptions.variant === VARIANT.line) {
+                    setViewOptions({ ...viewOptions, variant: VARIANT.block });
+                  } else if (viewOptions.variant === VARIANT.block) {
+                    setViewOptions({
+                      ...viewOptions,
+                      variant: VARIANT.content,
+                    });
+                  } else if (viewOptions.variant === VARIANT.content) {
+                    setViewOptions({ ...viewOptions, variant: VARIANT.line });
+                  }
+                }}
+                className="grid place-content-center p-0"
+              >
+                {viewOptions.variant === VARIANT.line && <Rows3 />}
+                {viewOptions.variant === VARIANT.block && <Rows2 />}
+                {viewOptions.variant === VARIANT.content && <Image />}
+              </Button> */}
+            </div>
           )}
           {/* Colocar ações concluídas no final */}
           {viewOptions.showOptions.finishedOnEnd && (

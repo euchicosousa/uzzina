@@ -290,58 +290,62 @@ export function ActionItem({
     }
   };
 
-  return (
-    <Draggable id={action.id}>
-      <div
-        title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
-        className={cn(
-          "group/action font-inter @container relative shrink-0 cursor-pointer overflow-hidden",
-          variant === VARIANT.content
-            ? "flex-col gap-2"
-            : variant === VARIANT.block
-              ? "squircle rounded-2xl px-3 py-2"
-              : variant === VARIANT.hour
-                ? "squircle w-auto rounded-xl px-3 py-2"
-                : "px-3 py-1 transition-colors @xs:p-1",
+  const content = (
+    <div
+      title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
+      className={cn(
+        "group/action font-inter @container relative shrink-0 cursor-pointer overflow-hidden",
+        variant === VARIANT.content
+          ? "flex-col gap-2"
+          : variant === VARIANT.block
+            ? "squircle rounded-2xl px-3 py-2"
+            : variant === VARIANT.hour
+              ? "squircle w-auto rounded-xl px-3 py-2"
+              : "px-3 py-1 transition-colors @xs:p-1",
 
-          bgClasses,
-          variant === VARIANT.block ? "flex-col gap-2" : "",
-          className,
-          isDragging ? "cursor-grabbing" : "",
-        )}
-        // style={{ borderColor: currentState.color }}
-        onMouseOver={() => setIsHovered(true)}
-        onMouseOut={() => setIsHovered(false)}
-        onClick={() => {
-          if (!isEditing) {
-            if (onClick) {
-              onClick(action);
-            } else {
-              setBaseAction(action);
-            }
+        bgClasses,
+        variant === VARIANT.block ? "flex-col gap-2" : "",
+        className,
+        isDragging ? "cursor-grabbing" : "",
+      )}
+      // style={{ borderColor: currentState.color }}
+      onMouseOver={() => setIsHovered(true)}
+      onMouseOut={() => setIsHovered(false)}
+      onClick={() => {
+        if (!isEditing) {
+          if (onClick) {
+            onClick(action);
+          } else {
+            setBaseAction(action);
           }
-        }}
-      >
-        {variant === VARIANT.content && (
-          <div className="mb-2 flex items-center gap-2 overflow-hidden">
-            <ActionItemPartners
-              action={action}
-              partners={currentPartners}
-              size={SIZE.sm}
-            />
-            <div className="w-full overflow-hidden text-xs leading-none font-medium text-ellipsis whitespace-nowrap">
-              {getFormattedPartnersName(currentPartners || [])}
-            </div>
-
-            <StateIcon state={currentState} />
+        }
+      }}
+    >
+      {variant === VARIANT.content && (
+        <div className="mb-2 flex items-center gap-2 overflow-hidden">
+          <ActionItemPartners
+            action={action}
+            partners={currentPartners}
+            size={SIZE.sm}
+          />
+          <div className="w-full overflow-hidden text-xs leading-none font-medium text-ellipsis whitespace-nowrap">
+            {getFormattedPartnersName(currentPartners || [])}
           </div>
-        )}
-        {renderActionVariant()}
-        {isHovered && !isEditing && (
-          <ShortcutActions action={action} isInstagramDate={isInstagramDate} />
-        )}
-      </div>
-    </Draggable>
+
+          <StateIcon state={currentState} />
+        </div>
+      )}
+      {renderActionVariant()}
+      {isHovered && !isEditing && (
+        <ShortcutActions action={action} isInstagramDate={isInstagramDate} />
+      )}
+    </div>
+  );
+
+  return isDraggable ? (
+    <Draggable id={action.id}>{content}</Draggable>
+  ) : (
+    content
   );
 }
 

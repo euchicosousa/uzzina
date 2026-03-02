@@ -12,9 +12,9 @@ export function StateIcon({
   let sizeClasses = {
     xs: "size-3",
     sm: "size-4",
-    md: "size-6",
-    lg: "size-8",
-    xl: "size-10",
+    md: "size-5",
+    lg: "size-6",
+    xl: "size-8",
     xxl: "size-12",
   }[size];
   return state.slug === STATES.finished.slug ? (

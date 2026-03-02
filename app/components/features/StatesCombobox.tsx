@@ -38,7 +38,7 @@ export function StatesCombobox({
           className="hover:bg-secondary focus:bg-secondary/50 flex items-center gap-2 p-6 text-sm outline-none"
         >
           {!showText ? (
-            <StateIcon state={currentState} />
+            <StateIcon state={currentState} size="md" />
           ) : (
             <>
               <div

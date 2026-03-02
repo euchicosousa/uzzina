@@ -162,7 +162,7 @@ export function CelebrationContainer({
         <div key={celebration.id} title={celebration.title}>
           <div className="flex items-center gap-2">
             <div className="bg-primary size-1 rounded-full"></div>
-            <div className="line-clamp-1 opacity-50">{celebration.title}</div>
+            <div className="truncate opacity-50">{celebration.title}</div>
           </div>
         </div>
       ))}

@@ -4,14 +4,12 @@ import {
   endOfMonth,
   endOfWeek,
   format,
-  isSameDay,
-  parseISO,
   startOfMonth,
   startOfWeek,
 } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { useMatches } from "react-router";
-import { CalendarActions } from "~/components/features/Calendar";
+import { CalendarWithDnd } from "~/components/features/CalendarWithDnd";
 import {
   ViewOptionsComponent,
   type ViewOptions,
@@ -31,10 +29,11 @@ export function CalendarHomeComponent({
   actions: Action[];
   setBaseAction: (action: Action | null) => void;
 }) {
-  const { celebrations } = useMatches()[1].loaderData as AppLoaderData;
+  const { celebrations, person } = useMatches()[1].loaderData as AppLoaderData;
 
   const [period, setPeriod] = useState<"week" | "month">("week");
   const [currentDate] = useState(new Date());
+
   const calendarDays = eachDayOfInterval({
     start:
       period === "week"
@@ -45,6 +44,7 @@ export function CalendarHomeComponent({
         ? endOfWeek(currentDate)
         : endOfWeek(endOfMonth(currentDate)),
   });
+
   const [viewOptions, setViewOptions] = useState<ViewOptions>({
     ascending: true,
     category: true,
@@ -56,18 +56,6 @@ export function CalendarHomeComponent({
       order: true,
       finishedOnEnd: true,
     },
-  });
-
-  const { person } = useMatches()[1].loaderData as AppLoaderData;
-
-  let calendar = calendarDays.map((day) => {
-    return {
-      date: day,
-      actions: actions.filter((action) => isSameDay(action.date, day)),
-      celebrations: celebrations.filter((celebration) =>
-        isSameDay(parseISO(celebration.date), day),
-      ),
-    };
   });
 
   return (
@@ -110,8 +98,10 @@ export function CalendarHomeComponent({
           period === "week" ? "h-[50vh]" : "",
         )}
       >
-        <CalendarActions
-          calendar={calendar}
+        <CalendarWithDnd
+          actions={actions}
+          calendarDays={calendarDays}
+          celebrations={celebrations}
           viewOptions={viewOptions}
           isCompact={period === "month"}
           isScroll={period === "week"}
