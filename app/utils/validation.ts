@@ -43,7 +43,7 @@ export function isInstagramFeed(category: string, stories = false) {
 }
 
 export const isSprint = (action: Action, person: Person) => {
-  return action.sprints?.find((sprint) => sprint === person.user_id);
+  return !!action.sprints?.find((sprint) => sprint === person.user_id);
 };
 
 export const isColorValid = (color: string) => {

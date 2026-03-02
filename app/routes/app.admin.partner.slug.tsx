@@ -22,6 +22,7 @@ import { PartnerUsersSelector } from "~/components/features/PartnerUsersSelector
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
+import { UToggleInput } from "~/components/uzzina/UToggle";
 import { getUserId } from "~/services/auth.server";
 
 export const meta: MetaFunction = () => {
@@ -77,9 +78,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     colors: colors.length > 0 ? colors : ["#000000", "#ffffff"],
     archived: updates.archived === "on",
     users_ids: formData.getAll("users_ids") as string[],
-    // Provide default values for required fields that might be missing in form if not touched
     short: (updates.short as string) || "",
-    // New fields
     context: (updates.context as string) || null,
     voice: (updates.voice as string) || null,
     img: (updates.img as string) || null,
@@ -149,6 +148,7 @@ export default function AdminPartnerEditPage() {
               required
             />
           </div>
+
           <div className="grid gap-4 md:grid-cols-2">
             <div className="grid gap-4">
               <label className="font-medium" htmlFor="short">
@@ -193,9 +193,7 @@ export default function AdminPartnerEditPage() {
               >
                 <Tiptap
                   content={contextValue}
-                  handleBlur={(content) => {
-                    setContextValue(content);
-                  }}
+                  handleBlur={(content) => setContextValue(content)}
                   className="prose prose-sm dark:prose-invert font-inter h-full max-w-none focus:outline-none"
                 />
               </Suspense>
@@ -215,9 +213,7 @@ export default function AdminPartnerEditPage() {
               >
                 <Tiptap
                   content={voiceValue}
-                  handleBlur={(content) => {
-                    setVoiceValue(content);
-                  }}
+                  handleBlur={(content) => setVoiceValue(content)}
                   className="prose prose-sm dark:prose-invert font-inter h-full max-w-none focus:outline-none"
                 />
               </Suspense>
@@ -249,88 +245,59 @@ export default function AdminPartnerEditPage() {
             <div className="font-medium">Cores da Marca</div>
             <ColorListEditor initialColors={partner?.colors || []} />
           </div>
+
           <div className="flex items-end justify-between gap-4">
             <div className="grid gap-4">
               <div className="font-medium">Escopo de Trabalho (SOW)</div>
-
               <div className="flex items-center gap-4">
-                <div>
-                  <input
-                    type="radio"
-                    id="sow-marketing"
-                    name="sow"
-                    value="marketing"
-                    defaultChecked={
-                      partner?.sow === "marketing" || !partner?.sow
-                    }
-                    className="peer sr-only absolute size-0"
-                  />
-                  <label
-                    htmlFor="sow-marketing"
-                    className="hover:bg-opacity-100 peer-checked:bg-muted squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
-                  >
-                    <Megaphone className="size-4" />
-                    Marketing
-                  </label>
-                </div>
+                <UToggleInput
+                  type="radio"
+                  id="sow-marketing"
+                  name="sow"
+                  value="marketing"
+                  defaultChecked={partner?.sow === "marketing" || !partner?.sow}
+                >
+                  <Megaphone className="size-4" />
+                  Marketing
+                </UToggleInput>
 
-                <div>
-                  <input
-                    type="radio"
-                    id="sow-socialmedia"
-                    name="sow"
-                    value="socialmedia"
-                    defaultChecked={partner?.sow === "socialmedia"}
-                    className="peer sr-only absolute size-0"
-                  />
-                  <label
-                    htmlFor="sow-socialmedia"
-                    className="hover:bg-opacity-100 peer-checked:bg-muted squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
-                  >
-                    <BadgeCheck className="size-4" />
-                    Social Media
-                  </label>
-                </div>
+                <UToggleInput
+                  type="radio"
+                  id="sow-socialmedia"
+                  name="sow"
+                  value="socialmedia"
+                  defaultChecked={partner?.sow === "socialmedia"}
+                >
+                  <BadgeCheck className="size-4" />
+                  Social Media
+                </UToggleInput>
 
-                <div>
-                  <input
-                    type="radio"
-                    id="sow-demand"
-                    name="sow"
-                    value="demand"
-                    defaultChecked={partner?.sow === "demand"}
-                    className="peer sr-only absolute size-0"
-                  />
-                  <label
-                    htmlFor="sow-demand"
-                    className="hover:bg-opacity-100 peer-checked:bg-muted squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
-                  >
-                    <MailCheck className="size-4" />
-                    Demand
-                  </label>
-                </div>
+                <UToggleInput
+                  type="radio"
+                  id="sow-demand"
+                  name="sow"
+                  value="demand"
+                  defaultChecked={partner?.sow === "demand"}
+                >
+                  <MailCheck className="size-4" />
+                  Demand
+                </UToggleInput>
               </div>
             </div>
           </div>
         </div>
 
         <div className="flex items-center justify-between gap-4">
-          <div>
-            <input
-              type="checkbox"
-              id="archived"
-              name="archived"
-              defaultChecked={partner?.archived || false}
-              className="peer sr-only absolute size-0"
-            />
-            <label
-              htmlFor="archived"
-              className="hover:bg-opacity-100 peer-checked:bg-destructive/10 peer-checked:text-destructive squircle flex cursor-pointer items-center justify-between gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
-            >
-              <Archive className="size-4" />
-              {partner?.archived ? "Arquivado" : "Visível"}
-            </label>
-          </div>
+          <UToggleInput
+            id="archived"
+            name="archived"
+            defaultChecked={partner?.archived || false}
+            variant="destructive"
+          >
+            <Archive className="size-4" />
+            {partner?.archived ? "Arquivado" : "Visível"}
+          </UToggleInput>
+
           <Button
             type="submit"
             disabled={isSubmitting}
