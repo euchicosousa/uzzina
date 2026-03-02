@@ -38,9 +38,10 @@ export const runtime = "edge";
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { user_id, supabase } = await getUserId(request);
 
-  let start = startOfWeek(startOfMonth(new Date()));
-  let end = endOfDay(endOfWeek(endOfMonth(addMonths(new Date(), 1))));
-  let todayEnd = endOfDay(new Date());
+  const now = new Date();
+  let start = startOfWeek(startOfMonth(now));
+  let end = endOfDay(endOfWeek(endOfMonth(addMonths(now, 1))));
+  let todayEnd = endOfDay(now);
 
   // @ts-ignore
   const allActions = await getHomeActions(
@@ -51,16 +52,16 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     todayEnd.toISOString(),
   );
 
-  const startTs = start.getTime();
-  const endTs = end.getTime();
   const todayEndTs = todayEnd.getTime();
 
-  const actions =
-    (allActions as Action[])?.filter((action: Action) => {
-      const actionTime = new Date(action.date).getTime();
-      return actionTime >= startTs && actionTime <= endTs;
-    }) || [];
+  // The RPC already returns exactly what we need:
+  //   - period actions (start → end, any state)
+  //   - past pending (date <= today, state != 'finished')
+  // No need to re-filter here.
+  const actions = (allActions as Action[]) || [];
 
+  // actionsChart: non-finished actions up to end of today (for the stats/late panel).
+  // Different dimension from `actions`, so we filter client-side.
   const actionsChart =
     (allActions as Action[])?.filter((action: Action) => {
       const actionTime = new Date(action.date).getTime();

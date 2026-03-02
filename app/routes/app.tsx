@@ -2,7 +2,6 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import {
   Outlet,
   useLoaderData,
-  useNavigate,
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "react-router";
