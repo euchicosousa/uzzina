@@ -2,7 +2,11 @@ import { useCallback, useEffect, useRef } from "react";
 import { useRouteLoaderData, useSubmit } from "react-router";
 import { addDays, addMinutes, format, isAfter, parseISO } from "date-fns";
 import { INTENT, STATES } from "~/lib/CONSTANTS";
-import { getNewDateForAction, handleAction } from "~/lib/helpers";
+import {
+  getNewDateForAction,
+  handleAction,
+  toggleSprintAction,
+} from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
 
@@ -123,31 +127,7 @@ export const useActionShortcuts = (
           );
         } else if (code === "KeyU") {
           // Coloca ou retira do sprint
-          let sprints = null;
-          if (currentAction.sprints) {
-            if (
-              currentAction.sprints.find((sprint) => sprint === person.user_id)
-            ) {
-              sprints = currentAction.sprints.filter(
-                (sprint) => sprint !== person.user_id,
-              );
-            } else {
-              sprints = [...currentAction.sprints, person.user_id];
-            }
-          } else {
-            sprints = [person.user_id];
-          }
-
-          sprints = sprints.length > 0 ? sprints : null;
-
-          handleAction(
-            {
-              ...currentAction,
-              intent: INTENT.update_action,
-              sprints,
-            },
-            submit,
-          );
+          toggleSprintAction(currentAction, person.user_id, submit);
         } else if (code === "KeyX") {
           if (confirm("Tem certeza que deseja arquivar esta ação?")) {
             handleAction(

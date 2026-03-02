@@ -3,6 +3,7 @@ import { INTENT } from "~/lib/CONSTANTS";
 import { getUserId } from "~/services/auth.server";
 import {
   createAction,
+  deleteAction,
   getActionById,
   updateAction,
 } from "~/models/actions.server";
@@ -51,10 +52,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   } else if (intent === INTENT.duplicate_action) {
     if (id) {
       try {
-        const data = await getActionById(supabase, String(id));
+        await getActionById(supabase, String(id));
         // TODO: implement actual duplication logic
       } catch (error) {
         console.error("Error fetching action for duplication:", error);
+      }
+    }
+  } else if (intent === INTENT.delete_action) {
+    if (id) {
+      try {
+        await deleteAction(supabase, String(id));
+      } catch (error) {
+        console.error("Error deleting action:", error);
       }
     }
   }

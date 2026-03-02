@@ -84,6 +84,14 @@ export async function updateAction(
 }
 
 /**
+ * Delete an action by ID
+ */
+export async function deleteAction(supabase: SupabaseClient, id: string) {
+  const { error } = await supabase.from("actions").delete().eq("id", id);
+  if (error) throw error;
+}
+
+/**
  * Get a single action by ID
  */
 export async function getActionById(supabase: SupabaseClient, id: string) {

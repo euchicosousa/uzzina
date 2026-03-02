@@ -392,6 +392,7 @@ export const INTENT = {
   create_action: "create-action",
   update_action: "update-action",
   duplicate_action: "duplicate-action",
+  delete_action: "delete-action",
   caption_ai: "caption-ai",
 } as const;
 

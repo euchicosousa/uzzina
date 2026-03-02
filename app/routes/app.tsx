@@ -97,8 +97,6 @@ export default function Dashboard() {
     };
   }, []);
 
-  const navigate = useNavigate();
-
   return (
     <div id="app" className="flex h-screen flex-col">
       {/* HEADER */}

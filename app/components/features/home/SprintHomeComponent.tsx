@@ -5,7 +5,7 @@ import {
   ViewOptionsComponent,
   type ViewOptions,
 } from "~/components/features/ViewOptions";
-import { PRIORITIES, VARIANT } from "~/lib/CONSTANTS";
+import { VARIANT } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 

@@ -5,7 +5,7 @@ import { cn } from "~/lib/utils";
 import type { ViewOptions } from "~/components/features/ViewOptions";
 import { ActionContainer } from "./ActionContainer";
 import type { Action } from "~/models/actions.server";
-import { getInstagramFeedActions, isInstagramFeed } from "~/utils/validation";
+import { getInstagramFeedActions } from "~/utils/validation";
 import { Plus } from "lucide-react";
 
 export function CalendarDay({

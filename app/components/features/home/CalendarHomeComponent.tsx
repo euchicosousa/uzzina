@@ -34,7 +34,7 @@ export function CalendarHomeComponent({
   const { celebrations } = useMatches()[1].loaderData as AppLoaderData;
 
   const [period, setPeriod] = useState<"week" | "month">("week");
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate] = useState(new Date());
   const calendarDays = eachDayOfInterval({
     start:
       period === "week"

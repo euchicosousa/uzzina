@@ -18,14 +18,12 @@ import {
   Megaphone,
   Monitor,
   Moon,
-  Pencil,
   Play,
   Presentation,
   Printer,
   Rabbit,
   SplinePointer,
   Sun,
-  Zap,
 } from "lucide-react";
 
 export function Icons({

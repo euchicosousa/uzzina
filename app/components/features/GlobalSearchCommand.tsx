@@ -16,13 +16,7 @@ import {
   DialogDescription,
 } from "~/components/ui/dialog";
 import { UAvatar } from "~/components/uzzina/UAvatar";
-import {
-  DATE_TIME_DISPLAY,
-  SIZE,
-  STATES,
-  type STATE,
-  type STATE_TYPE,
-} from "~/lib/CONSTANTS";
+import { DATE_TIME_DISPLAY, SIZE, STATES, type STATE } from "~/lib/CONSTANTS";
 import { getFormattedDateTime } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import { StateIcon } from "./StateIcon";

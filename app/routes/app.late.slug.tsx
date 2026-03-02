@@ -43,9 +43,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 export default function PartnerPage() {
   let { partner, actions } = useLoaderData<typeof loader>();
   let currentActions = useOptimisticActions(actions || []);
-  const [query, setQuery] = useState("");
+  const [query] = useState("");
 
-  const [viewOptions, setViewOptions] = useState<ViewOptions>({
+  const [viewOptions] = useState<ViewOptions>({
     responsibles: false,
     priority: false,
     category: false,

@@ -1,14 +1,20 @@
-import { CloudUpload, Loader, Plus, Rabbit, Trash, X } from "lucide-react";
-import type { SubmitFunction } from "react-router";
+import { CloudUpload, Loader, Plus, Rabbit, Trash } from "lucide-react";
+import { useRouteLoaderData, useSubmit } from "react-router";
 import { ActionColorDropdown } from "~/components/features/ActionForm/ActionColorDropdown";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { PartnersCombobox } from "~/components/features/PartnersCombobox";
 import { StatesCombobox } from "~/components/features/StatesCombobox";
 import { Button } from "~/components/ui/button";
-import { isInstagramFeed } from "~/lib/helpers";
+import {
+  isInstagramFeed,
+  isSprint,
+  submitDeleteAction,
+  toggleSprintAction,
+} from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
+import type { AppLoaderData } from "~/routes/app";
 
 interface ActionFormFooterProps {
   RawAction: Action;
@@ -29,6 +35,9 @@ export function ActionFormFooter({
   handleSave,
   handleClose,
 }: ActionFormFooterProps) {
+  const submit = useSubmit();
+  const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
+  const isInSprint = isSprint(RawAction, person);
   return (
     <div className="w-fulld flex shrink-0 justify-between overflow-hidden border-t">
       {/* Coisas */}
@@ -91,32 +100,37 @@ export function ActionFormFooter({
             />
           </div>
         )}
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            "p-6 outline-none" /* se não for sprint deve estar com opacity-50 */,
-          )}
-          onClick={() => {
-            //definir que vai para o sprint
-          }}
-        >
-          <Rabbit />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="p-6 text-sm outline-none"
-          onClick={() => {
-            //deletar a ação
-          }}
-        >
-          <Trash />
-        </Button>
+        {RawAction.id && (
+          <button
+            title={isInSprint ? "Remover do sprint" : "Adicionar ao sprint"}
+            className={cn(
+              "hover:bg-secondary focus:bg-secondary/50 flex items-center gap-2 p-6 text-sm outline-none",
+              !isInSprint && "opacity-40",
+            )}
+            onClick={() => {
+              toggleSprintAction(RawAction, person.user_id, submit);
+            }}
+          >
+            <Rabbit className="size-5" />
+          </button>
+        )}
       </div>
       {/* Botão de criar e atualizar */}
-      <div className="p-4">
+      <div className="flex items-center gap-2 p-2">
+        {RawAction.id && (
+          <button
+            title="Excluir ação"
+            className="flex items-center gap-2 rounded-2xl p-2 text-sm opacity-50 hover:opacity-100 focus:opacity-100"
+            onClick={() => {
+              if (confirm("Tem certeza que deseja excluir esta ação?")) {
+                submitDeleteAction(RawAction, submit);
+                handleClose();
+              }
+            }}
+          >
+            <Trash className="size-5" />
+          </button>
+        )}
         <Button
           disabled={isPending}
           className="squircle rounded-2xl"
