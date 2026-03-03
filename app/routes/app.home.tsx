@@ -14,6 +14,8 @@ import {
   useOutletContext,
   type LoaderFunctionArgs,
 } from "react-router";
+import { useMemo } from "react";
+import type { Action } from "~/models/actions.server";
 
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
 import { ORDER_BY, STATES } from "~/lib/CONSTANTS";
@@ -73,9 +75,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   });
 };
 
-import { useMemo } from "react";
-import type { Action } from "~/models/actions.server";
-
 export default function AppHome() {
   let { actions, actionsChart } = useLoaderData<typeof loader>();
   let { person } = useMatches()[1].loaderData as AppLoaderData;
@@ -83,16 +82,16 @@ export default function AppHome() {
 
   const currentLateActions = useOptimisticActions(actionsChart);
 
-  const sprintActions = useMemo(() => {
-    return sortActions(
-      currentActions.filter(
-        (action) =>
-          action.sprints?.length &&
-          action.sprints.filter((sprint) => sprint === person.user_id),
+  const sprintActions = useMemo(
+    () =>
+      sortActions(
+        currentActions.filter((action) =>
+          action.sprints?.includes(person.user_id),
+        ),
+        ORDER_BY.state,
       ),
-      ORDER_BY.state,
-    );
-  }, [currentActions]);
+    [currentActions],
+  );
 
   const { setBaseAction } = useOutletContext<OutletContext>();
 

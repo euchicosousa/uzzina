@@ -10,18 +10,12 @@ export * from "~/utils/sort";
 // export * from "~/services/auth.server";
 export * from "~/components/uzzina/UIIcons";
 
-export const handleAction = async (data: any, submit: SubmitFunction) => {
-  await submit(
-    {
-      ...data,
-    },
-    {
-      method: "post",
-      action: "/action/handle-action",
-      navigate: false,
-    },
-  );
-};
+export const handleAction = (data: any, submit: SubmitFunction) =>
+  submit(data, {
+    method: "post",
+    action: "/action/handle-action",
+    navigate: false,
+  });
 
 /**
  * Toggles the given userId in/out of the action's sprints array.

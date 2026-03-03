@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useRouteLoaderData, useSubmit } from "react-router";
-import { addDays, addMinutes, format, isAfter, parseISO } from "date-fns";
+import { addDays, addMinutes, isAfter, parseISO } from "date-fns";
 import { INTENT, STATES } from "~/lib/CONSTANTS";
 import {
   getNewDateForAction,
@@ -32,7 +32,31 @@ export const useActionShortcuts = (
       const currentAction = actionRef.current;
       const currentIsInstagramDate = isInstagramDateRef.current;
 
-      let status: Record<string, string> = {
+      // Helper: update action date to a given Date
+      const updateDate = (newDate: Date) =>
+        handleAction(
+          {
+            ...currentAction,
+            intent: INTENT.update_action,
+            ...getNewDateForAction(
+              currentAction,
+              newDate,
+              currentIsInstagramDate,
+            ),
+          },
+          submit,
+        );
+
+      // Helper: returns the action's relevant date if it's in the future, otherwise today
+      const getFutureTarget = () => {
+        const str = currentIsInstagramDate
+          ? currentAction.instagram_date!
+          : currentAction.date;
+        const d = parseISO(str.replace(" ", "T"));
+        return isAfter(d, new Date()) ? d : new Date();
+      };
+
+      const status: Record<string, string> = {
         KeyI: STATES.idea.slug,
         KeyF: STATES.do.slug,
         KeyZ: STATES.doing.slug,
@@ -42,130 +66,28 @@ export const useActionShortcuts = (
         KeyC: STATES.finished.slug,
       };
 
-      //SHIFT
-      //Atalhos de Data
+      //SHIFT — Atalhos de Data
       if (event.shiftKey) {
-        // Hoje em 30 minutos
         if (code === "KeyD") {
           handleAction(
-            {
-              ...currentAction,
-              intent: INTENT.create_action,
-              created_at: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
-              updated_at: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
-            },
+            { id: currentAction.id, intent: INTENT.duplicate_action },
             submit,
           );
         } else if (code === "KeyH") {
-          handleAction(
-            {
-              ...currentAction,
-              intent: INTENT.update_action,
-              ...getNewDateForAction(
-                currentAction,
-                addMinutes(new Date(), 30),
-                currentIsInstagramDate,
-              ),
-            },
-            submit,
-          );
+          updateDate(addMinutes(new Date(), 30));
         } else if (code === "Digit1") {
-          handleAction(
-            {
-              ...currentAction,
-              intent: INTENT.update_action,
-              ...getNewDateForAction(
-                currentAction,
-                addMinutes(new Date(), 60),
-                currentIsInstagramDate,
-              ),
-            },
-            submit,
-          );
+          updateDate(addMinutes(new Date(), 60));
         } else if (code === "Digit2") {
-          handleAction(
-            {
-              ...currentAction,
-              intent: INTENT.update_action,
-              ...getNewDateForAction(
-                currentAction,
-                addMinutes(new Date(), 120),
-                currentIsInstagramDate,
-              ),
-            },
-            submit,
-          );
+          updateDate(addMinutes(new Date(), 120));
         } else if (code === "Digit3") {
-          handleAction(
-            {
-              ...currentAction,
-              intent: INTENT.update_action,
-              ...getNewDateForAction(
-                currentAction,
-                addMinutes(new Date(), 180),
-                currentIsInstagramDate,
-              ),
-            },
-            submit,
-          );
+          updateDate(addMinutes(new Date(), 180));
         } else if (code === "KeyA") {
-          //Amanhã
-          handleAction(
-            {
-              ...currentAction,
-              intent: INTENT.update_action,
-              ...getNewDateForAction(
-                currentAction,
-                addDays(new Date(), 1),
-                currentIsInstagramDate,
-              ),
-            },
-            submit,
-          );
+          updateDate(addDays(new Date(), 1));
         } else if (code === "KeyS") {
-          // Em 7 dias
-          const targetStr = currentIsInstagramDate
-            ? currentAction.instagram_date!
-            : currentAction.date;
-          const targetDateObj = parseISO(targetStr.replace(" ", "T"));
-
-          handleAction(
-            {
-              ...currentAction,
-              intent: INTENT.update_action,
-              ...getNewDateForAction(
-                currentAction,
-                isAfter(targetDateObj, new Date())
-                  ? addDays(targetDateObj, 7)
-                  : addDays(new Date(), 7),
-                currentIsInstagramDate,
-              ),
-            },
-            submit,
-          );
+          updateDate(addDays(getFutureTarget(), 7));
         } else if (code === "KeyM") {
-          // Em 30 dias
-          const targetStr = currentIsInstagramDate
-            ? currentAction.instagram_date!
-            : currentAction.date;
-          const targetDateObj = parseISO(targetStr.replace(" ", "T"));
-
-          handleAction(
-            {
-              ...currentAction,
-              intent: INTENT.update_action,
-              ...getNewDateForAction(
-                currentAction,
-                isAfter(targetDateObj, new Date())
-                  ? addDays(targetDateObj, 30)
-                  : addDays(new Date(), 30),
-                currentIsInstagramDate,
-              ),
-            },
-            submit,
-          );
+          updateDate(addDays(getFutureTarget(), 30));
         } else if (code === "KeyU") {
-          // Coloca ou retira do sprint
           toggleSprintAction(currentAction, person.user_id, submit);
         } else if (code === "KeyX") {
           if (confirm("Tem certeza que deseja arquivar esta ação?")) {

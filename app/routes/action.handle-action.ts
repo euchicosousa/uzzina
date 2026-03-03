@@ -52,10 +52,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   } else if (intent === INTENT.duplicate_action) {
     if (id) {
       try {
-        await getActionById(supabase, String(id));
-        // TODO: implement actual duplication logic
+        const original = await getActionById(supabase, String(id));
+        const { id: _, created_at, updated_at, ...rest } = original;
+        const now = new Date().toISOString();
+        return await createAction(supabase, {
+          ...rest,
+          created_at: now,
+          updated_at: now,
+        });
       } catch (error) {
-        console.error("Error fetching action for duplication:", error);
+        console.error("Error duplicating action:", error);
       }
     }
   } else if (intent === INTENT.delete_action) {

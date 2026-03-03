@@ -66,49 +66,29 @@ export function useOptimisticActions(actions: Action[]): Action[] {
             }
           };
 
-          const updateArray = (key: keyof Action) => {
+          const updateArray = (
+            key: keyof Action,
+            transform?: (v: string) => any,
+          ) => {
             const values = dataPayload.getAll(key as string);
             const cleanValues = values
               .map(String)
               .filter((v) => v !== "" && v !== "null");
 
+            let result: any[];
             if (cleanValues.length === 0) {
-              // @ts-ignore
-              newAction[key] = [];
+              result = [];
             } else if (
               cleanValues.length === 1 &&
               cleanValues[0].includes(",")
             ) {
-              // @ts-ignore
-              newAction[key] = cleanValues[0].split(",").filter(Boolean);
+              result = cleanValues[0].split(",").filter(Boolean);
             } else {
-              // @ts-ignore
-              newAction[key] = cleanValues;
+              result = cleanValues;
             }
-          };
 
-          const updateNumberArray = (key: keyof Action) => {
-            const values = dataPayload.getAll(key as string);
-            const cleanValues = values
-              .map(String)
-              .filter((v) => v !== "" && v !== "null");
-
-            if (cleanValues.length === 0) {
-              // @ts-ignore
-              newAction[key] = [];
-            } else if (
-              cleanValues.length === 1 &&
-              cleanValues[0].includes(",")
-            ) {
-              // @ts-ignore
-              newAction[key] = cleanValues[0]
-                .split(",")
-                .filter(Boolean)
-                .map(Number);
-            } else {
-              // @ts-ignore
-              newAction[key] = cleanValues.map(Number);
-            }
+            // @ts-ignore
+            newAction[key] = transform ? result.map(transform) : result;
           };
 
           // Update fields
@@ -132,7 +112,7 @@ export function useOptimisticActions(actions: Action[]): Action[] {
           updateArray("sprints");
           updateArray("work_files");
 
-          updateNumberArray("topics");
+          updateArray("topics", Number);
 
           actionsMap.set(id, newAction);
         }

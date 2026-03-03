@@ -196,13 +196,6 @@ export function CreateAndEditAction({
   }, [fetcher.data]);
 
   useEffect(() => {
-    if (isAIProcessing) {
-      setTimeout(() => {}, 2000);
-    } else {
-    }
-  }, [isAIProcessing]);
-
-  useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key.toLocaleLowerCase() === "escape") {
         event.preventDefault();
@@ -228,36 +221,47 @@ export function CreateAndEditAction({
       )}
     >
       {/* Tabs */}
-      <div className="flex shrink-0 divide-x">
-        <div
-          className={`flex w-full cursor-pointer items-center justify-center gap-2 border-b p-4 text-sm font-medium ${view !== "essential" ? "bg-muted border-border" : "bg-background border-b-transparent"}`}
-          onClick={() => setView("essential")}
-        >
-          ESSENCIAL <Heart className="size-4" />
-        </div>
-        {isInstagramFeed(RawAction.category) && (
-          <div
-            className={`flex w-full cursor-pointer items-center justify-center gap-2 border-b p-4 text-sm font-medium ${view !== "instagram" ? "bg-muted border-border" : "bg-background border-b-transparent"}`}
-            onClick={() => setView("instagram")}
-          >
-            INSTAGRAM <IconBrandInstagram className="size-4" />
-          </div>
-        )}
-        <div
-          className={`flex w-full cursor-pointer items-center justify-center gap-2 border-b p-4 text-sm font-medium ${view !== "chat" ? "bg-muted border-border" : "bg-background border-b-transparent"}`}
-          onClick={() => setView("chat")}
-        >
-          CHAT <MessageCircle className="size-4" />
-        </div>
-        <div>
-          <button
-            className="flex w-full cursor-pointer items-center justify-center gap-2 border-b p-5 text-sm font-medium"
-            onClick={onClose}
-          >
-            <X className="size-4" />
-          </button>
-        </div>
-      </div>
+      {/* Helper: active tab = bg-background sem border-b; inativa = bg-muted com border */}
+      {(() => {
+        const tabClass = (active: boolean) =>
+          `flex w-full cursor-pointer items-center justify-center gap-2 border-b p-4 text-sm font-medium ${
+            active
+              ? "bg-background border-b-transparent"
+              : "bg-muted border-border"
+          }`;
+        return (
+          <>
+            <div
+              className={tabClass(view === "essential")}
+              onClick={() => setView("essential")}
+            >
+              ESSENCIAL <Heart className="size-4" />
+            </div>
+            {isInstagramFeed(RawAction.category) && (
+              <div
+                className={tabClass(view === "instagram")}
+                onClick={() => setView("instagram")}
+              >
+                INSTAGRAM <IconBrandInstagram className="size-4" />
+              </div>
+            )}
+            <div
+              className={tabClass(view === "chat")}
+              onClick={() => setView("chat")}
+            >
+              CHAT <MessageCircle className="size-4" />
+            </div>
+            <div>
+              <button
+                className="flex w-full cursor-pointer items-center justify-center gap-2 border-b p-5 text-sm font-medium"
+                onClick={onClose}
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          </>
+        );
+      })()}
 
       <div className="relative flex h-full grow flex-col overflow-hidden">
         {/* Essencial */}

@@ -3,37 +3,21 @@ import { z } from "zod";
 import { STATES } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
 
-export function isLateAction(action: Action) {
-  const isLate =
-    action.state !== STATES.finished.slug && isBefore(action.date, new Date());
+export const isLateAction = (action: Action) =>
+  action.state !== STATES.finished.slug && isBefore(action.date, new Date());
 
-  return isLate;
-}
-
-export function getLateActions(actions: Action[]) {
-  if (!actions) return [];
-
-  const lateActions = actions.filter((action) => {
-    return isLateAction(action);
-  });
-
-  return lateActions;
-}
+export const getLateActions = (actions: Action[]) =>
+  actions?.filter(isLateAction) ?? [];
 
 export function getInstagramFeedActions(
   actions: Action[],
   isFeed = true,
   stories = false,
 ) {
-  if (!actions) return [];
-
-  const instagramFeedActions = actions.filter((action) => {
-    return isFeed
-      ? isInstagramFeed(action.category, stories)
-      : !isInstagramFeed(action.category, stories);
-  });
-
-  return instagramFeedActions;
+  return (
+    actions?.filter((a) => isFeed === isInstagramFeed(a.category, stories)) ??
+    []
+  );
 }
 
 export function isInstagramFeed(category: string, stories = false) {

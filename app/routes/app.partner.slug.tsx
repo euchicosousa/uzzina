@@ -139,6 +139,7 @@ export default function PartnerPage() {
     });
 
   const [view, setView] = useState<"list" | "calendar">("calendar");
+  const lateCount = getLateActions(currentActions).length;
 
   const navigate = useNavigate();
 
@@ -154,15 +155,12 @@ export default function PartnerPage() {
               size={SIZE.lg}
               isSquircle
             />
-            {getLateActions(currentActions).length > 0 && (
+            {lateCount > 0 && (
               <Link
                 className="isolate -mt-8 -ml-4"
                 to={`/app/late/${partner.slug}`}
               >
-                <UBadge
-                  value={getLateActions(currentActions).length}
-                  isDynamic
-                />
+                <UBadge value={lateCount} isDynamic />
               </Link>
             )}
             <h2 className="overflow-hidden p-0 py-2 text-ellipsis whitespace-nowrap">

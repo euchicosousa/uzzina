@@ -41,6 +41,7 @@ export function sortActions(
           (parseISO(a.date).getTime() - parseISO(b.date).getTime()) *
           (ascending ? 1 : -1),
       );
+      break;
     case ORDER_BY.instagram_date:
       actions.sort(
         (a, b) =>
