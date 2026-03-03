@@ -69,6 +69,45 @@ export const useActionShortcuts = (
             },
             submit,
           );
+        } else if (code === "Digit1") {
+          handleAction(
+            {
+              ...currentAction,
+              intent: INTENT.update_action,
+              ...getNewDateForAction(
+                currentAction,
+                addMinutes(new Date(), 60),
+                currentIsInstagramDate,
+              ),
+            },
+            submit,
+          );
+        } else if (code === "Digit2") {
+          handleAction(
+            {
+              ...currentAction,
+              intent: INTENT.update_action,
+              ...getNewDateForAction(
+                currentAction,
+                addMinutes(new Date(), 120),
+                currentIsInstagramDate,
+              ),
+            },
+            submit,
+          );
+        } else if (code === "Digit3") {
+          handleAction(
+            {
+              ...currentAction,
+              intent: INTENT.update_action,
+              ...getNewDateForAction(
+                currentAction,
+                addMinutes(new Date(), 180),
+                currentIsInstagramDate,
+              ),
+            },
+            submit,
+          );
         } else if (code === "KeyA") {
           //Amanhã
           handleAction(

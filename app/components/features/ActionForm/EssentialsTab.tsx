@@ -1,17 +1,11 @@
 import { parseISO } from "date-fns";
 import { IconBrandInstagram } from "@tabler/icons-react";
 import { Suspense, lazy, useRef } from "react";
-import { useSubmit } from "react-router";
 import { GMGCombobox } from "~/components/features/GMGCombobox";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
-import { INTENT } from "~/lib/CONSTANTS";
 import { CalendarDays, Plus } from "lucide-react";
-import {
-  getNewDateForAction,
-  handleAction,
-  isInstagramFeed,
-} from "~/lib/helpers";
+import { getNewDateForAction, isInstagramFeed } from "~/lib/helpers";
 import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
@@ -45,8 +39,6 @@ export function EssentialsTab({
   cloudName,
   uploadPreset,
 }: EssentialsTabProps) {
-  const submit = useSubmit();
-
   const workFilesRef = useRef(workFiles);
   workFilesRef.current = workFiles;
 
@@ -240,14 +232,7 @@ export function EssentialsTab({
 
                 // @ts-ignore
                 setRawAction({ ...RawAction, description: content });
-                await handleAction(
-                  {
-                    ...RawAction,
-                    description: content,
-                    intent: INTENT.update_action,
-                  },
-                  submit,
-                );
+                await updateAction({ description: content });
               }}
               className="font-inter h-full w-full"
             />

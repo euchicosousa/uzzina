@@ -42,6 +42,12 @@ export function CreateAndEditAction({
 
   const [RawAction, setRawAction] = useState<Action>(BaseAction);
 
+  // Ref always points to the latest RawAction to avoid stale closures
+  const rawActionRef = useRef(RawAction);
+  useEffect(() => {
+    rawActionRef.current = RawAction;
+  }, [RawAction]);
+
   const handleSave = useCallback(async () => {
     if (!RawAction.title) {
       toast.error("Erro / O título é obrigatório", {
@@ -144,18 +150,22 @@ export function CreateAndEditAction({
     updateAction({ content_files: next });
   }
 
-  async function updateAction(data?: { [key: string]: any }) {
-    if (RawAction.id) {
-      await handleAction(
-        {
-          ...RawAction,
-          ...data,
-          intent: INTENT.update_action,
-        },
-        submit,
-      );
-    }
-  }
+  const updateAction = useCallback(
+    async (data?: { [key: string]: any }) => {
+      const current = rawActionRef.current;
+      if (current.id) {
+        await handleAction(
+          {
+            ...current,
+            ...data,
+            intent: INTENT.update_action,
+          },
+          submit,
+        );
+      }
+    },
+    [submit],
+  );
 
   useEffect(() => {
     if (RawAction.partners.length === 0) return;
