@@ -193,7 +193,7 @@ export default function AdminPartnerEditPage() {
               >
                 <Tiptap
                   content={contextValue}
-                  handleBlur={(content) => setContextValue(content)}
+                  handleChange={(content) => setContextValue(content)}
                   className="prose prose-sm dark:prose-invert font-inter h-full max-w-none focus:outline-none"
                 />
               </Suspense>
@@ -213,7 +213,7 @@ export default function AdminPartnerEditPage() {
               >
                 <Tiptap
                   content={voiceValue}
-                  handleBlur={(content) => setVoiceValue(content)}
+                  handleChange={(content) => setVoiceValue(content)}
                   className="prose prose-sm dark:prose-invert font-inter h-full max-w-none focus:outline-none"
                 />
               </Suspense>

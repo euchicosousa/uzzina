@@ -6,11 +6,13 @@ import { cn } from "~/lib/utils";
 export function Tiptap({
   content,
   handleBlur,
+  handleChange,
   className,
   tabIndex,
 }: {
   content: string;
-  handleBlur: (content: string) => void;
+  handleBlur?: (content: string) => void;
+  handleChange?: (content: string) => void;
   className?: string;
   tabIndex?: number;
 }) {
@@ -23,8 +25,11 @@ export function Tiptap({
         tabindex: tabIndex?.toString() || "0",
       },
     },
+    onUpdate: (props) => {
+      handleChange?.(props.editor.getHTML());
+    },
     onBlur: (props) => {
-      handleBlur(props.editor.getHTML());
+      handleBlur?.(props.editor.getHTML());
     },
   });
 

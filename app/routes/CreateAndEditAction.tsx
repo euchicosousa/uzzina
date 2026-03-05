@@ -48,6 +48,11 @@ export function CreateAndEditAction({
     rawActionRef.current = RawAction;
   }, [RawAction]);
 
+  // Ref for the latest description typed in Tiptap — updated on every keystroke
+  // without triggering re-renders. handleSave reads from here so Cmd+Enter
+  // always saves the latest typed content even without blur.
+  const descriptionRef = useRef(BaseAction.description || "");
+
   const handleSave = useCallback(async () => {
     if (!RawAction.title) {
       toast.error("Erro / O título é obrigatório", {
@@ -66,6 +71,7 @@ export function CreateAndEditAction({
     await handleAction(
       {
         ...RawAction,
+        description: descriptionRef.current, // always latest typed content
         intent: RawAction.id ? INTENT.update_action : INTENT.create_action,
       },
       submit,
@@ -80,15 +86,9 @@ export function CreateAndEditAction({
 
   useEffect(() => {
     if (RawAction.id && !BaseAction.id) {
-      // Salva a ação atual antes de limpá-la para iniciar uma nova
-      handleAction(
-        {
-          ...RawAction,
-          intent: INTENT.update_action,
-        },
-        submit,
-      );
+      handleAction({ ...RawAction, intent: INTENT.update_action }, submit);
     }
+    descriptionRef.current = BaseAction.description || "";
     setRawAction(BaseAction);
   }, [BaseAction]);
 
@@ -167,18 +167,27 @@ export function CreateAndEditAction({
     [submit],
   );
 
+  // Use a stable string key so this effect only re-runs when partner slugs
+  // actually change, not on every setRawAction call (which would create a new
+  // array reference each time and cause an infinite cascade).
+  const partnersKey = RawAction.partners.join(",");
   useEffect(() => {
-    if (RawAction.partners.length === 0) return;
+    if (!partnersKey) return;
     setCurrentPartners(
       RawAction.partners.map((p) =>
         partners.find((partner) => partner.slug === p),
       ) as Partner[],
     );
-  }, [RawAction.partners]);
+  }, [partnersKey]);
 
+  // Guard: only update color if it actually changed to avoid
+  // triggering another render cycle via the partners effect above.
   useEffect(() => {
     if (currentPartners.length > 0) {
-      setRawAction({ ...RawAction, color: currentPartners[0].colors[0] });
+      const newColor = currentPartners[0].colors[0];
+      setRawAction((prev) =>
+        prev.color === newColor ? prev : { ...prev, color: newColor },
+      );
     }
   }, [currentPartners]);
 
@@ -199,9 +208,11 @@ export function CreateAndEditAction({
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key.toLocaleLowerCase() === "escape") {
         event.preventDefault();
+        event.stopPropagation();
         onClose();
       } else if (event.key.toLocaleLowerCase() === "enter" && event.metaKey) {
         event.preventDefault();
+        event.stopPropagation();
         handleSaveRef.current();
         if (!event.shiftKey) {
           onClose();
@@ -212,6 +223,12 @@ export function CreateAndEditAction({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
+  const tabClass = (active: boolean) =>
+    cn(
+      "flex w-full cursor-pointer items-center justify-center gap-2 border-b p-4 text-sm font-medium",
+      active ? "bg-background border-b-transparent" : "bg-muted border-border",
+    );
+
   return (
     <div
       className={cn(
@@ -221,47 +238,36 @@ export function CreateAndEditAction({
       )}
     >
       {/* Tabs */}
-      {/* Helper: active tab = bg-background sem border-b; inativa = bg-muted com border */}
-      {(() => {
-        const tabClass = (active: boolean) =>
-          `flex w-full cursor-pointer items-center justify-center gap-2 border-b p-4 text-sm font-medium ${
-            active
-              ? "bg-background border-b-transparent"
-              : "bg-muted border-border"
-          }`;
-        return (
-          <>
-            <div
-              className={tabClass(view === "essential")}
-              onClick={() => setView("essential")}
-            >
-              ESSENCIAL <Heart className="size-4" />
-            </div>
-            {isInstagramFeed(RawAction.category) && (
-              <div
-                className={tabClass(view === "instagram")}
-                onClick={() => setView("instagram")}
-              >
-                INSTAGRAM <IconBrandInstagram className="size-4" />
-              </div>
-            )}
-            <div
-              className={tabClass(view === "chat")}
-              onClick={() => setView("chat")}
-            >
-              CHAT <MessageCircle className="size-4" />
-            </div>
-            <div>
-              <button
-                className="flex w-full cursor-pointer items-center justify-center gap-2 border-b p-5 text-sm font-medium"
-                onClick={onClose}
-              >
-                <X className="size-4" />
-              </button>
-            </div>
-          </>
-        );
-      })()}
+      <div className="flex shrink-0 divide-x">
+        <div
+          className={tabClass(view === "essential")}
+          onClick={() => setView("essential")}
+        >
+          ESSENCIAL <Heart className="size-4" />
+        </div>
+        {isInstagramFeed(RawAction.category) && (
+          <div
+            className={tabClass(view === "instagram")}
+            onClick={() => setView("instagram")}
+          >
+            INSTAGRAM <IconBrandInstagram className="size-4" />
+          </div>
+        )}
+        <div
+          className={tabClass(view === "chat")}
+          onClick={() => setView("chat")}
+        >
+          CHAT <MessageCircle className="size-4" />
+        </div>
+        <div>
+          <button
+            className="flex w-full cursor-pointer items-center justify-center gap-2 border-b p-5 text-sm font-medium"
+            onClick={onClose}
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+      </div>
 
       <div className="relative flex h-full grow flex-col overflow-hidden">
         {/* Essencial */}
@@ -276,6 +282,9 @@ export function CreateAndEditAction({
             currentPartners={currentPartners}
             cloudName={cloudName}
             uploadPreset={uploadPreset}
+            onDescriptionChange={(desc: string) => {
+              descriptionRef.current = desc;
+            }}
           />
         )}
         {view === "instagram" && (

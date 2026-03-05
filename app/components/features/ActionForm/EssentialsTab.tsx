@@ -27,6 +27,7 @@ interface EssentialsTabProps {
   currentPartners: Partner[];
   cloudName: string;
   uploadPreset: string;
+  onDescriptionChange?: (description: string) => void;
 }
 
 export function EssentialsTab({
@@ -38,6 +39,7 @@ export function EssentialsTab({
   currentPartners,
   cloudName,
   uploadPreset,
+  onDescriptionChange,
 }: EssentialsTabProps) {
   const workFilesRef = useRef(workFiles);
   workFilesRef.current = workFiles;
@@ -225,11 +227,17 @@ export function EssentialsTab({
             <Tiptap
               content={RawAction.description || ""}
               tabIndex={2}
+              handleChange={(content) => {
+                // Update the ref in the parent (zero re-renders).
+                // The parent's handleSave reads from this ref so Cmd+Enter
+                // always includes the latest typed content.
+                onDescriptionChange?.(content);
+              }}
               handleBlur={async (content) => {
                 if (content === RawAction.description) {
                   return;
                 }
-
+                // Sync local state so RawAction stays consistent after blur
                 // @ts-ignore
                 setRawAction({ ...RawAction, description: content });
                 await updateAction({ description: content });
