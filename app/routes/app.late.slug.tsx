@@ -6,7 +6,10 @@ import { useOptimisticActions } from "~/hooks/useOptimisticActions";
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 import { getLateActions } from "~/lib/helpers";
 import { getUserId } from "~/services/auth.server";
-import type { ViewOptions } from "~/components/features/ViewOptions";
+import {
+  useViewOptions,
+  type ViewOptions,
+} from "~/components/features/ViewOptions";
 import type { Action } from "~/models/actions.server";
 
 export const runtime = "edge";
@@ -45,17 +48,9 @@ export default function PartnerPage() {
   let currentActions = useOptimisticActions(actions || []);
   const [query] = useState("");
 
-  const [viewOptions] = useState<ViewOptions>({
-    responsibles: false,
-    priority: false,
+  const [viewOptions] = useViewOptions({
     category: false,
-    late: true,
-    partner: false,
-    instagram: false,
     sprint: true,
-    variant: VARIANT.line,
-    order: ORDER_BY.date,
-    ascending: true,
     finishedOnEnd: true,
     showOptions: {
       instagram: true,

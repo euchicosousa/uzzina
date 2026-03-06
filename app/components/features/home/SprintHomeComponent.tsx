@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { ActionContainer } from "~/components/features/ActionContainer";
-import { Signal, SignalMedium, SignalZero } from "lucide-react";
+import { SignalIcon, SignalMediumIcon, SignalZeroIcon } from "lucide-react";
 import {
   ViewOptionsComponent,
+  useViewOptions,
   type ViewOptions,
 } from "~/components/features/ViewOptions";
 import { VARIANT } from "~/lib/CONSTANTS";
@@ -10,12 +11,10 @@ import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
 export function SprintHomeComponent({ actions }: { actions: Action[] }) {
-  const [viewOptions, setViewOptions] = useState<ViewOptions>({
+  const [viewOptions, setViewOptions] = useViewOptions({
     variant: VARIANT.block,
     showOptions: {
       variant: true,
-      // priority: true,
-      // category: true,
     },
   });
 

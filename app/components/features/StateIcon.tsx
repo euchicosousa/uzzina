@@ -1,6 +1,6 @@
 import { STATES, type SIZE, type STATE_TYPE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
-import { Check } from "lucide-react";
+import { CheckIcon } from "lucide-react";
 
 export function StateIcon({
   state,
@@ -22,7 +22,7 @@ export function StateIcon({
       className={cn("grid aspect-square place-content-center rounded-full")}
       style={{ backgroundColor: state.color }}
     >
-      <Check className={cn("scale-75 text-white", sizeClasses)} />
+      <CheckIcon className={cn("scale-75 text-white", sizeClasses)} />
     </div>
   ) : (
     <div className="relative">

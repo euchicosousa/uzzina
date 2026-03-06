@@ -34,20 +34,24 @@ export const isColorValid = (color: string) => {
   return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
 };
 
-// Helper for comma-separated strings to array of strings
-const commaSeparatedStringToArray = z
-  .string()
-  .transform((val) => val.split(",").filter(Boolean));
+// Aceita string com vírgulas (FormData legado) ou array direto (JSON)
+const commaSeparatedStringToArray = z.union([
+  z.array(z.string()),
+  z.string().transform((val) => val.split(",").filter(Boolean)),
+]);
 
-// Helper for arrays or null from comma-separated strings
-const nullableCommaSeparatedStringToArray = z
-  .string()
-  .nullable()
-  .optional()
-  .transform((val) => {
-    if (!val || val === "null" || val === "") return null;
-    return val.split(",").filter(Boolean);
-  });
+// Mesma coisa mas permite null/undefined
+const nullableCommaSeparatedStringToArray = z.union([
+  z.array(z.string()).nullable().optional(),
+  z
+    .string()
+    .nullable()
+    .optional()
+    .transform((val) => {
+      if (!val || val === "null" || val === "") return null;
+      return val.split(",").filter(Boolean);
+    }),
+]);
 
 // Helper for strings that might be "null" or empty
 const nullableString = z

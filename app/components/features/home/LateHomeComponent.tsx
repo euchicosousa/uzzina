@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import {
   ViewOptionsComponent,
+  useViewOptions,
   type ViewOptions,
 } from "~/components/features/ViewOptions";
 import { ORDER_BY } from "~/lib/CONSTANTS";
@@ -10,11 +11,8 @@ import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
 export function LateHomeComponent({ actions }: { actions: Action[] }) {
-  const [viewOptions, setViewOptions] = useState<ViewOptions>({
-    ascending: true,
+  const [viewOptions, setViewOptions] = useViewOptions({
     partner: true,
-    category: true,
-    order: ORDER_BY.date,
     showOptions: {
       ascending: true,
       order: true,

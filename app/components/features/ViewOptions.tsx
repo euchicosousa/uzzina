@@ -1,17 +1,17 @@
 import { IconBrandInstagram } from "@tabler/icons-react";
 import {
-  ArrowDown,
-  ArrowDownAZ,
-  ArrowUpAZ,
-  Clock,
-  HeartHandshake,
-  Image,
-  Rows2,
-  Rows3,
-  Signal,
-  SquareCheck,
-  Tag,
-  Users,
+  ArrowDownIcon,
+  ArrowDownAZIcon,
+  ArrowUpAZIcon,
+  ClockIcon,
+  HeartHandshakeIcon,
+  ImageIcon,
+  Rows2Icon,
+  Rows3Icon,
+  SignalIcon,
+  SquareCheckIcon,
+  TagIcon,
+  UsersIcon,
 } from "lucide-react";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { Button } from "~/components/ui/button";
@@ -49,6 +49,36 @@ export type ViewOptions = {
     filter_responsible?: boolean;
   };
 };
+
+import { useState } from "react";
+
+/** Defaults internos — não expostos fora deste módulo */
+const DEFAULT_VIEW_OPTIONS = {
+  variant: VARIANT.line,
+  ascending: true,
+  order: ORDER_BY.date,
+  category: true,
+  late: true,
+  partner: false,
+  sprint: false,
+  responsibles: false,
+  priority: false,
+  instagram: false,
+  finishedOnEnd: false,
+} satisfies Omit<
+  ViewOptions,
+  "showOptions" | "filter_category" | "filter_state" | "filter_responsible"
+>;
+
+/**
+ * Hook que inicializa ViewOptions com defaults aplicados automaticamente.
+ * Passe apenas o que difere do padrão — showOptions é obrigatório.
+ */
+export function useViewOptions(
+  overrides: Partial<ViewOptions> & Pick<ViewOptions, "showOptions">,
+) {
+  return useState<ViewOptions>({ ...DEFAULT_VIEW_OPTIONS, ...overrides });
+}
 
 export function ViewOptionsComponent({
   viewOptions,
@@ -90,7 +120,7 @@ export function ViewOptionsComponent({
                   setViewOptions({ ...viewOptions, variant: VARIANT.line });
                 }}
               >
-                <Rows3 />
+                <Rows3Icon />
               </Button>
               <Button
                 variant={
@@ -101,7 +131,7 @@ export function ViewOptionsComponent({
                   setViewOptions({ ...viewOptions, variant: VARIANT.block });
                 }}
               >
-                <Rows2 />
+                <Rows2Icon />
               </Button>
               <Button
                 variant={
@@ -112,7 +142,7 @@ export function ViewOptionsComponent({
                   setViewOptions({ ...viewOptions, variant: VARIANT.content });
                 }}
               >
-                <Image />
+                <ImageIcon />
               </Button>
               {/* <Button
                 variant={"ghost"}
@@ -137,9 +167,9 @@ export function ViewOptionsComponent({
                 }}
                 className="grid place-content-center p-0"
               >
-                {viewOptions.variant === VARIANT.line && <Rows3 />}
-                {viewOptions.variant === VARIANT.block && <Rows2 />}
-                {viewOptions.variant === VARIANT.content && <Image />}
+                {viewOptions.variant === VARIANT.line && <Rows3Icon />}
+                {viewOptions.variant === VARIANT.block && <Rows2Icon />}
+                {viewOptions.variant === VARIANT.content && <ImageIcon />}
               </Button> */}
             </div>
           )}
@@ -153,7 +183,7 @@ export function ViewOptionsComponent({
               }
               className="grid place-content-center p-0"
             >
-              <ArrowDown />
+              <ArrowDownIcon />
             </Toggle>
           )}
         </div>
@@ -176,7 +206,7 @@ export function ViewOptionsComponent({
               }
               className="grid place-content-center p-0"
             >
-              {viewOptions.ascending ? <ArrowUpAZ /> : <ArrowDownAZ />}
+              {viewOptions.ascending ? <ArrowUpAZIcon /> : <ArrowDownAZIcon />}
             </Toggle>
           )}
           {/* Ordem por Data  */}
@@ -192,7 +222,7 @@ export function ViewOptionsComponent({
               }
               className="grid place-content-center p-0"
             >
-              <Clock />
+              <ClockIcon />
             </Toggle>
           )}
           {/* Ordem por Status */}
@@ -208,7 +238,7 @@ export function ViewOptionsComponent({
               }
               className="grid place-content-center p-0"
             >
-              <SquareCheck />
+              <SquareCheckIcon />
             </Toggle>
           )}
         </div>
@@ -227,7 +257,7 @@ export function ViewOptionsComponent({
                 setViewOptions({ ...viewOptions, responsibles: value })
               }
             >
-              <Users />
+              <UsersIcon />
             </Toggle>
           )}
           {viewOptions.showOptions.priority && (
@@ -238,7 +268,7 @@ export function ViewOptionsComponent({
               }
               className="grid place-content-center p-0"
             >
-              <Signal />
+              <SignalIcon />
             </Toggle>
           )}
           {viewOptions.showOptions.category && (
@@ -249,7 +279,7 @@ export function ViewOptionsComponent({
               }
               className="grid place-content-center p-0"
             >
-              <Tag />
+              <TagIcon />
             </Toggle>
           )}
           {viewOptions.showOptions.partner && (
@@ -260,7 +290,7 @@ export function ViewOptionsComponent({
               }
               className="grid place-content-center p-0"
             >
-              <HeartHandshake />
+              <HeartHandshakeIcon />
             </Toggle>
           )}
         </div>

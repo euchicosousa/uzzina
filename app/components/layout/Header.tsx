@@ -30,7 +30,7 @@ import {
   useNavigation,
   useParams,
 } from "react-router";
-import { HeartHandshake, Plus, Search } from "lucide-react";
+import { HeartHandshakeIcon, PlusIcon, SearchIcon } from "lucide-react";
 
 export function Header({
   person,
@@ -61,7 +61,7 @@ export function Header({
           className="rounded-full"
           onClick={() => setOpenCmdK(true)}
         >
-          <Search />
+          <SearchIcon />
         </Button>
       </div>
       <div className="flex items-center gap-2">
@@ -75,7 +75,7 @@ export function Header({
           className="squircle rounded-2xl"
         >
           Nova Ação
-          <Plus />
+          <PlusIcon />
         </Button>
         <Popover>
           <PopoverTrigger asChild>
@@ -84,7 +84,7 @@ export function Header({
               size="icon"
               className="relative rounded-full"
             >
-              <HeartHandshake />
+              <HeartHandshakeIcon />
               {actionsChart && actionsChart.length > 0 ? (
                 <UBadge
                   size="sm"

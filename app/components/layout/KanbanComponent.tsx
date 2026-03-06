@@ -86,7 +86,7 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
 
   return (
     <div className="w-full max-w-full overflow-hidden">
-      <h5 className="pb-4">Kanban</h5>
+      <h5 className="pb-4">KanbanIcon</h5>
       <div className="overflow-x-auto pb-8">
         <div className="grid min-w-[1500px] grid-cols-7 overflow-hidden">
           <DndContext

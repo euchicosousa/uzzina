@@ -3,27 +3,30 @@ import Color from "color";
 import { Theme } from "remix-themes";
 import { cn } from "~/lib/utils";
 import {
-  BadgeCheck,
-  Blocks,
-  Brain,
-  Camera,
-  CirclePlus,
-  ClipboardCheck,
-  Code,
-  Coins,
-  Filter,
-  GalleryHorizontal,
-  Image,
-  LayoutGrid,
-  Megaphone,
-  Monitor,
-  Moon,
-  Play,
-  Presentation,
-  Printer,
-  Rabbit,
-  SplinePointer,
-  Sun,
+  BadgeCheckIcon,
+  BlocksIcon,
+  BrainIcon,
+  CameraIcon,
+  CircleDashedIcon,
+  CircleDotDashedIcon,
+  CircleFadingPlusIcon,
+  CirclePlusIcon,
+  ClipboardCheckIcon,
+  CodeIcon,
+  CoinsIcon,
+  FilterIcon,
+  GalleryHorizontalIcon,
+  ImageIcon,
+  LayoutGridIcon,
+  MegaphoneIcon,
+  MonitorIcon,
+  MoonIcon,
+  PlayIcon,
+  PresentationIcon,
+  PrinterIcon,
+  RabbitIcon,
+  SplinePointerIcon,
+  SunIcon,
 } from "lucide-react";
 
 export function Icons({
@@ -48,54 +51,54 @@ export function Icons({
 
   switch (slug) {
     case "ads":
-      return <Megaphone className={cn(className)} style={style} />;
+      return <MegaphoneIcon className={cn(className)} style={style} />;
     case "capture":
-      return <Camera className={cn(className)} style={style} />;
+      return <CameraIcon className={cn(className)} style={style} />;
     case "carousel":
-      return <GalleryHorizontal className={cn(className)} style={style} />;
+      return <GalleryHorizontalIcon className={cn(className)} style={style} />;
     case "design":
-      return <SplinePointer className={cn(className)} style={style} />;
+      return <SplinePointerIcon className={cn(className)} style={style} />;
     case "dev":
-      return <Code className={cn(className)} style={style} />;
+      return <CodeIcon className={cn(className)} style={style} />;
     case "finance":
-      return <Coins className={cn(className)} style={style} />;
+      return <CoinsIcon className={cn(className)} style={style} />;
     case "meeting":
-      return <Presentation className={cn(className)} style={style} />;
+      return <PresentationIcon className={cn(className)} style={style} />;
     case "plan":
-      return <Brain className={cn(className)} style={style} />;
+      return <BrainIcon className={cn(className)} style={style} />;
     case "post":
-      return <Image className={cn(className)} style={style} />;
+      return <ImageIcon className={cn(className)} style={style} />;
     case "print":
-      return <Printer className={cn(className)} style={style} />;
+      return <PrinterIcon className={cn(className)} style={style} />;
     case "reels":
-      return <Play className={cn(className)} style={style} />;
+      return <PlayIcon className={cn(className)} style={style} />;
     case "sm":
-      return <BadgeCheck className={cn(className)} style={style} />;
+      return <BadgeCheckIcon className={cn(className)} style={style} />;
     case "stories":
-      return <CirclePlus className={cn(className)} style={style} />;
+      return <CircleFadingPlusIcon className={cn(className)} style={style} />;
     case "todo":
-      return <ClipboardCheck className={cn(className)} style={style} />;
+      return <ClipboardCheckIcon className={cn(className)} style={style} />;
     case "sprint":
-      return <Rabbit className={cn(className)} style={style} />;
+      return <RabbitIcon className={cn(className)} style={style} />;
     case "categories":
-      return <LayoutGrid className={cn(className)} style={style} />;
+      return <LayoutGridIcon className={cn(className)} style={style} />;
     case "filter":
-      return <Filter className={cn(className)} style={style} />;
+      return <FilterIcon className={cn(className)} style={style} />;
     case "instagram":
       return <IconBrandInstagram className={cn(className)} style={style} />;
 
     default:
-      return <Blocks className={cn(className)} style={style} />;
+      return <BlocksIcon className={cn(className)} style={style} />;
   }
 }
 
 export const getThemeIcon = (theme: Theme | null, className?: string) => {
   switch (theme) {
     case Theme.DARK:
-      return <Moon className={cn(className)} />;
+      return <MoonIcon className={cn(className)} />;
     case Theme.LIGHT:
-      return <Sun className={cn(className)} />;
+      return <SunIcon className={cn(className)} />;
     default:
-      return <Monitor className={cn(className)} />;
+      return <MonitorIcon className={cn(className)} />;
   }
 };

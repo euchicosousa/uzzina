@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  type ReactNode,
+} from "react";
 import { useRouteLoaderData, useSubmit } from "react-router";
 import { addDays, addMinutes, isAfter, parseISO } from "date-fns";
 import { INTENT, STATES } from "~/lib/CONSTANTS";
@@ -10,48 +17,47 @@ import {
 import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
 
-export const useActionShortcuts = (
-  action: Action,
-  isInstagramDate?: boolean,
-) => {
+type ActiveAction = { action: Action; isInstagramDate?: boolean } | null;
+
+const ActionShortcutContext = createContext<{
+  setActiveAction: (active: ActiveAction) => void;
+}>({ setActiveAction: () => {} });
+
+/**
+ * Provider que registra UM único listener de keydown no document.
+ * O listener lê a ação ativa via ref — sem stale closures, sem listeners acumulados.
+ * Coloque este provider no layout raiz (app.tsx), dentro do RouteLoaderData.
+ */
+export function ActionShortcutProvider({ children }: { children: ReactNode }) {
   const submit = useSubmit();
   const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
 
-  // Use refs so the keyDown callback always reads the latest values,
-  // avoiding stale closures when shortcuts are pressed multiple times in a row.
-  const actionRef = useRef(action);
-  actionRef.current = action;
+  const activeRef = useRef<ActiveAction>(null);
 
-  const isInstagramDateRef = useRef(isInstagramDate);
-  isInstagramDateRef.current = isInstagramDate;
+  const setActiveAction = useCallback((active: ActiveAction) => {
+    activeRef.current = active;
+  }, []);
 
-  const keyDown = useCallback(
-    (event: KeyboardEvent) => {
+  useEffect(() => {
+    function keyDown(event: KeyboardEvent) {
+      const active = activeRef.current;
+      if (!active) return;
+
+      const { action, isInstagramDate } = active;
       const code = event.code;
-      // Always read from the ref to get the latest action value
-      const currentAction = actionRef.current;
-      const currentIsInstagramDate = isInstagramDateRef.current;
 
-      // Helper: update action date to a given Date
       const updateDate = (newDate: Date) =>
         handleAction(
           {
-            ...currentAction,
+            ...action,
             intent: INTENT.update_action,
-            ...getNewDateForAction(
-              currentAction,
-              newDate,
-              currentIsInstagramDate,
-            ),
+            ...getNewDateForAction(action, newDate, isInstagramDate),
           },
           submit,
         );
 
-      // Helper: returns the action's relevant date if it's in the future, otherwise today
       const getFutureTarget = () => {
-        const str = currentIsInstagramDate
-          ? currentAction.instagram_date!
-          : currentAction.date;
+        const str = isInstagramDate ? action.instagram_date! : action.date;
         const d = parseISO(str.replace(" ", "T"));
         return isAfter(d, new Date()) ? d : new Date();
       };
@@ -66,11 +72,10 @@ export const useActionShortcuts = (
         KeyC: STATES.finished.slug,
       };
 
-      //SHIFT — Atalhos de Data
       if (event.shiftKey) {
         if (code === "KeyD") {
           handleAction(
-            { id: currentAction.id, intent: INTENT.duplicate_action },
+            { id: action.id, intent: INTENT.duplicate_action },
             submit,
           );
         } else if (code === "KeyH") {
@@ -88,38 +93,35 @@ export const useActionShortcuts = (
         } else if (code === "KeyM") {
           updateDate(addDays(getFutureTarget(), 30));
         } else if (code === "KeyU") {
-          toggleSprintAction(currentAction, person.user_id, submit);
+          toggleSprintAction(action, person.user_id, submit);
         } else if (code === "KeyX") {
           if (confirm("Tem certeza que deseja arquivar esta ação?")) {
             handleAction(
-              {
-                ...currentAction,
-                intent: INTENT.update_action,
-                archived: true,
-              },
+              { ...action, intent: INTENT.update_action, archived: true },
               submit,
             );
           }
         }
       } else if (status[code]) {
         handleAction(
-          {
-            ...currentAction,
-            intent: INTENT.update_action,
-            state: status[code],
-          },
+          { ...action, intent: INTENT.update_action, state: status[code] },
           submit,
         );
       }
-    },
-    // The callback only depends on stable values (submit, person.user_id).
-    // Action data is always read from the ref, which is kept up-to-date.
-    [submit, person.user_id],
-  );
+    }
 
-  useEffect(() => {
     document.addEventListener("keydown", keyDown);
-
     return () => document.removeEventListener("keydown", keyDown);
-  }, [keyDown]);
-};
+  }, [submit, person.user_id]);
+
+  return (
+    <ActionShortcutContext.Provider value={{ setActiveAction }}>
+      {children}
+    </ActionShortcutContext.Provider>
+  );
+}
+
+/** Retorna a função para definir a ação ativa no contexto de shortcuts. */
+export function useSetActiveAction() {
+  return useContext(ActionShortcutContext).setActiveAction;
+}

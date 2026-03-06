@@ -1,7 +1,7 @@
 import { IconBrandInstagram } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import { useOutletContext, useRouteLoaderData, useSubmit } from "react-router";
-import { CalendarDays, Signal } from "lucide-react";
+import { CalendarDaysIcon, SignalIcon } from "lucide-react";
 import {
   CATEGORIES,
   DATE_TIME_DISPLAY,
@@ -31,7 +31,7 @@ import { Draggable } from "./DnD";
 import { StateIcon } from "./StateIcon";
 import { ActionItemTitleInput } from "./ActionItemTitleInput";
 import type { Action } from "~/models/actions.server";
-import { useActionShortcuts } from "~/hooks/useActionShortcuts";
+import { useSetActiveAction } from "~/hooks/useActionShortcut";
 
 type ActionItemProps = {
   action: Action;
@@ -69,9 +69,9 @@ export function ActionItem({
   ) as AppLoaderData;
 
   const sumbit = useSubmit();
+  const setActiveAction = useSetActiveAction();
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const { setBaseAction } = useOutletContext<OutletContext>();
 
   const currentState = useMemo(
@@ -195,7 +195,7 @@ export function ActionItem({
               <div className="flex items-center gap-2 text-xs">
                 {(!isInstagramDate || !isInstagramFeed(action.category)) && (
                   <div className="flex items-center gap-1">
-                    <CalendarDays className="size-3 opacity-50" />
+                    <CalendarDaysIcon className="size-3 opacity-50" />
                     {getFormattedDateTime(action.date, dateTimeDisplay)}
                   </div>
                 )}
@@ -308,9 +308,8 @@ export function ActionItem({
         className,
         isDragging ? "cursor-grabbing" : "",
       )}
-      // style={{ borderColor: currentState.color }}
-      onMouseOver={() => setIsHovered(true)}
-      onMouseOut={() => setIsHovered(false)}
+      onMouseEnter={() => setActiveAction({ action, isInstagramDate })}
+      onMouseLeave={() => setActiveAction(null)}
       onClick={() => {
         if (!isEditing) {
           if (onClick) {
@@ -336,9 +335,6 @@ export function ActionItem({
         </div>
       )}
       {renderActionVariant()}
-      {isHovered && !isEditing && (
-        <ShortcutActions action={action} isInstagramDate={isInstagramDate} />
-      )}
     </div>
   );
 
@@ -442,14 +438,14 @@ export function ActionItemResponsibles({
 export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
   switch (priority) {
     case PRIORITIES.low.slug:
-      return <Signal className="text-info size-4" />;
+      return <SignalIcon className="text-info size-4" />;
 
     case PRIORITIES.high.slug:
-      return <Signal className="text-error size-4" />;
+      return <SignalIcon className="text-error size-4" />;
 
     case PRIORITIES.medium.slug:
     default:
-      return <Signal className="text-success size-4" />;
+      return <SignalIcon className="text-success size-4" />;
   }
 }
 
@@ -466,14 +462,3 @@ export function ActionItemSprint({
     <Icons slug="sprint" className={cn("size-4 shrink-0", className)} />
   ) : null;
 }
-
-const ShortcutActions = ({
-  action,
-  isInstagramDate,
-}: {
-  action: Action;
-  isInstagramDate?: boolean;
-}) => {
-  useActionShortcuts(action, isInstagramDate);
-  return <></>;
-};

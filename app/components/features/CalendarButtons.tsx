@@ -1,4 +1,4 @@
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDaysIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import {
   addDays,
   addYears,
@@ -41,12 +41,12 @@ export function CalendarButtons({
           setCurrentDay(addDays(currentDay, -days));
         }}
       >
-        <ChevronLeft />
+        <ChevronLeftIcon />
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost">
-            <CalendarDays />
+            <CalendarDaysIcon />
             {showDate && (
               <span className="capitalize">
                 {format(currentDay, "MMMM/yy", { locale: ptBR })}
@@ -119,7 +119,7 @@ export function CalendarButtons({
           setCurrentDay(addDays(currentDay, days));
         }}
       >
-        <ChevronRight />
+        <ChevronRightIcon />
       </Button>
     </div>
   );

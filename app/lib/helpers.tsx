@@ -15,6 +15,7 @@ export const handleAction = (data: any, submit: SubmitFunction) =>
     method: "post",
     action: "/action/handle-action",
     navigate: false,
+    encType: "application/json",
   });
 
 /**

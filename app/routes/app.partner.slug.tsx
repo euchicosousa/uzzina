@@ -1,4 +1,4 @@
-import { CalendarDays, List, Search } from "lucide-react";
+import { CalendarDaysIcon, ListIcon, SearchIcon } from "lucide-react";
 import {
   addDays,
   endOfDay,
@@ -26,6 +26,7 @@ import { ActionContainer } from "~/components/features/ActionContainer";
 import { CalendarButtons } from "~/components/features/Calendar";
 import {
   ViewOptionsComponent,
+  useViewOptions,
   type ViewOptions,
 } from "~/components/features/ViewOptions";
 import {
@@ -99,17 +100,8 @@ export default function PartnerPage() {
   const [currentDay, setCurrentDay] = useState(parseISO(date));
   const [query, setQuery] = useState("");
 
-  const [viewOptions, setViewOptions] = useState<ViewOptions>({
-    responsibles: false,
-    priority: false,
-    category: true,
-    late: true,
-    partner: false,
-    instagram: false,
+  const [viewOptions, setViewOptions] = useViewOptions({
     sprint: true,
-    variant: VARIANT.line,
-    order: ORDER_BY.date,
-    ascending: true,
     finishedOnEnd: true,
     showOptions: {
       instagram: true,
@@ -181,7 +173,7 @@ export default function PartnerPage() {
 
           <InputGroup className="w-auto min-w-[300px]">
             <InputGroupAddon>
-              <Search />
+              <SearchIcon />
             </InputGroupAddon>
             <InputGroupInput
               placeholder="Buscar ação..."
@@ -206,7 +198,7 @@ export default function PartnerPage() {
               setView("list");
             }}
           >
-            <List />
+            <ListIcon />
           </UToggle>
           <UToggle
             checked={view === "calendar"}
@@ -214,7 +206,7 @@ export default function PartnerPage() {
               setView("calendar");
             }}
           >
-            <CalendarDays />
+            <CalendarDaysIcon />
           </UToggle>
         </div>
       </div>

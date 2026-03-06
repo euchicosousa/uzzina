@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-// Tipagem mínima do Cloudinary Upload Widget global
+// Tipagem mínima do Cloudinary UploadIcon Widget global
 declare global {
   interface Window {
     cloudinary?: {

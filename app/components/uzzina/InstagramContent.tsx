@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { ContentReorderDialog } from "./ContentReorderDialog";
 import { detectPostType } from "./InstagramHelpers";
-import { Plus, SlidersHorizontal } from "lucide-react";
+import { PlusIcon, SlidersHorizontalIcon } from "lucide-react";
 export { InstagramPreview } from "./InstagramPreview";
 
 // ---------------------------------------------------------------------------
@@ -41,7 +41,7 @@ export function ContentFilesManager({
     <>
       <div className="flex items-center justify-between py-2">
         <div className="flex items-center gap-2">
-          {/* Upload rápido (primeiro arquivo) */}
+          {/* UploadIcon rápido (primeiro arquivo) */}
           {files.length === 0 ? (
             <CloudinaryUpload
               cloudName={cloudName}
@@ -80,7 +80,7 @@ export function ContentFilesManager({
               }}
               className="flex items-center gap-1.5 rounded-lg border border-dashed px-3 py-1.5 text-xs opacity-60 transition hover:opacity-100"
             >
-              <Plus className="size-3.5" />
+              <PlusIcon className="size-3.5" />
               Adicionar conteúdo
             </CloudinaryUpload>
           ) : (
@@ -100,7 +100,7 @@ export function ContentFilesManager({
           onClick={() => setDialogOpen(true)}
           className="hover:bg-muted flex items-center gap-1 rounded-lg px-2 py-1 text-xs opacity-50 transition hover:opacity-100"
         >
-          <SlidersHorizontal className="size-3.5" />
+          <SlidersHorizontalIcon className="size-3.5" />
           {files.length === 0
             ? "Gerenciar"
             : `${files.length} arquivo${files.length !== 1 ? "s" : ""}`}

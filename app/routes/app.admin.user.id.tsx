@@ -61,7 +61,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const admin = formData.get("admin") === "on";
   const visible = formData.get("visible") === "on";
   const areas = formData.getAll("areas") as string[];
-  // URL vinda diretamente do Cloudinary Upload Widget (já enviada pelo widget)
+  // URL vinda diretamente do Cloudinary UploadIcon Widget (já enviada pelo widget)
   const image = (formData.get("image") as string) || null;
 
   if (user_id === "new") {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { detectPostType } from "./InstagramHelpers";
-import { ChevronLeft, ChevronRight, Image } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, ImageIcon } from "lucide-react";
 
 interface InstagramPreviewProps {
   files: string[];
@@ -26,7 +26,7 @@ export function InstagramPreview({ files }: InstagramPreviewProps) {
     return (
       <div className={`${frameClass} ${aspectClass}`}>
         <div className="flex h-full flex-col items-center justify-center gap-2 opacity-30">
-          <Image className="size-10" />
+          <ImageIcon className="size-10" />
           <span className="text-xs">Nenhum conteúdo</span>
         </div>
       </div>
@@ -79,7 +79,7 @@ export function InstagramPreview({ files }: InstagramPreviewProps) {
           onClick={() => setCarouselIndex((i) => i - 1)}
           className="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
         >
-          <ChevronLeft className="size-4" />
+          <ChevronLeftIcon className="size-4" />
         </button>
       )}
       {canNext && (
@@ -88,7 +88,7 @@ export function InstagramPreview({ files }: InstagramPreviewProps) {
           onClick={() => setCarouselIndex((i) => i + 1)}
           className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
         >
-          <ChevronRight className="size-4" />
+          <ChevronRightIcon className="size-4" />
         </button>
       )}
 

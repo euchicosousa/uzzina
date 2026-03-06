@@ -6,7 +6,7 @@ import type { ViewOptions } from "~/components/features/ViewOptions";
 import { ActionContainer } from "./ActionContainer";
 import type { Action } from "~/models/actions.server";
 import { getInstagramFeedActions } from "~/utils/validation";
-import { Plus } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 
 export function CalendarDay({
   currentDay,
@@ -73,7 +73,7 @@ export function CalendarDay({
                   onCreateAction(day);
                 }}
               >
-                <Plus className="size-4" />
+                <PlusIcon className="size-4" />
               </button>
             </div>
           )}

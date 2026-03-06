@@ -4,7 +4,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
-import { Eye, EyeOff, Save, Upload, User } from "lucide-react";
+import { EyeIcon, EyeOffIcon, SaveIcon, UploadIcon, UserIcon } from "lucide-react";
 
 interface Area {
   id: string;
@@ -39,7 +39,7 @@ export function AdminUserForm({
       <input type="hidden" name="image" value={imageUrl || ""} />
 
       <div className="grid gap-8">
-        {/* Avatar / Upload Widget */}
+        {/* Avatar / UploadIcon Widget */}
         <div className="flex items-center gap-6">
           <CloudinaryUpload
             cloudName={cloudName}
@@ -57,7 +57,7 @@ export function AdminUserForm({
               size="xxl"
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
-              <Upload className="size-6 text-white" />
+              <UploadIcon className="size-6 text-white" />
             </div>
           </CloudinaryUpload>
 
@@ -167,9 +167,9 @@ export function AdminUserForm({
                 className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
               >
                 {showPassword ? (
-                  <EyeOff className="size-4" />
+                  <EyeOffIcon className="size-4" />
                 ) : (
-                  <Eye className="size-4" />
+                  <EyeIcon className="size-4" />
                 )}
               </button>
             </div>
@@ -234,7 +234,7 @@ export function AdminUserForm({
                 htmlFor="admin"
                 className="peer-checked:bg-muted squircle flex cursor-pointer items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
               >
-                <User className="size-4" />
+                <UserIcon className="size-4" />
                 Admin
               </label>
             </div>
@@ -248,7 +248,7 @@ export function AdminUserForm({
           disabled={isSubmitting}
           className="squircle rounded-2xl"
         >
-          <Save className="mr-2 size-4" />
+          <SaveIcon className="mr-2 size-4" />
           {isSubmitting ? "Salvando..." : "Salvar Usuário"}
         </Button>
       </div>

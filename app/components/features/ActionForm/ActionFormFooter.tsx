@@ -1,4 +1,4 @@
-import { CloudUpload, Loader, Plus, Rabbit, Trash } from "lucide-react";
+import { CloudUploadIcon, LoaderIcon, PlusIcon, RabbitIcon, TrashIcon } from "lucide-react";
 import { useRouteLoaderData, useSubmit } from "react-router";
 import { ActionColorDropdown } from "~/components/features/ActionForm/ActionColorDropdown";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
@@ -115,7 +115,7 @@ export function ActionFormFooter({
                 toggleSprintAction(RawAction, person.user_id, submit);
               }}
             >
-              <Rabbit className="size-5" />
+              <RabbitIcon className="size-5" />
             </UToggleInput>
             <button
               title="Excluir ação"
@@ -127,7 +127,7 @@ export function ActionFormFooter({
                 }
               }}
             >
-              <Trash className="size-5" />
+              <TrashIcon className="size-5" />
             </button>
           </>
         )}
@@ -153,11 +153,11 @@ export function ActionFormFooter({
               : "Criar Ação"}
 
           {isPending ? (
-            <Loader className="animate-spin" />
+            <LoaderIcon className="animate-spin" />
           ) : RawAction.id ? (
-            <CloudUpload />
+            <CloudUploadIcon />
           ) : (
-            <Plus />
+            <PlusIcon />
           )}
         </Button>
       </div>

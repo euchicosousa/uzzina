@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CircleAlert, Eye, EyeOff, LogIn } from "lucide-react";
+import { CircleAlertIcon, EyeIcon, EyeOffIcon, LogInIcon } from "lucide-react";
 import {
   redirect,
   useActionData,
@@ -59,7 +59,7 @@ const Login = () => {
             variant={"destructive"}
             className="bg-destructive/5 border-destructive/10 mb-8"
           >
-            <CircleAlert />
+            <CircleAlertIcon />
             <AlertTitle>Erro ao fazer login</AlertTitle>
             <AlertDescription>{actionData.errors.email}</AlertDescription>
           </Alert>
@@ -87,13 +87,13 @@ const Login = () => {
                 setShowPassword(!showPassword);
               }}
             >
-              {showPassword ? <Eye /> : <EyeOff />}
+              {showPassword ? <EyeIcon /> : <EyeOffIcon />}
             </Button>
           </div>
 
           <div className="flex justify-end">
             <Button type="submit">
-              Fazer Login <LogIn className="ml-2 size-3" />
+              Fazer Login <LogInIcon className="ml-2 size-3" />
             </Button>
           </div>
         </form>

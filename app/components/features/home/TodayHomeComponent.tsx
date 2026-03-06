@@ -1,10 +1,11 @@
 import { format, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
-import { Blocks, CircleAlert, Clock, Grid3x3, Kanban } from "lucide-react";
+import { BlocksIcon, CircleAlertIcon, ClockIcon, Grid3x3Icon, KanbanIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CalendarButtons } from "~/components/features/Calendar";
 import {
   ViewOptionsComponent,
+  useViewOptions,
   type ViewOptions,
 } from "~/components/features/ViewOptions";
 import FeedComponent from "~/components/layout/FeedComponent";
@@ -22,12 +23,8 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
   );
 
   const [currentDay, setCurrentDay] = useState(new Date());
-  const [viewOptions, setViewOptions] = useState<ViewOptions>({
-    ascending: true,
-    category: true,
-    late: true,
+  const [viewOptions, setViewOptions] = useViewOptions({
     partner: true,
-    order: ORDER_BY.date,
     showOptions: {
       ascending: true,
       order: true,
@@ -74,22 +71,22 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
               checked={view === "kanban"}
               onClick={() => setView("kanban")}
             >
-              <Kanban />
+              <KanbanIcon />
             </UToggle>
             <UToggle
               checked={view === "hours"}
               onClick={() => setView("hours")}
             >
-              <Clock />
+              <ClockIcon />
             </UToggle>
             <UToggle checked={view === "feed"} onClick={() => setView("feed")}>
-              <Grid3x3 />
+              <Grid3x3Icon />
             </UToggle>
             <UToggle
               checked={view === "categories"}
               onClick={() => setView("categories")}
             >
-              <Blocks />
+              <BlocksIcon />
             </UToggle>
           </div>
         </div>
@@ -113,7 +110,7 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
         )}
         {view === "categories" && (
           <div className="bg-muted text-muted-foreground flex items-center rounded-xl p-8">
-            <CircleAlert className="mr-4 size-8 opacity-50" />
+            <CircleAlertIcon className="mr-4 size-8 opacity-50" />
             <div>
               Visualização por <strong className="underline">CATEGORIAS</strong>{" "}
               ainda não está disponível

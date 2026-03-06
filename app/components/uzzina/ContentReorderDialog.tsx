@@ -1,5 +1,11 @@
 import { useEffect, useState, useRef } from "react";
-import { GripVertical, Plus, SlidersHorizontal, Trash2, X } from "lucide-react";
+import {
+  GripVerticalIcon,
+  PlusIcon,
+  SlidersHorizontalIcon,
+  Trash2Icon,
+  XIcon,
+} from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -70,7 +76,7 @@ function SortableThumbnail({
         {...listeners}
         className="absolute top-1 left-1 z-10 cursor-grab rounded bg-black/40 p-0.5 opacity-0 transition group-hover:opacity-100 active:cursor-grabbing"
       >
-        <GripVertical className="size-3 text-white" />
+        <GripVerticalIcon className="size-3 text-white" />
       </div>
 
       {/* Número de ordem */}
@@ -84,7 +90,7 @@ function SortableThumbnail({
         onClick={onRemove}
         className="bg-destructive absolute top-1 right-1 z-10 hidden size-4 items-center justify-center rounded-full text-white group-hover:flex"
       >
-        <X className="size-2.5" />
+        <XIcon className="size-2.5" />
       </button>
 
       {/* Preview */}
@@ -201,7 +207,7 @@ export function ContentReorderDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <SlidersHorizontal className="size-4" />
+            <SlidersHorizontalIcon className="size-4" />
             Gerenciar conteúdo
           </DialogTitle>
           <DialogDescription className="sr-only">
@@ -209,7 +215,7 @@ export function ContentReorderDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Info do tipo detectado */}
+        {/* InfoIcon do tipo detectado */}
         <div className="text-muted-foreground flex items-center justify-between text-xs">
           <span>
             Tipo detectado:{" "}
@@ -277,7 +283,7 @@ export function ContentReorderDialog({
               onUpload={handleAdd}
               className="hover:bg-muted flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm transition disabled:opacity-50"
             >
-              <Plus className="size-4" />
+              <PlusIcon className="size-4" />
               Adicionar
             </CloudinaryUpload>
 
@@ -291,7 +297,7 @@ export function ContentReorderDialog({
                   onChange([]);
                 }}
               >
-                <Trash2 className="size-4" />
+                <Trash2Icon className="size-4" />
                 Limpar
               </Button>
             )}

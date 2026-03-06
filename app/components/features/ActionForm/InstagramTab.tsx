@@ -1,7 +1,7 @@
 import { type FetcherWithComponents } from "react-router";
 import { Button } from "~/components/ui/button";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
-import { Loader, Wand2 } from "lucide-react";
+import { LoaderIcon, Wand2Icon } from "lucide-react";
 import {
   ContentFilesManager,
   InstagramPreview,
@@ -32,7 +32,7 @@ function AiProcessingMessage({ isAIProcessing }: { isAIProcessing: boolean }) {
   return (
     <div className="flex w-full items-center justify-center gap-2 border-b py-4 text-xs font-medium">
       <div className="relative flex items-center justify-center">
-        <Loader className="size-4 animate-spin opacity-50" />
+        <LoaderIcon className="size-4 animate-spin opacity-50" />
       </div>
       <span className="animate-pulse">Gerando legenda com IA...</span>
     </div>
@@ -95,7 +95,7 @@ export function InstagramTab({
               );
             }}
           >
-            <Wand2 />
+            <Wand2Icon />
           </Button>
         </div>
         <div className="flex h-full flex-col">

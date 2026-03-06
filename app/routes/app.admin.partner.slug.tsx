@@ -1,9 +1,9 @@
 import {
-  Archive,
-  BadgeCheck,
-  CloudUpload,
-  MailCheck,
-  Megaphone,
+  ArchiveIcon,
+  BadgeCheckIcon,
+  CloudUploadIcon,
+  MailCheckIcon,
+  MegaphoneIcon,
 } from "lucide-react";
 import {
   Form,
@@ -257,7 +257,7 @@ export default function AdminPartnerEditPage() {
                   value="marketing"
                   defaultChecked={partner?.sow === "marketing" || !partner?.sow}
                 >
-                  <Megaphone className="size-4" />
+                  <MegaphoneIcon className="size-4" />
                   Marketing
                 </UToggleInput>
 
@@ -268,7 +268,7 @@ export default function AdminPartnerEditPage() {
                   value="socialmedia"
                   defaultChecked={partner?.sow === "socialmedia"}
                 >
-                  <BadgeCheck className="size-4" />
+                  <BadgeCheckIcon className="size-4" />
                   Social Media
                 </UToggleInput>
 
@@ -279,7 +279,7 @@ export default function AdminPartnerEditPage() {
                   value="demand"
                   defaultChecked={partner?.sow === "demand"}
                 >
-                  <MailCheck className="size-4" />
+                  <MailCheckIcon className="size-4" />
                   Demand
                 </UToggleInput>
               </div>
@@ -294,7 +294,7 @@ export default function AdminPartnerEditPage() {
             defaultChecked={partner?.archived || false}
             variant="destructive"
           >
-            <Archive className="size-4" />
+            <ArchiveIcon className="size-4" />
             {partner?.archived ? "Arquivado" : "Visível"}
           </UToggleInput>
 
@@ -304,7 +304,7 @@ export default function AdminPartnerEditPage() {
             className="squircle rounded-2xl"
           >
             {isSubmitting ? "Salvando..." : "Salvar"}
-            <CloudUpload className="size-4" />
+            <CloudUploadIcon className="size-4" />
           </Button>
         </div>
       </Form>

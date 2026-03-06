@@ -4,7 +4,7 @@ import { Suspense, lazy, useRef } from "react";
 import { GMGCombobox } from "~/components/features/GMGCombobox";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
-import { CalendarDays, Plus } from "lucide-react";
+import { CalendarDaysIcon, PlusIcon } from "lucide-react";
 import { getNewDateForAction, isInstagramFeed } from "~/lib/helpers";
 import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
@@ -87,7 +87,7 @@ export function EssentialsTab({
             {isInstagramFeed(
               RawAction.category,
               RawAction.category === "stories",
-            ) && <CalendarDays className="size-4" />}
+            ) && <CalendarDaysIcon className="size-4" />}
             <ActionDatePicker
               onSelect={async (date) => {
                 // @ts-ignore
@@ -212,7 +212,7 @@ export function EssentialsTab({
               }`}
             >
               {workFiles.length === 0 && <span>Adicionar arquivo</span>}
-              <Plus className="size-3" />
+              <PlusIcon className="size-3" />
             </CloudinaryUpload>
           </div>
         </div>

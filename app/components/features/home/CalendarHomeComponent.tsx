@@ -12,6 +12,7 @@ import { useMatches } from "react-router";
 import { CalendarWithDnd } from "~/components/features/CalendarWithDnd";
 import {
   ViewOptionsComponent,
+  useViewOptions,
   type ViewOptions,
 } from "~/components/features/ViewOptions";
 import { Toggle } from "~/components/ui/toggle";
@@ -45,12 +46,8 @@ export function CalendarHomeComponent({
         : endOfWeek(endOfMonth(currentDate)),
   });
 
-  const [viewOptions, setViewOptions] = useState<ViewOptions>({
-    ascending: true,
-    category: true,
-    late: true,
+  const [viewOptions, setViewOptions] = useViewOptions({
     partner: true,
-    order: ORDER_BY.date,
     showOptions: {
       ascending: true,
       order: true,

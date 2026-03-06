@@ -10,8 +10,11 @@ import {
 import { ActionFormSchema } from "~/utils/validation";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const formData = Object.fromEntries(await request.formData());
-  const { intent, id, ...values } = formData as any;
+  const contentType = request.headers.get("content-type") ?? "";
+  const payload = contentType.includes("application/json")
+    ? await request.json()
+    : Object.fromEntries(await request.formData());
+  const { intent, id, ...values } = payload as any;
 
   const { supabase } = await getUserId(request);
 

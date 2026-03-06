@@ -5,7 +5,7 @@ import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { CATEGORIES, SIZE, STATES } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
-import { Monitor, Moon, Sun } from "lucide-react";
+import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 
 export const meta = () => {
   return [
@@ -47,13 +47,13 @@ export default function UITestingPage() {
             onClick={() => setTheme(Theme.LIGHT)}
             variant={Theme.LIGHT === theme ? "outline" : "ghost"}
           >
-            <Sun />
+            <SunIcon />
           </Button>
           <Button
             onClick={() => setTheme(Theme.DARK)}
             variant={Theme.DARK === theme ? "outline" : "ghost"}
           >
-            <Moon />
+            <MoonIcon />
           </Button>
           <Button
             onClick={() => setTheme(null)}
@@ -63,7 +63,7 @@ export default function UITestingPage() {
                 : "ghost"
             }
           >
-            <Monitor />
+            <MonitorIcon />
           </Button>
 
           {/* <ToggleGroup
@@ -77,13 +77,13 @@ export default function UITestingPage() {
             }}
           >
             <ToggleGroupItem value={Theme.LIGHT}>
-              <Sun />
+              <SunIcon />
             </ToggleGroupItem>
             <ToggleGroupItem value={Theme.DARK}>
-              <Moon />
+              <MoonIcon />
             </ToggleGroupItem>
             <ToggleGroupItem value={"system"}>
-              <Monitor />
+              <MonitorIcon />
             </ToggleGroupItem>
           </ToggleGroup> */}
         </div>

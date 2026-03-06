@@ -1,7 +1,7 @@
 import { addMinutes, format, parse } from "date-fns";
 import { IconBrandInstagram } from "@tabler/icons-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Heart, MessageCircle, X } from "lucide-react";
+import { HeartIcon, MessageCircleIcon, XIcon } from "lucide-react";
 import {
   useFetcher,
   useFetchers,
@@ -96,7 +96,10 @@ export function CreateAndEditAction({
   const [isAIProcessing, setIsAIProcessing] = useState(false);
 
   useEffect(() => {
-    setIsPending(fetchers.filter((f) => f.formData).length > 0);
+    setIsPending(
+      fetchers.filter((f) => (f as any).json || f.state === "submitting")
+        .length > 0,
+    );
 
     setIsAIProcessing(
       fetchers.filter((f) => f.formData?.get("intent") === INTENT.caption_ai)
@@ -104,8 +107,9 @@ export function CreateAndEditAction({
     );
 
     fetchers.forEach((f) => {
-      if (f.formData && f.data) {
-        const intent = f.formData.get("intent");
+      const payload = (f as any).json;
+      if (payload && f.data) {
+        const intent = payload.intent;
 
         if (intent === INTENT.create_action) {
           const newId = f.data?.id;
@@ -243,7 +247,7 @@ export function CreateAndEditAction({
           className={tabClass(view === "essential")}
           onClick={() => setView("essential")}
         >
-          ESSENCIAL <Heart className="size-4" />
+          ESSENCIAL <HeartIcon className="size-4" />
         </div>
         {isInstagramFeed(RawAction.category) && (
           <div
@@ -257,14 +261,14 @@ export function CreateAndEditAction({
           className={tabClass(view === "chat")}
           onClick={() => setView("chat")}
         >
-          CHAT <MessageCircle className="size-4" />
+          CHAT <MessageCircleIcon className="size-4" />
         </div>
         <div>
           <button
             className="flex w-full cursor-pointer items-center justify-center gap-2 border-b p-5 text-sm font-medium"
             onClick={onClose}
           >
-            <X className="size-4" />
+            <XIcon className="size-4" />
           </button>
         </div>
       </div>

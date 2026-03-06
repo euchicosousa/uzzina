@@ -31,7 +31,7 @@ export function UToggle({
  *
  * @example
  * <UToggleInput id="archived" name="archived" defaultChecked={partner.archived} variant="destructive">
- *   <Archive className="size-4" /> Arquivado
+ *   <ArchiveIcon className="size-4" /> Arquivado
  * </UToggleInput>
  */
 export function UToggleInput({

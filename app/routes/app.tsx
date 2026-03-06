@@ -16,6 +16,7 @@ import { getUserId } from "~/services/auth.server";
 import { Toaster } from "sonner";
 import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
 import type { Action } from "~/models/actions.server";
+import { ActionShortcutProvider } from "~/hooks/useActionShortcut";
 
 const CreateAndEditAction = lazy(() =>
   import("./CreateAndEditAction").then((module) => ({
@@ -75,26 +76,18 @@ export default function Dashboard() {
   const [openCmdK, setOpenCmdK] = useState(false);
 
   useEffect(() => {
-    function keyDownCmdK(event: KeyboardEvent) {
+    function keyDownGlobal(event: KeyboardEvent) {
       if (event.key === "k" && event.metaKey) {
-        setOpenCmdK(!openCmdK);
-      }
-    }
-    function keyDownNewAction(event: KeyboardEvent) {
-      if (event.code === "KeyA" && event.altKey && event.metaKey) {
+        setOpenCmdK((prev) => !prev);
+      } else if (event.code === "KeyA" && event.altKey && event.metaKey) {
         setBaseAction({
           ...(getCleanAction(person.user_id) as unknown as Action),
         });
       }
     }
-    document.addEventListener("keydown", keyDownCmdK);
-    document.addEventListener("keydown", keyDownNewAction);
-
-    return () => {
-      document.removeEventListener("keydown", keyDownCmdK);
-      document.removeEventListener("keydown", keyDownNewAction);
-    };
-  }, []);
+    document.addEventListener("keydown", keyDownGlobal);
+    return () => document.removeEventListener("keydown", keyDownGlobal);
+  }, [person.user_id]);
 
   return (
     <div id="app" className="flex h-screen flex-col">
@@ -105,42 +98,41 @@ export default function Dashboard() {
         setBaseAction={setBaseAction}
         setOpenCmdK={setOpenCmdK}
       />
-      <div className="flex h-full w-full overflow-hidden">
-        <div className="grow overflow-x-hidden overflow-y-auto">
-          <div className="flex min-h-full grow">
-            {/* <div className="min-h-full w-8 shrink-0 border-r"></div> */}
-            {/* <div className="flex min-h-full w-[calc(100%-4rem)] shrink flex-col"> */}
-            <div className="flex min-h-full w-full shrink flex-col">
-              <Outlet context={{ BaseAction, setBaseAction }} />
+      <ActionShortcutProvider>
+        <div className="flex h-full w-full overflow-hidden">
+          <div className="grow overflow-x-hidden overflow-y-auto">
+            <div className="flex min-h-full grow">
+              <div className="flex min-h-full w-full shrink flex-col">
+                <Outlet context={{ BaseAction, setBaseAction }} />
+              </div>
             </div>
-            {/* <div className="min-h-full w-8 shrink-0 border-l"></div> */}
           </div>
-        </div>
-        <Toaster richColors />
+          <Toaster richColors />
 
-        {BaseAction ? (
-          <Suspense fallback={null}>
-            <div
-              className="fixed inset-0 top-17 z-10 flex w-full shrink-0 flex-col bg-black/20 dark:bg-black/80"
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                setBaseAction(null);
-              }}
-            ></div>
-            <CreateAndEditAction
-              BaseAction={BaseAction}
-              onClose={() => setBaseAction(null)}
-            />
-          </Suspense>
-        ) : null}
-      </div>
-      <GlobalSearchCommand
-        open={openCmdK}
-        onOpenChange={setOpenCmdK}
-        partners={partners}
-        setBaseAction={setBaseAction}
-      />
+          {BaseAction ? (
+            <Suspense fallback={null}>
+              <div
+                className="fixed inset-0 top-17 z-10 flex w-full shrink-0 flex-col bg-black/20 dark:bg-black/80"
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  setBaseAction(null);
+                }}
+              ></div>
+              <CreateAndEditAction
+                BaseAction={BaseAction}
+                onClose={() => setBaseAction(null)}
+              />
+            </Suspense>
+          ) : null}
+        </div>
+        <GlobalSearchCommand
+          open={openCmdK}
+          onOpenChange={setOpenCmdK}
+          partners={partners}
+          setBaseAction={setBaseAction}
+        />
+      </ActionShortcutProvider>
     </div>
   );
 }

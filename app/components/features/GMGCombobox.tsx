@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { GENESIS, GOALS, MISSIONS } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
-import { Check } from "lucide-react";
+import { CheckIcon } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -53,7 +53,7 @@ export function GMGCombobox({
                 className="flex justify-between"
               >
                 {item.title}
-                {selected === item.slug && <Check />}
+                {selected === item.slug && <CheckIcon />}
               </CommandItem>
             ))}
           </CommandList>

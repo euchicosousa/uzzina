@@ -4,7 +4,7 @@ import { sortActions } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import { ActionItem } from "./ActionItem";
 import type { Action } from "~/models/actions.server";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 
 type ActionContainerProps = {
   actions: Action[];
@@ -90,9 +90,9 @@ export function ActionContainer(
             }}
           >
             {showMore ? (
-              <ChevronDown className="size-4" />
+              <ChevronDownIcon className="size-4" />
             ) : (
-              <ChevronUp className="size-4" />
+              <ChevronUpIcon className="size-4" />
             )}
           </button>
         )}
