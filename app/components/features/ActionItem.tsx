@@ -72,6 +72,11 @@ export function ActionItem({
   const setActiveAction = useSetActiveAction();
 
   const [isEditing, setIsEditing] = useState(false);
+
+  const handleSetIsEditing = (value: boolean) => {
+    if (value) setActiveAction(null);
+    setIsEditing(value);
+  };
   const { setBaseAction } = useOutletContext<OutletContext>();
 
   const currentState = useMemo(
@@ -156,7 +161,7 @@ export function ActionItem({
               {!isEditing && <ActionItemSprint action={action} />}
               <ActionItemTitleInput
                 isEditing={isEditing}
-                setIsEditing={setIsEditing}
+                setIsEditing={handleSetIsEditing}
                 title={action.title}
                 className={"h-6 text-xl"}
                 InputButtonClassName="w-auto"
@@ -225,7 +230,7 @@ export function ActionItem({
 
               <ActionItemTitleInput
                 isEditing={isEditing}
-                setIsEditing={setIsEditing}
+                setIsEditing={handleSetIsEditing}
                 title={action.title}
                 className="w-full"
                 onChange={(title) => {
@@ -308,7 +313,11 @@ export function ActionItem({
         className,
         isDragging ? "cursor-grabbing" : "",
       )}
-      onMouseEnter={() => setActiveAction({ action, isInstagramDate })}
+      onMouseEnter={() =>
+        isEditing
+          ? setActiveAction(null)
+          : setActiveAction({ action, isInstagramDate })
+      }
       onMouseLeave={() => setActiveAction(null)}
       onClick={() => {
         if (!isEditing) {
