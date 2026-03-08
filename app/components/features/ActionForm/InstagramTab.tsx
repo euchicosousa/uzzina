@@ -7,7 +7,7 @@ import {
   InstagramPreview,
 } from "~/components/uzzina/InstagramContent";
 import { INTENT } from "~/lib/CONSTANTS";
-import { getFormattedPartnersName } from "~/utils/format";
+import { getFormattedPartnersLinks } from "~/utils/format";
 import type { Action } from "~/models/actions.server";
 
 interface InstagramTabProps {
@@ -74,7 +74,8 @@ export function InstagramTab({
               }))}
             />
             <div className="text-sm font-medium">
-              {getFormattedPartnersName(currentPartners)}
+              {/* {getFormattedPartnersName(currentPartners)} */}
+              {getFormattedPartnersLinks(currentPartners)}
             </div>
           </div>
           <Button

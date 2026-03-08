@@ -1,4 +1,11 @@
-import { CloudUploadIcon, LoaderIcon, PlusIcon, RabbitIcon, TrashIcon } from "lucide-react";
+import {
+  CloudUploadIcon,
+  CopyIcon,
+  LoaderIcon,
+  PlusIcon,
+  RabbitIcon,
+  TrashIcon,
+} from "lucide-react";
 import { useRouteLoaderData, useSubmit } from "react-router";
 import { ActionColorDropdown } from "~/components/features/ActionForm/ActionColorDropdown";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
@@ -6,7 +13,9 @@ import { PartnersCombobox } from "~/components/features/PartnersCombobox";
 import { StatesCombobox } from "~/components/features/StatesCombobox";
 import { Button } from "~/components/ui/button";
 import { UToggleInput } from "~/components/uzzina/UToggle";
+import { INTENT } from "~/lib/CONSTANTS";
 import {
+  handleAction,
   isInstagramFeed,
   isSprint,
   submitDeleteAction,
@@ -117,6 +126,19 @@ export function ActionFormFooter({
             >
               <RabbitIcon className="size-5" />
             </UToggleInput>
+            <button
+              title="Duplicar ação (Shift+D)"
+              className="flex items-center gap-2 rounded-2xl p-2 text-sm opacity-50 hover:opacity-100 focus:opacity-100"
+              onClick={() => {
+                handleAction(
+                  { id: RawAction.id, intent: INTENT.duplicate_action },
+                  submit,
+                );
+                handleClose();
+              }}
+            >
+              <CopyIcon className="size-5" />
+            </button>
             <button
               title="Excluir ação"
               className="flex items-center gap-2 rounded-2xl p-2 text-sm opacity-50 hover:opacity-100 focus:opacity-100"
