@@ -1,6 +1,14 @@
 import { format, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
-import { BlocksIcon, CircleAlertIcon, ClockIcon, Grid3x3Icon, KanbanIcon } from "lucide-react";
+import {
+  BlocksIcon,
+  CircleAlertIcon,
+  ClockIcon,
+  Grid3x3Icon,
+  HandshakeIcon,
+  HeartHandshakeIcon,
+  KanbanIcon,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { CalendarButtons } from "~/components/features/Calendar";
 import {
@@ -11,6 +19,7 @@ import {
 import FeedComponent from "~/components/layout/FeedComponent";
 import { HoursComponent } from "~/components/layout/HoursComponent";
 import KanbanComponent from "~/components/layout/KanbanComponent";
+import { PartnersComponent } from "~/components/layout/PartnersComponent";
 import { UToggle } from "~/components/uzzina/UToggle";
 import { ORDER_BY } from "~/lib/CONSTANTS";
 import { isInstagramFeed } from "~/lib/helpers";
@@ -18,9 +27,9 @@ import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
 export function TodayHomeComponent({ actions }: { actions: Action[] }) {
-  const [view, setView] = useState<"kanban" | "hours" | "feed" | "categories">(
-    "kanban",
-  );
+  const [view, setView] = useState<
+    "kanban" | "hours" | "feed" | "categories" | "partners"
+  >("partners");
 
   const [currentDay, setCurrentDay] = useState(new Date());
   const [viewOptions, setViewOptions] = useViewOptions({
@@ -57,15 +66,20 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
             }).slice(1)
       }
       OptionsComponent={
-        <div className="flex items-center gap-8">
-          <CalendarButtons
-            currentDay={currentDay}
-            setCurrentDay={setCurrentDay}
-          />
-          <ViewOptionsComponent
-            viewOptions={viewOptions}
-            setViewOptions={setViewOptions}
-          />
+        <div className="flex flex-wrap items-center gap-2 xl:gap-6">
+          <div className="flex items-center gap-8">
+            {/* Opções de calendario  */}
+            <CalendarButtons
+              currentDay={currentDay}
+              setCurrentDay={setCurrentDay}
+            />
+            {/* Opções de visualização  */}
+            <ViewOptionsComponent
+              viewOptions={viewOptions}
+              setViewOptions={setViewOptions}
+            />
+          </div>
+          {/* Opções de Views  */}
           <div className="flex gap-2">
             <UToggle
               checked={view === "kanban"}
@@ -88,6 +102,12 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
             >
               <BlocksIcon />
             </UToggle>
+            <UToggle
+              checked={view === "partners"}
+              onClick={() => setView("partners")}
+            >
+              <HeartHandshakeIcon />
+            </UToggle>
           </div>
         </div>
       }
@@ -109,15 +129,22 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
           />
         )}
         {view === "categories" && (
-          <div className="bg-muted text-muted-foreground flex items-center rounded-xl p-8">
-            <CircleAlertIcon className="mr-4 size-8 opacity-50" />
-            <div>
-              Visualização por <strong className="underline">CATEGORIAS</strong>{" "}
-              ainda não está disponível
-            </div>
-          </div>
+          <NotAvailableViewComponent view="CATEGORIAS" />
         )}
+        {view === "partners" && <PartnersComponent actions={filteredActions} />}
       </div>
     </HomeComponentWrapper>
+  );
+}
+
+function NotAvailableViewComponent({ view }: { view: string }) {
+  return (
+    <div className="bg-muted text-muted-foreground flex items-center rounded-xl p-8">
+      <CircleAlertIcon className="mr-4 size-8 opacity-50" />
+      <div>
+        Visualização por <strong className="underline">{view}</strong> ainda não
+        está disponível
+      </div>
+    </div>
   );
 }

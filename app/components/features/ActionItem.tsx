@@ -306,7 +306,7 @@ export function ActionItem({
             ? "squircle rounded-2xl px-3 py-2"
             : variant === VARIANT.hour
               ? "squircle w-auto rounded-xl px-3 py-2"
-              : "px-3 py-1 transition-colors @xs:p-1",
+              : `px-3 ${variant === VARIANT.hair ? "py-0 @xs:p-0" : "py-1 @xs:p-1"} transition-colors`,
 
         bgClasses,
         variant === VARIANT.block ? "flex-col gap-2" : "",

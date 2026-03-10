@@ -386,6 +386,7 @@ export const VARIANT = {
   block: "block",
   content: "content",
   hour: "hour",
+  hair: "hair",
 } as const;
 
 export const INTENT = {
