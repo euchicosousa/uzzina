@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { ORDER_BY, VARIANT, type DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
+import {
+  ORDER_BY,
+  VARIANT,
+  COLUMNS,
+  type DATE_TIME_DISPLAY,
+} from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import { ActionItem } from "./ActionItem";
@@ -9,7 +14,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 type ActionContainerProps = {
   actions: Action[];
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
-  columns?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  columns?: (typeof COLUMNS)[keyof typeof COLUMNS];
   showLate?: boolean;
   showPartner?: boolean;
   showCategory?: boolean;
@@ -26,27 +31,25 @@ type ActionContainerProps = {
   isDraggable?: boolean;
 };
 
-export function ActionContainer(
-  {
-    actions,
-    variant = VARIANT.line,
-    columns = 1,
-    showLate = false,
-    showPartner,
-    showCategory,
-    showResponsibles,
-    showPriority,
-    showDivider,
-    showSprint,
-    dateTimeDisplay,
-    orderBy,
-    ascending,
-    isCompact,
-    isScroll,
-    isInstagramDate,
-    isDraggable,
-  }: ActionContainerProps
-) {
+export function ActionContainer({
+  actions,
+  variant = VARIANT.line,
+  columns = 1,
+  showLate = false,
+  showPartner,
+  showCategory,
+  showResponsibles,
+  showPriority,
+  showDivider,
+  showSprint,
+  dateTimeDisplay,
+  orderBy,
+  ascending,
+  isCompact,
+  isScroll,
+  isInstagramDate,
+  isDraggable,
+}: ActionContainerProps) {
   const columnsClasses =
     columns === 1
       ? `flex flex-col`

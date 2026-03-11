@@ -13,6 +13,8 @@ export function sortActions(
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY],
   ascending = true,
 ) {
+  const sorted = [...actions];
+
   const priorities_order = Object.values(PRIORITIES).map(
     (priority) => priority.slug,
   );
@@ -20,7 +22,7 @@ export function sortActions(
 
   switch (orderBy) {
     case ORDER_BY.priority:
-      actions.sort(
+      sorted.sort(
         (a, b) =>
           (priorities_order.indexOf(a.priority as PRIORITY) -
             priorities_order.indexOf(b.priority as PRIORITY)) *
@@ -28,7 +30,7 @@ export function sortActions(
       );
       break;
     case ORDER_BY.state:
-      actions.sort(
+      sorted.sort(
         (a, b) =>
           (states_order.indexOf(a.state as STATE) -
             states_order.indexOf(b.state as STATE)) *
@@ -36,22 +38,23 @@ export function sortActions(
       );
       break;
     case ORDER_BY.date:
-      actions.sort(
+      sorted.sort(
         (a, b) =>
           (parseISO(a.date).getTime() - parseISO(b.date).getTime()) *
           (ascending ? 1 : -1),
       );
       break;
     case ORDER_BY.instagram_date:
-      actions.sort(
+      sorted.sort(
         (a, b) =>
           (parseISO(a.instagram_date).getTime() -
             parseISO(b.instagram_date).getTime()) *
           (ascending ? 1 : -1),
       );
+      break;
     default:
       break;
   }
 
-  return actions;
+  return sorted;
 }

@@ -1,10 +1,7 @@
-import { useState } from "react";
 import { ActionContainer } from "~/components/features/ActionContainer";
-import { SignalIcon, SignalMediumIcon, SignalZeroIcon } from "lucide-react";
 import {
   ViewOptionsComponent,
   useViewOptions,
-  type ViewOptions,
 } from "~/components/features/ViewOptions";
 import { VARIANT } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
@@ -15,6 +12,7 @@ export function SprintHomeComponent({ actions }: { actions: Action[] }) {
     variant: VARIANT.block,
     showOptions: {
       variant: true,
+      columns: true,
     },
   });
 
@@ -37,7 +35,7 @@ export function SprintHomeComponent({ actions }: { actions: Action[] }) {
           showPartner
           showResponsibles
           actions={actions}
-          columns={7}
+          columns={viewOptions.columns || 4}
           variant={viewOptions.variant}
           showLate
         />

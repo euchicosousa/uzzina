@@ -370,6 +370,15 @@ export const SIZE = {
   xxl: "xxl",
 } as const;
 
+export const COLUMNS = {
+  2: 2,
+  3: 3,
+  4: 4,
+  5: 5,
+  6: 6,
+  7: 7,
+} as const;
+
 export const DATE_TIME_DISPLAY = {
   Relative: 1,
   DateTime: 2,

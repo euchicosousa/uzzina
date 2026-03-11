@@ -12,15 +12,19 @@ import {
   SquareCheckIcon,
   TagIcon,
   UsersIcon,
+  Columns2Icon,
+  Columns3Icon,
+  Columns4Icon,
 } from "lucide-react";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { Button } from "~/components/ui/button";
 import { Toggle } from "~/components/ui/toggle";
-import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
+import { ORDER_BY, VARIANT, COLUMNS } from "~/lib/CONSTANTS";
 
 export type ViewOptions = {
   instagram?: boolean;
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
+  columns?: (typeof COLUMNS)[keyof typeof COLUMNS];
   responsibles?: boolean;
   priority?: boolean;
   category?: boolean;
@@ -36,6 +40,7 @@ export type ViewOptions = {
   showOptions: {
     instagram?: boolean;
     variant?: boolean;
+    columns?: boolean;
     responsibles?: boolean;
     priority?: boolean;
     category?: boolean;
@@ -55,6 +60,7 @@ import { useState } from "react";
 /** Defaults internos — não expostos fora deste módulo */
 const DEFAULT_VIEW_OPTIONS = {
   variant: VARIANT.line,
+  columns: 4,
   ascending: true,
   order: ORDER_BY.date,
   category: true,
@@ -144,33 +150,25 @@ export function ViewOptionsComponent({
               >
                 <ImageIcon />
               </Button>
-              {/* <Button
-                variant={"ghost"}
-                title={
-                  viewOptions.variant === VARIANT.line
-                    ? "Ação em formato de linha"
-                    : viewOptions.variant === VARIANT.block
-                      ? "Ação em formato de bloco"
-                      : "Ação em formato de conteúdo"
-                }
-                onClick={() => {
-                  if (viewOptions.variant === VARIANT.line) {
-                    setViewOptions({ ...viewOptions, variant: VARIANT.block });
-                  } else if (viewOptions.variant === VARIANT.block) {
-                    setViewOptions({
-                      ...viewOptions,
-                      variant: VARIANT.content,
-                    });
-                  } else if (viewOptions.variant === VARIANT.content) {
-                    setViewOptions({ ...viewOptions, variant: VARIANT.line });
-                  }
-                }}
-                className="grid place-content-center p-0"
-              >
-                {viewOptions.variant === VARIANT.line && <Rows3Icon />}
-                {viewOptions.variant === VARIANT.block && <Rows2Icon />}
-                {viewOptions.variant === VARIANT.content && <ImageIcon />}
-              </Button> */}
+              {viewOptions.variant === VARIANT.content &&
+                viewOptions.showOptions.columns && (
+                  <Button
+                    variant={"ghost"}
+                    onClick={() => {
+                      if (viewOptions.columns === 4) {
+                        setViewOptions({ ...viewOptions, columns: 6 });
+                      } else if (viewOptions.columns === 6) {
+                        setViewOptions({ ...viewOptions, columns: 7 });
+                      } else {
+                        setViewOptions({ ...viewOptions, columns: 4 });
+                      }
+                    }}
+                  >
+                    {viewOptions.columns === 4 && <Columns2Icon />}
+                    {viewOptions.columns === 6 && <Columns3Icon />}
+                    {viewOptions.columns === 7 && <Columns4Icon />}
+                  </Button>
+                )}
             </div>
           )}
           {/* Colocar ações concluídas no final */}

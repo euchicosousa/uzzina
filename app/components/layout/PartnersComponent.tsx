@@ -21,7 +21,7 @@ export function PartnersComponent({ actions }: { actions: Action[] }) {
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
         {activePartners.map((partner) => {
           const partnerActions = actions.filter((a) =>
             a.partners.includes(partner.slug),
