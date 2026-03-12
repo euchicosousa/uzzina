@@ -20,27 +20,67 @@ import type { AppLoaderData } from "~/routes/app";
 type ActiveAction = { action: Action; isInstagramDate?: boolean } | null;
 
 const ActionShortcutContext = createContext<{
-  setActiveAction: (active: ActiveAction) => void;
-}>({ setActiveAction: () => {} });
+  registerAction: (id: string, data: NonNullable<ActiveAction>) => void;
+  unregisterAction: (id: string) => void;
+  setEditingId: (id: string | null) => void;
+}>({
+  registerAction: () => {},
+  unregisterAction: () => {},
+  setEditingId: () => {},
+});
 
 /**
- * Provider que registra UM único listener de keydown no document.
- * O listener lê a ação ativa via ref — sem stale closures, sem listeners acumulados.
- * Coloque este provider no layout raiz (app.tsx), dentro do RouteLoaderData.
+ * Provider que registra UM único listener de keydown no document (capture phase).
+ *
+ * Em vez de rastrear mouseenter/mouseleave (que pode ser interceptado pelo
+ * onKeyDown do dnd-kit no componente Draggable), este provider:
+ *  1. Mantém um Map de todas as ações montadas (registry)
+ *  2. No keydown, lê document.querySelectorAll('[data-action-id]:hover') para
+ *     descobrir qual ação está sob o cursor no exato momento da tecla
+ *  3. Usa capture phase (terceiro arg true) para garantir que o evento chegue
+ *     antes do onKeyDown do dnd-kit ter chance de bloqueá-lo
  */
 export function ActionShortcutProvider({ children }: { children: ReactNode }) {
   const submit = useSubmit();
   const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
 
-  const activeRef = useRef<ActiveAction>(null);
+  // Registry: actionId → {action, isInstagramDate}
+  const actionsMapRef = useRef<Map<string, NonNullable<ActiveAction>>>(
+    new Map(),
+  );
 
-  const setActiveAction = useCallback((active: ActiveAction) => {
-    activeRef.current = active;
+  // ID da ação que está em modo de edição (sem atalhos)
+  const editingIdRef = useRef<string | null>(null);
+
+  const registerAction = useCallback(
+    (id: string, data: NonNullable<ActiveAction>) => {
+      actionsMapRef.current.set(id, data);
+    },
+    [],
+  );
+
+  const unregisterAction = useCallback((id: string) => {
+    actionsMapRef.current.delete(id);
+  }, []);
+
+  const setEditingId = useCallback((id: string | null) => {
+    editingIdRef.current = id;
   }, []);
 
   useEffect(() => {
     function keyDown(event: KeyboardEvent) {
-      const active = activeRef.current;
+      // Descobre o elemento mais interno sob o cursor que tenha data-action-id
+      const hovered = [
+        ...document.querySelectorAll("[data-action-id]:hover"),
+      ] as HTMLElement[];
+      const el = hovered.at(-1);
+      const actionId = el?.getAttribute("data-action-id");
+
+      if (!actionId) return;
+      // Se o item está em modo de edição, ignora atalhos
+      if (editingIdRef.current === actionId) return;
+
+      const active = actionsMapRef.current.get(actionId);
       if (!active) return;
 
       const { action, isInstagramDate } = active;
@@ -110,18 +150,29 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    document.addEventListener("keydown", keyDown);
-    return () => document.removeEventListener("keydown", keyDown);
+    // capture: true → captura antes do onKeyDown do dnd-kit interceptar
+    document.addEventListener("keydown", keyDown, true);
+    return () => document.removeEventListener("keydown", keyDown, true);
   }, [submit, person.user_id]);
 
   return (
-    <ActionShortcutContext.Provider value={{ setActiveAction }}>
+    <ActionShortcutContext.Provider
+      value={{ registerAction, unregisterAction, setEditingId }}
+    >
       {children}
     </ActionShortcutContext.Provider>
   );
 }
 
-/** Retorna a função para definir a ação ativa no contexto de shortcuts. */
+/** Retorna as funções do context de shortcuts para uso no ActionItem. */
+export function useActionShortcutContext() {
+  return useContext(ActionShortcutContext);
+}
+
+/**
+ * @deprecated Use useActionShortcutContext() em vez disso.
+ * Mantido por compatibilidade. Retorna um setActiveAction no-op.
+ */
 export function useSetActiveAction() {
-  return useContext(ActionShortcutContext).setActiveAction;
+  return () => {};
 }

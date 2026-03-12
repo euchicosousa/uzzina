@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useRouteLoaderData } from "react-router";
+import { Link, useRouteLoaderData } from "react-router";
 import { DATE_TIME_DISPLAY, SIZE, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
@@ -49,7 +49,10 @@ function PartnerColumn({
   return (
     <div className="flex flex-col overflow-hidden">
       {/* Header do parceiro */}
-      <div className="flex items-center gap-3 overflow-hidden p-2">
+      <Link
+        to={`/app/partner/${partner.slug}`}
+        className="group flex items-center gap-3 overflow-hidden p-2"
+      >
         <UAvatarGroup
           size={SIZE.sm}
           isSquircle
@@ -62,12 +65,12 @@ function PartnerColumn({
             },
           ]}
         />
-        <span className="truncate text-sm font-medium tracking-tight">
+        <span className="truncate text-sm font-medium tracking-tight underline-offset-3 group-hover:underline">
           {partner.title}
         </span>
 
         <UBadge value={actions.length} />
-      </div>
+      </Link>
 
       {/* Lista de ações */}
 

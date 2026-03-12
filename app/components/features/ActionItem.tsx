@@ -1,5 +1,5 @@
 import { IconBrandInstagram } from "@tabler/icons-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useOutletContext, useRouteLoaderData, useSubmit } from "react-router";
 import { CalendarDaysIcon, SignalIcon } from "lucide-react";
 import {
@@ -31,7 +31,7 @@ import { Draggable } from "./DnD";
 import { StateIcon } from "./StateIcon";
 import { ActionItemTitleInput } from "./ActionItemTitleInput";
 import type { Action } from "~/models/actions.server";
-import { useSetActiveAction } from "~/hooks/useActionShortcut";
+import { useActionShortcutContext } from "~/hooks/useActionShortcut";
 
 type ActionItemProps = {
   action: Action;
@@ -69,12 +69,19 @@ export function ActionItem({
   ) as AppLoaderData;
 
   const sumbit = useSubmit();
-  const setActiveAction = useSetActiveAction();
+  const { registerAction, unregisterAction, setEditingId } =
+    useActionShortcutContext();
 
   const [isEditing, setIsEditing] = useState(false);
 
+  // Registra a ação no registry global ao montar, atualiza se action mudar
+  useEffect(() => {
+    registerAction(action.id, { action, isInstagramDate });
+    return () => unregisterAction(action.id);
+  }, [action, isInstagramDate, registerAction, unregisterAction]);
+
   const handleSetIsEditing = (value: boolean) => {
-    if (value) setActiveAction(null);
+    setEditingId(value ? action.id : null);
     setIsEditing(value);
   };
   const { setBaseAction } = useOutletContext<OutletContext>();
@@ -297,6 +304,7 @@ export function ActionItem({
 
   const content = (
     <div
+      data-action-id={action.id}
       title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
       className={cn(
         "group/action font-inter @container relative shrink-0 cursor-pointer overflow-hidden",
@@ -313,12 +321,6 @@ export function ActionItem({
         className,
         isDragging ? "cursor-grabbing" : "",
       )}
-      onMouseEnter={() =>
-        isEditing
-          ? setActiveAction(null)
-          : setActiveAction({ action, isInstagramDate })
-      }
-      onMouseLeave={() => setActiveAction(null)}
       onClick={() => {
         if (!isEditing) {
           if (onClick) {
