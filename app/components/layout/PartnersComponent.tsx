@@ -9,6 +9,8 @@ import { ActionItem } from "../features/ActionItem";
 import { UBadge } from "../uzzina/UBadge";
 import { UAvatarGroup } from "../uzzina/UAvatar";
 import { ActionContainer } from "../features/ActionContainer";
+import { Button } from "../ui/button";
+import { PlusIcon } from "lucide-react";
 
 export function PartnersComponent({ actions }: { actions: Action[] }) {
   const { partners } = useRouteLoaderData("routes/app") as AppLoaderData;
@@ -47,30 +49,37 @@ function PartnerColumn({
   actions: Action[];
 }) {
   return (
-    <div className="flex flex-col overflow-hidden">
+    <div className="group/column flex flex-col overflow-hidden">
       {/* Header do parceiro */}
-      <Link
-        to={`/app/partner/${partner.slug}`}
-        className="group flex items-center gap-3 overflow-hidden p-2"
-      >
-        <UAvatarGroup
-          size={SIZE.sm}
-          isSquircle
-          avatars={[
-            {
-              id: partner.id,
-              fallback: partner.short,
-              backgroundColor: partner.colors[0],
-              color: partner.colors[1],
-            },
-          ]}
-        />
-        <span className="truncate text-sm font-medium tracking-tight underline-offset-3 group-hover:underline">
-          {partner.title}
-        </span>
+      <div className="flex items-center justify-between gap-4 overflow-hidden p-2">
+        <Link
+          to={`/app/partner/${partner.slug}`}
+          className="group flex items-center gap-2 overflow-hidden"
+        >
+          <UAvatarGroup
+            size={SIZE.sm}
+            isSquircle
+            avatars={[
+              {
+                id: partner.id,
+                fallback: partner.short,
+                backgroundColor: partner.colors[0],
+                color: partner.colors[1],
+              },
+            ]}
+          />
+          <span className="truncate text-sm font-medium tracking-tight underline-offset-3 group-hover:underline">
+            {partner.title}
+          </span>
+        </Link>
 
-        <UBadge value={actions.length} />
-      </Link>
+        <Button
+          size="icon"
+          className="size-6 opacity-0 group-hover/column:opacity-100"
+        >
+          <PlusIcon />
+        </Button>
+      </div>
 
       {/* Lista de ações */}
 
