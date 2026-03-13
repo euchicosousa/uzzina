@@ -1,16 +1,14 @@
+import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
-import { Link, useRouteLoaderData } from "react-router";
-import { DATE_TIME_DISPLAY, SIZE, VARIANT } from "~/lib/CONSTANTS";
-import { cn } from "~/lib/utils";
+import { Link, useOutletContext, useRouteLoaderData } from "react-router";
+import { SIZE, VARIANT } from "~/lib/CONSTANTS";
+import { getCleanAction } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
 import type { AppLoaderData } from "~/routes/app";
-import { ActionItem } from "../features/ActionItem";
-import { UBadge } from "../uzzina/UBadge";
-import { UAvatarGroup } from "../uzzina/UAvatar";
 import { ActionContainer } from "../features/ActionContainer";
 import { Button } from "../ui/button";
-import { PlusIcon } from "lucide-react";
+import { UAvatarGroup } from "../uzzina/UAvatar";
 
 export function PartnersComponent({ actions }: { actions: Action[] }) {
   const { partners } = useRouteLoaderData("routes/app") as AppLoaderData;
@@ -48,6 +46,9 @@ function PartnerColumn({
   partner: Partner;
   actions: Action[];
 }) {
+  const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
+  const { setBaseAction } = useOutletContext<OutletContext>();
+
   return (
     <div className="group/column flex flex-col overflow-hidden">
       {/* Header do parceiro */}
@@ -76,6 +77,12 @@ function PartnerColumn({
         <Button
           size="icon"
           className="size-6 opacity-0 group-hover/column:opacity-100"
+          onClick={() =>
+            setBaseAction({
+              ...(getCleanAction(person.user_id) as unknown as Action),
+              partners: [partner.slug],
+            })
+          }
         >
           <PlusIcon />
         </Button>
@@ -83,7 +90,12 @@ function PartnerColumn({
 
       {/* Lista de ações */}
 
-      <ActionContainer actions={actions} variant={VARIANT.hair} />
+      <ActionContainer
+        actions={actions}
+        variant={VARIANT.hair}
+        showLate
+        showSprint
+      />
     </div>
   );
 }

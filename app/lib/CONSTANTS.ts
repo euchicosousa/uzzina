@@ -371,6 +371,7 @@ export const SIZE = {
 } as const;
 
 export const COLUMNS = {
+  1: 1,
   2: 2,
   3: 3,
   4: 4,
