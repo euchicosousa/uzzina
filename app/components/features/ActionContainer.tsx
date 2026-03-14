@@ -29,6 +29,7 @@ type ActionContainerProps = {
   isScroll?: boolean;
   isInstagramDate?: boolean;
   isDraggable?: boolean;
+  onClick?: (action: Action) => void;
 };
 
 export function ActionContainer({
@@ -49,6 +50,7 @@ export function ActionContainer({
   isScroll,
   isInstagramDate,
   isDraggable,
+  onClick,
 }: ActionContainerProps) {
   const columnsClasses =
     columns === 1
@@ -83,6 +85,7 @@ export function ActionContainer({
             dateTimeDisplay={dateTimeDisplay}
             isInstagramDate={isInstagramDate}
             isDraggable={isDraggable}
+            onClick={onClick}
           />
         ))}
         {isCompact && actions.length > 6 && (

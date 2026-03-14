@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      action_comments: {
+        Row: {
+          action_id: string | null
+          author_id: string | null
+          author_name: string | null
+          content: string
+          created_at: string | null
+          id: string
+          is_internal: boolean | null
+        }
+        Insert: {
+          action_id?: string | null
+          author_id?: string | null
+          author_name?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          is_internal?: boolean | null
+        }
+        Update: {
+          action_id?: string | null
+          author_id?: string | null
+          author_name?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_internal?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "action_comments_action_id_fkey"
+            columns: ["action_id"]
+            isOneToOne: false
+            referencedRelation: "actions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       actions: {
         Row: {
           archived: boolean | null
@@ -184,6 +222,38 @@ export type Database = {
           title?: string
         }
         Relationships: []
+      }
+      clients: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string | null
+          partner_slug: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          partner_slug?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          partner_slug?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_partner_slug_fkey"
+            columns: ["partner_slug"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       config: {
         Row: {

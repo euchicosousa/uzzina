@@ -201,6 +201,13 @@ const HeaderMenu = ({ person }: { person: Person }) => {
         <DropdownMenuItem asChild>
           <Link to="/app/admin/user/new">Novo Usuário</Link>
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link to="/app/admin/clients">Clientes</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/app/admin/clients/new">Novo Cliente</Link>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
