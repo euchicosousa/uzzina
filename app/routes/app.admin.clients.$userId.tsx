@@ -78,12 +78,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     if (authError) return { error: authError.message };
     if (!authUser.user) return { error: "Falha ao criar usuário" };
 
-    await upsertClientPartners(
-      supabase,
-      authUser.user.id,
-      name,
-      partnerSlugs,
-    );
+    await upsertClientPartners(supabase, authUser.user.id, name, partnerSlugs);
   } else {
     // Atualiza os partners do cliente existente
     await upsertClientPartners(supabase, userId!, name, partnerSlugs);
@@ -151,8 +146,7 @@ export default function AdminClientPage() {
                 fallback: p.short,
                 backgroundColor: p.colors[0],
                 color: p.colors[1],
-                title: p.short,
-                subtitle: p.title,
+                title: p.title,
               }))}
             initialSelectedIds={client?.partner_slugs || []}
           />

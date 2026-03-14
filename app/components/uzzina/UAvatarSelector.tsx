@@ -48,7 +48,7 @@ export function UAvatarSelector({
             type="button"
             onClick={() => toggleOption(option.id)}
             className={cn(
-              "hover:bg-muted/50 relative flex flex-col items-center gap-2 rounded-lg p-4 transition-all",
+              "hover:bg-muted/50 relative flex flex-col items-center gap-2 overflow-hidden rounded-lg p-4 transition-all",
               isSelected ? "text-foreground bg-muted" : "opacity-50",
             )}
           >
@@ -61,12 +61,12 @@ export function UAvatarSelector({
               isSquircle={isSquircle}
             />
 
-            <div className="text-center">
-              <div className="mb-0.5 text-sm leading-none font-medium">
+            <div className="flex w-full flex-col overflow-hidden text-center">
+              <div className="w-full truncate text-sm leading-none font-medium">
                 {option.title}
               </div>
               {option.subtitle && (
-                <div className="text-muted-foreground text-xs leading-tight">
+                <div className="text-muted-foreground truncate text-xs leading-tight">
                   {option.subtitle}
                 </div>
               )}

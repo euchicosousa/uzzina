@@ -6,7 +6,7 @@ import {
   type MetaFunction,
 } from "react-router";
 import { Button } from "~/components/ui/button";
-import { UAvatarGroup } from "~/components/uzzina/UAvatar";
+import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { getAllClients, groupClients } from "~/models/clients.server";
 import { getAllPartners } from "~/models/partners.server";
 import { getUserId } from "~/services/auth.server";
@@ -53,17 +53,10 @@ export default function AdminClientsPage() {
               to={`/app/admin/clients/${client.user_id}`}
               className="hover:bg-muted/50 squircle flex items-center gap-4 rounded-3xl border p-4 transition-colors"
             >
-              <div className="min-w-0 flex-1">
-                <div className="mb-1 font-medium">{client.name}</div>
-                <div className="text-muted-foreground flex flex-wrap gap-1 text-xs">
-                  {clientPartners.map((p) => (
-                    <span
-                      key={p!.slug}
-                      className="bg-muted rounded-full px-2 py-0.5"
-                    >
-                      {p!.short}
-                    </span>
-                  ))}
+              <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+                <UAvatar fallback={client.name} size="lg" isSquircle />
+                <div className="mb-1 w-full truncate text-xl font-medium">
+                  {client.name}
                 </div>
               </div>
               <UAvatarGroup
