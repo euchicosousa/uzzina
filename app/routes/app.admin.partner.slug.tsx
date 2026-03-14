@@ -18,7 +18,7 @@ import {
 import invariant from "tiny-invariant";
 import { Suspense, lazy, useState } from "react";
 import { ColorListEditor } from "~/components/features/ColorListEditor";
-import { PartnerUsersSelector } from "~/components/features/PartnerUsersSelector";
+import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
@@ -235,9 +235,16 @@ export default function AdminPartnerEditPage() {
 
           <div className="grid gap-4">
             <div className="font-medium">Usuários Vinculados</div>
-            <PartnerUsersSelector
-              people={people}
-              initialSelectedUserIds={partner?.users_ids || []}
+            <UAvatarSelector
+              name="users_ids"
+              options={people.map((person) => ({
+                id: person.user_id,
+                fallback: person.initials,
+                image: person.image || undefined,
+                title: person.name,
+                subtitle: person.surname || undefined,
+              }))}
+              initialSelectedIds={partner?.users_ids || []}
             />
           </div>
 

@@ -12,6 +12,7 @@ import {
 import type { Database } from "types/database";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
 import { UToggleInput } from "~/components/uzzina/UToggle";
 import {
   groupClients,
@@ -139,22 +140,22 @@ export default function AdminClientPage() {
 
         <div className="grid gap-4">
           <div className="font-medium">Partners com acesso</div>
-          <div className="flex flex-wrap gap-3">
-            {partners
+          <UAvatarSelector
+            name="partner_slugs"
+            isSquircle
+            options={partners
               .filter((p) => !p.archived)
-              .map((partner) => (
-                <UToggleInput
-                  key={partner.slug}
-                  type="checkbox"
-                  id={`partner-${partner.slug}`}
-                  name="partner_slugs"
-                  value={partner.slug}
-                  defaultChecked={client?.partner_slugs.includes(partner.slug)}
-                >
-                  {partner.short} — {partner.title}
-                </UToggleInput>
-              ))}
-          </div>
+              .sort((a, b) => a.title.localeCompare(b.title))
+              .map((p) => ({
+                id: p.slug,
+                fallback: p.short,
+                backgroundColor: p.colors[0],
+                color: p.colors[1],
+                title: p.short,
+                subtitle: p.title,
+              }))}
+            initialSelectedIds={client?.partner_slugs || []}
+          />
         </div>
 
         <div className="flex items-center justify-between gap-4 border-t pt-6">

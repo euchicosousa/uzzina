@@ -10,6 +10,13 @@ export default [
     route("admin/partner/:slug", "routes/app.admin.partner.slug.tsx"),
     route("admin/users", "routes/app.admin.users.tsx"),
     route("admin/user/:user_id", "routes/app.admin.user.id.tsx"),
+    route("admin/clients", "routes/app.admin.clients.tsx"),
+    route("admin/clients/:userId", "routes/app.admin.clients.$userId.tsx"),
+  ]),
+  route("dash", "routes/dash.tsx", [
+    index("routes/dash.home.tsx"),
+    route("login", "routes/dash.login.tsx"),
+    route("action/:id", "routes/dash.action.$id.tsx"),
   ]),
   route("teste", "routes/teste.tsx"),
   route("login", "routes/login.tsx"),
