@@ -225,6 +225,7 @@ export type Database = {
       }
       clients: {
         Row: {
+          active: boolean
           created_at: string | null
           id: string
           name: string | null
@@ -232,6 +233,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          active?: boolean
           created_at?: string | null
           id?: string
           name?: string | null
@@ -239,6 +241,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          active?: boolean
           created_at?: string | null
           id?: string
           name?: string | null

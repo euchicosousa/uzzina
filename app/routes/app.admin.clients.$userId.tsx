@@ -18,6 +18,7 @@ import {
   groupClients,
   getAllClients,
   upsertClientPartners,
+  archiveClient,
 } from "~/models/clients.server";
 import { getAllPartners } from "~/models/partners.server";
 import { getUserId } from "~/services/auth.server";
@@ -63,16 +64,24 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     return { success: "Magic link enviado para " + email };
   }
 
+  // Arquivar cliente
+  if (intent === "archive_client") {
+    await archiveClient(supabase, userId!);
+    return redirect("/app/admin/clients");
+  }
+
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const partnerSlugs = formData.getAll("partner_slugs") as string[];
 
   if (userId === "new") {
-    // Cria o usuário via Auth admin (magic link no primeiro acesso)
+    // Cria o usuário via Auth admin como confirmado
     const { data: authUser, error: authError } =
-      await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
-        data: { name },
-        redirectTo: `${new URL(request.url).origin}/dash/home`,
+      await supabaseAdmin.auth.admin.createUser({
+        email,
+        password: Math.random().toString(36).slice(-10) + "X1!",
+        email_confirm: true,
+        user_metadata: { name },
       });
 
     if (authError) return { error: authError.message };
@@ -154,17 +163,34 @@ export default function AdminClientPage() {
 
         <div className="flex items-center justify-between gap-4 border-t pt-6">
           {!isNew && (
-            <Button
-              type="submit"
-              name="intent"
-              value="send_magic_link"
-              variant="secondary"
-              className="squircle rounded-2xl"
-              disabled={isSubmitting}
-            >
-              <SendIcon className="size-4" />
-              Reenviar Magic Link
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                type="submit"
+                name="intent"
+                value="archive_client"
+                variant="destructive"
+                className="squircle rounded-2xl bg-destructive/10 text-destructive hover:bg-destructive/20"
+                disabled={isSubmitting}
+                onClick={(e) => {
+                  if (!confirm("Tem certeza que deseja ocultar este cliente? Dados e comentários serão mantidos.")) {
+                    e.preventDefault();
+                  }
+                }}
+              >
+                Arquivar Cliente
+              </Button>
+              <Button
+                type="submit"
+                name="intent"
+                value="send_magic_link"
+                variant="secondary"
+                className="squircle rounded-2xl"
+                disabled={isSubmitting}
+              >
+                <SendIcon className="size-4" />
+                Reenviar Magic Link
+              </Button>
+            </div>
           )}
           <Button
             type="submit"
@@ -174,7 +200,7 @@ export default function AdminClientPage() {
             {isSubmitting
               ? "Salvando..."
               : isNew
-                ? "Criar e Convidar"
+                ? "Criar Cliente"
                 : "Salvar"}
           </Button>
         </div>

@@ -15,6 +15,7 @@ export async function getClientsByUserId(
     .from("clients")
     .select("*")
     .eq("user_id", userId)
+    .is("active", true)
     .order("name", { ascending: true });
 
   if (error) throw error;
@@ -35,15 +36,29 @@ export async function getPartnerSlugsByUserId(
   return [...new Set(slugs)];
 }
 
-/** Retorna todos os clientes para o painel admin. */
+/** Retorna todos os clientes ativos para o painel admin. */
 export async function getAllClients(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from("clients")
     .select("*")
+    .is("active", true)
     .order("name", { ascending: true });
 
   if (error) throw error;
   return data as Client[];
+}
+
+/**
+ * Arquiva (oculta) logicamente todos os registros client associados a um usuário,
+ * garantindo que os ids e relações com comentários continuem existindo no banco.
+ */
+export async function archiveClient(supabase: SupabaseClient, userId: string) {
+  const { error } = await supabase
+    .from("clients")
+    .update({ active: false })
+    .eq("user_id", userId);
+
+  if (error) throw error;
 }
 
 /**
