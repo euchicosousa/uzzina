@@ -47,7 +47,13 @@ export function GlobalSearchCommand({
 
   // Debounce the search query to avoid spamming the database on every keystroke
   useEffect(() => {
-    if (query.length >= 3) {
+    // Check if the query has the 'p:' modifier or is just text
+    const hasModifier = query.includes("p:");
+    // If it has 'p:', we still need at least 3 characters total (like 'p:a' or 'a p:a') to search
+    // Otherwise standard 3 chars rule
+    const shouldSearch = hasModifier ? query.length >= 3 : query.length >= 3;
+
+    if (shouldSearch) {
       const delayDebounceFn = setTimeout(() => {
         const searchUrl = new URLSearchParams({ q: query });
         if (activePartnerSlug) {
@@ -70,7 +76,9 @@ export function GlobalSearchCommand({
         );
 
   const searchedActions = fetcher.data?.actions || [];
-  const isSearching = fetcher.state === "loading" && query.length >= 3;
+  const hasModifier = query.includes("p:");
+  const shouldSearch = hasModifier ? query.length >= 3 : query.length >= 3;
+  const isSearching = fetcher.state === "loading" && shouldSearch;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -81,7 +89,7 @@ export function GlobalSearchCommand({
         </DialogDescription>
         <Command className="squircle rounded-2xl" shouldFilter={false}>
           <CommandInput
-            placeholder="Faça sua busca aqui (mínimo de 3 caracteres para buscar ações)"
+            placeholder="Faça sua busca aqui (mínimo de 3 caracteres)"
             value={query}
             onValueChange={setQuery}
           />
@@ -119,7 +127,7 @@ export function GlobalSearchCommand({
               </CommandGroup>
             )}
 
-            {query.length >= 3 && searchedActions.length > 0 && (
+            {shouldSearch && searchedActions.length > 0 && (
               <>
                 <CommandSeparator className="my-2" />
                 <CommandGroup heading="Ações">

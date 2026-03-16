@@ -4,10 +4,17 @@ import { getPartnersByUserId } from "~/models/partners.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
-  const query = url.searchParams.get("q") || "";
+  const rawQuery = url.searchParams.get("q") || "";
   const targetPartner = url.searchParams.get("partner") || null;
 
-  // Require at least 3 characters to search
+  const partnerMatch = rawQuery.match(/p:(\S+)/);
+  const explicitPartner = partnerMatch ? partnerMatch[1] : null;
+  const query = rawQuery.replace(/p:\S+/, "").trim();
+
+  // Require at least 3 characters to search text, unless explicitly filtering by partner
+  // if (!explicitPartner && query.length < 3) {
+  //   return { actions: [] };
+  // }
   if (query.length < 3) {
     return { actions: [] };
   }
@@ -32,14 +39,31 @@ export async function loader({ request }: LoaderFunctionArgs) {
     }
   }
 
+  if (explicitPartner) {
+    searchPartnerSlugs = searchPartnerSlugs.filter((slug) =>
+      slug.includes(explicitPartner.toLowerCase()),
+    );
+    if (searchPartnerSlugs.length === 0) {
+      return { actions: [] };
+    }
+  }
+
   // Find all actions that belong to the user's partners
   // where the title OR description contains the query (case insensitive)
-  const { data: actions, error } = await supabase
+  let supabaseQuery = supabase
     .from("actions")
     .select("*")
     .overlaps("partners", searchPartnerSlugs)
-    .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
     .order("date", { ascending: false });
+
+  if (query.length > 0) {
+    supabaseQuery = supabaseQuery.or(
+      `title.ilike.%${query}%,description.ilike.%${query}%`,
+    );
+  }
+
+  // Added a limit to ensure that "p:" queries do not return unbounded rows
+  const { data: actions, error } = await supabaseQuery.limit(50);
 
   if (error) {
     console.error("Error searching actions:", error);
