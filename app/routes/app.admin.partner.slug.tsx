@@ -100,7 +100,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     const { error } = await supabase.from("partners").insert(partnerData);
     if (error) throw error;
 
-    return redirect(`/app/admin/partners/${partnerData.slug}`);
+    return redirect(`/app/admin/partner/${partnerData.slug}`);
   } else {
     const { error } = await supabase
       .from("partners")

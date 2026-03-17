@@ -1,4 +1,3 @@
-import { CalendarDaysIcon, ListIcon, SearchIcon } from "lucide-react";
 import {
   addDays,
   endOfDay,
@@ -12,6 +11,12 @@ import {
   startOfWeek,
   subDays,
 } from "date-fns";
+import {
+  CalendarDaysIcon,
+  ListIcon,
+  SearchIcon,
+  SettingsIcon,
+} from "lucide-react";
 import { useState } from "react";
 import {
   Link,
@@ -38,7 +43,7 @@ import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { UToggle } from "~/components/uzzina/UToggle";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
-import { DATE_TIME_DISPLAY, ORDER_BY, SIZE, VARIANT } from "~/lib/CONSTANTS";
+import { DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
 import { getLateActions } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import { getActionsByPartner } from "~/models/actions.server";
@@ -89,13 +94,13 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   invariant(partner);
 
   return data(
-    { partner, actions, date },
+    { partner, actions, date, person },
     { headers: { "Cache-Control": "no-store" } },
   );
 };
 
 export default function PartnerPage() {
-  let { partner, actions, date } = useLoaderData<typeof loader>();
+  let { partner, actions, date, person } = useLoaderData<typeof loader>();
   let currentActions = useOptimisticActions(actions || []);
   const [currentDay, setCurrentDay] = useState(parseISO(date));
   const [query, setQuery] = useState("");
@@ -158,6 +163,9 @@ export default function PartnerPage() {
             <h2 className="overflow-hidden p-0 py-2 text-ellipsis whitespace-nowrap">
               {partner.title}
             </h2>
+            <Link to={`/app/admin/partner/${partner.slug}/`}>
+              {person.admin && <SettingsIcon className="mb-4 size-5" />}
+            </Link>
           </div>
 
           <CalendarButtons
