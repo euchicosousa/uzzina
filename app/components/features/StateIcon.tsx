@@ -7,7 +7,7 @@ export function StateIcon({
   size = "sm",
 }: {
   state: STATE_TYPE;
-  size?: (typeof SIZE)[keyof typeof SIZE];
+  size?: (typeof SIZE)[keyof typeof SIZE] | "dot";
 }) {
   let sizeClasses = {
     xs: "size-3",
@@ -16,8 +16,14 @@ export function StateIcon({
     lg: "size-6",
     xl: "size-8",
     xxl: "size-12",
+    dot: "size-2",
   }[size];
-  return state.slug === STATES.finished.slug ? (
+  return size === "dot" ? (
+    <div
+      className="size-2 shrink-0 rounded-full"
+      style={{ backgroundColor: state.color }}
+    ></div>
+  ) : state.slug === STATES.finished.slug ? (
     <div
       className={cn("grid aspect-square place-content-center rounded-full")}
       style={{ backgroundColor: state.color }}

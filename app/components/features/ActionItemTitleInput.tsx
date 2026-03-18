@@ -29,7 +29,7 @@ export function ActionItemTitleInput({
   return (
     <div
       className={cn(
-        "flex min-h-4 w-full overflow-hidden text-xs",
+        "flex min-h-4 w-full overflow-hidden font-light",
         !isEditing && "@md:w-auto",
         className,
       )}

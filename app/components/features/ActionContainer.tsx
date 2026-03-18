@@ -21,7 +21,6 @@ type ActionContainerProps = {
   showResponsibles?: boolean;
   showPriority?: boolean;
   showDivider?: boolean;
-  showSprint?: boolean;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending?: boolean;
@@ -42,7 +41,6 @@ export function ActionContainer({
   showResponsibles,
   showPriority,
   showDivider,
-  showSprint,
   dateTimeDisplay,
   orderBy,
   ascending,
@@ -62,7 +60,7 @@ export function ActionContainer({
   const [showMore, setShowMore] = useState(isCompact);
 
   // const gapAndDividerClasses = `${[VARIANT.block].find((v) => v === variant) ? "gap-2" : showDivider ? "divide-y" : "gap-1"}`;
-  const gapAndDividerClasses = `${[VARIANT.block].find((v) => v === variant) ? "gap-2" : [VARIANT.content].find((v) => v === variant) ? "gap-x-4 gap-y-6" : showDivider ? "divide-y" : "gap-1"}`;
+  const gapAndDividerClasses = `${[VARIANT.block].find((v) => v === variant) ? "gap-2" : [VARIANT.content].find((v) => v === variant) ? "gap-x-4 gap-y-6" : "gap-px"}`;
 
   useEffect(() => {
     setShowMore(isCompact);

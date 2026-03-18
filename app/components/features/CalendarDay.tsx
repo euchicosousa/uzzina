@@ -91,7 +91,6 @@ export function CalendarDay({
                   showLate={viewOptions.late}
                   showPriority={viewOptions.priority}
                   showDivider={true}
-                  showSprint={viewOptions.sprint}
                   orderBy={viewOptions.order}
                   ascending={viewOptions.ascending}
                   isCompact={isCompact}
@@ -111,7 +110,6 @@ export function CalendarDay({
                   showLate={viewOptions.late}
                   showPriority={viewOptions.priority}
                   showDivider={true}
-                  showSprint={viewOptions.sprint}
                   orderBy={viewOptions.order}
                   ascending={viewOptions.ascending}
                   isCompact={isCompact}
@@ -132,7 +130,6 @@ export function CalendarDay({
               showLate={viewOptions.late}
               showPriority={viewOptions.priority}
               showDivider={true}
-              showSprint={viewOptions.sprint}
               orderBy={viewOptions.order}
               ascending={viewOptions.ascending}
               isCompact={isCompact}

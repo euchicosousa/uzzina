@@ -261,7 +261,6 @@ function ActionListPartnerPage({
             showLate={viewOptions.late}
             showPriority={viewOptions.priority}
             showDivider={true}
-            showSprint={true}
             orderBy={viewOptions.order}
             ascending={viewOptions.ascending}
           />
@@ -277,7 +276,6 @@ function ActionListPartnerPage({
             showLate={viewOptions.late}
             showPriority={viewOptions.priority}
             showDivider={true}
-            showSprint={true}
             orderBy={viewOptions.order}
             ascending={viewOptions.ascending}
           />
@@ -292,7 +290,6 @@ function ActionListPartnerPage({
           showLate={viewOptions.late}
           showPriority={viewOptions.priority}
           showDivider={true}
-          showSprint={true}
           orderBy={viewOptions.order}
           ascending={viewOptions.ascending}
         />

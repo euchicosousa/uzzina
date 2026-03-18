@@ -55,7 +55,11 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
           <Link
             to={`/app/partner/${partner.slug}`}
             key={partner.id}
-            className="group/partner hover:bg-foreground hover:text-background relative grid place-content-center p-8"
+            className="group/partner relative grid place-content-center p-8 transition-opacity hover:opacity-80"
+            style={{
+              backgroundColor: partner.colors[0],
+              color: partner.colors[1],
+            }}
           >
             <div className="relative">
               {getShortText(partner.short)}

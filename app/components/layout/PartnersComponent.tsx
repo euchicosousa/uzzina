@@ -94,7 +94,6 @@ function PartnerColumn({
         actions={actions}
         variant={VARIANT.hair}
         showLate
-        showSprint
       />
     </div>
   );

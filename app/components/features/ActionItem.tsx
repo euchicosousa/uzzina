@@ -117,23 +117,37 @@ export function ActionItem({
       ? VARIANT.line
       : variant;
 
+  const variantClasses = useMemo(() => {
+    switch (variant) {
+      case VARIANT.content:
+        return "flex-col gap-2";
+      case VARIANT.block:
+        return "squircle flex-col gap-2 rounded-2xl px-3 py-2";
+      case VARIANT.hour:
+        return "squircle w-auto rounded-xl px-3 py-2";
+      case VARIANT.hair:
+        return "squircle rounded-xl px-3 py-0 transition-colors @xs:p-0";
+      case VARIANT.line:
+      default:
+        return "squircle rounded-xl px-3 py-1 transition-colors @xs:p-1";
+    }
+  }, [variant]);
+
   const bgClasses = useMemo(() => {
     if (variant === VARIANT.content) return "";
-
-    if (isEditing) {
+    if (isEditing)
       return "ring-foreground focus-within:ring-2 z-100 text-foreground";
-    }
-
-    if (showLate && isLateAction(action)) {
+    if (showLate && isLateAction(action))
       return "bg-destructive/5 text-destructive hover:bg-destructive/10";
-    }
 
-    // return variant === VARIANT.block || variant === VARIANT.hour
-    return variant === VARIANT.hour
-      ? "hover:bg-card bg-card text-card-foreground"
-      : variant === VARIANT.block
-        ? "hover:bg-secondary/50 bg-secondary text-card-foreground transition"
-        : "hover:bg-card bg-background text-card-foreground";
+    switch (variant) {
+      case VARIANT.hour:
+        return "hover:bg-card bg-card text-card-foreground";
+      case VARIANT.block:
+        return "hover:bg-secondary/50 bg-secondary text-card-foreground transition";
+      default:
+        return "hover:bg-card bg-background text-card-foreground";
+    }
   }, [variant, isEditing, showLate, action]);
 
   const renderActionVariant = () => {
@@ -229,10 +243,8 @@ export function ActionItem({
         return (
           <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
             <div className="flex w-full items-center gap-2 overflow-hidden">
-              <div
-                className="size-2 shrink-0 rounded-full"
-                style={{ backgroundColor: currentState.color }}
-              ></div>
+              <StateIcon state={currentState} size={"dot"} />
+
               {!isEditing && <ActionItemSprint action={action} />}
 
               <ActionItemTitleInput
@@ -308,18 +320,10 @@ export function ActionItem({
       title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
       className={cn(
         "group/action font-inter @container relative shrink-0 cursor-pointer overflow-hidden",
-        variant === VARIANT.content
-          ? "flex-col gap-2"
-          : variant === VARIANT.block
-            ? "squircle rounded-2xl px-3 py-2"
-            : variant === VARIANT.hour
-              ? "squircle w-auto rounded-xl px-3 py-2"
-              : `px-3 ${variant === VARIANT.hair ? "py-0 @xs:p-0" : "py-1 @xs:p-1"} transition-colors`,
-
+        variantClasses,
         bgClasses,
-        variant === VARIANT.block ? "flex-col gap-2" : "",
         className,
-        isDragging ? "cursor-grabbing" : "",
+        isDragging && "cursor-grabbing",
       )}
       onClick={() => {
         if (!isEditing) {
