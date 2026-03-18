@@ -12,3 +12,24 @@ export async function getAllCelebrations(supabase: SupabaseClient) {
   if (error) throw error;
   return data as Celebration[];
 }
+
+export async function createCelebration(
+  supabase: SupabaseClient,
+  title: string,
+  date: string,
+) {
+  const { data, error } = await supabase
+    .from("celebrations")
+    .insert([{ title, date }])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as Celebration;
+}
+
+export async function deleteCelebration(supabase: SupabaseClient, id: string) {
+  const { error } = await supabase.from("celebrations").delete().eq("id", id);
+  if (error) throw error;
+  return true;
+}

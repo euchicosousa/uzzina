@@ -224,6 +224,10 @@
   }
 }
 
+.page-height {
+  @apply h-[calc(100vh-68px)];
+}
+
 .border_after {
   @apply after:bg-border relative after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-[100vw] after:-translate-x-1/2 dark:after:bg-white/10;
 }
