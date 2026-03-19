@@ -48,6 +48,10 @@ export function Header({
 
   const lateActions = getLateActions(actionsChart);
 
+  const responsibles = params.slug
+    ? partners.filter((p) => p.slug === params.slug)[0].users_ids
+    : [person.user_id];
+
   return (
     <div className="border_after flex w-full items-center justify-between px-8">
       <div className="flex items-center gap-2 py-4">
@@ -68,8 +72,12 @@ export function Header({
         <Button
           onClick={() =>
             setBaseAction({
-              ...getCleanAction(person.user_id),
-              partners: params.slug ? [params.slug] : [],
+              ...getCleanAction({
+                user_id: person.user_id,
+                date: undefined,
+                partners: params.slug ? [params.slug] : [],
+              }),
+              responsibles,
             })
           }
           className="squircle rounded-2xl"

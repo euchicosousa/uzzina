@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   eachDayOfInterval,
   endOfMonth,
@@ -8,15 +7,14 @@ import {
   startOfWeek,
 } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
+import { useState } from "react";
 import { useMatches } from "react-router";
 import { CalendarWithDnd } from "~/components/features/CalendarWithDnd";
 import {
   ViewOptionsComponent,
   useViewOptions,
-  type ViewOptions,
 } from "~/components/features/ViewOptions";
 import { Toggle } from "~/components/ui/toggle";
-import { ORDER_BY } from "~/lib/CONSTANTS";
 import { getCleanAction } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
@@ -104,7 +102,10 @@ export function CalendarHomeComponent({
           isScroll={period === "week"}
           onCreateAction={(day) => {
             setBaseAction({
-              ...(getCleanAction(person.user_id, day) as unknown as Action),
+              ...(getCleanAction({
+                user_id: person.user_id,
+                date: day,
+              }) as unknown as Action),
             });
           }}
         />

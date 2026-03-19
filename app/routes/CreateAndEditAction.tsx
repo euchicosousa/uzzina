@@ -192,6 +192,12 @@ export function CreateAndEditAction({
       setRawAction((prev) =>
         prev.color === newColor ? prev : { ...prev, color: newColor },
       );
+
+      const newResponsibles = currentPartners.map((p) =>
+        p.users_ids.map((user) => user),
+      );
+
+      console.log(newResponsibles);
     }
   }, [currentPartners]);
 

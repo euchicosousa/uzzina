@@ -27,13 +27,17 @@ export function ActionCalendarPartnerPage({
     end: endOfWeek(endOfMonth(currentDay)),
   });
 
-  const { person, celebrations } = useMatches()[1].loaderData as AppLoaderData;
+  const { person, celebrations, partners } = useMatches()[1]
+    .loaderData as AppLoaderData;
 
   const params = useParams();
   const partnerSlug = params.slug;
   invariant(partnerSlug);
 
   const { setBaseAction } = useOutletContext<any>();
+
+  const responsibles = partners.filter((p) => p.slug === partnerSlug)[0]
+    .users_ids;
 
   return (
     <CalendarWithDnd
@@ -44,8 +48,12 @@ export function ActionCalendarPartnerPage({
       currentDay={currentDay}
       onCreateAction={(day) => {
         setBaseAction({
-          ...(getCleanAction(person.user_id, day) as unknown as Action),
-          partners: [partnerSlug],
+          ...(getCleanAction({
+            user_id: person.user_id,
+            date: day,
+            partners: [partnerSlug],
+          }) as unknown as Action),
+          responsibles,
         });
       }}
     />

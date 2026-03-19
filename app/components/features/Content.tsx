@@ -1,9 +1,11 @@
 import Color from "color";
 import { useRouteLoaderData } from "react-router";
-import { CATEGORIES, DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
+import { CATEGORIES, DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
 import { getFormattedDateTime, Icons, isSprint } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
+import { UAvatarGroup } from "../uzzina/UAvatar";
+import { getPeople } from "~/utils/filter";
 
 export function Content({
   action,
@@ -16,8 +18,9 @@ export function Content({
   isInstagramDate?: boolean;
   className?: string;
 }) {
-  const { person } = useRouteLoaderData("routes/app") as {
+  const { person, people } = useRouteLoaderData("routes/app") as {
     person: Person;
+    people: Person[];
   };
 
   const actionColor = action.color;
@@ -55,10 +58,23 @@ export function Content({
         )}
       </div>
       <div className="absolute inset-0 flex flex-col justify-between p-2">
-        <div>
-          {isSprint(action, person) && (
-            <Icons slug="sprint" className="size-4" color={foregroundColor} />
-          )}
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            {isSprint(action, person) && (
+              <Icons slug="sprint" className="size-4" color={foregroundColor} />
+            )}
+          </div>
+
+          <UAvatarGroup
+            avatars={getPeople(action.responsibles, people).map(
+              (responsible) => ({
+                id: responsible.user_id,
+                fallback: responsible.name,
+                image: responsible.image,
+              }),
+            )}
+            size={SIZE.sm}
+          />
         </div>
         <div className="flex items-center justify-between gap-2">
           {category && (

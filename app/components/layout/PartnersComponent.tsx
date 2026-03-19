@@ -79,8 +79,11 @@ function PartnerColumn({
           className="size-6 opacity-0 group-hover/column:opacity-100"
           onClick={() =>
             setBaseAction({
-              ...(getCleanAction(person.user_id) as unknown as Action),
-              partners: [partner.slug],
+              ...(getCleanAction({
+                user_id: person.user_id,
+                partners: [partner.slug],
+              }) as unknown as Action),
+              responsibles: partner.users_ids,
             })
           }
         >
@@ -90,11 +93,7 @@ function PartnerColumn({
 
       {/* Lista de ações */}
 
-      <ActionContainer
-        actions={actions}
-        variant={VARIANT.hair}
-        showLate
-      />
+      <ActionContainer actions={actions} variant={VARIANT.hair} showLate />
     </div>
   );
 }

@@ -1,7 +1,15 @@
 import { addMinutes, format, isToday } from "date-fns";
 import { PRIORITIES, STATES } from "~/lib/CONSTANTS";
 
-export const getCleanAction = (user_id: string, date?: Date) => {
+export const getCleanAction = ({
+  user_id,
+  date,
+  partners,
+}: {
+  user_id: string;
+  date?: Date;
+  partners?: string[];
+}) => {
   date = date || new Date();
   let _date = format(
     isToday(date)
@@ -23,7 +31,7 @@ export const getCleanAction = (user_id: string, date?: Date) => {
     color: "#999",
     date: _date,
     instagram_date: format(addMinutes(_date, 10), "yyyy-MM-dd HH:mm:ss"),
-    partners: [],
+    partners: partners || [],
     time: 10,
   };
 };

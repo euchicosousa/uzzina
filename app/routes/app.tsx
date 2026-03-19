@@ -81,7 +81,9 @@ export default function Dashboard() {
         setOpenCmdK((prev) => !prev);
       } else if (event.code === "KeyA" && event.altKey && event.metaKey) {
         setBaseAction({
-          ...(getCleanAction(person.user_id) as unknown as Action),
+          ...(getCleanAction({
+            user_id: person.user_id,
+          }) as unknown as Action),
         });
       }
     }
