@@ -1,5 +1,5 @@
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   COLUMNS,
   ORDER_BY,
@@ -51,7 +51,21 @@ export function ActionContainer({
   actions = sortActions(actions, orderBy, ascending);
   const [showMore, setShowMore] = useState(isCompact);
 
-  const gapAndDividerClasses = `${[VARIANT.block].find((v) => v === variant) ? "gap-2" : [VARIANT.content].find((v) => v === variant) ? "gap-x-4 gap-y-6" : "gap-px"}`;
+  // Lógica de Gaps (Variantes)
+  const gapClasses = useMemo(() => {
+    const map = {
+      block: "gap-2",
+      content: "gap-x-4 gap-y-6",
+    };
+
+    // Dizemos que 'variant' deve ser tratada como uma chave do 'map'
+    return map[variant as keyof typeof map] ?? "gap-px";
+  }, [variant]);
+
+  // Lógica de Grid (Responsivo ou Automático)
+  const gridClasses = useMemo(() => {
+    return getGridClasses(columns); // Aquela função que criamos antes
+  }, [columns]);
 
   useEffect(() => {
     setShowMore(isCompact);
@@ -59,13 +73,7 @@ export function ActionContainer({
 
   return (
     <div className={cn(isScroll ? "h-full overflow-y-auto" : "", "p-0.5")}>
-      <div
-        className={cn(
-          getGridClasses(columns),
-          gapAndDividerClasses,
-          "relative",
-        )}
-      >
+      <div className={cn(gapClasses, gridClasses, "relative")}>
         {/* <pre>{JSON.stringify(showMore, null, 2)}</pre> */}
         {(showMore ? actions.slice(0, 6) : actions).map((action) => (
           <ActionItem
