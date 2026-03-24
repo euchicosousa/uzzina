@@ -104,3 +104,22 @@ export async function getActionById(supabase: SupabaseClient, id: string) {
   if (error) throw error;
   return data as Action;
 }
+
+/**
+ * Update multiple existing actions at once
+ */
+export async function bulkUpdateActions(
+  supabase: SupabaseClient,
+  ids: string[],
+  actionData: Partial<Action>,
+) {
+  const { data, error } = await supabase
+    .from("actions")
+    .update(actionData)
+    .in("id", ids)
+    .select();
+
+  if (error) throw error;
+  return data as Action[];
+}
+

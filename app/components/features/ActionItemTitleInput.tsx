@@ -29,7 +29,7 @@ export function ActionItemTitleInput({
   return (
     <div
       className={cn(
-        "flex min-h-4 w-full overflow-hidden font-light",
+        "flex min-h-4 w-full overflow-hidden leading-snug font-light",
         !isEditing && "@md:w-auto",
         className,
       )}
@@ -66,7 +66,7 @@ export function ActionItemTitleInput({
             setIsEditing(true);
           }}
           className={cn(
-            "w-full cursor-text text-left leading-snug",
+            "w-full cursor-text text-left",
             lines === 1
               ? "overflow-hidden text-ellipsis whitespace-nowrap"
               : "line-clamp-2",

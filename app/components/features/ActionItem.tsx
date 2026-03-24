@@ -32,6 +32,8 @@ import { StateIcon } from "./StateIcon";
 import { ActionItemTitleInput } from "./ActionItemTitleInput";
 import type { Action } from "~/models/actions.server";
 import { useActionShortcutContext } from "~/hooks/useActionShortcut";
+import { useMultiSelection } from "~/hooks/useMultiSelection";
+import { Checkbox } from "~/components/ui/checkbox";
 
 type ActionItemProps = {
   action: Action;
@@ -67,6 +69,9 @@ export function ActionItem({
   const { people, partners } = useRouteLoaderData(
     "routes/app",
   ) as AppLoaderData;
+
+  const { isSelectionMode, selectedIds, toggleSelection } = useMultiSelection();
+  const isSelected = selectedIds.includes(action.id);
 
   const sumbit = useSubmit();
   const { registerAction, unregisterAction, setEditingId } =
@@ -324,8 +329,16 @@ export function ActionItem({
         bgClasses,
         className,
         isDragging && "cursor-grabbing",
+        isSelectionMode && "relative pl-8 transition-all",
+        isSelectionMode && isSelected && "ring-primary ring-2 ring-inset",
       )}
-      onClick={() => {
+      onClick={(e) => {
+        if (isSelectionMode) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleSelection(action.id);
+          return;
+        }
         if (!isEditing) {
           if (onClick) {
             onClick(action);
@@ -335,6 +348,11 @@ export function ActionItem({
         }
       }}
     >
+      {isSelectionMode && (
+        <div className="absolute top-1/2 left-2.5 z-20 flex -translate-y-1/2 items-center justify-center">
+          <Checkbox checked={isSelected} className="pointer-events-none" />
+        </div>
+      )}
       {variant === VARIANT.content && (
         <div className="mb-2 flex items-center gap-2 overflow-hidden">
           <ActionItemPartners

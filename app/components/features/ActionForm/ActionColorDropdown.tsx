@@ -1,5 +1,5 @@
 import Color from "color";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
+import { cn, getGridCols } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 
 export function ActionColorDropdown({
@@ -21,7 +22,22 @@ export function ActionColorDropdown({
   tabIndex?: number;
 }) {
   const [selected, setSelected] = useState(action.color);
-
+  const colors = useMemo(() => {
+    return [
+      ...new Set(
+        (partners.length > 0
+          ? partners.map((partner) =>
+              partner.colors.map((color) => Color(color).hex()),
+            )
+          : [
+              Color(action.color).lighten(0.4).hex(),
+              action.color,
+              Color(action.color).darken(0.4).hex(),
+            ]
+        ).flat(),
+      ),
+    ];
+  }, [partners, action.color]);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -35,21 +51,10 @@ export function ActionColorDropdown({
           ></div>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="grid w-40 grid-cols-3 gap-2 p-2">
-        {[
-          ...new Set(
-            (partners.length > 0
-              ? partners.map((partner) =>
-                  partner.colors.map((color) => Color(color).hex()),
-                )
-              : [
-                  Color(action.color).lighten(0.4).hex(),
-                  action.color,
-                  Color(action.color).darken(0.4).hex(),
-                ]
-            ).flat(),
-          ),
-        ].map((color, index) => (
+      <DropdownMenuContent
+        className={cn("grid w-40 gap-2 p-2", getGridCols(colors.length))}
+      >
+        {colors.map((color, index) => (
           <DropdownMenuItem
             key={index}
             className="cursor-pointer p-0 hover:opacity-50"
@@ -59,12 +64,12 @@ export function ActionColorDropdown({
             }}
           >
             <div
-              className="aspect-[4/5] w-12 rounded border border-black/5"
+              className="aspect-[3/4] w-12 rounded border border-black/5"
               style={{ backgroundColor: color }}
             ></div>
           </DropdownMenuItem>
         ))}
-        <div className="col-span-3 flex w-full items-center gap-2">
+        <div className="col-span-full flex w-full shrink-0 items-center gap-2">
           <Input
             value={selected}
             onChange={(e) => {

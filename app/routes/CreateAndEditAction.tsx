@@ -196,8 +196,6 @@ export function CreateAndEditAction({
       const newResponsibles = currentPartners.map((p) =>
         p.users_ids.map((user) => user),
       );
-
-      console.log(newResponsibles);
     }
   }, [currentPartners]);
 

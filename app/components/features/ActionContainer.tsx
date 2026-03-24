@@ -1,15 +1,15 @@
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
+  COLUMNS,
   ORDER_BY,
   VARIANT,
-  COLUMNS,
   type DATE_TIME_DISPLAY,
 } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
-import { cn } from "~/lib/utils";
-import { ActionItem } from "./ActionItem";
+import { cn, getGridClasses } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { ActionItem } from "./ActionItem";
 
 type ActionContainerProps = {
   actions: Action[];
@@ -20,7 +20,6 @@ type ActionContainerProps = {
   showCategory?: boolean;
   showResponsibles?: boolean;
   showPriority?: boolean;
-  showDivider?: boolean;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending?: boolean;
@@ -40,7 +39,6 @@ export function ActionContainer({
   showCategory,
   showResponsibles,
   showPriority,
-  showDivider,
   dateTimeDisplay,
   orderBy,
   ascending,
@@ -50,16 +48,9 @@ export function ActionContainer({
   isDraggable,
   onClick,
 }: ActionContainerProps) {
-  const columnsClasses =
-    columns === 1
-      ? `flex flex-col`
-      : [2, 3, 4, 5, 6].find((c) => c === columns)
-        ? `grid grid-cols-2 ${columns >= 3 ? "sm:grid-cols-3" : ""} ${columns >= 4 ? "md:grid-cols-4" : ""} ${columns === 5 ? "lg:grid-cols-5" : "lg:grid-cols-6"}`
-        : `grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))]`;
   actions = sortActions(actions, orderBy, ascending);
   const [showMore, setShowMore] = useState(isCompact);
 
-  // const gapAndDividerClasses = `${[VARIANT.block].find((v) => v === variant) ? "gap-2" : showDivider ? "divide-y" : "gap-1"}`;
   const gapAndDividerClasses = `${[VARIANT.block].find((v) => v === variant) ? "gap-2" : [VARIANT.content].find((v) => v === variant) ? "gap-x-4 gap-y-6" : "gap-px"}`;
 
   useEffect(() => {
@@ -68,7 +59,13 @@ export function ActionContainer({
 
   return (
     <div className={cn(isScroll ? "h-full overflow-y-auto" : "", "p-0.5")}>
-      <div className={cn(columnsClasses, gapAndDividerClasses, "relative")}>
+      <div
+        className={cn(
+          getGridClasses(columns),
+          gapAndDividerClasses,
+          "relative",
+        )}
+      >
         {/* <pre>{JSON.stringify(showMore, null, 2)}</pre> */}
         {(showMore ? actions.slice(0, 6) : actions).map((action) => (
           <ActionItem

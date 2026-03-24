@@ -18,6 +18,21 @@ export const handleAction = (data: any, submit: SubmitFunction) =>
     encType: "application/json",
   });
 
+export const handleBulkAction = (
+  ids: string[],
+  updates: Record<string, any>,
+  submit: SubmitFunction,
+) =>
+  submit(
+    { intent: INTENT.bulk_update_actions, ids, ...updates },
+    {
+      method: "post",
+      action: "/action/handle-action",
+      navigate: false,
+      encType: "application/json",
+    },
+  );
+
 /**
  * Toggles the given userId in/out of the action's sprints array.
  */

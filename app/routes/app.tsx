@@ -17,6 +17,7 @@ import { Toaster } from "sonner";
 import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
 import type { Action } from "~/models/actions.server";
 import { ActionShortcutProvider } from "~/hooks/useActionShortcut";
+import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
 
 const CreateAndEditAction = lazy(() =>
   import("./CreateAndEditAction").then((module) => ({
@@ -93,47 +94,49 @@ export default function Dashboard() {
 
   return (
     <div id="app" className="flex h-screen flex-col">
-      {/* HEADER */}
-
-      <Header
-        person={person}
-        setBaseAction={setBaseAction}
-        setOpenCmdK={setOpenCmdK}
-      />
       <ActionShortcutProvider>
-        <div className="flex h-full w-full overflow-hidden">
-          <div className="grow overflow-x-hidden overflow-y-auto">
-            <div className="flex min-h-full grow">
-              <div className="flex min-h-full w-full shrink flex-col">
-                <Outlet context={{ BaseAction, setBaseAction }} />
+        <MultiSelectionProvider>
+          {/* HEADER */}
+
+          <Header
+            person={person}
+            setBaseAction={setBaseAction}
+            setOpenCmdK={setOpenCmdK}
+          />
+          <div className="flex h-full w-full overflow-hidden">
+            <div className="grow overflow-x-hidden overflow-y-auto">
+              <div className="flex min-h-full grow">
+                <div className="flex min-h-full w-full shrink flex-col">
+                  <Outlet context={{ BaseAction, setBaseAction }} />
+                </div>
               </div>
             </div>
-          </div>
-          <Toaster richColors />
+            <Toaster richColors />
 
-          {BaseAction ? (
-            <Suspense fallback={null}>
-              <div
-                className="fixed inset-0 top-17 z-10 flex w-full shrink-0 flex-col bg-black/20 dark:bg-black/80"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  setBaseAction(null);
-                }}
-              ></div>
-              <CreateAndEditAction
-                BaseAction={BaseAction}
-                onClose={() => setBaseAction(null)}
-              />
-            </Suspense>
-          ) : null}
-        </div>
-        <GlobalSearchCommand
-          open={openCmdK}
-          onOpenChange={setOpenCmdK}
-          partners={partners}
-          setBaseAction={setBaseAction}
-        />
+            {BaseAction ? (
+              <Suspense fallback={null}>
+                <div
+                  className="fixed inset-0 top-17 z-10 flex w-full shrink-0 flex-col bg-black/20 dark:bg-black/80"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setBaseAction(null);
+                  }}
+                ></div>
+                <CreateAndEditAction
+                  BaseAction={BaseAction}
+                  onClose={() => setBaseAction(null)}
+                />
+              </Suspense>
+            ) : null}
+          </div>
+          <GlobalSearchCommand
+            open={openCmdK}
+            onOpenChange={setOpenCmdK}
+            partners={partners}
+            setBaseAction={setBaseAction}
+          />
+        </MultiSelectionProvider>
       </ActionShortcutProvider>
     </div>
   );

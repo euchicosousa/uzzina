@@ -1,16 +1,11 @@
 import { IconBrandInstagram } from "@tabler/icons-react";
 import Color from "color";
-import { Theme } from "remix-themes";
-import { cn } from "~/lib/utils";
 import {
   BadgeCheckIcon,
   BlocksIcon,
   BrainIcon,
   CameraIcon,
-  CircleDashedIcon,
-  CircleDotDashedIcon,
   CircleFadingPlusIcon,
-  CirclePlusIcon,
   ClipboardCheckIcon,
   CodeIcon,
   CoinsIcon,
@@ -28,6 +23,8 @@ import {
   SplinePointerIcon,
   SunIcon,
 } from "lucide-react";
+import { Theme } from "remix-themes";
+import { cn } from "~/lib/utils";
 
 export function Icons({
   slug,

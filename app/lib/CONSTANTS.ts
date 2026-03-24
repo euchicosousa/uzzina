@@ -402,6 +402,7 @@ export const VARIANT = {
 export const INTENT = {
   create_action: "create-action",
   update_action: "update-action",
+  bulk_update_actions: "bulk-update-actions",
   duplicate_action: "duplicate-action",
   delete_action: "delete-action",
   caption_ai: "caption-ai",

@@ -16,13 +16,23 @@ export function useOptimisticActions(actions: Action[]): Action[] {
       .filter(Boolean);
 
     for (const payload of pendingPayloads) {
-      if (payload.intent !== INTENT.update_action) continue;
+      if (payload.intent === INTENT.update_action) {
+        const id = String(payload.id);
+        if (!actionsMap.has(id)) continue;
 
-      const id = String(payload.id);
-      if (!actionsMap.has(id)) continue;
-
-      // Merge direto: JSON já preserva arrays, booleans e numbers
-      actionsMap.set(id, { ...actionsMap.get(id)!, ...payload });
+        // Merge direto: JSON já preserva arrays, booleans e numbers
+        actionsMap.set(id, { ...actionsMap.get(id)!, ...payload });
+      } else if (payload.intent === INTENT.bulk_update_actions) {
+        const ids = Array.isArray(payload.ids) ? payload.ids : JSON.parse(payload.ids || "[]");
+        const { intent, ids: _removed, ...updates } = payload;
+        
+        for (const id of ids) {
+          const stringId = String(id);
+          if (actionsMap.has(stringId)) {
+            actionsMap.set(stringId, { ...actionsMap.get(stringId)!, ...updates });
+          }
+        }
+      }
     }
 
     return Array.from(actionsMap.values());

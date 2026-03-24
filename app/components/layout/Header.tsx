@@ -1,4 +1,22 @@
+import {
+  CopyCheckIcon,
+  HeartHandshakeIcon,
+  PlusIcon,
+  SearchIcon,
+} from "lucide-react";
+import {
+  Link,
+  useFetchers,
+  useMatches,
+  useNavigate,
+  useNavigation,
+  useParams,
+} from "react-router";
 import { Theme, useTheme } from "remix-themes";
+import { BulkActionMenu } from "~/components/features/BulkActionMenu";
+import { UToggleInput } from "~/components/uzzina/UToggle";
+import { useAccentColor } from "~/hooks/useAccentColor";
+import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { PALLETE, SIZE } from "~/lib/CONSTANTS";
 import { getCleanAction, getLateActions, getThemeIcon } from "~/lib/helpers";
 import type { AppHomeLoaderData } from "~/routes/app.home";
@@ -21,16 +39,6 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { UAvatar } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
-import { useAccentColor } from "~/hooks/useAccentColor";
-import {
-  Link,
-  useFetchers,
-  useMatches,
-  useNavigate,
-  useNavigation,
-  useParams,
-} from "react-router";
-import { HeartHandshakeIcon, PlusIcon, SearchIcon } from "lucide-react";
 
 export function Header({
   person,
@@ -52,6 +60,9 @@ export function Header({
     ? partners.filter((p) => p.slug === params.slug)[0].users_ids
     : [person.user_id];
 
+  const { isSelectionMode, toggleSelectionMode, selectedIds } =
+    useMultiSelection();
+
   return (
     <div className="border_after flex w-full items-center justify-between px-8">
       <div className="flex items-center gap-2 py-4">
@@ -69,6 +80,17 @@ export function Header({
         </Button>
       </div>
       <div className="flex items-center gap-2">
+        <BulkActionMenu />
+
+        <UToggleInput
+          id="toggle-multi-selection"
+          checked={isSelectionMode}
+          onCheckedChange={() => toggleSelectionMode()}
+          className="h-10 px-4 py-2"
+        >
+          <CopyCheckIcon className="size-4" />
+        </UToggleInput>
+
         <Button
           onClick={() =>
             setBaseAction({

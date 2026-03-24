@@ -6,6 +6,7 @@ import {
   deleteAction,
   getActionById,
   updateAction,
+  bulkUpdateActions,
 } from "~/models/actions.server";
 import { ActionFormSchema } from "~/utils/validation";
 
@@ -73,6 +74,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         await deleteAction(supabase, String(id));
       } catch (error) {
         console.error("Error deleting action:", error);
+      }
+    }
+  } else if (intent === INTENT.bulk_update_actions) {
+    const ids = Array.isArray(values.ids) ? values.ids : JSON.parse(values.ids || "[]");
+    if (ids.length > 0) {
+      const { ids: _removed, ...updates } = values;
+      try {
+        await bulkUpdateActions(supabase, ids, updates);
+      } catch (error) {
+        console.error("Error bulk updating actions:", error);
+        return Response.json({ error: "Failed to bulk update updates" }, { status: 500 });
       }
     }
   }

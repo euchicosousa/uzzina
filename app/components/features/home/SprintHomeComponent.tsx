@@ -3,7 +3,7 @@ import {
   ViewOptionsComponent,
   useViewOptions,
 } from "~/components/features/ViewOptions";
-import { VARIANT } from "~/lib/CONSTANTS";
+import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
@@ -38,6 +38,7 @@ export function SprintHomeComponent({ actions }: { actions: Action[] }) {
           columns={viewOptions.columns || 4}
           variant={viewOptions.variant}
           showLate
+          orderBy={ORDER_BY.state}
         />
       </div>
     </HomeComponentWrapper>
