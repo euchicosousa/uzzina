@@ -107,7 +107,7 @@ export function Header({
           }
           className="squircle rounded-2xl"
         >
-          Nova Ação
+          <span className="hidden sm:block">Nova Ação</span>
           <PlusIcon />
         </Button>
         <Popover>
@@ -177,8 +177,12 @@ export function Header({
 
 const HeaderMenu = ({ person }: { person: Person }) => {
   const [theme, setTheme] = useTheme();
-  const { setColorIndex, followPartnerColor, setFollowPartnerColor } =
-    useAccentColor();
+  const {
+    setColorIndex,
+    colorIndex,
+    followPartnerColor,
+    setFollowPartnerColor,
+  } = useAccentColor();
   const isLoading =
     useFetchers().length > 0 || useNavigation().state !== "idle";
   return (
@@ -205,23 +209,33 @@ const HeaderMenu = ({ person }: { person: Person }) => {
           {PALLETE.map((paletteConfig, i) => {
             const { light, dark } = paletteConfig;
             const currentColors = theme === Theme.DARK ? dark : light;
+            const isSelected = colorIndex === i;
             return (
               <button
                 onClick={() => {
                   setColorIndex(i);
                 }}
-                style={{
-                  backgroundColor: `oklch(${currentColors.l} ${currentColors.c} ${currentColors.h})`,
-                }}
-                className="ring-border size-4 cursor-pointer rounded-lg hover:ring-2 focus:ring-4"
                 key={i}
                 title={paletteConfig.label}
-              ></button>
+                className="squircle flex justify-center rounded-xl p-2 hover:opacity-80"
+                style={{
+                  backgroundColor: isSelected
+                    ? `oklch(${currentColors.l} ${currentColors.c} ${currentColors.h})`
+                    : "",
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor: isSelected
+                      ? "white"
+                      : `oklch(${currentColors.l} ${currentColors.c} ${currentColors.h})`,
+                  }}
+                  className={`size-4 rounded-lg`}
+                ></div>
+              </button>
             );
           })}
         </div>
-
-        <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => setFollowPartnerColor(!followPartnerColor)}
           className={cn(
@@ -232,6 +246,9 @@ const HeaderMenu = ({ person }: { person: Person }) => {
           Cores do parceiro
           {followPartnerColor ? <CheckIcon /> : null}
         </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
         <DropdownMenuItem asChild>
           <Link to="/app/admin/partners">Parceiros</Link>
         </DropdownMenuItem>

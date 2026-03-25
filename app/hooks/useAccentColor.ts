@@ -3,12 +3,13 @@ import { PALLETE } from "~/lib/CONSTANTS";
 
 const STORAGE_KEY = "uzzina-accent-color-index";
 const FOLLOW_PARTNER_KEY = "uzzina-follow-partner-color";
-const DEFAULT_INDEX = 0; // Azul (Padrão)
 
-function getStoredIndex(): number {
-  if (typeof window === "undefined") return DEFAULT_INDEX;
+function getStoredIndex(): number | null {
+  if (typeof window === "undefined") return null;
   const saved = localStorage.getItem(STORAGE_KEY);
-  return saved !== null ? Number(saved) : DEFAULT_INDEX;
+  if (saved === null || saved === "") return null;
+  const n = Number(saved);
+  return isNaN(n) ? null : n;
 }
 
 function getStoredFollowPartner(): boolean {
@@ -17,7 +18,7 @@ function getStoredFollowPartner(): boolean {
 }
 
 export function useAccentColor() {
-  const [colorIndex, setColorIndexState] = useState<number>(DEFAULT_INDEX);
+  const [colorIndex, setColorIndexState] = useState<number | null>(null);
   const [followPartnerColor, setFollowPartnerColorState] =
     useState<boolean>(false);
 
@@ -27,11 +28,14 @@ export function useAccentColor() {
     setFollowPartnerColorState(getStoredFollowPartner());
   }, []);
 
-  // Sincroniza entre abas: se o usuário mudar a cor em outra aba, reflete aqui
+  // Sincroniza entre abas
   useEffect(() => {
     function onStorage(event: StorageEvent) {
-      if (event.key === STORAGE_KEY && event.newValue !== null) {
-        setColorIndexState(Number(event.newValue));
+      if (event.key === STORAGE_KEY) {
+        const val = event.newValue;
+        setColorIndexState(
+          val === null || val === "" ? null : Number(val),
+        );
       }
       if (event.key === FOLLOW_PARTNER_KEY && event.newValue !== null) {
         setFollowPartnerColorState(event.newValue === "true");
@@ -41,25 +45,39 @@ export function useAccentColor() {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  const selectedPalette = PALLETE[colorIndex] || PALLETE[DEFAULT_INDEX];
+  const selectedPalette =
+    colorIndex !== null ? PALLETE[colorIndex] : undefined;
 
-  // Aplica as variáveis CSS ao mudar a paleta
+  // Aplica ou remove as variáveis CSS de acento
   useEffect(() => {
     const root = document.documentElement;
-    const { light, dark } = selectedPalette;
 
-    root.style.setProperty("--accent-h", String(light.h));
-    root.style.setProperty("--accent-c", String(light.c));
-    root.style.setProperty("--accent-l", String(light.l));
-
-    root.style.setProperty("--dark-accent-h", String(dark.h));
-    root.style.setProperty("--dark-accent-c", String(dark.c));
-    root.style.setProperty("--dark-accent-l", String(dark.l));
+    if (selectedPalette) {
+      const { light, dark } = selectedPalette;
+      root.style.setProperty("--accent-h", String(light.h));
+      root.style.setProperty("--accent-c", String(light.c));
+      root.style.setProperty("--accent-l", String(light.l));
+      root.style.setProperty("--dark-accent-h", String(dark.h));
+      root.style.setProperty("--dark-accent-c", String(dark.c));
+      root.style.setProperty("--dark-accent-l", String(dark.l));
+    } else {
+      // Sem cor selecionada: remove overrides para o CSS base assumir
+      root.style.removeProperty("--accent-h");
+      root.style.removeProperty("--accent-c");
+      root.style.removeProperty("--accent-l");
+      root.style.removeProperty("--dark-accent-h");
+      root.style.removeProperty("--dark-accent-c");
+      root.style.removeProperty("--dark-accent-l");
+    }
   }, [selectedPalette]);
 
+  /**
+   * Seleciona uma cor; se já estiver selecionada, desmarca (volta ao CSS base).
+   */
   const setColorIndex = (index: number) => {
-    localStorage.setItem(STORAGE_KEY, String(index));
-    setColorIndexState(index);
+    const next = colorIndex === index ? null : index;
+    localStorage.setItem(STORAGE_KEY, next !== null ? String(next) : "");
+    setColorIndexState(next);
   };
 
   const setFollowPartnerColor = (value: boolean) => {
@@ -79,8 +97,7 @@ export function useAccentColor() {
   };
 
   /**
-   * Remove a sobrescrita das cores do parceiro, deixando os knobs oklch
-   * assumirem novamente via CSS (calculados a partir de --accent-h/c/l).
+   * Remove a sobrescrita das cores do parceiro, deixando o CSS base assumir.
    */
   const restoreAccentColors = () => {
     const root = document.documentElement;
@@ -99,4 +116,3 @@ export function useAccentColor() {
     restoreAccentColors,
   };
 }
-

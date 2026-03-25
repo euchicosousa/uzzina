@@ -143,7 +143,7 @@ export function ActionItem({
     if (isEditing)
       return "ring-foreground focus-within:ring-2 z-100 text-foreground";
     if (showLate && isLateAction(action))
-      return "bg-destructive/5 text-destructive hover:bg-destructive/10";
+      return "bg-destructive/5 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30";
 
     switch (variant) {
       case VARIANT.hour:

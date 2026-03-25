@@ -423,8 +423,13 @@ export const PALLETE = [
   },
   {
     label: "Roxo",
-    light: { h: 280, c: 0.28, l: 0.54 },
-    dark: { h: 280, c: 0.28, l: 0.68 },
+    light: { h: 290, c: 0.28, l: 0.54 },
+    dark: { h: 290, c: 0.28, l: 0.68 },
+  },
+  {
+    label: "Magenta",
+    light: { h: 350, c: 0.4, l: 0.9 },
+    dark: { h: 350, c: 0.4, l: 0.8 },
   },
   {
     label: "Rosa",
@@ -460,10 +465,5 @@ export const PALLETE = [
     label: "Azul Claro",
     light: { h: 240, c: 0.22, l: 0.7 },
     dark: { h: 240, c: 0.22, l: 0.65 },
-  },
-  {
-    label: "Magenta",
-    light: { h: 350, c: 0.4, l: 0.9 },
-    dark: { h: 350, c: 0.4, l: 0.8 },
   },
 ];

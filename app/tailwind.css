@@ -16,9 +16,9 @@
   --popover-foreground: var(--foreground);
 
   /* Accent color knobs — overrideable by JS for theme color picker */
-  --accent-h: 264; /* hue: 0–360 */
-  --accent-c: 0.31; /* chroma / saturation */
-  --accent-l: 0.45; /* lightness: darker in light mode for contrast on white */
+  --accent-h: 0; /* hue: 0–360 */
+  --accent-c: 0; /* chroma / saturation */
+  --accent-l: 0; /* lightness: darker in light mode for contrast on white */
   --accent-fg-l: 0.97; /* foreground lightness: bright text over dark primary */
 
   --primary: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
@@ -29,7 +29,7 @@
   --muted-foreground: oklch(0.552 0.016 285.938);
   --accent: oklch(0.967 0.001 286.375);
   --accent-foreground: var(--foreground);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(66.147% 0.2279 16.339);
   --border: oklch(0.92 0 0);
   --input: oklch(0.92 0 0);
   --ring: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
@@ -59,10 +59,10 @@
   --popover-foreground: var(--foreground);
 
   /* Dark mode variables injected by JS */
-  /* Fallback values */
-  --dark-accent-h: 264;
-  --dark-accent-c: 0.31;
-  --dark-accent-l: 0.58;
+  /* Fallback values — preto/branco base */
+  --dark-accent-h: 0;
+  --dark-accent-c: 0;
+  --dark-accent-l: 0.35;
   /* --dark-accent-fg-l: 0.1; */
 
   --primary: oklch(
@@ -77,7 +77,7 @@
   --muted-foreground: oklch(0.705 0.015 286.067);
   --accent: oklch(0.274 0.006 286.033);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
+  --destructive: oklch(66.147% 0.2279 16.339);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(var(--dark-accent-l) var(--dark-accent-c) var(--dark-accent-h));
