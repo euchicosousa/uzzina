@@ -28,7 +28,7 @@ export function useAccentColor() {
     setFollowPartnerColorState(getStoredFollowPartner());
   }, []);
 
-  // Sincroniza entre abas
+  // Sincroniza entre abas e instâncias no mesmo documento
   useEffect(() => {
     function onStorage(event: StorageEvent) {
       if (event.key === STORAGE_KEY) {
@@ -41,8 +41,18 @@ export function useAccentColor() {
         setFollowPartnerColorState(event.newValue === "true");
       }
     }
+
+    function onLocalUpdate() {
+      setColorIndexState(getStoredIndex());
+      setFollowPartnerColorState(getStoredFollowPartner());
+    }
+
     window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    window.addEventListener("uzzina-storage-update", onLocalUpdate);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("uzzina-storage-update", onLocalUpdate);
+    }
   }, []);
 
   const selectedPalette =
@@ -78,11 +88,13 @@ export function useAccentColor() {
     const next = colorIndex === index ? null : index;
     localStorage.setItem(STORAGE_KEY, next !== null ? String(next) : "");
     setColorIndexState(next);
+    window.dispatchEvent(new Event("uzzina-storage-update"));
   };
 
   const setFollowPartnerColor = (value: boolean) => {
     localStorage.setItem(FOLLOW_PARTNER_KEY, String(value));
     setFollowPartnerColorState(value);
+    window.dispatchEvent(new Event("uzzina-storage-update"));
   };
 
   /**
