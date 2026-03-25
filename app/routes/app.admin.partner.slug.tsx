@@ -81,7 +81,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     short: (updates.short as string) || "",
     context: (updates.context as string) || null,
     voice: (updates.voice as string) || null,
-    img: (updates.img as string) || null,
+    image: (updates.image as string) || null,
     instagram_caption_tail: (updates.instagram_caption_tail as string) || null,
     sow: (updates.sow as "marketing" | "socialmedia" | "demand") || "marketing",
   };

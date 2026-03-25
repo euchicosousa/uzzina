@@ -1,18 +1,35 @@
-import { addDays, endOfWeek, format, startOfWeek } from "date-fns";
+import { addDays, format } from "date-fns";
 import { useState } from "react";
-import { useLoaderData, useNavigate, type LoaderFunctionArgs } from "react-router";
+import {
+  useLoaderData,
+  useNavigate,
+  type LoaderFunctionArgs,
+} from "react-router";
 import { ClientCalendar } from "~/components/client/ClientCalendar";
-import { VARIANT, ORDER_BY } from "~/lib/CONSTANTS";
+import { Content } from "~/components/features/Content";
+import { UAvatar } from "~/components/uzzina/UAvatar";
+import { CATEGORIES, type CATEGORY } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
 import { getClientSession } from "~/services/client-auth.server";
-import { ActionContainer } from "~/components/features/ActionContainer";
+import { sortActions } from "~/utils/sort";
+import { getInstagramFeedActions } from "~/utils/validation";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { supabase, partnerSlugs } = await getClientSession(request);
+  const { supabase, partners } = await getClientSession(request);
 
-  if (partnerSlugs.length === 0) {
+  if (partners.length === 0) {
     return { actions: [] as Action[] };
   }
+
+  const url = new URL(request.url);
+  const partnerQuery = url.searchParams.get("partner");
+
+  const currentPartnerSlug =
+    partnerQuery && partners.some((p) => p.slug === partnerQuery)
+      ? partnerQuery
+      : partners[0].slug;
+
+  const currentPartner = partners.find((p) => p.slug === currentPartnerSlug)!;
 
   // Janela de 3 meses centrada no hoje
   const today = new Date();
@@ -23,82 +40,106 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     .from("actions")
     .select("*")
     .is("archived", false)
-    .overlaps("partners", partnerSlugs)
+    .contains("partners", [currentPartnerSlug])
     .gte("date", start)
     .lte("date", end)
     .order("date", { ascending: true })
     .limit(2000);
 
-  return { actions: (actions ?? []) as Action[] };
+  return { actions: (actions ?? []) as Action[], currentPartner };
 };
 
 export default function DashHome() {
-  const { actions } = useLoaderData<typeof loader>();
+  const { actions, currentPartner } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const [currentDay, setCurrentDay] = useState(new Date());
   const [mobileTab, setMobileTab] = useState<"calendar" | "feed">("calendar");
+  const [calendarView, setCalendarView] = useState<"month" | "week">("month");
 
   const handleActionClick = (action: Action) => {
     navigate(`/dash/action/${action.id}`);
   };
 
-  const handlePrev = () => setCurrentDay((d) => addDays(d, -7));
-  const handleNext = () => setCurrentDay((d) => addDays(d, 7));
+  const handlePrev = () => {
+    if (calendarView === "month") setCurrentDay((d) => addDays(d, -30));
+    else setCurrentDay((d) => addDays(d, -7));
+  };
+  const handleNext = () => {
+    if (calendarView === "month") setCurrentDay((d) => addDays(d, 30));
+    else setCurrentDay((d) => addDays(d, 7));
+  };
 
   // Ações de feed (Instagram) ordenadas por instagram_date
-  const feedActions = actions.filter(
-    (a) => a.category === "post" || a.category === "reels" || a.category === "stories",
-  );
+  const feedActions = getInstagramFeedActions(actions, true, true);
 
   return (
     <div className="flex min-h-0 w-full flex-1 overflow-hidden">
       {/* Mobile: abas */}
-      <div className="flex w-full flex-col md:hidden">
-        <div className="flex border-b">
-          <button
-            className={`flex-1 py-3 text-sm font-medium transition-colors ${mobileTab === "calendar" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}
-            onClick={() => setMobileTab("calendar")}
-          >
-            Calendário
-          </button>
-          <button
-            className={`flex-1 py-3 text-sm font-medium transition-colors ${mobileTab === "feed" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}
-            onClick={() => setMobileTab("feed")}
-          >
-            Feed
-          </button>
+      <div className="flex min-h-0 w-full flex-1 flex-col lg:hidden">
+        <div className="flex items-center justify-between border-b pr-2">
+          <div className="flex flex-1">
+            <button
+              className={`flex-1 py-3 text-sm font-medium transition-colors ${mobileTab === "calendar" ? "border-primary text-primary border-b-2" : "text-muted-foreground"}`}
+              onClick={() => setMobileTab("calendar")}
+            >
+              Calendário
+            </button>
+            <button
+              className={`flex-1 py-3 text-sm font-medium transition-colors ${mobileTab === "feed" ? "border-primary text-primary border-b-2" : "text-muted-foreground"}`}
+              onClick={() => setMobileTab("feed")}
+            >
+              Feed
+            </button>
+          </div>
         </div>
+
         <div className="min-h-0 flex-1 overflow-hidden">
           {mobileTab === "calendar" ? (
             <ClientCalendar
-              actions={actions}
+              actions={feedActions}
               currentDay={currentDay}
               onPrev={handlePrev}
               onNext={handleNext}
               onActionClick={handleActionClick}
+              view={calendarView}
+              calendarView={calendarView}
+              setCalendarView={setCalendarView}
             />
           ) : (
-            <FeedSection actions={feedActions} onActionClick={handleActionClick} />
+            <div className="h-full w-full overflow-y-auto">
+              <FeedSection
+                actions={feedActions}
+                onActionClick={handleActionClick}
+                currentPartner={currentPartner as Partner}
+              />
+            </div>
           )}
         </div>
       </div>
 
-      {/* Desktop: calendário + feed lado a lado */}
-      <div className="hidden min-h-0 flex-1 md:flex overflow-hidden">
+      {/* Desktop (lg+): calendário + feed lado a lado */}
+      <div className="hidden min-h-0 flex-1 overflow-hidden lg:flex">
         {/* Calendário — ocupa o resto */}
-        <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
+        <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <ClientCalendar
-            actions={actions}
+            actions={feedActions}
             currentDay={currentDay}
             onPrev={handlePrev}
             onNext={handleNext}
             onActionClick={handleActionClick}
+            view={calendarView}
+            calendarView={calendarView}
+            setCalendarView={setCalendarView}
           />
         </div>
 
-        {/* Feed — max-width 480px */}
-        <div className="w-full max-w-[480px] shrink-0 border-l overflow-y-auto">
-          <FeedSection actions={feedActions} onActionClick={handleActionClick} />
+        {/* Feed — max-width 560px (agora com 3 colunas) */}
+        <div className="w-full max-w-[560px] shrink-0 overflow-y-auto border-l">
+          <FeedSection
+            actions={feedActions}
+            onActionClick={handleActionClick}
+            currentPartner={currentPartner as Partner}
+          />
         </div>
       </div>
     </div>
@@ -108,28 +149,40 @@ export default function DashHome() {
 function FeedSection({
   actions,
   onActionClick,
+  currentPartner,
 }: {
   actions: Action[];
   onActionClick: (action: Action) => void;
+  currentPartner: Partner;
 }) {
+  actions = sortActions(actions, "instagram_date", false);
   return (
     <div className="p-4">
-      <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-        Feed do Instagram
-      </h2>
+      <div className="mb-4 flex items-center gap-2">
+        <UAvatar fallback={currentPartner.short} image={currentPartner.image} />
+        <div className="font-medium">{currentPartner.title}</div>
+      </div>
       {actions.length === 0 ? (
-        <p className="text-muted-foreground text-sm">Nenhuma publicação programada.</p>
+        <p className="text-muted-foreground text-sm">
+          Nenhuma publicação programada.
+        </p>
       ) : (
-        <ActionContainer
-          actions={actions}
-          variant={VARIANT.content}
-          columns={2}
-          orderBy={ORDER_BY.instagram_date}
-          ascending
-          isInstagramDate
-          showCategory
-          onClick={onActionClick}
-        />
+        <div className="grid grid-cols-3 gap-px">
+          {actions.map((action) => (
+            <div
+              key={action.id}
+              onClick={() => onActionClick(action)}
+              className="relative transition-opacity hover:opacity-60"
+            >
+              <Content
+                action={action}
+                isSquared
+                isInstagramDate
+                category={CATEGORIES[action.category as CATEGORY]}
+              />
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

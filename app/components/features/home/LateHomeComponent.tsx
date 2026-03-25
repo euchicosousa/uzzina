@@ -38,7 +38,6 @@ export function LateHomeComponent({ actions }: { actions: Action[] }) {
           orderBy={viewOptions.order}
           ascending={viewOptions.ascending}
           variant={viewOptions.variant}
-          showDivider={true}
           actions={actions}
           columns={viewOptions.variant != "content" ? 3 : 6}
           showResponsibles={viewOptions.responsibles}

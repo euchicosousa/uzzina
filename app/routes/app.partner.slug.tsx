@@ -113,12 +113,12 @@ export default function PartnerPage() {
   useEffect(() => {
     if (followPartnerColor && partner.colors.length >= 2) {
       applyPartnerColors(partner.colors[0], partner.colors[1]);
+    } else {
+      restoreAccentColors();
     }
     return () => {
-      // Restaura ao desmontar a página (saindo da rota do parceiro)
-      if (followPartnerColor) {
-        restoreAccentColors();
-      }
+      // Restaura ao desmontar a página
+      restoreAccentColors();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [followPartnerColor, partner.colors]);

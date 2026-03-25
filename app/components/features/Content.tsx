@@ -10,18 +10,28 @@ import { getPeople } from "~/utils/filter";
 export function Content({
   action,
   category,
-  isInstagramDate,
   className,
+  isInstagramDate,
+  isSquared,
+  showDate = true,
+  dateTimeDisplay = DATE_TIME_DISPLAY.TimeOnly,
 }: {
   action: Action;
   category?: (typeof CATEGORIES)[keyof typeof CATEGORIES];
   isInstagramDate?: boolean;
   className?: string;
+  isSquared?: boolean;
+  showDate?: boolean;
+  dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
 }) {
-  const { person, people } = useRouteLoaderData("routes/app") as {
-    person: Person;
-    people: Person[];
-  };
+  const appData = useRouteLoaderData("routes/app") as
+    | {
+        person?: Person;
+        people?: Person[];
+      }
+    | undefined;
+  const person = appData?.person;
+  const people = appData?.people || [];
 
   const actionColor = action.color;
 
@@ -37,7 +47,12 @@ export function Content({
 
   return (
     <div className={cn("relative", className)}>
-      <div className="bg-secondary squircle aspect-[4/5] overflow-hidden rounded-2xl border transition-opacity duration-500 group-hover/action:opacity-50">
+      <div
+        className={cn(
+          "bg-secondary ring-foreground/5 aspect-[4/5] overflow-hidden ring transition-opacity duration-500 group-hover/action:opacity-50",
+          !isSquared && "squircle rounded-2xl",
+        )}
+      >
         {action.content_files?.length ? (
           <img
             src={action.content_files[0]}
@@ -60,7 +75,7 @@ export function Content({
       <div className="absolute inset-0 flex flex-col justify-between p-2">
         <div className="flex items-center justify-between gap-2">
           <div>
-            {isSprint(action, person) && (
+            {person && isSprint(action, person) && (
               <Icons slug="sprint" className="size-4" color={foregroundColor} />
             )}
           </div>
@@ -84,15 +99,17 @@ export function Content({
               color={foregroundColor}
             />
           )}
-          <div
-            className={`overflow-hidden text-xs font-medium text-ellipsis whitespace-nowrap ${hasFiles ? "drop-shadow-[0px_1px_1px_#00000050]" : ""}`}
-            style={{ color: foregroundColor }}
-          >
-            {getFormattedDateTime(
-              isInstagramDate ? action.instagram_date : action.date,
-              DATE_TIME_DISPLAY.TimeOnly,
-            )}
-          </div>
+          {showDate && (
+            <div
+              className={`overflow-hidden text-xs font-medium text-ellipsis whitespace-nowrap ${hasFiles ? "drop-shadow-[0px_1px_1px_#00000050]" : ""}`}
+              style={{ color: foregroundColor }}
+            >
+              {getFormattedDateTime(
+                isInstagramDate ? action.instagram_date : action.date,
+                dateTimeDisplay,
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

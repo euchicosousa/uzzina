@@ -68,7 +68,7 @@ export function CalendarDay({
           {onCreateAction && (
             <div className="isolate opacity-0 group-hover/column:opacity-100">
               <button
-                className="bg-primary grid size-6 cursor-pointer place-content-center rounded-full text-white"
+                className="bg-primary text-primary-foreground grid size-6 cursor-pointer place-content-center rounded-full"
                 onClick={() => {
                   onCreateAction(day);
                 }}
@@ -90,7 +90,6 @@ export function CalendarDay({
                   showResponsibles={viewOptions.responsibles}
                   showLate={viewOptions.late}
                   showPriority={viewOptions.priority}
-                  showDivider={true}
                   orderBy={viewOptions.order}
                   ascending={viewOptions.ascending}
                   isCompact={isCompact}
@@ -109,7 +108,6 @@ export function CalendarDay({
                   showResponsibles={viewOptions.responsibles}
                   showLate={viewOptions.late}
                   showPriority={viewOptions.priority}
-                  showDivider={true}
                   orderBy={viewOptions.order}
                   ascending={viewOptions.ascending}
                   isCompact={isCompact}
@@ -129,7 +127,6 @@ export function CalendarDay({
               showResponsibles={viewOptions.responsibles}
               showLate={viewOptions.late}
               showPriority={viewOptions.priority}
-              showDivider={true}
               orderBy={viewOptions.order}
               ascending={viewOptions.ascending}
               isCompact={isCompact}

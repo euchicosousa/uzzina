@@ -27,7 +27,7 @@ export function ContentFilesManager({
   uploadPreset,
 }: ContentFilesManagerProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const type = detectPostType(files);
+  const type = !files || files.length === 0 ? "empty" : detectPostType(files);
 
   const filesRef = useRef(files);
   filesRef.current = files;

@@ -3,7 +3,7 @@ import { detectPostType } from "./InstagramHelpers";
 import { ChevronLeftIcon, ChevronRightIcon, ImageIcon } from "lucide-react";
 
 interface InstagramPreviewProps {
-  files: string[];
+  files?: string[] | null;
 }
 
 /**
@@ -15,14 +15,14 @@ interface InstagramPreviewProps {
  */
 export function InstagramPreview({ files }: InstagramPreviewProps) {
   const [carouselIndex, setCarouselIndex] = useState(0);
-  const type = detectPostType(files);
+  const type = detectPostType(files as string[]);
 
   // Proporção Instagram feed padrão 4:5
   const frameClass =
     "relative w-full overflow-hidden rounded-xl bg-black/5 border";
   const aspectClass = "aspect-[4/5]";
 
-  if (type === "empty") {
+  if (!files || files.length === 0) {
     return (
       <div className={`${frameClass} ${aspectClass}`}>
         <div className="flex h-full flex-col items-center justify-center gap-2 opacity-30">

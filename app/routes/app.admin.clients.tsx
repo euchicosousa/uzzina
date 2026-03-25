@@ -7,7 +7,7 @@ import {
 } from "react-router";
 import { Button } from "~/components/ui/button";
 import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
-import { getAllClients, groupClients } from "~/models/clients.server";
+import { getAllClients } from "~/models/clients.server";
 import { getAllPartners } from "~/models/partners.server";
 import { getUserId } from "~/services/auth.server";
 
@@ -19,12 +19,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     getAllClients(supabase),
     getAllPartners(supabase),
   ]);
-  const grouped = groupClients(clients);
-  return { grouped, partners };
+  return { clients, partners };
 };
 
 export default function AdminClientsPage() {
-  const { grouped, partners } = useLoaderData<typeof loader>();
+  const { clients, partners } = useLoaderData<typeof loader>();
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-8">
@@ -37,24 +36,24 @@ export default function AdminClientsPage() {
         </Button>
       </div>
 
-      {grouped.length === 0 && (
+      {clients.length === 0 && (
         <p className="text-muted-foreground">Nenhum cliente cadastrado.</p>
       )}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {grouped.map((client) => {
-          const clientPartners = client.partner_slugs
+        {clients.map((client) => {
+          const clientPartners = (client.partners || [])
             .map((slug) => partners.find((p) => p.slug === slug))
             .filter(Boolean);
 
           return (
             <Link
-              key={client.user_id}
-              to={`/app/admin/clients/${client.user_id}`}
+              key={client.id}
+              to={`/app/admin/clients/${client.id}`}
               className="hover:bg-muted/50 squircle flex items-center gap-4 rounded-3xl border p-4 transition-colors"
             >
               <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-                <UAvatar fallback={client.name} size="lg" isSquircle />
+                <UAvatar image={client.image} fallback={client.name || "??"} size="lg" isSquircle />
                 <div className="mb-1 w-full truncate text-xl font-medium">
                   {client.name}
                 </div>

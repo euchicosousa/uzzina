@@ -1,9 +1,14 @@
 import {
   addDays,
+  eachDayOfInterval,
+  endOfMonth,
+  endOfWeek,
   format,
   isSameDay,
+  isSameMonth,
   isToday,
   parseISO,
+  startOfMonth,
   startOfWeek,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -11,7 +16,16 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
-import { STATES, type STATE } from "~/lib/CONSTANTS";
+import {
+  CATEGORIES,
+  DATE_TIME_DISPLAY,
+  STATES,
+  type STATE,
+} from "~/lib/CONSTANTS";
+import { Content } from "../features/Content";
+import { StateIcon } from "../features/StateIcon";
+import { getFormattedDateTime } from "~/utils/date";
+import { useMemo } from "react";
 
 type ClientCalendarProps = {
   actions: Action[];
@@ -19,6 +33,9 @@ type ClientCalendarProps = {
   onPrev: () => void;
   onNext: () => void;
   onActionClick: (action: Action) => void;
+  view?: "week" | "month";
+  calendarView?: "week" | "month";
+  setCalendarView?: (view: "week" | "month") => void;
 };
 
 export function ClientCalendar({
@@ -27,87 +44,156 @@ export function ClientCalendar({
   onPrev,
   onNext,
   onActionClick,
+  view = "week",
+  calendarView,
+  setCalendarView,
 }: ClientCalendarProps) {
-  // Semana começa na segunda-feira
   const weekStart = startOfWeek(currentDay, { weekStartsOn: 1 });
-  const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+
+  const days = useMemo(() => {
+    return view === "week"
+      ? Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
+      : eachDayOfInterval({
+          start: startOfWeek(startOfMonth(currentDay), { weekStartsOn: 1 }),
+          end: endOfWeek(endOfMonth(currentDay), { weekStartsOn: 1 }),
+        });
+  }, [view, currentDay, weekStart]);
+
+  const title = useMemo(() => {
+    return view === "week"
+      ? `${format(days[0], "d 'de' MMMM", { locale: ptBR })} — ${format(
+          days[6],
+          "d 'de' MMMM yyyy",
+          { locale: ptBR },
+        )}`
+      : format(currentDay, "MMMM yyyy", { locale: ptBR });
+  }, [view, days, currentDay]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      {/* Navegação da semana */}
+    <div className="flex h-full min-h-0 flex-col">
       <div className="flex items-center justify-between border-b px-4 py-3">
-        <Button variant="ghost" size="icon" onClick={onPrev}>
-          <ChevronLeftIcon className="size-4" />
-        </Button>
-        <span className="text-sm font-medium">
-          {format(days[0], "d 'de' MMMM", { locale: ptBR })} —{" "}
-          {format(days[6], "d 'de' MMMM yyyy", { locale: ptBR })}
-        </span>
-        <Button variant="ghost" size="icon" onClick={onNext}>
-          <ChevronRightIcon className="size-4" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={onPrev}>
+            <ChevronLeftIcon className="size-4" />
+          </Button>
+          <span className="text-sm font-medium capitalize">{title}</span>
+          <Button variant="ghost" size="icon" onClick={onNext}>
+            <ChevronRightIcon className="size-4" />
+          </Button>
+        </div>
+
+        <div className="bg-card flex divide-x rounded-lg border text-sm">
+          <button
+            onClick={() => setCalendarView && setCalendarView("week")}
+            className={`px-3 py-1 font-medium transition-colors ${calendarView === "week" ? "bg-primary text-primary-foreground rounded-l-lg" : "hover:bg-muted"}`}
+          >
+            Semana
+          </button>
+          <button
+            onClick={() => setCalendarView && setCalendarView("month")}
+            className={`px-3 py-1 font-medium transition-colors ${calendarView === "month" ? "bg-primary text-primary-foreground rounded-r-lg" : "hover:bg-muted"}`}
+          >
+            Mês
+          </button>
+        </div>
       </div>
 
-      {/* Grade da semana */}
-      <div className="grid min-h-0 flex-1 grid-cols-7 divide-x overflow-y-auto">
-        {days.map((day) => {
-          const dayActions = actions.filter((a) =>
-            isSameDay(parseISO(a.date), day),
-          );
-          const isCurrentDay = isToday(day);
-
-          return (
-            <div key={day.toISOString()} className="flex flex-col overflow-hidden">
-              {/* Cabeçalho do dia */}
-              <div
-                className={cn(
-                  "sticky top-0 z-10 border-b bg-background px-2 py-2 text-center",
-                  isCurrentDay && "bg-primary/5",
-                )}
-              >
-                <div className="text-muted-foreground text-xs uppercase tracking-wide">
-                  {format(day, "EEE", { locale: ptBR })}
-                </div>
+      {/* Container com rolagem global nos 2 eixos divididos */}
+      <div className="min-h-0 w-full flex-1 overflow-x-auto overflow-y-hidden">
+        <div className="flex h-full min-w-[1500px] flex-col overflow-hidden">
+          {/* Cabeçalho dos dias da semana (apenas para Mês) */}
+          {view === "month" && (
+            <div className="bg-muted/20 grid shrink-0 grid-cols-7 border-b">
+              {Array.from({ length: 7 }).map((_, i) => (
                 <div
+                  key={i}
+                  className="text-muted-foreground py-2 text-center text-xs font-semibold uppercase"
+                >
+                  {format(addDays(weekStart, i), "EEE", { locale: ptBR })}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="grid flex-1 grid-cols-7 divide-x divide-y overflow-y-auto">
+            {days.map((day) => {
+              const dayActions = actions.filter((a) =>
+                isSameDay(parseISO(a.instagram_date || a.date), day),
+              );
+              const isCurrentDay = isToday(day);
+              const isCurrentMonth = isSameMonth(day, currentDay);
+
+              return (
+                <div
+                  key={day.toISOString()}
                   className={cn(
-                    "mx-auto mt-0.5 flex size-7 items-center justify-center rounded-full text-sm font-medium",
-                    isCurrentDay &&
-                      "bg-primary text-primary-foreground",
+                    "flex flex-col",
+                    // !isCurrentMonth && view === "month" && "opacity-50",
                   )}
                 >
-                  {format(day, "d")}
-                </div>
-              </div>
-
-              {/* Ações do dia */}
-              <div className="flex-1 space-y-1 overflow-y-auto p-1">
-                {dayActions.map((action) => {
-                  const state = STATES[action.state as STATE];
-                  return (
-                    <button
-                      key={action.id}
-                      onClick={() => onActionClick(action)}
-                      className="hover:bg-muted/60 w-full rounded-lg px-2 py-1.5 text-left transition-colors"
+                  {/* Cabeçalho do dia */}
+                  <div
+                    className={cn(
+                      "bg-background sticky top-0 z-10 border-b px-2 py-1 text-center",
+                      view === "month" &&
+                        "flex items-center justify-between border-none px-2 py-1",
+                    )}
+                  >
+                    {view === "week" && (
+                      <div className="text-muted-foreground text-[10px] font-semibold tracking-wide uppercase">
+                        {format(day, "EEE", { locale: ptBR })}
+                      </div>
+                    )}
+                    <div
+                      className={cn(
+                        "flex size-6 items-center justify-center rounded-full text-xs font-medium",
+                        isCurrentDay
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground",
+                        view === "week" && "mx-auto mt-0.5 size-7 text-sm",
+                      )}
                     >
-                      <div className="flex items-start gap-1.5">
-                        <span
-                          className="mt-0.5 size-2 shrink-0 rounded-full"
-                          style={{ backgroundColor: state?.color ?? "#999" }}
-                        />
-                        <span className="line-clamp-2 text-xs leading-snug">
-                          {action.title}
-                        </span>
-                      </div>
-                      <div className="text-muted-foreground mt-0.5 pl-3.5 text-[10px]">
-                        {format(parseISO(action.date), "HH:mm")}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
+                      {format(day, "d")}
+                    </div>
+                  </div>
+
+                  {/* Ações do dia */}
+                  <div className="flex h-full min-h-[120px] flex-col gap-px p-1">
+                    {dayActions.map((action) => {
+                      const state = STATES[action.state as STATE];
+                      const actionTime = parseISO(
+                        action.instagram_date || action.date,
+                      );
+
+                      return (
+                        <button
+                          key={action.id}
+                          onClick={() => onActionClick(action)}
+                          className={cn(
+                            "hover:bg-muted/60 w-full rounded-md px-1.5 py-1 text-left transition-colors",
+                            view === "week" && "rounded-lg px-2 py-1.5",
+                          )}
+                        >
+                          <Content action={action} showDate={false} />
+                          <div className="mt-2 flex items-center justify-between gap-4">
+                            <StateIcon state={state} />
+
+                            <div className="text-muted-foreground text-xs">
+                              {getFormattedDateTime(
+                                actionTime,
+                                DATE_TIME_DISPLAY.TimeOnly,
+                              )}
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );

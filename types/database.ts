@@ -227,36 +227,34 @@ export type Database = {
         Row: {
           active: boolean
           created_at: string | null
+          email: string
           id: string
+          image: string | null
           name: string | null
-          partner_slug: string | null
-          user_id: string | null
+          partners: string[]
+          password: string
         }
         Insert: {
           active?: boolean
           created_at?: string | null
+          email: string
           id?: string
+          image?: string | null
           name?: string | null
-          partner_slug?: string | null
-          user_id?: string | null
+          partners: string[]
+          password: string
         }
         Update: {
           active?: boolean
           created_at?: string | null
+          email?: string
           id?: string
+          image?: string | null
           name?: string | null
-          partner_slug?: string | null
-          user_id?: string | null
+          partners?: string[]
+          password?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "clients_partner_slug_fkey"
-            columns: ["partner_slug"]
-            isOneToOne: false
-            referencedRelation: "partners"
-            referencedColumns: ["slug"]
-          },
-        ]
+        Relationships: []
       }
       config: {
         Row: {
@@ -289,7 +287,7 @@ export type Database = {
           context: string | null
           created_at: string
           id: string
-          img: string | null
+          image: string | null
           instagram_caption_tail: string | null
           short: string
           slug: string
@@ -304,7 +302,7 @@ export type Database = {
           context?: string | null
           created_at?: string
           id?: string
-          img?: string | null
+          image?: string | null
           instagram_caption_tail?: string | null
           short: string
           slug: string
@@ -319,7 +317,7 @@ export type Database = {
           context?: string | null
           created_at?: string
           id?: string
-          img?: string | null
+          image?: string | null
           instagram_caption_tail?: string | null
           short?: string
           slug?: string

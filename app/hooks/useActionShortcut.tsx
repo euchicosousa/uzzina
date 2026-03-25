@@ -42,7 +42,8 @@ const ActionShortcutContext = createContext<{
  */
 export function ActionShortcutProvider({ children }: { children: ReactNode }) {
   const submit = useSubmit();
-  const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
+  const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
+  const person = appData?.person;
 
   // Registry: actionId → {action, isInstagramDate}
   const actionsMapRef = useRef<Map<string, NonNullable<ActiveAction>>>(
@@ -133,7 +134,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
         } else if (code === "KeyM") {
           updateDate(addDays(getFutureTarget(), 30));
         } else if (code === "KeyU") {
-          toggleSprintAction(action, person.user_id, submit);
+          if (person) toggleSprintAction(action, person.user_id, submit);
         } else if (code === "KeyX") {
           if (confirm("Tem certeza que deseja arquivar esta ação?")) {
             handleAction(
@@ -153,7 +154,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
     // capture: true → captura antes do onKeyDown do dnd-kit interceptar
     document.addEventListener("keydown", keyDown, true);
     return () => document.removeEventListener("keydown", keyDown, true);
-  }, [submit, person.user_id]);
+  }, [submit, person?.user_id]);
 
   return (
     <ActionShortcutContext.Provider

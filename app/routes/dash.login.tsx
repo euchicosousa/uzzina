@@ -1,5 +1,6 @@
-import { CheckCircleIcon, MailIcon } from "lucide-react";
+import { LogInIcon } from "lucide-react";
 import {
+  redirect,
   useActionData,
   type ActionFunctionArgs,
   type MetaFunction,
@@ -7,39 +8,43 @@ import {
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { createSupabaseClient } from "~/lib/supabase";
+import { authenticateClient } from "~/models/clients.server";
+import { commitSession, dashSessionStorage } from "~/services/client-auth.server";
 
 export const meta: MetaFunction = () => [
   { title: "Acesso ao Portal" },
   {
     name: "description",
-    content: "Portal de clientes — acesso via magic link.",
+    content: "Portal de parceiros — acesso via senha.",
   },
 ];
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
 
-  if (!email) return { sent: false, error: "Informe seu e-mail." };
-
-  const { supabase, headers } = createSupabaseClient(request);
-
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: `${new URL(request.url).origin}/dash/home`,
-      shouldCreateUser: false, // Só permite logins de clientes já cadastrados
-    },
-  });
-
-  if (error) {
-    return {
-      sent: false,
-      error: "E-mail não encontrado. Fale com seu contato na agência.",
-    };
+  if (!email || !password) {
+    return { error: "Informe e-mail e senha." };
   }
 
-  return { sent: true, error: null };
+  const { supabase } = createSupabaseClient(request);
+
+  const client = await authenticateClient(supabase, email, password);
+
+  if (!client) {
+    return { error: "E-mail ou senha incorretos." };
+  }
+
+  // Cria a sessão com o ID do cliente
+  const session = await dashSessionStorage.getSession();
+  session.set("clientId", client.id);
+
+  return redirect("/dash", {
+    headers: {
+      "Set-Cookie": await commitSession(session),
+    },
+  });
 };
 
 export default function DashLogin() {
@@ -54,48 +59,51 @@ export default function DashLogin() {
             Portal do Parceiro
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Informe seu e-mail para receber o link de acesso.
+            Informe seu e-mail e senha para acessar.
           </p>
         </div>
 
-        {data?.sent ? (
-          /* Estado de sucesso */
-          <div className="bg-card space-y-3 rounded-2xl border p-6 text-center">
-            <CheckCircleIcon className="mx-auto size-10 text-green-500" />
-            <p className="font-medium">Verifique seu e-mail</p>
-            <p className="text-muted-foreground text-sm">
-              Enviamos um link de acesso. Clique nele para entrar no portal.
-            </p>
-          </div>
-        ) : (
-          <form method="post" className="space-y-4">
-            {data?.error && (
-              <div className="border-destructive/20 bg-destructive/5 text-destructive rounded-lg border px-4 py-3 text-sm">
-                {data.error}
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                E-mail
-              </label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="seu@email.com"
-                required
-                autoComplete="email"
-                autoFocus
-              />
+        <form method="post" className="space-y-4">
+          {data?.error && (
+            <div className="border-destructive/20 bg-destructive/5 text-destructive rounded-lg border px-4 py-3 text-sm">
+              {data.error}
             </div>
+          )}
 
-            <Button type="submit" className="squircle w-full rounded-2xl">
-              <MailIcon className="size-4" />
-              Enviar link de acesso
-            </Button>
-          </form>
-        )}
+          <div className="space-y-2">
+            <label htmlFor="email" className="text-sm font-medium">
+              E-mail
+            </label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="seu@email.com"
+              required
+              autoComplete="email"
+              autoFocus
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="password" className="text-sm font-medium">
+              Senha
+            </label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="*******"
+              required
+              autoComplete="current-password"
+            />
+          </div>
+
+          <Button type="submit" className="squircle w-full rounded-2xl">
+            <LogInIcon className="size-4" />
+            Entrar
+          </Button>
+        </form>
       </div>
     </div>
   );

@@ -66,9 +66,9 @@ export function ActionItem({
   dateTimeDisplay,
   onClick,
 }: ActionItemProps) {
-  const { people, partners } = useRouteLoaderData(
-    "routes/app",
-  ) as AppLoaderData;
+  const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
+  const people = appData?.people || [];
+  const partners = appData?.partners || [];
 
   const { isSelectionMode, selectedIds, toggleSelection } = useMultiSelection();
   const isSelected = selectedIds.includes(action.id);
@@ -489,9 +489,10 @@ export function ActionItemSprint({
   action: Action;
   className?: string;
 }) {
-  const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
+  const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
+  const person = appData?.person;
 
-  return isSprint(action, person) ? (
+  return person && isSprint(action, person) ? (
     <Icons slug="sprint" className={cn("size-4 shrink-0", className)} />
   ) : null;
 }
