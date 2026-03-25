@@ -17,7 +17,7 @@ import {
   SearchIcon,
   SettingsIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Link,
   data,
@@ -42,6 +42,7 @@ import {
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { UToggle } from "~/components/uzzina/UToggle";
+import { useAccentColor } from "~/hooks/useAccentColor";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
 import { DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
 import { getLateActions } from "~/lib/helpers";
@@ -104,6 +105,23 @@ export default function PartnerPage() {
   let currentActions = useOptimisticActions(actions || []);
   const [currentDay, setCurrentDay] = useState(parseISO(date));
   const [query, setQuery] = useState("");
+
+  const { followPartnerColor, applyPartnerColors, restoreAccentColors } =
+    useAccentColor();
+
+  // Aplica as cores do parceiro quando a flag está ativa
+  useEffect(() => {
+    if (followPartnerColor && partner.colors.length >= 2) {
+      applyPartnerColors(partner.colors[0], partner.colors[1]);
+    }
+    return () => {
+      // Restaura ao desmontar a página (saindo da rota do parceiro)
+      if (followPartnerColor) {
+        restoreAccentColors();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [followPartnerColor, partner.colors]);
 
   const [viewOptions, setViewOptions] = useViewOptions({
     sprint: true,
@@ -260,7 +278,6 @@ function ActionListPartnerPage({
             showResponsibles={viewOptions.responsibles}
             showLate={viewOptions.late}
             showPriority={viewOptions.priority}
-            showDivider={true}
             orderBy={viewOptions.order}
             ascending={viewOptions.ascending}
           />
@@ -275,7 +292,6 @@ function ActionListPartnerPage({
             showResponsibles={viewOptions.responsibles}
             showLate={viewOptions.late}
             showPriority={viewOptions.priority}
-            showDivider={true}
             orderBy={viewOptions.order}
             ascending={viewOptions.ascending}
           />
@@ -289,7 +305,6 @@ function ActionListPartnerPage({
           showResponsibles={viewOptions.responsibles}
           showLate={viewOptions.late}
           showPriority={viewOptions.priority}
-          showDivider={true}
           orderBy={viewOptions.order}
           ascending={viewOptions.ascending}
         />

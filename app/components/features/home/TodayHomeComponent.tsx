@@ -53,18 +53,15 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
         });
   }, [actions, view, currentDay]);
 
+  const title = useMemo(() => {
+    if (isToday(currentDay)) return "Hoje";
+    const formatted = format(currentDay, "eeee, dd 'de' MMMM", { locale: ptBR });
+    return formatted[0].toUpperCase() + formatted.slice(1);
+  }, [currentDay]);
+
   return (
     <HomeComponentWrapper
-      title={
-        isToday(currentDay)
-          ? "Hoje"
-          : format(currentDay, "eeee, dd 'de' MMMM", {
-              locale: ptBR,
-            })[0].toUpperCase() +
-            format(currentDay, "eeee, dd 'de' MMMM", {
-              locale: ptBR,
-            }).slice(1)
-      }
+      title={title}
       OptionsComponent={
         <div className="flex flex-wrap items-center gap-2 xl:gap-6">
           <div className="flex items-center gap-8">

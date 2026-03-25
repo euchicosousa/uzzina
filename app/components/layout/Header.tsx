@@ -1,6 +1,7 @@
 import {
   CopyCheckIcon,
   HeartHandshakeIcon,
+  PaletteIcon,
   PlusIcon,
   SearchIcon,
 } from "lucide-react";
@@ -174,7 +175,8 @@ export function Header({
 
 const HeaderMenu = ({ person }: { person: Person }) => {
   const [theme, setTheme] = useTheme();
-  const { setColorIndex } = useAccentColor();
+  const { setColorIndex, followPartnerColor, setFollowPartnerColor } =
+    useAccentColor();
   const isLoading =
     useFetchers().length > 0 || useNavigation().state !== "idle";
   return (
@@ -218,6 +220,22 @@ const HeaderMenu = ({ person }: { person: Person }) => {
         </div>
 
         <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => setFollowPartnerColor(!followPartnerColor)}
+          className="flex items-center justify-between gap-2"
+        >
+          <div className="flex items-center gap-2">
+            <PaletteIcon className="size-4" />
+            Cores do parceiro
+          </div>
+          <div
+            className={`h-4 w-4 rounded border-2 transition-colors ${
+              followPartnerColor
+                ? "border-primary bg-primary"
+                : "border-muted-foreground"
+            }`}
+          />
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link to="/app/admin/partners">Parceiros</Link>
         </DropdownMenuItem>

@@ -7,7 +7,7 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSubmit } from "react-router";
 import {
   DATE_TIME_DISPLAY,
@@ -79,11 +79,26 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
   };
 
   // Apply local overrides on top of server-supplied actions
-  const actionsWithOverrides = actions.map((action) =>
-    stateOverrides[action.id]
-      ? { ...action, state: stateOverrides[action.id] }
-      : action,
+  const actionsWithOverrides = useMemo(
+    () =>
+      actions.map((action) =>
+        stateOverrides[action.id]
+          ? { ...action, state: stateOverrides[action.id] }
+          : action,
+      ),
+    [actions, stateOverrides],
   );
+
+  // Pre-group by state so each KanbanColumn doesn't re-filter on every render
+  const actionsByState = useMemo(() => {
+    const map: Record<string, Action[]> = {};
+    for (const action of actionsWithOverrides) {
+      const key = action.state ?? "";
+      if (!map[key]) map[key] = [];
+      map[key].push(action);
+    }
+    return map;
+  }, [actionsWithOverrides]);
 
   return (
     <div className="w-full max-w-full overflow-hidden">
@@ -100,9 +115,7 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
                 id={state.slug}
                 state={state}
                 key={state.slug}
-                actions={actionsWithOverrides.filter(
-                  (action) => action.state === state.slug,
-                )}
+                actions={actionsByState[state.slug] ?? []}
               />
             ))}
             <DragOverlay
