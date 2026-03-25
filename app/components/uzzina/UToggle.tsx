@@ -64,7 +64,7 @@ export function UToggleInput({
       <label
         htmlFor={id}
         className={cn(
-          "squircle flex cursor-pointer items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100 hover:opacity-100 focus:opacity-100",
+          "squircle flex items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100 hover:opacity-100 focus:opacity-100",
           variant === "destructive"
             ? "peer-checked:bg-destructive/10 peer-checked:text-destructive"
             : "hover:bg-opacity-100 peer-checked:bg-muted",

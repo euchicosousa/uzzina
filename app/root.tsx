@@ -93,8 +93,9 @@ export function App() {
               try {
                 var palette = ${JSON.stringify(PALLETE)};
                 var idx = localStorage.getItem("uzzina-accent-color-index");
-                if (idx !== null && palette[idx]) {
-                  var p = palette[idx];
+                var n = parseInt(idx, 10);
+                if (idx !== null && idx !== "" && !isNaN(n) && palette[n]) {
+                  var p = palette[n];
                   var root = document.documentElement;
                   root.style.setProperty("--accent-h", p.light.h);
                   root.style.setProperty("--accent-c", p.light.c);

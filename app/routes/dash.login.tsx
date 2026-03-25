@@ -10,7 +10,10 @@ import { createSupabaseClient } from "~/lib/supabase";
 
 export const meta: MetaFunction = () => [
   { title: "Acesso ao Portal" },
-  { name: "description", content: "Portal de clientes — acesso via magic link." },
+  {
+    name: "description",
+    content: "Portal de clientes — acesso via magic link.",
+  },
 ];
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -30,7 +33,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   });
 
   if (error) {
-    return { sent: false, error: "E-mail não encontrado. Fale com seu contato na agência." };
+    return {
+      sent: false,
+      error: "E-mail não encontrado. Fale com seu contato na agência.",
+    };
   }
 
   return { sent: true, error: null };
@@ -40,14 +46,13 @@ export default function DashLogin() {
   const data = useActionData<typeof action>();
 
   return (
-    <div className="grid h-screen place-items-center bg-background p-4">
+    <div className="bg-background grid h-screen w-full place-content-center">
       <div className="w-full max-w-sm space-y-8">
         {/* Logo / Título */}
         <div className="text-center">
-          <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground text-2xl font-bold">
-            U
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight">Portal do Cliente</h1>
+          <h1 className="p-0 text-2xl font-bold tracking-tight">
+            Portal do Parceiro
+          </h1>
           <p className="text-muted-foreground mt-1 text-sm">
             Informe seu e-mail para receber o link de acesso.
           </p>
@@ -55,7 +60,7 @@ export default function DashLogin() {
 
         {data?.sent ? (
           /* Estado de sucesso */
-          <div className="rounded-2xl border bg-card p-6 text-center space-y-3">
+          <div className="bg-card space-y-3 rounded-2xl border p-6 text-center">
             <CheckCircleIcon className="mx-auto size-10 text-green-500" />
             <p className="font-medium">Verifique seu e-mail</p>
             <p className="text-muted-foreground text-sm">
@@ -65,7 +70,7 @@ export default function DashLogin() {
         ) : (
           <form method="post" className="space-y-4">
             {data?.error && (
-              <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+              <div className="border-destructive/20 bg-destructive/5 text-destructive rounded-lg border px-4 py-3 text-sm">
                 {data.error}
               </div>
             )}
@@ -85,7 +90,7 @@ export default function DashLogin() {
               />
             </div>
 
-            <Button type="submit" className="w-full squircle rounded-2xl">
+            <Button type="submit" className="squircle w-full rounded-2xl">
               <MailIcon className="size-4" />
               Enviar link de acesso
             </Button>
