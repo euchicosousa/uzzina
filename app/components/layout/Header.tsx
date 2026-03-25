@@ -1,4 +1,5 @@
 import {
+  CheckIcon,
   CopyCheckIcon,
   HeartHandshakeIcon,
   PaletteIcon,
@@ -40,6 +41,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { UAvatar } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
+import { cn } from "~/lib/utils";
 
 export function Header({
   person,
@@ -222,19 +224,13 @@ const HeaderMenu = ({ person }: { person: Person }) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => setFollowPartnerColor(!followPartnerColor)}
-          className="flex items-center justify-between gap-2"
+          className={cn(
+            "flex items-center justify-between",
+            followPartnerColor ? "bg-secondary" : "",
+          )}
         >
-          <div className="flex items-center gap-2">
-            <PaletteIcon className="size-4" />
-            Cores do parceiro
-          </div>
-          <div
-            className={`h-4 w-4 rounded border-2 transition-colors ${
-              followPartnerColor
-                ? "border-primary bg-primary"
-                : "border-muted-foreground"
-            }`}
-          />
+          Cores do parceiro
+          {followPartnerColor ? <CheckIcon /> : null}
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link to="/app/admin/partners">Parceiros</Link>
