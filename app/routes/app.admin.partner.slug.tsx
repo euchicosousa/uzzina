@@ -62,6 +62,10 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   const partner = data as Partner;
 
+  if (!partner) {
+    return redirect("/app/admin/partners");
+  }
+
   invariant(partner, "Partner not found");
   invariant(people, "People not found");
 

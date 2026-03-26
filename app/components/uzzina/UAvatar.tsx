@@ -1,6 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { type CSSProperties } from "react";
 import { SIZE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 type UAvatarGroupProps = {
   avatars: UAvatarItem[];
@@ -8,6 +9,7 @@ type UAvatarGroupProps = {
   clampAt?: number;
   isSquircle?: boolean;
   title?: string;
+  ringColor?: string;
 };
 
 type UAvatarItem = {
@@ -21,6 +23,7 @@ type UAvatarItem = {
   color?: string;
   isSquircle?: boolean;
   isGroup?: boolean;
+  ringColor?: string;
 };
 
 export function UAvatarGroup({
@@ -29,37 +32,42 @@ export function UAvatarGroup({
   clampAt,
   isSquircle,
   title,
+  ringColor,
 }: UAvatarGroupProps) {
-  const sizeClasses = {
-    xs: "-space-x-1",
-    sm: "-space-x-1",
-    md: "-space-x-2",
-    lg: "-space-x-2",
-    xl: "-space-x-2",
-    xxl: "-space-x-2",
-  }[size];
+  const sizeClasses =
+    {
+      xs: "-space-x-0.5",
+      sm: "-space-x-0.5",
+      md: "-space-x-1",
+      lg: "-space-x-2",
+      xl: "-space-x-2",
+      xxl: "-space-x-2",
+    }[size as keyof typeof SIZE] || "-space-x-2";
 
-  clampAt = clampAt || avatars.length;
+  const effectiveClampAt = clampAt || avatars.length;
+
   return (
     <div
       className={cn(sizeClasses, "flex")}
       title={title || avatars.map((avatar) => avatar.fallback).join(", ")}
     >
-      {avatars.slice(0, clampAt).map((avatar) => (
+      {avatars.slice(0, effectiveClampAt).map((avatar) => (
         <UAvatar
-          key={`${avatar.id}`}
+          key={`${avatar.id || avatar.fallback}`}
           {...avatar}
           size={size}
           isSquircle={isSquircle}
           isGroup
+          ringColor={ringColor || avatar.ringColor}
         />
       ))}
-      {clampAt < avatars.length && (
+      {effectiveClampAt < avatars.length && (
         <UAvatar
-          fallback={`+${avatars.length - clampAt}`}
+          fallback={`+${avatars.length - effectiveClampAt}`}
           size={size}
           isSquircle={isSquircle}
           isGroup
+          ringColor={ringColor}
         />
       )}
     </div>
@@ -77,6 +85,7 @@ export function UAvatar({
   color,
   isSquircle,
   isGroup,
+  ringColor,
 }: UAvatarItem) {
   const fallbackText = (
     size === SIZE.xs
@@ -85,14 +94,17 @@ export function UAvatar({
         ? fallback.substring(0, 2)
         : fallback
   ).toUpperCase();
-  const sizeClasses = {
-    xs: `size-4 ${isGroup && "ring-2"}`,
-    sm: `size-6 ${isGroup && "ring-2"}`,
-    md: `size-8 ${isGroup && "ring-3"}`,
-    lg: `size-12 ${isGroup && "ring-4"}`,
-    xl: `size-18 ${isGroup && "ring-6"}`,
-    xxl: `size-24 ${isGroup && "ring-6"}`,
-  }[size];
+
+  const sizeClasses =
+    {
+      xs: `size-4 ${isGroup && "ring-3"}`,
+      sm: `size-6 ${isGroup && "ring-3"}`,
+      md: `size-8 ${isGroup && "ring-4"}`,
+      lg: `size-12 ${isGroup && "ring-6"}`,
+      xl: `size-18 ${isGroup && "ring-8"}`,
+      xxl: `size-24 ${isGroup && "ring-8"}`,
+    }[size as keyof typeof SIZE] || `size-8 ${isGroup && "ring-4"}`;
+
   const textClasses =
     fallbackText.length <= 2
       ? {
@@ -102,7 +114,7 @@ export function UAvatar({
           lg: "text-[18px]",
           xl: "text-[28px]",
           xxl: "text-[38px]",
-        }[size]
+        }[size as keyof typeof SIZE]
       : fallbackText.length <= 4
         ? {
             xs: "",
@@ -111,7 +123,7 @@ export function UAvatar({
             lg: "text-[16px] tracking-[2px]",
             xl: "text-[24px] tracking-[2px]",
             xxl: "text-[34px] tracking-[2px]",
-          }[size]
+          }[size as keyof typeof SIZE]
         : {
             xs: "",
             sm: "",
@@ -119,21 +131,29 @@ export function UAvatar({
             lg: "text-[15px] tracking-[2px]",
             xl: "text-[20px] tracking-[2px]",
             xxl: "text-[30px] tracking-[2px]",
-          }[size];
+          }[size as keyof typeof SIZE];
 
   const styles =
     backgroundColor && color ? { backgroundColor, color } : undefined;
+
+  const avatarStyles: CSSProperties = {};
+  if (ringColor) {
+    // @ts-ignore - custom property for Tailwind ring
+    avatarStyles["--tw-ring-color"] = ringColor;
+  }
+
   return (
     <Avatar
       id={id}
+      style={avatarStyles}
       className={cn(
         sizeClasses,
         textClasses,
         isSquircle && "squircle",
         "rounded-full",
+        "p-0 leading-none font-bold",
+        isGroup ? "ring-background" : "border",
         className,
-        "border p-0 leading-none font-bold",
-        isGroup && "ring-background",
       )}
     >
       {image ? (

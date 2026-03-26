@@ -49,7 +49,7 @@ export function Content({
     <div className={cn("relative", className)}>
       <div
         className={cn(
-          "bg-secondary ring-foreground/5 aspect-[4/5] overflow-hidden ring transition-opacity duration-500 group-hover/action:opacity-50",
+          "bg-secondary ring-foreground/5 aspect-[4/5] overflow-hidden ring transition-opacity duration-500 group-hover/action:opacity-80",
           !isSquared && "squircle rounded-2xl",
         )}
       >
@@ -88,6 +88,7 @@ export function Content({
                 image: responsible.image,
               }),
             )}
+            ringColor={backgroundColor.hex()}
             size={SIZE.sm}
           />
         </div>

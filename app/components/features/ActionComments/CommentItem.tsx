@@ -46,10 +46,10 @@ export function CommentItem({
         />
       </div>
       <div
-        className={`group relative flex-1 rounded-3xl p-4 shadow-sm ${
+        className={`group relative max-w-[85%] rounded-3xl px-5 py-4 md:max-w-[75%] ${
           isOwn
             ? "bg-primary text-primary-foreground rounded-tr-xs shadow-black/5"
-            : "bg-card rounded-tl-xs border shadow-black/5"
+            : "bg-card rounded-tl-xs"
         }`}
         style={
           isOwn && brandColor
@@ -57,9 +57,9 @@ export function CommentItem({
             : {}
         }
       >
-        <div className="mb-1 flex items-center justify-between gap-4">
+        <div className="font-inter mb-1 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold tracking-tight">
+            <span className="text-xs font-medium tracking-wide">
               {isOwn ? "Você" : comment.author_name}
             </span>
             {isOwn && !editing && (
@@ -97,7 +97,7 @@ export function CommentItem({
             <textarea
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
-              className="w-full resize-none rounded-lg bg-black/5 p-2 text-sm focus:outline-none dark:bg-white/5"
+              className="font-inter w-full resize-none rounded-lg bg-black/5 p-2 text-sm focus:outline-none dark:bg-white/5"
               rows={3}
               autoFocus
             />
@@ -117,9 +117,9 @@ export function CommentItem({
             </div>
           </div>
         ) : (
-          <p className="whitespace-pre-wrap leading-relaxed">
+          <div className="font-inter whitespace-pre-wrap">
             {comment.content}
-          </p>
+          </div>
         )}
       </div>
     </div>

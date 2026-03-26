@@ -13,19 +13,14 @@ import {
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { useMemo } from "react";
 import { Button } from "~/components/ui/button";
+import { DATE_TIME_DISPLAY, STATES, type STATE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
-import {
-  CATEGORIES,
-  DATE_TIME_DISPLAY,
-  STATES,
-  type STATE,
-} from "~/lib/CONSTANTS";
+import { getFormattedDateTime } from "~/utils/date";
 import { Content } from "../features/Content";
 import { StateIcon } from "../features/StateIcon";
-import { getFormattedDateTime } from "~/utils/date";
-import { useMemo } from "react";
 
 type ClientCalendarProps = {
   actions: Action[];
@@ -48,7 +43,7 @@ export function ClientCalendar({
   calendarView,
   setCalendarView,
 }: ClientCalendarProps) {
-  const weekStart = startOfWeek(currentDay, { weekStartsOn: 1 });
+  const weekStart = startOfWeek(currentDay, { weekStartsOn: 0 });
 
   const days = useMemo(() => {
     return view === "week"
