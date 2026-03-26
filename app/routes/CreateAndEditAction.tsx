@@ -1,7 +1,7 @@
 import { addMinutes, format, parse } from "date-fns";
 import { IconBrandInstagram } from "@tabler/icons-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { HeartIcon, MessageCircleIcon, XIcon } from "lucide-react";
+import { HeartIcon, MessageSquareIcon, XIcon } from "lucide-react";
 import {
   useFetcher,
   useFetchers,
@@ -11,6 +11,7 @@ import {
 import { ActionFormFooter } from "~/components/features/ActionForm/ActionFormFooter";
 import { EssentialsTab } from "~/components/features/ActionForm/EssentialsTab";
 import { InstagramTab } from "~/components/features/ActionForm/InstagramTab";
+import { ObservationsTab } from "~/components/features/ActionForm/ObservationsTab";
 import type { AppLoaderData } from "~/routes/app";
 import { INTENT } from "~/lib/CONSTANTS";
 import { handleAction, isInstagramFeed } from "~/lib/helpers";
@@ -29,7 +30,7 @@ export function CreateAndEditAction({
   BaseAction: Action;
   onClose: () => void;
 }) {
-  const [view, setView] = useState<"essential" | "instagram" | "chat">(
+  const [view, setView] = useState<"essential" | "instagram" | "observations">(
     "essential",
   );
   const { partners, cloudName, uploadPreset } = useRouteLoaderData(
@@ -242,7 +243,7 @@ export function CreateAndEditAction({
       className={cn(
         "bg-background fixed top-17 right-0 bottom-0 z-10 flex w-full shrink-0 flex-col overflow-hidden border-l",
 
-        view === "instagram" ? "md:w-3xl" : "md:w-2xl",
+        view === "instagram" || view === "observations" ? "md:w-3xl" : "md:w-2xl",
       )}
     >
       {/* Tabs */}
@@ -262,10 +263,10 @@ export function CreateAndEditAction({
           </div>
         )}
         <div
-          className={tabClass(view === "chat")}
-          onClick={() => setView("chat")}
+          className={tabClass(view === "observations")}
+          onClick={() => setView("observations")}
         >
-          CHAT <MessageCircleIcon className="size-4" />
+          OBSERVAÇÕES <MessageSquareIcon className="size-4" />
         </div>
         <div>
           <button
@@ -308,7 +309,13 @@ export function CreateAndEditAction({
             fetcher={fetcher}
           />
         )}
-        {view === "chat" && <div className="h-full"></div>}
+        {view === "observations" && (
+          <ObservationsTab
+            actionId={RawAction.id}
+            actionColor={currentPartners[0]?.colors?.[0] || RawAction.color}
+            actionTextColor={currentPartners[0]?.colors?.[1]}
+          />
+        )}
         {/* Criar e Atualizar */}
         <ActionFormFooter
           RawAction={RawAction}

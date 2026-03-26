@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
-import { cn, getGridCols } from "~/lib/utils";
+import { cn, getGridCols, isHexColorValid } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 
 export function ActionColorDropdown({
@@ -22,7 +22,9 @@ export function ActionColorDropdown({
   tabIndex?: number;
 }) {
   const [selected, setSelected] = useState(action.color);
+
   const colors = useMemo(() => {
+    let color = isHexColorValid(action.color) ? action.color : "#666";
     return [
       ...new Set(
         (partners.length > 0
@@ -30,9 +32,9 @@ export function ActionColorDropdown({
               partner.colors.map((color) => Color(color).hex()),
             )
           : [
-              Color(action.color).lighten(0.4).hex(),
-              action.color,
-              Color(action.color).darken(0.4).hex(),
+              Color(color).lighten(0.4).hex(),
+              color,
+              Color(color).darken(0.4).hex(),
             ]
         ).flat(),
       ),
@@ -74,7 +76,9 @@ export function ActionColorDropdown({
             value={selected}
             onChange={(e) => {
               setSelected(e.target.value);
-              onSelect?.(e.target.value);
+              if (isHexColorValid(e.target.value)) {
+                onSelect?.(e.target.value);
+              }
             }}
             placeholder="Hex"
             className="h-8"

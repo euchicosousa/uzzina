@@ -14,6 +14,8 @@ import { LogOutIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Form } from "react-router";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
+import { useAccentColor } from "~/hooks/useAccentColor";
+import { useEffect } from "react";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import {
   Select,
@@ -35,6 +37,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       clientImage: null,
       partnerSlugs: [] as string[],
       partners: [] as any[],
+      cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
+      uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET!,
     };
   }
 
@@ -43,6 +47,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     name,
     image,
     partners,
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
+    uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET!,
   };
 };
 
@@ -62,9 +68,23 @@ export default function DashLayout() {
   const [params, setParams] = useSearchParams();
 
   const currentPartnerSlug = params.get("partner") || partners[0]?.slug;
+  const currentPartner =
+    partners.find((p: any) => p.slug === currentPartnerSlug) || partners[0];
+
+  const { applyPartnerColors } = useAccentColor();
+
+  useEffect(() => {
+    if (
+      currentPartner &&
+      currentPartner.colors &&
+      currentPartner.colors.length >= 2
+    ) {
+      applyPartnerColors(currentPartner.colors[0], currentPartner.colors[1]);
+    }
+  }, [currentPartner, applyPartnerColors]);
 
   return (
-    <div className="bg-background flex h-screen flex-col">
+    <div className="bg-background flex h-screen w-full flex-col">
       {name && (
         <header className="border_after flex items-center justify-between px-6 py-3">
           <div className="flex items-center gap-3">

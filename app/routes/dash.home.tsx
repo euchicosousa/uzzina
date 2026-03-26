@@ -79,13 +79,13 @@ export default function DashHome() {
         <div className="flex items-center justify-between border-b pr-2">
           <div className="flex flex-1">
             <button
-              className={`flex-1 py-3 text-sm font-medium transition-colors ${mobileTab === "calendar" ? "border-primary text-primary border-b-2" : "text-muted-foreground"}`}
+              className={`flex-1 border-b-2 py-3 text-sm font-medium transition-colors ${mobileTab === "calendar" ? "border-foreground" : "text-muted-foreground border-transparent"}`}
               onClick={() => setMobileTab("calendar")}
             >
               Calendário
             </button>
             <button
-              className={`flex-1 py-3 text-sm font-medium transition-colors ${mobileTab === "feed" ? "border-primary text-primary border-b-2" : "text-muted-foreground"}`}
+              className={`flex-1 border-b-2 py-3 text-sm font-medium transition-colors ${mobileTab === "feed" ? "border-foreground" : "text-muted-foreground border-transparent"}`}
               onClick={() => setMobileTab("feed")}
             >
               Feed

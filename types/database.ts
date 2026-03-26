@@ -16,31 +16,34 @@ export type Database = {
     Tables: {
       action_comments: {
         Row: {
-          action_id: string | null
-          author_id: string | null
-          author_name: string | null
+          action_id: string
+          author_id: string
+          author_name: string
           content: string
-          created_at: string | null
+          created_at: string
           id: string
           is_internal: boolean | null
+          is_user: boolean
         }
         Insert: {
-          action_id?: string | null
-          author_id?: string | null
-          author_name?: string | null
+          action_id: string
+          author_id: string
+          author_name: string
           content: string
-          created_at?: string | null
+          created_at?: string
           id?: string
           is_internal?: boolean | null
+          is_user?: boolean
         }
         Update: {
-          action_id?: string | null
-          author_id?: string | null
-          author_name?: string | null
+          action_id?: string
+          author_id?: string
+          author_name?: string
           content?: string
-          created_at?: string | null
+          created_at?: string
           id?: string
           is_internal?: boolean | null
+          is_user?: boolean
         }
         Relationships: [
           {

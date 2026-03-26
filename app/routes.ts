@@ -19,7 +19,6 @@ export default [
     route("login", "routes/dash.login.tsx"),
     route("action/:id", "routes/dash.action.$id.tsx"),
   ]),
-  route("teste", "routes/teste.tsx"),
   route("login", "routes/login.tsx"),
   route("ui", "routes/ui.tsx"),
   route("action/set-theme", "routes/action.set-theme.ts"),

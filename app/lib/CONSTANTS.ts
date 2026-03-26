@@ -406,6 +406,9 @@ export const INTENT = {
   duplicate_action: "duplicate-action",
   delete_action: "delete-action",
   caption_ai: "caption-ai",
+  create_comment: "create-comment",
+  update_comment: "update-comment",
+  delete_comment: "delete-comment",
 } as const;
 
 export const ORDER_BY = {

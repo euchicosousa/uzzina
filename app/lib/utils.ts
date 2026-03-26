@@ -33,3 +33,17 @@ export const getGridClasses = (columns: number) => {
   // Fallback para auto-fill (o mais seguro para listas gigantes)
   return "grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))]";
 };
+
+export const isHexColorValid = (color: string) => {
+  return /^#([0-9A-F]{3}){1,2}$/i.test(color);
+};
+
+export const normalizeHexColor = (color: string) => {
+  if (color && color.length === 4 && color.startsWith("#")) {
+    return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`;
+  }
+  if (color && color.length === 7 && color.startsWith("#")) {
+    return color;
+  }
+  return "#666";
+};

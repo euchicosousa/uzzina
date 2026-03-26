@@ -5,11 +5,15 @@ import {
   type ActionFunctionArgs,
   type MetaFunction,
 } from "react-router";
+import { UzzinaLogo } from "~/components/logo";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { createSupabaseClient } from "~/lib/supabase";
 import { authenticateClient } from "~/models/clients.server";
-import { commitSession, dashSessionStorage } from "~/services/client-auth.server";
+import {
+  commitSession,
+  dashSessionStorage,
+} from "~/services/client-auth.server";
 
 export const meta: MetaFunction = () => [
   { title: "Acesso ao Portal" },
@@ -51,8 +55,13 @@ export default function DashLogin() {
   const data = useActionData<typeof action>();
 
   return (
-    <div className="bg-background grid h-screen w-full place-content-center">
-      <div className="w-full max-w-sm space-y-8">
+    <div className="grid h-screen w-full grid-cols-[2rem_20rem_2rem] justify-center overflow-x-hidden md:grid-cols-[2rem_30rem_2rem]">
+      <div className="border-r"></div>
+
+      <div className="border_after border_before relative my-auto p-8">
+        <div className="mb-12">
+          <UzzinaLogo className="h-12" />
+        </div>
         {/* Logo / Título */}
         <div className="text-center">
           <h1 className="p-0 text-2xl font-bold tracking-tight">
@@ -105,6 +114,8 @@ export default function DashLogin() {
           </Button>
         </form>
       </div>
+
+      <div className="border-l"></div>
     </div>
   );
 }

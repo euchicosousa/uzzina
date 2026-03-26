@@ -9,6 +9,7 @@ import {
   Form,
   Link,
   useLoaderData,
+  useRouteLoaderData,
   useNavigation,
   redirect,
   type ActionFunctionArgs,
@@ -23,7 +24,11 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { UToggleInput } from "~/components/uzzina/UToggle";
+import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
+import { UAvatar } from "~/components/uzzina/UAvatar";
 import { getUserId } from "~/services/auth.server";
+import { UploadIcon } from "lucide-react";
+import type { AppLoaderData } from "~/routes/app";
 
 export const meta: MetaFunction = () => {
   return [{ title: "ADMIN — Editar Parceiro" }];
@@ -114,9 +119,13 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
 export default function AdminPartnerEditPage() {
   const { partner, people } = useLoaderData<typeof loader>();
+  const appData = useRouteLoaderData("routes/app") as AppLoaderData;
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
   const [contextValue, setContextValue] = useState(partner?.context || "");
+  const [imageUrl, setImageUrl] = useState<string | null>(
+    partner?.image || null,
+  );
   // @ts-ignore (voice doesn't strictly exist on Partner type yet if types aren't regenerated)
   const [voiceValue, setVoiceValue] = useState(partner?.voice || "");
 
@@ -136,6 +145,47 @@ export default function AdminPartnerEditPage() {
         className="flex flex-col gap-8"
         key={partner?.slug ?? "new"}
       >
+        <input type="hidden" name="image" value={imageUrl || ""} />
+
+        {/* Avatar / UploadIcon Widget */}
+        <div className="flex items-center gap-6">
+          <CloudinaryUpload
+            cloudName={appData.cloudName}
+            uploadPreset={appData.uploadPreset}
+            folder="uzzina/partners"
+            square
+            outputWidth={400}
+            onUpload={(url: string) => setImageUrl(url)}
+            className="group relative -ml-1 size-24 shrink-0 overflow-hidden rounded-full transition hover:opacity-90"
+          >
+            <UAvatar
+              key={imageUrl ?? "empty"}
+              image={imageUrl}
+              fallback={partner?.short || "?"}
+              size="xxl"
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
+              <UploadIcon className="size-6 text-white" />
+            </div>
+          </CloudinaryUpload>
+
+          <div className="flex flex-col gap-1">
+            <div className="font-medium">Logotipo da Marca</div>
+            <div className="text-muted-foreground text-sm">
+              Clique para fazer upload e recortar
+            </div>
+            {imageUrl && (
+              <button
+                type="button"
+                onClick={() => setImageUrl(null)}
+                className="text-muted-foreground hover:text-foreground mt-1 text-left text-xs underline"
+              >
+                Remover imagem
+              </button>
+            )}
+          </div>
+        </div>
+
         <div className="grid gap-8">
           <div className="grid gap-4">
             <label className="font-medium" htmlFor="title">
