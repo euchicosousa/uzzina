@@ -49,8 +49,8 @@ export function ClientCalendar({
     return view === "week"
       ? Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
       : eachDayOfInterval({
-          start: startOfWeek(startOfMonth(currentDay), { weekStartsOn: 1 }),
-          end: endOfWeek(endOfMonth(currentDay), { weekStartsOn: 1 }),
+          start: startOfWeek(startOfMonth(currentDay), { weekStartsOn: 0 }),
+          end: endOfWeek(endOfMonth(currentDay), { weekStartsOn: 0 }),
         });
   }, [view, currentDay, weekStart]);
 

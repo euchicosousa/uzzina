@@ -3,6 +3,7 @@ import {
   useLoaderData,
   redirect,
   useSearchParams,
+  useNavigate,
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "react-router";
@@ -65,7 +66,8 @@ export const action = async ({ request }: { request: Request }) => {
 
 export default function DashLayout() {
   const { name, image, partners } = useLoaderData<typeof loader>();
-  const [params, setParams] = useSearchParams();
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
 
   const currentPartnerSlug = params.get("partner") || partners[0]?.slug;
   const currentPartner =
@@ -106,7 +108,7 @@ export default function DashLayout() {
               ) : (
                 <Select
                   value={currentPartnerSlug}
-                  onValueChange={(val) => setParams({ partner: val })}
+                  onValueChange={(val) => navigate(`/dash?partner=${val}`)}
                 >
                   <SelectTrigger className="w-[180px] rounded-xl border-none text-sm font-semibold shadow-none">
                     <SelectValue />
