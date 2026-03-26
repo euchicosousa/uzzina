@@ -10,26 +10,34 @@ import { Content } from "~/components/features/Content";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { CATEGORIES, type CATEGORY } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
-import { getClientSession } from "~/services/client-auth.server";
+import { getClientSession, dashSessionStorage } from "~/services/client-auth.server";
 import { sortActions } from "~/utils/sort";
 import { getInstagramFeedActions } from "~/utils/validation";
+import type { Partner } from "~/models/partners.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { supabase, partners } = await getClientSession(request);
 
   if (partners.length === 0) {
-    return { actions: [] as Action[] };
+    return { actions: [] as Action[], currentPartner: null };
   }
+
+  const session = await dashSessionStorage.getSession(
+    request.headers.get("Cookie"),
+  );
+  const lastPartner = session.get("lastPartner");
 
   const url = new URL(request.url);
   const partnerQuery = url.searchParams.get("partner");
 
   const currentPartnerSlug =
-    partnerQuery && partners.some((p) => p.slug === partnerQuery)
+    partnerQuery && partners.some((p: any) => p.slug === partnerQuery)
       ? partnerQuery
-      : partners[0].slug;
+      : lastPartner && partners.some((p: any) => p.slug === lastPartner)
+        ? lastPartner
+        : partners[0].slug;
 
-  const currentPartner = partners.find((p) => p.slug === currentPartnerSlug)!;
+  const currentPartner = partners.find((p: any) => p.slug === currentPartnerSlug)!;
 
   // Janela de 3 meses centrada no hoje
   const today = new Date();
@@ -41,6 +49,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     .select("*")
     .is("archived", false)
     .contains("partners", [currentPartnerSlug])
+    .neq("state", "idea")
     .gte("date", start)
     .lte("date", end)
     .order("date", { ascending: true })
@@ -56,8 +65,12 @@ export default function DashHome() {
   const [mobileTab, setMobileTab] = useState<"calendar" | "feed">("calendar");
   const [calendarView, setCalendarView] = useState<"month" | "week">("month");
 
+  if (!currentPartner) return null;
+
   const handleActionClick = (action: Action) => {
-    navigate(`/dash/action/${action.id}`);
+    const searchParams = new URLSearchParams(window.location.search);
+    const partner = searchParams.get("partner");
+    navigate(`/dash/action/${action.id}${partner ? `?partner=${partner}` : ""}`);
   };
 
   const handlePrev = () => {

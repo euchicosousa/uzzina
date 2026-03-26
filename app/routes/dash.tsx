@@ -4,6 +4,7 @@ import {
   redirect,
   useSearchParams,
   useNavigate,
+  useSubmit,
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "react-router";
@@ -30,6 +31,9 @@ export const meta: MetaFunction = () => [{ title: "Portal do Cliente" }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
+  const session = await dashSessionStorage.getSession(
+    request.headers.get("Cookie"),
+  );
 
   // A página de login não precisa de auth
   if (url.pathname.startsWith("/dash/login")) {
@@ -48,6 +52,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     name,
     image,
     partners,
+    lastPartner: session.get("lastPartner") || null,
     cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
     uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET!,
   };
@@ -57,6 +62,20 @@ export const action = async ({ request }: { request: Request }) => {
   const session = await dashSessionStorage.getSession(
     request.headers.get("Cookie"),
   );
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+
+  if (intent === "set_partner") {
+    const partner = formData.get("partner") as string;
+    session.set("lastPartner", partner);
+    return new Response(JSON.stringify({ success: true }), {
+      headers: {
+        "Set-Cookie": await dashSessionStorage.commitSession(session),
+        "Content-Type": "application/json",
+      },
+    });
+  }
+
   return redirect("/dash/login", {
     headers: {
       "Set-Cookie": await dashSessionStorage.destroySession(session),
@@ -65,11 +84,12 @@ export const action = async ({ request }: { request: Request }) => {
 };
 
 export default function DashLayout() {
-  const { name, image, partners } = useLoaderData<typeof loader>();
+  const { name, image, partners, lastPartner } = useLoaderData<typeof loader>();
   const [params] = useSearchParams();
   const navigate = useNavigate();
+  const submit = useSubmit();
 
-  const currentPartnerSlug = params.get("partner") || partners[0]?.slug;
+  const currentPartnerSlug = params.get("partner") || lastPartner || partners[0]?.slug;
   const currentPartner =
     partners.find((p: any) => p.slug === currentPartnerSlug) || partners[0];
 
@@ -108,7 +128,13 @@ export default function DashLayout() {
               ) : (
                 <Select
                   value={currentPartnerSlug}
-                  onValueChange={(val) => navigate(`/dash?partner=${val}`)}
+                  onValueChange={(val) => {
+                    submit(
+                      { partner: val, intent: "set_partner" },
+                      { method: "post" },
+                    );
+                    navigate(`/dash?partner=${val}`);
+                  }}
                 >
                   <SelectTrigger className="w-[180px] rounded-xl border-none text-sm font-semibold shadow-none">
                     <SelectValue />

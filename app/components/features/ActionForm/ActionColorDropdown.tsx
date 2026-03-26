@@ -1,5 +1,5 @@
 import Color from "color";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +21,15 @@ export function ActionColorDropdown({
   onSelect?: (color: string) => void;
   tabIndex?: number;
 }) {
-  const [selected, setSelected] = useState(action.color);
+  const normalizedActionColor = useMemo(() => {
+    return isHexColorValid(action.color) ? Color(action.color).hex() : "";
+  }, [action.color]);
+
+  const [selected, setSelected] = useState(normalizedActionColor);
+
+  useEffect(() => {
+    setSelected(normalizedActionColor);
+  }, [normalizedActionColor]);
 
   const colors = useMemo(() => {
     let color = isHexColorValid(action.color) ? action.color : "#666";
@@ -59,7 +67,12 @@ export function ActionColorDropdown({
         {colors.map((color, index) => (
           <DropdownMenuItem
             key={index}
-            className="cursor-pointer p-0 hover:opacity-50"
+            className={cn(
+              "cursor-pointer p-0.5 transition-opacity hover:opacity-50",
+              (selected?.toLowerCase() === color.toLowerCase() ||
+                (!selected && index === 0)) &&
+                "ring-primary ring-2 ring-offset-1 rounded-md",
+            )}
             onSelect={() => {
               setSelected(color);
               onSelect?.(color);

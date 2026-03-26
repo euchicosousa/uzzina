@@ -15,7 +15,7 @@ import { ObservationsTab } from "~/components/features/ActionForm/ObservationsTa
 import type { AppLoaderData } from "~/routes/app";
 import { INTENT } from "~/lib/CONSTANTS";
 import { handleAction, isInstagramFeed } from "~/lib/helpers";
-import { cn } from "~/lib/utils";
+import { cn, isHexColorValid } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import { toast } from "sonner";
 
@@ -188,7 +188,7 @@ export function CreateAndEditAction({
   // Guard: only update color if it actually changed to avoid
   // triggering another render cycle via the partners effect above.
   useEffect(() => {
-    if (currentPartners.length > 0) {
+    if (!BaseAction.id && currentPartners.length > 0 && !isHexColorValid(RawAction.color)) {
       const newColor = currentPartners[0].colors[0];
       setRawAction((prev) =>
         prev.color === newColor ? prev : { ...prev, color: newColor },

@@ -80,7 +80,7 @@ export function CommentItem({
             )}
           </div>
           <span
-            className={`text-xs tabular-nums opacity-70 ${
+            className={`font-inter text-xs tabular-nums opacity-70 ${
               isOwn ? "" : "text-muted-foreground"
             }`}
           >
