@@ -113,7 +113,7 @@ export function ClientCalendar({
           <div className="grid flex-1 grid-cols-7 divide-x divide-y overflow-y-auto">
             {days.map((day) => {
               const dayActions = actions.filter((a) =>
-                isSameDay(parseISO(a.instagram_date || a.date), day),
+                isSameDay(parseISO(a.date), day),
               );
               const isCurrentDay = isToday(day);
               const isCurrentMonth = isSameMonth(day, currentDay);
@@ -157,7 +157,7 @@ export function ClientCalendar({
                     {dayActions.map((action) => {
                       const state = STATES[action.state as STATE];
                       const actionTime = parseISO(
-                        action.instagram_date || action.date,
+                        action.date,
                       );
 
                       return (

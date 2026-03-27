@@ -87,7 +87,6 @@ export function UAvatar({
   isGroup,
   ringColor,
 }: UAvatarItem) {
-  console.log({ image });
   const fallbackText = (
     size === SIZE.xs
       ? fallback[0]

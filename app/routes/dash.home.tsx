@@ -82,7 +82,7 @@ export default function DashHome() {
     else setCurrentDay((d) => addDays(d, 7));
   };
 
-  // Ações de feed (Instagram) ordenadas por instagram_date
+  // Ações de feed (Instagram) ordenadas por date
   const feedActions = getInstagramFeedActions(actions, true, true);
 
   return (
@@ -168,7 +168,7 @@ function FeedSection({
   onActionClick: (action: Action) => void;
   currentPartner: Partner;
 }) {
-  actions = sortActions(actions, "instagram_date", false);
+  actions = sortActions(actions, "date", false);
   return (
     <div className="p-4">
       <div className="mb-4 flex items-center gap-2">
@@ -190,7 +190,6 @@ function FeedSection({
               <Content
                 action={action}
                 isSquared
-                isInstagramDate
                 category={CATEGORIES[action.category as CATEGORY]}
               />
             </div>

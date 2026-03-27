@@ -55,49 +55,8 @@ export function getFormattedDateTime(
 export const getNewDateForAction = (
   action: Action,
   newDateInput: Date,
-  isInstagramDate = false,
 ) => {
-  const duration = action.time || 5; // Duration in minutes
-
-  // Rule: date <= instagram_date - duration
-
-  if (isInstagramDate) {
-    // Priority: Update instagram_date
-    // New instagram_date = newDateInput
-
-    // Calculate max allowed start date: new_instagram_date - duration
-    const maxStartDate = addMinutes(newDateInput, -duration);
-    // Guard: action.date may be null for brand-new actions
-    const currentStartDate = action.date ? parseISO(action.date) : maxStartDate;
-
-    // If current start date is after max start date, we must move it back
-    const newStartDate = isAfter(currentStartDate, maxStartDate)
-      ? maxStartDate
-      : currentStartDate;
-
-    return {
-      date: format(newStartDate, "yyyy-MM-dd HH:mm:ss"),
-      instagram_date: format(newDateInput, "yyyy-MM-dd HH:mm:ss"),
-    };
-  } else {
-    // Priority: Update date (start date)
-    // New date = newDateInput
-
-    // Calculate min allowed instagram date: new_date + duration
-    const minInstagramDate = addMinutes(newDateInput, duration);
-    // Guard: instagram_date may be null for non-Instagram actions
-    const currentInstagramDate = action.instagram_date
-      ? parseISO(action.instagram_date)
-      : minInstagramDate;
-
-    // If current instagram date is before min instagram date, we must move it forward
-    const newInstagramDate = isBefore(currentInstagramDate, minInstagramDate)
-      ? minInstagramDate
-      : currentInstagramDate;
-
-    return {
-      date: format(newDateInput, "yyyy-MM-dd HH:mm:ss"),
-      instagram_date: format(newInstagramDate, "yyyy-MM-dd HH:mm:ss"),
-    };
-  }
+  return {
+    date: format(newDateInput, "yyyy-MM-dd HH:mm:ss"),
+  };
 };

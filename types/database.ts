@@ -64,13 +64,8 @@ export type Database = {
           created_at: string
           date: string
           description: string | null
-          genesis: string | null
-          goal: string | null
           id: string
           instagram_caption: string | null
-          instagram_content: string | null
-          instagram_date: string
-          mission: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -78,7 +73,6 @@ export type Database = {
           state: string
           time: number
           title: string
-          topics: number[] | null
           updated_at: string
           user_id: string
           work_files: string[] | null
@@ -91,13 +85,8 @@ export type Database = {
           created_at: string
           date: string
           description?: string | null
-          genesis?: string | null
-          goal?: string | null
           id?: string
           instagram_caption?: string | null
-          instagram_content?: string | null
-          instagram_date: string
-          mission?: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -105,7 +94,6 @@ export type Database = {
           state: string
           time?: number
           title: string
-          topics?: number[] | null
           updated_at: string
           user_id?: string
           work_files?: string[] | null
@@ -118,13 +106,8 @@ export type Database = {
           created_at?: string
           date?: string
           description?: string | null
-          genesis?: string | null
-          goal?: string | null
           id?: string
           instagram_caption?: string | null
-          instagram_content?: string | null
-          instagram_date?: string
-          mission?: string | null
           partners?: string[]
           priority?: string
           responsibles?: string[]
@@ -132,7 +115,6 @@ export type Database = {
           state?: string
           time?: number
           title?: string
-          topics?: number[] | null
           updated_at?: string
           user_id?: string
           work_files?: string[] | null
@@ -486,13 +468,8 @@ export type Database = {
           created_at: string
           date: string
           description: string | null
-          genesis: string | null
-          goal: string | null
           id: string
           instagram_caption: string | null
-          instagram_content: string | null
-          instagram_date: string
-          mission: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -500,7 +477,6 @@ export type Database = {
           state: string
           time: number
           title: string
-          topics: number[] | null
           updated_at: string
           user_id: string
           work_files: string[] | null
@@ -527,13 +503,8 @@ export type Database = {
           created_at: string
           date: string
           description: string | null
-          genesis: string | null
-          goal: string | null
           id: string
           instagram_caption: string | null
-          instagram_content: string | null
-          instagram_date: string
-          mission: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -541,7 +512,6 @@ export type Database = {
           state: string
           time: number
           title: string
-          topics: number[] | null
           updated_at: string
           user_id: string
           work_files: string[] | null
@@ -563,13 +533,8 @@ export type Database = {
           created_at: string
           date: string
           description: string | null
-          genesis: string | null
-          goal: string | null
           id: string
           instagram_caption: string | null
-          instagram_content: string | null
-          instagram_date: string
-          mission: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -577,7 +542,6 @@ export type Database = {
           state: string
           time: number
           title: string
-          topics: number[] | null
           updated_at: string
           user_id: string
           work_files: string[] | null
@@ -599,13 +563,8 @@ export type Database = {
           created_at: string
           date: string
           description: string | null
-          genesis: string | null
-          goal: string | null
           id: string
           instagram_caption: string | null
-          instagram_content: string | null
-          instagram_date: string
-          mission: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -613,7 +572,6 @@ export type Database = {
           state: string
           time: number
           title: string
-          topics: number[] | null
           updated_at: string
           user_id: string
           work_files: string[] | null

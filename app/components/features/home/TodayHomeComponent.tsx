@@ -5,7 +5,6 @@ import {
   CircleAlertIcon,
   ClockIcon,
   Grid3x3Icon,
-  HandshakeIcon,
   HeartHandshakeIcon,
   KanbanIcon,
 } from "lucide-react";
@@ -14,14 +13,12 @@ import { CalendarButtons } from "~/components/features/Calendar";
 import {
   ViewOptionsComponent,
   useViewOptions,
-  type ViewOptions,
 } from "~/components/features/ViewOptions";
 import FeedComponent from "~/components/layout/FeedComponent";
 import { HoursComponent } from "~/components/layout/HoursComponent";
 import KanbanComponent from "~/components/layout/KanbanComponent";
 import { PartnersComponent } from "~/components/layout/PartnersComponent";
 import { UToggle } from "~/components/uzzina/UToggle";
-import { ORDER_BY } from "~/lib/CONSTANTS";
 import { isInstagramFeed } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
@@ -44,7 +41,7 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
     return view === "feed"
       ? actions.filter((action) => {
           return (
-            isSameDay(action.instagram_date, currentDay) &&
+            isSameDay(action.date, currentDay) &&
             isInstagramFeed(action.category)
           );
         })
@@ -55,7 +52,9 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
 
   const title = useMemo(() => {
     if (isToday(currentDay)) return "Hoje";
-    const formatted = format(currentDay, "eeee, dd 'de' MMMM", { locale: ptBR });
+    const formatted = format(currentDay, "eeee, dd 'de' MMMM", {
+      locale: ptBR,
+    });
     return formatted[0].toUpperCase() + formatted.slice(1);
   }, [currentDay]);
 

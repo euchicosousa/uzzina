@@ -5,7 +5,7 @@ import type { Action } from "~/models/actions.server";
 
 export default function FeedComponent({
   actions,
-  orderBy = ORDER_BY.instagram_date,
+  orderBy = ORDER_BY.date,
   ascending = true,
 }: {
   actions: Action[];
@@ -21,7 +21,6 @@ export default function FeedComponent({
           actions={actions}
           variant={VARIANT.content}
           showCategory
-          isInstagramDate
           orderBy={orderBy}
           ascending={ascending}
         />

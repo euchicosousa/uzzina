@@ -2,6 +2,7 @@ import { isBefore } from "date-fns";
 import { z } from "zod";
 import { STATES } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
+import type { Person } from "~/models/people.server";
 
 export const isLateAction = (action: Action) =>
   action.state !== STATES.finished.slug && isBefore(action.date, new Date());
@@ -63,25 +64,20 @@ const nullableString = z
     return val;
   });
 
-export const ActionFormSchema = z
-  .object({
-    title: z.string().min(2, "O Título deve ter pelo menos 2 caracteres"),
-    date: z.string().min(1, "A data é obrigatória"),
-    category: z.string().min(1, "A categoria é obrigatória"),
-    state: z.string().min(1, "O estado é obrigatório"),
-    priority: z.string().min(1, "A prioridade é obrigatória"),
-    description: nullableString,
+export const ActionFormSchema = z.object({
+  title: z.string().min(2, "O Título deve ter pelo menos 2 caracteres"),
+  date: z.string().min(1, "A data é obrigatória"),
+  category: z.string().min(1, "A categoria é obrigatória"),
+  state: z.string().min(1, "O estado é obrigatório"),
+  priority: z.string().min(1, "A prioridade é obrigatória"),
+  description: nullableString,
 
-    responsibles: commaSeparatedStringToArray,
-    partners: commaSeparatedStringToArray,
+  responsibles: commaSeparatedStringToArray,
+  partners: commaSeparatedStringToArray,
 
-    content_files: nullableCommaSeparatedStringToArray,
-    work_files: nullableCommaSeparatedStringToArray,
-    sprints: nullableCommaSeparatedStringToArray,
+  content_files: nullableCommaSeparatedStringToArray,
+  work_files: nullableCommaSeparatedStringToArray,
+  sprints: nullableCommaSeparatedStringToArray,
 
-    topics: nullableString,
-    instagram_content: nullableString,
-    instagram_caption: nullableString,
-    instagram_date: nullableString,
-  })
-  .passthrough(); // passthrough allows other unexpected fields from formData like created_at, user_id just in case, though we only care about validating these known fields.
+  instagram_caption: nullableString,
+});

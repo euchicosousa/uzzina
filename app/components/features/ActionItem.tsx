@@ -1,7 +1,9 @@
-import { IconBrandInstagram } from "@tabler/icons-react";
+import { CalendarDaysIcon, SignalIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useOutletContext, useRouteLoaderData, useSubmit } from "react-router";
-import { CalendarDaysIcon, SignalIcon } from "lucide-react";
+import { Checkbox } from "~/components/ui/checkbox";
+import { useActionShortcutContext } from "~/hooks/useActionShortcut";
+import { useMultiSelection } from "~/hooks/useMultiSelection";
 import {
   CATEGORIES,
   DATE_TIME_DISPLAY,
@@ -24,23 +26,19 @@ import {
   isSprint,
 } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
+import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
 import { UAvatarGroup } from "../uzzina/UAvatar";
+import { ActionItemTitleInput } from "./ActionItemTitleInput";
 import { Content } from "./Content";
 import { Draggable } from "./DnD";
 import { StateIcon } from "./StateIcon";
-import { ActionItemTitleInput } from "./ActionItemTitleInput";
-import type { Action } from "~/models/actions.server";
-import { useActionShortcutContext } from "~/hooks/useActionShortcut";
-import { useMultiSelection } from "~/hooks/useMultiSelection";
-import { Checkbox } from "~/components/ui/checkbox";
 
 type ActionItemProps = {
   action: Action;
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
   className?: string;
   isDragging?: boolean;
-  isInstagramDate?: boolean;
   isDraggable?: boolean;
   showLate?: boolean;
   showPartner?: boolean;
@@ -57,7 +55,6 @@ export function ActionItem({
   showLate,
   className,
   isDragging,
-  isInstagramDate,
   isDraggable,
   showPartner,
   showCategory,
@@ -81,9 +78,9 @@ export function ActionItem({
 
   // Registra a ação no registry global ao montar, atualiza se action mudar
   useEffect(() => {
-    registerAction(action.id, { action, isInstagramDate });
+    registerAction(action.id, { action });
     return () => unregisterAction(action.id);
-  }, [action, isInstagramDate, registerAction, unregisterAction]);
+  }, [action, registerAction, unregisterAction]);
 
   const handleSetIsEditing = (value: boolean) => {
     setEditingId(value ? action.id : null);
@@ -177,7 +174,6 @@ export function ActionItem({
           <Content
             action={action}
             category={showCategory ? currentCategory : undefined}
-            isInstagramDate={isInstagramDate}
           />
         );
       case VARIANT.block:
@@ -224,21 +220,12 @@ export function ActionItem({
               </div>
 
               <div className="flex items-center gap-2 text-xs">
-                {(!isInstagramDate || !isInstagramFeed(action.category)) && (
+                <div className="flex items-center gap-2 text-xs">
                   <div className="flex items-center gap-1">
                     <CalendarDaysIcon className="size-3 opacity-50" />
                     {getFormattedDateTime(action.date, dateTimeDisplay)}
                   </div>
-                )}
-                {isInstagramFeed(action.category) && (
-                  <div className="flex items-center gap-1">
-                    <IconBrandInstagram className="size-3 opacity-50" />
-                    {getFormattedDateTime(
-                      action.instagram_date,
-                      dateTimeDisplay,
-                    )}
-                  </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
@@ -307,9 +294,6 @@ export function ActionItem({
                   <ActionItemDateTimeDisplay
                     action={action}
                     dateTimeDisplay={dateTimeDisplay}
-                    isInstagramDate={
-                      isInstagramDate && isInstagramFeed(action.category)
-                    }
                   />
                 </div>
               )}
@@ -381,18 +365,13 @@ export function ActionItem({
 export function ActionItemDateTimeDisplay({
   action,
   dateTimeDisplay,
-  isInstagramDate = false,
 }: {
   action: Action;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
-  isInstagramDate?: boolean;
 }) {
   return (
     <div className="text-xs whitespace-nowrap opacity-50">
-      {getFormattedDateTime(
-        isInstagramDate ? action.instagram_date : action.date,
-        dateTimeDisplay,
-      )}
+      {getFormattedDateTime(action.date, dateTimeDisplay)}
     </div>
   );
 }

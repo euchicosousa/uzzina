@@ -413,7 +413,6 @@ export const INTENT = {
 
 export const ORDER_BY = {
   date: "date",
-  instagram_date: "instagram_date",
   priority: "priority",
   state: "state",
 } as const;

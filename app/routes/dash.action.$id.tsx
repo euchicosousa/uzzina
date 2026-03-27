@@ -1,32 +1,22 @@
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { ArrowLeftIcon, PlusIcon } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
 import {
-  ArrowLeftIcon,
-  SendIcon,
-  MoreHorizontal,
-  Pencil,
-  Trash,
-  X,
-  Check,
-} from "lucide-react";
-import { useMemo } from "react";
-import {
-  Form,
   Link,
   useActionData,
   useLoaderData,
   useNavigation,
-  useSubmit,
   useRouteLoaderData,
+  useSubmit,
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
 } from "react-router";
-import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
+import { CommentInput } from "~/components/features/ActionComments/CommentInput";
+import { CommentList } from "~/components/features/ActionComments/CommentList";
 import { WorkFileThumbnail } from "~/components/features/ActionForm/WorkFileThumbnail";
-import { PlusIcon } from "lucide-react";
-import { useRef, useState } from "react";
 import { StateIcon } from "~/components/features/StateIcon";
-import { Button } from "~/components/ui/button";
+import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { InstagramPreview } from "~/components/uzzina/InstagramPreview";
 import { CATEGORIES, STATES, type CATEGORY, type STATE } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
@@ -37,9 +27,6 @@ import {
   updateComment,
 } from "~/models/action_comments.server";
 import { getClientSession } from "~/services/client-auth.server";
-import { UAvatar } from "~/components/uzzina/UAvatar";
-import { CommentList } from "~/components/features/ActionComments/CommentList";
-import { CommentInput } from "~/components/features/ActionComments/CommentInput";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const {
@@ -175,13 +162,9 @@ export default function DashActionDetail() {
                 Data de publicar
               </div>
               <div className="font-medium">
-                {format(
-                  parseISO(action.instagram_date),
-                  "d 'de' MMMM 'às' HH:mm",
-                  {
-                    locale: ptBR,
-                  },
-                )}
+                {format(parseISO(action.date), "d 'de' MMMM 'às' HH:mm", {
+                  locale: ptBR,
+                })}
               </div>
             </div>
 
@@ -313,67 +296,69 @@ export default function DashActionDetail() {
 
           {/* Comentários */}
 
-            <div className="flex flex-col gap-4">
-              <div className="text-muted-foreground mb-4 text-sm font-semibold tracking-wide uppercase">
-                Observações ({comments.length})
-              </div>
-
-              <div className="mb-4 flex min-h-0 flex-1 flex-col overflow-y-auto">
-                <CommentList
-                  comments={comments}
-                  currentUserId={clientId}
-                  isUser={false}
-                  brandColor={brandColor}
-                  brandTextColor={actionPartner?.colors?.[1]}
-                  onUpdate={(commentId, content) => {
-                    submit(
-                      {
-                        intent: "edit_comment",
-                        commentId,
-                        content,
-                      },
-                      { method: "post" },
-                    );
-                  }}
-                  onDelete={(commentId) => {
-                    if (confirm("Tem certeza que deseja excluir esta observação?")) {
-                      submit(
-                        {
-                          intent: "delete_comment",
-                          commentId,
-                        },
-                        { method: "post" },
-                      );
-                    }
-                  }}
-                  emptyMessage="Nenhuma observação ainda."
-                />
-              </div>
-
-              {/* Formulário de novo comentário */}
-              <div className="border-t pt-4">
-                {(actionData as any)?.error && (
-                  <p className="text-destructive mb-2 text-sm">
-                    {(actionData as any).error}
-                  </p>
-                )}
-                <CommentInput
-                  value={newComment}
-                  onChange={setNewComment}
-                  onSend={() => {
-                    if (!newComment.trim()) return;
-                    submit(
-                      {
-                        content: newComment,
-                      },
-                      { method: "post" },
-                    );
-                    setNewComment("");
-                  }}
-                  isSubmitting={isSubmitting}
-                />
-              </div>
+          <div className="flex flex-col gap-4">
+            <div className="text-muted-foreground mb-4 text-sm font-semibold tracking-wide uppercase">
+              Observações ({comments.length})
             </div>
+
+            <div className="mb-4 flex min-h-0 flex-1 flex-col overflow-y-auto">
+              <CommentList
+                comments={comments}
+                currentUserId={clientId}
+                isUser={false}
+                brandColor={brandColor}
+                brandTextColor={actionPartner?.colors?.[1]}
+                onUpdate={(commentId, content) => {
+                  submit(
+                    {
+                      intent: "edit_comment",
+                      commentId,
+                      content,
+                    },
+                    { method: "post" },
+                  );
+                }}
+                onDelete={(commentId) => {
+                  if (
+                    confirm("Tem certeza que deseja excluir esta observação?")
+                  ) {
+                    submit(
+                      {
+                        intent: "delete_comment",
+                        commentId,
+                      },
+                      { method: "post" },
+                    );
+                  }
+                }}
+                emptyMessage="Nenhuma observação ainda."
+              />
+            </div>
+
+            {/* Formulário de novo comentário */}
+            <div className="border-t pt-4">
+              {(actionData as any)?.error && (
+                <p className="text-destructive mb-2 text-sm">
+                  {(actionData as any).error}
+                </p>
+              )}
+              <CommentInput
+                value={newComment}
+                onChange={setNewComment}
+                onSend={() => {
+                  if (!newComment.trim()) return;
+                  submit(
+                    {
+                      content: newComment,
+                    },
+                    { method: "post" },
+                  );
+                  setNewComment("");
+                }}
+                isSubmitting={isSubmitting}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -25,7 +25,6 @@ type ActionContainerProps = {
   ascending?: boolean;
   isCompact?: boolean;
   isScroll?: boolean;
-  isInstagramDate?: boolean;
   isDraggable?: boolean;
   onClick?: (action: Action) => void;
 };
@@ -44,7 +43,6 @@ export function ActionContainer({
   ascending,
   isCompact,
   isScroll,
-  isInstagramDate,
   isDraggable,
   onClick,
 }: ActionContainerProps) {
@@ -86,7 +84,6 @@ export function ActionContainer({
             showResponsibles={showResponsibles}
             showPriority={showPriority}
             dateTimeDisplay={dateTimeDisplay}
-            isInstagramDate={isInstagramDate}
             isDraggable={isDraggable}
             onClick={onClick}
           />

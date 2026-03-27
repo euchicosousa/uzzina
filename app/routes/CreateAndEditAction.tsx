@@ -130,13 +130,6 @@ export function CreateAndEditAction({
       ...RawAction,
       created_at: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
       updated_at: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
-      instagram_date: format(
-        addMinutes(
-          parse(RawAction.date, "yyyy-MM-dd HH:mm:ss", new Date()),
-          10,
-        ),
-        "yyyy-MM-dd HH:mm:ss",
-      ),
     });
   }
 

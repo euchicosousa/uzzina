@@ -1,16 +1,15 @@
 import { parseISO } from "date-fns";
-import { IconBrandInstagram } from "@tabler/icons-react";
+import { CalendarDaysIcon, PlusIcon } from "lucide-react";
 import { Suspense, lazy, useRef } from "react";
 import { GMGCombobox } from "~/components/features/GMGCombobox";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
-import { CalendarDaysIcon, PlusIcon } from "lucide-react";
 import { getNewDateForAction, isInstagramFeed } from "~/lib/helpers";
+import type { Action } from "~/models/actions.server";
 import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "./WorkFileThumbnail";
-import type { Action } from "~/models/actions.server";
 
 const Tiptap = lazy(() =>
   import("~/components/features/Tiptap").then((module) => ({
@@ -84,10 +83,7 @@ export function EssentialsTab({
         </div>
         <div className="flex gap-8 border-b px-4 py-2">
           <div className="flex items-center gap-1 opacity-50">
-            {isInstagramFeed(
-              RawAction.category,
-              RawAction.category === "stories",
-            ) && <CalendarDaysIcon className="size-4" />}
+            <CalendarDaysIcon className="size-4" />
             <ActionDatePicker
               onSelect={async (date) => {
                 // @ts-ignore
@@ -103,28 +99,6 @@ export function EssentialsTab({
               date={parseISO(RawAction.date)}
             />
           </div>
-          {isInstagramFeed(
-            RawAction.category,
-            RawAction.category === "stories",
-          ) && (
-            <div className="flex items-center gap-1 opacity-50">
-              <IconBrandInstagram className="size-4" />
-              <ActionDatePicker
-                onSelect={async (date) => {
-                  // @ts-ignore
-                  setRawAction({
-                    ...RawAction,
-                    ...getNewDateForAction(RawAction, date, true),
-                  });
-                  await updateAction({
-                    ...RawAction,
-                    ...getNewDateForAction(RawAction, date, true),
-                  });
-                }}
-                date={parseISO(RawAction.instagram_date)}
-              />
-            </div>
-          )}
         </div>
 
         {isInstagramFeed(

@@ -2,15 +2,11 @@ import { useState } from "react";
 import { Link, useLoaderData, type LoaderFunctionArgs } from "react-router";
 import invariant from "tiny-invariant";
 import { ActionContainer } from "~/components/features/ActionContainer";
+import { useViewOptions } from "~/components/features/ViewOptions";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
-import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 import { getLateActions } from "~/lib/helpers";
-import { getUserId } from "~/services/auth.server";
-import {
-  useViewOptions,
-  type ViewOptions,
-} from "~/components/features/ViewOptions";
 import type { Action } from "~/models/actions.server";
+import { getUserId } from "~/services/auth.server";
 
 export const runtime = "edge";
 
@@ -53,7 +49,6 @@ export default function PartnerPage() {
     sprint: true,
     finishedOnEnd: true,
     showOptions: {
-      instagram: true,
       variant: true,
       responsibles: true,
       priority: true,

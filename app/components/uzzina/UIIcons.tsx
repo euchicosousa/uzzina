@@ -1,4 +1,3 @@
-import { IconBrandInstagram } from "@tabler/icons-react";
 import Color from "color";
 import {
   BadgeCheckIcon,
@@ -12,6 +11,7 @@ import {
   FilterIcon,
   GalleryHorizontalIcon,
   ImageIcon,
+  InstagramIcon,
   LayoutGridIcon,
   MegaphoneIcon,
   MonitorIcon,
@@ -82,7 +82,7 @@ export function Icons({
     case "filter":
       return <FilterIcon className={cn(className)} style={style} />;
     case "instagram":
-      return <IconBrandInstagram className={cn(className)} style={style} />;
+      return <InstagramIcon className={cn(className)} style={style} />;
 
     default:
       return <BlocksIcon className={cn(className)} style={style} />;

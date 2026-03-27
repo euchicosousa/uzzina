@@ -53,15 +53,6 @@ export function sortActions(
         return primary !== 0 ? primary : byTitle(a, b);
       });
       break;
-    case ORDER_BY.instagram_date:
-      sorted.sort((a, b) => {
-        const primary =
-          (parseISO(a.instagram_date).getTime() -
-            parseISO(b.instagram_date).getTime()) *
-          (ascending ? 1 : -1);
-        return primary !== 0 ? primary : byTitle(a, b);
-      });
-      break;
     default:
       // Sem critério primário: ordem estável por título
       sorted.sort(byTitle);

@@ -17,7 +17,7 @@ import {
 import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
 
-type ActiveAction = { action: Action; isInstagramDate?: boolean } | null;
+type ActiveAction = { action: Action } | null;
 
 const ActionShortcutContext = createContext<{
   registerAction: (id: string, data: NonNullable<ActiveAction>) => void;
@@ -45,7 +45,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
   const person = appData?.person;
 
-  // Registry: actionId → {action, isInstagramDate}
+  // Registry: actionId → {action}
   const actionsMapRef = useRef<Map<string, NonNullable<ActiveAction>>>(
     new Map(),
   );
@@ -84,7 +84,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
       const active = actionsMapRef.current.get(actionId);
       if (!active) return;
 
-      const { action, isInstagramDate } = active;
+      const { action } = active;
       const code = event.code;
 
       const updateDate = (newDate: Date) =>
@@ -92,13 +92,13 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
           {
             ...action,
             intent: INTENT.update_action,
-            ...getNewDateForAction(action, newDate, isInstagramDate),
+            ...getNewDateForAction(action, newDate),
           },
           submit,
         );
 
       const getFutureTarget = () => {
-        const str = isInstagramDate ? action.instagram_date! : action.date;
+        const str = action.date;
         const d = parseISO(str.replace(" ", "T"));
         return isAfter(d, new Date()) ? d : new Date();
       };

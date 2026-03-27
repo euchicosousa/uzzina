@@ -63,10 +63,7 @@ export function CalendarWithDnd({
 
   const handleDragEnd = (event: DragEndEvent) => {
     if (event.over && activeAction) {
-      const key =
-        viewOptions.instagram && isInstagramFeed(activeAction.category)
-          ? "instagram_date"
-          : "date";
+      const key = "date";
 
       const value = format(
         parseISO(event.over.id as string),
@@ -76,7 +73,6 @@ export function CalendarWithDnd({
       const newDates = getNewDateForAction(
         activeAction,
         parseISO(value),
-        viewOptions.instagram && isInstagramFeed(activeAction.category),
       );
 
       setDateOverrides((prev) => ({ ...prev, [activeAction.id]: newDates }));
@@ -100,9 +96,7 @@ export function CalendarWithDnd({
     date,
     actions: actionsWithOverrides.filter((action) =>
       isSameDay(
-        viewOptions.instagram && isInstagramFeed(action.category)
-          ? action.instagram_date
-          : action.date,
+        action.date,
         date,
       ),
     ),

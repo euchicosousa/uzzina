@@ -1,9 +1,11 @@
-import { IconBrandInstagram } from "@tabler/icons-react";
 import {
-  ArrowDownIcon,
   ArrowDownAZIcon,
+  ArrowDownIcon,
   ArrowUpAZIcon,
   ClockIcon,
+  Columns2Icon,
+  Columns3Icon,
+  Columns4Icon,
   HeartHandshakeIcon,
   ImageIcon,
   Rows2Icon,
@@ -12,17 +14,13 @@ import {
   SquareCheckIcon,
   TagIcon,
   UsersIcon,
-  Columns2Icon,
-  Columns3Icon,
-  Columns4Icon,
 } from "lucide-react";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { Button } from "~/components/ui/button";
 import { Toggle } from "~/components/ui/toggle";
-import { ORDER_BY, VARIANT, COLUMNS } from "~/lib/CONSTANTS";
+import { COLUMNS, ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 
 export type ViewOptions = {
-  instagram?: boolean;
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
   columns?: (typeof COLUMNS)[keyof typeof COLUMNS];
   responsibles?: boolean;
@@ -38,7 +36,6 @@ export type ViewOptions = {
   filter_state?: string[];
   filter_responsible?: string[];
   showOptions: {
-    instagram?: boolean;
     variant?: boolean;
     columns?: boolean;
     responsibles?: boolean;
@@ -69,11 +66,14 @@ const DEFAULT_VIEW_OPTIONS = {
   sprint: false,
   responsibles: false,
   priority: false,
-  instagram: false,
   finishedOnEnd: false,
 } satisfies Omit<
   ViewOptions,
-  "showOptions" | "filter_category" | "filter_state" | "filter_responsible"
+  | "instagram"
+  | "showOptions"
+  | "filter_category"
+  | "filter_state"
+  | "filter_responsible"
 >;
 
 /**
@@ -97,24 +97,9 @@ export function ViewOptionsComponent({
 
   return (
     <div className="flex gap-8">
-      {(viewOptions.showOptions.instagram ||
-        viewOptions.showOptions.variant ||
+      {(viewOptions.showOptions.variant ||
         viewOptions.showOptions.finishedOnEnd) && (
         <div className="flex gap-1">
-          {/* Organizar pela Data do Instagram */}
-          {viewOptions.showOptions.instagram && (
-            <Toggle
-              title="Organizar pela Data do Instagram"
-              pressed={viewOptions.instagram}
-              onPressedChange={(value) =>
-                setViewOptions({ ...viewOptions, instagram: value })
-              }
-              className="grid place-content-center p-0"
-            >
-              <IconBrandInstagram />
-            </Toggle>
-          )}
-
           {viewOptions.showOptions.variant && (
             <div className="flex">
               <Button
@@ -215,7 +200,7 @@ export function ViewOptionsComponent({
               onPressedChange={(pressed) =>
                 setViewOptions({
                   ...viewOptions,
-                  order: pressed ? ORDER_BY.date : ORDER_BY.instagram_date,
+                  order: pressed ? ORDER_BY.date : ORDER_BY.state,
                 })
               }
               className="grid place-content-center p-0"

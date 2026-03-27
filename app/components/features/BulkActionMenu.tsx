@@ -40,7 +40,7 @@ import { UAvatar } from "~/components/uzzina/UAvatar";
 import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "~/routes/app";
 
-type DateTarget = "date" | "instagram_date";
+type DateTarget = "date";
 
 export function BulkActionMenu() {
   const { isSelectionMode, selectedIds, clearSelection } = useMultiSelection();
@@ -85,8 +85,7 @@ export function BulkActionMenu() {
     setPartnersOpen(false);
   };
 
-  const dateLabel =
-    dateTarget === "instagram_date" ? "Data do Instagram" : "Data Padrão";
+  const dateLabel = "Data";
 
   return (
     <>
@@ -201,13 +200,7 @@ export function BulkActionMenu() {
               <DropdownMenuSubContent>
                 <DropdownMenuItem onSelect={() => setDateTarget("date")}>
                   <CalendarIcon className="mr-2 size-4 opacity-70" />
-                  Data Padrão
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={() => setDateTarget("instagram_date")}
-                >
-                  <InstagramIcon className="mr-2 size-4 opacity-70" />
-                  Data do Instagram
+                  Atualizar Data
                 </DropdownMenuItem>
               </DropdownMenuSubContent>
             </DropdownMenuPortal>

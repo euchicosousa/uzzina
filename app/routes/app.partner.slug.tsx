@@ -127,7 +127,6 @@ export default function PartnerPage() {
     sprint: true,
     finishedOnEnd: true,
     showOptions: {
-      instagram: true,
       variant: true,
       responsibles: true,
       priority: true,

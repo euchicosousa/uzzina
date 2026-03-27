@@ -93,7 +93,6 @@ export function CalendarDay({
                   orderBy={viewOptions.order}
                   ascending={viewOptions.ascending}
                   isCompact={isCompact}
-                  isInstagramDate={viewOptions.instagram}
                   variant={viewOptions.variant}
                   isScroll={false}
                   isDraggable
@@ -111,7 +110,6 @@ export function CalendarDay({
                   orderBy={viewOptions.order}
                   ascending={viewOptions.ascending}
                   isCompact={isCompact}
-                  isInstagramDate={viewOptions.instagram}
                   variant={VARIANT.line}
                   isScroll={false}
                   isDraggable
@@ -130,7 +128,6 @@ export function CalendarDay({
               orderBy={viewOptions.order}
               ascending={viewOptions.ascending}
               isCompact={isCompact}
-              isInstagramDate={viewOptions.instagram}
               variant={viewOptions.variant}
               isScroll
               isDraggable

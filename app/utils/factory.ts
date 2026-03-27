@@ -27,10 +27,8 @@ export const getCleanAction = ({
     priority: PRIORITIES.medium.slug,
     category: "post",
     responsibles: [user_id],
-    topics: null,
     color: "#999",
     date: _date,
-    instagram_date: format(addMinutes(_date, 10), "yyyy-MM-dd HH:mm:ss"),
     partners: partners || [],
     time: 10,
   };
