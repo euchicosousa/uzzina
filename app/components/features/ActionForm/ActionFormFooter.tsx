@@ -62,7 +62,7 @@ export function ActionFormFooter({
                 ...RawAction,
                 partners: selected,
               });
-              await updateAction({ partners: selected });
+              // await updateAction({ partners: selected });
             }}
           />
         </div>
@@ -92,7 +92,7 @@ export function ActionFormFooter({
                 ...RawAction,
                 category,
               });
-              await updateAction({ category });
+              // await updateAction({ category });
             }}
           />
         </div>
@@ -104,7 +104,7 @@ export function ActionFormFooter({
               tabIndex={6}
               onSelect={async (color) => {
                 setRawAction({ ...RawAction, color });
-                await updateAction({ color });
+                // await updateAction({ color });
               }}
             />
           </div>

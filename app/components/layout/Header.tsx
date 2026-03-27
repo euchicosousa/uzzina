@@ -2,7 +2,6 @@ import {
   CheckIcon,
   CopyCheckIcon,
   HeartHandshakeIcon,
-  PaletteIcon,
   PlusIcon,
   SearchIcon,
 } from "lucide-react";
@@ -21,6 +20,7 @@ import { useAccentColor } from "~/hooks/useAccentColor";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { PALLETE, SIZE } from "~/lib/CONSTANTS";
 import { getCleanAction, getLateActions, getThemeIcon } from "~/lib/helpers";
+import { cn } from "~/lib/utils";
 import type { AppHomeLoaderData } from "~/routes/app.home";
 import { UzzinaLogo } from "../logo";
 import { Button } from "../ui/button";
@@ -41,7 +41,6 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { UAvatar } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
-import { cn } from "~/lib/utils";
 
 export function Header({
   person,
@@ -185,6 +184,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
   } = useAccentColor();
   const isLoading =
     useFetchers().length > 0 || useNavigation().state !== "idle";
+
   return (
     <DropdownMenu>
       {/* Perfil */}
@@ -192,7 +192,6 @@ const HeaderMenu = ({ person }: { person: Person }) => {
         {isLoading && (
           <div className="border-primary absolute top-0 left-0 size-11 -translate-1.5 animate-spin rounded-full border-4 border-b-transparent"></div>
         )}
-
         <UAvatar size={SIZE.md} fallback={person.short} image={person.image} />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mx-2">
