@@ -113,7 +113,8 @@ export default function DashHome() {
   };
 
   // Ações de feed (Instagram) ordenadas por date
-  const feedActions = getInstagramFeedActions(actions, true, true);
+  const instaActions = getInstagramFeedActions(actions, true, true);
+  const feedActions = getInstagramFeedActions(actions);
 
   return (
     <div className="flex min-h-0 w-full flex-1 overflow-hidden">
@@ -139,7 +140,7 @@ export default function DashHome() {
         <div className="min-h-0 flex-1 overflow-hidden">
           {mobileTab === "calendar" ? (
             <ClientCalendar
-              actions={feedActions}
+              actions={instaActions}
               currentDay={currentDay}
               onPrev={handlePrev}
               onNext={handleNext}
