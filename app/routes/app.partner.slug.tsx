@@ -12,8 +12,8 @@ import {
   subDays,
 } from "date-fns";
 import {
-  CalendarDaysIcon,
-  ListIcon,
+  CalendarIcon,
+  Grid3X3Icon,
   SearchIcon,
   SettingsIcon,
 } from "lucide-react";
@@ -29,11 +29,13 @@ import invariant from "tiny-invariant";
 import { ActionCalendarPartnerPage } from "~/components/features/ActionCalendarPartnerPage";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import { CalendarButtons } from "~/components/features/Calendar";
+import { Content } from "~/components/features/Content";
 import {
   ViewOptionsComponent,
   useViewOptions,
   type ViewOptions,
 } from "~/components/features/ViewOptions";
+import { Button } from "~/components/ui/button";
 import {
   InputGroup,
   InputGroupAddon,
@@ -41,11 +43,11 @@ import {
 } from "~/components/ui/input-group";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
-import { UToggle } from "~/components/uzzina/UToggle";
 import { useAccentColor } from "~/hooks/useAccentColor";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
 import { DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
 import { getLateActions } from "~/lib/helpers";
+import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import { getActionsByPartner } from "~/models/actions.server";
 import { getPartnerBySlug } from "~/models/partners.server";
@@ -152,16 +154,19 @@ export default function PartnerPage() {
       return action.title?.toLowerCase().includes(query.toLowerCase());
     });
 
-  const [view, setView] = useState<"list" | "calendar">("calendar");
   const lateCount = getLateActions(currentActions).length;
 
   const navigate = useNavigate();
 
+  const [view, setView] = useState<"calendar" | "feed">("calendar");
+
   return (
     <div className="page-height flex flex-col overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b p-2 2xl:flex-nowrap">
-        <div className="order-1 flex items-center gap-4">
-          <div className="flex items-center gap-2 overflow-hidden">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between border-b 2xl:flex-nowrap 2xl:gap-4">
+        {/* Mobile Top */}
+        <div className="order-1 flex w-full shrink-0 items-center justify-between gap-4 overflow-hidden border-b p-2 2xl:w-auto 2xl:border-b-0">
+          <div className="flex shrink-0 items-center justify-between gap-2 overflow-hidden">
             <UAvatar
               fallback={partner.short}
               backgroundColor={partner.colors[0]}
@@ -177,11 +182,11 @@ export default function PartnerPage() {
                 <UBadge value={lateCount} isDynamic />
               </Link>
             )}
-            <h2 className="overflow-hidden p-0 py-2 text-ellipsis whitespace-nowrap">
+            <div className="hidden truncate p-0 py-2 text-lg font-medium sm:block">
               {partner.title}
-            </h2>
+            </div>
             <Link to={`/app/admin/partner/${partner.slug}/`}>
-              {person.admin && <SettingsIcon className="mb-4 size-5" />}
+              {person.admin && <SettingsIcon className="size-5" />}
             </Link>
           </div>
 
@@ -196,7 +201,7 @@ export default function PartnerPage() {
             mode="month"
           />
 
-          <InputGroup className="w-auto min-w-[300px]">
+          <InputGroup className="w-auto">
             <InputGroupAddon>
               <SearchIcon />
             </InputGroupAddon>
@@ -207,49 +212,74 @@ export default function PartnerPage() {
             />
           </InputGroup>
         </div>
-        <div className="order-3 flex items-center 2xl:order-2">
+        {/* Mobile Bottom */}
+        <div className="order-3 w-full overflow-hidden p-2 2xl:order-2">
           {/* Organização */}
           <ViewOptionsComponent
             viewOptions={viewOptions}
             setViewOptions={setViewOptions}
+            endComponents={
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={view === "calendar" ? "secondary" : "ghost"}
+                  onClick={() => {
+                    setView("calendar");
+                  }}
+                >
+                  <CalendarIcon />
+                </Button>
+                <Button
+                  variant={view === "feed" ? "secondary" : "ghost"}
+                  onClick={() => {
+                    setView("feed");
+                  }}
+                >
+                  <Grid3X3Icon />
+                </Button>
+              </div>
+            }
           />
-        </div>
-
-        {/* Tab de páginas */}
-        <div className="order-2 flex items-center gap-2 2xl:order-3">
-          <UToggle
-            checked={view === "list"}
-            onClick={() => {
-              setView("list");
-            }}
-          >
-            <ListIcon />
-          </UToggle>
-          <UToggle
-            checked={view === "calendar"}
-            onClick={() => {
-              setView("calendar");
-            }}
-          >
-            <CalendarDaysIcon />
-          </UToggle>
         </div>
       </div>
 
       <div className="flex overflow-hidden">
-        {view === "list" && (
-          <ActionListPartnerPage
-            actions={filteredActions}
-            viewOptions={viewOptions}
-          />
-        )}
-        {view === "calendar" && (
+        <div
+          className={cn(
+            "flex shrink overflow-hidden",
+            view === "calendar" ? "w-full" : "hidden w-auto md:flex",
+          )}
+        >
           <ActionCalendarPartnerPage
             actions={filteredActions}
             viewOptions={viewOptions}
             currentDay={currentDay}
           />
-        )}
+        </div>
+        <div
+          className={cn(
+            "overflow-hidden overflow-y-auto border-l",
+            view === "feed"
+              ? "min-w-full md:w-[540px] md:min-w-auto md:shrink-0"
+              : "w-0",
+          )}
+        >
+          <div className="flex items-center gap-2 p-4">
+            <UAvatar
+              fallback={partner.short}
+              backgroundColor={partner.colors[0]}
+              color={partner.colors[1]}
+              size={SIZE.lg}
+              isSquircle
+            />
+
+            <div className="font-medium">@{partner.slug}</div>
+          </div>
+          <div className="grid grid-cols-3">
+            {filteredActions.map((action) => (
+              <Content key={action.id} action={action} isSquared />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

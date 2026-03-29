@@ -89,14 +89,19 @@ export function useViewOptions(
 export function ViewOptionsComponent({
   viewOptions,
   setViewOptions,
+  startComponents,
+  endComponents,
 }: {
   viewOptions: ViewOptions;
   setViewOptions: (viewOptions: ViewOptions) => void;
+  startComponents?: React.ReactNode;
+  endComponents?: React.ReactNode;
 }) {
   viewOptions.variant ||= VARIANT.line;
 
   return (
-    <div className="flex gap-8">
+    <div className="flex w-full shrink flex-wrap justify-between gap-x-2 gap-y-2">
+      {startComponents}
       {(viewOptions.showOptions.variant ||
         viewOptions.showOptions.finishedOnEnd) && (
         <div className="flex gap-1">
@@ -299,6 +304,7 @@ export function ViewOptionsComponent({
           )}
         </div>
       )}
+      {endComponents}
     </div>
   );
 }

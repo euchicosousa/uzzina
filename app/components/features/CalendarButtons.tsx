@@ -1,4 +1,8 @@
-import { CalendarDaysIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import {
+  CalendarDaysIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "lucide-react";
 import {
   addDays,
   addYears,
@@ -36,6 +40,7 @@ export function CalendarButtons({
   return (
     <div className="flex">
       <Button
+        className="hidden md:flex"
         variant="ghost"
         onClick={() => {
           setCurrentDay(addDays(currentDay, -days));
@@ -48,9 +53,14 @@ export function CalendarButtons({
           <Button variant="ghost">
             <CalendarDaysIcon />
             {showDate && (
-              <span className="capitalize">
-                {format(currentDay, "MMMM/yy", { locale: ptBR })}
-              </span>
+              <>
+                <span className="hidden capitalize md:block">
+                  {format(currentDay, "MMMM/yy", { locale: ptBR })}
+                </span>
+                <span className="block capitalize md:hidden">
+                  {format(currentDay, "MM/yy", { locale: ptBR })}
+                </span>
+              </>
             )}
           </Button>
         </DropdownMenuTrigger>
@@ -102,7 +112,7 @@ export function CalendarButtons({
                     onClick={() => {
                       setCurrentDay(day);
                     }}
-                    className="hover:bg-secondary h-24 w-24 text-3xl leading-none font-medium tracking-tighter capitalize"
+                    className="hover:bg-secondary h-12 w-18 text-xl leading-none font-medium tracking-tighter capitalize"
                   >
                     {format(day, "MMM", { locale: ptBR })}
                   </button>
@@ -115,6 +125,7 @@ export function CalendarButtons({
 
       <Button
         variant="ghost"
+        className="hidden md:flex"
         onClick={() => {
           setCurrentDay(addDays(currentDay, days));
         }}

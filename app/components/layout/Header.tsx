@@ -66,10 +66,11 @@ export function Header({
     useMultiSelection();
 
   return (
-    <div className="border_after flex w-full items-center justify-between px-8">
+    <div className="border_after flex w-full items-center justify-between px-2 lg:px-8">
       <div className="flex items-center gap-2 py-4">
         <Link to="/app">
-          <UzzinaLogo className="h-8" />
+          <UzzinaLogo className="hidden h-8 sm:block" />
+          <UzzinaLogo className="h-8 sm:hidden" model="logo" />
         </Link>
 
         <Button
