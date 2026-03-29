@@ -1,8 +1,9 @@
 import { addDays, format } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useLoaderData,
   useNavigate,
+  useSearchParams,
   type LoaderFunctionArgs,
 } from "react-router";
 import { ClientCalendar } from "~/components/client/ClientCalendar";
@@ -10,10 +11,16 @@ import { Content } from "~/components/features/Content";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { CATEGORIES, type CATEGORY } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
-import { getClientSession, dashSessionStorage } from "~/services/client-auth.server";
+import {
+  getClientSession,
+  dashSessionStorage,
+} from "~/services/client-auth.server";
 import { sortActions } from "~/utils/sort";
 import { getInstagramFeedActions } from "~/utils/validation";
 import type { Partner } from "~/models/partners.server";
+import { SidebarClose } from "lucide-react";
+import { Button } from "~/components/ui/button";
+import { cn } from "~/lib/utils";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { supabase, partners } = await getClientSession(request);
@@ -37,7 +44,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         ? lastPartner
         : partners[0].slug;
 
-  const currentPartner = partners.find((p: any) => p.slug === currentPartnerSlug)!;
+  const currentPartner = partners.find(
+    (p: any) => p.slug === currentPartnerSlug,
+  )!;
 
   // Janela de 3 meses centrada no hoje
   const today = new Date();
@@ -61,16 +70,40 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export default function DashHome() {
   const { actions, currentPartner } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [currentDay, setCurrentDay] = useState(new Date());
   const [mobileTab, setMobileTab] = useState<"calendar" | "feed">("calendar");
   const [calendarView, setCalendarView] = useState<"month" | "week">("month");
+
+  const [isSidebarVisible, setIsSidebarVisible] = useState(
+    searchParams.get("sidebar") !== "false",
+  );
+
+  useEffect(() => {
+    setIsSidebarVisible(searchParams.get("sidebar") !== "false");
+  }, [searchParams]);
+
+  const toggleSidebar = () => {
+    const nextValue = !isSidebarVisible;
+    setIsSidebarVisible(nextValue);
+
+    const nextParams = new URLSearchParams(searchParams);
+    if (nextValue) {
+      nextParams.delete("sidebar");
+    } else {
+      nextParams.set("sidebar", "false");
+    }
+    setSearchParams(nextParams, { replace: true });
+  };
 
   if (!currentPartner) return null;
 
   const handleActionClick = (action: Action) => {
     const searchParams = new URLSearchParams(window.location.search);
     const partner = searchParams.get("partner");
-    navigate(`/dash/action/${action.id}${partner ? `?partner=${partner}` : ""}`);
+    navigate(
+      `/dash/action/${action.id}${partner ? `?partner=${partner}` : ""}`,
+    );
   };
 
   const handlePrev = () => {
@@ -147,13 +180,29 @@ export default function DashHome() {
         </div>
 
         {/* Feed — max-width 560px (agora com 3 colunas) */}
-        <div className="w-full max-w-[560px] shrink-0 overflow-y-auto border-l">
+        <div
+          className={`w-full ${isSidebarVisible ? "max-w-[560px]" : "max-w-[0px]"} shrink-0 overflow-y-auto border-l`}
+        >
           <FeedSection
             actions={feedActions}
             onActionClick={handleActionClick}
             currentPartner={currentPartner as Partner}
           />
         </div>
+      </div>
+      <div
+        className={cn(
+          "absolute right-6 hidden lg:block",
+          isSidebarVisible ? "top-18" : "top-28",
+        )}
+      >
+        <Button
+          variant={!isSidebarVisible ? "default" : "outline"}
+          size={"icon"}
+          onClick={toggleSidebar}
+        >
+          <SidebarClose />
+        </Button>
       </div>
     </div>
   );
@@ -169,12 +218,14 @@ function FeedSection({
   currentPartner: Partner;
 }) {
   actions = sortActions(actions, "date", false);
+
   return (
     <div className="p-4">
       <div className="mb-4 flex items-center gap-2">
         <UAvatar fallback={currentPartner.short} image={currentPartner.image} />
         <div className="font-medium">{currentPartner.title}</div>
       </div>
+
       {actions.length === 0 ? (
         <p className="text-muted-foreground text-sm">
           Nenhuma publicação programada.

@@ -1,23 +1,23 @@
-import { addMinutes, format, parse } from "date-fns";
 import { IconBrandInstagram } from "@tabler/icons-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { format } from "date-fns";
 import { HeartIcon, MessageSquareIcon, XIcon } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   useFetcher,
   useFetchers,
   useRouteLoaderData,
   useSubmit,
 } from "react-router";
+import { toast } from "sonner";
 import { ActionFormFooter } from "~/components/features/ActionForm/ActionFormFooter";
 import { EssentialsTab } from "~/components/features/ActionForm/EssentialsTab";
 import { InstagramTab } from "~/components/features/ActionForm/InstagramTab";
 import { ObservationsTab } from "~/components/features/ActionForm/ObservationsTab";
-import type { AppLoaderData } from "~/routes/app";
 import { INTENT } from "~/lib/CONSTANTS";
 import { handleAction, isInstagramFeed } from "~/lib/helpers";
-import { cn, isHexColorValid } from "~/lib/utils";
+import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
-import { toast } from "sonner";
+import type { AppLoaderData } from "~/routes/app";
 
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
@@ -181,14 +181,17 @@ export function CreateAndEditAction({
   // Guard: only update color if it actually changed to avoid
   // triggering another render cycle via the partners effect above.
   useEffect(() => {
-    if (!BaseAction.id && currentPartners.length > 0 && !isHexColorValid(RawAction.color)) {
+    if (!BaseAction.id && currentPartners.length > 0) {
       const newColor = currentPartners[0].colors[0];
-      setRawAction((prev) =>
-        prev.color === newColor ? prev : { ...prev, color: newColor },
-      );
 
-      const newResponsibles = currentPartners.map((p) =>
-        p.users_ids.map((user) => user),
+      const newResponsibles = currentPartners
+        .map((p) => p.users_ids.map((user) => user))
+        .flat();
+
+      setRawAction((prev) =>
+        prev.color === newColor
+          ? prev
+          : { ...prev, color: newColor, responsibles: newResponsibles },
       );
     }
   }, [currentPartners]);
@@ -236,7 +239,9 @@ export function CreateAndEditAction({
       className={cn(
         "bg-background fixed top-17 right-0 bottom-0 z-10 flex w-full shrink-0 flex-col overflow-hidden border-l",
 
-        view === "instagram" || view === "observations" ? "md:w-3xl" : "md:w-2xl",
+        view === "instagram" || view === "observations"
+          ? "md:w-3xl"
+          : "md:w-2xl",
       )}
     >
       {/* Tabs */}

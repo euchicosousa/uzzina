@@ -1,7 +1,6 @@
 export type PostType = "empty" | "image" | "video" | "carousel";
 
 export function detectPostType(files: string[]): PostType {
-  console.log({ files });
   if (!files || files.length === 0) return "empty";
   const first = files[0];
   const isVideo =

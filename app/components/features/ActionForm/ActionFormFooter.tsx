@@ -47,6 +47,7 @@ export function ActionFormFooter({
   const submit = useSubmit();
   const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
   const isInSprint = isSprint(RawAction, person);
+
   return (
     <div className="w-fulld flex shrink-0 justify-between overflow-hidden border-t">
       {/* Coisas */}
@@ -77,7 +78,7 @@ export function ActionFormFooter({
                 ...RawAction,
                 state: selected,
               });
-              await updateAction({ state: selected });
+              // await updateAction({ state: selected });
             }}
           />
         </div>

@@ -71,7 +71,7 @@ export function ActionColorDropdown({
               "cursor-pointer p-0.5 transition-opacity hover:opacity-50",
               (selected?.toLowerCase() === color.toLowerCase() ||
                 (!selected && index === 0)) &&
-                "ring-primary ring-2 ring-offset-1 rounded-md",
+                "ring-primary rounded ring-2 ring-offset-1",
             )}
             onSelect={() => {
               setSelected(color);
