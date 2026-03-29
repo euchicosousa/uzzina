@@ -23,17 +23,16 @@ import {
   data,
   useLoaderData,
   useNavigate,
+  useOutletContext,
   type LoaderFunctionArgs,
 } from "react-router";
 import invariant from "tiny-invariant";
 import { ActionCalendarPartnerPage } from "~/components/features/ActionCalendarPartnerPage";
-import { ActionContainer } from "~/components/features/ActionContainer";
 import { CalendarButtons } from "~/components/features/Calendar";
-import { Content } from "~/components/features/Content";
+import { FeedSection } from "~/components/features/FeedSection";
 import {
   ViewOptionsComponent,
   useViewOptions,
-  type ViewOptions,
 } from "~/components/features/ViewOptions";
 import { Button } from "~/components/ui/button";
 import {
@@ -45,10 +44,9 @@ import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { useAccentColor } from "~/hooks/useAccentColor";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
-import { DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
-import { getLateActions } from "~/lib/helpers";
+import { SIZE } from "~/lib/CONSTANTS";
+import { getInstagramFeedActions, getLateActions } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
-import type { Action } from "~/models/actions.server";
 import { getActionsByPartner } from "~/models/actions.server";
 import { getPartnerBySlug } from "~/models/partners.server";
 import { getPersonByUserId } from "~/models/people.server";
@@ -105,6 +103,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 export default function PartnerPage() {
   let { partner, actions, date, person } = useLoaderData<typeof loader>();
   let currentActions = useOptimisticActions(actions || []);
+  const { setBaseAction } = useOutletContext<OutletContext>();
   const [currentDay, setCurrentDay] = useState(parseISO(date));
   const [query, setQuery] = useState("");
 
@@ -153,6 +152,8 @@ export default function PartnerPage() {
       if (!query) return true;
       return action.title?.toLowerCase().includes(query.toLowerCase());
     });
+
+  const feedActions = getInstagramFeedActions(filteredActions);
 
   const lateCount = getLateActions(currentActions).length;
 
@@ -263,81 +264,15 @@ export default function PartnerPage() {
               : "w-0",
           )}
         >
-          <div className="flex items-center gap-2 p-4">
-            <UAvatar
-              fallback={partner.short}
-              backgroundColor={partner.colors[0]}
-              color={partner.colors[1]}
-              size={SIZE.lg}
-              isSquircle
-            />
-
-            <div className="font-medium">@{partner.slug}</div>
-          </div>
-          <div className="grid grid-cols-3">
-            {filteredActions.map((action) => (
-              <Content key={action.id} action={action} isSquared />
-            ))}
-          </div>
+          <FeedSection
+            actions={feedActions}
+            onActionClick={(action) => {
+              setBaseAction(action);
+            }}
+            currentPartner={partner}
+          />
         </div>
       </div>
-    </div>
-  );
-}
-
-function ActionListPartnerPage({
-  actions,
-  viewOptions,
-}: {
-  actions: Action[];
-  viewOptions: ViewOptions;
-}) {
-  return (
-    <div className="w-full overflow-y-auto">
-      {viewOptions.finishedOnEnd ? (
-        <div className="flex flex-col">
-          <h4 className="border-b p-4">Ações em andamento</h4>
-          <ActionContainer
-            actions={
-              actions.filter((action) => action.state !== "finished") || []
-            }
-            dateTimeDisplay={DATE_TIME_DISPLAY.DateTime}
-            showCategory={viewOptions.category}
-            showPartner={viewOptions.partner}
-            showResponsibles={viewOptions.responsibles}
-            showLate={viewOptions.late}
-            showPriority={viewOptions.priority}
-            orderBy={viewOptions.order}
-            ascending={viewOptions.ascending}
-          />
-          <h4 className="border-y p-4">Ações concluídas</h4>
-          <ActionContainer
-            actions={
-              actions.filter((action) => action.state === "finished") || []
-            }
-            dateTimeDisplay={DATE_TIME_DISPLAY.DateTime}
-            showCategory={viewOptions.category}
-            showPartner={viewOptions.partner}
-            showResponsibles={viewOptions.responsibles}
-            showLate={viewOptions.late}
-            showPriority={viewOptions.priority}
-            orderBy={viewOptions.order}
-            ascending={viewOptions.ascending}
-          />
-        </div>
-      ) : (
-        <ActionContainer
-          actions={actions || []}
-          dateTimeDisplay={DATE_TIME_DISPLAY.DateTime}
-          showCategory={viewOptions.category}
-          showPartner={viewOptions.partner}
-          showResponsibles={viewOptions.responsibles}
-          showLate={viewOptions.late}
-          showPriority={viewOptions.priority}
-          orderBy={viewOptions.order}
-          ascending={viewOptions.ascending}
-        />
-      )}
     </div>
   );
 }
