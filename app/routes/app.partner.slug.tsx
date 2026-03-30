@@ -218,24 +218,15 @@ export default function PartnerPage() {
             viewOptions={viewOptions}
             setViewOptions={setViewOptions}
             endComponents={
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={view === "calendar" ? "secondary" : "ghost"}
-                  onClick={() => {
-                    setView("calendar");
-                  }}
-                >
-                  <CalendarIcon />
-                </Button>
-                <Button
-                  variant={view === "feed" ? "secondary" : "ghost"}
-                  onClick={() => {
-                    setView("feed");
-                  }}
-                >
-                  <Grid3X3Icon />
-                </Button>
-              </div>
+              <Button
+                variant={view === "feed" ? "secondary" : "ghost"}
+                onClick={() => {
+                  const v = view === "calendar" ? "feed" : "calendar";
+                  setView(v);
+                }}
+              >
+                <Grid3X3Icon />
+              </Button>
             }
           />
         </div>
