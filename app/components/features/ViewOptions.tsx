@@ -30,7 +30,6 @@ export type ViewOptions = {
   partner?: boolean;
   order?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending?: boolean;
-  finishedOnEnd?: boolean;
   sprint?: boolean;
   filter_category?: string[];
   filter_state?: string[];
@@ -66,7 +65,6 @@ const DEFAULT_VIEW_OPTIONS = {
   sprint: false,
   responsibles: false,
   priority: false,
-  finishedOnEnd: false,
 } satisfies Omit<
   ViewOptions,
   | "instagram"
@@ -101,81 +99,52 @@ export function ViewOptionsComponent({
 
   return (
     <div className="flex w-full shrink flex-wrap justify-between gap-x-2 gap-y-2">
+      {/* Componentes no começo */}
       {startComponents}
-      {(viewOptions.showOptions.variant ||
-        viewOptions.showOptions.finishedOnEnd) && (
-        <div className="flex gap-1">
-          {viewOptions.showOptions.variant && (
-            <div className="flex">
-              <Button
-                variant={
-                  viewOptions.variant === VARIANT.line ? "outline" : "ghost"
-                }
-                title="Ação em formato de linha"
-                onClick={() => {
-                  setViewOptions({ ...viewOptions, variant: VARIANT.line });
-                }}
-              >
-                <Rows3Icon />
-              </Button>
-              <Button
-                variant={
-                  viewOptions.variant === VARIANT.block ? "outline" : "ghost"
-                }
-                title="Ação em formato de bloco"
-                onClick={() => {
-                  setViewOptions({ ...viewOptions, variant: VARIANT.block });
-                }}
-              >
-                <Rows2Icon />
-              </Button>
-              <Button
-                variant={
-                  viewOptions.variant === VARIANT.content ? "outline" : "ghost"
-                }
-                title="Ação em formato de conteúdo"
-                onClick={() => {
-                  setViewOptions({ ...viewOptions, variant: VARIANT.content });
-                }}
-              >
-                <ImageIcon />
-              </Button>
-              {viewOptions.variant === VARIANT.content &&
-                viewOptions.showOptions.columns && (
-                  <Button
-                    variant={"ghost"}
-                    onClick={() => {
-                      if (viewOptions.columns === 4) {
-                        setViewOptions({ ...viewOptions, columns: 6 });
-                      } else if (viewOptions.columns === 6) {
-                        setViewOptions({ ...viewOptions, columns: 7 });
-                      } else {
-                        setViewOptions({ ...viewOptions, columns: 4 });
-                      }
-                    }}
-                  >
-                    {viewOptions.columns === 4 && <Columns2Icon />}
-                    {viewOptions.columns === 6 && <Columns3Icon />}
-                    {viewOptions.columns === 7 && <Columns4Icon />}
-                  </Button>
-                )}
-            </div>
+      {/* Mostrar botões de variantes */}
+      {viewOptions.showOptions.variant && (
+        <Button
+          variant={"ghost"}
+          title="Ação em formato de linha"
+          onClick={() => {
+            const variant =
+              viewOptions.variant === VARIANT.line
+                ? VARIANT.block
+                : viewOptions.variant === VARIANT.block
+                  ? VARIANT.content
+                  : VARIANT.line;
+            setViewOptions({ ...viewOptions, variant });
+          }}
+        >
+          {viewOptions.variant === VARIANT.line ? (
+            <Rows3Icon />
+          ) : viewOptions.variant === VARIANT.block ? (
+            <Rows2Icon />
+          ) : (
+            <ImageIcon />
           )}
-          {/* Colocar ações concluídas no final */}
-          {viewOptions.showOptions.finishedOnEnd && (
-            <Toggle
-              title="Colocar ações concluídas no final"
-              pressed={viewOptions.finishedOnEnd}
-              onPressedChange={(value) =>
-                setViewOptions({ ...viewOptions, finishedOnEnd: value })
-              }
-              className="grid place-content-center p-0"
-            >
-              <ArrowDownIcon />
-            </Toggle>
-          )}
-        </div>
+        </Button>
       )}
+
+      {viewOptions.variant === VARIANT.content &&
+        viewOptions.showOptions.columns && (
+          <Button
+            variant={"ghost"}
+            onClick={() => {
+              if (viewOptions.columns === 4) {
+                setViewOptions({ ...viewOptions, columns: 6 });
+              } else if (viewOptions.columns === 6) {
+                setViewOptions({ ...viewOptions, columns: 7 });
+              } else {
+                setViewOptions({ ...viewOptions, columns: 4 });
+              }
+            }}
+          >
+            {viewOptions.columns === 4 && <Columns2Icon />}
+            {viewOptions.columns === 6 && <Columns3Icon />}
+            {viewOptions.columns === 7 && <Columns4Icon />}
+          </Button>
+        )}
 
       {(viewOptions.showOptions.order || viewOptions.showOptions.ascending) && (
         <div className="flex gap-1">
