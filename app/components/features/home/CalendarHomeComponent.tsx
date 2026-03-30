@@ -49,7 +49,6 @@ export function CalendarHomeComponent({
     showOptions: {
       ascending: true,
       order: true,
-      finishedOnEnd: true,
     },
   });
 

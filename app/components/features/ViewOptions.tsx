@@ -43,7 +43,6 @@ export type ViewOptions = {
     partner?: boolean;
     order?: boolean;
     ascending?: boolean;
-    finishedOnEnd?: boolean;
     sprint?: boolean;
     filter_category?: boolean;
     filter_state?: boolean;

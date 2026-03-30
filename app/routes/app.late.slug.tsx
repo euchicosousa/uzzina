@@ -47,7 +47,6 @@ export default function PartnerPage() {
   const [viewOptions] = useViewOptions({
     category: false,
     sprint: true,
-    finishedOnEnd: true,
     showOptions: {
       variant: true,
       responsibles: true,
@@ -56,7 +55,6 @@ export default function PartnerPage() {
       partner: true,
       order: true,
       ascending: true,
-      finishedOnEnd: true,
       filter_category: true,
       filter_state: true,
       filter_responsible: true,
