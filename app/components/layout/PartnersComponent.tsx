@@ -59,7 +59,6 @@ function PartnerColumn({
         >
           <UAvatarGroup
             size={SIZE.sm}
-            isSquircle
             avatars={[
               {
                 id: partner.id,

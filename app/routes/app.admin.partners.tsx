@@ -64,7 +64,6 @@ export default function AdminPartnersPage() {
               backgroundColor={partner.colors[0]}
               color={partner.colors[1]}
               size="lg"
-              isSquircle
             />
 
             <div className="min-w-0 flex-1">
@@ -94,7 +93,6 @@ export default function AdminPartnersPage() {
                   backgroundColor={partner.colors[0]}
                   color={partner.colors[1]}
                   size="lg"
-                  isSquircle
                 />
 
                 <div className="">

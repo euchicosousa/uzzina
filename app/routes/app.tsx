@@ -8,6 +8,7 @@ import {
 import invariant from "tiny-invariant";
 import { Header } from "~/components/layout/Header";
 import { getCleanAction } from "~/lib/helpers";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { getAllCelebrations } from "~/models/celebrations.server";
 import { getPartnersByUserId } from "~/models/partners.server";
 import { getAllVisiblePeople } from "~/models/people.server";
@@ -75,6 +76,22 @@ export default function Dashboard() {
   const { person, partners } = useLoaderData<typeof loader>();
   const [BaseAction, setBaseAction] = useState<Action | null>(null);
   const [openCmdK, setOpenCmdK] = useState(false);
+
+  useEffect(() => {
+    // Inicializa o client Supabase no browser para gerenciar o refresh do token
+    // automaticamente. Quando o access token expira, o @supabase/ssr o renova
+    // no browser e atualiza os cookies — evitando que o servidor precise fazer isso.
+    const supabase = createSupabaseBrowserClient();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session && event !== "INITIAL_SESSION") {
+        // Se a sessão expirar e não puder ser renovada, redireciona para login
+        window.location.href = "/login";
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     function keyDownGlobal(event: KeyboardEvent) {

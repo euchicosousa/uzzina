@@ -7,9 +7,7 @@ type UAvatarGroupProps = {
   avatars: UAvatarItem[];
   size?: (typeof SIZE)[keyof typeof SIZE];
   clampAt?: number;
-  isSquircle?: boolean;
   title?: string;
-  ringColor?: string;
 };
 
 type UAvatarItem = {
@@ -21,18 +19,13 @@ type UAvatarItem = {
   size?: (typeof SIZE)[keyof typeof SIZE];
   backgroundColor?: string;
   color?: string;
-  isSquircle?: boolean;
-  isGroup?: boolean;
-  ringColor?: string;
 };
 
 export function UAvatarGroup({
   avatars,
   size = SIZE.md,
   clampAt,
-  isSquircle,
   title,
-  ringColor,
 }: UAvatarGroupProps) {
   const sizeClasses =
     {
@@ -56,18 +49,12 @@ export function UAvatarGroup({
           key={`${avatar.id || avatar.fallback}`}
           {...avatar}
           size={size}
-          isSquircle={isSquircle}
-          isGroup
-          ringColor={ringColor || avatar.ringColor}
         />
       ))}
       {effectiveClampAt < avatars.length && (
         <UAvatar
           fallback={`+${avatars.length - effectiveClampAt}`}
           size={size}
-          isSquircle={isSquircle}
-          isGroup
-          ringColor={ringColor}
         />
       )}
     </div>
@@ -83,9 +70,6 @@ export function UAvatar({
   size = SIZE.md,
   backgroundColor,
   color,
-  isSquircle,
-  isGroup,
-  ringColor,
 }: UAvatarItem) {
   const fallbackText = (
     size === SIZE.xs
@@ -97,13 +81,13 @@ export function UAvatar({
 
   const sizeClasses =
     {
-      xs: `size-4 ${isGroup && "ring-3"}`,
-      sm: `size-6 ${isGroup && "ring-3"}`,
-      md: `size-8 ${isGroup && "ring-4"}`,
-      lg: `size-12 ${isGroup && "ring-6"}`,
-      xl: `size-18 ${isGroup && "ring-8"}`,
-      xxl: `size-24 ${isGroup && "ring-8"}`,
-    }[size as keyof typeof SIZE] || `size-8 ${isGroup && "ring-4"}`;
+      xs: `size-4`,
+      sm: `size-6`,
+      md: `size-8`,
+      lg: `size-12`,
+      xl: `size-18`,
+      xxl: `size-24`,
+    }[size as keyof typeof SIZE] || `size-8`;
 
   const textClasses =
     fallbackText.length <= 2
@@ -136,23 +120,16 @@ export function UAvatar({
   const styles =
     backgroundColor && color ? { backgroundColor, color } : undefined;
 
-  const avatarStyles: CSSProperties = {};
-  if (ringColor) {
-    // @ts-ignore - custom property for Tailwind ring
-    avatarStyles["--tw-ring-color"] = ringColor;
-  }
-
   return (
     <Avatar
       id={id}
-      style={avatarStyles}
+      // style={avatarStyles}
       className={cn(
         sizeClasses,
         textClasses,
-        isSquircle && "squircle",
         "rounded-full",
         "p-0 leading-none font-bold",
-        isGroup ? "ring-background" : "border",
+        "ring-[1px] ring-black/5",
         className,
       )}
     >
@@ -162,7 +139,6 @@ export function UAvatar({
         <AvatarFallback
           className={cn(
             "bg-secondary text-secondary-foreground grid place-content-center text-center",
-            isSquircle && "squircle",
           )}
           style={styles}
         >

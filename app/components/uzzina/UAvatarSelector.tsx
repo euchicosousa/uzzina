@@ -17,14 +17,12 @@ interface UAvatarSelectorProps {
   options: AvatarSelectorOption[];
   initialSelectedIds?: string[];
   name: string; // Nome do input para FormData (ex: 'users_ids' ou 'partner_slugs')
-  isSquircle?: boolean;
 }
 
 export function UAvatarSelector({
   options,
   initialSelectedIds = [],
   name,
-  isSquircle = false,
 }: UAvatarSelectorProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedIds);
 
@@ -58,7 +56,6 @@ export function UAvatarSelector({
               backgroundColor={option.backgroundColor}
               color={option.color}
               size={SIZE.lg}
-              isSquircle={isSquircle}
             />
 
             <div className="flex w-full flex-col overflow-hidden text-center">

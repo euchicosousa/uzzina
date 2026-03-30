@@ -5,10 +5,10 @@ import {
   type ActionFunctionArgs,
   type MetaFunction,
 } from "react-router";
+import { createClient } from "@supabase/supabase-js";
 import { UzzinaLogo } from "~/components/logo";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { createSupabaseClient } from "~/lib/supabase";
 import { authenticateClient } from "~/models/clients.server";
 import {
   commitSession,
@@ -32,7 +32,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     return { error: "Informe e-mail e senha." };
   }
 
-  const { supabase } = createSupabaseClient(request);
+  const supabase = createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_PUBLISHABLE_KEY!,
+    { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } },
+  );
 
   const client = await authenticateClient(supabase, email, password);
 

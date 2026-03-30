@@ -59,6 +59,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const { getTheme } = await themeSessionResolver(request);
   return {
     theme: getTheme(),
+    env: {
+      SUPABASE_URL: process.env.SUPABASE_URL!,
+      SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY!,
+    },
   };
 }
 
@@ -77,6 +81,7 @@ export default function AppWithProviders({
 
 export function App() {
   const data = useLoaderData<typeof loader>();
+  const { env } = data;
   const [theme] = useTheme();
 
   return (
@@ -87,6 +92,12 @@ export function App() {
         <Meta />
         <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
         <Links />
+        {/* Env vars públicas para o browser — apenas keys publishable (nunca service_role) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__env = ${JSON.stringify(env)};`,
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `

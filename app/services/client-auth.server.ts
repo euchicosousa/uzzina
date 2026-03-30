@@ -1,5 +1,6 @@
 import { createCookieSessionStorage, redirect } from "react-router";
-import { createSupabaseClient } from "~/lib/supabase";
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "types/database";
 import { getClientById } from "~/models/clients.server";
 
 // Cria um storage de sessão específico para o Dash (independente do Supabase Auth principal)
@@ -18,6 +19,26 @@ export const dashSessionStorage = createCookieSessionStorage({
 export const { getSession, commitSession, destroySession } = dashSessionStorage;
 
 /**
+ * Client Supabase sem autenticação para o portal /dash.
+ * O portal usa cookie session próprio (uzzina_dash_session), não Supabase Auth.
+ * Desabilitar auth evita que o @supabase/ssr tente fazer token refresh
+ * desnecessário nessas rotas, prevenindo requests extras ao Auth endpoint.
+ */
+function createPortalClient() {
+  return createClient<Database>(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_PUBLISHABLE_KEY!,
+    {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+    },
+  );
+}
+
+/**
  * Autentica um usuário do portal /dash usando o cookie customizado.
  * Verifica o cliente no banco para garantir que ainda existe e está ativo.
  */
@@ -27,7 +48,7 @@ export async function getClientSession(request: Request) {
 
   if (!clientId) throw redirect("/dash/login");
 
-  const { supabase } = createSupabaseClient(request);
+  const supabase = createPortalClient();
 
   try {
     const client = await getClientById(supabase, clientId);

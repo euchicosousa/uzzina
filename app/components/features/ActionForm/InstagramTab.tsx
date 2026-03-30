@@ -66,7 +66,6 @@ export function InstagramTab({
         <div className="flex items-center justify-between border-b px-4 py-4">
           <div className="flex items-center gap-2">
             <UAvatarGroup
-              isSquircle
               avatars={currentPartners.map((partner) => ({
                 fallback: partner.short,
                 backgroundColor: partner.colors[0],

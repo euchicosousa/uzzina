@@ -53,7 +53,11 @@ export default function AdminClientsPage() {
               className="hover:bg-muted/50 squircle flex items-center gap-4 rounded-3xl border p-4 transition-colors"
             >
               <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-                <UAvatar image={client.image} fallback={client.name || "??"} size="lg" isSquircle />
+                <UAvatar
+                  image={client.image}
+                  fallback={client.name || "??"}
+                  size="lg"
+                />
                 <div className="mb-1 w-full truncate text-xl font-medium">
                   {client.name}
                 </div>
@@ -66,7 +70,6 @@ export default function AdminClientsPage() {
                   color: p!.colors[1],
                 }))}
                 size="sm"
-                isSquircle
               />
             </Link>
           );

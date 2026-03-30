@@ -10,4 +10,10 @@ declare global {
     BaseAction: Action | null;
     setBaseAction: (action: Action | null) => void;
   };
+  interface Window {
+    __env: {
+      SUPABASE_URL: string;
+      SUPABASE_PUBLISHABLE_KEY: string;
+    };
+  }
 }

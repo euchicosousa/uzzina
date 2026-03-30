@@ -64,7 +64,6 @@ export function PartnersCombobox({
         >
           {selected.length > 0 ? (
             <UAvatarGroup
-              isSquircle
               clampAt={2}
               size="sm"
               avatars={currentPartners.map((partner) => ({
@@ -115,7 +114,6 @@ export function PartnersCombobox({
                 }}
               >
                 <UAvatar
-                  isSquircle
                   fallback={partner.short}
                   size="sm"
                   backgroundColor={partner.colors[0]}

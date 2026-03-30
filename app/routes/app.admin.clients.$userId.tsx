@@ -30,16 +30,14 @@ export const meta: MetaFunction = () => [{ title: "Admin | Editar Cliente" }];
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { supabase } = await getUserId(request);
   const { userId } = params;
-  
+
   const partners = await getAllPartners(supabase);
-  
+
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME!;
   const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET!;
-  
+
   const client =
-    userId !== "new"
-      ? await getClientById(supabase, userId as string)
-      : null;
+    userId !== "new" ? await getClientById(supabase, userId as string) : null;
 
   return { client, partners, cloudName, uploadPreset };
 };
@@ -87,18 +85,22 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 };
 
 export default function AdminClientPage() {
-  const { client, partners, cloudName, uploadPreset } = useLoaderData<typeof loader>();
+  const { client, partners, cloudName, uploadPreset } =
+    useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
   const isNew = !client;
-  
+
   const [imageUrl, setImageUrl] = useState<string | null>(
-    client?.image || null
+    client?.image || null,
   );
 
   return (
-    <div key={client?.id || "new"} className="mx-auto flex h-full w-full max-w-3xl flex-col p-8">
+    <div
+      key={client?.id || "new"}
+      className="mx-auto flex h-full w-full max-w-3xl flex-col p-8"
+    >
       <div className="mb-8 flex items-center justify-between gap-8">
         <h1 className="pb-0 text-2xl font-bold">
           {isNew ? "Novo Cliente" : `Editar ${client.name}`}
@@ -183,7 +185,7 @@ export default function AdminClientPage() {
               placeholder="cliente@empresa.com"
             />
           </div>
-          
+
           <div className="grid gap-4">
             <label className="font-medium" htmlFor="password">
               Senha
@@ -203,7 +205,6 @@ export default function AdminClientPage() {
           <div className="font-medium">Partners com acesso</div>
           <UAvatarSelector
             name="partner_slugs"
-            isSquircle
             options={partners
               .filter((p) => !p.archived)
               .sort((a, b) => a.title.localeCompare(b.title))
@@ -226,10 +227,12 @@ export default function AdminClientPage() {
                 name="intent"
                 value="archive_client"
                 variant="destructive"
-                className="squircle rounded-2xl bg-destructive/10 text-destructive hover:bg-destructive/20"
+                className="squircle bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-2xl"
                 disabled={isSubmitting}
                 onClick={(e) => {
-                  if (!confirm("Tem certeza que deseja ocultar este cliente?")) {
+                  if (
+                    !confirm("Tem certeza que deseja ocultar este cliente?")
+                  ) {
                     e.preventDefault();
                   }
                 }}
@@ -243,11 +246,7 @@ export default function AdminClientPage() {
             className="squircle ml-auto rounded-2xl"
             disabled={isSubmitting}
           >
-            {isSubmitting
-              ? "Salvando..."
-              : isNew
-                ? "Criar Cliente"
-                : "Salvar"}
+            {isSubmitting ? "Salvando..." : isNew ? "Criar Cliente" : "Salvar"}
           </Button>
         </div>
       </Form>

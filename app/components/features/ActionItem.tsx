@@ -388,7 +388,6 @@ export function ActionItemPartners({
   return size ? (
     <UAvatarGroup
       size={size}
-      isSquircle
       avatars={partners.map((partner) => ({
         id: `${action.id}-${partner.id}`,
         fallback: partner.short,
@@ -401,7 +400,6 @@ export function ActionItemPartners({
       <div className="@xs:hidden">
         <UAvatarGroup
           size={SIZE.xs}
-          isSquircle
           avatars={partners.map((partner) => ({
             id: `${action.id}-${partner.id}`,
             fallback: partner.short,
@@ -412,7 +410,6 @@ export function ActionItemPartners({
       </div>
       <div className="hidden @xs:block">
         <UAvatarGroup
-          isSquircle
           size={SIZE.sm}
           avatars={partners.map((partner) => ({
             id: `${action.id}-${partner.id}`,

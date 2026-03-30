@@ -116,7 +116,6 @@ export function GlobalSearchCommand({
                   >
                     <UAvatar
                       fallback={partner.short}
-                      isSquircle
                       size={SIZE.sm}
                       backgroundColor={partner.colors[0]}
                       color={partner.colors[1]}
@@ -151,7 +150,6 @@ export function GlobalSearchCommand({
                           {partner && (
                             <UAvatar
                               fallback={partner.short}
-                              isSquircle
                               size={SIZE.sm}
                               backgroundColor={partner.colors[0]}
                               color={partner.colors[1]}

@@ -236,37 +236,31 @@ export default function UITestingPage() {
               fallback="CN"
               image="https://github.com/shadcn.png"
               size={SIZE.xs}
-              isSquircle
             />
             <UAvatar
               fallback="CN"
               image="https://github.com/shadcn.png"
               size={SIZE.sm}
-              isSquircle
             />
             <UAvatar
               fallback="CN"
               image="https://github.com/shadcn.png"
               size={SIZE.md}
-              isSquircle
             />
             <UAvatar
               fallback="CN"
               image="https://github.com/shadcn.png"
               size={SIZE.lg}
-              isSquircle
             />
             <UAvatar
               fallback="CN"
               image="https://github.com/shadcn.png"
               size={SIZE.xl}
-              isSquircle
             />
           </div>
           <div className="flex flex-wrap gap-4">
             <h5 className="w-full">Grupo de Avatares Squircle</h5>
             <UAvatarGroup
-              isSquircle
               avatars={[
                 {
                   fallback: "AC",

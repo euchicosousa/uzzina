@@ -170,8 +170,7 @@ export default function PartnerPage() {
               fallback={partner.short}
               backgroundColor={partner.colors[0]}
               color={partner.colors[1]}
-              size={SIZE.lg}
-              isSquircle
+              size={SIZE.md}
             />
             {lateCount > 0 && (
               <Link
