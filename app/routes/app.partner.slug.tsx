@@ -174,7 +174,7 @@ export default function PartnerPage() {
             />
             {lateCount > 0 && (
               <Link
-                className="isolate -mt-8 -ml-4"
+                className="isolate -mt-4 -ml-4"
                 to={`/app/late/${partner.slug}`}
               >
                 <UBadge value={lateCount} isDynamic />

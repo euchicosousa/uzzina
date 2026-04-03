@@ -51,8 +51,8 @@ export function InstagramTab({
   fetcher,
 }: InstagramTabProps) {
   return (
-    <div className="flex h-full p-6 pr-0">
-      <div className="flex h-full max-w-[320px] shrink-0 grow flex-col">
+    <div className="flex h-full flex-col overflow-y-auto md:flex-row">
+      <div className="mx-auto flex shrink-0 flex-col p-6 md:w-2/5 lg:w-1/2">
         <InstagramPreview files={contentFiles} />
         <ContentFilesManager
           files={contentFiles}
@@ -62,8 +62,8 @@ export function InstagramTab({
         />
       </div>
 
-      <div className="flex w-2/3 flex-col overflow-hidden">
-        <div className="flex items-center justify-between border-b px-4 py-4">
+      <div className="flex min-h-80 flex-col md:w-3/5 md:overflow-hidden lg:w-1/2">
+        <div className="flex items-center justify-between border-b px-4 py-4 md:pl-0">
           <div className="flex items-center gap-2">
             <UAvatarGroup
               avatars={currentPartners.map((partner) => ({
@@ -119,7 +119,7 @@ export function InstagramTab({
               })
             }
             placeholder="Legenda"
-            className="font-inter h-full w-full resize-none p-4 outline-none disabled:opacity-50"
+            className="font-inter h-full w-full resize-none p-4 outline-none disabled:opacity-50 md:pl-0"
           />
         </div>
       </div>

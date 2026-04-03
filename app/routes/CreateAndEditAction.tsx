@@ -239,9 +239,7 @@ export function CreateAndEditAction({
       className={cn(
         "bg-background fixed top-17 right-0 bottom-0 z-10 flex w-full shrink-0 flex-col overflow-hidden border-l",
 
-        view === "instagram" || view === "observations"
-          ? "md:w-3xl"
-          : "md:w-2xl",
+        view === "instagram" ? "lg:w-4xl" : "lg:w-2xl",
       )}
     >
       {/* Tabs */}
