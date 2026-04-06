@@ -234,8 +234,8 @@ export default function PartnerPage() {
       <div className="flex overflow-hidden">
         <div
           className={cn(
-            "flex shrink overflow-hidden",
-            view === "calendar" ? "w-full" : "hidden w-auto md:flex",
+            "flex w-full shrink overflow-hidden",
+            view === "calendar" ? "" : "hidden md:flex",
           )}
         >
           <ActionCalendarPartnerPage

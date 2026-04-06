@@ -101,7 +101,7 @@ export function EssentialsTab({
           </div>
         </div>
 
-        {isInstagramFeed(
+        {/* {isInstagramFeed(
           RawAction.category,
           RawAction.category === "stories",
         ) && (
@@ -125,7 +125,7 @@ export function EssentialsTab({
               />
             </div>
           </div>
-        )}
+        )} */}
         <div className="flex items-start gap-2 border-b px-4 py-1">
           <div className="flex flex-wrap items-center gap-1.5">
             {workFiles.map((url, i) => (
