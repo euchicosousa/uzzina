@@ -1,6 +1,6 @@
 import { parseISO } from "date-fns";
-import { CalendarDaysIcon, PlusIcon } from "lucide-react";
-import { Suspense, lazy, useRef } from "react";
+import { CalendarDaysIcon, IdCardIcon, PlusIcon } from "lucide-react";
+import { Suspense, lazy, useRef, useState } from "react";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { getNewDateForAction } from "~/lib/helpers";
@@ -46,6 +46,8 @@ export function EssentialsTab({
     Record<string, { name: string; addedAt: number }>
   >({});
 
+  const [isIDVisible, setisIDVisible] = useState(false);
+
   return (
     <div className="flex h-full flex-col overflow-hidden">
       {/* Título */}
@@ -79,8 +81,14 @@ export function EssentialsTab({
               });
             }}
           />
-          <pre className="bg-secondary border p-1 text-[10px]">
-            {RawAction.id}
+
+          <pre
+            className="bg-secondary ml-auto rounded border p-1 text-[10px]"
+            onClick={() => {
+              setisIDVisible(!isIDVisible);
+            }}
+          >
+            {isIDVisible ? RawAction.id : "ID"}
           </pre>
         </div>
         <div className="flex gap-8 border-b px-4 py-2">
