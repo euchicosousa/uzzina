@@ -1,12 +1,9 @@
-import { useState } from "react";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import {
   ViewOptionsComponent,
   useViewOptions,
   type ViewOptions,
 } from "~/components/features/ViewOptions";
-import { ORDER_BY } from "~/lib/CONSTANTS";
-import { getLateActions } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
@@ -22,7 +19,6 @@ export function LateHomeComponent({ actions }: { actions: Action[] }) {
       variant: true,
     },
   });
-  actions = getLateActions(actions);
   return (
     <HomeComponentWrapper
       title="Atrasados"

@@ -10,6 +10,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const partnerMatch = rawQuery.match(/p:(\S+)/);
   const explicitPartner = partnerMatch ? partnerMatch[1] : null;
   const query = rawQuery.replace(/p:\S+/, "").trim();
+  const includeArchived = url.searchParams.get("archived") === "true";
 
   // Require at least 3 characters to search text, unless explicitly filtering by partner
   // if (!explicitPartner && query.length < 3) {
@@ -55,6 +56,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
     .select("*")
     .overlaps("partners", searchPartnerSlugs)
     .order("date", { ascending: false });
+
+  if (!includeArchived) {
+    supabaseQuery = supabaseQuery.or("archived.is.false,archived.is.null");
+  }
 
   if (query.length > 0) {
     supabaseQuery = supabaseQuery.or(

@@ -1,6 +1,6 @@
 import { IconBrandInstagram } from "@tabler/icons-react";
 import { format } from "date-fns";
-import { HeartIcon, MessageSquareIcon, XIcon } from "lucide-react";
+import { ArchiveIcon, HeartIcon, MessageSquareIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   useFetcher,
@@ -242,6 +242,22 @@ export function CreateAndEditAction({
         view === "instagram" ? "lg:w-4xl" : "lg:w-2xl",
       )}
     >
+      {RawAction.archived && (
+        <div className="bg-amber-500 text-amber-50 dark:text-amber-950 p-2 flex items-center justify-center gap-2 text-sm font-medium shrink-0">
+          <ArchiveIcon className="size-4" />
+          Esta ação está arquivada.
+          <button
+            onClick={() => {
+              setRawAction((prev) => ({ ...prev, archived: false }));
+              updateAction({ archived: false });
+            }}
+            className="ml-2 underline hover:no-underline"
+          >
+            Desarquivar
+          </button>
+        </div>
+      )}
+
       {/* Tabs */}
       <div className="flex shrink-0 divide-x">
         <div

@@ -1,10 +1,9 @@
 import { parseISO } from "date-fns";
 import { CalendarDaysIcon, PlusIcon } from "lucide-react";
 import { Suspense, lazy, useRef } from "react";
-import { GMGCombobox } from "~/components/features/GMGCombobox";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
-import { getNewDateForAction, isInstagramFeed } from "~/lib/helpers";
+import { getNewDateForAction } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
@@ -80,6 +79,9 @@ export function EssentialsTab({
               });
             }}
           />
+          <pre className="bg-secondary border p-1 text-[10px]">
+            {RawAction.id}
+          </pre>
         </div>
         <div className="flex gap-8 border-b px-4 py-2">
           <div className="flex items-center gap-1 opacity-50">
@@ -101,31 +103,6 @@ export function EssentialsTab({
           </div>
         </div>
 
-        {/* {isInstagramFeed(
-          RawAction.category,
-          RawAction.category === "stories",
-        ) && (
-          <div className="flex gap-4 border-b px-4 text-sm">
-            <div>
-              <GMGCombobox
-                gmg="origem"
-                className="py-2 underline-offset-4 opacity-50 hover:underline"
-              />
-            </div>
-            <div>
-              <GMGCombobox
-                gmg="funil"
-                className="py-2 underline-offset-4 opacity-50 hover:underline"
-              />
-            </div>
-            <div>
-              <GMGCombobox
-                gmg="objetivo"
-                className="py-2 underline-offset-4 opacity-50 hover:underline"
-              />
-            </div>
-          </div>
-        )} */}
         <div className="flex items-start gap-2 border-b px-4 py-1">
           <div className="flex flex-wrap items-center gap-1.5">
             {workFiles.map((url, i) => (

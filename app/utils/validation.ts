@@ -5,7 +5,8 @@ import type { Action } from "~/models/actions.server";
 import type { Person } from "~/models/people.server";
 
 export const isLateAction = (action: Action) =>
-  action.state !== STATES.finished.slug && isBefore(action.date, new Date());
+  action.state !== STATES.finished.slug &&
+  isBefore(new Date(action.date), new Date());
 
 export const getLateActions = (actions: Action[]) =>
   actions?.filter(isLateAction) ?? [];

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useFetcher, useLocation } from "react-router";
+import { ArchiveIcon } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -16,8 +17,10 @@ import {
   DialogDescription,
 } from "~/components/ui/dialog";
 import { UAvatar } from "~/components/uzzina/UAvatar";
+import { UToggleInput } from "~/components/uzzina/UToggle";
 import { DATE_TIME_DISPLAY, SIZE, STATES, type STATE } from "~/lib/CONSTANTS";
 import { getFormattedDateTime } from "~/lib/helpers";
+import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import { StateIcon } from "./StateIcon";
 
@@ -37,6 +40,7 @@ export function GlobalSearchCommand({
   const navigate = useNavigate();
   const fetcher = useFetcher<{ actions: Action[] }>();
   const [query, setQuery] = useState("");
+  const [includeArchived, setIncludeArchived] = useState(false);
   const location = useLocation();
 
   // Extract the partner slug if the user is currently looking at a partner page
@@ -59,12 +63,15 @@ export function GlobalSearchCommand({
         if (activePartnerSlug) {
           searchUrl.append("partner", activePartnerSlug);
         }
+        if (includeArchived) {
+          searchUrl.append("archived", "true");
+        }
         fetcher.load(`/api/search?${searchUrl.toString()}`);
       }, 500); // 500ms debounce
 
       return () => clearTimeout(delayDebounceFn);
     }
-  }, [query, activePartnerSlug]);
+  }, [query, activePartnerSlug, includeArchived]);
 
   const filteredPartners =
     query.trim() === ""
@@ -144,7 +151,7 @@ export function GlobalSearchCommand({
                           onOpenChange(false);
                           setQuery("");
                         }}
-                        className="font-inter flex cursor-pointer items-start justify-between gap-2 py-3"
+                        className="font-inter flex cursor-pointer items-center justify-between gap-2 py-3"
                       >
                         <div className="flex items-center gap-2 overflow-hidden">
                           {partner && (
@@ -155,7 +162,17 @@ export function GlobalSearchCommand({
                               color={partner.colors[1]}
                             />
                           )}
-                          <div className="truncate">{action.title}</div>
+                          <div
+                            className={cn(
+                              "truncate",
+                              action.archived && "line-through opacity-50",
+                            )}
+                          >
+                            {action.title}
+                          </div>
+                          {action.archived && (
+                            <ArchiveIcon className="text-muted-foreground mr-1 size-3 shrink-0" />
+                          )}
                         </div>
                         <div className="flex items-center gap-2">
                           <StateIcon state={STATES[action.state as STATE]} />
@@ -179,6 +196,16 @@ export function GlobalSearchCommand({
               </div>
             )}
           </CommandList>
+          <div className="flex items-center justify-center border-t p-1">
+            <UToggleInput
+              id="searchArchived"
+              checked={includeArchived}
+              className="w-auto scale-90 px-3 py-1 text-sm opacity-70 hover:opacity-100"
+              onCheckedChange={(checked) => setIncludeArchived(checked)}
+            >
+              <ArchiveIcon className="size-4" /> Ações arquivadas
+            </UToggleInput>
+          </div>
         </Command>
       </DialogContent>
     </Dialog>

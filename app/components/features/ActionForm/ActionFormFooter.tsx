@@ -1,10 +1,11 @@
 import {
+  ArchiveIcon,
+  ArchiveRestoreIcon,
   CloudUploadIcon,
   CopyIcon,
   LoaderIcon,
   PlusIcon,
   RabbitIcon,
-  TrashIcon,
 } from "lucide-react";
 import { useRouteLoaderData, useSubmit } from "react-router";
 import { ActionColorDropdown } from "~/components/features/ActionForm/ActionColorDropdown";
@@ -140,18 +141,36 @@ export function ActionFormFooter({
             >
               <CopyIcon className="size-5" />
             </button>
-            <button
-              title="Excluir ação"
-              className="flex items-center gap-2 rounded-2xl p-2 text-sm opacity-50 hover:opacity-100 focus:opacity-100"
-              onClick={() => {
-                if (confirm("Tem certeza que deseja excluir esta ação?")) {
-                  submitDeleteAction(RawAction, submit);
-                  handleClose();
-                }
-              }}
-            >
-              <TrashIcon className="size-5" />
-            </button>
+            {!RawAction.archived && (
+              <button
+                title="Arquivar ação"
+                className="flex items-center gap-2 rounded-2xl p-2 text-sm opacity-50 hover:opacity-100 focus:opacity-100"
+                onClick={async () => {
+                  if (confirm("Tem certeza que deseja arquivar esta ação?")) {
+                    setRawAction({ ...RawAction, archived: true });
+                    await updateAction({ archived: true });
+                    handleClose();
+                  }
+                }}
+              >
+                <ArchiveIcon className="size-5" />
+              </button>
+            )}
+            {RawAction.archived && (
+              <button
+                title="Desarquivar ação"
+                className="flex items-center gap-2 rounded-2xl p-2 text-sm text-amber-500 opacity-80 hover:text-amber-600 hover:opacity-100 focus:opacity-100"
+                onClick={async () => {
+                  if (confirm("Tem certeza que deseja desarquivar esta ação?")) {
+                    setRawAction({ ...RawAction, archived: false });
+                    await updateAction({ archived: false });
+                    handleClose();
+                  }
+                }}
+              >
+                <ArchiveRestoreIcon className="size-5" />
+              </button>
+            )}
           </>
         )}
         <Button

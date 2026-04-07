@@ -47,7 +47,10 @@ import { useOptimisticActions } from "~/hooks/useOptimisticActions";
 import { SIZE } from "~/lib/CONSTANTS";
 import { getInstagramFeedActions, getLateActions } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
-import { getActionsByPartner } from "~/models/actions.server";
+import {
+  getActionsByPartner,
+  getLateActionsByPartner,
+} from "~/models/actions.server";
 import { getPartnerBySlug } from "~/models/partners.server";
 import { getPersonByUserId } from "~/models/people.server";
 import { getUserId } from "~/services/auth.server";
@@ -78,7 +81,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   invariant(person);
 
-  const [partner, actions] = await Promise.all([
+  const [partner, actions, lateActions] = await Promise.all([
     getPartnerBySlug(supabase, params.slug!),
     skipActions
       ? Promise.resolve([])
@@ -90,19 +93,24 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
           format(start, "yyyy-MM-dd HH:mm:ss"),
           format(end, "yyyy-MM-dd HH:mm:ss"),
         ),
+    skipActions
+      ? Promise.resolve([])
+      : getLateActionsByPartner(supabase, params.slug!, user_id, person.admin),
   ]);
 
   invariant(partner);
 
   return data(
-    { partner, actions, date, person },
+    { partner, actions, lateActions, date, person },
     { headers: { "Cache-Control": "no-store" } },
   );
 };
 
 export default function PartnerPage() {
-  let { partner, actions, date, person } = useLoaderData<typeof loader>();
+  let { partner, actions, lateActions, date, person } =
+    useLoaderData<typeof loader>();
   let currentActions = useOptimisticActions(actions || []);
+  let currentLateActions = useOptimisticActions(lateActions || []);
   const { setBaseAction } = useOutletContext<OutletContext>();
   const [currentDay, setCurrentDay] = useState(parseISO(date));
   const [query, setQuery] = useState("");
@@ -153,7 +161,7 @@ export default function PartnerPage() {
 
   const feedActions = getInstagramFeedActions(filteredActions);
 
-  const lateCount = getLateActions(currentActions).length;
+  const lateCount = currentLateActions.length;
 
   const navigate = useNavigate();
 

@@ -32,7 +32,6 @@ import { TodayHomeComponent } from "~/components/features/home/TodayHomeComponen
 
 export type AppHomeLoaderData = {
   actions: Action[];
-  actionsChart: Action[];
 };
 
 export const runtime = "edge";
@@ -54,33 +53,19 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     todayEnd.toISOString(),
   );
 
-  const todayEndTs = todayEnd.getTime();
-
-  // The RPC already returns exactly what we need:
-  //   - period actions (start → end, any state)
-  //   - past pending (date <= today, state != 'finished')
-  // No need to re-filter here.
   const actions = (allActions as Action[]) || [];
 
-  // actionsChart: non-finished actions up to end of today (for the stats/late panel).
-  // Different dimension from `actions`, so we filter client-side.
-  const actionsChart =
-    (allActions as Action[])?.filter((action: Action) => {
-      const actionTime = new Date(action.date).getTime();
-      return action.state !== STATES.finished.slug && actionTime <= todayEndTs;
-    }) || [];
-
-  return data({ actions, actionsChart } as AppHomeLoaderData, {
+  return data({ actions } as AppHomeLoaderData, {
     headers: { "Cache-Control": "no-store" },
   });
 };
 
 export default function AppHome() {
-  let { actions, actionsChart } = useLoaderData<typeof loader>();
-  let { person } = useMatches()[1].loaderData as AppLoaderData;
+  let { actions } = useLoaderData<typeof loader>();
+  let { person, lateActions } = useMatches()[1].loaderData as AppLoaderData;
   const currentActions = useOptimisticActions(actions);
 
-  const currentLateActions = useOptimisticActions(actionsChart);
+  const currentLateActions = useOptimisticActions(lateActions);
 
   const sprintActions = useMemo(
     () =>

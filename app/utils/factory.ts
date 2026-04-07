@@ -31,5 +31,6 @@ export const getCleanAction = ({
     date: _date,
     partners: partners || [],
     time: 10,
+    archived: false,
   };
 };

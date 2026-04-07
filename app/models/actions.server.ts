@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Tables } from "types/database";
 
@@ -22,6 +23,55 @@ export async function getActionsByPartner(
     .overlaps("partners", [partnerSlug])
     .gte("date", startDate)
     .lte("date", endDate)
+    .order("date", { ascending: false });
+
+  if (error) throw error;
+
+  return data as Action[];
+}
+
+/**
+ * Get all overdue actions for a specific partner/slug
+ * (without date range restrictions)
+ */
+export async function getLateActionsByPartner(
+  supabase: SupabaseClient,
+  partnerSlug: string,
+  userId: string,
+  isAdmin: boolean,
+) {
+  const { data, error } = await supabase
+    .from("actions")
+    .select("*")
+    .or("archived.is.false,archived.is.null")
+    .contains("responsibles", isAdmin ? [] : [userId])
+    .overlaps("partners", [partnerSlug])
+    .neq("state", "finished")
+    .lt("date", format(new Date(), "yyyy-MM-dd HH:mm:ss"))
+    .order("date", { ascending: false });
+
+  if (error) throw error;
+
+  return data as Action[];
+}
+
+/**
+ * Get all overdue actions for all partners the user has access to
+ */
+export async function getAllLateActions(
+  supabase: SupabaseClient,
+  userId: string,
+  isAdmin: boolean,
+  partnerSlugs: string[],
+) {
+  const { data, error } = await supabase
+    .from("actions")
+    .select("*")
+    .or("archived.is.false,archived.is.null")
+    .contains("responsibles", isAdmin ? [] : [userId])
+    .overlaps("partners", partnerSlugs)
+    .neq("state", "finished")
+    .lt("date", format(new Date(), "yyyy-MM-dd HH:mm:ss"))
     .order("date", { ascending: false });
 
   if (error) throw error;

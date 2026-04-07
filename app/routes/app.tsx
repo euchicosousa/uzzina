@@ -11,8 +11,9 @@ import { getCleanAction } from "~/lib/helpers";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { getAllCelebrations } from "~/models/celebrations.server";
 import { getPartnersByUserId } from "~/models/partners.server";
-import { getAllVisiblePeople } from "~/models/people.server";
+import { getAllVisiblePeople, type Person } from "~/models/people.server";
 import { getUserId } from "~/services/auth.server";
+import { getAllLateActions } from "~/models/actions.server";
 
 import { Toaster } from "sonner";
 import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
@@ -31,6 +32,7 @@ export type AppLoaderData = {
   person: Person;
   partners: Partner[];
   celebrations: Celebration[];
+  lateActions: Action[];
   cloudName: string;
   uploadPreset: string;
 };
@@ -47,6 +49,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const person = people?.find((person) => person.user_id === user_id)!;
 
   invariant(person, "Person not found");
+
+  const lateActions = await getAllLateActions(
+    supabase,
+    user_id,
+    person.admin,
+    partners.map((p) => p.slug),
+  );
+
+  invariant(person, "Person not found");
   invariant(people, "People not found");
   invariant(partners, "Partners not found");
   invariant(celebrations, "Priorities not found");
@@ -56,6 +67,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     person,
     partners,
     celebrations,
+    lateActions,
     cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
     uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET!,
   } as AppLoaderData;

@@ -51,12 +51,12 @@ export function Header({
   setBaseAction: (action: any) => void;
   setOpenCmdK: (open: boolean) => void;
 }) {
-  const { partners } = useMatches()[1].loaderData as { partners: Partner[] };
-  const { actionsChart } = useMatches()[2].loaderData as AppHomeLoaderData;
+  const { partners, lateActions } = useMatches()[1].loaderData as {
+    partners: Partner[];
+    lateActions: Action[];
+  };
   const navigate = useNavigate();
   const params = useParams();
-
-  const lateActions = getLateActions(actionsChart);
 
   const responsibles = params.slug
     ? partners.filter((p) => p.slug === params.slug)[0].users_ids
@@ -118,7 +118,7 @@ export function Header({
               className="relative rounded-full"
             >
               <HeartHandshakeIcon />
-              {actionsChart && actionsChart.length > 0 ? (
+              {lateActions && lateActions.length > 0 ? (
                 <UBadge
                   size="sm"
                   value={lateActions.length}

@@ -4,8 +4,7 @@ import invariant from "tiny-invariant";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import { useViewOptions } from "~/components/features/ViewOptions";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
-import { getLateActions } from "~/lib/helpers";
-import type { Action } from "~/models/actions.server";
+import { getLateActionsByPartner } from "~/models/actions.server";
 import { getUserId } from "~/services/auth.server";
 
 export const runtime = "edge";
@@ -21,20 +20,12 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   invariant(person);
 
-  let [{ data: partner }, { data: actions }] = await Promise.all([
+  const [{ data: partner }, actions] = await Promise.all([
     supabase.from("partners").select("*").match({ slug: params.slug }).single(),
-    supabase
-      .from("actions")
-      .select("*")
-      .is("archived", false)
-      .contains("responsibles", person.admin ? [] : [user_id])
-      .overlaps("partners", [params.slug])
-      .order("date", { ascending: false }),
+    getLateActionsByPartner(supabase, params.slug!, user_id, person.admin),
   ]);
 
   invariant(partner);
-
-  actions = getLateActions(actions as Action[]);
 
   return { partner, actions };
 };

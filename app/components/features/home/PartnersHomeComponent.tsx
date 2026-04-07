@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { Link, useRouteLoaderData } from "react-router";
 import { getShortText } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
-import { getLateActions } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
@@ -15,28 +14,27 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
 
   const partnersWithActionsLength = useMemo(() => {
     // Create a map of partner slug to actions for O(1) lookup or O(N) build
-    const actionsByPartner = new Map<string, Action[]>();
+    const actionsByPartner = new Map<string, number>();
 
     // Initialize map
-    partners.forEach((p) => actionsByPartner.set(p.slug, []));
+    partners.forEach((p) => actionsByPartner.set(p.slug, 0));
 
     // Single pass through actions
     actions.forEach((action) => {
       action.partners.forEach((partnerSlug) => {
         if (actionsByPartner.has(partnerSlug)) {
-          actionsByPartner.get(partnerSlug)?.push(action);
+          actionsByPartner.set(
+            partnerSlug,
+            (actionsByPartner.get(partnerSlug) || 0) + 1,
+          );
         }
       });
     });
 
-    return partners.map((partner) => {
-      return {
-        ...partner,
-        lateActionsLength: getLateActions(
-          actionsByPartner.get(partner.slug) || [],
-        ).length,
-      };
-    });
+    return partners.map((partner) => ({
+      ...partner,
+      lateActionsLength: actionsByPartner.get(partner.slug) || 0,
+    }));
   }, [partners, actions]);
 
   return (
