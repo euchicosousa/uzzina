@@ -196,7 +196,7 @@ export function GlobalSearchCommand({
               </div>
             )}
           </CommandList>
-          <div className="flex items-center justify-center border-t p-1">
+          <div className="flex items-center justify-center border-t p-2">
             <UToggleInput
               id="searchArchived"
               checked={includeArchived}
