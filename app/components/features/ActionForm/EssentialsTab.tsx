@@ -66,7 +66,7 @@ export function EssentialsTab({
 
       <div className="text-sm">
         <div className="flex flex-wrap items-center gap-4 border-b px-4 py-2">
-          <div className="opacity-50">
+          <div>
             <ActionTimeDisplay action={RawAction} />
           </div>
           <ResponsiblesCombobox
