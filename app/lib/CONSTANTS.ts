@@ -234,66 +234,169 @@ export const AREAS = {
 export type AREA = keyof typeof AREAS;
 export type AREA_TYPE = (typeof AREAS)[AREA];
 
-export const GENESIS = {
-  market: {
-    category: "EXTERNO",
-    title: "Mercado",
-    slug: "market",
-    description: "Tendências macro e futurismo.",
+// export const GENESIS = {
+//   market: {
+//     category: "EXTERNO",
+//     title: "Mercado",
+//     slug: "market",
+//     description: "Tendências macro e futurismo.",
+//   },
+//   news: {
+//     category: "EXTERNO",
+//     title: "Notícia",
+//     slug: "news",
+//     description: "Fatos atuais e breaking news.",
+//   },
+//   culture: {
+//     category: "INTERNO",
+//     title: "Cultura",
+//     slug: "culture",
+//     description: "Comportamento, memes e zeitgeist.",
+//   },
+//   bastidores: {
+//     category: "INTERNO",
+//     title: "Bastidores",
+//     slug: "bastidores",
+//     description: "Rotina crua e documentos.",
+//   },
+//   process: {
+//     category: "INTERNO",
+//     title: "Processo",
+//     slug: "process",
+//     description: 'O método técnico, o "como fazer".',
+//   },
+//   pov: {
+//     category: "INTERNO",
+//     title: "POV",
+//     slug: "pov",
+//     description: "Opinião proprietária e manifestos.",
+//   },
+//   errors: {
+//     category: "INTERNO",
+//     title: "Erros",
+//     slug: "errors",
+//     description: "Mitos e críticas ao mercado.",
+//   },
+//   community: {
+//     category: "SOCIAL",
+//     title: "Comunidade",
+//     slug: "community",
+//     description: "Respostas a dúvidas e Q&A.",
+//   },
+//   cases: {
+//     category: "PROVA",
+//     title: "Cases",
+//     slug: "cases",
+//     description: "Histórias de sucesso (Jornada do Herói).",
+//   },
+//   product: {
+//     category: "INTERNO",
+//     title: "Produto",
+//     slug: "product",
+//     description: "Oferta e mecanismo único.",
+//   },
+// } as const;
+
+// export const MISSIONS = {
+//   top: {
+//     title: "Topo",
+//     slug: "top",
+//     description:
+//       "Inconsciente/Sintoma: Focar em romper a bolha e simplicidade.",
+//   },
+//   middle: {
+//     title: "Meio",
+//     slug: "middle",
+//     description:
+//       "Consciente do Problema: Focar em diagnóstico e diferenciação.",
+//   },
+//   bottom: {
+//     title: "Fundo",
+//     slug: "bottom",
+//     description: "Consciente da Solução: Focar em quebra de objeção e oferta.",
+//   },
+// } as const;
+
+// export const GOALS = {
+//   education: {
+//     title: "Educação",
+//     slug: "education",
+//     description: "Tom Didático (Professor).",
+//   },
+//   informative: {
+//     title: "Informativo",
+//     slug: "informative",
+//     description: "Tom Jornalístico (Repórter).",
+//   },
+//   authority: {
+//     title: "Autoridade",
+//     slug: "authority",
+//     description: "Tom Firme/Polêmico (Crítico).",
+//   },
+//   inspiration: {
+//     title: "Inspiração",
+//     slug: "inspiration",
+//     description: "Tom Elevado (Mentor).",
+//   },
+//   connection: {
+//     title: "Conexão",
+//     slug: "connection",
+//     description: "Tom Vulnerável (Humano).",
+//   },
+//   entertainment: {
+//     title: "Entretenimento",
+//     slug: "entertainment",
+//     description: "Tom Leve/Irônico (Amigo).",
+//   },
+//   demonstration: {
+//     title: "Demonstração",
+//     slug: "demonstration",
+//     description: "Tom Técnico (Vendedor).",
+//   },
+// } as const;
+
+export const GOALS = {
+  education: {
+    title: "Educação",
+    slug: "education",
+    instruction:
+      "Macro: PROFESSOR (Papel Didático). Use a Nuance de Mentor: linguagem simples, acolhedora e focada no aprendizado prático do usuário.",
   },
-  news: {
-    category: "EXTERNO",
-    title: "Notícia",
-    slug: "news",
-    description: "Fatos atuais e breaking news.",
+  informative: {
+    title: "Informativo",
+    slug: "informative",
+    instruction:
+      "Macro: PROFESSOR (Papel Didático). Use a Nuance de Acadêmico: rigor técnico, clareza absoluta e foco na precisão dos dados apresentados.",
   },
-  culture: {
-    category: "INTERNO",
-    title: "Cultura",
-    slug: "culture",
-    description: "Comportamento, memes e zeitgeist.",
+  authority: {
+    title: "Autoridade",
+    slug: "authority",
+    instruction:
+      "Macro: CRÍTICO (Papel de Autoridade). Use a Nuance de Cético: foco em fatos e lógica fria. Se o texto não gerar discordância ou desconforto, ele está seguro demais.",
   },
-  bastidores: {
-    category: "INTERNO",
-    title: "Bastidores",
-    slug: "bastidores",
-    description: "Rotina crua e documentos.",
+  inspiration: {
+    title: "Inspiração",
+    slug: "inspiration",
+    instruction:
+      "Macro: EXPLORADOR (Papel de Curadoria). Use a Nuance de Desbravador: mostre o teste, o erro real e a jornada de quem está no campo de batalha.",
   },
-  process: {
-    category: "INTERNO",
-    title: "Processo",
-    slug: "process",
-    description: 'O método técnico, o "como fazer".',
+  connection: {
+    title: "Conexão",
+    slug: "connection",
+    instruction:
+      "Macro: HUMANO (Papel de Conexão). Use a Nuance de Empático: foque nas dores e na jornada real do outro, gerando identificação imediata.",
   },
-  pov: {
-    category: "INTERNO",
-    title: "POV",
-    slug: "pov",
-    description: "Opinião proprietária e manifestos.",
+  entertainment: {
+    title: "Entretenimento",
+    slug: "entertainment",
+    instruction:
+      "Macro: CRÍTICO (Papel de Autoridade). Use a Nuance de Irônico: utilize o sarcasmo inteligente para educar e criticar padrões medíocres do mercado.",
   },
-  errors: {
-    category: "INTERNO",
-    title: "Erros",
-    slug: "errors",
-    description: "Mitos e críticas ao mercado.",
-  },
-  community: {
-    category: "SOCIAL",
-    title: "Comunidade",
-    slug: "community",
-    description: "Respostas a dúvidas e Q&A.",
-  },
-  cases: {
-    category: "PROVA",
-    title: "Cases",
-    slug: "cases",
-    description: "Histórias de sucesso (Jornada do Herói).",
-  },
-  product: {
-    category: "INTERNO",
-    title: "Produto",
-    slug: "product",
-    description: "Oferta e mecanismo único.",
+  demonstration: {
+    title: "Demonstração",
+    slug: "demonstration",
+    instruction:
+      "Macro: HUMANO (Papel de Conexão). Use a Nuance de Pragmático: mostre a vida real como ela é, sem filtros, focando na aplicação prática do produto ou método no dia a dia.",
   },
 } as const;
 
@@ -301,57 +404,93 @@ export const MISSIONS = {
   top: {
     title: "Topo",
     slug: "top",
-    description:
-      "Inconsciente/Sintoma: Focar em romper a bolha e simplicidade.",
+    instruction:
+      "Missão: Romper a bolha. Focar no Inconsciente ou no Sintoma. O conteúdo deve ser simples, direto e focado em atrair estranhos que ainda não conhecem a marca ou o problema.",
   },
   middle: {
     title: "Meio",
     slug: "middle",
-    description:
-      "Consciente do Problema: Focar em diagnóstico e diferenciação.",
+    instruction:
+      "Missão: Diagnosticar e diferenciar. Focar no Consciente do Problema. Atue como o especialista que expõe a causa real das dores, separando o amadorismo da solução profissional.",
   },
   bottom: {
     title: "Fundo",
     slug: "bottom",
-    description: "Consciente da Solução: Focar em quebra de objeção e oferta.",
+    instruction:
+      "Missão: Quebrar objeções e vender. Focar no Consciente da Solução. O conteúdo deve ser direto, focado em prova social, oferta clara e remoção de qualquer barreira para a conversão.",
   },
 } as const;
 
-export const GOALS = {
-  education: {
-    title: "Educação",
-    slug: "education",
-    description: "Tom Didático (Professor).",
+export const GENESIS = {
+  market: {
+    category: "EXTERNO",
+    title: "Mercado",
+    slug: "market",
+    instruction:
+      "Origem: Mercado. Analise tendências macro e futurismo. Posicione a marca como uma antena que antecipa movimentos do setor.",
   },
-  informative: {
-    title: "Informativo",
-    slug: "informative",
-    description: "Tom Jornalístico (Repórter).",
+  news: {
+    category: "EXTERNO",
+    title: "Notícia",
+    slug: "news",
+    instruction:
+      "Origem: Notícia. Utilize fatos atuais e breaking news para gerar relevância imediata e autoridade de opinião.",
   },
-  authority: {
-    title: "Autoridade",
-    slug: "authority",
-    description: "Tom Firme/Polêmico (Crítico).",
+  culture: {
+    category: "EXTERNO",
+    title: "Cultura",
+    slug: "culture",
+    instruction:
+      "Origem: Cultura. Conecte a marca ao comportamento atual, memes e ao Zeitgeist.",
   },
-  inspiration: {
-    title: "Inspiração",
-    slug: "inspiration",
-    description: "Tom Elevado (Mentor).",
+  bastidores: {
+    category: "INTERNO",
+    title: "Bastidores",
+    slug: "bastidores",
+    instruction:
+      "Origem: Bastidores. Mostre a rotina crua e documentos reais do processo. Menos perfeição, mais verdade operacional.",
   },
-  connection: {
-    title: "Conexão",
-    slug: "connection",
-    description: "Tom Vulnerável (Humano).",
+  process: {
+    category: "INTERNO",
+    title: "Processo",
+    slug: "process",
+    instruction:
+      "Origem: Processo. Explique o método técnico proprietário (o 'como fazer') para validar a competência da marca.",
   },
-  entertainment: {
-    title: "Entretenimento",
-    slug: "entertainment",
-    description: "Tom Leve/Irônico (Amigo).",
+  pov: {
+    category: "INTERNO",
+    title: "POV",
+    slug: "pov",
+    instruction:
+      "Origem: POV (Point of View). Traga a opinião proprietária e manifestos que reforcem o posicionamento único da marca.",
   },
-  demonstration: {
-    title: "Demonstração",
-    slug: "demonstration",
-    description: "Tom Técnico (Vendedor).",
+  errors: {
+    category: "INTERNO",
+    title: "Erros",
+    slug: "errors",
+    instruction:
+      "Origem: Erros e Mitos. Critique práticas comuns do mercado e desmonte mitos que prejudicam o cliente.",
+  },
+  community: {
+    category: "PROVA/SOCIAL",
+    title: "Comunidade",
+    slug: "community",
+    instruction:
+      "Origem: Comunidade. Utilize respostas a dúvidas reais e sessões de Q&A para construir proximidade e autoridade.",
+  },
+  cases: {
+    category: "PROVA/SOCIAL",
+    title: "Cases",
+    slug: "cases",
+    instruction:
+      "Origem: Cases. Narre histórias de sucesso utilizando a jornada do herói e resultados concretos.",
+  },
+  product: {
+    category: "PROVA/SOCIAL",
+    title: "Produto",
+    slug: "product",
+    instruction:
+      "Origem: Produto. Foque na oferta direta e no mecanismo único que torna a solução indispensável.",
   },
 } as const;
 

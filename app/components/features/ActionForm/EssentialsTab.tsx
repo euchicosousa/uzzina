@@ -1,14 +1,17 @@
 import { parseISO } from "date-fns";
-import { CalendarDaysIcon, IdCardIcon, PlusIcon } from "lucide-react";
+import { CalendarDaysIcon, IdCardIcon, PlusIcon, Wand2 } from "lucide-react";
 import { Suspense, lazy, useRef, useState } from "react";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
-import { getNewDateForAction } from "~/lib/helpers";
+import { getNewDateForAction, isLateAction } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "./WorkFileThumbnail";
+import { cn } from "~/lib/utils";
+import { GMGCombobox } from "../GMGCombobox";
+import { Button } from "~/components/ui/button";
 
 const Tiptap = lazy(() =>
   import("~/components/features/Tiptap").then((module) => ({
@@ -47,6 +50,9 @@ export function EssentialsTab({
   >({});
 
   const [isIDVisible, setisIDVisible] = useState(false);
+  const [selectedOrigin, setSelectedOrigin] = useState<string | undefined>();
+  const [selectedFunnel, setSelectedFunnel] = useState<string | undefined>();
+  const [selectedGoal, setSelectedGoal] = useState<string | undefined>();
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -66,7 +72,7 @@ export function EssentialsTab({
 
       <div className="text-sm">
         <div className="flex flex-wrap items-center gap-4 border-b px-4 py-2">
-          <div>
+          <div className="opacity-50">
             <ActionTimeDisplay action={RawAction} />
           </div>
           <ResponsiblesCombobox
@@ -91,10 +97,28 @@ export function EssentialsTab({
             {isIDVisible ? RawAction.id : "ID"}
           </pre>
         </div>
+        <div className="flex items-center justify-between border-b px-4 py-1">
+          <div className="flex gap-8">
+            <GMGCombobox gmg="origem" selected={selectedOrigin} />
+            <GMGCombobox gmg="funil" selected={selectedFunnel} />
+            <GMGCombobox gmg="objetivo" selected={selectedGoal} />
+          </div>
+          <button className="hover:bg-secondary rounded-lg border p-2">
+            <Wand2 className="size-3" />
+          </button>
+        </div>
         <div className="flex gap-8 border-b px-4 py-2">
-          <div className="flex items-center gap-1 opacity-50">
-            <CalendarDaysIcon className="size-4" />
+          <div className="flex items-center gap-1">
+            <CalendarDaysIcon
+              className={cn(
+                "size-4",
+                isLateAction(RawAction) ? "text-destructive" : "opacity-50",
+              )}
+            />
             <ActionDatePicker
+              className={cn(
+                isLateAction(RawAction) ? "text-destructive" : "opacity-50",
+              )}
               onSelect={async (date) => {
                 // @ts-ignore
                 setRawAction({

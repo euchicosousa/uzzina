@@ -9,14 +9,17 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
+import { cn } from "~/lib/utils";
 import { getFormattedDateTime } from "~/utils/date";
 
 export function ActionDatePicker({
   onSelect,
   date,
+  className,
 }: {
   onSelect?: (date: Date) => void;
   date?: Date;
+  className?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(date);
@@ -36,7 +39,12 @@ export function ActionDatePicker({
       }}
     >
       <PopoverTrigger asChild>
-        <button className="cursor-pointer underline-offset-4 hover:underline">
+        <button
+          className={cn(
+            "cursor-pointer underline-offset-2 hover:underline",
+            className,
+          )}
+        >
           {date
             ? getFormattedDateTime(date, DATE_TIME_DISPLAY.DayDateMonthTime)
             : "Escolha a data"}

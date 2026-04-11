@@ -15,10 +15,12 @@ export function GMGCombobox({
   className,
   selected,
   gmg,
+  onSelect,
 }: {
   className?: string;
   selected?: string;
   gmg: "origem" | "funil" | "objetivo";
+  onSelect?: (value: string | undefined) => void;
 }) {
   const items = {
     origem: Object.values(GENESIS),
@@ -27,6 +29,7 @@ export function GMGCombobox({
   }[gmg];
 
   const [selectedItem, setSelectedItem] = useState(selected);
+
   const [isOpen, setIsOpen] = useState(false);
 
   const currentItem = items.find((item) => item.slug === selectedItem);
@@ -34,8 +37,19 @@ export function GMGCombobox({
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <button className={cn("flex items-center gap-2", className)}>
-          {selectedItem ? currentItem?.title : `Selecione ${gmg}`}
+        <button
+          className={cn(
+            "flex items-center gap-2 underline-offset-2 hover:underline",
+            className,
+          )}
+        >
+          {selectedItem ? (
+            <span className="bg-secondary squircle rounded-xl px-3 py-2">
+              {currentItem?.title}
+            </span>
+          ) : (
+            <span className="opacity-50"> Selecione {gmg} </span>
+          )}
         </button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
@@ -48,6 +62,7 @@ export function GMGCombobox({
                 key={index}
                 onSelect={() => {
                   setSelectedItem(item.slug);
+                  onSelect?.(item.slug);
                   setIsOpen(false);
                 }}
                 className="flex justify-between"

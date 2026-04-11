@@ -14,6 +14,7 @@ import {
   ViewOptionsComponent,
   useViewOptions,
 } from "~/components/features/ViewOptions";
+import { CategoriesComponent } from "~/components/layout/CategoriesComponent";
 import FeedComponent from "~/components/layout/FeedComponent";
 import { HoursComponent } from "~/components/layout/HoursComponent";
 import KanbanComponent from "~/components/layout/KanbanComponent";
@@ -76,7 +77,7 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
             />
           </div>
           {/* Opções de Views  */}
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             <UToggle
               checked={view === "kanban"}
               onClick={() => setView("kanban")}
@@ -125,7 +126,11 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
           />
         )}
         {view === "categories" && (
-          <NotAvailableViewComponent view="CATEGORIAS" />
+          <CategoriesComponent
+            actions={filteredActions}
+            orderBy={viewOptions.order}
+            ascending={viewOptions.ascending}
+          />
         )}
         {view === "partners" && <PartnersComponent actions={filteredActions} />}
       </div>
