@@ -4,7 +4,13 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
-import { EyeIcon, EyeOffIcon, SaveIcon, UploadIcon, UserIcon } from "lucide-react";
+import {
+  EyeIcon,
+  EyeOffIcon,
+  SaveIcon,
+  UploadIcon,
+  UserIcon,
+} from "lucide-react";
 
 interface Area {
   id: string;
@@ -54,7 +60,7 @@ export function AdminUserForm({
               key={imageUrl ?? "empty"}
               image={imageUrl}
               fallback={person?.initials || "?"}
-              size="xxl"
+              size="2xl"
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
               <UploadIcon className="size-6 text-white" />

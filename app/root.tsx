@@ -104,16 +104,29 @@ export function App() {
               try {
                 var palette = ${JSON.stringify(PALLETE)};
                 var idx = localStorage.getItem("uzzina-accent-color-index");
-                var n = parseInt(idx, 10);
-                if (idx !== null && idx !== "" && !isNaN(n) && palette[n]) {
+                var n = (idx !== null && idx !== "") ? parseInt(idx, 10) : 0;
+                if (!isNaN(n) && palette[n]) {
                   var p = palette[n];
                   var root = document.documentElement;
-                  root.style.setProperty("--accent-h", p.light.h);
-                  root.style.setProperty("--accent-c", p.light.c);
-                  root.style.setProperty("--accent-l", p.light.l);
-                  root.style.setProperty("--dark-accent-h", p.dark.h);
-                  root.style.setProperty("--dark-accent-c", p.dark.c);
-                  root.style.setProperty("--dark-accent-l", p.dark.l);
+                  root.style.setProperty("--accent-h", p.light.primary.h);
+                  root.style.setProperty("--accent-c", p.light.primary.c);
+                  root.style.setProperty("--accent-l", p.light.primary.l);
+                  root.style.setProperty("--dark-accent-h", p.dark.primary.h);
+                  root.style.setProperty("--dark-accent-c", p.dark.primary.c);
+                  root.style.setProperty("--dark-accent-l", p.dark.primary.l);
+
+                  if (p.light.bg) {
+                    root.style.setProperty("--background-override", "oklch(" + p.light.bg.l + " " + p.light.bg.c + " " + p.light.bg.h + ")");
+                  }
+                  if (p.light.fg) {
+                    root.style.setProperty("--foreground-override", "oklch(" + p.light.fg.l + " " + p.light.fg.c + " " + p.light.fg.h + ")");
+                  }
+                  if (p.dark.bg) {
+                    root.style.setProperty("--dark-background-override", "oklch(" + p.dark.bg.l + " " + p.dark.bg.c + " " + p.dark.bg.h + ")");
+                  }
+                  if (p.dark.fg) {
+                    root.style.setProperty("--dark-foreground-override", "oklch(" + p.dark.fg.l + " " + p.dark.fg.c + " " + p.dark.fg.h + ")");
+                  }
                 }
               } catch (e) {}
             `,

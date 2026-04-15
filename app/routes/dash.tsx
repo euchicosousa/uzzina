@@ -16,7 +16,7 @@ import { LogOutIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Form } from "react-router";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
-import { useAccentColor } from "~/hooks/useAccentColor";
+import { useAppTheme } from "~/hooks/useAppTheme";
 import { useEffect } from "react";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import {
@@ -93,7 +93,7 @@ export default function DashLayout() {
   const currentPartner =
     partners.find((p: any) => p.slug === currentPartnerSlug) || partners[0];
 
-  const { applyPartnerColors } = useAccentColor();
+  const { applyPartnerColors } = useAppTheme();
 
   useEffect(() => {
     if (

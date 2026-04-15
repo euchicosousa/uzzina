@@ -42,7 +42,7 @@ import {
 } from "~/components/ui/input-group";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
-import { useAccentColor } from "~/hooks/useAccentColor";
+import { useAppTheme } from "~/hooks/useAppTheme";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
 import { SIZE } from "~/lib/CONSTANTS";
 import { getInstagramFeedActions, getLateActions } from "~/lib/helpers";
@@ -115,19 +115,19 @@ export default function PartnerPage() {
   const [currentDay, setCurrentDay] = useState(parseISO(date));
   const [query, setQuery] = useState("");
 
-  const { followPartnerColor, applyPartnerColors, restoreAccentColors } =
-    useAccentColor();
+  const { followPartnerColor, applyPartnerColors, restoreThemeColors } =
+    useAppTheme();
 
   // Aplica as cores do parceiro quando a flag está ativa
   useEffect(() => {
     if (followPartnerColor && partner.colors.length >= 2) {
       applyPartnerColors(partner.colors[0], partner.colors[1]);
     } else {
-      restoreAccentColors();
+      restoreThemeColors();
     }
     return () => {
       // Restaura ao desmontar a página
-      restoreAccentColors();
+      restoreThemeColors();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [followPartnerColor, partner.colors]);

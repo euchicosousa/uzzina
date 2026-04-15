@@ -506,7 +506,7 @@ export const SIZE = {
   md: "md",
   lg: "lg",
   xl: "xl",
-  xxl: "xxl",
+  "2xl": "2xl",
 } as const;
 
 export const COLUMNS = {
@@ -558,53 +558,159 @@ export const ORDER_BY = {
 
 export const PALLETE = [
   {
+    label: "Padrão",
+    light: {
+      primary: { h: 0, c: 0, l: 0 },
+      bg: { h: 0, c: 0, l: 1 },
+      fg: { h: 0, c: 0, l: 0 },
+    },
+    dark: {
+      primary: { h: 0, c: 0, l: 0.4 },
+      bg: { h: 285, c: 0.005, l: 0.141 },
+      fg: { h: 0, c: 0, l: 1 },
+    },
+  },
+  {
     label: "Azul (Padrão)",
-    light: { h: 264, c: 0.31, l: 0.45 },
-    dark: { h: 264, c: 0.31, l: 0.58 },
+    light: {
+      primary: { h: 264, c: 0.31, l: 0.45 },
+      bg: { h: 220, c: 0.005, l: 0.99 },
+      fg: { h: 0, c: 0, l: 0 },
+    },
+    dark: {
+      primary: { h: 264, c: 0.31, l: 0.58 },
+      bg: { h: 285, c: 0.005, l: 0.141 },
+      fg: { h: 0, c: 0, l: 1 },
+    },
   },
   {
     label: "Roxo",
-    light: { h: 290, c: 0.28, l: 0.54 },
-    dark: { h: 290, c: 0.28, l: 0.68 },
+    light: {
+      primary: { h: 290, c: 0.28, l: 0.54 },
+      bg: { h: 290, c: 0.005, l: 0.99 },
+      fg: { h: 0, c: 0, l: 0 },
+    },
+    dark: {
+      primary: { h: 290, c: 0.28, l: 0.68 },
+      bg: { h: 285, c: 0.005, l: 0.141 },
+      fg: { h: 0, c: 0, l: 1 },
+    },
   },
   {
     label: "Magenta",
-    light: { h: 350, c: 0.4, l: 0.9 },
-    dark: { h: 350, c: 0.4, l: 0.8 },
+    light: {
+      primary: { h: 350, c: 0.4, l: 0.9 },
+      bg: { h: 320, c: 0.02, l: 0.98 },
+      fg: { h: 0, c: 0, l: 0 },
+    },
+    dark: {
+      primary: { h: 350, c: 0.4, l: 0.8 },
+      bg: { h: 285, c: 0.005, l: 0.141 },
+      fg: { h: 0, c: 0, l: 1 },
+    },
   },
   {
     label: "Rosa",
-    light: { h: 340, c: 0.25, l: 0.65 },
-    dark: { h: 340, c: 0.25, l: 0.68 },
+    light: {
+      primary: { h: 340, c: 0.25, l: 0.65 },
+      bg: { h: 0, c: 0, l: 1 },
+      fg: { h: 0, c: 0, l: 0 },
+    },
+    dark: {
+      primary: { h: 340, c: 0.25, l: 0.68 },
+      bg: { h: 285, c: 0.005, l: 0.141 },
+      fg: { h: 0, c: 0, l: 1 },
+    },
   },
   {
     label: "Vermelho",
-    light: { h: 20, c: 0.25, l: 0.62 },
-    dark: { h: 20, c: 0.25, l: 0.68 },
+    light: {
+      primary: { h: 20, c: 0.25, l: 0.62 },
+      bg: { h: 0, c: 0, l: 1 },
+      fg: { h: 0, c: 0, l: 0 },
+    },
+    dark: {
+      primary: { h: 20, c: 0.25, l: 0.68 },
+      bg: { h: 285, c: 0.005, l: 0.141 },
+      fg: { h: 0, c: 0, l: 1 },
+    },
   },
   {
     label: "Laranja",
-    light: { h: 40, c: 0.22, l: 0.7 },
-    dark: { h: 40, c: 0.22, l: 0.75 },
+    light: {
+      primary: { h: 40, c: 0.22, l: 0.7 },
+      bg: { h: 0, c: 0, l: 1 },
+      fg: { h: 0, c: 0, l: 0 },
+    },
+    dark: {
+      primary: { h: 40, c: 0.22, l: 0.75 },
+      bg: { h: 285, c: 0.005, l: 0.141 },
+      fg: { h: 0, c: 0, l: 1 },
+    },
   },
   {
     label: "Amarelo",
-    light: { h: 100, c: 0.5, l: 0.8 },
-    dark: { h: 100, c: 0.4, l: 0.8 },
+    light: {
+      primary: { h: 100, c: 0.5, l: 0.8 },
+      bg: { h: 0, c: 0, l: 1 },
+      fg: { h: 0, c: 0, l: 0 },
+    },
+    dark: {
+      primary: { h: 100, c: 0.4, l: 0.8 },
+      bg: { h: 285, c: 0.005, l: 0.141 },
+      fg: { h: 0, c: 0, l: 1 },
+    },
   },
   {
     label: "Verde",
-    light: { h: 130, c: 0.2, l: 0.7 },
-    dark: { h: 130, c: 0.2, l: 0.65 },
+    light: {
+      primary: { h: 130, c: 0.2, l: 0.7 },
+      bg: { h: 0, c: 0, l: 1 },
+      fg: { h: 0, c: 0, l: 0 },
+    },
+    dark: {
+      primary: { h: 130, c: 0.2, l: 0.65 },
+      bg: { h: 285, c: 0.005, l: 0.141 },
+      fg: { h: 0, c: 0, l: 1 },
+    },
   },
   {
     label: "Ciano",
-    light: { h: 200, c: 0.2, l: 0.7 },
-    dark: { h: 200, c: 0.2, l: 0.65 },
+    light: {
+      primary: { h: 200, c: 0.2, l: 0.7 },
+      bg: { h: 0, c: 0, l: 1 },
+      fg: { h: 0, c: 0, l: 0 },
+    },
+    dark: {
+      primary: { h: 200, c: 0.2, l: 0.65 },
+      bg: { h: 285, c: 0.005, l: 0.141 },
+      fg: { h: 0, c: 0, l: 1 },
+    },
   },
   {
     label: "Azul Claro",
-    light: { h: 240, c: 0.22, l: 0.7 },
-    dark: { h: 240, c: 0.22, l: 0.65 },
+    light: {
+      primary: { h: 240, c: 0.22, l: 0.7 },
+      bg: { h: 0, c: 0, l: 1 },
+      fg: { h: 0, c: 0, l: 0 },
+    },
+    dark: {
+      primary: { h: 240, c: 0.22, l: 0.65 },
+      bg: { h: 285, c: 0.005, l: 0.141 },
+      fg: { h: 0, c: 0, l: 1 },
+    },
+  },
+  {
+    label: "Azul Marinho",
+    light: {
+      primary: { h: 250, c: 0.12, l: 0.5 },
+      bg: { h: 90, c: 0.005, l: 0.99 },
+      fg: { h: 0, c: 0, l: 0 },
+    },
+    dark: {
+      primary: { h: 250, c: 0.12, l: 0.6 },
+      bg: { h: 285, c: 0.005, l: 0.141 },
+      fg: { h: 0, c: 0, l: 1 },
+    },
   },
 ];

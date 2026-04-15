@@ -1,3 +1,4 @@
+import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { Theme, useTheme } from "remix-themes";
 import { StateIcon } from "~/components/features/StateIcon";
 import { Button } from "~/components/ui/button";
@@ -5,7 +6,6 @@ import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { CATEGORIES, SIZE, STATES } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
-import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 
 export const meta = () => {
   return [
@@ -17,24 +17,6 @@ export const meta = () => {
 
 export default function UITestingPage() {
   const [theme, setTheme] = useTheme();
-
-  const fontSize = 20;
-  const factor = 1.414;
-  const sizes = 10;
-  const lineHeight = 15;
-
-  const fontSizes = Array.from({ length: sizes }, (_, i) => {
-    let fs = Math.floor(fontSize * Math.pow(factor, i));
-    let lh = Math.ceil(fs / 15) * lineHeight;
-    return { fontSize: fs, lineHeight: lh === 45 ? 60 : lh === 60 ? 75 : lh };
-  });
-
-  const webFontSizes = fontSizes.map((fs) => {
-    return {
-      fontSize: Math.floor(fs.fontSize / 2.4),
-      lineHeight: Math.floor(fs.lineHeight / 2.4),
-    };
-  });
 
   return (
     <div className="container mx-auto px-8">
@@ -65,27 +47,6 @@ export default function UITestingPage() {
           >
             <MonitorIcon />
           </Button>
-
-          {/* <ToggleGroup
-            type="single"
-            onValueChange={(value) => {
-              if (value === "system") {
-                setTheme(null);
-              } else {
-                setTheme(value as Theme);
-              }
-            }}
-          >
-            <ToggleGroupItem value={Theme.LIGHT}>
-              <SunIcon />
-            </ToggleGroupItem>
-            <ToggleGroupItem value={Theme.DARK}>
-              <MoonIcon />
-            </ToggleGroupItem>
-            <ToggleGroupItem value={"system"}>
-              <MonitorIcon />
-            </ToggleGroupItem>
-          </ToggleGroup> */}
         </div>
       </div>
       <div className="border_after flex items-center gap-8 py-4 *:underline-offset-2 *:hover:underline">
@@ -95,7 +56,6 @@ export default function UITestingPage() {
         <a href="#avatars">Avatars</a>
         <a href="#categories">Categories</a>
         <a href="#state">State</a>
-        <a href="#font-sizes">Font-sizes</a>
       </div>
 
       {/* Headings */}
@@ -466,14 +426,67 @@ export default function UITestingPage() {
         <div>
           <h2>State</h2>
         </div>
-        <div className="flex gap-4">
-          {Object.values(STATES).map((state, index) => (
-            <StateIcon key={state.slug} state={state} size={SIZE.xs} />
-          ))}
+        <div className="grid gap-8 md:grid-cols-3">
+          <div>
+            <div className="mb-4 font-medium">Tamanho {SIZE.xs}</div>
+            <div className="flex gap-4">
+              {Object.values(STATES).map((state, index) => (
+                <StateIcon key={state.slug} state={state} size={SIZE.xs} />
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="mb-4 font-medium">Tamanho {SIZE.xs}</div>
+            <div className="flex gap-4">
+              {Object.values(STATES).map((state, index) => (
+                <StateIcon key={state.slug} state={state} size={SIZE.sm} />
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="mb-4 font-medium">Tamanho {SIZE.md}</div>
+            <div className="flex gap-4">
+              {Object.values(STATES).map((state, index) => (
+                <StateIcon key={state.slug} state={state} size={SIZE.md} />
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="mb-4 font-medium">Tamanho {SIZE.lg}</div>
+            <div className="flex gap-4">
+              {Object.values(STATES).map((state, index) => (
+                <StateIcon key={state.slug} state={state} size={SIZE.lg} />
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="mb-4 font-medium">Tamanho {SIZE.xl}</div>
+            <div className="flex gap-4">
+              {Object.values(STATES).map((state, index) => (
+                <StateIcon key={state.slug} state={state} size={SIZE.xl} />
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="mb-4 font-medium">Tamanho {SIZE["2xl"]}</div>
+            <div className="flex gap-4">
+              {Object.values(STATES).map((state, index) => (
+                <StateIcon key={state.slug} state={state} size={SIZE["2xl"]} />
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="mb-4 font-medium">Tamanho dot</div>
+            <div className="flex gap-4">
+              {Object.values(STATES).map((state, index) => (
+                <StateIcon key={state.slug} state={state} size={"dot"} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div id="font-sizes" className="border_after py-8">
+      {/* <div id="font-sizes" className="border_after py-8">
         <div>
           <h2>Font-sizes</h2>
         </div>
@@ -544,7 +557,7 @@ export default function UITestingPage() {
             </div>
           );
         })}
-      </div>
+      </div> */}
     </div>
   );
 }

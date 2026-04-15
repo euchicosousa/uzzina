@@ -6,11 +6,9 @@
 
 :root {
   --radius: 0.65rem;
-  --background: oklch(1 0 0);
-  /* --background: oklch(0.9667 0.0017 247.84); */
-  --foreground: oklch(0.141 0.005 285.823);
-  /* --card: oklch(0.99 0 0); */
-  --card: oklch(0.96 0 0);
+  --background: var(--background-override, oklch(1 0 0));
+  --foreground: var(--foreground-override, oklch(0.141 0.005 285.823));
+  --card: oklch(from var(--foreground) l c h / 5%);
   --card-foreground: var(--foreground);
   --popover: oklch(1 0 0);
   --popover-foreground: var(--foreground);
@@ -23,15 +21,16 @@
 
   --primary: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
   --primary-foreground: oklch(var(--accent-fg-l) 0.014 var(--accent-h));
-  --secondary: oklch(0.97 0.001 286.375);
+  --secondary: oklch(from var(--foreground) l c h / 6%);
   --secondary-foreground: var(--foreground);
   --muted: oklch(0.967 0.001 286.375);
   --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
+  --accent: oklch(from var(--foreground) l c h / 5%);
   --accent-foreground: var(--foreground);
   --destructive: oklch(66.147% 0.2279 16.339);
-  --border: oklch(0.92 0 0);
-  --input: oklch(0.92 0 0);
+  --border: oklch(from var(--foreground) l c h / 10%);
+  --input: oklch(from var(--foreground) l c h / 15%);
+  /* --input: oklch(0.92 0 0); */
   --ring: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);
@@ -50,8 +49,8 @@
 
 .dark,
 :root[class~="dark"] {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
+  --background: var(--dark-background-override, oklch(0.141 0.005 285.823));
+  --foreground: var(--dark-foreground-override, oklch(0.985 0 0));
 
   --card: oklch(0.3 0.006 285.885);
   --card-foreground: var(--foreground);
@@ -78,8 +77,8 @@
   --accent: oklch(0.274 0.006 286.033);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(66.147% 0.2279 16.339);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --border: oklch(from var(--foreground) l c h / 10%);
+  --input: oklch(from var(--foreground) l c h / 15%);
   --ring: oklch(var(--dark-accent-l) var(--dark-accent-c) var(--dark-accent-h));
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);
@@ -179,10 +178,10 @@
   --font-inter:
     "Inter Tight", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-sans:
+  /* --font-sans:
     "Inter Tight", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-object:
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; */
+  --font-sans:
     "PP Object Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }

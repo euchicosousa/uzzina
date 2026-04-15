@@ -134,7 +134,7 @@ export default function AdminClientPage() {
               key={imageUrl ?? "empty"}
               image={imageUrl}
               fallback={client?.name || "?"}
-              size="xxl"
+              size="2xl"
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
               <UploadIcon className="size-6 text-white" />

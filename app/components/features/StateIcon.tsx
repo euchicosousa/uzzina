@@ -15,7 +15,7 @@ export function StateIcon({
     md: "size-5",
     lg: "size-6",
     xl: "size-8",
-    xxl: "size-12",
+    "2xl": "size-12",
     dot: "size-2",
   }[size];
   return size === "dot" ? (

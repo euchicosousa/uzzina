@@ -34,7 +34,7 @@ export function UAvatarGroup({
       md: "-space-x-1",
       lg: "-space-x-2",
       xl: "-space-x-2",
-      xxl: "-space-x-2",
+      "2xl": "-space-x-2",
     }[size as keyof typeof SIZE] || "-space-x-2";
 
   const effectiveClampAt = clampAt || avatars.length;
@@ -86,7 +86,7 @@ export function UAvatar({
       md: `size-8`,
       lg: `size-12`,
       xl: `size-18`,
-      xxl: `size-24`,
+      "2xl": `size-24`,
     }[size as keyof typeof SIZE] || `size-8`;
 
   const textClasses =
@@ -97,7 +97,7 @@ export function UAvatar({
           md: "text-[12px]",
           lg: "text-[18px]",
           xl: "text-[28px]",
-          xxl: "text-[38px]",
+          "2xl": "text-[38px]",
         }[size as keyof typeof SIZE]
       : fallbackText.length <= 4
         ? {
@@ -106,7 +106,7 @@ export function UAvatar({
             md: "text-[9px] tracking-[1px]",
             lg: "text-[16px] tracking-[2px]",
             xl: "text-[24px] tracking-[2px]",
-            xxl: "text-[34px] tracking-[2px]",
+            "2xl": "text-[34px] tracking-[2px]",
           }[size as keyof typeof SIZE]
         : {
             xs: "",
@@ -114,7 +114,7 @@ export function UAvatar({
             md: "text-[8px] tracking-[1px]",
             lg: "text-[15px] tracking-[2px]",
             xl: "text-[20px] tracking-[2px]",
-            xxl: "text-[30px] tracking-[2px]",
+            "2xl": "text-[30px] tracking-[2px]",
           }[size as keyof typeof SIZE];
 
   const styles =

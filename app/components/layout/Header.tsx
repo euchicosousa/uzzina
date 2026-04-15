@@ -16,7 +16,7 @@ import {
 import { Theme, useTheme } from "remix-themes";
 import { BulkActionMenu } from "~/components/features/BulkActionMenu";
 import { UToggleInput } from "~/components/uzzina/UToggle";
-import { useAccentColor } from "~/hooks/useAccentColor";
+import { useAppTheme } from "~/hooks/useAppTheme";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { PALLETE, SIZE } from "~/lib/CONSTANTS";
 import { getCleanAction, getLateActions, getThemeIcon } from "~/lib/helpers";
@@ -68,11 +68,13 @@ export function Header({
   return (
     <div className="border_after flex w-full items-center justify-between px-2 lg:px-8">
       <div className="flex items-center gap-2 py-4">
+        {/* Logo */}
         <Link to="/app">
           <UzzinaLogo className="hidden h-8 sm:block" />
           <UzzinaLogo className="h-8 sm:hidden" model="logo" />
         </Link>
 
+        {/* Search */}
         <Button
           variant="ghost"
           size="icon"
@@ -110,6 +112,7 @@ export function Header({
           <span className="hidden sm:block">Nova Ação</span>
           <PlusIcon />
         </Button>
+
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -177,11 +180,12 @@ export function Header({
 const HeaderMenu = ({ person }: { person: Person }) => {
   const [theme, setTheme] = useTheme();
   const {
-    setColorIndex,
-    colorIndex,
+    setPrimaryColorIndex,
+    primaryColorIndex,
+    resetPrimaryColor,
     followPartnerColor,
     setFollowPartnerColor,
-  } = useAccentColor();
+  } = useAppTheme();
   const isLoading =
     useFetchers().length > 0 || useNavigation().state !== "idle";
 
@@ -204,30 +208,30 @@ const HeaderMenu = ({ person }: { person: Person }) => {
             {getThemeIcon(Theme.DARK, "size-4")} Tema escuro
           </DropdownMenuItem>
         )}
-        <div className="grid grid-cols-5 justify-between gap-1 p-2">
+        <div className="grid grid-cols-6 justify-between p-2">
           {PALLETE.map((paletteConfig, i) => {
             const { light, dark } = paletteConfig;
             const currentColors = theme === Theme.DARK ? dark : light;
-            const isSelected = colorIndex === i;
+            const isSelected = primaryColorIndex === i;
             return (
               <button
                 onClick={() => {
-                  setColorIndex(i);
+                  setPrimaryColorIndex(i);
                 }}
                 key={i}
                 title={paletteConfig.label}
                 className="squircle flex justify-center rounded-xl p-2 hover:opacity-80"
                 style={{
                   backgroundColor: isSelected
-                    ? `oklch(${currentColors.l} ${currentColors.c} ${currentColors.h})`
+                    ? `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`
                     : "",
                 }}
               >
                 <div
                   style={{
                     backgroundColor: isSelected
-                      ? "white"
-                      : `oklch(${currentColors.l} ${currentColors.c} ${currentColors.h})`,
+                      ? `oklch(${currentColors.bg.l} ${currentColors.bg.c} ${currentColors.bg.h})`
+                      : `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`,
                   }}
                   className={`size-4 rounded-lg`}
                 ></div>
