@@ -390,7 +390,7 @@ export function ActionItemPartners({
       size={size}
       avatars={partners.map((partner) => ({
         id: `${action.id}-${partner.id}`,
-        fallback: partner.short,
+        fallback: partner.short.toLocaleUpperCase(),
         backgroundColor: partner.colors[0],
         color: partner.colors[1],
       }))}
@@ -402,7 +402,7 @@ export function ActionItemPartners({
           size={SIZE.xs}
           avatars={partners.map((partner) => ({
             id: `${action.id}-${partner.id}`,
-            fallback: partner.short,
+            fallback: partner.short.toLocaleUpperCase(),
             backgroundColor: partner.colors[0],
             color: partner.colors[1],
           }))}
@@ -413,7 +413,7 @@ export function ActionItemPartners({
           size={SIZE.sm}
           avatars={partners.map((partner) => ({
             id: `${action.id}-${partner.id}`,
-            fallback: partner.short,
+            fallback: partner.short.toLocaleUpperCase(),
             backgroundColor: partner.colors[0],
             color: partner.colors[1],
           }))}
@@ -437,7 +437,7 @@ export function ActionItemResponsibles({
       size={size || SIZE.sm}
       avatars={responsibles.map((person) => ({
         id: `${action.id}-${person.id}`,
-        fallback: person.short,
+        fallback: person.short.toLocaleUpperCase(),
         image: person.image,
       }))}
     />

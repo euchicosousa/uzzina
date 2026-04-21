@@ -4,6 +4,7 @@ import {
   CloudUploadIcon,
   MailCheckIcon,
   MegaphoneIcon,
+  PrinterIcon,
 } from "lucide-react";
 import {
   Form,
@@ -140,9 +141,20 @@ export default function AdminPartnerEditPage() {
           {partner ? `Editar ${partner.title}` : "Novo Parceiro"}
         </h1>
 
-        <Link to="/app/admin/partners" className="font-medium hover:underline">
-          Parceiros
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            to="/app/admin/partners"
+            className="font-medium hover:underline"
+          >
+            Parceiros
+          </Link>
+          <Link
+            to={`/print/partner/${partner?.slug}`}
+            className="hover:underline"
+          >
+            <PrinterIcon className="size-5" />
+          </Link>
+        </div>
       </div>
       <Form
         method="post"

@@ -19,6 +19,7 @@ export default [
     route("login", "routes/dash.login.tsx"),
     route("action/:id", "routes/dash.action.$id.tsx"),
   ]),
+  route("print/partner/:slug", "routes/print.partner.$slug.tsx"),
   route("login", "routes/login.tsx"),
   route("ui", "routes/ui.tsx"),
   route("action/set-theme", "routes/action.set-theme.ts"),

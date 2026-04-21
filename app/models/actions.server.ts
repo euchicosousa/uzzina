@@ -31,6 +31,30 @@ export async function getActionsByPartner(
 }
 
 /**
+ * Get all open (non-finished, non-archived) actions for a specific partner/slug
+ * without date range restrictions — used by the print page.
+ */
+export async function getOpenActionsByPartner(
+  supabase: SupabaseClient,
+  partnerSlug: string,
+  userId: string,
+  isAdmin: boolean,
+) {
+  const { data, error } = await supabase
+    .from("actions")
+    .select("*")
+    .or("archived.is.false,archived.is.null")
+    .contains("responsibles", isAdmin ? [] : [userId])
+    .overlaps("partners", [partnerSlug])
+    .neq("state", "finished")
+    .order("date", { ascending: true });
+
+  if (error) throw error;
+
+  return data as Action[];
+}
+
+/**
  * Get all overdue actions for a specific partner/slug
  * (without date range restrictions)
  */

@@ -19,9 +19,8 @@ import { UToggleInput } from "~/components/uzzina/UToggle";
 import { useAppTheme } from "~/hooks/useAppTheme";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { PALLETE, SIZE } from "~/lib/CONSTANTS";
-import { getCleanAction, getLateActions, getThemeIcon } from "~/lib/helpers";
+import { getCleanAction, getThemeIcon } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
-import type { AppHomeLoaderData } from "~/routes/app.home";
 import { UzzinaLogo } from "../logo";
 import { Button } from "../ui/button";
 import {
@@ -58,9 +57,10 @@ export function Header({
   const navigate = useNavigate();
   const params = useParams();
 
-  const responsibles = params.slug
-    ? partners.filter((p) => p.slug === params.slug)[0].users_ids
-    : [person.user_id];
+  const responsibles =
+    params.slug && params.slug !== "new"
+      ? partners.filter((p) => p.slug === params.slug)[0].users_ids
+      : [person.user_id];
 
   const { isSelectionMode, toggleSelectionMode, selectedIds } =
     useMultiSelection();
