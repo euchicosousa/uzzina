@@ -22,7 +22,10 @@ const Tiptap = lazy(() =>
 interface EssentialsTabProps {
   RawAction: Action;
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;
-  updateAction: (data?: any) => Promise<void>;
+  updateAction: (
+    data?: { [key: string]: any },
+    forceCreate?: boolean,
+  ) => Promise<void>;
   workFiles: string[];
   setWorkFiles: (files: string[]) => void;
   currentPartners: Partner[];
@@ -64,9 +67,12 @@ export function EssentialsTab({
           setRawAction({ ...RawAction, title });
         }}
         onBlur={async (title) => {
-          await updateAction({
-            title,
-          });
+          await updateAction(
+            {
+              title,
+            },
+            true,
+          );
         }}
       />
 

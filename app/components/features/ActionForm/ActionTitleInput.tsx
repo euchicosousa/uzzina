@@ -29,10 +29,8 @@ export function ActionTitleInput({
           onChange(e.target.value);
           setLocalTitle(e.target.value);
         }}
-        onBlur={() => {
-          if (localTitle !== title) {
-            onBlur(localTitle);
-          }
+        onBlur={(e) => {
+          onBlur(e.target.value);
         }}
         placeholder="Título"
         className={cn(

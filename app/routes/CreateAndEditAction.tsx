@@ -149,14 +149,21 @@ export function CreateAndEditAction({
   }
 
   const updateAction = useCallback(
-    async (data?: { [key: string]: any }) => {
+    async (data?: { [key: string]: any }, forceCreate = false) => {
       const current = rawActionRef.current;
-      if (current.id) {
+
+      if (
+        current.id ||
+        (forceCreate &&
+          !current.id &&
+          current.title &&
+          current.partners.length > 0)
+      ) {
         await handleAction(
           {
             ...current,
             ...data,
-            intent: INTENT.update_action,
+            intent: current.id ? INTENT.update_action : INTENT.create_action,
           },
           submit,
         );
@@ -243,7 +250,7 @@ export function CreateAndEditAction({
       )}
     >
       {RawAction.archived && (
-        <div className="bg-amber-500 text-amber-50 dark:text-amber-950 p-2 flex items-center justify-center gap-2 text-sm font-medium shrink-0">
+        <div className="flex shrink-0 items-center justify-center gap-2 bg-amber-500 p-2 text-sm font-medium text-amber-50 dark:text-amber-950">
           <ArchiveIcon className="size-4" />
           Esta ação está arquivada.
           <button
