@@ -17,7 +17,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   const response = await client.responses.create({
-    model: "gpt-5.1-chat-latest",
+    model: "gpt-5.3-chat-latest",
     input: [
       {
         role: "system",
