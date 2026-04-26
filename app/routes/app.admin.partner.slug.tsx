@@ -218,7 +218,7 @@ export default function AdminPartnerEditPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="grid gap-4">
               <label className="font-medium" htmlFor="short">
-                Sigla (Short Name)
+                Sigla (4 letras)
               </label>
               <Input
                 id="short"
