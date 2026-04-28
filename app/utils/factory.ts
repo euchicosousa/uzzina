@@ -1,6 +1,6 @@
 import { addMinutes, format, isToday } from "date-fns";
-import { CATEGORY_ATTRIBUTES, PRIORITIES, STATES } from "~/lib/CONSTANTS";
 import type { CATEGORY } from "~/lib/CONSTANTS";
+import { CATEGORY_ATTRIBUTES, PRIORITIES, STATES } from "~/lib/CONSTANTS";
 
 export const getCleanAction = ({
   user_id,
@@ -39,16 +39,16 @@ export const getCleanAction = ({
 
 /**
  * Cria o objeto de attributes inicial para uma categoria.
- * Todos os slugs da categoria começam com state "idea".
+ * Todos os slugs da categoria começam com state "do".
  */
 export function buildAttributes(category: string): Record<string, string> {
   const slugs = CATEGORY_ATTRIBUTES[category as CATEGORY] ?? [];
-  return Object.fromEntries(slugs.map((slug) => [slug, STATES.idea.slug]));
+  return Object.fromEntries(slugs.map((slug) => [slug, STATES.do.slug]));
 }
 
 /**
  * Ao trocar de categoria, preserva o estado dos slugs que existem
- * em ambas as categorias. Slugs novos começam como "idea".
+ * em ambas as categorias. Slugs novos começam como "do".
  */
 export function mergeAttributes(
   oldAttrs: Record<string, string>,
@@ -56,6 +56,6 @@ export function mergeAttributes(
 ): Record<string, string> {
   const newSlugs = CATEGORY_ATTRIBUTES[newCategory as CATEGORY] ?? [];
   return Object.fromEntries(
-    newSlugs.map((slug) => [slug, oldAttrs[slug] ?? STATES.idea.slug]),
+    newSlugs.map((slug) => [slug, oldAttrs[slug] ?? STATES.do.slug]),
   );
 }

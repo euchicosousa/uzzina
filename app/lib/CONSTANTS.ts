@@ -60,6 +60,8 @@ export const STATES = {
 export type STATE = keyof typeof STATES;
 export type STATE_TYPE = (typeof STATES)[STATE];
 
+export const ATTRIBUTE_STATES: STATE[] = ["do", "review", "finished"];
+
 export const CATEGORIES = {
   ads: {
     slug: "ads",

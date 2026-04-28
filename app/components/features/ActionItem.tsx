@@ -174,6 +174,7 @@ export function ActionItem({
           <Content
             action={action}
             category={showCategory ? currentCategory : undefined}
+            showResponsibles={showResponsibles}
           />
         );
       case VARIANT.block:
