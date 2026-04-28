@@ -1,7 +1,16 @@
 import { CheckIcon } from "lucide-react";
 import { Fragment, useState } from "react";
-import { useLoaderData, type LoaderFunctionArgs } from "react-router";
+import {
+  Link,
+  useLoaderData,
+  type LoaderFunctionArgs,
+  type MetaFunction,
+} from "react-router";
 import { getUserId } from "~/services/auth.server";
+
+export const meta: MetaFunction = () => [
+  { title: "Programação Semanal | Uzzina" },
+];
 
 // Domingo = 0, Segunda = 1, ..., Sábado = 6
 const diaKeyOrder = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
@@ -154,7 +163,12 @@ export default function ProgramacaoPage() {
 
   return (
     <div className="min-h-screen overflow-x-auto p-8">
-      <h1 className="mb-6 text-2xl font-bold">Programação Semanal</h1>
+      <div className="flex justify-between">
+        <h1 className="mb-6 text-2xl font-bold">Programação Semanal</h1>
+        <Link to="/app" className="font-bold underline">
+          APP
+        </Link>
+      </div>
 
       <div
         className="inline-grid w-full"
