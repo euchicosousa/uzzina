@@ -85,4 +85,5 @@ export const ActionFormSchema = z.object({
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
   archived: z.boolean().optional(),
+  attributes: z.record(z.string(), z.string()).optional().nullable(),
 });

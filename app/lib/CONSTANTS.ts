@@ -192,6 +192,46 @@ export const CATEGORIES = {
 export type CATEGORY = keyof typeof CATEGORIES;
 export type CATEGORY_TYPE = (typeof CATEGORIES)[CATEGORY];
 
+export const ATTRIBUTE_LABELS: Record<string, string> = {
+  brief: "Brief",
+  text: "Texto",
+  script: "Roteiro",
+  image: "Imagem",
+  design: "Design",
+  slides: "Slides",
+  capture: "Gravação",
+  edit: "Edição",
+  caption: "Legenda",
+  revision: "Revisão",
+  approval: "Aprovação",
+  copy: "Copy",
+  launch: "Publicação",
+  schedule: "Agendamento",
+  agenda: "Pauta",
+  strategy: "Estratégia",
+  presentation: "Apresentação",
+  production: "Produção",
+  delivery: "Entrega",
+  proposal: "Proposta",
+  invoice: "Faturamento",
+};
+
+export const CATEGORY_ATTRIBUTES: Partial<Record<CATEGORY, string[]>> = {
+  post: ["brief", "text", "image", "design", "caption", "approval"],
+  reels: ["brief", "script", "capture", "edit", "caption", "approval"],
+  carousel: ["brief", "text", "design", "slides", "caption", "approval"],
+  stories: ["brief", "design", "caption", "approval"],
+  capture: ["script", "capture"],
+  design: ["brief", "design", "revision", "approval"],
+  print: ["brief", "design", "revision", "approval", "production"],
+  dev: ["brief", "design", "revision", "delivery"],
+  ads: ["brief", "copy", "design", "approval", "launch"],
+  plan: ["brief", "strategy", "presentation", "approval"],
+  sm: ["strategy", "schedule"],
+  meeting: ["agenda"],
+  finance: ["proposal", "approval", "invoice"],
+};
+
 export const PRIORITIES = {
   low: {
     slug: "low",
@@ -574,7 +614,7 @@ export const PALLETE = [
     label: "Azul (Padrão)",
     light: {
       primary: { h: 264, c: 0.31, l: 0.45 },
-      bg: { h: 220, c: 0.005, l: 0.99 },
+      bg: { h: 0, c: 0, l: 1 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {

@@ -19,7 +19,7 @@ import {
   handleAction,
   isInstagramFeed,
   isSprint,
-  submitDeleteAction,
+  mergeAttributes,
   toggleSprintAction,
 } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
@@ -90,11 +90,16 @@ export function ActionFormFooter({
             tabIndex={5}
             showText={false}
             onSelect={async ({ category }) => {
+              const merged = mergeAttributes(
+                (RawAction.attributes as Record<string, string>) ?? {},
+                category,
+              );
               setRawAction({
                 ...RawAction,
                 category,
+                attributes: merged,
               });
-              await updateAction({ category });
+              await updateAction({ category, attributes: merged });
             }}
           />
         </div>

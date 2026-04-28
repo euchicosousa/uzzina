@@ -1,17 +1,19 @@
 import { parseISO } from "date-fns";
-import { CalendarDaysIcon, IdCardIcon, PlusIcon, Wand2 } from "lucide-react";
+import { CalendarDaysIcon, PlusIcon, Wand2 } from "lucide-react";
 import { Suspense, lazy, useRef, useState } from "react";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { getNewDateForAction, isLateAction } from "~/lib/helpers";
+import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
+import type { Partner } from "~/models/partners.server";
+import { GMGCombobox } from "../GMGCombobox";
 import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "./WorkFileThumbnail";
-import { cn } from "~/lib/utils";
-import { GMGCombobox } from "../GMGCombobox";
-import { Button } from "~/components/ui/button";
+
+import { AttributesSection } from "./AttributesSection";
 
 const Tiptap = lazy(() =>
   import("~/components/features/Tiptap").then((module) => ({
@@ -113,6 +115,11 @@ export function EssentialsTab({
             <Wand2 className="size-3" />
           </button>
         </div>
+        <AttributesSection
+          RawAction={RawAction}
+          setRawAction={setRawAction}
+          updateAction={updateAction}
+        />
         <div className="flex gap-8 border-b px-4 py-2">
           <div className="flex items-center gap-1">
             <CalendarDaysIcon

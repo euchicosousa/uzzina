@@ -51,7 +51,6 @@ const semana: Dia[] = [
       "brendavasconcelos",
       "clinicadengo",
       "clinicaunivetsobral",
-      "draanaliarocha",
       "dramargaridacarneiro",
       "draiaratomaz",
       "lumatorremarques",
@@ -68,6 +67,7 @@ const semana: Dia[] = [
       "cali.pizza.holiday",
       "toroburgerandbeer",
       "parksobral",
+      "draanaliarocha",
     ],
   },
   {
@@ -83,7 +83,6 @@ const semana: Dia[] = [
       "brendavasconcelos",
       "clinicadengo",
       "clinicaunivetsobral",
-      "draanaliarocha",
       "dramargaridacarneiro",
       "draiaratomaz",
       "lumatorremarques",
@@ -100,6 +99,7 @@ const semana: Dia[] = [
       "cali.pizza.holiday",
       "toroburgerandbeer",
       "parksobral",
+      "draanaliarocha",
     ],
   },
   {
@@ -115,7 +115,6 @@ const semana: Dia[] = [
       "brendavasconcelos",
       "clinicadengo",
       "clinicaunivetsobral",
-      "draanaliarocha",
       "dramargaridacarneiro",
       "draiaratomaz",
       "lumatorremarques",
@@ -132,6 +131,7 @@ const semana: Dia[] = [
       "cali.pizza.holiday",
       "toroburgerandbeer",
       "parksobral",
+      "draanaliarocha",
     ],
   },
 ];
@@ -172,7 +172,7 @@ export default function ProgramacaoPage() {
               type="button"
               onClick={() => setSelectedKey(dia.key)}
               className={[
-                "border-border cursor-pointer border-b px-3 py-2 text-center text-xs font-semibold tracking-widest uppercase transition-colors hover:text-foreground",
+                "border-border hover:text-foreground cursor-pointer border-b px-3 py-2 text-center text-xs font-semibold tracking-widest uppercase transition-colors",
                 isToday
                   ? "bg-card/50 text-foreground"
                   : "text-muted-foreground",

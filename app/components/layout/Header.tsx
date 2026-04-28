@@ -276,6 +276,9 @@ const HeaderMenu = ({ person }: { person: Person }) => {
         <DropdownMenuItem asChild>
           <Link to="/app/admin/celebrations">Datas Comemorativas</Link>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/programacao">Programação</Link>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

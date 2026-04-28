@@ -58,14 +58,19 @@ export type Database = {
       actions: {
         Row: {
           archived: boolean | null
+          attributes: Json | null
           category: string
           color: string
           content_files: string[] | null
           created_at: string
           date: string
           description: string | null
+          genesis: string | null
+          goal: string | null
           id: string
           instagram_caption: string | null
+          layout: string | null
+          mission: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -79,14 +84,19 @@ export type Database = {
         }
         Insert: {
           archived?: boolean | null
+          attributes?: Json | null
           category: string
           color?: string
           content_files?: string[] | null
           created_at: string
           date: string
           description?: string | null
+          genesis?: string | null
+          goal?: string | null
           id?: string
           instagram_caption?: string | null
+          layout?: string | null
+          mission?: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -100,14 +110,19 @@ export type Database = {
         }
         Update: {
           archived?: boolean | null
+          attributes?: Json | null
           category?: string
           color?: string
           content_files?: string[] | null
           created_at?: string
           date?: string
           description?: string | null
+          genesis?: string | null
+          goal?: string | null
           id?: string
           instagram_caption?: string | null
+          layout?: string | null
+          mission?: string | null
           partners?: string[]
           priority?: string
           responsibles?: string[]
@@ -462,14 +477,19 @@ export type Database = {
         Args: { query: string }
         Returns: {
           archived: boolean | null
+          attributes: Json | null
           category: string
           color: string
           content_files: string[] | null
           created_at: string
           date: string
           description: string | null
+          genesis: string | null
+          goal: string | null
           id: string
           instagram_caption: string | null
+          layout: string | null
+          mission: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -497,14 +517,19 @@ export type Database = {
         }
         Returns: {
           archived: boolean | null
+          attributes: Json | null
           category: string
           color: string
           content_files: string[] | null
           created_at: string
           date: string
           description: string | null
+          genesis: string | null
+          goal: string | null
           id: string
           instagram_caption: string | null
+          layout: string | null
+          mission: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -527,14 +552,19 @@ export type Database = {
         Args: { end_date: string; start_date: string; user_id_param: string }
         Returns: {
           archived: boolean | null
+          attributes: Json | null
           category: string
           color: string
           content_files: string[] | null
           created_at: string
           date: string
           description: string | null
+          genesis: string | null
+          goal: string | null
           id: string
           instagram_caption: string | null
+          layout: string | null
+          mission: string | null
           partners: string[]
           priority: string
           responsibles: string[]
@@ -557,14 +587,19 @@ export type Database = {
         Args: { user_id_param: string }
         Returns: {
           archived: boolean | null
+          attributes: Json | null
           category: string
           color: string
           content_files: string[] | null
           created_at: string
           date: string
           description: string | null
+          genesis: string | null
+          goal: string | null
           id: string
           instagram_caption: string | null
+          layout: string | null
+          mission: string | null
           partners: string[]
           priority: string
           responsibles: string[]
