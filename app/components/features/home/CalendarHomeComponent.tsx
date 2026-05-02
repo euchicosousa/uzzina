@@ -89,7 +89,7 @@ export function CalendarHomeComponent({
       <div
         className={cn(
           "flex flex-col overflow-hidden px-8 xl:px-16",
-          period === "week" ? "h-[50vh]" : "",
+          period === "week" ? "max-h-[50vh]" : "",
         )}
       >
         <CalendarWithDnd

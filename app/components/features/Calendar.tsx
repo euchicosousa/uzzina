@@ -57,7 +57,7 @@ const WeekHeader = () => {
     end: endOfWeek(new Date()),
   });
   return (
-    <div className="grid grid-cols-7 border-b">
+    <div className="grid grid-cols-7">
       {week.slice(0, 7).map((day) => (
         <div key={day.toISOString()} className="p-2 xl:p-3">
           <div

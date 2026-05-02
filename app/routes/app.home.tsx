@@ -81,11 +81,16 @@ export default function AppHome() {
   const { setBaseAction } = useOutletContext<OutletContext>();
 
   return (
+    // <div className="mx-8 flex flex-col gap-6 border-r border-l">
     <>
       {sprintActions.length > 0 && (
-        <SprintHomeComponent actions={sprintActions} />
+        <>
+          <SprintHomeComponent actions={sprintActions} />
+          {/* <div className="-mx-8 h-2 border-b"></div> */}
+        </>
       )}
       <TodayHomeComponent actions={currentActions} />
+      {/* <div className="-mx-8 h-2 border-b"></div> */}
       <CalendarHomeComponent
         actions={currentActions}
         setBaseAction={setBaseAction}
@@ -93,5 +98,6 @@ export default function AppHome() {
       <PartnersHomeComponent actions={currentLateActions} />
       <LateHomeComponent actions={currentLateActions} />
     </>
+    // </div>
   );
 }

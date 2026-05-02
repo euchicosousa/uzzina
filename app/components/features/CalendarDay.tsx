@@ -39,7 +39,7 @@ export function CalendarDay({
       id={`day_${format(day, "yyyy-MM-dd")}`}
       key={format(day, "yyyy-MM-dd")}
       className={cn(
-        "group/column flex flex-col justify-between border-b p-2",
+        "group/column flex flex-col justify-between",
         viewOptions.variant === VARIANT.content
           ? ""
           : isScroll

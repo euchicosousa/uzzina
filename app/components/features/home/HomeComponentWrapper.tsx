@@ -10,10 +10,9 @@ export function HomeComponentWrapper({
   title: string | ReactNode;
 }) {
   return (
-    <div>
-      <div className="flex flex-col justify-between gap-8 p-8 lg:flex-row lg:items-center xl:px-16">
+    <div className="border_after relative mx-8 border-x pb-12">
+      <div className="flex flex-col justify-between gap-8 px-8 lg:flex-row lg:items-center xl:px-16">
         <h1 className="py-12 text-5xl font-semibold">{title}</h1>
-        {/* <div className="bg-foreground hidden h-0.5 w-full lg:block"></div> */}
         {OptionsComponent && (
           <div className="self-end lg:self-auto">{OptionsComponent}</div>
         )}
