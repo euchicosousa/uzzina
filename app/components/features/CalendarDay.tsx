@@ -47,7 +47,7 @@ export function CalendarDay({
             : "h-72 overflow-hidden",
       )}
     >
-      <div className="flex h-full shrink flex-col gap-2 overflow-hidden">
+      <div className="flex h-full shrink flex-col gap-2 overflow-hidden p-1">
         <div className="flex items-center justify-between">
           <div
             className={cn(

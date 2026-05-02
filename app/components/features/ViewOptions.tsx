@@ -51,6 +51,7 @@ export type ViewOptions = {
 };
 
 import { useState } from "react";
+import { StatesCombobox } from "./StatesCombobox";
 
 /** Defaults internos — não expostos fora deste módulo */
 const DEFAULT_VIEW_OPTIONS = {
@@ -266,6 +267,18 @@ export function ViewOptionsComponent({
                   ...viewOptions,
                   filter_category:
                     categories[0] === "all" ? undefined : categories,
+                });
+              }}
+            />
+          )}
+          {viewOptions.showOptions.filter_state && (
+            <StatesCombobox
+              isMulti={true}
+              selectedStates={viewOptions.filter_state ?? ["all"]}
+              onSelect={({ states }) => {
+                setViewOptions({
+                  ...viewOptions,
+                  filter_state: states[0] === "all" ? undefined : states,
                 });
               }}
             />
