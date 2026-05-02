@@ -59,3 +59,15 @@ export function mergeAttributes(
     newSlugs.map((slug) => [slug, oldAttrs[slug] ?? STATES.do.slug]),
   );
 }
+
+/**
+ * Marca todos os atributos como concluídos.
+ */
+export function finishAttributes(
+  attrs: Record<string, string> | null | undefined,
+): Record<string, string> {
+  if (!attrs) return {};
+  return Object.fromEntries(
+    Object.keys(attrs).map((slug) => [slug, STATES.finished.slug]),
+  );
+}

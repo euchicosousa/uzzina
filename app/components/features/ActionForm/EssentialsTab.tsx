@@ -3,7 +3,11 @@ import { CalendarDaysIcon, PlusIcon, Wand2 } from "lucide-react";
 import { Suspense, lazy, useRef, useState } from "react";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
-import { getNewDateForAction, isLateAction } from "~/lib/helpers";
+import {
+  getNewDateForAction,
+  isInstagramFeed,
+  isLateAction,
+} from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
@@ -105,16 +109,18 @@ export function EssentialsTab({
             {isIDVisible ? RawAction.id : "ID"}
           </pre>
         </div>
-        <div className="flex items-center justify-between border-b px-4 py-1">
-          <div className="flex gap-8">
-            <GMGCombobox gmg="origem" selected={selectedOrigin} />
-            <GMGCombobox gmg="funil" selected={selectedFunnel} />
-            <GMGCombobox gmg="objetivo" selected={selectedGoal} />
+        {isInstagramFeed(RawAction.category) && (
+          <div className="flex items-center justify-between border-b px-4 py-1">
+            <div className="flex gap-8">
+              <GMGCombobox gmg="origem" selected={selectedOrigin} />
+              <GMGCombobox gmg="funil" selected={selectedFunnel} />
+              <GMGCombobox gmg="objetivo" selected={selectedGoal} />
+            </div>
+            <button className="hover:bg-secondary rounded-lg border p-2">
+              <Wand2 className="size-3" />
+            </button>
           </div>
-          <button className="hover:bg-secondary rounded-lg border p-2">
-            <Wand2 className="size-3" />
-          </button>
-        </div>
+        )}
         <AttributesSection
           RawAction={RawAction}
           setRawAction={setRawAction}

@@ -124,6 +124,7 @@ export function GlobalSearchCommand({
                     <UAvatar
                       fallback={partner.short}
                       size={SIZE.sm}
+                      image={partner.image}
                       backgroundColor={partner.colors[0]}
                       color={partner.colors[1]}
                     />
@@ -158,6 +159,7 @@ export function GlobalSearchCommand({
                             <UAvatar
                               fallback={partner.short}
                               size={SIZE.sm}
+                              image={partner.image}
                               backgroundColor={partner.colors[0]}
                               color={partner.colors[1]}
                             />

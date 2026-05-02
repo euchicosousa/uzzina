@@ -211,6 +211,7 @@ export default function AdminClientPage() {
               .map((p) => ({
                 id: p.slug,
                 fallback: p.short,
+                image: p.image,
                 backgroundColor: p.colors[0],
                 color: p.colors[1],
                 title: p.title,

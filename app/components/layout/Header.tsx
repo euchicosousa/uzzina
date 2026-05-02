@@ -152,6 +152,7 @@ export function Header({
                         <UAvatar
                           size={SIZE.sm}
                           fallback={partner.short}
+                          image={partner.image}
                           backgroundColor={partner.colors[0]}
                           color={partner.colors[1]}
                         />

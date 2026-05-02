@@ -179,6 +179,7 @@ export default function PartnerPage() {
               backgroundColor={partner.colors[0]}
               color={partner.colors[1]}
               size={SIZE.md}
+              image={partner.image}
             />
             {lateCount > 0 && (
               <Link

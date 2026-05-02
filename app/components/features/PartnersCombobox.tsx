@@ -69,6 +69,7 @@ export function PartnersCombobox({
               avatars={currentPartners.map((partner) => ({
                 id: partner.id,
                 fallback: partner?.short,
+                image: partner.image,
                 backgroundColor: partner?.colors[0],
                 color: partner?.colors[1],
               }))}
@@ -116,6 +117,7 @@ export function PartnersCombobox({
                 <UAvatar
                   fallback={partner.short}
                   size="sm"
+                  image={partner.image}
                   backgroundColor={partner.colors[0]}
                   color={partner.colors[1]}
                 />

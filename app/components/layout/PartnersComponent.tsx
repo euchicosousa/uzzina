@@ -63,6 +63,7 @@ function PartnerColumn({
               {
                 id: partner.id,
                 fallback: partner.short,
+                image: partner.image,
                 backgroundColor: partner.colors[0],
                 color: partner.colors[1],
               },

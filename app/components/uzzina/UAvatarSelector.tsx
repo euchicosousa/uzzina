@@ -6,7 +6,7 @@ import { cn } from "~/lib/utils";
 export interface AvatarSelectorOption {
   id: string; // O ID ou Slug original que será enviado no form state
   fallback: string;
-  image?: string;
+  image?: string | null;
   backgroundColor?: string;
   color?: string;
   title: string;
