@@ -83,7 +83,7 @@ export function Content({
           {showResponsibles && (
             <UAvatarGroup
               avatars={getPeople(action.responsibles, people).map(
-                (responsible) => ({
+                (responsible: Person) => ({
                   id: responsible.user_id,
                   fallback: responsible.name,
                   image: responsible.image,

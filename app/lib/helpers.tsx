@@ -7,6 +7,7 @@ export * from "~/utils/format";
 export * from "~/utils/validation";
 export * from "~/utils/factory";
 export * from "~/utils/sort";
+export * from "~/utils/filter";
 // export * from "~/services/auth.server";
 export * from "~/components/uzzina/UIIcons";
 

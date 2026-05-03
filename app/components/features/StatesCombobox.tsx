@@ -164,10 +164,11 @@ export function StatesCombobox({
                         states: newStates,
                         state: state.slug,
                       });
+                      // Mantém aberto para seleção múltipla
                     } else {
                       onSelect?.(state.slug);
+                      setIsOpen(false);
                     }
-                    setIsOpen(false);
                   }}
                 >
                   <div

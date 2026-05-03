@@ -146,7 +146,7 @@ export function ActionItem({
       case VARIANT.hour:
         return "hover:bg-card bg-card text-card-foreground";
       case VARIANT.block:
-        return "hover:bg-secondary/50 bg-secondary text-card-foreground transition";
+        return "hover:bg-card ring-foreground/10 ring-1 text-card-foreground transition";
       default:
         return "hover:bg-card bg-background text-card-foreground";
     }
@@ -180,16 +180,16 @@ export function ActionItem({
       case VARIANT.block:
         return (
           <div className="flex flex-col gap-2 pb-2">
-            <div className="flex items-center gap-2 py-2">
-              {!isEditing && <ActionItemSprint action={action} />}
+            <div className="flex items-center gap-2 py-1">
               <ActionItemTitleInput
                 isEditing={isEditing}
                 setIsEditing={handleSetIsEditing}
                 title={action.title}
-                className={"h-6 text-xl"}
+                className={"h-6 text-xl leading-none font-medium"}
                 InputButtonClassName="w-auto"
                 lines={1}
               />
+              <ActionItemSprint action={action} />
             </div>
 
             <div className="flex items-center justify-between">

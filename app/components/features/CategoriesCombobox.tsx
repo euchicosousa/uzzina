@@ -11,12 +11,13 @@ import { Button } from "../ui/button";
 import {
   Command,
   CommandEmpty,
+  CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
   CommandSeparator,
 } from "../ui/command";
-import { CATEGORIES } from "~/lib/CONSTANTS";
+import { AREAS, CATEGORIES } from "~/lib/CONSTANTS";
 
 export function CategoriesCombobox({
   selectedCategories,
@@ -71,6 +72,29 @@ export function CategoriesCombobox({
     (category) =>
       selectedCategories.find((slug) => slug === category.slug) !== undefined,
   );
+
+  // Agrupamento por área
+  const groupedCategories = categoriesList.reduce(
+    (acc, category) => {
+      let area = (category as any).area || "other";
+      if (category.slug === "all") area = "all";
+
+      // Move os itens de postagem para o grupo do Instagram
+      if (
+        category.slug === "instagram" ||
+        ["post", "reels", "carousel", "stories"].includes(category.slug)
+      ) {
+        area = "instagram";
+      }
+
+      if (!acc[area]) acc[area] = [];
+      acc[area].push(category);
+      return acc;
+    },
+    {} as Record<string, typeof categoriesList>,
+  );
+
+  const AREA_ORDER = ["all", "instagram", "creative", "account", "adm"];
 
   const isShiftPressedRef = useRef(false);
 
@@ -149,76 +173,104 @@ export function CategoriesCombobox({
           <CommandInput placeholder="Procurar estado..." />
           <CommandEmpty>Nenhum estado encontrado.</CommandEmpty>
           <CommandList className="p-1 outline-none">
-            {categoriesList.map((category) => (
-              <Fragment key={category.slug}>
-                <CommandItem
-                  className={cn("flex items-center gap-2")}
-                  onSelect={() => {
-                    if (isMulti) {
-                      let newCategories = selectedCategories;
+            {AREA_ORDER.map((areaSlug, index) => {
+              const items = groupedCategories[areaSlug];
+              if (!items || items.length === 0) return null;
 
-                      if (category.slug === "all") {
-                        newCategories = ["all"];
-                      } else if (category.slug === "instagram") {
-                        newCategories = ["post", "reels", "carousel"];
-                      } else {
-                        if (isShiftPressedRef.current) {
-                          newCategories = [category.slug];
-                        } else {
-                          newCategories = selectedCategories.filter(
-                            (slug) => slug !== "all",
-                          );
+              const areaTitle =
+                areaSlug === "all"
+                  ? "Filtros"
+                  : areaSlug === "instagram"
+                    ? "Instagram"
+                    : AREAS[areaSlug as keyof typeof AREAS]?.title || "Outros";
 
-                          if (newCategories.includes(category.slug)) {
-                            newCategories = newCategories.filter(
-                              (slug) => slug !== category.slug,
-                            );
+              return (
+                <Fragment key={areaSlug}>
+                  <CommandGroup heading={areaTitle}>
+                    {items.map((category) => (
+                      <CommandItem
+                        key={category.slug}
+                        className={cn("flex items-center gap-2")}
+                        onSelect={() => {
+                          if (isMulti) {
+                            let newCategories = selectedCategories;
+
+                            if (category.slug === "all") {
+                              newCategories = ["all"];
+                            } else if (category.slug === "instagram") {
+                              newCategories = ["post", "reels", "carousel"];
+                            } else {
+                              if (isShiftPressedRef.current) {
+                                newCategories = [category.slug];
+                              } else {
+                                newCategories = selectedCategories.filter(
+                                  (slug) => slug !== "all",
+                                );
+
+                                if (newCategories.includes(category.slug)) {
+                                  newCategories = newCategories.filter(
+                                    (slug) => slug !== category.slug,
+                                  );
+                                } else {
+                                  newCategories = [
+                                    ...newCategories,
+                                    category.slug,
+                                  ];
+                                }
+                              }
+
+                              newCategories =
+                                newCategories.length === 0
+                                  ? ["all"]
+                                  : newCategories;
+                            }
+
+                            onSelect?.({
+                              categories: newCategories,
+                              category: "",
+                            });
                           } else {
-                            newCategories = [...newCategories, category.slug];
+                            onSelect?.({
+                              category: category.slug,
+                              categories: [],
+                            });
                           }
-                        }
-
-                        newCategories =
-                          newCategories.length === 0 ? ["all"] : newCategories;
-                      }
-
-                      onSelect?.({
-                        categories: newCategories,
-                        category: "",
-                      });
-                    } else {
-                      onSelect?.({ category: category.slug, categories: [] });
-                    }
-                    setIsOpen(false);
-                  }}
-                >
-                  <Icons
-                    slug={category.slug}
-                    className="size-5"
-                    color={category.color}
-                  />
-                  {category.title}
-                  <CheckIcon
-                    className={cn(
-                      "ml-auto size-4",
-                      category.slug === "instagram"
-                        ? selectedCategories.filter(
-                            (s) =>
-                              s === "post" || s === "reels" || s === "carousel",
-                          ).length === 3
-                          ? "visible"
-                          : "invisible"
-                        : selectedCategories.includes(category.slug)
-                          ? "visible"
-                          : "invisible",
+                          setIsOpen(false);
+                        }}
+                      >
+                        <Icons
+                          slug={category.slug}
+                          className="size-5"
+                          color={category.color}
+                        />
+                        {category.title}
+                        <CheckIcon
+                          className={cn(
+                            "ml-auto size-4",
+                            category.slug === "instagram"
+                              ? selectedCategories.filter(
+                                  (s) =>
+                                    s === "post" ||
+                                    s === "reels" ||
+                                    s === "carousel",
+                                ).length === 3
+                                ? "visible"
+                                : "invisible"
+                              : selectedCategories.includes(category.slug)
+                                ? "visible"
+                                : "invisible",
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                  {index < AREA_ORDER.length - 1 &&
+                    groupedCategories[AREA_ORDER[index + 1]]?.length > 0 && (
+                      <CommandSeparator className="my-1" />
                     )}
-                  />
-                </CommandItem>
-                {["all", "instagram"].includes(category.slug) && (
-                  <CommandSeparator className="my-1" />
-                )}
-              </Fragment>
-            ))}
+                </Fragment>
+              );
+            })}
           </CommandList>
         </Command>
       </PopoverContent>

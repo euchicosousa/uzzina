@@ -101,7 +101,12 @@ export function BulkActionMenu() {
               Selecione uma data para {selectedIds.length} ação(ões)
             </DialogDescription>
           </DialogHeader>
-          <Calendar mode="single" onSelect={onDateSelect} autoFocus />
+          <Calendar
+            mode="single"
+            onSelect={onDateSelect}
+            autoFocus
+            className="w-full"
+          />
         </DialogContent>
       </Dialog>
 

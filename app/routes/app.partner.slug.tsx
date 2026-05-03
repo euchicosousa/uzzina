@@ -45,7 +45,11 @@ import { UBadge } from "~/components/uzzina/UBadge";
 import { useAppTheme } from "~/hooks/useAppTheme";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
 import { SIZE } from "~/lib/CONSTANTS";
-import { getInstagramFeedActions, getLateActions } from "~/lib/helpers";
+import {
+  filterActions,
+  getInstagramFeedActions,
+  getLateActions,
+} from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import {
   getActionsByPartner,
@@ -148,16 +152,8 @@ export default function PartnerPage() {
     },
   });
 
-  const filteredActions = currentActions
-    .filter((action) =>
-      viewOptions.filter_category
-        ? viewOptions.filter_category.includes(action.category)
-        : action,
-    )
-    .filter((action) => {
-      if (!query) return true;
-      return action.title?.toLowerCase().includes(query.toLowerCase());
-    });
+  const filteredActions = filterActions(currentActions, viewOptions, query);
+  console.log("[DEBUG] filter_state:", viewOptions.filter_state, "| total:", currentActions.length, "| filtered:", filteredActions.length);
 
   const feedActions = getInstagramFeedActions(filteredActions);
 
