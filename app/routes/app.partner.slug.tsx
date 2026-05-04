@@ -153,7 +153,6 @@ export default function PartnerPage() {
   });
 
   const filteredActions = filterActions(currentActions, viewOptions, query);
-  console.log("[DEBUG] filter_state:", viewOptions.filter_state, "| total:", currentActions.length, "| filtered:", filteredActions.length);
 
   const feedActions = getInstagramFeedActions(filteredActions);
 

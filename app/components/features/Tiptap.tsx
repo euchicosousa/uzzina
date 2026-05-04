@@ -9,17 +9,20 @@ export function Tiptap({
   handleChange,
   className,
   tabIndex,
+  disabled,
 }: {
   content: string;
   handleBlur?: (content: string) => void;
   handleChange?: (content: string) => void;
   className?: string;
   tabIndex?: number;
+  disabled?: boolean;
 }) {
   const editor = useEditor({
     extensions: [StarterKit], // define your extension array
     content, // initial content
     immediatelyRender: false,
+    editable: !disabled,
     editorProps: {
       attributes: {
         tabindex: tabIndex?.toString() || "0",
@@ -32,6 +35,11 @@ export function Tiptap({
       handleBlur?.(props.editor.getHTML());
     },
   });
+
+  // Update editable state when disabled prop changes
+  if (editor && editor.isEditable !== !disabled) {
+    editor.setEditable(!disabled);
+  }
 
   const providedValue = useMemo(() => ({ editor }), [editor]);
 

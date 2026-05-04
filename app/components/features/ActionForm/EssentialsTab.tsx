@@ -1,23 +1,35 @@
 import { parseISO } from "date-fns";
-import { CalendarDaysIcon, PlusIcon, Wand2 } from "lucide-react";
+import {
+  CalendarDaysIcon,
+  FishingHookIcon,
+  PlusIcon,
+  SparklesIcon,
+  Wand2,
+} from "lucide-react";
 import { Suspense, lazy, useRef, useState } from "react";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
-import {
-  getNewDateForAction,
-  isInstagramFeed,
-  isLateAction,
-} from "~/lib/helpers";
+import { getNewDateForAction, isLateAction } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
-import { GMGCombobox } from "../GMGCombobox";
 import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "./WorkFileThumbnail";
 
-import { AttributesSection } from "./AttributesSection";
+import { ArrowRightIcon } from "lucide-react";
+import { useEffect } from "react";
+import type { FetcherWithComponents } from "react-router";
+import { Button } from "~/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "~/components/ui/sheet";
+import { INTENT } from "~/lib/CONSTANTS";
 
 const Tiptap = lazy(() =>
   import("~/components/features/Tiptap").then((module) => ({
@@ -37,7 +49,10 @@ interface EssentialsTabProps {
   currentPartners: Partner[];
   cloudName: string;
   uploadPreset: string;
+  isAIProcessing: boolean;
+  fetcher: FetcherWithComponents<any>;
   onDescriptionChange?: (description: string) => void;
+  descriptionVersion?: number;
 }
 
 export function EssentialsTab({
@@ -48,8 +63,11 @@ export function EssentialsTab({
   setWorkFiles,
   currentPartners,
   cloudName,
+  isAIProcessing,
+  fetcher,
   uploadPreset,
   onDescriptionChange,
+  descriptionVersion,
 }: EssentialsTabProps) {
   const workFilesRef = useRef(workFiles);
   workFilesRef.current = workFiles;
@@ -59,9 +77,33 @@ export function EssentialsTab({
   >({});
 
   const [isIDVisible, setisIDVisible] = useState(false);
-  const [selectedOrigin, setSelectedOrigin] = useState<string | undefined>();
-  const [selectedFunnel, setSelectedFunnel] = useState<string | undefined>();
-  const [selectedGoal, setSelectedGoal] = useState<string | undefined>();
+
+  const [hooksOpen, setHooksOpen] = useState(false);
+  const [hooks, setHooks] = useState<{ tipo: string; texto: string }[]>([]);
+  const [racional, setRacional] = useState("");
+  const [isCreatingPost, setIsCreatingPost] = useState(false);
+
+  useEffect(() => {
+    if (fetcher.data?.intent === INTENT.ai_hooks) {
+      setRacional(fetcher.data.output.racional ?? "");
+      setHooks(fetcher.data.output.hooks ?? []);
+      setHooksOpen(true);
+      setIsCreatingPost(false);
+    }
+
+    if (
+      fetcher.data?.intent &&
+      [
+        INTENT.ai_post,
+        INTENT.ai_carousel,
+        INTENT.ai_stories,
+        INTENT.ai_reels,
+      ].includes(fetcher.data.intent)
+    ) {
+      setHooksOpen(false);
+      setIsCreatingPost(false);
+    }
+  }, [fetcher.data]);
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -109,24 +151,8 @@ export function EssentialsTab({
             {isIDVisible ? RawAction.id : "ID"}
           </pre>
         </div>
-        {isInstagramFeed(RawAction.category) && (
-          <div className="flex items-center justify-between border-b px-4 py-1">
-            <div className="flex gap-8">
-              <GMGCombobox gmg="origem" selected={selectedOrigin} />
-              <GMGCombobox gmg="funil" selected={selectedFunnel} />
-              <GMGCombobox gmg="objetivo" selected={selectedGoal} />
-            </div>
-            <button className="hover:bg-secondary rounded-lg border p-2">
-              <Wand2 className="size-3" />
-            </button>
-          </div>
-        )}
-        <AttributesSection
-          RawAction={RawAction}
-          setRawAction={setRawAction}
-          updateAction={updateAction}
-        />
-        <div className="flex gap-8 border-b px-4 py-2">
+
+        <div className="flex justify-between gap-8 border-b px-4 py-1">
           <div className="flex items-center gap-1">
             <CalendarDaysIcon
               className={cn(
@@ -151,6 +177,50 @@ export function EssentialsTab({
               }}
               date={parseISO(RawAction.date)}
             />
+          </div>
+          <div className="flex gap-1">
+            {hooks.length > 0 && (
+              <Button
+                size={"sm"}
+                variant={"secondary"}
+                onClick={() => {
+                  setHooksOpen(true);
+                }}
+              >
+                <FishingHookIcon />
+              </Button>
+            )}
+            <button
+              className="relative overflow-hidden rounded-full p-0.5 disabled:opacity-50"
+              disabled={isAIProcessing}
+              onClick={() => {
+                fetcher.submit(
+                  {
+                    intent: INTENT.ai_hooks,
+                    title: RawAction.title,
+                    description: RawAction.description,
+                    partner_context: currentPartners[0].context,
+                  },
+                  {
+                    method: "post",
+                    action: "/action/handle-ai",
+                  },
+                );
+              }}
+            >
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "conic-gradient(from var(--gradient-angle), #fc6, #f63, #96f, #6cf, #fc6)",
+                  animation: "spin-gradient 3s linear infinite",
+                }}
+              />
+              <div className="bg-background relative flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold tracking-wide">
+                CRIAR COM IA
+                <SparklesIcon className="size-3" />
+              </div>
+            </button>
           </div>
         </div>
 
@@ -227,6 +297,8 @@ export function EssentialsTab({
             fallback={<div className="bg-muted h-full w-full animate-pulse" />}
           >
             <Tiptap
+              key={descriptionVersion}
+              disabled={isAIProcessing}
               content={RawAction.description || ""}
               tabIndex={2}
               handleChange={(content) => {
@@ -244,10 +316,118 @@ export function EssentialsTab({
                 setRawAction({ ...RawAction, description: content });
                 await updateAction({ description: content });
               }}
-              className="font-inter h-full w-full"
+              className={cn(
+                "font-inter h-full w-full",
+                isAIProcessing && "opacity-40",
+              )}
             />
           </Suspense>
         </div>
+      </div>
+      <Sheet open={hooksOpen} onOpenChange={setHooksOpen}>
+        <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
+          <div className="sr-only">
+            <SheetTitle>Hooks gerados pela IA</SheetTitle>
+            <SheetDescription>{racional}</SheetDescription>
+          </div>
+          {isCreatingPost ? (
+            <div className="flex flex-col items-center justify-center gap-4 py-20">
+              <div className="border-primary size-12 animate-spin rounded-full border-4 border-t-transparent" />
+              <div className="text-center">
+                <h3 className="text-xl font-bold">Criando conteúdo...</h3>
+                <p className="text-muted-foreground text-sm">
+                  Isso pode levar alguns segundos.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4 p-4 pb-12 lg:p-8">
+              <div className="pt-8 text-3xl font-bold">Hooks</div>
+              <div className="pb-8 text-xl">{racional}</div>
+              {hooks.map((hook, i) => (
+                <HookItem
+                  key={i}
+                  hook={hook}
+                  racional={racional}
+                  RawAction={RawAction}
+                  category={RawAction.category}
+                  partner_context={currentPartners[0]?.context || ""}
+                  onChange={(texto) => {
+                    setHooks((prev) =>
+                      prev.map((h, j) => (j === i ? { ...h, texto } : h)),
+                    );
+                  }}
+                  onSubmit={(data) => {
+                    setIsCreatingPost(true);
+                    fetcher.submit(data, {
+                      method: "post",
+                      action: "/action/handle-ai",
+                    });
+                  }}
+                />
+              ))}
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+}
+
+function HookItem({
+  hook,
+  racional,
+  RawAction,
+  onChange,
+  category,
+  onSubmit,
+  partner_context,
+}: {
+  hook: { tipo: string; texto: string };
+  racional: string;
+  RawAction: Record<string, any>;
+  onChange: (texto: string) => void;
+  category: string;
+  onSubmit: (formData: any) => void;
+  partner_context: string;
+}) {
+  return (
+    <div>
+      <div className="mb-2 text-xs font-bold tracking-widest uppercase opacity-40">
+        {hook.tipo}
+      </div>
+
+      <div className="flex items-center gap-4">
+        <textarea
+          value={hook.texto}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full resize-none rounded-lg border bg-transparent px-4 py-2 outline-none"
+          // @ts-ignore
+          style={{ fieldSizing: "content" }}
+        />
+        <Button
+          variant="secondary"
+          size="icon"
+          className="h-8 w-8 shrink-0 rounded-full"
+          onClick={() => {
+            const intent = {
+              post: INTENT.ai_post,
+              reels: INTENT.ai_reels,
+              carousel: INTENT.ai_carousel,
+              stories: INTENT.ai_stories,
+            }[category];
+            onSubmit({
+              intent: intent || INTENT.ai_post,
+              tipo: hook.tipo,
+              hook: hook.texto,
+              description: RawAction.description,
+              racional: racional,
+              partner_context: partner_context,
+            });
+          }}
+        >
+          <ArrowRightIcon className="size-4" />
+        </Button>
       </div>
     </div>
   );

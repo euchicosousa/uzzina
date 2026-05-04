@@ -17,6 +17,7 @@ import { INTENT } from "~/lib/CONSTANTS";
 import { handleAction, isInstagramFeed } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
+import type { Partner } from "~/models/partners.server";
 import type { AppLoaderData } from "~/routes/app";
 
 function getCaptionTail(instagram_caption_tail: string | null) {
@@ -95,6 +96,7 @@ export function CreateAndEditAction({
 
   const [isPending, setIsPending] = useState(false);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
+  const [descriptionVersion, setDescriptionVersion] = useState(0);
 
   useEffect(() => {
     setIsPending(
@@ -103,8 +105,15 @@ export function CreateAndEditAction({
     );
 
     setIsAIProcessing(
-      fetchers.filter((f) => f.formData?.get("intent") === INTENT.caption_ai)
-        .length > 0,
+      fetchers.filter(
+        (f) =>
+          f.formData?.get("intent") === INTENT.ai_caption ||
+          f.formData?.get("intent") === INTENT.ai_hooks ||
+          f.formData?.get("intent") === INTENT.ai_post ||
+          f.formData?.get("intent") === INTENT.ai_carousel ||
+          f.formData?.get("intent") === INTENT.ai_stories ||
+          f.formData?.get("intent") === INTENT.ai_reels,
+      ).length > 0,
     );
 
     fetchers.forEach((f) => {
@@ -205,13 +214,56 @@ export function CreateAndEditAction({
 
   useEffect(() => {
     if (fetcher.data) {
-      if (fetcher.data.intent === INTENT.caption_ai) {
+      const intent = fetcher.data.intent;
+
+      if (intent === INTENT.ai_caption) {
+        const captionText =
+          typeof fetcher.data.output === "string"
+            ? fetcher.data.output
+            : fetcher.data.output.caption;
+
+        const newCaption = (captionText || "").concat(
+          getCaptionTail(currentPartners[0]?.instagram_caption_tail),
+        );
         setRawAction((prev) => ({
           ...prev,
-          instagram_caption: fetcher.data.output.concat(
-            getCaptionTail(currentPartners[0].instagram_caption_tail),
-          ),
+          instagram_caption: newCaption,
         }));
+        updateAction({ instagram_caption: newCaption });
+      }
+
+      if (
+        [
+          INTENT.ai_post,
+          INTENT.ai_carousel,
+          INTENT.ai_stories,
+          INTENT.ai_reels,
+        ].includes(intent)
+      ) {
+        const { content, caption } = fetcher.data.output;
+        const newCaption = (caption || "").concat(
+          getCaptionTail(currentPartners[0]?.instagram_caption_tail),
+        );
+
+        const currentDescription = rawActionRef.current.description || "";
+        const newDescription = content + "<hr />" + currentDescription;
+
+        setRawAction((prev) => ({
+          ...prev,
+          description: newDescription,
+          instagram_caption: newCaption,
+        }));
+
+        // Atualiza a ref da descrição para o Tiptap não sobrescrever
+        descriptionRef.current = newDescription;
+
+        // Incrementa a versão para forçar o Tiptap a remontar com o novo conteúdo
+        setDescriptionVersion((v) => v + 1);
+
+        updateAction({
+          description: newDescription,
+          instagram_caption: newCaption,
+        });
       }
     }
   }, [fetcher.data]);
@@ -302,6 +354,8 @@ export function CreateAndEditAction({
 
         {view === "essential" && (
           <EssentialsTab
+            isAIProcessing={isAIProcessing}
+            fetcher={fetcher}
             RawAction={RawAction}
             setRawAction={setRawAction}
             updateAction={updateAction}
@@ -313,6 +367,7 @@ export function CreateAndEditAction({
             onDescriptionChange={(desc: string) => {
               descriptionRef.current = desc;
             }}
+            descriptionVersion={descriptionVersion}
           />
         )}
         {view === "instagram" && (

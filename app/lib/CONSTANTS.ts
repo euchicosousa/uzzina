@@ -586,10 +586,15 @@ export const INTENT = {
   bulk_update_actions: "bulk-update-actions",
   duplicate_action: "duplicate-action",
   delete_action: "delete-action",
-  caption_ai: "caption-ai",
   create_comment: "create-comment",
   update_comment: "update-comment",
   delete_comment: "delete-comment",
+  ai_caption: "ai-caption",
+  ai_hooks: "ai-hooks",
+  ai_post: "ai-post",
+  ai_carousel: "ai-carousel",
+  ai_stories: "ai-stories",
+  ai_reels: "ai-reels",
 } as const;
 
 export const ORDER_BY = {

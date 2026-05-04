@@ -287,3 +287,14 @@
 .squircle {
   @apply [corner-shape:superellipse(1.5)];
 }
+
+/* Animated gradient angle for the AI button border */
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes spin-gradient {
+  to { --gradient-angle: 360deg; }
+}

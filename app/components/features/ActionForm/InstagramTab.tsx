@@ -82,17 +82,17 @@ export function InstagramTab({
             disabled={isAIProcessing}
             className="disabled:opacity-50"
             onClick={() => {
-              fetcher.submit(
-                {
-                  intent: INTENT.caption_ai,
-                  ...RawAction,
-                  contexto: `${currentPartners[0].context} — ${RawAction.category}`,
-                },
-                {
-                  method: "post",
-                  action: "/action/handle-ai",
-                },
-              );
+              // fetcher.submit(
+              //   {
+              //     intent: INTENT.caption_ai,
+              //     ...RawAction,
+              //     contexto: `${currentPartners[0].context} — ${RawAction.category}`,
+              //   },
+              //   {
+              //     method: "post",
+              //     action: "/action/handle-ai",
+              //   },
+              // );
             }}
           >
             <Wand2Icon />
