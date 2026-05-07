@@ -1,7 +1,7 @@
 import { type FetcherWithComponents } from "react-router";
 import { Button } from "~/components/ui/button";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
-import { LoaderIcon, Wand2Icon } from "lucide-react";
+import { LoaderIcon, SparklesIcon, Wand2Icon } from "lucide-react";
 import {
   ContentFilesManager,
   InstagramPreview,
@@ -82,20 +82,21 @@ export function InstagramTab({
             disabled={isAIProcessing}
             className="disabled:opacity-50"
             onClick={() => {
-              // fetcher.submit(
-              //   {
-              //     intent: INTENT.caption_ai,
-              //     ...RawAction,
-              //     contexto: `${currentPartners[0].context} — ${RawAction.category}`,
-              //   },
-              //   {
-              //     method: "post",
-              //     action: "/action/handle-ai",
-              //   },
-              // );
+              fetcher.submit(
+                {
+                  intent: INTENT.ai_caption,
+                  title: RawAction.title,
+                  description: RawAction.description,
+                  partner_context: `${currentPartners[0].context} — ${RawAction.category}`,
+                },
+                {
+                  method: "post",
+                  action: "/action/handle-ai",
+                },
+              );
             }}
           >
-            <Wand2Icon />
+            <SparklesIcon />
           </Button>
         </div>
         <div className="flex h-full flex-col">
