@@ -140,13 +140,13 @@ export function ActionItem({
     if (isEditing)
       return "ring-foreground focus-within:ring-2 z-100 text-foreground";
     if (showLate && isLateAction(action))
-      return "bg-destructive/5 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30";
+      return "bg-destructive/5 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
 
     switch (variant) {
       case VARIANT.hour:
         return "hover:bg-card bg-card text-card-foreground";
       case VARIANT.block:
-        return "hover:bg-card ring-foreground/10 ring-1 text-card-foreground transition";
+        return "hover:bg-card bg-card/50 ring-foreground/10 ring-1 text-card-foreground transition";
       default:
         return "hover:bg-card bg-background text-card-foreground";
     }
