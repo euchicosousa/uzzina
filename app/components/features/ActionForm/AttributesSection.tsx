@@ -43,12 +43,27 @@ export function AttributesSection({
             currentState={currentAttrs[slug] ?? STATES.do.slug}
             onSelect={async (newState) => {
               const updated = { ...currentAttrs, [slug]: newState };
+
+              // Regra bidirecional: se algum atributo mudar para não-finished
+              // e a ação estiver como finished, volta o estado da ação para 'do'
+              const hasNonFinished = Object.values(updated).some(
+                (v) => v !== STATES.finished.slug,
+              );
+              const revertState =
+                hasNonFinished && RawAction.state === STATES.finished.slug
+                  ? STATES.do.slug
+                  : undefined;
+
               // @ts-ignore
               setRawAction((prev: Action) => ({
                 ...prev,
                 attributes: updated,
+                ...(revertState ? { state: revertState } : {}),
               }));
-              await updateAction({ attributes: updated });
+              await updateAction({
+                attributes: updated,
+                ...(revertState ? { state: revertState } : {}),
+              });
             }}
             className={cn(
               "min-w-0",

@@ -30,6 +30,7 @@ import {
   SheetTitle,
 } from "~/components/ui/sheet";
 import { INTENT } from "~/lib/CONSTANTS";
+import { AttributesSection } from "./AttributesSection";
 
 const Tiptap = lazy(() =>
   import("~/components/features/Tiptap").then((module) => ({
@@ -178,6 +179,7 @@ export function EssentialsTab({
               date={parseISO(RawAction.date)}
             />
           </div>
+
           <div className="flex gap-1">
             {hooks.length > 0 && (
               <Button
@@ -223,6 +225,12 @@ export function EssentialsTab({
             </button>
           </div>
         </div>
+
+        <AttributesSection
+          RawAction={RawAction}
+          setRawAction={setRawAction}
+          updateAction={updateAction}
+        />
 
         <div className="flex items-start gap-2 border-b px-4 py-1">
           <div className="flex flex-wrap items-center gap-1.5">

@@ -69,22 +69,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       const updateData = { ...result.data };
 
       // Se o estado for 'finished', garante que todos os atributos também fiquem 'finished'
+      // e remove do sprint de todos
       if (updateData.state === STATES.finished.slug) {
-        let currentAttributes = updateData.attributes;
-
-        // Se os atributos não vieram no payload, buscamos do banco para não perder dados ou ter inconsistência
-        if (!currentAttributes) {
-          try {
-            const original = await getActionById(supabase, String(id));
-            currentAttributes = original?.attributes as Record<string, string>;
-          } catch (e) {
-            console.error("Error fetching original action for attributes update:", e);
-          }
+        if (updateData.attributes) {
+          updateData.attributes = finishAttributes(updateData.attributes);
         }
+        updateData.sprints = null;
+      }
 
-        if (currentAttributes) {
-          updateData.attributes = finishAttributes(currentAttributes);
-        }
+      // Se for arquivado, também remove do sprint
+      if (updateData.archived === true) {
+        updateData.sprints = null;
       }
 
       try {
