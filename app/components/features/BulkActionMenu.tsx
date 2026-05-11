@@ -2,17 +2,18 @@ import {
   ArchiveIcon,
   CalendarIcon,
   FlagIcon,
-  InstagramIcon,
   KanbanIcon,
+  PaletteIcon,
   SignalIcon,
   TagIcon,
   UserIcon,
   XIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
-import { useMatches, useSubmit } from "react-router";
+import { PartnerColorPicker } from "~/components/features/ActionForm/PartnerColorPicker";
+import { useMatches, useParams, useSubmit } from "react-router";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { handleBulkAction } from "~/lib/helpers";
 import { CATEGORIES, PRIORITIES, STATES } from "~/lib/CONSTANTS";
@@ -39,36 +40,59 @@ import { Calendar } from "~/components/ui/calendar";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "~/routes/app";
+import type { Partner } from "~/models/partners.server";
 
+// "date" é o único target de data por agora — tipo explícito para segurança
 type DateTarget = "date";
 
 export function BulkActionMenu() {
+  // ─── Multi-seleção ───────────────────────────────────────────────────────────
   const { isSelectionMode, selectedIds, clearSelection } = useMultiSelection();
   const submit = useSubmit();
+
+  // ─── Dados globais do app loader ─────────────────────────────────────────────
+  // useMatches()[1] é sempre o loader do route "routes/app" (app shell)
+  const { people, partners } = useMatches()[1].loaderData as AppLoaderData;
+  const params = useParams();
+
+  // ─── Parceiro da página atual ────────────────────────────────────────────────
+  // Usa params.slug igual ao Header.tsx — undefined quando não há slug ou é "new"
+  const currentPartner: Partner | undefined =
+    params.slug && params.slug !== "new"
+      ? partners.find((p) => p.slug === params.slug)
+      : undefined;
+
+  // Cores brutas do parceiro atual — PartnerColorPicker cuida da normalização internamente
+  const partnerColors = currentPartner?.colors ?? [];
+
+  // ─── Estados dos dialogs ─────────────────────────────────────────────────────
+  // ─── Estados dos dialogs ─────────────────────────────────────────────────────
   const [dateTarget, setDateTarget] = useState<DateTarget | null>(null);
   const [partnersOpen, setPartnersOpen] = useState(false);
   const [pickedResponsibles, setPickedResponsibles] = useState<string[]>([]);
+  const [colorOpen, setColorOpen] = useState(false);
+  const [pickedColor, setPickedColor] = useState("");
 
-  // Get people from the root app loader
-  const { people } = useMatches()[1].loaderData as AppLoaderData;
-
+  // Early return: nada a mostrar fora do modo de seleção ou sem itens selecionados
   if (!isSelectionMode || selectedIds.length === 0) return null;
 
-  const handleAction = (name: string) =>
-    toast.info(`'${name}' para ${selectedIds.length} itens. Em breve!`);
+  // ─── Helpers de ação em lote ─────────────────────────────────────────────────
 
-  const performBulkAction = (updates: any) => {
+  /** Aplica `updates` em todas as ações selecionadas e limpa a seleção */
+  const performBulkAction = (updates: Record<string, unknown>) => {
     handleBulkAction(selectedIds, updates, submit);
     clearSelection();
     toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
   };
 
+  // ─── Handlers: Data ──────────────────────────────────────────────────────────
   const onDateSelect = (date: Date | undefined) => {
     if (!date || !dateTarget) return;
     performBulkAction({ [dateTarget]: date.toISOString() });
     setDateTarget(null);
   };
 
+  // ─── Handlers: Responsáveis ──────────────────────────────────────────────────
   const openPartnersDialog = () => {
     setPickedResponsibles([]);
     setPartnersOpen(true);
@@ -85,18 +109,29 @@ export function BulkActionMenu() {
     setPartnersOpen(false);
   };
 
-  const dateLabel = "Data";
+  // ─── Handlers: Cor ───────────────────────────────────────────────────────────
+  const openColorDialog = () => {
+    setPickedColor("");
+    setColorOpen(true);
+  };
 
+  const applyColor = () => {
+    if (!pickedColor) return;
+    performBulkAction({ color: pickedColor });
+    setColorOpen(false);
+  };
+
+  // ─── Render ──────────────────────────────────────────────────────────────────
   return (
     <>
-      {/* Date picker Dialog */}
+      {/* ── Dialog: Seleção de data ────────────────────────────────────────── */}
       <Dialog
         open={!!dateTarget}
         onOpenChange={(open) => !open && setDateTarget(null)}
       >
         <DialogContent className="w-auto overflow-hidden p-0">
           <DialogHeader className="px-4 pt-4">
-            <DialogTitle>{dateLabel}</DialogTitle>
+            <DialogTitle>Data</DialogTitle>
             <DialogDescription>
               Selecione uma data para {selectedIds.length} ação(ões)
             </DialogDescription>
@@ -110,7 +145,7 @@ export function BulkActionMenu() {
         </DialogContent>
       </Dialog>
 
-      {/* Responsibles picker Dialog */}
+      {/* ── Dialog: Seleção de responsáveis ───────────────────────────────── */}
       <Dialog open={partnersOpen} onOpenChange={setPartnersOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -161,6 +196,35 @@ export function BulkActionMenu() {
         </DialogContent>
       </Dialog>
 
+      {/* ── Dialog: Seleção de cor do parceiro ────────────────────────────── */}
+      <Dialog open={colorOpen} onOpenChange={setColorOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Alterar Cor</DialogTitle>
+            <DialogDescription>
+              Escolha uma cor do parceiro para {selectedIds.length} ação(ões)
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-2">
+            {/* Swatches + hex input unificados — mesmo componente do ActionColorDropdown */}
+            <PartnerColorPicker
+              colors={partnerColors}
+              value={pickedColor}
+              onChange={setPickedColor}
+            />
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setColorOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={applyColor} disabled={!pickedColor}>
+              Aplicar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Dropdown principal de ações em lote ───────────────────────────── */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -196,7 +260,7 @@ export function BulkActionMenu() {
             </DropdownMenuPortal>
           </DropdownMenuSub>
 
-          {/* Datas */}
+          {/* Data */}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <CalendarIcon className="mr-2 size-4 opacity-70" /> Alterar Data
@@ -244,6 +308,7 @@ export function BulkActionMenu() {
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
                 {Object.values(PRIORITIES).map((priority) => {
+                  // Mapeia slug → classe de cor semântica do design system
                   const iconClass =
                     priority.slug === "low"
                       ? "text-info"
@@ -266,22 +331,26 @@ export function BulkActionMenu() {
             </DropdownMenuPortal>
           </DropdownMenuSub>
 
-          {/* Responsáveis */}
+          {/* Cor — abre o dialog com as cores do parceiro atual */}
+          <DropdownMenuItem onSelect={openColorDialog}>
+            <PaletteIcon className="mr-2 size-4 opacity-70" /> Alterar Cor
+          </DropdownMenuItem>
+
+          {/* Responsáveis — abre o dialog de seleção de pessoas */}
           <DropdownMenuItem onSelect={openPartnersDialog}>
             <UserIcon className="mr-2 size-4 opacity-70" /> Alterar Responsáveis
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
 
-          {/* Arquivar */}
-          <DropdownMenuItem
-            onClick={() => performBulkAction({ archived: true })}
-          >
+          {/* Arquivar todas as selecionadas de uma vez */}
+          <DropdownMenuItem onClick={() => performBulkAction({ archived: true })}>
             <ArchiveIcon className="mr-2 size-4 opacity-70" /> Arquivar
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
 
+          {/* Sai do modo de seleção sem aplicar nada */}
           <DropdownMenuItem onClick={clearSelection}>
             <XIcon className="mr-2 size-4 opacity-70" /> Limpar Seleção
           </DropdownMenuItem>

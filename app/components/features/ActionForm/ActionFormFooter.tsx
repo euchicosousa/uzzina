@@ -14,8 +14,9 @@ import { PartnersCombobox } from "~/components/features/PartnersCombobox";
 import { StatesCombobox } from "~/components/features/StatesCombobox";
 import { Button } from "~/components/ui/button";
 import { UToggleInput } from "~/components/uzzina/UToggle";
-import { INTENT } from "~/lib/CONSTANTS";
+import { INTENT, STATES } from "~/lib/CONSTANTS";
 import {
+  finishAttributes,
   handleAction,
   isInstagramFeed,
   isSprint,
@@ -75,9 +76,15 @@ export function ActionFormFooter({
             tabIndex={4}
             showText={false}
             onSelect={async (selected) => {
+              const isFinishing = selected === STATES.finished.slug;
               setRawAction({
                 ...RawAction,
                 state: selected,
+                // Espelha os side effects do servidor imediatamente na UI
+                ...(isFinishing && RawAction.attributes
+                  ? { attributes: finishAttributes(RawAction.attributes as Record<string, string>) }
+                  : {}),
+                ...(isFinishing ? { sprints: null } : {}),
               });
               await updateAction({ state: selected });
             }}
@@ -122,6 +129,7 @@ export function ActionFormFooter({
         {RawAction.id && (
           <>
             <UToggleInput
+              key={`sprint-${isInSprint}`}
               id="sprint"
               name="sprint"
               defaultChecked={isInSprint}
@@ -152,7 +160,7 @@ export function ActionFormFooter({
                 className="flex items-center gap-2 rounded-2xl p-2 text-sm opacity-50 hover:opacity-100 focus:opacity-100"
                 onClick={async () => {
                   if (confirm("Tem certeza que deseja arquivar esta ação?")) {
-                    setRawAction({ ...RawAction, archived: true });
+                    setRawAction({ ...RawAction, archived: true, sprints: null });
                     await updateAction({ archived: true });
                     handleClose();
                   }

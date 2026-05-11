@@ -314,8 +314,12 @@ export function ActionItem({
         bgClasses,
         className,
         isDragging && "cursor-grabbing",
-        isSelectionMode && "relative pl-8 transition-all",
+        isSelectionMode &&
+          (variant !== VARIANT.content
+            ? "relative pl-8 transition-all"
+            : "relative transition-all"),
         isSelectionMode && isSelected && "ring-primary ring-2 ring-inset",
+        isSelected && variant === VARIANT.content && "rounded-2xl p-2",
       )}
       onClick={(e) => {
         if (isSelectionMode) {
@@ -334,12 +338,24 @@ export function ActionItem({
       }}
     >
       {isSelectionMode && (
-        <div className="absolute top-1/2 left-2.5 z-20 flex -translate-y-1/2 items-center justify-center">
-          <Checkbox checked={isSelected} className="pointer-events-none" />
+        <div
+          className={cn(
+            "absolute z-20 flex items-center justify-center transition-all",
+            variant !== VARIANT.content
+              ? "top-1/2 left-2.5 -translate-y-1/2"
+              : isSelected
+                ? "top-3 left-3"
+                : "top-1 left-1",
+          )}
+        >
+          <Checkbox
+            checked={isSelected}
+            className="bg-background pointer-events-none"
+          />
         </div>
       )}
       {variant === VARIANT.content && (
-        <div className="mb-2 flex items-center gap-2 overflow-hidden">
+        <div className={cn("mb-2 flex items-center gap-2 overflow-hidden")}>
           <ActionItemPartners
             action={action}
             partners={currentPartners}

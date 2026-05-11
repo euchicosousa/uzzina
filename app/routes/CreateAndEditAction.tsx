@@ -50,6 +50,11 @@ export function CreateAndEditAction({
     rawActionRef.current = RawAction;
   }, [RawAction]);
 
+  // Lock to prevent race condition: onBlur + button click both firing create_action
+  // simultaneously before the server responds with the new id.
+  // useRef is synchronous — both callbacks share the same lock in the same call stack.
+  const isCreatingRef = useRef(false);
+
   // Ref for the latest description typed in Tiptap — updated on every keystroke
   // without triggering re-renders. handleSave reads from here so Cmd+Enter
   // always saves the latest typed content even without blur.
@@ -69,6 +74,10 @@ export function CreateAndEditAction({
       });
       return;
     }
+
+    // Prevent double-create: if onBlur already fired a create, bail out
+    if (!RawAction.id && isCreatingRef.current) return;
+    if (!RawAction.id) isCreatingRef.current = true;
 
     await handleAction(
       {
@@ -124,6 +133,7 @@ export function CreateAndEditAction({
         if (intent === INTENT.create_action) {
           const newId = f.data?.id;
           if (newId) {
+            isCreatingRef.current = false; // release lock after server responds
             setRawAction((prev) => {
               if (prev.id === newId) return prev;
               return { ...prev, id: newId };
@@ -168,6 +178,10 @@ export function CreateAndEditAction({
           current.title &&
           current.partners.length > 0)
       ) {
+        // Prevent double-create: if a creation is already in flight, bail out
+        if (!current.id && isCreatingRef.current) return;
+        if (!current.id) isCreatingRef.current = true;
+
         await handleAction(
           {
             ...current,

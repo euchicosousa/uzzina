@@ -1,55 +1,59 @@
-import Color from "color";
 import { useEffect, useMemo, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { Input } from "~/components/ui/input";
-import { cn, getGridCols, isHexColorValid } from "~/lib/utils";
+import { cn, getGridCols } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
+import { PartnerColorPicker, toHex } from "./PartnerColorPicker";
 
+interface ActionColorDropdownProps {
+  action: Action;
+  partners: Partner[];
+  /** Chamado quando o usuário seleciona ou digita uma nova cor */
+  onSelect?: (color: string) => void;
+  tabIndex?: number;
+}
+
+/**
+ * Dropdown de seleção de cor para uma ação individual.
+ * Exibe um botão com a cor atual e abre um painel com os swatches do parceiro + input hex.
+ * Posicionado no footer do form (EssentialsTab → ActionFormFooter).
+ */
 export function ActionColorDropdown({
   action,
   partners,
   onSelect,
   tabIndex,
-}: {
-  action: Action;
-  partners: Partner[];
-  onSelect?: (color: string) => void;
-  tabIndex?: number;
-}) {
-  const normalizedActionColor = useMemo(() => {
-    return isHexColorValid(action.color) ? Color(action.color).hex() : "";
-  }, [action.color]);
+}: ActionColorDropdownProps) {
+  // Cor atual normalizada para hex — serve como valor inicial do estado local
+  const normalizedActionColor = useMemo(
+    () => (action.color ? toHex(action.color) : ""),
+    [action.color],
+  );
 
   const [selected, setSelected] = useState(normalizedActionColor);
 
+  // Sincroniza quando a prop muda externamente (ex: troca de ação no painel)
   useEffect(() => {
     setSelected(normalizedActionColor);
   }, [normalizedActionColor]);
 
-  const colors = useMemo(() => {
-    let color = isHexColorValid(action.color) ? action.color : "#666";
-    return [
-      ...new Set(
-        (partners.length > 0
-          ? partners.map((partner) =>
-              partner.colors.map((color) => Color(color).hex()),
-            )
-          : [
-              Color(color).lighten(0.4).hex(),
-              color,
-              Color(color).darken(0.4).hex(),
-            ]
-        ).flat(),
-      ),
-    ];
-  }, [partners, action.color]);
+  // Agrega todas as cores de todos os parceiros associados à ação
+  const partnerColors = useMemo(
+    () => partners.flatMap((p) => p.colors ?? []),
+    [partners],
+  );
+
+  const handleChange = (color: string) => {
+    setSelected(color);
+    onSelect?.(color);
+  };
+
   return (
     <DropdownMenu>
+      {/* Botão trigger: bolinha com a cor atual da ação */}
       <DropdownMenuTrigger asChild>
         <button
           tabIndex={tabIndex}
@@ -58,45 +62,19 @@ export function ActionColorDropdown({
           <div
             className="size-5 rounded-full border border-black/5"
             style={{ backgroundColor: action.color }}
-          ></div>
+          />
         </button>
       </DropdownMenuTrigger>
+
+      {/* Painel: swatches + input hex via componente compartilhado */}
       <DropdownMenuContent
-        className={cn("grid w-40 gap-2 p-2", getGridCols(colors.length))}
+        className={cn("grid w-40 gap-2 p-2", getGridCols(partnerColors.length))}
       >
-        {colors.map((color, index) => (
-          <DropdownMenuItem
-            key={index}
-            className={cn(
-              "cursor-pointer p-0.5 transition-opacity hover:opacity-50",
-              (selected?.toLowerCase() === color.toLowerCase() ||
-                (!selected && index === 0)) &&
-                "ring-primary rounded ring-2 ring-offset-1",
-            )}
-            onSelect={() => {
-              setSelected(color);
-              onSelect?.(color);
-            }}
-          >
-            <div
-              className="aspect-[3/4] w-12 rounded border border-black/5"
-              style={{ backgroundColor: color }}
-            ></div>
-          </DropdownMenuItem>
-        ))}
-        <div className="col-span-full flex w-full shrink-0 items-center gap-2">
-          <Input
-            value={selected}
-            onChange={(e) => {
-              setSelected(e.target.value);
-              if (isHexColorValid(e.target.value)) {
-                onSelect?.(e.target.value);
-              }
-            }}
-            placeholder="Hex"
-            className="h-8"
-          />
-        </div>
+        <PartnerColorPicker
+          colors={partnerColors}
+          value={selected}
+          onChange={handleChange}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );
