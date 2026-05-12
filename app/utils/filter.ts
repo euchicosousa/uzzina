@@ -32,9 +32,9 @@ export function filterActions(
       if (!options.filter_category.includes(action.category)) return false;
     }
 
-    // 3. Filtro por Estado (Status)
-    if (options.filter_state && options.filter_state.length > 0) {
-      if (!options.filter_state.includes(action.state)) return false;
+    // 3. Filtro por Fase
+    if (options.filter_phase && options.filter_phase.length > 0) {
+      if (!options.filter_phase.includes(action.phase ?? "idea")) return false;
     }
 
     // 4. Filtro por Responsável

@@ -46,7 +46,7 @@ export async function getOpenActionsByPartner(
     .or("archived.is.false,archived.is.null")
     .contains("responsibles", isAdmin ? [] : [userId])
     .overlaps("partners", [partnerSlug])
-    .neq("state", "finished")
+    .neq("phase", "concluido")
     .order("date", { ascending: true });
 
   if (error) throw error;
@@ -70,7 +70,7 @@ export async function getLateActionsByPartner(
     .or("archived.is.false,archived.is.null")
     .contains("responsibles", isAdmin ? [] : [userId])
     .overlaps("partners", [partnerSlug])
-    .neq("state", "finished")
+    .neq("phase", "concluido")
     .lt("date", format(new Date(), "yyyy-MM-dd HH:mm:ss"))
     .order("date", { ascending: false });
 
@@ -94,7 +94,7 @@ export async function getAllLateActions(
     .or("archived.is.false,archived.is.null")
     .contains("responsibles", isAdmin ? [] : [userId])
     .overlaps("partners", partnerSlugs)
-    .neq("state", "finished")
+    .neq("phase", "concluido")
     .lt("date", format(new Date(), "yyyy-MM-dd HH:mm:ss"))
     .order("date", { ascending: false });
 

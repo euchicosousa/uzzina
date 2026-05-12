@@ -12,8 +12,8 @@ import { useSubmit } from "react-router";
 import {
   DATE_TIME_DISPLAY,
   INTENT,
-  STATES,
-  type STATE_TYPE,
+  PHASES,
+  type PHASE_TYPE,
 } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import { ActionItem } from "../features/ActionItem";
@@ -28,9 +28,8 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
 
   const [activeAction, setActiveAction] = useState<Action>();
 
-  // Local override: maps action.id → new state slug
-  // Applied immediately on drop so the DOM is correct before drop animation runs.
-  const [stateOverrides, setStateOverrides] = useState<Record<string, string>>(
+  // Local override: maps action.id → new phase slug
+  const [phaseOverrides, setPhaseOverrides] = useState<Record<string, string>>(
     {},
   );
 
@@ -39,7 +38,7 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
   // delivers fresh data that already contains the persisted changes,
   // keeping the overrides would cause stale values to shadow future updates.
   useEffect(() => {
-    setStateOverrides({});
+    setPhaseOverrides({});
   }, [actions]);
 
   const sensors = useSensors(
@@ -54,27 +53,23 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
 
   const handleDragEnd = (event: DragEndEvent) => {
     if (event.over && activeAction) {
-      const newState = event.over.id as string;
+      const newPhase = event.over.id as string;
 
-      // 1. Apply override locally RIGHT NOW so that in the same batched render
-      //    the item already appears in the new column — this is what the drop
-      //    animation will use to calculate the destination position.
-      setStateOverrides((prev) => ({ ...prev, [activeAction.id]: newState }));
+      // 1. Apply override locally
+      setPhaseOverrides((prev) => ({ ...prev, [activeAction.id]: newPhase }));
 
-      // 2. Persist to server (async fetcher)
+      // 2. Persist to server
       handleAction(
         {
           ...activeAction,
           intent: INTENT.update_action,
-          state: newState,
+          phase: newPhase,
         },
         submit,
       );
     }
 
-    // 3. Clear overlay in the same render cycle as the override update above.
-    //    React batches these together, so the drop animation starts from the
-    //    correct (new) column position in the DOM.
+    // 3. Clear overlay
     setActiveAction(undefined);
   };
 
@@ -82,18 +77,18 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
   const actionsWithOverrides = useMemo(
     () =>
       actions.map((action) =>
-        stateOverrides[action.id]
-          ? { ...action, state: stateOverrides[action.id] }
+        phaseOverrides[action.id]
+          ? { ...action, phase: phaseOverrides[action.id] }
           : action,
       ),
-    [actions, stateOverrides],
+    [actions, phaseOverrides],
   );
 
-  // Pre-group by state so each KanbanColumn doesn't re-filter on every render
-  const actionsByState = useMemo(() => {
+  // Pre-group by phase so each KanbanColumn doesn't re-filter on every render
+  const actionsByPhase = useMemo(() => {
     const map: Record<string, Action[]> = {};
     for (const action of actionsWithOverrides) {
-      const key = action.state ?? "";
+      const key = action.phase ?? "idea";
       if (!map[key]) map[key] = [];
       map[key].push(action);
     }
@@ -103,19 +98,19 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
   return (
     <div className="w-full max-w-full overflow-hidden">
       <div className="overflow-x-auto pb-8">
-        <div className="grid min-w-[1500px] grid-cols-7 overflow-hidden">
+        <div className="grid min-w-[1500px] grid-cols-6 overflow-hidden">
           <DndContext
             id={"kanban"}
             sensors={sensors}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            {Object.values(STATES).map((state) => (
+            {Object.values(PHASES).map((phase) => (
               <KanbanColumn
-                id={state.slug}
-                state={state}
-                key={state.slug}
-                actions={actionsByState[state.slug] ?? []}
+                id={phase.slug}
+                phase={phase}
+                key={phase.slug}
+                actions={actionsByPhase[phase.slug] ?? []}
               />
             ))}
             <DragOverlay
@@ -144,11 +139,11 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
 const KanbanColumn = ({
   actions,
   id,
-  state,
+  phase,
 }: {
   actions: Action[];
   id: string;
-  state: STATE_TYPE;
+  phase: PHASE_TYPE;
 }) => {
   return (
     <Droppable id={id} className="flex h-[30vh] flex-col overflow-hidden">
@@ -159,10 +154,10 @@ const KanbanColumn = ({
               "flex h-full flex-col overflow-hidden border-t transition-colors",
               isOver && "border-primary text-primary",
             )}
-            // style={{ borderTopColor: state.color }}
+            style={{ borderTopColor: phase.color }}
           >
             <div className="flex items-center gap-2 px-1 py-2 text-lg font-medium tracking-tight">
-              <div>{state.title}</div>
+              <div>{phase.title}</div>
               <UBadge value={actions.length} />
             </div>
 

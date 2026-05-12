@@ -15,10 +15,10 @@ import {
 import { CommentInput } from "~/components/features/ActionComments/CommentInput";
 import { CommentList } from "~/components/features/ActionComments/CommentList";
 import { WorkFileThumbnail } from "~/components/features/ActionForm/WorkFileThumbnail";
-import { StateIcon } from "~/components/features/StateIcon";
+import { PhaseIcon } from "~/components/features/PhaseIcon";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { InstagramPreview } from "~/components/uzzina/InstagramPreview";
-import { CATEGORIES, STATES, type CATEGORY, type STATE } from "~/lib/CONSTANTS";
+import { CATEGORIES, PHASES, type CATEGORY, type PHASE } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
 import {
   createComment,
@@ -123,9 +123,9 @@ export default function DashActionDetail() {
     Record<string, { name: string; addedAt: number }>
   >({});
 
-  const currentState = useMemo(
-    () => STATES[action.state as STATE],
-    [action.state],
+  const currentPhase = useMemo(
+    () => PHASES[(action.phase as PHASE) || "idea"],
+    [action.phase],
   );
   const currentCategory = useMemo(
     () => CATEGORIES[action.category as CATEGORY],
@@ -183,18 +183,18 @@ export default function DashActionDetail() {
             </div>
             <div className="flex flex-col gap-1">
               <div className="text-muted-foreground mb-1 text-xs font-medium tracking-wide uppercase">
-                Status
+                Fase
               </div>
               <div className="flex items-center gap-2">
-                <StateIcon state={currentState} />
+                <PhaseIcon phase={currentPhase} variant="icon" />
                 <span
                   className="shrink-0 rounded-full px-3 py-1 text-xs font-medium"
                   style={{
-                    backgroundColor: currentState?.color + "22",
-                    color: currentState?.color,
+                    backgroundColor: currentPhase?.color + "22",
+                    color: currentPhase?.color,
                   }}
                 >
-                  {currentState?.title ?? action.state}
+                  {currentPhase?.title ?? action.phase}
                 </span>
               </div>
             </div>

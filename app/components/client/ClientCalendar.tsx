@@ -15,12 +15,12 @@ import { ptBR } from "date-fns/locale";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useMemo } from "react";
 import { Button } from "~/components/ui/button";
-import { DATE_TIME_DISPLAY, STATES, type STATE } from "~/lib/CONSTANTS";
+import { DATE_TIME_DISPLAY, PHASES, type PHASE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import { getFormattedDateTime } from "~/utils/date";
 import { Content } from "../features/Content";
-import { StateIcon } from "../features/StateIcon";
+import { PhaseIcon } from "../features/PhaseIcon";
 
 type ClientCalendarProps = {
   actions: Action[];
@@ -155,7 +155,7 @@ export function ClientCalendar({
                   {/* Ações do dia */}
                   <div className="flex h-full min-h-[120px] flex-col gap-px p-1">
                     {dayActions.map((action) => {
-                      const state = STATES[action.state as STATE];
+                      const phase = PHASES[(action.phase as PHASE) || "idea"];
                       const actionTime = parseISO(
                         action.date,
                       );
@@ -171,7 +171,7 @@ export function ClientCalendar({
                         >
                           <Content action={action} showDate={false} />
                           <div className="mt-2 flex items-center justify-between gap-4">
-                            <StateIcon state={state} />
+                            <PhaseIcon phase={phase} size="sm" variant="icon" />
 
                             <div className="text-muted-foreground text-xs">
                               {getFormattedDateTime(

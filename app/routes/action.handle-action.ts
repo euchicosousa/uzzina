@@ -1,8 +1,7 @@
-
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
-import { INTENT, STATES } from "~/lib/CONSTANTS";
+import { INTENT, PHASES } from "~/lib/CONSTANTS";
 import { getUserId } from "~/services/auth.server";
-import { finishAttributes } from "~/utils/factory";
+
 import {
   createAction,
   deleteAction,
@@ -68,12 +67,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
       const updateData = { ...result.data };
 
-      // Se o estado for 'finished', garante que todos os atributos também fiquem 'finished'
-      // e remove do sprint de todos
-      if (updateData.state === STATES.finished.slug) {
-        if (updateData.attributes) {
-          updateData.attributes = finishAttributes(updateData.attributes);
-        }
+      // Se a fase for 'concluido', remove do sprint de todos.
+      if (updateData.phase === PHASES.concluido.slug) {
         updateData.sprints = null;
       }
 
@@ -92,7 +87,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     if (id) {
       try {
         const original = await getActionById(supabase, String(id));
-        const { id: _, created_at, updated_at, ...rest } = original;
+        const { id: _, created_at, updated_at, state: __, attributes: ___, ...rest } = original;
         const now = new Date().toISOString();
         return await createAction(supabase, {
           ...rest,

@@ -1,10 +1,10 @@
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { Theme, useTheme } from "remix-themes";
-import { StateIcon } from "~/components/features/StateIcon";
+import { PhaseIcon } from "~/components/features/PhaseIcon";
 import { Button } from "~/components/ui/button";
 import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
-import { CATEGORIES, SIZE, STATES } from "~/lib/CONSTANTS";
+import { CATEGORIES, SIZE, PHASES } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
 
 export const meta = () => {
@@ -55,7 +55,7 @@ export default function UITestingPage() {
         <a href="#badges">Badges</a>
         <a href="#avatars">Avatars</a>
         <a href="#categories">Categories</a>
-        <a href="#state">State</a>
+        <a href="#phases">Phases</a>
       </div>
 
       {/* Headings */}
@@ -421,65 +421,57 @@ export default function UITestingPage() {
           ))}
         </div>
       </div>
-      {/* States */}
-      <div id="state" className="border_after py-8">
+      {/* Phases */}
+      <div id="phases" className="border_after py-8">
         <div>
-          <h2>State</h2>
+          <h2>Phases</h2>
         </div>
         <div className="grid gap-8 md:grid-cols-3">
           <div>
             <div className="mb-4 font-medium">Tamanho {SIZE.xs}</div>
             <div className="flex gap-4">
-              {Object.values(STATES).map((state, index) => (
-                <StateIcon key={state.slug} state={state} size={SIZE.xs} />
+              {Object.values(PHASES).map((phase, index) => (
+                <PhaseIcon key={phase.slug} phase={phase} size={SIZE.xs} variant="icon" />
               ))}
             </div>
           </div>
           <div>
-            <div className="mb-4 font-medium">Tamanho {SIZE.xs}</div>
+            <div className="mb-4 font-medium">Tamanho {SIZE.sm}</div>
             <div className="flex gap-4">
-              {Object.values(STATES).map((state, index) => (
-                <StateIcon key={state.slug} state={state} size={SIZE.sm} />
+              {Object.values(PHASES).map((phase, index) => (
+                <PhaseIcon key={phase.slug} phase={phase} size={SIZE.sm} variant="icon" />
               ))}
             </div>
           </div>
           <div>
             <div className="mb-4 font-medium">Tamanho {SIZE.md}</div>
             <div className="flex gap-4">
-              {Object.values(STATES).map((state, index) => (
-                <StateIcon key={state.slug} state={state} size={SIZE.md} />
+              {Object.values(PHASES).map((phase, index) => (
+                <PhaseIcon key={phase.slug} phase={phase} size={SIZE.md} variant="icon" />
               ))}
             </div>
           </div>
           <div>
             <div className="mb-4 font-medium">Tamanho {SIZE.lg}</div>
             <div className="flex gap-4">
-              {Object.values(STATES).map((state, index) => (
-                <StateIcon key={state.slug} state={state} size={SIZE.lg} />
+              {Object.values(PHASES).map((phase, index) => (
+                <PhaseIcon key={phase.slug} phase={phase} size={SIZE.lg} variant="icon" />
               ))}
             </div>
           </div>
           <div>
             <div className="mb-4 font-medium">Tamanho {SIZE.xl}</div>
             <div className="flex gap-4">
-              {Object.values(STATES).map((state, index) => (
-                <StateIcon key={state.slug} state={state} size={SIZE.xl} />
+              {Object.values(PHASES).map((phase, index) => (
+                <PhaseIcon key={phase.slug} phase={phase} size={SIZE.xl} variant="icon" />
               ))}
             </div>
           </div>
           <div>
             <div className="mb-4 font-medium">Tamanho {SIZE["2xl"]}</div>
             <div className="flex gap-4">
-              {Object.values(STATES).map((state, index) => (
-                <StateIcon key={state.slug} state={state} size={SIZE["2xl"]} />
-              ))}
-            </div>
-          </div>
-          <div>
-            <div className="mb-4 font-medium">Tamanho dot</div>
-            <div className="flex gap-4">
-              {Object.values(STATES).map((state, index) => (
-                <StateIcon key={state.slug} state={state} size={"dot"} />
+              {Object.values(PHASES).map((phase, index) => (
+                <PhaseIcon key={phase.slug} phase={phase} size={SIZE["2xl"]} variant="icon" />
               ))}
             </div>
           </div>

@@ -147,7 +147,7 @@ export default function PartnerPage() {
       order: true,
       ascending: true,
       filter_category: true,
-      filter_state: true,
+      filter_phase: true,
       filter_responsible: true,
     },
   });

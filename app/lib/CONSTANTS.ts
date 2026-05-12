@@ -1,66 +1,24 @@
-export const STATES = {
-  idea: {
-    slug: "idea",
-    title: "Ideia",
-    shortcut: "i",
-    color: "#fb3",
-    foreground: "#333",
-    order: 1,
-  },
-  do: {
-    slug: "do",
-    title: "Fazer",
-    shortcut: "f",
+export const PHASES = {
+  idea: { slug: "idea", title: "Ideia", color: "#fb3", order: 1 },
+  planejamento: {
+    slug: "planejamento",
+    title: "Planejamento",
     color: "#F75",
-    foreground: "#fff",
     order: 2,
   },
-  doing: {
-    slug: "doing",
-    title: "Fazendo",
-    shortcut: "z",
-    color: "#f49",
-    foreground: "#fff",
+  alinhamento: {
+    slug: "alinhamento",
+    title: "Alinhamento",
+    color: "#93e",
     order: 3,
   },
-  review: {
-    slug: "review",
-    title: "Análise",
-    shortcut: "a",
-    color: "#93e",
-    foreground: "#fff",
-    order: 4,
-  },
-  approved: {
-    slug: "approved",
-    title: "Aprovado",
-    shortcut: "p",
-    color: "#06f",
-    foreground: "#fff",
-    order: 5,
-  },
-  done: {
-    slug: "done",
-    title: "Feito",
-    shortcut: "t",
-    color: "#3cc",
-    foreground: "#fff",
-    order: 6,
-  },
-  finished: {
-    slug: "finished",
-    title: "Concluído",
-    shortcut: "c",
-    color: "#7c3",
-    foreground: "#fff",
-    order: 7,
-  },
+  criacao: { slug: "criacao", title: "Criação", color: "#f49", order: 4 },
+  aprovacao: { slug: "aprovacao", title: "Aprovação", color: "#06f", order: 5 },
+  concluido: { slug: "concluido", title: "Concluído", color: "#7c3", order: 6 },
 } as const;
 
-export type STATE = keyof typeof STATES;
-export type STATE_TYPE = (typeof STATES)[STATE];
-
-export const ATTRIBUTE_STATES: STATE[] = ["do", "review", "finished"];
+export type PHASE = keyof typeof PHASES;
+export type PHASE_TYPE = (typeof PHASES)[PHASE];
 
 export const CATEGORIES = {
   ads: {
@@ -126,15 +84,6 @@ export const CATEGORIES = {
     tag: "REUN",
     tag_min: "re",
   },
-  plan: {
-    slug: "plan",
-    title: "Planejamento",
-    shortcut: "e",
-    color: "#00e6ff",
-    area: "account",
-    tag: "PLAN",
-    tag_min: "pl",
-  },
   post: {
     slug: "post",
     title: "Post",
@@ -194,44 +143,48 @@ export const CATEGORIES = {
 export type CATEGORY = keyof typeof CATEGORIES;
 export type CATEGORY_TYPE = (typeof CATEGORIES)[CATEGORY];
 
-export const ATTRIBUTE_LABELS: Record<string, string> = {
-  brief: "Brief",
-  text: "Texto",
-  script: "Roteiro",
-  image: "Imagem",
-  design: "Design",
-  slides: "Slides",
-  capture: "Gravação",
-  edit: "Edição",
-  caption: "Legenda",
-  revision: "Revisão",
-  approval: "Aprovação",
-  copy: "Copy",
-  launch: "Publicação",
-  schedule: "Agendamento",
-  agenda: "Pauta",
-  strategy: "Estratégia",
-  presentation: "Apresentação",
-  production: "Produção",
-  delivery: "Entrega",
-  proposal: "Proposta",
-  invoice: "Faturamento",
-};
-
-export const CATEGORY_ATTRIBUTES: Partial<Record<CATEGORY, string[]>> = {
-  post: ["brief", "text", "image", "design", "caption", "approval"],
-  reels: ["brief", "script", "capture", "edit", "caption", "approval"],
-  carousel: ["brief", "text", "design", "slides", "caption", "approval"],
-  stories: ["brief", "design", "caption", "approval"],
-  capture: ["script", "capture"],
-  design: ["brief", "design", "revision", "approval"],
-  print: ["brief", "design", "revision", "approval", "production"],
-  dev: ["brief", "design", "revision", "delivery"],
-  ads: ["brief", "copy", "design", "approval", "launch"],
-  plan: ["brief", "strategy", "presentation", "approval"],
-  sm: ["strategy", "schedule"],
-  meeting: ["agenda"],
-  finance: ["proposal", "approval", "invoice"],
+export const CATEGORY_PHASES: Partial<Record<CATEGORY, PHASE[]>> = {
+  post: [
+    "idea",
+    "planejamento",
+    "alinhamento",
+    "criacao",
+    "aprovacao",
+    "concluido",
+  ],
+  reels: [
+    "idea",
+    "planejamento",
+    "alinhamento",
+    "criacao",
+    "aprovacao",
+    "concluido",
+  ],
+  carousel: [
+    "idea",
+    "planejamento",
+    "alinhamento",
+    "criacao",
+    "aprovacao",
+    "concluido",
+  ],
+  ads: [
+    "idea",
+    "planejamento",
+    "alinhamento",
+    "criacao",
+    "aprovacao",
+    "concluido",
+  ],
+  design: ["idea", "planejamento", "criacao", "aprovacao", "concluido"],
+  print: ["idea", "planejamento", "criacao", "aprovacao", "concluido"],
+  dev: ["idea", "planejamento", "criacao", "aprovacao", "concluido"],
+  stories: ["idea", "planejamento", "criacao", "aprovacao", "concluido"],
+  sm: ["idea", "planejamento", "alinhamento", "criacao", "concluido"],
+  capture: ["idea", "planejamento", "criacao", "concluido"],
+  meeting: ["idea", "criacao", "concluido"],
+  finance: ["idea", "criacao", "aprovacao", "concluido"],
+  todo: ["idea", "criacao", "concluido"],
 };
 
 export const PRIORITIES = {
@@ -600,7 +553,7 @@ export const INTENT = {
 export const ORDER_BY = {
   date: "date",
   priority: "priority",
-  state: "state",
+  phase: "phase",
 } as const;
 
 export const PALLETE = [

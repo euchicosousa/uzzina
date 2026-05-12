@@ -11,16 +11,14 @@ import { useRouteLoaderData, useSubmit } from "react-router";
 import { ActionColorDropdown } from "~/components/features/ActionForm/ActionColorDropdown";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { PartnersCombobox } from "~/components/features/PartnersCombobox";
-import { StatesCombobox } from "~/components/features/StatesCombobox";
+import { PhaseCombobox } from "~/components/features/PhaseCombobox";
 import { Button } from "~/components/ui/button";
 import { UToggleInput } from "~/components/uzzina/UToggle";
-import { INTENT, STATES } from "~/lib/CONSTANTS";
+import { INTENT } from "~/lib/CONSTANTS";
 import {
-  finishAttributes,
   handleAction,
   isInstagramFeed,
   isSprint,
-  mergeAttributes,
   toggleSprintAction,
 } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
@@ -69,24 +67,20 @@ export function ActionFormFooter({
             }}
           />
         </div>
-        {/* Estados States Combobox */}
+        {/* Fases Phase Combobox */}
         <div>
-          <StatesCombobox
-            selectedState={RawAction.state}
-            tabIndex={4}
+          <PhaseCombobox
+            selectedPhase={RawAction.phase ?? "idea"}
+            category={RawAction.category as any}
+            tabIndex={4.5}
             showText={false}
+            iconVariant="icon"
             onSelect={async (selected) => {
-              const isFinishing = selected === STATES.finished.slug;
               setRawAction({
                 ...RawAction,
-                state: selected,
-                // Espelha os side effects do servidor imediatamente na UI
-                ...(isFinishing && RawAction.attributes
-                  ? { attributes: finishAttributes(RawAction.attributes as Record<string, string>) }
-                  : {}),
-                ...(isFinishing ? { sprints: null } : {}),
+                phase: selected,
               });
-              await updateAction({ state: selected });
+              await updateAction({ phase: selected });
             }}
           />
         </div>
@@ -97,16 +91,11 @@ export function ActionFormFooter({
             tabIndex={5}
             showText={false}
             onSelect={async ({ category }) => {
-              const merged = mergeAttributes(
-                (RawAction.attributes as Record<string, string>) ?? {},
-                category,
-              );
               setRawAction({
                 ...RawAction,
                 category,
-                attributes: merged,
               });
-              await updateAction({ category, attributes: merged });
+              await updateAction({ category });
             }}
           />
         </div>

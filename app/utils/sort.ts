@@ -3,9 +3,9 @@ import type { Action } from "~/models/actions.server";
 import {
   ORDER_BY,
   PRIORITIES,
-  STATES,
+  PHASES,
+  type PHASE,
   type PRIORITY,
-  type STATE,
 } from "~/lib/CONSTANTS";
 
 export function sortActions(
@@ -18,7 +18,7 @@ export function sortActions(
   const priorities_order = Object.values(PRIORITIES).map(
     (priority) => priority.slug,
   );
-  const states_order = Object.values(STATES).map((state) => state.slug);
+  const phases_order = Object.values(PHASES).map((phase) => phase.slug);
 
   /** Tiebreaker fixo: ordem alfabética por título quando o critério primário empata */
   const byTitle = (a: Action, b: Action) =>
@@ -36,11 +36,11 @@ export function sortActions(
         return primary !== 0 ? primary : byTitle(a, b);
       });
       break;
-    case ORDER_BY.state:
+    case ORDER_BY.phase:
       sorted.sort((a, b) => {
         const primary =
-          (states_order.indexOf(a.state as STATE) -
-            states_order.indexOf(b.state as STATE)) *
+          (phases_order.indexOf(a.phase as PHASE) -
+            phases_order.indexOf(b.phase as PHASE)) *
           (ascending ? 1 : -1);
         return primary !== 0 ? primary : byTitle(a, b);
       });

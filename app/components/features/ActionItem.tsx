@@ -8,13 +8,13 @@ import {
   CATEGORIES,
   DATE_TIME_DISPLAY,
   INTENT,
+  PHASES,
   PRIORITIES,
   SIZE,
-  STATES,
   VARIANT,
   type CATEGORY,
+  type PHASE,
   type PRIORITY,
-  type STATE,
 } from "~/lib/CONSTANTS";
 import {
   getFormattedDateTime,
@@ -32,7 +32,7 @@ import { UAvatarGroup } from "../uzzina/UAvatar";
 import { ActionItemTitleInput } from "./ActionItemTitleInput";
 import { Content } from "./Content";
 import { Draggable } from "./DnD";
-import { StateIcon } from "./StateIcon";
+import { PhaseIcon } from "./PhaseIcon";
 
 type ActionItemProps = {
   action: Action;
@@ -88,9 +88,9 @@ export function ActionItem({
   };
   const { setBaseAction } = useOutletContext<OutletContext>();
 
-  const currentState = useMemo(
-    () => STATES[action.state as STATE],
-    [action.state],
+  const currentPhase = useMemo(
+    () => PHASES[(action.phase as PHASE) || "idea"],
+    [action.phase],
   );
 
   const currentPartners = useMemo(
@@ -136,7 +136,9 @@ export function ActionItem({
   }, [variant]);
 
   const bgClasses = useMemo(() => {
-    if (variant === VARIANT.content) return "";
+    if (variant === VARIANT.content && showLate && isLateAction(action))
+      return "bg-destructive/5 dark:bg-destructive/20 text-destructive p-1 rounded-xl hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
+
     if (isEditing)
       return "ring-foreground focus-within:ring-2 z-100 text-foreground";
     if (showLate && isLateAction(action))
@@ -158,7 +160,7 @@ export function ActionItem({
         return (
           <div className="flex items-center justify-between gap-1 overflow-hidden text-sm">
             <div className="flex items-center gap-2 overflow-hidden">
-              <StateIcon state={currentState} />
+              <PhaseIcon phase={currentPhase} size="dot" />
               <div className="overflow-hidden text-ellipsis whitespace-nowrap">
                 {action.title}
               </div>
@@ -209,7 +211,7 @@ export function ActionItem({
                   />
                 )}
 
-                <StateIcon state={currentState} />
+                <PhaseIcon phase={currentPhase} size="dot" />
 
                 {showResponsibles && (
                   <ActionItemResponsibles
@@ -236,7 +238,7 @@ export function ActionItem({
         return (
           <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
             <div className="flex w-full items-center gap-2 overflow-hidden">
-              <StateIcon state={currentState} size={"dot"} />
+              <PhaseIcon phase={currentPhase} size="dot" />
 
               {!isEditing && <ActionItemSprint action={action} />}
 
@@ -319,7 +321,7 @@ export function ActionItem({
             ? "relative pl-8 transition-all"
             : "relative transition-all"),
         isSelectionMode && isSelected && "ring-primary ring-2 ring-inset",
-        isSelected && variant === VARIANT.content && "rounded-2xl p-2",
+        isSelected && variant === VARIANT.content && "squircle rounded-3xl p-2",
       )}
       onClick={(e) => {
         if (isSelectionMode) {
@@ -345,7 +347,9 @@ export function ActionItem({
               ? "top-1/2 left-2.5 -translate-y-1/2"
               : isSelected
                 ? "top-3 left-3"
-                : "top-1 left-1",
+                : showLate && isLateAction(action)
+                  ? "top-2 left-2"
+                  : "top-1 left-1",
           )}
         >
           <Checkbox
@@ -364,8 +368,6 @@ export function ActionItem({
           <div className="w-full overflow-hidden text-xs leading-none font-medium text-ellipsis whitespace-nowrap">
             {getFormattedPartnersName(currentPartners || [])}
           </div>
-
-          <StateIcon state={currentState} />
         </div>
       )}
       {renderActionVariant()}

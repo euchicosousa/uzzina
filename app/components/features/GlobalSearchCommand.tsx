@@ -18,11 +18,11 @@ import {
 } from "~/components/ui/dialog";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UToggleInput } from "~/components/uzzina/UToggle";
-import { DATE_TIME_DISPLAY, SIZE, STATES, type STATE } from "~/lib/CONSTANTS";
+import { DATE_TIME_DISPLAY, SIZE, PHASES, type PHASE } from "~/lib/CONSTANTS";
 import { getFormattedDateTime } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
-import { StateIcon } from "./StateIcon";
+import { PhaseIcon } from "./PhaseIcon";
 
 type GlobalSearchCommandProps = {
   open: boolean;
@@ -177,7 +177,11 @@ export function GlobalSearchCommand({
                           )}
                         </div>
                         <div className="flex items-center gap-2">
-                          <StateIcon state={STATES[action.state as STATE]} />
+                          <PhaseIcon
+                            phase={PHASES[(action.phase as PHASE) || "idea"]}
+                            variant="icon"
+                            size="sm"
+                          />
                           <div className="text-muted-foreground w-30 text-right text-xs whitespace-nowrap">
                             {getFormattedDateTime(
                               action.date,

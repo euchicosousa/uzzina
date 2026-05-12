@@ -16,7 +16,8 @@ import { PartnerColorPicker } from "~/components/features/ActionForm/PartnerColo
 import { useMatches, useParams, useSubmit } from "react-router";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { handleBulkAction } from "~/lib/helpers";
-import { CATEGORIES, PRIORITIES, STATES } from "~/lib/CONSTANTS";
+import { CATEGORIES, PHASES, PRIORITIES } from "~/lib/CONSTANTS";
+import { PhaseIcon } from "./PhaseIcon";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -236,24 +237,25 @@ export function BulkActionMenu() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="font-inter w-56">
           {/* Estado */}
+
+          {/* Fase */}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
-              <KanbanIcon className="mr-2 size-4 opacity-70" /> Alterar Estado
+              <KanbanIcon className="mr-2 size-4 opacity-70" /> Alterar Fase
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
-                {Object.values(STATES)
+                {Object.values(PHASES)
                   .sort((a, b) => a.order - b.order)
-                  .map((state) => (
+                  .map((phase) => (
                     <DropdownMenuItem
-                      key={state.slug}
-                      onClick={() => performBulkAction({ state: state.slug })}
+                      key={phase.slug}
+                      onClick={() => performBulkAction({ phase: phase.slug })}
                     >
-                      <span
-                        className="mr-2 size-2 rounded-full"
-                        style={{ backgroundColor: state.color }}
-                      />
-                      {state.title}
+                      <div className="mr-2">
+                        <PhaseIcon phase={phase as any} size="xs" variant="icon" />
+                      </div>
+                      {phase.title}
                     </DropdownMenuItem>
                   ))}
               </DropdownMenuSubContent>

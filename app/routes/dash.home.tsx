@@ -55,7 +55,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     .select("*")
     .is("archived", false)
     .contains("partners", [currentPartnerSlug])
-    .neq("state", "idea")
+    .neq("phase", "idea")
     .gte("date", start)
     .lte("date", end)
     .order("date", { ascending: true })

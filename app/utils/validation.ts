@@ -1,11 +1,11 @@
 import { isBefore } from "date-fns";
 import { z } from "zod";
-import { STATES } from "~/lib/CONSTANTS";
+import { PHASES } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
 import type { Person } from "~/models/people.server";
 
 export const isLateAction = (action: Action) =>
-  action.state !== STATES.finished.slug &&
+  action.phase !== PHASES.concluido.slug &&
   isBefore(new Date(action.date), new Date());
 
 export const getLateActions = (actions: Action[]) =>
@@ -69,7 +69,7 @@ export const ActionFormSchema = z.object({
   title: z.string().min(2, "O Título deve ter pelo menos 2 caracteres"),
   date: z.string().min(1, "A data é obrigatória"),
   category: z.string().min(1, "A categoria é obrigatória"),
-  state: z.string().min(1, "O estado é obrigatório"),
+
   priority: z.string().min(1, "A prioridade é obrigatória"),
   description: nullableString,
 
@@ -82,8 +82,8 @@ export const ActionFormSchema = z.object({
 
   instagram_caption: nullableString,
   color: z.string().optional(),
+  phase: z.string().optional().nullable(),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
   archived: z.boolean().optional(),
-  attributes: z.record(z.string(), z.string()).optional().nullable(),
 });

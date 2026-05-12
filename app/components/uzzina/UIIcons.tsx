@@ -22,6 +22,12 @@ import {
   RabbitIcon,
   SplinePointerIcon,
   SunIcon,
+  LightbulbIcon,
+  LayoutListIcon,
+  Users2Icon,
+  Wand2Icon,
+  UserCheck2Icon,
+  CheckCircle2Icon,
 } from "lucide-react";
 import { Theme } from "remix-themes";
 import { cn } from "~/lib/utils";
@@ -61,8 +67,6 @@ export function Icons({
       return <CoinsIcon className={cn(className)} style={style} />;
     case "meeting":
       return <PresentationIcon className={cn(className)} style={style} />;
-    case "plan":
-      return <BrainIcon className={cn(className)} style={style} />;
     case "post":
       return <ImageIcon className={cn(className)} style={style} />;
     case "print":
@@ -83,6 +87,20 @@ export function Icons({
       return <FilterIcon className={cn(className)} style={style} />;
     case "instagram":
       return <InstagramIcon className={cn(className)} style={style} />;
+
+    // Fases
+    case "idea":
+      return <LightbulbIcon className={cn(className)} style={style} />;
+    case "planejamento":
+      return <LayoutListIcon className={cn(className)} style={style} />;
+    case "alinhamento":
+      return <Users2Icon className={cn(className)} style={style} />;
+    case "criacao":
+      return <Wand2Icon className={cn(className)} style={style} />;
+    case "aprovacao":
+      return <UserCheck2Icon className={cn(className)} style={style} />;
+    case "concluido":
+      return <CheckCircle2Icon className={cn(className)} style={style} />;
 
     default:
       return <BlocksIcon className={cn(className)} style={style} />;

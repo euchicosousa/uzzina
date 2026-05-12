@@ -8,7 +8,7 @@ import {
 } from "react";
 import { useRouteLoaderData, useSubmit } from "react-router";
 import { addDays, addMinutes, isAfter, parseISO } from "date-fns";
-import { INTENT, STATES } from "~/lib/CONSTANTS";
+import { INTENT, PHASES } from "~/lib/CONSTANTS";
 import {
   getNewDateForAction,
   handleAction,
@@ -103,14 +103,13 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
         return isAfter(d, new Date()) ? d : new Date();
       };
 
-      const status: Record<string, string> = {
-        KeyI: STATES.idea.slug,
-        KeyF: STATES.do.slug,
-        KeyZ: STATES.doing.slug,
-        KeyA: STATES.review.slug,
-        KeyP: STATES.approved.slug,
-        KeyT: STATES.done.slug,
-        KeyC: STATES.finished.slug,
+      const phases: Record<string, string> = {
+        KeyI: PHASES.idea.slug,
+        KeyP: PHASES.planejamento.slug,
+        KeyA: PHASES.alinhamento.slug,
+        KeyC: PHASES.criacao.slug,
+        KeyV: PHASES.aprovacao.slug,
+        KeyD: PHASES.concluido.slug,
       };
 
       if (event.shiftKey) {
@@ -143,9 +142,9 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
             );
           }
         }
-      } else if (status[code]) {
+      } else if (phases[code]) {
         handleAction(
-          { ...action, intent: INTENT.update_action, state: status[code] },
+          { ...action, intent: INTENT.update_action, phase: phases[code] },
           submit,
         );
       }

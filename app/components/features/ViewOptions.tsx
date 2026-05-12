@@ -32,7 +32,7 @@ export type ViewOptions = {
   ascending?: boolean;
   sprint?: boolean;
   filter_category?: string[];
-  filter_state?: string[];
+  filter_phase?: string[];
   filter_responsible?: string[];
   showOptions: {
     variant?: boolean;
@@ -45,13 +45,13 @@ export type ViewOptions = {
     ascending?: boolean;
     sprint?: boolean;
     filter_category?: boolean;
-    filter_state?: boolean;
+    filter_phase?: boolean;
     filter_responsible?: boolean;
   };
 };
 
 import { useState } from "react";
-import { StatesCombobox } from "./StatesCombobox";
+import { PhaseCombobox } from "./PhaseCombobox";
 
 /** Defaults internos — não expostos fora deste módulo */
 const DEFAULT_VIEW_OPTIONS = {
@@ -70,7 +70,7 @@ const DEFAULT_VIEW_OPTIONS = {
   | "instagram"
   | "showOptions"
   | "filter_category"
-  | "filter_state"
+  | "filter_phase"
   | "filter_responsible"
 >;
 
@@ -174,7 +174,7 @@ export function ViewOptionsComponent({
               onPressedChange={(pressed) =>
                 setViewOptions({
                   ...viewOptions,
-                  order: pressed ? ORDER_BY.date : ORDER_BY.state,
+                  order: pressed ? ORDER_BY.date : ORDER_BY.phase,
                 })
               }
               className="grid place-content-center p-0"
@@ -182,22 +182,19 @@ export function ViewOptionsComponent({
               <ClockIcon />
             </Toggle>
           )}
-          {/* Ordem por Status */}
-          {viewOptions.showOptions.order && (
             <Toggle
-              title="Ordem por Status"
-              pressed={viewOptions.order === ORDER_BY.state}
+              title="Ordem por Fase"
+              pressed={viewOptions.order === ORDER_BY.phase}
               onPressedChange={(pressed) =>
                 setViewOptions({
                   ...viewOptions,
-                  order: pressed ? ORDER_BY.state : ORDER_BY.date,
+                  order: pressed ? ORDER_BY.phase : ORDER_BY.date,
                 })
               }
               className="grid place-content-center p-0"
             >
               <SquareCheckIcon />
             </Toggle>
-          )}
         </div>
       )}
 
@@ -254,7 +251,7 @@ export function ViewOptionsComponent({
       )}
 
       {(viewOptions.showOptions.filter_category ||
-        viewOptions.showOptions.filter_state ||
+        viewOptions.showOptions.filter_phase ||
         viewOptions.showOptions.filter_responsible) && (
         <div className="flex gap-1">
           {viewOptions.showOptions.filter_category && (
@@ -271,14 +268,14 @@ export function ViewOptionsComponent({
               }}
             />
           )}
-          {viewOptions.showOptions.filter_state && (
-            <StatesCombobox
+          {viewOptions.showOptions.filter_phase && (
+            <PhaseCombobox
               isMulti={true}
-              selectedStates={viewOptions.filter_state ?? ["all"]}
-              onSelect={({ states }) => {
+              selectedPhases={viewOptions.filter_phase ?? ["all"]}
+              onSelect={({ phases }) => {
                 setViewOptions({
                   ...viewOptions,
-                  filter_state: states[0] === "all" ? undefined : states,
+                  filter_phase: phases[0] === "all" ? undefined : phases,
                 });
               }}
             />

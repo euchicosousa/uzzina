@@ -18,7 +18,7 @@ import { useMemo } from "react";
 import type { Action } from "~/models/actions.server";
 
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
-import { ORDER_BY, STATES } from "~/lib/CONSTANTS";
+import { ORDER_BY } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
 import { getHomeActions } from "~/models/actions.server";
 import { getUserId } from "~/services/auth.server";
@@ -73,7 +73,7 @@ export default function AppHome() {
         currentActions.filter((action) =>
           action.sprints?.includes(person.user_id),
         ),
-        ORDER_BY.state,
+        ORDER_BY.phase,
       ),
     [currentActions],
   );

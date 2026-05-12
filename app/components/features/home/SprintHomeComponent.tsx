@@ -38,7 +38,7 @@ export function SprintHomeComponent({ actions }: { actions: Action[] }) {
           columns={viewOptions.columns || 4}
           variant={viewOptions.variant}
           showLate
-          orderBy={ORDER_BY.state}
+          orderBy={ORDER_BY.phase}
         />
       </div>
     </HomeComponentWrapper>

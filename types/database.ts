@@ -72,6 +72,7 @@ export type Database = {
           layout: string | null
           mission: string | null
           partners: string[]
+          phase: string
           priority: string
           responsibles: string[]
           sprints: string[] | null
@@ -98,6 +99,7 @@ export type Database = {
           layout?: string | null
           mission?: string | null
           partners: string[]
+          phase?: string
           priority: string
           responsibles: string[]
           sprints?: string[] | null
@@ -124,6 +126,7 @@ export type Database = {
           layout?: string | null
           mission?: string | null
           partners?: string[]
+          phase?: string
           priority?: string
           responsibles?: string[]
           sprints?: string[] | null
@@ -491,6 +494,7 @@ export type Database = {
           layout: string | null
           mission: string | null
           partners: string[]
+          phase: string
           priority: string
           responsibles: string[]
           sprints: string[] | null
@@ -531,6 +535,7 @@ export type Database = {
           layout: string | null
           mission: string | null
           partners: string[]
+          phase: string
           priority: string
           responsibles: string[]
           sprints: string[] | null
@@ -566,6 +571,7 @@ export type Database = {
           layout: string | null
           mission: string | null
           partners: string[]
+          phase: string
           priority: string
           responsibles: string[]
           sprints: string[] | null
@@ -601,6 +607,7 @@ export type Database = {
           layout: string | null
           mission: string | null
           partners: string[]
+          phase: string
           priority: string
           responsibles: string[]
           sprints: string[] | null

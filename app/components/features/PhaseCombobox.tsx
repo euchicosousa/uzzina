@@ -15,32 +15,36 @@ import {
   CommandList,
   CommandSeparator,
 } from "../ui/command";
-import { STATES, type STATE } from "~/lib/CONSTANTS";
-import { StateIcon } from "./StateIcon";
+import { PHASES, CATEGORY_PHASES, type CATEGORY } from "~/lib/CONSTANTS";
+import { PhaseIcon } from "./PhaseIcon";
 
-const ALL_STATE = {
+const ALL_PHASE = {
   slug: "all",
-  title: "Todos os estados",
+  title: "Todas as fases",
   color: "#888",
   foreground: "#fff",
 };
 
-export function StatesCombobox({
-  selectedState,
-  selectedStates = [],
+export function PhaseCombobox({
+  selectedPhase,
+  selectedPhases = [],
+  category,
   onSelect,
   isMulti = false,
   tabIndex,
   showText = true,
   className,
+  iconVariant = "progress",
 }: {
-  selectedState?: string;
-  selectedStates?: string[];
+  selectedPhase?: string;
+  selectedPhases?: string[];
+  category?: CATEGORY;
   onSelect?: (args: any) => void;
   isMulti?: boolean;
   tabIndex?: number;
   showText?: boolean;
   className?: string;
+  iconVariant?: "progress" | "icon";
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const isShiftPressedRef = useRef(false);
@@ -60,23 +64,30 @@ export function StatesCombobox({
     };
   }, []);
 
-  const STATES_LIST = Object.values(STATES);
-  const statesList = isMulti ? [ALL_STATE, ...STATES_LIST] : STATES_LIST;
+  // Filtra as fases disponíveis para a categoria, ou mostra todas se não houver categoria
+  const PHASES_LIST = Object.values(PHASES);
+  const availableSlugs = category ? CATEGORY_PHASES[category] : undefined;
+  
+  const filteredPhases = availableSlugs 
+    ? PHASES_LIST.filter(p => availableSlugs.includes(p.slug as any))
+    : PHASES_LIST;
 
-  // Determinar o(s) estado(s) atual(is) para o trigger
-  let currentStates = statesList.filter((state) =>
+  const phasesList = isMulti ? [ALL_PHASE, ...filteredPhases] : filteredPhases;
+
+  // Determinar a(s) fase(s) atual(is) para o trigger
+  let currentPhases = phasesList.filter((phase) =>
     isMulti
-      ? selectedStates.includes(state.slug)
-      : selectedState === state.slug,
+      ? selectedPhases.includes(phase.slug)
+      : selectedPhase === phase.slug,
   );
 
   // Fallback se não encontrar nada (ex: estado inicial)
-  if (currentStates.length === 0 && !isMulti) {
-    currentStates = [STATES_LIST[0]];
+  if (currentPhases.length === 0 && !isMulti) {
+    currentPhases = [filteredPhases[0] || PHASES_LIST[0]];
   }
 
   const hasRealSelection =
-    isMulti && currentStates.filter((s) => s.slug !== "all").length > 0;
+    isMulti && currentPhases.filter((s) => s.slug !== "all").length > 0;
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -88,15 +99,15 @@ export function StatesCombobox({
             className={cn("flex gap-px", className)}
             title={
               !hasRealSelection
-                ? "Filtrar por estado"
-                : currentStates.map((s) => s.title).join(" • ")
+                ? "Filtrar por fase"
+                : currentPhases.map((s) => s.title).join(" • ")
             }
           >
             {!hasRealSelection ? (
               <FilterIcon />
             ) : (
               <div className="flex -space-x-2">
-                {currentStates.map((s) => (
+                {currentPhases.map((s) => (
                   <div
                     key={s.slug}
                     className="size-4 rounded-full border"
@@ -115,81 +126,77 @@ export function StatesCombobox({
             )}
           >
             {!showText ? (
-              <StateIcon state={currentStates[0] as any} size="md" />
+              <PhaseIcon phase={currentPhases[0] as any} size="md" variant={iconVariant} />
             ) : (
               <>
                 <div
                   className="size-2 rounded-full"
-                  style={{ backgroundColor: currentStates[0]?.color }}
+                  style={{ backgroundColor: currentPhases[0]?.color }}
                 />
-                {currentStates[0]?.title}
+                {currentPhases[0]?.title}
               </>
             )}
           </button>
         )}
       </PopoverTrigger>
-      <PopoverContent className="p-0">
+      <PopoverContent className="p-0 w-56" align="start">
         <Command>
-          <CommandInput placeholder="Procurar estado..." />
-          <CommandEmpty>Nenhum estado encontrado.</CommandEmpty>
+          <CommandInput placeholder="Procurar fase..." />
+          <CommandEmpty>Nenhuma fase encontrada.</CommandEmpty>
           <CommandList className="p-1 outline-none">
-            {statesList.map((state) => (
-              <Fragment key={state.slug}>
+            {phasesList.map((phase) => (
+              <Fragment key={phase.slug}>
                 <CommandItem
                   className={cn("flex items-center gap-2")}
                   onSelect={() => {
                     if (isMulti) {
-                      let newStates: string[];
+                      let newPhases: string[];
 
-                      if (state.slug === "all") {
-                        newStates = ["all"];
+                      if (phase.slug === "all") {
+                        newPhases = ["all"];
                       } else if (isShiftPressedRef.current) {
-                        newStates = [state.slug];
+                        newPhases = [phase.slug];
                       } else {
-                        newStates = selectedStates.filter(
+                        newPhases = selectedPhases.filter(
                           (slug) => slug !== "all",
                         );
-                        if (newStates.includes(state.slug)) {
-                          newStates = newStates.filter(
-                            (slug) => slug !== state.slug,
+                        if (newPhases.includes(phase.slug)) {
+                          newPhases = newPhases.filter(
+                            (slug) => slug !== phase.slug,
                           );
                         } else {
-                          newStates = [...newStates, state.slug];
+                          newPhases = [...newPhases, phase.slug];
                         }
-                        newStates =
-                          newStates.length === 0 ? ["all"] : newStates;
+                        newPhases =
+                          newPhases.length === 0 ? ["all"] : newPhases;
                       }
 
                       onSelect?.({
-                        states: newStates,
-                        state: state.slug,
+                        phases: newPhases,
+                        phase: phase.slug,
                       });
-                      // Mantém aberto para seleção múltipla
                     } else {
-                      onSelect?.(state.slug);
+                      onSelect?.(phase.slug);
                       setIsOpen(false);
                     }
                   }}
                 >
-                  <div
-                    className="size-2 rounded-full"
-                    style={{ backgroundColor: state.color }}
-                  />
-                  {state.title}
+                  <PhaseIcon phase={phase as any} size="xs" variant={iconVariant} />
+                  <span className="truncate">{phase.title}</span>
                   <CheckIcon
                     className={cn(
                       "ml-auto size-4",
                       isMulti
-                        ? selectedStates.includes(state.slug)
+                        ? selectedPhases.includes(phase.slug)
                           ? "visible"
                           : "invisible"
-                        : selectedState === state.slug
+                        : selectedPhase === phase.slug
                           ? "visible"
                           : "invisible",
                     )}
                   />
                 </CommandItem>
-                {state.slug === "all" && <CommandSeparator className="my-1" />}
+                {phase.slug === "all" && <CommandSeparator className="my-1" />}
               </Fragment>
             ))}
           </CommandList>
