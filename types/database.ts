@@ -58,25 +58,19 @@ export type Database = {
       actions: {
         Row: {
           archived: boolean | null
-          attributes: Json | null
           category: string
           color: string
           content_files: string[] | null
           created_at: string
           date: string
           description: string | null
-          genesis: string | null
-          goal: string | null
           id: string
           instagram_caption: string | null
-          layout: string | null
-          mission: string | null
           partners: string[]
           phase: string
           priority: string
           responsibles: string[]
           sprints: string[] | null
-          state: string
           time: number
           title: string
           updated_at: string
@@ -85,25 +79,19 @@ export type Database = {
         }
         Insert: {
           archived?: boolean | null
-          attributes?: Json | null
           category: string
           color?: string
           content_files?: string[] | null
           created_at: string
           date: string
           description?: string | null
-          genesis?: string | null
-          goal?: string | null
           id?: string
           instagram_caption?: string | null
-          layout?: string | null
-          mission?: string | null
           partners: string[]
           phase?: string
           priority: string
           responsibles: string[]
           sprints?: string[] | null
-          state: string
           time?: number
           title: string
           updated_at: string
@@ -112,96 +100,24 @@ export type Database = {
         }
         Update: {
           archived?: boolean | null
-          attributes?: Json | null
           category?: string
           color?: string
           content_files?: string[] | null
           created_at?: string
           date?: string
           description?: string | null
-          genesis?: string | null
-          goal?: string | null
           id?: string
           instagram_caption?: string | null
-          layout?: string | null
-          mission?: string | null
           partners?: string[]
           phase?: string
           priority?: string
           responsibles?: string[]
           sprints?: string[] | null
-          state?: string
           time?: number
           title?: string
           updated_at?: string
           user_id?: string
           work_files?: string[] | null
-        }
-        Relationships: []
-      }
-      areas: {
-        Row: {
-          created_at: string
-          id: string
-          order: number
-          role: number
-          slug: string
-          title: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          order: number
-          role?: number
-          slug: string
-          title: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          order?: number
-          role?: number
-          slug?: string
-          title?: string
-        }
-        Relationships: []
-      }
-      categories: {
-        Row: {
-          area: string
-          color: string
-          created_at: string
-          id: string
-          order: number
-          shortcut: string
-          slug: string
-          tag: string
-          tag_min: string | null
-          title: string
-        }
-        Insert: {
-          area: string
-          color: string
-          created_at: string
-          id: string
-          order: number
-          shortcut: string
-          slug: string
-          tag: string
-          tag_min?: string | null
-          title: string
-        }
-        Update: {
-          area?: string
-          color?: string
-          created_at?: string
-          id?: string
-          order?: number
-          shortcut?: string
-          slug?: string
-          tag?: string
-          tag_min?: string | null
-          title?: string
         }
         Relationships: []
       }
@@ -376,142 +292,11 @@ export type Database = {
         }
         Relationships: []
       }
-      priorities: {
-        Row: {
-          created_at: string
-          id: string
-          order: number
-          shortcut: string
-          slug: string
-          title: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          order: number
-          shortcut?: string
-          slug: string
-          title: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          order?: number
-          shortcut?: string
-          slug?: string
-          title?: string
-        }
-        Relationships: []
-      }
-      states: {
-        Row: {
-          color: string
-          created_at: string
-          foreground: string
-          id: string
-          order: number
-          shortcut: string
-          slug: string
-          title: string
-        }
-        Insert: {
-          color?: string
-          created_at?: string
-          foreground?: string
-          id?: string
-          order: number
-          shortcut?: string
-          slug: string
-          title: string
-        }
-        Update: {
-          color?: string
-          created_at?: string
-          foreground?: string
-          id?: string
-          order?: number
-          shortcut?: string
-          slug?: string
-          title?: string
-        }
-        Relationships: []
-      }
-      topics: {
-        Row: {
-          color: string
-          created_at: string
-          foreground: string
-          id: number
-          partner_slug: string
-          title: string
-        }
-        Insert: {
-          color: string
-          created_at?: string
-          foreground: string
-          id?: number
-          partner_slug: string
-          title: string
-        }
-        Update: {
-          color?: string
-          created_at?: string
-          foreground?: string
-          id?: number
-          partner_slug?: string
-          title?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "topics_partner_slug_fkey"
-            columns: ["partner_slug"]
-            isOneToOne: false
-            referencedRelation: "partners"
-            referencedColumns: ["slug"]
-          },
-        ]
-      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      buscar_actions: {
-        Args: { query: string }
-        Returns: {
-          archived: boolean | null
-          attributes: Json | null
-          category: string
-          color: string
-          content_files: string[] | null
-          created_at: string
-          date: string
-          description: string | null
-          genesis: string | null
-          goal: string | null
-          id: string
-          instagram_caption: string | null
-          layout: string | null
-          mission: string | null
-          partners: string[]
-          phase: string
-          priority: string
-          responsibles: string[]
-          sprints: string[] | null
-          state: string
-          time: number
-          title: string
-          updated_at: string
-          user_id: string
-          work_files: string[] | null
-        }[]
-        SetofOptions: {
-          from: "*"
-          to: "actions"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
       get_home_actions: {
         Args: {
           p_end_date: string
@@ -521,25 +306,19 @@ export type Database = {
         }
         Returns: {
           archived: boolean | null
-          attributes: Json | null
           category: string
           color: string
           content_files: string[] | null
           created_at: string
           date: string
           description: string | null
-          genesis: string | null
-          goal: string | null
           id: string
           instagram_caption: string | null
-          layout: string | null
-          mission: string | null
           partners: string[]
           phase: string
           priority: string
           responsibles: string[]
           sprints: string[] | null
-          state: string
           time: number
           title: string
           updated_at: string
@@ -553,79 +332,6 @@ export type Database = {
           isSetofReturn: true
         }
       }
-      get_user_actions: {
-        Args: { end_date: string; start_date: string; user_id_param: string }
-        Returns: {
-          archived: boolean | null
-          attributes: Json | null
-          category: string
-          color: string
-          content_files: string[] | null
-          created_at: string
-          date: string
-          description: string | null
-          genesis: string | null
-          goal: string | null
-          id: string
-          instagram_caption: string | null
-          layout: string | null
-          mission: string | null
-          partners: string[]
-          phase: string
-          priority: string
-          responsibles: string[]
-          sprints: string[] | null
-          state: string
-          time: number
-          title: string
-          updated_at: string
-          user_id: string
-          work_files: string[] | null
-        }[]
-        SetofOptions: {
-          from: "*"
-          to: "actions"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
-      get_user_actions_chart: {
-        Args: { user_id_param: string }
-        Returns: {
-          archived: boolean | null
-          attributes: Json | null
-          category: string
-          color: string
-          content_files: string[] | null
-          created_at: string
-          date: string
-          description: string | null
-          genesis: string | null
-          goal: string | null
-          id: string
-          instagram_caption: string | null
-          layout: string | null
-          mission: string | null
-          partners: string[]
-          phase: string
-          priority: string
-          responsibles: string[]
-          sprints: string[] | null
-          state: string
-          time: number
-          title: string
-          updated_at: string
-          user_id: string
-          work_files: string[] | null
-        }[]
-        SetofOptions: {
-          from: "*"
-          to: "actions"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
-      is_user_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       sow: "marketing" | "socialmedia" | "demand"

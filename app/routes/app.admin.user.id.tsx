@@ -11,6 +11,7 @@ import {
 import type { Database } from "types/database";
 import { AdminUserForm } from "~/components/features/AdminUserForm";
 import { getUserId } from "~/services/auth.server";
+import { AREAS } from "~/lib/CONSTANTS";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Admin | Editar Usuário" }];
@@ -20,10 +21,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { supabase } = await getUserId(request);
   const { user_id } = params;
 
-  const { data: areas } = await supabase
-    .from("areas")
-    .select("id, slug, title")
-    .order("order");
+  const areas = Object.values(AREAS);
 
   // Passamos cloud_name e upload_preset ao cliente (são públicos — sem risco)
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME!;

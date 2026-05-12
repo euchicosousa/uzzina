@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 
 interface Area {
-  id: string;
   slug: string;
   title: string;
 }

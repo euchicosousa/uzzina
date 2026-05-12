@@ -87,7 +87,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     if (id) {
       try {
         const original = await getActionById(supabase, String(id));
-        const { id: _, created_at, updated_at, state: __, attributes: ___, ...rest } = original;
+        const { id: _, created_at, updated_at, ...rest } = original;
         const now = new Date().toISOString();
         return await createAction(supabase, {
           ...rest,
