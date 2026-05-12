@@ -67,9 +67,9 @@ export function PhaseCombobox({
   // Filtra as fases disponíveis para a categoria, ou mostra todas se não houver categoria
   const PHASES_LIST = Object.values(PHASES);
   const availableSlugs = category ? CATEGORY_PHASES[category] : undefined;
-  
-  const filteredPhases = availableSlugs 
-    ? PHASES_LIST.filter(p => availableSlugs.includes(p.slug as any))
+
+  const filteredPhases = availableSlugs
+    ? PHASES_LIST.filter((p) => availableSlugs.includes(p.slug as any))
     : PHASES_LIST;
 
   const phasesList = isMulti ? [ALL_PHASE, ...filteredPhases] : filteredPhases;
@@ -126,7 +126,11 @@ export function PhaseCombobox({
             )}
           >
             {!showText ? (
-              <PhaseIcon phase={currentPhases[0] as any} size="md" variant={iconVariant} />
+              <PhaseIcon
+                phase={currentPhases[0] as any}
+                size="md"
+                variant={iconVariant}
+              />
             ) : (
               <>
                 <div
@@ -139,7 +143,7 @@ export function PhaseCombobox({
           </button>
         )}
       </PopoverTrigger>
-      <PopoverContent className="p-0 w-56" align="start">
+      <PopoverContent className="w-56 p-0" align="start">
         <Command>
           <CommandInput placeholder="Procurar fase..." />
           <CommandEmpty>Nenhuma fase encontrada.</CommandEmpty>
@@ -181,7 +185,7 @@ export function PhaseCombobox({
                     }
                   }}
                 >
-                  <PhaseIcon phase={phase as any} size="xs" variant={iconVariant} />
+                  <PhaseIcon phase={phase as any} variant={"icon"} />
                   <span className="truncate">{phase.title}</span>
                   <CheckIcon
                     className={cn(

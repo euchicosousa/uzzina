@@ -8,11 +8,14 @@ import {
 } from "~/components/uzzina/InstagramContent";
 import { INTENT } from "~/lib/CONSTANTS";
 import { getFormattedPartnersLinks } from "~/utils/format";
-import type { Action } from "~/models/actions.server";
+import { type Action } from "~/models/actions.server";
 
 interface InstagramTabProps {
   RawAction: Action;
+
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;
+  updateAction: (data?: { [key: string]: any }) => Promise<void>;
+
   contentFiles: string[];
   updateContentFiles: (files: string[]) => void;
   currentPartners: Partner[];
@@ -42,6 +45,7 @@ function AiProcessingMessage({ isAIProcessing }: { isAIProcessing: boolean }) {
 export function InstagramTab({
   RawAction,
   setRawAction,
+  updateAction,
   contentFiles,
   updateContentFiles,
   currentPartners,
@@ -113,10 +117,14 @@ export function InstagramTab({
               )
             }
             onChange={(e) =>
-              // @ts-ignore
-              setRawAction({
-                ...RawAction,
+              setRawAction((prev) => ({
+                ...prev,
                 instagram_caption: e.target.value,
+              }))
+            }
+            onBlur={async () =>
+              await updateAction({
+                instagram_caption: RawAction.instagram_caption,
               })
             }
             placeholder="Legenda"

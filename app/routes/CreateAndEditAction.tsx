@@ -388,6 +388,7 @@ export function CreateAndEditAction({
           <InstagramTab
             RawAction={RawAction}
             setRawAction={setRawAction}
+            updateAction={updateAction}
             contentFiles={contentFiles}
             updateContentFiles={updateContentFiles}
             currentPartners={currentPartners}

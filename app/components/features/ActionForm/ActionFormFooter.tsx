@@ -74,7 +74,7 @@ export function ActionFormFooter({
             category={RawAction.category as any}
             tabIndex={4.5}
             showText={false}
-            iconVariant="icon"
+            iconVariant="progress"
             onSelect={async (selected) => {
               setRawAction({
                 ...RawAction,
@@ -149,7 +149,11 @@ export function ActionFormFooter({
                 className="flex items-center gap-2 rounded-2xl p-2 text-sm opacity-50 hover:opacity-100 focus:opacity-100"
                 onClick={async () => {
                   if (confirm("Tem certeza que deseja arquivar esta ação?")) {
-                    setRawAction({ ...RawAction, archived: true, sprints: null });
+                    setRawAction({
+                      ...RawAction,
+                      archived: true,
+                      sprints: null,
+                    });
                     await updateAction({ archived: true });
                     handleClose();
                   }
@@ -163,7 +167,9 @@ export function ActionFormFooter({
                 title="Desarquivar ação"
                 className="flex items-center gap-2 rounded-2xl p-2 text-sm text-amber-500 opacity-80 hover:text-amber-600 hover:opacity-100 focus:opacity-100"
                 onClick={async () => {
-                  if (confirm("Tem certeza que deseja desarquivar esta ação?")) {
+                  if (
+                    confirm("Tem certeza que deseja desarquivar esta ação?")
+                  ) {
                     setRawAction({ ...RawAction, archived: false });
                     await updateAction({ archived: false });
                     handleClose();
