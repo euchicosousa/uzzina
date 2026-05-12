@@ -107,9 +107,9 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
         KeyI: PHASES.idea.slug,
         KeyP: PHASES.planejamento.slug,
         KeyA: PHASES.alinhamento.slug,
-        KeyC: PHASES.criacao.slug,
+        KeyD: PHASES.criacao.slug,
         KeyV: PHASES.aprovacao.slug,
-        KeyD: PHASES.concluido.slug,
+        KeyC: PHASES.concluido.slug,
       };
 
       if (event.shiftKey) {
