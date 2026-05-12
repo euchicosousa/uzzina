@@ -8,7 +8,7 @@ import {
 } from "~/components/uzzina/InstagramContent";
 import { INTENT } from "~/lib/CONSTANTS";
 import { getFormattedPartnersLinks } from "~/utils/format";
-import { type Action } from "~/models/actions.server";
+import type { Action } from "~/models/actions.server";
 
 interface InstagramTabProps {
   RawAction: Action;
