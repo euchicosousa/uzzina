@@ -57,7 +57,7 @@ export function ActionContainer({
     };
 
     // Dizemos que 'variant' deve ser tratada como uma chave do 'map'
-    return map[variant as keyof typeof map] ?? "gap-px";
+    return map[variant as keyof typeof map] ?? "gap-1";
   }, [variant]);
 
   // Lógica de Grid (Responsivo ou Automático)

@@ -9,6 +9,7 @@ import {
 import { INTENT } from "~/lib/CONSTANTS";
 import { getFormattedPartnersLinks } from "~/utils/format";
 import type { Action } from "~/models/actions.server";
+import { UButtonAI } from "~/components/uzzina/UButtonAI";
 
 interface InstagramTabProps {
   RawAction: Action;
@@ -81,10 +82,8 @@ export function InstagramTab({
               {getFormattedPartnersLinks(currentPartners)}
             </div>
           </div>
-          <Button
-            variant={"ghost"}
+          <UButtonAI
             disabled={isAIProcessing}
-            className="disabled:opacity-50"
             onClick={() => {
               fetcher.submit(
                 {
@@ -100,8 +99,8 @@ export function InstagramTab({
               );
             }}
           >
-            <SparklesIcon />
-          </Button>
+            GERAR LEGENDA
+          </UButtonAI>
         </div>
         <div className="flex h-full flex-col">
           <AiProcessingMessage isAIProcessing={isAIProcessing} />

@@ -17,6 +17,7 @@ import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "./WorkFileThumbnail";
+import { UButtonAI } from "~/components/uzzina/UButtonAI";
 
 import { ArrowRightIcon } from "lucide-react";
 import { useEffect } from "react";
@@ -191,8 +192,7 @@ export function EssentialsTab({
                 <FishingHookIcon />
               </Button>
             )}
-            <button
-              className="relative overflow-hidden rounded-full p-0.5 disabled:opacity-50"
+            <UButtonAI
               disabled={isAIProcessing}
               onClick={() => {
                 fetcher.submit(
@@ -209,22 +209,10 @@ export function EssentialsTab({
                 );
               }}
             >
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "conic-gradient(from var(--gradient-angle), #fc6, #f63, #96f, #6cf, #fc6)",
-                  animation: "spin-gradient 3s linear infinite",
-                }}
-              />
-              <div className="bg-background relative flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold tracking-wide">
-                CRIAR COM IA
-                <SparklesIcon className="size-3" />
-              </div>
-            </button>
+              CRIAR COM IA
+            </UButtonAI>
           </div>
         </div>
-
 
         <div className="flex items-start gap-2 border-b px-4 py-1">
           <div className="flex flex-wrap items-center gap-1.5">
