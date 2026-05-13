@@ -7,17 +7,15 @@ import React from "react";
 import { cn } from "~/lib/utils";
 import { CSS } from "@dnd-kit/utilities";
 
-export function Droppable(
-  {
-    id,
-    children,
-    className,
-  }: {
-    id: UniqueIdentifier;
-    children: (isOver: boolean) => React.ReactNode;
-    className?: string;
-  }
-) {
+export function Droppable({
+  id,
+  children,
+  className,
+}: {
+  id: UniqueIdentifier;
+  children: (isOver: boolean) => React.ReactNode;
+  className?: string;
+}) {
   const { isOver, setNodeRef } = useDroppable({ id });
   return (
     <div ref={setNodeRef} className={cn(className)}>
@@ -26,15 +24,13 @@ export function Droppable(
   );
 }
 
-export function Draggable(
-  {
-    id,
-    children,
-  }: {
-    id: UniqueIdentifier;
-    children: React.ReactElement<any>;
-  }
-) {
+export function Draggable({
+  id,
+  children,
+}: {
+  id: UniqueIdentifier;
+  children: React.ReactElement<any>;
+}) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id,
@@ -52,7 +48,7 @@ export function Draggable(
       {...attributes}
       {...listeners}
       style={isDragging ? undefined : style}
-      className={cn(isDragging && "opacity-20")}
+      // className={cn(isDragging && "opacity-20")}
     >
       {React.cloneElement(child, {
         [isDOMElement ? "data-dragging" : "isDragging"]: isDragging,

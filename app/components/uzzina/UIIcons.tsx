@@ -91,7 +91,7 @@ export function Icons({
     // Fases
     case "idea":
       return <LightbulbIcon className={cn(className)} style={style} />;
-    case "planejamento":
+    case "estrategia":
       return <LayoutListIcon className={cn(className)} style={style} />;
     case "alinhamento":
       return <Users2Icon className={cn(className)} style={style} />;

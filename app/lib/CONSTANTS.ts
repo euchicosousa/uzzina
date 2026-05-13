@@ -1,8 +1,8 @@
 export const PHASES = {
   idea: { slug: "idea", title: "Ideia", color: "#fb3", order: 1 },
-  planejamento: {
-    slug: "planejamento",
-    title: "Planejamento",
+  estrategia: {
+    slug: "estrategia",
+    title: "Estratégia",
     color: "#F75",
     order: 2,
   },
@@ -146,7 +146,7 @@ export type CATEGORY_TYPE = (typeof CATEGORIES)[CATEGORY];
 export const CATEGORY_PHASES: Partial<Record<CATEGORY, PHASE[]>> = {
   post: [
     "idea",
-    "planejamento",
+    "estrategia",
     "alinhamento",
     "criacao",
     "aprovacao",
@@ -154,7 +154,7 @@ export const CATEGORY_PHASES: Partial<Record<CATEGORY, PHASE[]>> = {
   ],
   reels: [
     "idea",
-    "planejamento",
+    "estrategia",
     "alinhamento",
     "criacao",
     "aprovacao",
@@ -162,7 +162,7 @@ export const CATEGORY_PHASES: Partial<Record<CATEGORY, PHASE[]>> = {
   ],
   carousel: [
     "idea",
-    "planejamento",
+    "estrategia",
     "alinhamento",
     "criacao",
     "aprovacao",
@@ -170,18 +170,18 @@ export const CATEGORY_PHASES: Partial<Record<CATEGORY, PHASE[]>> = {
   ],
   ads: [
     "idea",
-    "planejamento",
+    "estrategia",
     "alinhamento",
     "criacao",
     "aprovacao",
     "concluido",
   ],
-  design: ["idea", "planejamento", "criacao", "aprovacao", "concluido"],
-  print: ["idea", "planejamento", "criacao", "aprovacao", "concluido"],
-  dev: ["idea", "planejamento", "criacao", "aprovacao", "concluido"],
-  stories: ["idea", "planejamento", "criacao", "aprovacao", "concluido"],
-  sm: ["idea", "planejamento", "alinhamento", "criacao", "concluido"],
-  capture: ["idea", "planejamento", "criacao", "concluido"],
+  design: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
+  print: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
+  dev: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
+  stories: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
+  sm: ["idea", "estrategia", "alinhamento", "criacao", "concluido"],
+  capture: ["idea", "estrategia", "criacao", "concluido"],
   meeting: ["idea", "criacao", "concluido"],
   finance: ["idea", "criacao", "aprovacao", "concluido"],
   todo: ["idea", "criacao", "concluido"],

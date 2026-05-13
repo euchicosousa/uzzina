@@ -166,7 +166,7 @@ function SortableColorItem({
     transform: CSS.Transform.toString(transform),
     transition,
     zIndex: isDragging ? 1 : 0,
-    opacity: isDragging ? 0.5 : 1,
+    // opacity: isDragging ? 0.5 : 1,
   };
 
   return (
