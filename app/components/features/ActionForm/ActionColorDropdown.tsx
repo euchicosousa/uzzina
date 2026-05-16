@@ -67,13 +67,12 @@ export function ActionColorDropdown({
       </DropdownMenuTrigger>
 
       {/* Painel: swatches + input hex via componente compartilhado */}
-      <DropdownMenuContent
-        className={cn("grid w-40 gap-2 p-2", getGridCols(partnerColors.length))}
-      >
+      <DropdownMenuContent className={cn("w-40 p-2")}>
         <PartnerColorPicker
           colors={partnerColors}
           value={selected}
           onChange={handleChange}
+          className={getGridCols(partnerColors.length)}
         />
       </DropdownMenuContent>
     </DropdownMenu>

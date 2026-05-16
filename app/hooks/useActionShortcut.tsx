@@ -104,12 +104,15 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
       };
 
       const phases: Record<string, string> = {
-        KeyI: PHASES.idea.slug,
-        KeyE: PHASES.estrategia.slug,
-        KeyA: PHASES.alinhamento.slug,
-        KeyD: PHASES.criacao.slug,
-        KeyV: PHASES.aprovacao.slug,
-        KeyC: PHASES.concluido.slug,
+        KeyI: PHASES.idea.slug, // Ideia
+        KeyE: PHASES.estrategia.slug, // Estratégia
+        KeyF: PHASES.estrategia.slug, // Fazer
+        KeyA: PHASES.alinhamento.slug, // Alinhamento
+        KeyD: PHASES.criacao.slug, // Design
+        KeyP: PHASES.criacao.slug, // Produção
+        KeyV: PHASES.aprovacao.slug, // aproVação
+        KeyT: PHASES.aprovacao.slug, // pronTo
+        KeyC: PHASES.concluido.slug, // Concluído
       };
 
       if (event.shiftKey) {

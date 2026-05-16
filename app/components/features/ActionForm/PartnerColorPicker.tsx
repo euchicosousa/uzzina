@@ -24,6 +24,7 @@ interface PartnerColorPickerProps {
   colors: string[];
   /** Cor atualmente selecionada */
   value: string;
+  className?: string;
   /** Chamado sempre que o usuário seleciona uma cor (swatch ou hex input) */
   onChange: (color: string) => void;
 }
@@ -41,6 +42,7 @@ interface PartnerColorPickerProps {
 export function PartnerColorPicker({
   colors,
   value,
+  className,
   onChange,
 }: PartnerColorPickerProps) {
   // Normaliza as cores para hex uma única vez — evita recomputar a cada render
@@ -50,7 +52,7 @@ export function PartnerColorPicker({
     <div className="space-y-3">
       {/* Swatches do parceiro — aspecto 3:4 igual ao ActionColorDropdown original */}
       {hexColors.length > 0 ? (
-        <div className="flex flex-wrap gap-2">
+        <div className={cn("grid gap-2", className)}>
           {hexColors.map((hex) => (
             <button
               key={hex}
@@ -58,9 +60,9 @@ export function PartnerColorPicker({
               title={hex}
               onClick={() => onChange(hex)}
               className={cn(
-                "aspect-[3/4] w-10 rounded border border-black/5 transition-all hover:opacity-80",
+                "w-fill aspect-[3/4] rounded border border-black/5 transition-all hover:opacity-80",
                 value.toLowerCase() === hex.toLowerCase() &&
-                  "ring-primary ring-2 ring-offset-1 scale-105",
+                  "ring-primary scale-105 ring-2 ring-offset-1",
               )}
               style={{ backgroundColor: hex }}
             />
