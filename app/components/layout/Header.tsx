@@ -187,8 +187,9 @@ const HeaderMenu = ({ person }: { person: Person }) => {
     followPartnerColor,
     setFollowPartnerColor,
   } = useAppTheme();
-  const isLoading =
-    useFetchers().length > 0 || useNavigation().state !== "idle";
+  const fetchers = useFetchers();
+  const navigation = useNavigation();
+  const isLoading = fetchers.length > 0 || navigation.state !== "idle";
 
   return (
     <DropdownMenu>
