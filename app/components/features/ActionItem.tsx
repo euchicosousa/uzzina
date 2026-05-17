@@ -187,7 +187,9 @@ export function ActionItem({
                 isEditing={isEditing}
                 setIsEditing={handleSetIsEditing}
                 title={action.title}
-                className={"h-6 text-xl leading-none font-medium"}
+                className={
+                  "h-6 text-xl leading-none font-medium lg:text-base xl:text-xl"
+                }
                 InputButtonClassName="w-auto"
                 lines={1}
               />
@@ -246,7 +248,7 @@ export function ActionItem({
                 isEditing={isEditing}
                 setIsEditing={handleSetIsEditing}
                 title={action.title}
-                className="w-full"
+                className="w-full lg:text-xs xl:text-base"
                 onChange={(title) => {
                   handleAction(
                     {

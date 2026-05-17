@@ -29,7 +29,7 @@ export function CalendarActions({
 }) {
   return (
     <div className="w-full overflow-x-auto overflow-y-hidden">
-      <div className="flex h-full w-full min-w-[1500px] flex-col overflow-hidden">
+      <div className="flex h-full w-full min-w-[1500px] flex-col overflow-hidden lg:min-w-[900px]">
         <WeekHeader />
         <div className="grid h-full shrink grid-cols-7 overflow-y-auto">
           {calendar.map((day) => (
