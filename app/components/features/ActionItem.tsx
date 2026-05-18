@@ -278,6 +278,7 @@ export function ActionItem({
               {/* Responsáveis */}
               {showResponsibles && (
                 <ActionItemResponsibles
+                  size="xs"
                   action={action}
                   responsibles={currentResponsibles}
                 />

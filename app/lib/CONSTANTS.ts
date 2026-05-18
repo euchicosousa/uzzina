@@ -10,17 +10,17 @@ export const PHASES = {
     slug: "fazer",
     title: "Fazer",
     color: "#F75",
-    order: 3,
+    order: 2,
   },
   alinhamento: {
     slug: "alinhamento",
     title: "Alinhamento",
-    color: "#93e",
-    order: 4,
+    color: "#f49",
+    order: 3,
   },
-  criacao: { slug: "criacao", title: "Criação", color: "#f49", order: 5 },
-  aprovacao: { slug: "aprovacao", title: "Aprovação", color: "#06f", order: 6 },
-  concluido: { slug: "concluido", title: "Concluído", color: "#7c3", order: 7 },
+  criacao: { slug: "criacao", title: "Criação", color: "#93e", order: 4 },
+  aprovacao: { slug: "aprovacao", title: "Aprovação", color: "#06f", order: 5 },
+  concluido: { slug: "concluido", title: "Concluído", color: "#7c3", order: 6 },
 } as const;
 
 export type PHASE = keyof typeof PHASES;
