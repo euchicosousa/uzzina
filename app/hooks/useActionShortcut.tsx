@@ -106,7 +106,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
       const phases: Record<string, string> = {
         KeyI: PHASES.idea.slug, // Ideia
         KeyE: PHASES.estrategia.slug, // Estratégia
-        KeyF: PHASES.estrategia.slug, // Fazer
+        KeyF: PHASES.fazer.slug, // Fazer
         KeyA: PHASES.alinhamento.slug, // Alinhamento
         KeyD: PHASES.criacao.slug, // Design
         KeyP: PHASES.criacao.slug, // Produção

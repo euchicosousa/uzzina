@@ -1,9 +1,11 @@
 import Color from "color";
 import {
   BadgeCheckIcon,
+  BinaryIcon,
   BlocksIcon,
   BrainIcon,
   CameraIcon,
+  CheckCircle2Icon,
   CircleFadingPlusIcon,
   ClipboardCheckIcon,
   CodeIcon,
@@ -13,21 +15,22 @@ import {
   ImageIcon,
   InstagramIcon,
   LayoutGridIcon,
+  LightbulbIcon,
+  ListCheckIcon,
   MegaphoneIcon,
   MonitorIcon,
   MoonIcon,
+  PenToolIcon,
   PlayIcon,
   PresentationIcon,
   PrinterIcon,
   RabbitIcon,
   SplinePointerIcon,
   SunIcon,
-  LightbulbIcon,
-  LayoutListIcon,
-  Users2Icon,
-  Wand2Icon,
   UserCheck2Icon,
-  CheckCircle2Icon,
+  Users2Icon,
+  UsersIcon,
+  Wand2Icon,
 } from "lucide-react";
 import { Theme } from "remix-themes";
 import { cn } from "~/lib/utils";
@@ -62,7 +65,7 @@ export function Icons({
     case "design":
       return <SplinePointerIcon className={cn(className)} style={style} />;
     case "dev":
-      return <CodeIcon className={cn(className)} style={style} />;
+      return <BinaryIcon className={cn(className)} style={style} />;
     case "finance":
       return <CoinsIcon className={cn(className)} style={style} />;
     case "meeting":
@@ -92,11 +95,13 @@ export function Icons({
     case "idea":
       return <LightbulbIcon className={cn(className)} style={style} />;
     case "estrategia":
-      return <LayoutListIcon className={cn(className)} style={style} />;
+      return <BrainIcon className={cn(className)} style={style} />;
+    case "fazer":
+      return <ListCheckIcon className={cn(className)} style={style} />;
     case "alinhamento":
-      return <Users2Icon className={cn(className)} style={style} />;
+      return <UsersIcon className={cn(className)} style={style} />;
     case "criacao":
-      return <Wand2Icon className={cn(className)} style={style} />;
+      return <PenToolIcon className={cn(className)} style={style} />;
     case "aprovacao":
       return <UserCheck2Icon className={cn(className)} style={style} />;
     case "concluido":

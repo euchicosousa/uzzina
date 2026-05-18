@@ -6,15 +6,21 @@ export const PHASES = {
     color: "#F75",
     order: 2,
   },
+  fazer: {
+    slug: "fazer",
+    title: "Fazer",
+    color: "#F75",
+    order: 3,
+  },
   alinhamento: {
     slug: "alinhamento",
     title: "Alinhamento",
     color: "#93e",
-    order: 3,
+    order: 4,
   },
-  criacao: { slug: "criacao", title: "Criação", color: "#f49", order: 4 },
-  aprovacao: { slug: "aprovacao", title: "Aprovação", color: "#06f", order: 5 },
-  concluido: { slug: "concluido", title: "Concluído", color: "#7c3", order: 6 },
+  criacao: { slug: "criacao", title: "Criação", color: "#f49", order: 5 },
+  aprovacao: { slug: "aprovacao", title: "Aprovação", color: "#06f", order: 6 },
+  concluido: { slug: "concluido", title: "Concluído", color: "#7c3", order: 7 },
 } as const;
 
 export type PHASE = keyof typeof PHASES;
@@ -178,13 +184,13 @@ export const CATEGORY_PHASES: Partial<Record<CATEGORY, PHASE[]>> = {
   ],
   design: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
   print: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
-  dev: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
+  dev: ["idea", "fazer", "criacao", "aprovacao", "concluido"],
   stories: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
   sm: ["idea", "estrategia", "alinhamento", "criacao", "concluido"],
-  capture: ["idea", "estrategia", "criacao", "concluido"],
-  meeting: ["idea", "criacao", "concluido"],
-  finance: ["idea", "criacao", "aprovacao", "concluido"],
-  todo: ["idea", "criacao", "concluido"],
+  capture: ["idea", "fazer", "concluido"],
+  meeting: ["idea", "fazer", "concluido"],
+  finance: ["idea", "fazer", "aprovacao", "concluido"],
+  todo: ["idea", "fazer", "concluido"],
 };
 
 export const PRIORITIES = {
