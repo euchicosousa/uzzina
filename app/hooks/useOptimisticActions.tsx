@@ -1,6 +1,6 @@
 import { useFetchers, useNavigation } from "react-router";
 import { useMemo } from "react";
-import { INTENT } from "~/lib/CONSTANTS";
+import { INTENT, PHASES } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
 
 export function useOptimisticActions(actions: Action[]): Action[] {
@@ -20,8 +20,14 @@ export function useOptimisticActions(actions: Action[]): Action[] {
         const id = String(payload.id);
         if (!actionsMap.has(id)) continue;
 
-        // Merge direto: JSON já preserva arrays, booleans e numbers
-        actionsMap.set(id, { ...actionsMap.get(id)!, ...payload });
+        const original = actionsMap.get(id)!;
+        const updated = { ...original, ...payload };
+
+        if (updated.phase === PHASES.concluido.slug || updated.archived === true) {
+          updated.sprints = null;
+        }
+
+        actionsMap.set(id, updated);
       } else if (payload.intent === INTENT.bulk_update_actions) {
         const ids = Array.isArray(payload.ids) ? payload.ids : JSON.parse(payload.ids || "[]");
         const { intent, ids: _removed, ...updates } = payload;
@@ -29,7 +35,14 @@ export function useOptimisticActions(actions: Action[]): Action[] {
         for (const id of ids) {
           const stringId = String(id);
           if (actionsMap.has(stringId)) {
-            actionsMap.set(stringId, { ...actionsMap.get(stringId)!, ...updates });
+            const original = actionsMap.get(stringId)!;
+            const updated = { ...original, ...updates };
+
+            if (updated.phase === PHASES.concluido.slug || updated.archived === true) {
+              updated.sprints = null;
+            }
+
+            actionsMap.set(stringId, updated);
           }
         }
       }
@@ -40,3 +53,4 @@ export function useOptimisticActions(actions: Action[]): Action[] {
 
   return currentActions;
 }
+
