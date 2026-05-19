@@ -5,25 +5,18 @@ import {
   CopyIcon,
   LoaderIcon,
   PlusIcon,
-  RabbitIcon,
 } from "lucide-react";
-import { useRouteLoaderData, useSubmit } from "react-router";
+import { useSubmit } from "react-router";
 import { ActionColorDropdown } from "~/components/features/ActionForm/ActionColorDropdown";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { PartnersCombobox } from "~/components/features/PartnersCombobox";
 import { PhaseCombobox } from "~/components/features/PhaseCombobox";
+import { SprintCombobox } from "~/components/features/SprintCombobox";
 import { Button } from "~/components/ui/button";
-import { UToggleInput } from "~/components/uzzina/UToggle";
 import { INTENT } from "~/lib/CONSTANTS";
-import {
-  handleAction,
-  isInstagramFeed,
-  isSprint,
-  toggleSprintAction,
-} from "~/lib/helpers";
+import { handleAction, isInstagramFeed } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
-import type { AppLoaderData } from "~/routes/app";
 
 interface ActionFormFooterProps {
   RawAction: Action;
@@ -45,8 +38,6 @@ export function ActionFormFooter({
   handleClose,
 }: ActionFormFooterProps) {
   const submit = useSubmit();
-  const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
-  const isInSprint = isSprint(RawAction, person);
 
   return (
     <div className="w-fulld flex shrink-0 justify-between overflow-hidden border-t">
@@ -117,19 +108,25 @@ export function ActionFormFooter({
       <div className="flex items-center gap-2 p-2">
         {RawAction.id && (
           <>
-            <UToggleInput
-              key={`sprint-${isInSprint}`}
-              id="sprint"
-              name="sprint"
-              defaultChecked={isInSprint}
+            <SprintCombobox
+              selectedSprints={RawAction.sprints || []}
+              responsibles={RawAction.responsibles || []}
+              currentPartners={currentPartners}
               tabIndex={7}
-              className="py-3"
-              onCheckedChange={(checked) => {
-                toggleSprintAction(RawAction, person.user_id, submit);
+              onSelect={async (newSprints, newResponsibles) => {
+                const finalSprints = newSprints.length > 0 ? newSprints : null;
+
+                setRawAction({
+                  ...RawAction,
+                  sprints: finalSprints,
+                  responsibles: newResponsibles,
+                });
+                await updateAction({
+                  sprints: finalSprints,
+                  responsibles: newResponsibles,
+                });
               }}
-            >
-              <RabbitIcon className="size-5" />
-            </UToggleInput>
+            />
             <button
               title="Duplicar ação (Shift+D)"
               className="flex items-center gap-2 rounded-2xl p-2 text-sm opacity-50 hover:opacity-100 focus:opacity-100"
