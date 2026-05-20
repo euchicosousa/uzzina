@@ -109,6 +109,7 @@ export function EssentialsTab({
       <ActionTitleInput
         title={RawAction.title}
         tabIndex={1}
+        autoFocus
         onChange={async (title) => {
           setRawAction({ ...RawAction, title });
         }}
@@ -265,8 +266,8 @@ export function EssentialsTab({
                 await updateAction({ work_files: next });
               }}
               className={`text-foreground/50 ${workFiles.length === 0
-                  ? "text-md flex items-center gap-1.5 py-1.5 underline-offset-2 hover:underline"
-                  : "squircle bg-secondary hover:bg-secondary/50 flex size-10 shrink-0 items-center justify-center rounded-xl transition"
+                ? "text-md flex items-center gap-1.5 py-1.5 underline-offset-2 hover:underline"
+                : "squircle bg-secondary hover:bg-secondary/50 flex size-10 shrink-0 items-center justify-center rounded-xl transition"
                 }`}
             >
               {workFiles.length === 0 && <span>Adicionar arquivo</span>}
