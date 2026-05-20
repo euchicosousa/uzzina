@@ -317,15 +317,15 @@ export function ActionItem({
       data-action-id={action.id}
       title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
       className={cn(
-        "group/action font-inter @container relative shrink-0 cursor-pointer overflow-hidden",
+        "group/action font-inter p-2 squircle rounded-3xl @container relative shrink-0 cursor-pointer overflow-hidden",
         variantClasses,
         bgClasses,
         className,
         isDragging && "cursor-grabbing",
         isSelectionMode &&
-          (variant !== VARIANT.content
-            ? "relative pl-8 transition-all"
-            : "relative transition-all"),
+        (variant !== VARIANT.content
+          ? "relative pl-8 transition-all"
+          : "relative transition-all"),
         isSelectionMode && isSelected && "ring-primary ring-2 ring-inset",
         isSelected && variant === VARIANT.content && "squircle rounded-3xl p-2",
       )}

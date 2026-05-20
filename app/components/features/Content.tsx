@@ -26,9 +26,9 @@ export function Content({
 }) {
   const appData = useRouteLoaderData("routes/app") as
     | {
-        person?: Person;
-        people?: Person[];
-      }
+      person?: Person;
+      people?: Person[];
+    }
     | undefined;
   const person = appData?.person;
   const people = appData?.people || [];

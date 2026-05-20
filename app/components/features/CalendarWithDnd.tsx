@@ -19,6 +19,7 @@ import {
 } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import type { ViewOptions } from "./ViewOptions";
+import { DragStateContext } from "./DragStateContext";
 
 export function CalendarWithDnd({
   actions,
@@ -103,39 +104,41 @@ export function CalendarWithDnd({
   }));
 
   return (
-    <DndContext
-      id="calendar"
-      sensors={sensors}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <CalendarActions
-        currentDay={currentDay}
-        calendar={calendar}
-        viewOptions={viewOptions}
-        onCreateAction={onCreateAction}
-        isCompact={isCompact}
-        isScroll={isScroll}
-      />
-      <DragOverlay
-        className="z-100"
-        dropAnimation={{ duration: 150, easing: "ease-in-out" }}
-        adjustScale={false}
+    <DragStateContext.Provider value={!!activeAction}>
+      <DndContext
+        id="calendar"
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
       >
-        {activeAction ? (
-          <ActionItem
-            action={activeAction}
-            variant={viewOptions.variant}
-            isDragging
-            showLate={viewOptions.late}
-            showPartner={viewOptions.partner}
-            showCategory={viewOptions.category}
-            showResponsibles={viewOptions.responsibles}
-            showPriority={viewOptions.priority}
-            dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
-          />
-        ) : null}
-      </DragOverlay>
-    </DndContext>
+        <CalendarActions
+          currentDay={currentDay}
+          calendar={calendar}
+          viewOptions={viewOptions}
+          onCreateAction={onCreateAction}
+          isCompact={isCompact}
+          isScroll={isScroll}
+        />
+        <DragOverlay
+          className="z-100"
+          dropAnimation={{ duration: 150, easing: "ease-in-out" }}
+          adjustScale={false}
+        >
+          {activeAction ? (
+            <ActionItem
+              action={activeAction}
+              variant={viewOptions.variant}
+              isDragging
+              showLate={viewOptions.late}
+              showPartner={viewOptions.partner}
+              showCategory={viewOptions.category}
+              showResponsibles={viewOptions.responsibles}
+              showPriority={viewOptions.priority}
+              dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+            />
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+    </DragStateContext.Provider>
   );
 }

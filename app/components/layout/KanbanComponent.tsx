@@ -21,6 +21,7 @@ import { Draggable, Droppable } from "../features/DnD";
 import { handleAction } from "~/lib/helpers";
 import { UBadge } from "../uzzina/UBadge";
 import type { Action } from "~/models/actions.server";
+import { DragStateContext } from "../features/DragStateContext";
 
 export default function KanbanComponent({ actions }: { actions: Action[] }) {
   const submit = useSubmit();
@@ -98,37 +99,39 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
     <div className="w-full max-w-full overflow-hidden">
       <div className="overflow-x-auto pb-8">
         <div className="grid min-w-[1500px] grid-cols-6 overflow-hidden">
-          <DndContext
-            id={"kanban"}
-            sensors={sensors}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-          >
-            {Object.values(PHASES).map((phase) => (
-              <KanbanColumn
-                id={phase.slug}
-                phase={phase}
-                key={phase.slug}
-                actions={actionsByPhase[phase.slug] ?? []}
-              />
-            ))}
-            <DragOverlay
-              className="z-100"
-              dropAnimation={{ duration: 150, easing: "ease-in-out" }}
-              adjustScale={false}
+          <DragStateContext.Provider value={!!activeAction}>
+            <DndContext
+              id={"kanban"}
+              sensors={sensors}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
             >
-              {activeAction ? (
-                <ActionItem
-                  action={activeAction}
-                  isDragging
-                  showLate
-                  showPartner
-                  showCategory
-                  dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+              {Object.values(PHASES).map((phase) => (
+                <KanbanColumn
+                  id={phase.slug}
+                  phase={phase}
+                  key={phase.slug}
+                  actions={actionsByPhase[phase.slug] ?? []}
                 />
-              ) : null}
-            </DragOverlay>
-          </DndContext>
+              ))}
+              <DragOverlay
+                className="z-100"
+                dropAnimation={{ duration: 150, easing: "ease-in-out" }}
+                adjustScale={false}
+              >
+                {activeAction ? (
+                  <ActionItem
+                    action={activeAction}
+                    isDragging
+                    showLate
+                    showPartner
+                    showCategory
+                    dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+                  />
+                ) : null}
+              </DragOverlay>
+            </DndContext>
+          </DragStateContext.Provider>
         </div>
       </div>
     </div>

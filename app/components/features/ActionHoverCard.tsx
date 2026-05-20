@@ -1,30 +1,25 @@
 import * as HoverCard from "@radix-ui/react-hover-card";
 import { parseISO } from "date-fns";
 import {
-  ArchiveIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  CopyIcon,
-  ExternalLinkIcon
+  ExternalLinkIcon,
 } from "lucide-react";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useOutletContext, useRouteLoaderData, useSubmit } from "react-router";
 
 import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
-import {
-  getNewDateForAction,
-  handleAction
-} from "~/lib/helpers";
+import { getNewDateForAction, handleAction } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
 
+import { Button } from "../ui/button";
 import { ActionDatePicker } from "./ActionForm/ActionDatePicker";
 import { ActionTitleInput } from "./ActionForm/ActionTitleInput";
-import { Button } from "../ui/button";
 import { CategoriesCombobox } from "./CategoriesCombobox";
+import { DragStateContext } from "./DragStateContext";
 import { PhaseCombobox } from "./PhaseCombobox";
-import { ResponsiblesCombobox } from "./ResponsiblesCombobox";
 import { SprintCombobox } from "./SprintCombobox";
 
 const Tiptap = lazy(() =>
@@ -42,6 +37,12 @@ interface ActionHoverCardProps {
 export function ActionHoverCard({ action, children, onClick }: ActionHoverCardProps) {
   const [isDesktop, setIsDesktop] = useState(false);
 
+  // Lê o contexto de drag. `useContext` nunca joga erro —
+  // retorna `false` por padrão quando fora de um DragStateContext.Provider
+  // (ex: HoursComponent, listas sem drag).
+  const [preventOpen, setPreventOpen] = useState(false);
+  const cooldownRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
   useEffect(() => {
     const media = window.matchMedia("(hover: hover)");
     setIsDesktop(media.matches);
@@ -50,7 +51,25 @@ export function ActionHoverCard({ action, children, onClick }: ActionHoverCardPr
     return () => media.removeEventListener("change", listener);
   }, []);
 
-  if (!isDesktop) {
+  useEffect(() => () => clearTimeout(cooldownRef.current), []);
+
+  // Lê o estado de drag do contexto pai (CalendarWithDnd / KanbanComponent).
+  // Se não houver provider, retorna false — sem erros.
+  const isDragActive = useContext(DragStateContext);
+
+  useEffect(() => {
+    if (isDragActive) {
+      clearTimeout(cooldownRef.current);
+      setPreventOpen(true);
+    } else if (preventOpen) {
+      // Cooldown: aguarda 800ms após o fim do drag antes de reabrir.
+      // Evita que o Radix detecte o hover residual e reabra imediatamente.
+      cooldownRef.current = setTimeout(() => setPreventOpen(false), 800);
+    }
+  }, [isDragActive]);
+
+  // Sem HoverCard em mobile ou durante drag/cooldown
+  if (!isDesktop || preventOpen) {
     return <>{children}</>;
   }
 
@@ -100,8 +119,6 @@ function ActionHoverCardContent({ action, onClick }: { action: Action; onClick?:
   );
 
   const hasFiles = action.content_files && action.content_files.length > 0;
-
-
 
   const handleOpenFull = () => {
     if (onClick) {
@@ -173,7 +190,7 @@ function ActionHoverCardContent({ action, onClick }: { action: Action; onClick?:
           />
         </div>
 
-        {/* Mini Editor de Descrição (Sempre descrição, nunca legenda) */}
+        {/* Mini Editor de Descrição */}
         <div className="flex-1 flex flex-col min-h-[100px] hover:bg-secondary/40 py-2 border-border/40 overflow-hidden border-b focus-within:bg-secondary/40">
           <div className="flex-1 text-xs overflow-y-auto h-full">
             <Suspense fallback={<div className="h-full w-full animate-pulse bg-muted" />}>
@@ -191,9 +208,8 @@ function ActionHoverCardContent({ action, onClick }: { action: Action; onClick?:
           </div>
         </div>
 
-        {/* Controles Compactos - Sem Labels (Estilo Action Footer) */}
+        {/* Controles Compactos */}
         <div className="flex flex-wrap items-center gap-2 py-2 px-5">
-          {/* Fase */}
           <PhaseCombobox
             size="sm"
             className="rounded-full"
@@ -206,7 +222,6 @@ function ActionHoverCardContent({ action, onClick }: { action: Action; onClick?:
             }}
           />
 
-          {/* Categoria */}
           <CategoriesCombobox
             size="sm"
             className="rounded-full"
@@ -217,7 +232,6 @@ function ActionHoverCardContent({ action, onClick }: { action: Action; onClick?:
             }}
           />
 
-          {/* Data */}
           <ActionDatePicker
             size="sm"
             dateTimeDisplay={DATE_TIME_DISPLAY.DateTime}
@@ -229,7 +243,6 @@ function ActionHoverCardContent({ action, onClick }: { action: Action; onClick?:
             }}
           />
 
-          {/* Sprint */}
           <SprintCombobox
             size="sm"
             className="rounded-full"
@@ -255,8 +268,6 @@ function ActionHoverCardContent({ action, onClick }: { action: Action; onClick?:
             <ExternalLinkIcon className="size-4" />
           </Button>
         </div>
-
-
       </div>
     </>
   );
