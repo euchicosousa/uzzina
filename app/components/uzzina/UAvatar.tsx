@@ -1,4 +1,3 @@
-import { type CSSProperties } from "react";
 import { SIZE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";

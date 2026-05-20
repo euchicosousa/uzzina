@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 import { useFetcher, useRouteLoaderData } from "react-router";
-import { format, parseISO } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { SendIcon, Pencil, Trash, X, Check } from "lucide-react";
-import { UAvatar } from "~/components/uzzina/UAvatar";
 import { CommentList } from "../ActionComments/CommentList";
 import { CommentInput } from "../ActionComments/CommentInput";
-import { Button } from "~/components/ui/button";
 import { INTENT } from "~/lib/CONSTANTS";
 import type { AugmentedComment } from "~/models/action_comments.server";
 import type { AppLoaderData } from "~/routes/app";

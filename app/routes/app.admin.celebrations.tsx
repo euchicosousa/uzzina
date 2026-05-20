@@ -1,4 +1,4 @@
-import { eachMonthOfInterval, endOfYear, format, startOfYear } from "date-fns";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
@@ -18,7 +18,6 @@ import {
   createCelebration,
   deleteCelebration,
   getAllCelebrations,
-  type Celebration,
 } from "~/models/celebrations.server";
 import { getUserId } from "~/services/auth.server";
 

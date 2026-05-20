@@ -16,7 +16,6 @@ import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
 import {
   getNewDateForAction,
   handleAction,
-  isInstagramFeed,
 } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import type { ViewOptions } from "./ViewOptions";

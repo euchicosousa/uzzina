@@ -62,7 +62,7 @@ export function Header({
       ? partners.filter((p) => p.slug === params.slug)[0].users_ids
       : [person.user_id];
 
-  const { isSelectionMode, toggleSelectionMode, selectedIds } =
+  const { isSelectionMode, toggleSelectionMode } =
     useMultiSelection();
 
   return (
@@ -183,7 +183,6 @@ const HeaderMenu = ({ person }: { person: Person }) => {
   const {
     setPrimaryColorIndex,
     primaryColorIndex,
-    resetPrimaryColor,
     followPartnerColor,
     setFollowPartnerColor,
   } = useAppTheme();

@@ -8,12 +8,10 @@ import {
   CheckCircle2Icon,
   CircleFadingPlusIcon,
   ClipboardCheckIcon,
-  CodeIcon,
   CoinsIcon,
   FilterIcon,
   GalleryHorizontalIcon,
   ImageIcon,
-  InstagramIcon,
   LayoutGridIcon,
   LightbulbIcon,
   ListCheckIcon,
@@ -28,9 +26,7 @@ import {
   SplinePointerIcon,
   SunIcon,
   UserCheck2Icon,
-  Users2Icon,
   UsersIcon,
-  Wand2Icon,
 } from "lucide-react";
 import { Theme } from "remix-themes";
 import { cn } from "~/lib/utils";
@@ -89,7 +85,24 @@ export function Icons({
     case "filter":
       return <FilterIcon className={cn(className)} style={style} />;
     case "instagram":
-      return <InstagramIcon className={cn(className)} style={style} />;
+      return (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={cn(className)}
+          style={style}
+          aria-hidden="true"
+        >
+          <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+          <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+        </svg>
+      );
 
     // Fases
     case "idea":

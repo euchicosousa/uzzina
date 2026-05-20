@@ -2,7 +2,6 @@ import { ActionContainer } from "~/components/features/ActionContainer";
 import {
   ViewOptionsComponent,
   useViewOptions,
-  type ViewOptions,
 } from "~/components/features/ViewOptions";
 import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";

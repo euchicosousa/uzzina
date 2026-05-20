@@ -24,9 +24,9 @@ const ActionShortcutContext = createContext<{
   unregisterAction: (id: string) => void;
   setEditingId: (id: string | null) => void;
 }>({
-  registerAction: () => {},
-  unregisterAction: () => {},
-  setEditingId: () => {},
+  registerAction: () => { },
+  unregisterAction: () => { },
+  setEditingId: () => { },
 });
 
 /**
@@ -103,17 +103,15 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
         return isAfter(d, new Date()) ? d : new Date();
       };
 
-      const phases: Record<string, string> = {
-        KeyI: PHASES.idea.slug, // Ideia
-        KeyE: PHASES.estrategia.slug, // Estratégia
-        KeyF: PHASES.fazer.slug, // Fazer
-        KeyA: PHASES.alinhamento.slug, // Alinhamento
-        KeyD: PHASES.criacao.slug, // Design
-        KeyP: PHASES.criacao.slug, // Produção
-        KeyV: PHASES.aprovacao.slug, // aproVação
-        KeyT: PHASES.aprovacao.slug, // pronTo
-        KeyC: PHASES.concluido.slug, // Concluído
-      };
+      const phases = Object.values(PHASES).reduce<Record<string, string>>(
+        (acc, phase) => {
+          if ("key" in phase && phase.key) {
+            acc[phase.key] = phase.slug;
+          }
+          return acc;
+        },
+        {}
+      );
 
       if (event.shiftKey) {
         if (code === "KeyD") {
@@ -177,5 +175,5 @@ export function useActionShortcutContext() {
  * Mantido por compatibilidade. Retorna um setActiveAction no-op.
  */
 export function useSetActiveAction() {
-  return () => {};
+  return () => { };
 }

@@ -1,8 +1,6 @@
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
-import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
-import { isLateAction } from "~/utils/validation";
 
 export function ActionTimeDisplay({ action }: { action: Action }) {
   return (

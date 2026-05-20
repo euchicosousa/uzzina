@@ -1,15 +1,14 @@
+import { LoaderIcon } from "lucide-react";
 import { type FetcherWithComponents } from "react-router";
-import { Button } from "~/components/ui/button";
-import { UAvatarGroup } from "~/components/uzzina/UAvatar";
-import { LoaderIcon, SparklesIcon, Wand2Icon } from "lucide-react";
 import {
   ContentFilesManager,
   InstagramPreview,
 } from "~/components/uzzina/InstagramContent";
-import { INTENT } from "~/lib/CONSTANTS";
-import { getFormattedPartnersLinks } from "~/utils/format";
-import type { Action } from "~/models/actions.server";
+import { UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UButtonAI } from "~/components/uzzina/UButtonAI";
+import { INTENT } from "~/lib/CONSTANTS";
+import type { Action } from "~/models/actions.server";
+import { getFormattedPartnersLinks } from "~/utils/format";
 
 interface InstagramTabProps {
   RawAction: Action;

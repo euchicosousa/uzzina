@@ -1,26 +1,32 @@
 export const PHASES = {
-  idea: { slug: "idea", title: "Ideia", color: "#fb3", order: 1 },
+  idea: { slug: "idea", title: "Ideia", color: "#fb3", order: 1, shortcut: "d", key: "KeyD" },
   estrategia: {
     slug: "estrategia",
     title: "Estratégia",
     color: "#F75",
     order: 2,
+    shortcut: "e",
+    key: "KeyE"
   },
   fazer: {
     slug: "fazer",
     title: "Fazer",
     color: "#F75",
     order: 2,
+    shortcut: "f",
+    key: "KeyF"
   },
   alinhamento: {
     slug: "alinhamento",
     title: "Alinhamento",
     color: "#f49",
     order: 3,
+    shortcut: "a",
+    key: "KeyA"
   },
-  criacao: { slug: "criacao", title: "Criação", color: "#93e", order: 4 },
-  aprovacao: { slug: "aprovacao", title: "Aprovação", color: "#06f", order: 5 },
-  concluido: { slug: "concluido", title: "Concluído", color: "#7c3", order: 6 },
+  criacao: { slug: "criacao", title: "Produção", color: "#93e", order: 4, shortcut: "p", key: "KeyP" },
+  aprovacao: { slug: "aprovacao", title: "Validação", color: "#06f", order: 5, shortcut: "v", key: "KeyV" },
+  concluido: { slug: "concluido", title: "Concluído", color: "#7c3", order: 6, shortcut: "c", key: "KeyC" },
 } as const;
 
 export type PHASE = keyof typeof PHASES;

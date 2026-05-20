@@ -21,7 +21,6 @@ import { Draggable, Droppable } from "../features/DnD";
 import { handleAction } from "~/lib/helpers";
 import { UBadge } from "../uzzina/UBadge";
 import type { Action } from "~/models/actions.server";
-import { KanbanIcon } from "lucide-react";
 
 export default function KanbanComponent({ actions }: { actions: Action[] }) {
   const submit = useSubmit();

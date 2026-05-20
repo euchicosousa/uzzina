@@ -2,13 +2,12 @@ import { parseISO } from "date-fns";
 import {
   CalendarDaysIcon,
   FishingHookIcon,
-  PlusIcon,
-  SparklesIcon,
-  Wand2,
+  PlusIcon
 } from "lucide-react";
 import { Suspense, lazy, useRef, useState } from "react";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
+import { UButtonAI } from "~/components/uzzina/UButtonAI";
 import { getNewDateForAction, isLateAction } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
@@ -17,7 +16,6 @@ import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "./WorkFileThumbnail";
-import { UButtonAI } from "~/components/uzzina/UButtonAI";
 
 import { ArrowRightIcon } from "lucide-react";
 import { useEffect } from "react";
@@ -27,8 +25,7 @@ import {
   Sheet,
   SheetContent,
   SheetDescription,
-  SheetHeader,
-  SheetTitle,
+  SheetTitle
 } from "~/components/ui/sheet";
 import { INTENT } from "~/lib/CONSTANTS";
 
@@ -267,11 +264,10 @@ export function EssentialsTab({
                 setRawAction((prev) => ({ ...prev, work_files: next }));
                 await updateAction({ work_files: next });
               }}
-              className={`text-foreground/50 ${
-                workFiles.length === 0
+              className={`text-foreground/50 ${workFiles.length === 0
                   ? "text-md flex items-center gap-1.5 py-1.5 underline-offset-2 hover:underline"
                   : "squircle bg-secondary hover:bg-secondary/50 flex size-10 shrink-0 items-center justify-center rounded-xl transition"
-              }`}
+                }`}
             >
               {workFiles.length === 0 && <span>Adicionar arquivo</span>}
               <PlusIcon className="size-3" />

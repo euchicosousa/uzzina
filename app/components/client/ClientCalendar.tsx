@@ -5,7 +5,6 @@ import {
   endOfWeek,
   format,
   isSameDay,
-  isSameMonth,
   isToday,
   parseISO,
   startOfMonth,
@@ -116,14 +115,12 @@ export function ClientCalendar({
                 isSameDay(parseISO(a.date), day),
               );
               const isCurrentDay = isToday(day);
-              const isCurrentMonth = isSameMonth(day, currentDay);
 
               return (
                 <div
                   key={day.toISOString()}
                   className={cn(
                     "flex flex-col",
-                    // !isCurrentMonth && view === "month" && "opacity-50",
                   )}
                 >
                   {/* Cabeçalho do dia */}

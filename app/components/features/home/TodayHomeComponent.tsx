@@ -2,7 +2,6 @@ import { format, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import {
   BlocksIcon,
-  CircleAlertIcon,
   ClockIcon,
   Grid3x3Icon,
   HeartHandshakeIcon,
@@ -135,17 +134,5 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
         {view === "partners" && <PartnersComponent actions={filteredActions} />}
       </div>
     </HomeComponentWrapper>
-  );
-}
-
-function NotAvailableViewComponent({ view }: { view: string }) {
-  return (
-    <div className="bg-muted text-muted-foreground flex items-center rounded-xl p-8">
-      <CircleAlertIcon className="mr-4 size-8 opacity-50" />
-      <div>
-        Visualização por <strong className="underline">{view}</strong> ainda não
-        está disponível
-      </div>
-    </div>
   );
 }
