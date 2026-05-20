@@ -27,6 +27,7 @@ export function CategoriesCombobox({
   className,
   tabIndex,
   showText = true,
+  size = "lg",
 }: {
   selectedCategories: string[];
   onSelect?: ({
@@ -41,6 +42,7 @@ export function CategoriesCombobox({
   className?: string;
   tabIndex?: number;
   showText?: boolean;
+  size?: "sm" | "lg";
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -48,24 +50,24 @@ export function CategoriesCombobox({
 
   let categoriesList = showInstagramGroup
     ? [
-        {
-          color: "#666",
-          slug: "instagram",
-          title: "Feed do Instagram",
-        },
-        ...CATEGORIES_LIST,
-      ]
+      {
+        color: "#666",
+        slug: "instagram",
+        title: "Feed do Instagram",
+      },
+      ...CATEGORIES_LIST,
+    ]
     : CATEGORIES_LIST;
 
   categoriesList = isMulti
     ? [
-        {
-          color: "#666",
-          slug: "all",
-          title: "Todas as categorias",
-        },
-        ...categoriesList,
-      ]
+      {
+        color: "#666",
+        slug: "all",
+        title: "Todas as categorias",
+      },
+      ...categoriesList,
+    ]
     : categoriesList;
 
   let currentCategories = categoriesList.filter(
@@ -131,8 +133,8 @@ export function CategoriesCombobox({
               currentCategories[0].slug === "all"
                 ? "Escolha a categoria"
                 : currentCategories
-                    .map((category) => category.title)
-                    .join(" • ")
+                  .map((category) => category.title)
+                  .join(" • ")
             }
           >
             {currentCategories[0].slug === "all" ? (
@@ -151,13 +153,19 @@ export function CategoriesCombobox({
           <button
             tabIndex={tabIndex}
             className={cn(
-              "hover:bg-secondary focus:bg-secondary/50 flex items-center gap-2 overflow-hidden p-6 text-sm outline-none",
+              "flex items-center gap-1.5 outline-none transition-colors overflow-hidden",
+              size === "sm"
+                ? cn(
+                  "h-8 hover:bg-secondary text-xs",
+                  !showText ? "w-8 p-0 justify-center" : "px-3 justify-start"
+                )
+                : "p-6 text-sm hover:bg-secondary focus:bg-secondary/50",
               className,
             )}
           >
             <Icons
               slug={currentCategories[0].slug}
-              className="size-5"
+              className={size === "sm" ? "size-4" : "size-5"}
               color={currentCategories[0].color}
             />
             {showText && (
@@ -249,11 +257,11 @@ export function CategoriesCombobox({
                             "ml-auto size-4",
                             category.slug === "instagram"
                               ? selectedCategories.filter(
-                                  (s) =>
-                                    s === "post" ||
-                                    s === "reels" ||
-                                    s === "carousel",
-                                ).length === 3
+                                (s) =>
+                                  s === "post" ||
+                                  s === "reels" ||
+                                  s === "carousel",
+                              ).length === 3
                                 ? "visible"
                                 : "invisible"
                               : selectedCategories.includes(category.slug)

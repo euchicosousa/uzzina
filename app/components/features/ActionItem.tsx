@@ -33,6 +33,7 @@ import { ActionItemTitleInput } from "./ActionItemTitleInput";
 import { Content } from "./Content";
 import { Draggable } from "./DnD";
 import { PhaseIcon } from "./PhaseIcon";
+import { ActionHoverCard } from "./ActionHoverCard";
 
 type ActionItemProps = {
   action: Action;
@@ -47,6 +48,7 @@ type ActionItemProps = {
   showPriority?: boolean;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
   onClick?: (action: Action) => void;
+  enableHoverCard?: boolean;
 };
 
 export function ActionItem({
@@ -62,6 +64,7 @@ export function ActionItem({
   showPriority,
   dateTimeDisplay,
   onClick,
+  enableHoverCard = true,
 }: ActionItemProps) {
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
   const people = appData?.people || [];
@@ -377,10 +380,18 @@ export function ActionItem({
     </div>
   );
 
-  return isDraggable ? (
-    <Draggable id={action.id}>{content}</Draggable>
+  const wrapper = enableHoverCard ? (
+    <ActionHoverCard action={action} onClick={onClick}>
+      {content}
+    </ActionHoverCard>
   ) : (
     content
+  );
+
+  return isDraggable ? (
+    <Draggable id={action.id}>{wrapper}</Draggable>
+  ) : (
+    wrapper
   );
 }
 

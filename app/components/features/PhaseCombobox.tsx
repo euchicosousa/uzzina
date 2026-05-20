@@ -35,6 +35,7 @@ export function PhaseCombobox({
   showText = true,
   className,
   iconVariant = "progress",
+  size = "lg",
 }: {
   selectedPhase?: string;
   selectedPhases?: string[];
@@ -45,6 +46,7 @@ export function PhaseCombobox({
   showText?: boolean;
   className?: string;
   iconVariant?: "progress" | "icon";
+  size?: "sm" | "lg";
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const isShiftPressedRef = useRef(false);
@@ -121,7 +123,13 @@ export function PhaseCombobox({
           <button
             tabIndex={tabIndex}
             className={cn(
-              "hover:bg-secondary focus:bg-secondary/50 flex items-center gap-2 p-6 text-sm outline-none",
+              "flex items-center gap-1.5 outline-none transition-colors ",
+              size === "sm"
+                ? cn(
+                  "h-8 hover:bg-secondary text-xs",
+                  !showText ? "w-8 p-0 justify-center" : "px-3 justify-start"
+                )
+                : "p-6 text-sm hover:bg-secondary focus:bg-secondary/50",
               className,
             )}
           >

@@ -7,6 +7,9 @@ interface ActionTitleInputProps {
   onChange: (title: string) => void;
   onBlur: (title: string) => void;
   tabIndex?: number;
+  className?: string;
+  textareaClassName?: string;
+  autoFocus?: boolean;
 }
 
 export function ActionTitleInput({
@@ -14,6 +17,9 @@ export function ActionTitleInput({
   onBlur,
   onChange,
   tabIndex,
+  className,
+  textareaClassName,
+  autoFocus = false,
 }: ActionTitleInputProps) {
   const [localTitle, setLocalTitle] = useState(title);
 
@@ -22,7 +28,7 @@ export function ActionTitleInput({
   }, [title]);
 
   return (
-    <div className="focus-within:bg-secondary/50 relative px-4 py-2">
+    <div className={cn("focus-within:bg-secondary/50 relative px-4 py-2", className)}>
       <textarea
         value={localTitle}
         onChange={(e) => {
@@ -35,15 +41,15 @@ export function ActionTitleInput({
         placeholder="Título"
         className={cn(
           "font-inter w-full shrink-0 resize-none overflow-hidden pt-2 pb-1 leading-none font-medium tracking-tight outline-none",
-          localTitle.length > 70 ? "text-error text-4xl" : "text-5xl",
+          textareaClassName || (localTitle.length > 70 ? "text-error text-4xl" : "text-5xl"),
         )}
         // @ts-ignore
         style={{ fieldSizing: "content" }}
-        autoFocus
+        autoFocus={autoFocus}
         maxLength={100}
         tabIndex={tabIndex}
       />
-      {localTitle.length > 70 && (
+      {localTitle.length > 70 && !textareaClassName && (
         <div className="absolute right-0 bottom-0">
           <UBadge isDynamic value={localTitle.length} />
         </div>

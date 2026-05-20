@@ -1,5 +1,6 @@
 import { useEditor, EditorContent, EditorContext } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
 import { useMemo } from "react";
 import { cn } from "~/lib/utils";
 
@@ -10,6 +11,7 @@ export function Tiptap({
   className,
   tabIndex,
   disabled,
+  placeholder,
 }: {
   content: string;
   handleBlur?: (content: string) => void;
@@ -17,9 +19,15 @@ export function Tiptap({
   className?: string;
   tabIndex?: number;
   disabled?: boolean;
+  placeholder?: string;
 }) {
   const editor = useEditor({
-    extensions: [StarterKit], // define your extension array
+    extensions: [
+      StarterKit,
+      Placeholder.configure({
+        placeholder: placeholder || "Escreva algo...",
+      }),
+    ],
     content, // initial content
     immediatelyRender: false,
     editable: !disabled,

@@ -284,6 +284,11 @@
   @apply h-full overflow-y-auto outline-none;
 }
 
+.tiptap.ProseMirror p.is-editor-empty:first-child::before {
+  @apply text-muted-foreground pointer-events-none float-left h-0;
+  content: attr(data-placeholder);
+}
+
 .squircle {
   @apply [corner-shape:superellipse(1.5)];
 }
