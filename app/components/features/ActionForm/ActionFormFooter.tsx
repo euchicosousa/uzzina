@@ -180,7 +180,7 @@ export function ActionFormFooter({
         )}
         <Button
           disabled={isPending}
-          className="squircle rounded-2xl"
+          className="squircle rounded-2xl w-32 overflow-hidden"
           tabIndex={7}
           onClick={(event) => {
             event.preventDefault();
@@ -191,14 +191,15 @@ export function ActionFormFooter({
             }
           }}
         >
-          {RawAction.id
-            ? isPending
-              ? "Atualizando..."
-              : "Atualizar"
-            : isPending
-              ? "Criando..."
-              : "Criar Ação"}
-
+          <div className="truncate">
+            {RawAction.id
+              ? isPending
+                ? "Atualizando..."
+                : "Atualizar"
+              : isPending
+                ? "Criando..."
+                : "Criar Ação"}
+          </div>
           {isPending ? (
             <LoaderIcon className="animate-spin" />
           ) : RawAction.id ? (
