@@ -57,7 +57,7 @@ export function ActionHoverCard({ action, children, onClick }: ActionHoverCardPr
   const hasFiles = action.content_files && action.content_files.length > 0;
 
   return (
-    <HoverCard.Root openDelay={350} closeDelay={150}>
+    <HoverCard.Root openDelay={600} closeDelay={150}>
       <HoverCard.Trigger asChild>{children}</HoverCard.Trigger>
       <HoverCard.Portal>
         <HoverCard.Content
