@@ -8,6 +8,8 @@ import {
   getActionById,
   updateAction,
   bulkUpdateActions,
+  bulkUpdateDateOnly,
+  bulkUpdateTimeOnly,
 } from "~/models/actions.server";
 import {
   createComment,
@@ -115,6 +117,28 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       } catch (error) {
         console.error("Error bulk updating actions:", error);
         return Response.json({ error: "Failed to bulk update updates" }, { status: 500 });
+      }
+    }
+  } else if (intent === INTENT.bulk_update_date_only) {
+    // Altera só a data, preservando a hora original de cada ação
+    const ids = Array.isArray(values.ids) ? values.ids : JSON.parse(values.ids || "[]");
+    if (ids.length > 0 && values.date_only) {
+      try {
+        await bulkUpdateDateOnly(supabase, ids, values.date_only);
+      } catch (error) {
+        console.error("Error bulk updating date only:", error);
+        return Response.json({ error: "Failed to bulk update date" }, { status: 500 });
+      }
+    }
+  } else if (intent === INTENT.bulk_update_time_only) {
+    // Altera só a hora, preservando a data original de cada ação
+    const ids = Array.isArray(values.ids) ? values.ids : JSON.parse(values.ids || "[]");
+    if (ids.length > 0 && values.time_only) {
+      try {
+        await bulkUpdateTimeOnly(supabase, ids, values.time_only);
+      } catch (error) {
+        console.error("Error bulk updating time only:", error);
+        return Response.json({ error: "Failed to bulk update time" }, { status: 500 });
       }
     }
   } else if (intent === INTENT.create_comment) {

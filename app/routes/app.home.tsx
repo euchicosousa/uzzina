@@ -7,6 +7,7 @@ import {
   startOfWeek,
 } from "date-fns";
 
+import { useMemo } from "react";
 import {
   data,
   useLoaderData,
@@ -14,7 +15,6 @@ import {
   useOutletContext,
   type LoaderFunctionArgs,
 } from "react-router";
-import { useMemo } from "react";
 import type { Action } from "~/models/actions.server";
 
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";

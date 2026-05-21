@@ -5,10 +5,12 @@ import {
 } from "~/components/features/ViewOptions";
 import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
+import { VARIANT } from "~/lib/CONSTANTS";
 
 export function LateHomeComponent({ actions }: { actions: Action[] }) {
   const [viewOptions, setViewOptions] = useViewOptions({
     partner: true,
+    variant: VARIANT.block,
     showOptions: {
       ascending: true,
       order: true,

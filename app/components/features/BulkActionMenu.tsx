@@ -16,7 +16,7 @@ import { PartnerColorPicker } from "~/components/features/ActionForm/PartnerColo
 import { useMatches, useParams, useSubmit } from "react-router";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { handleBulkAction } from "~/lib/helpers";
-import { CATEGORIES, PHASES, PRIORITIES } from "~/lib/CONSTANTS";
+import { CATEGORIES, INTENT, PHASES, PRIORITIES } from "~/lib/CONSTANTS";
 import { PhaseIcon } from "./PhaseIcon";
 import {
   DropdownMenu,
@@ -37,14 +37,14 @@ import {
   DialogDescription,
   DialogFooter,
 } from "~/components/ui/dialog";
-import { Calendar } from "~/components/ui/calendar";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { cn } from "~/lib/utils";
 import type { AppLoaderData } from "~/routes/app";
 import type { Partner } from "~/models/partners.server";
-
-// "date" é o único target de data por agora — tipo explícito para segurança
-type DateTarget = "date";
+import {
+  BulkDateTimeDialog,
+  type BulkDateTimeResult,
+} from "./BulkDateTimeDialog";
 
 export function BulkActionMenu() {
   // ─── Multi-seleção ───────────────────────────────────────────────────────────
@@ -67,8 +67,7 @@ export function BulkActionMenu() {
   const partnerColors = currentPartner?.colors ?? [];
 
   // ─── Estados dos dialogs ─────────────────────────────────────────────────────
-  // ─── Estados dos dialogs ─────────────────────────────────────────────────────
-  const [dateTarget, setDateTarget] = useState<DateTarget | null>(null);
+  const [dateTimeOpen, setDateTimeOpen] = useState(false);
   const [partnersOpen, setPartnersOpen] = useState(false);
   const [pickedResponsibles, setPickedResponsibles] = useState<string[]>([]);
   const [colorOpen, setColorOpen] = useState(false);
@@ -86,11 +85,28 @@ export function BulkActionMenu() {
     toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
   };
 
-  // ─── Handlers: Data ──────────────────────────────────────────────────────────
-  const onDateSelect = (date: Date | undefined) => {
-    if (!date || !dateTarget) return;
-    performBulkAction({ [dateTarget]: date.toISOString() });
-    setDateTarget(null);
+  // ─── Handlers: Data/Hora ─────────────────────────────────────────────────────
+  const applyDateTime = (result: BulkDateTimeResult) => {
+    if (result.mode === "datetime") {
+      // Situação 1: substitui data + hora completos
+      performBulkAction({ date: result.date });
+    } else if (result.mode === "date_only") {
+      // Situação 2: só a data — servidor preserva a hora de cada ação
+      submit(
+        { intent: INTENT.bulk_update_date_only, ids: selectedIds, date_only: result.dateOnly },
+        { method: "post", action: "/action/handle-action", navigate: false, encType: "application/json" },
+      );
+      clearSelection();
+      toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
+    } else {
+      // Situação 3: só a hora — servidor preserva a data de cada ação
+      submit(
+        { intent: INTENT.bulk_update_time_only, ids: selectedIds, time_only: result.timeOnly },
+        { method: "post", action: "/action/handle-action", navigate: false, encType: "application/json" },
+      );
+      clearSelection();
+      toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
+    }
   };
 
   // ─── Handlers: Responsáveis ──────────────────────────────────────────────────
@@ -125,26 +141,13 @@ export function BulkActionMenu() {
   // ─── Render ──────────────────────────────────────────────────────────────────
   return (
     <>
-      {/* ── Dialog: Seleção de data ────────────────────────────────────────── */}
-      <Dialog
-        open={!!dateTarget}
-        onOpenChange={(open) => !open && setDateTarget(null)}
-      >
-        <DialogContent className="w-auto overflow-hidden p-0">
-          <DialogHeader className="px-4 pt-4">
-            <DialogTitle>Data</DialogTitle>
-            <DialogDescription>
-              Selecione uma data para {selectedIds.length} ação(ões)
-            </DialogDescription>
-          </DialogHeader>
-          <Calendar
-            mode="single"
-            onSelect={onDateSelect}
-            autoFocus
-            className="w-full"
-          />
-        </DialogContent>
-      </Dialog>
+      {/* ── Dialog: Data e Hora ─────────────────────────────────────────────── */}
+      <BulkDateTimeDialog
+        open={dateTimeOpen}
+        onOpenChange={setDateTimeOpen}
+        selectedCount={selectedIds.length}
+        onApply={applyDateTime}
+      />
 
       {/* ── Dialog: Seleção de responsáveis ───────────────────────────────── */}
       <Dialog open={partnersOpen} onOpenChange={setPartnersOpen}>
@@ -262,20 +265,10 @@ export function BulkActionMenu() {
             </DropdownMenuPortal>
           </DropdownMenuSub>
 
-          {/* Data */}
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <CalendarIcon className="mr-2 size-4 opacity-70" /> Alterar Data
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem onSelect={() => setDateTarget("date")}>
-                  <CalendarIcon className="mr-2 size-4 opacity-70" />
-                  Atualizar Data
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
+          {/* Data e Hora */}
+          <DropdownMenuItem onSelect={() => setDateTimeOpen(true)}>
+            <CalendarIcon className="size-4 opacity-70" /> Alterar Data e Hora
+          </DropdownMenuItem>
 
           {/* Categoria */}
           <DropdownMenuSub>

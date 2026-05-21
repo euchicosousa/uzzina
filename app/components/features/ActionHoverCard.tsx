@@ -6,7 +6,7 @@ import {
   ExternalLinkIcon,
 } from "lucide-react";
 import { lazy, Suspense, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useOutletContext, useRouteLoaderData, useSubmit } from "react-router";
+import { useFetchers, useNavigation, useOutletContext, useRouteLoaderData, useSubmit } from "react-router";
 
 import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
 import { getNewDateForAction, handleAction } from "~/lib/helpers";
@@ -99,9 +99,12 @@ export function ActionHoverCard({ action, children, onClick }: ActionHoverCardPr
 
 function ActionHoverCardContent({ action, onClick }: { action: Action; onClick?: (action: Action) => void }) {
   const submit = useSubmit();
+  const fetchers = useFetchers();
+  const navigation = useNavigation();
   const outletContext = useOutletContext<any>();
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
   const partners = appData?.partners || [];
+
 
   const [title, setTitle] = useState(action.title);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -109,6 +112,9 @@ function ActionHoverCardContent({ action, onClick }: { action: Action; onClick?:
   useEffect(() => {
     setTitle(action.title);
   }, [action.title]);
+
+  const isPending = fetchers.length > 0 || navigation.state !== "idle";
+
 
   const currentPartners = useMemo(
     () =>
@@ -128,15 +134,7 @@ function ActionHoverCardContent({ action, onClick }: { action: Action; onClick?:
     }
   };
 
-  const handleDuplicate = () => {
-    handleAction({ id: action.id, intent: INTENT.duplicate_action }, submit);
-  };
 
-  const handleArchive = () => {
-    if (confirm("Tem certeza que deseja arquivar esta ação?")) {
-      handleAction({ ...action, intent: INTENT.update_action, archived: true, sprints: null }, submit);
-    }
-  };
 
   return (
     <>
@@ -263,7 +261,7 @@ function ActionHoverCardContent({ action, onClick }: { action: Action; onClick?:
           <Button
             size="icon"
             onClick={handleOpenFull}
-            className="h-8 rounded-full ml-auto"
+            className="h-8 p-0 w-8 rounded-full ml-auto"
           >
             <ExternalLinkIcon className="size-4" />
           </Button>

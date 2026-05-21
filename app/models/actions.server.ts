@@ -197,3 +197,58 @@ export async function bulkUpdateActions(
   return data as Action[];
 }
 
+/**
+ * Change only the DATE part of N actions, preserving each action's original time.
+ * @param newDate - "yyyy-MM-dd"
+ */
+export async function bulkUpdateDateOnly(
+  supabase: SupabaseClient,
+  ids: string[],
+  newDate: string,
+) {
+  const { data, error } = await supabase
+    .from("actions")
+    .select("id, date")
+    .in("id", ids);
+
+  if (error) throw error;
+
+  await Promise.all(
+    (data as { id: string; date: string }[]).map(({ id, date }) => {
+      // Extrai a hora existente — o campo é "yyyy-MM-dd HH:mm:ss"
+      const existingTime = format(new Date(date.replace(" ", "T")), "HH:mm:ss");
+      return supabase
+        .from("actions")
+        .update({ date: `${newDate} ${existingTime}` })
+        .eq("id", id);
+    }),
+  );
+}
+
+/**
+ * Change only the TIME part of N actions, preserving each action's original date.
+ * @param newTime - "HH:mm"
+ */
+export async function bulkUpdateTimeOnly(
+  supabase: SupabaseClient,
+  ids: string[],
+  newTime: string,
+) {
+  const { data, error } = await supabase
+    .from("actions")
+    .select("id, date")
+    .in("id", ids);
+
+  if (error) throw error;
+
+  await Promise.all(
+    (data as { id: string; date: string }[]).map(({ id, date }) => {
+      // Extrai a data existente — o campo é "yyyy-MM-dd HH:mm:ss"
+      const existingDate = format(new Date(date.replace(" ", "T")), "yyyy-MM-dd");
+      return supabase
+        .from("actions")
+        .update({ date: `${existingDate} ${newTime}:00` })
+        .eq("id", id);
+    }),
+  );
+}
