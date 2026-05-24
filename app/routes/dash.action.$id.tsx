@@ -20,6 +20,7 @@ import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { InstagramPreview } from "~/components/uzzina/InstagramPreview";
 import { CATEGORIES, PHASES, type CATEGORY, type PHASE } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
+import { safeColor } from "~/lib/utils";
 import {
   createComment,
   deleteComment,
@@ -135,7 +136,7 @@ export default function DashActionDetail() {
   const partners = (appData?.partners || []) as any[];
   const actionPartner =
     partners.find((p: any) => action.partners?.includes(p.slug)) || partners[0];
-  const brandColor = actionPartner?.colors?.[0] || action.color;
+  const brandColor = actionPartner?.colors?.[0] || safeColor(action.color);
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">

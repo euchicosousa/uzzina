@@ -1,4 +1,6 @@
+import Color from "color";
 import { clsx, type ClassValue } from "clsx";
+
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -47,3 +49,27 @@ export const normalizeHexColor = (color: string) => {
   }
   return "#666";
 };
+
+/**
+ * Cor padrão aplicada quando action.color é nulo, vazio ou inválido.
+ * Corresponde ao cinza neutro já usado implicitamente em normalizeHexColor.
+ */
+export const DEFAULT_ACTION_COLOR = "#666666";
+
+/**
+ * Normaliza e valida qualquer valor de cor bruto vindo do banco de dados.
+ *
+ * - Cor válida (hex, rgb, nome CSS, etc.) → retorna em formato #RRGGBB
+ * - Nulo, vazio ou inválido              → retorna DEFAULT_ACTION_COLOR
+ *
+ * Nunca lança exceção — seguro para usar diretamente em qualquer render.
+ */
+export function safeColor(raw: string | null | undefined): string {
+  if (!raw) return DEFAULT_ACTION_COLOR;
+  try {
+    return Color(raw).hex();
+  } catch {
+    return DEFAULT_ACTION_COLOR;
+  }
+}
+

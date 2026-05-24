@@ -4,9 +4,9 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { cn, getGridCols } from "~/lib/utils";
+import { cn, getGridCols, safeColor } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
-import { PartnerColorPicker, toHex } from "./PartnerColorPicker";
+import { PartnerColorPicker } from "./PartnerColorPicker";
 
 interface ActionColorDropdownProps {
   action: Action;
@@ -27,9 +27,9 @@ export function ActionColorDropdown({
   onSelect,
   tabIndex,
 }: ActionColorDropdownProps) {
-  // Cor atual normalizada para hex — serve como valor inicial do estado local
+  // Cor atual normalizada e validada — safeColor retorna #666666 se inválida ou nula
   const normalizedActionColor = useMemo(
-    () => (action.color ? toHex(action.color) : ""),
+    () => safeColor(action.color),
     [action.color],
   );
 
@@ -61,7 +61,7 @@ export function ActionColorDropdown({
         >
           <div
             className="size-5 rounded-full border border-black/5"
-            style={{ backgroundColor: action.color }}
+            style={{ backgroundColor: normalizedActionColor }}
           />
         </button>
       </DropdownMenuTrigger>

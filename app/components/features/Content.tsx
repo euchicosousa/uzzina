@@ -2,7 +2,7 @@ import Color from "color";
 import { useRouteLoaderData } from "react-router";
 import { CATEGORIES, DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
 import { getFormattedDateTime, Icons, isSprint } from "~/lib/helpers";
-import { cn } from "~/lib/utils";
+import { cn, safeColor } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import { UAvatarGroup } from "../uzzina/UAvatar";
 import { getPeople } from "~/utils/filter";
@@ -33,7 +33,8 @@ export function Content({
   const person = appData?.person;
   const people = appData?.people || [];
 
-  const actionColor = action.color;
+  // Normaliza e valida a cor — nunca quebra mesmo se action.color vier inválido do banco
+  const actionColor = safeColor(action.color);
 
   const hasFiles = action.content_files && action.content_files?.length;
   const backgroundColor = Color(actionColor);
