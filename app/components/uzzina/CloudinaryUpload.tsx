@@ -70,6 +70,7 @@ export function CloudinaryUpload({
   const widgetRef = useRef<{ open: () => void; destroy: () => void } | null>(
     null,
   );
+  const destroyTimeoutRef = useRef<any>(null);
 
   // Mantém sempre a referência mais recente do onUpload.
   // Isso resolve o problema de closure estale quando o widget é criado uma vez
@@ -78,6 +79,18 @@ export function CloudinaryUpload({
   useEffect(() => {
     onUploadRef.current = onUpload;
   });
+
+  // Limpa o widget e o timeout caso o componente seja desmontado
+  useEffect(() => {
+    return () => {
+      if (destroyTimeoutRef.current) {
+        clearTimeout(destroyTimeoutRef.current);
+      }
+      if (widgetRef.current) {
+        widgetRef.current.destroy();
+      }
+    };
+  }, []);
 
   // Carrega o script do widget uma única vez por página
   useEffect(() => {
@@ -97,6 +110,13 @@ export function CloudinaryUpload({
     if (!window.cloudinary) {
       console.warn("CloudinaryUpload: script ainda carregando.");
       return;
+    }
+
+    // Se houver um timeout de destruição ativo (porque o widget acabou de fechar),
+    // cancela a destruição e reutiliza o mesmo widget.
+    if (destroyTimeoutRef.current) {
+      clearTimeout(destroyTimeoutRef.current);
+      destroyTimeoutRef.current = null;
     }
 
     if (widgetRef.current) {
@@ -199,9 +219,16 @@ export function CloudinaryUpload({
         }
         // Destrói o widget ao fechar para garantir sessão limpa na próxima abertura.
         // Sem isso, o widget cached re-emite eventos `success` de sessões anteriores.
+        // Adicionamos um setTimeout para evitar que a destruição síncrona interrompa
+        // a limpeza interna e a animação do widget (o que gerava o elemento sombra na tela).
         if (!error && result.event === "close") {
-          widgetRef.current?.destroy();
-          widgetRef.current = null;
+          destroyTimeoutRef.current = setTimeout(() => {
+            if (widgetRef.current) {
+              widgetRef.current.destroy();
+              widgetRef.current = null;
+            }
+            destroyTimeoutRef.current = null;
+          }, 300);
         }
       },
     );

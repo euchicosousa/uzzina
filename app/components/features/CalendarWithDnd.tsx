@@ -13,10 +13,7 @@ import { useSubmit } from "react-router";
 import { ActionItem } from "~/components/features/ActionItem";
 import { CalendarActions } from "~/components/features/Calendar";
 import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
-import {
-  getNewDateForAction,
-  handleAction,
-} from "~/lib/helpers";
+import { getNewDateForAction, handleAction } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import type { ViewOptions } from "./ViewOptions";
 import { DragStateContext } from "./DragStateContext";
@@ -30,6 +27,8 @@ export function CalendarWithDnd({
   onCreateAction,
   isCompact,
   isScroll,
+  showBorder,
+  highlightThisWeek,
 }: {
   actions: Action[];
   calendarDays: Date[];
@@ -39,6 +38,8 @@ export function CalendarWithDnd({
   onCreateAction?: (day: Date) => void;
   isCompact?: boolean;
   isScroll?: boolean;
+  showBorder?: boolean;
+  highlightThisWeek?: boolean;
 }) {
   const submit = useSubmit();
   const [activeAction, setActiveAction] = useState<Action>();
@@ -70,10 +71,7 @@ export function CalendarWithDnd({
         "yyyy-MM-dd",
       ).concat(format(activeAction[key], " HH:mm:ss"));
 
-      const newDates = getNewDateForAction(
-        activeAction,
-        parseISO(value),
-      );
+      const newDates = getNewDateForAction(activeAction, parseISO(value));
 
       setDateOverrides((prev) => ({ ...prev, [activeAction.id]: newDates }));
 
@@ -95,10 +93,7 @@ export function CalendarWithDnd({
   const calendar = calendarDays.map((date) => ({
     date,
     actions: actionsWithOverrides.filter((action) =>
-      isSameDay(
-        action.date,
-        date,
-      ),
+      isSameDay(action.date, date),
     ),
     celebrations: celebrations.filter((c) => isSameDay(parseISO(c.date), date)),
   }));
@@ -118,6 +113,8 @@ export function CalendarWithDnd({
           onCreateAction={onCreateAction}
           isCompact={isCompact}
           isScroll={isScroll}
+          showBorder={showBorder}
+          highlightThisWeek={highlightThisWeek}
         />
         <DragOverlay
           className="z-100"

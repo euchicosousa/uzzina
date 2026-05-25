@@ -19,6 +19,8 @@ export function CalendarActions({
   onCreateAction,
   isCompact,
   isScroll,
+  showBorder,
+  highlightThisWeek,
 }: {
   currentDay?: Date;
   calendar: CalendarActionsType[];
@@ -26,6 +28,8 @@ export function CalendarActions({
   onCreateAction?: (day: Date) => void;
   isCompact?: boolean;
   isScroll?: boolean;
+  showBorder?: boolean;
+  highlightThisWeek?: boolean;
 }) {
   return (
     <div className="w-full overflow-x-auto overflow-y-hidden">
@@ -42,6 +46,8 @@ export function CalendarActions({
               celebrations={day.celebrations}
               isCompact={isCompact}
               isScroll={isScroll}
+              showBorder={showBorder}
+              highlightThisWeek={highlightThisWeek}
               key={format(day.date, "yyyy-MM-dd")}
             />
           ))}

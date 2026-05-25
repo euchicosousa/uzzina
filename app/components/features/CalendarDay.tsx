@@ -1,5 +1,5 @@
 import { useDroppable } from "@dnd-kit/core";
-import { format, isSameDay, isSameMonth } from "date-fns";
+import { format, isSameDay, isSameMonth, isSameWeek } from "date-fns";
 import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import type { ViewOptions } from "~/components/features/ViewOptions";
@@ -17,6 +17,8 @@ export function CalendarDay({
   celebrations,
   isCompact,
   isScroll,
+  showBorder,
+  highlightThisWeek,
 }: {
   currentDay?: Date;
   day: Date;
@@ -26,6 +28,8 @@ export function CalendarDay({
   celebrations?: Celebration[];
   isCompact?: boolean;
   isScroll?: boolean;
+  showBorder?: boolean;
+  highlightThisWeek?: boolean;
 }) {
   const { setNodeRef } = useDroppable({
     id: `${format(day, "yyyy-MM-dd")}`,
@@ -40,6 +44,8 @@ export function CalendarDay({
       key={format(day, "yyyy-MM-dd")}
       className={cn(
         "group/column flex flex-col justify-between",
+        showBorder && "border-b",
+        highlightThisWeek && isSameWeek(day, currentDay || new Date()) && "",
         viewOptions.variant === VARIANT.content
           ? ""
           : isScroll
@@ -58,7 +64,7 @@ export function CalendarDay({
               className={cn(
                 "grid h-8 place-content-center text-lg font-medium",
                 isSameDay(day, new Date())
-                  ? "bg-foreground text-background w-8 rounded-full"
+                  ? "w-8 rounded-full bg-foreground text-background"
                   : "",
               )}
             >
@@ -68,7 +74,7 @@ export function CalendarDay({
           {onCreateAction && (
             <div className="isolate opacity-0 group-hover/column:opacity-100">
               <button
-                className="bg-primary text-primary-foreground grid size-6 cursor-pointer place-content-center rounded-full"
+                className="grid size-6 cursor-pointer place-content-center rounded-full bg-primary text-primary-foreground"
                 onClick={() => {
                   onCreateAction(day);
                 }}
@@ -152,7 +158,7 @@ export function CelebrationContainer({
       {celebrations.map((celebration) => (
         <div key={celebration.id} title={celebration.title}>
           <div className="flex items-center gap-2">
-            <div className="bg-primary size-1 rounded-full"></div>
+            <div className="size-1 rounded-full bg-primary"></div>
             <div className="truncate opacity-50">{celebration.title}</div>
           </div>
         </div>

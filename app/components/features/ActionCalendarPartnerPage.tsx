@@ -46,6 +46,8 @@ export function ActionCalendarPartnerPage({
       celebrations={celebrations}
       viewOptions={viewOptions}
       currentDay={currentDay}
+      highlightThisWeek
+      showBorder
       onCreateAction={(day) => {
         setBaseAction({
           ...(getCleanAction({
