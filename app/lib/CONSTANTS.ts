@@ -1,12 +1,19 @@
 export const PHASES = {
-  idea: { slug: "idea", title: "Ideia", color: "#fb3", order: 1, shortcut: "d", key: "KeyD" },
+  idea: {
+    slug: "idea",
+    title: "Ideia",
+    color: "#fb3",
+    order: 1,
+    shortcut: "i",
+    key: "KeyI",
+  },
   estrategia: {
     slug: "estrategia",
     title: "Estratégia",
     color: "#F75",
     order: 2,
     shortcut: "e",
-    key: "KeyE"
+    key: "KeyE",
   },
   fazer: {
     slug: "fazer",
@@ -14,7 +21,7 @@ export const PHASES = {
     color: "#F75",
     order: 2,
     shortcut: "f",
-    key: "KeyF"
+    key: "KeyF",
   },
   alinhamento: {
     slug: "alinhamento",
@@ -22,11 +29,32 @@ export const PHASES = {
     color: "#f49",
     order: 3,
     shortcut: "a",
-    key: "KeyA"
+    key: "KeyA",
   },
-  criacao: { slug: "criacao", title: "Produção", color: "#93e", order: 4, shortcut: "p", key: "KeyP" },
-  aprovacao: { slug: "aprovacao", title: "Validação", color: "#06f", order: 5, shortcut: "v", key: "KeyV" },
-  concluido: { slug: "concluido", title: "Concluído", color: "#7c3", order: 6, shortcut: "c", key: "KeyC" },
+  criacao: {
+    slug: "criacao",
+    title: "Produção",
+    color: "#93e",
+    order: 4,
+    shortcut: "p",
+    key: "KeyP",
+  },
+  aprovacao: {
+    slug: "aprovacao",
+    title: "Validação",
+    color: "#06f",
+    order: 5,
+    shortcut: "v",
+    key: "KeyV",
+  },
+  concluido: {
+    slug: "concluido",
+    title: "Concluído",
+    color: "#7c3",
+    order: 6,
+    shortcut: "c",
+    key: "KeyC",
+  },
 } as const;
 
 export type PHASE = keyof typeof PHASES;
