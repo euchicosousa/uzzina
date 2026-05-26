@@ -252,3 +252,31 @@ export async function bulkUpdateTimeOnly(
     }),
   );
 }
+
+/**
+ * Get actions for planning board (by date range, handling admin and visibility)
+ */
+export async function getActionsForPlanning(
+  supabase: SupabaseClient,
+  userId: string,
+  isAdmin: boolean,
+  partnerSlugs: string[],
+  startDate: string,
+  endDate: string,
+) {
+  let query = supabase
+    .from("actions")
+    .select("*")
+    .or("archived.is.false,archived.is.null")
+    .gte("date", startDate)
+    .lte("date", endDate)
+    .order("date", { ascending: true });
+
+  if (!isAdmin) {
+    query = query.overlaps("partners", partnerSlugs);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data as Action[];
+}

@@ -113,6 +113,11 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
         {}
       );
 
+      let targetPhase = phases[code];
+      if (!targetPhase && code === "KeyF") {
+        targetPhase = "estrategia";
+      }
+
       if (event.shiftKey) {
         if (code === "KeyD") {
           handleAction(
@@ -143,9 +148,9 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
             );
           }
         }
-      } else if (phases[code]) {
+      } else if (targetPhase) {
         handleAction(
-          { ...action, intent: INTENT.update_action, phase: phases[code] },
+          { ...action, intent: INTENT.update_action, phase: targetPhase },
           submit,
         );
       }

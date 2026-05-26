@@ -109,8 +109,6 @@ export function Icons({
       return <LightbulbIcon className={cn(className)} style={style} />;
     case "estrategia":
       return <BrainIcon className={cn(className)} style={style} />;
-    case "fazer":
-      return <ListCheckIcon className={cn(className)} style={style} />;
     case "alinhamento":
       return <UsersIcon className={cn(className)} style={style} />;
     case "criacao":

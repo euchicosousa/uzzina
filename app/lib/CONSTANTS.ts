@@ -15,14 +15,6 @@ export const PHASES = {
     shortcut: "e",
     key: "KeyE",
   },
-  fazer: {
-    slug: "fazer",
-    title: "Fazer",
-    color: "#F75",
-    order: 2,
-    shortcut: "f",
-    key: "KeyF",
-  },
   alinhamento: {
     slug: "alinhamento",
     title: "Alinhamento",
@@ -218,13 +210,13 @@ export const CATEGORY_PHASES: Partial<Record<CATEGORY, PHASE[]>> = {
   ],
   design: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
   print: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
-  dev: ["idea", "fazer", "criacao", "aprovacao", "concluido"],
+  dev: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
   stories: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
   sm: ["idea", "estrategia", "alinhamento", "criacao", "concluido"],
-  capture: ["idea", "fazer", "concluido"],
-  meeting: ["idea", "fazer", "concluido"],
-  finance: ["idea", "fazer", "aprovacao", "concluido"],
-  todo: ["idea", "fazer", "concluido"],
+  capture: ["idea", "estrategia", "concluido"],
+  meeting: ["idea", "estrategia", "concluido"],
+  finance: ["idea", "estrategia", "aprovacao", "concluido"],
+  todo: ["idea", "estrategia", "concluido"],
 };
 
 export const PRIORITIES = {

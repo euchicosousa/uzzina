@@ -14,6 +14,7 @@ export default [
     route("admin/clients", "routes/app.admin.clients.tsx"),
     route("admin/clients/:userId", "routes/app.admin.clients.$userId.tsx"),
     route("admin/celebrations", "routes/app.admin.celebrations.tsx"),
+    route("planejamento", "routes/app.planejamento.tsx"),
   ]),
   route("dash", "routes/dash.tsx", [
     index("routes/dash.home.tsx"),
