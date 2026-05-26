@@ -618,7 +618,7 @@ export default function PlanejamentoPage() {
 
                                   {/* Ícone de check pequeno se concluído */}
                                   {isCompleted && (
-                                    <CheckIcon className="size-3 stroke-[3] text-background" />
+                                    <CheckIcon className="size-3 stroke-3 text-background" />
                                   )}
 
                                   {/* Tooltip de hover */}
