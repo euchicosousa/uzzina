@@ -358,6 +358,8 @@ export default function ProfilePage() {
                 onChange={setSelectedThemeColor}
                 columnsClassName="grid-cols-5 sm:grid-cols-9 gap-2"
                 hideLabelText
+                selectedClassName="border-primary bg-primary/20 scale-[1.02] shadow-sm"
+                unselectedClassName="border-border bg-transparent hover:bg-card/40"
               />
             </div>
 

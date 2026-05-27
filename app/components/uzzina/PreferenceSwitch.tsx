@@ -23,7 +23,10 @@ export function PreferenceSwitch({
   return (
     <div
       className={cn(
-        "flex items-center justify-between rounded-2xl border bg-card p-4",
+        "flex items-center justify-between rounded-2xl border p-4 transition-all duration-200",
+        checked
+          ? "border-primary bg-primary/5 text-foreground"
+          : "border-border bg-card/25 text-muted-foreground",
         className,
       )}
     >

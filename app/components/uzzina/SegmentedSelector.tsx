@@ -17,6 +17,8 @@ interface SegmentedSelectorProps<T> {
   vertical?: boolean;
   orientation?: "horizontal" | "vertical";
   hideLabelText?: boolean;
+  selectedClassName?: string;
+  unselectedClassName?: string;
 }
 
 export function SegmentedSelector<T extends string | number>({
@@ -29,6 +31,8 @@ export function SegmentedSelector<T extends string | number>({
   vertical = false,
   orientation = "horizontal",
   hideLabelText = false,
+  selectedClassName,
+  unselectedClassName,
 }: SegmentedSelectorProps<T>) {
   // If columns is provided, build style object. Else fallback to columnsClassName or grid-cols-3
   const gridStyle = columns
@@ -38,6 +42,9 @@ export function SegmentedSelector<T extends string | number>({
   const defaultColsClass = columns ? undefined : (columnsClassName || "grid-cols-3");
 
   const isVerticalLayout = orientation === "vertical";
+
+  const btnSelectedClass = selectedClassName || "border-primary bg-primary text-primary-foreground scale-[1.02] shadow-sm";
+  const btnUnselectedClass = unselectedClassName || "border-border bg-card/40 text-muted-foreground hover:bg-card hover:text-foreground";
 
   return (
     <div
@@ -63,9 +70,7 @@ export function SegmentedSelector<T extends string | number>({
               vertical
                 ? "flex-col items-center justify-center gap-2 p-4"
                 : "items-center justify-center gap-2 p-2.5",
-              isSelected
-                ? "border-primary bg-primary/5 text-primary scale-[1.02] shadow-sm"
-                : "border-border bg-card text-muted-foreground hover:text-foreground",
+              isSelected ? btnSelectedClass : btnUnselectedClass,
             )}
           >
             {Icon && <Icon className="size-4 shrink-0 transition-transform duration-200" />}
