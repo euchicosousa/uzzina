@@ -172,12 +172,12 @@ export function CloudinaryUpload({
                   textLight: "#ffffff", // background light (contrast)
                 };
           })(),
-          fonts: {
-            "'Inter', sans-serif": {
-              url: "https://fonts.googleapis.com/css?family=Inter",
-              active: true,
-            },
-          },
+          // fonts: {
+          //   "'Inter', sans-serif": {
+          //     url: "https://fonts.googleapis.com/css?family=Inter",
+          //     active: true,
+          //   },
+          // },
         },
       },
       (error, result) => {

@@ -1,9 +1,5 @@
 import { parseISO } from "date-fns";
-import {
-  CalendarDaysIcon,
-  FishingHookIcon,
-  PlusIcon
-} from "lucide-react";
+import { CalendarDaysIcon, FishingHookIcon, PlusIcon } from "lucide-react";
 import { Suspense, lazy, useRef, useState } from "react";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
@@ -25,7 +21,7 @@ import {
   Sheet,
   SheetContent,
   SheetDescription,
-  SheetTitle
+  SheetTitle,
 } from "~/components/ui/sheet";
 import { INTENT } from "~/lib/CONSTANTS";
 
@@ -142,7 +138,7 @@ export function EssentialsTab({
           />
 
           <pre
-            className="bg-secondary ml-auto rounded border p-1 text-[10px]"
+            className="ml-auto rounded border bg-secondary p-1 text-[10px]"
             onClick={() => {
               setisIDVisible(!isIDVisible);
             }}
@@ -265,10 +261,11 @@ export function EssentialsTab({
                 setRawAction((prev) => ({ ...prev, work_files: next }));
                 await updateAction({ work_files: next });
               }}
-              className={`text-foreground/50 ${workFiles.length === 0
-                ? "text-md flex items-center gap-1.5 py-1.5 underline-offset-2 hover:underline"
-                : "squircle bg-secondary hover:bg-secondary/50 flex size-10 shrink-0 items-center justify-center rounded-xl transition"
-                }`}
+              className={`text-foreground/50 ${
+                workFiles.length === 0
+                  ? "text-md flex items-center gap-1.5 py-1.5 underline-offset-2 hover:underline"
+                  : "squircle flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary transition hover:bg-secondary/50"
+              }`}
             >
               {workFiles.length === 0 && <span>Adicionar arquivo</span>}
               <PlusIcon className="size-3" />
@@ -277,11 +274,11 @@ export function EssentialsTab({
         </div>
       </div>
       {/* Descrição */}
-      <div className="focus-within:bg-secondary/50 h-full overflow-hidden p-4">
+      <div className="h-full overflow-hidden p-4 focus-within:bg-secondary/50">
         {/* Descrição */}
         <div className="h-full overflow-hidden">
           <Suspense
-            fallback={<div className="bg-muted h-full w-full animate-pulse" />}
+            fallback={<div className="h-full w-full animate-pulse bg-muted" />}
           >
             <Tiptap
               key={descriptionVersion}
@@ -303,10 +300,7 @@ export function EssentialsTab({
                 setRawAction({ ...RawAction, description: content });
                 await updateAction({ description: content });
               }}
-              className={cn(
-                "font-inter h-full w-full",
-                isAIProcessing && "opacity-40",
-              )}
+              className={cn("h-full w-full", isAIProcessing && "opacity-40")}
             />
           </Suspense>
         </div>
@@ -319,10 +313,10 @@ export function EssentialsTab({
           </div>
           {isCreatingPost ? (
             <div className="flex flex-col items-center justify-center gap-4 py-20">
-              <div className="border-primary size-12 animate-spin rounded-full border-4 border-t-transparent" />
+              <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
               <div className="text-center">
                 <h3 className="text-xl font-bold">Criando conteúdo...</h3>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Isso pode levar alguns segundos.
                 </p>
               </div>

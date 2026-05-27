@@ -152,7 +152,7 @@ export function GlobalSearchCommand({
                           onOpenChange(false);
                           setQuery("");
                         }}
-                        className="font-inter flex cursor-pointer items-center justify-between gap-2 py-3"
+                        className="flex cursor-pointer items-center justify-between gap-2 py-3"
                       >
                         <div className="flex items-center gap-2 overflow-hidden">
                           {partner && (
@@ -173,7 +173,7 @@ export function GlobalSearchCommand({
                             {action.title}
                           </div>
                           {action.archived && (
-                            <ArchiveIcon className="text-muted-foreground mr-1 size-3 shrink-0" />
+                            <ArchiveIcon className="mr-1 size-3 shrink-0 text-muted-foreground" />
                           )}
                         </div>
                         <div className="flex items-center gap-2">
@@ -182,7 +182,7 @@ export function GlobalSearchCommand({
                             variant="icon"
                             size="sm"
                           />
-                          <div className="text-muted-foreground w-30 text-right text-xs whitespace-nowrap">
+                          <div className="w-30 text-right text-xs whitespace-nowrap text-muted-foreground">
                             {getFormattedDateTime(
                               action.date,
                               DATE_TIME_DISPLAY.DateMonthTime,
@@ -197,7 +197,7 @@ export function GlobalSearchCommand({
             )}
 
             {isSearching && (
-              <div className="text-muted-foreground animate-pulse p-4 text-center text-sm">
+              <div className="animate-pulse p-4 text-center text-sm text-muted-foreground">
                 Buscando ações...
               </div>
             )}

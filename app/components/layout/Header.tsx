@@ -62,8 +62,7 @@ export function Header({
       ? partners.filter((p) => p.slug === params.slug)[0].users_ids
       : [person.user_id];
 
-  const { isSelectionMode, toggleSelectionMode } =
-    useMultiSelection();
+  const { isSelectionMode, toggleSelectionMode } = useMultiSelection();
 
   return (
     <div className="border_after flex w-full items-center justify-between px-2 lg:px-8">
@@ -195,7 +194,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
       {/* Perfil */}
       <DropdownMenuTrigger className="relative outline-none">
         {isLoading && (
-          <div className="border-primary absolute top-0 left-0 size-11 -translate-1.5 animate-spin rounded-full border-4 border-b-transparent"></div>
+          <div className="absolute top-0 left-0 size-11 -translate-1.5 animate-spin rounded-full border-4 border-primary border-b-transparent"></div>
         )}
         <UAvatar size={SIZE.md} fallback={person.short} image={person.image} />
       </DropdownMenuTrigger>
@@ -254,35 +253,45 @@ const HeaderMenu = ({ person }: { person: Person }) => {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
-          <Link to="/app/admin/partners">Parceiros</Link>
+          <Link to="/app/profile">Minha Conta</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/app/admin/partner/new">Novo Parceiro</Link>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link to="/app/admin/users">Usuários</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/app/admin/user/new">Novo Usuário</Link>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link to="/app/admin/clients">Clientes</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/app/admin/clients/new">Novo Cliente</Link>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link to="/app/admin/celebrations">Datas Comemorativas</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/programacao">Programação</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/app/planejamento">Planejamento</Link>
-        </DropdownMenuItem>
+
+        {person.admin && (
+          <>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem asChild>
+              <Link to="/app/admin/partners">Parceiros</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/app/admin/partner/new">Novo Parceiro</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link to="/app/admin/users">Usuários</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/app/admin/user/new">Novo Usuário</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link to="/app/admin/clients">Clientes</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/app/admin/clients/new">Novo Cliente</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link to="/app/admin/celebrations">Datas Comemorativas</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/schedule">Programação</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/app/planning">Planejamento</Link>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -104,7 +104,7 @@ const PLANNING_COLUMNS = [
   { slug: "concluido", title: "Concluído", color: "#7c3" },
 ];
 
-export default function PlanejamentoPage() {
+export default function PlanningPage() {
   const { actions, start, end } = useLoaderData<typeof loader>();
   const { partners, people } = useMatches()[1].loaderData as AppLoaderData;
   const { setBaseAction } = useOutletContext<{
@@ -511,7 +511,7 @@ export default function PlanejamentoPage() {
                         <div className="w-full min-w-0">
                           <button
                             onClick={() => setBaseAction(action)}
-                            className="block w-full truncate text-left font-inter text-sm font-medium text-foreground hover:underline"
+                            className="block w-full truncate text-left text-sm font-medium text-foreground hover:underline"
                           >
                             {action.title}
                           </button>

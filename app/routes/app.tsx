@@ -14,6 +14,7 @@ import { getPartnersByUserId } from "~/models/partners.server";
 import { getAllVisiblePeople, type Person } from "~/models/people.server";
 import { getUserId } from "~/services/auth.server";
 import { getAllLateActions } from "~/models/actions.server";
+import { getUserPreferences } from "~/lib/preferences";
 
 import { Toaster } from "sonner";
 import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
@@ -88,6 +89,15 @@ export default function Dashboard() {
   const { person, partners } = useLoaderData<typeof loader>();
   const [BaseAction, setBaseAction] = useState<Action | null>(null);
   const [openCmdK, setOpenCmdK] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && person) {
+      const prefs = getUserPreferences(person);
+      localStorage.setItem("uzzina-accent-color-index", String(prefs.themeColorIndex));
+      localStorage.setItem("uzzina-follow-partner-color", String(prefs.followPartnerColor));
+      window.dispatchEvent(new Event("uzzina-storage-update"));
+    }
+  }, [person]);
 
   useEffect(() => {
     // Inicializa o client Supabase no browser para gerenciar o refresh do token

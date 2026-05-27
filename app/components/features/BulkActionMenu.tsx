@@ -93,16 +93,34 @@ export function BulkActionMenu() {
     } else if (result.mode === "date_only") {
       // Situação 2: só a data — servidor preserva a hora de cada ação
       submit(
-        { intent: INTENT.bulk_update_date_only, ids: selectedIds, date_only: result.dateOnly },
-        { method: "post", action: "/action/handle-action", navigate: false, encType: "application/json" },
+        {
+          intent: INTENT.bulk_update_date_only,
+          ids: selectedIds,
+          date_only: result.dateOnly,
+        },
+        {
+          method: "post",
+          action: "/action/handle-action",
+          navigate: false,
+          encType: "application/json",
+        },
       );
       clearSelection();
       toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
     } else {
       // Situação 3: só a hora — servidor preserva a data de cada ação
       submit(
-        { intent: INTENT.bulk_update_time_only, ids: selectedIds, time_only: result.timeOnly },
-        { method: "post", action: "/action/handle-action", navigate: false, encType: "application/json" },
+        {
+          intent: INTENT.bulk_update_time_only,
+          ids: selectedIds,
+          time_only: result.timeOnly,
+        },
+        {
+          method: "post",
+          action: "/action/handle-action",
+          navigate: false,
+          encType: "application/json",
+        },
       );
       clearSelection();
       toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
@@ -156,7 +174,7 @@ export function BulkActionMenu() {
             <DialogTitle>Alterar Responsáveis</DialogTitle>
             <DialogDescription>
               Clique para multi-selecionar.{" "}
-              <kbd className="bg-muted rounded px-1 text-xs">Shift</kbd>+clique
+              <kbd className="rounded bg-muted px-1 text-xs">Shift</kbd>+clique
               para selecionar somente um.
             </DialogDescription>
           </DialogHeader>
@@ -169,7 +187,7 @@ export function BulkActionMenu() {
                   type="button"
                   onClick={() => toggleResponsible(person.user_id)}
                   className={cn(
-                    "hover:bg-muted/50 flex flex-col items-center gap-2 rounded-lg p-3 transition-all",
+                    "flex flex-col items-center gap-2 rounded-lg p-3 transition-all hover:bg-muted/50",
                     isSelected ? "bg-muted text-foreground" : "opacity-50",
                   )}
                 >
@@ -238,7 +256,7 @@ export function BulkActionMenu() {
             {selectedIds.length} Selecionado{selectedIds.length > 1 ? "s" : ""}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="font-inter w-56">
+        <DropdownMenuContent align="end" className="w-56">
           {/* Estado */}
 
           {/* Fase */}
@@ -256,7 +274,11 @@ export function BulkActionMenu() {
                       onClick={() => performBulkAction({ phase: phase.slug })}
                     >
                       <div className="mr-2">
-                        <PhaseIcon phase={phase as any} size="xs" variant="icon" />
+                        <PhaseIcon
+                          phase={phase as any}
+                          size="xs"
+                          variant="icon"
+                        />
                       </div>
                       {phase.title}
                     </DropdownMenuItem>
@@ -339,7 +361,9 @@ export function BulkActionMenu() {
           <DropdownMenuSeparator />
 
           {/* Arquivar todas as selecionadas de uma vez */}
-          <DropdownMenuItem onClick={() => performBulkAction({ archived: true })}>
+          <DropdownMenuItem
+            onClick={() => performBulkAction({ archived: true })}
+          >
             <ArchiveIcon className="mr-2 size-4 opacity-70" /> Arquivar
           </DropdownMenuItem>
 

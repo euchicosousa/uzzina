@@ -28,7 +28,12 @@ export function ActionTitleInput({
   }, [title]);
 
   return (
-    <div className={cn("focus-within:bg-secondary/50 relative px-4 py-2", className)}>
+    <div
+      className={cn(
+        "relative px-4 py-2 focus-within:bg-secondary/50",
+        className,
+      )}
+    >
       <textarea
         value={localTitle}
         onChange={(e) => {
@@ -40,8 +45,9 @@ export function ActionTitleInput({
         }}
         placeholder="Título"
         className={cn(
-          "font-inter w-full shrink-0 resize-none overflow-hidden pt-2 pb-1 leading-none font-medium tracking-tight outline-none",
-          textareaClassName || (localTitle.length > 70 ? "text-error text-4xl" : "text-5xl"),
+          "w-full shrink-0 resize-none overflow-hidden pt-2 pb-1 leading-none font-medium tracking-tight outline-none",
+          textareaClassName ||
+            (localTitle.length > 70 ? "text-error text-4xl" : "text-5xl"),
         )}
         // @ts-ignore
         style={{ fieldSizing: "content" }}

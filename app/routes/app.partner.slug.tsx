@@ -54,6 +54,7 @@ import {
   getLateActionsByPartner,
 } from "~/models/actions.server";
 import { getPartnerBySlug } from "~/models/partners.server";
+import { getUserPreferences } from "~/lib/preferences";
 import { getPersonByUserId } from "~/models/people.server";
 import { getUserId } from "~/services/auth.server";
 
@@ -134,8 +135,11 @@ export default function PartnerPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [followPartnerColor, partner.colors]);
 
+  const preferences = getUserPreferences(person);
+
   const [viewOptions, setViewOptions] = useViewOptions({
     sprint: true,
+    variant: preferences.defaultViewVariant,
     showOptions: {
       variant: true,
       responsibles: true,
@@ -158,7 +162,9 @@ export default function PartnerPage() {
 
   const navigate = useNavigate();
 
-  const [view, setView] = useState<"calendar" | "feed">("calendar");
+  const [view, setView] = useState<"calendar" | "feed">(
+    preferences.showInstagramSidebar ? "feed" : "calendar",
+  );
 
   return (
     <div className="page-height flex flex-col overflow-hidden">

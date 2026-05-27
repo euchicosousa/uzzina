@@ -257,6 +257,7 @@ export type Database = {
           image: string | null
           initials: string
           name: string
+          preferences: Json | null
           short: string
           surname: string
           user_id: string
@@ -271,6 +272,7 @@ export type Database = {
           image?: string | null
           initials: string
           name: string
+          preferences?: Json | null
           short: string
           surname: string
           user_id: string
@@ -285,6 +287,7 @@ export type Database = {
           image?: string | null
           initials?: string
           name?: string
+          preferences?: Json | null
           short?: string
           surname?: string
           user_id?: string

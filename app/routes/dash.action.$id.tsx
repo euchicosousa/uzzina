@@ -143,23 +143,21 @@ export default function DashActionDetail() {
       {/* Voltar */}
       <Link
         to="/dash"
-        className="text-muted-foreground hover:text-foreground flex items-center gap-2 p-4 text-sm transition-colors"
+        className="flex items-center gap-2 p-4 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeftIcon className="size-4" />
         Voltar ao calendário
       </Link>
       <div className="w-full overflow-y-auto p-4 pt-0">
         <div className="mx-auto flex max-w-2xl flex-col gap-8">
-          <h1 className="font-inter p-0 leading-none font-semibold">
-            {action.title}
-          </h1>
+          <h1 className="p-0 leading-none font-semibold">{action.title}</h1>
           {/* Mídias do Post */}
           <div className="mx-auto w-full sm:max-w-sm">
             <InstagramPreview files={action.content_files} />
           </div>
           <div className="flex justify-between gap-4 text-sm">
             <div className="flex flex-col gap-1">
-              <div className="text-muted-foreground mb-1 text-xs font-medium tracking-wide uppercase">
+              <div className="mb-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                 Data de publicar
               </div>
               <div className="font-medium">
@@ -170,7 +168,7 @@ export default function DashActionDetail() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <div className="text-muted-foreground mb-1 text-xs font-medium tracking-wide uppercase">
+              <div className="mb-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                 Categoria
               </div>
               <div className="flex items-center gap-1 font-medium capitalize">
@@ -183,7 +181,7 @@ export default function DashActionDetail() {
               </div>
             </div>
             <div className="flex flex-col gap-1">
-              <div className="text-muted-foreground mb-1 text-xs font-medium tracking-wide uppercase">
+              <div className="mb-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                 Fase
               </div>
               <div className="flex items-center gap-2">
@@ -202,11 +200,11 @@ export default function DashActionDetail() {
           </div>
           {action.description && (
             <div>
-              <div className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
+              <div className="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                 Descrição
               </div>
               <div
-                className="bg-card rounded-xl border p-4"
+                className="rounded-xl border bg-card p-4"
                 dangerouslySetInnerHTML={{
                   __html: action.description,
                 }}
@@ -216,7 +214,7 @@ export default function DashActionDetail() {
           {/* Legenda */}
 
           <div className="mb-8 space-y-3">
-            <div className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+            <div className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
               Legenda
             </div>
             <div className="min-h-[200px] w-full resize-none whitespace-pre-wrap">
@@ -226,7 +224,7 @@ export default function DashActionDetail() {
 
           {/* Anexos (Work Files) do Cliente */}
           <div className="mb-8 space-y-3">
-            <div className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+            <div className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
               Seus Anexos e Materiais
             </div>
             <div className="flex flex-wrap items-center gap-1.5 rounded-xl">
@@ -286,7 +284,7 @@ export default function DashActionDetail() {
                 className={`text-foreground/50 ${
                   workFiles.length === 0
                     ? "text-md flex items-center gap-1.5 py-1.5 underline-offset-2 hover:underline"
-                    : "squircle bg-secondary hover:bg-secondary/50 flex size-10 shrink-0 items-center justify-center rounded-xl transition"
+                    : "squircle flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary transition hover:bg-secondary/50"
                 }`}
               >
                 {workFiles.length === 0 && <span>Adicionar arquivo</span>}
@@ -298,7 +296,7 @@ export default function DashActionDetail() {
           {/* Comentários */}
 
           <div className="flex flex-col gap-4">
-            <div className="text-muted-foreground mb-4 text-sm font-semibold tracking-wide uppercase">
+            <div className="mb-4 text-sm font-semibold tracking-wide text-muted-foreground uppercase">
               Observações ({comments.length})
             </div>
 
@@ -339,7 +337,7 @@ export default function DashActionDetail() {
             {/* Formulário de novo comentário */}
             <div className="border-t pt-4">
               {(actionData as any)?.error && (
-                <p className="text-destructive mb-2 text-sm">
+                <p className="mb-2 text-sm text-destructive">
                   {(actionData as any).error}
                 </p>
               )}

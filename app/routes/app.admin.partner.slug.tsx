@@ -187,14 +187,14 @@ export default function AdminPartnerEditPage() {
 
           <div className="flex flex-col gap-1">
             <div className="font-medium">Logotipo da Marca</div>
-            <div className="text-muted-foreground text-sm">
+            <div className="text-sm text-muted-foreground">
               Clique para fazer upload e recortar
             </div>
             {imageUrl && (
               <button
                 type="button"
                 onClick={() => setImageUrl(null)}
-                className="text-muted-foreground hover:text-foreground mt-1 text-left text-xs underline"
+                className="mt-1 text-left text-xs text-muted-foreground underline hover:text-foreground"
               >
                 Remover imagem
               </button>
@@ -251,16 +251,16 @@ export default function AdminPartnerEditPage() {
               name="context"
               value={contextValue}
             />
-            <div className="border-input focus-within:border-ring focus-within:ring-ring/50 min-h-[100px] rounded-md border bg-transparent px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:ring-[3px] md:text-sm">
+            <div className="min-h-[100px] rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
               <Suspense
                 fallback={
-                  <div className="bg-muted h-full w-full animate-pulse" />
+                  <div className="h-full w-full animate-pulse bg-muted" />
                 }
               >
                 <Tiptap
                   content={contextValue}
                   handleChange={(content) => setContextValue(content)}
-                  className="prose prose-sm dark:prose-invert font-inter h-full max-w-none focus:outline-none"
+                  className="prose prose-sm dark:prose-invert h-full max-w-none focus:outline-none"
                 />
               </Suspense>
             </div>
@@ -271,16 +271,16 @@ export default function AdminPartnerEditPage() {
               Tom de Voz
             </label>
             <input type="hidden" id="voice" name="voice" value={voiceValue} />
-            <div className="border-input focus-within:border-ring focus-within:ring-ring/50 min-h-[100px] rounded-md border bg-transparent px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:ring-[3px] md:text-sm">
+            <div className="min-h-[100px] rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
               <Suspense
                 fallback={
-                  <div className="bg-muted h-full w-full animate-pulse" />
+                  <div className="h-full w-full animate-pulse bg-muted" />
                 }
               >
                 <Tiptap
                   content={voiceValue}
                   handleChange={(content) => setVoiceValue(content)}
-                  className="prose prose-sm dark:prose-invert font-inter h-full max-w-none focus:outline-none"
+                  className="prose prose-sm dark:prose-invert h-full max-w-none focus:outline-none"
                 />
               </Suspense>
             </div>
@@ -295,7 +295,7 @@ export default function AdminPartnerEditPage() {
               name="instagram_caption_tail"
               defaultValue={partner?.instagram_caption_tail || ""}
               placeholder="#hashtags @mentions..."
-              className="font-inter min-h-[80px]"
+              className="min-h-[80px]"
             />
           </div>
 

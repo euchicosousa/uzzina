@@ -175,15 +175,15 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /* VARIÁVEIS DA UZZINA  */
-  --font-inter:
+  /* --font-inter:
     "Inter Tight", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-sans:
-    "Inter Tight", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  /* --font-sans:
-    "PP Object Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; */
+  /* --font-sans:
+    "Inter Tight", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; */
+  --font-sans:
+    "PP Object Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 @layer base {
@@ -231,11 +231,11 @@
 }
 
 .border_after {
-  @apply after:bg-border relative after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-[100vw] after:-translate-x-1/2 dark:after:bg-white/10;
+  @apply relative after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-[100vw] after:-translate-x-1/2 after:bg-border dark:after:bg-white/10;
 }
 
 .border_before {
-  @apply before:bg-border relative before:absolute before:top-0 before:left-1/2 before:h-px before:w-[100vw] before:-translate-x-1/2 dark:before:bg-white/10;
+  @apply relative before:absolute before:top-0 before:left-1/2 before:h-px before:w-[100vw] before:-translate-x-1/2 before:bg-border dark:before:bg-white/10;
 }
 
 ::-webkit-scrollbar {
@@ -247,7 +247,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-foreground/10 border-background rounded-full border-2;
+  @apply rounded-full border-2 border-background bg-foreground/10;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -285,7 +285,7 @@
 }
 
 .tiptap.ProseMirror p.is-editor-empty:first-child::before {
-  @apply text-muted-foreground pointer-events-none float-left h-0;
+  @apply pointer-events-none float-left h-0 text-muted-foreground;
   content: attr(data-placeholder);
 }
 

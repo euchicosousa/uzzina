@@ -185,22 +185,21 @@ export function ActionItem({
       case VARIANT.block:
         return (
           <div className="flex flex-col gap-2 pb-2">
-            <div className="flex items-center gap-2 py-1">
-              <ActionItemTitleInput
-                isEditing={isEditing}
-                setIsEditing={handleSetIsEditing}
-                title={action.title}
-                className={
-                  "h-6 text-xl leading-none font-medium lg:text-base xl:text-xl"
-                }
-                InputButtonClassName="w-auto"
-                lines={1}
-              />
-              <ActionItemSprint action={action} />
-            </div>
+            {/* <div className="flex items-center gap-2 py-1"> */}
+            <ActionItemTitleInput
+              isEditing={isEditing}
+              setIsEditing={handleSetIsEditing}
+              title={action.title}
+              className={
+                "text-xl leading-tight font-medium lg:text-base xl:text-xl"
+              }
+              lines={2} // resolver essas linhas
+            />
+            {/* </div> */}
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
+                <ActionItemSprint action={action} />
                 {showPartner && (
                   <ActionItemPartners
                     action={action}
@@ -317,16 +316,16 @@ export function ActionItem({
       data-action-id={action.id}
       title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
       className={cn(
-        "group/action font-inter p-2 squircle rounded-3xl @container relative shrink-0 cursor-pointer overflow-hidden",
+        "group/action squircle @container relative shrink-0 cursor-pointer overflow-hidden rounded-3xl p-2",
         variantClasses,
         bgClasses,
         className,
         isDragging && "cursor-grabbing",
         isSelectionMode &&
-        (variant !== VARIANT.content
-          ? "relative pl-8 transition-all"
-          : "relative transition-all"),
-        isSelectionMode && isSelected && "ring-primary ring-2 ring-inset",
+          (variant !== VARIANT.content
+            ? "relative pl-8 transition-all"
+            : "relative transition-all"),
+        isSelectionMode && isSelected && "ring-2 ring-primary ring-inset",
         isSelected && variant === VARIANT.content && "squircle rounded-3xl p-2",
       )}
       onClick={(e) => {
@@ -360,7 +359,7 @@ export function ActionItem({
         >
           <Checkbox
             checked={isSelected}
-            className="bg-background pointer-events-none"
+            className="pointer-events-none bg-background"
           />
         </div>
       )}

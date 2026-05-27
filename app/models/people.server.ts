@@ -3,6 +3,7 @@ import type { Tables } from "types/database";
 
 export type Person = Tables<"people">;
 
+
 export async function getPersonByUserId(
   supabase: SupabaseClient,
   userId: string,
