@@ -49,6 +49,7 @@ type ActionItemProps = {
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
   onClick?: (action: Action) => void;
   enableHoverCard?: boolean;
+  lines?: 1 | 2;
 };
 
 export function ActionItem({
@@ -65,6 +66,7 @@ export function ActionItem({
   dateTimeDisplay,
   onClick,
   enableHoverCard = true,
+  lines = 1,
 }: ActionItemProps) {
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
   const people = appData?.people || [];
@@ -193,7 +195,7 @@ export function ActionItem({
               className={
                 "text-xl leading-tight font-medium lg:text-base xl:text-xl"
               }
-              lines={2} // resolver essas linhas
+              lines={lines} // resolver essas linhas
             />
             {/* </div> */}
 
