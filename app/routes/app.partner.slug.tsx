@@ -68,10 +68,10 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       : format(new Date().setDate(15), "yyyy-MM-dd");
   }
 
-  const start = startOfDay(
-    startOfWeek(startOfMonth(subDays(parseISO(date), 30))),
-  );
-  const end = endOfDay(endOfWeek(endOfMonth(addDays(parseISO(date), 30))));
+  const start = startOfDay(startOfWeek(startOfMonth(parseISO(date))));
+  const end = endOfDay(endOfWeek(endOfMonth(parseISO(date))));
+
+  console.log({ date, start, end });
 
   const person = await getPersonByUserId(supabase, user_id);
 

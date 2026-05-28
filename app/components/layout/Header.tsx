@@ -255,6 +255,9 @@ const HeaderMenu = ({ person }: { person: Person }) => {
         <DropdownMenuItem asChild>
           <Link to="/app/profile">Minha Conta</Link>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/app/help">Ajuda & Documentação</Link>
+        </DropdownMenuItem>
 
         {person.admin && (
           <>

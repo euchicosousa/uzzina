@@ -16,6 +16,7 @@ export default [
     route("admin/celebrations", "routes/app.admin.celebrations.tsx"),
     route("planning", "routes/app.planning.tsx"),
     route("profile", "routes/app.profile.tsx"),
+    route("help", "routes/app.help.tsx"),
   ]),
   route("dash", "routes/dash.tsx", [
     index("routes/dash.home.tsx"),
