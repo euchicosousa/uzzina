@@ -71,8 +71,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const start = startOfDay(startOfWeek(startOfMonth(parseISO(date))));
   const end = endOfDay(endOfWeek(endOfMonth(parseISO(date))));
 
-  console.log({ date, start, end });
-
   const person = await getPersonByUserId(supabase, user_id);
 
   invariant(person);
