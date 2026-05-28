@@ -71,6 +71,7 @@ export function ActionItem({
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
   const people = appData?.people || [];
   const partners = appData?.partners || [];
+  const person = appData?.person;
 
   const { isSelectionMode, selectedIds, toggleSelection } = useMultiSelection();
   const isSelected = selectedIds.includes(action.id);
@@ -129,7 +130,7 @@ export function ActionItem({
       case VARIANT.content:
         return "flex-col gap-2";
       case VARIANT.block:
-        return "squircle flex-col gap-2 rounded-2xl px-3 py-2";
+        return "squircle flex-col gap-2 rounded-2xl px-4 py-3";
       case VARIANT.hour:
         return "squircle w-auto rounded-xl px-3 py-2";
       case VARIANT.hair:
@@ -148,6 +149,10 @@ export function ActionItem({
       return "ring-foreground focus-within:ring-2 z-100 text-foreground";
     if (showLate && isLateAction(action))
       return "bg-destructive/5 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
+
+    if (person && isSprint(action, person)) {
+      return "hover:bg-primary bg-primary/80 ring-primary-foreground/10 ring-1 text-primary-foreground transition";
+    }
 
     switch (variant) {
       case VARIANT.hour:
