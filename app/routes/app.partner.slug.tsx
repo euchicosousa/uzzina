@@ -11,11 +11,7 @@ import {
   startOfWeek,
   subDays,
 } from "date-fns";
-import {
-  Grid3X3Icon,
-  SearchIcon,
-  SettingsIcon,
-} from "lucide-react";
+import { Grid3X3Icon, SearchIcon, SettingsIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   Link,
@@ -44,17 +40,14 @@ import { UBadge } from "~/components/uzzina/UBadge";
 import { useAppTheme } from "~/hooks/useAppTheme";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
 import { SIZE } from "~/lib/CONSTANTS";
-import {
-  filterActions,
-  getInstagramFeedActions,
-} from "~/lib/helpers";
+import { filterActions, getInstagramFeedActions } from "~/lib/helpers";
+import { getUserPreferences } from "~/lib/preferences";
 import { cn } from "~/lib/utils";
 import {
   getActionsByPartner,
   getLateActionsByPartner,
 } from "~/models/actions.server";
 import { getPartnerBySlug } from "~/models/partners.server";
-import { getUserPreferences } from "~/lib/preferences";
 import { getPersonByUserId } from "~/models/people.server";
 import { getUserId } from "~/services/auth.server";
 

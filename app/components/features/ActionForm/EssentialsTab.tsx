@@ -106,6 +106,7 @@ export function EssentialsTab({
         title={RawAction.title}
         tabIndex={1}
         autoFocus
+        className="font-bold tracking-[-5%]"
         onChange={async (title) => {
           setRawAction({ ...RawAction, title });
         }}

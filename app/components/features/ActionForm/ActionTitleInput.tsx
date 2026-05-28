@@ -45,7 +45,7 @@ export function ActionTitleInput({
         }}
         placeholder="Título"
         className={cn(
-          "w-full shrink-0 resize-none overflow-hidden pt-2 pb-1 leading-none font-medium tracking-tight outline-none",
+          "w-full shrink-0 resize-none overflow-hidden pt-2 pb-1 leading-none outline-none",
           textareaClassName ||
             (localTitle.length > 70 ? "text-error text-4xl" : "text-5xl"),
         )}
