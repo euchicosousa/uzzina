@@ -191,6 +191,62 @@ const HeaderMenu = ({ person }: { person: Person }) => {
   const navigation = useNavigation();
   const isLoading = fetchers.length > 0 || navigation.state !== "idle";
 
+  const prefFetcher = useFetchers().find(f => f.formAction === "/action/set-preferences") || fetchers[0]; // fallback
+  // Usamos um hook de fetcher customizado para disparar os posts das preferências
+  const customFetcher = useFetchers()[0]; 
+  
+  // Vamos buscar ou criar um fetcher usando useNavigate/useSubmit ou simplesmente useFetchers
+  // Para ser simples e direto, podemos importar useSubmit/useFetcher
+  return <HeaderMenuInner person={person} theme={theme} setTheme={setTheme} primaryColorIndex={primaryColorIndex} setPrimaryColorIndex={setPrimaryColorIndex} followPartnerColor={followPartnerColor} setFollowPartnerColor={setFollowPartnerColor} isLoading={isLoading} />;
+};
+
+import { useFetcher } from "react-router";
+
+const HeaderMenuInner = ({
+  person,
+  theme,
+  setTheme,
+  primaryColorIndex,
+  setPrimaryColorIndex,
+  followPartnerColor,
+  setFollowPartnerColor,
+  isLoading,
+}: {
+  person: Person;
+  theme: Theme | null;
+  setTheme: (theme: Theme | null) => void;
+  primaryColorIndex: number;
+  setPrimaryColorIndex: (index: number) => void;
+  followPartnerColor: boolean;
+  setFollowPartnerColor: (value: boolean) => void;
+  isLoading: boolean;
+}) => {
+  const fetcher = useFetcher();
+
+  const changeTheme = (newTheme: Theme) => {
+    setTheme(newTheme);
+    fetcher.submit(
+      { theme: newTheme },
+      { method: "post", action: "/action/set-preferences" }
+    );
+  };
+
+  const changeColorIndex = (index: number) => {
+    setPrimaryColorIndex(index);
+    fetcher.submit(
+      { themeColorIndex: String(index) },
+      { method: "post", action: "/action/set-preferences" }
+    );
+  };
+
+  const changeFollowPartner = (value: boolean) => {
+    setFollowPartnerColor(value);
+    fetcher.submit(
+      { followPartnerColor: String(value) },
+      { method: "post", action: "/action/set-preferences" }
+    );
+  };
+
   return (
     <DropdownMenu>
       {/* Perfil */}
@@ -202,11 +258,11 @@ const HeaderMenu = ({ person }: { person: Person }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mx-2">
         {theme === Theme.DARK ? (
-          <DropdownMenuItem onClick={() => setTheme(Theme.LIGHT)}>
+          <DropdownMenuItem onClick={() => changeTheme(Theme.LIGHT)}>
             {getThemeIcon(Theme.LIGHT, "size-4")} Tema claro
           </DropdownMenuItem>
         ) : (
-          <DropdownMenuItem onClick={() => setTheme(Theme.DARK)}>
+          <DropdownMenuItem onClick={() => changeTheme(Theme.DARK)}>
             {getThemeIcon(Theme.DARK, "size-4")} Tema escuro
           </DropdownMenuItem>
         )}
@@ -218,7 +274,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
             return (
               <button
                 onClick={() => {
-                  setPrimaryColorIndex(i);
+                  changeColorIndex(i);
                 }}
                 key={i}
                 title={paletteConfig.label}
@@ -242,7 +298,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
           })}
         </div>
         <DropdownMenuItem
-          onClick={() => setFollowPartnerColor(!followPartnerColor)}
+          onClick={() => changeFollowPartner(!followPartnerColor)}
           className={cn(
             "flex items-center justify-between",
             followPartnerColor ? "bg-secondary" : "",

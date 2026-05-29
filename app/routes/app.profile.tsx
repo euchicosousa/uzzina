@@ -34,6 +34,7 @@ import { cn } from "~/lib/utils";
 import { getPersonByUserId } from "~/models/people.server";
 import { getUserId } from "~/services/auth.server";
 import { themeSessionResolver } from "~/sessions.server";
+import { useAppTheme } from "~/hooks/useAppTheme";
 
 export const runtime = "edge";
 
@@ -120,7 +121,8 @@ export default function ProfilePage() {
 
   const preferences = getUserPreferences(person);
 
-  const [theme] = useTheme();
+  const [theme, setTheme] = useTheme();
+  const { previewColorIndex } = useAppTheme();
   const [imageUrl, setImageUrl] = useState<string | null>(person.image || null);
   const [selectedTheme, setSelectedTheme] = useState<
     "light" | "dark" | "system"
@@ -136,6 +138,22 @@ export default function ProfilePage() {
   const [showInstagramSidebar, setShowInstagramSidebar] = useState<boolean>(
     preferences.showInstagramSidebar,
   );
+
+  // Aplica preview do tema na UI quando o usuário apenas seleciona
+  const handleThemeChange = (val: "light" | "dark" | "system") => {
+    setSelectedTheme(val);
+    if (val === "system") {
+      setTheme(Theme.LIGHT); // ou deixa remix-themes lidar com o do sistema
+    } else {
+      setTheme(val as Theme);
+    }
+  };
+
+  // Aplica preview da cor na UI quando o usuário apenas seleciona
+  const handleColorChange = (idx: number) => {
+    setSelectedThemeColor(idx);
+    previewColorIndex(idx);
+  };
 
   // Trigger Toast Notification on success/error
   useEffect(() => {
@@ -313,7 +331,7 @@ export default function ProfilePage() {
                   { value: "system", label: "Sistema", icon: LaptopIcon },
                 ]}
                 value={selectedTheme}
-                onChange={(val) => setSelectedTheme(val as any)}
+                onChange={(val) => handleThemeChange(val as any)}
                 columns={3}
               />
             </div>
@@ -355,7 +373,7 @@ export default function ProfilePage() {
                   };
                 })}
                 value={selectedThemeColor}
-                onChange={setSelectedThemeColor}
+                onChange={handleColorChange}
                 columnsClassName="grid-cols-5 sm:grid-cols-9 gap-2"
                 hideLabelText
                 selectedClassName="border-primary bg-primary/20 scale-[1.02] shadow-sm"

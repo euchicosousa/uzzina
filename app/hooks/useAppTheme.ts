@@ -73,38 +73,43 @@ export function useAppTheme() {
     PALLETE[primaryColorIndex] || PALLETE[0]
   , [primaryColorIndex]);
 
+  const applyPaletteVars = (palette: typeof PALLETE[number]) => {
+    const root = document.documentElement;
+    const { light, dark } = palette;
+    
+    // 1. Cor Primária
+    root.style.setProperty("--accent-h", String(light.primary.h));
+    root.style.setProperty("--accent-c", String(light.primary.c));
+    root.style.setProperty("--accent-l", String(light.primary.l));
+    root.style.setProperty("--dark-accent-h", String(dark.primary.h));
+    root.style.setProperty("--dark-accent-c", String(dark.primary.c));
+    root.style.setProperty("--dark-accent-l", String(dark.primary.l));
+
+    // 2. Cor de Fundo e Texto (Light e Dark)
+    if (light.bg) {
+      const bgStr = `oklch(${light.bg.l} ${light.bg.c} ${light.bg.h})`;
+      root.style.setProperty("--background-override", bgStr);
+    }
+    if (light.fg) {
+      const fgStr = `oklch(${light.fg.l} ${light.fg.c} ${light.fg.h})`;
+      root.style.setProperty("--foreground-override", fgStr);
+    }
+    if (dark.bg) {
+      const bgStr = `oklch(${dark.bg.l} ${dark.bg.c} ${dark.bg.h})`;
+      root.style.setProperty("--dark-background-override", bgStr);
+    }
+    if (dark.fg) {
+      const fgStr = `oklch(${dark.fg.l} ${dark.fg.c} ${dark.fg.h})`;
+      root.style.setProperty("--dark-foreground-override", fgStr);
+    }
+  };
+
   // Aplica as variáveis CSS
   useEffect(() => {
     const root = document.documentElement;
 
     if (selectedPalette) {
-      const { light, dark } = selectedPalette;
-      
-      // 1. Cor Primária
-      root.style.setProperty("--accent-h", String(light.primary.h));
-      root.style.setProperty("--accent-c", String(light.primary.c));
-      root.style.setProperty("--accent-l", String(light.primary.l));
-      root.style.setProperty("--dark-accent-h", String(dark.primary.h));
-      root.style.setProperty("--dark-accent-c", String(dark.primary.c));
-      root.style.setProperty("--dark-accent-l", String(dark.primary.l));
-
-      // 2. Cor de Fundo e Texto (Light e Dark)
-      if (light.bg) {
-        const bgStr = `oklch(${light.bg.l} ${light.bg.c} ${light.bg.h})`;
-        root.style.setProperty("--background-override", bgStr);
-      }
-      if (light.fg) {
-        const fgStr = `oklch(${light.fg.l} ${light.fg.c} ${light.fg.h})`;
-        root.style.setProperty("--foreground-override", fgStr);
-      }
-      if (dark.bg) {
-        const bgStr = `oklch(${dark.bg.l} ${dark.bg.c} ${dark.bg.h})`;
-        root.style.setProperty("--dark-background-override", bgStr);
-      }
-      if (dark.fg) {
-        const fgStr = `oklch(${dark.fg.l} ${dark.fg.c} ${dark.fg.h})`;
-        root.style.setProperty("--dark-foreground-override", fgStr);
-      }
+      applyPaletteVars(selectedPalette);
     }
 
     // 3. Override Manual de Background (Caso exista algum uso externo)
@@ -118,6 +123,11 @@ export function useAppTheme() {
     localStorage.setItem(STORAGE_KEY, String(index));
     setPrimaryColorIndexState(index);
     window.dispatchEvent(new Event("uzzina-storage-update"));
+  };
+
+  const previewColorIndex = (index: number) => {
+    const palette = PALLETE[index] || PALLETE[0];
+    applyPaletteVars(palette);
   };
 
   const resetPrimaryColor = () => {
@@ -156,6 +166,7 @@ export function useAppTheme() {
     primaryColorIndex,
     selectedPalette,
     setPrimaryColorIndex,
+    previewColorIndex,
     resetPrimaryColor,
     followPartnerColor,
     setFollowPartnerColor,
