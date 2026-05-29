@@ -33,7 +33,9 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
@@ -260,8 +262,9 @@ const HeaderMenu = ({ person }: { person: Person }) => {
         </DropdownMenuItem>
 
         {person.admin && (
-          <>
+          <DropdownMenuGroup className="-mx-1 -mb-1 bg-secondary px-1 pb-1">
             <DropdownMenuSeparator />
+            <DropdownMenuLabel>Admin</DropdownMenuLabel>
 
             <DropdownMenuItem asChild>
               <Link to="/app/admin/partners">Parceiros</Link>
@@ -293,7 +296,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
             <DropdownMenuItem asChild>
               <Link to="/app/planning">Planejamento</Link>
             </DropdownMenuItem>
-          </>
+          </DropdownMenuGroup>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

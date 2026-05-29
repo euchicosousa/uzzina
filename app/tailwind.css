@@ -21,7 +21,8 @@
 
   --primary: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
   --primary-foreground: oklch(var(--accent-fg-l) 0.014 var(--accent-h));
-  --secondary: oklch(from var(--foreground) l c h / 6%);
+  --secondary: oklch(97% 0.001 260);
+  /* --secondary: oklch(from var(--foreground) l c h / 6%); */
   --secondary-foreground: var(--foreground);
   --muted: oklch(0.967 0.001 286.375);
   --muted-foreground: oklch(0.552 0.016 285.938);
