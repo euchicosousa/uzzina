@@ -132,10 +132,13 @@ export function ContentReorderDialog({
     { id: string; url: string; addedAt?: number; name?: string }[]
   >(() => files.map((url, i) => ({ id: `${url}-${i}`, url })));
 
-  // Sincroniza quando `files` prop muda externamente (ex: reset)
+  // Sincroniza quando `files` prop muda externamente apenas se o modal estiver fechado.
+  // Isso previne que "stale props" sobrescrevam o estado local durante uploads múltiplos rápidos.
   useEffect(() => {
-    setItems(files.map((url, i) => ({ id: `${url}-${i}`, url })));
-  }, [files]);
+    if (!open) {
+      setItems(files.map((url, i) => ({ id: `${url}-${i}`, url })));
+    }
+  }, [files, open]);
 
   const itemsRef = useRef(items);
   itemsRef.current = items;
@@ -203,7 +206,7 @@ export function ContentReorderDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <SlidersHorizontalIcon className="size-4" />

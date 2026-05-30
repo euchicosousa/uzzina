@@ -8,9 +8,9 @@
   --radius: 0.65rem;
   --background: var(--background-override, oklch(1 0 0));
   --foreground: var(--foreground-override, oklch(0.141 0.005 285.823));
-  --card: oklch(97% 0.001 260);
+  --card: oklch(from var(--background) l c h);
   --card-foreground: var(--foreground);
-  --popover: oklch(1 0 0);
+  --popover: oklch(from var(--background) l c h);
   --popover-foreground: var(--foreground);
 
   /* Accent color knobs — overrideable by JS for theme color picker */
@@ -20,12 +20,12 @@
   --accent-fg-l: 0.97; /* foreground lightness: bright text over dark primary */
 
   --primary: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
-  --primary-foreground: oklch(var(--accent-fg-l) 0.014 var(--accent-h));
-  --secondary: oklch(97% 0.001 260);
+  --primary-foreground: var(--primary-foreground-override, oklch(var(--accent-fg-l) 0.014 var(--accent-h)));
+  --secondary: oklch(from var(--background) l c h / 97%);
   /* --secondary: oklch(from var(--foreground) l c h / 6%); */
   --secondary-foreground: var(--foreground);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
+  --muted: oklch(from var(--background) l c h / 96.7%);
+  --muted-foreground: oklch(from var(--foreground) l c h / 55.2%);
   --accent: oklch(from var(--foreground) l c h / 5%);
   --accent-foreground: var(--foreground);
   --destructive: oklch(66.147% 0.2279 16.339);
@@ -38,13 +38,13 @@
   --chart-3: oklch(0.546 0.245 262.881);
   --chart-4: oklch(0.488 0.243 264.376);
   --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
+  --sidebar: oklch(from var(--background) l c h / 98.5%);
+  --sidebar-foreground: var(--foreground);
   --sidebar-primary: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
-  --sidebar-primary-foreground: oklch(var(--accent-fg-l) 0.014 var(--accent-h));
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
+  --sidebar-primary-foreground: var(--sidebar-primary-foreground-override, oklch(var(--accent-fg-l) 0.014 var(--accent-h)));
+  --sidebar-accent: oklch(from var(--background) l c h / 96.7%);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: oklch(from var(--foreground) l c h / 8%);
   --sidebar-ring: oklch(0.708 0 0);
 }
 
@@ -53,9 +53,9 @@
   --background: var(--dark-background-override, oklch(0.141 0.005 285.823));
   --foreground: var(--dark-foreground-override, oklch(0.985 0 0));
 
-  --card: oklch(0.3 0.006 285.885);
+  --card: oklch(from var(--background) l c h);
   --card-foreground: var(--foreground);
-  --popover: oklch(0.21 0.006 285.885);
+  --popover: oklch(from var(--background) l c h);
   --popover-foreground: var(--foreground);
 
   /* Dark mode variables injected by JS */
@@ -63,20 +63,20 @@
   --dark-accent-h: 0;
   --dark-accent-c: 0;
   --dark-accent-l: 0.35;
-  /* --dark-accent-fg-l: 0.1; */
+  --dark-accent-fg-l: 0.97;
 
   --primary: oklch(
     var(--dark-accent-l) var(--dark-accent-c) var(--dark-accent-h)
   );
-  --primary-foreground: oklch(
+  --primary-foreground: var(--dark-primary-foreground-override, oklch(
     var(--dark-accent-fg-l) 0.014 var(--dark-accent-h)
-  );
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
+  ));
+  --secondary: oklch(from var(--background) l c h / 90%);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(from var(--background) l c h / 90%);
+  --muted-foreground: oklch(from var(--foreground) l c h / 70.5%);
+  --accent: oklch(from var(--background) l c h / 90%);
+  --accent-foreground: var(--foreground);
   --destructive: oklch(66.147% 0.2279 16.339);
   --border: oklch(from var(--foreground) l c h / 10%);
   --input: oklch(from var(--foreground) l c h / 15%);
@@ -86,17 +86,17 @@
   --chart-3: oklch(0.546 0.245 262.881);
   --chart-4: oklch(0.488 0.243 264.376);
   --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar: oklch(from var(--background) l c h);
+  --sidebar-foreground: var(--foreground);
   --sidebar-primary: oklch(
     var(--dark-accent-l) var(--dark-accent-c) var(--dark-accent-h)
   );
   --sidebar-primary-foreground: oklch(
     var(--dark-accent-fg-l) 0.014 var(--dark-accent-h)
   );
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-accent: oklch(from var(--background) l c h / 90%);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: oklch(from var(--foreground) l c h / 10%);
   --sidebar-ring: oklch(0.439 0 0);
 
   --warning-hue: 90;
@@ -305,4 +305,9 @@
   to {
     --gradient-angle: 360deg;
   }
+}
+
+/* Ensure Cloudinary widget is clickable even when Radix Dialog locks the body */
+iframe[data-test="uw-iframe"] {
+  pointer-events: auto !important;
 }

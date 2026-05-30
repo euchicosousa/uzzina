@@ -7,6 +7,7 @@ import {
   SaveIcon,
   SunIcon,
   UploadIcon,
+  PipetteIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
@@ -29,12 +30,18 @@ import { UAvatar } from "~/components/uzzina/UAvatar";
 import { PreferenceSwitch } from "~/components/uzzina/PreferenceSwitch";
 import { SegmentedSelector } from "~/components/uzzina/SegmentedSelector";
 import { PALLETE } from "~/lib/CONSTANTS";
-import { getUserPreferences } from "~/lib/preferences";
+import { getUserPreferences, type CustomTheme } from "~/lib/preferences";
 import { cn } from "~/lib/utils";
 import { getPersonByUserId } from "~/models/people.server";
 import { getUserId } from "~/services/auth.server";
 import { themeSessionResolver } from "~/sessions.server";
 import { useAppTheme } from "~/hooks/useAppTheme";
+import {
+  deriveAccentFg,
+  deriveDarkAccent,
+  deriveDarkBg,
+  deriveDarkFg,
+} from "~/utils/color";
 
 export const runtime = "edge";
 
@@ -74,12 +81,52 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const defaultViewVariant = formData.get("defaultViewVariant") as string;
   const showInstagramSidebar = formData.get("showInstagramSidebar") === "true";
 
+  // Custom theme colors (optional hexes)
+  let customTheme = null;
+  if (themeColorIndex === -1) {
+    const lightPrimaryHex = formData.get("custom_light_primary") as string;
+    const lightPrimaryFgHex = formData.get("custom_light_primary_fg") as string;
+    const lightBgHex = formData.get("custom_light_bg") as string;
+    const lightFgHex = formData.get("custom_light_fg") as string;
+    const darkPrimaryHex = formData.get("custom_dark_primary") as string;
+    const darkPrimaryFgHex = formData.get("custom_dark_primary_fg") as string;
+    const darkBgHex = formData.get("custom_dark_bg") as string;
+    const darkFgHex = formData.get("custom_dark_fg") as string;
+
+    if (
+      lightPrimaryHex &&
+      lightPrimaryFgHex &&
+      lightBgHex &&
+      lightFgHex &&
+      darkPrimaryHex &&
+      darkPrimaryFgHex &&
+      darkBgHex &&
+      darkFgHex
+    ) {
+      customTheme = {
+        light: {
+          primaryHex: lightPrimaryHex,
+          primaryFgHex: lightPrimaryFgHex,
+          bgHex: lightBgHex,
+          fgHex: lightFgHex,
+        },
+        dark: {
+          primaryHex: darkPrimaryHex,
+          primaryFgHex: darkPrimaryFgHex,
+          bgHex: darkBgHex,
+          fgHex: darkFgHex,
+        },
+      };
+    }
+  }
+
   const preferences = {
     theme,
     themeColorIndex,
     followPartnerColor,
     defaultViewVariant,
     showInstagramSidebar,
+    customTheme,
   };
 
   const { error } = await supabase
@@ -122,7 +169,8 @@ export default function ProfilePage() {
   const preferences = getUserPreferences(person);
 
   const [theme, setTheme] = useTheme();
-  const { previewColorIndex } = useAppTheme();
+  const { previewColorIndex, previewCustomTheme, setCustomTheme } =
+    useAppTheme();
   const [imageUrl, setImageUrl] = useState<string | null>(person.image || null);
   const [selectedTheme, setSelectedTheme] = useState<
     "light" | "dark" | "system"
@@ -139,6 +187,32 @@ export default function ProfilePage() {
     preferences.showInstagramSidebar,
   );
 
+  // Estados locais para o tema personalizado
+  const [lightPrimary, setLightPrimary] = useState(
+    preferences.customTheme?.light.primaryHex || "#2640A0",
+  );
+  const [lightPrimaryFg, setLightPrimaryFg] = useState(
+    preferences.customTheme?.light.primaryFgHex || "#FFFFFF",
+  );
+  const [lightBg, setLightBg] = useState(
+    preferences.customTheme?.light.bgHex || "#FFFFFF",
+  );
+  const [lightFg, setLightFg] = useState(
+    preferences.customTheme?.light.fgHex || "#000000",
+  );
+  const [darkPrimary, setDarkPrimary] = useState(
+    preferences.customTheme?.dark.primaryHex || "#3558DE",
+  );
+  const [darkPrimaryFg, setDarkPrimaryFg] = useState(
+    preferences.customTheme?.dark.primaryFgHex || "#FFFFFF",
+  );
+  const [darkBg, setDarkBg] = useState(
+    preferences.customTheme?.dark.bgHex || "#141414",
+  );
+  const [darkFg, setDarkFg] = useState(
+    preferences.customTheme?.dark.fgHex || "#FFFFFF",
+  );
+
   // Aplica preview do tema na UI quando o usuário apenas seleciona
   const handleThemeChange = (val: "light" | "dark" | "system") => {
     setSelectedTheme(val);
@@ -152,7 +226,183 @@ export default function ProfilePage() {
   // Aplica preview da cor na UI quando o usuário apenas seleciona
   const handleColorChange = (idx: number) => {
     setSelectedThemeColor(idx);
-    previewColorIndex(idx);
+    if (idx === -1) {
+      previewCustomTheme({
+        light: {
+          primaryHex: lightPrimary,
+          primaryFgHex: lightPrimaryFg,
+          bgHex: lightBg,
+          fgHex: lightFg,
+        },
+        dark: {
+          primaryHex: darkPrimary,
+          primaryFgHex: darkPrimaryFg,
+          bgHex: darkBg,
+          fgHex: darkFg,
+        },
+      });
+    } else {
+      previewColorIndex(idx);
+    }
+  };
+
+  const handleLightPrimaryChange = (val: string) => {
+    setLightPrimary(val);
+    const derivedAccent = deriveDarkAccent(val);
+    setDarkPrimary(derivedAccent);
+
+    const derivedLightFg = deriveAccentFg(val);
+    setLightPrimaryFg(derivedLightFg);
+
+    const derivedDarkFg = deriveAccentFg(derivedAccent);
+    setDarkPrimaryFg(derivedDarkFg);
+
+    previewCustomTheme({
+      light: {
+        primaryHex: val,
+        primaryFgHex: derivedLightFg,
+        bgHex: lightBg,
+        fgHex: lightFg,
+      },
+      dark: {
+        primaryHex: derivedAccent,
+        primaryFgHex: derivedDarkFg,
+        bgHex: darkBg,
+        fgHex: darkFg,
+      },
+    });
+  };
+
+  const handleLightPrimaryFgChange = (val: string) => {
+    setLightPrimaryFg(val);
+    previewCustomTheme({
+      light: {
+        primaryHex: lightPrimary,
+        primaryFgHex: val,
+        bgHex: lightBg,
+        fgHex: lightFg,
+      },
+      dark: {
+        primaryHex: darkPrimary,
+        primaryFgHex: darkPrimaryFg,
+        bgHex: darkBg,
+        fgHex: darkFg,
+      },
+    });
+  };
+
+  const handleLightBgChange = (val: string) => {
+    setLightBg(val);
+    const derived = deriveDarkBg(val);
+    setDarkBg(derived);
+    previewCustomTheme({
+      light: {
+        primaryHex: lightPrimary,
+        primaryFgHex: lightPrimaryFg,
+        bgHex: val,
+        fgHex: lightFg,
+      },
+      dark: {
+        primaryHex: darkPrimary,
+        primaryFgHex: darkPrimaryFg,
+        bgHex: derived,
+        fgHex: darkFg,
+      },
+    });
+  };
+
+  const handleLightFgChange = (val: string) => {
+    setLightFg(val);
+    const derived = deriveDarkFg(val);
+    setDarkFg(derived);
+    previewCustomTheme({
+      light: {
+        primaryHex: lightPrimary,
+        primaryFgHex: lightPrimaryFg,
+        bgHex: lightBg,
+        fgHex: val,
+      },
+      dark: {
+        primaryHex: darkPrimary,
+        primaryFgHex: darkPrimaryFg,
+        bgHex: darkBg,
+        fgHex: derived,
+      },
+    });
+  };
+
+  const handleDarkPrimaryChange = (val: string) => {
+    setDarkPrimary(val);
+    const derivedDarkFg = deriveAccentFg(val);
+    setDarkPrimaryFg(derivedDarkFg);
+    previewCustomTheme({
+      light: {
+        primaryHex: lightPrimary,
+        primaryFgHex: lightPrimaryFg,
+        bgHex: lightBg,
+        fgHex: lightFg,
+      },
+      dark: {
+        primaryHex: val,
+        primaryFgHex: derivedDarkFg,
+        bgHex: darkBg,
+        fgHex: darkFg,
+      },
+    });
+  };
+
+  const handleDarkPrimaryFgChange = (val: string) => {
+    setDarkPrimaryFg(val);
+    previewCustomTheme({
+      light: {
+        primaryHex: lightPrimary,
+        primaryFgHex: lightPrimaryFg,
+        bgHex: lightBg,
+        fgHex: lightFg,
+      },
+      dark: {
+        primaryHex: darkPrimary,
+        primaryFgHex: val,
+        bgHex: darkBg,
+        fgHex: darkFg,
+      },
+    });
+  };
+
+  const handleDarkBgChange = (val: string) => {
+    setDarkBg(val);
+    previewCustomTheme({
+      light: {
+        primaryHex: lightPrimary,
+        primaryFgHex: lightPrimaryFg,
+        bgHex: lightBg,
+        fgHex: lightFg,
+      },
+      dark: {
+        primaryHex: darkPrimary,
+        primaryFgHex: darkPrimaryFg,
+        bgHex: val,
+        fgHex: darkFg,
+      },
+    });
+  };
+
+  const handleDarkFgChange = (val: string) => {
+    setDarkFg(val);
+    previewCustomTheme({
+      light: {
+        primaryHex: lightPrimary,
+        primaryFgHex: lightPrimaryFg,
+        bgHex: lightBg,
+        fgHex: lightFg,
+      },
+      dark: {
+        primaryHex: darkPrimary,
+        primaryFgHex: darkPrimaryFg,
+        bgHex: darkBg,
+        fgHex: val,
+      },
+    });
   };
 
   // Trigger Toast Notification on success/error
@@ -167,11 +417,68 @@ export default function ProfilePage() {
         "uzzina-follow-partner-color",
         String(selectedFollowPartnerColor),
       );
+      if (selectedThemeColor === -1) {
+        setCustomTheme({
+          light: {
+            primaryHex: lightPrimary,
+            primaryFgHex: lightPrimaryFg,
+            bgHex: lightBg,
+            fgHex: lightFg,
+          },
+          dark: {
+            primaryHex: darkPrimary,
+            primaryFgHex: darkPrimaryFg,
+            bgHex: darkBg,
+            fgHex: darkFg,
+          },
+        });
+      }
       window.dispatchEvent(new Event("uzzina-storage-update"));
     } else if (actionData?.error) {
       toast.error(`Erro ao salvar configurações: ${actionData.error}`);
     }
   }, [actionData]);
+
+  // Lista estendida contendo o Sentinel personalizado
+  const paletteOptions = [
+    ...PALLETE.map((p, idx) => {
+      const currentColors = theme === Theme.DARK ? p.dark : p.light;
+      const ColorDot = ({ className }: { className?: string }) => (
+        <div
+          className={cn(
+            "size-4 shrink-0 rounded-lg transition-transform duration-200",
+            className,
+          )}
+          style={{
+            backgroundColor: `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`,
+            border:
+              theme === Theme.DARK
+                ? "1px solid rgba(255,255,255,0.1)"
+                : "1px solid rgba(0,0,0,0.1)",
+          }}
+        />
+      );
+      return {
+        value: idx,
+        label: p.label,
+        icon: ColorDot,
+      };
+    }),
+    {
+      value: -1,
+      label: "Personalizado",
+      icon: ({ className }: { className?: string }) => (
+        <div
+          className={cn(
+            "flex size-4 shrink-0 items-center justify-center rounded-lg border border-black/10 bg-zinc-200 text-zinc-600 transition-transform duration-200 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-400",
+            className,
+          )}
+        >
+          <PipetteIcon className="size-2.5" />
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="mx-auto flex h-full w-full max-w-5xl flex-col p-6 sm:p-8">
@@ -209,6 +516,35 @@ export default function ProfilePage() {
           name="showInstagramSidebar"
           value={String(showInstagramSidebar)}
         />
+
+        {selectedThemeColor === -1 && (
+          <>
+            <input
+              type="hidden"
+              name="custom_light_primary"
+              value={lightPrimary}
+            />
+            <input
+              type="hidden"
+              name="custom_light_primary_fg"
+              value={lightPrimaryFg}
+            />
+            <input type="hidden" name="custom_light_bg" value={lightBg} />
+            <input type="hidden" name="custom_light_fg" value={lightFg} />
+            <input
+              type="hidden"
+              name="custom_dark_primary"
+              value={darkPrimary}
+            />
+            <input
+              type="hidden"
+              name="custom_dark_primary_fg"
+              value={darkPrimaryFg}
+            />
+            <input type="hidden" name="custom_dark_bg" value={darkBg} />
+            <input type="hidden" name="custom_dark_fg" value={darkFg} />
+          </>
+        )}
 
         <div className="grid gap-8 lg:grid-cols-[1.2fr_1.8fr]">
           {/* Left Column: Personal Info */}
@@ -349,29 +685,7 @@ export default function ProfilePage() {
               </div>
               <SegmentedSelector
                 columns={6}
-                options={PALLETE.map((p, idx) => {
-                  const currentColors = theme === Theme.DARK ? p.dark : p.light;
-                  const ColorDot = ({ className }: { className?: string }) => (
-                    <div
-                      className={cn(
-                        "size-4 shrink-0 rounded-lg transition-transform duration-200",
-                        className,
-                      )}
-                      style={{
-                        backgroundColor: `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`,
-                        border:
-                          theme === Theme.DARK
-                            ? "1px solid rgba(255,255,255,0.1)"
-                            : "1px solid rgba(0,0,0,0.1)",
-                      }}
-                    />
-                  );
-                  return {
-                    value: idx,
-                    label: p.label,
-                    icon: ColorDot,
-                  };
-                })}
+                options={paletteOptions}
                 value={selectedThemeColor}
                 onChange={handleColorChange}
                 columnsClassName="grid-cols-5 sm:grid-cols-9 gap-2"
@@ -380,6 +694,254 @@ export default function ProfilePage() {
                 unselectedClassName="border-border bg-transparent hover:bg-card/40"
               />
             </div>
+
+            {/* Painel Customizado */}
+            {selectedThemeColor === -1 && (
+              <div className="grid gap-4 rounded-xl border bg-zinc-50/50 p-4 dark:bg-zinc-950/20">
+                <div className="flex items-center gap-2 border-b pb-2">
+                  <PipetteIcon className="size-4 text-primary" />
+                  <span className="text-sm font-semibold">
+                    Editar Tema Personalizado
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  {/* Coluna Light */}
+                  <div className="flex flex-col gap-4">
+                    <span className="text-xs font-semibold text-muted-foreground">
+                      Modo Claro
+                    </span>
+                    <div className="grid gap-3">
+                      {/* Destaque (Accent) */}
+                      <div className="flex flex-col gap-1.5">
+                        <Label className="text-xs text-muted-foreground">
+                          Destaque (Accent)
+                        </Label>
+                        <label className="group flex cursor-pointer items-center gap-2">
+                          <div
+                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
+                            style={{ backgroundColor: lightPrimary }}
+                          />
+                          <input
+                            type="color"
+                            value={lightPrimary}
+                            onChange={(e) =>
+                              handleLightPrimaryChange(e.target.value)
+                            }
+                            className="sr-only"
+                          />
+                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
+                            {lightPrimary}
+                          </span>
+                        </label>
+                      </div>
+
+                      {/* Texto no Destaque (Accent Fg) */}
+                      <div className="flex flex-col gap-1.5">
+                        <Label className="text-xs text-muted-foreground">
+                          Texto no Destaque (Accent Fg)
+                        </Label>
+                        <label className="group flex cursor-pointer items-center gap-2">
+                          <div
+                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
+                            style={{ backgroundColor: lightPrimaryFg }}
+                          />
+                          <input
+                            type="color"
+                            value={lightPrimaryFg}
+                            onChange={(e) =>
+                              handleLightPrimaryFgChange(e.target.value)
+                            }
+                            className="sr-only"
+                          />
+                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
+                            {lightPrimaryFg}
+                          </span>
+                        </label>
+                      </div>
+
+                      {/* Fundo (Background) */}
+                      <div className="flex flex-col gap-1.5">
+                        <Label className="text-xs text-muted-foreground">
+                          Fundo (Background)
+                        </Label>
+                        <label className="group flex cursor-pointer items-center gap-2">
+                          <div
+                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
+                            style={{ backgroundColor: lightBg }}
+                          />
+                          <input
+                            type="color"
+                            value={lightBg}
+                            onChange={(e) =>
+                              handleLightBgChange(e.target.value)
+                            }
+                            className="sr-only"
+                          />
+                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
+                            {lightBg}
+                          </span>
+                        </label>
+                      </div>
+
+                      {/* Texto (Foreground) */}
+                      <div className="flex flex-col gap-1.5">
+                        <Label className="text-xs text-muted-foreground">
+                          Texto (Foreground)
+                        </Label>
+                        <label className="group flex cursor-pointer items-center gap-2">
+                          <div
+                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
+                            style={{ backgroundColor: lightFg }}
+                          />
+                          <input
+                            type="color"
+                            value={lightFg}
+                            onChange={(e) =>
+                              handleLightFgChange(e.target.value)
+                            }
+                            className="sr-only"
+                          />
+                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
+                            {lightFg}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Coluna Dark */}
+                  <div className="flex flex-col gap-4">
+                    <span className="text-xs font-semibold text-muted-foreground">
+                      Modo Escuro
+                    </span>
+                    <div className="grid gap-3">
+                      {/* Destaque (Accent) */}
+                      <div className="flex flex-col gap-1.5">
+                        <Label className="text-xs text-muted-foreground">
+                          Destaque (Accent)
+                        </Label>
+                        <label className="group flex cursor-pointer items-center gap-2">
+                          <div
+                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
+                            style={{ backgroundColor: darkPrimary }}
+                          />
+                          <input
+                            type="color"
+                            value={darkPrimary}
+                            onChange={(e) =>
+                              handleDarkPrimaryChange(e.target.value)
+                            }
+                            className="sr-only"
+                          />
+                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
+                            {darkPrimary}
+                          </span>
+                        </label>
+                      </div>
+
+                      {/* Texto no Destaque (Accent Fg) */}
+                      <div className="flex flex-col gap-1.5">
+                        <Label className="text-xs text-muted-foreground">
+                          Texto no Destaque (Accent Fg)
+                        </Label>
+                        <label className="group flex cursor-pointer items-center gap-2">
+                          <div
+                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
+                            style={{ backgroundColor: darkPrimaryFg }}
+                          />
+                          <input
+                            type="color"
+                            value={darkPrimaryFg}
+                            onChange={(e) =>
+                              handleDarkPrimaryFgChange(e.target.value)
+                            }
+                            className="sr-only"
+                          />
+                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
+                            {darkPrimaryFg}
+                          </span>
+                        </label>
+                      </div>
+
+                      {/* Fundo (Background) */}
+                      <div className="flex flex-col gap-1.5">
+                        <Label className="text-xs text-muted-foreground">
+                          Fundo (Background)
+                        </Label>
+                        <label className="group flex cursor-pointer items-center gap-2">
+                          <div
+                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
+                            style={{ backgroundColor: darkBg }}
+                          />
+                          <input
+                            type="color"
+                            value={darkBg}
+                            onChange={(e) => handleDarkBgChange(e.target.value)}
+                            className="sr-only"
+                          />
+                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
+                            {darkBg}
+                          </span>
+                        </label>
+                      </div>
+
+                      {/* Texto (Foreground) */}
+                      <div className="flex flex-col gap-1.5">
+                        <Label className="text-xs text-muted-foreground">
+                          Texto (Foreground)
+                        </Label>
+                        <label className="group flex cursor-pointer items-center gap-2">
+                          <div
+                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
+                            style={{ backgroundColor: darkFg }}
+                          />
+                          <input
+                            type="color"
+                            value={darkFg}
+                            onChange={(e) => handleDarkFgChange(e.target.value)}
+                            className="sr-only"
+                          />
+                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
+                            {darkFg}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Grid de Previsão Visual dos Elementos Derivados */}
+                <div className="mt-2 border-t pt-3">
+                  <span className="mb-2 block text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+                    Pré-visualização de Elementos Derivados
+                  </span>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="flex flex-col justify-between rounded-lg border bg-primary p-3 text-primary-foreground">
+                      <span className="text-xs font-semibold">
+                        Botão Destaque
+                      </span>
+                      <span className="text-[9px] opacity-80">
+                        Usa o Accent Fg
+                      </span>
+                    </div>
+                    <div className="rounded-lg border bg-card p-3 text-card-foreground">
+                      <span className="block text-xs font-semibold">
+                        Card & Popover
+                      </span>
+                      <span className="text-[9px] text-muted-foreground">
+                        Fundo & texto derivados.
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-lg border bg-muted p-3 text-muted-foreground">
+                      <span className="text-xs font-semibold">Muted</span>
+                      <span className="rounded border border-border bg-background px-1.5 py-0.5 text-[9px] text-foreground">
+                        Borda
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Follow Partner Color Toggle */}
             <PreferenceSwitch
