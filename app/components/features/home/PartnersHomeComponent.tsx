@@ -8,9 +8,11 @@ import type { Partner } from "~/models/partners.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
 export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
-  const { partners } = useRouteLoaderData("routes/app") as {
+  let { partners } = useRouteLoaderData("routes/app") as {
     partners: Partner[];
   };
+
+  partners = partners.sort((a, b) => a.short.localeCompare(b.short));
 
   const partnersWithActionsLength = useMemo(() => {
     // Create a map of partner slug to actions for O(1) lookup or O(N) build
