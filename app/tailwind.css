@@ -20,7 +20,10 @@
   --accent-fg-l: 0.97; /* foreground lightness: bright text over dark primary */
 
   --primary: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
-  --primary-foreground: var(--primary-foreground-override, oklch(var(--accent-fg-l) 0.014 var(--accent-h)));
+  --primary-foreground: var(
+    --primary-foreground-override,
+    oklch(var(--accent-fg-l) 0.014 var(--accent-h))
+  );
   --secondary: oklch(from var(--background) l c h / 97%);
   /* --secondary: oklch(from var(--foreground) l c h / 6%); */
   --secondary-foreground: var(--foreground);
@@ -41,7 +44,10 @@
   --sidebar: oklch(from var(--background) l c h / 98.5%);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
-  --sidebar-primary-foreground: var(--sidebar-primary-foreground-override, oklch(var(--accent-fg-l) 0.014 var(--accent-h)));
+  --sidebar-primary-foreground: var(
+    --sidebar-primary-foreground-override,
+    oklch(var(--accent-fg-l) 0.014 var(--accent-h))
+  );
   --sidebar-accent: oklch(from var(--background) l c h / 96.7%);
   --sidebar-accent-foreground: var(--foreground);
   --sidebar-border: oklch(from var(--foreground) l c h / 8%);
@@ -50,7 +56,7 @@
 
 .dark,
 :root[class~="dark"] {
-  --background: var(--dark-background-override, oklch(0.141 0.005 285.823));
+  --background: var(--dark-background-override, oklch(0.4 0.01 285.823));
   --foreground: var(--dark-foreground-override, oklch(0.985 0 0));
 
   --card: oklch(from var(--background) l c h);
@@ -68,9 +74,10 @@
   --primary: oklch(
     var(--dark-accent-l) var(--dark-accent-c) var(--dark-accent-h)
   );
-  --primary-foreground: var(--dark-primary-foreground-override, oklch(
-    var(--dark-accent-fg-l) 0.014 var(--dark-accent-h)
-  ));
+  --primary-foreground: var(
+    --dark-primary-foreground-override,
+    oklch(var(--dark-accent-fg-l) 0.014 var(--dark-accent-h))
+  );
   --secondary: oklch(from var(--background) l c h / 90%);
   --secondary-foreground: var(--foreground);
   --muted: oklch(from var(--background) l c h / 90%);
@@ -232,11 +239,11 @@
 }
 
 .border_after {
-  @apply relative after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-[100vw] after:-translate-x-1/2 after:bg-border dark:after:bg-white/10;
+  @apply relative after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-screen after:-translate-x-1/2 after:bg-border dark:after:bg-white/10;
 }
 
 .border_before {
-  @apply relative before:absolute before:top-0 before:left-1/2 before:h-px before:w-[100vw] before:-translate-x-1/2 before:bg-border dark:before:bg-white/10;
+  @apply relative before:absolute before:top-0 before:left-1/2 before:h-px before:w-screen before:-translate-x-1/2 before:bg-border dark:before:bg-white/10;
 }
 
 ::-webkit-scrollbar {

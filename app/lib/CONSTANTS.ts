@@ -339,8 +339,8 @@ export const PALLETE = [
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
-      primary: { h: 0, c: 0, l: 0.4 },
-      bg: { h: 285, c: 0.005, l: 0.141 },
+      primary: { h: 250, c: 0.01, l: 0.3 },
+      bg: { h: 250, c: 0.01, l: 0.2 },
       fg: { h: 0, c: 0, l: 1 },
     },
   },

@@ -10,5 +10,5 @@ export const PERF_FLAGS = {
    * não refaz o fetch do loader do app.tsx — usa a memória do navegador.
    * Quando `false`: comportamento padrão do React Router (revalida sempre).
    */
-  SMART_REVALIDATION: true,
+  SMART_REVALIDATION: false,
 } as const;

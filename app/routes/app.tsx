@@ -78,7 +78,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const shouldRevalidate: ShouldRevalidateFunction = (args) => {
   if (!PERF_FLAGS.SMART_REVALIDATION) return args.defaultShouldRevalidate;
+
+  // Revalida se houve qualquer mutação (POST, PUT, PATCH, DELETE)
+  if (args.formMethod && args.formMethod !== "GET") {
+    return true;
+  }
+
+  // Se uma action local retornou resultado
   if (args.actionResult) return true;
+
   return false;
 };
 
