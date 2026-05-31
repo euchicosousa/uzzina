@@ -4,10 +4,12 @@ import {
   useLoaderData,
   type LoaderFunctionArgs,
   type MetaFunction,
+  type ShouldRevalidateFunction,
 } from "react-router";
 import invariant from "tiny-invariant";
 import { Header } from "~/components/layout/Header";
 import { getCleanAction } from "~/lib/helpers";
+import { PERF_FLAGS } from "~/lib/perf";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { getAllCelebrations } from "~/models/celebrations.server";
 import { getPartnersByUserId } from "~/models/partners.server";
@@ -72,6 +74,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
     uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET!,
   } as AppLoaderData;
+};
+
+export const shouldRevalidate: ShouldRevalidateFunction = (args) => {
+  if (!PERF_FLAGS.SMART_REVALIDATION) return args.defaultShouldRevalidate;
+  if (args.actionResult) return true;
+  return false;
 };
 
 export const meta: MetaFunction = () => {
