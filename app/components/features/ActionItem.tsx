@@ -151,7 +151,7 @@ export function ActionItem({
       return "bg-destructive/5 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
 
     if (person && isSprint(action, person)) {
-      return "hover:bg-primary bg-primary/80 text-primary-foreground transition";
+      return "hover:bg-primary/80 bg-primary text-primary-foreground transition";
     }
 
     switch (variant) {
