@@ -1,5 +1,5 @@
 import { useFetchers, useNavigation } from "react-router";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useRef } from "react";
 import { INTENT, PHASES } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
 
@@ -12,9 +12,12 @@ export function useOptimisticActions(actions: Action[]): Action[] {
   const fetchers = useFetchers();
   const navigation = useNavigation();
 
-  // Local state to keep track of active overrides.
-  // Key is action ID.
-  const [overrides, setOverrides] = useState<Record<string, Override>>({});
+  // Keep overrides in a ref to manage them synchronously during the render cycle,
+  // preventing any one-frame rendering lag/flicker.
+  const overridesRef = useRef<Record<string, Override>>({});
+  const overrides = overridesRef.current;
+
+  const now = Date.now();
 
   // 1. Gather all current pending payloads from active submissions
   const pendingPayloads = useMemo(() => {
@@ -24,7 +27,6 @@ export function useOptimisticActions(actions: Action[]): Action[] {
       if ((f as any).json) {
         list.push((f as any).json);
       } else if (f.formData) {
-        // Fallback for standard form data just in case
         const obj: Record<string, any> = {};
         f.formData.forEach((value, key) => {
           obj[key] = value;
@@ -35,80 +37,58 @@ export function useOptimisticActions(actions: Action[]): Action[] {
     return list;
   }, [fetchers, navigation]);
 
-  // 2. Synchronize overrides state with active submissions and database actions
-  useEffect(() => {
-    setOverrides((prev) => {
-      const next = { ...prev };
-      let changed = false;
-      const now = Date.now();
+  // 2. Synchronously clean up overrides that are expired or match the server data
+  for (const [id, override] of Object.entries(overrides)) {
+    // Expire after 8 seconds to prevent stuck state if request fails
+    if (now - override.timestamp > 8000) {
+      delete overrides[id];
+      continue;
+    }
 
-      // Clean up expired overrides (e.g. older than 8 seconds) or those that already match the server data
-      for (const [id, override] of Object.entries(next)) {
-        // Expire after 8 seconds to prevent stuck state if request fails
-        if (now - override.timestamp > 8000) {
-          delete next[id];
-          changed = true;
-          continue;
-        }
-
-        const baseAction = actions.find((a) => String(a.id) === id);
-        if (baseAction) {
-          // Check if baseAction already has all the values specified in the payload
-          let allMatch = true;
-          const payload = override.payload;
-          for (const key of Object.keys(payload)) {
-            if (key === "intent" || key === "id" || key === "ids") continue;
-            
-            const baseValue = (baseAction as any)[key];
-            const payloadValue = payload[key];
-            if (JSON.stringify(baseValue) !== JSON.stringify(payloadValue)) {
-              allMatch = false;
-              break;
-            }
-          }
-
-          if (allMatch) {
-            delete next[id];
-            changed = true;
-          }
+    const baseAction = actions.find((a) => String(a.id) === id);
+    if (baseAction) {
+      let allMatch = true;
+      const payload = override.payload;
+      for (const key of Object.keys(payload)) {
+        if (key === "intent" || key === "id" || key === "ids") continue;
+        
+        const baseValue = (baseAction as any)[key];
+        const payloadValue = payload[key];
+        if (JSON.stringify(baseValue) !== JSON.stringify(payloadValue)) {
+          allMatch = false;
+          break;
         }
       }
 
-      // Add new active submissions to overrides
-      for (const payload of pendingPayloads) {
-        if (payload.intent === INTENT.update_action && payload.id) {
-          const id = String(payload.id);
-          const existing = next[id];
-          if (!existing || JSON.stringify(existing.payload) !== JSON.stringify(payload)) {
-            next[id] = {
-              timestamp: now,
-              payload,
-            };
-            changed = true;
-          }
-        } else if (payload.intent === INTENT.bulk_update_actions && payload.ids) {
-          const ids = Array.isArray(payload.ids) ? payload.ids : JSON.parse(payload.ids || "[]");
-          const { intent, ids: _removed, ...updates } = payload;
-          for (const id of ids) {
-            const stringId = String(id);
-            const existing = next[stringId];
-            const subPayload = { id: stringId, intent: INTENT.update_action, ...updates };
-            if (!existing || JSON.stringify(existing.payload) !== JSON.stringify(subPayload)) {
-              next[stringId] = {
-                timestamp: now,
-                payload: subPayload,
-              };
-              changed = true;
-            }
-          }
-        }
+      if (allMatch) {
+        delete overrides[id];
       }
+    }
+  }
 
-      return changed ? next : prev;
-    });
-  }, [pendingPayloads, actions]);
+  // 3. Synchronously add new active submissions to overrides
+  for (const payload of pendingPayloads) {
+    if (payload.intent === INTENT.update_action && payload.id) {
+      const id = String(payload.id);
+      overrides[id] = {
+        timestamp: now,
+        payload,
+      };
+    } else if (payload.intent === INTENT.bulk_update_actions && payload.ids) {
+      const ids = Array.isArray(payload.ids) ? payload.ids : JSON.parse(payload.ids || "[]");
+      const { intent, ids: _removed, ...updates } = payload;
+      for (const id of ids) {
+        const stringId = String(id);
+        const subPayload = { id: stringId, intent: INTENT.update_action, ...updates };
+        overrides[stringId] = {
+          timestamp: now,
+          payload: subPayload,
+        };
+      }
+    }
+  }
 
-  // 3. Apply overrides to current actions
+  // 4. Apply overrides to current actions synchronously
   const currentActions = useMemo(() => {
     const actionsMap = new Map(actions.map((action) => [String(action.id), action]));
 
@@ -126,7 +106,7 @@ export function useOptimisticActions(actions: Action[]): Action[] {
     }
 
     return Array.from(actionsMap.values());
-  }, [actions, overrides]);
+  }, [actions, pendingPayloads]);
 
   return currentActions;
 }
