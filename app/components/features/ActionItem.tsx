@@ -249,7 +249,7 @@ export function ActionItem({
             <div className="flex w-full items-center gap-2 overflow-hidden">
               <PhaseIcon phase={currentPhase} size="dot" />
 
-              {!isEditing && <ActionItemSprint action={action} />}
+              {/* {!isEditing && <ActionItemSprint action={action} />} */}
 
               <ActionItemTitleInput
                 isEditing={isEditing}
