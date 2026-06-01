@@ -65,7 +65,7 @@ export function ActionItem({
   showPriority,
   dateTimeDisplay,
   onClick,
-  enableHoverCard = true,
+  enableHoverCard = false,
   lines = 1,
 }: ActionItemProps) {
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
