@@ -12,14 +12,14 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
     partners: Partner[];
   };
 
-  partners = partners.sort((a, b) => a.short.localeCompare(b.short));
+  const sortedPartners = [...partners].sort((a, b) => a.short.localeCompare(b.short));
 
   const partnersWithActionsLength = useMemo(() => {
     // Create a map of partner slug to actions for O(1) lookup or O(N) build
     const actionsByPartner = new Map<string, number>();
 
     // Initialize map
-    partners.forEach((p) => actionsByPartner.set(p.slug, 0));
+    sortedPartners.forEach((p) => actionsByPartner.set(p.slug, 0));
 
     // Single pass through actions
     actions.forEach((action) => {
@@ -33,11 +33,11 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
       });
     });
 
-    return partners.map((partner) => ({
+    return sortedPartners.map((partner) => ({
       ...partner,
       lateActionsLength: actionsByPartner.get(partner.slug) || 0,
     }));
-  }, [partners, actions]);
+  }, [sortedPartners, actions]);
 
   return (
     <HomeComponentWrapper title="Parceiros">
