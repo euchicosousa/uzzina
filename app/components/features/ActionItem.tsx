@@ -148,10 +148,11 @@ export function ActionItem({
     if (person && isSprint(action, person)) {
       return "hover:bg-primary/80 bg-primary text-primary-foreground transition";
     } else {
-      if (isEditing)
+      if (isEditing) {
         return "ring-foreground focus-within:ring-2 z-100 text-foreground";
-      if (showLate && isLateAction(action))
+      } else if (showLate && isLateAction(action)) {
         return "bg-destructive/5 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
+      }
     }
 
     switch (variant) {
