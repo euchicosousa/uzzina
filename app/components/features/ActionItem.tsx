@@ -1,9 +1,21 @@
-import { CalendarDaysIcon, SignalIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useOutletContext, useRouteLoaderData, useSubmit } from "react-router";
+import { CalendarDaysIcon, SignalIcon } from "lucide-react";
+
+// UI Components
 import { Checkbox } from "~/components/ui/checkbox";
+import { UAvatarGroup } from "../uzzina/UAvatar";
+import { ActionHoverCard } from "./ActionHoverCard";
+import { ActionItemTitleInput } from "./ActionItemTitleInput";
+import { Content } from "./Content";
+import { Draggable } from "./DnD";
+import { PhaseIcon } from "./PhaseIcon";
+
+// Hooks
 import { useActionShortcutContext } from "~/hooks/useActionShortcut";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
+
+// Constants & Helpers
 import {
   CATEGORIES,
   DATE_TIME_DISPLAY,
@@ -26,32 +38,60 @@ import {
   isSprint,
 } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
-import type { Action } from "~/models/actions.server";
-import type { AppLoaderData } from "~/routes/app";
-import { UAvatarGroup } from "../uzzina/UAvatar";
-import { ActionItemTitleInput } from "./ActionItemTitleInput";
-import { Content } from "./Content";
-import { Draggable } from "./DnD";
-import { PhaseIcon } from "./PhaseIcon";
-import { ActionHoverCard } from "./ActionHoverCard";
 
+// Types
+import type { Action } from "~/models/actions.server";
+import type { Partner } from "~/models/partners.server"; // Imported explicitly for subcomponents
+import type { Person } from "~/models/people.server";   // Imported explicitly for subcomponents
+import type { AppLoaderData } from "~/routes/app";
+
+/**
+ * Props for the ActionItem component.
+ */
 type ActionItemProps = {
+  /** The action object to render */
   action: Action;
+  /** The layout variant of the action item */
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
+  /** Additional CSS class names to apply to the wrapper */
   className?: string;
+  /** Whether the item is currently being dragged */
   isDragging?: boolean;
+  /** Whether the item is draggable */
   isDraggable?: boolean;
+  /** Whether to highlight the action if it is late */
   showLate?: boolean;
+  /** Whether to show the associated partner information */
   showPartner?: boolean;
+  /** Whether to show the category icon */
   showCategory?: boolean;
+  /** Whether to show the avatar group of responsible users */
   showResponsibles?: boolean;
+  /** Whether to show the priority icon indicator */
   showPriority?: boolean;
+  /** Format pattern for displaying dates and times */
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
+  /** Optional click handler override */
   onClick?: (action: Action) => void;
+  /** Whether to wrap the item with a hover card detailing the action */
   enableHoverCard?: boolean;
+  /** Max lines for the title layout in certain variants */
   lines?: 1 | 2;
 };
 
+/**
+ * Interface representing the context structure returned by React Router's useOutletContext.
+ */
+interface OutletContext {
+  setBaseAction: (action: Action) => void;
+}
+
+/**
+ * ActionItem Component
+ * 
+ * Renders a single Action card/item in various layouts (line, block, hour, content, hair).
+ * Integrates drag-and-drop capability, selection mode, inline title editing, and action shortcuts.
+ */
 export function ActionItem({
   action,
   variant = VARIANT.line,
@@ -82,7 +122,7 @@ export function ActionItem({
 
   const [isEditing, setIsEditing] = useState(false);
 
-  // Registra a ação no registry global ao montar, atualiza se action mudar
+  // Register the action in the global shortcut registry on mount/update
   useEffect(() => {
     registerAction(action.id, { action });
     return () => unregisterAction(action.id);
@@ -120,6 +160,7 @@ export function ActionItem({
     [action.category],
   );
 
+  // Fallback variant check
   variant =
     !isInstagramFeed(action.category) && variant === VARIANT.content
       ? VARIANT.line
@@ -142,28 +183,38 @@ export function ActionItem({
   }, [variant]);
 
   const bgClasses = useMemo(() => {
-    if (variant === VARIANT.content && showLate && isLateAction(action))
-      return "bg-destructive/5 dark:bg-destructive/20 text-destructive p-1 rounded-xl hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
+    let baseStyles = "";
 
-    if (person && isSprint(action, person)) {
-      return "hover:bg-primary/80 bg-primary text-primary-foreground transition";
+    // 1. Determine base background/text colors based on priority states
+    if (showLate && isLateAction(action)) {
+      if (variant === VARIANT.content) {
+        baseStyles = "bg-destructive/5 dark:bg-destructive/20 text-destructive p-1 rounded-xl hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
+      } else {
+        baseStyles = "bg-destructive/5 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
+      }
+    } else if (person && isSprint(action, person)) {
+      baseStyles = "hover:bg-primary/80 bg-primary text-primary-foreground transition";
     } else {
-      if (isEditing) {
-        return "ring-foreground focus-within:ring-2 z-100 text-foreground";
-      } else if (showLate && isLateAction(action)) {
-        return "bg-destructive/5 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
+      switch (variant) {
+        case VARIANT.hour:
+          baseStyles = "hover:bg-card bg-card text-card-foreground";
+          break;
+        case VARIANT.block:
+          baseStyles = "hover:bg-card bg-card/50 ring-foreground/10 ring-1 text-card-foreground transition";
+          break;
+        default:
+          baseStyles = "hover:bg-card bg-background text-card-foreground";
+          break;
       }
     }
 
-    switch (variant) {
-      case VARIANT.hour:
-        return "hover:bg-card bg-card text-card-foreground";
-      case VARIANT.block:
-        return "hover:bg-card bg-card/50 ring-foreground/10 ring-1 text-card-foreground transition";
-      default:
-        return "hover:bg-card bg-background text-card-foreground";
+    // 2. Apply editing ring/focus overrides on top of the base style
+    if (isEditing) {
+      baseStyles = cn(baseStyles, "ring-foreground focus-within:ring-2 z-100 text-foreground");
     }
-  }, [variant, isEditing, showLate, action]);
+
+    return baseStyles;
+  }, [variant, isEditing, showLate, action, person]);
 
   const renderActionVariant = () => {
     switch (variant) {
@@ -193,15 +244,13 @@ export function ActionItem({
       case VARIANT.block:
         return (
           <div className="flex flex-col gap-2 pb-2">
-            {/* <div className="flex items-center gap-2 py-1"> */}
             <ActionItemTitleInput
               isEditing={isEditing}
               setIsEditing={handleSetIsEditing}
               title={action.title}
               className={"text-xl leading-tight font-medium"}
-              lines={lines} // resolver essas linhas
+              lines={lines}
             />
-            {/* </div> */}
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -257,8 +306,6 @@ export function ActionItem({
             <div className="flex w-full items-center gap-2 overflow-hidden">
               <PhaseIcon phase={currentPhase} size="dot" />
 
-              {/* {!isEditing && <ActionItemSprint action={action} />} */}
-
               <ActionItemTitleInput
                 isEditing={isEditing}
                 setIsEditing={handleSetIsEditing}
@@ -283,14 +330,12 @@ export function ActionItem({
                 isEditing ? "hidden @md:flex" : "flex",
               )}
             >
-              {/* Parceiro */}
               {(showPartner || currentPartners.length > 1) && (
                 <ActionItemPartners
                   action={action}
                   partners={currentPartners}
                 />
               )}
-              {/* Responsáveis */}
               {showResponsibles && (
                 <ActionItemResponsibles
                   size="xs"
@@ -316,7 +361,6 @@ export function ActionItem({
                 />
               )}
 
-              {/* Data */}
               {dateTimeDisplay && (
                 <div className="hidden justify-end overflow-hidden group-hover/action:flex @md:w-[90px]">
                   <ActionItemDateTimeDisplay
@@ -414,6 +458,11 @@ export function ActionItem({
   );
 }
 
+/**
+ * ActionItemDateTimeDisplay Component
+ * 
+ * Renders the formatted date and time for an action.
+ */
 export function ActionItemDateTimeDisplay({
   action,
   dateTimeDisplay,
@@ -428,6 +477,11 @@ export function ActionItemDateTimeDisplay({
   );
 }
 
+/**
+ * ActionItemPartners Component
+ * 
+ * Renders avatar(s) for the partner(s) associated with an action.
+ */
 export function ActionItemPartners({
   action,
   partners,
@@ -478,6 +532,11 @@ export function ActionItemPartners({
   );
 }
 
+/**
+ * ActionItemResponsibles Component
+ * 
+ * Renders an avatar group representing the team members responsible for the action.
+ */
 export function ActionItemResponsibles({
   action,
   responsibles,
@@ -499,6 +558,11 @@ export function ActionItemResponsibles({
   );
 }
 
+/**
+ * ActionItemPriority Component
+ * 
+ * Renders a priority indicator icon colored according to the action's priority level.
+ */
 export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
   switch (priority) {
     case PRIORITIES.low.slug:
@@ -513,6 +577,11 @@ export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
   }
 }
 
+/**
+ * ActionItemSprint Component
+ * 
+ * Displays a sprint icon if the action belongs to the active user's current sprint.
+ */
 export function ActionItemSprint({
   action,
   className,
@@ -527,3 +596,4 @@ export function ActionItemSprint({
     <Icons slug="sprint" className={cn("size-4 shrink-0", className)} />
   ) : null;
 }
+
