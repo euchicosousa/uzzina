@@ -8,9 +8,9 @@
   --radius: 0.65rem;
   --background: var(--background-override, oklch(1 0 0));
   --foreground: var(--foreground-override, oklch(0.141 0.005 285.823));
-  --card: oklch(from var(--background) l c h);
+  --card: oklch(from var(--foreground) l c h / 3%);
   --card-foreground: var(--foreground);
-  --popover: oklch(from var(--background) l c h);
+  --popover: oklch(from var(--background) l c h / 96%);
   --popover-foreground: var(--foreground);
 
   /* Accent color knobs — overrideable by JS for theme color picker */
@@ -24,8 +24,7 @@
     --primary-foreground-override,
     oklch(var(--accent-fg-l) 0.014 var(--accent-h))
   );
-  --secondary: oklch(from var(--background) l c h / 97%);
-  /* --secondary: oklch(from var(--foreground) l c h / 6%); */
+  --secondary: oklch(from var(--foreground) l c h / 5%);
   --secondary-foreground: var(--foreground);
   --muted: oklch(from var(--background) l c h / 96.7%);
   --muted-foreground: oklch(from var(--foreground) l c h / 55.2%);

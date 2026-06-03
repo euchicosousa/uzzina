@@ -216,8 +216,15 @@ export function ActionItem({
                 {showCategory && (
                   <Icons
                     slug={currentCategory.slug}
-                    className="size-4"
-                    color={currentCategory.color}
+                    className={cn(
+                      "size-4",
+                      isSprint(action, person) && "text-primary-foreground",
+                    )}
+                    color={
+                      !isSprint(action, person)
+                        ? currentCategory.color
+                        : undefined
+                    }
                   />
                 )}
 
@@ -297,8 +304,15 @@ export function ActionItem({
               {showCategory && (
                 <Icons
                   slug={currentCategory.slug}
-                  className="size-4 shrink-0"
-                  color={currentCategory.color}
+                  className={cn(
+                    "size-4",
+                    isSprint(action, person) && "text-primary-foreground",
+                  )}
+                  color={
+                    !isSprint(action, person)
+                      ? currentCategory.color
+                      : undefined
+                  }
                 />
               )}
 
@@ -509,7 +523,7 @@ export function ActionItemSprint({
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
   const person = appData?.person;
 
-  return person && isSprint(action, person) ? (
+  return isSprint(action, person) ? (
     <Icons slug="sprint" className={cn("size-4 shrink-0", className)} />
   ) : null;
 }

@@ -28,7 +28,8 @@ export function isInstagramFeed(category: string, stories = false) {
   );
 }
 
-export const isSprint = (action: Action, person: Person) => {
+export const isSprint = (action: Action, person?: Person) => {
+  if (!person) return false;
   return !!action.sprints?.find((sprint) => sprint === person.user_id);
 };
 
