@@ -22,7 +22,7 @@
   --primary: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
   --primary-foreground: var(
     --primary-foreground-override,
-    oklch(var(--accent-fg-l) 0.014 var(--accent-h))
+    oklch(var(--accent-fg-l) 0 var(--accent-h))
   );
   --secondary: oklch(from var(--foreground) l c h / 5%);
   --secondary-foreground: var(--foreground);

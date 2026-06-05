@@ -42,7 +42,7 @@ import { cn } from "~/lib/utils";
 // Types
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server"; // Imported explicitly for subcomponents
-import type { Person } from "~/models/people.server";   // Imported explicitly for subcomponents
+import type { Person } from "~/models/people.server"; // Imported explicitly for subcomponents
 import type { AppLoaderData } from "~/routes/app";
 
 /**
@@ -88,7 +88,7 @@ interface OutletContext {
 
 /**
  * ActionItem Component
- * 
+ *
  * Renders a single Action card/item in various layouts (line, block, hour, content, hair).
  * Integrates drag-and-drop capability, selection mode, inline title editing, and action shortcuts.
  */
@@ -188,19 +188,22 @@ export function ActionItem({
     // 1. Determine base background/text colors based on priority states
     if (showLate && isLateAction(action)) {
       if (variant === VARIANT.content) {
-        baseStyles = "bg-destructive/5 dark:bg-destructive/20 text-destructive p-1 rounded-xl hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
+        baseStyles =
+          "bg-destructive/5 dark:bg-destructive/20 text-destructive p-1 rounded-xl hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
       } else {
-        baseStyles = "bg-destructive/5 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
+        baseStyles =
+          "bg-destructive/5 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
       }
     } else if (person && isSprint(action, person)) {
-      baseStyles = "hover:bg-primary/80 bg-primary text-primary-foreground transition";
+      baseStyles = "hover:bg-primary/10 bg-primary/5 transition ";
     } else {
       switch (variant) {
         case VARIANT.hour:
           baseStyles = "hover:bg-card bg-card text-card-foreground";
           break;
         case VARIANT.block:
-          baseStyles = "hover:bg-card bg-card/50 ring-foreground/10 ring-1 text-card-foreground transition";
+          baseStyles =
+            "hover:bg-card bg-card/50 ring-foreground/10 ring-1 text-card-foreground transition";
           break;
         default:
           baseStyles = "hover:bg-card bg-background text-card-foreground";
@@ -210,7 +213,10 @@ export function ActionItem({
 
     // 2. Apply editing ring/focus overrides on top of the base style
     if (isEditing) {
-      baseStyles = cn(baseStyles, "ring-foreground focus-within:ring-2 z-100 text-foreground");
+      baseStyles = cn(
+        baseStyles,
+        "ring-foreground focus-within:ring-2 z-100 text-foreground",
+      );
     }
 
     return baseStyles;
@@ -267,13 +273,9 @@ export function ActionItem({
                     slug={currentCategory.slug}
                     className={cn(
                       "size-4",
-                      isSprint(action, person) && "text-primary-foreground",
+                      // isSprint(action, person) && "text-primary-foreground",
                     )}
-                    color={
-                      !isSprint(action, person)
-                        ? currentCategory.color
-                        : undefined
-                    }
+                    color={currentCategory.color}
                   />
                 )}
 
@@ -460,7 +462,7 @@ export function ActionItem({
 
 /**
  * ActionItemDateTimeDisplay Component
- * 
+ *
  * Renders the formatted date and time for an action.
  */
 export function ActionItemDateTimeDisplay({
@@ -479,7 +481,7 @@ export function ActionItemDateTimeDisplay({
 
 /**
  * ActionItemPartners Component
- * 
+ *
  * Renders avatar(s) for the partner(s) associated with an action.
  */
 export function ActionItemPartners({
@@ -534,7 +536,7 @@ export function ActionItemPartners({
 
 /**
  * ActionItemResponsibles Component
- * 
+ *
  * Renders an avatar group representing the team members responsible for the action.
  */
 export function ActionItemResponsibles({
@@ -560,7 +562,7 @@ export function ActionItemResponsibles({
 
 /**
  * ActionItemPriority Component
- * 
+ *
  * Renders a priority indicator icon colored according to the action's priority level.
  */
 export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
@@ -579,7 +581,7 @@ export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
 
 /**
  * ActionItemSprint Component
- * 
+ *
  * Displays a sprint icon if the action belongs to the active user's current sprint.
  */
 export function ActionItemSprint({
@@ -596,4 +598,3 @@ export function ActionItemSprint({
     <Icons slug="sprint" className={cn("size-4 shrink-0", className)} />
   ) : null;
 }
-
