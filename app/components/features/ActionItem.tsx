@@ -196,7 +196,7 @@ export function ActionItem({
       }
     } else if (person && isSprint(action, person)) {
       baseStyles =
-        "hover:bg-primary/10 bg-primary/5 transition ring-primary/20 ring-1";
+        "hover:bg-primary/10 bg-primary/5 transition ring-primary/50 ring-1";
     } else {
       switch (variant) {
         case VARIANT.hour:
@@ -272,10 +272,7 @@ export function ActionItem({
                 {showCategory && (
                   <Icons
                     slug={currentCategory.slug}
-                    className={cn(
-                      "size-4",
-                      // isSprint(action, person) && "text-primary-foreground",
-                    )}
+                    className={cn("size-4")}
                     color={currentCategory.color}
                   />
                 )}
@@ -352,15 +349,8 @@ export function ActionItem({
               {showCategory && (
                 <Icons
                   slug={currentCategory.slug}
-                  className={cn(
-                    "size-4",
-                    isSprint(action, person) && "text-primary-foreground",
-                  )}
-                  color={
-                    !isSprint(action, person)
-                      ? currentCategory.color
-                      : undefined
-                  }
+                  className={cn("size-4")}
+                  color={currentCategory.color}
                 />
               )}
 

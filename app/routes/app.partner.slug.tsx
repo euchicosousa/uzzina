@@ -39,7 +39,7 @@ import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { useAppTheme } from "~/hooks/useAppTheme";
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
-import { SIZE } from "~/lib/CONSTANTS";
+import { PHASES, SIZE } from "~/lib/CONSTANTS";
 import { filterActions, getInstagramFeedActions } from "~/lib/helpers";
 import { getUserPreferences } from "~/lib/preferences";
 import { cn } from "~/lib/utils";
@@ -147,7 +147,9 @@ export default function PartnerPage() {
 
   const filteredActions = filterActions(currentActions, viewOptions, query);
 
-  const feedActions = getInstagramFeedActions(filteredActions);
+  const feedActions = getInstagramFeedActions(filteredActions).filter(
+    (action) => action.phase !== PHASES.idea.slug,
+  );
 
   const lateCount = currentLateActions.length;
 
