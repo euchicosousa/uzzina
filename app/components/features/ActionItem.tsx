@@ -195,7 +195,8 @@ export function ActionItem({
           "bg-destructive/5 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
       }
     } else if (person && isSprint(action, person)) {
-      baseStyles = "hover:bg-primary/10 bg-primary/5 transition ";
+      baseStyles =
+        "hover:bg-primary/10 bg-primary/5 transition ring-primary/20 ring-1";
     } else {
       switch (variant) {
         case VARIANT.hour:
