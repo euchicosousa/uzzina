@@ -1,3 +1,4 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArchiveIcon,
   CalendarIcon,
@@ -10,50 +11,50 @@ import {
   XIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
-import { Button } from "~/components/ui/button";
-import { PartnerColorPicker } from "~/components/features/ActionForm/PartnerColorPicker";
 import { useMatches, useParams } from "react-router";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { QUERY_KEYS } from "~/lib/query-keys";
-import { fetchPeople } from "~/lib/supabase.queries";
-import type { Person } from "~/lib/supabase.queries";
-import { useMultiSelection } from "~/hooks/useMultiSelection";
-import { handleBulkAction, handleBulkDateOnly, handleBulkTimeOnly } from "~/lib/helpers";
-import { CATEGORIES, INTENT, PHASES, PRIORITIES } from "~/lib/CONSTANTS";
-import { PhaseIcon } from "./PhaseIcon";
+import { toast } from "sonner";
+import { PartnerColorPicker } from "~/components/features/ActionForm/PartnerColorPicker";
+import { Button } from "~/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
   DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
   DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "~/components/ui/dialog";
 import { UAvatar } from "~/components/uzzina/UAvatar";
+import { useMultiSelection } from "~/hooks/useMultiSelection";
+import { useActionMutations } from "~/hooks/useActionMutations";
+import { CATEGORIES, PHASES, PRIORITIES } from "~/lib/CONSTANTS";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import type { Person } from "~/lib/supabase.queries";
+import { fetchPeople } from "~/lib/supabase.queries";
 import { cn } from "~/lib/utils";
-import type { AppLoaderData } from "~/routes/app";
 import type { Partner } from "~/models/partners.server";
+import type { AppLoaderData } from "~/routes/app";
 import {
   BulkDateTimeDialog,
   type BulkDateTimeResult,
 } from "./BulkDateTimeDialog";
+import { PhaseIcon } from "./PhaseIcon";
 
 export function BulkActionMenu() {
   // ─── Multi-seleção ───────────────────────────────────────────────────────────
   const { isSelectionMode, selectedIds, clearSelection } = useMultiSelection();
   const queryClient = useQueryClient();
+  const { handleBulkAction, handleBulkDateOnly, handleBulkTimeOnly } = useActionMutations();
 
   // ─── Dados globais do app loader ─────────────────────────────────────────────
   // useMatches()[1] é sempre o loader do route "routes/app" (app shell)
@@ -89,7 +90,7 @@ export function BulkActionMenu() {
 
   /** Aplica `updates` em todas as ações selecionadas e limpa a seleção */
   const performBulkAction = (updates: Record<string, unknown>) => {
-    handleBulkAction(selectedIds, updates, queryClient);
+    handleBulkAction(selectedIds, updates);
     clearSelection();
     toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
   };
@@ -101,12 +102,12 @@ export function BulkActionMenu() {
       performBulkAction({ date: result.date });
     } else if (result.mode === "date_only") {
       // Situação 2: só a data — servidor preserva a hora de cada ação
-      handleBulkDateOnly(selectedIds, result.dateOnly, queryClient);
+      handleBulkDateOnly(selectedIds, result.dateOnly);
       clearSelection();
       toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
     } else {
       // Situação 3: só a hora — servidor preserva a data de cada ação
-      handleBulkTimeOnly(selectedIds, result.timeOnly, queryClient);
+      handleBulkTimeOnly(selectedIds, result.timeOnly);
       clearSelection();
       toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
     }

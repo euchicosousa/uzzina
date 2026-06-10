@@ -16,7 +16,7 @@ import {
 } from "react-router";
 import type { Action } from "~/models/actions.server";
 
-import { useOptimisticActions } from "~/hooks/useOptimisticActions";
+import { useOptimisticQuery } from "~/hooks/useOptimisticQuery";
 import { ORDER_BY } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
 // [ROLLBACK-HOME-LOADER] imports do servidor removidos:
@@ -30,7 +30,6 @@ import { PartnersHomeComponent } from "~/components/features/home/PartnersHomeCo
 import { SprintHomeComponent } from "~/components/features/home/SprintHomeComponent";
 import { TodayHomeComponent } from "~/components/features/home/TodayHomeComponent";
 
-import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchHomeActions, fetchAllLateActions } from "~/lib/supabase.queries";
 
@@ -93,14 +92,14 @@ export default function AppHome() {
   const { person, partners } = useMatches()[1].loaderData as AppLoaderData;
 
   // Busca as ações no client usando TanStack Query
-  const { data: actions = [] } = useQuery({
+  const { data: currentActions = [] } = useOptimisticQuery({
     queryKey: QUERY_KEYS.actions.home(person.user_id),
     queryFn: () =>
       fetchHomeActions(person.user_id, startDateISO, endDateISO, todayEndISO),
   });
 
   // Busca as lateActions no client usando TanStack Query
-  const { data: lateActions = [] } = useQuery({
+  const { data: currentLateActions = [] } = useOptimisticQuery({
     queryKey: QUERY_KEYS.lateActions.user(person.user_id),
     queryFn: () =>
       fetchAllLateActions(
@@ -109,9 +108,6 @@ export default function AppHome() {
         partners.map((p) => p.slug),
       ),
   });
-
-  const currentActions = useOptimisticActions(actions);
-  const currentLateActions = useOptimisticActions(lateActions);
 
   const sprintActions = useMemo(
     () =>

@@ -22,7 +22,8 @@ import {
 } from "react-router";
 
 import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
-import { getNewDateForAction, handleAction } from "~/lib/helpers";
+import { getNewDateForAction } from "~/lib/helpers";
+import { useActionMutations } from "~/hooks/useActionMutations";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
@@ -123,6 +124,7 @@ function ActionHoverCardContent({
   onClick?: (action: Action) => void;
 }) {
   const queryClient = useQueryClient();
+  const { handleAction } = useActionMutations();
   const fetchers = useFetchers();
   const navigation = useNavigation();
   const outletContext = useOutletContext<any>();
@@ -212,8 +214,7 @@ function ActionHoverCardContent({
             onBlur={(newTitle) => {
               if (newTitle !== action.title && newTitle.trim()) {
                 handleAction(
-                  { ...action, intent: INTENT.update_action, title: newTitle },
-                  queryClient,
+                  { ...action, intent: INTENT.update_action, title: newTitle }
                 );
               }
             }}
@@ -241,8 +242,7 @@ function ActionHoverCardContent({
                         ...action,
                         intent: INTENT.update_action,
                         description: content,
-                      },
-                      queryClient,
+                      }
                     );
                   }
                 }}
@@ -262,8 +262,7 @@ function ActionHoverCardContent({
             showText={false}
             onSelect={(selected) => {
               handleAction(
-                { ...action, intent: INTENT.update_action, phase: selected },
-                queryClient,
+                { ...action, intent: INTENT.update_action, phase: selected }
               );
             }}
           />
@@ -275,8 +274,7 @@ function ActionHoverCardContent({
             showText={false}
             onSelect={({ category }) => {
               handleAction(
-                { ...action, intent: INTENT.update_action, category },
-                queryClient,
+                { ...action, intent: INTENT.update_action, category }
               );
             }}
           />
@@ -289,8 +287,7 @@ function ActionHoverCardContent({
             onSelect={(newDate) => {
               const updatedDate = getNewDateForAction(action, newDate);
               handleAction(
-                { ...action, intent: INTENT.update_action, ...updatedDate },
-                queryClient,
+                { ...action, intent: INTENT.update_action, ...updatedDate }
               );
             }}
           />
@@ -309,8 +306,7 @@ function ActionHoverCardContent({
                   intent: INTENT.update_action,
                   sprints: finalSprints,
                   responsibles: newResponsibles,
-                },
-                queryClient,
+                }
               );
             }}
           />

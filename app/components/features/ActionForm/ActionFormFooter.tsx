@@ -14,7 +14,8 @@ import { PhaseCombobox } from "~/components/features/PhaseCombobox";
 import { SprintCombobox } from "~/components/features/SprintCombobox";
 import { Button } from "~/components/ui/button";
 import { INTENT } from "~/lib/CONSTANTS";
-import { handleAction, isInstagramFeed } from "~/lib/helpers";
+import { isInstagramFeed } from "~/lib/helpers";
+import { useActionMutations } from "~/hooks/useActionMutations";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
 
@@ -38,6 +39,7 @@ export function ActionFormFooter({
   handleClose,
 }: ActionFormFooterProps) {
   const queryClient = useQueryClient();
+  const { handleAction } = useActionMutations();
 
   return (
     <div className="w-fulld flex shrink-0 justify-between overflow-hidden border-t">
@@ -132,8 +134,7 @@ export function ActionFormFooter({
               className="flex items-center gap-2 rounded-2xl p-2 text-sm opacity-50 hover:opacity-100 focus:opacity-100"
               onClick={() => {
                 handleAction(
-                  { id: RawAction.id, intent: INTENT.duplicate_action },
-                  queryClient,
+                  { id: RawAction.id, intent: INTENT.duplicate_action }
                 );
                 handleClose();
               }}

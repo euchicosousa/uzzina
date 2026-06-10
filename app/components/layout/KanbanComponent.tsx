@@ -18,13 +18,14 @@ import {
 import { cn } from "~/lib/utils";
 import { ActionItem } from "../features/ActionItem";
 import { Draggable, Droppable } from "../features/DnD";
-import { handleAction } from "~/lib/helpers";
+import { useActionMutations } from "~/hooks/useActionMutations";
 import { UBadge } from "../uzzina/UBadge";
 import type { Action } from "~/models/actions.server";
 import { DragStateContext } from "../features/DragStateContext";
 
 export default function KanbanComponent({ actions }: { actions: Action[] }) {
   const queryClient = useQueryClient();
+  const { handleAction } = useActionMutations();
 
   const [activeAction, setActiveAction] = useState<Action>();
 
@@ -64,8 +65,7 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
           ...activeAction,
           intent: INTENT.update_action,
           phase: newPhase,
-        },
-        queryClient,
+        }
       );
     }
 

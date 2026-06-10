@@ -31,12 +31,12 @@ import {
 import {
   getFormattedDateTime,
   getFormattedPartnersName,
-  handleAction,
   Icons,
   isInstagramFeed,
   isLateAction,
   isSprint,
 } from "~/lib/helpers";
+import { useActionMutations } from "~/hooks/useActionMutations";
 import { cn } from "~/lib/utils";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
@@ -124,6 +124,7 @@ export function ActionItem({
   const isSelected = selectedIds.includes(action.id);
 
   const queryClient = useQueryClient();
+  const { handleAction } = useActionMutations();
   const { registerAction, unregisterAction, setEditingId } =
     useActionShortcutContext();
 
@@ -324,8 +325,7 @@ export function ActionItem({
                       ...action,
                       intent: INTENT.update_action,
                       title,
-                    },
-                    queryClient,
+                    }
                   );
                 }}
               />

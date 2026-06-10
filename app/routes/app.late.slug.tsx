@@ -3,12 +3,11 @@ import { Link, useLoaderData, type LoaderFunctionArgs, useMatches } from "react-
 import invariant from "tiny-invariant";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import { useViewOptions } from "~/components/features/ViewOptions";
-import { useOptimisticActions } from "~/hooks/useOptimisticActions";
+import { useOptimisticQuery } from "~/hooks/useOptimisticQuery";
 import { getUserId } from "~/services/auth.server";
 // [ROLLBACK-LATE-LOADER] Imports do servidor comentados/removidos:
 // import { getLateActionsByPartner } from "~/models/actions.server";
 
-import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchAllLateActions } from "~/lib/supabase.queries";
 import type { AppLoaderData } from "./app";
@@ -53,7 +52,7 @@ export default function PartnerPage() {
   let { partner } = useLoaderData<typeof loader>();
   const { person, partners } = useMatches()[1].loaderData as AppLoaderData;
 
-  const { data: actions = [] } = useQuery({
+  const { data: currentActions = [] } = useOptimisticQuery({
     queryKey: QUERY_KEYS.lateActions.user(person.user_id),
     queryFn: () =>
       fetchAllLateActions(
@@ -64,8 +63,6 @@ export default function PartnerPage() {
     select: (allLateActions) =>
       allLateActions.filter((action) => action.partners?.includes(partner.slug)),
   });
-
-  let currentActions = useOptimisticActions(actions);
   const [query] = useState("");
 
   const [viewOptions] = useViewOptions({

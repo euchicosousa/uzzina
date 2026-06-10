@@ -38,7 +38,7 @@ import {
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { useAppTheme } from "~/hooks/useAppTheme";
-import { useOptimisticActions } from "~/hooks/useOptimisticActions";
+import { useOptimisticQuery } from "~/hooks/useOptimisticQuery";
 import { PHASES, SIZE } from "~/lib/CONSTANTS";
 import { filterActions, getInstagramFeedActions } from "~/lib/helpers";
 import { getUserPreferences } from "~/lib/preferences";
@@ -49,7 +49,7 @@ import { cn } from "~/lib/utils";
 import { getPartnerBySlug } from "~/models/partners.server";
 import { getUserId } from "~/services/auth.server";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import {
   fetchPartnerActions,
@@ -121,7 +121,7 @@ export default function PartnerPage() {
 
   // Actions do parceiro — client-side via React Query
   const dateRange = `${startDateFormatted}_${endDateFormatted}`;
-  const { data: actions = [] } = useQuery({
+  const { data: currentActions = [] } = useOptimisticQuery({
     queryKey: QUERY_KEYS.actions.partner(partner.slug, dateRange),
     queryFn: () =>
       fetchPartnerActions(
@@ -147,7 +147,7 @@ export default function PartnerPage() {
   });
 
   // LateActions do parceiro — client-side via React Query (reutilizando cache global do Header)
-  const { data: lateActions = [] } = useQuery({
+  const { data: currentLateActions = [] } = useOptimisticQuery({
     queryKey: QUERY_KEYS.lateActions.user(person.user_id),
     queryFn: () =>
       fetchAllLateActions(
@@ -159,9 +159,6 @@ export default function PartnerPage() {
       allLateActions.filter((action) => action.partners?.includes(partner.slug)),
     enabled: !skipActions,
   });
-
-  let currentActions = useOptimisticActions(actions || []);
-  let currentLateActions = useOptimisticActions(lateActions || []);
   const { setBaseAction } = useOutletContext<OutletContext>();
   const [currentDay, setCurrentDay] = useState(parseISO(date));
   const [query, setQuery] = useState("");

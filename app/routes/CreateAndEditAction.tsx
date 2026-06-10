@@ -13,7 +13,8 @@ import { EssentialsTab } from "~/components/features/ActionForm/EssentialsTab";
 import { InstagramTab } from "~/components/features/ActionForm/InstagramTab";
 import { ObservationsTab } from "~/components/features/ActionForm/ObservationsTab";
 import { INTENT } from "~/lib/CONSTANTS";
-import { handleAction, isInstagramFeed } from "~/lib/helpers";
+import { isInstagramFeed } from "~/lib/helpers";
+import { useActionMutations } from "~/hooks/useActionMutations";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
@@ -41,6 +42,7 @@ export function CreateAndEditAction({
   const fetcher = useFetcher();
   const fetchers = useFetchers();
   const queryClient = useQueryClient();
+  const { handleAction } = useActionMutations();
 
   const [RawAction, setRawAction] = useState<Action>(BaseAction);
 
@@ -84,10 +86,9 @@ export function CreateAndEditAction({
         ...RawAction,
         description: descriptionRef.current, // always latest typed content
         intent: RawAction.id ? INTENT.update_action : INTENT.create_action,
-      },
-      queryClient,
+      }
     );
-  }, [RawAction, queryClient]);
+  }, [RawAction, handleAction]);
 
   // Ref always points to the latest handleSave to avoid stale closures in event listeners
   const handleSaveRef = useRef(handleSave);
@@ -97,7 +98,7 @@ export function CreateAndEditAction({
 
   useEffect(() => {
     if (RawAction.id && !BaseAction.id) {
-      handleAction({ ...RawAction, intent: INTENT.update_action }, queryClient);
+      handleAction({ ...RawAction, intent: INTENT.update_action });
     }
     descriptionRef.current = BaseAction.description || "";
     setRawAction(BaseAction);
@@ -187,12 +188,11 @@ export function CreateAndEditAction({
             ...current,
             ...data,
             intent: current.id ? INTENT.update_action : INTENT.create_action,
-          },
-          queryClient,
+          }
         );
       }
     },
-    [queryClient],
+    [handleAction],
   );
 
   // Use a stable string key so this effect only re-runs when partner slugs

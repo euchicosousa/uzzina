@@ -12,9 +12,8 @@ import { addDays, addMinutes, isAfter, parseISO } from "date-fns";
 import { INTENT, PHASES } from "~/lib/CONSTANTS";
 import {
   getNewDateForAction,
-  handleAction,
-  toggleSprintAction,
 } from "~/lib/helpers";
+import { useActionMutations } from "~/hooks/useActionMutations";
 import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
 
@@ -43,6 +42,7 @@ const ActionShortcutContext = createContext<{
  */
 export function ActionShortcutProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
+  const { handleAction, toggleSprintAction } = useActionMutations();
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
   const person = appData?.person;
 
@@ -94,8 +94,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
             ...action,
             intent: INTENT.update_action,
             ...getNewDateForAction(action, newDate),
-          },
-          queryClient,
+          }
         );
 
       const getFutureTarget = () => {
@@ -122,8 +121,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
       if (event.shiftKey) {
         if (code === "KeyD") {
           handleAction(
-            { id: action.id, intent: INTENT.duplicate_action },
-            queryClient,
+            { id: action.id, intent: INTENT.duplicate_action }
           );
         } else if (code === "KeyH") {
           updateDate(addMinutes(new Date(), 30));
@@ -140,19 +138,17 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
         } else if (code === "KeyM") {
           updateDate(addDays(getFutureTarget(), 30));
         } else if (code === "KeyU") {
-          if (person) toggleSprintAction(action, person.user_id, queryClient);
+          if (person) toggleSprintAction(action, person.user_id);
         } else if (code === "KeyX") {
           if (confirm("Deseja realmente arquivar esta ação?")) {
             handleAction(
-              { ...action, intent: INTENT.update_action, archived: true },
-              queryClient,
+              { ...action, intent: INTENT.update_action, archived: true }
             );
           }
         }
       } else if (targetPhase) {
         handleAction(
-          { ...action, intent: INTENT.update_action, phase: targetPhase },
-          queryClient,
+          { ...action, intent: INTENT.update_action, phase: targetPhase }
         );
       }
     }
@@ -160,7 +156,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
     // capture: true → captura antes do onKeyDown do dnd-kit interceptar
     document.addEventListener("keydown", keyDown, true);
     return () => document.removeEventListener("keydown", keyDown, true);
-  }, [queryClient, person?.user_id]);
+  }, [handleAction, toggleSprintAction, person?.user_id]);
 
   return (
     <ActionShortcutContext.Provider

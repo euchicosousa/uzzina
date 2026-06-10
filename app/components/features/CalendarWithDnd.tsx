@@ -13,7 +13,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ActionItem } from "~/components/features/ActionItem";
 import { CalendarActions } from "~/components/features/Calendar";
 import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
-import { getNewDateForAction, handleAction } from "~/lib/helpers";
+import { getNewDateForAction } from "~/lib/helpers";
+import { useActionMutations } from "~/hooks/useActionMutations";
 import type { Action } from "~/models/actions.server";
 import type { ViewOptions } from "./ViewOptions";
 import { DragStateContext } from "./DragStateContext";
@@ -42,6 +43,7 @@ export function CalendarWithDnd({
   highlightThisWeek?: boolean;
 }) {
   const queryClient = useQueryClient();
+  const { handleAction } = useActionMutations();
   const [activeAction, setActiveAction] = useState<Action>();
   // Local override: maps action.id → updated date fields.
   // Applied immediately on drop so the DOM is correct before the drop
@@ -76,8 +78,7 @@ export function CalendarWithDnd({
       setDateOverrides((prev) => ({ ...prev, [activeAction.id]: newDates }));
 
       handleAction(
-        { ...activeAction, intent: INTENT.update_action, ...newDates },
-        queryClient,
+        { ...activeAction, intent: INTENT.update_action, ...newDates }
       );
     }
 
