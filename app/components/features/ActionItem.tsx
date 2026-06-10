@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useOutletContext, useRouteLoaderData, useSubmit } from "react-router";
+import { useOutletContext, useRouteLoaderData } from "react-router";
 import { CalendarDaysIcon, SignalIcon } from "lucide-react";
 
 // UI Components
@@ -38,6 +38,9 @@ import {
   isSprint,
 } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { fetchPeople } from "~/lib/supabase.queries";
 
 // Types
 import type { Action } from "~/models/actions.server";
@@ -109,14 +112,18 @@ export function ActionItem({
   lines = 1,
 }: ActionItemProps) {
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
-  const people = appData?.people || [];
+  const { data: people = [] } = useQuery({
+    queryKey: QUERY_KEYS.people(),
+    queryFn: fetchPeople,
+    staleTime: 30 * 60 * 1000,
+  });
   const partners = appData?.partners || [];
   const person = appData?.person;
 
   const { isSelectionMode, selectedIds, toggleSelection } = useMultiSelection();
   const isSelected = selectedIds.includes(action.id);
 
-  const sumbit = useSubmit();
+  const queryClient = useQueryClient();
   const { registerAction, unregisterAction, setEditingId } =
     useActionShortcutContext();
 
@@ -150,8 +157,8 @@ export function ActionItem({
   const currentResponsibles = useMemo(
     () =>
       action.responsibles
-        .map((person) => people.find((p) => p.user_id === person))
-        .filter((r) => r !== undefined),
+        .map((person) => people.find((p: Person) => p.user_id === person))
+        .filter((r) => r !== undefined) as Person[],
     [action.responsibles, people],
   );
 
@@ -318,7 +325,7 @@ export function ActionItem({
                       intent: INTENT.update_action,
                       title,
                     },
-                    sumbit,
+                    queryClient,
                   );
                 }}
               />

@@ -9,7 +9,7 @@ import {
 } from "@dnd-kit/core";
 import { format, isSameDay, parseISO } from "date-fns";
 import { useEffect, useState } from "react";
-import { useSubmit } from "react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { ActionItem } from "~/components/features/ActionItem";
 import { CalendarActions } from "~/components/features/Calendar";
 import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
@@ -41,7 +41,7 @@ export function CalendarWithDnd({
   showBorder?: boolean;
   highlightThisWeek?: boolean;
 }) {
-  const submit = useSubmit();
+  const queryClient = useQueryClient();
   const [activeAction, setActiveAction] = useState<Action>();
   // Local override: maps action.id → updated date fields.
   // Applied immediately on drop so the DOM is correct before the drop
@@ -77,7 +77,7 @@ export function CalendarWithDnd({
 
       handleAction(
         { ...activeAction, intent: INTENT.update_action, ...newDates },
-        submit,
+        queryClient,
       );
     }
 

@@ -13,15 +13,15 @@ import {
   useLoaderData,
   useMatches,
   useOutletContext,
-  type LoaderFunctionArgs,
 } from "react-router";
 import type { Action } from "~/models/actions.server";
 
 import { useOptimisticActions } from "~/hooks/useOptimisticActions";
 import { ORDER_BY } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
-import { getHomeActions } from "~/models/actions.server";
-import { getUserId } from "~/services/auth.server";
+// [ROLLBACK-HOME-LOADER] imports do servidor removidos:
+// import { getHomeActions } from "~/models/actions.server";
+// import { getUserId } from "~/services/auth.server";
 import type { AppLoaderData } from "./app";
 
 import { CalendarHomeComponent } from "~/components/features/home/CalendarHomeComponent";
@@ -30,12 +30,20 @@ import { PartnersHomeComponent } from "~/components/features/home/PartnersHomeCo
 import { SprintHomeComponent } from "~/components/features/home/SprintHomeComponent";
 import { TodayHomeComponent } from "~/components/features/home/TodayHomeComponent";
 
+import { useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { fetchHomeActions, fetchAllLateActions } from "~/lib/supabase.queries";
+
 export type AppHomeLoaderData = {
-  actions: Action[];
+  startDateISO: string;
+  endDateISO: string;
+  todayEndISO: string;
 };
 
 export const runtime = "edge";
 
+// [ROLLBACK-HOME-LOADER] Loader anterior que realizava getHomeActions no servidor:
+/*
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { user_id, supabase } = await getUserId(request);
 
@@ -59,12 +67,50 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     headers: { "Cache-Control": "no-store" },
   });
 };
+*/
+
+export const loader = async () => {
+  const now = new Date();
+  const start = startOfWeek(startOfMonth(now));
+  const end = endOfDay(endOfWeek(endOfMonth(now)));
+  const todayEnd = endOfDay(now);
+
+  return data(
+    {
+      startDateISO: start.toISOString(),
+      endDateISO: end.toISOString(),
+      todayEndISO: todayEnd.toISOString(),
+    } as AppHomeLoaderData,
+    {
+      headers: { "Cache-Control": "no-store" },
+    },
+  );
+};
 
 export default function AppHome() {
-  let { actions } = useLoaderData<typeof loader>();
-  let { person, lateActions } = useMatches()[1].loaderData as AppLoaderData;
-  const currentActions = useOptimisticActions(actions);
+  const { startDateISO, endDateISO, todayEndISO } =
+    useLoaderData<typeof loader>();
+  const { person, partners } = useMatches()[1].loaderData as AppLoaderData;
 
+  // Busca as ações no client usando TanStack Query
+  const { data: actions = [] } = useQuery({
+    queryKey: QUERY_KEYS.actions.home(person.user_id),
+    queryFn: () =>
+      fetchHomeActions(person.user_id, startDateISO, endDateISO, todayEndISO),
+  });
+
+  // Busca as lateActions no client usando TanStack Query
+  const { data: lateActions = [] } = useQuery({
+    queryKey: QUERY_KEYS.lateActions.user(person.user_id),
+    queryFn: () =>
+      fetchAllLateActions(
+        person.user_id,
+        person.admin,
+        partners.map((p) => p.slug),
+      ),
+  });
+
+  const currentActions = useOptimisticActions(actions);
   const currentLateActions = useOptimisticActions(lateActions);
 
   const sprintActions = useMemo(

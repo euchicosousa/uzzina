@@ -2,7 +2,7 @@ export const QUERY_KEYS = {
   actions: {
     all: () => ["actions"] as const,
     home: (userId: string) => ["actions", "home", userId] as const,
-    partner: (slug: string, dateRange?: string) => ["actions", "partner", slug, dateRange].filter(Boolean) as const,
+    partner: (slug: string, dateRange?: string) => ["actions", "partner", slug, dateRange] as const,
   },
   lateActions: {
     all: () => ["actions", "late"] as const,
@@ -11,4 +11,5 @@ export const QUERY_KEYS = {
   },
   celebrations: () => ["celebrations"] as const,
   partners: () => ["partners"] as const,
+  people: () => ["people"] as const,
 } as const;

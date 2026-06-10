@@ -300,6 +300,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_app_bootstrap: { Args: { p_user_id: string }; Returns: Json }
       get_home_actions: {
         Args: {
           p_end_date: string

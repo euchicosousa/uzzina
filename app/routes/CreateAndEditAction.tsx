@@ -6,7 +6,6 @@ import {
   useFetcher,
   useFetchers,
   useRouteLoaderData,
-  useSubmit,
 } from "react-router";
 import { toast } from "sonner";
 import { ActionFormFooter } from "~/components/features/ActionForm/ActionFormFooter";
@@ -19,6 +18,7 @@ import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
 import type { AppLoaderData } from "~/routes/app";
+import { useQueryClient } from "@tanstack/react-query";
 
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
@@ -39,8 +39,8 @@ export function CreateAndEditAction({
   ) as AppLoaderData & { partners: Partner[] };
 
   const fetcher = useFetcher();
-  const submit = useSubmit();
   const fetchers = useFetchers();
+  const queryClient = useQueryClient();
 
   const [RawAction, setRawAction] = useState<Action>(BaseAction);
 
@@ -85,9 +85,9 @@ export function CreateAndEditAction({
         description: descriptionRef.current, // always latest typed content
         intent: RawAction.id ? INTENT.update_action : INTENT.create_action,
       },
-      submit,
+      queryClient,
     );
-  }, [RawAction, submit]);
+  }, [RawAction, queryClient]);
 
   // Ref always points to the latest handleSave to avoid stale closures in event listeners
   const handleSaveRef = useRef(handleSave);
@@ -97,7 +97,7 @@ export function CreateAndEditAction({
 
   useEffect(() => {
     if (RawAction.id && !BaseAction.id) {
-      handleAction({ ...RawAction, intent: INTENT.update_action }, submit);
+      handleAction({ ...RawAction, intent: INTENT.update_action }, queryClient);
     }
     descriptionRef.current = BaseAction.description || "";
     setRawAction(BaseAction);
@@ -188,11 +188,11 @@ export function CreateAndEditAction({
             ...data,
             intent: current.id ? INTENT.update_action : INTENT.create_action,
           },
-          submit,
+          queryClient,
         );
       }
     },
-    [submit],
+    [queryClient],
   );
 
   // Use a stable string key so this effect only re-runs when partner slugs

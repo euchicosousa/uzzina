@@ -23,10 +23,10 @@ import {
   useMatches,
   useNavigate,
   useOutletContext,
-  useSubmit,
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "react-router";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "~/components/ui/button";
 import { Calendar } from "~/components/ui/calendar";
@@ -106,11 +106,11 @@ const PLANNING_COLUMNS = [
 
 export default function PlanningPage() {
   const { actions, start, end } = useLoaderData<typeof loader>();
-  const { partners, people } = useMatches()[1].loaderData as AppLoaderData;
+  const { partners } = useMatches()[1].loaderData as AppLoaderData;
   const { setBaseAction } = useOutletContext<{
     setBaseAction: (action: Action | null) => void;
   }>();
-  const submit = useSubmit();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   // Estados dos filtros no frontend
@@ -201,7 +201,7 @@ export default function PlanningPage() {
         intent: INTENT.update_action,
         phase: newPhase,
       },
-      submit,
+      queryClient,
     );
   };
 

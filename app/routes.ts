@@ -14,7 +14,7 @@ export default [
     route("admin/clients", "routes/app.admin.clients.tsx"),
     route("admin/clients/:userId", "routes/app.admin.clients.$userId.tsx"),
     route("admin/celebrations", "routes/app.admin.celebrations.tsx"),
-    route("planning", "routes/app.planning.tsx"),
+    // [ROLLBACK-PLANNING] route("planning", "routes/app.planning.tsx"),
     route("profile", "routes/app.profile.tsx"),
     route("help", "routes/app.help.tsx"),
   ]),

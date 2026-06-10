@@ -21,6 +21,10 @@ import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
+import { useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { fetchCelebrations } from "~/lib/supabase.queries";
+
 export function CalendarHomeComponent({
   actions,
   setBaseAction,
@@ -28,7 +32,14 @@ export function CalendarHomeComponent({
   actions: Action[];
   setBaseAction: (action: Action | null) => void;
 }) {
-  const { celebrations, person } = useMatches()[1].loaderData as AppLoaderData;
+  const { person } = useMatches()[1].loaderData as AppLoaderData;
+
+  const { data: celebrations = [] } = useQuery({
+    queryKey: QUERY_KEYS.celebrations(),
+    queryFn: fetchCelebrations,
+    staleTime: 30 * 60 * 1000, // 30 minutos (celebrations são semi-estáticos)
+  });
+
 
   const [period, setPeriod] = useState<"week" | "month">("week");
   const [currentDate] = useState(new Date());

@@ -13,9 +13,13 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { PartnerColorPicker } from "~/components/features/ActionForm/PartnerColorPicker";
-import { useMatches, useParams, useSubmit } from "react-router";
+import { useMatches, useParams } from "react-router";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { fetchPeople } from "~/lib/supabase.queries";
+import type { Person } from "~/lib/supabase.queries";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
-import { handleBulkAction } from "~/lib/helpers";
+import { handleBulkAction, handleBulkDateOnly, handleBulkTimeOnly } from "~/lib/helpers";
 import { CATEGORIES, INTENT, PHASES, PRIORITIES } from "~/lib/CONSTANTS";
 import { PhaseIcon } from "./PhaseIcon";
 import {
@@ -49,11 +53,16 @@ import {
 export function BulkActionMenu() {
   // ─── Multi-seleção ───────────────────────────────────────────────────────────
   const { isSelectionMode, selectedIds, clearSelection } = useMultiSelection();
-  const submit = useSubmit();
+  const queryClient = useQueryClient();
 
   // ─── Dados globais do app loader ─────────────────────────────────────────────
   // useMatches()[1] é sempre o loader do route "routes/app" (app shell)
-  const { people, partners } = useMatches()[1].loaderData as AppLoaderData;
+  const { partners } = useMatches()[1].loaderData as AppLoaderData;
+  const { data: people = [] } = useQuery({
+    queryKey: QUERY_KEYS.people(),
+    queryFn: fetchPeople,
+    staleTime: 30 * 60 * 1000,
+  });
   const params = useParams();
 
   // ─── Parceiro da página atual ────────────────────────────────────────────────
@@ -80,7 +89,7 @@ export function BulkActionMenu() {
 
   /** Aplica `updates` em todas as ações selecionadas e limpa a seleção */
   const performBulkAction = (updates: Record<string, unknown>) => {
-    handleBulkAction(selectedIds, updates, submit);
+    handleBulkAction(selectedIds, updates, queryClient);
     clearSelection();
     toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
   };
@@ -92,36 +101,12 @@ export function BulkActionMenu() {
       performBulkAction({ date: result.date });
     } else if (result.mode === "date_only") {
       // Situação 2: só a data — servidor preserva a hora de cada ação
-      submit(
-        {
-          intent: INTENT.bulk_update_date_only,
-          ids: selectedIds,
-          date_only: result.dateOnly,
-        },
-        {
-          method: "post",
-          action: "/action/handle-action",
-          navigate: false,
-          encType: "application/json",
-        },
-      );
+      handleBulkDateOnly(selectedIds, result.dateOnly, queryClient);
       clearSelection();
       toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
     } else {
       // Situação 3: só a hora — servidor preserva a data de cada ação
-      submit(
-        {
-          intent: INTENT.bulk_update_time_only,
-          ids: selectedIds,
-          time_only: result.timeOnly,
-        },
-        {
-          method: "post",
-          action: "/action/handle-action",
-          navigate: false,
-          encType: "application/json",
-        },
-      );
+      handleBulkTimeOnly(selectedIds, result.timeOnly, queryClient);
       clearSelection();
       toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
     }
@@ -179,7 +164,7 @@ export function BulkActionMenu() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-3 gap-3 py-2 sm:grid-cols-4">
-            {people.map((person) => {
+            {people.map((person: Person) => {
               const isSelected = pickedResponsibles.includes(person.user_id);
               return (
                 <button

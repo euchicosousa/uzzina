@@ -43,6 +43,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { UAvatar } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
 
+import { useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { fetchAllLateActions } from "~/lib/supabase.queries";
+
 export function Header({
   person,
   setBaseAction,
@@ -52,12 +56,23 @@ export function Header({
   setBaseAction: (action: any) => void;
   setOpenCmdK: (open: boolean) => void;
 }) {
-  const { partners, lateActions } = useMatches()[1].loaderData as {
+  const { partners } = useMatches()[1].loaderData as {
     partners: Partner[];
-    lateActions: Action[];
   };
+
+  const { data: lateActions = [] } = useQuery({
+    queryKey: QUERY_KEYS.lateActions.user(person.user_id),
+    queryFn: () =>
+      fetchAllLateActions(
+        person.user_id,
+        person.admin,
+        partners.map((p) => p.slug),
+      ),
+  });
+
   const navigate = useNavigate();
   const params = useParams();
+
 
   const responsibles =
     params.slug && params.slug !== "new"
@@ -349,9 +364,11 @@ const HeaderMenuInner = ({
             <DropdownMenuItem asChild>
               <Link to="/schedule">Programação</Link>
             </DropdownMenuItem>
+            {/* [ROLLBACK-PLANNING]
             <DropdownMenuItem asChild>
               <Link to="/app/planning">Planejamento</Link>
             </DropdownMenuItem>
+            */}
           </DropdownMenuGroup>
         )}
       </DropdownMenuContent>

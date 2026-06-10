@@ -8,7 +8,7 @@ import {
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { useEffect, useMemo, useState } from "react";
-import { useSubmit } from "react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   DATE_TIME_DISPLAY,
   INTENT,
@@ -24,7 +24,7 @@ import type { Action } from "~/models/actions.server";
 import { DragStateContext } from "../features/DragStateContext";
 
 export default function KanbanComponent({ actions }: { actions: Action[] }) {
-  const submit = useSubmit();
+  const queryClient = useQueryClient();
 
   const [activeAction, setActiveAction] = useState<Action>();
 
@@ -65,7 +65,7 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
           intent: INTENT.update_action,
           phase: newPhase,
         },
-        submit,
+        queryClient,
       );
     }
 

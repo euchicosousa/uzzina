@@ -132,3 +132,17 @@ export async function fetchCelebrations() {
   if (error) throw error;
   return data as Celebration[];
 }
+
+export type Person = Tables<"people">;
+
+export async function fetchPeople() {
+  const supabase = createSupabaseBrowserClient();
+  const { data, error } = await supabase
+    .from("people")
+    .select("*")
+    .eq("visible", true)
+    .order("name", { ascending: true });
+
+  if (error) throw error;
+  return data as Person[];
+}

@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouteLoaderData } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { fetchPeople } from "~/lib/supabase.queries";
 import { CheckIcon, RabbitIcon } from "lucide-react";
 import {
   Popover,
@@ -41,8 +44,11 @@ export function SprintCombobox({
   size = "lg",
 }: SprintComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
-  const people = appData?.people || [];
+  const { data: people = [] } = useQuery({
+    queryKey: QUERY_KEYS.people(),
+    queryFn: fetchPeople,
+    staleTime: 30 * 60 * 1000,
+  });
 
   const isShiftPressedRef = useRef(false);
 
@@ -64,22 +70,22 @@ export function SprintCombobox({
   }, []);
 
   // Filter people to only those who have access to current partners
-  const availablePeople = people.filter((person) =>
+  const availablePeople = people.filter((person: Person) =>
     currentPartners.some((partner) =>
       partner.users_ids.includes(person.user_id),
     ),
   );
 
   // Group people into responsibles and non-responsibles
-  const responsiblePeople = availablePeople.filter((p) =>
+  const responsiblePeople = availablePeople.filter((p: Person) =>
     responsibles.includes(p.user_id),
   );
   const nonResponsiblePeople = availablePeople.filter(
-    (p) => !responsibles.includes(p.user_id),
+    (p: Person) => !responsibles.includes(p.user_id),
   );
 
   const selectedPeople = selectedSprints
-    .map((id) => people.find((p) => p.user_id === id))
+    .map((id) => people.find((p: Person) => p.user_id === id))
     .filter((p): p is Person => !!p);
 
   return (
@@ -128,7 +134,7 @@ export function SprintCombobox({
             {/* Responsible group */}
             {responsiblePeople.length > 0 && (
               <CommandGroup heading="Responsáveis">
-                {responsiblePeople.map((person) => (
+                {responsiblePeople.map((person: Person) => (
                   <CommandItem
                     key={person.id}
                     className="flex cursor-pointer items-center gap-2"
@@ -186,7 +192,7 @@ export function SprintCombobox({
             {/* Non-responsible group */}
             {nonResponsiblePeople.length > 0 && (
               <CommandGroup heading="Não estão na lista de responsáveis">
-                {nonResponsiblePeople.map((person) => (
+                {nonResponsiblePeople.map((person: Person) => (
                   <CommandItem
                     key={person.id}
                     className="flex cursor-pointer items-center gap-2"

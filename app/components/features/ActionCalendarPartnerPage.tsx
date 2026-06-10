@@ -5,6 +5,9 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns";
+import { useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { fetchCelebrations } from "~/lib/supabase.queries";
 import { useMatches, useOutletContext, useParams } from "react-router";
 import invariant from "tiny-invariant";
 import { CalendarWithDnd } from "~/components/features/CalendarWithDnd";
@@ -27,8 +30,14 @@ export function ActionCalendarPartnerPage({
     end: endOfWeek(endOfMonth(currentDay)),
   });
 
-  const { person, celebrations, partners } = useMatches()[1]
+  const { person, partners } = useMatches()[1]
     .loaderData as AppLoaderData;
+
+  const { data: celebrations = [] } = useQuery({
+    queryKey: QUERY_KEYS.celebrations(),
+    queryFn: fetchCelebrations,
+    staleTime: 30 * 60 * 1000,
+  });
 
   const params = useParams();
   const partnerSlug = params.slug;

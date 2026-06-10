@@ -43,13 +43,20 @@ import { PHASES, SIZE } from "~/lib/CONSTANTS";
 import { filterActions, getInstagramFeedActions } from "~/lib/helpers";
 import { getUserPreferences } from "~/lib/preferences";
 import { cn } from "~/lib/utils";
-import {
-  getActionsByPartner,
-  getLateActionsByPartner,
-} from "~/models/actions.server";
+// [ROLLBACK-PARTNER-LOADER] Imports do servidor removidos/comentados:
+// import { getActionsByPartner, getLateActionsByPartner } from "~/models/actions.server";
+// import { getPersonByUserId } from "~/models/people.server";
 import { getPartnerBySlug } from "~/models/partners.server";
-import { getPersonByUserId } from "~/models/people.server";
 import { getUserId } from "~/services/auth.server";
+
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import {
+  fetchPartnerActions,
+  fetchAllLateActions,
+} from "~/lib/supabase.queries";
+import type { AppLoaderData } from "./app";
+import { useMatches } from "react-router";
 
 export const runtime = "edge";
 
@@ -71,38 +78,88 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const start = startOfDay(startOfWeek(startOfMonth(parseISO(date))));
   const end = endOfDay(endOfWeek(endOfMonth(parseISO(date))));
 
+  // [ROLLBACK-PARTNER-LOADER] Bloco antigo buscava person, actions e lateActions no servidor:
+  /*
   const person = await getPersonByUserId(supabase, user_id);
-
   invariant(person);
 
   const [partner, actions, lateActions] = await Promise.all([
     getPartnerBySlug(supabase, params.slug!),
-    skipActions
-      ? Promise.resolve([])
-      : getActionsByPartner(
-          supabase,
-          params.slug!,
-          user_id,
-          person.admin,
-          format(start, "yyyy-MM-dd HH:mm:ss"),
-          format(end, "yyyy-MM-dd HH:mm:ss"),
-        ),
-    skipActions
-      ? Promise.resolve([])
-      : getLateActionsByPartner(supabase, params.slug!, user_id, person.admin),
+    skipActions ? Promise.resolve([]) : getActionsByPartner(supabase, params.slug!, user_id, person.admin, format(start, "yyyy-MM-dd HH:mm:ss"), format(end, "yyyy-MM-dd HH:mm:ss")),
+    skipActions ? Promise.resolve([]) : getLateActionsByPartner(supabase, params.slug!, user_id, person.admin),
   ]);
 
   invariant(partner);
-
   return data(
     { partner, actions, lateActions, date, person },
+    { headers: { "Cache-Control": "no-store" } },
+  );
+  */
+
+  // Loader simplificado: apenas partner e datas (sem queries de actions)
+  const partner = await getPartnerBySlug(supabase, params.slug!);
+  invariant(partner);
+
+  return data(
+    {
+      partner,
+      date,
+      startDateFormatted: format(start, "yyyy-MM-dd HH:mm:ss"),
+      endDateFormatted: format(end, "yyyy-MM-dd HH:mm:ss"),
+      skipActions,
+    },
     { headers: { "Cache-Control": "no-store" } },
   );
 };
 
 export default function PartnerPage() {
-  let { partner, actions, lateActions, date, person } =
+  const { partner, date, startDateFormatted, endDateFormatted, skipActions } =
     useLoaderData<typeof loader>();
+
+  const queryClient = useQueryClient();
+  const { person, partners } = useMatches()[1].loaderData as AppLoaderData;
+
+  // Actions do parceiro — client-side via React Query
+  const dateRange = `${startDateFormatted}_${endDateFormatted}`;
+  const { data: actions = [] } = useQuery({
+    queryKey: QUERY_KEYS.actions.partner(partner.slug, dateRange),
+    queryFn: () =>
+      fetchPartnerActions(
+        partner.slug,
+        person.user_id,
+        person.admin,
+        startDateFormatted,
+        endDateFormatted,
+      ),
+    enabled: !skipActions,
+    initialData: () => {
+      // Tenta recuperar do cache da Home e filtrar pelo parceiro
+      const cachedHomeActions = queryClient.getQueryData<any[]>(
+        QUERY_KEYS.actions.home(person.user_id),
+      );
+      if (cachedHomeActions) {
+        return cachedHomeActions.filter((action) =>
+          action.partners?.includes(partner.slug),
+        );
+      }
+      return undefined;
+    },
+  });
+
+  // LateActions do parceiro — client-side via React Query (reutilizando cache global do Header)
+  const { data: lateActions = [] } = useQuery({
+    queryKey: QUERY_KEYS.lateActions.user(person.user_id),
+    queryFn: () =>
+      fetchAllLateActions(
+        person.user_id,
+        person.admin,
+        partners.map((p) => p.slug),
+      ),
+    select: (allLateActions) =>
+      allLateActions.filter((action) => action.partners?.includes(partner.slug)),
+    enabled: !skipActions,
+  });
+
   let currentActions = useOptimisticActions(actions || []);
   let currentLateActions = useOptimisticActions(lateActions || []);
   const { setBaseAction } = useOutletContext<OutletContext>();
@@ -265,3 +322,4 @@ export default function PartnerPage() {
     </div>
   );
 }
+

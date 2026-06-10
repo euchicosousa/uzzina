@@ -6,7 +6,7 @@ import {
   LoaderIcon,
   PlusIcon,
 } from "lucide-react";
-import { useSubmit } from "react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { ActionColorDropdown } from "~/components/features/ActionForm/ActionColorDropdown";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { PartnersCombobox } from "~/components/features/PartnersCombobox";
@@ -37,7 +37,7 @@ export function ActionFormFooter({
   handleSave,
   handleClose,
 }: ActionFormFooterProps) {
-  const submit = useSubmit();
+  const queryClient = useQueryClient();
 
   return (
     <div className="w-fulld flex shrink-0 justify-between overflow-hidden border-t">
@@ -133,7 +133,7 @@ export function ActionFormFooter({
               onClick={() => {
                 handleAction(
                   { id: RawAction.id, intent: INTENT.duplicate_action },
-                  submit,
+                  queryClient,
                 );
                 handleClose();
               }}

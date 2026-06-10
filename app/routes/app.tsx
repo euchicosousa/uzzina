@@ -11,11 +11,13 @@ import { Header } from "~/components/layout/Header";
 import { getCleanAction } from "~/lib/helpers";
 // [ROLLBACK-REVALIDATION] import { PERF_FLAGS } from "~/lib/perf";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-import { getAllCelebrations } from "~/models/celebrations.server";
-import { getPartnersByUserId } from "~/models/partners.server";
-import { getAllVisiblePeople, type Person } from "~/models/people.server";
+// [ROLLBACK-BOOTSTRAP] Imports do servidor removidos/comentados:
+// import { getAllCelebrations } from "~/models/celebrations.server";
+// import { getPartnersByUserId } from "~/models/partners.server";
+// import { getAllVisiblePeople } from "~/models/people.server";
+// import { getAllLateActions } from "~/models/actions.server";
+import type { Person } from "~/models/people.server";
 import { getUserId } from "~/services/auth.server";
-import { getAllLateActions } from "~/models/actions.server";
 import { getUserPreferences } from "~/lib/preferences";
 
 import { Toaster } from "sonner";
@@ -24,18 +26,26 @@ import type { Action } from "~/models/actions.server";
 import { ActionShortcutProvider } from "~/hooks/useActionShortcut";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
 
+
 const CreateAndEditAction = lazy(() =>
   import("./CreateAndEditAction").then((module) => ({
     default: module.CreateAndEditAction,
   })),
 );
 
+// [ROLLBACK-BOOTSTRAP] Tipo original:
+// export type AppLoaderData = {
+//   people: Person[];
+//   person: Person;
+//   partners: Partner[];
+//   celebrations: Celebration[];
+//   lateActions: Action[];
+//   cloudName: string;
+//   uploadPreset: string;
+// };
 export type AppLoaderData = {
-  people: Person[];
   person: Person;
   partners: Partner[];
-  celebrations: Celebration[];
-  lateActions: Action[];
   cloudName: string;
   uploadPreset: string;
 };
@@ -43,6 +53,8 @@ export type AppLoaderData = {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { user_id, supabase } = await getUserId(request);
 
+  // [ROLLBACK-BOOTSTRAP] Bloco antigo com Promise.all de multiple queries e lateActions
+  /*
   const [people, partners, celebrations] = await Promise.all([
     getAllVisiblePeople(supabase),
     getPartnersByUserId(supabase, user_id),
@@ -64,17 +76,33 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   invariant(people, "People not found");
   invariant(partners, "Partners not found");
   invariant(celebrations, "Priorities not found");
+  */
+
+  // Nova chamada única utilizando a RPC get_app_bootstrap
+  const { data: bootstrap, error } = await supabase.rpc("get_app_bootstrap", {
+    p_user_id: user_id,
+  });
+
+  if (error || !bootstrap) {
+    throw error || new Error("Falha no bootstrap da aplicação");
+  }
+
+  const { person, partners } = bootstrap as {
+    person: Person;
+    partners: Partner[];
+  };
+
+  invariant(person, "Person not found");
+  invariant(partners, "Partners not found");
 
   return {
-    people,
     person,
     partners,
-    celebrations,
-    lateActions,
     cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
     uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET!,
   } as AppLoaderData;
 };
+
 
 // [ROLLBACK-REVALIDATION] Bloco completo abaixo — descomentar para reverter
 // export const shouldRevalidate: ShouldRevalidateFunction = (args) => {
