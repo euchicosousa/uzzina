@@ -4,12 +4,12 @@ import {
   useLoaderData,
   type LoaderFunctionArgs,
   type MetaFunction,
-  type ShouldRevalidateFunction,
+  // [ROLLBACK-REVALIDATION] type ShouldRevalidateFunction,
 } from "react-router";
 import invariant from "tiny-invariant";
 import { Header } from "~/components/layout/Header";
 import { getCleanAction } from "~/lib/helpers";
-import { PERF_FLAGS } from "~/lib/perf";
+// [ROLLBACK-REVALIDATION] import { PERF_FLAGS } from "~/lib/perf";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { getAllCelebrations } from "~/models/celebrations.server";
 import { getPartnersByUserId } from "~/models/partners.server";
@@ -76,19 +76,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   } as AppLoaderData;
 };
 
-export const shouldRevalidate: ShouldRevalidateFunction = (args) => {
-  if (!PERF_FLAGS.SMART_REVALIDATION) return args.defaultShouldRevalidate;
-
-  // Revalida se houve qualquer mutação (POST, PUT, PATCH, DELETE)
-  if (args.formMethod && args.formMethod !== "GET") {
-    return true;
-  }
-
-  // Se uma action local retornou resultado
-  if (args.actionResult) return true;
-
-  return false;
-};
+// [ROLLBACK-REVALIDATION] Bloco completo abaixo — descomentar para reverter
+// export const shouldRevalidate: ShouldRevalidateFunction = (args) => {
+//   if (!PERF_FLAGS.SMART_REVALIDATION) return args.defaultShouldRevalidate;
+//   if (args.formMethod && args.formMethod !== "GET") return true;
+//   if (args.actionResult) return true;
+//   return false;
+// };
 
 export const meta: MetaFunction = () => {
   return [
