@@ -55,6 +55,10 @@ export const links: Route.LinksFunction = () => [
   // },
 ];
 
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { queryClient } from "./lib/query-client";
+
 export async function loader({ request }: LoaderFunctionArgs) {
   const { getTheme } = await themeSessionResolver(request);
   return {
@@ -73,9 +77,14 @@ export default function AppWithProviders({
 }) {
   const data = useLoaderData<typeof loader>();
   return (
-    <ThemeProvider specifiedTheme={data.theme} themeAction="/action/set-theme">
-      <App />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider specifiedTheme={data.theme} themeAction="/action/set-theme">
+        <App />
+      </ThemeProvider>
+      {process.env.NODE_ENV === "development" && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
+    </QueryClientProvider>
   );
 }
 
@@ -83,6 +92,7 @@ export function App() {
   const data = useLoaderData<typeof loader>();
   const { env } = data;
   const [theme] = useTheme();
+
 
   return (
     <html lang="pt-br" className={cn(theme)} suppressHydrationWarning>
