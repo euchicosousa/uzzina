@@ -42,7 +42,7 @@ export function CreateAndEditAction({
   const fetcher = useFetcher();
   const fetchers = useFetchers();
   const queryClient = useQueryClient();
-  const { handleAction } = useActionMutations();
+  const { handleAction, isLoading: isMutationLoading } = useActionMutations();
 
   const [RawAction, setRawAction] = useState<Action>(BaseAction);
 
@@ -81,13 +81,17 @@ export function CreateAndEditAction({
     if (!RawAction.id && isCreatingRef.current) return;
     if (!RawAction.id) isCreatingRef.current = true;
 
-    await handleAction(
+    const result = await handleAction(
       {
         ...RawAction,
         description: descriptionRef.current, // always latest typed content
         intent: RawAction.id ? INTENT.update_action : INTENT.create_action,
       }
     );
+    if (result) {
+      isCreatingRef.current = false;
+      setRawAction(result);
+    }
   }, [RawAction, handleAction]);
 
   // Ref always points to the latest handleSave to avoid stale closures in event listeners
@@ -104,16 +108,12 @@ export function CreateAndEditAction({
     setRawAction(BaseAction);
   }, [BaseAction]);
 
-  const [isPending, setIsPending] = useState(false);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
   const [descriptionVersion, setDescriptionVersion] = useState(0);
 
-  useEffect(() => {
-    setIsPending(
-      fetchers.filter((f) => (f as any).json || f.state === "submitting")
-        .length > 0,
-    );
+  const isPending = isMutationLoading || fetchers.some((f) => f.state === "submitting");
 
+  useEffect(() => {
     setIsAIProcessing(
       fetchers.filter(
         (f) =>
@@ -183,13 +183,17 @@ export function CreateAndEditAction({
         if (!current.id && isCreatingRef.current) return;
         if (!current.id) isCreatingRef.current = true;
 
-        await handleAction(
+        const result = await handleAction(
           {
             ...current,
             ...data,
             intent: current.id ? INTENT.update_action : INTENT.create_action,
           }
         );
+        if (result) {
+          isCreatingRef.current = false;
+          setRawAction(result);
+        }
       }
     },
     [handleAction],

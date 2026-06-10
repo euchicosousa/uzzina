@@ -44,6 +44,12 @@ export function useOptimisticQuery<TData = Action[]>(
       (m) => m.submittedAt > queryResult.dataUpdatedAt && m.status !== "error"
     );
 
+    console.log("useOptimisticQuery Debug:", {
+      dataUpdatedAt: queryResult.dataUpdatedAt,
+      actionMutations,
+      activeActions,
+    });
+
     // 1. Aplicar mutações em lote primeiro
     activeBulkActions.forEach((mutation) => {
       const mutationVars = mutation.variables;
