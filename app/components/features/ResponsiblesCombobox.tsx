@@ -17,6 +17,11 @@ import {
 } from "../ui/command";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
+import { useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { fetchPeople } from "~/lib/supabase.queries";
+import type { Person } from "~/models/people.server";
+import type { Partner } from "~/models/partners.server";
 
 export function ResponsiblesCombobox({
   selectedResponsibles,
@@ -28,15 +33,22 @@ export function ResponsiblesCombobox({
   onSelect?: (responsibles: string[]) => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  let { people } = useMatches()[1].loaderData as { people: Person[] };
+  
+  const { data: allPeople = [] } = useQuery({
+    queryKey: QUERY_KEYS.people(),
+    queryFn: fetchPeople,
+    staleTime: 30 * 60 * 1000,
+  });
+
   const [selected, setSelected] = useState<string[]>(
     selectedResponsibles || [],
   );
+  
   let currentResponsibles = selected.map(
-    (slug) => people.find((person) => person.user_id === slug)!,
-  );
+    (slug) => allPeople.find((person) => person.user_id === slug)!,
+  ).filter(Boolean);
 
-  people = people.filter((person) =>
+  const peopleFiltered = allPeople.filter((person) =>
     currentPartners
       .map((partner) => partner.users_ids.includes(person.user_id))
       .includes(true),
@@ -79,7 +91,7 @@ export function ResponsiblesCombobox({
           <CommandInput placeholder="Procurar responsável..." />
           <CommandEmpty>Nenhum responsável encontrado.</CommandEmpty>
           <CommandList className="p-2 outline-none">
-            {people.map((person) => (
+            {peopleFiltered.map((person) => (
               <CommandItem
                 key={person.id}
                 className={cn("flex items-center gap-2")}
@@ -134,10 +146,17 @@ export function ActionResponsiblesDisplay({
   responsibles: string[];
   size?: (typeof SIZE)[keyof typeof SIZE];
 }) {
-  const { people } = useMatches()[1].loaderData as { people: Person[] };
+  const { data: people = [] } = useQuery({
+    queryKey: QUERY_KEYS.people(),
+    queryFn: fetchPeople,
+    staleTime: 30 * 60 * 1000,
+  });
+
   const responsibles = responsibles_
     .map((r) => people.find((p) => p.user_id === r))
     .filter((p) => p !== undefined);
+
+  if (responsibles.length === 0) return null;
 
   return (
     <div className="flex items-center gap-2">
@@ -152,7 +171,7 @@ export function ActionResponsiblesDisplay({
       <div className="opacity-50">
         {responsibles.length > 1
           ? responsibles.map((p) => p.name).join(", ")
-          : `${responsibles[0].name} ${responsibles[0].surname}`}
+          : `${responsibles[0]!.name} ${responsibles[0]!.surname}`}
       </div>
     </div>
   );
