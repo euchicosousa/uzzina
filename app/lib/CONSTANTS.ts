@@ -424,9 +424,9 @@ export const PALLETE = [
   {
     label: "Laranja",
     light: {
-      primary: { h: 40, c: 0.22, l: 0.7 },
-      primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 0, c: 0, l: 1 },
+      primary: { h: 25, c: 0.18, l: 0.65 },
+      primaryFg: { h: 0, c: 0, l: 1 },
+      bg: { h: 140, c: 0.01, l: 0.95 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {

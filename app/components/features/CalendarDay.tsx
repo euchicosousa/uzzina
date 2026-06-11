@@ -38,7 +38,7 @@ export function CalendarDay({
     id: `${format(day, "yyyy-MM-dd")}`,
   });
   const isLoading = useLoading(["actions"]);
-  const skeletonCount = useMemo(() => Math.ceil(Math.random() * 7) + 1, []);
+  const skeletonCount = useMemo(() => Math.ceil(Math.random() * 3) + 1, []);
 
   day.setHours(new Date().getHours(), new Date().getMinutes());
 
