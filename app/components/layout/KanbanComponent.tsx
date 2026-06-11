@@ -24,7 +24,7 @@ import type { Action } from "~/models/actions.server";
 import { DragStateContext } from "../features/DragStateContext";
 
 export default function KanbanComponent({ actions }: { actions: Action[] }) {
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
   const { handleAction } = useActionMutations();
 
   const [activeAction, setActiveAction] = useState<Action>();
@@ -40,7 +40,7 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
   // keeping the overrides would cause stale values to shadow future updates.
   useEffect(() => {
     setPhaseOverrides({});
-  }, [actions]);
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -49,7 +49,10 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
   );
 
   const handleDragStart = (event: DragStartEvent) => {
-    setActiveAction(actions.find((action) => action.id === event.active.id)!);
+    const found = actions.find((action) => action.id === event.active.id);
+    if (found) {
+      setActiveAction(found);
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {

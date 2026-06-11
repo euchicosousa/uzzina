@@ -70,7 +70,7 @@ export function CategoriesCombobox({
     ]
     : categoriesList;
 
-  let currentCategories = categoriesList.filter(
+  const currentCategories = categoriesList.filter(
     (category) =>
       selectedCategories.find((slug) => slug === category.slug) !== undefined,
   );
@@ -78,7 +78,7 @@ export function CategoriesCombobox({
   // Agrupamento por área
   const groupedCategories = categoriesList.reduce(
     (acc, category) => {
-      let area = (category as any).area || "other";
+      let area = (category as { area?: string }).area || "other";
       if (category.slug === "all") area = "all";
 
       // Move os itens de postagem para o grupo do Instagram

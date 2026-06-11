@@ -21,14 +21,14 @@ export function HoursComponent({
   date: Date;
   viewOptions: ViewOptions;
 }) {
-  let hours = eachHourOfInterval({
+  const hours = eachHourOfInterval({
     start: startOfDay(date),
     end: endOfDay(date),
   });
 
-  let actionsByHours = hours
+  const actionsByHours = hours
     .map((hour) => {
-      let _actions = actions.filter((action) => isSameHour(hour, action.date));
+      const _actions = actions.filter((action) => isSameHour(hour, action.date));
       return { actions: _actions, date: hour };
     })
     .filter((hour) => hour.actions.length > 0);

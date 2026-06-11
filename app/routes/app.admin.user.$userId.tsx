@@ -19,13 +19,16 @@ export const meta: MetaFunction = () => {
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { supabase } = await getUserId(request);
-  const { user_id } = params;
+  const user_id = params.userId || params.user_id;
+  if (!user_id) {
+    throw new Response("User ID não fornecido", { status: 400 });
+  }
 
   const areas = Object.values(AREAS);
 
   // Passamos cloud_name e upload_preset ao cliente (são públicos — sem risco)
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME!;
-  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET!;
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME || "";
+  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || "";
 
   if (user_id === "new") {
     return { person: null, areas: areas ?? [], cloudName, uploadPreset };
@@ -34,7 +37,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { data: person } = await supabase
     .from("people")
     .select("*")
-    .eq("user_id", user_id!)
+    .eq("user_id", user_id)
     .single();
 
   return { person, areas: areas ?? [], cloudName, uploadPreset };
@@ -44,11 +47,16 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const { supabase } = await getUserId(request);
   const formData = await request.formData();
 
+  const supabaseUrl = process.env.SUPABASE_URL || "";
+  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
   const supabaseAdmin = createClient<Database>(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    supabaseUrl,
+    supabaseServiceRoleKey,
   );
-  const { user_id } = params;
+  const user_id = params.userId || params.user_id;
+  if (!user_id) {
+    throw new Response("User ID não fornecido", { status: 400 });
+  }
 
   const name = formData.get("name") as string;
   const surname = formData.get("surname") as string;
@@ -111,7 +119,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
         visible,
         areas,
       })
-      .eq("user_id", user_id!);
+      .eq("user_id", user_id);
 
     if (error) {
       return { error: error.message };

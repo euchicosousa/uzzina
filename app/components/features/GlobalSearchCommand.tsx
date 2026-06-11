@@ -71,7 +71,7 @@ export function GlobalSearchCommand({
 
       return () => clearTimeout(delayDebounceFn);
     }
-  }, [query, activePartnerSlug, includeArchived]);
+  }, [query, activePartnerSlug, includeArchived, fetcher.load]);
 
   const filteredPartners =
     query.trim() === ""

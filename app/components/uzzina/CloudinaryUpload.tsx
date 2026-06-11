@@ -70,7 +70,7 @@ export function CloudinaryUpload({
   const widgetRef = useRef<{ open: () => void; destroy: () => void } | null>(
     null,
   );
-  const destroyTimeoutRef = useRef<any>(null);
+  const destroyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Mantém sempre a referência mais recente do onUpload.
   // Isso resolve o problema de closure estale quando o widget é criado uma vez

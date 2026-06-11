@@ -31,9 +31,9 @@ export function PartnersCombobox({
   const [isOpen, setIsOpen] = useState(false);
   const { partners } = useMatches()[1].loaderData as { partners: Partner[] };
   const [selected, setSelected] = useState<string[]>(selectedPartners || []);
-  let currentPartners = selected.map(
-    (slug) => partners.find((partner) => partner.slug === slug)!,
-  );
+  const currentPartners = selected
+    .map((slug) => partners.find((partner) => partner.slug === slug))
+    .filter((partner): partner is Partner => partner !== undefined);
 
   const isShiftPressedRef = useRef(false);
 

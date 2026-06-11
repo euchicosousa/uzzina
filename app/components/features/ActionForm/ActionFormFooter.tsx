@@ -6,14 +6,13 @@ import {
   LoaderIcon,
   PlusIcon,
 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
 import { ActionColorDropdown } from "~/components/features/ActionForm/ActionColorDropdown";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { PartnersCombobox } from "~/components/features/PartnersCombobox";
 import { PhaseCombobox } from "~/components/features/PhaseCombobox";
 import { SprintCombobox } from "~/components/features/SprintCombobox";
 import { Button } from "~/components/ui/button";
-import { INTENT } from "~/lib/CONSTANTS";
+import { INTENT, type CATEGORY } from "~/lib/CONSTANTS";
 import { isInstagramFeed } from "~/lib/helpers";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import type { Action } from "~/models/actions.server";
@@ -22,7 +21,7 @@ import type { Partner } from "~/models/partners.server";
 interface ActionFormFooterProps {
   RawAction: Action;
   setRawAction: (action: Action) => void;
-  updateAction: (data?: { [key: string]: any }) => Promise<void>;
+  updateAction: (data?: Record<string, unknown>) => Promise<void>;
   currentPartners: Partner[];
   isPending: boolean;
   handleSave: () => void;
@@ -38,7 +37,6 @@ export function ActionFormFooter({
   handleSave,
   handleClose,
 }: ActionFormFooterProps) {
-  const queryClient = useQueryClient();
   const { handleAction } = useActionMutations();
 
   return (
@@ -64,7 +62,7 @@ export function ActionFormFooter({
         <div>
           <PhaseCombobox
             selectedPhase={RawAction.phase ?? "idea"}
-            category={RawAction.category as any}
+            category={RawAction.category as CATEGORY}
             tabIndex={4.5}
             showText={false}
             iconVariant="progress"

@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   CheckIcon,
   CopyCheckIcon,
@@ -7,6 +8,7 @@ import {
 } from "lucide-react";
 import {
   Link,
+  useFetcher,
   useFetchers,
   useMatches,
   useNavigate,
@@ -24,13 +26,6 @@ import { cn } from "~/lib/utils";
 import { UzzinaLogo } from "../logo";
 import { Button } from "../ui/button";
 import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "../ui/command";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -42,6 +37,13 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { UAvatar } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../ui/command";
 
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
@@ -53,7 +55,7 @@ export function Header({
   setOpenCmdK,
 }: {
   person: Person;
-  setBaseAction: (action: any) => void;
+  setBaseAction: (action: Action | null) => void;
   setOpenCmdK: (open: boolean) => void;
 }) {
   const { partners } = useMatches()[1].loaderData as {
@@ -72,7 +74,6 @@ export function Header({
 
   const navigate = useNavigate();
   const params = useParams();
-
 
   const responsibles =
     params.slug && params.slug !== "new"
@@ -121,7 +122,7 @@ export function Header({
                 partners: params.slug ? [params.slug] : [],
               }),
               responsibles,
-            })
+            } as unknown as Action)
           }
           className="squircle rounded-2xl"
         >
@@ -205,61 +206,40 @@ const HeaderMenu = ({ person }: { person: Person }) => {
   const fetchers = useFetchers();
   const navigation = useNavigation();
   const isLoading = fetchers.length > 0 || navigation.state !== "idle";
-
-  const prefFetcher = useFetchers().find(f => f.formAction === "/action/set-preferences") || fetchers[0]; // fallback
-  // Usamos um hook de fetcher customizado para disparar os posts das preferências
-  const customFetcher = useFetchers()[0]; 
-  
-  // Vamos buscar ou criar um fetcher usando useNavigate/useSubmit ou simplesmente useFetchers
-  // Para ser simples e direto, podemos importar useSubmit/useFetcher
-  return <HeaderMenuInner person={person} theme={theme} setTheme={setTheme} primaryColorIndex={primaryColorIndex} setPrimaryColorIndex={setPrimaryColorIndex} followPartnerColor={followPartnerColor} setFollowPartnerColor={setFollowPartnerColor} isLoading={isLoading} />;
-};
-
-import { useFetcher } from "react-router";
-
-const HeaderMenuInner = ({
-  person,
-  theme,
-  setTheme,
-  primaryColorIndex,
-  setPrimaryColorIndex,
-  followPartnerColor,
-  setFollowPartnerColor,
-  isLoading,
-}: {
-  person: Person;
-  theme: Theme | null;
-  setTheme: (theme: Theme | null) => void;
-  primaryColorIndex: number;
-  setPrimaryColorIndex: (index: number) => void;
-  followPartnerColor: boolean;
-  setFollowPartnerColor: (value: boolean) => void;
-  isLoading: boolean;
-}) => {
   const fetcher = useFetcher();
+
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const pendingPrefsRef = useRef<Record<string, string>>({});
+
+  const queuePreference = (key: string, value: string) => {
+    pendingPrefsRef.current[key] = value;
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      fetcher.submit(
+        pendingPrefsRef.current,
+        { method: "post", action: "/action/set-preferences" },
+      );
+      pendingPrefsRef.current = {};
+    }, 300);
+  };
 
   const changeTheme = (newTheme: Theme) => {
     setTheme(newTheme);
-    fetcher.submit(
-      { theme: newTheme },
-      { method: "post", action: "/action/set-preferences" }
-    );
+    queuePreference("theme", newTheme);
   };
 
   const changeColorIndex = (index: number) => {
     setPrimaryColorIndex(index);
-    fetcher.submit(
-      { themeColorIndex: String(index) },
-      { method: "post", action: "/action/set-preferences" }
-    );
+    queuePreference("themeColorIndex", String(index));
   };
 
   const changeFollowPartner = (value: boolean) => {
     setFollowPartnerColor(value);
-    fetcher.submit(
-      { followPartnerColor: String(value) },
-      { method: "post", action: "/action/set-preferences" }
-    );
+    queuePreference("followPartnerColor", String(value));
   };
 
   return (
@@ -291,7 +271,7 @@ const HeaderMenuInner = ({
                 onClick={() => {
                   changeColorIndex(i);
                 }}
-                key={i}
+                key={paletteConfig.id}
                 title={paletteConfig.label}
                 className="squircle flex justify-center rounded-xl p-2 hover:opacity-80"
                 style={{
@@ -364,11 +344,6 @@ const HeaderMenuInner = ({
             <DropdownMenuItem asChild>
               <Link to="/schedule">Programação</Link>
             </DropdownMenuItem>
-            {/* [ROLLBACK-PLANNING]
-            <DropdownMenuItem asChild>
-              <Link to="/app/planning">Planejamento</Link>
-            </DropdownMenuItem>
-            */}
           </DropdownMenuGroup>
         )}
       </DropdownMenuContent>

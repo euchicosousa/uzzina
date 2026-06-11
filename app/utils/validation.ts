@@ -86,5 +86,9 @@ export const ActionFormSchema = z.object({
   phase: z.string().optional().nullable(),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
-  archived: z.boolean().optional(),
+  archived: z.boolean().nullable().optional(),
 });
+
+export type ActionFormInput = z.input<typeof ActionFormSchema>;
+export type ActionFormOutput = z.output<typeof ActionFormSchema>;
+

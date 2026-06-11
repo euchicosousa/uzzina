@@ -30,7 +30,7 @@ import { UAvatar } from "~/components/uzzina/UAvatar";
 import { PreferenceSwitch } from "~/components/uzzina/PreferenceSwitch";
 import { SegmentedSelector } from "~/components/uzzina/SegmentedSelector";
 import { PALLETE } from "~/lib/CONSTANTS";
-import { getUserPreferences, type CustomTheme } from "~/lib/preferences";
+import { getUserPreferences, } from "~/lib/preferences";
 import { cn } from "~/lib/utils";
 import { getPersonByUserId } from "~/models/people.server";
 import { getUserId } from "~/services/auth.server";
@@ -54,8 +54,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const person = await getPersonByUserId(supabase, user_id);
 
   // Cloudinary credentials (publicly accessible)
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME!;
-  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET!;
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME || "";
+  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || "";
 
   return {
     person,
@@ -437,7 +437,7 @@ export default function ProfilePage() {
     } else if (actionData?.error) {
       toast.error(`Erro ao salvar configurações: ${actionData.error}`);
     }
-  }, [actionData]);
+  }, [actionData, setCustomTheme, selectedThemeColor, selectedFollowPartnerColor, lightFg, lightPrimaryFg, lightBg, darkFg, lightPrimary, darkPrimaryFg, darkPrimary, darkBg]);
 
   // Lista estendida contendo o Sentinel personalizado
   const paletteOptions = [
@@ -667,7 +667,7 @@ export default function ProfilePage() {
                   { value: "system", label: "Sistema", icon: LaptopIcon },
                 ]}
                 value={selectedTheme}
-                onChange={(val) => handleThemeChange(val as any)}
+                onChange={(val) => handleThemeChange(val as "light" | "dark" | "system")}
                 columns={3}
               />
             </div>
@@ -970,7 +970,7 @@ export default function ProfilePage() {
                   { value: "content", label: "Conteúdo", icon: ImageIcon },
                 ]}
                 value={selectedVariant}
-                onChange={(val) => setSelectedVariant(val as any)}
+                onChange={(val) => setSelectedVariant(val as "line" | "block" | "content")}
               />
             </div>
 

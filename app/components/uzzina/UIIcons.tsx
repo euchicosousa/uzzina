@@ -14,7 +14,6 @@ import {
   ImageIcon,
   LayoutGridIcon,
   LightbulbIcon,
-  ListCheckIcon,
   MegaphoneIcon,
   MonitorIcon,
   MoonIcon,

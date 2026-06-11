@@ -12,7 +12,7 @@ import {
   UserIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { type MetaFunction } from "react-router";
+import type { MetaFunction } from "react-router";
 import { cn } from "~/lib/utils";
 
 export const meta: MetaFunction = () => {
@@ -60,7 +60,7 @@ export default function HelpPage() {
         if (element) observer.unobserve(element);
       });
     };
-  }, []);
+  }, [sections.forEach]);
 
   const handleScrollTo = (id: string) => {
     const el = document.getElementById(id);

@@ -64,11 +64,11 @@ export default function AdminClientsPage() {
               </div>
               <UAvatarGroup
                 avatars={clientPartners.slice(0, 3).map((p) => ({
-                  id: p!.id,
-                  fallback: p!.short,
-                  image: p!.image,
-                  backgroundColor: p!.colors[0],
-                  color: p!.colors[1],
+                  id: p?.id || "",
+                  fallback: p?.short || "?",
+                  image: p?.image,
+                  backgroundColor: p?.colors?.[0],
+                  color: p?.colors?.[1],
                 }))}
                 size="sm"
               />

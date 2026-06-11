@@ -28,6 +28,7 @@ import {
   updateComment,
 } from "~/models/action_comments.server";
 import { getClientSession } from "~/services/client-auth.server";
+import type { loader as DashLoader } from "~/routes/dash";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const {
@@ -36,10 +37,13 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     id: clientId,
   } = await getClientSession(request);
   const { id } = params;
+  if (!id) {
+    throw new Response("ID não fornecido", { status: 400 });
+  }
 
   const [{ data: action }, comments] = await Promise.all([
-    supabase.from("actions").select("*").eq("id", id!).single(),
-    getCommentsByAction(supabase, id!),
+    supabase.from("actions").select("*").eq("id", id).single(),
+    getCommentsByAction(supabase, id),
   ]);
 
   if (!action) throw new Response("Ação não encontrada", { status: 404 });
@@ -53,6 +57,10 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     name: clientName,
     id: clientId,
   } = await getClientSession(request);
+  const { id } = params;
+  if (!id) {
+    return { error: "ID não fornecido" };
+  }
   const formData = await request.formData();
 
   const workFilesRaw = formData.get("work_files");
@@ -61,7 +69,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     const { error } = await supabase
       .from("actions")
       .update({ work_files })
-      .eq("id", params.id!);
+      .eq("id", id);
     if (error) return { error: error.message };
     return { error: null };
   }
@@ -76,8 +84,9 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     try {
       await updateComment(supabase, commentId, content, clientId, false);
       return { error: null };
-    } catch (e: any) {
-      return { error: e.message };
+    } catch (e) {
+      const errorMsg = e instanceof Error ? e.message : "Erro desconhecido";
+      return { error: errorMsg };
     }
   }
 
@@ -86,8 +95,9 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     try {
       await deleteComment(supabase, commentId, clientId, false);
       return { error: null };
-    } catch (e: any) {
-      return { error: e.message };
+    } catch (e) {
+      const errorMsg = e instanceof Error ? e.message : "Erro desconhecido";
+      return { error: errorMsg };
     }
   }
 
@@ -95,7 +105,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   if (!content) return { error: "Escreva um comentário antes de enviar." };
 
   await createComment(supabase, {
-    action_id: params.id!,
+    action_id: id,
     author_id: clientId,
     author_name: clientName || "Cliente",
     content,
@@ -106,15 +116,17 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   return { error: null };
 };
 
+type ActionData = Awaited<ReturnType<typeof action>>;
+
 export default function DashActionDetail() {
   const { action, comments, clientId } = useLoaderData<typeof loader>();
-  const actionData = useActionData<typeof action>();
+  const actionData = useActionData<ActionData>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
   const submit = useSubmit();
 
   const [newComment, setNewComment] = useState("");
-  const appData = useRouteLoaderData("routes/dash") as any;
+  const appData = useRouteLoaderData<typeof DashLoader>("routes/dash");
 
   const [workFiles, setWorkFiles] = useState<string[]>(action.work_files || []);
   const workFilesRef = useRef(workFiles);
@@ -133,9 +145,9 @@ export default function DashActionDetail() {
     [action.category],
   );
 
-  const partners = (appData?.partners || []) as any[];
+  const partners = appData?.partners || [];
   const actionPartner =
-    partners.find((p: any) => action.partners?.includes(p.slug)) || partners[0];
+    partners.find((p) => action.partners?.includes(p.slug)) || partners[0];
   const brandColor = actionPartner?.colors?.[0] || safeColor(action.color);
 
   return (
@@ -189,7 +201,7 @@ export default function DashActionDetail() {
                 <span
                   className="shrink-0 rounded-full px-3 py-1 text-xs font-medium"
                   style={{
-                    backgroundColor: currentPhase?.color + "22",
+                    backgroundColor: `${currentPhase?.color}22`,
                     color: currentPhase?.color,
                   }}
                 >
@@ -205,6 +217,7 @@ export default function DashActionDetail() {
               </div>
               <div
                 className="rounded-xl border bg-card p-4"
+                // biome-ignore lint/security/noDangerouslySetInnerHtml: safe rich text description from admin editor
                 dangerouslySetInnerHTML={{
                   __html: action.description,
                 }}
@@ -230,7 +243,7 @@ export default function DashActionDetail() {
             <div className="flex flex-wrap items-center gap-1.5 rounded-xl">
               {workFiles.map((url, i) => (
                 <WorkFileThumbnail
-                  key={url + i}
+                  key={url}
                   url={url}
                   onRemove={() => {
                     const next = workFiles.filter((_, idx) => idx !== i);
@@ -243,13 +256,13 @@ export default function DashActionDetail() {
                 />
               ))}
               <CloudinaryUpload
-                cloudName={appData.cloudName}
-                uploadPreset={appData.uploadPreset}
+                cloudName={appData?.cloudName || ""}
+                uploadPreset={appData?.uploadPreset || ""}
                 folder="uzzina/work"
                 resourceType="auto"
                 multiple
                 outputWidth={1200}
-                onUpload={(url: string, meta: any) => {
+                onUpload={(url: string, meta: { originalFilename?: string }) => {
                   const now = Date.now();
                   workFilesMetaRef.current[url] = {
                     name: meta.originalFilename || url,
@@ -336,9 +349,9 @@ export default function DashActionDetail() {
 
             {/* Formulário de novo comentário */}
             <div className="border-t pt-4">
-              {(actionData as any)?.error && (
+              {actionData?.error && (
                 <p className="mb-2 text-sm text-destructive">
-                  {(actionData as any).error}
+                  {actionData.error}
                 </p>
               )}
               <CommentInput

@@ -107,7 +107,6 @@ export function CalendarButtons({
                   end: endOfYear(currentDay),
                 }).map((day) => (
                   <button
-                    // @ts-ignore
                     key={day.toISOString()}
                     onClick={() => {
                       setCurrentDay(day);

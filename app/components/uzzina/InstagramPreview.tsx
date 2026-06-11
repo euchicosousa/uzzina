@@ -94,9 +94,9 @@ export function InstagramPreview({ files }: InstagramPreviewProps) {
 
       {/* Indicador de pontos */}
       <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1">
-        {files.map((_, i) => (
+        {files.map((url, i) => (
           <button
-            key={i}
+            key={url}
             type="button"
             onClick={() => setCarouselIndex(i)}
             className={`size-1.5 rounded-full transition ${

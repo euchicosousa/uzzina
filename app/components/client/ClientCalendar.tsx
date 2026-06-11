@@ -78,13 +78,13 @@ export function ClientCalendar({
 
         <div className="flex rounded-lg border text-sm">
           <button
-            onClick={() => setCalendarView && setCalendarView("week")}
+            onClick={() => setCalendarView?.("week")}
             className={`rounded-l-lg px-3 py-1 font-medium transition-colors ${calendarView === "week" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
           >
             Semana
           </button>
           <button
-            onClick={() => setCalendarView && setCalendarView("month")}
+            onClick={() => setCalendarView?.("month")}
             className={`rounded-r-lg px-3 py-1 font-medium transition-colors ${calendarView === "month" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
           >
             Mês
@@ -97,11 +97,12 @@ export function ClientCalendar({
         <div className="flex h-full min-w-[1500px] flex-col overflow-hidden">
           {/* Cabeçalho dos dias da semana (apenas para Mês) */}
           {view === "month" && (
-            <div className="bg-muted/20 grid shrink-0 grid-cols-7 border-b">
+            <div className="grid shrink-0 grid-cols-7 border-b bg-muted/20">
               {Array.from({ length: 7 }).map((_, i) => (
                 <div
+                  // biome-ignore lint/suspicious/noArrayIndexKey: Lista estática dos dias da semana
                   key={i}
-                  className="text-muted-foreground py-2 text-center text-xs font-semibold uppercase"
+                  className="py-2 text-center text-xs font-semibold text-muted-foreground uppercase"
                 >
                   {format(addDays(weekStart, i), "EEE", { locale: ptBR })}
                 </div>
@@ -117,22 +118,17 @@ export function ClientCalendar({
               const isCurrentDay = isToday(day);
 
               return (
-                <div
-                  key={day.toISOString()}
-                  className={cn(
-                    "flex flex-col",
-                  )}
-                >
+                <div key={day.toISOString()} className={cn("flex flex-col")}>
                   {/* Cabeçalho do dia */}
                   <div
                     className={cn(
-                      "bg-background sticky top-0 z-10 border-b px-2 py-1 text-center",
+                      "sticky top-0 z-10 border-b bg-background px-2 py-1 text-center",
                       view === "month" &&
                         "flex items-center justify-between border-none px-2 py-1",
                     )}
                   >
                     {view === "week" && (
-                      <div className="text-muted-foreground text-[10px] font-semibold tracking-wide uppercase">
+                      <div className="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
                         {format(day, "EEE", { locale: ptBR })}
                       </div>
                     )}
@@ -153,16 +149,14 @@ export function ClientCalendar({
                   <div className="flex h-full min-h-[120px] flex-col gap-px p-1">
                     {dayActions.map((action) => {
                       const phase = PHASES[(action.phase as PHASE) || "idea"];
-                      const actionTime = parseISO(
-                        action.date,
-                      );
+                      const actionTime = parseISO(action.date);
 
                       return (
                         <button
                           key={action.id}
                           onClick={() => onActionClick(action)}
                           className={cn(
-                            "hover:bg-muted/60 w-full rounded-md px-1.5 py-1 text-left transition-colors",
+                            "w-full rounded-md px-1.5 py-1 text-left transition-colors hover:bg-muted/60",
                             view === "week" && "rounded-lg px-2 py-1.5",
                           )}
                         >
@@ -170,7 +164,7 @@ export function ClientCalendar({
                           <div className="mt-2 flex items-center justify-between gap-4">
                             <PhaseIcon phase={phase} size="sm" variant="icon" />
 
-                            <div className="text-muted-foreground text-xs">
+                            <div className="text-xs text-muted-foreground">
                               {getFormattedDateTime(
                                 actionTime,
                                 DATE_TIME_DISPLAY.TimeOnly,

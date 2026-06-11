@@ -8,7 +8,7 @@ import type { Partner } from "~/models/partners.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
 export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
-  let { partners } = useRouteLoaderData("routes/app") as {
+  const { partners } = useRouteLoaderData("routes/app") as {
     partners: Partner[];
   };
 
@@ -19,7 +19,9 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
     const actionsByPartner = new Map<string, number>();
 
     // Initialize map
-    sortedPartners.forEach((p) => actionsByPartner.set(p.slug, 0));
+    sortedPartners.forEach((p) => {
+      actionsByPartner.set(p.slug, 0);
+    });
 
     // Single pass through actions
     actions.forEach((action) => {

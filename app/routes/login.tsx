@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { CircleAlertIcon, EyeIcon, EyeOffIcon, LogInIcon } from "lucide-react";
+import { useState } from "react";
 import {
   redirect,
   useActionData,
@@ -57,7 +57,7 @@ const Login = () => {
         {actionData && (
           <Alert
             variant={"destructive"}
-            className="bg-destructive/5 border-destructive/10 mb-8"
+            className="mb-8 border-destructive/10 bg-destructive/5"
           >
             <CircleAlertIcon />
             <AlertTitle>Erro ao fazer login</AlertTitle>
@@ -68,7 +68,7 @@ const Login = () => {
         <form method="post">
           <div className="mb-4">
             <span className="mb-2 block w-full font-medium">E-mail</span>
-            <Input type="email" name="email" className="border-border border" />
+            <Input type="email" name="email" className="border border-border" />
           </div>
 
           <div className="relative mb-4">
@@ -76,7 +76,7 @@ const Login = () => {
             <Input
               type={showPassword ? "text" : "password"}
               name="password"
-              className="border-border border pr-12"
+              className="border border-border pr-12"
             />
             <Button
               size={"icon"}

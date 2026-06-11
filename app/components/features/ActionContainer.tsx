@@ -1,11 +1,7 @@
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import {
-  COLUMNS,
-  ORDER_BY,
-  VARIANT,
-  type DATE_TIME_DISPLAY,
-} from "~/lib/CONSTANTS";
+import type { ORDER_BY, DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
+import { VARIANT } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
 import { cn, getGridClasses } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
@@ -14,7 +10,7 @@ import { ActionItem } from "./ActionItem";
 type ActionContainerProps = {
   actions: Action[];
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
-  columns?: (typeof COLUMNS)[keyof typeof COLUMNS];
+  columns?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   showLate?: boolean;
   showPartner?: boolean;
   showCategory?: boolean;
@@ -90,7 +86,7 @@ export function ActionContainer({
         ))}
         {isCompact && actions.length > 6 && (
           <button
-            className="bg-background absolute -bottom-3 left-1/2 grid size-6 -translate-x-1/2 cursor-pointer place-content-center rounded-full border"
+            className="absolute -bottom-3 left-1/2 grid size-6 -translate-x-1/2 cursor-pointer place-content-center rounded-full border bg-background"
             onClick={() => {
               setShowMore(!showMore);
             }}

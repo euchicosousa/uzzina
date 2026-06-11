@@ -11,11 +11,11 @@ export interface OklchColor {
 
 // Converte RGB linear para RGB sRGB
 function srgbToLinear(c: number): number {
-  return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
 }
 
 function linearToSrgb(c: number): number {
-  return c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
+  return c <= 0.0031308 ? c * 12.92 : 1.055 * c ** (1 / 2.4) - 0.055;
 }
 
 /**
@@ -102,7 +102,7 @@ export function oklchToHex(h: number, c: number, l: number): string {
 
   const hexComponent = (val: number) => {
     const hex = val.toString(16);
-    return hex.length === 1 ? "0" + hex : hex;
+    return hex.length === 1 ? `0${hex}` : hex;
   };
 
   return `#${hexComponent(r)}${hexComponent(g)}${hexComponent(b)}`.toUpperCase();

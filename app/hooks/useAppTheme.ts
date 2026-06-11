@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { PALLETE } from "~/lib/CONSTANTS";
 import { hexToOklch } from "~/utils/color";
 import type { CustomTheme } from "~/lib/preferences";
@@ -22,7 +22,7 @@ function getStoredIndex(): number {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved === null || saved === "") return 0;
   const n = Number(saved);
-  return isNaN(n) ? 0 : n;
+  return Number.isNaN(n) ? 0 : n;
 }
 
 function getStoredFollowPartner(): boolean {
@@ -145,7 +145,20 @@ export function useAppTheme() {
     return PALLETE[primaryColorIndex] || PALLETE[0];
   }, [primaryColorIndex, customTheme]);
 
-  const applyPaletteVars = (palette: any) => {
+  const applyPaletteVars = useCallback((palette: {
+    light: {
+      primary: { h: number; c: number; l: number };
+      primaryFg?: { h: number; c: number; l: number } | null;
+      bg?: { h: number; c: number; l: number } | null;
+      fg?: { h: number; c: number; l: number } | null;
+    };
+    dark: {
+      primary: { h: number; c: number; l: number };
+      primaryFg?: { h: number; c: number; l: number } | null;
+      bg?: { h: number; c: number; l: number } | null;
+      fg?: { h: number; c: number; l: number } | null;
+    };
+  }) => {
     const root = document.documentElement;
     const { light, dark } = palette;
     
@@ -189,7 +202,7 @@ export function useAppTheme() {
       const fgStr = `oklch(${dark.fg.l} ${dark.fg.c} ${dark.fg.h})`;
       root.style.setProperty("--dark-foreground-override", fgStr);
     }
-  };
+  }, []);
 
   // Aplica as variáveis CSS
   useEffect(() => {
@@ -203,7 +216,7 @@ export function useAppTheme() {
     if (!selectedPalette && backgroundColor) {
       root.style.setProperty("--background-override", backgroundColor);
     }
-  }, [selectedPalette, backgroundColor]);
+  }, [selectedPalette, backgroundColor, applyPaletteVars]);
 
   const setPrimaryColorIndex = (index: number) => {
     localStorage.setItem(STORAGE_KEY, String(index));
@@ -247,6 +260,26 @@ export function useAppTheme() {
     localStorage.setItem(CUSTOM_DARK_PRIMARY_FG_KEY, theme.dark.primaryFgHex);
     localStorage.setItem(CUSTOM_DARK_BG_KEY, theme.dark.bgHex);
     localStorage.setItem(CUSTOM_DARK_FG_KEY, theme.dark.fgHex);
+
+    // Salva pré-convertido em OKLCH para o script inline do root.tsx
+    const lp = hexToOklch(theme.light.primaryHex);
+    const lpfg = hexToOklch(theme.light.primaryFgHex);
+    const lbg = hexToOklch(theme.light.bgHex);
+    const lfg = hexToOklch(theme.light.fgHex);
+    const dp = hexToOklch(theme.dark.primaryHex);
+    const dpfg = hexToOklch(theme.dark.primaryFgHex);
+    const dbg = hexToOklch(theme.dark.bgHex);
+    const dfg = hexToOklch(theme.dark.fgHex);
+
+    localStorage.setItem("uzzina-custom-light-primary-oklch", `${lp.h} ${lp.c} ${lp.l}`);
+    localStorage.setItem("uzzina-custom-light-primary-fg-oklch", `${lpfg.h} ${lpfg.c} ${lpfg.l}`);
+    localStorage.setItem("uzzina-custom-light-bg-oklch", `${lbg.h} ${lbg.c} ${lbg.l}`);
+    localStorage.setItem("uzzina-custom-light-fg-oklch", `${lfg.h} ${lfg.c} ${lfg.l}`);
+    localStorage.setItem("uzzina-custom-dark-primary-oklch", `${dp.h} ${dp.c} ${dp.l}`);
+    localStorage.setItem("uzzina-custom-dark-primary-fg-oklch", `${dpfg.h} ${dpfg.c} ${dpfg.l}`);
+    localStorage.setItem("uzzina-custom-dark-bg-oklch", `${dbg.h} ${dbg.c} ${dbg.l}`);
+    localStorage.setItem("uzzina-custom-dark-fg-oklch", `${dfg.h} ${dfg.c} ${dfg.l}`);
+
     setCustomThemeState(theme);
     window.dispatchEvent(new Event("uzzina-storage-update"));
   };

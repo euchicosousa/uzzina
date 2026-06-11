@@ -276,15 +276,6 @@ export const SIZE = {
   "2xl": "2xl",
 } as const;
 
-export const COLUMNS = {
-  1: 1,
-  2: 2,
-  3: 3,
-  4: 4,
-  5: 5,
-  6: 6,
-  7: 7,
-} as const;
 
 export const DATE_TIME_DISPLAY = {
   Relative: 1,
@@ -332,11 +323,12 @@ export const ORDER_BY = {
 
 export const PALLETE = [
   {
+    id: "default",
     label: "Padrão",
     light: {
       primary: { h: 0, c: 0, l: 0 },
       primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 0, c: 0, l: 1 },
+      bg: { h: 240, c: 0.001, l: 0.96 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
@@ -347,6 +339,7 @@ export const PALLETE = [
     },
   },
   {
+    id: "blue",
     label: "Azul (Padrão)",
     light: {
       primary: { h: 264, c: 0.31, l: 0.45 },
@@ -362,6 +355,7 @@ export const PALLETE = [
     },
   },
   {
+    id: "purple",
     label: "Roxo",
     light: {
       primary: { h: 290, c: 0.28, l: 0.54 },
@@ -377,6 +371,7 @@ export const PALLETE = [
     },
   },
   {
+    id: "magenta",
     label: "Magenta",
     light: {
       primary: { h: 350, c: 0.4, l: 0.9 },
@@ -392,6 +387,7 @@ export const PALLETE = [
     },
   },
   {
+    id: "pink",
     label: "Rosa",
     light: {
       primary: { h: 340, c: 0.25, l: 0.65 },
@@ -407,6 +403,7 @@ export const PALLETE = [
     },
   },
   {
+    id: "red",
     label: "Vermelho",
     light: {
       primary: { h: 20, c: 0.25, l: 0.62 },
@@ -422,11 +419,12 @@ export const PALLETE = [
     },
   },
   {
+    id: "orange",
     label: "Laranja",
     light: {
       primary: { h: 25, c: 0.18, l: 0.65 },
       primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 140, c: 0.01, l: 0.95 },
+      bg: { h: 130, c: 0.01, l: 0.97 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
@@ -437,6 +435,7 @@ export const PALLETE = [
     },
   },
   {
+    id: "yellow",
     label: "Amarelo",
     light: {
       primary: { h: 100, c: 0.5, l: 0.8 },
@@ -452,6 +451,7 @@ export const PALLETE = [
     },
   },
   {
+    id: "green",
     label: "Verde",
     light: {
       primary: { h: 130, c: 0.2, l: 0.7 },
@@ -467,6 +467,7 @@ export const PALLETE = [
     },
   },
   {
+    id: "cyan",
     label: "Ciano",
     light: {
       primary: { h: 200, c: 0.2, l: 0.7 },
@@ -482,6 +483,7 @@ export const PALLETE = [
     },
   },
   {
+    id: "light-blue",
     label: "Azul Claro",
     light: {
       primary: { h: 240, c: 0.22, l: 0.7 },
@@ -497,6 +499,7 @@ export const PALLETE = [
     },
   },
   {
+    id: "navy",
     label: "Azul Marinho",
     light: {
       primary: { h: 250, c: 0.12, l: 0.5 },

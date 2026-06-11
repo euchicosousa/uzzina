@@ -49,7 +49,7 @@ export function getFormattedDateTime(
 }
 
 export const getNewDateForAction = (
-  action: Action,
+  _action: Action,
   newDateInput: Date,
 ) => {
   return {

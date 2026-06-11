@@ -28,8 +28,30 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   customTheme: null,
 };
 
-export function getUserPreferences(person?: { preferences?: any }): UserPreferences {
-  const prefs = person?.preferences;
+export type SerializedPreferences = {
+  theme?: string;
+  themeColorIndex?: number;
+  followPartnerColor?: boolean;
+  defaultViewVariant?: string;
+  showInstagramSidebar?: boolean;
+  customTheme?: {
+    light?: {
+      primaryHex?: string;
+      primaryFgHex?: string;
+      bgHex?: string;
+      fgHex?: string;
+    };
+    dark?: {
+      primaryHex?: string;
+      primaryFgHex?: string;
+      bgHex?: string;
+      fgHex?: string;
+    };
+  } | null;
+};
+
+export function getUserPreferences(person?: { preferences?: unknown }): UserPreferences {
+  const prefs = person?.preferences as SerializedPreferences | null | undefined;
   if (!prefs || typeof prefs !== "object") {
     return DEFAULT_PREFERENCES;
   }

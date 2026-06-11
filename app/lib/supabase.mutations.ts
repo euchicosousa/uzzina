@@ -1,9 +1,9 @@
 import { format } from "date-fns";
 import { createSupabaseBrowserClient } from "./supabase.client";
-import { ActionFormSchema } from "~/utils/validation";
+import { ActionFormSchema, type ActionFormInput } from "~/utils/validation";
 import { PHASES } from "./CONSTANTS";
 import type { Action } from "~/models/actions.server";
-import type { Tables } from "types/database";
+import type { Tables, TablesInsert, TablesUpdate } from "types/database";
 
 export type ActionComment = Tables<"action_comments">;
 export type AugmentedComment = ActionComment & { author_image: string | null };
@@ -14,7 +14,7 @@ export type AugmentedComment = ActionComment & { author_image: string | null };
  * Create a new action directly via browser Supabase client.
  * Runs Zod validation (same schema as the server) before inserting.
  */
-export async function createActionClient(actionData: any): Promise<Action> {
+export async function createActionClient(actionData: ActionFormInput): Promise<Action> {
   const result = ActionFormSchema.safeParse(actionData);
   if (!result.success) {
     throw new Error(
@@ -26,7 +26,7 @@ export async function createActionClient(actionData: any): Promise<Action> {
   const supabase = createSupabaseBrowserClient();
   const { data, error } = await supabase
     .from("actions")
-    .insert(result.data as any)
+    .insert(result.data as TablesInsert<"actions">)
     .select()
     .single();
 
@@ -42,7 +42,7 @@ export async function createActionClient(actionData: any): Promise<Action> {
  */
 export async function updateActionClient(
   id: string,
-  actionData: any,
+  actionData: ActionFormInput,
 ): Promise<Action> {
   const result = ActionFormSchema.safeParse(actionData);
   if (!result.success) {
@@ -64,7 +64,7 @@ export async function updateActionClient(
   const supabase = createSupabaseBrowserClient();
   const { data, error } = await supabase
     .from("actions")
-    .update(updateData as any)
+    .update(updateData as TablesUpdate<"actions">)
     .eq("id", id)
     .select()
     .single();
@@ -220,10 +220,10 @@ export async function fetchAllCommentsByActionClient(
   ]);
 
   const imageMap = new Map<string, string | null>();
-  (usersRes.data ?? []).forEach((u: any) => {
+  (usersRes.data ?? []).forEach((u) => {
     if (u.image) imageMap.set(u.user_id, u.image);
   });
-  (clientsRes.data ?? []).forEach((c: any) => {
+  (clientsRes.data ?? []).forEach((c) => {
     if (c.image) imageMap.set(c.id, c.image);
   });
 

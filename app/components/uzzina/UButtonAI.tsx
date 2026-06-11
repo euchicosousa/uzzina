@@ -1,6 +1,6 @@
 import { SparklesIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
-import React from "react";
+import type React from "react";
 
 interface UButtonAIProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {}

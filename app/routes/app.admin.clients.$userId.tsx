@@ -30,14 +30,23 @@ export const meta: MetaFunction = () => [{ title: "Admin | Editar Cliente" }];
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { supabase } = await getUserId(request);
   const { userId } = params;
+  if (!userId) {
+    throw new Error("userId parameter is required.");
+  }
 
   const partners = await getAllPartners(supabase);
 
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME!;
-  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET!;
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
+
+  if (!cloudName || !uploadPreset) {
+    throw new Error(
+      "CLOUDINARY_CLOUD_NAME and CLOUDINARY_UPLOAD_PRESET environment variables are required.",
+    );
+  }
 
   const client =
-    userId !== "new" ? await getClientById(supabase, userId as string) : null;
+    userId !== "new" ? await getClientById(supabase, userId) : null;
 
   return { client, partners, cloudName, uploadPreset };
 };
@@ -47,10 +56,13 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const intent = formData.get("intent") as string;
   const { userId } = params;
+  if (!userId) {
+    throw new Error("userId parameter is required.");
+  }
 
   // Arquivar cliente
   if (intent === "archive_client" && userId !== "new") {
-    await archiveClient(supabase, userId!);
+    await archiveClient(supabase, userId);
     return redirect("/app/admin/clients");
   }
 
@@ -72,7 +84,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       partners: partnerSlugs,
     });
   } else {
-    await updateClient(supabase, userId!, {
+    await updateClient(supabase, userId, {
       name,
       email,
       password,
@@ -113,9 +125,9 @@ export default function AdminClientPage() {
       <Form method="post" className="flex flex-col gap-8">
         <input type="hidden" name="image" value={imageUrl || ""} />
 
-        {(actionData as any)?.error && (
+        {(actionData as { error?: string })?.error && (
           <div className="border-destructive/20 bg-destructive/5 text-destructive rounded-lg border px-4 py-3 text-sm">
-            {(actionData as any).error}
+            {(actionData as { error?: string }).error}
           </div>
         )}
 

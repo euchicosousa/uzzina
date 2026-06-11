@@ -12,7 +12,7 @@ export function PhaseIcon({
   size?: (typeof SIZE)[keyof typeof SIZE] | "dot";
   variant?: "progress" | "icon";
 }) {
-  let sizeClasses = {
+  const sizeClasses = {
     xs: "size-3",
     sm: "size-4",
     md: "size-5",

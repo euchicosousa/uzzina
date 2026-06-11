@@ -26,8 +26,8 @@ export const { getSession, commitSession, destroySession } = dashSessionStorage;
  */
 function createPortalClient() {
   return createClient<Database>(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_PUBLISHABLE_KEY!,
+    process.env.SUPABASE_URL || "",
+    process.env.SUPABASE_PUBLISHABLE_KEY || "",
     {
       auth: {
         persistSession: false,
@@ -52,7 +52,7 @@ export async function getClientSession(request: Request) {
 
   try {
     const client = await getClientById(supabase, clientId);
-    if (!client || !client.active) {
+    if (!client?.active) {
       throw redirect("/dash/login", {
         headers: {
           "Set-Cookie": await destroySession(session),

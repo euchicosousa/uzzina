@@ -53,8 +53,9 @@ import { PhaseIcon } from "./PhaseIcon";
 export function BulkActionMenu() {
   // ─── Multi-seleção ───────────────────────────────────────────────────────────
   const { isSelectionMode, selectedIds, clearSelection } = useMultiSelection();
-  const queryClient = useQueryClient();
-  const { handleBulkAction, handleBulkDateOnly, handleBulkTimeOnly } = useActionMutations();
+  const _queryClient = useQueryClient();
+  const { handleBulkAction, handleBulkDateOnly, handleBulkTimeOnly } =
+    useActionMutations();
 
   // ─── Dados globais do app loader ─────────────────────────────────────────────
   // useMatches()[1] é sempre o loader do route "routes/app" (app shell)
@@ -149,7 +150,6 @@ export function BulkActionMenu() {
       <BulkDateTimeDialog
         open={dateTimeOpen}
         onOpenChange={setDateTimeOpen}
-        selectedCount={selectedIds.length}
         onApply={applyDateTime}
       />
 
@@ -260,11 +260,7 @@ export function BulkActionMenu() {
                       onClick={() => performBulkAction({ phase: phase.slug })}
                     >
                       <div className="mr-2">
-                        <PhaseIcon
-                          phase={phase as any}
-                          size="xs"
-                          variant="icon"
-                        />
+                        <PhaseIcon phase={phase} size="xs" variant="icon" />
                       </div>
                       {phase.title}
                     </DropdownMenuItem>

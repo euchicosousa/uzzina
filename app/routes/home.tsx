@@ -1,7 +1,6 @@
 import { Link } from "react-router";
-import type { Route } from "./+types/home";
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
     { title: `UZZINA` },
     {
@@ -41,7 +40,7 @@ export default function Home() {
             },
           ].map((item, i) => (
             <Link
-              key={i}
+              key={item.href}
               className="group/link flex h-full items-center justify-between overflow-hidden transition-colors duration-500 hover:bg-foreground hover:text-background"
               to={item.href}
             >

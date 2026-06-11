@@ -39,6 +39,7 @@ export function SkeletonGroup({
   isWrapped?: boolean;
 }) {
   const skeletons = [...Array(count)].map((_, i) => (
+    // biome-ignore lint/suspicious/noArrayIndexKey: static list of skeletons
     <div className="flex w-full flex-col gap-2" key={i}>
       {hasProfile && (
         <ProfileSkeleton className={className} delay={delay * i} />

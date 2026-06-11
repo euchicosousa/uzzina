@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useOutletContext, useRouteLoaderData } from "react-router";
 import {
   CATEGORIES,
-  ORDER_BY,
+  type ORDER_BY,
   VARIANT,
   type CATEGORY_TYPE,
 } from "~/lib/CONSTANTS";
@@ -21,7 +21,6 @@ import { UBadge } from "../uzzina/UBadge";
 export function CategoriesComponent({
   actions,
   orderBy,
-  ascending,
 }: {
   actions: Action[];
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];

@@ -18,7 +18,7 @@ interface Area {
 }
 
 interface AdminUserFormProps {
-  person: any | null; // Tipagem básica para agilizar (idealmente seria importado do DB types ou loader)
+  person: Person | null; // Tipagem básica para agilizar (idealmente seria importado do DB types ou loader)
   areas: Area[];
   cloudName: string;
   uploadPreset: string;
@@ -68,14 +68,14 @@ export function AdminUserForm({
 
           <div className="grid gap-1">
             <p className="font-medium">Foto de Perfil</p>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Clique para fazer upload e recortar
             </p>
             {imageUrl && (
               <button
                 type="button"
                 onClick={() => setImageUrl(null)}
-                className="text-muted-foreground hover:text-foreground mt-1 text-left text-xs underline"
+                className="mt-1 text-left text-xs text-muted-foreground underline hover:text-foreground"
               >
                 Remover imagem
               </button>
@@ -145,7 +145,7 @@ export function AdminUserForm({
             required
           />
           {!isNew && (
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               Nota: Alterar o email aqui não altera o login, apenas o perfil.
             </p>
           )}
@@ -169,7 +169,7 @@ export function AdminUserForm({
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
+                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 {showPassword ? (
                   <EyeOffIcon className="size-4" />
@@ -198,7 +198,7 @@ export function AdminUserForm({
                   />
                   <label
                     htmlFor={`area-${area.slug}`}
-                    className="peer-checked:bg-muted squircle flex cursor-pointer items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
+                    className="squircle flex cursor-pointer items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:bg-muted peer-checked:opacity-100"
                   >
                     {area.title}
                   </label>
@@ -221,7 +221,7 @@ export function AdminUserForm({
               />
               <label
                 htmlFor="visible"
-                className="peer-checked:bg-muted squircle flex cursor-pointer items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
+                className="squircle flex cursor-pointer items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:bg-muted peer-checked:opacity-100"
               >
                 Ativo / Visível
               </label>
@@ -237,7 +237,7 @@ export function AdminUserForm({
               />
               <label
                 htmlFor="admin"
-                className="peer-checked:bg-muted squircle flex cursor-pointer items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100"
+                className="squircle flex cursor-pointer items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:bg-muted peer-checked:opacity-100"
               >
                 <UserIcon className="size-4" />
                 Admin

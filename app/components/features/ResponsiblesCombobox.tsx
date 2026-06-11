@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { useMatches } from "react-router";
 import { CheckIcon } from "lucide-react";
 import {
   Popover,
@@ -20,7 +19,6 @@ import { SIZE } from "~/lib/CONSTANTS";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
-import type { Person } from "~/models/people.server";
 import type { Partner } from "~/models/partners.server";
 
 export function ResponsiblesCombobox({
@@ -44,9 +42,9 @@ export function ResponsiblesCombobox({
     selectedResponsibles || [],
   );
   
-  let currentResponsibles = selected.map(
-    (slug) => allPeople.find((person) => person.user_id === slug)!,
-  ).filter(Boolean);
+  const currentResponsibles = selected
+    .map((slug) => allPeople.find((person) => person.user_id === slug))
+    .filter((person): person is typeof allPeople[number] => person !== undefined);
 
   const peopleFiltered = allPeople.filter((person) =>
     currentPartners
@@ -162,16 +160,16 @@ export function ActionResponsiblesDisplay({
     <div className="flex items-center gap-2">
       <UAvatarGroup
         avatars={responsibles.map((p) => ({
-          image: p!.image,
-          id: p!.id,
-          fallback: p!.short,
+          image: p?.image,
+          id: p?.id,
+          fallback: p?.short,
         }))}
         size={size}
       />
       <div className="opacity-50">
         {responsibles.length > 1
           ? responsibles.map((p) => p.name).join(", ")
-          : `${responsibles[0]!.name} ${responsibles[0]!.surname}`}
+          : `${responsibles[0]?.name} ${responsibles[0]?.surname}`}
       </div>
     </div>
   );

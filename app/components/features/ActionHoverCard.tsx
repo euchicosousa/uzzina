@@ -21,7 +21,7 @@ import {
   useRouteLoaderData,
 } from "react-router";
 
-import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
+import { DATE_TIME_DISPLAY, INTENT, type CATEGORY } from "~/lib/CONSTANTS";
 import { getNewDateForAction } from "~/lib/helpers";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { cn } from "~/lib/utils";
@@ -85,7 +85,7 @@ export function ActionHoverCard({
       // Evita que o Radix detecte o hover residual e reabra imediatamente.
       cooldownRef.current = setTimeout(() => setPreventOpen(false), 800);
     }
-  }, [isDragActive]);
+  }, [isDragActive, preventOpen]);
 
   // Sem HoverCard em mobile ou durante drag/cooldown
   if (!isDesktop || preventOpen) {
@@ -123,11 +123,11 @@ function ActionHoverCardContent({
   action: Action;
   onClick?: (action: Action) => void;
 }) {
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
   const { handleAction } = useActionMutations();
   const fetchers = useFetchers();
   const navigation = useNavigation();
-  const outletContext = useOutletContext<any>();
+  const outletContext = useOutletContext<{ setBaseAction?: (action: Action | null) => void }>();
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
   const partners = appData?.partners || [];
 
@@ -138,12 +138,12 @@ function ActionHoverCardContent({
     setTitle(action.title);
   }, [action.title]);
 
-  const isPending = fetchers.length > 0 || navigation.state !== "idle";
+  const _isPending = fetchers.length > 0 || navigation.state !== "idle";
 
   const currentPartners = useMemo(
     () =>
       action.partners
-        .map((partner) => partners.find((p) => p.slug === partner)!)
+        .map((partner) => partners.find((p) => p.slug === partner))
         .filter((p) => p !== undefined),
     [action.partners, partners],
   );
@@ -168,16 +168,18 @@ function ActionHoverCardContent({
         <div className="relative flex h-full w-[240px] shrink-0 flex-col justify-between overflow-hidden border-r border-border bg-muted">
           <div className="group relative h-full w-full">
             <img
-              src={action.content_files![currentImageIndex]}
+              src={action.content_files?.[currentImageIndex]}
               alt={action.title}
               className="h-full w-full object-cover"
             />
-            {action.content_files!.length > 1 && (
+            {action.content_files && action.content_files.length > 1 && (
               <>
                 <button
                   onClick={() =>
                     setCurrentImageIndex((prev) =>
-                      prev > 0 ? prev - 1 : action.content_files!.length - 1,
+                      prev > 0
+                        ? prev - 1
+                        : (action.content_files?.length ?? 1) - 1,
                     )
                   }
                   className="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white opacity-0 transition group-hover:opacity-100"
@@ -187,7 +189,9 @@ function ActionHoverCardContent({
                 <button
                   onClick={() =>
                     setCurrentImageIndex((prev) =>
-                      prev < action.content_files!.length - 1 ? prev + 1 : 0,
+                      prev < (action.content_files?.length ?? 1) - 1
+                        ? prev + 1
+                        : 0,
                     )
                   }
                   className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white opacity-0 transition group-hover:opacity-100"
@@ -195,7 +199,7 @@ function ActionHoverCardContent({
                   <ChevronRightIcon className="size-4" />
                 </button>
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
-                  {currentImageIndex + 1} / {action.content_files!.length}
+                  {currentImageIndex + 1} / {action.content_files.length}
                 </div>
               </>
             )}
@@ -213,9 +217,11 @@ function ActionHoverCardContent({
             onChange={(newTitle) => setTitle(newTitle)}
             onBlur={(newTitle) => {
               if (newTitle !== action.title && newTitle.trim()) {
-                handleAction(
-                  { ...action, intent: INTENT.update_action, title: newTitle }
-                );
+                handleAction({
+                  ...action,
+                  intent: INTENT.update_action,
+                  title: newTitle,
+                });
               }
             }}
             className="p-2 px-6 pb-1 focus-within:bg-secondary/40 hover:bg-secondary/40"
@@ -237,13 +243,11 @@ function ActionHoverCardContent({
                 className="min-h-[60px] px-6 outline-none"
                 handleBlur={async (content) => {
                   if (content !== (action.description || "")) {
-                    handleAction(
-                      {
-                        ...action,
-                        intent: INTENT.update_action,
-                        description: content,
-                      }
-                    );
+                    handleAction({
+                      ...action,
+                      intent: INTENT.update_action,
+                      description: content,
+                    });
                   }
                 }}
               />
@@ -258,12 +262,14 @@ function ActionHoverCardContent({
             className="rounded-full"
             iconVariant="progress"
             selectedPhase={action.phase || "idea"}
-            category={action.category as any}
+            category={action.category as CATEGORY}
             showText={false}
             onSelect={(selected) => {
-              handleAction(
-                { ...action, intent: INTENT.update_action, phase: selected }
-              );
+              handleAction({
+                ...action,
+                intent: INTENT.update_action,
+                phase: selected,
+              });
             }}
           />
 
@@ -273,9 +279,11 @@ function ActionHoverCardContent({
             selectedCategories={[action.category]}
             showText={false}
             onSelect={({ category }) => {
-              handleAction(
-                { ...action, intent: INTENT.update_action, category }
-              );
+              handleAction({
+                ...action,
+                intent: INTENT.update_action,
+                category,
+              });
             }}
           />
 
@@ -286,9 +294,11 @@ function ActionHoverCardContent({
             className="rounded-full"
             onSelect={(newDate) => {
               const updatedDate = getNewDateForAction(action, newDate);
-              handleAction(
-                { ...action, intent: INTENT.update_action, ...updatedDate }
-              );
+              handleAction({
+                ...action,
+                intent: INTENT.update_action,
+                ...updatedDate,
+              });
             }}
           />
 
@@ -300,14 +310,12 @@ function ActionHoverCardContent({
             currentPartners={currentPartners}
             onSelect={(newSprints, newResponsibles) => {
               const finalSprints = newSprints.length > 0 ? newSprints : null;
-              handleAction(
-                {
-                  ...action,
-                  intent: INTENT.update_action,
-                  sprints: finalSprints,
-                  responsibles: newResponsibles,
-                }
-              );
+              handleAction({
+                ...action,
+                intent: INTENT.update_action,
+                sprints: finalSprints,
+                responsibles: newResponsibles,
+              });
             }}
           />
 

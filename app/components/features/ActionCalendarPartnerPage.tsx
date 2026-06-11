@@ -14,7 +14,7 @@ import { CalendarWithDnd } from "~/components/features/CalendarWithDnd";
 import { getCleanAction } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
-import { type ViewOptions } from "./ViewOptions";
+import type { ViewOptions } from "./ViewOptions";
 
 export function ActionCalendarPartnerPage({
   currentDay = new Date(),
@@ -43,7 +43,7 @@ export function ActionCalendarPartnerPage({
   const partnerSlug = params.slug;
   invariant(partnerSlug);
 
-  const { setBaseAction } = useOutletContext<any>();
+  const { setBaseAction } = useOutletContext<{ setBaseAction: (action: Action | null) => void }>();
 
   const responsibles = partners.filter((p) => p.slug === partnerSlug)[0]
     .users_ids;

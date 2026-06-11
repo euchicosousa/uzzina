@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { useRouteLoaderData } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
@@ -22,7 +21,6 @@ import {
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import type { Person } from "~/models/people.server";
 import type { Partner } from "~/models/partners.server";
-import type { AppLoaderData } from "~/routes/app";
 
 interface SprintComboboxProps {
   selectedSprints: string[];
@@ -114,7 +112,7 @@ export function SprintCombobox({
           {selectedSprints.length > 0 ? (
             <UAvatarGroup
               clampAt={2}
-              size={size == "sm" ? "sm" : "md"}
+              size={size === "sm" ? "sm" : "md"}
               avatars={selectedPeople.map((person) => ({
                 id: person.id,
                 fallback: person.short,
@@ -148,7 +146,7 @@ export function SprintCombobox({
                         setIsOpen(false);
                       } else {
                         let newSprints = [...selectedSprints];
-                        let newResponsibles = [...responsibles];
+                        const newResponsibles = [...responsibles];
 
                         if (newSprints.includes(person.user_id)) {
                           newSprints = newSprints.filter((id) => id !== person.user_id);
@@ -206,7 +204,7 @@ export function SprintCombobox({
                         setIsOpen(false);
                       } else {
                         let newSprints = [...selectedSprints];
-                        let newResponsibles = [...responsibles];
+                        const newResponsibles = [...responsibles];
 
                         if (newSprints.includes(person.user_id)) {
                           newSprints = newSprints.filter((id) => id !== person.user_id);

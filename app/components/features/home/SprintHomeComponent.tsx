@@ -41,6 +41,7 @@ export function SprintHomeComponent({
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, index) => (
               <Skeleton
+                // biome-ignore lint/suspicious/noArrayIndexKey: static list of skeleton loaders
                 key={index}
                 delay={index * 200}
                 className="h-23 w-full rounded-2xl"

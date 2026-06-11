@@ -35,15 +35,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const partnerQuery = url.searchParams.get("partner");
 
   const currentPartnerSlug =
-    partnerQuery && partners.some((p: any) => p.slug === partnerQuery)
+    partnerQuery && partners.some((p) => p.slug === partnerQuery)
       ? partnerQuery
-      : lastPartner && partners.some((p: any) => p.slug === lastPartner)
+      : lastPartner && partners.some((p) => p.slug === lastPartner)
         ? lastPartner
         : partners[0].slug;
 
-  const currentPartner = partners.find(
-    (p: any) => p.slug === currentPartnerSlug,
-  )!;
+  const currentPartner =
+    partners.find((p) => p.slug === currentPartnerSlug) || partners[0];
 
   // Janela de 3 meses centrada no hoje
   const today = new Date();
@@ -123,13 +122,13 @@ export default function DashHome() {
         <div className="flex items-center justify-between border-b pr-2">
           <div className="flex flex-1">
             <button
-              className={`flex-1 border-b-2 py-3 text-sm font-medium transition-colors ${mobileTab === "calendar" ? "border-foreground" : "text-muted-foreground border-transparent"}`}
+              className={`flex-1 border-b-2 py-3 text-sm font-medium transition-colors ${mobileTab === "calendar" ? "border-foreground" : "border-transparent text-muted-foreground"}`}
               onClick={() => setMobileTab("calendar")}
             >
               Calendário
             </button>
             <button
-              className={`flex-1 border-b-2 py-3 text-sm font-medium transition-colors ${mobileTab === "feed" ? "border-foreground" : "text-muted-foreground border-transparent"}`}
+              className={`flex-1 border-b-2 py-3 text-sm font-medium transition-colors ${mobileTab === "feed" ? "border-foreground" : "border-transparent text-muted-foreground"}`}
               onClick={() => setMobileTab("feed")}
             >
               Feed
@@ -179,7 +178,7 @@ export default function DashHome() {
 
         {/* Feed — max-width 560px (agora com 3 colunas) */}
         <div
-          className={`w-full ${isSidebarVisible ? "max-w-[560px]" : "max-w-[0px]"} shrink-0 overflow-y-auto border-l`}
+          className={`w-full ${isSidebarVisible ? "max-w-[560px]" : "max-w-0"} shrink-0 overflow-y-auto border-l`}
         >
           <FeedSection
             actions={feedActions}

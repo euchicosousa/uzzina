@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { INTENT } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
 import { QUERY_KEYS } from "~/lib/query-keys";
@@ -11,6 +12,12 @@ import {
   bulkUpdateDateOnlyClient,
   bulkUpdateTimeOnlyClient,
 } from "~/lib/supabase.mutations";
+import type { ActionFormInput } from "~/utils/validation";
+
+export type SingleActionInput = Partial<ActionFormInput> & {
+  intent: string;
+  id?: string;
+};
 
 export function useActionMutations() {
   const queryClient = useQueryClient();
@@ -20,15 +27,21 @@ export function useActionMutations() {
     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.lateActions.all() });
   };
 
+  const handleError = (error: unknown) => {
+    console.error("Mutation failed:", error);
+    const message = error instanceof Error ? error.message : "Erro desconhecido";
+    toast.error(`Falha na operação: ${message}`);
+  };
+
   // 1. Single Action Mutation
   const singleActionMutation = useMutation({
     mutationKey: ["actionMutation"],
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: SingleActionInput) => {
       const { intent, id, ...values } = data;
       if (intent === INTENT.create_action) {
-        return await createActionClient(values);
+        return await createActionClient(values as ActionFormInput);
       } else if (intent === INTENT.update_action) {
-        if (id) return await updateActionClient(String(id), values);
+        if (id) return await updateActionClient(String(id), values as ActionFormInput);
       } else if (intent === INTENT.duplicate_action) {
         if (id) return await duplicateActionClient(String(id));
       } else if (intent === INTENT.delete_action) {
@@ -38,18 +51,20 @@ export function useActionMutations() {
     onSuccess: () => {
       invalidateActions();
     },
+    onError: handleError,
   });
 
   // 2. Bulk Actions Mutation
   const bulkActionMutation = useMutation({
     mutationKey: ["bulkActionMutation"],
-    mutationFn: async ({ ids, updates }: { ids: string[]; updates: Record<string, any> }) => {
+    mutationFn: async ({ ids, updates }: { ids: string[]; updates: Partial<Action> }) => {
       if (ids.length === 0) return;
       return await bulkUpdateActionsClient(ids, updates);
     },
     onSuccess: () => {
       invalidateActions();
     },
+    onError: handleError,
   });
 
   // 3. Bulk Date Only Mutation
@@ -62,6 +77,7 @@ export function useActionMutations() {
     onSuccess: () => {
       invalidateActions();
     },
+    onError: handleError,
   });
 
   // 4. Bulk Time Only Mutation
@@ -74,14 +90,15 @@ export function useActionMutations() {
     onSuccess: () => {
       invalidateActions();
     },
+    onError: handleError,
   });
 
   // Helper wrappers
-  const handleAction = async (data: any) => {
+  const handleAction = async (data: SingleActionInput) => {
     return singleActionMutation.mutateAsync(data);
   };
 
-  const handleBulkAction = async (ids: string[], updates: Record<string, any>) => {
+  const handleBulkAction = async (ids: string[], updates: Partial<Action>) => {
     return bulkActionMutation.mutateAsync({ ids, updates });
   };
 
@@ -106,11 +123,23 @@ export function useActionMutations() {
     }
     sprints = sprints.length > 0 ? sprints : null;
 
-    return handleAction({ ...action, intent: INTENT.update_action, sprints });
+    // Convert fields to input-friendly format for handleAction
+    const actionInput: SingleActionInput = {
+      ...(action as unknown as ActionFormInput),
+      intent: INTENT.update_action,
+      sprints,
+    };
+
+    return handleAction(actionInput);
   };
 
   const submitDeleteAction = async (action: Action) => {
-    return handleAction({ ...action, intent: INTENT.update_action, archived: true });
+    const actionInput: SingleActionInput = {
+      ...(action as unknown as ActionFormInput),
+      intent: INTENT.update_action,
+      archived: true,
+    };
+    return handleAction(actionInput);
   };
 
   return {
@@ -127,3 +156,4 @@ export function useActionMutations() {
       bulkTimeOnlyMutation.isPending,
   };
 }
+

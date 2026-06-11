@@ -17,6 +17,7 @@ export function useOptimisticQuery<TData = Action[]>(
   const actionMutations = useMutationState({
     filters: { mutationKey: ["actionMutation"] },
     select: (mutation) => ({
+      // biome-ignore lint/suspicious/noExplicitAny: variables payload shape is defined dynamically by React Query mutation key
       variables: mutation.state.variables as any,
       status: mutation.state.status,
       submittedAt: mutation.state.submittedAt,
@@ -27,6 +28,7 @@ export function useOptimisticQuery<TData = Action[]>(
   const bulkActionMutations = useMutationState({
     filters: { mutationKey: ["bulkActionMutation"] },
     select: (mutation) => ({
+      // biome-ignore lint/suspicious/noExplicitAny: variables payload shape is defined dynamically by React Query mutation key
       variables: mutation.state.variables as any,
       status: mutation.state.status,
       submittedAt: mutation.state.submittedAt,

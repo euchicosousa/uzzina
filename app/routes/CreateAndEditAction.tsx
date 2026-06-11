@@ -41,7 +41,7 @@ export function CreateAndEditAction({
 
   const fetcher = useFetcher();
   const fetchers = useFetchers();
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
   const { handleAction, isLoading: isMutationLoading } = useActionMutations();
 
   const [RawAction, setRawAction] = useState<Action>(BaseAction);
@@ -106,7 +106,7 @@ export function CreateAndEditAction({
     }
     descriptionRef.current = BaseAction.description || "";
     setRawAction(BaseAction);
-  }, [BaseAction]);
+  }, [BaseAction, RawAction.id, handleAction, RawAction]);
 
   const [isAIProcessing, setIsAIProcessing] = useState(false);
   const [descriptionVersion, setDescriptionVersion] = useState(0);
@@ -127,7 +127,7 @@ export function CreateAndEditAction({
     );
 
     fetchers.forEach((f) => {
-      const payload = (f as any).json;
+      const payload = (f as { json?: { intent?: string } }).json;
       if (payload && f.data) {
         const intent = payload.intent;
 
@@ -169,7 +169,7 @@ export function CreateAndEditAction({
   }
 
   const updateAction = useCallback(
-    async (data?: { [key: string]: any }, forceCreate = false) => {
+    async (data?: { [key: string]: unknown }, forceCreate = false) => {
       const current = rawActionRef.current;
 
       if (
@@ -210,7 +210,7 @@ export function CreateAndEditAction({
         partners.find((partner) => partner.slug === p),
       ) as Partner[],
     );
-  }, [partnersKey]);
+  }, [partnersKey, partners.find, RawAction.partners.map]);
 
   // Guard: only update color if it actually changed to avoid
   // triggering another render cycle via the partners effect above.
@@ -219,8 +219,7 @@ export function CreateAndEditAction({
       const newColor = currentPartners[0].colors[0];
 
       const newResponsibles = currentPartners
-        .map((p) => p.users_ids.map((user) => user))
-        .flat();
+        .flatMap((p) => p.users_ids.map((user) => user));
 
       setRawAction((prev) =>
         prev.color === newColor
@@ -228,7 +227,7 @@ export function CreateAndEditAction({
           : { ...prev, color: newColor, responsibles: newResponsibles },
       );
     }
-  }, [currentPartners]);
+  }, [currentPartners, BaseAction.id]);
 
   useEffect(() => {
     if (fetcher.data) {
@@ -264,7 +263,7 @@ export function CreateAndEditAction({
         );
 
         const currentDescription = rawActionRef.current.description || "";
-        const newDescription = content + "<hr />" + currentDescription;
+        const newDescription = `${content}<hr />${currentDescription}`;
 
         setRawAction((prev) => ({
           ...prev,
@@ -284,7 +283,7 @@ export function CreateAndEditAction({
         });
       }
     }
-  }, [fetcher.data]);
+  }, [fetcher.data, updateAction, currentPartners[0]?.instagram_caption_tail]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {

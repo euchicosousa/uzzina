@@ -147,7 +147,7 @@ export default function AdminCelebrationsPage() {
             {Object.entries(
               celebrations.reduce(
                 (acc, celebration) => {
-                  const date = new Date(celebration.date + "T00:00:00");
+                  const date = new Date(`${celebration.date}T00:00:00`);
                   const month = format(date, "MMMM 'de' yyyy", {
                     locale: ptBR,
                   });
@@ -175,7 +175,7 @@ export default function AdminCelebrationsPage() {
                       <div className="flex items-center gap-4 overflow-hidden">
                         <span className="text-muted-foreground w-6 text-center text-sm font-medium">
                           {format(
-                            new Date(celebration.date + "T00:00:00"),
+                            new Date(`${celebration.date}T00:00:00`),
                             "dd",
                           )}
                         </span>

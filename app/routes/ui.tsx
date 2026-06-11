@@ -110,6 +110,7 @@ export default function UITestingPage() {
             },
           ].map((colors) => (
             <div
+              key={colors.background}
               className={`${colors.background} ${colors.text} flex flex-col gap-2 border p-8`}
             >
               <code>.{colors.background}</code>
@@ -430,7 +431,7 @@ export default function UITestingPage() {
           <div>
             <div className="mb-4 font-medium">Tamanho {SIZE.xs}</div>
             <div className="flex gap-4">
-              {Object.values(PHASES).map((phase, index) => (
+              {Object.values(PHASES).map((phase, _index) => (
                 <PhaseIcon key={phase.slug} phase={phase} size={SIZE.xs} variant="icon" />
               ))}
             </div>
@@ -438,7 +439,7 @@ export default function UITestingPage() {
           <div>
             <div className="mb-4 font-medium">Tamanho {SIZE.sm}</div>
             <div className="flex gap-4">
-              {Object.values(PHASES).map((phase, index) => (
+              {Object.values(PHASES).map((phase, _index) => (
                 <PhaseIcon key={phase.slug} phase={phase} size={SIZE.sm} variant="icon" />
               ))}
             </div>
@@ -446,7 +447,7 @@ export default function UITestingPage() {
           <div>
             <div className="mb-4 font-medium">Tamanho {SIZE.md}</div>
             <div className="flex gap-4">
-              {Object.values(PHASES).map((phase, index) => (
+              {Object.values(PHASES).map((phase, _index) => (
                 <PhaseIcon key={phase.slug} phase={phase} size={SIZE.md} variant="icon" />
               ))}
             </div>
@@ -454,7 +455,7 @@ export default function UITestingPage() {
           <div>
             <div className="mb-4 font-medium">Tamanho {SIZE.lg}</div>
             <div className="flex gap-4">
-              {Object.values(PHASES).map((phase, index) => (
+              {Object.values(PHASES).map((phase, _index) => (
                 <PhaseIcon key={phase.slug} phase={phase} size={SIZE.lg} variant="icon" />
               ))}
             </div>
@@ -462,7 +463,7 @@ export default function UITestingPage() {
           <div>
             <div className="mb-4 font-medium">Tamanho {SIZE.xl}</div>
             <div className="flex gap-4">
-              {Object.values(PHASES).map((phase, index) => (
+              {Object.values(PHASES).map((phase, _index) => (
                 <PhaseIcon key={phase.slug} phase={phase} size={SIZE.xl} variant="icon" />
               ))}
             </div>
@@ -470,7 +471,7 @@ export default function UITestingPage() {
           <div>
             <div className="mb-4 font-medium">Tamanho {SIZE["2xl"]}</div>
             <div className="flex gap-4">
-              {Object.values(PHASES).map((phase, index) => (
+              {Object.values(PHASES).map((phase, _index) => (
                 <PhaseIcon key={phase.slug} phase={phase} size={SIZE["2xl"]} variant="icon" />
               ))}
             </div>

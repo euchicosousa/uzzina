@@ -1,6 +1,6 @@
+import { CalendarDaysIcon, SignalIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useOutletContext, useRouteLoaderData } from "react-router";
-import { CalendarDaysIcon, SignalIcon } from "lucide-react";
 
 // UI Components
 import { Checkbox } from "~/components/ui/checkbox";
@@ -16,6 +16,8 @@ import { useActionShortcutContext } from "~/hooks/useActionShortcut";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
 
 // Constants & Helpers
+import { useQuery } from "@tanstack/react-query";
+import { useActionMutations } from "~/hooks/useActionMutations";
 import {
   CATEGORIES,
   DATE_TIME_DISPLAY,
@@ -36,11 +38,9 @@ import {
   isLateAction,
   isSprint,
 } from "~/lib/helpers";
-import { useActionMutations } from "~/hooks/useActionMutations";
-import { cn } from "~/lib/utils";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
+import { cn } from "~/lib/utils";
 
 // Types
 import type { Action } from "~/models/actions.server";
@@ -123,7 +123,6 @@ export function ActionItem({
   const { isSelectionMode, selectedIds, toggleSelection } = useMultiSelection();
   const isSelected = selectedIds.includes(action.id);
 
-  const queryClient = useQueryClient();
   const { handleAction } = useActionMutations();
   const { registerAction, unregisterAction, setEditingId } =
     useActionShortcutContext();
@@ -140,7 +139,8 @@ export function ActionItem({
     setEditingId(value ? action.id : null);
     setIsEditing(value);
   };
-  const { setBaseAction } = useOutletContext<OutletContext>();
+  const context = useOutletContext<OutletContext | undefined>();
+  const setBaseAction = context?.setBaseAction;
 
   const currentPhase = useMemo(
     () => PHASES[(action.phase as PHASE) || "idea"],
@@ -150,7 +150,7 @@ export function ActionItem({
   const currentPartners = useMemo(
     () =>
       action.partners
-        .map((partner) => partners.find((p) => p.slug === partner)!)
+        .map((partner) => partners.find((p) => p.slug === partner))
         .filter((p) => p !== undefined),
     [action.partners, partners],
   );
@@ -184,7 +184,7 @@ export function ActionItem({
         return "squircle w-auto rounded-xl px-3 py-2";
       case VARIANT.hair:
         return "squircle rounded-xl px-3 py-0 transition-colors @xs:p-0";
-      case VARIANT.line:
+      // case VARIANT.line:
       default:
         return "squircle rounded-xl px-3 py-1 transition-colors @xs:p-1";
     }
@@ -204,20 +204,23 @@ export function ActionItem({
       }
     } else if (person && isSprint(action, person)) {
       baseStyles =
-        "hover:bg-primary/10 bg-primary/5 transition ring-primary/50 ring-1";
+        "hover:bg-primary/10 bg-primary/5 transition ring-primary/20 ring-1";
     } else {
-      switch (variant) {
-        case VARIANT.hour:
-          baseStyles = "hover:bg-card bg-card text-card-foreground";
-          break;
-        case VARIANT.block:
-          baseStyles =
-            "hover:bg-card bg-card/50 ring-foreground/10 ring-1 text-card-foreground transition";
-          break;
-        default:
-          baseStyles = "hover:bg-card bg-background text-card-foreground";
-          break;
-      }
+      baseStyles =
+        "hover:bg-card bg-card/50 shadow-xs text-card-foreground transition hover:shadow-xl duration-500 border-t border-card hover:z-10 z-0";
+      // GUARDAR PARA TESTES
+      // switch (variant) {
+      //   case VARIANT.hour:
+      //     baseStyles = "hover:bg-card bg-card text-card-foreground";
+      //     break;
+      //   case VARIANT.block:
+      //     baseStyles =
+      //       "hover:bg-card bg-card/50 shadow-xs text-card-foreground transition hover:shadow-xl duration-500 border-t border-card";
+      //     break;
+      //   default:
+      //     baseStyles = "hover:bg-card bg-background text-card-foreground";
+      //     break;
+      // }
     }
 
     // 2. Apply editing ring/focus overrides on top of the base style
@@ -307,7 +310,7 @@ export function ActionItem({
             </div>
           </div>
         );
-      case VARIANT.line:
+      // case VARIANT.line:
       default:
         return (
           <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
@@ -320,13 +323,11 @@ export function ActionItem({
                 title={action.title}
                 className="w-full lg:text-sm xl:text-base"
                 onChange={(title) => {
-                  handleAction(
-                    {
-                      ...action,
-                      intent: INTENT.update_action,
-                      title,
-                    }
-                  );
+                  handleAction({
+                    ...action,
+                    intent: INTENT.update_action,
+                    title,
+                  });
                 }}
               />
             </div>
@@ -402,7 +403,7 @@ export function ActionItem({
         if (!isEditing) {
           if (onClick) {
             onClick(action);
-          } else {
+          } else if (setBaseAction) {
             setBaseAction(action);
           }
         }
@@ -571,7 +572,6 @@ export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
     case PRIORITIES.high.slug:
       return <SignalIcon className="text-error size-4" />;
 
-    case PRIORITIES.medium.slug:
     default:
       return <SignalIcon className="text-success size-4" />;
   }

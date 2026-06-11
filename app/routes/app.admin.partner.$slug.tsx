@@ -80,6 +80,9 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const colors = formData.getAll("colors") as string[];
 
   const { slug } = params;
+  if (!slug) {
+    throw new Error("Slug is required");
+  }
   const isNew = slug === "new";
 
   const partnerData = {
@@ -115,7 +118,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     const { error } = await supabase
       .from("partners")
       .update(partnerData)
-      .eq("slug", slug!);
+      .eq("slug", slug);
     if (error) throw error;
   }
 
@@ -131,7 +134,6 @@ export default function AdminPartnerEditPage() {
   const [imageUrl, setImageUrl] = useState<string | null>(
     partner?.image || null,
   );
-  // @ts-ignore (voice doesn't strictly exist on Partner type yet if types aren't regenerated)
   const [voiceValue, setVoiceValue] = useState(partner?.voice || "");
 
   return (

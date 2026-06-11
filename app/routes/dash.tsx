@@ -12,6 +12,7 @@ import {
   getClientSession,
   dashSessionStorage,
 } from "~/services/client-auth.server";
+import type { Partner } from "~/models/partners.server";
 import { LogOutIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Form } from "react-router";
@@ -41,9 +42,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       clientName: null,
       clientImage: null,
       partnerSlugs: [] as string[],
-      partners: [] as any[],
-      cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
-      uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET!,
+      partners: [] as Partner[],
+      cloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
+      uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || "",
     };
   }
 
@@ -53,8 +54,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     image,
     partners,
     lastPartner: session.get("lastPartner") || null,
-    cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
-    uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET!,
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
+    uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || "",
   };
 };
 
@@ -91,14 +92,13 @@ export default function DashLayout() {
 
   const currentPartnerSlug = params.get("partner") || lastPartner || partners[0]?.slug;
   const currentPartner =
-    partners.find((p: any) => p.slug === currentPartnerSlug) || partners[0];
+    partners.find((p) => p.slug === currentPartnerSlug) || partners[0];
 
   const { applyPartnerColors } = useAppTheme();
 
   useEffect(() => {
     if (
-      currentPartner &&
-      currentPartner.colors &&
+      currentPartner?.colors &&
       currentPartner.colors.length >= 2
     ) {
       applyPartnerColors(currentPartner.colors[0], currentPartner.colors[1]);
@@ -140,7 +140,7 @@ export default function DashLayout() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl">
-                    {partners.map((p: any) => (
+                    {partners.map((p) => (
                       <SelectItem key={p.slug} value={p.slug}>
                         {p.title}
                       </SelectItem>

@@ -49,7 +49,6 @@ export function ActionTitleInput({
           textareaClassName ||
             (localTitle.length > 70 ? "text-error text-4xl" : "text-5xl"),
         )}
-        // @ts-ignore
         style={{ fieldSizing: "content" }}
         autoFocus={autoFocus}
         maxLength={100}

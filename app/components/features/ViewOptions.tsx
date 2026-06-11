@@ -17,11 +17,11 @@ import {
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { Button } from "~/components/ui/button";
 import { Toggle } from "~/components/ui/toggle";
-import { COLUMNS, ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
+import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 
 export type ViewOptions = {
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
-  columns?: (typeof COLUMNS)[keyof typeof COLUMNS];
+  columns?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   responsibles?: boolean;
   priority?: boolean;
   category?: boolean;

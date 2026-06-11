@@ -8,9 +8,9 @@
   --radius: 0.65rem;
   --background: var(--background-override, oklch(1 0 0));
   --foreground: var(--foreground-override, oklch(0.141 0.005 285.823));
-  --card: oklch(from var(--foreground) l c h / 3%);
+  --card: oklch(1 0 1);
   --card-foreground: var(--foreground);
-  --popover: oklch(from var(--background) l c h / 96%);
+  --popover: oklch(1 0 0);
   --popover-foreground: var(--foreground);
 
   /* Accent color knobs — overrideable by JS for theme color picker */
@@ -315,7 +315,7 @@
 
 /* Ensure Cloudinary widget is clickable even when Radix Dialog locks the body */
 iframe[data-test="uw-iframe"] {
-  pointer-events: auto !important;
+  pointer-events: auto;
 }
 
 @keyframes dialog-in {

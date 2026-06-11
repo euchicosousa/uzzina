@@ -8,7 +8,7 @@ import {
   useLoaderData,
 } from "react-router";
 import type { Route } from "./+types/root";
-import { type LoaderFunctionArgs } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
 
 import {
   PreventFlashOnWrongTheme,
@@ -64,21 +64,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return {
     theme: getTheme(),
     env: {
-      SUPABASE_URL: process.env.SUPABASE_URL!,
-      SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY!,
+      SUPABASE_URL: process.env.SUPABASE_URL || "",
+      SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY || "",
     },
   };
 }
 
-export default function AppWithProviders({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AppWithProviders() {
   const data = useLoaderData<typeof loader>();
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider specifiedTheme={data.theme} themeAction="/action/set-theme">
+      <ThemeProvider
+        specifiedTheme={data.theme}
+        themeAction="/action/set-theme"
+      >
         <App />
       </ThemeProvider>
       {process.env.NODE_ENV === "development" && (
@@ -93,7 +92,6 @@ export function App() {
   const { env } = data;
   const [theme] = useTheme();
 
-
   return (
     <html lang="pt-br" className={cn(theme)} suppressHydrationWarning>
       <head>
@@ -102,13 +100,14 @@ export function App() {
         <Meta />
         <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
         <Links />
-        {/* Env vars públicas para o browser — apenas keys publishable (nunca service_role) */}
         <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: Necessário para expor env vars no head
           dangerouslySetInnerHTML={{
             __html: `window.__env = ${JSON.stringify(env)};`,
           }}
         />
         <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: Script crítico para evitar FOUC/flash de tema antes da hidratação
           dangerouslySetInnerHTML={{
             __html: `
               try {
@@ -118,78 +117,40 @@ export function App() {
                 var root = document.documentElement;
                 
                 if (n === -1) {
-                  // Função auxiliar inline hexToOklch (minificada e adaptada)
-                  function h2o(hex) {
-                    var cHex = hex.replace("#", "");
-                    if (cHex.length === 3) {
-                      cHex = cHex.split("").map(function(x) { return x + x; }).join("");
-                    }
-                    if (cHex.length !== 6) return { h: 0, c: 0, l: 0 };
-                    var r = parseInt(cHex.substring(0, 2), 16) / 255;
-                    var g = parseInt(cHex.substring(2, 4), 16) / 255;
-                    var b = parseInt(cHex.substring(4, 6), 16) / 255;
-                    
-                    var rL = r <= 0.04045 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
-                    var gL = g <= 0.04045 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
-                    var bL = b <= 0.04045 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
-                    
-                    var l_ = 0.4122214708 * rL + 0.5363337775 * gL + 0.0514459954 * bL;
-                    var m_ = 0.2119034982 * rL + 0.6806995451 * gL + 0.1073970008 * bL;
-                    var s_ = 0.0883024619 * rL + 0.2817188376 * gL + 0.6299787005 * bL;
-                    
-                    var lL = Math.cbrt(l_);
-                    var mL = Math.cbrt(m_);
-                    var sL = Math.cbrt(s_);
-                    
-                    var L = 0.2104542553 * lL + 0.793617785 * mL - 0.0040720468 * sL;
-                    var a = 1.9779984951 * lL - 2.428592205 * mL + 0.4505937099 * sL;
-                    var b_ = 0.0259040371 * lL + 0.7827717662 * mL - 0.808675766 * sL;
-                    
-                    var C = Math.sqrt(a * a + b_ * b_);
-                    var H = Math.atan2(b_, a) * (180 / Math.PI);
-                    if (H < 0) H += 360;
-                    
-                    return {
-                      h: Math.round(H * 100) / 100,
-                      c: Math.round(C * 1000) / 1000,
-                      l: Math.round(L * 1000) / 1000
-                    };
-                  }
+                  var lpOklch = localStorage.getItem("uzzina-custom-light-primary-oklch");
+                  var lpfgOklch = localStorage.getItem("uzzina-custom-light-primary-fg-oklch") || "0 0 1";
+                  var lbgOklch = localStorage.getItem("uzzina-custom-light-bg-oklch");
+                  var lfgOklch = localStorage.getItem("uzzina-custom-light-fg-oklch");
+                  var dpOklch = localStorage.getItem("uzzina-custom-dark-primary-oklch");
+                  var dpfgOklch = localStorage.getItem("uzzina-custom-dark-primary-fg-oklch") || "0 0 1";
+                  var dbgOklch = localStorage.getItem("uzzina-custom-dark-bg-oklch");
+                  var dfgOklch = localStorage.getItem("uzzina-custom-dark-fg-oklch");
                   
-                  var lp = localStorage.getItem("uzzina-custom-light-primary");
-                  var lpfg = localStorage.getItem("uzzina-custom-light-primary-fg") || "#FFFFFF";
-                  var lbg = localStorage.getItem("uzzina-custom-custom-light-bg") || localStorage.getItem("uzzina-custom-light-bg");
-                  var lfg = localStorage.getItem("uzzina-custom-light-fg");
-                  var dp = localStorage.getItem("uzzina-custom-dark-primary");
-                  var dpfg = localStorage.getItem("uzzina-custom-dark-primary-fg") || "#FFFFFF";
-                  var dbg = localStorage.getItem("uzzina-custom-dark-bg");
-                  var dfg = localStorage.getItem("uzzina-custom-dark-fg");
-                  
-                  if (lp && lbg && lfg && dp && dbg && dfg) {
-                    var lightP = h2o(lp);
-                    var lightPfg = h2o(lpfg);
-                    var lightBg = h2o(lbg);
-                    var lightFg = h2o(lfg);
-                    var darkP = h2o(dp);
-                    var darkPfg = h2o(dpfg);
-                    var darkBg = h2o(dbg);
-                    var darkFg = h2o(dfg);
+                  if (lpOklch && lbgOklch && lfgOklch && dpOklch && dbgOklch && dfgOklch) {
+                    var lpParts = lpOklch.split(" ");
+                    var lpfgParts = lpfgOklch.split(" ");
+                    var lbgParts = lbgOklch.split(" ");
+                    var lfgParts = lfgOklch.split(" ");
+                    var dpParts = dpOklch.split(" ");
+                    var dpfgParts = dpfgOklch.split(" ");
+                    var dbgParts = dbgOklch.split(" ");
+                    var dfgParts = dfgOklch.split(" ");
                     
-                    root.style.setProperty("--accent-h", lightP.h);
-                    root.style.setProperty("--accent-c", lightP.c);
-                    root.style.setProperty("--accent-l", lightP.l);
-                    root.style.setProperty("--dark-accent-h", darkP.h);
-                    root.style.setProperty("--dark-accent-c", darkP.c);
-                    root.style.setProperty("--dark-accent-l", darkP.l);
+                    root.style.setProperty("--accent-h", lpParts[0]);
+                    root.style.setProperty("--accent-c", lpParts[1]);
+                    root.style.setProperty("--accent-l", lpParts[2]);
+                    root.style.setProperty("--dark-accent-h", dpParts[0]);
+                    root.style.setProperty("--dark-accent-c", dpParts[1]);
+                    root.style.setProperty("--dark-accent-l", dpParts[2]);
                     
-                    root.style.setProperty("--primary-foreground-override", "oklch(" + lightPfg.l + " " + lightPfg.c + " " + lightPfg.h + ")");
-                    root.style.setProperty("--sidebar-primary-foreground-override", "oklch(" + lightPfg.l + " " + lightPfg.c + " " + lightPfg.h + ")");
-                    root.style.setProperty("--dark-primary-foreground-override", "oklch(" + darkPfg.l + " " + darkPfg.c + " " + darkPfg.h + ")");
+                    root.style.setProperty("--primary-foreground-override", "oklch(" + lpfgParts[2] + " " + lpfgParts[1] + " " + lpfgParts[0] + ")");
+                    root.style.setProperty("--sidebar-primary-foreground-override", "oklch(" + lpfgParts[2] + " " + lpfgParts[1] + " " + lpfgParts[0] + ")");
+                    root.style.setProperty("--dark-primary-foreground-override", "oklch(" + dpfgParts[2] + " " + dpfgParts[1] + " " + dpfgParts[0] + ")");
                     
-                    root.style.setProperty("--background-override", "oklch(" + lightBg.l + " " + lightBg.c + " " + lightBg.h + ")");
-                    root.style.setProperty("--foreground-override", "oklch(" + lightFg.l + " " + lightFg.c + " " + lightFg.h + ")");
-                    root.style.setProperty("--dark-background-override", "oklch(" + darkBg.l + " " + darkBg.c + " " + darkBg.h + ")");
-                    root.style.setProperty("--dark-foreground-override", "oklch(" + darkFg.l + " " + darkFg.c + " " + darkFg.h + ")");
+                    root.style.setProperty("--background-override", "oklch(" + lbgParts[2] + " " + lbgParts[1] + " " + lbgParts[0] + ")");
+                    root.style.setProperty("--foreground-override", "oklch(" + lfgParts[2] + " " + lfgParts[1] + " " + lfgParts[0] + ")");
+                    root.style.setProperty("--dark-background-override", "oklch(" + dbgParts[2] + " " + dbgParts[1] + " " + dbgParts[0] + ")");
+                    root.style.setProperty("--dark-foreground-override", "oklch(" + dfgParts[2] + " " + dfgParts[1] + " " + dfgParts[0] + ")");
                   }
                 } else if (!isNaN(n) && palette[n]) {
                   var p = palette[n];
@@ -199,7 +160,7 @@ export function App() {
                   root.style.setProperty("--dark-accent-h", p.dark.primary.h);
                   root.style.setProperty("--dark-accent-c", p.dark.primary.c);
                   root.style.setProperty("--dark-accent-l", p.dark.primary.l);
-
+                  
                   if (p.light.primaryFg) {
                     var fgStr = "oklch(" + p.light.primaryFg.l + " " + p.light.primaryFg.c + " " + p.light.primaryFg.h + ")";
                     root.style.setProperty("--primary-foreground-override", fgStr);
@@ -209,7 +170,7 @@ export function App() {
                     var darkFgStr = "oklch(" + p.dark.primaryFg.l + " " + p.dark.primaryFg.c + " " + p.dark.primaryFg.h + ")";
                     root.style.setProperty("--dark-primary-foreground-override", darkFgStr);
                   }
-
+                  
                   if (p.light.bg) {
                     root.style.setProperty("--background-override", "oklch(" + p.light.bg.l + " " + p.light.bg.c + " " + p.light.bg.h + ")");
                   }

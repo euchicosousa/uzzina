@@ -7,8 +7,8 @@ import {
   type ReactNode,
 } from "react";
 import { useRouteLoaderData } from "react-router";
-import { useQueryClient } from "@tanstack/react-query";
 import { addDays, addMinutes, isAfter, parseISO } from "date-fns";
+import { toast } from "sonner";
 import { INTENT, PHASES } from "~/lib/CONSTANTS";
 import {
   getNewDateForAction,
@@ -41,7 +41,6 @@ const ActionShortcutContext = createContext<{
  *     antes do onKeyDown do dnd-kit ter chance de bloqueá-lo
  */
 export function ActionShortcutProvider({ children }: { children: ReactNode }) {
-  const queryClient = useQueryClient();
   const { handleAction, toggleSprintAction } = useActionMutations();
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
   const person = appData?.person;
@@ -140,11 +139,19 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
         } else if (code === "KeyU") {
           if (person) toggleSprintAction(action, person.user_id);
         } else if (code === "KeyX") {
-          if (confirm("Deseja realmente arquivar esta ação?")) {
-            handleAction(
-              { ...action, intent: INTENT.update_action, archived: true }
-            );
-          }
+          handleAction(
+            { ...action, intent: INTENT.update_action, archived: true }
+          );
+          toast("Ação arquivada", {
+            action: {
+              label: "Desfazer",
+              onClick: () => {
+                handleAction(
+                  { ...action, intent: INTENT.update_action, archived: false }
+                );
+              },
+            },
+          });
         }
       } else if (targetPhase) {
         handleAction(
@@ -156,7 +163,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
     // capture: true → captura antes do onKeyDown do dnd-kit interceptar
     document.addEventListener("keydown", keyDown, true);
     return () => document.removeEventListener("keydown", keyDown, true);
-  }, [handleAction, toggleSprintAction, person?.user_id]);
+  }, [handleAction, toggleSprintAction, person]);
 
   return (
     <ActionShortcutContext.Provider

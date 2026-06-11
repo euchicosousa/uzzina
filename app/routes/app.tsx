@@ -4,18 +4,11 @@ import {
   useLoaderData,
   type LoaderFunctionArgs,
   type MetaFunction,
-  // [ROLLBACK-REVALIDATION] type ShouldRevalidateFunction,
 } from "react-router";
 import invariant from "tiny-invariant";
 import { Header } from "~/components/layout/Header";
 import { getCleanAction } from "~/lib/helpers";
-// [ROLLBACK-REVALIDATION] import { PERF_FLAGS } from "~/lib/perf";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-// [ROLLBACK-BOOTSTRAP] Imports do servidor removidos/comentados:
-// import { getAllCelebrations } from "~/models/celebrations.server";
-// import { getPartnersByUserId } from "~/models/partners.server";
-// import { getAllVisiblePeople } from "~/models/people.server";
-// import { getAllLateActions } from "~/models/actions.server";
 import type { Person } from "~/models/people.server";
 import { getUserId } from "~/services/auth.server";
 import { getUserPreferences } from "~/lib/preferences";
@@ -33,16 +26,6 @@ const CreateAndEditAction = lazy(() =>
   })),
 );
 
-// [ROLLBACK-BOOTSTRAP] Tipo original:
-// export type AppLoaderData = {
-//   people: Person[];
-//   person: Person;
-//   partners: Partner[];
-//   celebrations: Celebration[];
-//   lateActions: Action[];
-//   cloudName: string;
-//   uploadPreset: string;
-// };
 export type AppLoaderData = {
   person: Person;
   partners: Partner[];
@@ -52,31 +35,6 @@ export type AppLoaderData = {
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { user_id, supabase } = await getUserId(request);
-
-  // [ROLLBACK-BOOTSTRAP] Bloco antigo com Promise.all de multiple queries e lateActions
-  /*
-  const [people, partners, celebrations] = await Promise.all([
-    getAllVisiblePeople(supabase),
-    getPartnersByUserId(supabase, user_id),
-    getAllCelebrations(supabase),
-  ]);
-
-  const person = people?.find((person) => person.user_id === user_id)!;
-
-  invariant(person, "Person not found");
-
-  const lateActions = await getAllLateActions(
-    supabase,
-    user_id,
-    person.admin,
-    partners.map((p) => p.slug),
-  );
-
-  invariant(person, "Person not found");
-  invariant(people, "People not found");
-  invariant(partners, "Partners not found");
-  invariant(celebrations, "Priorities not found");
-  */
 
   // Nova chamada única utilizando a RPC get_app_bootstrap
   const { data: bootstrap, error } = await supabase.rpc("get_app_bootstrap", {
@@ -98,19 +56,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return {
     person,
     partners,
-    cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
-    uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET!,
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
+    uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || "",
   } as AppLoaderData;
 };
-
-
-// [ROLLBACK-REVALIDATION] Bloco completo abaixo — descomentar para reverter
-// export const shouldRevalidate: ShouldRevalidateFunction = (args) => {
-//   if (!PERF_FLAGS.SMART_REVALIDATION) return args.defaultShouldRevalidate;
-//   if (args.formMethod && args.formMethod !== "GET") return true;
-//   if (args.actionResult) return true;
-//   return false;
-// };
 
 export const meta: MetaFunction = () => {
   return [

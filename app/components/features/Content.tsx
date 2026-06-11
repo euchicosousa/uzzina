@@ -1,6 +1,6 @@
 import Color from "color";
 import { useRouteLoaderData } from "react-router";
-import { CATEGORIES, DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
+import { type CATEGORIES, DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
 import { getFormattedDateTime, Icons, isSprint } from "~/lib/helpers";
 import { cn, safeColor } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
@@ -26,9 +26,9 @@ export function Content({
 }) {
   const appData = useRouteLoaderData("routes/app") as
     | {
-      person?: Person;
-      people?: Person[];
-    }
+        person?: Person;
+        people?: Person[];
+      }
     | undefined;
   const person = appData?.person;
   const people = appData?.people || [];
@@ -36,7 +36,7 @@ export function Content({
   // Normaliza e valida a cor — nunca quebra mesmo se action.color vier inválido do banco
   const actionColor = safeColor(action.color);
 
-  const hasFiles = action.content_files && action.content_files?.length;
+  const hasFiles = action.content_files?.length;
   const backgroundColor = Color(actionColor);
   const foregroundColor = hasFiles
     ? "white"
@@ -50,7 +50,7 @@ export function Content({
     <div className={cn("relative", className)}>
       <div
         className={cn(
-          "bg-secondary ring-foreground/5 aspect-[4/5] overflow-hidden ring transition-opacity duration-500 group-hover/action:opacity-80",
+          "aspect-4/5 overflow-hidden bg-secondary ring ring-foreground/5 transition-opacity duration-500 group-hover/action:opacity-80",
           !isSquared && "squircle rounded-2xl",
         )}
       >
@@ -62,7 +62,7 @@ export function Content({
           />
         ) : (
           <div
-            className="text-secondary-foreground grid h-full place-content-center p-4 text-center text-xl leading-tight font-medium tracking-tighter"
+            className="grid h-full place-content-center p-4 text-center text-xl leading-tight font-medium tracking-tighter text-secondary-foreground"
             style={{
               backgroundColor: backgroundColor.hex(),
               color: foregroundColor,

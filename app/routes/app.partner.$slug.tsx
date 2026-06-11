@@ -1,5 +1,4 @@
 import {
-  addDays,
   endOfDay,
   endOfMonth,
   endOfWeek,
@@ -9,7 +8,6 @@ import {
   startOfDay,
   startOfMonth,
   startOfWeek,
-  subDays,
 } from "date-fns";
 import { Grid3X3Icon, SearchIcon, SettingsIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -37,31 +35,35 @@ import {
 } from "~/components/ui/input-group";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
+import { ActionContainer } from "~/components/features/ActionContainer";
 import { useAppTheme } from "~/hooks/useAppTheme";
 import { useOptimisticQuery } from "~/hooks/useOptimisticQuery";
 import { PHASES, SIZE } from "~/lib/CONSTANTS";
 import { filterActions, getInstagramFeedActions } from "~/lib/helpers";
 import { getUserPreferences } from "~/lib/preferences";
 import { cn } from "~/lib/utils";
-// [ROLLBACK-PARTNER-LOADER] Imports do servidor removidos/comentados:
-// import { getActionsByPartner, getLateActionsByPartner } from "~/models/actions.server";
-// import { getPersonByUserId } from "~/models/people.server";
 import { getPartnerBySlug } from "~/models/partners.server";
 import { getUserId } from "~/services/auth.server";
+import type { Action } from "~/models/actions.server";
 
 import { useQueryClient } from "@tanstack/react-query";
+import { useMatches } from "react-router";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import {
-  fetchPartnerActions,
   fetchAllLateActions,
+  fetchPartnerActions,
 } from "~/lib/supabase.queries";
 import type { AppLoaderData } from "./app";
-import { useMatches } from "react-router";
 
 export const runtime = "edge";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const { user_id, supabase } = await getUserId(request);
+  const { supabase } = await getUserId(request);
 
   const searchParams = new URL(request.url).searchParams;
   let date = searchParams.get("date");
@@ -78,26 +80,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const start = startOfDay(startOfWeek(startOfMonth(parseISO(date))));
   const end = endOfDay(endOfWeek(endOfMonth(parseISO(date))));
 
-  // [ROLLBACK-PARTNER-LOADER] Bloco antigo buscava person, actions e lateActions no servidor:
-  /*
-  const person = await getPersonByUserId(supabase, user_id);
-  invariant(person);
-
-  const [partner, actions, lateActions] = await Promise.all([
-    getPartnerBySlug(supabase, params.slug!),
-    skipActions ? Promise.resolve([]) : getActionsByPartner(supabase, params.slug!, user_id, person.admin, format(start, "yyyy-MM-dd HH:mm:ss"), format(end, "yyyy-MM-dd HH:mm:ss")),
-    skipActions ? Promise.resolve([]) : getLateActionsByPartner(supabase, params.slug!, user_id, person.admin),
-  ]);
-
-  invariant(partner);
-  return data(
-    { partner, actions, lateActions, date, person },
-    { headers: { "Cache-Control": "no-store" } },
-  );
-  */
-
   // Loader simplificado: apenas partner e datas (sem queries de actions)
-  const partner = await getPartnerBySlug(supabase, params.slug!);
+  invariant(params.slug, "Slug do parceiro não fornecido");
+  const partner = await getPartnerBySlug(supabase, params.slug);
   invariant(partner);
 
   return data(
@@ -134,7 +119,7 @@ export default function PartnerPage() {
     enabled: !skipActions,
     initialData: () => {
       // Tenta recuperar do cache da Home e filtrar pelo parceiro
-      const cachedHomeActions = queryClient.getQueryData<any[]>(
+       const cachedHomeActions = queryClient.getQueryData<Action[]>(
         QUERY_KEYS.actions.home(person.user_id),
       );
       if (cachedHomeActions) {
@@ -156,10 +141,13 @@ export default function PartnerPage() {
         partners.map((p) => p.slug),
       ),
     select: (allLateActions) =>
-      allLateActions.filter((action) => action.partners?.includes(partner.slug)),
+      allLateActions.filter((action) =>
+        action.partners?.includes(partner.slug),
+      ),
     enabled: !skipActions,
   });
-  const { setBaseAction } = useOutletContext<OutletContext>();
+  const context = useOutletContext<OutletContext | undefined>();
+  const setBaseAction = context?.setBaseAction;
   const [currentDay, setCurrentDay] = useState(parseISO(date));
   const [query, setQuery] = useState("");
 
@@ -178,7 +166,7 @@ export default function PartnerPage() {
       restoreThemeColors();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [followPartnerColor, partner.colors]);
+  }, [followPartnerColor, partner.colors, restoreThemeColors, applyPartnerColors]);
 
   const preferences = getUserPreferences(person);
 
@@ -228,12 +216,26 @@ export default function PartnerPage() {
               image={partner.image}
             />
             {lateCount > 0 && (
-              <Link
-                className="isolate -mt-4 -ml-4"
-                to={`/app/late/${partner.slug}`}
-              >
-                <UBadge value={lateCount} isDynamic />
-              </Link>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="isolate -mt-4 -ml-4 cursor-pointer outline-none select-none">
+                    <UBadge value={lateCount} isDynamic />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="max-h-[400px] w-[380px] overflow-y-auto bg-popover/50 p-4 backdrop-blur-lg"
+                  align="start"
+                >
+                  <h3 className="text-lg tracking-normal">
+                    Ações Atrasadas ({lateCount})
+                  </h3>
+                  <ActionContainer
+                    actions={currentLateActions}
+                    variant="line"
+                    onClick={(action) => setBaseAction?.(action)}
+                  />
+                </PopoverContent>
+              </Popover>
             )}
             <div className="hidden truncate p-0 py-2 text-lg font-medium sm:block">
               {partner.title}
@@ -310,7 +312,7 @@ export default function PartnerPage() {
           <FeedSection
             actions={feedActions}
             onActionClick={(action) => {
-              setBaseAction(action);
+              setBaseAction?.(action);
             }}
             currentPartner={partner}
           />
@@ -319,4 +321,3 @@ export default function PartnerPage() {
     </div>
   );
 }
-

@@ -73,16 +73,16 @@ export function PartnerColorPicker({
               title={hex}
               onClick={() => onChange(hex)}
               className={cn(
-                "w-fill aspect-[3/4] rounded border border-black/5 transition-all hover:opacity-80",
+                "w-fill aspect-3/4 rounded border border-black/5 transition-all hover:opacity-80",
                 value.toLowerCase() === hex.toLowerCase() &&
-                "ring-primary scale-105 ring-2 ring-offset-1",
+                  "scale-105 ring-2 ring-primary ring-offset-1",
               )}
               style={{ backgroundColor: hex }}
             />
           ))}
         </div>
       ) : (
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Nenhuma cor definida para este parceiro.
         </p>
       )}
@@ -129,7 +129,12 @@ function HexInput({
   }, [value]);
 
   // Limpa o debounce ao desmontar
-  useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
+  useEffect(
+    () => () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    },
+    [],
+  );
 
   const isInvalid = inputValue.length > 0 && !isValidColor(inputValue);
 
@@ -145,7 +150,8 @@ function HexInput({
       placeholder="#Hex"
       className={cn(
         "h-8 font-mono tracking-wider uppercase",
-        isInvalid && "text-destructive focus-visible:border-destructive ring-destructive bg-destructive/5 focus-visible:ring-destructive/20",
+        isInvalid &&
+          "bg-destructive/5 text-destructive ring-destructive focus-visible:border-destructive focus-visible:ring-destructive/20",
       )}
       onChange={(e) => {
         const raw = e.target.value;

@@ -29,7 +29,7 @@ export function Draggable({
   children,
 }: {
   id: UniqueIdentifier;
-  children: React.ReactElement<any>;
+  children: React.ReactElement;
 }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({

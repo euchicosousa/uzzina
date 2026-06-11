@@ -9,7 +9,7 @@ import type { AppLoaderData } from "~/routes/app";
 import { ActionContainer } from "../features/ActionContainer";
 import { Button } from "../ui/button";
 import { UAvatarGroup } from "../uzzina/UAvatar";
-import { ProfileSkeleton, SkeletonGroup } from "../ui/skeleton";
+import { SkeletonGroup } from "../ui/skeleton";
 
 export function PartnersComponent({ actions }: { actions: Action[] }) {
   const { partners } = useRouteLoaderData("routes/app") as AppLoaderData;

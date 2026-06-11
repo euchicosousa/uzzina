@@ -42,7 +42,7 @@ export function CalendarWithDnd({
   showBorder?: boolean;
   highlightThisWeek?: boolean;
 }) {
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
   const { handleAction } = useActionMutations();
   const [activeAction, setActiveAction] = useState<Action>();
   // Local override: maps action.id → updated date fields.
@@ -54,14 +54,17 @@ export function CalendarWithDnd({
 
   useEffect(() => {
     setDateOverrides({});
-  }, [actions]);
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
   );
 
   const handleDragStart = (event: DragStartEvent) => {
-    setActiveAction(actions.find((a) => a.id === event.active.id)!);
+    const found = actions.find((a) => a.id === event.active.id);
+    if (found) {
+      setActiveAction(found);
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {

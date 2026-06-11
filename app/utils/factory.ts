@@ -11,7 +11,7 @@ export const getCleanAction = ({
   partners?: string[];
 }) => {
   date = date || new Date();
-  let _date = format(
+  const _date = format(
     isToday(date)
       ? date.getHours() < 11
         ? date.setHours(11, 0, 0)

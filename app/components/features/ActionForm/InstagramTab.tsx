@@ -1,5 +1,5 @@
 import { LoaderIcon } from "lucide-react";
-import { type FetcherWithComponents } from "react-router";
+import type { FetcherWithComponents } from "react-router";
 import {
   ContentFilesManager,
   InstagramPreview,
@@ -14,7 +14,7 @@ interface InstagramTabProps {
   RawAction: Action;
 
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;
-  updateAction: (data?: { [key: string]: any }) => Promise<void>;
+  updateAction: (data?: { [key: string]: unknown }) => Promise<void>;
 
   contentFiles: string[];
   updateContentFiles: (files: string[]) => void;
@@ -22,7 +22,7 @@ interface InstagramTabProps {
   cloudName: string;
   uploadPreset: string;
   isAIProcessing: boolean;
-  fetcher: FetcherWithComponents<any>;
+  fetcher: FetcherWithComponents<unknown>;
 }
 
 function getCaptionTail(instagram_caption_tail: string | null) {

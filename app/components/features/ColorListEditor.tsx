@@ -149,7 +149,6 @@ interface SortableItemProps {
 function SortableColorItem({
   id,
   value,
-  index,
   onRemove,
   onChange,
 }: SortableItemProps) {
@@ -175,13 +174,13 @@ function SortableColorItem({
       style={style}
       className={cn(
         "flex items-center gap-2 rounded-md",
-        isDragging && "ring-primary ring-2",
+        isDragging && "ring-2 ring-primary",
       )}
     >
       <div
         {...attributes}
         {...listeners}
-        className="text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing"
+        className="cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing"
       >
         <GripVerticalIcon className="size-4" />
       </div>
@@ -226,7 +225,7 @@ function SortableColorItem({
         variant="ghost"
         size="icon"
         onClick={onRemove}
-        className="text-muted-foreground hover:text-destructive h-9 w-9"
+        className="h-9 w-9 text-muted-foreground hover:text-destructive"
         title="Remover cor"
       >
         <Trash2Icon className="h-4 w-4" />

@@ -35,7 +35,7 @@ interface EssentialsTabProps {
   RawAction: Action;
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;
   updateAction: (
-    data?: { [key: string]: any },
+    data?: Record<string, unknown>,
     forceCreate?: boolean,
   ) => Promise<void>;
   workFiles: string[];
@@ -44,7 +44,10 @@ interface EssentialsTabProps {
   cloudName: string;
   uploadPreset: string;
   isAIProcessing: boolean;
-  fetcher: FetcherWithComponents<any>;
+  fetcher: FetcherWithComponents<{
+    intent?: string;
+    output?: { racional?: string; hooks?: { tipo: string; texto: string }[] };
+  }>;
   onDescriptionChange?: (description: string) => void;
   descriptionVersion?: number;
 }
@@ -78,7 +81,7 @@ export function EssentialsTab({
   const [isCreatingPost, setIsCreatingPost] = useState(false);
 
   useEffect(() => {
-    if (fetcher.data?.intent === INTENT.ai_hooks) {
+    if (fetcher.data?.intent === INTENT.ai_hooks && fetcher.data.output) {
       setRacional(fetcher.data.output.racional ?? "");
       setHooks(fetcher.data.output.hooks ?? []);
       setHooksOpen(true);
@@ -87,12 +90,14 @@ export function EssentialsTab({
 
     if (
       fetcher.data?.intent &&
-      [
-        INTENT.ai_post,
-        INTENT.ai_carousel,
-        INTENT.ai_stories,
-        INTENT.ai_reels,
-      ].includes(fetcher.data.intent)
+      (
+        [
+          INTENT.ai_post,
+          INTENT.ai_carousel,
+          INTENT.ai_stories,
+          INTENT.ai_reels,
+        ] as string[]
+      ).includes(fetcher.data.intent)
     ) {
       setHooksOpen(false);
       setIsCreatingPost(false);
@@ -129,7 +134,6 @@ export function EssentialsTab({
             selectedResponsibles={RawAction.responsibles}
             currentPartners={currentPartners}
             onSelect={async (responsibles) => {
-              // @ts-ignore
               setRawAction({ ...RawAction, responsibles });
               await updateAction({
                 ...RawAction,
@@ -161,7 +165,6 @@ export function EssentialsTab({
                 isLateAction(RawAction) ? "text-destructive" : "opacity-50",
               )}
               onSelect={async (date) => {
-                // @ts-ignore
                 setRawAction({
                   ...RawAction,
                   ...getNewDateForAction(RawAction, date),
@@ -213,12 +216,11 @@ export function EssentialsTab({
           <div className="flex flex-wrap items-center gap-1.5">
             {workFiles.map((url, i) => (
               <WorkFileThumbnail
-                key={url + i}
+                key={url}
                 url={url}
                 onRemove={async () => {
                   const next = workFiles.filter((_, idx) => idx !== i);
                   setWorkFiles(next);
-                  // @ts-ignore
                   setRawAction((prev) => ({ ...prev, work_files: next }));
                   await updateAction({ work_files: next });
                 }}
@@ -258,7 +260,6 @@ export function EssentialsTab({
 
                 workFilesRef.current = next;
                 setWorkFiles(next);
-                // @ts-ignore
                 setRawAction((prev) => ({ ...prev, work_files: next }));
                 await updateAction({ work_files: next });
               }}
@@ -297,7 +298,6 @@ export function EssentialsTab({
                   return;
                 }
                 // Sync local state so RawAction stays consistent after blur
-                // @ts-ignore
                 setRawAction({ ...RawAction, description: content });
                 await updateAction({ description: content });
               }}
@@ -328,7 +328,7 @@ export function EssentialsTab({
               <div className="pb-8 text-xl">{racional}</div>
               {hooks.map((hook, i) => (
                 <HookItem
-                  key={i}
+                  key={hook.tipo}
                   hook={hook}
                   racional={racional}
                   RawAction={RawAction}
@@ -367,10 +367,10 @@ function HookItem({
 }: {
   hook: { tipo: string; texto: string };
   racional: string;
-  RawAction: Record<string, any>;
+  RawAction: Action;
   onChange: (texto: string) => void;
   category: string;
-  onSubmit: (formData: any) => void;
+  onSubmit: (formData: Record<string, string | string[] | null>) => void;
   partner_context: string;
 }) {
   return (
@@ -384,7 +384,6 @@ function HookItem({
           value={hook.texto}
           onChange={(e) => onChange(e.target.value)}
           className="w-full resize-none rounded-lg border bg-transparent px-4 py-2 outline-none"
-          // @ts-ignore
           style={{ fieldSizing: "content" }}
         />
         <Button

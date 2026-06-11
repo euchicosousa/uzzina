@@ -15,7 +15,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "../ui/command";
-import { PHASES, CATEGORY_PHASES, type CATEGORY } from "~/lib/CONSTANTS";
+import { PHASES, CATEGORY_PHASES, type CATEGORY, type PHASE_TYPE } from "~/lib/CONSTANTS";
 import { PhaseIcon } from "./PhaseIcon";
 
 const ALL_PHASE = {
@@ -40,6 +40,7 @@ export function PhaseCombobox({
   selectedPhase?: string;
   selectedPhases?: string[];
   category?: CATEGORY;
+  // biome-ignore lint/suspicious/noExplicitAny: onSelect callback handles polymorphic inputs (string slug or multi-select object payload) depending on isMulti
   onSelect?: (args: any) => void;
   isMulti?: boolean;
   tabIndex?: number;
@@ -71,7 +72,7 @@ export function PhaseCombobox({
   const availableSlugs = category ? CATEGORY_PHASES[category] : undefined;
 
   const filteredPhases = availableSlugs
-    ? PHASES_LIST.filter((p) => availableSlugs.includes(p.slug as any))
+    ? PHASES_LIST.filter((p) => (availableSlugs as readonly string[]).includes(p.slug))
     : PHASES_LIST;
 
   const phasesList = isMulti ? [ALL_PHASE, ...filteredPhases] : filteredPhases;
@@ -135,7 +136,7 @@ export function PhaseCombobox({
           >
             {!showText ? (
               <PhaseIcon
-                phase={currentPhases[0] as any}
+                phase={currentPhases[0] as PHASE_TYPE}
                 size="md"
                 variant={iconVariant}
               />
@@ -193,7 +194,7 @@ export function PhaseCombobox({
                     }
                   }}
                 >
-                  <PhaseIcon phase={phase as any} variant={"icon"} />
+                  <PhaseIcon phase={phase as PHASE_TYPE} variant={"icon"} />
                   <span className="truncate">{phase.title}</span>
                   <CheckIcon
                     className={cn(

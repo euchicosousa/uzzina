@@ -25,7 +25,7 @@ export function ObservationsTab({
     if (actionId) {
       fetcher.load(`/action/handle-action?actionId=${actionId}`);
     }
-  }, [actionId]);
+  }, [actionId, fetcher.load]);
 
   const comments = fetcher.data?.comments || [];
 
