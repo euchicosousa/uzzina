@@ -125,12 +125,12 @@ export default function AppHome() {
   return (
     // <div className="mx-8 flex flex-col gap-6 border-r border-l">
     <>
-      {sprintActions.length > 0 && (
-        <>
-          <SprintHomeComponent actions={sprintActions} />
-          {/* <div className="-mx-8 h-2 border-b"></div> */}
-        </>
-      )}
+      {/* {sprintActions.length > 0 && (
+        <> */}
+      <SprintHomeComponent actions={sprintActions} />
+      {/* <div className="-mx-8 h-2 border-b"></div> */}
+      {/* </>
+      )} */}
       <TodayHomeComponent actions={currentActions} />
       {/* <div className="-mx-8 h-2 border-b"></div> */}
       <CalendarHomeComponent
