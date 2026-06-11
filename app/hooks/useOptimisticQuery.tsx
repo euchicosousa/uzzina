@@ -1,11 +1,15 @@
-import { useQuery, useMutationState, type UseQueryOptions } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutationState,
+  type UseQueryOptions,
+} from "@tanstack/react-query";
 import { useMemo } from "react";
 import { format } from "date-fns";
 import { INTENT } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
 
 export function useOptimisticQuery<TData = Action[]>(
-  options: UseQueryOptions<TData, Error, TData>
+  options: UseQueryOptions<TData, Error, TData>,
 ) {
   const queryResult = useQuery<TData, Error, TData>(options);
 
@@ -37,18 +41,12 @@ export function useOptimisticQuery<TData = Action[]>(
 
     // Mutações ativas: que começaram após a última atualização da query e que não falharam
     const activeBulkActions = bulkActionMutations.filter(
-      (m) => m.submittedAt > queryResult.dataUpdatedAt && m.status !== "error"
+      (m) => m.submittedAt > queryResult.dataUpdatedAt && m.status !== "error",
     );
 
     const activeActions = actionMutations.filter(
-      (m) => m.submittedAt > queryResult.dataUpdatedAt && m.status !== "error"
+      (m) => m.submittedAt > queryResult.dataUpdatedAt && m.status !== "error",
     );
-
-    console.log("useOptimisticQuery Debug:", {
-      dataUpdatedAt: queryResult.dataUpdatedAt,
-      actionMutations,
-      activeActions,
-    });
 
     // 1. Aplicar mutações em lote primeiro
     activeBulkActions.forEach((mutation) => {
@@ -65,7 +63,10 @@ export function useOptimisticQuery<TData = Action[]>(
           }
           if (newDate) {
             try {
-              const existingTime = format(new Date(action.date.replace(" ", "T")), "HH:mm:ss");
+              const existingTime = format(
+                new Date(action.date.replace(" ", "T")),
+                "HH:mm:ss",
+              );
               return { ...action, date: `${newDate} ${existingTime}` };
             } catch {
               return { ...action, date: `${newDate} 00:00:00` };
@@ -73,7 +74,10 @@ export function useOptimisticQuery<TData = Action[]>(
           }
           if (newTime) {
             try {
-              const existingDate = format(new Date(action.date.replace(" ", "T")), "yyyy-MM-dd");
+              const existingDate = format(
+                new Date(action.date.replace(" ", "T")),
+                "yyyy-MM-dd",
+              );
               return { ...action, date: `${existingDate} ${newTime}:00` };
             } catch {
               return action;
@@ -93,7 +97,7 @@ export function useOptimisticQuery<TData = Action[]>(
 
       if (intent === INTENT.update_action && id) {
         nextData = nextData.map((action) =>
-          action.id === id ? { ...action, ...values } : action
+          action.id === id ? { ...action, ...values } : action,
         );
       } else if (intent === INTENT.create_action) {
         // Gera um ID temporário se não houver um
@@ -126,7 +130,12 @@ export function useOptimisticQuery<TData = Action[]>(
     });
 
     return nextData as unknown as TData;
-  }, [queryResult.data, queryResult.dataUpdatedAt, actionMutations, bulkActionMutations]);
+  }, [
+    queryResult.data,
+    queryResult.dataUpdatedAt,
+    actionMutations,
+    bulkActionMutations,
+  ]);
 
   return {
     ...queryResult,
