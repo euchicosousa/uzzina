@@ -58,9 +58,9 @@
   --background: var(--dark-background-override, oklch(0.4 0.01 285.823));
   --foreground: var(--dark-foreground-override, oklch(0.985 0 0));
 
-  --card: oklch(from var(--background) l c h);
+  --card: oklch(0 0 0);
   --card-foreground: var(--foreground);
-  --popover: oklch(from var(--background) l c h);
+  --popover: oklch(0 0 0);
   --popover-foreground: var(--foreground);
 
   /* Dark mode variables injected by JS */

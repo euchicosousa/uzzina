@@ -276,7 +276,6 @@ export const SIZE = {
   "2xl": "2xl",
 } as const;
 
-
 export const DATE_TIME_DISPLAY = {
   Relative: 1,
   DateTime: 2,
@@ -332,9 +331,9 @@ export const PALLETE = [
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
-      primary: { h: 250, c: 0.01, l: 0.3 },
-      primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 250, c: 0.005, l: 0.141 },
+      primary: { h: 0, c: 0, l: 1 },
+      primaryFg: { h: 0, c: 0, l: 0 },
+      bg: { h: 250, c: 0.01, l: 0.2 },
       fg: { h: 0, c: 0, l: 1 },
     },
   },
@@ -382,7 +381,7 @@ export const PALLETE = [
     dark: {
       primary: { h: 350, c: 0.4, l: 0.8 },
       primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 285, c: 0.005, l: 0.141 },
+      bg: { h: 340, c: 0.1, l: 0.3 },
       fg: { h: 0, c: 0, l: 1 },
     },
   },
