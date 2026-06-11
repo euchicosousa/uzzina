@@ -92,11 +92,12 @@ export default function AppHome() {
   const { person, partners } = useMatches()[1].loaderData as AppLoaderData;
 
   // Busca as ações no client usando TanStack Query
-  const { data: currentActions = [] } = useOptimisticQuery({
-    queryKey: QUERY_KEYS.actions.home(person.user_id),
-    queryFn: () =>
-      fetchHomeActions(person.user_id, startDateISO, endDateISO, todayEndISO),
-  });
+  const { data: currentActions = [], isLoading: isLoadingActions } =
+    useOptimisticQuery({
+      queryKey: QUERY_KEYS.actions.home(person.user_id),
+      queryFn: () =>
+        fetchHomeActions(person.user_id, startDateISO, endDateISO, todayEndISO),
+    });
 
   // Busca as lateActions no client usando TanStack Query
   const { data: currentLateActions = [] } = useOptimisticQuery({
@@ -125,12 +126,14 @@ export default function AppHome() {
   return (
     // <div className="mx-8 flex flex-col gap-6 border-r border-l">
     <>
-      {/* {sprintActions.length > 0 && (
-        <> */}
-      <SprintHomeComponent actions={sprintActions} />
-      {/* <div className="-mx-8 h-2 border-b"></div> */}
-      {/* </>
-      )} */}
+      {sprintActions.length > 0 && (
+        <>
+          <SprintHomeComponent
+            actions={sprintActions}
+          />
+          {/* <div className="-mx-8 h-2 border-b"></div> */}
+        </>
+      )}
       <TodayHomeComponent actions={currentActions} />
       {/* <div className="-mx-8 h-2 border-b"></div> */}
       <CalendarHomeComponent

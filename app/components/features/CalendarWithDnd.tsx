@@ -77,9 +77,11 @@ export function CalendarWithDnd({
 
       setDateOverrides((prev) => ({ ...prev, [activeAction.id]: newDates }));
 
-      handleAction(
-        { ...activeAction, intent: INTENT.update_action, ...newDates }
-      );
+      handleAction({
+        ...activeAction,
+        intent: INTENT.update_action,
+        ...newDates,
+      });
     }
 
     setActiveAction(undefined);

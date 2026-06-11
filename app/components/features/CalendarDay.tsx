@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { format, isSameDay, isSameMonth, isSameWeek } from "date-fns";
 import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
@@ -7,6 +8,8 @@ import { ActionContainer } from "./ActionContainer";
 import type { Action } from "~/models/actions.server";
 import { getInstagramFeedActions } from "~/utils/validation";
 import { PlusIcon } from "lucide-react";
+import { SkeletonGroup } from "../ui/skeleton";
+import { useLoading } from "~/hooks/useLoading";
 
 export function CalendarDay({
   currentDay,
@@ -34,6 +37,8 @@ export function CalendarDay({
   const { setNodeRef } = useDroppable({
     id: `${format(day, "yyyy-MM-dd")}`,
   });
+  const isLoading = useLoading(["actions"]);
+  const skeletonCount = useMemo(() => Math.ceil(Math.random() * 7) + 1, []);
 
   day.setHours(new Date().getHours(), new Date().getMinutes());
 
@@ -85,6 +90,15 @@ export function CalendarDay({
           )}
         </div>
         <div className={cn("h-full overflow-hidden")}>
+          {isLoading && actions.length === 0 && (
+            <SkeletonGroup
+              orientation="vertical"
+              className="gap-1"
+              delay={400}
+              count={skeletonCount}
+            />
+          )}
+
           {viewOptions.variant === VARIANT.content ? (
             <div className="flex flex-col gap-2">
               {getInstagramFeedActions(actions).length > 0 && (

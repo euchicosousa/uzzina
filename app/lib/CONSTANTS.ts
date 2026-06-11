@@ -335,12 +335,14 @@ export const PALLETE = [
     label: "Padrão",
     light: {
       primary: { h: 0, c: 0, l: 0 },
+      primaryFg: { h: 0, c: 0, l: 1 },
       bg: { h: 0, c: 0, l: 1 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
       primary: { h: 250, c: 0.01, l: 0.3 },
-      bg: { h: 250, c: 0.01, l: 0.2 },
+      primaryFg: { h: 0, c: 0, l: 1 },
+      bg: { h: 250, c: 0.005, l: 0.141 },
       fg: { h: 0, c: 0, l: 1 },
     },
   },
@@ -348,11 +350,13 @@ export const PALLETE = [
     label: "Azul (Padrão)",
     light: {
       primary: { h: 264, c: 0.31, l: 0.45 },
+      primaryFg: { h: 0, c: 0, l: 1 },
       bg: { h: 0, c: 0, l: 1 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
       primary: { h: 264, c: 0.31, l: 0.58 },
+      primaryFg: { h: 0, c: 0, l: 1 },
       bg: { h: 285, c: 0.005, l: 0.141 },
       fg: { h: 0, c: 0, l: 1 },
     },
@@ -361,11 +365,13 @@ export const PALLETE = [
     label: "Roxo",
     light: {
       primary: { h: 290, c: 0.28, l: 0.54 },
+      primaryFg: { h: 0, c: 0, l: 1 },
       bg: { h: 290, c: 0.005, l: 0.99 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
       primary: { h: 290, c: 0.28, l: 0.68 },
+      primaryFg: { h: 0, c: 0, l: 1 },
       bg: { h: 285, c: 0.005, l: 0.141 },
       fg: { h: 0, c: 0, l: 1 },
     },
@@ -374,11 +380,13 @@ export const PALLETE = [
     label: "Magenta",
     light: {
       primary: { h: 350, c: 0.4, l: 0.9 },
+      primaryFg: { h: 0, c: 0, l: 0 },
       bg: { h: 320, c: 0.02, l: 0.98 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
       primary: { h: 350, c: 0.4, l: 0.8 },
+      primaryFg: { h: 0, c: 0, l: 0 },
       bg: { h: 285, c: 0.005, l: 0.141 },
       fg: { h: 0, c: 0, l: 1 },
     },
@@ -387,11 +395,13 @@ export const PALLETE = [
     label: "Rosa",
     light: {
       primary: { h: 340, c: 0.25, l: 0.65 },
+      primaryFg: { h: 0, c: 0, l: 1 },
       bg: { h: 0, c: 0, l: 1 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
       primary: { h: 340, c: 0.25, l: 0.68 },
+      primaryFg: { h: 0, c: 0, l: 1 },
       bg: { h: 285, c: 0.005, l: 0.141 },
       fg: { h: 0, c: 0, l: 1 },
     },
@@ -400,11 +410,13 @@ export const PALLETE = [
     label: "Vermelho",
     light: {
       primary: { h: 20, c: 0.25, l: 0.62 },
+      primaryFg: { h: 0, c: 0, l: 1 },
       bg: { h: 0, c: 0, l: 1 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
       primary: { h: 20, c: 0.25, l: 0.68 },
+      primaryFg: { h: 0, c: 0, l: 1 },
       bg: { h: 285, c: 0.005, l: 0.141 },
       fg: { h: 0, c: 0, l: 1 },
     },
@@ -413,11 +425,13 @@ export const PALLETE = [
     label: "Laranja",
     light: {
       primary: { h: 40, c: 0.22, l: 0.7 },
+      primaryFg: { h: 0, c: 0, l: 0 },
       bg: { h: 0, c: 0, l: 1 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
       primary: { h: 40, c: 0.22, l: 0.75 },
+      primaryFg: { h: 0, c: 0, l: 0 },
       bg: { h: 285, c: 0.005, l: 0.141 },
       fg: { h: 0, c: 0, l: 1 },
     },
@@ -426,11 +440,13 @@ export const PALLETE = [
     label: "Amarelo",
     light: {
       primary: { h: 100, c: 0.5, l: 0.8 },
+      primaryFg: { h: 0, c: 0, l: 0 },
       bg: { h: 0, c: 0, l: 1 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
       primary: { h: 100, c: 0.4, l: 0.8 },
+      primaryFg: { h: 0, c: 0, l: 0 },
       bg: { h: 285, c: 0.005, l: 0.141 },
       fg: { h: 0, c: 0, l: 1 },
     },
@@ -439,11 +455,13 @@ export const PALLETE = [
     label: "Verde",
     light: {
       primary: { h: 130, c: 0.2, l: 0.7 },
+      primaryFg: { h: 0, c: 0, l: 0 },
       bg: { h: 0, c: 0, l: 1 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
       primary: { h: 130, c: 0.2, l: 0.65 },
+      primaryFg: { h: 0, c: 0, l: 0 },
       bg: { h: 285, c: 0.005, l: 0.141 },
       fg: { h: 0, c: 0, l: 1 },
     },
@@ -452,11 +470,13 @@ export const PALLETE = [
     label: "Ciano",
     light: {
       primary: { h: 200, c: 0.2, l: 0.7 },
+      primaryFg: { h: 0, c: 0, l: 0 },
       bg: { h: 0, c: 0, l: 1 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
       primary: { h: 200, c: 0.2, l: 0.65 },
+      primaryFg: { h: 0, c: 0, l: 0 },
       bg: { h: 285, c: 0.005, l: 0.141 },
       fg: { h: 0, c: 0, l: 1 },
     },
@@ -465,11 +485,13 @@ export const PALLETE = [
     label: "Azul Claro",
     light: {
       primary: { h: 240, c: 0.22, l: 0.7 },
+      primaryFg: { h: 0, c: 0, l: 0 },
       bg: { h: 0, c: 0, l: 1 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
       primary: { h: 240, c: 0.22, l: 0.65 },
+      primaryFg: { h: 0, c: 0, l: 0 },
       bg: { h: 285, c: 0.005, l: 0.141 },
       fg: { h: 0, c: 0, l: 1 },
     },
@@ -478,11 +500,13 @@ export const PALLETE = [
     label: "Azul Marinho",
     light: {
       primary: { h: 250, c: 0.12, l: 0.5 },
+      primaryFg: { h: 0, c: 0, l: 1 },
       bg: { h: 90, c: 0.005, l: 0.99 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
       primary: { h: 250, c: 0.12, l: 0.6 },
+      primaryFg: { h: 0, c: 0, l: 1 },
       bg: { h: 285, c: 0.005, l: 0.141 },
       fg: { h: 0, c: 0, l: 1 },
     },

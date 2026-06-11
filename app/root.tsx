@@ -200,6 +200,16 @@ export function App() {
                   root.style.setProperty("--dark-accent-c", p.dark.primary.c);
                   root.style.setProperty("--dark-accent-l", p.dark.primary.l);
 
+                  if (p.light.primaryFg) {
+                    var fgStr = "oklch(" + p.light.primaryFg.l + " " + p.light.primaryFg.c + " " + p.light.primaryFg.h + ")";
+                    root.style.setProperty("--primary-foreground-override", fgStr);
+                    root.style.setProperty("--sidebar-primary-foreground-override", fgStr);
+                  }
+                  if (p.dark.primaryFg) {
+                    var darkFgStr = "oklch(" + p.dark.primaryFg.l + " " + p.dark.primaryFg.c + " " + p.dark.primaryFg.h + ")";
+                    root.style.setProperty("--dark-primary-foreground-override", darkFgStr);
+                  }
+
                   if (p.light.bg) {
                     root.style.setProperty("--background-override", "oklch(" + p.light.bg.l + " " + p.light.bg.c + " " + p.light.bg.h + ")");
                   }

@@ -40,7 +40,6 @@ export function CalendarHomeComponent({
     staleTime: 30 * 60 * 1000, // 30 minutos (celebrations são semi-estáticos)
   });
 
-
   const [period, setPeriod] = useState<"week" | "month">("week");
   const [currentDate] = useState(new Date());
 

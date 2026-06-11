@@ -7,8 +7,14 @@ import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 import { Skeleton } from "~/components/ui/skeleton";
+import { useLoading } from "~/hooks/useLoading";
 
-export function SprintHomeComponent({ actions }: { actions: Action[] }) {
+export function SprintHomeComponent({
+  actions,
+}: {
+  actions: Action[];
+}) {
+  const isLoading = useLoading(["actions"]);
   const [viewOptions, setViewOptions] = useViewOptions({
     variant: VARIANT.block,
     showOptions: {
@@ -31,7 +37,7 @@ export function SprintHomeComponent({ actions }: { actions: Action[] }) {
       }
     >
       <div className="px-8 pb-8 xl:px-16">
-        {actions.length === 0 ? (
+        {isLoading && actions.length === 0 ? (
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, index) => (
               <Skeleton

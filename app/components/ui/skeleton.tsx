@@ -31,7 +31,7 @@ export function SkeletonGroup({
   isWrapped = true,
   ...props
 }: SkeletonProps & {
-  count: number;
+  count?: number;
   orientation?: "horizontal" | "vertical";
   hasProfile?: boolean;
   hasLine?: boolean;
@@ -54,9 +54,8 @@ export function SkeletonGroup({
     <div
       className={cn(
         orientation === "horizontal"
-          ? "grid grid-cols-2 md:grid-cols-4"
-          : "flex flex-col",
-        "gap-8",
+          ? "grid grid-cols-2 gap-8 md:grid-cols-4"
+          : "flex flex-col gap-2",
       )}
       {...props}
     >
