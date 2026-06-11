@@ -1,12 +1,8 @@
 import { IconBrandInstagram } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { ArchiveIcon, HeartIcon, MessageSquareIcon, XIcon } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  useFetcher,
-  useFetchers,
-  useRouteLoaderData,
-} from "react-router";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useFetcher, useFetchers, useRouteLoaderData } from "react-router";
 import { toast } from "sonner";
 import { ActionFormFooter } from "~/components/features/ActionForm/ActionFormFooter";
 import { EssentialsTab } from "~/components/features/ActionForm/EssentialsTab";
@@ -19,7 +15,6 @@ import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
 import type { AppLoaderData } from "~/routes/app";
-import { useQueryClient } from "@tanstack/react-query";
 
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
@@ -35,16 +30,25 @@ export function CreateAndEditAction({
   const [view, setView] = useState<"essential" | "instagram" | "observations">(
     "essential",
   );
-  const { partners, cloudName, uploadPreset } = useRouteLoaderData(
-    "routes/app",
-  ) as AppLoaderData & { partners: Partner[] };
+  const {
+    partners: routePartners,
+    cloudName,
+    uploadPreset,
+  } = useRouteLoaderData("routes/app") as AppLoaderData & {
+    partners: Partner[];
+  };
+
+  const partners = routePartners || [];
 
   const fetcher = useFetcher();
   const fetchers = useFetchers();
-  const _queryClient = useQueryClient();
   const { handleAction, isLoading: isMutationLoading } = useActionMutations();
 
-  const [RawAction, setRawAction] = useState<Action>(BaseAction);
+  const [RawAction, setRawAction] = useState<Action>(() => {
+    if (BaseAction.created_at) return BaseAction;
+    const now = format(new Date(), "yyyy-MM-dd HH:mm:ss");
+    return { ...BaseAction, created_at: now, updated_at: now };
+  });
 
   // Ref always points to the latest RawAction to avoid stale closures
   const rawActionRef = useRef(RawAction);
@@ -81,13 +85,11 @@ export function CreateAndEditAction({
     if (!RawAction.id && isCreatingRef.current) return;
     if (!RawAction.id) isCreatingRef.current = true;
 
-    const result = await handleAction(
-      {
-        ...RawAction,
-        description: descriptionRef.current, // always latest typed content
-        intent: RawAction.id ? INTENT.update_action : INTENT.create_action,
-      }
-    );
+    const result = await handleAction({
+      ...RawAction,
+      description: descriptionRef.current, // always latest typed content
+      intent: RawAction.id ? INTENT.update_action : INTENT.create_action,
+    });
     if (result) {
       isCreatingRef.current = false;
       setRawAction(result);
@@ -100,19 +102,28 @@ export function CreateAndEditAction({
     handleSaveRef.current = handleSave;
   }, [handleSave]);
 
+  const prevBaseIdRef = useRef(BaseAction.id);
   useEffect(() => {
-    if (RawAction.id && !BaseAction.id) {
-      handleAction({ ...RawAction, intent: INTENT.update_action });
+    const current = rawActionRef.current;
+    if (current.id && !BaseAction.id) {
+      handleAction({ ...current, intent: INTENT.update_action });
     }
-    descriptionRef.current = BaseAction.description || "";
-    setRawAction(BaseAction);
-  }, [BaseAction, RawAction.id, handleAction, RawAction]);
+    
+    // Only reset state if the action we are viewing actually changed
+    if (BaseAction.id !== prevBaseIdRef.current) {
+      prevBaseIdRef.current = BaseAction.id;
+      descriptionRef.current = BaseAction.description || "";
+      setRawAction(BaseAction);
+    }
+  }, [BaseAction, handleAction]);
 
   const [isAIProcessing, setIsAIProcessing] = useState(false);
   const [descriptionVersion, setDescriptionVersion] = useState(0);
 
-  const isPending = isMutationLoading || fetchers.some((f) => f.state === "submitting");
+  const isPending =
+    isMutationLoading || fetchers.some((f) => f.state === "submitting");
 
+  // Effect for AI Processing indicator
   useEffect(() => {
     setIsAIProcessing(
       fetchers.filter(
@@ -125,7 +136,10 @@ export function CreateAndEditAction({
           f.formData?.get("intent") === INTENT.ai_reels,
       ).length > 0,
     );
+  }, [fetchers]);
 
+  // Effect for capturing new action ID from create_action fetcher
+  useEffect(() => {
     fetchers.forEach((f) => {
       const payload = (f as { json?: { intent?: string } }).json;
       if (payload && f.data) {
@@ -145,15 +159,11 @@ export function CreateAndEditAction({
     });
   }, [fetchers]);
 
-  if (!RawAction.created_at) {
-    setRawAction({
-      ...RawAction,
-      created_at: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
-      updated_at: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
-    });
-  }
-
-  const [currentPartners, setCurrentPartners] = useState<Partner[]>([]);
+  const currentPartners = useMemo(() => {
+    return RawAction.partners
+      .map((slug) => partners.find((partner) => partner.slug === slug))
+      .filter((partner): partner is Partner => partner !== undefined);
+  }, [RawAction.partners, partners]);
 
   const [workFiles, setWorkFiles] = useState<string[]>(
     RawAction.work_files ?? [],
@@ -162,11 +172,9 @@ export function CreateAndEditAction({
     RawAction.content_files ?? [],
   );
 
-  function updateContentFiles(next: string[]) {
-    setContentFiles(next);
-    setRawAction((prev) => ({ ...prev, content_files: next }));
-    updateAction({ content_files: next });
-  }
+  const handleDescriptionChange = useCallback((desc: string) => {
+    descriptionRef.current = desc;
+  }, []);
 
   const updateAction = useCallback(
     async (data?: { [key: string]: unknown }, forceCreate = false) => {
@@ -183,13 +191,11 @@ export function CreateAndEditAction({
         if (!current.id && isCreatingRef.current) return;
         if (!current.id) isCreatingRef.current = true;
 
-        const result = await handleAction(
-          {
-            ...current,
-            ...data,
-            intent: current.id ? INTENT.update_action : INTENT.create_action,
-          }
-        );
+        const result = await handleAction({
+          ...current,
+          ...data,
+          intent: current.id ? INTENT.update_action : INTENT.create_action,
+        });
         if (result) {
           isCreatingRef.current = false;
           setRawAction(result);
@@ -199,18 +205,12 @@ export function CreateAndEditAction({
     [handleAction],
   );
 
-  // Use a stable string key so this effect only re-runs when partner slugs
-  // actually change, not on every setRawAction call (which would create a new
-  // array reference each time and cause an infinite cascade).
-  const partnersKey = RawAction.partners.join(",");
-  useEffect(() => {
-    if (!partnersKey) return;
-    setCurrentPartners(
-      RawAction.partners.map((p) =>
-        partners.find((partner) => partner.slug === p),
-      ) as Partner[],
-    );
-  }, [partnersKey, partners.find, RawAction.partners.map]);
+  const updateContentFiles = useCallback((next: string[]) => {
+    setContentFiles(next);
+    setRawAction((prev) => ({ ...prev, content_files: next }));
+    updateAction({ content_files: next });
+  }, [updateAction]);
+
 
   // Guard: only update color if it actually changed to avoid
   // triggering another render cycle via the partners effect above.
@@ -218,8 +218,9 @@ export function CreateAndEditAction({
     if (!BaseAction.id && currentPartners.length > 0) {
       const newColor = currentPartners[0].colors[0];
 
-      const newResponsibles = currentPartners
-        .flatMap((p) => p.users_ids.map((user) => user));
+      const newResponsibles = currentPartners.flatMap((p) =>
+        p.users_ids.map((user) => user),
+      );
 
       setRawAction((prev) =>
         prev.color === newColor
@@ -229,9 +230,15 @@ export function CreateAndEditAction({
     }
   }, [currentPartners, BaseAction.id]);
 
+  const captionTailRef = useRef(currentPartners[0]?.instagram_caption_tail);
+  useEffect(() => {
+    captionTailRef.current = currentPartners[0]?.instagram_caption_tail;
+  }, [currentPartners]);
+
   useEffect(() => {
     if (fetcher.data) {
       const intent = fetcher.data.intent;
+      const captionTail = captionTailRef.current;
 
       if (intent === INTENT.ai_caption) {
         const captionText =
@@ -240,7 +247,7 @@ export function CreateAndEditAction({
             : fetcher.data.output.caption;
 
         const newCaption = (captionText || "").concat(
-          getCaptionTail(currentPartners[0]?.instagram_caption_tail),
+          getCaptionTail(captionTail),
         );
         setRawAction((prev) => ({
           ...prev,
@@ -259,7 +266,7 @@ export function CreateAndEditAction({
       ) {
         const { content, caption } = fetcher.data.output;
         const newCaption = (caption || "").concat(
-          getCaptionTail(currentPartners[0]?.instagram_caption_tail),
+          getCaptionTail(captionTail),
         );
 
         const currentDescription = rawActionRef.current.description || "";
@@ -283,7 +290,7 @@ export function CreateAndEditAction({
         });
       }
     }
-  }, [fetcher.data, updateAction, currentPartners[0]?.instagram_caption_tail]);
+  }, [fetcher.data, updateAction]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -313,7 +320,7 @@ export function CreateAndEditAction({
   return (
     <div
       className={cn(
-        "bg-background fixed top-17 right-0 bottom-0 z-10 flex w-full shrink-0 flex-col overflow-hidden border-l",
+        "fixed top-17 right-0 bottom-0 z-10 flex w-full shrink-0 flex-col overflow-hidden border-l bg-background",
 
         view === "instagram" ? "lg:w-4xl" : "lg:w-2xl",
       )}
@@ -381,9 +388,7 @@ export function CreateAndEditAction({
             currentPartners={currentPartners}
             cloudName={cloudName}
             uploadPreset={uploadPreset}
-            onDescriptionChange={(desc: string) => {
-              descriptionRef.current = desc;
-            }}
+            onDescriptionChange={handleDescriptionChange}
             descriptionVersion={descriptionVersion}
           />
         )}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useMatches } from "react-router";
 import { CheckIcon } from "lucide-react";
 import {
@@ -31,9 +31,40 @@ export function PartnersCombobox({
   const [isOpen, setIsOpen] = useState(false);
   const { partners } = useMatches()[1].loaderData as { partners: Partner[] };
   const [selected, setSelected] = useState<string[]>(selectedPartners || []);
+  // Keep a ref so the memoized handleSelect callback always reads the latest
+  // selected array without being recreated on every render.
+  const selectedRef = useRef(selected);
+  selectedRef.current = selected;
+
   const currentPartners = selected
     .map((slug) => partners.find((partner) => partner.slug === slug))
     .filter((partner): partner is Partner => partner !== undefined);
+
+  // Stable per-partner callback — only recreated when partner.slug changes
+  // (i.e. never, since slugs are static). This prevents cmdk from
+  // re-registering items on every render and calling setState in a loop.
+  const handleSelect = useCallback(
+    (slug: string) => {
+      const current = selectedRef.current;
+      let newPartners: string[];
+
+      if (isShiftPressedRef.current) {
+        newPartners = [slug];
+        setIsOpen(false);
+      } else {
+        newPartners = current.includes(slug)
+          ? current.filter((s) => s !== slug)
+          : [...current, slug];
+        setIsOpen(false);
+      }
+
+      setSelected(newPartners);
+      onSelect?.(newPartners);
+    },
+    // onSelect is from parent — stabilise with useCallback there if needed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [onSelect],
+  );
 
   const isShiftPressedRef = useRef(false);
 
@@ -92,27 +123,9 @@ export function PartnersCombobox({
             {partners.map((partner) => (
               <CommandItem
                 key={partner.id}
+                value={partner.slug}
                 className={cn("flex items-center gap-2")}
-                onSelect={() => {
-                  if (isShiftPressedRef.current) {
-                    setSelected([partner.slug]);
-                    onSelect?.([partner.slug]);
-                    setIsOpen(false);
-                  } else {
-                    let newPartners = [...selected];
-                    if (selected.includes(partner.slug)) {
-                      newPartners = newPartners.filter(
-                        (slug) => slug !== partner.slug,
-                      );
-                    } else {
-                      newPartners.push(partner.slug);
-                    }
-
-                    setSelected(newPartners);
-                    onSelect?.(newPartners);
-                    setIsOpen(false);
-                  }
-                }}
+                onSelect={() => handleSelect(partner.slug)}
               >
                 <UAvatar
                   fallback={partner.short}

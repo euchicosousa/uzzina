@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
 import { toast } from "sonner";
 import { INTENT } from "~/lib/CONSTANTS";
 import type { Action } from "~/models/actions.server";
@@ -93,54 +94,75 @@ export function useActionMutations() {
     onError: handleError,
   });
 
-  // Helper wrappers
-  const handleAction = async (data: SingleActionInput) => {
-    return singleActionMutation.mutateAsync(data);
-  };
+  // Helper wrappers — wrapped in useCallback so their references stay stable
+  // across renders. Unstable references here cascade into useCallback/useEffect
+  // dependency arrays in consumers (e.g. CreateAndEditAction) and cause
+  // infinite re-render loops.
+  const handleAction = useCallback(
+    async (data: SingleActionInput) => {
+      return singleActionMutation.mutateAsync(data);
+    },
+    [singleActionMutation.mutateAsync],
+  );
 
-  const handleBulkAction = async (ids: string[], updates: Partial<Action>) => {
-    return bulkActionMutation.mutateAsync({ ids, updates });
-  };
+  const handleBulkAction = useCallback(
+    async (ids: string[], updates: Partial<Action>) => {
+      return bulkActionMutation.mutateAsync({ ids, updates });
+    },
+    [bulkActionMutation.mutateAsync],
+  );
 
-  const handleBulkDateOnly = async (ids: string[], newDate: string) => {
-    return bulkDateOnlyMutation.mutateAsync({ ids, newDate });
-  };
+  const handleBulkDateOnly = useCallback(
+    async (ids: string[], newDate: string) => {
+      return bulkDateOnlyMutation.mutateAsync({ ids, newDate });
+    },
+    [bulkDateOnlyMutation.mutateAsync],
+  );
 
-  const handleBulkTimeOnly = async (ids: string[], newTime: string) => {
-    return bulkTimeOnlyMutation.mutateAsync({ ids, newTime });
-  };
+  const handleBulkTimeOnly = useCallback(
+    async (ids: string[], newTime: string) => {
+      return bulkTimeOnlyMutation.mutateAsync({ ids, newTime });
+    },
+    [bulkTimeOnlyMutation.mutateAsync],
+  );
 
-  const toggleSprintAction = async (action: Action, userId: string) => {
-    let sprints: string[] | null = null;
-    if (action.sprints) {
-      if (action.sprints.includes(userId)) {
-        sprints = action.sprints.filter((s) => s !== userId);
+  const toggleSprintAction = useCallback(
+    async (action: Action, userId: string) => {
+      let sprints: string[] | null = null;
+      if (action.sprints) {
+        if (action.sprints.includes(userId)) {
+          sprints = action.sprints.filter((s) => s !== userId);
+        } else {
+          sprints = [...action.sprints, userId];
+        }
       } else {
-        sprints = [...action.sprints, userId];
+        sprints = [userId];
       }
-    } else {
-      sprints = [userId];
-    }
-    sprints = sprints.length > 0 ? sprints : null;
+      sprints = sprints.length > 0 ? sprints : null;
 
-    // Convert fields to input-friendly format for handleAction
-    const actionInput: SingleActionInput = {
-      ...(action as unknown as ActionFormInput),
-      intent: INTENT.update_action,
-      sprints,
-    };
+      // Convert fields to input-friendly format for handleAction
+      const actionInput: SingleActionInput = {
+        ...(action as unknown as ActionFormInput),
+        intent: INTENT.update_action,
+        sprints,
+      };
 
-    return handleAction(actionInput);
-  };
+      return handleAction(actionInput);
+    },
+    [handleAction],
+  );
 
-  const submitDeleteAction = async (action: Action) => {
-    const actionInput: SingleActionInput = {
-      ...(action as unknown as ActionFormInput),
-      intent: INTENT.update_action,
-      archived: true,
-    };
-    return handleAction(actionInput);
-  };
+  const submitDeleteAction = useCallback(
+    async (action: Action) => {
+      const actionInput: SingleActionInput = {
+        ...(action as unknown as ActionFormInput),
+        intent: INTENT.update_action,
+        archived: true,
+      };
+      return handleAction(actionInput);
+    },
+    [handleAction],
+  );
 
   return {
     handleAction,

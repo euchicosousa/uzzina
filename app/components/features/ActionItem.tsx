@@ -197,10 +197,10 @@ export function ActionItem({
     if (showLate && isLateAction(action)) {
       if (variant === VARIANT.content) {
         baseStyles =
-          "bg-destructive/5 dark:bg-destructive/20 text-destructive p-1 rounded-xl hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
+          "bg-destructive/10 dark:bg-destructive/20 text-destructive p-1 rounded-xl hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
       } else {
         baseStyles =
-          "bg-destructive/5 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
+          "bg-destructive/10 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
       }
     } else if (person && isSprint(action, person)) {
       baseStyles =
