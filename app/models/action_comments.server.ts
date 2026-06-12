@@ -79,18 +79,25 @@ export async function createComment(
     content: string;
     is_internal?: boolean;
     is_user?: boolean;
+    mentions?: string[];
   },
 ) {
-  const { error } = await supabase.from("action_comments").insert({
-    action_id: data.action_id,
-    author_id: data.author_id,
-    author_name: data.author_name,
-    content: data.content,
-    is_internal: data.is_internal ?? false,
-    is_user: data.is_user ?? false,
-  });
+  const { data: inserted, error } = await supabase
+    .from("action_comments")
+    .insert({
+      action_id: data.action_id,
+      author_id: data.author_id,
+      author_name: data.author_name,
+      content: data.content,
+      is_internal: data.is_internal ?? false,
+      is_user: data.is_user ?? false,
+      mentions: data.mentions ?? [],
+    })
+    .select()
+    .single();
 
   if (error) throw error;
+  return inserted as ActionComment;
 }
 
 /** Atualiza o conteúdo de um comentário. */

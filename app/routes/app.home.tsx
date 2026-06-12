@@ -52,18 +52,32 @@ export default function AppHome() {
       ),
   });
 
+  const { setBaseAction, partnerFilters } = useOutletContext<OutletContext>();
+
+  const filteredActions = useMemo(() => {
+    if (partnerFilters.length === 0) return currentActions;
+    return currentActions.filter((action) =>
+      action.partners?.some((p) => partnerFilters.includes(p))
+    );
+  }, [currentActions, partnerFilters]);
+
+  const filteredLateActions = useMemo(() => {
+    if (partnerFilters.length === 0) return currentLateActions;
+    return currentLateActions.filter((action) =>
+      action.partners?.some((p) => partnerFilters.includes(p))
+    );
+  }, [currentLateActions, partnerFilters]);
+
   const sprintActions = useMemo(
     () =>
       sortActions(
-        currentActions.filter((action) =>
+        filteredActions.filter((action) =>
           action.sprints?.includes(person.user_id),
         ),
         ORDER_BY.phase,
       ),
-    [currentActions, person.user_id],
+    [filteredActions, person.user_id],
   );
-
-  const { setBaseAction } = useOutletContext<OutletContext>();
 
   return (
     // <div className="mx-8 flex flex-col gap-6 border-r border-l">
@@ -74,14 +88,14 @@ export default function AppHome() {
           {/* <div className="-mx-8 h-2 border-b"></div> */}
         </>
       )}
-      <TodayHomeComponent actions={currentActions} />
+      <TodayHomeComponent actions={filteredActions} />
       {/* <div className="-mx-8 h-2 border-b"></div> */}
       <CalendarHomeComponent
-        actions={currentActions}
+        actions={filteredActions}
         setBaseAction={setBaseAction}
       />
-      <PartnersHomeComponent actions={currentLateActions} />
-      <LateHomeComponent actions={currentLateActions} />
+      <PartnersHomeComponent actions={filteredLateActions} />
+      <LateHomeComponent actions={filteredLateActions} />
     </>
     // </div>
   );

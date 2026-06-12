@@ -7,6 +7,7 @@ import {
 } from "react-router";
 import invariant from "tiny-invariant";
 import { Header } from "~/components/layout/Header";
+import { AppBar } from "~/components/layout/AppBar";
 import { getCleanAction } from "~/lib/helpers";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import type { Person } from "~/models/people.server";
@@ -18,6 +19,7 @@ import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
 import type { Action } from "~/models/actions.server";
 import { ActionShortcutProvider } from "~/hooks/useActionShortcut";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
+
 
 
 const CreateAndEditAction = lazy(() =>
@@ -76,6 +78,7 @@ export default function Dashboard() {
   const { person, partners } = useLoaderData<typeof loader>();
   const [BaseAction, setBaseAction] = useState<Action | null>(null);
   const [openCmdK, setOpenCmdK] = useState(false);
+  const [partnerFilters, setPartnerFilters] = useState<string[]>([]);
 
   useEffect(() => {
     if (typeof window !== "undefined" && person) {
@@ -127,13 +130,12 @@ export default function Dashboard() {
           <Header
             person={person}
             setBaseAction={setBaseAction}
-            setOpenCmdK={setOpenCmdK}
           />
           <div className="flex h-full w-full overflow-hidden">
             <div className="grow overflow-x-hidden overflow-y-auto">
               <div className="flex min-h-full grow">
-                <div className="flex min-h-full w-full shrink flex-col">
-                  <Outlet context={{ BaseAction, setBaseAction }} />
+                <div className="flex min-h-full w-full shrink flex-col pb-24">
+                  <Outlet context={{ BaseAction, setBaseAction, partnerFilters, setPartnerFilters }} />
                 </div>
               </div>
             </div>
@@ -156,6 +158,18 @@ export default function Dashboard() {
               </Suspense>
             ) : null}
           </div>
+
+          {!BaseAction && (
+            <AppBar
+              partners={partners}
+              person={person}
+              setBaseAction={setBaseAction}
+              setOpenCmdK={setOpenCmdK}
+              partnerFilters={partnerFilters}
+              setPartnerFilters={setPartnerFilters}
+            />
+          )}
+
           <GlobalSearchCommand
             open={openCmdK}
             onOpenChange={setOpenCmdK}

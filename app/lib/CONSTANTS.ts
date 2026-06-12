@@ -312,6 +312,8 @@ export const INTENT = {
   ai_carousel: "ai-carousel",
   ai_stories: "ai-stories",
   ai_reels: "ai-reels",
+  mark_notification_read: "mark-notification-read",
+  mark_all_notifications_read: "mark-all-notifications-read",
 } as const;
 
 export const ORDER_BY = {

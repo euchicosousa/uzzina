@@ -24,6 +24,7 @@ export type Database = {
           id: string
           is_internal: boolean | null
           is_user: boolean
+          mentions: string[] | null
         }
         Insert: {
           action_id: string
@@ -34,6 +35,7 @@ export type Database = {
           id?: string
           is_internal?: boolean | null
           is_user?: boolean
+          mentions?: string[] | null
         }
         Update: {
           action_id?: string
@@ -44,6 +46,7 @@ export type Database = {
           id?: string
           is_internal?: boolean | null
           is_user?: boolean
+          mentions?: string[] | null
         }
         Relationships: [
           {
@@ -198,6 +201,60 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      notifications: {
+        Row: {
+          action_id: string
+          action_title: string
+          author_name: string
+          comment_excerpt: string
+          comment_id: string | null
+          created_at: string
+          id: string
+          read_at: string | null
+          recipient_id: string
+          type: string
+        }
+        Insert: {
+          action_id: string
+          action_title?: string
+          author_name?: string
+          comment_excerpt?: string
+          comment_id?: string | null
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id: string
+          type?: string
+        }
+        Update: {
+          action_id?: string
+          action_title?: string
+          author_name?: string
+          comment_excerpt?: string
+          comment_id?: string | null
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_action_id_fkey"
+            columns: ["action_id"]
+            isOneToOne: false
+            referencedRelation: "actions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "action_comments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       partners: {
         Row: {

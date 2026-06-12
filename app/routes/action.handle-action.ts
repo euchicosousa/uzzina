@@ -25,6 +25,7 @@ interface ActionPayload {
   commentId?: string;
   content?: string;
   isInternal?: boolean | string;
+  mentions?: string[] | string;
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -40,25 +41,57 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const actionId = payload.actionId;
     const content = payload.content;
     const isInternal = payload.isInternal === true || payload.isInternal === "true";
+    let mentions: string[] = [];
+
+    if (payload.mentions) {
+      if (Array.isArray(payload.mentions)) {
+        mentions = payload.mentions;
+      } else if (typeof payload.mentions === "string") {
+        try {
+          mentions = JSON.parse(payload.mentions);
+        } catch {
+          // Ignora erros de parse
+        }
+      }
+    }
 
     if (!actionId || !content)
       return Response.json({ error: "Action ID and Content are required" }, { status: 400 });
 
-    const { data: person } = await supabase
-      .from("people")
-      .select("name")
-      .eq("user_id", user_id)
-      .single();
+    const [personRes, actionRes] = await Promise.all([
+      supabase.from("people").select("name").eq("user_id", user_id).single(),
+      supabase.from("actions").select("title").eq("id", actionId).single(),
+    ]);
 
-    await createComment(supabase, {
+    const authorName = personRes.data?.name || "Agência";
+    const actionTitle = actionRes.data?.title || "Ação";
+
+    const insertedComment = await createComment(supabase, {
       action_id: actionId,
       author_id: user_id,
-      author_name: person?.name || "Agência",
+      author_name: authorName,
       content,
       is_internal: isInternal,
       is_user: true,
+      mentions,
     });
-    return Response.json({ success: true });
+
+    if (mentions.length > 0) {
+      const { createNotificationsForMentions } = await import("~/models/notifications.server");
+      // Resumo de até 100 caracteres
+      const commentExcerpt = content.length > 100 ? `${content.substring(0, 100)}...` : content;
+      await createNotificationsForMentions(supabase, {
+        commentId: insertedComment.id,
+        actionId,
+        actionTitle,
+        authorName,
+        commentExcerpt,
+        authorId: user_id,
+        mentionedIds: mentions,
+      });
+    }
+
+    return Response.json({ success: true, comment: insertedComment });
   } else if (intent === INTENT.update_comment) {
     const commentId = payload.commentId;
     const content = payload.content;

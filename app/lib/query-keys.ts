@@ -12,4 +12,5 @@ export const QUERY_KEYS = {
   celebrations: () => ["celebrations"] as const,
   partners: () => ["partners"] as const,
   people: () => ["people"] as const,
+  notifications: () => ["notifications"] as const,
 } as const;

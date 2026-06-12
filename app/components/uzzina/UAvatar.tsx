@@ -12,7 +12,7 @@ type UAvatarGroupProps = {
 type UAvatarItem = {
   id?: string;
   fallback: string;
-  image?: string | null;
+  image?: string | null | undefined;
   alt?: string;
   className?: string;
   size?: (typeof SIZE)[keyof typeof SIZE];
@@ -137,7 +137,7 @@ export function UAvatar({
       ) : (
         <AvatarFallback
           className={cn(
-            "bg-secondary text-secondary-foreground grid place-content-center text-center",
+            "grid place-content-center bg-secondary text-center text-secondary-foreground",
           )}
           style={styles}
         >

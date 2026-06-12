@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useFetcher, useRouteLoaderData } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 import { CommentList } from "../ActionComments/CommentList";
 import { CommentInput } from "../ActionComments/CommentInput";
 import { INTENT } from "~/lib/CONSTANTS";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { fetchPeople } from "~/lib/supabase.queries";
 import type { AugmentedComment } from "~/models/action_comments.server";
 import type { AppLoaderData } from "~/routes/app";
 
@@ -10,10 +13,12 @@ export function ObservationsTab({
   actionId,
   actionColor,
   actionTextColor,
+  partnerUsersIds = [],
 }: {
   actionId: string;
   actionColor?: string;
   actionTextColor?: string;
+  partnerUsersIds?: string[];
 }) {
   const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
   const fetcher = useFetcher<{ comments: AugmentedComment[] }>();
@@ -27,16 +32,28 @@ export function ObservationsTab({
     }
   }, [actionId, fetcher.load]);
 
+  const { data: allPeople = [] } = useQuery({
+    queryKey: QUERY_KEYS.people(),
+    queryFn: fetchPeople,
+    staleTime: 30 * 60 * 1000,
+  });
+
+  // Filtra as pessoas que possuem acesso ao partner desta ação
+  const mentionablePeople = allPeople.filter((p) =>
+    partnerUsersIds.includes(p.user_id)
+  );
+
   const comments = fetcher.data?.comments || [];
 
-  const handleCreate = () => {
-    if (!newComment.trim()) return;
+  const handleCreate = (content: string, mentions: string[]) => {
+    if (!content.trim()) return;
     commentFetcher.submit(
       {
         intent: INTENT.create_comment,
         actionId,
-        content: newComment,
-        is_internal: "false",
+        content,
+        isInternal: "false",
+        mentions: JSON.stringify(mentions),
       },
       {
         method: "post",
@@ -92,6 +109,7 @@ export function ObservationsTab({
           onChange={setNewComment}
           onSend={handleCreate}
           isSubmitting={commentFetcher.state !== "idle"}
+          mentionablePeople={mentionablePeople}
         />
       </div>
     </div>

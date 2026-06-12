@@ -1,5 +1,4 @@
 import type { Tables } from "types/database";
-import { CATEGORIES } from "./CONSTANTS";
 
 declare global {
   type Person = Tables<"people">;
@@ -9,6 +8,8 @@ declare global {
   type OutletContext = {
     BaseAction: Action | null;
     setBaseAction: (action: Action | null) => void;
+    partnerFilters: string[];
+    setPartnerFilters: (slugs: string[]) => void;
   };
   interface Window {
     __env: {

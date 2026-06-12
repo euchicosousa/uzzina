@@ -1,27 +1,13 @@
-import { useRef } from "react";
-import {
-  CheckIcon,
-  CopyCheckIcon,
-  HeartHandshakeIcon,
-  PlusIcon,
-  SearchIcon,
-} from "lucide-react";
-import {
-  Link,
-  useFetcher,
-  useFetchers,
-  useMatches,
-  useNavigate,
-  useNavigation,
-  useParams,
-} from "react-router";
+import { CheckIcon, BellIcon } from "lucide-react";
+import { Link, useFetcher, useFetchers, useNavigation } from "react-router";
+import { toast } from "sonner";
+import { useNotifications } from "~/hooks/useNotifications";
+import type { Notification } from "~/models/notifications.server";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { Theme, useTheme } from "remix-themes";
-import { BulkActionMenu } from "~/components/features/BulkActionMenu";
-import { UToggleInput } from "~/components/uzzina/UToggle";
 import { useAppTheme } from "~/hooks/useAppTheme";
-import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { PALLETE, SIZE } from "~/lib/CONSTANTS";
-import { getCleanAction, getThemeIcon } from "~/lib/helpers";
+import { getThemeIcon } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import { UzzinaLogo } from "../logo";
 import { Button } from "../ui/button";
@@ -37,50 +23,38 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { UAvatar } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "../ui/command";
-
-import { useQuery } from "@tanstack/react-query";
-import { QUERY_KEYS } from "~/lib/query-keys";
-import { fetchAllLateActions } from "~/lib/supabase.queries";
+import { useRef } from "react";
 
 export function Header({
   person,
   setBaseAction,
-  setOpenCmdK,
 }: {
   person: Person;
   setBaseAction: (action: Action | null) => void;
-  setOpenCmdK: (open: boolean) => void;
 }) {
-  const { partners } = useMatches()[1].loaderData as {
-    partners: Partner[];
+  const { notifications, unreadCount, markAsRead, markAllAsRead } =
+    useNotifications();
+
+  const handleNotificationClick = async (notif: Notification) => {
+    const supabase = createSupabaseBrowserClient();
+    if (!notif.read_at) {
+      markAsRead([notif.id]);
+    }
+    try {
+      const { data: actionData, error } = await supabase
+        .from("actions")
+        .select("*")
+        .eq("id", notif.action_id)
+        .single();
+      if (error) throw error;
+      if (actionData) {
+        setBaseAction(actionData as unknown as Action);
+      }
+    } catch (err) {
+      console.error("Erro ao carregar ação mencionada:", err);
+      toast.error("Não foi possível carregar o detalhe da ação.");
+    }
   };
-
-  const { data: lateActions = [] } = useQuery({
-    queryKey: QUERY_KEYS.lateActions.user(person.user_id),
-    queryFn: () =>
-      fetchAllLateActions(
-        person.user_id,
-        person.admin,
-        partners.map((p) => p.slug),
-      ),
-  });
-
-  const navigate = useNavigate();
-  const params = useParams();
-
-  const responsibles =
-    params.slug && params.slug !== "new"
-      ? partners.filter((p) => p.slug === params.slug)[0].users_ids
-      : [person.user_id];
-
-  const { isSelectionMode, toggleSelectionMode } = useMultiSelection();
 
   return (
     <div className="border_after flex w-full items-center justify-between px-2 lg:px-8">
@@ -90,46 +64,12 @@ export function Header({
           <UzzinaLogo className="hidden h-8 sm:block" />
           <UzzinaLogo className="h-8 sm:hidden" model="logo" />
         </Link>
-
-        {/* Search */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="rounded-full"
-          onClick={() => setOpenCmdK(true)}
-        >
-          <SearchIcon />
-        </Button>
       </div>
+
+      {/* Central space for future stats */}
+      <div className="flex-1" />
+
       <div className="flex items-center gap-2">
-        <BulkActionMenu />
-
-        <UToggleInput
-          id="toggle-multi-selection"
-          checked={isSelectionMode}
-          onCheckedChange={() => toggleSelectionMode()}
-          className="h-10 px-4 py-2"
-        >
-          <CopyCheckIcon className="size-4" />
-        </UToggleInput>
-
-        <Button
-          onClick={() =>
-            setBaseAction({
-              ...getCleanAction({
-                user_id: person.user_id,
-                date: undefined,
-                partners: params.slug ? [params.slug] : [],
-              }),
-              responsibles,
-            } as unknown as Action)
-          }
-          className="squircle rounded-2xl"
-        >
-          <span className="hidden sm:block">Nova Ação</span>
-          <PlusIcon />
-        </Button>
-
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -137,58 +77,78 @@ export function Header({
               size="icon"
               className="relative rounded-full"
             >
-              <HeartHandshakeIcon />
-              {lateActions && lateActions.length > 0 ? (
+              <BellIcon className="size-5" />
+              {unreadCount > 0 ? (
                 <UBadge
                   size="sm"
-                  value={lateActions.length}
+                  value={unreadCount}
                   isDynamic
-                  className="absolute -top-2 -right-2"
+                  className="absolute -top-1 -right-1"
                 />
               ) : null}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="mx-2 p-0">
-            <Command>
-              <CommandInput placeholder="Procurar parceiro..." />
-              <CommandList className="p-2 outline-none">
-                <CommandEmpty>Nenumn parceiro encontrado.</CommandEmpty>
-                {partners.map((partner) => {
-                  const partnerLateActions = lateActions.filter((action) =>
-                    action.partners.includes(partner.slug),
-                  );
-                  return (
-                    <CommandItem
-                      key={partner.id}
-                      className="flex items-center justify-between gap-2"
-                      onSelect={() => {
-                        navigate(`/app/partner/${partner.slug}`);
-                      }}
-                    >
-                      <div className="flex items-center gap-2">
-                        <UAvatar
-                          size={SIZE.sm}
-                          fallback={partner.short}
-                          image={partner.image}
-                          backgroundColor={partner.colors[0]}
-                          color={partner.colors[1]}
-                        />
-                        <span>{partner.title}</span>
-                      </div>
-                      {partnerLateActions.length > 0 ? (
-                        <UBadge
-                          size="sm"
-                          value={partnerLateActions.length}
-                          isDynamic
-                        />
-                      ) : null}
-                    </CommandItem>
-                  );
-                })}
-              </CommandList>
-            </Command>
+          <PopoverContent
+            className="w-80 overflow-hidden rounded-2xl border border-border p-0 shadow-xl"
+            align="end"
+          >
+            <div className="flex items-center justify-between border-b bg-muted/20 px-4 py-3">
+              <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                Notificações
+              </span>
+              {unreadCount > 0 && (
+                <button
+                  onClick={() => markAllAsRead()}
+                  className="text-xs font-medium text-primary transition-colors hover:underline"
+                >
+                  Marcar todas como lidas
+                </button>
+              )}
+            </div>
+            <div className="max-h-[300px] divide-y divide-border overflow-y-auto">
+              {notifications.length === 0 ? (
+                <div className="p-8 text-center text-xs text-muted-foreground">
+                  Você não tem nenhuma notificação.
+                </div>
+              ) : (
+                notifications.map((notif) => (
+                  <button
+                    key={notif.id}
+                    onClick={() => handleNotificationClick(notif)}
+                    className={cn(
+                      "flex w-full flex-col gap-1 p-4 text-left transition hover:bg-muted/50",
+                      !notif.read_at && "bg-primary/5",
+                    )}
+                  >
+                    <div className="flex w-full items-start justify-between gap-2">
+                      <span className="text-xs font-semibold text-foreground">
+                        {notif.author_name} mencionou você
+                      </span>
+                      {!notif.read_at && (
+                        <span className="mt-1 size-2 shrink-0 rounded-full bg-primary" />
+                      )}
+                    </div>
+                    <span className="line-clamp-1 text-[11px] font-medium text-muted-foreground">
+                      na ação: {notif.action_title}
+                    </span>
+                    <p className="mt-1 line-clamp-2 rounded-lg border border-border/50 bg-muted/30 p-2 text-xs text-foreground/80">
+                      {notif.comment_excerpt}
+                    </p>
+                  </button>
+                ))
+              )}
+            </div>
+            <div className="border-t bg-muted/10 p-2 text-center">
+              <Link
+                to="/app/notifications"
+                className="block w-full py-1.5 text-xs font-semibold text-primary hover:underline"
+              >
+                Ver todas as notificações →
+              </Link>
+            </div>
           </PopoverContent>
         </Popover>
+
         <HeaderMenu person={person} />
       </div>
     </div>
@@ -219,10 +179,10 @@ const HeaderMenu = ({ person }: { person: Person }) => {
     }
 
     debounceTimerRef.current = setTimeout(() => {
-      fetcher.submit(
-        pendingPrefsRef.current,
-        { method: "post", action: "/action/set-preferences" },
-      );
+      fetcher.submit(pendingPrefsRef.current, {
+        method: "post",
+        action: "/action/set-preferences",
+      });
       pendingPrefsRef.current = {};
     }, 300);
   };

@@ -117,7 +117,29 @@ export function CommentItem({
             </div>
           </div>
         ) : (
-          <div className="whitespace-pre-wrap">{comment.content}</div>
+          <div className="whitespace-pre-wrap">
+            {(() => {
+              const parts = comment.content.split(/(@[A-Za-zÀ-ÖØ-öø-ÿ0-9._-]+(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ0-9._-]+)*)/g);
+              return parts.map((part, index) => {
+                const key = `${comment.id}-part-${index}`;
+                if (part.startsWith("@")) {
+                  return (
+                    <span
+                      key={key}
+                      className={
+                        isOwn
+                          ? "font-semibold underline decoration-2 underline-offset-2"
+                          : "text-primary font-semibold dark:text-primary/90"
+                      }
+                    >
+                      {part}
+                    </span>
+                  );
+                }
+                return <span key={key}>{part}</span>;
+              });
+            })()}
+          </div>
         )}
       </div>
     </div>
