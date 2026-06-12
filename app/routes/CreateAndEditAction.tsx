@@ -320,9 +320,9 @@ export function CreateAndEditAction({
   return (
     <div
       className={cn(
-        "fixed top-17 right-0 bottom-0 z-10 flex w-full shrink-0 flex-col overflow-hidden border-l bg-background",
+        "fixed top-16 right-0 bottom-0 z-10 flex shrink-0 flex-col overflow-hidden border-l bg-background",
 
-        // view === "instagram" ? "lg:w-4xl" : "lg:w-2xl",
+        view === "instagram" ? "lg:w-4xl" : "lg:w-2xl",
       )}
     >
       {RawAction.archived && (
@@ -342,7 +342,7 @@ export function CreateAndEditAction({
       )}
 
       {/* Tabs */}
-      <div className="flex shrink-0 divide-x xl:hidden">
+      <div className="flex shrink-0 divide-x">
         <div
           className={tabClass(view === "essential")}
           onClick={() => setView("essential")}
@@ -376,45 +376,57 @@ export function CreateAndEditAction({
       <div className="relative flex h-full grow flex-col overflow-hidden">
         {/* Essencial */}
         <div className="flex h-full w-full divide-x overflow-hidden">
-          <div className={cn("hidden w-full xl:block xl:w-4/12", "h-full")}>
-            <EssentialsTab
-              isAIProcessing={isAIProcessing}
-              fetcher={fetcher}
-              RawAction={RawAction}
-              setRawAction={setRawAction}
-              updateAction={updateAction}
-              workFiles={workFiles}
-              setWorkFiles={setWorkFiles}
-              currentPartners={currentPartners}
-              cloudName={cloudName}
-              uploadPreset={uploadPreset}
-              onDescriptionChange={handleDescriptionChange}
-              descriptionVersion={descriptionVersion}
-            />
-          </div>
-          <div className={cn("hidden w-full xl:block xl:w-5/12", "h-full")}>
-            <InstagramTab
-              RawAction={RawAction}
-              setRawAction={setRawAction}
-              updateAction={updateAction}
-              contentFiles={contentFiles}
-              updateContentFiles={updateContentFiles}
-              currentPartners={currentPartners}
-              cloudName={cloudName}
-              uploadPreset={uploadPreset}
-              isAIProcessing={isAIProcessing}
-              fetcher={fetcher}
-            />
-          </div>
-
-          <div className={cn("hidden w-full xl:block xl:w-3/12", "h-full")}>
-            <ObservationsTab
-              actionId={RawAction.id}
-              actionColor={currentPartners[0]?.colors?.[0] || RawAction.color}
-              actionTextColor={currentPartners[0]?.colors?.[1]}
-              partnerUsersIds={currentPartners[0]?.users_ids || []}
-            />
-          </div>
+          {view === "essential" && (
+            <div
+              className={cn(
+                view !== "essential" && "hidden",
+                "w-full",
+                "h-full",
+              )}
+            >
+              <EssentialsTab
+                isAIProcessing={isAIProcessing}
+                fetcher={fetcher}
+                RawAction={RawAction}
+                setRawAction={setRawAction}
+                updateAction={updateAction}
+                workFiles={workFiles}
+                setWorkFiles={setWorkFiles}
+                currentPartners={currentPartners}
+                cloudName={cloudName}
+                uploadPreset={uploadPreset}
+                onDescriptionChange={handleDescriptionChange}
+                descriptionVersion={descriptionVersion}
+              />
+            </div>
+          )}
+          {/* Instagram */}
+          {view === "instagram" && (
+            <div className={cn("w-full", "h-full")}>
+              <InstagramTab
+                RawAction={RawAction}
+                setRawAction={setRawAction}
+                updateAction={updateAction}
+                contentFiles={contentFiles}
+                updateContentFiles={updateContentFiles}
+                currentPartners={currentPartners}
+                cloudName={cloudName}
+                uploadPreset={uploadPreset}
+                isAIProcessing={isAIProcessing}
+                fetcher={fetcher}
+              />
+            </div>
+          )}
+          {view === "observations" && (
+            <div className={cn("w-full", "h-full")}>
+              <ObservationsTab
+                actionId={RawAction.id}
+                actionColor={currentPartners[0]?.colors?.[0] || RawAction.color}
+                actionTextColor={currentPartners[0]?.colors?.[1]}
+                partnerUsersIds={currentPartners[0]?.users_ids || []}
+              />
+            </div>
+          )}
         </div>
         {/* Criar e Atualizar */}
         <ActionFormFooter

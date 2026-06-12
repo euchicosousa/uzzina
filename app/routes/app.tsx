@@ -20,8 +20,6 @@ import type { Action } from "~/models/actions.server";
 import { ActionShortcutProvider } from "~/hooks/useActionShortcut";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
 
-
-
 const CreateAndEditAction = lazy(() =>
   import("./CreateAndEditAction").then((module) => ({
     default: module.CreateAndEditAction,
@@ -83,8 +81,14 @@ export default function Dashboard() {
   useEffect(() => {
     if (typeof window !== "undefined" && person) {
       const prefs = getUserPreferences(person);
-      localStorage.setItem("uzzina-accent-color-index", String(prefs.themeColorIndex));
-      localStorage.setItem("uzzina-follow-partner-color", String(prefs.followPartnerColor));
+      localStorage.setItem(
+        "uzzina-accent-color-index",
+        String(prefs.themeColorIndex),
+      );
+      localStorage.setItem(
+        "uzzina-follow-partner-color",
+        String(prefs.followPartnerColor),
+      );
       window.dispatchEvent(new Event("uzzina-storage-update"));
     }
   }, [person]);
@@ -127,15 +131,19 @@ export default function Dashboard() {
         <MultiSelectionProvider>
           {/* HEADER */}
 
-          <Header
-            person={person}
-            setBaseAction={setBaseAction}
-          />
+          <Header person={person} setBaseAction={setBaseAction} />
           <div className="flex h-full w-full overflow-hidden">
             <div className="grow overflow-x-hidden overflow-y-auto">
               <div className="flex min-h-full grow">
                 <div className="flex min-h-full w-full shrink flex-col pb-24">
-                  <Outlet context={{ BaseAction, setBaseAction, partnerFilters, setPartnerFilters }} />
+                  <Outlet
+                    context={{
+                      BaseAction,
+                      setBaseAction,
+                      partnerFilters,
+                      setPartnerFilters,
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -144,7 +152,7 @@ export default function Dashboard() {
             {BaseAction ? (
               <Suspense fallback={null}>
                 <div
-                  className="fixed inset-0 top-17 z-10 flex w-full shrink-0 flex-col bg-black/20 dark:bg-black/80"
+                  className="fixed inset-0 top-16 z-10 flex w-full shrink-0 flex-col bg-black/20 dark:bg-black/80"
                   onClick={(event) => {
                     event.preventDefault();
                     event.stopPropagation();

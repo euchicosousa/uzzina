@@ -27,7 +27,7 @@ export function PhaseIcon({
     return (
       <Icons
         slug={phase.slug}
-        className={cn(sizeClasses)}
+        className={cn(sizeClasses, "transition-colors duration-500")}
         color={phase.color}
       />
     );
@@ -39,7 +39,8 @@ export function PhaseIcon({
   if (size === "dot") {
     return (
       <div
-        className="size-2 shrink-0 rounded-full"
+        key={phase.color}
+        className="size-2 shrink-0 animate-pop rounded-full"
         style={{ backgroundColor: phase.color }}
       ></div>
     );
@@ -51,6 +52,7 @@ export function PhaseIcon({
         className={cn(
           "grid aspect-square place-content-center rounded-full",
           sizeClasses,
+          "animate-pop",
         )}
         style={{ backgroundColor: phase.color }}
       >
@@ -71,7 +73,7 @@ export function PhaseIcon({
       </svg>
       {/* Progress circle */}
       <svg
-        className={`-rotate-90 stroke-4 ${sizeClasses}`}
+        className={`-rotate-90 stroke-4 transition-all duration-500 ${sizeClasses}`}
         style={{ color: phase.color }}
         viewBox="0 0 20 20"
       >
@@ -82,6 +84,7 @@ export function PhaseIcon({
           fill="none"
           stroke="currentColor"
           strokeDasharray={`${Math.floor(phase.order * 8.5)},51`}
+          className="transition-all duration-500"
         />
       </svg>
     </div>
