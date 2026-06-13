@@ -269,6 +269,10 @@ const HeaderMenu = ({ person }: { person: Person }) => {
           <Link to="/app/profile">Minha Conta</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
+          <Link to="/app/">Sair</Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
           <Link to="/app/help">Ajuda & Documentação</Link>
         </DropdownMenuItem>
 

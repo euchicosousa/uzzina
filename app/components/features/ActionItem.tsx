@@ -196,32 +196,22 @@ export function ActionItem({
     // 1. Determine base background/text colors based on priority states
     if (showLate && isLateAction(action)) {
       if (variant === VARIANT.content) {
-        baseStyles =
-          "bg-destructive/10 dark:bg-destructive/20 text-destructive p-1 rounded-xl hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
-      } else {
-        baseStyles =
-          "bg-destructive/10 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1";
+        baseStyles = "p-1 rounded-xl";
       }
+      baseStyles = cn(
+        "bg-destructive/10 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1 shadow-destructive/30",
+      );
     } else if (person && isSprint(action, person)) {
       baseStyles =
         "hover:bg-primary/10 bg-primary/5 transition ring-primary/20 ring-1";
     } else {
-      baseStyles =
-        "hover:bg-card bg-card/50 shadow-xs text-card-foreground transition hover:shadow-lg duration-500 border-t border-card hover:z-10 z-0";
-      // GUARDAR PARA TESTES
-      // switch (variant) {
-      //   case VARIANT.hour:
-      //     baseStyles = "hover:bg-card bg-card text-card-foreground";
-      //     break;
-      //   case VARIANT.block:
-      //     baseStyles =
-      //       "hover:bg-card bg-card/50 shadow-xs text-card-foreground transition hover:shadow-xl duration-500 border-t border-card";
-      //     break;
-      //   default:
-      //     baseStyles = "hover:bg-card bg-background text-card-foreground";
-      //     break;
-      // }
+      baseStyles = "hover:bg-card bg-card/50  text-card-foreground";
     }
+
+    baseStyles = cn(
+      baseStyles,
+      "shadow-xs transition hover:shadow-lg duration-500 border-t border-card hover:z-10 z-0",
+    );
 
     // 2. Apply editing ring/focus overrides on top of the base style
     if (isEditing) {
