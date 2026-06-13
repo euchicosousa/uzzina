@@ -1,7 +1,7 @@
 import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
 import { Link, useOutletContext, useRouteLoaderData } from "react-router";
-import { SIZE, VARIANT } from "~/lib/CONSTANTS";
+import { SIZE } from "~/lib/CONSTANTS";
 import { getCleanAction } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
@@ -97,7 +97,7 @@ function PartnerColumn({
 
       {/* Lista de ações */}
 
-      <ActionContainer actions={actions} variant={VARIANT.hair} showLate />
+      <ActionContainer actions={actions} showLate />
     </div>
   );
 }

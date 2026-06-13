@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useFetcher, useRouteLoaderData } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { CommentList } from "../ActionComments/CommentList";
@@ -11,13 +11,9 @@ import type { AppLoaderData } from "~/routes/app";
 
 export function ObservationsTab({
   actionId,
-  actionColor,
-  actionTextColor,
   partnerUsersIds = [],
 }: {
   actionId: string;
-  actionColor?: string;
-  actionTextColor?: string;
   partnerUsersIds?: string[];
 }) {
   const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
@@ -39,9 +35,11 @@ export function ObservationsTab({
   });
 
   // Filtra as pessoas que possuem acesso ao partner desta ação
-  const mentionablePeople = allPeople.filter((p) =>
-    partnerUsersIds.includes(p.user_id)
-  );
+  const mentionablePeople = useMemo(() => {
+    return allPeople.filter((p) =>
+      partnerUsersIds.includes(p.user_id),
+    );
+  }, [allPeople, partnerUsersIds]);
 
   const comments = fetcher.data?.comments || [];
 
@@ -70,8 +68,6 @@ export function ObservationsTab({
           comments={comments}
           currentUserId={person.user_id}
           isUser={true}
-          brandColor={actionColor}
-          brandTextColor={actionTextColor}
           onUpdate={(commentId, content) => {
             commentFetcher.submit(
               {
@@ -99,6 +95,7 @@ export function ObservationsTab({
               );
             }
           }}
+          mentionablePeople={mentionablePeople}
           emptyMessage="Nenhuma observação encontrada para esta ação."
         />
       </div>

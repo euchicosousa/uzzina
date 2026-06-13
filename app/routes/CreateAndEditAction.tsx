@@ -421,8 +421,6 @@ export function CreateAndEditAction({
             <div className={cn("w-full", "h-full")}>
               <ObservationsTab
                 actionId={RawAction.id}
-                actionColor={currentPartners[0]?.colors?.[0] || RawAction.color}
-                actionTextColor={currentPartners[0]?.colors?.[1]}
                 partnerUsersIds={currentPartners[0]?.users_ids || []}
               />
             </div>

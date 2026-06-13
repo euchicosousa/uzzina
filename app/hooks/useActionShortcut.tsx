@@ -112,10 +112,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
         {}
       );
 
-      let targetPhase = phases[code];
-      if (!targetPhase && code === "KeyF") {
-        targetPhase = "estrategia";
-      }
+      const targetPhase = phases[code];
 
       if (event.shiftKey) {
         if (code === "KeyD") {

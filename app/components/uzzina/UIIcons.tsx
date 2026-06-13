@@ -106,13 +106,13 @@ export function Icons({
     // Fases
     case "idea":
       return <LightbulbIcon className={cn(className)} style={style} />;
-    case "estrategia":
+    case "fazer":
       return <BrainIcon className={cn(className)} style={style} />;
     case "alinhamento":
       return <UsersIcon className={cn(className)} style={style} />;
-    case "criacao":
+    case "produzindo":
       return <PenToolIcon className={cn(className)} style={style} />;
-    case "aprovacao":
+    case "revisao":
       return <UserCheck2Icon className={cn(className)} style={style} />;
     case "concluido":
       return <CheckCircle2Icon className={cn(className)} style={style} />;

@@ -1,10 +1,11 @@
-import { Fragment, useEffect, useRef, useState } from "react";
 import { CheckIcon, FilterIcon } from "lucide-react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
+import { PHASES, type PHASE_TYPE, type CATEGORY } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
 import {
@@ -15,7 +16,6 @@ import {
   CommandList,
   CommandSeparator,
 } from "../ui/command";
-import { PHASES, CATEGORY_PHASES, type CATEGORY, type PHASE_TYPE } from "~/lib/CONSTANTS";
 import { PhaseIcon } from "./PhaseIcon";
 
 const ALL_PHASE = {
@@ -28,7 +28,7 @@ const ALL_PHASE = {
 export function PhaseCombobox({
   selectedPhase,
   selectedPhases = [],
-  category,
+  category: _category,
   onSelect,
   isMulti = false,
   tabIndex,
@@ -67,15 +67,8 @@ export function PhaseCombobox({
     };
   }, []);
 
-  // Filtra as fases disponíveis para a categoria, ou mostra todas se não houver categoria
   const PHASES_LIST = Object.values(PHASES);
-  const availableSlugs = category ? CATEGORY_PHASES[category] : undefined;
-
-  const filteredPhases = availableSlugs
-    ? PHASES_LIST.filter((p) => (availableSlugs as readonly string[]).includes(p.slug))
-    : PHASES_LIST;
-
-  const phasesList = isMulti ? [ALL_PHASE, ...filteredPhases] : filteredPhases;
+  const phasesList = isMulti ? [ALL_PHASE, ...PHASES_LIST] : PHASES_LIST;
 
   // Determinar a(s) fase(s) atual(is) para o trigger
   let currentPhases = phasesList.filter((phase) =>
@@ -86,7 +79,7 @@ export function PhaseCombobox({
 
   // Fallback se não encontrar nada (ex: estado inicial)
   if (currentPhases.length === 0 && !isMulti) {
-    currentPhases = [filteredPhases[0] || PHASES_LIST[0]];
+    currentPhases = [PHASES_LIST[0]];
   }
 
   const hasRealSelection =
@@ -124,12 +117,12 @@ export function PhaseCombobox({
           <button
             tabIndex={tabIndex}
             className={cn(
-              "flex items-center gap-1.5 outline-none transition-colors ",
+              "flex items-center gap-1.5 transition-colors outline-none",
               size === "sm"
                 ? cn(
-                  "h-8 hover:bg-secondary text-xs",
-                  !showText ? "w-8 p-0 justify-center" : "px-3 justify-start"
-                )
+                    "h-8 text-xs hover:bg-secondary",
+                    !showText ? "w-8 justify-center p-0" : "justify-start px-3",
+                  )
                 : "p-6 text-sm hover:bg-secondary focus:bg-secondary/50",
               className,
             )}

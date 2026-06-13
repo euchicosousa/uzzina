@@ -207,7 +207,7 @@ export function ActionItem({
         "hover:bg-primary/10 bg-primary/5 transition ring-primary/20 ring-1";
     } else {
       baseStyles =
-        "hover:bg-card bg-card/50 shadow-xs text-card-foreground transition hover:shadow-xl duration-500 border-t border-card hover:z-10 z-0";
+        "hover:bg-card bg-card/50 shadow-xs text-card-foreground transition hover:shadow-lg duration-500 border-t border-card hover:z-10 z-0";
       // GUARDAR PARA TESTES
       // switch (variant) {
       //   case VARIANT.hour:

@@ -224,10 +224,6 @@
     @apply pb-2 text-xl leading-none font-medium tracking-tight;
   }
 
-  p {
-    @apply mb-4 leading-relaxed;
-  }
-
   .lead {
     @apply text-xl leading-normal tracking-tight;
   }
@@ -390,4 +386,8 @@ iframe[data-test="uw-iframe"] {
 
 @utility animate-pop {
   animation: pop 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mention {
+  @apply  font-semibold underline underline-offset-4;
 }

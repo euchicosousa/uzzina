@@ -66,7 +66,7 @@ export function ActionContainer({
   }, [isCompact]);
 
   return (
-    <div className={cn(isScroll ? "h-full overflow-y-auto" : "", "p-0.5")}>
+    <div className={cn(isScroll ? "h-full overflow-y-auto" : "", "p-0.5 pb-4")}>
       <div className={cn(gapClasses, gridClasses, "relative")}>
         {/* <pre>{JSON.stringify(showMore, null, 2)}</pre> */}
         {(showMore ? actions.slice(0, 6) : actions).map((action) => (

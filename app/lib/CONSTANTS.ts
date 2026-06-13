@@ -7,37 +7,37 @@ export const PHASES = {
     shortcut: "i",
     key: "KeyI",
   },
-  estrategia: {
-    slug: "estrategia",
-    title: "Estratégia",
+  fazer: {
+    slug: "fazer",
+    title: "Fazer",
     color: "#F75",
     order: 2,
-    shortcut: "e",
-    key: "KeyE",
+    shortcut: "f",
+    key: "KeyF",
+  },
+  produzindo: {
+    slug: "produzindo",
+    title: "Produzindo",
+    color: "#93e",
+    order: 3,
+    shortcut: "p",
+    key: "KeyP",
   },
   alinhamento: {
     slug: "alinhamento",
     title: "Alinhamento",
     color: "#f49",
-    order: 3,
+    order: 4,
     shortcut: "a",
     key: "KeyA",
   },
-  criacao: {
-    slug: "criacao",
-    title: "Produção",
-    color: "#93e",
-    order: 4,
-    shortcut: "p",
-    key: "KeyP",
-  },
-  aprovacao: {
-    slug: "aprovacao",
-    title: "Validação",
+  revisao: {
+    slug: "revisao",
+    title: "Revisão",
     color: "#06f",
     order: 5,
-    shortcut: "v",
-    key: "KeyV",
+    shortcut: "r",
+    key: "KeyR",
   },
   concluido: {
     slug: "concluido",
@@ -175,49 +175,7 @@ export const CATEGORIES = {
 export type CATEGORY = keyof typeof CATEGORIES;
 export type CATEGORY_TYPE = (typeof CATEGORIES)[CATEGORY];
 
-export const CATEGORY_PHASES: Partial<Record<CATEGORY, PHASE[]>> = {
-  post: [
-    "idea",
-    "estrategia",
-    "alinhamento",
-    "criacao",
-    "aprovacao",
-    "concluido",
-  ],
-  reels: [
-    "idea",
-    "estrategia",
-    "alinhamento",
-    "criacao",
-    "aprovacao",
-    "concluido",
-  ],
-  carousel: [
-    "idea",
-    "estrategia",
-    "alinhamento",
-    "criacao",
-    "aprovacao",
-    "concluido",
-  ],
-  ads: [
-    "idea",
-    "estrategia",
-    "alinhamento",
-    "criacao",
-    "aprovacao",
-    "concluido",
-  ],
-  design: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
-  print: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
-  dev: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
-  stories: ["idea", "estrategia", "criacao", "aprovacao", "concluido"],
-  sm: ["idea", "estrategia", "alinhamento", "criacao", "concluido"],
-  capture: ["idea", "estrategia", "concluido"],
-  meeting: ["idea", "estrategia", "concluido"],
-  finance: ["idea", "estrategia", "aprovacao", "concluido"],
-  todo: ["idea", "estrategia", "concluido"],
-};
+
 
 export const PRIORITIES = {
   low: {

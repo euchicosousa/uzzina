@@ -20,15 +20,14 @@ import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { InstagramPreview } from "~/components/uzzina/InstagramPreview";
 import { CATEGORIES, PHASES, type CATEGORY, type PHASE } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
-import { safeColor } from "~/lib/utils";
 import {
   createComment,
   deleteComment,
   getCommentsByAction,
   updateComment,
 } from "~/models/action_comments.server";
-import { getClientSession } from "~/services/client-auth.server";
 import type { loader as DashLoader } from "~/routes/dash";
+import { getClientSession } from "~/services/client-auth.server";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const {
@@ -145,11 +144,6 @@ export default function DashActionDetail() {
     [action.category],
   );
 
-  const partners = appData?.partners || [];
-  const actionPartner =
-    partners.find((p) => action.partners?.includes(p.slug)) || partners[0];
-  const brandColor = actionPartner?.colors?.[0] || safeColor(action.color);
-
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
       {/* Voltar */}
@@ -262,7 +256,10 @@ export default function DashActionDetail() {
                 resourceType="auto"
                 multiple
                 outputWidth={1200}
-                onUpload={(url: string, meta: { originalFilename?: string }) => {
+                onUpload={(
+                  url: string,
+                  meta: { originalFilename?: string },
+                ) => {
                   const now = Date.now();
                   workFilesMetaRef.current[url] = {
                     name: meta.originalFilename || url,
@@ -318,8 +315,6 @@ export default function DashActionDetail() {
                 comments={comments}
                 currentUserId={clientId}
                 isUser={false}
-                brandColor={brandColor}
-                brandTextColor={actionPartner?.colors?.[1]}
                 onUpdate={(commentId, content) => {
                   submit(
                     {
