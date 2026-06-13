@@ -2,20 +2,14 @@ import { format, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import {
   BlocksIcon,
-  ClockIcon,
   Grid3x3Icon,
   HeartHandshakeIcon,
   KanbanIcon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CalendarButtons } from "~/components/features/Calendar";
-import {
-  ViewOptionsComponent,
-  useViewOptions,
-} from "~/components/features/ViewOptions";
 import { CategoriesComponent } from "~/components/layout/CategoriesComponent";
 import FeedComponent from "~/components/layout/FeedComponent";
-import { HoursComponent } from "~/components/layout/HoursComponent";
 import KanbanComponent from "~/components/layout/KanbanComponent";
 import { PartnersComponent } from "~/components/layout/PartnersComponent";
 import { UToggle } from "~/components/uzzina/UToggle";
@@ -25,17 +19,10 @@ import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
 export function TodayHomeComponent({ actions }: { actions: Action[] }) {
   const [view, setView] = useState<
-    "kanban" | "hours" | "feed" | "categories" | "partners"
+    "kanban" | "feed" | "categories" | "partners"
   >("partners");
 
   const [currentDay, setCurrentDay] = useState(new Date());
-  const [viewOptions, setViewOptions] = useViewOptions({
-    partner: true,
-    showOptions: {
-      ascending: true,
-      order: true,
-    },
-  });
 
   const filteredActions = useMemo(() => {
     return view === "feed"
@@ -68,12 +55,13 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
             <CalendarButtons
               currentDay={currentDay}
               setCurrentDay={setCurrentDay}
+              showDate
             />
             {/* Opções de visualização  */}
-            <ViewOptionsComponent
+            {/* <ViewOptionsComponent
               viewOptions={viewOptions}
               setViewOptions={setViewOptions}
-            />
+            /> */}
           </div>
           {/* Opções de Views  */}
           <div className="flex gap-1">
@@ -83,12 +71,7 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
             >
               <KanbanIcon />
             </UToggle>
-            <UToggle
-              checked={view === "hours"}
-              onClick={() => setView("hours")}
-            >
-              <ClockIcon />
-            </UToggle>
+
             <UToggle checked={view === "feed"} onClick={() => setView("feed")}>
               <Grid3x3Icon />
             </UToggle>
@@ -110,26 +93,9 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
     >
       <div className="px-8 xl:px-16">
         {view === "kanban" && <KanbanComponent actions={filteredActions} />}
-        {view === "hours" && (
-          <HoursComponent
-            actions={filteredActions}
-            date={currentDay}
-            viewOptions={viewOptions}
-          />
-        )}
-        {view === "feed" && (
-          <FeedComponent
-            actions={filteredActions}
-            orderBy={viewOptions.order}
-            ascending={viewOptions.ascending}
-          />
-        )}
+        {view === "feed" && <FeedComponent actions={filteredActions} />}
         {view === "categories" && (
-          <CategoriesComponent
-            actions={filteredActions}
-            orderBy={viewOptions.order}
-            ascending={viewOptions.ascending}
-          />
+          <CategoriesComponent actions={filteredActions} />
         )}
         {view === "partners" && <PartnersComponent actions={filteredActions} />}
       </div>
