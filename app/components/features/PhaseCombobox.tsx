@@ -5,7 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
-import { PHASES, type PHASE_TYPE, type CATEGORY } from "~/lib/CONSTANTS";
+import { PHASES, type PHASE_TYPE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
 import {
@@ -28,7 +28,6 @@ const ALL_PHASE = {
 export function PhaseCombobox({
   selectedPhase,
   selectedPhases = [],
-  category: _category,
   onSelect,
   isMulti = false,
   tabIndex,
@@ -39,7 +38,6 @@ export function PhaseCombobox({
 }: {
   selectedPhase?: string;
   selectedPhases?: string[];
-  category?: CATEGORY;
   // biome-ignore lint/suspicious/noExplicitAny: onSelect callback handles polymorphic inputs (string slug or multi-select object payload) depending on isMulti
   onSelect?: (args: any) => void;
   isMulti?: boolean;

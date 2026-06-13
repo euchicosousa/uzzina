@@ -63,13 +63,11 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
       setPhaseOverrides((prev) => ({ ...prev, [activeAction.id]: newPhase }));
 
       // 2. Persist to server
-      handleAction(
-        {
-          ...activeAction,
-          intent: INTENT.update_action,
-          phase: newPhase,
-        }
-      );
+      handleAction({
+        ...activeAction,
+        intent: INTENT.update_action,
+        phase: newPhase,
+      });
     }
 
     // 3. Clear overlay
@@ -167,7 +165,7 @@ const KanbanColumn = ({
             </div>
 
             <div className="flex h-full flex-col overflow-y-auto p-1">
-              <div className="flex flex-col divide-y">
+              <div className="flex flex-col gap-1">
                 {actions.map((action) => (
                   <Draggable id={action.id} key={action.id}>
                     <ActionItem
