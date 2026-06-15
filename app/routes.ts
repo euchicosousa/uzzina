@@ -30,6 +30,7 @@ export default [
   route("action/set-theme", "routes/action.set-theme.ts"),
   route("action/set-preferences", "routes/action.set-preferences.ts"),
   route("action/handle-action", "routes/action.handle-action.ts"),
+  route("action/handle-notifications", "routes/action.handle-notifications.ts"),
   route("action/handle-ai", "routes/action.handle-ai.ts"),
   route("api/search", "routes/api.search.ts"),
 ] satisfies RouteConfig;

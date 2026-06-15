@@ -9,7 +9,7 @@ import {
 import { useMemo } from "react";
 import { useMatches, useOutletContext } from "react-router";
 
-import { useOptimisticQuery } from "~/hooks/useOptimisticQuery";
+import { useQuery } from "@tanstack/react-query";
 import { ORDER_BY } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
 import type { AppLoaderData } from "./app";
@@ -36,14 +36,14 @@ export default function AppHome() {
 
   // Busca as ações no client usando TanStack Query
   const { data: currentActions = [], isLoading: isLoadingHomeActions } =
-    useOptimisticQuery({
+    useQuery({
       queryKey: QUERY_KEYS.actions.home(person.user_id),
       queryFn: () =>
         fetchHomeActions(person.user_id, startDateISO, endDateISO, todayEndISO),
     });
 
   // Busca as lateActions no client usando TanStack Query
-  const { data: currentLateActions = [] } = useOptimisticQuery({
+  const { data: currentLateActions = [] } = useQuery({
     queryKey: QUERY_KEYS.lateActions.user(person.user_id),
     queryFn: () =>
       fetchAllLateActions(

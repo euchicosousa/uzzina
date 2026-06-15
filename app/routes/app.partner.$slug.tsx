@@ -42,7 +42,6 @@ import {
 } from "~/components/ui/popover";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import { useAppTheme } from "~/hooks/useAppTheme";
-import { useOptimisticQuery } from "~/hooks/useOptimisticQuery";
 import { PHASES, SIZE } from "~/lib/CONSTANTS";
 import { filterActions, getInstagramFeedActions } from "~/lib/helpers";
 import { getUserPreferences } from "~/lib/preferences";
@@ -51,7 +50,7 @@ import { getPartnerBySlug } from "~/models/partners.server";
 import { getUserId } from "~/services/auth.server";
 import type { Action } from "~/models/actions.server";
 
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useMatches } from "react-router";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import {
@@ -106,7 +105,7 @@ export default function PartnerPage() {
 
   // Actions do parceiro — client-side via React Query
   const dateRange = `${startDateFormatted}_${endDateFormatted}`;
-  const { data: currentActions = [] } = useOptimisticQuery({
+  const { data: currentActions = [] } = useQuery({
     queryKey: QUERY_KEYS.actions.partner(partner.slug, dateRange),
     queryFn: () =>
       fetchPartnerActions(
@@ -132,7 +131,7 @@ export default function PartnerPage() {
   });
 
   // LateActions do parceiro — client-side via React Query (reutilizando cache global do Header)
-  const { data: currentLateActions = [] } = useOptimisticQuery({
+  const { data: currentLateActions = [] } = useQuery({
     queryKey: QUERY_KEYS.lateActions.user(person.user_id),
     queryFn: () =>
       fetchAllLateActions(
