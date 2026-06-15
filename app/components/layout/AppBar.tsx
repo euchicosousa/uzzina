@@ -114,8 +114,11 @@ export function AppBar({
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="mx-2 w-64 p-0" align="start">
-            <Command>
+          <PopoverContent
+            className="mx-2 w-64 bg-popover/20 p-0 backdrop-blur-2xl"
+            align="start"
+          >
+            <Command className="bg-transparent">
               <CommandInput placeholder="Procurar parceiro..." />
               <CommandList
                 className={cn(
@@ -163,12 +166,11 @@ export function AppBar({
                         {isAtHome && (
                           <Button
                             variant={isFiltered ? "secondary" : "ghost"}
-                            size="icon"
                             className={cn(
-                              "size-7 rounded-lg transition-opacity",
-                              isFiltered
-                                ? "bg-primary/20 text-primary opacity-100"
-                                : "opacity-0 group-hover:opacity-100 max-sm:opacity-100",
+                              "absolute right-1 size-6 cursor-pointer bg-accent transition",
+                              !isFiltered
+                                ? "opacity-0 ring-black/5 group-hover:opacity-100 hover:bg-card hover:shadow-xs hover:ring max-sm:opacity-100"
+                                : "bg-card shadow-xs ring ring-black/5",
                             )}
                             onClick={() => {
                               if (isFiltered) {
