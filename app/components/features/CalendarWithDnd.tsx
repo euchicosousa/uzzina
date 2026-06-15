@@ -9,7 +9,6 @@ import {
 } from "@dnd-kit/core";
 import { format, isSameDay, parseISO } from "date-fns";
 import { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { ActionItem } from "~/components/features/ActionItem";
 import { CalendarActions } from "~/components/features/Calendar";
 import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
@@ -29,6 +28,7 @@ export function CalendarWithDnd({
   isCompact,
   isScroll,
   showBorder,
+  hideBorderOnLastRow,
   highlightThisWeek,
 }: {
   actions: Action[];
@@ -40,9 +40,9 @@ export function CalendarWithDnd({
   isCompact?: boolean;
   isScroll?: boolean;
   showBorder?: boolean;
+  hideBorderOnLastRow?: boolean;
   highlightThisWeek?: boolean;
 }) {
-  const _queryClient = useQueryClient();
   const { handleAction } = useActionMutations();
   const [activeAction, setActiveAction] = useState<Action>();
   // Local override: maps action.id → updated date fields.
@@ -121,6 +121,7 @@ export function CalendarWithDnd({
           isScroll={isScroll}
           showBorder={showBorder}
           highlightThisWeek={highlightThisWeek}
+          hideBorderOnLastRow={hideBorderOnLastRow}
         />
         <DragOverlay
           className="z-100"

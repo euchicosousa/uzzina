@@ -23,6 +23,7 @@ export function LateHomeComponent({ actions }: { actions: Action[] }) {
   return (
     <HomeComponentWrapper
       title="Atrasados"
+      borderAfter={false}
       OptionsComponent={
         <ViewOptionsComponent
           viewOptions={viewOptions}

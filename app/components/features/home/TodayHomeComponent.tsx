@@ -72,24 +72,31 @@ export function TodayHomeComponent({
           {/* Opções de Views  */}
           <div className="flex gap-1">
             <UToggle
-              checked={view === "kanban"}
+              pressed={view === "kanban"}
               onClick={() => setView("kanban")}
+              className="raised"
             >
               <KanbanIcon />
             </UToggle>
 
-            <UToggle checked={view === "feed"} onClick={() => setView("feed")}>
+            <UToggle
+              pressed={view === "feed"}
+              onClick={() => setView("feed")}
+              className="raised"
+            >
               <Grid3x3Icon />
             </UToggle>
             <UToggle
-              checked={view === "categories"}
+              pressed={view === "categories"}
               onClick={() => setView("categories")}
+              className="raised"
             >
               <BlocksIcon />
             </UToggle>
             <UToggle
-              checked={view === "partners"}
+              pressed={view === "partners"}
               onClick={() => setView("partners")}
+              className="raised"
             >
               <HeartHandshakeIcon />
             </UToggle>
@@ -103,7 +110,9 @@ export function TodayHomeComponent({
         {view === "categories" && (
           <CategoriesComponent actions={filteredActions} />
         )}
-        {view === "partners" && <PartnersComponent actions={filteredActions} isLoading={isLoading} />}
+        {view === "partners" && (
+          <PartnersComponent actions={filteredActions} isLoading={isLoading} />
+        )}
       </div>
     </HomeComponentWrapper>
   );

@@ -30,8 +30,7 @@ export function ActionCalendarPartnerPage({
     end: endOfWeek(endOfMonth(currentDay)),
   });
 
-  const { person, partners } = useMatches()[1]
-    .loaderData as AppLoaderData;
+  const { person, partners } = useMatches()[1].loaderData as AppLoaderData;
 
   const { data: celebrations = [] } = useQuery({
     queryKey: QUERY_KEYS.celebrations(),
@@ -43,7 +42,9 @@ export function ActionCalendarPartnerPage({
   const partnerSlug = params.slug;
   invariant(partnerSlug);
 
-  const { setBaseAction } = useOutletContext<{ setBaseAction: (action: Action | null) => void }>();
+  const { setBaseAction } = useOutletContext<{
+    setBaseAction: (action: Action | null) => void;
+  }>();
 
   const responsibles = partners.filter((p) => p.slug === partnerSlug)[0]
     .users_ids;
@@ -57,6 +58,7 @@ export function ActionCalendarPartnerPage({
       currentDay={currentDay}
       highlightThisWeek
       showBorder
+      hideBorderOnLastRow
       onCreateAction={(day) => {
         setBaseAction({
           ...(getCleanAction({

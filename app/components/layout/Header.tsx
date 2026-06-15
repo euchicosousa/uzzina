@@ -89,7 +89,7 @@ export function Header({
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            className="w-80 overflow-hidden rounded-2xl border border-border p-0 shadow-xl"
+            className="w-80 overflow-hidden rounded-2xl border border-border bg-popover/20 p-0 shadow-xl backdrop-blur-lg"
             align="end"
           >
             <div className="flex items-center justify-between border-b bg-muted/20 px-4 py-3">
@@ -132,7 +132,9 @@ export function Header({
                       na ação: {notif.action_title}
                     </span>
                     <p className="mt-1 line-clamp-2 rounded-lg border border-border/50 bg-muted/30 p-2 text-xs text-foreground/80">
-                      {notif.comment_excerpt ? notif.comment_excerpt.replace(/<[^>]*>/g, "") : ""}
+                      {notif.comment_excerpt
+                        ? notif.comment_excerpt.replace(/<[^>]*>/g, "")
+                        : ""}
                     </p>
                   </button>
                 ))
@@ -211,7 +213,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
         )}
         <UAvatar size={SIZE.md} fallback={person.short} image={person.image} />
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="mx-2">
+      <DropdownMenuContent className="mx-2 bg-popover/20 backdrop-blur-lg">
         {theme === Theme.DARK ? (
           <DropdownMenuItem onClick={() => changeTheme(Theme.LIGHT)}>
             {getThemeIcon(Theme.LIGHT, "size-4")} Tema claro

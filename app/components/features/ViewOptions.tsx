@@ -12,7 +12,7 @@ import {
   SignalIcon,
   SquareCheckIcon,
   TagIcon,
-  UsersIcon
+  UsersIcon,
 } from "lucide-react";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { Button } from "~/components/ui/button";
@@ -160,7 +160,7 @@ export function ViewOptionsComponent({
                   ascending: pressed,
                 })
               }
-              className="grid place-content-center p-0"
+              className="pressed"
             >
               {viewOptions.ascending ? <ArrowUpAZIcon /> : <ArrowDownAZIcon />}
             </Toggle>
@@ -176,7 +176,7 @@ export function ViewOptionsComponent({
                   order: pressed ? ORDER_BY.date : ORDER_BY.phase,
                 })
               }
-              className="grid place-content-center p-0"
+              className="pressed"
             >
               <ClockIcon />
             </Toggle>
@@ -190,7 +190,7 @@ export function ViewOptionsComponent({
                 order: pressed ? ORDER_BY.phase : ORDER_BY.date,
               })
             }
-            className="grid place-content-center p-0"
+            className="pressed"
           >
             <SquareCheckIcon />
           </Toggle>
@@ -201,86 +201,86 @@ export function ViewOptionsComponent({
         viewOptions.showOptions.priority ||
         viewOptions.showOptions.partner ||
         viewOptions.showOptions.category) && (
-          <div className="flex gap-1">
-            {viewOptions.showOptions.responsibles && (
-              <Toggle
-                className="grid place-content-center p-0"
-                pressed={viewOptions.responsibles}
-                onPressedChange={(value) =>
-                  setViewOptions({ ...viewOptions, responsibles: value })
-                }
-              >
-                <UsersIcon />
-              </Toggle>
-            )}
-            {viewOptions.showOptions.priority && (
-              <Toggle
-                pressed={viewOptions.priority}
-                onPressedChange={(value) =>
-                  setViewOptions({ ...viewOptions, priority: value })
-                }
-                className="grid place-content-center p-0"
-              >
-                <SignalIcon />
-              </Toggle>
-            )}
-            {viewOptions.showOptions.category && (
-              <Toggle
-                pressed={viewOptions.category}
-                onPressedChange={(value) =>
-                  setViewOptions({ ...viewOptions, category: value })
-                }
-                className="grid place-content-center p-0"
-              >
-                <TagIcon />
-              </Toggle>
-            )}
-            {viewOptions.showOptions.partner && (
-              <Toggle
-                pressed={viewOptions.partner}
-                onPressedChange={(value) =>
-                  setViewOptions({ ...viewOptions, partner: value })
-                }
-                className="grid place-content-center p-0"
-              >
-                <HeartHandshakeIcon />
-              </Toggle>
-            )}
-          </div>
-        )}
+        <div className="flex gap-1">
+          {viewOptions.showOptions.responsibles && (
+            <Toggle
+              className="pressed"
+              pressed={viewOptions.responsibles}
+              onPressedChange={(value) =>
+                setViewOptions({ ...viewOptions, responsibles: value })
+              }
+            >
+              <UsersIcon />
+            </Toggle>
+          )}
+          {viewOptions.showOptions.priority && (
+            <Toggle
+              pressed={viewOptions.priority}
+              onPressedChange={(value) =>
+                setViewOptions({ ...viewOptions, priority: value })
+              }
+              className="pressed"
+            >
+              <SignalIcon />
+            </Toggle>
+          )}
+          {viewOptions.showOptions.category && (
+            <Toggle
+              pressed={viewOptions.category}
+              onPressedChange={(value) =>
+                setViewOptions({ ...viewOptions, category: value })
+              }
+              className="pressed"
+            >
+              <TagIcon />
+            </Toggle>
+          )}
+          {viewOptions.showOptions.partner && (
+            <Toggle
+              pressed={viewOptions.partner}
+              onPressedChange={(value) =>
+                setViewOptions({ ...viewOptions, partner: value })
+              }
+              className="pressed"
+            >
+              <HeartHandshakeIcon />
+            </Toggle>
+          )}
+        </div>
+      )}
 
       {(viewOptions.showOptions.filter_category ||
         viewOptions.showOptions.filter_phase ||
         viewOptions.showOptions.filter_responsible) && (
-          <div className="flex gap-1">
-            {viewOptions.showOptions.filter_category && (
-              <CategoriesCombobox
-                isMulti
-                showInstagramGroup
-                selectedCategories={viewOptions.filter_category || ["all"]}
-                onSelect={({ categories }) => {
-                  setViewOptions({
-                    ...viewOptions,
-                    filter_category:
-                      categories[0] === "all" ? undefined : categories,
-                  });
-                }}
-              />
-            )}
-            {viewOptions.showOptions.filter_phase && (
-              <PhaseCombobox
-                isMulti={true}
-                selectedPhases={viewOptions.filter_phase ?? ["all"]}
-                onSelect={({ phases }) => {
-                  setViewOptions({
-                    ...viewOptions,
-                    filter_phase: phases[0] === "all" ? undefined : phases,
-                  });
-                }}
-              />
-            )}
-          </div>
-        )}
+        <div className="flex gap-1">
+          {viewOptions.showOptions.filter_category && (
+            <CategoriesCombobox
+              isMulti
+              showInstagramGroup
+              selectedCategories={viewOptions.filter_category || ["all"]}
+              onSelect={({ categories }) => {
+                setViewOptions({
+                  ...viewOptions,
+                  filter_category:
+                    categories[0] === "all" ? undefined : categories,
+                });
+              }}
+            />
+          )}
+          {viewOptions.showOptions.filter_phase && (
+            <PhaseCombobox
+              isMulti={true}
+              selectedPhases={viewOptions.filter_phase ?? ["all"]}
+              onSelect={({ phases }) => {
+                setViewOptions({
+                  ...viewOptions,
+                  filter_phase: phases[0] === "all" ? undefined : phases,
+                });
+              }}
+            />
+          )}
+        </div>
+      )}
       {endComponents}
     </div>
   );

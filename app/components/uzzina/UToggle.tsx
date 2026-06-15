@@ -1,27 +1,23 @@
 import type React from "react";
 import { cn } from "~/lib/utils";
-import { Button } from "../ui/button";
+import { Toggle } from "../ui/toggle";
 
 /**
  * UToggle — button-based toggle (not form-linked)
  */
 export function UToggle({
   children,
-  checked,
+  pressed,
   className,
   ...props
-}: Omit<React.ComponentProps<typeof Button>, "children"> & {
-  checked: boolean;
+}: Omit<React.ComponentProps<typeof Toggle>, "children"> & {
+  pressed: boolean;
   children: React.ReactElement;
 }) {
   return (
-    <Button
-      {...props}
-      variant={checked ? "outline" : "ghost"}
-      className={cn("border", !checked && "border-transparent", className)}
-    >
+    <Toggle {...props} pressed={pressed} className={className}>
       {children}
-    </Button>
+    </Toggle>
   );
 }
 
@@ -64,7 +60,7 @@ export function UToggleInput({
       <label
         htmlFor={id}
         className={cn(
-          "squircle flex items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:opacity-100 hover:opacity-100 focus:opacity-100",
+          "flex items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all squircle peer-checked:opacity-100 hover:opacity-100 focus:opacity-100",
           variant === "destructive"
             ? "peer-checked:bg-destructive/10 peer-checked:text-destructive"
             : "hover:bg-opacity-100 peer-checked:bg-muted",

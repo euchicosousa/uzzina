@@ -264,7 +264,7 @@ export function ActionItem({
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <ActionItemSprint action={action} />
+                {isLateAction(action) && <ActionItemSprint action={action} />}
                 {showPartner && (
                   <ActionItemPartners
                     action={action}
@@ -308,6 +308,8 @@ export function ActionItem({
           <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
             <div className="flex w-full items-center gap-2 overflow-hidden">
               <PhaseIcon phase={currentPhase} size="dot" />
+
+              {isLateAction(action) && <ActionItemSprint action={action} />}
 
               <ActionItemTitleInput
                 isEditing={isEditing}

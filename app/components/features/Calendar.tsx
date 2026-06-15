@@ -21,6 +21,7 @@ export function CalendarActions({
   isScroll,
   showBorder,
   highlightThisWeek,
+  hideBorderOnLastRow,
 }: {
   currentDay?: Date;
   calendar: CalendarActionsType[];
@@ -30,27 +31,33 @@ export function CalendarActions({
   isScroll?: boolean;
   showBorder?: boolean;
   highlightThisWeek?: boolean;
+  hideBorderOnLastRow?: boolean;
 }) {
   return (
     <div className="w-full overflow-x-auto overflow-y-hidden">
       <div className="flex h-full w-full min-w-[1500px] flex-col overflow-hidden lg:min-w-[900px]">
         <WeekHeader />
         <div className="grid h-full shrink grid-cols-7 overflow-y-auto">
-          {calendar.map((day) => (
-            <CalendarDay
-              currentDay={currentDay}
-              day={day.date}
-              onCreateAction={onCreateAction}
-              viewOptions={viewOptions}
-              actions={day.actions || []}
-              celebrations={day.celebrations}
-              isCompact={isCompact}
-              isScroll={isScroll}
-              showBorder={showBorder}
-              highlightThisWeek={highlightThisWeek}
-              key={format(day.date, "yyyy-MM-dd")}
-            />
-          ))}
+          {calendar.map((day, i) => {
+            const isLastRow = i >= Math.floor((calendar.length - 1) / 7) * 7;
+            return (
+              <CalendarDay
+                currentDay={currentDay}
+                day={day.date}
+                onCreateAction={onCreateAction}
+                viewOptions={viewOptions}
+                actions={day.actions || []}
+                celebrations={day.celebrations}
+                isCompact={isCompact}
+                isScroll={isScroll}
+                showBorder={
+                  hideBorderOnLastRow && isLastRow ? false : showBorder
+                }
+                highlightThisWeek={highlightThisWeek}
+                key={format(day.date, "yyyy-MM-dd")}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

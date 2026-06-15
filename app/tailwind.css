@@ -297,8 +297,8 @@ html {
   content: attr(data-placeholder);
 }
 
-.squircle {
-  @apply [corner-shape:superellipse(1.5)];
+@utility squircle {
+  corner-shape: superellipse(1.5);
 }
 
 /* Animated gradient angle for the AI button border */
@@ -394,4 +394,12 @@ iframe[data-test="uw-iframe"] {
 
 .tiptap p {
   @apply mb-2;
+}
+
+.pressed {
+  @apply grid place-content-center rounded-xl p-0 shadow-white inset-shadow-black/20 transition-all squircle data-[state=on]:shadow-sm data-[state=on]:inset-shadow-sm;
+}
+
+.raised {
+  @apply ring-black/5 transition-all data-[state=on]:border-t data-[state=on]:border-white data-[state=on]:bg-card/50 data-[state=on]:shadow data-[state=on]:ring;
 }

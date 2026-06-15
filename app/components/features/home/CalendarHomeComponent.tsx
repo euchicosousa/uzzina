@@ -79,12 +79,16 @@ export function CalendarHomeComponent({
             <Toggle
               pressed={period === "week"}
               onClick={() => setPeriod("week")}
+              className="raised"
+              key="week-toggle"
             >
               Semana
             </Toggle>
             <Toggle
               pressed={period === "month"}
               onClick={() => setPeriod("month")}
+              className="raised"
+              key="month-toggle"
             >
               Mês
             </Toggle>
