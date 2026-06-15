@@ -23,9 +23,11 @@ function getCaptionTail(instagram_caption_tail: string | null) {
 export function CreateAndEditAction({
   BaseAction,
   onClose,
+  partnerFilters = [],
 }: {
   BaseAction: Action;
   onClose: () => void;
+  partnerFilters?: string[];
 }) {
   const [view, setView] = useState<"essential" | "instagram" | "observations">(
     "essential",
@@ -47,7 +49,26 @@ export function CreateAndEditAction({
   const [RawAction, setRawAction] = useState<Action>(() => {
     if (BaseAction.created_at) return BaseAction;
     const now = format(new Date(), "yyyy-MM-dd HH:mm:ss");
-    return { ...BaseAction, created_at: now, updated_at: now };
+
+    let initialPartners = BaseAction.partners || [];
+    let initialResponsibles = BaseAction.responsibles || [];
+
+    if (initialPartners.length === 0 && partnerFilters.length > 0) {
+      initialPartners = partnerFilters;
+      // Busca o primeiro parceiro filtrado para pré-selecionar os responsáveis
+      const matchedPartner = partners.find((p) => p.slug === partnerFilters[0]);
+      if (matchedPartner && initialResponsibles.length === 0) {
+        initialResponsibles = matchedPartner.users_ids;
+      }
+    }
+
+    return {
+      ...BaseAction,
+      partners: initialPartners,
+      responsibles: initialResponsibles,
+      created_at: now,
+      updated_at: now,
+    };
   });
 
   // Ref always points to the latest RawAction to avoid stale closures

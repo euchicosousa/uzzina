@@ -75,11 +75,10 @@ export function CommentItem({
           </div>
         ) : (
           <>
-            <div
-              // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is generated safely by Tiptap editor
-              dangerouslySetInnerHTML={{ __html: comment.content }}
-              className="comment-content text-sm"
-            />
+            <div className="comment-content text-sm whitespace-pre-line">
+              {comment.content}
+            </div>
+
             {isOwn && (
               <div className="absolute right-0 bottom-0 flex min-w-24 items-center justify-end gap-1 rounded-br-lg bg-linear-to-l from-primary to-primary/0 p-1 opacity-0 transition-opacity group-hover:opacity-100">
                 <button

@@ -14,6 +14,7 @@ export default [
     route("admin/celebrations", "routes/app.admin.celebrations.tsx"),
     route("profile", "routes/app.profile.tsx"),
     route("help", "routes/app.help.tsx"),
+    route("notifications", "routes/app.notifications.tsx"),
   ]),
   route("dash", "routes/dash.tsx", [
     index("routes/dash.home.tsx"),
@@ -21,6 +22,10 @@ export default [
     route("action/:id", "routes/dash.action.$id.tsx"),
   ]),
   route("login", "routes/login.tsx"),
+  route("forgot-password", "routes/forgot-password.tsx"),
+  route("reset-password", "routes/reset-password.tsx"),
+  route("force-reset", "routes/force-reset.tsx"),
+
   route("ui", "routes/ui.tsx"),
   route("action/set-theme", "routes/action.set-theme.ts"),
   route("action/set-preferences", "routes/action.set-preferences.ts"),

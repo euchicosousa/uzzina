@@ -134,8 +134,8 @@ export default function Dashboard() {
           <Header person={person} setBaseAction={setBaseAction} />
           <div className="flex h-full w-full overflow-hidden">
             <div className="grow overflow-x-hidden overflow-y-auto">
-              <div className="flex min-h-full grow">
-                <div className="flex min-h-full w-full shrink flex-col pb-24">
+              <div className="flex min-h-full grow flex-col">
+                <div className="flex min-h-full w-full shrink flex-col">
                   <Outlet
                     context={{
                       BaseAction,
@@ -144,6 +144,20 @@ export default function Dashboard() {
                       setPartnerFilters,
                     }}
                   />
+                </div>
+                <div className="flex h-22 shrink-0 items-center justify-between border-t px-4 py-4 text-xs text-gray-500 lg:px-8">
+                  <p>
+                    © 2026. Todos os direitos reservados. Feito com carinho pela
+                    Agência CNVT®.
+                  </p>
+                  <a
+                    href="https://cnvt.com.br"
+                    target="_blank"
+                    className="font-bold"
+                    rel="noopener noreferrer"
+                  >
+                    CNVT
+                  </a>
                 </div>
               </div>
             </div>
@@ -162,6 +176,7 @@ export default function Dashboard() {
                 <CreateAndEditAction
                   BaseAction={BaseAction}
                   onClose={() => setBaseAction(null)}
+                  partnerFilters={partnerFilters}
                 />
               </Suspense>
             ) : null}

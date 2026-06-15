@@ -17,7 +17,13 @@ import { isInstagramFeed } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
-export function TodayHomeComponent({ actions }: { actions: Action[] }) {
+export function TodayHomeComponent({
+  actions,
+  isLoading,
+}: {
+  actions: Action[];
+  isLoading?: boolean;
+}) {
   const [view, setView] = useState<
     "kanban" | "feed" | "categories" | "partners"
   >("partners");
@@ -97,7 +103,7 @@ export function TodayHomeComponent({ actions }: { actions: Action[] }) {
         {view === "categories" && (
           <CategoriesComponent actions={filteredActions} />
         )}
-        {view === "partners" && <PartnersComponent actions={filteredActions} />}
+        {view === "partners" && <PartnersComponent actions={filteredActions} isLoading={isLoading} />}
       </div>
     </HomeComponentWrapper>
   );

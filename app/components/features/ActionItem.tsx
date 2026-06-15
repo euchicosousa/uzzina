@@ -191,27 +191,29 @@ export function ActionItem({
   }, [variant]);
 
   const bgClasses = useMemo(() => {
-    let baseStyles = "";
+    let baseStyles =
+      "shadow-xs transition ring ring-black/5 hover:shadow-lg duration-500 border-t border-white dark:border-white/10 hover:z-10 z-0 hover:bg-card bg-card/50 text-card-foreground dark:shadow-black/50";
 
     // 1. Determine base background/text colors based on priority states
     if (showLate && isLateAction(action)) {
       if (variant === VARIANT.content) {
-        baseStyles = "p-1 rounded-xl";
+        baseStyles = cn(baseStyles, "p-1 rounded-xl");
       }
       baseStyles = cn(
-        "bg-destructive/10 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/30 ring-destructive/20 ring-1 shadow-destructive/30",
+        baseStyles,
+        "bg-destructive/10 dark:bg-destructive/10 text-destructive hover:bg-destructive/5 dark:hover:bg-destructive/20 ring-destructive/20 ring-1",
       );
     } else if (person && isSprint(action, person)) {
-      baseStyles =
-        "hover:bg-primary/10 bg-primary/5 transition ring-primary/20 ring-1";
-    } else {
-      baseStyles = "hover:bg-card bg-card/50  text-card-foreground";
+      baseStyles = cn(
+        baseStyles,
+        "hover:bg-primary/10 bg-primary/5 transition ring-primary/20 ring-1",
+      );
     }
 
-    baseStyles = cn(
-      baseStyles,
-      "shadow-xs transition hover:shadow-lg duration-500 border-t border-card hover:z-10 z-0",
-    );
+    // baseStyles = cn(
+    //   baseStyles,
+    //   "shadow-xs transition ring ring-black/5 hover:shadow-lg duration-500 border-t border-card hover:z-10 z-0",
+    // );
 
     // 2. Apply editing ring/focus overrides on top of the base style
     if (isEditing) {

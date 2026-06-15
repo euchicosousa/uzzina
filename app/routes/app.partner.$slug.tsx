@@ -119,7 +119,7 @@ export default function PartnerPage() {
     enabled: !skipActions,
     initialData: () => {
       // Tenta recuperar do cache da Home e filtrar pelo parceiro
-       const cachedHomeActions = queryClient.getQueryData<Action[]>(
+      const cachedHomeActions = queryClient.getQueryData<Action[]>(
         QUERY_KEYS.actions.home(person.user_id),
       );
       if (cachedHomeActions) {
@@ -166,7 +166,12 @@ export default function PartnerPage() {
       restoreThemeColors();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [followPartnerColor, partner.colors, restoreThemeColors, applyPartnerColors]);
+  }, [
+    followPartnerColor,
+    partner.colors,
+    restoreThemeColors,
+    applyPartnerColors,
+  ]);
 
   const preferences = getUserPreferences(person);
 
@@ -256,7 +261,7 @@ export default function PartnerPage() {
             mode="month"
           />
 
-          <InputGroup className="w-auto">
+          <InputGroup className="w-auto bg-input">
             <InputGroupAddon>
               <SearchIcon />
             </InputGroupAddon>

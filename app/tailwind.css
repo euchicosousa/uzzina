@@ -32,7 +32,7 @@
   --accent-foreground: var(--foreground);
   --destructive: oklch(66.147% 0.2279 16.339);
   --border: oklch(from var(--foreground) l c h / 10%);
-  --input: oklch(from var(--foreground) l c h / 15%);
+  --input: oklch(from var(--foreground) l c h / 5%);
   /* --input: oklch(0.92 0 0); */
   --ring: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
   --chart-1: oklch(0.809 0.105 251.813);
@@ -58,7 +58,7 @@
   --background: var(--dark-background-override, oklch(0.4 0.01 285.823));
   --foreground: var(--dark-foreground-override, oklch(0.985 0 0));
 
-  --card: oklch(0 0 0);
+  --card: oklch(0.3 0.02 270);
   --card-foreground: var(--foreground);
   --popover: oklch(0 0 0);
   --popover-foreground: var(--foreground);
@@ -389,5 +389,9 @@ iframe[data-test="uw-iframe"] {
 }
 
 .mention {
-  @apply  font-semibold underline underline-offset-4;
+  @apply font-semibold underline underline-offset-4;
+}
+
+.tiptap p {
+  @apply mb-2;
 }

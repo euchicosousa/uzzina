@@ -7,7 +7,7 @@ import {
   getAllCommentsByAction,
   updateComment,
 } from "~/models/action_comments.server";
-
+import { createNotificationsForMentions } from "~/models/notifications.server";
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const actionId = url.searchParams.get("actionId");
@@ -77,9 +77,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     });
 
     if (mentions.length > 0) {
-      const { createNotificationsForMentions } = await import("~/models/notifications.server");
-      // Resumo de até 100 caracteres
-      const commentExcerpt = content.length > 100 ? `${content.substring(0, 100)}...` : content;
+      // Resumo de até 100 caracteres (sem tags HTML)
+      const plainText = content.replace(/<[^>]*>/g, "");
+      const commentExcerpt = plainText.length > 100 ? `${plainText.substring(0, 100)}...` : plainText;
       await createNotificationsForMentions(supabase, {
         commentId: insertedComment.id,
         actionId,

@@ -35,11 +35,12 @@ export default function AppHome() {
   const todayEndISO = endOfDay(now).toISOString();
 
   // Busca as ações no client usando TanStack Query
-  const { data: currentActions = [] } = useOptimisticQuery({
-    queryKey: QUERY_KEYS.actions.home(person.user_id),
-    queryFn: () =>
-      fetchHomeActions(person.user_id, startDateISO, endDateISO, todayEndISO),
-  });
+  const { data: currentActions = [], isLoading: isLoadingHomeActions } =
+    useOptimisticQuery({
+      queryKey: QUERY_KEYS.actions.home(person.user_id),
+      queryFn: () =>
+        fetchHomeActions(person.user_id, startDateISO, endDateISO, todayEndISO),
+    });
 
   // Busca as lateActions no client usando TanStack Query
   const { data: currentLateActions = [] } = useOptimisticQuery({
@@ -57,14 +58,14 @@ export default function AppHome() {
   const filteredActions = useMemo(() => {
     if (partnerFilters.length === 0) return currentActions;
     return currentActions.filter((action) =>
-      action.partners?.some((p) => partnerFilters.includes(p))
+      action.partners?.some((p) => partnerFilters.includes(p)),
     );
   }, [currentActions, partnerFilters]);
 
   const filteredLateActions = useMemo(() => {
     if (partnerFilters.length === 0) return currentLateActions;
     return currentLateActions.filter((action) =>
-      action.partners?.some((p) => partnerFilters.includes(p))
+      action.partners?.some((p) => partnerFilters.includes(p)),
     );
   }, [currentLateActions, partnerFilters]);
 
@@ -80,7 +81,6 @@ export default function AppHome() {
   );
 
   return (
-    // <div className="mx-8 flex flex-col gap-6 border-r border-l">
     <>
       {sprintActions.length > 0 && (
         <>
@@ -88,7 +88,10 @@ export default function AppHome() {
           {/* <div className="-mx-8 h-2 border-b"></div> */}
         </>
       )}
-      <TodayHomeComponent actions={filteredActions} />
+      <TodayHomeComponent
+        actions={filteredActions}
+        isLoading={isLoadingHomeActions}
+      />
       {/* <div className="-mx-8 h-2 border-b"></div> */}
       <CalendarHomeComponent
         actions={filteredActions}
@@ -97,6 +100,5 @@ export default function AppHome() {
       <PartnersHomeComponent actions={filteredLateActions} />
       <LateHomeComponent actions={filteredLateActions} />
     </>
-    // </div>
   );
 }

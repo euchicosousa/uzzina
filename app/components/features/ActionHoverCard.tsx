@@ -21,13 +21,13 @@ import {
   useRouteLoaderData,
 } from "react-router";
 
-import { DATE_TIME_DISPLAY, INTENT, type CATEGORY } from "~/lib/CONSTANTS";
-import { getNewDateForAction } from "~/lib/helpers";
+import { useQueryClient } from "@tanstack/react-query";
 import { useActionMutations } from "~/hooks/useActionMutations";
+import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
+import { getNewDateForAction } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "../ui/button";
 import { ActionDatePicker } from "./ActionForm/ActionDatePicker";
@@ -127,7 +127,9 @@ function ActionHoverCardContent({
   const { handleAction } = useActionMutations();
   const fetchers = useFetchers();
   const navigation = useNavigation();
-  const outletContext = useOutletContext<{ setBaseAction?: (action: Action | null) => void }>();
+  const outletContext = useOutletContext<{
+    setBaseAction?: (action: Action | null) => void;
+  }>();
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
   const partners = appData?.partners || [];
 
@@ -262,7 +264,6 @@ function ActionHoverCardContent({
             className="rounded-full"
             iconVariant="progress"
             selectedPhase={action.phase || "idea"}
-            category={action.category as CATEGORY}
             showText={false}
             onSelect={(selected) => {
               handleAction({

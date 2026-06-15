@@ -12,9 +12,9 @@ import { PartnersCombobox } from "~/components/features/PartnersCombobox";
 import { PhaseCombobox } from "~/components/features/PhaseCombobox";
 import { SprintCombobox } from "~/components/features/SprintCombobox";
 import { Button } from "~/components/ui/button";
-import { INTENT, type CATEGORY } from "~/lib/CONSTANTS";
-import { isInstagramFeed } from "~/lib/helpers";
 import { useActionMutations } from "~/hooks/useActionMutations";
+import { INTENT } from "~/lib/CONSTANTS";
+import { isInstagramFeed } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
 
@@ -62,7 +62,6 @@ export function ActionFormFooter({
         <div>
           <PhaseCombobox
             selectedPhase={RawAction.phase ?? "idea"}
-            category={RawAction.category as CATEGORY}
             tabIndex={4.5}
             showText={false}
             iconVariant="progress"
@@ -131,9 +130,10 @@ export function ActionFormFooter({
               title="Duplicar ação (Shift+D)"
               className="flex items-center gap-2 rounded-2xl p-2 text-sm opacity-50 hover:opacity-100 focus:opacity-100"
               onClick={() => {
-                handleAction(
-                  { id: RawAction.id, intent: INTENT.duplicate_action }
-                );
+                handleAction({
+                  id: RawAction.id,
+                  intent: INTENT.duplicate_action,
+                });
                 handleClose();
               }}
             >
@@ -179,7 +179,7 @@ export function ActionFormFooter({
         )}
         <Button
           disabled={isPending}
-          className="squircle rounded-2xl w-32 overflow-hidden"
+          className="squircle w-32 overflow-hidden rounded-2xl"
           tabIndex={7}
           onClick={(event) => {
             event.preventDefault();

@@ -132,7 +132,7 @@ export function Header({
                       na ação: {notif.action_title}
                     </span>
                     <p className="mt-1 line-clamp-2 rounded-lg border border-border/50 bg-muted/30 p-2 text-xs text-foreground/80">
-                      {notif.comment_excerpt}
+                      {notif.comment_excerpt ? notif.comment_excerpt.replace(/<[^>]*>/g, "") : ""}
                     </p>
                   </button>
                 ))
@@ -268,8 +268,14 @@ const HeaderMenu = ({ person }: { person: Person }) => {
         <DropdownMenuItem asChild>
           <Link to="/app/profile">Minha Conta</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/app/">Sair</Link>
+        <DropdownMenuItem
+          onClick={async () => {
+            const supabase = createSupabaseBrowserClient();
+            await supabase.auth.signOut();
+          }}
+          className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
+        >
+          Sair
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>

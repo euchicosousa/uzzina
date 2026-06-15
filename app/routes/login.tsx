@@ -1,6 +1,7 @@
 import { CircleAlertIcon, EyeIcon, EyeOffIcon, LogInIcon } from "lucide-react";
 import { useState } from "react";
 import {
+  Link,
   redirect,
   useActionData,
   type ActionFunctionArgs,
@@ -72,7 +73,15 @@ const Login = () => {
           </div>
 
           <div className="relative mb-4">
-            <span className="mb-2 block w-full font-medium">Senha</span>
+            <div className="mb-2 flex items-center justify-between">
+              <span className="font-medium">Senha</span>
+              <Link
+                to="/forgot-password"
+                className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+              >
+                Esqueceu sua senha?
+              </Link>
+            </div>
             <Input
               type={showPassword ? "text" : "password"}
               name="password"

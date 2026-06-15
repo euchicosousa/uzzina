@@ -74,7 +74,7 @@ export function AppBar({
 
   return (
     <div className="fixed right-0 bottom-4 left-0 z-20 flex justify-center px-4">
-      <div className="squircle flex items-center gap-2 rounded-3xl border border-border bg-card/50 p-2 shadow-2xl backdrop-blur-xl lg:gap-4">
+      <div className="squircle flex items-center gap-2 rounded-3xl border border-border bg-card/20 p-2 shadow-2xl backdrop-blur-xl lg:gap-4">
         {/* Slot 1: Homepage */}
         <Button asChild variant={"ghost"} className={"rounded-xl"}>
           <Link to="/app">
@@ -87,9 +87,7 @@ export function AppBar({
             <Button
               variant={partnerFilters.length > 0 ? "secondary" : "ghost"}
               className={cn(
-                "squircle relative flex h-10 items-center justify-center rounded-xl px-2",
-                partnerFilters.length > 0 &&
-                  "bg-primary/10 text-primary ring-2 ring-primary hover:bg-primary/20",
+                "squircle relative flex items-center justify-center rounded-2xl px-2",
               )}
             >
               {activePartners.length > 0 ? (
