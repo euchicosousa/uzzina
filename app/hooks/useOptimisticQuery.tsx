@@ -131,6 +131,9 @@ export function useOptimisticQuery<TData = Action[]>(
       }
     });
 
+    // Remove as ações que foram arquivadas otimisticamente
+    nextData = nextData.filter((action) => !action.archived);
+
     return nextData as unknown as TData;
   }, [
     queryResult.data,
