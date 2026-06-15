@@ -1,13 +1,13 @@
-import { Fragment, useEffect, useRef, useState } from "react";
 import { CheckIcon } from "lucide-react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
+import { AREAS, CATEGORIES } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
-import { Button } from "../ui/button";
 import {
   Command,
   CommandEmpty,
@@ -17,7 +17,6 @@ import {
   CommandList,
   CommandSeparator,
 } from "../ui/command";
-import { AREAS, CATEGORIES } from "~/lib/CONSTANTS";
 
 export function CategoriesCombobox({
   selectedCategories,
@@ -50,24 +49,24 @@ export function CategoriesCombobox({
 
   let categoriesList = showInstagramGroup
     ? [
-      {
-        color: "#666",
-        slug: "instagram",
-        title: "Feed do Instagram",
-      },
-      ...CATEGORIES_LIST,
-    ]
+        {
+          color: "#666",
+          slug: "instagram",
+          title: "Feed do Instagram",
+        },
+        ...CATEGORIES_LIST,
+      ]
     : CATEGORIES_LIST;
 
   categoriesList = isMulti
     ? [
-      {
-        color: "#666",
-        slug: "all",
-        title: "Todas as categorias",
-      },
-      ...categoriesList,
-    ]
+        {
+          color: "#666",
+          slug: "all",
+          title: "Todas as categorias",
+        },
+        ...categoriesList,
+      ]
     : categoriesList;
 
   const currentCategories = categoriesList.filter(
@@ -117,48 +116,48 @@ export function CategoriesCombobox({
     };
   }, []);
 
+  const hasSelection =
+    currentCategories.filter((c) => c.slug !== "all").length === 0;
+
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         {isMulti ? (
-          <Button
+          <button
             tabIndex={tabIndex}
-            variant={
-              currentCategories.filter((c) => c.slug !== "all").length === 0
-                ? "ghost"
-                : "secondary"
-            }
-            className="flex gap-px"
+            data-state={!hasSelection && "on"}
+            className="raised flex h-9 place-content-center items-center rounded-xl border-b border-b-transparent px-3 squircle"
             title={
               currentCategories[0].slug === "all"
                 ? "Escolha a categoria"
                 : currentCategories
-                  .map((category) => category.title)
-                  .join(" • ")
+                    .map((category) => category.title)
+                    .join(" • ")
             }
           >
             {currentCategories[0].slug === "all" ? (
-              <Icons color="#666" slug="categories" />
+              <Icons color="#666" slug="categories" className="size-4" />
             ) : (
               currentCategories.map((category) => (
                 <Icons
                   key={category.slug}
                   slug={category.slug}
                   color={category.color}
+                  className="size-4"
                 />
               ))
             )}
-          </Button>
+          </button>
         ) : (
           <button
             tabIndex={tabIndex}
             className={cn(
-              "flex items-center gap-1.5 outline-none transition-colors overflow-hidden",
+              "flex items-center gap-1.5 overflow-hidden transition-colors outline-none",
               size === "sm"
                 ? cn(
-                  "h-8 hover:bg-secondary text-xs",
-                  !showText ? "w-8 p-0 justify-center" : "px-3 justify-start"
-                )
+                    "h-8 text-xs hover:bg-secondary",
+                    !showText ? "w-8 justify-center p-0" : "justify-start px-3",
+                  )
                 : "p-6 text-sm hover:bg-secondary focus:bg-secondary/50",
               className,
             )}
@@ -257,11 +256,11 @@ export function CategoriesCombobox({
                             "ml-auto size-4",
                             category.slug === "instagram"
                               ? selectedCategories.filter(
-                                (s) =>
-                                  s === "post" ||
-                                  s === "reels" ||
-                                  s === "carousel",
-                              ).length === 3
+                                  (s) =>
+                                    s === "post" ||
+                                    s === "reels" ||
+                                    s === "carousel",
+                                ).length === 3
                                 ? "visible"
                                 : "invisible"
                               : selectedCategories.includes(category.slug)

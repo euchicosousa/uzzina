@@ -7,7 +7,6 @@ import {
 } from "~/components/ui/popover";
 import { PHASES, type PHASE_TYPE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
-import { Button } from "../ui/button";
 import {
   Command,
   CommandEmpty,
@@ -87,10 +86,13 @@ export function PhaseCombobox({
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         {isMulti ? (
-          <Button
+          <button
             tabIndex={tabIndex}
-            variant={hasRealSelection ? "secondary" : "ghost"}
-            className={cn("flex gap-px", className)}
+            data-state={hasRealSelection && "on"}
+            className={cn(
+              "raised grid size-9 place-content-center rounded-xl border-b border-b-transparent squircle hover:text-foreground/50",
+              className,
+            )}
             title={
               !hasRealSelection
                 ? "Filtrar por fase"
@@ -98,7 +100,7 @@ export function PhaseCombobox({
             }
           >
             {!hasRealSelection ? (
-              <FilterIcon />
+              <FilterIcon className="size-4" />
             ) : (
               <div className="flex -space-x-2">
                 {currentPhases.map((s) => (
@@ -110,7 +112,7 @@ export function PhaseCombobox({
                 ))}
               </div>
             )}
-          </Button>
+          </button>
         ) : (
           <button
             tabIndex={tabIndex}

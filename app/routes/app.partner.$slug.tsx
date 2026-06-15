@@ -21,37 +21,37 @@ import {
 } from "react-router";
 import invariant from "tiny-invariant";
 import { ActionCalendarPartnerPage } from "~/components/features/ActionCalendarPartnerPage";
+import { ActionContainer } from "~/components/features/ActionContainer";
 import { CalendarButtons } from "~/components/features/Calendar";
 import { FeedSection } from "~/components/features/FeedSection";
 import {
   ViewOptionsComponent,
   useViewOptions,
 } from "~/components/features/ViewOptions";
-import { Button } from "~/components/ui/button";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "~/components/ui/input-group";
-import { UAvatar } from "~/components/uzzina/UAvatar";
-import { UBadge } from "~/components/uzzina/UBadge";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
-import { ActionContainer } from "~/components/features/ActionContainer";
+import { UAvatar } from "~/components/uzzina/UAvatar";
+import { UBadge } from "~/components/uzzina/UBadge";
 import { useAppTheme } from "~/hooks/useAppTheme";
 import { PHASES, SIZE } from "~/lib/CONSTANTS";
 import { filterActions, getInstagramFeedActions } from "~/lib/helpers";
 import { getUserPreferences } from "~/lib/preferences";
 import { cn } from "~/lib/utils";
+import type { Action } from "~/models/actions.server";
 import { getPartnerBySlug } from "~/models/partners.server";
 import { getUserId } from "~/services/auth.server";
-import type { Action } from "~/models/actions.server";
 
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMatches } from "react-router";
+import { UToggle } from "~/components/uzzina/UToggle";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import {
   fetchAllLateActions,
@@ -278,15 +278,16 @@ export default function PartnerPage() {
             viewOptions={viewOptions}
             setViewOptions={setViewOptions}
             endComponents={
-              <Button
-                variant={view === "feed" ? "secondary" : "ghost"}
-                onClick={() => {
+              <UToggle
+                pressed={view === "feed"}
+                className="raised"
+                onPressedChange={() => {
                   const v = view === "calendar" ? "feed" : "calendar";
                   setView(v);
                 }}
               >
                 <Grid3X3Icon />
-              </Button>
+              </UToggle>
             }
           />
         </div>
