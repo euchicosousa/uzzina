@@ -24,7 +24,7 @@ export default [
   route("login", "routes/login.tsx"),
   route("forgot-password", "routes/forgot-password.tsx"),
   route("reset-password", "routes/reset-password.tsx"),
-  route("force-reset", "routes/force-reset.tsx"),
+  // route("force-reset", "routes/force-reset.tsx"),
 
   route("ui", "routes/ui.tsx"),
   route("action/set-theme", "routes/action.set-theme.ts"),
