@@ -58,7 +58,7 @@
   --background: var(--dark-background-override, oklch(0.4 0.01 285.823));
   --foreground: var(--dark-foreground-override, oklch(0.985 0 0));
 
-  --card: oklch(0.3 0.02 270);
+  --card: oklch(0.4 0.02 270);
   --card-foreground: var(--foreground);
   --popover: oklch(0 0 0);
   --popover-foreground: var(--foreground);
@@ -401,5 +401,5 @@ iframe[data-test="uw-iframe"] {
 }
 
 .raised {
-  @apply ring-black/5 transition-all data-[state=on]:border-t data-[state=on]:border-white data-[state=on]:bg-card/50 data-[state=on]:shadow data-[state=on]:ring hover:data-[state=on]:bg-card;
+  @apply ring-black/5 transition-all data-[state=on]:border-t data-[state=on]:border-white data-[state=on]:bg-card/50 data-[state=on]:shadow data-[state=on]:ring hover:data-[state=on]:bg-card dark:data-[state=on]:border-white/30;
 }

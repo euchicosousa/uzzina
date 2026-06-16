@@ -204,10 +204,7 @@ export function ActionItem({
         "bg-destructive/10 dark:bg-destructive/10 text-destructive hover:bg-destructive/5 dark:hover:bg-destructive/20 ring-destructive/20 ring-1",
       );
     } else if (person && isSprint(action, person)) {
-      baseStyles = cn(
-        baseStyles,
-        "hover:bg-primary/10 bg-primary/5 transition ring-primary/20 ring-1",
-      );
+      baseStyles = cn(baseStyles, "ring-primary ring-2");
     }
 
     // baseStyles = cn(
@@ -375,7 +372,7 @@ export function ActionItem({
       data-action-id={action.id}
       title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
       className={cn(
-        "group/action squircle @container relative shrink-0 cursor-pointer overflow-hidden rounded-3xl p-2",
+        "group/action @container relative shrink-0 cursor-pointer overflow-hidden rounded-3xl p-2 squircle",
         variantClasses,
         bgClasses,
         className,
@@ -385,7 +382,7 @@ export function ActionItem({
             ? "relative pl-8 transition-all"
             : "relative transition-all"),
         isSelectionMode && isSelected && "ring-2 ring-primary ring-inset",
-        isSelected && variant === VARIANT.content && "squircle rounded-3xl p-2",
+        isSelected && variant === VARIANT.content && "rounded-3xl p-2 squircle",
       )}
       onClick={(e) => {
         if (isSelectionMode) {

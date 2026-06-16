@@ -88,6 +88,7 @@ export default function AppHome() {
           {/* <div className="-mx-8 h-2 border-b"></div> */}
         </>
       )}
+
       <TodayHomeComponent
         actions={filteredActions}
         isLoading={isLoadingHomeActions}

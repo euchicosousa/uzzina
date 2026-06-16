@@ -1,5 +1,26 @@
 import { CheckIcon, BellIcon } from "lucide-react";
-import { Link, useFetcher, useFetchers, useNavigation } from "react-router";
+import {
+  Link,
+  useFetcher,
+  useFetchers,
+  useNavigation,
+  useLocation,
+  useParams,
+  useSearchParams,
+  useMatches,
+} from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import {
+  endOfDay,
+  endOfWeek,
+  startOfWeek,
+  startOfMonth,
+  endOfMonth,
+  startOfDay,
+  format,
+  isValid,
+  parseISO,
+} from "date-fns";
 import { toast } from "sonner";
 import { useNotifications } from "~/hooks/useNotifications";
 import type { Notification } from "~/models/notifications.server";
@@ -8,6 +29,13 @@ import { Theme, useTheme } from "remix-themes";
 import { useAppTheme } from "~/hooks/useAppTheme";
 import { PALLETE, SIZE } from "~/lib/CONSTANTS";
 import { getThemeIcon } from "~/lib/helpers";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import {
+  fetchAllLateActions,
+  fetchHomeActions,
+  fetchPartnerActions,
+} from "~/lib/supabase.queries";
+import type { AppLoaderData } from "~/routes/app";
 import { cn } from "~/lib/utils";
 import { UzzinaLogo } from "../logo";
 import { Button } from "../ui/button";
@@ -23,17 +51,122 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { UAvatar } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
+import { DashboardMetrics } from "../features/home/DashboardMetrics";
 
 export function Header({
   person,
   setBaseAction,
+  partnerFilters = [],
 }: {
   person: Person;
   setBaseAction: (action: Action | null) => void;
+  partnerFilters?: string[];
 }) {
   const { notifications, unreadCount, markAsRead, markAllAsRead } =
     useNotifications();
+  const location = useLocation();
+  const params = useParams();
+  const [searchParams] = useSearchParams();
+  const matches = useMatches();
+
+  const isHome = location.pathname === "/app";
+  const isPartner = location.pathname.startsWith("/app/partner/");
+  const showMetrics = isHome || isPartner;
+
+  // Get partners list from app layout loader (route index 1)
+  const appData = matches[1]?.loaderData as AppLoaderData | undefined;
+  const partners = appData?.partners || [];
+
+  // 1. Queries for Home page actions
+  const now = new Date();
+  const homeStartISO = startOfWeek(startOfMonth(now)).toISOString();
+  const homeEndISO = endOfDay(endOfWeek(endOfMonth(now))).toISOString();
+  const todayEndISO = endOfDay(now).toISOString();
+
+  const { data: homeActions = [] } = useQuery<Action[]>({
+    queryKey: QUERY_KEYS.actions.home(person.user_id),
+    queryFn: () =>
+      fetchHomeActions(person.user_id, homeStartISO, homeEndISO, todayEndISO),
+    enabled: isHome,
+  });
+
+  const { data: homeLateActions = [] } = useQuery<Action[]>({
+    queryKey: QUERY_KEYS.lateActions.user(person.user_id),
+    queryFn: () =>
+      fetchAllLateActions(
+        person.user_id,
+        person.admin,
+        partners.map((p) => p.slug),
+      ),
+    enabled: isHome,
+  });
+
+  // 2. Queries for Partner page actions
+  const slug = params.slug;
+  let partnerDate = searchParams.get("date");
+  if (!partnerDate) {
+    partnerDate = format(new Date().setDate(15), "yyyy-MM-dd");
+  } else {
+    partnerDate = isValid(new Date(partnerDate))
+      ? format(parseISO(partnerDate).setDate(15), "yyyy-MM-dd")
+      : format(new Date().setDate(15), "yyyy-MM-dd");
+  }
+
+  const pStart = startOfDay(startOfWeek(startOfMonth(parseISO(partnerDate))));
+  const pEnd = endOfDay(endOfWeek(endOfMonth(parseISO(partnerDate))));
+  const pStartStr = format(pStart, "yyyy-MM-dd HH:mm:ss");
+  const pEndStr = format(pEnd, "yyyy-MM-dd HH:mm:ss");
+  const partnerDateRange = `${pStartStr}_${pEndStr}`;
+
+  const { data: partnerActions = [] } = useQuery<Action[]>({
+    queryKey: QUERY_KEYS.actions.partner(slug || "", partnerDateRange),
+    queryFn: () =>
+      fetchPartnerActions(
+        slug || "",
+        person.user_id,
+        person.admin,
+        pStartStr,
+        pEndStr,
+      ),
+    enabled: isPartner && !!slug,
+  });
+
+  const { data: partnerAllLateActions = [] } = useQuery<Action[]>({
+    queryKey: QUERY_KEYS.lateActions.user(person.user_id),
+    queryFn: () =>
+      fetchAllLateActions(
+        person.user_id,
+        person.admin,
+        partners.map((p) => p.slug),
+      ),
+    enabled: isPartner && !!slug,
+  });
+
+  const partnerLateActions = useMemo(() => {
+    if (!slug) return [];
+    return partnerAllLateActions.filter((action) =>
+      action.partners?.includes(slug),
+    );
+  }, [partnerAllLateActions, slug]);
+
+  const activeActions = isHome ? homeActions : isPartner ? partnerActions : [];
+  const activeLateActions = isHome ? homeLateActions : isPartner ? partnerLateActions : [];
+  const referenceDate = isPartner ? parseISO(partnerDate) : now;
+
+  const filteredActions = useMemo(() => {
+    if (partnerFilters.length === 0) return activeActions;
+    return activeActions.filter((action: Action) =>
+      action.partners?.some((p: string) => partnerFilters.includes(p)),
+    );
+  }, [activeActions, partnerFilters]);
+
+  const filteredLateActions = useMemo(() => {
+    if (partnerFilters.length === 0) return activeLateActions;
+    return activeLateActions.filter((action: Action) =>
+      action.partners?.some((p: string) => partnerFilters.includes(p)),
+    );
+  }, [activeLateActions, partnerFilters]);
 
   const handleNotificationClick = async (notif: Notification) => {
     const supabase = createSupabaseBrowserClient();
@@ -67,7 +200,16 @@ export function Header({
       </div>
 
       {/* Central space for future stats */}
-      <div className="flex-1" />
+      <div className="flex-1 px-4 lg:px-8 max-w-2xl">
+        {showMetrics && (
+          <DashboardMetrics
+            actions={filteredActions}
+            lateActions={filteredLateActions}
+            showToday={isHome}
+            referenceDate={referenceDate}
+          />
+        )}
+      </div>
 
       <div className="flex items-center gap-2">
         <Popover>
@@ -235,7 +377,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
                 }}
                 key={paletteConfig.id}
                 title={paletteConfig.label}
-                className="squircle flex justify-center rounded-xl p-2 hover:opacity-80"
+                className="flex justify-center rounded-xl p-2 squircle hover:opacity-80"
                 style={{
                   backgroundColor: isSelected
                     ? `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`

@@ -84,8 +84,8 @@ export function BulkActionMenu() {
   const [colorOpen, setColorOpen] = useState(false);
   const [pickedColor, setPickedColor] = useState("");
 
-  // Early return: nada a mostrar fora do modo de seleção ou sem itens selecionados
-  if (!isSelectionMode || selectedIds.length === 0) return null;
+  // Early return: nada a mostrar fora do modo de seleção
+  if (!isSelectionMode) return null;
 
   // ─── Helpers de ação em lote ─────────────────────────────────────────────────
 
@@ -238,8 +238,11 @@ export function BulkActionMenu() {
           <Button
             variant="secondary"
             className="h-10 rounded-xl px-4 font-semibold"
+            disabled={selectedIds.length === 0}
           >
-            {selectedIds.length} Selecionado{selectedIds.length > 1 ? "s" : ""}
+            {selectedIds.length > 0
+              ? `${selectedIds.length} Selecionado${selectedIds.length > 1 ? "s" : ""}`
+              : "Selecione as ações"}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">

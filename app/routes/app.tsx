@@ -131,7 +131,7 @@ export default function Dashboard() {
         <MultiSelectionProvider>
           {/* HEADER */}
 
-          <Header person={person} setBaseAction={setBaseAction} />
+          <Header person={person} setBaseAction={setBaseAction} partnerFilters={partnerFilters} />
           <div className="flex h-full w-full overflow-hidden">
             <div className="grow overflow-x-hidden overflow-y-auto">
               <div className="flex min-h-full grow flex-col">
