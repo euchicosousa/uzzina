@@ -151,7 +151,11 @@ export function Header({
   }, [partnerAllLateActions, slug]);
 
   const activeActions = isHome ? homeActions : isPartner ? partnerActions : [];
-  const activeLateActions = isHome ? homeLateActions : isPartner ? partnerLateActions : [];
+  const activeLateActions = isHome
+    ? homeLateActions
+    : isPartner
+      ? partnerLateActions
+      : [];
   const referenceDate = isPartner ? parseISO(partnerDate) : now;
 
   const filteredActions = useMemo(() => {
@@ -200,7 +204,7 @@ export function Header({
       </div>
 
       {/* Central space for future stats */}
-      <div className="flex-1 px-4 lg:px-8 max-w-2xl">
+      <div className="flex-1 px-4 lg:px-8">
         {showMetrics && (
           <DashboardMetrics
             actions={filteredActions}

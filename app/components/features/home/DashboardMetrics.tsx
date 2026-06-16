@@ -18,6 +18,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { PHASES } from "~/lib/CONSTANTS";
+import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 
 interface DashboardMetricsProps {
@@ -94,9 +95,9 @@ export function DashboardMetrics({
   }, [actions, refDate]);
 
   return (
-    <div className="flex w-full items-center justify-center">
+    <div className="flex items-center justify-center">
       {/* Desktop Layout - Side-by-side pills */}
-      <div className="hidden items-center gap-2 lg:flex">
+      <div className="hidden w-full items-center justify-center gap-2 lg:flex">
         {showToday && (
           <MetricPill
             title={"hoje"}
@@ -130,18 +131,43 @@ export function DashboardMetrics({
       <div className="flex justify-center lg:hidden">
         <Popover>
           <PopoverTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative size-8 rounded-full border border-border bg-card/20 backdrop-blur-md"
-            >
+            <Button variant="ghost" size="icon" className="relative">
               <BarChart3Icon className="size-4" />
-              {/* {lateCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex size-2 animate-pulse rounded-full bg-destructive" />
-              )} */}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="flex w-52 flex-col gap-2 rounded-xl border-border bg-popover/40 p-2.5 backdrop-blur-2xl"></PopoverContent>
+          <PopoverContent className="flex w-52 flex-col gap-2 rounded-xl border-border bg-popover/40 p-2.5 backdrop-blur-2xl">
+            {showToday && (
+              <MetricPill
+                title={"hoje"}
+                actions={stats.today.actions}
+                total={stats.today.total}
+                completed={stats.today.completed}
+                isMobile={true}
+              />
+            )}
+            <MetricPill
+              title={"Semana"}
+              actions={stats.week.actions}
+              total={stats.week.total}
+              completed={stats.week.completed}
+              isMobile={true}
+            />
+            <MetricPill
+              title={format(refDate, "MMMM", { locale: ptBR })}
+              actions={stats.period.actions}
+              total={stats.period.total}
+              completed={stats.period.completed}
+              isMobile={true}
+            />
+            {lateActions.length > 0 && (
+              <MetricPill
+                title={"Atrasadas"}
+                actions={lateActions}
+                total={lateActions.length}
+                isMobile={true}
+              />
+            )}
+          </PopoverContent>
         </Popover>
       </div>
     </div>
@@ -153,11 +179,13 @@ const MetricPill = ({
   actions,
   total,
   completed,
+  isMobile = false,
 }: {
   title: string;
   actions: Action[];
   total: number;
   completed?: number;
+  isMobile?: boolean;
 }) => {
   const renderProgressBar = (actions: Action[], total: number) => {
     if (total === 0) {
@@ -202,11 +230,23 @@ const MetricPill = ({
   };
 
   return (
-    <div className="flex items-center gap-2 px-4 py-1">
-      <span className="text-base font-bold capitalize">{title}</span>
+    <div className="flex items-center justify-between gap-2 overflow-hidden px-4 py-1">
+      <div
+        className={cn(
+          "truncate text-xs font-medium capitalize",
+          isMobile && "w-12",
+        )}
+      >
+        {title}
+      </div>
       {renderProgressBar(actions, total)}
 
-      <span className="text-right font-bold text-foreground/80">
+      <span
+        className={cn(
+          "text-right text-xs font-medium text-foreground/80",
+          isMobile && "w-14",
+        )}
+      >
         {completed ? `${completed}/${total}` : total}
       </span>
     </div>
