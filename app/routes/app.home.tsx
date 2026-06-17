@@ -22,6 +22,7 @@ import { TodayHomeComponent } from "~/components/features/home/TodayHomeComponen
 
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchAllLateActions, fetchHomeActions } from "~/lib/supabase.queries";
+import { Footer } from "~/components/layout/Footer";
 
 export const runtime = "edge";
 
@@ -100,6 +101,7 @@ export default function AppHome() {
       />
       <PartnersHomeComponent actions={filteredLateActions} />
       <LateHomeComponent actions={filteredLateActions} />
+      <Footer />
     </>
   );
 }
