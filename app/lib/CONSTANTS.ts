@@ -175,8 +175,6 @@ export const CATEGORIES = {
 export type CATEGORY = keyof typeof CATEGORIES;
 export type CATEGORY_TYPE = (typeof CATEGORIES)[CATEGORY];
 
-
-
 export const PRIORITIES = {
   low: {
     slug: "low",
@@ -383,14 +381,14 @@ export const PALLETE = [
     light: {
       primary: { h: 25, c: 0.18, l: 0.65 },
       primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 130, c: 0.01, l: 0.97 },
+      bg: { h: 130, c: 0.01, l: 0.95 },
       fg: { h: 0, c: 0, l: 0 },
     },
     dark: {
-      primary: { h: 40, c: 0.22, l: 0.75 },
-      primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 285, c: 0.005, l: 0.141 },
-      fg: { h: 0, c: 0, l: 1 },
+      primary: { h: 25, c: 0.18, l: 0.65 },
+      primaryFg: { h: 130, c: 0.02, l: 0.9 },
+      bg: { h: 160, c: 0.03, l: 0.3 },
+      fg: { h: 130, c: 0.01, l: 0.95 },
     },
   },
   {

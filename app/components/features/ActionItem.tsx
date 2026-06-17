@@ -192,7 +192,7 @@ export function ActionItem({
 
   const bgClasses = useMemo(() => {
     let baseStyles =
-      "shadow-xs transition ring ring-black/5 hover:shadow-lg duration-500 border-t border-white dark:border-white/10 hover:z-10 z-0 hover:bg-card bg-card/50 text-card-foreground dark:shadow-black/50";
+      "shadow-xs transition ring ring-black/5  hover:shadow-lg duration-500 border-t border-white dark:border-white/30 hover:z-10 z-0 hover:bg-card bg-card/50 text-card-foreground dark:shadow-black/50";
 
     // 1. Determine base background/text colors based on priority states
     if (showLate && isLateAction(action)) {
@@ -201,10 +201,10 @@ export function ActionItem({
       }
       baseStyles = cn(
         baseStyles,
-        "bg-destructive/10 dark:bg-destructive/10 text-destructive hover:bg-destructive/5 dark:hover:bg-destructive/20 ring-destructive/20 ring-1",
+        "bg-destructive/10 dark:bg-destructive/10 text-destructive hover:bg-destructive/5 dark:hover:bg-destructive/20 ring-destructive/20 ring",
       );
     } else if (person && isSprint(action, person)) {
-      baseStyles = cn(baseStyles, "ring-primary ring-2");
+      baseStyles = cn(baseStyles, "bg-primary text-primary-foreground");
     }
 
     // baseStyles = cn(

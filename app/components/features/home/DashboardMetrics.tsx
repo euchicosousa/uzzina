@@ -94,6 +94,10 @@ export function DashboardMetrics({
     };
   }, [actions, refDate]);
 
+  if (!actions) {
+    return <div>Carregando métricas</div>;
+  }
+
   return (
     <div className="flex items-center justify-center">
       {/* Desktop Layout - Side-by-side pills */}

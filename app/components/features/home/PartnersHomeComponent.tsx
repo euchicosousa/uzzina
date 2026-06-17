@@ -12,7 +12,9 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
     partners: Partner[];
   };
 
-  const sortedPartners = [...partners].sort((a, b) => a.short.localeCompare(b.short));
+  const sortedPartners = [...partners].sort((a, b) =>
+    a.title.localeCompare(b.title),
+  );
 
   const partnersWithActionsLength = useMemo(() => {
     // Create a map of partner slug to actions for O(1) lookup or O(N) build
