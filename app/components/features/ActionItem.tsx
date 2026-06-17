@@ -204,10 +204,7 @@ export function ActionItem({
         "bg-destructive/10 dark:bg-destructive/10 text-destructive hover:bg-destructive/5 dark:hover:bg-destructive/20 ring-destructive/20 ring",
       );
     } else if (person && isSprint(action, person)) {
-      baseStyles = cn(
-        baseStyles,
-        "bg-primary text-primary-foreground border-white/30",
-      );
+      baseStyles = cn(baseStyles, "ring-primary/50");
     }
 
     // baseStyles = cn(
