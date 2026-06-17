@@ -179,14 +179,14 @@ export function ActionItem({
       case VARIANT.content:
         return "flex-col gap-2";
       case VARIANT.block:
-        return "squircle flex-col gap-2 rounded-2xl px-4 py-3";
+        return "flex-col gap-2 px-4 py-3";
       case VARIANT.hour:
-        return "squircle w-auto rounded-xl px-3 py-2";
+        return "w-auto rounded-xl px-3 py-2";
       case VARIANT.hair:
-        return "squircle rounded-xl px-3 py-0 transition-colors @xs:p-0";
+        return "rounded-xl px-3 py-0 transition-colors @xs:p-0";
       // case VARIANT.line:
       default:
-        return "squircle rounded-xl px-3 py-1 transition-colors @xs:p-1";
+        return "rounded-xl px-3 py-1 transition-colors @xs:p-1";
     }
   }, [variant]);
 
@@ -246,6 +246,7 @@ export function ActionItem({
             action={action}
             category={showCategory ? currentCategory : undefined}
             showResponsibles={showResponsibles}
+            isSquared
           />
         );
       case VARIANT.block:
@@ -372,7 +373,7 @@ export function ActionItem({
       data-action-id={action.id}
       title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
       className={cn(
-        "group/action @container relative shrink-0 cursor-pointer overflow-hidden rounded-3xl p-2 squircle",
+        "group/action @container relative shrink-0 cursor-pointer overflow-hidden rounded-2xl squircle",
         variantClasses,
         bgClasses,
         className,
@@ -420,7 +421,7 @@ export function ActionItem({
         </div>
       )}
       {variant === VARIANT.content && (
-        <div className={cn("mb-2 flex items-center gap-2 overflow-hidden")}>
+        <div className={cn("flex items-center gap-2 overflow-hidden p-2")}>
           <ActionItemPartners
             action={action}
             partners={currentPartners}
@@ -429,8 +430,10 @@ export function ActionItem({
           <div className="w-full overflow-hidden text-xs leading-none font-medium text-ellipsis whitespace-nowrap">
             {getFormattedPartnersName(currentPartners || [])}
           </div>
+          <PhaseIcon phase={currentPhase} />
         </div>
       )}
+
       {renderActionVariant()}
     </div>
   );
