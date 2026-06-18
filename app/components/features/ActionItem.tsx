@@ -305,10 +305,11 @@ export function ActionItem({
         return (
           <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
             <div className="flex w-full items-center gap-2 overflow-hidden">
+              {/* Ícone da fase */}
               <PhaseIcon phase={currentPhase} size="dot" />
-
+              {/* Badge de "Atrasado" se aplicável */}
               {isLateAction(action) && <ActionItemSprint action={action} />}
-
+              {/* Título da ação */}
               <ActionItemTitleInput
                 isEditing={isEditing}
                 setIsEditing={handleSetIsEditing}
@@ -323,19 +324,24 @@ export function ActionItem({
                 }}
               />
             </div>
-
+            {/* Grupo de metadados */}
             <div
               className={cn(
                 "items-center gap-1",
                 isEditing ? "hidden @md:flex" : "flex",
+                dateTimeDisplay
+                  ? "transition duration-500 group-hover/action:-translate-x-3 group-hover/action:opacity-0"
+                  : "",
               )}
             >
+              {/* Ícone de parceiros se aplicável */}
               {(showPartner || currentPartners.length > 1) && (
                 <ActionItemPartners
                   action={action}
                   partners={currentPartners}
                 />
               )}
+              {/* Ícone de responsáveis se aplicável */}
               {showResponsibles && (
                 <ActionItemResponsibles
                   size="xs"
@@ -343,9 +349,11 @@ export function ActionItem({
                   responsibles={currentResponsibles}
                 />
               )}
+              {/* Ícone de prioridade se aplicável */}
               {showPriority && (
                 <ActionItemPriority priority={action.priority as PRIORITY} />
               )}
+              {/* Ícone da categoria se aplicável */}
               {showCategory && (
                 <Icons
                   slug={currentCategory.slug}
@@ -353,16 +361,16 @@ export function ActionItem({
                   color={currentCategory.color}
                 />
               )}
-
-              {dateTimeDisplay && (
-                <div className="hidden justify-end overflow-hidden group-hover/action:flex @md:w-[90px]">
-                  <ActionItemDateTimeDisplay
-                    action={action}
-                    dateTimeDisplay={dateTimeDisplay}
-                  />
-                </div>
-              )}
             </div>
+            {/* Data */}
+            {dateTimeDisplay && (
+              <div className="absolute right-0 flex translate-x-[90px] justify-end overflow-hidden transition-transform duration-500 group-hover/action:-translate-x-3 @md:w-[90px]">
+                <ActionItemDateTimeDisplay
+                  action={action}
+                  dateTimeDisplay={dateTimeDisplay}
+                />
+              </div>
+            )}
           </div>
         );
     }

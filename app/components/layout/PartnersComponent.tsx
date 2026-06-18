@@ -1,7 +1,7 @@
 import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
 import { Link, useOutletContext, useRouteLoaderData } from "react-router";
-import { SIZE } from "~/lib/CONSTANTS";
+import { DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
 import { getCleanAction } from "~/lib/helpers";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
@@ -33,7 +33,7 @@ export function PartnersComponent({
           <SkeletonGroup count={12} isWrapped={false} hasProfile />
         )}
         {!isLoading && activePartners.length === 0 && (
-          <div className="col-span-full py-16 text-center text-sm text-muted-foreground bg-input/20 rounded-2xl border border-dashed border-border/50">
+          <div className="col-span-full rounded-2xl border border-dashed border-border/50 bg-input/20 py-16 text-center text-sm text-muted-foreground">
             Nenhuma ação para hoje.
           </div>
         )}
@@ -108,7 +108,13 @@ function PartnerColumn({
 
       {/* Lista de ações */}
 
-      <ActionContainer actions={actions} showLate />
+      <ActionContainer
+        actions={actions}
+        dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+        orderBy="date"
+        showLate
+        showCategory
+      />
     </div>
   );
 }
