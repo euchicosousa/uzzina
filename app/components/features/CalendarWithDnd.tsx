@@ -28,7 +28,7 @@ export function CalendarWithDnd({
   isCompact,
   isScroll,
   showBorder,
-  hideBorderOnLastRow,
+  hideBorderOnLastRow = false,
   highlightThisWeek,
 }: {
   actions: Action[];
@@ -48,6 +48,7 @@ export function CalendarWithDnd({
   // Local override: maps action.id → updated date fields.
   // Applied immediately on drop so the DOM is correct before the drop
   // animation runs. Cleared once the server data is revalidated.
+
   const [dateOverrides, setDateOverrides] = useState<
     Record<string, Partial<Action>>
   >({});

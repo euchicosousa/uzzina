@@ -4,6 +4,7 @@ export default [
   index("routes/home.tsx"),
   route("app", "routes/app.tsx", [
     index("routes/app.home.tsx"),
+    route("today", "routes/app.today.tsx"),
     route("partner/:slug", "routes/app.partner.$slug.tsx"),
     route("admin/partners", "routes/app.admin.partners.tsx"),
     route("admin/partner/:slug", "routes/app.admin.partner.$slug.tsx"),
