@@ -362,7 +362,7 @@ export default function AdminPartnerEditPage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-4">
+        <div className="mb-18 flex items-center justify-between gap-4">
           <UToggleInput
             id="archived"
             name="archived"
@@ -376,7 +376,7 @@ export default function AdminPartnerEditPage() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="squircle rounded-2xl"
+            className="rounded-2xl squircle"
           >
             {isSubmitting ? "Salvando..." : "Salvar"}
             <CloudUploadIcon className="size-4" />

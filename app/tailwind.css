@@ -397,7 +397,7 @@ iframe[data-test="uw-iframe"] {
 }
 
 .pressed {
-  @apply grid place-content-center rounded-xl p-0 shadow-white inset-shadow-black/20 transition-all squircle data-[state=on]:shadow-sm data-[state=on]:inset-shadow-sm;
+  @apply grid place-content-center rounded-xl p-0 shadow-white inset-shadow-black/20 transition-all squircle data-[state=on]:shadow-sm data-[state=on]:inset-shadow-sm dark:shadow-white/20;
 }
 
 .raised {
