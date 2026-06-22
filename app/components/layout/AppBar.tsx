@@ -73,8 +73,8 @@ export function AppBar({
     : null;
 
   return (
-    <div className="fixed right-0 bottom-4 left-0 z-20 flex justify-center px-4">
-      <div className="squircle flex items-center gap-2 rounded-3xl border border-border bg-card/20 p-2 shadow-2xl backdrop-blur-xl lg:gap-4">
+    <div className="fixed bottom-4 left-1/2 z-20 flex -translate-x-1/2 justify-center">
+      <div className="flex items-center gap-2 rounded-3xl border border-border bg-card/20 p-2 shadow-2xl backdrop-blur-xl squircle lg:gap-4">
         {/* Slot 1: Homepage */}
         <Button asChild variant={"ghost"} className={"rounded-xl"}>
           <Link to="/app">
@@ -87,7 +87,7 @@ export function AppBar({
             <Button
               variant={partnerFilters.length > 0 ? "secondary" : "ghost"}
               className={cn(
-                "squircle relative flex items-center justify-center rounded-2xl px-2",
+                "relative flex items-center justify-center rounded-2xl px-2 squircle",
               )}
             >
               {activePartners.length > 0 ? (
@@ -227,7 +227,7 @@ export function AppBar({
                   responsibles: [person.user_id],
                 } as unknown as Action)
               }
-              className="squircle flex items-center gap-1 rounded-xl px-3"
+              className="flex items-center gap-1 rounded-xl px-3 squircle"
             >
               <PlusIcon className="size-4" />
               <span className="max-sm:hidden">Nova Ação</span>

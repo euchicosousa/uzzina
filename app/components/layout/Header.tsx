@@ -156,7 +156,7 @@ export function Header({
     : isPartner
       ? partnerLateActions
       : [];
-  const referenceDate = isPartner ? parseISO(partnerDate) : now;
+  const referenceDate = now;
 
   const filteredActions = useMemo(() => {
     if (partnerFilters.length === 0) return activeActions;

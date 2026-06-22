@@ -1,4 +1,4 @@
-import { format, isSameDay, isToday } from "date-fns";
+import { format, isSameDay, isToday, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import {
   BlocksIcon,
@@ -34,12 +34,12 @@ export function TodayHomeComponent({
     return view === "feed"
       ? actions.filter((action) => {
           return (
-            isSameDay(action.date, currentDay) &&
+            isSameDay(parseISO(action.date), currentDay) &&
             isInstagramFeed(action.category)
           );
         })
       : actions.filter((action) => {
-          return isSameDay(action.date, currentDay);
+          return isSameDay(parseISO(action.date), currentDay);
         });
   }, [actions, view, currentDay]);
 

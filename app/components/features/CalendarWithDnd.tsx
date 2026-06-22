@@ -100,7 +100,7 @@ export function CalendarWithDnd({
   const calendar = calendarDays.map((date) => ({
     date,
     actions: actionsWithOverrides.filter((action) =>
-      isSameDay(action.date, date),
+      isSameDay(parseISO(action.date), date),
     ),
     celebrations: celebrations.filter((c) => isSameDay(parseISO(c.date), date)),
   }));

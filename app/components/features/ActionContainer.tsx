@@ -66,9 +66,14 @@ export function ActionContainer({
   }, [isCompact]);
 
   return (
-    <div className={cn(isScroll ? "h-full overflow-y-auto" : "", "p-0.5 pb-6")}>
+    <div
+      className={cn(
+        "relative",
+        isScroll ? "h-full overflow-y-auto" : "",
+        "p-0.5 pb-6",
+      )}
+    >
       <div className={cn(gapClasses, gridClasses, "relative")}>
-        {/* <pre>{JSON.stringify(showMore, null, 2)}</pre> */}
         {(showMore ? actions.slice(0, 6) : actions).map((action) => (
           <ActionItem
             action={action}
@@ -99,6 +104,9 @@ export function ActionContainer({
           </button>
         )}
       </div>
+      {isScroll && (
+        <div className="sticky right-0 -bottom-6 left-0 h-6 bg-linear-to-t from-background"></div>
+      )}
     </div>
   );
 }

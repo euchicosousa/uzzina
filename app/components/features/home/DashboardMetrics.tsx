@@ -5,6 +5,7 @@ import {
   format,
   isSameDay,
   isWithinInterval,
+  parseISO,
   startOfMonth,
   startOfWeek,
 } from "date-fns";
@@ -53,22 +54,23 @@ export function DashboardMetrics({
 
     for (const action of actions) {
       const isCompleted = action.phase === "concluido";
+      const actionDate = parseISO(action.date);
 
-      //       // 1. Hoje
-      if (isSameDay(action.date, refDate)) {
+      // 1. Hoje
+      if (isSameDay(actionDate, refDate)) {
         todayActions.push(action);
         if (isCompleted) todayCompleted++;
       }
 
-      //       // 2. Semana
-      if (isWithinInterval(action.date, { start: weekStart, end: weekEnd })) {
+      // 2. Semana
+      if (isWithinInterval(actionDate, { start: weekStart, end: weekEnd })) {
         weekActions.push(action);
         if (isCompleted) weekCompleted++;
       }
 
-      //       // 3. Período (Mês Comercial)
+      // 3. Período (Mês Comercial)
       if (
-        isWithinInterval(action.date, { start: periodStart, end: periodEnd })
+        isWithinInterval(actionDate, { start: periodStart, end: periodEnd })
       ) {
         periodActions.push(action);
         if (isCompleted) periodCompleted++;
