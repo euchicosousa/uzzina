@@ -310,8 +310,8 @@ export default function PartnerPage() {
           className={cn(
             "overflow-hidden overflow-y-auto border-l",
             view === "feed"
-              ? "min-w-full md:w-[540px] md:min-w-auto md:shrink-0"
-              : "w-0",
+              ? "flex min-w-full md:w-[540px] md:min-w-auto md:shrink-0"
+              : "hidden",
           )}
         >
           <FeedSection

@@ -258,6 +258,13 @@ html {
   @apply rounded-full border-2 border-background bg-foreground/10;
 }
 
+.tiptap::-webkit-scrollbar {
+  @apply w-1;
+}
+.tiptap::-webkit-scrollbar-thumb {
+  @apply border-0;
+}
+
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-foreground/20;
 }
