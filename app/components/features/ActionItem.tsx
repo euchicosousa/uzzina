@@ -265,7 +265,7 @@ export function ActionItem({
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                {isLateAction(action) && <ActionItemSprint action={action} />}
+                {/* {isLateAction(action) && <ActionItemSprint action={action} />} */}
                 {showPartner && (
                   <ActionItemPartners
                     action={action}
