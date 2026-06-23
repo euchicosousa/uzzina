@@ -66,6 +66,7 @@
     "@types/react-dom": "^19.1.2",
     "@vercel/react-router": "^1.2.2",
     "prettier": "^3.6.2",
+    "prettier-plugin-jsx-attr-sort": "^1.0.4",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "supabase": "^2.100.1",
     "tailwindcss": "^4.1.4",

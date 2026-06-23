@@ -6,7 +6,6 @@ import { sortActions } from "~/lib/helpers";
 import { cn, getGridClasses } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import { ActionItem } from "./ActionItem";
-
 type ActionContainerProps = {
   actions: Action[];
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
@@ -25,7 +24,6 @@ type ActionContainerProps = {
   isDraggable?: boolean;
   onClick?: (action: Action) => void;
 };
-
 export function ActionContainer({
   actions,
   variant = VARIANT.line,
@@ -62,11 +60,9 @@ export function ActionContainer({
   const gridClasses = useMemo(() => {
     return getGridClasses(columns); // Aquela função que criamos antes
   }, [columns]);
-
   useEffect(() => {
     setShowMore(isCompact);
   }, [isCompact]);
-
   return (
     <div
       className={cn(
@@ -78,18 +74,18 @@ export function ActionContainer({
       <div className={cn(gapClasses, gridClasses, "relative")}>
         {(showMore ? actions.slice(0, 6) : actions).map((action) => (
           <ActionItem
-            action={action}
             key={action.id}
-            variant={variant}
-            showLate={showLate}
-            showPartner={showPartner}
-            showCategory={showCategory}
-            showResponsibles={showResponsibles}
-            showPriority={showPriority}
+            action={action}
             dateTimeDisplay={dateTimeDisplay}
             isDraggable={isDraggable}
             onClick={onClick}
+            showCategory={showCategory}
+            showLate={showLate}
+            showPartner={showPartner}
+            showPriority={showPriority}
+            showResponsibles={showResponsibles}
             showSprint={showSprint}
+            variant={variant}
           />
         ))}
         {isCompact && actions.length > 6 && (
