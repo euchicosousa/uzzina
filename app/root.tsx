@@ -1,3 +1,5 @@
+import { QueryClientProvider } from "@tanstack/react-query";
+import type { LoaderFunctionArgs } from "react-router";
 import {
   isRouteErrorResponse,
   Links,
@@ -7,23 +9,18 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "react-router";
-import type { Route } from "./+types/root";
-import type { LoaderFunctionArgs } from "react-router";
-
 import {
   PreventFlashOnWrongTheme,
   ThemeProvider,
   useTheme,
 } from "remix-themes";
-
-import { themeSessionResolver } from "./sessions.server";
-
-import "./tailwind.css";
-import { cn } from "./lib/utils";
+import type { Route } from "./+types/root";
 import { PALLETE } from "./lib/CONSTANTS";
-
+import { queryClient } from "./lib/query-client";
+import { cn } from "./lib/utils";
+import { themeSessionResolver } from "./sessions.server";
+import "./tailwind.css";
 export const links: Route.LinksFunction = () => [
-  // { rel: "stylesheet", href: "/object-sans/object-sans.css" },
   // Favicon para o tema claro (light)
   {
     rel: "icon",
@@ -40,25 +37,7 @@ export const links: Route.LinksFunction = () => [
     type: "image/png",
     media: "(prefers-color-scheme: dark)",
   },
-  // {
-  //   rel: "preconnect",
-  //   href: "https://fonts.googleapis.com",
-  // },
-  // {
-  //   rel: "preconnect",
-  //   href: "https://fonts.gstatic.com",
-  //   crossOrigin: "anonymous",
-  // },
-  // {
-  //   rel: "stylesheet",
-  //   href: "https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap",
-  // },
 ];
-
-import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { queryClient } from "./lib/query-client";
-
 export async function loader({ request }: LoaderFunctionArgs) {
   const { getTheme } = await themeSessionResolver(request);
   return {
@@ -69,7 +48,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     },
   };
 }
-
 export default function AppWithProviders() {
   const data = useLoaderData<typeof loader>();
   return (
@@ -80,23 +58,18 @@ export default function AppWithProviders() {
       >
         <App />
       </ThemeProvider>
-      {process.env.NODE_ENV === "development" && (
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
     </QueryClientProvider>
   );
 }
-
 export function App() {
   const data = useLoaderData<typeof loader>();
   const { env } = data;
   const [theme] = useTheme();
-
   return (
-    <html lang="pt-br" className={cn(theme)} suppressHydrationWarning>
+    <html className={cn(theme)} lang="pt-br" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
         <Meta />
         <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
         <Links />
@@ -197,12 +170,10 @@ export function App() {
     </html>
   );
 }
-
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "Oops!";
   let details = "An unexpected error occurred.";
   let stack: string | undefined;
-
   if (isRouteErrorResponse(error)) {
     message = error.status === 404 ? "404" : "Error";
     details =
@@ -213,7 +184,6 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     details = error.message;
     stack = error.stack;
   }
-
   return (
     <main className="container mx-auto p-4 pt-16">
       <h1>{message}</h1>
