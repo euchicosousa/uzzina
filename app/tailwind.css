@@ -407,8 +407,8 @@ iframe[data-test="uw-iframe"] {
   @apply grid place-content-center rounded-xl p-0 shadow-white inset-shadow-black/20 transition-all squircle data-[state=on]:shadow-sm data-[state=on]:inset-shadow-sm dark:shadow-white/20;
 }
 
-.input-pressed {
-  @apply rounded-xl p-0 shadow-white inset-shadow-black/20 transition-all squircle data-[state=on]:shadow-sm data-[state=on]:inset-shadow-sm dark:shadow-white/20;
+.input-embossed {
+  @apply rounded-xl p-0 shadow-sm inset-shadow-sm shadow-white inset-shadow-black/20 transition-all squircle dark:shadow-white/30;
 }
 
 .raised {
