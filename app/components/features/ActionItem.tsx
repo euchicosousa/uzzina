@@ -64,6 +64,8 @@ type ActionItemProps = {
   isDraggable?: boolean;
   /** Whether to highlight the action if it is late */
   showLate?: boolean;
+  /** Whether to highlight the action if it is a sprint */
+  showSprint?: boolean;
   /** Whether to show the associated partner information */
   showPartner?: boolean;
   /** Whether to show the category icon */
@@ -99,6 +101,7 @@ export function ActionItem({
   action,
   variant = VARIANT.line,
   showLate,
+  showSprint = true,
   className,
   isDragging,
   isDraggable,
@@ -203,17 +206,9 @@ export function ActionItem({
         baseStyles,
         "bg-destructive/10 dark:bg-destructive/10 text-destructive hover:bg-destructive/5 dark:hover:bg-destructive/20 ring-destructive/20 dark:border-destructive/30 ring",
       );
-    } else if (person && isSprint(action, person)) {
-      baseStyles = cn(
-        baseStyles,
-        "bg-primary/5 dark:bg-card/50 dark:hover:bg-card ring-primary/50",
-      );
+    } else if (showSprint && person && isSprint(action, person)) {
+      baseStyles = cn(baseStyles, "ring-2 ring-primary");
     }
-
-    // baseStyles = cn(
-    //   baseStyles,
-    //   "shadow-xs transition ring ring-black/5 hover:shadow-lg duration-500 border-t border-card hover:z-10 z-0",
-    // );
 
     // 2. Apply editing ring/focus overrides on top of the base style
     if (isEditing) {
@@ -224,7 +219,7 @@ export function ActionItem({
     }
 
     return baseStyles;
-  }, [variant, isEditing, showLate, action, person]);
+  }, [variant, isEditing, showLate, action, person, showSprint]);
 
   const renderActionVariant = () => {
     switch (variant) {

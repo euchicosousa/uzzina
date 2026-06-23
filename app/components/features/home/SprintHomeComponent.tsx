@@ -9,11 +9,7 @@ import { HomeComponentWrapper } from "./HomeComponentWrapper";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useLoading } from "~/hooks/useLoading";
 
-export function SprintHomeComponent({
-  actions,
-}: {
-  actions: Action[];
-}) {
+export function SprintHomeComponent({ actions }: { actions: Action[] }) {
   const isLoading = useLoading(["actions"]);
   const [viewOptions, setViewOptions] = useViewOptions({
     variant: VARIANT.block,
@@ -57,6 +53,7 @@ export function SprintHomeComponent({
             columns={viewOptions.columns || 4}
             variant={viewOptions.variant}
             showLate
+            showSprint={false}
             orderBy={ORDER_BY.phase}
           />
         )}

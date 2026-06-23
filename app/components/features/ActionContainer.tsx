@@ -12,6 +12,7 @@ type ActionContainerProps = {
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
   columns?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   showLate?: boolean;
+  showSprint?: boolean;
   showPartner?: boolean;
   showCategory?: boolean;
   showResponsibles?: boolean;
@@ -30,6 +31,7 @@ export function ActionContainer({
   variant = VARIANT.line,
   columns = 1,
   showLate = false,
+  showSprint,
   showPartner,
   showCategory,
   showResponsibles,
@@ -87,6 +89,7 @@ export function ActionContainer({
             dateTimeDisplay={dateTimeDisplay}
             isDraggable={isDraggable}
             onClick={onClick}
+            showSprint={showSprint}
           />
         ))}
         {isCompact && actions.length > 6 && (
