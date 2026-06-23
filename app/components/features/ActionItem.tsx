@@ -122,34 +122,30 @@ export function ActionItem({
   });
   const partners = appData?.partners || [];
   const person = appData?.person;
-
   const { isSelectionMode, selectedIds, toggleSelection } = useMultiSelection();
   const isSelected = selectedIds.includes(action.id);
-
   const { handleAction } = useActionMutations();
   const { registerAction, unregisterAction, setEditingId } =
     useActionShortcutContext();
-
   const [isEditing, setIsEditing] = useState(false);
 
   // Register the action in the global shortcut registry on mount/update
   useEffect(() => {
-    registerAction(action.id, { action });
+    registerAction(action.id, {
+      action,
+    });
     return () => unregisterAction(action.id);
   }, [action, registerAction, unregisterAction]);
-
   const handleSetIsEditing = (value: boolean) => {
     setEditingId(value ? action.id : null);
     setIsEditing(value);
   };
   const context = useOutletContext<OutletContext | undefined>();
   const setBaseAction = context?.setBaseAction;
-
   const currentPhase = useMemo(
     () => PHASES[(action.phase as PHASE) || "idea"],
     [action.phase],
   );
-
   const currentPartners = useMemo(
     () =>
       action.partners
@@ -157,7 +153,6 @@ export function ActionItem({
         .filter((p) => p !== undefined),
     [action.partners, partners],
   );
-
   const currentResponsibles = useMemo(
     () =>
       action.responsibles
@@ -165,7 +160,6 @@ export function ActionItem({
         .filter((r) => r !== undefined) as Person[],
     [action.responsibles, people],
   );
-
   const currentCategory = useMemo(
     () => CATEGORIES[action.category as CATEGORY],
     [action.category],
@@ -176,7 +170,6 @@ export function ActionItem({
     !isInstagramFeed(action.category) && variant === VARIANT.content
       ? VARIANT.line
       : variant;
-
   const variantClasses = useMemo(() => {
     switch (variant) {
       case VARIANT.content:
@@ -192,7 +185,6 @@ export function ActionItem({
         return "rounded-xl px-3 py-1 transition-colors @xs:p-1";
     }
   }, [variant]);
-
   const bgClasses = useMemo(() => {
     let baseStyles =
       "shadow-xs transition ring ring-black/5  hover:shadow-lg duration-500 border-t border-white dark:border-white/20 hover:z-10 z-0 hover:bg-card bg-card/50 text-card-foreground dark:shadow-black/80";
@@ -206,7 +198,8 @@ export function ActionItem({
         baseStyles,
         "bg-destructive/10 dark:bg-destructive/10 text-destructive hover:bg-destructive/5 dark:hover:bg-destructive/20 ring-destructive/20 dark:border-destructive/30 ring",
       );
-    } else if (showSprint && person && isSprint(action, person)) {
+    }
+    if (showSprint && person && isSprint(action, person)) {
       baseStyles = cn(baseStyles, "ring-2 ring-primary");
     }
 
@@ -217,10 +210,8 @@ export function ActionItem({
         "ring-foreground focus-within:ring-2 z-100 text-foreground",
       );
     }
-
     return baseStyles;
   }, [variant, isEditing, showLate, action, person, showSprint]);
-
   const renderActionVariant = () => {
     switch (variant) {
       case VARIANT.hour:
@@ -243,19 +234,19 @@ export function ActionItem({
           <Content
             action={action}
             category={showCategory ? currentCategory : undefined}
-            showResponsibles={showResponsibles}
             isSquared
+            showResponsibles={showResponsibles}
           />
         );
       case VARIANT.block:
         return (
           <div className="flex flex-col gap-2 pb-2">
             <ActionItemTitleInput
+              className={"text-xl leading-tight font-medium"}
               isEditing={isEditing}
+              lines={lines}
               setIsEditing={handleSetIsEditing}
               title={action.title}
-              className={"text-xl leading-tight font-medium"}
-              lines={lines}
             />
 
             <div className="flex items-center justify-between">
@@ -270,9 +261,9 @@ export function ActionItem({
 
                 {showCategory && (
                   <Icons
-                    slug={currentCategory.slug}
                     className={cn("size-4")}
                     color={currentCategory.color}
+                    slug={currentCategory.slug}
                   />
                 )}
 
@@ -309,10 +300,8 @@ export function ActionItem({
               {isLateAction(action) && <ActionItemSprint action={action} />}
               {/* Título da ação */}
               <ActionItemTitleInput
-                isEditing={isEditing}
-                setIsEditing={handleSetIsEditing}
-                title={action.title}
                 className="w-full lg:text-sm xl:text-base"
+                isEditing={isEditing}
                 onChange={(title) => {
                   handleAction({
                     ...action,
@@ -320,6 +309,8 @@ export function ActionItem({
                     title,
                   });
                 }}
+                setIsEditing={handleSetIsEditing}
+                title={action.title}
               />
             </div>
             {/* Grupo de metadados */}
@@ -342,9 +333,9 @@ export function ActionItem({
               {/* Ícone de responsáveis se aplicável */}
               {showResponsibles && (
                 <ActionItemResponsibles
-                  size="xs"
                   action={action}
                   responsibles={currentResponsibles}
+                  size="xs"
                 />
               )}
               {/* Ícone de prioridade se aplicável */}
@@ -354,9 +345,9 @@ export function ActionItem({
               {/* Ícone da categoria se aplicável */}
               {showCategory && (
                 <Icons
-                  slug={currentCategory.slug}
                   className={cn("size-4")}
                   color={currentCategory.color}
+                  slug={currentCategory.slug}
                 />
               )}
             </div>
@@ -373,11 +364,8 @@ export function ActionItem({
         );
     }
   };
-
   const content = (
     <div
-      data-action-id={action.id}
-      title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
       className={cn(
         "group/action @container relative shrink-0 cursor-pointer overflow-hidden rounded-2xl squircle",
         variantClasses,
@@ -391,6 +379,7 @@ export function ActionItem({
         isSelectionMode && isSelected && "ring-2 ring-primary ring-inset",
         isSelected && variant === VARIANT.content && "rounded-3xl p-2 squircle",
       )}
+      data-action-id={action.id}
       onClick={(e) => {
         if (isSelectionMode) {
           e.preventDefault();
@@ -406,6 +395,7 @@ export function ActionItem({
           }
         }
       }}
+      title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
     >
       {isSelectionMode && (
         <div
@@ -443,7 +433,6 @@ export function ActionItem({
       {renderActionVariant()}
     </div>
   );
-
   const wrapper = enableHoverCard ? (
     <ActionHoverCard action={action} onClick={onClick}>
       {content}
@@ -451,7 +440,6 @@ export function ActionItem({
   ) : (
     content
   );
-
   return isDraggable ? (
     <Draggable id={action.id}>{wrapper}</Draggable>
   ) : (
@@ -494,7 +482,6 @@ export function ActionItemPartners({
 }) {
   return size ? (
     <UAvatarGroup
-      size={size}
       avatars={partners.map((partner) => ({
         id: `${action.id}-${partner.id}`,
         fallback: partner.short.toLocaleUpperCase(),
@@ -502,12 +489,12 @@ export function ActionItemPartners({
         backgroundColor: partner.colors[0],
         color: partner.colors[1],
       }))}
+      size={size}
     />
   ) : (
     <>
       <div className="@xs:hidden">
         <UAvatarGroup
-          size={SIZE.xs}
           avatars={partners.map((partner) => ({
             id: `${action.id}-${partner.id}`,
             fallback: partner.short.toLocaleUpperCase(),
@@ -515,11 +502,11 @@ export function ActionItemPartners({
             backgroundColor: partner.colors[0],
             color: partner.colors[1],
           }))}
+          size={SIZE.xs}
         />
       </div>
       <div className="hidden @xs:block">
         <UAvatarGroup
-          size={SIZE.sm}
           avatars={partners.map((partner) => ({
             id: `${action.id}-${partner.id}`,
             fallback: partner.short.toLocaleUpperCase(),
@@ -527,6 +514,7 @@ export function ActionItemPartners({
             backgroundColor: partner.colors[0],
             color: partner.colors[1],
           }))}
+          size={SIZE.sm}
         />
       </div>
     </>
@@ -549,12 +537,12 @@ export function ActionItemResponsibles({
 }) {
   return (
     <UAvatarGroup
-      size={size || SIZE.sm}
       avatars={responsibles.map((person) => ({
         id: `${action.id}-${person.id}`,
         fallback: person.short.toLocaleUpperCase(),
         image: person.image,
       }))}
+      size={size || SIZE.sm}
     />
   );
 }
@@ -568,10 +556,8 @@ export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
   switch (priority) {
     case PRIORITIES.low.slug:
       return <SignalIcon className="text-info size-4" />;
-
     case PRIORITIES.high.slug:
       return <SignalIcon className="text-error size-4" />;
-
     default:
       return <SignalIcon className="text-success size-4" />;
   }
@@ -591,8 +577,7 @@ export function ActionItemSprint({
 }) {
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
   const person = appData?.person;
-
   return isSprint(action, person) ? (
-    <Icons slug="sprint" className={cn("size-4 shrink-0", className)} />
+    <Icons className={cn("size-4 shrink-0", className)} slug="sprint" />
   ) : null;
 }
