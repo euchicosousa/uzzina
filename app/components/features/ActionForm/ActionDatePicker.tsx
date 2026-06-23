@@ -1,7 +1,7 @@
-import { CalendarDaysIcon } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
-import { useEffect, useState } from "react";
+import { CalendarDaysIcon } from "lucide-react";
+import { useState } from "react";
 import { Calendar } from "~/components/ui/calendar";
 import { Input } from "~/components/ui/input";
 import {
@@ -12,7 +12,6 @@ import {
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import { getFormattedDateTime } from "~/utils/date";
-
 export function ActionDatePicker({
   onSelect,
   date,
@@ -27,21 +26,18 @@ export function ActionDatePicker({
   size?: "sm" | "lg";
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(date);
-
-  useEffect(() => {
-    setSelectedDate(date);
-  }, [date]);
-
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   return (
     <Popover
-      open={isOpen}
       onOpenChange={(newIsOpen) => {
         setIsOpen(newIsOpen);
-        if (!newIsOpen && onSelect && selectedDate) {
+        if (newIsOpen) {
+          setSelectedDate(date);
+        } else if (onSelect && selectedDate) {
           onSelect(selectedDate);
         }
       }}
+      open={isOpen}
     >
       <PopoverTrigger asChild>
         <button
@@ -52,6 +48,7 @@ export function ActionDatePicker({
               : "cursor-pointer underline-offset-2 hover:underline",
             className,
           )}
+          type="button"
         >
           {size === "sm" && (
             <CalendarDaysIcon className="size-3.5 text-muted-foreground shrink-0" />
@@ -64,9 +61,8 @@ export function ActionDatePicker({
       <PopoverContent className="p-0">
         <Calendar
           className="w-full"
-          mode="single"
-          selected={selectedDate}
           locale={ptBR}
+          mode="single"
           onSelect={(date) => {
             if (date) {
               const newDate = selectedDate
@@ -80,14 +76,11 @@ export function ActionDatePicker({
               setSelectedDate(newDate);
             }
           }}
+          selected={selectedDate}
         />
         <div className="flex items-center justify-between gap-4 border-t p-4">
           <div className="text-sm">Defina a hora</div>
           <Input
-            type="time"
-            // step={1}
-
-            value={selectedDate ? format(selectedDate, "HH:mm") : ""}
             // value={"13:00"}
             className="w-auto appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
             onChange={(e) => {
@@ -98,6 +91,9 @@ export function ActionDatePicker({
                 setSelectedDate(newDate);
               }
             }}
+            type="time"
+            // step={1}
+            value={selectedDate ? format(selectedDate, "HH:mm") : ""}
           />
         </div>
       </PopoverContent>

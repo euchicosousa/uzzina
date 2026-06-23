@@ -18,7 +18,7 @@ interface CommentItemProps {
   onUpdate: (content: string) => void;
   onDelete: () => void;
   mentionablePeople?: Person[];
-}
+}const DEFAULT_MENTIONABLE_PEOPLE: Person[] = [];
 
 function htmlToPlainText(html: string) {
   if (typeof document === "undefined") return html;
@@ -32,19 +32,21 @@ export function CommentItem({
   isOwn,
   onUpdate,
   onDelete,
-  mentionablePeople = [],
+  mentionablePeople = DEFAULT_MENTIONABLE_PEOPLE,
 }: CommentItemProps) {
   const [editing, setEditing] = useState(false);
-  const [editContent, setEditContent] = useState(comment.content);
+  const [overrideContent, setOverrideContent] = useState<string | null>(null);
+  const editContent = overrideContent !== null ? overrideContent : comment.content;
 
   const handleSave = (content: string) => {
     if (!content.trim()) return;
     onUpdate(content);
     setEditing(false);
+    setOverrideContent(null);
   };
 
   const handleCancel = () => {
-    setEditContent(comment.content);
+    setOverrideContent(null);
     setEditing(false);
   };
 
@@ -66,7 +68,7 @@ export function CommentItem({
           <div className="mt-2 w-full min-w-[280px] text-foreground">
             <CommentInput
               value={editContent}
-              onChange={setEditContent}
+              onChange={setOverrideContent}
               onSend={handleSave}
               onCancel={handleCancel}
               submitLabel="Salvar"
@@ -82,8 +84,9 @@ export function CommentItem({
             {isOwn && (
               <div className="absolute right-0 bottom-0 flex min-w-24 items-center justify-end gap-1 rounded-br-lg bg-linear-to-l from-primary to-primary/0 p-1 opacity-0 transition-opacity group-hover:opacity-100">
                 <button
+                  type="button"
                   onClick={() => {
-                    setEditContent(htmlToPlainText(comment.content));
+                    setOverrideContent(htmlToPlainText(comment.content));
                     setEditing(true);
                   }}
                   className="rounded p-1 transition-colors hover:bg-black/10 dark:hover:bg-white/10"
@@ -91,6 +94,7 @@ export function CommentItem({
                   <Pencil className="size-3" />
                 </button>
                 <button
+                  type="button"
                   onClick={onDelete}
                   className="rounded p-1 transition-colors hover:bg-black/10 dark:hover:bg-white/10"
                 >

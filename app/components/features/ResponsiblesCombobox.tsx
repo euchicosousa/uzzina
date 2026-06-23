@@ -75,6 +75,7 @@ export function ResponsiblesCombobox({
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <button
+          type="button"
           className="cursor-pointer underline-offset-4 outline-none hover:underline"
           title={getFormattedPeopleName(currentResponsibles)}
         >

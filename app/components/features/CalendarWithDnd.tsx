@@ -17,11 +17,12 @@ import { useActionMutations } from "~/hooks/useActionMutations";
 import type { Action } from "~/models/actions.server";
 import type { ViewOptions } from "./ViewOptions";
 import { DragStateContext } from "./DragStateContext";
+const DEFAULT_CELEBRATIONS: Celebration[] = [];
 
 export function CalendarWithDnd({
   actions,
   calendarDays,
-  celebrations = [],
+  celebrations = DEFAULT_CELEBRATIONS,
   viewOptions,
   currentDay,
   onCreateAction,

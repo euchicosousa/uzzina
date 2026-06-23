@@ -60,7 +60,6 @@ export function PartnerColorPicker({
 }: PartnerColorPickerProps) {
   // Normaliza as cores para hex uma única vez — evita recomputar a cada render
   const hexColors = useMemo(() => colors.map(toHex), [colors]);
-
   return (
     <div className="space-y-3">
       {/* Swatches do parceiro — aspecto 3:4 igual ao ActionColorDropdown original */}
@@ -69,15 +68,17 @@ export function PartnerColorPicker({
           {hexColors.map((hex) => (
             <button
               key={hex}
-              type="button"
-              title={hex}
-              onClick={() => onChange(hex)}
               className={cn(
                 "w-fill aspect-3/4 rounded border border-black/5 transition-all hover:opacity-80",
                 value.toLowerCase() === hex.toLowerCase() &&
                   "scale-105 ring-2 ring-primary ring-offset-1",
               )}
-              style={{ backgroundColor: hex }}
+              onClick={() => onChange(hex)}
+              style={{
+                backgroundColor: hex,
+              }}
+              title={hex}
+              type="button"
             />
           ))}
         </div>
@@ -88,7 +89,7 @@ export function PartnerColorPicker({
       )}
 
       {/* Input hex com estado interno — só confirma ao exterior quando cor é válida */}
-      <HexInput value={value} onChange={onChange} />
+      <HexInput onChange={onChange} value={value} />
     </div>
   );
 }
@@ -118,15 +119,9 @@ function HexInput({
   value: string;
   onChange: (color: string) => void;
 }) {
-  // Estado interno de digitação — pode conter valores parciais como "#f" ou "#ff"
-  const [inputValue, setInputValue] = useState(value);
-  // Referência ao timer do debounce para cancelar se necessário
+  const [overrideValue, setOverrideValue] = useState<string | null>(null);
+  const inputValue = overrideValue !== null ? overrideValue : value;
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Sincroniza quando o valor externo muda (ex: swatch clicado ou ação trocada)
-  useEffect(() => {
-    setInputValue(value);
-  }, [value]);
 
   // Limpa o debounce ao desmontar
   useEffect(
@@ -135,34 +130,19 @@ function HexInput({
     },
     [],
   );
-
   const isInvalid = inputValue.length > 0 && !isValidColor(inputValue);
-
   const confirm = (raw: string) => {
     if (isValidColor(raw)) {
       onChange(toHex(raw));
     }
   };
-
   return (
     <Input
-      value={inputValue}
-      placeholder="#Hex"
       className={cn(
         "h-8 font-mono tracking-wider uppercase",
         isInvalid &&
           "bg-destructive/5 text-destructive ring-destructive focus-visible:border-destructive focus-visible:ring-destructive/20",
       )}
-      onChange={(e) => {
-        const raw = e.target.value;
-        setInputValue(raw);
-
-        // Cancela o debounce anterior e agenda um novo
-        if (debounceRef.current) clearTimeout(debounceRef.current);
-        if (isValidColor(raw)) {
-          debounceRef.current = setTimeout(() => confirm(raw), 500);
-        }
-      }}
       onBlur={() => {
         // Cancela debounce pendente — confirmamos ou revertemos imediatamente
         if (debounceRef.current) {
@@ -171,11 +151,21 @@ function HexInput({
         }
         if (isValidColor(inputValue)) {
           onChange(toHex(inputValue));
-        } else {
-          // Cor inválida ao sair: reverte para o último valor confirmado
-          setInputValue(value);
+        }
+        setOverrideValue(null);
+      }}
+      onChange={(e) => {
+        const raw = e.target.value;
+        setOverrideValue(raw);
+
+        // Cancela o debounce anterior e agenda um novo
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        if (isValidColor(raw)) {
+          debounceRef.current = setTimeout(() => confirm(raw), 500);
         }
       }}
+      placeholder="#Hex"
+      value={inputValue}
     />
   );
 }

@@ -79,6 +79,7 @@ export function CalendarDay({
           {onCreateAction && (
             <div className="isolate opacity-0 group-hover/column:opacity-100">
               <button
+                type="button"
                 className="grid size-6 cursor-pointer place-content-center rounded-full bg-primary text-primary-foreground"
                 onClick={() => {
                   onCreateAction(day);

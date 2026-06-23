@@ -56,6 +56,7 @@ export function ActionColorDropdown({
       {/* Botão trigger: bolinha com a cor atual da ação */}
       <DropdownMenuTrigger asChild>
         <button
+          type="button"
           tabIndex={tabIndex}
           className="hover:bg-secondary focus:bg-secondary/50 flex items-center gap-2 p-6 text-sm outline-none"
         >

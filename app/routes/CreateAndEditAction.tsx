@@ -20,10 +20,12 @@ function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
 }
 
+const DEFAULT_PARTNER_FILTERS: string[] = [];
+
 export function CreateAndEditAction({
   BaseAction,
   onClose,
-  partnerFilters = [],
+  partnerFilters = DEFAULT_PARTNER_FILTERS,
 }: {
   BaseAction: Action;
   onClose: () => void;
@@ -351,6 +353,7 @@ export function CreateAndEditAction({
           <ArchiveIcon className="size-4" />
           Esta ação está arquivada.
           <button
+            type="button"
             onClick={() => {
               setRawAction((prev) => ({ ...prev, archived: false }));
               updateAction({ archived: false });
@@ -386,6 +389,7 @@ export function CreateAndEditAction({
         </div>
         <div>
           <button
+            type="button"
             className="flex w-full cursor-pointer items-center justify-center gap-2 border-b p-5 text-sm font-medium"
             onClick={onClose}
           >

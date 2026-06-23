@@ -17,6 +17,8 @@ interface CommentListProps {
   mentionablePeople?: Person[];
 }
 
+const DEFAULT_MENTIONABLE_PEOPLE: Person[] = [];
+
 export function CommentList({
   comments,
   currentUserId,
@@ -24,7 +26,7 @@ export function CommentList({
   onUpdate,
   onDelete,
   emptyMessage = "Nenhuma observação encontrada.",
-  mentionablePeople = [],
+  mentionablePeople = DEFAULT_MENTIONABLE_PEOPLE,
 }: CommentListProps) {
   return (
     <div className="flex flex-col space-y-4">

@@ -20,7 +20,6 @@ import {
   useOutletContext,
   useRouteLoaderData,
 } from "react-router";
-
 import { useQueryClient } from "@tanstack/react-query";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
@@ -28,7 +27,6 @@ import { getNewDateForAction } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
-
 import { Button } from "../ui/button";
 import { ActionDatePicker } from "./ActionForm/ActionDatePicker";
 import { ActionTitleInput } from "./ActionForm/ActionTitleInput";
@@ -36,19 +34,16 @@ import { CategoriesCombobox } from "./CategoriesCombobox";
 import { DragStateContext } from "./DragStateContext";
 import { PhaseCombobox } from "./PhaseCombobox";
 import { SprintCombobox } from "./SprintCombobox";
-
 const Tiptap = lazy(() =>
   import("~/components/features/Tiptap").then((module) => ({
     default: module.Tiptap,
   })),
 );
-
 interface ActionHoverCardProps {
   action: Action;
   children: React.ReactNode;
   onClick?: (action: Action) => void;
 }
-
 export function ActionHoverCard({
   action,
   children,
@@ -61,7 +56,6 @@ export function ActionHoverCard({
   // (ex: HoursComponent, listas sem drag).
   const [preventOpen, setPreventOpen] = useState(false);
   const cooldownRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-
   useEffect(() => {
     const media = window.matchMedia("(hover: hover)");
     setIsDesktop(media.matches);
@@ -69,13 +63,11 @@ export function ActionHoverCard({
     media.addEventListener("change", listener);
     return () => media.removeEventListener("change", listener);
   }, []);
-
   useEffect(() => () => clearTimeout(cooldownRef.current), []);
 
   // Lê o estado de drag do contexto pai (CalendarWithDnd / KanbanComponent).
   // Se não houver provider, retorna false — sem erros.
   const isDragActive = useContext(DragStateContext);
-
   useEffect(() => {
     if (isDragActive) {
       clearTimeout(cooldownRef.current);
@@ -85,29 +77,30 @@ export function ActionHoverCard({
       // Evita que o Radix detecte o hover residual e reabra imediatamente.
       cooldownRef.current = setTimeout(() => setPreventOpen(false), 800);
     }
+    return () => {
+      clearTimeout(cooldownRef.current);
+    };
   }, [isDragActive, preventOpen]);
 
   // Sem HoverCard em mobile ou durante drag/cooldown
   if (!isDesktop || preventOpen) {
     return <>{children}</>;
   }
-
   const hasFiles = action.content_files && action.content_files.length > 0;
-
   return (
-    <HoverCard.Root openDelay={600} closeDelay={150}>
+    <HoverCard.Root closeDelay={150} openDelay={600}>
       <HoverCard.Trigger asChild>{children}</HoverCard.Trigger>
       <HoverCard.Portal>
         <HoverCard.Content
-          side="top"
           align="center"
-          sideOffset={8}
           className={cn(
             "z-50 overflow-hidden rounded-2xl border border-border bg-popover text-popover-foreground shadow-2xl focus:outline-none",
             "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
             "pointer-events-auto flex h-[300px] flex-row transition-all duration-200",
             hasFiles ? "w-[680px]" : "w-[440px]",
           )}
+          side="top"
+          sideOffset={8}
         >
           <ActionHoverCardContent action={action} onClick={onClick} />
         </HoverCard.Content>
@@ -115,7 +108,6 @@ export function ActionHoverCard({
     </HoverCard.Root>
   );
 }
-
 function ActionHoverCardContent({
   action,
   onClick,
@@ -132,16 +124,11 @@ function ActionHoverCardContent({
   }>();
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
   const partners = appData?.partners || [];
+  const [overrideTitle, setOverrideTitle] = useState<string | null>(null);
+  const title = overrideTitle !== null ? overrideTitle : action.title;
 
-  const [title, setTitle] = useState(action.title);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  useEffect(() => {
-    setTitle(action.title);
-  }, [action.title]);
-
   const _isPending = fetchers.length > 0 || navigation.state !== "idle";
-
   const currentPartners = useMemo(
     () =>
       action.partners
@@ -149,9 +136,7 @@ function ActionHoverCardContent({
         .filter((p) => p !== undefined),
     [action.partners, partners],
   );
-
   const hasFiles = action.content_files && action.content_files.length > 0;
-
   const handleOpenFull = () => {
     if (onClick) {
       onClick(action);
@@ -162,7 +147,6 @@ function ActionHoverCardContent({
       outletContext.setBaseAction(action);
     }
   };
-
   return (
     <>
       {/* Coluna Esquerda: Preview de Mídia (Apenas se houver content_files) */}
@@ -170,13 +154,15 @@ function ActionHoverCardContent({
         <div className="relative flex h-full w-[240px] shrink-0 flex-col justify-between overflow-hidden border-r border-border bg-muted">
           <div className="group relative h-full w-full">
             <img
-              src={action.content_files?.[currentImageIndex]}
               alt={action.title}
               className="h-full w-full object-cover"
+              src={action.content_files?.[currentImageIndex]}
             />
             {action.content_files && action.content_files.length > 1 && (
               <>
                 <button
+                  type="button"
+                  className="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white opacity-0 transition group-hover:opacity-100"
                   onClick={() =>
                     setCurrentImageIndex((prev) =>
                       prev > 0
@@ -184,11 +170,12 @@ function ActionHoverCardContent({
                         : (action.content_files?.length ?? 1) - 1,
                     )
                   }
-                  className="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white opacity-0 transition group-hover:opacity-100"
                 >
                   <ChevronLeftIcon className="size-4" />
                 </button>
                 <button
+                  type="button"
+                  className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white opacity-0 transition group-hover:opacity-100"
                   onClick={() =>
                     setCurrentImageIndex((prev) =>
                       prev < (action.content_files?.length ?? 1) - 1
@@ -196,7 +183,6 @@ function ActionHoverCardContent({
                         : 0,
                     )
                   }
-                  className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white opacity-0 transition group-hover:opacity-100"
                 >
                   <ChevronRightIcon className="size-4" />
                 </button>
@@ -214,9 +200,7 @@ function ActionHoverCardContent({
         {/* Título Editável */}
         <div className="border-b">
           <ActionTitleInput
-            tabIndex={10}
-            title={title}
-            onChange={(newTitle) => setTitle(newTitle)}
+            className="p-2 px-6 pb-1 focus-within:bg-secondary/40 hover:bg-secondary/40"
             onBlur={(newTitle) => {
               if (newTitle !== action.title && newTitle.trim()) {
                 handleAction({
@@ -225,9 +209,12 @@ function ActionHoverCardContent({
                   title: newTitle,
                 });
               }
+              setOverrideTitle(null);
             }}
-            className="p-2 px-6 pb-1 focus-within:bg-secondary/40 hover:bg-secondary/40"
+            onChange={(newTitle) => setOverrideTitle(newTitle)}
+            tabIndex={10}
             textareaClassName="w-full font-semibold text-lg text-foreground bg-transparent border-none resize-none outline-none leading-tight pt-1 pb-1 "
+            title={title}
           />
         </div>
 
@@ -240,9 +227,8 @@ function ActionHoverCardContent({
               }
             >
               <Tiptap
-                content={action.description || ""}
-                placeholder="Descrição da Ação"
                 className="min-h-[60px] px-6 outline-none"
+                content={action.description || ""}
                 handleBlur={async (content) => {
                   if (content !== (action.description || "")) {
                     handleAction({
@@ -252,6 +238,7 @@ function ActionHoverCardContent({
                     });
                   }
                 }}
+                placeholder="Descrição da Ação"
               />
             </Suspense>
           </div>
@@ -260,11 +247,8 @@ function ActionHoverCardContent({
         {/* Controles Compactos */}
         <div className="flex flex-wrap items-center gap-2 px-5 py-2">
           <PhaseCombobox
-            size="sm"
             className="rounded-full"
             iconVariant="progress"
-            selectedPhase={action.phase || "idea"}
-            showText={false}
             onSelect={(selected) => {
               handleAction({
                 ...action,
@@ -272,13 +256,13 @@ function ActionHoverCardContent({
                 phase: selected,
               });
             }}
+            selectedPhase={action.phase || "idea"}
+            showText={false}
+            size="sm"
           />
 
           <CategoriesCombobox
-            size="sm"
             className="rounded-full"
-            selectedCategories={[action.category]}
-            showText={false}
             onSelect={({ category }) => {
               handleAction({
                 ...action,
@@ -286,13 +270,15 @@ function ActionHoverCardContent({
                 category,
               });
             }}
+            selectedCategories={[action.category]}
+            showText={false}
+            size="sm"
           />
 
           <ActionDatePicker
-            size="sm"
-            dateTimeDisplay={DATE_TIME_DISPLAY.DateTime}
-            date={parseISO(action.date)}
             className="rounded-full"
+            date={parseISO(action.date)}
+            dateTimeDisplay={DATE_TIME_DISPLAY.DateTime}
             onSelect={(newDate) => {
               const updatedDate = getNewDateForAction(action, newDate);
               handleAction({
@@ -301,13 +287,11 @@ function ActionHoverCardContent({
                 ...updatedDate,
               });
             }}
+            size="sm"
           />
 
           <SprintCombobox
-            size="sm"
             className="rounded-full"
-            selectedSprints={action.sprints || []}
-            responsibles={action.responsibles || []}
             currentPartners={currentPartners}
             onSelect={(newSprints, newResponsibles) => {
               const finalSprints = newSprints.length > 0 ? newSprints : null;
@@ -318,12 +302,15 @@ function ActionHoverCardContent({
                 responsibles: newResponsibles,
               });
             }}
+            responsibles={action.responsibles || []}
+            selectedSprints={action.sprints || []}
+            size="sm"
           />
 
           <Button
-            size="icon"
-            onClick={handleOpenFull}
             className="ml-auto h-8 w-8 rounded-full p-0"
+            onClick={handleOpenFull}
+            size="icon"
           >
             <ExternalLinkIcon className="size-4" />
           </Button>

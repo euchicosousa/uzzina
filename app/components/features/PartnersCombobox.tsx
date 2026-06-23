@@ -89,6 +89,7 @@ export function PartnersCombobox({
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <button
+          type="button"
           className="hover:bg-secondary focus:bg-secondary/50 flex w-full items-center gap-2 overflow-hidden px-6 py-5.5 text-sm outline-none"
           title={getFormattedPartnersName(currentPartners)}
           tabIndex={tabIndex}

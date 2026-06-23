@@ -85,6 +85,7 @@ export function CalendarButtons({
                 }).map((year) => {
                   return (
                     <button
+                      type="button"
                       key={year.toISOString()}
                       onClick={() => {
                         setCurrentDay(year);
@@ -107,6 +108,7 @@ export function CalendarButtons({
                   end: endOfYear(currentDay),
                 }).map((day) => (
                   <button
+                    type="button"
                     key={day.toISOString()}
                     onClick={() => {
                       setCurrentDay(day);

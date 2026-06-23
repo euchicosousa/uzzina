@@ -443,25 +443,24 @@ export default function ProfilePage() {
   const paletteOptions = [
     ...PALLETE.map((p, idx) => {
       const currentColors = theme === Theme.DARK ? p.dark : p.light;
-      const ColorDot = ({ className }: { className?: string }) => (
-        <div
-          className={cn(
-            "size-4 shrink-0 rounded-lg transition-transform duration-200",
-            className,
-          )}
-          style={{
-            backgroundColor: `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`,
-            border:
-              theme === Theme.DARK
-                ? "1px solid rgba(255,255,255,0.1)"
-                : "1px solid rgba(0,0,0,0.1)",
-          }}
-        />
-      );
       return {
         value: idx,
         label: p.label,
-        icon: ColorDot,
+        icon: ({ className }: { className?: string }) => (
+          <div
+            className={cn(
+              "size-4 shrink-0 rounded-lg transition-transform duration-200",
+              className,
+            )}
+            style={{
+              backgroundColor: `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`,
+              border:
+                theme === Theme.DARK
+                  ? "1px solid rgba(255,255,255,0.1)"
+                  : "1px solid rgba(0,0,0,0.1)",
+            }}
+          />
+        ),
       };
     }),
     {

@@ -124,6 +124,7 @@ export function CategoriesCombobox({
       <PopoverTrigger asChild>
         {isMulti ? (
           <button
+            type="button"
             tabIndex={tabIndex}
             data-state={!hasSelection && "on"}
             className="raised flex h-9 place-content-center items-center rounded-xl border-b border-b-transparent px-3 squircle"
@@ -150,6 +151,7 @@ export function CategoriesCombobox({
           </button>
         ) : (
           <button
+            type="button"
             tabIndex={tabIndex}
             className={cn(
               "flex items-center gap-1.5 overflow-hidden transition-colors outline-none",

@@ -13,6 +13,7 @@ export function UButtonAI({
 }: UButtonAIProps) {
   return (
     <button
+      type="button"
       className={cn(
         "relative overflow-hidden rounded-full p-0.5 disabled:opacity-50",
         className,

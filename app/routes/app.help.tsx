@@ -96,6 +96,7 @@ export default function HelpPage() {
               const isSelected = activeSection === section.id;
               return (
                 <button
+                  type="button"
                   key={section.id}
                   onClick={() => handleScrollTo(section.id)}
                   className={cn(
@@ -119,6 +120,7 @@ export default function HelpPage() {
             const isSelected = activeSection === section.id;
             return (
               <button
+                type="button"
                 key={section.id}
                 onClick={() => handleScrollTo(section.id)}
                 className={cn(

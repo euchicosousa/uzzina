@@ -127,6 +127,7 @@ export function ActionFormFooter({
               }}
             />
             <button
+              type="button"
               title="Duplicar ação (Shift+D)"
               className="flex items-center gap-2 rounded-2xl p-2 text-sm opacity-50 hover:opacity-100 focus:opacity-100"
               onClick={() => {
@@ -141,6 +142,7 @@ export function ActionFormFooter({
             </button>
             {!RawAction.archived && (
               <button
+                type="button"
                 title="Arquivar ação"
                 className="flex items-center gap-2 rounded-2xl p-2 text-sm opacity-50 hover:opacity-100 focus:opacity-100"
                 onClick={async () => {
@@ -160,6 +162,7 @@ export function ActionFormFooter({
             )}
             {RawAction.archived && (
               <button
+                type="button"
                 title="Desarquivar ação"
                 className="flex items-center gap-2 rounded-2xl p-2 text-sm text-amber-500 opacity-80 hover:text-amber-600 hover:opacity-100 focus:opacity-100"
                 onClick={async () => {

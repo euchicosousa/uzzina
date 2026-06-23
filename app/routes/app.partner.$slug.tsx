@@ -222,7 +222,10 @@ export default function PartnerPage() {
             {lateCount > 0 && (
               <Popover>
                 <PopoverTrigger asChild>
-                  <button className="isolate -mt-4 -ml-4 cursor-pointer outline-none select-none">
+                  <button
+                    type="button"
+                    className="isolate -mt-4 -ml-4 cursor-pointer outline-none select-none"
+                  >
                     <UBadge value={lateCount} isDynamic />
                   </button>
                 </PopoverTrigger>

@@ -78,12 +78,14 @@ export function ClientCalendar({
 
         <div className="flex rounded-lg border text-sm">
           <button
+            type="button"
             onClick={() => setCalendarView?.("week")}
             className={`rounded-l-lg px-3 py-1 font-medium transition-colors ${calendarView === "week" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
           >
             Semana
           </button>
           <button
+            type="button"
             onClick={() => setCalendarView?.("month")}
             className={`rounded-r-lg px-3 py-1 font-medium transition-colors ${calendarView === "month" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
           >
@@ -153,6 +155,7 @@ export function ClientCalendar({
 
                       return (
                         <button
+                          type="button"
                           key={action.id}
                           onClick={() => onActionClick(action)}
                           className={cn(

@@ -12,9 +12,7 @@ import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "./WorkFileThumbnail";
-
 import { ArrowRightIcon } from "lucide-react";
-import { useEffect } from "react";
 import type { FetcherWithComponents } from "react-router";
 import { Button } from "~/components/ui/button";
 import {
@@ -24,13 +22,11 @@ import {
   SheetTitle,
 } from "~/components/ui/sheet";
 import { INTENT } from "~/lib/CONSTANTS";
-
 const Tiptap = lazy(() =>
   import("~/components/features/Tiptap").then((module) => ({
     default: module.Tiptap,
   })),
 );
-
 interface EssentialsTabProps {
   RawAction: Action;
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;
@@ -46,12 +42,17 @@ interface EssentialsTabProps {
   isAIProcessing: boolean;
   fetcher: FetcherWithComponents<{
     intent?: string;
-    output?: { racional?: string; hooks?: { tipo: string; texto: string }[] };
+    output?: {
+      racional?: string;
+      hooks?: {
+        tipo: string;
+        texto: string;
+      }[];
+    };
   }>;
   onDescriptionChange?: (description: string) => void;
   descriptionVersion?: number;
 }
-
 export function EssentialsTab({
   RawAction,
   setRawAction,
@@ -68,26 +69,34 @@ export function EssentialsTab({
 }: EssentialsTabProps) {
   const workFilesRef = useRef(workFiles);
   workFilesRef.current = workFiles;
-
   const workFilesMetaRef = useRef<
-    Record<string, { name: string; addedAt: number }>
+    Record<
+      string,
+      {
+        name: string;
+        addedAt: number;
+      }
+    >
   >({});
-
   const [isIDVisible, setisIDVisible] = useState(false);
-
   const [hooksOpen, setHooksOpen] = useState(false);
-  const [hooks, setHooks] = useState<{ tipo: string; texto: string }[]>([]);
+  const [hooks, setHooks] = useState<
+    {
+      tipo: string;
+      texto: string;
+    }[]
+  >([]);
   const [racional, setRacional] = useState("");
   const [isCreatingPost, setIsCreatingPost] = useState(false);
-
-  useEffect(() => {
+  const lastDataRef = useRef(fetcher.data);
+  if (fetcher.data !== lastDataRef.current) {
+    lastDataRef.current = fetcher.data;
     if (fetcher.data?.intent === INTENT.ai_hooks && fetcher.data.output) {
       setRacional(fetcher.data.output.racional ?? "");
       setHooks(fetcher.data.output.hooks ?? []);
       setHooksOpen(true);
       setIsCreatingPost(false);
     }
-
     if (
       fetcher.data?.intent &&
       (
@@ -102,19 +111,13 @@ export function EssentialsTab({
       setHooksOpen(false);
       setIsCreatingPost(false);
     }
-  }, [fetcher.data]);
-
+  }
   return (
     <div className="flex h-full flex-col overflow-hidden">
       {/* Título */}
       <ActionTitleInput
-        title={RawAction.title}
-        tabIndex={1}
         autoFocus
         className="font-bold tracking-[-5%]"
-        onChange={async (title) => {
-          setRawAction({ ...RawAction, title });
-        }}
         onBlur={async (title) => {
           await updateAction(
             {
@@ -123,6 +126,14 @@ export function EssentialsTab({
             true,
           );
         }}
+        onChange={async (title) => {
+          setRawAction({
+            ...RawAction,
+            title,
+          });
+        }}
+        tabIndex={1}
+        title={RawAction.title}
       />
 
       <div className="text-sm">
@@ -131,15 +142,18 @@ export function EssentialsTab({
             <ActionTimeDisplay action={RawAction} />
           </div>
           <ResponsiblesCombobox
-            selectedResponsibles={RawAction.responsibles}
             currentPartners={currentPartners}
             onSelect={async (responsibles) => {
-              setRawAction({ ...RawAction, responsibles });
+              setRawAction({
+                ...RawAction,
+                responsibles,
+              });
               await updateAction({
                 ...RawAction,
                 responsibles,
               });
             }}
+            selectedResponsibles={RawAction.responsibles}
           />
 
           <pre
@@ -164,6 +178,7 @@ export function EssentialsTab({
               className={cn(
                 isLateAction(RawAction) ? "text-destructive" : "opacity-50",
               )}
+              date={parseISO(RawAction.date)}
               onSelect={async (date) => {
                 setRawAction({
                   ...RawAction,
@@ -174,18 +189,17 @@ export function EssentialsTab({
                   ...getNewDateForAction(RawAction, date),
                 });
               }}
-              date={parseISO(RawAction.date)}
             />
           </div>
 
           <div className="flex gap-1">
             {hooks.length > 0 && (
               <Button
-                size={"sm"}
-                variant={"secondary"}
                 onClick={() => {
                   setHooksOpen(true);
                 }}
+                size={"sm"}
+                variant={"secondary"}
               >
                 <FishingHookIcon />
               </Button>
@@ -217,36 +231,36 @@ export function EssentialsTab({
             {workFiles.map((url, i) => (
               <WorkFileThumbnail
                 key={url}
-                url={url}
                 onRemove={async () => {
                   const next = workFiles.filter((_, idx) => idx !== i);
                   setWorkFiles(next);
-                  setRawAction((prev) => ({ ...prev, work_files: next }));
-                  await updateAction({ work_files: next });
+                  setRawAction((prev) => ({
+                    ...prev,
+                    work_files: next,
+                  }));
+                  await updateAction({
+                    work_files: next,
+                  });
                 }}
+                url={url}
               />
             ))}
             <CloudinaryUpload
+              className={`text-foreground/50 ${workFiles.length === 0 ? "text-md flex items-center gap-1.5 py-1.5 underline-offset-2 hover:underline" : "squircle flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary transition hover:bg-secondary/50"}`}
               cloudName={cloudName}
-              uploadPreset={uploadPreset}
               folder="uzzina/work"
-              resourceType="auto"
               multiple
-              outputWidth={1200}
               onUpload={async (url, meta) => {
                 const now = Date.now();
                 workFilesMetaRef.current[url] = {
                   name: meta.originalFilename || url,
                   addedAt: now,
                 };
-
                 let next = [...workFilesRef.current, url];
-
                 const splitIndex = next.findIndex((u) => {
                   const m = workFilesMetaRef.current[u];
                   return m && m.addedAt > now - 5000;
                 });
-
                 if (splitIndex !== -1) {
                   const oldUrls = next.slice(0, splitIndex);
                   const recentUrls = next.slice(splitIndex);
@@ -257,17 +271,19 @@ export function EssentialsTab({
                   });
                   next = [...oldUrls, ...recentUrls];
                 }
-
                 workFilesRef.current = next;
                 setWorkFiles(next);
-                setRawAction((prev) => ({ ...prev, work_files: next }));
-                await updateAction({ work_files: next });
+                setRawAction((prev) => ({
+                  ...prev,
+                  work_files: next,
+                }));
+                await updateAction({
+                  work_files: next,
+                });
               }}
-              className={`text-foreground/50 ${
-                workFiles.length === 0
-                  ? "text-md flex items-center gap-1.5 py-1.5 underline-offset-2 hover:underline"
-                  : "squircle flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary transition hover:bg-secondary/50"
-              }`}
+              outputWidth={1200}
+              resourceType="auto"
+              uploadPreset={uploadPreset}
             >
               {workFiles.length === 0 && <span>Adicionar arquivo</span>}
               <PlusIcon className="size-3" />
@@ -284,30 +300,35 @@ export function EssentialsTab({
           >
             <Tiptap
               key={descriptionVersion}
-              disabled={isAIProcessing}
+              className={cn("h-full w-full", isAIProcessing && "opacity-40")}
               content={RawAction.description || ""}
-              tabIndex={2}
+              disabled={isAIProcessing}
+              handleBlur={async (content) => {
+                if (content === RawAction.description) {
+                  return;
+                }
+                // Sync local state so RawAction stays consistent after blur
+                setRawAction({
+                  ...RawAction,
+                  description: content,
+                });
+                await updateAction({
+                  description: content,
+                });
+              }}
               handleChange={(content) => {
                 // Update the ref in the parent (zero re-renders).
                 // The parent's handleSave reads from this ref so Cmd+Enter
                 // always includes the latest typed content.
                 onDescriptionChange?.(content);
               }}
-              handleBlur={async (content) => {
-                if (content === RawAction.description) {
-                  return;
-                }
-                // Sync local state so RawAction stays consistent after blur
-                setRawAction({ ...RawAction, description: content });
-                await updateAction({ description: content });
-              }}
-              className={cn("h-full w-full", isAIProcessing && "opacity-40")}
+              tabIndex={2}
             />
           </Suspense>
         </div>
       </div>
-      <Sheet open={hooksOpen} onOpenChange={setHooksOpen}>
-        <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
+      <Sheet onOpenChange={setHooksOpen} open={hooksOpen}>
+        <SheetContent className="max-h-[85vh] overflow-y-auto" side="bottom">
           <div className="sr-only">
             <SheetTitle>Hooks gerados pela IA</SheetTitle>
             <SheetDescription>{racional}</SheetDescription>
@@ -329,14 +350,18 @@ export function EssentialsTab({
               {hooks.map((hook, i) => (
                 <HookItem
                   key={hook.tipo}
-                  hook={hook}
-                  racional={racional}
-                  RawAction={RawAction}
                   category={RawAction.category}
-                  partner_context={currentPartners[0]?.context || ""}
+                  hook={hook}
                   onChange={(texto) => {
                     setHooks((prev) =>
-                      prev.map((h, j) => (j === i ? { ...h, texto } : h)),
+                      prev.map((h, j) =>
+                        j === i
+                          ? {
+                              ...h,
+                              texto,
+                            }
+                          : h,
+                      ),
                     );
                   }}
                   onSubmit={(data) => {
@@ -346,6 +371,9 @@ export function EssentialsTab({
                       action: "/action/handle-ai",
                     });
                   }}
+                  partner_context={currentPartners[0]?.context || ""}
+                  racional={racional}
+                  RawAction={RawAction}
                 />
               ))}
             </div>
@@ -355,7 +383,6 @@ export function EssentialsTab({
     </div>
   );
 }
-
 function HookItem({
   hook,
   racional,
@@ -365,7 +392,10 @@ function HookItem({
   onSubmit,
   partner_context,
 }: {
-  hook: { tipo: string; texto: string };
+  hook: {
+    tipo: string;
+    texto: string;
+  };
   racional: string;
   RawAction: Action;
   onChange: (texto: string) => void;
@@ -381,14 +411,14 @@ function HookItem({
 
       <div className="flex items-center gap-4">
         <textarea
-          value={hook.texto}
-          onChange={(e) => onChange(e.target.value)}
           className="w-full resize-none rounded-lg border bg-transparent px-4 py-2 outline-none"
-          style={{ fieldSizing: "content" }}
+          onChange={(e) => onChange(e.target.value)}
+          style={{
+            fieldSizing: "content",
+          }}
+          value={hook.texto}
         />
         <Button
-          variant="secondary"
-          size="icon"
           className="h-8 w-8 shrink-0 rounded-full"
           onClick={() => {
             const intent = {
@@ -406,6 +436,8 @@ function HookItem({
               partner_context: partner_context,
             });
           }}
+          size="icon"
+          variant="secondary"
         >
           <ArrowRightIcon className="size-4" />
         </Button>

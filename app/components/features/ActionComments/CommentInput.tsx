@@ -17,48 +17,43 @@ import { Textarea } from "~/components/ui/textarea";
 import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
-
 interface Person {
   user_id: string;
   name: string;
   image: string | null;
 }
-
 interface CommentInputProps {
   value: string;
+  onCancel?: () => void;
   onChange: (val: string) => void;
   onSend: (content: string, mentions: string[]) => void;
   isSubmitting?: boolean;
   mentionablePeople?: Person[];
   submitLabel?: string;
-  onCancel?: () => void;
 }
-
+const DEFAULT_MENTIONABLE_PEOPLE: Person[] = [];
 export function CommentInput({
   value,
   onChange,
   onSend,
   isSubmitting,
-  mentionablePeople = [],
+  mentionablePeople = DEFAULT_MENTIONABLE_PEOPLE,
   submitLabel,
   onCancel,
 }: CommentInputProps) {
   const [selectedMentions, setSelectedMentions] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-
   const handleSend = () => {
     if (!value.trim()) return;
     onSend(value, selectedMentions);
     setSelectedMentions([]);
   };
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
       handleSend();
     }
   };
-
   const toggleMention = (userId: string) => {
     setSelectedMentions((prev) =>
       prev.includes(userId)
@@ -66,27 +61,25 @@ export function CommentInput({
         : [...prev, userId],
     );
   };
-
   const selectedPeople = mentionablePeople.filter((p) =>
     selectedMentions.includes(p.user_id),
   );
-
   return (
     <div className="relative flex flex-col gap-2 rounded-xl border bg-input p-3 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
       <Textarea
-        value={value}
+        className="min-h-[80px] w-full border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Escreva uma observação..."
-        className="min-h-[80px] w-full border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
+        value={value}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/50 pt-2">
         {/* Seletor de Notificação */}
         <div className="flex items-center gap-2">
-          <Popover open={isOpen} onOpenChange={setIsOpen}>
+          <Popover onOpenChange={setIsOpen} open={isOpen}>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="sm">
+              <Button size="sm" variant="ghost">
                 {/* Avatares das pessoas selecionadas */}
                 {selectedPeople.length > 0 ? (
                   <div className="flex items-center gap-1.5">
@@ -104,11 +97,11 @@ export function CommentInput({
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[240px] p-0" align="start">
+            <PopoverContent align="start" className="w-[240px] p-0">
               <Command>
                 <CommandInput
-                  placeholder="Procurar membro..."
                   className="h-9 text-xs"
+                  placeholder="Procurar membro..."
                 />
                 <CommandEmpty className="py-3 text-center text-xs">
                   Nenhum membro encontrado.
@@ -121,8 +114,8 @@ export function CommentInput({
                     return (
                       <CommandItem
                         key={person.user_id}
-                        onSelect={() => toggleMention(person.user_id)}
                         className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs hover:bg-muted"
+                        onSelect={() => toggleMention(person.user_id)}
                       >
                         <UAvatar
                           fallback={person.name}
@@ -154,20 +147,20 @@ export function CommentInput({
           </span>
           {onCancel && (
             <Button
-              variant="ghost"
-              size="sm"
               className="h-8 rounded-lg px-3 text-xs"
               onClick={onCancel}
+              size="sm"
               type="button"
+              variant="ghost"
             >
               Cancelar
             </Button>
           )}
           <Button
-            size="sm"
             className="squircle h-8 rounded-lg px-3.5 text-xs font-semibold"
             disabled={isSubmitting || !value.trim()}
             onClick={handleSend}
+            size="sm"
           >
             {submitLabel !== "Salvar" && (
               <SendIcon className="mr-1.5 size-3.5" />

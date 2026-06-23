@@ -1,6 +1,6 @@
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import type { ORDER_BY, DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
+import { useMemo, useState } from "react";
+import type { DATE_TIME_DISPLAY, ORDER_BY } from "~/lib/CONSTANTS";
 import { VARIANT } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
 import { cn, getGridClasses } from "~/lib/utils";
@@ -43,7 +43,8 @@ export function ActionContainer({
   onClick,
 }: ActionContainerProps) {
   actions = sortActions(actions, orderBy, ascending);
-  const [showMore, setShowMore] = useState(isCompact);
+  const [showMoreOverride, setShowMoreOverride] = useState<boolean | null>(null);
+  const showMore = showMoreOverride !== null ? showMoreOverride : isCompact;
 
   // Lógica de Gaps (Variantes)
   const gapClasses = useMemo(() => {
@@ -60,9 +61,6 @@ export function ActionContainer({
   const gridClasses = useMemo(() => {
     return getGridClasses(columns); // Aquela função que criamos antes
   }, [columns]);
-  useEffect(() => {
-    setShowMore(isCompact);
-  }, [isCompact]);
   return (
     <div
       className={cn(
@@ -92,8 +90,9 @@ export function ActionContainer({
           <button
             className="absolute -bottom-3 left-1/2 grid size-6 -translate-x-1/2 cursor-pointer place-content-center rounded-full border bg-background"
             onClick={() => {
-              setShowMore(!showMore);
+              setShowMoreOverride(!showMore);
             }}
+            type="button"
           >
             {showMore ? (
               <ChevronDownIcon className="size-4" />

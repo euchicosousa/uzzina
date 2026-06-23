@@ -18,10 +18,11 @@ interface UAvatarSelectorProps {
   initialSelectedIds?: string[];
   name: string; // Nome do input para FormData (ex: 'users_ids' ou 'partner_slugs')
 }
+const DEFAULT_INITIAL_SELECTED_IDS: string[] = [];
 
 export function UAvatarSelector({
   options,
-  initialSelectedIds = [],
+  initialSelectedIds = DEFAULT_INITIAL_SELECTED_IDS,
   name,
 }: UAvatarSelectorProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedIds);

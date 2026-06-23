@@ -1,7 +1,6 @@
-import { cn } from "~/lib/utils";
+import { useState } from "react";
 import { UBadge } from "~/components/uzzina/UBadge";
-import { useEffect, useState } from "react";
-
+import { cn } from "~/lib/utils";
 interface ActionTitleInputProps {
   title: string;
   onChange: (title: string) => void;
@@ -11,7 +10,6 @@ interface ActionTitleInputProps {
   textareaClassName?: string;
   autoFocus?: boolean;
 }
-
 export function ActionTitleInput({
   title,
   onBlur,
@@ -21,12 +19,8 @@ export function ActionTitleInput({
   textareaClassName,
   autoFocus = false,
 }: ActionTitleInputProps) {
-  const [localTitle, setLocalTitle] = useState(title);
-
-  useEffect(() => {
-    setLocalTitle(title);
-  }, [title]);
-
+  const [overrideTitle, setOverrideTitle] = useState<string | null>(null);
+  const localTitle = overrideTitle !== null ? overrideTitle : title;
   return (
     <div
       className={cn(
@@ -35,24 +29,27 @@ export function ActionTitleInput({
       )}
     >
       <textarea
-        value={localTitle}
-        onChange={(e) => {
-          onChange(e.target.value);
-          setLocalTitle(e.target.value);
-        }}
-        onBlur={(e) => {
-          onBlur(e.target.value);
-        }}
-        placeholder="Título"
+        autoFocus={autoFocus}
         className={cn(
           "w-full shrink-0 resize-none overflow-hidden pt-2 pb-1 leading-none outline-none",
           textareaClassName ||
             (localTitle.length > 70 ? "text-error text-4xl" : "text-5xl"),
         )}
-        style={{ fieldSizing: "content" }}
-        autoFocus={autoFocus}
         maxLength={100}
+        onBlur={(e) => {
+          onBlur(e.target.value);
+          setOverrideTitle(null);
+        }}
+        onChange={(e) => {
+          onChange(e.target.value);
+          setOverrideTitle(e.target.value);
+        }}
+        placeholder="Título"
+        style={{
+          fieldSizing: "content",
+        }}
         tabIndex={tabIndex}
+        value={localTitle}
       />
       {localTitle.length > 70 && !textareaClassName && (
         <div className="absolute right-0 bottom-0">

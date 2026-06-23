@@ -41,8 +41,9 @@ const normalizeHexColor = (color: string) => {
   }
   return "#000000"; // Safe fallback while typing
 };
+const DEFAULT_INITIAL_COLORS: string[] = [];
 
-export function ColorListEditor({ initialColors = [] }: ColorListProps) {
+export function ColorListEditor({ initialColors = DEFAULT_INITIAL_COLORS }: ColorListProps) {
   const dndId = useId();
 
   // Use unique IDs for dnd-kit, initialized from colors or empty

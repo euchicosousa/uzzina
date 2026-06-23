@@ -24,9 +24,11 @@ const ALL_PHASE = {
   foreground: "#fff",
 };
 
+const DEFAULT_SELECTED_PHASES: string[] = [];
+
 export function PhaseCombobox({
   selectedPhase,
-  selectedPhases = [],
+  selectedPhases = DEFAULT_SELECTED_PHASES,
   onSelect,
   isMulti = false,
   tabIndex,
@@ -87,6 +89,7 @@ export function PhaseCombobox({
       <PopoverTrigger asChild>
         {isMulti ? (
           <button
+            type="button"
             tabIndex={tabIndex}
             data-state={hasRealSelection && "on"}
             className={cn(
@@ -115,6 +118,7 @@ export function PhaseCombobox({
           </button>
         ) : (
           <button
+            type="button"
             tabIndex={tabIndex}
             className={cn(
               "flex items-center gap-1.5 transition-colors outline-none",

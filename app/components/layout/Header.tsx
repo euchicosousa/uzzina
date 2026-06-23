@@ -54,10 +54,12 @@ import { UBadge } from "../uzzina/UBadge";
 import { useRef, useMemo } from "react";
 import { DashboardMetrics } from "../features/home/DashboardMetrics";
 
+const DEFAULT_PARTNER_FILTERS: string[] = [];
+
 export function Header({
   person,
   setBaseAction,
-  partnerFilters = [],
+  partnerFilters = DEFAULT_PARTNER_FILTERS,
 }: {
   person: Person;
   setBaseAction: (action: Action | null) => void;
@@ -244,6 +246,7 @@ export function Header({
               </span>
               {unreadCount > 0 && (
                 <button
+                  type="button"
                   onClick={() => markAllAsRead()}
                   className="text-xs font-medium text-primary transition-colors hover:underline"
                 >
@@ -259,6 +262,7 @@ export function Header({
               ) : (
                 notifications.map((notif) => (
                   <button
+                    type="button"
                     key={notif.id}
                     onClick={() => handleNotificationClick(notif)}
                     className={cn(
@@ -376,6 +380,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
             const isSelected = primaryColorIndex === i;
             return (
               <button
+                type="button"
                 onClick={() => {
                   changeColorIndex(i);
                 }}
