@@ -407,6 +407,10 @@ iframe[data-test="uw-iframe"] {
   @apply grid place-content-center rounded-xl p-0 shadow-white inset-shadow-black/20 transition-all squircle data-[state=on]:shadow-sm data-[state=on]:inset-shadow-sm dark:shadow-white/20;
 }
 
+.input-pressed {
+  @apply rounded-xl p-0 shadow-white inset-shadow-black/20 transition-all squircle data-[state=on]:shadow-sm data-[state=on]:inset-shadow-sm dark:shadow-white/20;
+}
+
 .raised {
   @apply ring-black/5 transition-all data-[state=on]:border-t data-[state=on]:border-white data-[state=on]:bg-card/50 data-[state=on]:shadow data-[state=on]:ring hover:data-[state=on]:bg-card dark:data-[state=on]:border-white/30;
 }

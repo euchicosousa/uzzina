@@ -296,6 +296,22 @@ export const PALLETE = [
     },
   },
   {
+    id: "energy",
+    label: "Energy",
+    light: {
+      primary: { h: 120, c: 0.26, l: 0.9 },
+      primaryFg: { h: 0, c: 0, l: 0 },
+      bg: { h: 240, c: 0.001, l: 0.96 },
+      fg: { h: 0, c: 0, l: 0 },
+    },
+    dark: {
+      primary: { h: 120, c: 0.26, l: 0.9 },
+      primaryFg: { h: 0, c: 0, l: 0 },
+      bg: { h: 250, c: 0.01, l: 0.2 },
+      fg: { h: 0, c: 0, l: 1 },
+    },
+  },
+  {
     id: "blue",
     label: "Azul (Padrão)",
     light: {
@@ -343,22 +359,22 @@ export const PALLETE = [
       fg: { h: 0, c: 0, l: 1 },
     },
   },
-  {
-    id: "pink",
-    label: "Rosa",
-    light: {
-      primary: { h: 340, c: 0.25, l: 0.65 },
-      primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 0, c: 0, l: 1 },
-      fg: { h: 0, c: 0, l: 0 },
-    },
-    dark: {
-      primary: { h: 340, c: 0.25, l: 0.68 },
-      primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 285, c: 0.005, l: 0.141 },
-      fg: { h: 0, c: 0, l: 1 },
-    },
-  },
+  // {
+  //   id: "pink",
+  //   label: "Rosa",
+  //   light: {
+  //     primary: { h: 340, c: 0.25, l: 0.65 },
+  //     primaryFg: { h: 0, c: 0, l: 1 },
+  //     bg: { h: 0, c: 0, l: 1 },
+  //     fg: { h: 0, c: 0, l: 0 },
+  //   },
+  //   dark: {
+  //     primary: { h: 340, c: 0.25, l: 0.68 },
+  //     primaryFg: { h: 0, c: 0, l: 1 },
+  //     bg: { h: 285, c: 0.005, l: 0.141 },
+  //     fg: { h: 0, c: 0, l: 1 },
+  //   },
+  // },
   {
     id: "red",
     label: "Vermelho",
