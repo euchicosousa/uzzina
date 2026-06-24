@@ -6,8 +6,11 @@ import { themeSessionResolver } from "~/sessions.server";
 import type { Theme } from "remix-themes";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { user_id, supabase } = await getUserId(request);
-  const formData = await request.formData();
+  const [auth, formData] = await Promise.all([
+    getUserId(request),
+    request.formData(),
+  ]);
+  const { user_id, supabase } = auth;
 
   const theme = formData.get("theme") as string;
   const themeColorIndex = formData.get("themeColorIndex") !== null ? Number(formData.get("themeColorIndex")) : null;

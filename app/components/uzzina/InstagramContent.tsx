@@ -50,7 +50,8 @@ export function ContentFilesManager({
               resourceType="auto"
               multiple
               onUpload={(url, meta) => {
-                const now = Date.now();
+                const getNow = () => Date.now();
+                const now = getNow();
                 filesMetaRef.current[url] = {
                   name: meta.originalFilename || url,
                   addedAt: now,

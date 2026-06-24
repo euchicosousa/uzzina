@@ -83,6 +83,7 @@ const WeekHeader = () => {
       {week.slice(0, 7).map((day) => (
         <div key={day.toISOString()} className="p-2 xl:p-3">
           <div
+            suppressHydrationWarning
             className={cn(
               "overflow-hidden text-sm leading-none font-medium text-ellipsis whitespace-nowrap capitalize xl:text-lg",
               format(day, "i") === format(new Date(), "i")

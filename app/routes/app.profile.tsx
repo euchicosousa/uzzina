@@ -65,8 +65,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { user_id, supabase } = await getUserId(request);
-  const formData = await request.formData();
+  const [auth, formData] = await Promise.all([
+    getUserId(request),
+    request.formData(),
+  ]);
+  const { user_id, supabase } = auth;
 
   const name = formData.get("name") as string;
   const surname = formData.get("surname") as string;

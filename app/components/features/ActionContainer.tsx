@@ -21,7 +21,7 @@ type ActionContainerProps = {
   onClick?: (action: Action) => void;
 };
 const DEFAULT_DISPLAY_FLAGS: ActionDisplayFlags = {};
-
+const MAX_ACTIONS = 5;
 export function ActionContainer({
   actions,
   variant = VARIANT.line,
@@ -65,7 +65,7 @@ export function ActionContainer({
       )}
     >
       <div className={cn(gapClasses, gridClasses, "relative")}>
-        {(showMore ? actions.slice(0, 6) : actions).map((action) => (
+        {(showMore ? actions.slice(0, MAX_ACTIONS) : actions).map((action) => (
           <ActionItem
             key={action.id}
             action={action}
@@ -76,9 +76,9 @@ export function ActionContainer({
             variant={variant}
           />
         ))}
-        {isCompact && actions.length > 6 && (
+        {isCompact && actions.length > MAX_ACTIONS && (
           <button
-            className="absolute -bottom-3 left-1/2 grid size-6 -translate-x-1/2 cursor-pointer place-content-center rounded-full border bg-background"
+            className="absolute -bottom-3 left-1/2 grid size-6 -translate-x-1/2 cursor-pointer place-content-center rounded-full border bg-muted z-20 shadow-xs hover:shadow-lg hover:bg-card transition-all"
             onClick={() => {
               setShowMoreOverride(!showMore);
             }}

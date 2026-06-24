@@ -44,9 +44,11 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
-  const { supabase } = await getUserId(request);
-  const formData = await request.formData();
-
+  const [auth, formData] = await Promise.all([
+    getUserId(request),
+    request.formData(),
+  ]);
+  const { supabase } = auth;
   const supabaseUrl = process.env.SUPABASE_URL || "";
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
   const supabaseAdmin = createClient<Database>(

@@ -45,23 +45,31 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { supabase } = await getUserId(request);
   const { slug } = params;
 
-  const { data: people } = await supabase
-    .from("people")
-    .select("*")
-    .eq("visible", true)
-    .order("name", { ascending: true });
-
   if (slug === "new" || !slug) {
+    const { data: people } = await supabase
+      .from("people")
+      .select("*")
+      .eq("visible", true)
+      .order("name", { ascending: true });
     return { partner: null, people: people || [] };
   }
 
-  const { data } = await supabase
-    .from("partners")
-    .select("*")
-    .eq("slug", slug)
-    .single();
+  const [peopleResult, partnerResult] = await Promise.all([
+    supabase
+      .from("people")
+      .select("*")
+      .eq("visible", true)
+      .order("name", { ascending: true }),
+    supabase
+      .from("partners")
+      .select("*")
+      .eq("slug", slug)
+      .single()
+  ]);
 
-  const partner = data as Partner;
+  const { data: people } = peopleResult;
+  const { data: partnerData } = partnerResult;
+  const partner = partnerData as Partner;
 
   if (!partner) {
     return redirect("/app/admin/partners");
@@ -74,8 +82,11 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
-  const { supabase } = await getUserId(request);
-  const formData = await request.formData();
+  const [auth, formData] = await Promise.all([
+    getUserId(request),
+    request.formData(),
+  ]);
+  const { supabase } = auth;
   const updates = Object.fromEntries(formData);
   const colors = formData.getAll("colors") as string[];
 

@@ -50,7 +50,10 @@ export function InstagramPreview({ files }: InstagramPreviewProps) {
           poster={cover}
           controls
           className="h-full w-full object-cover"
-        />
+          aria-label="Vídeo do Instagram"
+        >
+          <track kind="captions" />
+        </video>
         {/* Badge vídeo */}
         <div className="absolute top-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
           Vídeo

@@ -175,7 +175,8 @@ export function ContentReorderDialog({
     meta: { resourceType?: string; format?: string; originalFilename?: string },
   ) {
     if (itemsRef.current.length >= MAX_FILES) return;
-    const now = Date.now();
+    const getNow = () => Date.now();
+    const now = getNow();
     const newItem = {
       id: `${url}-${now}-${Math.random().toString(36).substring(7)}`,
       url,

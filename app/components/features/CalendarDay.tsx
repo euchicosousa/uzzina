@@ -40,7 +40,9 @@ export function CalendarDay({
   const isLoading = useLoading(["actions"]);
   const skeletonCount = useMemo(() => Math.ceil(Math.random() * 3) + 1, []);
 
-  day.setHours(new Date().getHours(), new Date().getMinutes());
+  // Modifica a data no render utilizando um helper ou no browser, mas para o SSR não quebrar o layout,
+  // mantemos sem mutar horas baseadas no tempo real do servidor. Mover para uma constante estável ou no efeito.
+  // Removido day.setHours(new Date().getHours(), new Date().getMinutes()); pois altera a data em tempo real no render.
 
   return (
     <div
@@ -61,11 +63,13 @@ export function CalendarDay({
       <div className="flex h-full shrink flex-col gap-2 overflow-hidden p-1">
         <div className="flex items-center justify-between">
           <div
+            suppressHydrationWarning
             className={cn(
               !isSameMonth(day, currentDay || new Date()) ? "opacity-25" : "",
             )}
           >
             <div
+              suppressHydrationWarning
               className={cn(
                 "grid h-8 place-content-center text-lg font-medium",
                 isSameDay(day, new Date())

@@ -34,8 +34,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     throw new Error("userId parameter is required.");
   }
 
-  const partners = await getAllPartners(supabase);
-
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
   const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
 
@@ -45,15 +43,20 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     );
   }
 
-  const client =
-    userId !== "new" ? await getClientById(supabase, userId) : null;
+  const [partners, client] = await Promise.all([
+    getAllPartners(supabase),
+    userId !== "new" ? getClientById(supabase, userId) : Promise.resolve(null),
+  ]);
 
   return { client, partners, cloudName, uploadPreset };
 };
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
-  const { supabase } = await getUserId(request);
-  const formData = await request.formData();
+  const [auth, formData] = await Promise.all([
+    getUserId(request),
+    request.formData(),
+  ]);
+  const { supabase } = auth;
   const intent = formData.get("intent") as string;
   const { userId } = params;
   if (!userId) {

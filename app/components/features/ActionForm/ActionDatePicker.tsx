@@ -67,7 +67,10 @@ export function ActionDatePicker({
             if (date) {
               const newDate = selectedDate
                 ? new Date(selectedDate)
-                : new Date();
+                : (() => {
+                    const d = new Date();
+                    return d;
+                  })();
               newDate.setFullYear(
                 date.getFullYear(),
                 date.getMonth(),

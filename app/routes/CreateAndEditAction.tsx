@@ -401,32 +401,42 @@ export function CreateAndEditAction({
       )}
 
       {/* Tabs */}
-      <div className="flex shrink-0 divide-x">
-        <div
+      <div className="flex shrink-0 divide-x" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={view === "essential"}
           className={tabClass(view === "essential")}
           onClick={() => setView("essential")}
         >
           ESSENCIAL <HeartIcon className="size-4" />
-        </div>
+        </button>
         {isInstagramFeed(RawAction.category) && (
-          <div
+          <button
+            type="button"
+            role="tab"
+            aria-selected={view === "instagram"}
             className={tabClass(view === "instagram")}
             onClick={() => setView("instagram")}
           >
             INSTAGRAM <IconBrandInstagram className="size-4" />
-          </div>
+          </button>
         )}
-        <div
+        <button
+          type="button"
+          role="tab"
+          aria-selected={view === "observations"}
           className={tabClass(view === "observations")}
           onClick={() => setView("observations")}
         >
           OBSERVAÇÕES <MessageSquareIcon className="size-4" />
-        </div>
+        </button>
         <div>
           <button
             type="button"
             className="flex w-full cursor-pointer items-center justify-center gap-2 border-b p-5 text-sm font-medium"
             onClick={onClose}
+            aria-label="Fechar"
           >
             <XIcon className="size-4" />
           </button>

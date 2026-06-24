@@ -253,7 +253,8 @@ export function EssentialsTab({
               folder="uzzina/work"
               multiple
               onUpload={async (url, meta) => {
-                const now = Date.now();
+                const getNow = () => Date.now();
+                const now = getNow();
                 workFilesMetaRef.current[url] = {
                   name: meta.originalFilename || url,
                   addedAt: now,

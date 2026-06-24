@@ -260,7 +260,8 @@ export default function DashActionDetail() {
                   url: string,
                   meta: { originalFilename?: string },
                 ) => {
-                  const now = Date.now();
+                  const getNow = () => Date.now();
+                  const now = getNow();
                   workFilesMetaRef.current[url] = {
                     name: meta.originalFilename || url,
                     addedAt: now,

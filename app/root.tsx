@@ -61,12 +61,6 @@ export default function AppWithProviders() {
     </QueryClientProvider>
   );
 }
-function escapeHtmlScript(jsonString: string): string {
-  return jsonString
-    .replace(/</g, "\\u003c")
-    .replace(/>/g, "\\u003e")
-    .replace(/\//g, "\\u002f");
-}
 
 export function App() {
   const data = useLoaderData<typeof loader>();
@@ -81,17 +75,29 @@ export function App() {
         <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
         <Links />
         <script
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: Necessário para expor env vars no head
+          id="env-vars"
+          type="application/json"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: Necessário para injetar env vars de forma segura em JSON
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(env) }}
+        />
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: Script estático para ler env vars lidas via ID
           dangerouslySetInnerHTML={{
-            __html: `window.__env = ${escapeHtmlScript(JSON.stringify(env))};`,
+            __html: "window.__env = JSON.parse(document.getElementById('env-vars').textContent || '{}');",
           }}
         />
         <script
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: Script crítico para evitar FOUC/flash de tema antes da hidratação
+          id="theme-palette"
+          type="application/json"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: Necessário para injetar paleta de cores estática em JSON
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(PALLETE) }}
+        />
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: Script crítico para evitar FOUC antes da hidratação
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                var palette = ${escapeHtmlScript(JSON.stringify(PALLETE))};
+                var palette = JSON.parse(document.getElementById('theme-palette').textContent || '[]');
                 var idx = localStorage.getItem("uzzina-accent-color-index");
                 var n = (idx !== null && idx !== "") ? parseInt(idx, 10) : 0;
                 var root = document.documentElement;

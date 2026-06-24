@@ -35,8 +35,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { supabase } = await getUserId(request);
-  const formData = await request.formData();
+  const [auth, formData] = await Promise.all([
+    getUserId(request),
+    request.formData(),
+  ]);
+  const { supabase } = auth;
   const intent = formData.get("intent");
 
   if (intent === "create") {

@@ -32,9 +32,6 @@ export const meta: MetaFunction = () => [{ title: "Portal do Cliente" }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
-  const session = await dashSessionStorage.getSession(
-    request.headers.get("Cookie"),
-  );
 
   // A página de login não precisa de auth
   if (url.pathname.startsWith("/dash/login")) {
@@ -48,7 +45,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     };
   }
 
-  const { name, image, partners } = await getClientSession(request);
+  const [session, clientSession] = await Promise.all([
+    dashSessionStorage.getSession(request.headers.get("Cookie")),
+    getClientSession(request),
+  ]);
+
+  const { name, image, partners } = clientSession;
   return {
     name,
     image,
