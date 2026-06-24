@@ -1,7 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Tables } from "types/database";
-
-export type Celebration = Tables<"celebrations">;
+import type { Celebration } from "~/types";
 
 export async function getAllCelebrations(supabase: SupabaseClient) {
   const { data, error } = await supabase

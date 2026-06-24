@@ -1,3 +1,4 @@
+import type { Person, Partner } from "~/types";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
@@ -19,8 +20,6 @@ import {
   CommandSeparator,
 } from "../ui/command";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
-import type { Person } from "~/models/people.server";
-import type { Partner } from "~/models/partners.server";
 
 interface SprintComboboxProps {
   selectedSprints: string[];

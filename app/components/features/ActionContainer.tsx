@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { DATE_TIME_DISPLAY, ORDER_BY } from "~/lib/CONSTANTS";
@@ -5,7 +6,6 @@ import { VARIANT } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import { getGridClasses } from "~/lib/uzzina-utils";
-import type { Action } from "~/models/actions.server";
 import { ActionItem, type ActionDisplayFlags } from "./ActionItem";
 type ActionContainerProps = {
   actions: Action[];

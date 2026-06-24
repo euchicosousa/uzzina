@@ -1,7 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Tables } from "types/database";
+import type { ActionComment } from "~/types";
 
-export type ActionComment = Tables<"action_comments">;
 export type AugmentedComment = ActionComment & { author_image: string | null };
 
 async function attachAuthorsImages(
@@ -10,8 +9,15 @@ async function attachAuthorsImages(
 ): Promise<AugmentedComment[]> {
   if (!comments.length) return [];
 
-  const userIds = comments.filter((c) => c.is_user).map((c) => c.author_id);
-  const clientIds = comments.filter((c) => !c.is_user).map((c) => c.author_id);
+  const userIds: string[] = [];
+  const clientIds: string[] = [];
+  for (const c of comments) {
+    if (c.is_user) {
+      userIds.push(c.author_id);
+    } else {
+      clientIds.push(c.author_id);
+    }
+  }
 
   const [usersRes, clientsRes] = await Promise.all([
     userIds.length > 0

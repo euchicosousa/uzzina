@@ -1,6 +1,6 @@
+import type { Action } from "~/types";
 import { createSupabaseBrowserClient } from "./supabase.client";
 import { format } from "date-fns";
-import type { Action } from "~/models/actions.server";
 import type { Tables } from "types/database";
 
 export type Celebration = Tables<"celebrations">;
@@ -51,50 +51,7 @@ export async function fetchPartnerActions(
   return data as Action[];
 }
 
-/**
- * Fetch open actions for a partner (without date range) client-side
- */
-export async function fetchOpenActionsByPartner(
-  partnerSlug: string,
-  userId: string,
-  isAdmin: boolean,
-) {
-  const supabase = createSupabaseBrowserClient();
-  const { data, error } = await supabase
-    .from("actions")
-    .select("*")
-    .or("archived.is.false,archived.is.null")
-    .contains("responsibles", isAdmin ? [] : [userId])
-    .overlaps("partners", [partnerSlug])
-    .neq("phase", "concluido")
-    .order("date", { ascending: true });
 
-  if (error) throw error;
-  return data as Action[];
-}
-
-/**
- * Fetch late actions for a partner client-side
- */
-export async function fetchLateActionsByPartner(
-  partnerSlug: string,
-  userId: string,
-  isAdmin: boolean,
-) {
-  const supabase = createSupabaseBrowserClient();
-  const { data, error } = await supabase
-    .from("actions")
-    .select("*")
-    .or("archived.is.false,archived.is.null")
-    .contains("responsibles", isAdmin ? [] : [userId])
-    .overlaps("partners", [partnerSlug])
-    .neq("phase", "concluido")
-    .lt("date", format(new Date(), "yyyy-MM-dd HH:mm:ss"))
-    .order("date", { ascending: false });
-
-  if (error) throw error;
-  return data as Action[];
-}
 
 /**
  * Fetch all late actions for all partners the user has access to

@@ -1,15 +1,13 @@
+import type { Action, Person } from "~/types";
 import { isBefore } from "date-fns";
 import { z } from "zod";
 import { PHASES } from "~/lib/CONSTANTS";
-import type { Action } from "~/models/actions.server";
-import type { Person } from "~/models/people.server";
 
 export const isLateAction = (action: Action) =>
   action.phase !== PHASES.concluido.slug &&
   isBefore(new Date(action.date), new Date());
 
-export const getLateActions = (actions: Action[]) =>
-  actions?.filter(isLateAction) ?? [];
+
 
 export function getInstagramFeedActions(
   actions: Action[],
@@ -33,9 +31,7 @@ export const isSprint = (action: Action, person?: Person) => {
   return !!action.sprints?.find((sprint) => sprint === person.user_id);
 };
 
-export const isColorValid = (color: string) => {
-  return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
-};
+
 
 // Aceita string com vírgulas (FormData legado) ou array direto (JSON)
 const commaSeparatedStringToArray = z.union([

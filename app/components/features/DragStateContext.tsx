@@ -6,6 +6,6 @@ import { createContext, useContext } from "react";
 
 export const DragStateContext = createContext(false);
 
-export function useDragState(): boolean {
+function useDragState(): boolean {
   return useContext(DragStateContext);
 }

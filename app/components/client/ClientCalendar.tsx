@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import {
   addDays,
   eachDayOfInterval,
@@ -16,7 +17,6 @@ import { useMemo } from "react";
 import { Button } from "~/components/ui/button";
 import { DATE_TIME_DISPLAY, PHASES, type PHASE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
-import type { Action } from "~/models/actions.server";
 import { getFormattedDateTime } from "~/utils/date";
 import { Content } from "../features/Content";
 import { PhaseIcon } from "../features/PhaseIcon";

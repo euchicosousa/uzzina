@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import {
   eachDayOfInterval,
   endOfMonth,
@@ -17,7 +18,6 @@ import {
 import { Toggle } from "~/components/ui/toggle";
 import { getCleanAction } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
-import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 

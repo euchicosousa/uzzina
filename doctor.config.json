@@ -3,6 +3,8 @@
   "rules": {
     "react-doctor/no-derived-state": "off",
     "react-doctor/no-initialize-state": "off",
-    "react-doctor/no-event-handler": "off"
+    "react-doctor/no-event-handler": "off",
+    "react-doctor/no-multi-comp": "off",
+    "react-doctor/only-export-components": "off"
   }
 }

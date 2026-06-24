@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import {
   endOfDay,
   endOfMonth,
@@ -20,7 +21,6 @@ import {
 } from "~/components/ui/popover";
 import { PHASES } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
-import type { Action } from "~/models/actions.server";
 
 interface DashboardMetricsProps {
   actions: Action[];
@@ -180,6 +180,48 @@ export function DashboardMetrics({
   );
 }
 
+const renderProgressBar = (actions: Action[], total: number) => {
+  if (total === 0) {
+    return <div className="h-1.5 w-14 shrink-0 rounded-full bg-muted/20" />;
+  }
+
+  const counts = {
+    idea: 0,
+    fazer: 0,
+    produzindo: 0,
+    alinhamento: 0,
+    revisao: 0,
+    concluido: 0,
+  };
+
+  for (const action of actions) {
+    const phase = action.phase as keyof typeof counts;
+    if (phase in counts) {
+      counts[phase]++;
+    }
+  }
+
+  return (
+    <div className="flex h-1.5 w-14 shrink-0 overflow-hidden rounded-full bg-muted/20">
+      {Object.entries(PHASES).map(([key, phaseInfo]) => {
+        const count = counts[key as keyof typeof counts] || 0;
+        if (count === 0) return null;
+        const pct = (count / total) * 100;
+        return (
+          <div
+            key={key}
+            style={{
+              width: `${pct}%`,
+              backgroundColor: phaseInfo.color,
+            }}
+            className="h-full transition-all duration-300 ease-in-out first:rounded-l-full last:rounded-r-full"
+          />
+        );
+      })}
+    </div>
+  );
+};
+
 const MetricPill = ({
   title,
   actions,
@@ -193,48 +235,6 @@ const MetricPill = ({
   completed?: number;
   isMobile?: boolean;
 }) => {
-  const renderProgressBar = (actions: Action[], total: number) => {
-    if (total === 0) {
-      return <div className="h-1.5 w-14 shrink-0 rounded-full bg-muted/20" />;
-    }
-
-    const counts = {
-      idea: 0,
-      fazer: 0,
-      produzindo: 0,
-      alinhamento: 0,
-      revisao: 0,
-      concluido: 0,
-    };
-
-    for (const action of actions) {
-      const phase = action.phase as keyof typeof counts;
-      if (phase in counts) {
-        counts[phase]++;
-      }
-    }
-
-    return (
-      <div className="flex h-1.5 w-14 shrink-0 overflow-hidden rounded-full bg-muted/20">
-        {Object.entries(PHASES).map(([key, phaseInfo]) => {
-          const count = counts[key as keyof typeof counts] || 0;
-          if (count === 0) return null;
-          const pct = (count / total) * 100;
-          return (
-            <div
-              key={key}
-              style={{
-                width: `${pct}%`,
-                backgroundColor: phaseInfo.color,
-              }}
-              className="h-full transition-all duration-300 ease-in-out first:rounded-l-full last:rounded-r-full"
-            />
-          );
-        })}
-      </div>
-    );
-  };
-
   return (
     <div className="flex items-center justify-between gap-2 overflow-hidden px-4 py-1">
       <div

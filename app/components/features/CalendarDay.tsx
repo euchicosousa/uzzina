@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import { useMemo } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { format, isSameDay, isSameMonth, isSameWeek } from "date-fns";
@@ -5,7 +6,6 @@ import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import type { ViewOptions } from "~/components/features/ViewOptions";
 import { ActionContainer } from "./ActionContainer";
-import type { Action } from "~/models/actions.server";
 import { getInstagramFeedActions } from "~/utils/validation";
 import { PlusIcon } from "lucide-react";
 import { SkeletonGroup } from "../ui/skeleton";
@@ -169,7 +169,7 @@ export function CalendarDay({
   );
 }
 
-export function CelebrationContainer({
+function CelebrationContainer({
   celebrations,
 }: {
   celebrations: Celebration[];

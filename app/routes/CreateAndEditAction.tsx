@@ -1,3 +1,4 @@
+import type { Action, Partner } from "~/types";
 import { IconBrandInstagram } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { ArchiveIcon, HeartIcon, MessageSquareIcon, XIcon } from "lucide-react";
@@ -12,8 +13,6 @@ import { INTENT } from "~/lib/CONSTANTS";
 import { isInstagramFeed } from "~/lib/helpers";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { cn } from "~/lib/utils";
-import type { Action } from "~/models/actions.server";
-import type { Partner } from "~/models/partners.server";
 import type { AppLoaderData } from "~/routes/app";
 
 function getCaptionTail(instagram_caption_tail: string | null) {
@@ -369,11 +368,7 @@ export function CreateAndEditAction({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
-  const tabClass = (active: boolean) =>
-    cn(
-      "flex w-full cursor-pointer items-center justify-center gap-2 border-b p-4 text-sm font-medium",
-      active ? "bg-background border-b-transparent" : "bg-muted border-border",
-    );
+
 
   return (
     <div
@@ -510,3 +505,9 @@ export function CreateAndEditAction({
     </div>
   );
 }
+
+const tabClass = (active: boolean) =>
+  cn(
+    "flex w-full cursor-pointer items-center justify-center gap-2 border-b p-4 text-sm font-medium",
+    active ? "bg-background border-b-transparent" : "bg-muted border-border",
+  );

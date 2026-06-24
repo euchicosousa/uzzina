@@ -70,7 +70,7 @@ export function hexToOklch(hex: string): OklchColor {
 /**
  * Converte OKLCH para Hexadecimal.
  */
-export function oklchToHex(h: number, c: number, l: number): string {
+function oklchToHex(h: number, c: number, l: number): string {
   const H = (h * Math.PI) / 180;
   const a = c * Math.cos(H);
   const b_ = c * Math.sin(H);

@@ -61,7 +61,7 @@ export function SkeletonGroup({
   );
 }
 
-export function ProfileSkeleton({ className, delay, ...props }: SkeletonProps) {
+function ProfileSkeleton({ className, delay, ...props }: SkeletonProps) {
   return (
     <div className={cn("flex items-center gap-2", className)} {...props}>
       <Skeleton className={cn("size-8 rounded-full")} delay={delay} />

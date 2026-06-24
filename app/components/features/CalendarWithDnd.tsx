@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import {
   DndContext,
   DragOverlay,
@@ -17,7 +18,6 @@ import {
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
 import { getNewDateForAction } from "~/lib/helpers";
-import type { Action } from "~/models/actions.server";
 import { DragStateContext } from "./DragStateContext";
 import type { ViewOptions } from "./ViewOptions";
 const DEFAULT_CELEBRATIONS: Celebration[] = [];

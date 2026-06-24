@@ -1,10 +1,9 @@
+import type { Action, Partner } from "~/types";
 import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
 import { Link, useOutletContext, useRouteLoaderData } from "react-router";
 import { DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
 import { getCleanAction } from "~/lib/helpers";
-import type { Action } from "~/models/actions.server";
-import type { Partner } from "~/models/partners.server";
 import type { AppLoaderData } from "~/routes/app";
 import { ActionContainer } from "../features/ActionContainer";
 import { Button } from "../ui/button";

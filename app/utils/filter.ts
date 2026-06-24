@@ -1,4 +1,4 @@
-import type { Action } from "~/models/actions.server";
+import type { Action } from "~/types";
 import type { ViewOptions } from "~/components/features/ViewOptions";
 
 /**

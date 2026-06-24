@@ -1,3 +1,4 @@
+import type { Action, Person } from "~/types";
 import { lazy, Suspense, useEffect, useState } from "react";
 import {
   Outlet,
@@ -10,13 +11,11 @@ import { Header } from "~/components/layout/Header";
 import { AppBar } from "~/components/layout/AppBar";
 import { getCleanAction } from "~/lib/helpers";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-import type { Person } from "~/models/people.server";
 import { getUserId } from "~/services/auth.server";
 import { getUserPreferences } from "~/lib/preferences";
 
 import { Toaster } from "sonner";
 import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
-import type { Action } from "~/models/actions.server";
 import { ActionShortcutProvider } from "~/hooks/useActionShortcut";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
 

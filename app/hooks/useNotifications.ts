@@ -1,8 +1,8 @@
+import type { Notification } from "~/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { INTENT } from "~/lib/CONSTANTS";
 import { QUERY_KEYS } from "~/lib/query-keys";
-import type { Notification } from "~/models/notifications.server";
 
 interface NotificationsResponse {
   notifications: Notification[];

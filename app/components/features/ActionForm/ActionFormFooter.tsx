@@ -1,3 +1,4 @@
+import type { Action, Partner } from "~/types";
 import {
   ArchiveIcon,
   ArchiveRestoreIcon,
@@ -15,8 +16,6 @@ import { Button } from "~/components/ui/button";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { INTENT } from "~/lib/CONSTANTS";
 import { isInstagramFeed } from "~/lib/helpers";
-import type { Action } from "~/models/actions.server";
-import type { Partner } from "~/models/partners.server";
 
 interface ActionFormFooterProps {
   RawAction: Action;

@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import { useMemo, useState, useRef } from "react";
 import {
   DropdownMenu,
@@ -6,7 +7,6 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { cn } from "~/lib/utils";
 import { getGridCols, safeColor } from "~/lib/uzzina-utils";
-import type { Action } from "~/models/actions.server";
 import { PartnerColorPicker } from "./PartnerColorPicker";
 interface ActionColorDropdownProps {
   action: Action;

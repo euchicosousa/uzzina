@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import { useState, useEffect } from "react";
 import { useNavigate, useFetcher, useLocation } from "react-router";
 import { ArchiveIcon } from "lucide-react";
@@ -21,7 +22,6 @@ import { UToggleInput } from "~/components/uzzina/UToggle";
 import { DATE_TIME_DISPLAY, SIZE, PHASES, type PHASE } from "~/lib/CONSTANTS";
 import { getFormattedDateTime } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
-import type { Action } from "~/models/actions.server";
 import { PhaseIcon } from "./PhaseIcon";
 
 type GlobalSearchCommandProps = {

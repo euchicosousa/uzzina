@@ -1,10 +1,9 @@
+import type { Action, Partner } from "~/types";
 import { useMemo } from "react";
 import { Link, useRouteLoaderData } from "react-router";
 import { getShortText } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { cn } from "~/lib/utils";
-import type { Action } from "~/models/actions.server";
-import type { Partner } from "~/models/partners.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
   const { partners } = useRouteLoaderData("routes/app") as {

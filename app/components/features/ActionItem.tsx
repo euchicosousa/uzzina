@@ -1,3 +1,4 @@
+import type { Action, Person, Partner } from "~/types";
 import { CalendarDaysIcon, SignalIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useOutletContext, useRouteLoaderData } from "react-router";
@@ -42,9 +43,8 @@ import { fetchPeople } from "~/lib/supabase.queries";
 import { cn } from "~/lib/utils";
 
 // Types
-import type { Action } from "~/models/actions.server";
-import type { Partner } from "~/models/partners.server"; // Imported explicitly for subcomponents
-import type { Person } from "~/models/people.server"; // Imported explicitly for subcomponents
+ // Imported explicitly for subcomponents
+ // Imported explicitly for subcomponents
 import type { AppLoaderData } from "~/routes/app";
 export type ActionDisplayFlags = {
   /** Whether to highlight the action if it is late */
@@ -183,8 +183,6 @@ export function ActionItem({
         return "flex-col gap-2";
       case VARIANT.block:
         return "flex-col gap-2 px-4 py-3";
-      case VARIANT.hour:
-        return "w-auto rounded-xl px-3 py-2";
       case VARIANT.hair:
         return "rounded-xl px-3 py-0 transition-colors @xs:p-0";
       // case VARIANT.line:
@@ -234,7 +232,7 @@ export function ActionItem({
   }, [variant, isEditing, showLate, action, person, showSprint]);
   const renderActionVariant = () => {
     switch (variant) {
-      case VARIANT.hour:
+      case VARIANT.hair:
         return (
           <div className="flex items-center justify-between gap-1 overflow-hidden text-sm">
             <div className="flex items-center gap-2 overflow-hidden">
@@ -483,7 +481,7 @@ export function ActionItem({
  *
  * Renders the formatted date and time for an action.
  */
-export function ActionItemDateTimeDisplay({
+function ActionItemDateTimeDisplay({
   action,
   dateTimeDisplay,
 }: {
@@ -502,7 +500,7 @@ export function ActionItemDateTimeDisplay({
  *
  * Renders avatar(s) for the partner(s) associated with an action.
  */
-export function ActionItemPartners({
+function ActionItemPartners({
   action,
   partners,
   size,
@@ -557,7 +555,7 @@ export function ActionItemPartners({
  *
  * Renders an avatar group representing the team members responsible for the action.
  */
-export function ActionItemResponsibles({
+function ActionItemResponsibles({
   action,
   responsibles,
   size,
@@ -583,7 +581,7 @@ export function ActionItemResponsibles({
  *
  * Renders a priority indicator icon colored according to the action's priority level.
  */
-export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
+function ActionItemPriority({ priority }: { priority: PRIORITY }) {
   switch (priority) {
     case PRIORITIES.low.slug:
       return <SignalIcon className="text-info size-4" />;
@@ -599,7 +597,7 @@ export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
  *
  * Displays a sprint icon if the action belongs to the active user's current sprint.
  */
-export function ActionItemSprint({
+function ActionItemSprint({
   action,
   className,
 }: {

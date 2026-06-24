@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import {
   DndContext,
   DragOverlay,
@@ -17,7 +18,6 @@ import {
   type PHASE_TYPE,
 } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
-import type { Action } from "~/models/actions.server";
 import { ActionItem } from "../features/ActionItem";
 import { Draggable, Droppable } from "../features/DnD";
 import { DragStateContext } from "../features/DragStateContext";

@@ -1,3 +1,4 @@
+import type { Action, Person, Partner } from "~/types";
 import { useQuery } from "@tanstack/react-query";
 import {
   CopyCheckIcon,
@@ -17,9 +18,6 @@ import { getCleanAction } from "~/lib/helpers";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchAllLateActions } from "~/lib/supabase.queries";
 import { cn } from "~/lib/utils";
-import type { Action } from "~/models/actions.server";
-import type { Partner } from "~/models/partners.server";
-import type { Person } from "~/models/people.server";
 import { Button } from "../ui/button";
 import {
   Command,

@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useOutletContext, useRouteLoaderData } from "react-router";
@@ -8,7 +9,6 @@ import {
   type CATEGORY_TYPE,
 } from "~/lib/CONSTANTS";
 import { getCleanAction, Icons } from "~/lib/helpers";
-import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
 import { ActionContainer } from "../features/ActionContainer";
 import { Button } from "../ui/button";

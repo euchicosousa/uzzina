@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import { LoaderIcon } from "lucide-react";
 import type { FetcherWithComponents } from "react-router";
 import {
@@ -7,7 +8,6 @@ import {
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UButtonAI } from "~/components/uzzina/UButtonAI";
 import { INTENT } from "~/lib/CONSTANTS";
-import type { Action } from "~/models/actions.server";
 import { getFormattedPartnersLinks } from "~/utils/format";
 
 interface InstagramTabProps {

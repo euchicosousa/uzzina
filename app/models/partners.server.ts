@@ -1,7 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Tables } from "types/database";
-
-export type Partner = Tables<"partners">;
+import type { Partner } from "~/types";
 
 export async function getPartnerBySlug(supabase: SupabaseClient, slug: string) {
   const { data, error } = await supabase

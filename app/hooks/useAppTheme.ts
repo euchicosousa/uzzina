@@ -55,6 +55,20 @@ function getStoredCustomTheme(): CustomTheme | null {
   return null;
 }
 
+const applyPartnerColors = (bg: string, fg: string) => {
+  const root = document.documentElement;
+  root.style.setProperty("--primary", bg);
+  root.style.setProperty("--primary-foreground", fg);
+  root.style.setProperty("--ring", bg);
+};
+
+const restoreThemeColors = () => {
+  const root = document.documentElement;
+  root.style.removeProperty("--primary");
+  root.style.removeProperty("--primary-foreground");
+  root.style.removeProperty("--ring");
+};
+
 /**
  * Hook para gerenciar as cores da marca (Tema) do aplicativo.
  * Gerencia a cor primária e a cor de fundo padrão.
@@ -300,19 +314,7 @@ export function useAppTheme() {
     });
   };
 
-  const applyPartnerColors = (bg: string, fg: string) => {
-    const root = document.documentElement;
-    root.style.setProperty("--primary", bg);
-    root.style.setProperty("--primary-foreground", fg);
-    root.style.setProperty("--ring", bg);
-  };
 
-  const restoreThemeColors = () => {
-    const root = document.documentElement;
-    root.style.removeProperty("--primary");
-    root.style.removeProperty("--primary-foreground");
-    root.style.removeProperty("--ring");
-  };
 
   return {
     primaryColorIndex,

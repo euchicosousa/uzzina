@@ -209,11 +209,6 @@ export const AREAS = {
 } as const;
 export type AREA = keyof typeof AREAS;
 export type AREA_TYPE = (typeof AREAS)[AREA];
-export const SCRIPT = `HOOK/HEADLINE - Para o dedo.
-MECANISMO - Explica a lógica (o porquê).
-PROVA - O dado concreto/visual.
-APLICAÇÃO - O que fazer agora.
-DIREÇÃO - O CTA estratégico.`;
 export const SIZE = {
   xs: "xs",
   sm: "sm",
@@ -236,7 +231,6 @@ export const VARIANT = {
   line: "line",
   block: "block",
   content: "content",
-  hour: "hour",
   hair: "hair",
 } as const;
 export const INTENT = {

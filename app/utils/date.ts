@@ -1,10 +1,10 @@
+import type { Action } from "~/types";
 import {
   format,
   formatDistanceToNow,
 } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
-import type { Action } from "~/models/actions.server";
 
 export function getFormattedDateTime(
   date: Date | string,

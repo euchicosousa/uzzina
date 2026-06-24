@@ -1,3 +1,4 @@
+import type { Partner } from "~/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArchiveIcon,
@@ -42,7 +43,6 @@ import { QUERY_KEYS } from "~/lib/query-keys";
 import type { Person } from "~/lib/supabase.queries";
 import { fetchPeople } from "~/lib/supabase.queries";
 import { cn } from "~/lib/utils";
-import type { Partner } from "~/models/partners.server";
 import type { AppLoaderData } from "~/routes/app";
 import {
   BulkDateTimeDialog,

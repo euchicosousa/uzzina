@@ -76,26 +76,12 @@
           "category": "Accessibility"
         },
         {
-          "filePath": "app/components/features/ActionForm/PartnerColorPicker.tsx",
-          "plugin": "react-doctor",
-          "rule": "only-export-components",
-          "severity": "warning",
-          "title": "Non-component export in component file",
-          "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
-          "help": "Move non-component exports out of component files so Fast Refresh can preserve component state instead of full-reloading.",
-          "line": 12,
-          "column": 17,
-          "offset": 566,
-          "length": 5,
-          "category": "Maintainability"
-        },
-        {
           "filePath": "app/components/features/ActionItem.tsx",
           "plugin": "react-doctor",
           "rule": "no-giant-component",
           "severity": "warning",
           "title": "Large component is hard to read and change",
-          "message": "Component \"ActionItem\" is 375 lines long, which is hard to read & change. Split it into a few smaller components.",
+          "message": "Component \"ActionItem\" is 373 lines long, which is hard to read & change. Split it into a few smaller components.",
           "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
           "line": 105,
           "column": 17,
@@ -111,9 +97,9 @@
           "title": "Role used instead of HTML tag",
           "message": "Screen reader users get more reliable semantics from `<button>` than `role=\"button\"`, so use `<button>` instead.",
           "help": "Use the matching HTML element when one exists so browsers and assistive tech get native semantics.",
-          "line": 434,
+          "line": 432,
           "column": 7,
-          "offset": 14421,
+          "offset": 14350,
           "length": 13,
           "category": "Accessibility"
         },
@@ -125,65 +111,10 @@
           "title": "Component rendered by inline function call",
           "message": "Your users lose state because \"renderActionVariant()\" builds UI from an inline call that React remounts, so pull it into its own component instead.",
           "help": "Make it a named component so React preserves its identity and does not remount its state.",
-          "line": 471,
+          "line": 469,
           "column": 8,
-          "offset": 15654,
+          "offset": 15583,
           "length": 21,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/features/ActionItem.tsx",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `ActionItemDateTimeDisplay` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 486,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/features/ActionItem.tsx",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `ActionItemPartners` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 505,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/features/ActionItem.tsx",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `ActionItemResponsibles` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 560,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/features/ActionItem.tsx",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `ActionItemPriority` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 586,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/features/ActionItem.tsx",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `ActionItemSprint` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 602,
-          "column": 7,
           "category": "Maintainability"
         },
         {
@@ -243,17 +174,6 @@
           "category": "Bugs"
         },
         {
-          "filePath": "app/components/features/CalendarDay.tsx",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `CelebrationContainer` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 172,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
           "filePath": "app/components/features/CategoriesCombobox.tsx",
           "plugin": "react-doctor",
           "rule": "prefer-module-scope-static-value",
@@ -282,17 +202,6 @@
           "category": "Maintainability"
         },
         {
-          "filePath": "app/components/features/DragStateContext.tsx",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `useDragState` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 9,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
           "filePath": "app/components/features/PhaseCombobox.tsx",
           "plugin": "react-doctor",
           "rule": "prefer-explicit-variants",
@@ -307,31 +216,6 @@
           "category": "Maintainability"
         },
         {
-          "filePath": "app/components/features/ResponsiblesCombobox.tsx",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `ActionResponsiblesDisplay` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 141,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/features/home/DashboardMetrics.tsx",
-          "plugin": "react-doctor",
-          "rule": "prefer-module-scope-pure-function",
-          "severity": "warning",
-          "title": "Pure function rebuilt every render",
-          "message": "`renderProgressBar` inside `MetricPill` uses no local state but is rebuilt on every render, so it wastes work & breaks memoized children. Move it to the top of the file, outside the component.",
-          "help": "Move the function above the component, at the top of the file. It doesn't use local state, so rebuilding it each update is wasted work.",
-          "line": 196,
-          "column": 29,
-          "offset": 5348,
-          "length": 1126,
-          "category": "Maintainability"
-        },
-        {
           "filePath": "app/components/features/home/DashboardMetrics.tsx",
           "plugin": "react-doctor",
           "rule": "no-render-in-render",
@@ -341,117 +225,8 @@
           "help": "Make it a named component so React preserves its identity and does not remount its state.",
           "line": 248,
           "column": 8,
-          "offset": 6748,
+          "offset": 6672,
           "length": 33,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/layout/HoursComponent.tsx",
-          "plugin": "deslop",
-          "rule": "unused-file",
-          "severity": "warning",
-          "message": "Unused file is not reachable from any entry point, so it adds maintenance surface without shipping any code.",
-          "help": "Delete the file if it is truly unreachable, or import it from an entry point.",
-          "line": 0,
-          "column": 0,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/layout/HoursComponent.tsx",
-          "plugin": "react-doctor",
-          "rule": "js-combine-iterations",
-          "severity": "warning",
-          "title": "Chained array iterations",
-          "message": "This loops over your list twice because .map().filter() makes two passes, so do it in one pass with .reduce() or a for...of loop",
-          "help": "Combine `.map().filter()` style chains into one pass with `.reduce()` or a `for...of` loop, so you only loop over the list once",
-          "line": 29,
-          "column": 26,
-          "offset": 683,
-          "length": 210,
-          "category": "Performance"
-        },
-        {
-          "filePath": "app/components/ui/alert.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-multi-comp",
-          "severity": "warning",
-          "title": "Multiple components in one file",
-          "message": "This file declares several components, so each component is harder to find, test, and change.",
-          "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-          "line": 37,
-          "column": 10,
-          "offset": 978,
-          "length": 10,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/alert.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-multi-comp",
-          "severity": "warning",
-          "title": "Multiple components in one file",
-          "message": "This file declares several components, so each component is harder to find, test, and change.",
-          "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-          "line": 50,
-          "column": 10,
-          "offset": 1254,
-          "length": 16,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/avatar.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-multi-comp",
-          "severity": "warning",
-          "title": "Multiple components in one file",
-          "message": "This file declares several components, so each component is harder to find, test, and change.",
-          "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-          "line": 22,
-          "column": 10,
-          "offset": 447,
-          "length": 11,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/avatar.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-multi-comp",
-          "severity": "warning",
-          "title": "Multiple components in one file",
-          "message": "This file declares several components, so each component is harder to find, test, and change.",
-          "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-          "line": 35,
-          "column": 10,
-          "offset": 710,
-          "length": 14,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/badge.tsx",
-          "plugin": "react-doctor",
-          "rule": "only-export-components",
-          "severity": "warning",
-          "title": "Non-component export in component file",
-          "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
-          "help": "Move non-component exports out of component files so Fast Refresh can preserve component state instead of full-reloading.",
-          "line": 46,
-          "column": 17,
-          "offset": 1620,
-          "length": 13,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/button.tsx",
-          "plugin": "react-doctor",
-          "rule": "only-export-components",
-          "severity": "warning",
-          "title": "Non-component export in component file",
-          "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
-          "help": "Move non-component exports out of component files so Fast Refresh can preserve component state instead of full-reloading.",
-          "line": 60,
-          "column": 18,
-          "offset": 2130,
-          "length": 14,
           "category": "Maintainability"
         },
         {
@@ -467,20 +242,6 @@
           "offset": 421,
           "length": 12,
           "category": "Accessibility"
-        },
-        {
-          "filePath": "app/components/ui/input-group.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-multi-comp",
-          "severity": "warning",
-          "title": "Multiple components in one file",
-          "message": "This file declares several components, so each component is harder to find, test, and change.",
-          "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-          "line": 59,
-          "column": 10,
-          "offset": 2455,
-          "length": 15,
-          "category": "Maintainability"
         },
         {
           "filePath": "app/components/ui/input-group.tsx",
@@ -511,20 +272,6 @@
           "category": "Accessibility"
         },
         {
-          "filePath": "app/components/ui/input-group.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-multi-comp",
-          "severity": "warning",
-          "title": "Multiple components in one file",
-          "message": "This file declares several components, so each component is harder to find, test, and change.",
-          "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-          "line": 118,
-          "column": 10,
-          "offset": 3922,
-          "length": 14,
-          "category": "Maintainability"
-        },
-        {
           "filePath": "app/components/ui/label.tsx",
           "plugin": "react-doctor",
           "rule": "no-react19-deprecated-apis",
@@ -535,45 +282,6 @@
           "line": 11,
           "column": 15,
           "offset": 333,
-          "length": 16,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/radio-group.tsx",
-          "plugin": "deslop",
-          "rule": "unused-file",
-          "severity": "warning",
-          "message": "Unused file is not reachable from any entry point, so it adds maintenance surface without shipping any code.",
-          "help": "Delete the file if it is truly unreachable, or import it from an entry point.",
-          "line": 0,
-          "column": 0,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/radio-group.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-react19-deprecated-apis",
-          "severity": "warning",
-          "title": "React 19 API migration can break callers",
-          "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-          "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-          "line": 7,
-          "column": 20,
-          "offset": 194,
-          "length": 16,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/radio-group.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-react19-deprecated-apis",
-          "severity": "warning",
-          "title": "React 19 API migration can break callers",
-          "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-          "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-          "line": 21,
-          "column": 24,
-          "offset": 592,
           "length": 16,
           "category": "Maintainability"
         },
@@ -678,20 +386,6 @@
         {
           "filePath": "app/components/ui/skeleton.tsx",
           "plugin": "react-doctor",
-          "rule": "no-multi-comp",
-          "severity": "warning",
-          "title": "Multiple components in one file",
-          "message": "This file declares several components, so each component is harder to find, test, and change.",
-          "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-          "line": 23,
-          "column": 17,
-          "offset": 537,
-          "length": 13,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/skeleton.tsx",
-          "plugin": "react-doctor",
           "rule": "no-array-index-as-key",
           "severity": "warning",
           "title": "Array index used as a key",
@@ -702,42 +396,6 @@
           "offset": 1005,
           "length": 7,
           "category": "Bugs"
-        },
-        {
-          "filePath": "app/components/ui/skeleton.tsx",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `ProfileSkeleton` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 64,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/skeleton.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-multi-comp",
-          "severity": "warning",
-          "title": "Multiple components in one file",
-          "message": "This file declares several components, so each component is harder to find, test, and change.",
-          "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-          "line": 64,
-          "column": 17,
-          "offset": 1595,
-          "length": 15,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/sonner.tsx",
-          "plugin": "deslop",
-          "rule": "unused-file",
-          "severity": "warning",
-          "message": "Unused file is not reachable from any entry point, so it adds maintenance surface without shipping any code.",
-          "help": "Delete the file if it is truly unreachable, or import it from an entry point.",
-          "line": 0,
-          "column": 0,
-          "category": "Maintainability"
         },
         {
           "filePath": "app/components/ui/switch.tsx",
@@ -751,20 +409,6 @@
           "column": 16,
           "offset": 143,
           "length": 16,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/toggle.tsx",
-          "plugin": "react-doctor",
-          "rule": "only-export-components",
-          "severity": "warning",
-          "title": "Non-component export in component file",
-          "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
-          "help": "Move non-component exports out of component files so Fast Refresh can preserve component state instead of full-reloading.",
-          "line": 45,
-          "column": 18,
-          "offset": 1544,
-          "length": 14,
           "category": "Maintainability"
         },
         {
@@ -796,20 +440,6 @@
           "category": "Bugs"
         },
         {
-          "filePath": "app/components/uzzina/UAvatar.tsx",
-          "plugin": "react-doctor",
-          "rule": "only-export-components",
-          "severity": "warning",
-          "title": "Non-component export in component file",
-          "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
-          "help": "Move non-component exports out of component files so Fast Refresh can preserve component state instead of full-reloading.",
-          "line": 151,
-          "column": 17,
-          "offset": 3513,
-          "length": 12,
-          "category": "Maintainability"
-        },
-        {
           "filePath": "app/components/uzzina/UButtonAI.tsx",
           "plugin": "react-doctor",
           "rule": "no-long-transition-duration",
@@ -822,34 +452,6 @@
           "offset": 695,
           "length": 45,
           "category": "Performance"
-        },
-        {
-          "filePath": "app/components/uzzina/UIIcons.tsx",
-          "plugin": "react-doctor",
-          "rule": "only-export-components",
-          "severity": "warning",
-          "title": "Non-component export in component file",
-          "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
-          "help": "Move non-component exports out of component files so Fast Refresh can preserve component state instead of full-reloading.",
-          "line": 125,
-          "column": 14,
-          "offset": 3671,
-          "length": 12,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/hooks/useActionMutations.tsx",
-          "plugin": "react-doctor",
-          "rule": "prefer-module-scope-pure-function",
-          "severity": "warning",
-          "title": "Pure function rebuilt every render",
-          "message": "`handleError` inside `useActionMutations` uses no local state but is rebuilt on every render, so it wastes work & breaks memoized children. Move it to the top of the file, outside the component.",
-          "help": "Move the function above the component, at the top of the file. It doesn't use local state, so rebuilding it each update is wasted work.",
-          "line": 37,
-          "column": 23,
-          "offset": 1153,
-          "length": 211,
-          "category": "Maintainability"
         },
         {
           "filePath": "app/hooks/useActionShortcut.tsx",
@@ -894,45 +496,6 @@
           "category": "Performance"
         },
         {
-          "filePath": "app/hooks/useActionShortcut.tsx",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `useSetActiveAction` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 183,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/hooks/useAppTheme.ts",
-          "plugin": "react-doctor",
-          "rule": "prefer-module-scope-pure-function",
-          "severity": "warning",
-          "title": "Pure function rebuilt every render",
-          "message": "`applyPartnerColors` inside `useAppTheme` uses no local state but is rebuilt on every render, so it wastes work & breaks memoized children. Move it to the top of the file, outside the component.",
-          "help": "Move the function above the component, at the top of the file. It doesn't use local state, so rebuilding it each update is wasted work.",
-          "line": 303,
-          "column": 30,
-          "offset": 12257,
-          "length": 219,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/hooks/useAppTheme.ts",
-          "plugin": "react-doctor",
-          "rule": "prefer-module-scope-pure-function",
-          "severity": "warning",
-          "title": "Pure function rebuilt every render",
-          "message": "`restoreThemeColors` inside `useAppTheme` uses no local state but is rebuilt on every render, so it wastes work & breaks memoized children. Move it to the top of the file, outside the component.",
-          "help": "Move the function above the component, at the top of the file. It doesn't use local state, so rebuilding it each update is wasted work.",
-          "line": 310,
-          "column": 30,
-          "offset": 12508,
-          "length": 194,
-          "category": "Maintainability"
-        },
-        {
           "filePath": "app/hooks/useMultiSelection.tsx",
           "plugin": "react-doctor",
           "rule": "no-react19-deprecated-apis",
@@ -973,252 +536,6 @@
           "offset": 2494,
           "length": 160,
           "category": "Performance"
-        },
-        {
-          "filePath": "app/lib/CONSTANTS.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `SCRIPT` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 212,
-          "column": 13,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/lib/cloudinary.ts",
-          "plugin": "deslop",
-          "rule": "unused-file",
-          "severity": "warning",
-          "message": "Unused file is not reachable from any entry point, so it adds maintenance surface without shipping any code.",
-          "help": "Delete the file if it is truly unreachable, or import it from an entry point.",
-          "line": 0,
-          "column": 0,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/lib/preferences.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `DEFAULT_PREFERENCES` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 22,
-          "column": 13,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/lib/supabase.mutations.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `fetchAllCommentsByActionClient` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 194,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/lib/supabase.mutations.ts",
-          "plugin": "react-doctor",
-          "rule": "js-combine-iterations",
-          "severity": "warning",
-          "title": "Chained array iterations",
-          "message": "This loops over your list twice because .filter().map() makes two passes, so do it in one pass with .reduce() or a for...of loop",
-          "help": "Combine `.map().filter()` style chains into one pass with `.reduce()` or a `for...of` loop, so you only loop over the list once",
-          "line": 210,
-          "column": 19,
-          "offset": 5927,
-          "length": 57,
-          "category": "Performance"
-        },
-        {
-          "filePath": "app/lib/supabase.mutations.ts",
-          "plugin": "react-doctor",
-          "rule": "js-combine-iterations",
-          "severity": "warning",
-          "title": "Chained array iterations",
-          "message": "This loops over your list twice because .filter().map() makes two passes, so do it in one pass with .reduce() or a for...of loop",
-          "help": "Combine `.map().filter()` style chains into one pass with `.reduce()` or a `for...of` loop, so you only loop over the list once",
-          "line": 211,
-          "column": 21,
-          "offset": 6006,
-          "length": 58,
-          "category": "Performance"
-        },
-        {
-          "filePath": "app/lib/supabase.mutations.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `createCommentClient` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 239,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/lib/supabase.mutations.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `updateCommentClient` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 262,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/lib/supabase.mutations.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `deleteCommentClient` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 280,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/lib/supabase.queries.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `fetchOpenActionsByPartner` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 57,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/lib/supabase.queries.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `fetchLateActionsByPartner` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 79,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/lib/uzzina-utils.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `isHexColorValid` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 28,
-          "column": 13,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/lib/uzzina-utils.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `DEFAULT_ACTION_COLOR` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 45,
-          "column": 13,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/models/action_comments.server.ts",
-          "plugin": "react-doctor",
-          "rule": "js-combine-iterations",
-          "severity": "warning",
-          "title": "Chained array iterations",
-          "message": "This loops over your list twice because .filter().map() makes two passes, so do it in one pass with .reduce() or a for...of loop",
-          "help": "Combine `.map().filter()` style chains into one pass with `.reduce()` or a `for...of` loop, so you only loop over the list once",
-          "line": 13,
-          "column": 19,
-          "offset": 424,
-          "length": 57,
-          "category": "Performance"
-        },
-        {
-          "filePath": "app/models/action_comments.server.ts",
-          "plugin": "react-doctor",
-          "rule": "js-combine-iterations",
-          "severity": "warning",
-          "title": "Chained array iterations",
-          "message": "This loops over your list twice because .filter().map() makes two passes, so do it in one pass with .reduce() or a for...of loop",
-          "help": "Combine `.map().filter()` style chains into one pass with `.reduce()` or a `for...of` loop, so you only loop over the list once",
-          "line": 14,
-          "column": 21,
-          "offset": 503,
-          "length": 58,
-          "category": "Performance"
-        },
-        {
-          "filePath": "app/models/actions.server.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `getActionsByPartner` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 10,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/models/actions.server.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `getOpenActionsByPartner` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 37,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/models/actions.server.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `getLateActionsByPartner` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 61,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/models/actions.server.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `getAllLateActions` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 85,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/models/people.server.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `getAllVisiblePeople` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 21,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/root.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-multi-comp",
-          "severity": "warning",
-          "title": "Multiple components in one file",
-          "message": "This file declares several components, so each component is harder to find, test, and change.",
-          "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-          "line": 65,
-          "column": 17,
-          "offset": 1667,
-          "length": 3,
-          "category": "Maintainability"
         },
         {
           "filePath": "app/root.tsx",
@@ -1281,26 +598,12 @@
           "category": "Security"
         },
         {
-          "filePath": "app/root.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-multi-comp",
-          "severity": "warning",
-          "title": "Multiple components in one file",
-          "message": "This file declares several components, so each component is harder to find, test, and change.",
-          "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-          "line": 186,
-          "column": 17,
-          "offset": 8663,
-          "length": 13,
-          "category": "Maintainability"
-        },
-        {
           "filePath": "app/routes/CreateAndEditAction.tsx",
           "plugin": "react-doctor",
           "rule": "no-giant-component",
           "severity": "warning",
           "title": "Large component is hard to read and change",
-          "message": "Component \"CreateAndEditAction\" is 488 lines long, which is hard to read & change. Split it into a few smaller components.",
+          "message": "Component \"CreateAndEditAction\" is 484 lines long, which is hard to read & change. Split it into a few smaller components.",
           "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
           "line": 25,
           "column": 17,
@@ -1319,7 +622,7 @@
           "line": 33,
           "column": 4,
           "offset": 1408,
-          "length": 15560,
+          "length": 15323,
           "category": "Bugs"
         },
         {
@@ -1349,20 +652,6 @@
           "offset": 8917,
           "length": 63,
           "category": "Performance"
-        },
-        {
-          "filePath": "app/routes/CreateAndEditAction.tsx",
-          "plugin": "react-doctor",
-          "rule": "prefer-module-scope-pure-function",
-          "severity": "warning",
-          "title": "Pure function rebuilt every render",
-          "message": "`tabClass` inside `CreateAndEditAction` uses no local state but is rebuilt on every render, so it wastes work & breaks memoized children. Move it to the top of the file, outside the component.",
-          "help": "Move the function above the component, at the top of the file. It doesn't use local state, so rebuilding it each update is wasted work.",
-          "line": 372,
-          "column": 20,
-          "offset": 12235,
-          "length": 217,
-          "category": "Maintainability"
         },
         {
           "filePath": "app/routes/app.admin.clients.tsx",
@@ -1533,75 +822,6 @@
           "category": "Maintainability"
         },
         {
-          "filePath": "app/services/client-auth.server.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `destroySession` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 19,
-          "column": 13,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/services/client-auth.server.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `getSession` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 19,
-          "column": 13,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/utils/color.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `oklchToHex` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 73,
-          "column": 7,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/utils/format.tsx",
-          "plugin": "react-doctor",
-          "rule": "js-combine-iterations",
-          "severity": "warning",
-          "title": "Chained array iterations",
-          "message": "This loops over your list twice because .filter().map() makes two passes, so do it in one pass with .reduce() or a for...of loop",
-          "help": "Combine `.map().filter()` style chains into one pass with `.reduce()` or a `for...of` loop, so you only loop over the list once",
-          "line": 25,
-          "column": 10,
-          "offset": 713,
-          "length": 62,
-          "category": "Performance"
-        },
-        {
-          "filePath": "app/utils/validation.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `getLateActions` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 11,
-          "column": 13,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/utils/validation.ts",
-          "plugin": "deslop",
-          "rule": "unused-export",
-          "severity": "warning",
-          "message": "Unused export: `isColorValid` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-          "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 36,
-          "column": 13,
-          "category": "Maintainability"
-        },
-        {
           "filePath": "build/client/assets/supabase.client-1EEV7WLk.js",
           "plugin": "react-doctor",
           "rule": "artifact-baas-authority-surface",
@@ -1618,7 +838,7 @@
           "plugin": "deslop",
           "rule": "unused-dependency",
           "severity": "warning",
-          "message": "Unused dependency: `@radix-ui/react-hover-card`",
+          "message": "Unused dependency: `@radix-ui/react-radio-group`",
           "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
           "line": 0,
           "column": 0,
@@ -1629,7 +849,7 @@
           "plugin": "deslop",
           "rule": "unused-dependency",
           "severity": "warning",
-          "message": "Unused dependency: `@tanstack/react-query-devtools`",
+          "message": "Unused dependency: `cloudinary`",
           "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
           "line": 0,
           "column": 0,
@@ -1640,48 +860,15 @@
           "plugin": "deslop",
           "rule": "unused-dependency",
           "severity": "warning",
-          "message": "Unused dependency: `@tiptap/extension-mention`",
+          "message": "Unused dependency: `next-themes`",
           "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
-          "line": 0,
-          "column": 0,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "package.json",
-          "plugin": "deslop",
-          "rule": "unused-dependency",
-          "severity": "warning",
-          "message": "Unused dependency: `clsx`",
-          "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
-          "line": 0,
-          "column": 0,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "package.json",
-          "plugin": "deslop",
-          "rule": "unused-dependency",
-          "severity": "warning",
-          "message": "Unused dependency: `tailwind-merge`",
-          "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
-          "line": 0,
-          "column": 0,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "transform.cjs",
-          "plugin": "deslop",
-          "rule": "unused-file",
-          "severity": "warning",
-          "message": "Unused file is not reachable from any entry point, so it adds maintenance surface without shipping any code.",
-          "help": "Delete the file if it is truly unreachable, or import it from an entry point.",
           "line": 0,
           "column": 0,
           "category": "Maintainability"
         }
       ],
       "score": {
-        "score": 46,
+        "score": 47,
         "label": "Critical",
         "rules": {
           "react-doctor/no-giant-component": {
@@ -1696,10 +883,6 @@
             "priority": 33,
             "tier": "P3"
           },
-          "react-doctor/only-export-components": {
-            "priority": 12,
-            "tier": "P3"
-          },
           "react-doctor/prefer-tag-over-role": {
             "priority": 48,
             "tier": "P3"
@@ -1707,10 +890,6 @@
           "react-doctor/no-render-in-render": {
             "priority": 56,
             "tier": "P2"
-          },
-          "deslop/unused-export": {
-            "priority": 38,
-            "tier": "P3"
           },
           "react-doctor/label-has-associated-control": {
             "priority": 59,
@@ -1726,22 +905,6 @@
           },
           "react-doctor/prefer-explicit-variants": {
             "priority": 27,
-            "tier": "P3"
-          },
-          "react-doctor/prefer-module-scope-pure-function": {
-            "priority": 31,
-            "tier": "P3"
-          },
-          "deslop/unused-file": {
-            "priority": 48,
-            "tier": "P3"
-          },
-          "react-doctor/js-combine-iterations": {
-            "priority": 26,
-            "tier": "P3"
-          },
-          "react-doctor/no-multi-comp": {
-            "priority": 14,
             "tier": "P3"
           },
           "react-doctor/click-events-have-key-events": {
@@ -1808,7 +971,7 @@
       },
       "skippedChecks": [],
       "scannedFileCount": 162,
-      "elapsedMilliseconds": 3713.931042
+      "elapsedMilliseconds": 3213.139916
     }
   ],
   "diagnostics": [
@@ -1855,26 +1018,12 @@
       "category": "Accessibility"
     },
     {
-      "filePath": "app/components/features/ActionForm/PartnerColorPicker.tsx",
-      "plugin": "react-doctor",
-      "rule": "only-export-components",
-      "severity": "warning",
-      "title": "Non-component export in component file",
-      "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
-      "help": "Move non-component exports out of component files so Fast Refresh can preserve component state instead of full-reloading.",
-      "line": 12,
-      "column": 17,
-      "offset": 566,
-      "length": 5,
-      "category": "Maintainability"
-    },
-    {
       "filePath": "app/components/features/ActionItem.tsx",
       "plugin": "react-doctor",
       "rule": "no-giant-component",
       "severity": "warning",
       "title": "Large component is hard to read and change",
-      "message": "Component \"ActionItem\" is 375 lines long, which is hard to read & change. Split it into a few smaller components.",
+      "message": "Component \"ActionItem\" is 373 lines long, which is hard to read & change. Split it into a few smaller components.",
       "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
       "line": 105,
       "column": 17,
@@ -1890,9 +1039,9 @@
       "title": "Role used instead of HTML tag",
       "message": "Screen reader users get more reliable semantics from `<button>` than `role=\"button\"`, so use `<button>` instead.",
       "help": "Use the matching HTML element when one exists so browsers and assistive tech get native semantics.",
-      "line": 434,
+      "line": 432,
       "column": 7,
-      "offset": 14421,
+      "offset": 14350,
       "length": 13,
       "category": "Accessibility"
     },
@@ -1904,65 +1053,10 @@
       "title": "Component rendered by inline function call",
       "message": "Your users lose state because \"renderActionVariant()\" builds UI from an inline call that React remounts, so pull it into its own component instead.",
       "help": "Make it a named component so React preserves its identity and does not remount its state.",
-      "line": 471,
+      "line": 469,
       "column": 8,
-      "offset": 15654,
+      "offset": 15583,
       "length": 21,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/features/ActionItem.tsx",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `ActionItemDateTimeDisplay` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 486,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/features/ActionItem.tsx",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `ActionItemPartners` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 505,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/features/ActionItem.tsx",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `ActionItemResponsibles` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 560,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/features/ActionItem.tsx",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `ActionItemPriority` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 586,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/features/ActionItem.tsx",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `ActionItemSprint` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 602,
-      "column": 7,
       "category": "Maintainability"
     },
     {
@@ -2022,17 +1116,6 @@
       "category": "Bugs"
     },
     {
-      "filePath": "app/components/features/CalendarDay.tsx",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `CelebrationContainer` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 172,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
       "filePath": "app/components/features/CategoriesCombobox.tsx",
       "plugin": "react-doctor",
       "rule": "prefer-module-scope-static-value",
@@ -2061,17 +1144,6 @@
       "category": "Maintainability"
     },
     {
-      "filePath": "app/components/features/DragStateContext.tsx",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `useDragState` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 9,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
       "filePath": "app/components/features/PhaseCombobox.tsx",
       "plugin": "react-doctor",
       "rule": "prefer-explicit-variants",
@@ -2086,31 +1158,6 @@
       "category": "Maintainability"
     },
     {
-      "filePath": "app/components/features/ResponsiblesCombobox.tsx",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `ActionResponsiblesDisplay` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 141,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/features/home/DashboardMetrics.tsx",
-      "plugin": "react-doctor",
-      "rule": "prefer-module-scope-pure-function",
-      "severity": "warning",
-      "title": "Pure function rebuilt every render",
-      "message": "`renderProgressBar` inside `MetricPill` uses no local state but is rebuilt on every render, so it wastes work & breaks memoized children. Move it to the top of the file, outside the component.",
-      "help": "Move the function above the component, at the top of the file. It doesn't use local state, so rebuilding it each update is wasted work.",
-      "line": 196,
-      "column": 29,
-      "offset": 5348,
-      "length": 1126,
-      "category": "Maintainability"
-    },
-    {
       "filePath": "app/components/features/home/DashboardMetrics.tsx",
       "plugin": "react-doctor",
       "rule": "no-render-in-render",
@@ -2120,117 +1167,8 @@
       "help": "Make it a named component so React preserves its identity and does not remount its state.",
       "line": 248,
       "column": 8,
-      "offset": 6748,
+      "offset": 6672,
       "length": 33,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/layout/HoursComponent.tsx",
-      "plugin": "deslop",
-      "rule": "unused-file",
-      "severity": "warning",
-      "message": "Unused file is not reachable from any entry point, so it adds maintenance surface without shipping any code.",
-      "help": "Delete the file if it is truly unreachable, or import it from an entry point.",
-      "line": 0,
-      "column": 0,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/layout/HoursComponent.tsx",
-      "plugin": "react-doctor",
-      "rule": "js-combine-iterations",
-      "severity": "warning",
-      "title": "Chained array iterations",
-      "message": "This loops over your list twice because .map().filter() makes two passes, so do it in one pass with .reduce() or a for...of loop",
-      "help": "Combine `.map().filter()` style chains into one pass with `.reduce()` or a `for...of` loop, so you only loop over the list once",
-      "line": 29,
-      "column": 26,
-      "offset": 683,
-      "length": 210,
-      "category": "Performance"
-    },
-    {
-      "filePath": "app/components/ui/alert.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-multi-comp",
-      "severity": "warning",
-      "title": "Multiple components in one file",
-      "message": "This file declares several components, so each component is harder to find, test, and change.",
-      "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-      "line": 37,
-      "column": 10,
-      "offset": 978,
-      "length": 10,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/alert.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-multi-comp",
-      "severity": "warning",
-      "title": "Multiple components in one file",
-      "message": "This file declares several components, so each component is harder to find, test, and change.",
-      "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-      "line": 50,
-      "column": 10,
-      "offset": 1254,
-      "length": 16,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/avatar.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-multi-comp",
-      "severity": "warning",
-      "title": "Multiple components in one file",
-      "message": "This file declares several components, so each component is harder to find, test, and change.",
-      "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-      "line": 22,
-      "column": 10,
-      "offset": 447,
-      "length": 11,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/avatar.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-multi-comp",
-      "severity": "warning",
-      "title": "Multiple components in one file",
-      "message": "This file declares several components, so each component is harder to find, test, and change.",
-      "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-      "line": 35,
-      "column": 10,
-      "offset": 710,
-      "length": 14,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/badge.tsx",
-      "plugin": "react-doctor",
-      "rule": "only-export-components",
-      "severity": "warning",
-      "title": "Non-component export in component file",
-      "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
-      "help": "Move non-component exports out of component files so Fast Refresh can preserve component state instead of full-reloading.",
-      "line": 46,
-      "column": 17,
-      "offset": 1620,
-      "length": 13,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/button.tsx",
-      "plugin": "react-doctor",
-      "rule": "only-export-components",
-      "severity": "warning",
-      "title": "Non-component export in component file",
-      "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
-      "help": "Move non-component exports out of component files so Fast Refresh can preserve component state instead of full-reloading.",
-      "line": 60,
-      "column": 18,
-      "offset": 2130,
-      "length": 14,
       "category": "Maintainability"
     },
     {
@@ -2246,20 +1184,6 @@
       "offset": 421,
       "length": 12,
       "category": "Accessibility"
-    },
-    {
-      "filePath": "app/components/ui/input-group.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-multi-comp",
-      "severity": "warning",
-      "title": "Multiple components in one file",
-      "message": "This file declares several components, so each component is harder to find, test, and change.",
-      "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-      "line": 59,
-      "column": 10,
-      "offset": 2455,
-      "length": 15,
-      "category": "Maintainability"
     },
     {
       "filePath": "app/components/ui/input-group.tsx",
@@ -2290,20 +1214,6 @@
       "category": "Accessibility"
     },
     {
-      "filePath": "app/components/ui/input-group.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-multi-comp",
-      "severity": "warning",
-      "title": "Multiple components in one file",
-      "message": "This file declares several components, so each component is harder to find, test, and change.",
-      "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-      "line": 118,
-      "column": 10,
-      "offset": 3922,
-      "length": 14,
-      "category": "Maintainability"
-    },
-    {
       "filePath": "app/components/ui/label.tsx",
       "plugin": "react-doctor",
       "rule": "no-react19-deprecated-apis",
@@ -2314,45 +1224,6 @@
       "line": 11,
       "column": 15,
       "offset": 333,
-      "length": 16,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/radio-group.tsx",
-      "plugin": "deslop",
-      "rule": "unused-file",
-      "severity": "warning",
-      "message": "Unused file is not reachable from any entry point, so it adds maintenance surface without shipping any code.",
-      "help": "Delete the file if it is truly unreachable, or import it from an entry point.",
-      "line": 0,
-      "column": 0,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/radio-group.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-react19-deprecated-apis",
-      "severity": "warning",
-      "title": "React 19 API migration can break callers",
-      "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-      "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-      "line": 7,
-      "column": 20,
-      "offset": 194,
-      "length": 16,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/radio-group.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-react19-deprecated-apis",
-      "severity": "warning",
-      "title": "React 19 API migration can break callers",
-      "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-      "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-      "line": 21,
-      "column": 24,
-      "offset": 592,
       "length": 16,
       "category": "Maintainability"
     },
@@ -2457,20 +1328,6 @@
     {
       "filePath": "app/components/ui/skeleton.tsx",
       "plugin": "react-doctor",
-      "rule": "no-multi-comp",
-      "severity": "warning",
-      "title": "Multiple components in one file",
-      "message": "This file declares several components, so each component is harder to find, test, and change.",
-      "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-      "line": 23,
-      "column": 17,
-      "offset": 537,
-      "length": 13,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/skeleton.tsx",
-      "plugin": "react-doctor",
       "rule": "no-array-index-as-key",
       "severity": "warning",
       "title": "Array index used as a key",
@@ -2481,42 +1338,6 @@
       "offset": 1005,
       "length": 7,
       "category": "Bugs"
-    },
-    {
-      "filePath": "app/components/ui/skeleton.tsx",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `ProfileSkeleton` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 64,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/skeleton.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-multi-comp",
-      "severity": "warning",
-      "title": "Multiple components in one file",
-      "message": "This file declares several components, so each component is harder to find, test, and change.",
-      "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-      "line": 64,
-      "column": 17,
-      "offset": 1595,
-      "length": 15,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/sonner.tsx",
-      "plugin": "deslop",
-      "rule": "unused-file",
-      "severity": "warning",
-      "message": "Unused file is not reachable from any entry point, so it adds maintenance surface without shipping any code.",
-      "help": "Delete the file if it is truly unreachable, or import it from an entry point.",
-      "line": 0,
-      "column": 0,
-      "category": "Maintainability"
     },
     {
       "filePath": "app/components/ui/switch.tsx",
@@ -2530,20 +1351,6 @@
       "column": 16,
       "offset": 143,
       "length": 16,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/toggle.tsx",
-      "plugin": "react-doctor",
-      "rule": "only-export-components",
-      "severity": "warning",
-      "title": "Non-component export in component file",
-      "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
-      "help": "Move non-component exports out of component files so Fast Refresh can preserve component state instead of full-reloading.",
-      "line": 45,
-      "column": 18,
-      "offset": 1544,
-      "length": 14,
       "category": "Maintainability"
     },
     {
@@ -2575,20 +1382,6 @@
       "category": "Bugs"
     },
     {
-      "filePath": "app/components/uzzina/UAvatar.tsx",
-      "plugin": "react-doctor",
-      "rule": "only-export-components",
-      "severity": "warning",
-      "title": "Non-component export in component file",
-      "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
-      "help": "Move non-component exports out of component files so Fast Refresh can preserve component state instead of full-reloading.",
-      "line": 151,
-      "column": 17,
-      "offset": 3513,
-      "length": 12,
-      "category": "Maintainability"
-    },
-    {
       "filePath": "app/components/uzzina/UButtonAI.tsx",
       "plugin": "react-doctor",
       "rule": "no-long-transition-duration",
@@ -2601,34 +1394,6 @@
       "offset": 695,
       "length": 45,
       "category": "Performance"
-    },
-    {
-      "filePath": "app/components/uzzina/UIIcons.tsx",
-      "plugin": "react-doctor",
-      "rule": "only-export-components",
-      "severity": "warning",
-      "title": "Non-component export in component file",
-      "message": "This file exports non-components, so Fast Refresh can't safely preserve component state.",
-      "help": "Move non-component exports out of component files so Fast Refresh can preserve component state instead of full-reloading.",
-      "line": 125,
-      "column": 14,
-      "offset": 3671,
-      "length": 12,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/hooks/useActionMutations.tsx",
-      "plugin": "react-doctor",
-      "rule": "prefer-module-scope-pure-function",
-      "severity": "warning",
-      "title": "Pure function rebuilt every render",
-      "message": "`handleError` inside `useActionMutations` uses no local state but is rebuilt on every render, so it wastes work & breaks memoized children. Move it to the top of the file, outside the component.",
-      "help": "Move the function above the component, at the top of the file. It doesn't use local state, so rebuilding it each update is wasted work.",
-      "line": 37,
-      "column": 23,
-      "offset": 1153,
-      "length": 211,
-      "category": "Maintainability"
     },
     {
       "filePath": "app/hooks/useActionShortcut.tsx",
@@ -2673,45 +1438,6 @@
       "category": "Performance"
     },
     {
-      "filePath": "app/hooks/useActionShortcut.tsx",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `useSetActiveAction` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 183,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/hooks/useAppTheme.ts",
-      "plugin": "react-doctor",
-      "rule": "prefer-module-scope-pure-function",
-      "severity": "warning",
-      "title": "Pure function rebuilt every render",
-      "message": "`applyPartnerColors` inside `useAppTheme` uses no local state but is rebuilt on every render, so it wastes work & breaks memoized children. Move it to the top of the file, outside the component.",
-      "help": "Move the function above the component, at the top of the file. It doesn't use local state, so rebuilding it each update is wasted work.",
-      "line": 303,
-      "column": 30,
-      "offset": 12257,
-      "length": 219,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/hooks/useAppTheme.ts",
-      "plugin": "react-doctor",
-      "rule": "prefer-module-scope-pure-function",
-      "severity": "warning",
-      "title": "Pure function rebuilt every render",
-      "message": "`restoreThemeColors` inside `useAppTheme` uses no local state but is rebuilt on every render, so it wastes work & breaks memoized children. Move it to the top of the file, outside the component.",
-      "help": "Move the function above the component, at the top of the file. It doesn't use local state, so rebuilding it each update is wasted work.",
-      "line": 310,
-      "column": 30,
-      "offset": 12508,
-      "length": 194,
-      "category": "Maintainability"
-    },
-    {
       "filePath": "app/hooks/useMultiSelection.tsx",
       "plugin": "react-doctor",
       "rule": "no-react19-deprecated-apis",
@@ -2752,252 +1478,6 @@
       "offset": 2494,
       "length": 160,
       "category": "Performance"
-    },
-    {
-      "filePath": "app/lib/CONSTANTS.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `SCRIPT` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 212,
-      "column": 13,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/lib/cloudinary.ts",
-      "plugin": "deslop",
-      "rule": "unused-file",
-      "severity": "warning",
-      "message": "Unused file is not reachable from any entry point, so it adds maintenance surface without shipping any code.",
-      "help": "Delete the file if it is truly unreachable, or import it from an entry point.",
-      "line": 0,
-      "column": 0,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/lib/preferences.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `DEFAULT_PREFERENCES` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 22,
-      "column": 13,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/lib/supabase.mutations.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `fetchAllCommentsByActionClient` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 194,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/lib/supabase.mutations.ts",
-      "plugin": "react-doctor",
-      "rule": "js-combine-iterations",
-      "severity": "warning",
-      "title": "Chained array iterations",
-      "message": "This loops over your list twice because .filter().map() makes two passes, so do it in one pass with .reduce() or a for...of loop",
-      "help": "Combine `.map().filter()` style chains into one pass with `.reduce()` or a `for...of` loop, so you only loop over the list once",
-      "line": 210,
-      "column": 19,
-      "offset": 5927,
-      "length": 57,
-      "category": "Performance"
-    },
-    {
-      "filePath": "app/lib/supabase.mutations.ts",
-      "plugin": "react-doctor",
-      "rule": "js-combine-iterations",
-      "severity": "warning",
-      "title": "Chained array iterations",
-      "message": "This loops over your list twice because .filter().map() makes two passes, so do it in one pass with .reduce() or a for...of loop",
-      "help": "Combine `.map().filter()` style chains into one pass with `.reduce()` or a `for...of` loop, so you only loop over the list once",
-      "line": 211,
-      "column": 21,
-      "offset": 6006,
-      "length": 58,
-      "category": "Performance"
-    },
-    {
-      "filePath": "app/lib/supabase.mutations.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `createCommentClient` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 239,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/lib/supabase.mutations.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `updateCommentClient` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 262,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/lib/supabase.mutations.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `deleteCommentClient` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 280,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/lib/supabase.queries.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `fetchOpenActionsByPartner` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 57,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/lib/supabase.queries.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `fetchLateActionsByPartner` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 79,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/lib/uzzina-utils.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `isHexColorValid` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 28,
-      "column": 13,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/lib/uzzina-utils.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `DEFAULT_ACTION_COLOR` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 45,
-      "column": 13,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/models/action_comments.server.ts",
-      "plugin": "react-doctor",
-      "rule": "js-combine-iterations",
-      "severity": "warning",
-      "title": "Chained array iterations",
-      "message": "This loops over your list twice because .filter().map() makes two passes, so do it in one pass with .reduce() or a for...of loop",
-      "help": "Combine `.map().filter()` style chains into one pass with `.reduce()` or a `for...of` loop, so you only loop over the list once",
-      "line": 13,
-      "column": 19,
-      "offset": 424,
-      "length": 57,
-      "category": "Performance"
-    },
-    {
-      "filePath": "app/models/action_comments.server.ts",
-      "plugin": "react-doctor",
-      "rule": "js-combine-iterations",
-      "severity": "warning",
-      "title": "Chained array iterations",
-      "message": "This loops over your list twice because .filter().map() makes two passes, so do it in one pass with .reduce() or a for...of loop",
-      "help": "Combine `.map().filter()` style chains into one pass with `.reduce()` or a `for...of` loop, so you only loop over the list once",
-      "line": 14,
-      "column": 21,
-      "offset": 503,
-      "length": 58,
-      "category": "Performance"
-    },
-    {
-      "filePath": "app/models/actions.server.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `getActionsByPartner` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 10,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/models/actions.server.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `getOpenActionsByPartner` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 37,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/models/actions.server.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `getLateActionsByPartner` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 61,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/models/actions.server.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `getAllLateActions` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 85,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/models/people.server.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `getAllVisiblePeople` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 21,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/root.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-multi-comp",
-      "severity": "warning",
-      "title": "Multiple components in one file",
-      "message": "This file declares several components, so each component is harder to find, test, and change.",
-      "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-      "line": 65,
-      "column": 17,
-      "offset": 1667,
-      "length": 3,
-      "category": "Maintainability"
     },
     {
       "filePath": "app/root.tsx",
@@ -3060,26 +1540,12 @@
       "category": "Security"
     },
     {
-      "filePath": "app/root.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-multi-comp",
-      "severity": "warning",
-      "title": "Multiple components in one file",
-      "message": "This file declares several components, so each component is harder to find, test, and change.",
-      "help": "Move secondary components into their own files so each component stays easier to find, test, and change.",
-      "line": 186,
-      "column": 17,
-      "offset": 8663,
-      "length": 13,
-      "category": "Maintainability"
-    },
-    {
       "filePath": "app/routes/CreateAndEditAction.tsx",
       "plugin": "react-doctor",
       "rule": "no-giant-component",
       "severity": "warning",
       "title": "Large component is hard to read and change",
-      "message": "Component \"CreateAndEditAction\" is 488 lines long, which is hard to read & change. Split it into a few smaller components.",
+      "message": "Component \"CreateAndEditAction\" is 484 lines long, which is hard to read & change. Split it into a few smaller components.",
       "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
       "line": 25,
       "column": 17,
@@ -3098,7 +1564,7 @@
       "line": 33,
       "column": 4,
       "offset": 1408,
-      "length": 15560,
+      "length": 15323,
       "category": "Bugs"
     },
     {
@@ -3128,20 +1594,6 @@
       "offset": 8917,
       "length": 63,
       "category": "Performance"
-    },
-    {
-      "filePath": "app/routes/CreateAndEditAction.tsx",
-      "plugin": "react-doctor",
-      "rule": "prefer-module-scope-pure-function",
-      "severity": "warning",
-      "title": "Pure function rebuilt every render",
-      "message": "`tabClass` inside `CreateAndEditAction` uses no local state but is rebuilt on every render, so it wastes work & breaks memoized children. Move it to the top of the file, outside the component.",
-      "help": "Move the function above the component, at the top of the file. It doesn't use local state, so rebuilding it each update is wasted work.",
-      "line": 372,
-      "column": 20,
-      "offset": 12235,
-      "length": 217,
-      "category": "Maintainability"
     },
     {
       "filePath": "app/routes/app.admin.clients.tsx",
@@ -3312,75 +1764,6 @@
       "category": "Maintainability"
     },
     {
-      "filePath": "app/services/client-auth.server.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `destroySession` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 19,
-      "column": 13,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/services/client-auth.server.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `getSession` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 19,
-      "column": 13,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/utils/color.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `oklchToHex` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 73,
-      "column": 7,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/utils/format.tsx",
-      "plugin": "react-doctor",
-      "rule": "js-combine-iterations",
-      "severity": "warning",
-      "title": "Chained array iterations",
-      "message": "This loops over your list twice because .filter().map() makes two passes, so do it in one pass with .reduce() or a for...of loop",
-      "help": "Combine `.map().filter()` style chains into one pass with `.reduce()` or a `for...of` loop, so you only loop over the list once",
-      "line": 25,
-      "column": 10,
-      "offset": 713,
-      "length": 62,
-      "category": "Performance"
-    },
-    {
-      "filePath": "app/utils/validation.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `getLateActions` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 11,
-      "column": 13,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/utils/validation.ts",
-      "plugin": "deslop",
-      "rule": "unused-export",
-      "severity": "warning",
-      "message": "Unused export: `isColorValid` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
-      "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 36,
-      "column": 13,
-      "category": "Maintainability"
-    },
-    {
       "filePath": "build/client/assets/supabase.client-1EEV7WLk.js",
       "plugin": "react-doctor",
       "rule": "artifact-baas-authority-surface",
@@ -3397,7 +1780,7 @@
       "plugin": "deslop",
       "rule": "unused-dependency",
       "severity": "warning",
-      "message": "Unused dependency: `@radix-ui/react-hover-card`",
+      "message": "Unused dependency: `@radix-ui/react-radio-group`",
       "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
       "line": 0,
       "column": 0,
@@ -3408,7 +1791,7 @@
       "plugin": "deslop",
       "rule": "unused-dependency",
       "severity": "warning",
-      "message": "Unused dependency: `@tanstack/react-query-devtools`",
+      "message": "Unused dependency: `cloudinary`",
       "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
       "line": 0,
       "column": 0,
@@ -3419,41 +1802,8 @@
       "plugin": "deslop",
       "rule": "unused-dependency",
       "severity": "warning",
-      "message": "Unused dependency: `@tiptap/extension-mention`",
+      "message": "Unused dependency: `next-themes`",
       "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
-      "line": 0,
-      "column": 0,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "package.json",
-      "plugin": "deslop",
-      "rule": "unused-dependency",
-      "severity": "warning",
-      "message": "Unused dependency: `clsx`",
-      "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
-      "line": 0,
-      "column": 0,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "package.json",
-      "plugin": "deslop",
-      "rule": "unused-dependency",
-      "severity": "warning",
-      "message": "Unused dependency: `tailwind-merge`",
-      "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
-      "line": 0,
-      "column": 0,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "transform.cjs",
-      "plugin": "deslop",
-      "rule": "unused-file",
-      "severity": "warning",
-      "message": "Unused file is not reachable from any entry point, so it adds maintenance surface without shipping any code.",
-      "help": "Delete the file if it is truly unreachable, or import it from an entry point.",
       "line": 0,
       "column": 0,
       "category": "Maintainability"
@@ -3461,12 +1811,12 @@
   ],
   "summary": {
     "errorCount": 0,
-    "warningCount": 127,
-    "affectedFileCount": 61,
-    "totalDiagnosticCount": 127,
-    "score": 46,
+    "warningCount": 61,
+    "affectedFileCount": 32,
+    "totalDiagnosticCount": 61,
+    "score": 47,
     "scoreLabel": "Critical"
   },
-  "elapsedMilliseconds": 3733.9322909999996,
+  "elapsedMilliseconds": 3240.968875,
   "error": null
 }

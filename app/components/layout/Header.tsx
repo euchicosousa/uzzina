@@ -1,3 +1,4 @@
+import type { Notification } from "~/types";
 import { CheckIcon, BellIcon } from "lucide-react";
 import {
   Link,
@@ -23,7 +24,6 @@ import {
 } from "date-fns";
 import { toast } from "sonner";
 import { useNotifications } from "~/hooks/useNotifications";
-import type { Notification } from "~/models/notifications.server";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { Theme, useTheme } from "remix-themes";
 import { useAppTheme } from "~/hooks/useAppTheme";

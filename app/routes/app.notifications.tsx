@@ -1,3 +1,4 @@
+import type { Action, Notification } from "~/types";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowLeftIcon, BellIcon, CheckCheckIcon } from "lucide-react";
@@ -10,8 +11,6 @@ import { cn } from "~/lib/utils";
 import { getUserId } from "~/services/auth.server";
 import { listNotifications, getUnreadCount } from "~/models/notifications.server";
 
-import type { Action } from "~/models/actions.server";
-import type { Notification } from "~/models/notifications.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { supabase, user_id } = await getUserId(request);

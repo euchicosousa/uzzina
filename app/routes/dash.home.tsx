@@ -1,3 +1,4 @@
+import type { Action, Partner } from "~/types";
 import { addDays, format } from "date-fns";
 import { SidebarClose } from "lucide-react";
 import { useState } from "react";
@@ -11,8 +12,6 @@ import { ClientCalendar } from "~/components/client/ClientCalendar";
 import { FeedSection } from "~/components/features/FeedSection";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
-import type { Action } from "~/models/actions.server";
-import type { Partner } from "~/models/partners.server";
 import {
   dashSessionStorage,
   getClientSession,

@@ -1,10 +1,10 @@
+import type { Action } from "~/types";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import {
   ViewOptionsComponent,
   useViewOptions,
 } from "~/components/features/ViewOptions";
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
-import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useLoading } from "~/hooks/useLoading";

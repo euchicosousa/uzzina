@@ -1,7 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Tables } from "types/database";
-
-export type Client = Tables<"clients">;
+import type { Client } from "~/types";
 
 /** Retorna todos os clientes ativos para o painel admin. */
 export async function getAllClients(supabase: SupabaseClient) {

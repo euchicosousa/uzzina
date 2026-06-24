@@ -1,3 +1,4 @@
+import type { Partner } from "~/types";
 import { useEffect, useRef, useState } from "react";
 import { CheckIcon } from "lucide-react";
 import {
@@ -19,7 +20,6 @@ import { SIZE } from "~/lib/CONSTANTS";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
-import type { Partner } from "~/models/partners.server";
 
 export function ResponsiblesCombobox({
   selectedResponsibles,
@@ -138,7 +138,7 @@ export function ResponsiblesCombobox({
   );
 }
 
-export function ActionResponsiblesDisplay({
+function ActionResponsiblesDisplay({
   responsibles: responsibles_,
   size = SIZE.md,
 }: {

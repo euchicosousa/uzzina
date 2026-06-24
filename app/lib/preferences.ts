@@ -19,7 +19,7 @@ export type UserPreferences = {
   customTheme: CustomTheme | null;
 };
 
-export const DEFAULT_PREFERENCES: UserPreferences = {
+const DEFAULT_PREFERENCES: UserPreferences = {
   theme: "system",
   themeColorIndex: 0,
   followPartnerColor: false,

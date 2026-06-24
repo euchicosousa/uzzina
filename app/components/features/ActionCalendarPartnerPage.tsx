@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import {
   eachDayOfInterval,
   endOfMonth,
@@ -12,7 +13,6 @@ import { useMatches, useOutletContext, useParams } from "react-router";
 import invariant from "tiny-invariant";
 import { CalendarWithDnd } from "~/components/features/CalendarWithDnd";
 import { getCleanAction } from "~/lib/helpers";
-import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
 import type { ViewOptions } from "./ViewOptions";
 

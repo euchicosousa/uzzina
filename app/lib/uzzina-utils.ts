@@ -25,9 +25,6 @@ export const getGridClasses = (columns: number) => {
   // Fallback para auto-fill (o mais seguro para listas gigantes)
   return "grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))]";
 };
-export const isHexColorValid = (color: string) => {
-  return /^#([0-9A-F]{3}){1,2}$/i.test(color);
-};
 export const normalizeHexColor = (color: string) => {
   if (color && color.length === 4 && color.startsWith("#")) {
     return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`;
@@ -42,7 +39,7 @@ export const normalizeHexColor = (color: string) => {
  * Cor padrão aplicada quando action.color é nulo, vazio ou inválido.
  * Corresponde ao cinza neutro já usado implicitamente em normalizeHexColor.
  */
-export const DEFAULT_ACTION_COLOR = "#666666";
+const DEFAULT_ACTION_COLOR = "#666666";
 
 /**
  * Normaliza e valida qualquer valor de cor bruto vindo do banco de dados.

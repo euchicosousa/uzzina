@@ -1,9 +1,9 @@
+import type { Action } from "~/types";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import {
   ViewOptionsComponent,
   useViewOptions,
 } from "~/components/features/ViewOptions";
-import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 import { VARIANT } from "~/lib/CONSTANTS";
 

@@ -1,10 +1,10 @@
+import type { Action } from "~/types";
 import { eachDayOfInterval, endOfWeek, format, startOfWeek } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import type { ViewOptions } from "~/components/features/ViewOptions";
 import { cn } from "~/lib/utils";
 import { CalendarDay } from "./CalendarDay";
 export { CalendarButtons } from "./CalendarButtons";
-import type { Action } from "~/models/actions.server";
 
 export type CalendarLayoutOptions = {
   isCompact?: boolean;

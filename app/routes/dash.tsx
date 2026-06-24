@@ -1,3 +1,4 @@
+import type { Partner } from "~/types";
 import {
   Outlet,
   useLoaderData,
@@ -12,7 +13,6 @@ import {
   getClientSession,
   dashSessionStorage,
 } from "~/services/client-auth.server";
-import type { Partner } from "~/models/partners.server";
 import { LogOutIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Form } from "react-router";

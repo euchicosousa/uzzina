@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import {
   createContext,
   useCallback,
@@ -14,7 +15,6 @@ import {
   getNewDateForAction,
 } from "~/lib/helpers";
 import { useActionMutations } from "~/hooks/useActionMutations";
-import type { Action } from "~/models/actions.server";
 import type { AppLoaderData } from "~/routes/app";
 
 type ActiveAction = { action: Action } | null;
@@ -176,10 +176,4 @@ export function useActionShortcutContext() {
   return useContext(ActionShortcutContext);
 }
 
-/**
- * @deprecated Use useActionShortcutContext() em vez disso.
- * Mantido por compatibilidade. Retorna um setActiveAction no-op.
- */
-export function useSetActiveAction() {
-  return () => { };
-}
+

@@ -11,7 +11,6 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { authenticateClient } from "~/models/clients.server";
 import {
-  commitSession,
   dashSessionStorage,
 } from "~/services/client-auth.server";
 
@@ -50,7 +49,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   return redirect("/dash", {
     headers: {
-      "Set-Cookie": await commitSession(session),
+      "Set-Cookie": await dashSessionStorage.commitSession(session),
     },
   });
 };

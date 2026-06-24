@@ -1,3 +1,4 @@
+import type { Action, Partner } from "~/types";
 import { parseISO } from "date-fns";
 import { CalendarDaysIcon, FishingHookIcon, PlusIcon } from "lucide-react";
 import { Suspense, lazy, useRef, useState } from "react";
@@ -6,8 +7,6 @@ import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { UButtonAI } from "~/components/uzzina/UButtonAI";
 import { getNewDateForAction, isLateAction } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
-import type { Action } from "~/models/actions.server";
-import type { Partner } from "~/models/partners.server";
 import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";

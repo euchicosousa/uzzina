@@ -1,7 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Tables } from "types/database";
-
-export type Notification = Tables<"notifications">;
+import type { Notification } from "~/types";
 
 /**
  * Cria registros de notificação para todos os usuários mencionados (exceto o próprio autor).

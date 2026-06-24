@@ -1,7 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Tables } from "types/database";
-
-export type Person = Tables<"people">;
+import type { Person } from "~/types";
 
 
 export async function getPersonByUserId(
@@ -18,13 +16,4 @@ export async function getPersonByUserId(
   return data as Person;
 }
 
-export async function getAllVisiblePeople(supabase: SupabaseClient) {
-  const { data, error } = await supabase
-    .from("people")
-    .select("*")
-    .eq("visible", true)
-    .order("name", { ascending: true });
 
-  if (error) throw error;
-  return data as Person[];
-}

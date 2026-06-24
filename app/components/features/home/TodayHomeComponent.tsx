@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import { format, isSameDay, isToday, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import {
@@ -14,7 +15,6 @@ import KanbanComponent from "~/components/layout/KanbanComponent";
 import { PartnersComponent } from "~/components/layout/PartnersComponent";
 import { UToggle } from "~/components/uzzina/UToggle";
 import { isInstagramFeed } from "~/lib/helpers";
-import type { Action } from "~/models/actions.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
 export function TodayHomeComponent({

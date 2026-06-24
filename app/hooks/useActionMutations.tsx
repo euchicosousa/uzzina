@@ -1,8 +1,8 @@
+import type { Action } from "~/types";
 import { useMutation, useQueryClient, type QueryKey } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { toast } from "sonner";
 import { INTENT } from "~/lib/CONSTANTS";
-import type { Action } from "~/models/actions.server";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { format } from "date-fns";
 import {
@@ -26,19 +26,19 @@ interface MutationContext {
   previousLateActions?: [QueryKey, Action[] | undefined][];
 }
 
+const handleError = (error: unknown) => {
+  console.error("Mutation failed:", error);
+  const message =
+    error instanceof Error ? error.message : "Erro desconhecido";
+  toast.error(`Falha na operação: ${message}`);
+};
+
 export function useActionMutations() {
   const queryClient = useQueryClient();
 
   const invalidateActions = () => {
     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.actions.all() });
     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.lateActions.all() });
-  };
-
-  const handleError = (error: unknown) => {
-    console.error("Mutation failed:", error);
-    const message =
-      error instanceof Error ? error.message : "Erro desconhecido";
-    toast.error(`Falha na operação: ${message}`);
   };
 
   // Helper function to rollback cache on error

@@ -1,9 +1,9 @@
+import type { Action } from "~/types";
 import Color from "color";
 import { useRouteLoaderData } from "react-router";
 import { type CATEGORIES, DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
 import { getFormattedDateTime, Icons, isSprint } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
-import type { Action } from "~/models/actions.server";
 import { UAvatarGroup } from "../uzzina/UAvatar";
 import { getPeople } from "~/utils/filter";
 import { safeColor } from "~/lib/uzzina-utils";

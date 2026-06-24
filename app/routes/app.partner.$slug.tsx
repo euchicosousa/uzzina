@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import {
   endOfDay,
   endOfMonth,
@@ -45,7 +46,6 @@ import { PHASES, SIZE } from "~/lib/CONSTANTS";
 import { filterActions, getInstagramFeedActions } from "~/lib/helpers";
 import { getUserPreferences } from "~/lib/preferences";
 import { cn } from "~/lib/utils";
-import type { Action } from "~/models/actions.server";
 import { getPartnerBySlug } from "~/models/partners.server";
 import { getUserId } from "~/services/auth.server";
 
