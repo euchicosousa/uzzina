@@ -19,20 +19,20 @@ export const meta: MetaFunction = () => {
   return [{ title: "Ajuda & Documentação | Uzzina" }];
 };
 
+const sections = [
+  { id: "filosofia", title: "Filosofia do Uzzina", icon: CompassIcon },
+  {
+    id: "visualizacoes",
+    title: "Visualizações & Painéis",
+    icon: CalendarIcon,
+  },
+  { id: "fluxo", title: "Fases do Fluxo", icon: GitCommitIcon },
+  { id: "atalhos", title: "Atalhos de Teclado", icon: KeyboardIcon },
+  { id: "selecao-multipla", title: "Seleção & Lote", icon: CheckSquareIcon },
+];
+
 export default function HelpPage() {
   const [activeSection, setActiveSection] = useState("filosofia");
-
-  const sections = [
-    { id: "filosofia", title: "Filosofia do Uzzina", icon: CompassIcon },
-    {
-      id: "visualizacoes",
-      title: "Visualizações & Painéis",
-      icon: CalendarIcon,
-    },
-    { id: "fluxo", title: "Fases do Fluxo", icon: GitCommitIcon },
-    { id: "atalhos", title: "Atalhos de Teclado", icon: KeyboardIcon },
-    { id: "selecao-multipla", title: "Seleção & Lote", icon: CheckSquareIcon },
-  ];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -60,7 +60,7 @@ export default function HelpPage() {
         if (element) observer.unobserve(element);
       });
     };
-  }, [sections.forEach]);
+  }, []);
 
   const handleScrollTo = (id: string) => {
     const el = document.getElementById(id);

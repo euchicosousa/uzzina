@@ -2,7 +2,7 @@ import type { Action } from "~/types";
 import {
   createContext,
   useCallback,
-  useContext,
+  use,
   useEffect,
   useRef,
   type ReactNode,
@@ -173,7 +173,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
 
 /** Retorna as funções do context de shortcuts para uso no ActionItem. */
 export function useActionShortcutContext() {
-  return useContext(ActionShortcutContext);
+  return use(ActionShortcutContext);
 }
 
 

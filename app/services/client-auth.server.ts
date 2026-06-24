@@ -16,7 +16,7 @@ export const dashSessionStorage = createCookieSessionStorage({
   },
 });
 
-const { getSession, commitSession, destroySession } = dashSessionStorage;
+const { getSession, destroySession } = dashSessionStorage;
 
 /**
  * Client Supabase sem autenticação para o portal /dash.

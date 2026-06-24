@@ -180,7 +180,7 @@ export function DashboardMetrics({
   );
 }
 
-const renderProgressBar = (actions: Action[], total: number) => {
+const ProgressBar = ({ actions, total }: { actions: Action[]; total: number }) => {
   if (total === 0) {
     return <div className="h-1.5 w-14 shrink-0 rounded-full bg-muted/20" />;
   }
@@ -245,7 +245,7 @@ const MetricPill = ({
       >
         {title}
       </div>
-      {renderProgressBar(actions, total)}
+      <ProgressBar actions={actions} total={total} />
 
       <span
         className={cn(

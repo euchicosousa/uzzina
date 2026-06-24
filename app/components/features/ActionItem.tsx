@@ -29,6 +29,8 @@ import {
   type CATEGORY,
   type PHASE,
   type PRIORITY,
+  type CATEGORY_TYPE,
+  type PHASE_TYPE,
 } from "~/lib/CONSTANTS";
 import {
   getFormattedDateTime,
@@ -230,158 +232,6 @@ export function ActionItem({
     }
     return baseStyles;
   }, [variant, isEditing, showLate, action, person, showSprint]);
-  const renderActionVariant = () => {
-    switch (variant) {
-      case VARIANT.hair:
-        return (
-          <div className="flex items-center justify-between gap-1 overflow-hidden text-sm">
-            <div className="flex items-center gap-2 overflow-hidden">
-              <PhaseIcon phase={currentPhase} size="dot" />
-              <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-                {action.title}
-              </div>
-            </div>
-
-            <div className="text-xs opacity-50">
-              {getFormattedDateTime(action.date, DATE_TIME_DISPLAY.TimeOnly)}
-            </div>
-          </div>
-        );
-      case VARIANT.content:
-        return (
-          <Content
-            action={action}
-            category={showCategory ? currentCategory : undefined}
-            isSquared
-            showResponsibles={showResponsibles}
-          />
-        );
-      case VARIANT.block:
-        return (
-          <div className="flex flex-col gap-2 pb-2">
-            <ActionItemTitleInput
-              className={"text-xl leading-tight font-medium"}
-              isEditing={isEditing}
-              lines={lines}
-              setIsEditing={handleSetIsEditing}
-              title={action.title}
-            />
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                {/* {isLateAction(action) && <ActionItemSprint action={action} />} */}
-                {showPartner && (
-                  <ActionItemPartners
-                    action={action}
-                    partners={currentPartners}
-                  />
-                )}
-
-                {showCategory && (
-                  <Icons
-                    className={cn("size-4")}
-                    color={currentCategory.color}
-                    slug={currentCategory.slug}
-                  />
-                )}
-
-                <PhaseIcon phase={currentPhase} size="dot" />
-
-                {showResponsibles && (
-                  <ActionItemResponsibles
-                    action={action}
-                    responsibles={currentResponsibles}
-                    size={SIZE.xs}
-                  />
-                )}
-              </div>
-
-              <div className="flex items-center gap-2 text-xs">
-                <div className="flex items-center gap-2 text-xs">
-                  <div className="flex items-center gap-1">
-                    <CalendarDaysIcon className="size-3 opacity-50" />
-                    {getFormattedDateTime(action.date, dateTimeDisplay)}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      // case VARIANT.line:
-      default:
-        return (
-          <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
-            <div className="flex w-full items-center gap-2 overflow-hidden">
-              {/* Ícone da fase */}
-              <PhaseIcon phase={currentPhase} size="dot" />
-              {/* Badge de "Atrasado" se aplicável */}
-              {isLateAction(action) && <ActionItemSprint action={action} />}
-              {/* Título da ação */}
-              <ActionItemTitleInput
-                className="w-full lg:text-sm xl:text-base"
-                isEditing={isEditing}
-                onChange={(title) => {
-                  handleAction({
-                    ...action,
-                    intent: INTENT.update_action,
-                    title,
-                  });
-                }}
-                setIsEditing={handleSetIsEditing}
-                title={action.title}
-              />
-            </div>
-            {/* Grupo de metadados */}
-            <div
-              className={cn(
-                "items-center gap-1",
-                isEditing ? "hidden @md:flex" : "flex",
-                dateTimeDisplay
-                  ? "transition duration-500 group-hover/action:-translate-x-3 group-hover/action:opacity-0"
-                  : "",
-              )}
-            >
-              {/* Ícone de parceiros se aplicável */}
-              {(showPartner || currentPartners.length > 1) && (
-                <ActionItemPartners
-                  action={action}
-                  partners={currentPartners}
-                />
-              )}
-              {/* Ícone de responsáveis se aplicável */}
-              {showResponsibles && (
-                <ActionItemResponsibles
-                  action={action}
-                  responsibles={currentResponsibles}
-                  size="xs"
-                />
-              )}
-              {/* Ícone de prioridade se aplicável */}
-              {showPriority && (
-                <ActionItemPriority priority={action.priority as PRIORITY} />
-              )}
-              {/* Ícone da categoria se aplicável */}
-              {showCategory && (
-                <Icons
-                  className={cn("size-4")}
-                  color={currentCategory.color}
-                  slug={currentCategory.slug}
-                />
-              )}
-            </div>
-            {/* Data */}
-            {dateTimeDisplay && (
-              <div className="absolute right-0 flex translate-x-[90px] justify-end overflow-hidden transition-transform duration-500 group-hover/action:-translate-x-3 @md:w-[90px]">
-                <ActionItemDateTimeDisplay
-                  action={action}
-                  dateTimeDisplay={dateTimeDisplay}
-                />
-              </div>
-            )}
-          </div>
-        );
-    }
-  };
   const content = (
     <div
       className={cn(
@@ -466,7 +316,23 @@ export function ActionItem({
         </div>
       )}
 
-      {renderActionVariant()}
+      <ActionVariantRenderer
+        variant={variant}
+        action={action}
+        currentPhase={currentPhase}
+        currentCategory={currentCategory}
+        currentPartners={currentPartners}
+        currentResponsibles={currentResponsibles}
+        showCategory={showCategory}
+        showResponsibles={showResponsibles}
+        showPartner={showPartner}
+        showPriority={showPriority}
+        isEditing={isEditing}
+        handleSetIsEditing={handleSetIsEditing}
+        lines={lines}
+        dateTimeDisplay={dateTimeDisplay}
+        handleAction={handleAction}
+      />
     </div>
   );
   return isDraggable ? (
@@ -609,4 +475,180 @@ function ActionItemSprint({
   return isSprint(action, person) ? (
     <Icons className={cn("size-4 shrink-0", className)} slug="sprint" />
   ) : null;
+}
+
+interface ActionVariantRendererProps {
+  variant: (typeof VARIANT)[keyof typeof VARIANT];
+  action: Action;
+  currentPhase: PHASE_TYPE;
+  currentCategory: CATEGORY_TYPE;
+  currentPartners: Partner[];
+  currentResponsibles: Person[];
+  showCategory?: boolean;
+  showResponsibles?: boolean;
+  showPartner?: boolean;
+  showPriority?: boolean;
+  isEditing: boolean;
+  handleSetIsEditing: (val: boolean) => void;
+  lines: 1 | 2 | undefined;
+  dateTimeDisplay: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY] | undefined;
+  handleAction: (action: Action & { intent: string }) => void;
+}
+
+function ActionVariantRenderer({
+  variant,
+  action,
+  currentPhase,
+  currentCategory,
+  currentPartners,
+  currentResponsibles,
+  showCategory,
+  showResponsibles,
+  showPartner,
+  showPriority,
+  isEditing,
+  handleSetIsEditing,
+  lines,
+  dateTimeDisplay,
+  handleAction,
+}: ActionVariantRendererProps) {
+  switch (variant) {
+    case VARIANT.hair:
+      return (
+        <div className="flex items-center justify-between gap-1 overflow-hidden text-sm">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <PhaseIcon phase={currentPhase} size="dot" />
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+              {action.title}
+            </div>
+          </div>
+
+          <div className="text-xs opacity-50">
+            {getFormattedDateTime(action.date, DATE_TIME_DISPLAY.TimeOnly)}
+          </div>
+        </div>
+      );
+    case VARIANT.content:
+      return (
+        <Content
+          action={action}
+          category={showCategory ? currentCategory : undefined}
+          isSquared
+          showResponsibles={showResponsibles}
+        />
+      );
+    case VARIANT.block:
+      return (
+        <div className="flex flex-col gap-2 pb-2">
+          <ActionItemTitleInput
+            className={"text-xl leading-tight font-medium"}
+            isEditing={isEditing}
+            lines={lines}
+            setIsEditing={handleSetIsEditing}
+            title={action.title}
+          />
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {showPartner && (
+                <ActionItemPartners
+                  action={action}
+                  partners={currentPartners}
+                />
+              )}
+
+              {showCategory && (
+                <Icons
+                  className={cn("size-4")}
+                  color={currentCategory.color}
+                  slug={currentCategory.slug}
+                />
+              )}
+
+              <PhaseIcon phase={currentPhase} size="dot" />
+
+              {showResponsibles && (
+                <ActionItemResponsibles
+                  action={action}
+                  responsibles={currentResponsibles}
+                  size={SIZE.xs}
+                />
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 text-xs">
+              <div className="flex items-center gap-2 text-xs">
+                <div className="flex items-center gap-1">
+                  <CalendarDaysIcon className="size-3 opacity-50" />
+                  {getFormattedDateTime(action.date, dateTimeDisplay)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    default:
+      return (
+        <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
+          <div className="flex w-full items-center gap-2 overflow-hidden">
+            <PhaseIcon phase={currentPhase} size="dot" />
+            {isLateAction(action) && <ActionItemSprint action={action} />}
+            <ActionItemTitleInput
+              className="w-full lg:text-sm xl:text-base"
+              isEditing={isEditing}
+              onChange={(title) => {
+                handleAction({
+                  ...action,
+                  intent: INTENT.update_action,
+                  title,
+                });
+              }}
+              setIsEditing={handleSetIsEditing}
+              title={action.title}
+            />
+          </div>
+          <div
+            className={cn(
+              "items-center gap-1",
+              isEditing ? "hidden @md:flex" : "flex",
+              dateTimeDisplay
+                ? "transition duration-500 group-hover/action:-translate-x-3 group-hover/action:opacity-0"
+                : "",
+            )}
+          >
+            {(showPartner || currentPartners.length > 1) && (
+              <ActionItemPartners
+                action={action}
+                partners={currentPartners}
+              />
+            )}
+            {showResponsibles && (
+              <ActionItemResponsibles
+                action={action}
+                responsibles={currentResponsibles}
+                size="xs"
+              />
+            )}
+            {showPriority && (
+              <ActionItemPriority priority={action.priority as PRIORITY} />
+            )}
+            {showCategory && (
+              <Icons
+                className={cn("size-4")}
+                color={currentCategory.color}
+                slug={currentCategory.slug}
+              />
+            )}
+          </div>
+          {dateTimeDisplay && (
+            <div className="absolute right-0 flex translate-x-[90px] justify-end overflow-hidden transition-transform duration-500 group-hover/action:-translate-x-3 @md:w-[90px]">
+              <ActionItemDateTimeDisplay
+                action={action}
+                dateTimeDisplay={dateTimeDisplay}
+              />
+            </div>
+          )}
+        </div>
+      );
+  }
 }

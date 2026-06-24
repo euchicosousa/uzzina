@@ -30,7 +30,7 @@
         "shopifyFlashListMajorVersion": null,
         "hasReanimated": false,
         "isPreES2023Target": true,
-        "sourceFileCount": 162
+        "sourceFileCount": 158
       },
       "diagnostics": [
         {
@@ -41,9 +41,9 @@
           "title": "Large component is hard to read and change",
           "message": "Component \"EssentialsTab\" is 335 lines long, which is hard to read & change. Split it into a few smaller components.",
           "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
-          "line": 56,
+          "line": 55,
           "column": 17,
-          "offset": 1924,
+          "offset": 1860,
           "length": 13,
           "category": "Maintainability"
         },
@@ -55,9 +55,9 @@
           "title": "Many related useState calls",
           "message": "5 useState calls in \"EssentialsTab\" can each trigger a separate render.",
           "help": "Group related state in `useReducer` so one logical update does not fan out into separate renders.",
-          "line": 69,
+          "line": 68,
           "column": 24,
-          "offset": 2159,
+          "offset": 2095,
           "length": 10646,
           "category": "Bugs"
         },
@@ -71,23 +71,9 @@
           "help": "Do not use `autoFocus`. It disorients users on load.",
           "line": 108,
           "column": 13,
-          "offset": 3599,
+          "offset": 3583,
           "length": 9,
           "category": "Accessibility"
-        },
-        {
-          "filePath": "app/components/features/ActionItem.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-giant-component",
-          "severity": "warning",
-          "title": "Large component is hard to read and change",
-          "message": "Component \"ActionItem\" is 373 lines long, which is hard to read & change. Split it into a few smaller components.",
-          "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
-          "line": 105,
-          "column": 17,
-          "offset": 3510,
-          "length": 10,
-          "category": "Maintainability"
         },
         {
           "filePath": "app/components/features/ActionItem.tsx",
@@ -97,23 +83,23 @@
           "title": "Role used instead of HTML tag",
           "message": "Screen reader users get more reliable semantics from `<button>` than `role=\"button\"`, so use `<button>` instead.",
           "help": "Use the matching HTML element when one exists so browsers and assistive tech get native semantics.",
-          "line": 432,
+          "line": 280,
           "column": 7,
-          "offset": 14350,
+          "offset": 8686,
           "length": 13,
           "category": "Accessibility"
         },
         {
           "filePath": "app/components/features/ActionItem.tsx",
           "plugin": "react-doctor",
-          "rule": "no-render-in-render",
+          "rule": "no-many-boolean-props",
           "severity": "warning",
-          "title": "Component rendered by inline function call",
-          "message": "Your users lose state because \"renderActionVariant()\" builds UI from an inline call that React remounts, so pull it into its own component instead.",
-          "help": "Make it a named component so React preserves its identity and does not remount its state.",
-          "line": 469,
-          "column": 8,
-          "offset": 15583,
+          "title": "Boolean prop combinations are hard to test",
+          "message": "Component \"ActionVariantRenderer\" takes 5 on/off props (showCategory, showResponsibles, showPartner…), which is hard to combine & test. Split it into smaller components or named variants.",
+          "help": "Split boolean-heavy APIs into smaller components or named variants so combinations stay testable.",
+          "line": 496,
+          "column": 10,
+          "offset": 14401,
           "length": 21,
           "category": "Maintainability"
         },
@@ -155,7 +141,7 @@
           "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
           "line": 53,
           "column": 17,
-          "offset": 1554,
+          "offset": 1537,
           "length": 14,
           "category": "Maintainability"
         },
@@ -169,65 +155,9 @@
           "help": "Group related state in `useReducer` so one logical update does not fan out into separate renders.",
           "line": 53,
           "column": 34,
-          "offset": 1571,
+          "offset": 1554,
           "length": 13588,
           "category": "Bugs"
-        },
-        {
-          "filePath": "app/components/features/CategoriesCombobox.tsx",
-          "plugin": "react-doctor",
-          "rule": "prefer-module-scope-static-value",
-          "severity": "warning",
-          "title": "Static value rebuilt every render",
-          "message": "`AREA_ORDER` inside `CategoriesCombobox` uses no local state but is rebuilt every render, so it looks new each time & breaks memoized children. Move it to the top of the file, outside the component.",
-          "help": "Move the value above the component, at the top of the file. It doesn't use local state, so rebuilding it each update is wasted and makes it look new every time.",
-          "line": 98,
-          "column": 9,
-          "offset": 2215,
-          "length": 63,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/features/DragStateContext.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-react19-deprecated-apis",
-          "severity": "warning",
-          "title": "React 19 API migration can break callers",
-          "message": "useContext is replaced by `use()` in React 19, which reads context inside ifs & loops too, so switch to `import { use } from 'react'`.",
-          "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-          "line": 5,
-          "column": 25,
-          "offset": 189,
-          "length": 10,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/features/PhaseCombobox.tsx",
-          "plugin": "react-doctor",
-          "rule": "prefer-explicit-variants",
-          "severity": "warning",
-          "title": "Prefer explicit variant components",
-          "message": "Component \"PhaseCombobox\" picks which component to render from 2 boolean props (isMulti, showText), which multiplies untestable variants. Split it into explicit variant components so each renders one clear path.",
-          "help": "Replace boolean props that switch whole subtrees with explicit variant components, like `<ThreadComposer />` and `<EditMessageComposer />`, so each variant renders one clear path.",
-          "line": 29,
-          "column": 17,
-          "offset": 636,
-          "length": 13,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/features/home/DashboardMetrics.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-render-in-render",
-          "severity": "warning",
-          "title": "Component rendered by inline function call",
-          "message": "Your users lose state because \"renderProgressBar()\" builds UI from an inline call that React remounts, so pull it into its own component instead.",
-          "help": "Make it a named component so React preserves its identity and does not remount its state.",
-          "line": 248,
-          "column": 8,
-          "offset": 6672,
-          "length": 33,
-          "category": "Maintainability"
         },
         {
           "filePath": "app/components/ui/input-group.tsx",
@@ -272,118 +202,6 @@
           "category": "Accessibility"
         },
         {
-          "filePath": "app/components/ui/label.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-react19-deprecated-apis",
-          "severity": "warning",
-          "title": "React 19 API migration can break callers",
-          "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-          "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-          "line": 11,
-          "column": 15,
-          "offset": 333,
-          "length": 16,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/select.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-react19-deprecated-apis",
-          "severity": "warning",
-          "title": "React 19 API migration can break callers",
-          "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-          "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-          "line": 13,
-          "column": 23,
-          "offset": 337,
-          "length": 16,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/select.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-react19-deprecated-apis",
-          "severity": "warning",
-          "title": "React 19 API migration can break callers",
-          "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-          "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-          "line": 33,
-          "column": 30,
-          "offset": 1203,
-          "length": 16,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/select.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-react19-deprecated-apis",
-          "severity": "warning",
-          "title": "React 19 API migration can break callers",
-          "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-          "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-          "line": 50,
-          "column": 32,
-          "offset": 1751,
-          "length": 16,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/select.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-react19-deprecated-apis",
-          "severity": "warning",
-          "title": "React 19 API migration can break callers",
-          "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-          "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-          "line": 68,
-          "column": 23,
-          "offset": 2306,
-          "length": 16,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/select.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-react19-deprecated-apis",
-          "severity": "warning",
-          "title": "React 19 API migration can break callers",
-          "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-          "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-          "line": 100,
-          "column": 21,
-          "offset": 3812,
-          "length": 16,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/select.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-react19-deprecated-apis",
-          "severity": "warning",
-          "title": "React 19 API migration can break callers",
-          "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-          "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-          "line": 112,
-          "column": 20,
-          "offset": 4192,
-          "length": 16,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/select.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-react19-deprecated-apis",
-          "severity": "warning",
-          "title": "React 19 API migration can break callers",
-          "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-          "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-          "line": 134,
-          "column": 25,
-          "offset": 5090,
-          "length": 16,
-          "category": "Maintainability"
-        },
-        {
           "filePath": "app/components/ui/skeleton.tsx",
           "plugin": "react-doctor",
           "rule": "no-array-index-as-key",
@@ -396,20 +214,6 @@
           "offset": 1005,
           "length": 7,
           "category": "Bugs"
-        },
-        {
-          "filePath": "app/components/ui/switch.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-react19-deprecated-apis",
-          "severity": "warning",
-          "title": "React 19 API migration can break callers",
-          "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-          "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-          "line": 6,
-          "column": 16,
-          "offset": 143,
-          "length": 16,
-          "category": "Maintainability"
         },
         {
           "filePath": "app/components/uzzina/CloudinaryUpload.tsx",
@@ -456,20 +260,6 @@
         {
           "filePath": "app/hooks/useActionShortcut.tsx",
           "plugin": "react-doctor",
-          "rule": "no-react19-deprecated-apis",
-          "severity": "warning",
-          "title": "React 19 API migration can break callers",
-          "message": "useContext is replaced by `use()` in React 19, which reads context inside ifs & loops too, so switch to `import { use } from 'react'`.",
-          "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-          "line": 4,
-          "column": 3,
-          "offset": 43,
-          "length": 10,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/hooks/useActionShortcut.tsx",
-          "plugin": "react-doctor",
           "rule": "rerender-lazy-ref-init",
           "severity": "warning",
           "title": "Ref initializer runs on every render",
@@ -477,7 +267,7 @@
           "help": "Initialize the ref lazily so expensive values are not rebuilt and discarded on every render.",
           "line": 50,
           "column": 5,
-          "offset": 1863,
+          "offset": 1840,
           "length": 9,
           "category": "Performance"
         },
@@ -491,23 +281,9 @@
           "help": "Wrap the context value in `useMemo` or move it outside the component so consumers do not redraw every render.",
           "line": 167,
           "column": 7,
-          "offset": 5517,
+          "offset": 5494,
           "length": 58,
           "category": "Performance"
-        },
-        {
-          "filePath": "app/hooks/useMultiSelection.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-react19-deprecated-apis",
-          "severity": "warning",
-          "title": "React 19 API migration can break callers",
-          "message": "useContext is replaced by `use()` in React 19, which reads context inside ifs & loops too, so switch to `import { use } from 'react'`.",
-          "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-          "line": 3,
-          "column": 3,
-          "offset": 28,
-          "length": 10,
-          "category": "Maintainability"
         },
         {
           "filePath": "app/hooks/useMultiSelection.tsx",
@@ -519,7 +295,7 @@
           "help": "Use `.flatMap(item => condition ? [value] : [])` to change and drop items in one pass, instead of building a throwaway array in between",
           "line": 71,
           "column": 21,
-          "offset": 2104,
+          "offset": 2097,
           "length": 111,
           "category": "Performance"
         },
@@ -533,69 +309,9 @@
           "help": "Wrap the context value in `useMemo` or move it outside the component so consumers do not redraw every render.",
           "line": 85,
           "column": 7,
-          "offset": 2494,
+          "offset": 2487,
           "length": 160,
           "category": "Performance"
-        },
-        {
-          "filePath": "app/root.tsx",
-          "plugin": "react-doctor",
-          "rule": "unsafe-json-in-html",
-          "severity": "warning",
-          "title": "Unescaped JSON in HTML or script sink",
-          "message": "JSON.stringify is embedded in HTML/script markup without HTML-escaping; data containing `</script>` or `<` breaks out and becomes XSS.",
-          "help": "JSON.stringify does not HTML-escape, so a `</script>` (or `<`) in the data breaks out and becomes XSS. Use an HTML-safe serializer (serialize-javascript, devalue) or escape `<`, `>`, and `&`, or pass data via a JSON `<script type=\"application/json\">` read with JSON.parse.",
-          "line": 81,
-          "column": 11,
-          "category": "Security"
-        },
-        {
-          "filePath": "app/root.tsx",
-          "plugin": "react-doctor",
-          "rule": "unsafe-json-in-html",
-          "severity": "warning",
-          "title": "Unescaped JSON in HTML or script sink",
-          "message": "JSON.stringify is embedded in HTML/script markup without HTML-escaping; data containing `</script>` or `<` breaks out and becomes XSS.",
-          "help": "JSON.stringify does not HTML-escape, so a `</script>` (or `<`) in the data breaks out and becomes XSS. Use an HTML-safe serializer (serialize-javascript, devalue) or escape `<`, `>`, and `&`, or pass data via a JSON `<script type=\"application/json\">` read with JSON.parse.",
-          "line": 83,
-          "column": 9,
-          "category": "Security"
-        },
-        {
-          "filePath": "app/root.tsx",
-          "plugin": "react-doctor",
-          "rule": "dangerous-html-sink",
-          "severity": "warning",
-          "title": "HTML injection sink with dynamic content",
-          "message": "HTML is injected from a dynamic-looking source, which can become XSS if the value is user-controlled or unsanitized.",
-          "help": "Prefer rendering structured React nodes. If HTML is required, sanitize with a well-reviewed sanitizer and keep the trust boundary close to the sink.",
-          "line": 85,
-          "column": 11,
-          "category": "Security"
-        },
-        {
-          "filePath": "app/root.tsx",
-          "plugin": "react-doctor",
-          "rule": "unsafe-json-in-html",
-          "severity": "warning",
-          "title": "Unescaped JSON in HTML or script sink",
-          "message": "JSON.stringify is embedded in HTML/script markup without HTML-escaping; data containing `</script>` or `<` breaks out and becomes XSS.",
-          "help": "JSON.stringify does not HTML-escape, so a `</script>` (or `<`) in the data breaks out and becomes XSS. Use an HTML-safe serializer (serialize-javascript, devalue) or escape `<`, `>`, and `&`, or pass data via a JSON `<script type=\"application/json\">` read with JSON.parse.",
-          "line": 93,
-          "column": 11,
-          "category": "Security"
-        },
-        {
-          "filePath": "app/root.tsx",
-          "plugin": "react-doctor",
-          "rule": "dangerous-html-sink",
-          "severity": "warning",
-          "title": "HTML injection sink with dynamic content",
-          "message": "HTML is injected from a dynamic-looking source, which can become XSS if the value is user-controlled or unsanitized.",
-          "help": "Prefer rendering structured React nodes. If HTML is required, sanitize with a well-reviewed sanitizer and keep the trust boundary close to the sink.",
-          "line": 97,
-          "column": 11,
-          "category": "Security"
         },
         {
           "filePath": "app/routes/CreateAndEditAction.tsx",
@@ -605,9 +321,9 @@
           "title": "Large component is hard to read and change",
           "message": "Component \"CreateAndEditAction\" is 484 lines long, which is hard to read & change. Split it into a few smaller components.",
           "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
-          "line": 25,
+          "line": 24,
           "column": 17,
-          "offset": 1235,
+          "offset": 1171,
           "length": 19,
           "category": "Maintainability"
         },
@@ -619,9 +335,9 @@
           "title": "Many related useState calls",
           "message": "7 useState calls in \"CreateAndEditAction\" can each trigger a separate render.",
           "help": "Group related state in `useReducer` so one logical update does not fan out into separate renders.",
-          "line": 33,
+          "line": 32,
           "column": 4,
-          "offset": 1408,
+          "offset": 1344,
           "length": 15323,
           "category": "Bugs"
         },
@@ -633,9 +349,9 @@
           "title": "Missing effect dependencies",
           "message": "`partners` is rebuilt every render, so `useMemo` runs every time.",
           "help": "Don't blindly add missing dependencies. Read the hook callback first.\n\nBad:\nuseEffect(() => {\n  setCount(count + 1);\n}, [count]);\n\nBetter:\nuseEffect(() => {\n  setCount((currentCount) => currentCount + 1);\n}, []);\n\nIf the missing value is recreated every render, move it inside the hook or stabilize it before adding it to deps.",
-          "line": 189,
+          "line": 188,
           "column": 27,
-          "offset": 6749,
+          "offset": 6685,
           "length": 8,
           "category": "Bugs"
         },
@@ -647,9 +363,9 @@
           "title": "State only used in handlers",
           "message": "Each update to \"prevFetcherData\" redraws your component for nothing because this useState is set but never shown on screen.",
           "help": "Use useRef instead of useState when the value is only set and never shown on screen. `ref.current = ...` updates it without redrawing the component.",
-          "line": 263,
+          "line": 262,
           "column": 9,
-          "offset": 8917,
+          "offset": 8853,
           "length": 63,
           "category": "Performance"
         },
@@ -673,26 +389,12 @@
           "rule": "no-giant-component",
           "severity": "warning",
           "title": "Large component is hard to read and change",
-          "message": "Component \"HelpPage\" is 557 lines long, which is hard to read & change. Split it into a few smaller components.",
+          "message": "Component \"HelpPage\" is 545 lines long, which is hard to read & change. Split it into a few smaller components.",
           "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
-          "line": 22,
+          "line": 34,
           "column": 25,
-          "offset": 460,
+          "offset": 869,
           "length": 8,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "app/routes/app.help.tsx",
-          "plugin": "react-doctor",
-          "rule": "prefer-module-scope-static-value",
-          "severity": "warning",
-          "title": "Static value rebuilt every render",
-          "message": "`sections` inside `HelpPage` uses no local state but is rebuilt every render, so it looks new each time & breaks memoized children. Move it to the top of the file, outside the component.",
-          "help": "Move the value above the component, at the top of the file. It doesn't use local state, so rebuilding it each update is wasted and makes it look new every time.",
-          "line": 25,
-          "column": 9,
-          "offset": 549,
-          "length": 420,
           "category": "Maintainability"
         },
         {
@@ -703,9 +405,9 @@
           "title": "Click handler missing keyboard handler",
           "message": "Keyboard users can't trigger this click handler because there's no keyboard one, so add `onKeyUp`, `onKeyDown`, or `onKeyPress`.",
           "help": "Pair `onClick` with a key handler so keyboard users can trigger it.",
-          "line": 127,
+          "line": 126,
           "column": 18,
-          "offset": 5204,
+          "offset": 5135,
           "length": 3,
           "category": "Accessibility"
         },
@@ -717,9 +419,9 @@
           "title": "Interaction on static element",
           "message": "Screen reader users can't tell this click handler is interactive because it has no `role`, so add a `role` or use a button or link.",
           "help": "Give clickable static elements a `role`, or use a button or link.",
-          "line": 127,
+          "line": 126,
           "column": 18,
-          "offset": 5204,
+          "offset": 5135,
           "length": 3,
           "category": "Accessibility"
         },
@@ -733,7 +435,7 @@
           "help": "Wrap expensive initial state in an arrow function so the initializer does not rerun and get thrown away on every render.",
           "line": 150,
           "column": 48,
-          "offset": 4860,
+          "offset": 4844,
           "length": 14,
           "category": "Performance"
         },
@@ -773,9 +475,9 @@
           "title": "Click handler missing keyboard handler",
           "message": "Keyboard users can't trigger this click handler because there's no keyboard one, so add `onKeyUp`, `onKeyDown`, or `onKeyPress`.",
           "help": "Pair `onClick` with a key handler so keyboard users can trigger it.",
-          "line": 158,
+          "line": 157,
           "column": 18,
-          "offset": 5136,
+          "offset": 5074,
           "length": 3,
           "category": "Accessibility"
         },
@@ -787,9 +489,9 @@
           "title": "Interaction on static element",
           "message": "Screen reader users can't tell this click handler is interactive because it has no `role`, so add a `role` or use a button or link.",
           "help": "Give clickable static elements a `role`, or use a button or link.",
-          "line": 158,
+          "line": 157,
           "column": 18,
-          "offset": 5136,
+          "offset": 5074,
           "length": 3,
           "category": "Accessibility"
         },
@@ -832,44 +534,11 @@
           "line": 44,
           "column": 4966,
           "category": "Security"
-        },
-        {
-          "filePath": "package.json",
-          "plugin": "deslop",
-          "rule": "unused-dependency",
-          "severity": "warning",
-          "message": "Unused dependency: `@radix-ui/react-radio-group`",
-          "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
-          "line": 0,
-          "column": 0,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "package.json",
-          "plugin": "deslop",
-          "rule": "unused-dependency",
-          "severity": "warning",
-          "message": "Unused dependency: `cloudinary`",
-          "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
-          "line": 0,
-          "column": 0,
-          "category": "Maintainability"
-        },
-        {
-          "filePath": "package.json",
-          "plugin": "deslop",
-          "rule": "unused-dependency",
-          "severity": "warning",
-          "message": "Unused dependency: `next-themes`",
-          "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
-          "line": 0,
-          "column": 0,
-          "category": "Maintainability"
         }
       ],
       "score": {
-        "score": 47,
-        "label": "Critical",
+        "score": 68,
+        "label": "Needs work",
         "rules": {
           "react-doctor/no-giant-component": {
             "priority": 30,
@@ -887,25 +556,13 @@
             "priority": 48,
             "tier": "P3"
           },
-          "react-doctor/no-render-in-render": {
-            "priority": 56,
-            "tier": "P2"
+          "react-doctor/no-many-boolean-props": {
+            "priority": 24,
+            "tier": "P3"
           },
           "react-doctor/label-has-associated-control": {
             "priority": 59,
             "tier": "P2"
-          },
-          "react-doctor/prefer-module-scope-static-value": {
-            "priority": 38,
-            "tier": "P3"
-          },
-          "react-doctor/no-react19-deprecated-apis": {
-            "priority": 24,
-            "tier": "P3"
-          },
-          "react-doctor/prefer-explicit-variants": {
-            "priority": 27,
-            "tier": "P3"
           },
           "react-doctor/click-events-have-key-events": {
             "priority": 42,
@@ -939,14 +596,6 @@
             "priority": 28,
             "tier": "P3"
           },
-          "react-doctor/unsafe-json-in-html": {
-            "priority": null,
-            "tier": "P3"
-          },
-          "react-doctor/dangerous-html-sink": {
-            "priority": 84,
-            "tier": "P1"
-          },
           "react-doctor/rerender-state-only-in-handlers": {
             "priority": 46,
             "tier": "P3"
@@ -962,16 +611,12 @@
           "react-doctor/artifact-baas-authority-surface": {
             "priority": 60,
             "tier": "P2"
-          },
-          "deslop/unused-dependency": {
-            "priority": 30,
-            "tier": "P3"
           }
         }
       },
       "skippedChecks": [],
-      "scannedFileCount": 162,
-      "elapsedMilliseconds": 3213.139916
+      "scannedFileCount": 158,
+      "elapsedMilliseconds": 2746.075541
     }
   ],
   "diagnostics": [
@@ -983,9 +628,9 @@
       "title": "Large component is hard to read and change",
       "message": "Component \"EssentialsTab\" is 335 lines long, which is hard to read & change. Split it into a few smaller components.",
       "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
-      "line": 56,
+      "line": 55,
       "column": 17,
-      "offset": 1924,
+      "offset": 1860,
       "length": 13,
       "category": "Maintainability"
     },
@@ -997,9 +642,9 @@
       "title": "Many related useState calls",
       "message": "5 useState calls in \"EssentialsTab\" can each trigger a separate render.",
       "help": "Group related state in `useReducer` so one logical update does not fan out into separate renders.",
-      "line": 69,
+      "line": 68,
       "column": 24,
-      "offset": 2159,
+      "offset": 2095,
       "length": 10646,
       "category": "Bugs"
     },
@@ -1013,23 +658,9 @@
       "help": "Do not use `autoFocus`. It disorients users on load.",
       "line": 108,
       "column": 13,
-      "offset": 3599,
+      "offset": 3583,
       "length": 9,
       "category": "Accessibility"
-    },
-    {
-      "filePath": "app/components/features/ActionItem.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-giant-component",
-      "severity": "warning",
-      "title": "Large component is hard to read and change",
-      "message": "Component \"ActionItem\" is 373 lines long, which is hard to read & change. Split it into a few smaller components.",
-      "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
-      "line": 105,
-      "column": 17,
-      "offset": 3510,
-      "length": 10,
-      "category": "Maintainability"
     },
     {
       "filePath": "app/components/features/ActionItem.tsx",
@@ -1039,23 +670,23 @@
       "title": "Role used instead of HTML tag",
       "message": "Screen reader users get more reliable semantics from `<button>` than `role=\"button\"`, so use `<button>` instead.",
       "help": "Use the matching HTML element when one exists so browsers and assistive tech get native semantics.",
-      "line": 432,
+      "line": 280,
       "column": 7,
-      "offset": 14350,
+      "offset": 8686,
       "length": 13,
       "category": "Accessibility"
     },
     {
       "filePath": "app/components/features/ActionItem.tsx",
       "plugin": "react-doctor",
-      "rule": "no-render-in-render",
+      "rule": "no-many-boolean-props",
       "severity": "warning",
-      "title": "Component rendered by inline function call",
-      "message": "Your users lose state because \"renderActionVariant()\" builds UI from an inline call that React remounts, so pull it into its own component instead.",
-      "help": "Make it a named component so React preserves its identity and does not remount its state.",
-      "line": 469,
-      "column": 8,
-      "offset": 15583,
+      "title": "Boolean prop combinations are hard to test",
+      "message": "Component \"ActionVariantRenderer\" takes 5 on/off props (showCategory, showResponsibles, showPartner…), which is hard to combine & test. Split it into smaller components or named variants.",
+      "help": "Split boolean-heavy APIs into smaller components or named variants so combinations stay testable.",
+      "line": 496,
+      "column": 10,
+      "offset": 14401,
       "length": 21,
       "category": "Maintainability"
     },
@@ -1097,7 +728,7 @@
       "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
       "line": 53,
       "column": 17,
-      "offset": 1554,
+      "offset": 1537,
       "length": 14,
       "category": "Maintainability"
     },
@@ -1111,65 +742,9 @@
       "help": "Group related state in `useReducer` so one logical update does not fan out into separate renders.",
       "line": 53,
       "column": 34,
-      "offset": 1571,
+      "offset": 1554,
       "length": 13588,
       "category": "Bugs"
-    },
-    {
-      "filePath": "app/components/features/CategoriesCombobox.tsx",
-      "plugin": "react-doctor",
-      "rule": "prefer-module-scope-static-value",
-      "severity": "warning",
-      "title": "Static value rebuilt every render",
-      "message": "`AREA_ORDER` inside `CategoriesCombobox` uses no local state but is rebuilt every render, so it looks new each time & breaks memoized children. Move it to the top of the file, outside the component.",
-      "help": "Move the value above the component, at the top of the file. It doesn't use local state, so rebuilding it each update is wasted and makes it look new every time.",
-      "line": 98,
-      "column": 9,
-      "offset": 2215,
-      "length": 63,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/features/DragStateContext.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-react19-deprecated-apis",
-      "severity": "warning",
-      "title": "React 19 API migration can break callers",
-      "message": "useContext is replaced by `use()` in React 19, which reads context inside ifs & loops too, so switch to `import { use } from 'react'`.",
-      "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-      "line": 5,
-      "column": 25,
-      "offset": 189,
-      "length": 10,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/features/PhaseCombobox.tsx",
-      "plugin": "react-doctor",
-      "rule": "prefer-explicit-variants",
-      "severity": "warning",
-      "title": "Prefer explicit variant components",
-      "message": "Component \"PhaseCombobox\" picks which component to render from 2 boolean props (isMulti, showText), which multiplies untestable variants. Split it into explicit variant components so each renders one clear path.",
-      "help": "Replace boolean props that switch whole subtrees with explicit variant components, like `<ThreadComposer />` and `<EditMessageComposer />`, so each variant renders one clear path.",
-      "line": 29,
-      "column": 17,
-      "offset": 636,
-      "length": 13,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/features/home/DashboardMetrics.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-render-in-render",
-      "severity": "warning",
-      "title": "Component rendered by inline function call",
-      "message": "Your users lose state because \"renderProgressBar()\" builds UI from an inline call that React remounts, so pull it into its own component instead.",
-      "help": "Make it a named component so React preserves its identity and does not remount its state.",
-      "line": 248,
-      "column": 8,
-      "offset": 6672,
-      "length": 33,
-      "category": "Maintainability"
     },
     {
       "filePath": "app/components/ui/input-group.tsx",
@@ -1214,118 +789,6 @@
       "category": "Accessibility"
     },
     {
-      "filePath": "app/components/ui/label.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-react19-deprecated-apis",
-      "severity": "warning",
-      "title": "React 19 API migration can break callers",
-      "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-      "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-      "line": 11,
-      "column": 15,
-      "offset": 333,
-      "length": 16,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/select.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-react19-deprecated-apis",
-      "severity": "warning",
-      "title": "React 19 API migration can break callers",
-      "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-      "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-      "line": 13,
-      "column": 23,
-      "offset": 337,
-      "length": 16,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/select.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-react19-deprecated-apis",
-      "severity": "warning",
-      "title": "React 19 API migration can break callers",
-      "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-      "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-      "line": 33,
-      "column": 30,
-      "offset": 1203,
-      "length": 16,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/select.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-react19-deprecated-apis",
-      "severity": "warning",
-      "title": "React 19 API migration can break callers",
-      "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-      "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-      "line": 50,
-      "column": 32,
-      "offset": 1751,
-      "length": 16,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/select.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-react19-deprecated-apis",
-      "severity": "warning",
-      "title": "React 19 API migration can break callers",
-      "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-      "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-      "line": 68,
-      "column": 23,
-      "offset": 2306,
-      "length": 16,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/select.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-react19-deprecated-apis",
-      "severity": "warning",
-      "title": "React 19 API migration can break callers",
-      "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-      "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-      "line": 100,
-      "column": 21,
-      "offset": 3812,
-      "length": 16,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/select.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-react19-deprecated-apis",
-      "severity": "warning",
-      "title": "React 19 API migration can break callers",
-      "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-      "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-      "line": 112,
-      "column": 20,
-      "offset": 4192,
-      "length": 16,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/select.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-react19-deprecated-apis",
-      "severity": "warning",
-      "title": "React 19 API migration can break callers",
-      "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-      "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-      "line": 134,
-      "column": 25,
-      "offset": 5090,
-      "length": 16,
-      "category": "Maintainability"
-    },
-    {
       "filePath": "app/components/ui/skeleton.tsx",
       "plugin": "react-doctor",
       "rule": "no-array-index-as-key",
@@ -1338,20 +801,6 @@
       "offset": 1005,
       "length": 7,
       "category": "Bugs"
-    },
-    {
-      "filePath": "app/components/ui/switch.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-react19-deprecated-apis",
-      "severity": "warning",
-      "title": "React 19 API migration can break callers",
-      "message": "forwardRef is dead weight in React 19, since ref is a normal prop now, so drop it & pass ref straight through.",
-      "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-      "line": 6,
-      "column": 16,
-      "offset": 143,
-      "length": 16,
-      "category": "Maintainability"
     },
     {
       "filePath": "app/components/uzzina/CloudinaryUpload.tsx",
@@ -1398,20 +847,6 @@
     {
       "filePath": "app/hooks/useActionShortcut.tsx",
       "plugin": "react-doctor",
-      "rule": "no-react19-deprecated-apis",
-      "severity": "warning",
-      "title": "React 19 API migration can break callers",
-      "message": "useContext is replaced by `use()` in React 19, which reads context inside ifs & loops too, so switch to `import { use } from 'react'`.",
-      "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-      "line": 4,
-      "column": 3,
-      "offset": 43,
-      "length": 10,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/hooks/useActionShortcut.tsx",
-      "plugin": "react-doctor",
       "rule": "rerender-lazy-ref-init",
       "severity": "warning",
       "title": "Ref initializer runs on every render",
@@ -1419,7 +854,7 @@
       "help": "Initialize the ref lazily so expensive values are not rebuilt and discarded on every render.",
       "line": 50,
       "column": 5,
-      "offset": 1863,
+      "offset": 1840,
       "length": 9,
       "category": "Performance"
     },
@@ -1433,23 +868,9 @@
       "help": "Wrap the context value in `useMemo` or move it outside the component so consumers do not redraw every render.",
       "line": 167,
       "column": 7,
-      "offset": 5517,
+      "offset": 5494,
       "length": 58,
       "category": "Performance"
-    },
-    {
-      "filePath": "app/hooks/useMultiSelection.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-react19-deprecated-apis",
-      "severity": "warning",
-      "title": "React 19 API migration can break callers",
-      "message": "useContext is replaced by `use()` in React 19, which reads context inside ifs & loops too, so switch to `import { use } from 'react'`.",
-      "help": "Pass `ref` as a normal prop on function components, since `forwardRef` isn't needed in React 19. Replace `useContext(X)` with `use(X)`. Only runs on React 19+ projects.",
-      "line": 3,
-      "column": 3,
-      "offset": 28,
-      "length": 10,
-      "category": "Maintainability"
     },
     {
       "filePath": "app/hooks/useMultiSelection.tsx",
@@ -1461,7 +882,7 @@
       "help": "Use `.flatMap(item => condition ? [value] : [])` to change and drop items in one pass, instead of building a throwaway array in between",
       "line": 71,
       "column": 21,
-      "offset": 2104,
+      "offset": 2097,
       "length": 111,
       "category": "Performance"
     },
@@ -1475,69 +896,9 @@
       "help": "Wrap the context value in `useMemo` or move it outside the component so consumers do not redraw every render.",
       "line": 85,
       "column": 7,
-      "offset": 2494,
+      "offset": 2487,
       "length": 160,
       "category": "Performance"
-    },
-    {
-      "filePath": "app/root.tsx",
-      "plugin": "react-doctor",
-      "rule": "unsafe-json-in-html",
-      "severity": "warning",
-      "title": "Unescaped JSON in HTML or script sink",
-      "message": "JSON.stringify is embedded in HTML/script markup without HTML-escaping; data containing `</script>` or `<` breaks out and becomes XSS.",
-      "help": "JSON.stringify does not HTML-escape, so a `</script>` (or `<`) in the data breaks out and becomes XSS. Use an HTML-safe serializer (serialize-javascript, devalue) or escape `<`, `>`, and `&`, or pass data via a JSON `<script type=\"application/json\">` read with JSON.parse.",
-      "line": 81,
-      "column": 11,
-      "category": "Security"
-    },
-    {
-      "filePath": "app/root.tsx",
-      "plugin": "react-doctor",
-      "rule": "unsafe-json-in-html",
-      "severity": "warning",
-      "title": "Unescaped JSON in HTML or script sink",
-      "message": "JSON.stringify is embedded in HTML/script markup without HTML-escaping; data containing `</script>` or `<` breaks out and becomes XSS.",
-      "help": "JSON.stringify does not HTML-escape, so a `</script>` (or `<`) in the data breaks out and becomes XSS. Use an HTML-safe serializer (serialize-javascript, devalue) or escape `<`, `>`, and `&`, or pass data via a JSON `<script type=\"application/json\">` read with JSON.parse.",
-      "line": 83,
-      "column": 9,
-      "category": "Security"
-    },
-    {
-      "filePath": "app/root.tsx",
-      "plugin": "react-doctor",
-      "rule": "dangerous-html-sink",
-      "severity": "warning",
-      "title": "HTML injection sink with dynamic content",
-      "message": "HTML is injected from a dynamic-looking source, which can become XSS if the value is user-controlled or unsanitized.",
-      "help": "Prefer rendering structured React nodes. If HTML is required, sanitize with a well-reviewed sanitizer and keep the trust boundary close to the sink.",
-      "line": 85,
-      "column": 11,
-      "category": "Security"
-    },
-    {
-      "filePath": "app/root.tsx",
-      "plugin": "react-doctor",
-      "rule": "unsafe-json-in-html",
-      "severity": "warning",
-      "title": "Unescaped JSON in HTML or script sink",
-      "message": "JSON.stringify is embedded in HTML/script markup without HTML-escaping; data containing `</script>` or `<` breaks out and becomes XSS.",
-      "help": "JSON.stringify does not HTML-escape, so a `</script>` (or `<`) in the data breaks out and becomes XSS. Use an HTML-safe serializer (serialize-javascript, devalue) or escape `<`, `>`, and `&`, or pass data via a JSON `<script type=\"application/json\">` read with JSON.parse.",
-      "line": 93,
-      "column": 11,
-      "category": "Security"
-    },
-    {
-      "filePath": "app/root.tsx",
-      "plugin": "react-doctor",
-      "rule": "dangerous-html-sink",
-      "severity": "warning",
-      "title": "HTML injection sink with dynamic content",
-      "message": "HTML is injected from a dynamic-looking source, which can become XSS if the value is user-controlled or unsanitized.",
-      "help": "Prefer rendering structured React nodes. If HTML is required, sanitize with a well-reviewed sanitizer and keep the trust boundary close to the sink.",
-      "line": 97,
-      "column": 11,
-      "category": "Security"
     },
     {
       "filePath": "app/routes/CreateAndEditAction.tsx",
@@ -1547,9 +908,9 @@
       "title": "Large component is hard to read and change",
       "message": "Component \"CreateAndEditAction\" is 484 lines long, which is hard to read & change. Split it into a few smaller components.",
       "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
-      "line": 25,
+      "line": 24,
       "column": 17,
-      "offset": 1235,
+      "offset": 1171,
       "length": 19,
       "category": "Maintainability"
     },
@@ -1561,9 +922,9 @@
       "title": "Many related useState calls",
       "message": "7 useState calls in \"CreateAndEditAction\" can each trigger a separate render.",
       "help": "Group related state in `useReducer` so one logical update does not fan out into separate renders.",
-      "line": 33,
+      "line": 32,
       "column": 4,
-      "offset": 1408,
+      "offset": 1344,
       "length": 15323,
       "category": "Bugs"
     },
@@ -1575,9 +936,9 @@
       "title": "Missing effect dependencies",
       "message": "`partners` is rebuilt every render, so `useMemo` runs every time.",
       "help": "Don't blindly add missing dependencies. Read the hook callback first.\n\nBad:\nuseEffect(() => {\n  setCount(count + 1);\n}, [count]);\n\nBetter:\nuseEffect(() => {\n  setCount((currentCount) => currentCount + 1);\n}, []);\n\nIf the missing value is recreated every render, move it inside the hook or stabilize it before adding it to deps.",
-      "line": 189,
+      "line": 188,
       "column": 27,
-      "offset": 6749,
+      "offset": 6685,
       "length": 8,
       "category": "Bugs"
     },
@@ -1589,9 +950,9 @@
       "title": "State only used in handlers",
       "message": "Each update to \"prevFetcherData\" redraws your component for nothing because this useState is set but never shown on screen.",
       "help": "Use useRef instead of useState when the value is only set and never shown on screen. `ref.current = ...` updates it without redrawing the component.",
-      "line": 263,
+      "line": 262,
       "column": 9,
-      "offset": 8917,
+      "offset": 8853,
       "length": 63,
       "category": "Performance"
     },
@@ -1615,26 +976,12 @@
       "rule": "no-giant-component",
       "severity": "warning",
       "title": "Large component is hard to read and change",
-      "message": "Component \"HelpPage\" is 557 lines long, which is hard to read & change. Split it into a few smaller components.",
+      "message": "Component \"HelpPage\" is 545 lines long, which is hard to read & change. Split it into a few smaller components.",
       "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
-      "line": 22,
+      "line": 34,
       "column": 25,
-      "offset": 460,
+      "offset": 869,
       "length": 8,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "app/routes/app.help.tsx",
-      "plugin": "react-doctor",
-      "rule": "prefer-module-scope-static-value",
-      "severity": "warning",
-      "title": "Static value rebuilt every render",
-      "message": "`sections` inside `HelpPage` uses no local state but is rebuilt every render, so it looks new each time & breaks memoized children. Move it to the top of the file, outside the component.",
-      "help": "Move the value above the component, at the top of the file. It doesn't use local state, so rebuilding it each update is wasted and makes it look new every time.",
-      "line": 25,
-      "column": 9,
-      "offset": 549,
-      "length": 420,
       "category": "Maintainability"
     },
     {
@@ -1645,9 +992,9 @@
       "title": "Click handler missing keyboard handler",
       "message": "Keyboard users can't trigger this click handler because there's no keyboard one, so add `onKeyUp`, `onKeyDown`, or `onKeyPress`.",
       "help": "Pair `onClick` with a key handler so keyboard users can trigger it.",
-      "line": 127,
+      "line": 126,
       "column": 18,
-      "offset": 5204,
+      "offset": 5135,
       "length": 3,
       "category": "Accessibility"
     },
@@ -1659,9 +1006,9 @@
       "title": "Interaction on static element",
       "message": "Screen reader users can't tell this click handler is interactive because it has no `role`, so add a `role` or use a button or link.",
       "help": "Give clickable static elements a `role`, or use a button or link.",
-      "line": 127,
+      "line": 126,
       "column": 18,
-      "offset": 5204,
+      "offset": 5135,
       "length": 3,
       "category": "Accessibility"
     },
@@ -1675,7 +1022,7 @@
       "help": "Wrap expensive initial state in an arrow function so the initializer does not rerun and get thrown away on every render.",
       "line": 150,
       "column": 48,
-      "offset": 4860,
+      "offset": 4844,
       "length": 14,
       "category": "Performance"
     },
@@ -1715,9 +1062,9 @@
       "title": "Click handler missing keyboard handler",
       "message": "Keyboard users can't trigger this click handler because there's no keyboard one, so add `onKeyUp`, `onKeyDown`, or `onKeyPress`.",
       "help": "Pair `onClick` with a key handler so keyboard users can trigger it.",
-      "line": 158,
+      "line": 157,
       "column": 18,
-      "offset": 5136,
+      "offset": 5074,
       "length": 3,
       "category": "Accessibility"
     },
@@ -1729,9 +1076,9 @@
       "title": "Interaction on static element",
       "message": "Screen reader users can't tell this click handler is interactive because it has no `role`, so add a `role` or use a button or link.",
       "help": "Give clickable static elements a `role`, or use a button or link.",
-      "line": 158,
+      "line": 157,
       "column": 18,
-      "offset": 5136,
+      "offset": 5074,
       "length": 3,
       "category": "Accessibility"
     },
@@ -1774,49 +1121,16 @@
       "line": 44,
       "column": 4966,
       "category": "Security"
-    },
-    {
-      "filePath": "package.json",
-      "plugin": "deslop",
-      "rule": "unused-dependency",
-      "severity": "warning",
-      "message": "Unused dependency: `@radix-ui/react-radio-group`",
-      "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
-      "line": 0,
-      "column": 0,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "package.json",
-      "plugin": "deslop",
-      "rule": "unused-dependency",
-      "severity": "warning",
-      "message": "Unused dependency: `cloudinary`",
-      "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
-      "line": 0,
-      "column": 0,
-      "category": "Maintainability"
-    },
-    {
-      "filePath": "package.json",
-      "plugin": "deslop",
-      "rule": "unused-dependency",
-      "severity": "warning",
-      "message": "Unused dependency: `next-themes`",
-      "help": "An unused dependency adds install time and supply-chain surface without being used; remove it from package.json if it is genuinely unused.",
-      "line": 0,
-      "column": 0,
-      "category": "Maintainability"
     }
   ],
   "summary": {
     "errorCount": 0,
-    "warningCount": 61,
-    "affectedFileCount": 32,
-    "totalDiagnosticCount": 61,
-    "score": 47,
-    "scoreLabel": "Critical"
+    "warningCount": 36,
+    "affectedFileCount": 23,
+    "totalDiagnosticCount": 36,
+    "score": 68,
+    "scoreLabel": "Needs work"
   },
-  "elapsedMilliseconds": 3240.968875,
+  "elapsedMilliseconds": 2758.1865829999997,
   "error": null
 }

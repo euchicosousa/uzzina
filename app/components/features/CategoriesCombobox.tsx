@@ -18,6 +18,8 @@ import {
   CommandSeparator,
 } from "../ui/command";
 
+const AREA_ORDER = ["all", "instagram", "creative", "account", "adm"];
+
 export function CategoriesCombobox({
   selectedCategories,
   onSelect,
@@ -94,8 +96,6 @@ export function CategoriesCombobox({
     },
     {} as Record<string, typeof categoriesList>,
   );
-
-  const AREA_ORDER = ["all", "instagram", "creative", "account", "adm"];
 
   const isShiftPressedRef = useRef(false);
 

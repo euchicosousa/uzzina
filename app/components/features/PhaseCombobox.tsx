@@ -1,5 +1,6 @@
 import { CheckIcon, FilterIcon } from "lucide-react";
 import { Fragment, useEffect, useRef, useState } from "react";
+import type * as React from "react";
 import {
   Popover,
   PopoverContent,
@@ -16,16 +17,121 @@ import {
   CommandSeparator,
 } from "../ui/command";
 import { PhaseIcon } from "./PhaseIcon";
-
 const ALL_PHASE = {
   slug: "all",
   title: "Todas as fases",
   color: "#888",
   foreground: "#fff",
 };
+type PhaseItem = typeof ALL_PHASE | PHASE_TYPE;
 
 const DEFAULT_SELECTED_PHASES: string[] = [];
 
+function MultiPhaseTrigger({
+  tabIndex,
+  className,
+  currentPhases,
+  hasRealSelection,
+  ref,
+  ...props
+}: {
+  tabIndex?: number;
+  className?: string;
+  currentPhases: PhaseItem[];
+  hasRealSelection: boolean;
+  ref?: React.Ref<HTMLButtonElement>;
+}) {
+  return (
+    <button
+      ref={ref}
+      {...props}
+      className={cn(
+        "raised grid size-9 place-content-center rounded-xl border-b border-b-transparent squircle hover:text-foreground/50",
+        className,
+      )}
+      data-state={hasRealSelection && "on"}
+      tabIndex={tabIndex}
+      title={
+        !hasRealSelection
+          ? "Filtrar por fase"
+          : currentPhases.map((s) => s.title).join(" • ")
+      }
+      type="button"
+    >
+      {!hasRealSelection ? (
+        <FilterIcon className="size-4" />
+      ) : (
+        <div className="flex -space-x-2">
+          {currentPhases.map((s) => (
+            <div
+              key={s.slug}
+              className="size-4 rounded-full border"
+              style={{
+                backgroundColor: s.color,
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </button>
+  );
+}
+
+function SinglePhaseTrigger({
+  tabIndex,
+  className,
+  size,
+  showText,
+  iconVariant,
+  currentPhase,
+  ref,
+  ...props
+}: {
+  tabIndex?: number;
+  className?: string;
+  size?: "sm" | "lg";
+  showText?: boolean;
+  iconVariant?: "progress" | "icon";
+  currentPhase: PhaseItem;
+  ref?: React.Ref<HTMLButtonElement>;
+}) {
+  return (
+    <button
+      ref={ref}
+      {...props}
+      className={cn(
+        "flex items-center gap-1.5 transition-colors outline-none",
+        size === "sm"
+          ? cn(
+              "h-8 text-xs hover:bg-secondary",
+              !showText ? "w-8 justify-center p-0" : "justify-start px-3",
+            )
+          : "p-6 text-sm hover:bg-secondary focus:bg-secondary/50",
+        className,
+      )}
+      tabIndex={tabIndex}
+      type="button"
+    >
+      {!showText ? (
+        <PhaseIcon
+          phase={currentPhase as PHASE_TYPE}
+          size="md"
+          variant={iconVariant}
+        />
+      ) : (
+        <>
+          <div
+            className="size-2 rounded-full"
+            style={{
+              backgroundColor: currentPhase?.color,
+            }}
+          />
+          {currentPhase?.title}
+        </>
+      )}
+    </button>
+  );
+}
 export function PhaseCombobox({
   selectedPhase,
   selectedPhases = DEFAULT_SELECTED_PHASES,
@@ -50,7 +156,6 @@ export function PhaseCombobox({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const isShiftPressedRef = useRef(false);
-
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "Shift") isShiftPressedRef.current = true;
@@ -65,7 +170,6 @@ export function PhaseCombobox({
       window.removeEventListener("keyup", up);
     };
   }, []);
-
   const PHASES_LIST = Object.values(PHASES);
   const phasesList = isMulti ? [ALL_PHASE, ...PHASES_LIST] : PHASES_LIST;
 
@@ -80,76 +184,30 @@ export function PhaseCombobox({
   if (currentPhases.length === 0 && !isMulti) {
     currentPhases = [PHASES_LIST[0]];
   }
-
   const hasRealSelection =
     isMulti && currentPhases.filter((s) => s.slug !== "all").length > 0;
-
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover onOpenChange={setIsOpen} open={isOpen}>
       <PopoverTrigger asChild>
         {isMulti ? (
-          <button
-            type="button"
+          <MultiPhaseTrigger
+            className={className}
+            currentPhases={currentPhases}
+            hasRealSelection={hasRealSelection}
             tabIndex={tabIndex}
-            data-state={hasRealSelection && "on"}
-            className={cn(
-              "raised grid size-9 place-content-center rounded-xl border-b border-b-transparent squircle hover:text-foreground/50",
-              className,
-            )}
-            title={
-              !hasRealSelection
-                ? "Filtrar por fase"
-                : currentPhases.map((s) => s.title).join(" • ")
-            }
-          >
-            {!hasRealSelection ? (
-              <FilterIcon className="size-4" />
-            ) : (
-              <div className="flex -space-x-2">
-                {currentPhases.map((s) => (
-                  <div
-                    key={s.slug}
-                    className="size-4 rounded-full border"
-                    style={{ backgroundColor: s.color }}
-                  />
-                ))}
-              </div>
-            )}
-          </button>
+          />
         ) : (
-          <button
-            type="button"
+          <SinglePhaseTrigger
+            className={className}
+            currentPhase={currentPhases[0]}
+            iconVariant={iconVariant}
+            showText={showText}
+            size={size}
             tabIndex={tabIndex}
-            className={cn(
-              "flex items-center gap-1.5 transition-colors outline-none",
-              size === "sm"
-                ? cn(
-                    "h-8 text-xs hover:bg-secondary",
-                    !showText ? "w-8 justify-center p-0" : "justify-start px-3",
-                  )
-                : "p-6 text-sm hover:bg-secondary focus:bg-secondary/50",
-              className,
-            )}
-          >
-            {!showText ? (
-              <PhaseIcon
-                phase={currentPhases[0] as PHASE_TYPE}
-                size="md"
-                variant={iconVariant}
-              />
-            ) : (
-              <>
-                <div
-                  className="size-2 rounded-full"
-                  style={{ backgroundColor: currentPhases[0]?.color }}
-                />
-                {currentPhases[0]?.title}
-              </>
-            )}
-          </button>
+          />
         )}
       </PopoverTrigger>
-      <PopoverContent className="w-56 p-0" align="start">
+      <PopoverContent align="start" className="w-56 p-0">
         <Command>
           <CommandInput placeholder="Procurar fase..." />
           <CommandEmpty>Nenhuma fase encontrada.</CommandEmpty>
@@ -161,7 +219,6 @@ export function PhaseCombobox({
                   onSelect={() => {
                     if (isMulti) {
                       let newPhases: string[];
-
                       if (phase.slug === "all") {
                         newPhases = ["all"];
                       } else if (isShiftPressedRef.current) {
@@ -180,7 +237,6 @@ export function PhaseCombobox({
                         newPhases =
                           newPhases.length === 0 ? ["all"] : newPhases;
                       }
-
                       onSelect?.({
                         phases: newPhases,
                         phase: phase.slug,

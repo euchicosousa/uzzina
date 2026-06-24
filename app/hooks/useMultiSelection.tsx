@@ -1,6 +1,6 @@
 import {
   createContext,
-  useContext,
+  use,
   useState,
   useCallback,
   useEffect,
@@ -97,7 +97,7 @@ export function MultiSelectionProvider({
 }
 
 export function useMultiSelection() {
-  const context = useContext(MultiSelectionContext);
+  const context = use(MultiSelectionContext);
   if (context === undefined) {
     throw new Error(
       "useMultiSelection must be used within a MultiSelectionProvider",
