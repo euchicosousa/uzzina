@@ -152,27 +152,23 @@ export function Header({
     );
   }, [partnerAllLateActions, slug]);
 
-  const activeActions = isHome ? homeActions : isPartner ? partnerActions : [];
-  const activeLateActions = isHome
-    ? homeLateActions
-    : isPartner
-      ? partnerLateActions
-      : [];
   const referenceDate = now;
 
   const filteredActions = useMemo(() => {
-    if (partnerFilters.length === 0) return activeActions;
-    return activeActions.filter((action: Action) =>
+    const active = isHome ? homeActions : isPartner ? partnerActions : [];
+    if (partnerFilters.length === 0) return active;
+    return active.filter((action: Action) =>
       action.partners?.some((p: string) => partnerFilters.includes(p)),
     );
-  }, [activeActions, partnerFilters]);
+  }, [isHome, homeActions, isPartner, partnerActions, partnerFilters]);
 
   const filteredLateActions = useMemo(() => {
-    if (partnerFilters.length === 0) return activeLateActions;
-    return activeLateActions.filter((action: Action) =>
+    const active = isHome ? homeLateActions : isPartner ? partnerLateActions : [];
+    if (partnerFilters.length === 0) return active;
+    return active.filter((action: Action) =>
       action.partners?.some((p: string) => partnerFilters.includes(p)),
     );
-  }, [activeLateActions, partnerFilters]);
+  }, [isHome, homeLateActions, isPartner, partnerLateActions, partnerFilters]);
 
   const handleNotificationClick = async (notif: Notification) => {
     const supabase = createSupabaseBrowserClient();

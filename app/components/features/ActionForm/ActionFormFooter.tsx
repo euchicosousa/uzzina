@@ -47,7 +47,7 @@ export function ActionFormFooter({
         <div className="overflow-hidden">
           <PartnersCombobox
             selectedPartners={RawAction.partners}
-            tabIndex={3}
+            tabIndex={0}
             showText={false}
             onSelect={async (selected) => {
               setRawAction({
@@ -62,7 +62,7 @@ export function ActionFormFooter({
         <div>
           <PhaseCombobox
             selectedPhase={RawAction.phase ?? "idea"}
-            tabIndex={4.5}
+            tabIndex={0}
             showText={false}
             iconVariant="progress"
             onSelect={async (selected) => {
@@ -78,7 +78,7 @@ export function ActionFormFooter({
         <div>
           <CategoriesCombobox
             selectedCategories={[RawAction.category]}
-            tabIndex={5}
+            tabIndex={0}
             showText={false}
             onSelect={async ({ category }) => {
               setRawAction({
@@ -94,7 +94,7 @@ export function ActionFormFooter({
             <ActionColorDropdown
               action={RawAction}
               partners={currentPartners}
-              tabIndex={6}
+              tabIndex={0}
               onSelect={async (color) => {
                 setRawAction({ ...RawAction, color });
                 await updateAction({ color });
@@ -111,7 +111,7 @@ export function ActionFormFooter({
               selectedSprints={RawAction.sprints || []}
               responsibles={RawAction.responsibles || []}
               currentPartners={currentPartners}
-              tabIndex={7}
+              tabIndex={0}
               onSelect={async (newSprints, newResponsibles) => {
                 const finalSprints = newSprints.length > 0 ? newSprints : null;
 
@@ -183,7 +183,7 @@ export function ActionFormFooter({
         <Button
           disabled={isPending}
           className="squircle w-32 overflow-hidden rounded-2xl"
-          tabIndex={7}
+          tabIndex={0}
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();

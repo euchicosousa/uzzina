@@ -5,7 +5,6 @@ import { useOutletContext, useRouteLoaderData } from "react-router";
 // UI Components
 import { Checkbox } from "~/components/ui/checkbox";
 import { UAvatarGroup } from "../uzzina/UAvatar";
-import { ActionHoverCard } from "./ActionHoverCard";
 import { ActionItemTitleInput } from "./ActionItemTitleInput";
 import { Content } from "./Content";
 import { Draggable } from "./DnD";
@@ -83,7 +82,6 @@ type ActionItemProps = {
   /** Optional click handler override */
   onClick?: (action: Action) => void;
   /** Whether to wrap the item with a hover card detailing the action */
-  enableHoverCard?: boolean;
   /** Max lines for the title layout in certain variants */
   lines?: 1 | 2;
 };
@@ -102,6 +100,8 @@ interface OutletContext {
  * Integrates drag-and-drop capability, selection mode, inline title editing, and action shortcuts.
  */
 const DEFAULT_DISPLAY_FLAGS: ActionDisplayFlags = {};
+const DEFAULT_PARTNERS: Partner[] = [];
+const DEFAULT_PEOPLE: Person[] = [];
 
 export function ActionItem({
   action,
@@ -112,7 +112,6 @@ export function ActionItem({
   displayFlags = DEFAULT_DISPLAY_FLAGS,
   dateTimeDisplay,
   onClick,
-  enableHoverCard = false,
   lines = 1,
 }: ActionItemProps) {
   const {
@@ -124,12 +123,12 @@ export function ActionItem({
     showPriority = false,
   } = displayFlags;
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
-  const { data: people = [] } = useQuery({
+  const { data: people = DEFAULT_PEOPLE } = useQuery({
     queryKey: QUERY_KEYS.people(),
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });
-  const partners = appData?.partners || [];
+  const partners = appData?.partners || DEFAULT_PARTNERS;
   const person = appData?.person;
   const { isSelectionMode, selectedIds, toggleSelection } = useMultiSelection();
   const isSelected = selectedIds.includes(action.id);
@@ -417,6 +416,24 @@ export function ActionItem({
           }
         }
       }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (isSelectionMode) {
+            toggleSelection(action.id);
+            return;
+          }
+          if (!isEditing) {
+            if (onClick) {
+              onClick(action);
+            } else if (setBaseAction) {
+              setBaseAction(action);
+            }
+          }
+        }
+      }}
+      role="button"
+      tabIndex={0}
       title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
     >
       {isSelectionMode && (
@@ -455,17 +472,10 @@ export function ActionItem({
       {renderActionVariant()}
     </div>
   );
-  const wrapper = enableHoverCard ? (
-    <ActionHoverCard action={action} onClick={onClick}>
-      {content}
-    </ActionHoverCard>
+  return isDraggable ? (
+    <Draggable id={action.id}>{content}</Draggable>
   ) : (
     content
-  );
-  return isDraggable ? (
-    <Draggable id={action.id}>{wrapper}</Draggable>
-  ) : (
-    wrapper
   );
 }
 

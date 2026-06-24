@@ -33,17 +33,18 @@ export function FeedSection({
       ) : (
         <div className="grid grid-cols-3 gap-px">
           {actions.map((action) => (
-            <div
+            <button
               key={action.id}
+              type="button"
               onClick={() => onActionClick(action)}
-              className="relative transition-opacity hover:opacity-60"
+              className="relative text-left w-full transition-opacity hover:opacity-60"
             >
               <Content
                 action={action}
                 isSquared
                 category={CATEGORIES[action.category as CATEGORY]}
               />
-            </div>
+            </button>
           ))}
         </div>
       )}

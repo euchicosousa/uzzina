@@ -260,7 +260,9 @@ export function CreateAndEditAction({
     captionTailRef.current = currentPartners[0]?.instagram_caption_tail;
   }, [currentPartners]);
 
-  useEffect(() => {
+  const [prevFetcherData, setPrevFetcherData] = useState<unknown>(null);
+  if (fetcher.data !== prevFetcherData) {
+    setPrevFetcherData(fetcher.data);
     if (fetcher.data) {
       const intent = fetcher.data.intent;
       const captionTail = captionTailRef.current;
@@ -278,7 +280,6 @@ export function CreateAndEditAction({
           ...prev,
           instagram_caption: newCaption,
         }));
-        updateAction({ instagram_caption: newCaption });
       }
 
       if (
@@ -306,6 +307,40 @@ export function CreateAndEditAction({
 
         // Incrementa a versão para forçar o Tiptap a remontar com o novo conteúdo
         setDescriptionVersion((v) => v + 1);
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (fetcher.data) {
+      const intent = fetcher.data.intent;
+      const captionTail = captionTailRef.current;
+
+      if (intent === INTENT.ai_caption) {
+        const captionText =
+          typeof fetcher.data.output === "string"
+            ? fetcher.data.output
+            : fetcher.data.output.caption;
+
+        const newCaption = (captionText || "").concat(
+          getCaptionTail(captionTail),
+        );
+        updateAction({ instagram_caption: newCaption });
+      }
+
+      if (
+        [
+          INTENT.ai_post,
+          INTENT.ai_carousel,
+          INTENT.ai_stories,
+          INTENT.ai_reels,
+        ].includes(intent)
+      ) {
+        const { content, caption } = fetcher.data.output;
+        const newCaption = (caption || "").concat(getCaptionTail(captionTail));
+
+        const currentDescription = rawActionRef.current.description || "";
+        const newDescription = `${content}<hr />${currentDescription}`;
 
         updateAction({
           description: newDescription,

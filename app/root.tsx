@@ -61,6 +61,13 @@ export default function AppWithProviders() {
     </QueryClientProvider>
   );
 }
+function escapeHtmlScript(jsonString: string): string {
+  return jsonString
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/\//g, "\\u002f");
+}
+
 export function App() {
   const data = useLoaderData<typeof loader>();
   const { env } = data;
@@ -76,7 +83,7 @@ export function App() {
         <script
           // biome-ignore lint/security/noDangerouslySetInnerHtml: Necessário para expor env vars no head
           dangerouslySetInnerHTML={{
-            __html: `window.__env = ${JSON.stringify(env)};`,
+            __html: `window.__env = ${escapeHtmlScript(JSON.stringify(env))};`,
           }}
         />
         <script
@@ -84,7 +91,7 @@ export function App() {
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                var palette = ${JSON.stringify(PALLETE)};
+                var palette = ${escapeHtmlScript(JSON.stringify(PALLETE))};
                 var idx = localStorage.getItem("uzzina-accent-color-index");
                 var n = (idx !== null && idx !== "") ? parseInt(idx, 10) : 0;
                 var root = document.documentElement;

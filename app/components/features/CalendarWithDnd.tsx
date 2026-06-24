@@ -8,19 +8,20 @@ import {
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { format, isSameDay, parseISO } from "date-fns";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ActionItem } from "~/components/features/ActionItem";
-import { CalendarActions, type CalendarLayoutOptions } from "~/components/features/Calendar";
+import {
+  CalendarActions,
+  type CalendarLayoutOptions,
+} from "~/components/features/Calendar";
+import { useActionMutations } from "~/hooks/useActionMutations";
 import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
 import { getNewDateForAction } from "~/lib/helpers";
-import { useActionMutations } from "~/hooks/useActionMutations";
 import type { Action } from "~/models/actions.server";
-import type { ViewOptions } from "./ViewOptions";
 import { DragStateContext } from "./DragStateContext";
+import type { ViewOptions } from "./ViewOptions";
 const DEFAULT_CELEBRATIONS: Celebration[] = [];
-
 const DEFAULT_LAYOUT_OPTIONS: CalendarLayoutOptions = {};
-
 export function CalendarWithDnd({
   actions,
   calendarDays,
@@ -47,51 +48,47 @@ export function CalendarWithDnd({
   const [dateOverrides, setDateOverrides] = useState<
     Record<string, Partial<Action>>
   >({});
-
-  useEffect(() => {
-    setDateOverrides({});
-  }, []);
-
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
   );
-
   const handleDragStart = (event: DragStartEvent) => {
     const found = actions.find((a) => a.id === event.active.id);
     if (found) {
       setActiveAction(found);
     }
   };
-
   const handleDragEnd = (event: DragEndEvent) => {
     if (event.over && activeAction) {
       const key = "date";
-
       const value = format(
         parseISO(event.over.id as string),
         "yyyy-MM-dd",
       ).concat(format(activeAction[key], " HH:mm:ss"));
-
       const newDates = getNewDateForAction(activeAction, parseISO(value));
-
-      setDateOverrides((prev) => ({ ...prev, [activeAction.id]: newDates }));
-
+      setDateOverrides((prev) => ({
+        ...prev,
+        [activeAction.id]: newDates,
+      }));
       handleAction({
         ...activeAction,
         intent: INTENT.update_action,
         ...newDates,
       });
     }
-
     setActiveAction(undefined);
   };
-
   const actionsWithOverrides = actions.map((action) =>
     dateOverrides[action.id]
-      ? { ...action, ...dateOverrides[action.id] }
+      ? {
+          ...action,
+          ...dateOverrides[action.id],
+        }
       : action,
   );
-
   const calendar = calendarDays.map((date) => ({
     date,
     actions: actionsWithOverrides.filter((action) =>
@@ -99,32 +96,33 @@ export function CalendarWithDnd({
     ),
     celebrations: celebrations.filter((c) => isSameDay(parseISO(c.date), date)),
   }));
-
   return (
     <DragStateContext.Provider value={!!activeAction}>
       <DndContext
         id="calendar"
-        sensors={sensors}
-        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
+        onDragStart={handleDragStart}
+        sensors={sensors}
       >
         <CalendarActions
-          currentDay={currentDay}
           calendar={calendar}
-          viewOptions={viewOptions}
-          onCreateAction={onCreateAction}
+          currentDay={currentDay}
           layoutOptions={layoutOptions}
+          onCreateAction={onCreateAction}
+          viewOptions={viewOptions}
         />
         <DragOverlay
-          className="z-100"
-          dropAnimation={{ duration: 150, easing: "ease-in-out" }}
           adjustScale={false}
+          className="z-100"
+          dropAnimation={{
+            duration: 150,
+            easing: "ease-in-out",
+          }}
         >
           {activeAction ? (
             <ActionItem
               action={activeAction}
-              variant={viewOptions.variant}
-              isDragging
+              dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
               displayFlags={{
                 showLate: viewOptions.late,
                 showPartner: viewOptions.partner,
@@ -132,7 +130,8 @@ export function CalendarWithDnd({
                 showResponsibles: viewOptions.responsibles,
                 showPriority: viewOptions.priority,
               }}
-              dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+              isDragging
+              variant={viewOptions.variant}
             />
           ) : null}
         </DragOverlay>

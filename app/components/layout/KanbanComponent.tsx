@@ -7,8 +7,9 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { useActionMutations } from "~/hooks/useActionMutations";
 import {
   DATE_TIME_DISPLAY,
   INTENT,
@@ -16,51 +17,42 @@ import {
   type PHASE_TYPE,
 } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
+import type { Action } from "~/models/actions.server";
 import { ActionItem } from "../features/ActionItem";
 import { Draggable, Droppable } from "../features/DnD";
-import { useActionMutations } from "~/hooks/useActionMutations";
-import { UBadge } from "../uzzina/UBadge";
-import type { Action } from "~/models/actions.server";
 import { DragStateContext } from "../features/DragStateContext";
-
+import { UBadge } from "../uzzina/UBadge";
 export default function KanbanComponent({ actions }: { actions: Action[] }) {
   const _queryClient = useQueryClient();
   const { handleAction } = useActionMutations();
-
   const [activeAction, setActiveAction] = useState<Action>();
 
   // Local override: maps action.id → new phase slug
   const [phaseOverrides, setPhaseOverrides] = useState<Record<string, string>>(
     {},
   );
-
-  // Clear overrides once the server data (actions prop) is revalidated.
-  // The overrides exist only for smooth drop animations; once the loader
-  // delivers fresh data that already contains the persisted changes,
-  // keeping the overrides would cause stale values to shadow future updates.
-  useEffect(() => {
-    setPhaseOverrides({});
-  }, []);
-
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
+      activationConstraint: {
+        distance: 8,
+      },
     }),
   );
-
   const handleDragStart = (event: DragStartEvent) => {
     const found = actions.find((action) => action.id === event.active.id);
     if (found) {
       setActiveAction(found);
     }
   };
-
   const handleDragEnd = (event: DragEndEvent) => {
     if (event.over && activeAction) {
       const newPhase = event.over.id as string;
 
       // 1. Apply override locally
-      setPhaseOverrides((prev) => ({ ...prev, [activeAction.id]: newPhase }));
+      setPhaseOverrides((prev) => ({
+        ...prev,
+        [activeAction.id]: newPhase,
+      }));
 
       // 2. Persist to server
       handleAction({
@@ -79,7 +71,10 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
     () =>
       actions.map((action) =>
         phaseOverrides[action.id]
-          ? { ...action, phase: phaseOverrides[action.id] }
+          ? {
+              ...action,
+              phase: phaseOverrides[action.id],
+            }
           : action,
       ),
     [actions, phaseOverrides],
@@ -95,7 +90,6 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
     }
     return map;
   }, [actionsWithOverrides]);
-
   return (
     <div className="w-full max-w-full overflow-hidden">
       <div className="overflow-x-auto pb-8">
@@ -103,33 +97,36 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
           <DragStateContext.Provider value={!!activeAction}>
             <DndContext
               id={"kanban"}
-              sensors={sensors}
-              onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
+              onDragStart={handleDragStart}
+              sensors={sensors}
             >
               {Object.values(PHASES).map((phase) => (
                 <KanbanColumn
-                  id={phase.slug}
-                  phase={phase}
                   key={phase.slug}
                   actions={actionsByPhase[phase.slug] ?? []}
+                  id={phase.slug}
+                  phase={phase}
                 />
               ))}
               <DragOverlay
-                className="z-100"
-                dropAnimation={{ duration: 150, easing: "ease-in-out" }}
                 adjustScale={false}
+                className="z-100"
+                dropAnimation={{
+                  duration: 150,
+                  easing: "ease-in-out",
+                }}
               >
                 {activeAction ? (
                   <ActionItem
                     action={activeAction}
-                    isDragging
+                    dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
                     displayFlags={{
                       showLate: true,
                       showPartner: true,
                       showCategory: true,
                     }}
-                    dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+                    isDragging
                   />
                 ) : null}
               </DragOverlay>
@@ -140,7 +137,6 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
     </div>
   );
 }
-
 const KanbanColumn = ({
   actions,
   id,
@@ -151,7 +147,7 @@ const KanbanColumn = ({
   phase: PHASE_TYPE;
 }) => {
   return (
-    <Droppable id={id} className="flex h-[30vh] flex-col overflow-hidden">
+    <Droppable className="flex h-[30vh] flex-col overflow-hidden" id={id}>
       {(isOver) => {
         return (
           <div
@@ -159,7 +155,9 @@ const KanbanColumn = ({
               "flex h-full flex-col overflow-hidden border-t transition-colors",
               isOver && "border-primary text-primary",
             )}
-            style={{ borderTopColor: phase.color }}
+            style={{
+              borderTopColor: phase.color,
+            }}
           >
             <div className="flex items-center gap-2 px-1 py-2 text-lg font-medium tracking-tight">
               <div>{phase.title}</div>
@@ -169,15 +167,15 @@ const KanbanColumn = ({
             <div className="flex h-full flex-col overflow-y-auto p-1">
               <div className="flex flex-col gap-1">
                 {actions.map((action) => (
-                  <Draggable id={action.id} key={action.id}>
+                  <Draggable key={action.id} id={action.id}>
                     <ActionItem
                       action={action}
+                      dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
                       displayFlags={{
                         showLate: true,
                         showPartner: true,
                         showCategory: true,
                       }}
-                      dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
                     />
                   </Draggable>
                 ))}

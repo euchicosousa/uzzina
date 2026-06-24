@@ -132,7 +132,7 @@ export function EssentialsTab({
             title,
           });
         }}
-        tabIndex={1}
+        tabIndex={0}
         title={RawAction.title}
       />
 
@@ -156,14 +156,16 @@ export function EssentialsTab({
             selectedResponsibles={RawAction.responsibles}
           />
 
-          <pre
-            className="ml-auto rounded border bg-secondary p-1 text-[10px]"
+          <button
+            type="button"
+            className="ml-auto rounded border bg-secondary p-1 font-mono text-[10px] cursor-pointer"
             onClick={() => {
               setisIDVisible(!isIDVisible);
             }}
+            aria-label="Alternar exibição do ID da ação"
           >
             {isIDVisible ? RawAction.id : "ID"}
-          </pre>
+          </button>
         </div>
 
         <div className="flex justify-between gap-8 border-b px-4 py-1">
@@ -322,7 +324,7 @@ export function EssentialsTab({
                 // always includes the latest typed content.
                 onDescriptionChange?.(content);
               }}
-              tabIndex={2}
+              tabIndex={0}
             />
           </Suspense>
         </div>
