@@ -10,7 +10,7 @@ import {
 import { format, isSameDay, parseISO } from "date-fns";
 import { useEffect, useState } from "react";
 import { ActionItem } from "~/components/features/ActionItem";
-import { CalendarActions } from "~/components/features/Calendar";
+import { CalendarActions, type CalendarLayoutOptions } from "~/components/features/Calendar";
 import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
 import { getNewDateForAction } from "~/lib/helpers";
 import { useActionMutations } from "~/hooks/useActionMutations";
@@ -26,11 +26,7 @@ export function CalendarWithDnd({
   viewOptions,
   currentDay,
   onCreateAction,
-  isCompact,
-  isScroll,
-  showBorder,
-  hideBorderOnLastRow = false,
-  highlightThisWeek,
+  layoutOptions = {},
 }: {
   actions: Action[];
   calendarDays: Date[];
@@ -38,11 +34,7 @@ export function CalendarWithDnd({
   viewOptions: ViewOptions;
   currentDay?: Date;
   onCreateAction?: (day: Date) => void;
-  isCompact?: boolean;
-  isScroll?: boolean;
-  showBorder?: boolean;
-  hideBorderOnLastRow?: boolean;
-  highlightThisWeek?: boolean;
+  layoutOptions?: CalendarLayoutOptions;
 }) {
   const { handleAction } = useActionMutations();
   const [activeAction, setActiveAction] = useState<Action>();
@@ -119,11 +111,7 @@ export function CalendarWithDnd({
           calendar={calendar}
           viewOptions={viewOptions}
           onCreateAction={onCreateAction}
-          isCompact={isCompact}
-          isScroll={isScroll}
-          showBorder={showBorder}
-          highlightThisWeek={highlightThisWeek}
-          hideBorderOnLastRow={hideBorderOnLastRow}
+          layoutOptions={layoutOptions}
         />
         <DragOverlay
           className="z-100"
@@ -135,11 +123,13 @@ export function CalendarWithDnd({
               action={activeAction}
               variant={viewOptions.variant}
               isDragging
-              showLate={viewOptions.late}
-              showPartner={viewOptions.partner}
-              showCategory={viewOptions.category}
-              showResponsibles={viewOptions.responsibles}
-              showPriority={viewOptions.priority}
+              displayFlags={{
+                showLate: viewOptions.late,
+                showPartner: viewOptions.partner,
+                showCategory: viewOptions.category,
+                showResponsibles: viewOptions.responsibles,
+                showPriority: viewOptions.priority,
+              }}
               dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
             />
           ) : null}

@@ -25,27 +25,23 @@ export function SkeletonGroup({
   className,
   delay = 0,
   orientation = "horizontal",
-  hasProfile,
-  hasLine = true,
-  hasBlock,
+  variant = "line",
   isWrapped = true,
   ...props
 }: SkeletonProps & {
   count?: number;
   orientation?: "horizontal" | "vertical";
-  hasProfile?: boolean;
-  hasLine?: boolean;
-  hasBlock?: boolean;
+  variant?: "profile" | "line" | "block";
   isWrapped?: boolean;
 }) {
   const skeletons = [...Array(count)].map((_, i) => (
     // biome-ignore lint/suspicious/noArrayIndexKey: static list of skeletons
     <div className="flex w-full flex-col gap-2" key={i}>
-      {hasProfile && (
+      {variant === "profile" && (
         <ProfileSkeleton className={className} delay={delay * i} />
       )}
-      {hasLine && <Skeleton className={className} delay={delay * i} />}
-      {hasBlock && <Skeleton className={className} delay={delay * i} />}
+      {variant === "line" && <Skeleton className={className} delay={delay * i} />}
+      {variant === "block" && <Skeleton className={className} delay={delay * i} />}
     </div>
   ));
 

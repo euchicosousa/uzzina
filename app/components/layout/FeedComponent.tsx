@@ -20,7 +20,7 @@ export default function FeedComponent({
           columns={6}
           actions={actions}
           variant={VARIANT.content}
-          showCategory
+          displayFlags={{ showCategory: true }}
           orderBy={orderBy}
           ascending={ascending}
         />

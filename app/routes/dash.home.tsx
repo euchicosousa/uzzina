@@ -1,6 +1,6 @@
 import { addDays, format } from "date-fns";
 import { SidebarClose } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   useLoaderData,
   useNavigate,
@@ -71,17 +71,10 @@ export default function DashHome() {
   const [mobileTab, setMobileTab] = useState<"calendar" | "feed">("calendar");
   const [calendarView, setCalendarView] = useState<"month" | "week">("month");
 
-  const [isSidebarVisible, setIsSidebarVisible] = useState(
-    searchParams.get("sidebar") !== "false",
-  );
-
-  useEffect(() => {
-    setIsSidebarVisible(searchParams.get("sidebar") !== "false");
-  }, [searchParams]);
+  const isSidebarVisible = searchParams.get("sidebar") !== "false";
 
   const toggleSidebar = () => {
     const nextValue = !isSidebarVisible;
-    setIsSidebarVisible(nextValue);
 
     const nextParams = new URLSearchParams(searchParams);
     if (nextValue) {

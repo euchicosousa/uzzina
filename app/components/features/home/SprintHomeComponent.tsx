@@ -46,14 +46,16 @@ export function SprintHomeComponent({ actions }: { actions: Action[] }) {
           </div>
         ) : (
           <ActionContainer
-            showCategory
-            showPartner
-            showResponsibles
+            displayFlags={{
+              showCategory: true,
+              showPartner: true,
+              showResponsibles: true,
+              showLate: true,
+              showSprint: false,
+            }}
             actions={actions}
             columns={viewOptions.columns || 4}
             variant={viewOptions.variant}
-            showLate
-            showSprint={false}
             orderBy={ORDER_BY.phase}
           />
         )}

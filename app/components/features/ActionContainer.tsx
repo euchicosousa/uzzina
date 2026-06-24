@@ -3,19 +3,15 @@ import { useMemo, useState } from "react";
 import type { DATE_TIME_DISPLAY, ORDER_BY } from "~/lib/CONSTANTS";
 import { VARIANT } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
-import { cn, getGridClasses } from "~/lib/utils";
+import { cn } from "~/lib/utils";
+import { getGridClasses } from "~/lib/uzzina-utils";
 import type { Action } from "~/models/actions.server";
-import { ActionItem } from "./ActionItem";
+import { ActionItem, type ActionDisplayFlags } from "./ActionItem";
 type ActionContainerProps = {
   actions: Action[];
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
   columns?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
-  showLate?: boolean;
-  showSprint?: boolean;
-  showPartner?: boolean;
-  showCategory?: boolean;
-  showResponsibles?: boolean;
-  showPriority?: boolean;
+  displayFlags?: ActionDisplayFlags;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending?: boolean;
@@ -28,12 +24,7 @@ export function ActionContainer({
   actions,
   variant = VARIANT.line,
   columns = 1,
-  showLate = false,
-  showSprint,
-  showPartner,
-  showCategory,
-  showResponsibles,
-  showPriority,
+  displayFlags = {},
   dateTimeDisplay,
   orderBy,
   ascending,
@@ -43,7 +34,9 @@ export function ActionContainer({
   onClick,
 }: ActionContainerProps) {
   actions = sortActions(actions, orderBy, ascending);
-  const [showMoreOverride, setShowMoreOverride] = useState<boolean | null>(null);
+  const [showMoreOverride, setShowMoreOverride] = useState<boolean | null>(
+    null,
+  );
   const showMore = showMoreOverride !== null ? showMoreOverride : isCompact;
 
   // Lógica de Gaps (Variantes)
@@ -75,14 +68,9 @@ export function ActionContainer({
             key={action.id}
             action={action}
             dateTimeDisplay={dateTimeDisplay}
+            displayFlags={displayFlags}
             isDraggable={isDraggable}
             onClick={onClick}
-            showCategory={showCategory}
-            showLate={showLate}
-            showPartner={showPartner}
-            showPriority={showPriority}
-            showResponsibles={showResponsibles}
-            showSprint={showSprint}
             variant={variant}
           />
         ))}

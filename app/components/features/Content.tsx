@@ -2,11 +2,11 @@ import Color from "color";
 import { useRouteLoaderData } from "react-router";
 import { type CATEGORIES, DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
 import { getFormattedDateTime, Icons, isSprint } from "~/lib/helpers";
-import { cn, safeColor } from "~/lib/utils";
+import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import { UAvatarGroup } from "../uzzina/UAvatar";
 import { getPeople } from "~/utils/filter";
-
+import { safeColor } from "~/lib/uzzina-utils";
 export function Content({
   action,
   category,
@@ -35,7 +35,6 @@ export function Content({
 
   // Normaliza e valida a cor — nunca quebra mesmo se action.color vier inválido do banco
   const actionColor = safeColor(action.color);
-
   const hasFiles = action.content_files?.length;
   const backgroundColor = Color(actionColor);
   const foregroundColor = hasFiles
@@ -45,7 +44,6 @@ export function Content({
       : Color(actionColor).lightness() < 20
         ? "white"
         : Color(actionColor).lighten(2).hex();
-
   return (
     <div className={cn("relative", className)}>
       <div
@@ -56,9 +54,9 @@ export function Content({
       >
         {action.content_files?.length ? (
           <img
-            src={action.content_files[0]}
             alt={action.title}
             className="h-full w-full object-cover"
+            src={action.content_files[0]}
           />
         ) : (
           <div
@@ -77,7 +75,7 @@ export function Content({
         <div className="flex items-center justify-between gap-2">
           <div>
             {person && isSprint(action, person) && (
-              <Icons slug="sprint" className="size-4" color={foregroundColor} />
+              <Icons className="size-4" color={foregroundColor} slug="sprint" />
             )}
           </div>
 
@@ -98,15 +96,17 @@ export function Content({
         <div className="flex items-center justify-between gap-2">
           {category && (
             <Icons
-              slug={category.slug}
               className="size-4"
               color={foregroundColor}
+              slug={category.slug}
             />
           )}
           {showDate && (
             <div
               className={`overflow-hidden text-xs font-medium text-ellipsis whitespace-nowrap ${hasFiles ? "drop-shadow-[0px_1px_1px_#00000050]" : ""}`}
-              style={{ color: foregroundColor }}
+              style={{
+                color: foregroundColor,
+              }}
             >
               {getFormattedDateTime(action.date, dateTimeDisplay)}
             </div>

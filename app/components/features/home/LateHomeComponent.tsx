@@ -38,9 +38,11 @@ export function LateHomeComponent({ actions }: { actions: Action[] }) {
           variant={viewOptions.variant}
           actions={actions}
           columns={viewOptions.variant !== "content" ? 4 : 6}
-          showResponsibles={viewOptions.responsibles}
-          showPartner={viewOptions.partner}
-          showCategory={viewOptions.category}
+          displayFlags={{
+            showResponsibles: viewOptions.responsibles,
+            showPartner: viewOptions.partner,
+            showCategory: viewOptions.category,
+          }}
         />
       </div>
     </HomeComponentWrapper>

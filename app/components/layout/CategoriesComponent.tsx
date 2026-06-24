@@ -110,8 +110,10 @@ function CategoryColumn({
       <ActionContainer
         actions={actions}
         variant={VARIANT.hair}
-        showPartner
-        showLate
+        displayFlags={{
+          showPartner: true,
+          showLate: true,
+        }}
         orderBy={orderBy}
         ascending={ascending}
       />

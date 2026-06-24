@@ -30,7 +30,7 @@ export function PartnersComponent({
     <div className="w-full">
       <div className="grid grid-cols-2 gap-x-4 gap-y-8 pt-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
         {isLoading && activePartners.length === 0 && (
-          <SkeletonGroup count={12} isWrapped={false} hasProfile />
+          <SkeletonGroup count={12} isWrapped={false} variant="profile" />
         )}
         {!isLoading && activePartners.length === 0 && (
           <div className="col-span-full rounded-2xl border border-dashed border-border/50 bg-input/20 py-16 text-center text-sm text-muted-foreground">
@@ -112,8 +112,10 @@ function PartnerColumn({
         actions={actions}
         dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
         orderBy="date"
-        showLate
-        showCategory
+        displayFlags={{
+          showLate: true,
+          showCategory: true,
+        }}
       />
     </div>
   );

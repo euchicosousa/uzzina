@@ -51,6 +51,14 @@
   --sidebar-accent-foreground: var(--foreground);
   --sidebar-border: oklch(from var(--foreground) l c h / 8%);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Uzzina colors */
+
+  --action: oklch(from var(--background) 0.98 c h);
+  --action-hover: oklch(1 0 1);
+
+  --late: oklch(from var(--destructive) 0.95 0.2 h);
+  --late-hover: oklch(from var(--destructive) 0.95 0.1 h);
 }
 
 .dark,
@@ -131,6 +139,12 @@
   --color-info-background: oklch(
     var(--luminosity-background) var(--chroma-background) var(--info-hue)
   );
+
+  --action: oklch(from var(--background) calc(l + 0.1) c h);
+  --action-hover: oklch(from var(--background) calc(l + 0.2) c h);
+
+  --late: oklch(from var(--destructive) 0.4 0.15 h);
+  --late-hover: oklch(from var(--destructive) 0.45 0.15 h);
 }
 
 @theme inline {
@@ -191,6 +205,12 @@
   --font-sans:
     "PP Object Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --color-action: var(--action);
+  --color-action-hover: var(--action-hover);
+
+  --color-late: var(--late);
+  --color-late-hover: var(--late-hover);
 }
 
 @layer base {

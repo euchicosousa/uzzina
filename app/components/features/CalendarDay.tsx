@@ -106,11 +106,13 @@ export function CalendarDay({
                 <ActionContainer
                   actions={getInstagramFeedActions(actions)}
                   dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
-                  showCategory={viewOptions.category}
-                  showPartner={viewOptions.partner}
-                  showResponsibles={viewOptions.responsibles}
-                  showLate={viewOptions.late}
-                  showPriority={viewOptions.priority}
+                  displayFlags={{
+                    showCategory: viewOptions.category,
+                    showPartner: viewOptions.partner,
+                    showResponsibles: viewOptions.responsibles,
+                    showLate: viewOptions.late,
+                    showPriority: viewOptions.priority,
+                  }}
                   orderBy={viewOptions.order}
                   ascending={viewOptions.ascending}
                   isCompact={isCompact}
@@ -123,11 +125,13 @@ export function CalendarDay({
                 <ActionContainer
                   actions={getInstagramFeedActions(actions, false)}
                   dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
-                  showCategory={viewOptions.category}
-                  showPartner={viewOptions.partner}
-                  showResponsibles={viewOptions.responsibles}
-                  showLate={viewOptions.late}
-                  showPriority={viewOptions.priority}
+                  displayFlags={{
+                    showCategory: viewOptions.category,
+                    showPartner: viewOptions.partner,
+                    showResponsibles: viewOptions.responsibles,
+                    showLate: viewOptions.late,
+                    showPriority: viewOptions.priority,
+                  }}
                   orderBy={viewOptions.order}
                   ascending={viewOptions.ascending}
                   isCompact={isCompact}
@@ -141,11 +145,13 @@ export function CalendarDay({
             <ActionContainer
               actions={actions}
               dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
-              showCategory={viewOptions.category}
-              showPartner={viewOptions.partner}
-              showResponsibles={viewOptions.responsibles}
-              showLate={viewOptions.late}
-              showPriority={viewOptions.priority}
+              displayFlags={{
+                showCategory: viewOptions.category,
+                showPartner: viewOptions.partner,
+                showResponsibles: viewOptions.responsibles,
+                showLate: viewOptions.late,
+                showPriority: viewOptions.priority,
+              }}
               orderBy={viewOptions.order}
               ascending={viewOptions.ascending}
               isCompact={isCompact}

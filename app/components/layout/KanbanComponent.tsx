@@ -124,9 +124,11 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
                   <ActionItem
                     action={activeAction}
                     isDragging
-                    showLate
-                    showPartner
-                    showCategory
+                    displayFlags={{
+                      showLate: true,
+                      showPartner: true,
+                      showCategory: true,
+                    }}
                     dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
                   />
                 ) : null}
@@ -170,9 +172,11 @@ const KanbanColumn = ({
                   <Draggable id={action.id} key={action.id}>
                     <ActionItem
                       action={action}
-                      showLate
-                      showPartner
-                      showCategory
+                      displayFlags={{
+                        showLate: true,
+                        showPartner: true,
+                        showCategory: true,
+                      }}
                       dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
                     />
                   </Draggable>

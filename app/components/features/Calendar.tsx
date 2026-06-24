@@ -6,6 +6,14 @@ import { CalendarDay } from "./CalendarDay";
 export { CalendarButtons } from "./CalendarButtons";
 import type { Action } from "~/models/actions.server";
 
+export type CalendarLayoutOptions = {
+  isCompact?: boolean;
+  isScroll?: boolean;
+  showBorder?: boolean;
+  highlightThisWeek?: boolean;
+  hideBorderOnLastRow?: boolean;
+};
+
 export type CalendarActionsType = {
   date: Date;
   actions?: Action[];
@@ -17,22 +25,21 @@ export function CalendarActions({
   calendar,
   viewOptions,
   onCreateAction,
-  isCompact,
-  isScroll,
-  showBorder,
-  highlightThisWeek,
-  hideBorderOnLastRow,
+  layoutOptions = {},
 }: {
   currentDay?: Date;
   calendar: CalendarActionsType[];
   viewOptions: ViewOptions;
   onCreateAction?: (day: Date) => void;
-  isCompact?: boolean;
-  isScroll?: boolean;
-  showBorder?: boolean;
-  highlightThisWeek?: boolean;
-  hideBorderOnLastRow?: boolean;
+  layoutOptions?: CalendarLayoutOptions;
 }) {
+  const {
+    isCompact,
+    isScroll,
+    showBorder,
+    highlightThisWeek,
+    hideBorderOnLastRow,
+  } = layoutOptions;
   return (
     <div className="w-full overflow-x-auto overflow-y-hidden">
       <div className="flex h-full w-full min-w-[1500px] flex-col overflow-hidden lg:min-w-[900px]">

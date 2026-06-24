@@ -47,6 +47,20 @@ import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server"; // Imported explicitly for subcomponents
 import type { Person } from "~/models/people.server"; // Imported explicitly for subcomponents
 import type { AppLoaderData } from "~/routes/app";
+export type ActionDisplayFlags = {
+  /** Whether to highlight the action if it is late */
+  showLate?: boolean;
+  /** Whether to highlight the action if it is a sprint */
+  showSprint?: boolean;
+  /** Whether to show the associated partner information */
+  showPartner?: boolean;
+  /** Whether to show the category icon */
+  showCategory?: boolean;
+  /** Whether to show the avatar group of responsible users */
+  showResponsibles?: boolean;
+  /** Whether to show the priority icon indicator */
+  showPriority?: boolean;
+};
 
 /**
  * Props for the ActionItem component.
@@ -62,18 +76,8 @@ type ActionItemProps = {
   isDragging?: boolean;
   /** Whether the item is draggable */
   isDraggable?: boolean;
-  /** Whether to highlight the action if it is late */
-  showLate?: boolean;
-  /** Whether to highlight the action if it is a sprint */
-  showSprint?: boolean;
-  /** Whether to show the associated partner information */
-  showPartner?: boolean;
-  /** Whether to show the category icon */
-  showCategory?: boolean;
-  /** Whether to show the avatar group of responsible users */
-  showResponsibles?: boolean;
-  /** Whether to show the priority icon indicator */
-  showPriority?: boolean;
+  /** Configuration object for showing various details/badges */
+  displayFlags?: ActionDisplayFlags;
   /** Format pattern for displaying dates and times */
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
   /** Optional click handler override */
@@ -100,20 +104,23 @@ interface OutletContext {
 export function ActionItem({
   action,
   variant = VARIANT.line,
-  showLate,
-  showSprint = true,
   className,
   isDragging,
   isDraggable,
-  showPartner,
-  showCategory,
-  showResponsibles,
-  showPriority,
+  displayFlags = {},
   dateTimeDisplay,
   onClick,
   enableHoverCard = false,
   lines = 1,
 }: ActionItemProps) {
+  const {
+    showLate = false,
+    showSprint = true,
+    showPartner = false,
+    showCategory = false,
+    showResponsibles = false,
+    showPriority = false,
+  } = displayFlags;
   const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
   const { data: people = [] } = useQuery({
     queryKey: QUERY_KEYS.people(),
@@ -186,8 +193,21 @@ export function ActionItem({
     }
   }, [variant]);
   const bgClasses = useMemo(() => {
-    let baseStyles =
-      "shadow-xs transition ring ring-black/5  hover:shadow-lg duration-500 border-t border-white dark:border-white/20 hover:z-10 z-0 hover:bg-card bg-card/50 text-card-foreground dark:shadow-black/80";
+    let baseStyles = `shadow-xs
+      transition
+      ring
+      ring-black/5
+      duration-500
+      border-t
+      border-white
+      dark:border-white/20
+      hover:z-10
+      z-0
+      bg-action
+      hover:shadow-lg
+      hover:bg-action-hover
+      text-foreground
+      dark:shadow-black/80`;
 
     // 1. Determine base background/text colors based on priority states
     if (showLate && isLateAction(action)) {
@@ -196,7 +216,7 @@ export function ActionItem({
       }
       baseStyles = cn(
         baseStyles,
-        "bg-destructive/10 dark:bg-destructive/10 text-destructive hover:bg-destructive/5 dark:hover:bg-destructive/20 ring-destructive/20 dark:border-destructive/30 ring",
+        "bg-late text-destructive hover:bg-late-hover ring-late",
       );
     }
     if (showSprint && person && isSprint(action, person)) {

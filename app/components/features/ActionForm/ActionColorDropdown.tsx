@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { cn, getGridCols, safeColor } from "~/lib/utils";
+import { cn } from "~/lib/utils";
+import { getGridCols, safeColor } from "~/lib/uzzina-utils";
 import type { Action } from "~/models/actions.server";
 import { PartnerColorPicker } from "./PartnerColorPicker";
-
 interface ActionColorDropdownProps {
   action: Action;
   partners: Partner[];
@@ -32,37 +32,36 @@ export function ActionColorDropdown({
     () => safeColor(action.color),
     [action.color],
   );
-
+  const [prevColor, setPrevColor] = useState(normalizedActionColor);
   const [selected, setSelected] = useState(normalizedActionColor);
-
-  // Sincroniza quando a prop muda externamente (ex: troca de ação no painel)
-  useEffect(() => {
+  if (normalizedActionColor !== prevColor) {
+    setPrevColor(normalizedActionColor);
     setSelected(normalizedActionColor);
-  }, [normalizedActionColor]);
+  }
 
   // Agrega todas as cores de todos os parceiros associados à ação
   const partnerColors = useMemo(
     () => partners.flatMap((p) => p.colors ?? []),
     [partners],
   );
-
   const handleChange = (color: string) => {
     setSelected(color);
     onSelect?.(color);
   };
-
   return (
     <DropdownMenu>
       {/* Botão trigger: bolinha com a cor atual da ação */}
       <DropdownMenuTrigger asChild>
         <button
-          type="button"
-          tabIndex={tabIndex}
           className="hover:bg-secondary focus:bg-secondary/50 flex items-center gap-2 p-6 text-sm outline-none"
+          tabIndex={tabIndex}
+          type="button"
         >
           <div
             className="size-5 rounded-full border border-black/5"
-            style={{ backgroundColor: normalizedActionColor }}
+            style={{
+              backgroundColor: normalizedActionColor,
+            }}
           />
         </button>
       </DropdownMenuTrigger>
@@ -70,10 +69,10 @@ export function ActionColorDropdown({
       {/* Painel: swatches + input hex via componente compartilhado */}
       <DropdownMenuContent className={cn("w-40 p-2")}>
         <PartnerColorPicker
-          colors={partnerColors}
-          value={selected}
-          onChange={handleChange}
           className={getGridCols(partnerColors.length)}
+          colors={partnerColors}
+          onChange={handleChange}
+          value={selected}
         />
       </DropdownMenuContent>
     </DropdownMenu>
