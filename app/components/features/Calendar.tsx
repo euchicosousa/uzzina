@@ -20,12 +20,14 @@ export type CalendarActionsType = {
   celebrations?: Celebration[];
 };
 
+const DEFAULT_LAYOUT_OPTIONS: CalendarLayoutOptions = {};
+
 export function CalendarActions({
   currentDay,
   calendar,
   viewOptions,
   onCreateAction,
-  layoutOptions = {},
+  layoutOptions = DEFAULT_LAYOUT_OPTIONS,
 }: {
   currentDay?: Date;
   calendar: CalendarActionsType[];

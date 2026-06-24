@@ -170,6 +170,7 @@ export function AdminUserForm({
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
               >
                 {showPassword ? (
                   <EyeOffIcon className="size-4" />
@@ -195,6 +196,7 @@ export function AdminUserForm({
                     value={area.slug}
                     defaultChecked={person?.areas?.includes(area.slug)}
                     className="peer sr-only absolute size-0"
+                    aria-label={area.title}
                   />
                   <label
                     htmlFor={`area-${area.slug}`}

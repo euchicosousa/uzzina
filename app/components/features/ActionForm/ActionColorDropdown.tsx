@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,10 +32,10 @@ export function ActionColorDropdown({
     () => safeColor(action.color),
     [action.color],
   );
-  const [prevColor, setPrevColor] = useState(normalizedActionColor);
+  const prevColorRef = useRef(normalizedActionColor);
   const [selected, setSelected] = useState(normalizedActionColor);
-  if (normalizedActionColor !== prevColor) {
-    setPrevColor(normalizedActionColor);
+  if (normalizedActionColor !== prevColorRef.current) {
+    prevColorRef.current = normalizedActionColor;
     setSelected(normalizedActionColor);
   }
 
@@ -56,6 +56,7 @@ export function ActionColorDropdown({
           className="hover:bg-secondary focus:bg-secondary/50 flex items-center gap-2 p-6 text-sm outline-none"
           tabIndex={tabIndex}
           type="button"
+          aria-label="Abrir seletor de cores"
         >
           <div
             className="size-5 rounded-full border border-black/5"

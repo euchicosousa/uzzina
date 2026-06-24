@@ -11,11 +11,6 @@ const sessionStorage = createCookieSessionStorage({
     httpOnly: true,
     sameSite: "lax",
     secrets: [process.env.SESSION_SECRET || "default_secret_fallback_key"],
-    // Set domain and secure only if in production
-    // ...(isProduction
-    //   ? { domain: "your-production-domainbussola.com", secure: true }
-    //   : {}),
   },
 });
-
 export const themeSessionResolver = createThemeSessionResolver(sessionStorage);

@@ -417,6 +417,7 @@ function HookItem({
             fieldSizing: "content",
           }}
           value={hook.texto}
+          aria-label="Texto de apoio da ação"
         />
         <Button
           className="h-8 w-8 shrink-0 rounded-full"

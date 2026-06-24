@@ -1,5 +1,5 @@
 import { CircleAlertIcon, EyeIcon, EyeOffIcon, KeyRoundIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, type MetaFunction } from "react-router";
 import { toast } from "sonner";
 import { UzzinaLogo } from "~/components/logo";
@@ -21,11 +21,11 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
 
-  const [supabase, setSupabase] = useState<ReturnType<typeof createSupabaseBrowserClient> | null>(null);
+  const supabaseRef = useRef<ReturnType<typeof createSupabaseBrowserClient> | null>(null);
 
   useEffect(() => {
     const client = createSupabaseBrowserClient();
-    setSupabase(client);
+    supabaseRef.current = client;
 
     // Dá um tempo pequeno para o Supabase client ler o token do hash da URL ou query
     const checkSession = async () => {
@@ -94,7 +94,7 @@ export default function ResetPassword() {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!supabase) return;
+    if (!supabaseRef.current) return;
     setError(null);
 
     if (password.length < 6) {
@@ -110,7 +110,7 @@ export default function ResetPassword() {
     setLoading(true);
 
     try {
-      const { error: updateError } = await supabase.auth.updateUser({
+      const { error: updateError } = await supabaseRef.current.auth.updateUser({
         password: password,
       });
 

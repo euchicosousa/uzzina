@@ -20,11 +20,13 @@ type ActionContainerProps = {
   isDraggable?: boolean;
   onClick?: (action: Action) => void;
 };
+const DEFAULT_DISPLAY_FLAGS: ActionDisplayFlags = {};
+
 export function ActionContainer({
   actions,
   variant = VARIANT.line,
   columns = 1,
-  displayFlags = {},
+  displayFlags = DEFAULT_DISPLAY_FLAGS,
   dateTimeDisplay,
   orderBy,
   ascending,

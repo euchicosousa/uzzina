@@ -50,6 +50,7 @@ export function ActionTitleInput({
         }}
         tabIndex={tabIndex}
         value={localTitle}
+        aria-label="Título da ação"
       />
       {localTitle.length > 70 && !textareaClassName && (
         <div className="absolute right-0 bottom-0">

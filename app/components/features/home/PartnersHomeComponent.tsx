@@ -6,16 +6,13 @@ import { cn } from "~/lib/utils";
 import type { Action } from "~/models/actions.server";
 import type { Partner } from "~/models/partners.server";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
-
 export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
   const { partners } = useRouteLoaderData("routes/app") as {
     partners: Partner[];
   };
-
   const sortedPartners = [...partners].sort((a, b) =>
     a.title.localeCompare(b.title),
   );
-
   const partnersWithActionsLength = useMemo(() => {
     // Create a map of partner slug to actions for O(1) lookup or O(N) build
     const actionsByPartner = new Map<string, number>();
@@ -36,13 +33,11 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
         }
       });
     });
-
     return sortedPartners.map((partner) => ({
       ...partner,
       lateActionsLength: actionsByPartner.get(partner.slug) || 0,
     }));
   }, [sortedPartners, actions]);
-
   return (
     <HomeComponentWrapper title="Parceiros">
       <div
@@ -57,19 +52,27 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
       >
         {partnersWithActionsLength.map((partner) => (
           <Link
-            to={`/app/partner/${partner.slug}`}
             key={partner.id}
-            className="group/partner relative grid place-content-center p-8 transition-opacity hover:opacity-80"
+            className="group/partner relative grid place-content-center p-8"
             style={{
               backgroundColor: partner.colors[0],
               color: partner.colors[1],
             }}
+            to={`/app/partner/${partner.slug}`}
           >
-            <div className="relative">
+            {/* {partner.image && (
+              <div
+                className="absolute top-0 right-0 left-0 bottom-0 h-full w-full bg-cover bg-center opacity-0 group-hover/partner:opacity-100 transition duration-500"
+                style={{
+                  backgroundImage: `url(${partner.image})`,
+                }}
+              />
+             )} */}
+            <div className="relative group-hover/partner:opacity-50 transition duration-500 group-hover/partner:scale-80">
               {getShortText(partner.short)}
 
               <div className="absolute -top-2 -right-6 flex">
-                <UBadge isDynamic value={partner.lateActionsLength} size="sm" />
+                <UBadge isDynamic size="sm" value={partner.lateActionsLength} />
               </div>
             </div>
           </Link>

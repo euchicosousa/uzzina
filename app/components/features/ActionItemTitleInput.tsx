@@ -55,6 +55,7 @@ export function ActionItemTitleInput({
           }}
           type="text"
           value={localTitle}
+          aria-label="Editar título da ação"
         />
       ) : (
         <button

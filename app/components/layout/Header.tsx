@@ -355,9 +355,9 @@ const HeaderMenu = ({ person }: { person: Person }) => {
   };
 
   return (
-    <DropdownMenu>
+      <DropdownMenu>
       {/* Perfil */}
-      <DropdownMenuTrigger className="relative outline-none">
+      <DropdownMenuTrigger className="relative outline-none" aria-label="Menu do perfil do usuário">
         {isLoading && (
           <div className="absolute top-0 left-0 size-11 -translate-1.5 animate-spin rounded-full border-4 border-primary border-b-transparent"></div>
         )}
@@ -386,6 +386,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
                 }}
                 key={paletteConfig.id}
                 title={paletteConfig.label}
+                aria-label={`Paleta ${paletteConfig.label}`}
                 className="flex justify-center rounded-xl p-2 squircle hover:opacity-80"
                 style={{
                   backgroundColor: isSelected

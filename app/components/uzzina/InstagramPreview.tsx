@@ -78,6 +78,7 @@ export function InstagramPreview({ files }: InstagramPreviewProps) {
           type="button"
           onClick={() => setCarouselIndex((i) => i - 1)}
           className="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
+          aria-label="Imagem anterior"
         >
           <ChevronLeftIcon className="size-4" />
         </button>
@@ -87,6 +88,7 @@ export function InstagramPreview({ files }: InstagramPreviewProps) {
           type="button"
           onClick={() => setCarouselIndex((i) => i + 1)}
           className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
+          aria-label="Próxima imagem"
         >
           <ChevronRightIcon className="size-4" />
         </button>
@@ -99,6 +101,7 @@ export function InstagramPreview({ files }: InstagramPreviewProps) {
             key={url}
             type="button"
             onClick={() => setCarouselIndex(i)}
+            aria-label={`Ir para o slide ${i + 1}`}
             className={`size-1.5 rounded-full transition ${
               i === carouselIndex ? "bg-white" : "bg-white/40"
             }`}

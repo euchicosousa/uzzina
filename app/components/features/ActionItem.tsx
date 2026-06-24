@@ -101,13 +101,15 @@ interface OutletContext {
  * Renders a single Action card/item in various layouts (line, block, hour, content, hair).
  * Integrates drag-and-drop capability, selection mode, inline title editing, and action shortcuts.
  */
+const DEFAULT_DISPLAY_FLAGS: ActionDisplayFlags = {};
+
 export function ActionItem({
   action,
   variant = VARIANT.line,
   className,
   isDragging,
   isDraggable,
-  displayFlags = {},
+  displayFlags = DEFAULT_DISPLAY_FLAGS,
   dateTimeDisplay,
   onClick,
   enableHoverCard = false,

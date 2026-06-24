@@ -48,10 +48,8 @@ export const PHASES = {
     key: "KeyC",
   },
 } as const;
-
 export type PHASE = keyof typeof PHASES;
 export type PHASE_TYPE = (typeof PHASES)[PHASE];
-
 export const CATEGORIES = {
   ads: {
     slug: "ads",
@@ -171,10 +169,8 @@ export const CATEGORIES = {
     tag_min: "ta",
   },
 } as const;
-
 export type CATEGORY = keyof typeof CATEGORIES;
 export type CATEGORY_TYPE = (typeof CATEGORIES)[CATEGORY];
-
 export const PRIORITIES = {
   low: {
     slug: "low",
@@ -192,10 +188,8 @@ export const PRIORITIES = {
     shortcut: "/",
   },
 } as const;
-
 export type PRIORITY = keyof typeof PRIORITIES;
 export type PRIORITY_TYPE = (typeof PRIORITIES)[PRIORITY];
-
 export const AREAS = {
   adm: {
     slug: "adm",
@@ -213,16 +207,13 @@ export const AREAS = {
     role: 3,
   },
 } as const;
-
 export type AREA = keyof typeof AREAS;
 export type AREA_TYPE = (typeof AREAS)[AREA];
-
 export const SCRIPT = `HOOK/HEADLINE - Para o dedo.
 MECANISMO - Explica a lógica (o porquê).
 PROVA - O dado concreto/visual.
 APLICAÇÃO - O que fazer agora.
 DIREÇÃO - O CTA estratégico.`;
-
 export const SIZE = {
   xs: "xs",
   sm: "sm",
@@ -231,7 +222,6 @@ export const SIZE = {
   xl: "xl",
   "2xl": "2xl",
 } as const;
-
 export const DATE_TIME_DISPLAY = {
   Relative: 1,
   DateTime: 2,
@@ -242,7 +232,6 @@ export const DATE_TIME_DISPLAY = {
   DateOnly: 7,
   Null: 8,
 } as const;
-
 export const VARIANT = {
   line: "line",
   block: "block",
@@ -250,7 +239,6 @@ export const VARIANT = {
   hour: "hour",
   hair: "hair",
 } as const;
-
 export const INTENT = {
   create_action: "create-action",
   update_action: "update-action",
@@ -271,92 +259,250 @@ export const INTENT = {
   mark_notification_read: "mark-notification-read",
   mark_all_notifications_read: "mark-all-notifications-read",
 } as const;
-
 export const ORDER_BY = {
   date: "date",
   priority: "priority",
   phase: "phase",
 } as const;
-
 export const PALLETE = [
   {
     id: "default",
     label: "Padrão",
     light: {
-      primary: { h: 0, c: 0, l: 0 },
-      primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 240, c: 0.001, l: 0.96 },
-      fg: { h: 0, c: 0, l: 0 },
+      primary: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      bg: {
+        h: 240,
+        c: 0.001,
+        l: 0.96,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
     },
     dark: {
-      primary: { h: 0, c: 0, l: 1 },
-      primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 250, c: 0.01, l: 0.2 },
-      fg: { h: 0, c: 0, l: 1 },
+      primary: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
+      bg: {
+        h: 250,
+        c: 0.01,
+        l: 0.2,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
     },
   },
   {
     id: "energy",
     label: "Energy",
     light: {
-      primary: { h: 120, c: 0.26, l: 0.9 },
-      primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 240, c: 0.001, l: 0.96 },
-      fg: { h: 0, c: 0, l: 0 },
+      primary: {
+        h: 120,
+        c: 0.26,
+        l: 0.9,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
+      bg: {
+        h: 240,
+        c: 0.001,
+        l: 0.96,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
     },
     dark: {
-      primary: { h: 120, c: 0.26, l: 0.9 },
-      primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 250, c: 0.01, l: 0.2 },
-      fg: { h: 0, c: 0, l: 1 },
+      primary: {
+        h: 120,
+        c: 0.26,
+        l: 0.9,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
+      bg: {
+        h: 250,
+        c: 0.01,
+        l: 0.2,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
     },
   },
   {
     id: "blue",
     label: "Azul (Padrão)",
     light: {
-      primary: { h: 264, c: 0.31, l: 0.45 },
-      primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 0, c: 0, l: 1 },
-      fg: { h: 0, c: 0, l: 0 },
+      primary: {
+        h: 264,
+        c: 0.31,
+        l: 0.45,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      bg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
     },
     dark: {
-      primary: { h: 264, c: 0.31, l: 0.58 },
-      primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 285, c: 0.005, l: 0.141 },
-      fg: { h: 0, c: 0, l: 1 },
+      primary: {
+        h: 264,
+        c: 0.31,
+        l: 0.58,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      bg: {
+        h: 285,
+        c: 0.005,
+        l: 0.141,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
     },
   },
   {
     id: "purple",
     label: "Roxo",
     light: {
-      primary: { h: 290, c: 0.28, l: 0.54 },
-      primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 290, c: 0.005, l: 0.99 },
-      fg: { h: 0, c: 0, l: 0 },
+      primary: {
+        h: 290,
+        c: 0.28,
+        l: 0.54,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      bg: {
+        h: 290,
+        c: 0.005,
+        l: 0.99,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
     },
     dark: {
-      primary: { h: 290, c: 0.28, l: 0.68 },
-      primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 285, c: 0.005, l: 0.141 },
-      fg: { h: 0, c: 0, l: 1 },
+      primary: {
+        h: 290,
+        c: 0.28,
+        l: 0.68,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      bg: {
+        h: 285,
+        c: 0.005,
+        l: 0.141,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
     },
   },
   {
     id: "magenta",
     label: "Magenta",
     light: {
-      primary: { h: 350, c: 0.4, l: 0.9 },
-      primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 320, c: 0.02, l: 0.98 },
-      fg: { h: 0, c: 0, l: 0 },
+      primary: {
+        h: 350,
+        c: 0.4,
+        l: 0.9,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
+      bg: {
+        h: 320,
+        c: 0.02,
+        l: 0.98,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
     },
     dark: {
-      primary: { h: 350, c: 0.4, l: 0.8 },
-      primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 340, c: 0.1, l: 0.3 },
-      fg: { h: 0, c: 0, l: 1 },
+      primary: {
+        h: 350,
+        c: 0.4,
+        l: 0.8,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
+      bg: {
+        h: 340,
+        c: 0.1,
+        l: 0.3,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
     },
   },
   // {
@@ -379,112 +525,336 @@ export const PALLETE = [
     id: "red",
     label: "Vermelho",
     light: {
-      primary: { h: 20, c: 0.25, l: 0.62 },
-      primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 0, c: 0, l: 1 },
-      fg: { h: 0, c: 0, l: 0 },
+      primary: {
+        h: 20,
+        c: 0.25,
+        l: 0.62,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      bg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
     },
     dark: {
-      primary: { h: 20, c: 0.25, l: 0.68 },
-      primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 285, c: 0.005, l: 0.141 },
-      fg: { h: 0, c: 0, l: 1 },
+      primary: {
+        h: 20,
+        c: 0.25,
+        l: 0.68,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      bg: {
+        h: 285,
+        c: 0.005,
+        l: 0.141,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
     },
   },
   {
     id: "orange",
     label: "Laranja",
     light: {
-      primary: { h: 25, c: 0.18, l: 0.65 },
-      primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 130, c: 0.01, l: 0.95 },
-      fg: { h: 0, c: 0, l: 0 },
+      primary: {
+        h: 25,
+        c: 0.18,
+        l: 0.65,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      bg: {
+        h: 130,
+        c: 0.01,
+        l: 0.95,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
     },
     dark: {
-      primary: { h: 25, c: 0.18, l: 0.65 },
-      primaryFg: { h: 130, c: 0.02, l: 0.9 },
-      bg: { h: 160, c: 0.03, l: 0.3 },
-      fg: { h: 130, c: 0.01, l: 0.95 },
+      primary: {
+        h: 25,
+        c: 0.18,
+        l: 0.65,
+      },
+      primaryFg: {
+        h: 130,
+        c: 0.02,
+        l: 0.9,
+      },
+      bg: {
+        h: 180,
+        c: 0.015,
+        l: 0.25,
+      },
+      fg: {
+        h: 130,
+        c: 0.01,
+        l: 0.95,
+      },
     },
   },
   {
     id: "yellow",
     label: "Amarelo",
     light: {
-      primary: { h: 100, c: 0.5, l: 0.8 },
-      primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 0, c: 0, l: 1 },
-      fg: { h: 0, c: 0, l: 0 },
+      primary: {
+        h: 100,
+        c: 0.5,
+        l: 0.8,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
+      bg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
     },
     dark: {
-      primary: { h: 100, c: 0.4, l: 0.8 },
-      primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 285, c: 0.005, l: 0.141 },
-      fg: { h: 0, c: 0, l: 1 },
+      primary: {
+        h: 100,
+        c: 0.4,
+        l: 0.8,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
+      bg: {
+        h: 285,
+        c: 0.005,
+        l: 0.141,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
     },
   },
   {
     id: "green",
     label: "Verde",
     light: {
-      primary: { h: 130, c: 0.2, l: 0.7 },
-      primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 0, c: 0, l: 1 },
-      fg: { h: 0, c: 0, l: 0 },
+      primary: {
+        h: 130,
+        c: 0.2,
+        l: 0.7,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
+      bg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
     },
     dark: {
-      primary: { h: 130, c: 0.2, l: 0.65 },
-      primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 285, c: 0.005, l: 0.141 },
-      fg: { h: 0, c: 0, l: 1 },
+      primary: {
+        h: 130,
+        c: 0.2,
+        l: 0.65,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
+      bg: {
+        h: 285,
+        c: 0.005,
+        l: 0.141,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
     },
   },
   {
     id: "cyan",
     label: "Ciano",
     light: {
-      primary: { h: 200, c: 0.2, l: 0.7 },
-      primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 0, c: 0, l: 1 },
-      fg: { h: 0, c: 0, l: 0 },
+      primary: {
+        h: 200,
+        c: 0.2,
+        l: 0.7,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
+      bg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
     },
     dark: {
-      primary: { h: 200, c: 0.2, l: 0.65 },
-      primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 285, c: 0.005, l: 0.141 },
-      fg: { h: 0, c: 0, l: 1 },
+      primary: {
+        h: 200,
+        c: 0.2,
+        l: 0.65,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
+      bg: {
+        h: 285,
+        c: 0.005,
+        l: 0.141,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
     },
   },
   {
     id: "light-blue",
     label: "Azul Claro",
     light: {
-      primary: { h: 240, c: 0.22, l: 0.7 },
-      primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 0, c: 0, l: 1 },
-      fg: { h: 0, c: 0, l: 0 },
+      primary: {
+        h: 240,
+        c: 0.22,
+        l: 0.7,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
+      bg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
     },
     dark: {
-      primary: { h: 240, c: 0.22, l: 0.65 },
-      primaryFg: { h: 0, c: 0, l: 0 },
-      bg: { h: 285, c: 0.005, l: 0.141 },
-      fg: { h: 0, c: 0, l: 1 },
+      primary: {
+        h: 240,
+        c: 0.22,
+        l: 0.65,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
+      bg: {
+        h: 285,
+        c: 0.005,
+        l: 0.141,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
     },
   },
   {
     id: "navy",
     label: "Azul Marinho",
     light: {
-      primary: { h: 250, c: 0.12, l: 0.5 },
-      primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 90, c: 0.005, l: 0.99 },
-      fg: { h: 0, c: 0, l: 0 },
+      primary: {
+        h: 250,
+        c: 0.12,
+        l: 0.5,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      bg: {
+        h: 90,
+        c: 0.005,
+        l: 0.99,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
     },
     dark: {
-      primary: { h: 250, c: 0.12, l: 0.6 },
-      primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 285, c: 0.005, l: 0.141 },
-      fg: { h: 0, c: 0, l: 1 },
+      primary: {
+        h: 250,
+        c: 0.12,
+        l: 0.6,
+      },
+      primaryFg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
+      bg: {
+        h: 285,
+        c: 0.005,
+        l: 0.141,
+      },
+      fg: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
     },
   },
 ];

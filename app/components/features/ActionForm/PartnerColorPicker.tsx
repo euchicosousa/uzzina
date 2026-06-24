@@ -79,6 +79,7 @@ export function PartnerColorPicker({
               }}
               title={hex}
               type="button"
+              aria-label={`Cor ${hex}`}
             />
           ))}
         </div>

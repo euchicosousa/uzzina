@@ -19,6 +19,8 @@ import type { ViewOptions } from "./ViewOptions";
 import { DragStateContext } from "./DragStateContext";
 const DEFAULT_CELEBRATIONS: Celebration[] = [];
 
+const DEFAULT_LAYOUT_OPTIONS: CalendarLayoutOptions = {};
+
 export function CalendarWithDnd({
   actions,
   calendarDays,
@@ -26,7 +28,7 @@ export function CalendarWithDnd({
   viewOptions,
   currentDay,
   onCreateAction,
-  layoutOptions = {},
+  layoutOptions = DEFAULT_LAYOUT_OPTIONS,
 }: {
   actions: Action[];
   calendarDays: Date[];
