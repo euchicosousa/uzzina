@@ -19,7 +19,6 @@ export function CalendarDay({
   actions,
   celebrations,
   isCompact,
-  isScroll,
   showBorder,
   highlightThisWeek,
 }: {
@@ -30,10 +29,10 @@ export function CalendarDay({
   actions: Action[];
   celebrations?: Celebration[];
   isCompact?: boolean;
-  isScroll?: boolean;
   showBorder?: boolean;
   highlightThisWeek?: boolean;
 }) {
+  const today = new Date();
   const { setNodeRef } = useDroppable({
     id: `${format(day, "yyyy-MM-dd")}`,
   });
@@ -52,10 +51,10 @@ export function CalendarDay({
       className={cn(
         "group/column flex flex-col justify-between",
         showBorder && "border-b",
-        highlightThisWeek && isSameWeek(day, currentDay || new Date()) && "",
+        highlightThisWeek && isSameWeek(day, currentDay || today) && "",
         viewOptions.variant === VARIANT.content
           ? ""
-          : isScroll
+          : !isCompact
             ? "h-96 overflow-hidden"
             : "h-72 overflow-hidden",
       )}
@@ -65,14 +64,14 @@ export function CalendarDay({
           <div
             suppressHydrationWarning
             className={cn(
-              !isSameMonth(day, currentDay || new Date()) ? "opacity-25" : "",
+              !isSameMonth(day, currentDay || today) ? "opacity-25" : "",
             )}
           >
             <div
               suppressHydrationWarning
               className={cn(
                 "grid h-8 place-content-center text-lg font-medium",
-                isSameDay(day, new Date())
+                isSameDay(day, today)
                   ? "w-8 rounded-full bg-foreground text-background"
                   : "",
               )}
@@ -121,7 +120,6 @@ export function CalendarDay({
                   ascending={viewOptions.ascending}
                   isCompact={isCompact}
                   variant={viewOptions.variant}
-                  isScroll={false}
                   isDraggable
                 />
               )}
@@ -140,7 +138,6 @@ export function CalendarDay({
                   ascending={viewOptions.ascending}
                   isCompact={isCompact}
                   variant={VARIANT.line}
-                  isScroll={false}
                   isDraggable
                 />
               )}
@@ -160,7 +157,6 @@ export function CalendarDay({
               ascending={viewOptions.ascending}
               isCompact={isCompact}
               variant={viewOptions.variant}
-              isScroll
               isDraggable
             />
           )}

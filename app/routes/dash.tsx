@@ -62,10 +62,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ request }: { request: Request }) => {
-  const session = await dashSessionStorage.getSession(
-    request.headers.get("Cookie"),
-  );
-  const formData = await request.formData();
+  const [session, formData] = await Promise.all([
+    dashSessionStorage.getSession(request.headers.get("Cookie")),
+    request.formData(),
+  ]);
   const intent = formData.get("intent");
 
   if (intent === "set_partner") {

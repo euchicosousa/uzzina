@@ -16,7 +16,6 @@ type ActionContainerProps = {
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending?: boolean;
   isCompact?: boolean;
-  isScroll?: boolean;
   isDraggable?: boolean;
   onClick?: (action: Action) => void;
 };
@@ -31,7 +30,6 @@ export function ActionContainer({
   orderBy,
   ascending,
   isCompact,
-  isScroll,
   isDraggable,
   onClick,
 }: ActionContainerProps) {
@@ -60,7 +58,7 @@ export function ActionContainer({
     <div
       className={cn(
         "relative",
-        isScroll ? "h-full overflow-y-auto" : "",
+        !isCompact ? "h-full overflow-y-auto" : "",
         "p-0.5 pb-6",
       )}
     >
@@ -92,7 +90,7 @@ export function ActionContainer({
           </button>
         )}
       </div>
-      {isScroll && (
+      {!isCompact && (
         <div className="sticky right-0 -bottom-6 left-0 h-6 bg-linear-to-t from-background"></div>
       )}
     </div>

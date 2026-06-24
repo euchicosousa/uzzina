@@ -78,6 +78,39 @@ export function EssentialsTab({
       }
     >
   >({});
+
+  const handleUpload = async (url: string, meta: { originalFilename?: string }) => {
+    const now = Date.now();
+    workFilesMetaRef.current[url] = {
+      name: meta.originalFilename || url,
+      addedAt: now,
+    };
+    let next = [...workFilesRef.current, url];
+    const splitIndex = next.findIndex((u) => {
+      const m = workFilesMetaRef.current[u];
+      return m && m.addedAt > now - 5000;
+    });
+    if (splitIndex !== -1) {
+      const oldUrls = next.slice(0, splitIndex);
+      const recentUrls = next.slice(splitIndex);
+      recentUrls.sort((a, b) => {
+        const nameA = workFilesMetaRef.current[a]?.name || a;
+        const nameB = workFilesMetaRef.current[b]?.name || b;
+        return nameA.localeCompare(nameB);
+      });
+      next = [...oldUrls, ...recentUrls];
+    }
+    workFilesRef.current = next;
+    setWorkFiles(next);
+    setRawAction((prev) => ({
+      ...prev,
+      work_files: next,
+    }));
+    await updateAction({
+      work_files: next,
+    });
+  };
+
   const [isIDVisible, setisIDVisible] = useState(false);
   const [hooksOpen, setHooksOpen] = useState(false);
   const [hooks, setHooks] = useState<
@@ -252,38 +285,7 @@ export function EssentialsTab({
               cloudName={cloudName}
               folder="uzzina/work"
               multiple
-              onUpload={async (url, meta) => {
-                const getNow = () => Date.now();
-                const now = getNow();
-                workFilesMetaRef.current[url] = {
-                  name: meta.originalFilename || url,
-                  addedAt: now,
-                };
-                let next = [...workFilesRef.current, url];
-                const splitIndex = next.findIndex((u) => {
-                  const m = workFilesMetaRef.current[u];
-                  return m && m.addedAt > now - 5000;
-                });
-                if (splitIndex !== -1) {
-                  const oldUrls = next.slice(0, splitIndex);
-                  const recentUrls = next.slice(splitIndex);
-                  recentUrls.sort((a, b) => {
-                    const nameA = workFilesMetaRef.current[a]?.name || a;
-                    const nameB = workFilesMetaRef.current[b]?.name || b;
-                    return nameA.localeCompare(nameB);
-                  });
-                  next = [...oldUrls, ...recentUrls];
-                }
-                workFilesRef.current = next;
-                setWorkFiles(next);
-                setRawAction((prev) => ({
-                  ...prev,
-                  work_files: next,
-                }));
-                await updateAction({
-                  work_files: next,
-                });
-              }}
+              onUpload={handleUpload}
               outputWidth={1200}
               resourceType="auto"
               uploadPreset={uploadPreset}

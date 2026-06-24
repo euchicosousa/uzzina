@@ -113,7 +113,6 @@ export function CalendarHomeComponent({
           viewOptions={viewOptions}
           layoutOptions={{
             isCompact: period === "month",
-            isScroll: period === "week",
             showBorder: period === "month",
           }}
           onCreateAction={(day) => {

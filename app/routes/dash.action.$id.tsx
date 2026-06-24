@@ -135,6 +135,39 @@ export default function DashActionDetail() {
     Record<string, { name: string; addedAt: number }>
   >({});
 
+  const handleUpload = (url: string, meta: { originalFilename?: string }) => {
+    const now = Date.now();
+    workFilesMetaRef.current[url] = {
+      name: meta.originalFilename || url,
+      addedAt: now,
+    };
+
+    let next = [...workFilesRef.current, url];
+
+    const splitIndex = next.findIndex((u) => {
+      const m = workFilesMetaRef.current[u];
+      return m && m.addedAt > now - 5000;
+    });
+
+    if (splitIndex !== -1) {
+      const oldUrls = next.slice(0, splitIndex);
+      const recentUrls = next.slice(splitIndex);
+      recentUrls.sort((a, b) => {
+        const nameA = workFilesMetaRef.current[a]?.name || a;
+        const nameB = workFilesMetaRef.current[b]?.name || b;
+        return nameA.localeCompare(nameB);
+      });
+      next = [...oldUrls, ...recentUrls];
+    }
+
+    workFilesRef.current = next;
+    setWorkFiles(next);
+    submit(
+      { work_files: JSON.stringify(next) },
+      { method: "post" },
+    );
+  };
+
   const currentPhase = useMemo(
     () => PHASES[(action.phase as PHASE) || "idea"],
     [action.phase],
@@ -256,42 +289,7 @@ export default function DashActionDetail() {
                 resourceType="auto"
                 multiple
                 outputWidth={1200}
-                onUpload={(
-                  url: string,
-                  meta: { originalFilename?: string },
-                ) => {
-                  const getNow = () => Date.now();
-                  const now = getNow();
-                  workFilesMetaRef.current[url] = {
-                    name: meta.originalFilename || url,
-                    addedAt: now,
-                  };
-
-                  let next = [...workFilesRef.current, url];
-
-                  const splitIndex = next.findIndex((u) => {
-                    const m = workFilesMetaRef.current[u];
-                    return m && m.addedAt > now - 5000;
-                  });
-
-                  if (splitIndex !== -1) {
-                    const oldUrls = next.slice(0, splitIndex);
-                    const recentUrls = next.slice(splitIndex);
-                    recentUrls.sort((a, b) => {
-                      const nameA = workFilesMetaRef.current[a]?.name || a;
-                      const nameB = workFilesMetaRef.current[b]?.name || b;
-                      return nameA.localeCompare(nameB);
-                    });
-                    next = [...oldUrls, ...recentUrls];
-                  }
-
-                  workFilesRef.current = next;
-                  setWorkFiles(next);
-                  submit(
-                    { work_files: JSON.stringify(next) },
-                    { method: "post" },
-                  );
-                }}
+                onUpload={handleUpload}
                 className={`text-foreground/50 ${
                   workFiles.length === 0
                     ? "text-md flex items-center gap-1.5 py-1.5 underline-offset-2 hover:underline"

@@ -32,10 +32,39 @@ export function ContentFilesManager({
   const filesRef = useRef(files);
   filesRef.current = files;
 
-  // Track metadata for the duration of the component to allow sorting new batches
   const filesMetaRef = useRef<
     Record<string, { name: string; addedAt: number }>
   >({});
+
+  const handleUpload = (url: string, meta: { originalFilename?: string }) => {
+    const now = Date.now();
+    filesMetaRef.current[url] = {
+      name: meta.originalFilename || url,
+      addedAt: now,
+    };
+
+    let next = [...filesRef.current, url];
+
+    // Sort only the recently uploaded batch (last 5 seconds) to prevent mixing with old files
+    const splitIndex = next.findIndex((u) => {
+      const m = filesMetaRef.current[u];
+      return m && m.addedAt > now - 5000;
+    });
+
+    if (splitIndex !== -1) {
+      const oldUrls = next.slice(0, splitIndex);
+      const recentUrls = next.slice(splitIndex);
+      recentUrls.sort((a, b) => {
+        const nameA = filesMetaRef.current[a]?.name || a;
+        const nameB = filesMetaRef.current[b]?.name || b;
+        return nameA.localeCompare(nameB);
+      });
+      next = [...oldUrls, ...recentUrls];
+    }
+
+    filesRef.current = next;
+    onChange(next);
+  };
 
   return (
     <>
@@ -49,36 +78,7 @@ export function ContentFilesManager({
               folder="uzzina/content"
               resourceType="auto"
               multiple
-              onUpload={(url, meta) => {
-                const getNow = () => Date.now();
-                const now = getNow();
-                filesMetaRef.current[url] = {
-                  name: meta.originalFilename || url,
-                  addedAt: now,
-                };
-
-                let next = [...filesRef.current, url];
-
-                // Sort only the recently uploaded batch (last 5 seconds) to prevent mixing with old files
-                const splitIndex = next.findIndex((u) => {
-                  const m = filesMetaRef.current[u];
-                  return m && m.addedAt > now - 5000;
-                });
-
-                if (splitIndex !== -1) {
-                  const oldUrls = next.slice(0, splitIndex);
-                  const recentUrls = next.slice(splitIndex);
-                  recentUrls.sort((a, b) => {
-                    const nameA = filesMetaRef.current[a]?.name || a;
-                    const nameB = filesMetaRef.current[b]?.name || b;
-                    return nameA.localeCompare(nameB);
-                  });
-                  next = [...oldUrls, ...recentUrls];
-                }
-
-                filesRef.current = next;
-                onChange(next);
-              }}
+              onUpload={handleUpload}
               className="flex items-center gap-1.5 rounded-lg border border-dashed px-3 py-1.5 text-xs opacity-60 transition hover:opacity-100"
             >
               <PlusIcon className="size-3.5" />

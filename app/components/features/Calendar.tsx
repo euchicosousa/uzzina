@@ -8,7 +8,6 @@ import type { Action } from "~/models/actions.server";
 
 export type CalendarLayoutOptions = {
   isCompact?: boolean;
-  isScroll?: boolean;
   showBorder?: boolean;
   highlightThisWeek?: boolean;
   hideBorderOnLastRow?: boolean;
@@ -37,7 +36,6 @@ export function CalendarActions({
 }) {
   const {
     isCompact,
-    isScroll,
     showBorder,
     highlightThisWeek,
     hideBorderOnLastRow,
@@ -58,7 +56,6 @@ export function CalendarActions({
                 actions={day.actions || []}
                 celebrations={day.celebrations}
                 isCompact={isCompact}
-                isScroll={isScroll}
                 showBorder={
                   hideBorderOnLastRow && isLastRow ? false : showBorder
                 }
@@ -74,6 +71,7 @@ export function CalendarActions({
 }
 
 const WeekHeader = () => {
+  const todayDayIndex = format(new Date(), "i");
   const week = eachDayOfInterval({
     start: startOfWeek(new Date()),
     end: endOfWeek(new Date()),
@@ -86,7 +84,7 @@ const WeekHeader = () => {
             suppressHydrationWarning
             className={cn(
               "overflow-hidden text-sm leading-none font-medium text-ellipsis whitespace-nowrap capitalize xl:text-lg",
-              format(day, "i") === format(new Date(), "i")
+              format(day, "i") === todayDayIndex
                 ? "font-bold underline"
                 : "",
             )}

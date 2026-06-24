@@ -102,7 +102,6 @@ interface OutletContext {
 const DEFAULT_DISPLAY_FLAGS: ActionDisplayFlags = {};
 const DEFAULT_PARTNERS: Partner[] = [];
 const DEFAULT_PEOPLE: Person[] = [];
-
 export function ActionItem({
   action,
   variant = VARIANT.line,
@@ -217,7 +216,7 @@ export function ActionItem({
       }
       baseStyles = cn(
         baseStyles,
-        "bg-late text-destructive hover:bg-late-hover ring-late",
+        "bg-late text-destructive hover:bg-late-hover ring-destructive",
       );
     }
     if (showSprint && person && isSprint(action, person)) {

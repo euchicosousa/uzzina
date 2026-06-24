@@ -34,26 +34,12 @@
       },
       "diagnostics": [
         {
-          "filePath": "app/components/features/ActionForm/ActionDatePicker.tsx",
-          "plugin": "react-doctor",
-          "rule": "rendering-hydration-mismatch-time",
-          "severity": "warning",
-          "title": "Time or random value in JSX",
-          "message": "This can cause a hydration mismatch because new Date() reached from JSX gives a different value on the server than in the browser. Move it into useEffect+useState to run only in the browser, or add suppressHydrationWarning to the parent if it's on purpose.",
-          "help": "Move time or random values into useEffect+useState so they only run in the browser, or add suppressHydrationWarning to the parent if it's intentional",
-          "line": 71,
-          "column": 31,
-          "offset": 2205,
-          "length": 10,
-          "category": "Bugs"
-        },
-        {
           "filePath": "app/components/features/ActionForm/EssentialsTab.tsx",
           "plugin": "react-doctor",
           "rule": "no-giant-component",
           "severity": "warning",
           "title": "Large component is hard to read and change",
-          "message": "Component \"EssentialsTab\" is 333 lines long, which is hard to read & change. Split it into a few smaller components.",
+          "message": "Component \"EssentialsTab\" is 335 lines long, which is hard to read & change. Split it into a few smaller components.",
           "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
           "line": 56,
           "column": 17,
@@ -72,21 +58,7 @@
           "line": 69,
           "column": 24,
           "offset": 2159,
-          "length": 10975,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/components/features/ActionForm/EssentialsTab.tsx",
-          "plugin": "react-doctor",
-          "rule": "rendering-hydration-mismatch-time",
-          "severity": "warning",
-          "title": "Time or random value in JSX",
-          "message": "This can cause a hydration mismatch because Date.now() reached from JSX gives a different value on the server than in the browser. Move it into useEffect+useState to run only in the browser, or add suppressHydrationWarning to the parent if it's on purpose.",
-          "help": "Move time or random values into useEffect+useState so they only run in the browser, or add suppressHydrationWarning to the parent if it's intentional",
-          "line": 256,
-          "column": 38,
-          "offset": 8008,
-          "length": 10,
+          "length": 10646,
           "category": "Bugs"
         },
         {
@@ -102,20 +74,6 @@
           "offset": 3599,
           "length": 9,
           "category": "Accessibility"
-        },
-        {
-          "filePath": "app/components/features/ActionForm/ObservationsTab.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-event-handler",
-          "severity": "warning",
-          "title": "Event logic handled in an effect",
-          "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
-          "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-          "line": 26,
-          "column": 9,
-          "offset": 1023,
-          "length": 8,
-          "category": "Bugs"
         },
         {
           "filePath": "app/components/features/ActionForm/PartnerColorPicker.tsx",
@@ -139,9 +97,9 @@
           "title": "Large component is hard to read and change",
           "message": "Component \"ActionItem\" is 375 lines long, which is hard to read & change. Split it into a few smaller components.",
           "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
-          "line": 106,
+          "line": 105,
           "column": 17,
-          "offset": 3511,
+          "offset": 3510,
           "length": 10,
           "category": "Maintainability"
         },
@@ -153,9 +111,9 @@
           "title": "Role used instead of HTML tag",
           "message": "Screen reader users get more reliable semantics from `<button>` than `role=\"button\"`, so use `<button>` instead.",
           "help": "Use the matching HTML element when one exists so browsers and assistive tech get native semantics.",
-          "line": 435,
+          "line": 434,
           "column": 7,
-          "offset": 14415,
+          "offset": 14421,
           "length": 13,
           "category": "Accessibility"
         },
@@ -167,9 +125,9 @@
           "title": "Component rendered by inline function call",
           "message": "Your users lose state because \"renderActionVariant()\" builds UI from an inline call that React remounts, so pull it into its own component instead.",
           "help": "Make it a named component so React preserves its identity and does not remount its state.",
-          "line": 472,
+          "line": 471,
           "column": 8,
-          "offset": 15648,
+          "offset": 15654,
           "length": 21,
           "category": "Maintainability"
         },
@@ -180,7 +138,7 @@
           "severity": "warning",
           "message": "Unused export: `ActionItemDateTimeDisplay` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
           "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 487,
+          "line": 486,
           "column": 7,
           "category": "Maintainability"
         },
@@ -191,7 +149,7 @@
           "severity": "warning",
           "message": "Unused export: `ActionItemPartners` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
           "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 506,
+          "line": 505,
           "column": 7,
           "category": "Maintainability"
         },
@@ -202,7 +160,7 @@
           "severity": "warning",
           "message": "Unused export: `ActionItemResponsibles` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
           "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 561,
+          "line": 560,
           "column": 7,
           "category": "Maintainability"
         },
@@ -213,7 +171,7 @@
           "severity": "warning",
           "message": "Unused export: `ActionItemPriority` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
           "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 587,
+          "line": 586,
           "column": 7,
           "category": "Maintainability"
         },
@@ -224,7 +182,7 @@
           "severity": "warning",
           "message": "Unused export: `ActionItemSprint` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
           "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 603,
+          "line": 602,
           "column": 7,
           "category": "Maintainability"
         },
@@ -285,41 +243,13 @@
           "category": "Bugs"
         },
         {
-          "filePath": "app/components/features/Calendar.tsx",
-          "plugin": "react-doctor",
-          "rule": "rendering-hydration-mismatch-time",
-          "severity": "warning",
-          "title": "Time or random value in JSX",
-          "message": "This can cause a hydration mismatch because new Date() reached from JSX gives a different value on the server than in the browser. Move it into useEffect+useState to run only in the browser, or add suppressHydrationWarning to the parent if it's on purpose.",
-          "help": "Move time or random values into useEffect+useState so they only run in the browser, or add suppressHydrationWarning to the parent if it's intentional",
-          "line": 89,
-          "column": 43,
-          "offset": 2774,
-          "length": 10,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/components/features/CalendarDay.tsx",
-          "plugin": "react-doctor",
-          "rule": "rendering-hydration-mismatch-time",
-          "severity": "warning",
-          "title": "Time or random value in JSX",
-          "message": "This can cause a hydration mismatch because new Date() reached from JSX gives a different value on the server than in the browser. Move it into useEffect+useState to run only in the browser, or add suppressHydrationWarning to the parent if it's on purpose.",
-          "help": "Move time or random values into useEffect+useState so they only run in the browser, or add suppressHydrationWarning to the parent if it's intentional",
-          "line": 55,
-          "column": 60,
-          "offset": 1905,
-          "length": 10,
-          "category": "Bugs"
-        },
-        {
           "filePath": "app/components/features/CalendarDay.tsx",
           "plugin": "deslop",
           "rule": "unused-export",
           "severity": "warning",
           "message": "Unused export: `CelebrationContainer` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
           "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-          "line": 176,
+          "line": 172,
           "column": 7,
           "category": "Maintainability"
         },
@@ -523,20 +453,6 @@
           "offset": 2130,
           "length": 14,
           "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/ui/calendar.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-event-handler",
-          "severity": "warning",
-          "title": "Event logic handled in an effect",
-          "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
-          "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-          "line": 181,
-          "column": 9,
-          "offset": 6169,
-          "length": 9,
-          "category": "Bugs"
         },
         {
           "filePath": "app/components/ui/input-group.tsx",
@@ -868,34 +784,6 @@
         {
           "filePath": "app/components/uzzina/ContentReorderDialog.tsx",
           "plugin": "react-doctor",
-          "rule": "no-event-handler",
-          "severity": "warning",
-          "title": "Event logic handled in an effect",
-          "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
-          "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-          "line": 138,
-          "column": 10,
-          "offset": 3557,
-          "length": 4,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/components/uzzina/ContentReorderDialog.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-derived-state",
-          "severity": "warning",
-          "title": "Derived value copied into state",
-          "message": "Storing \"items\" in state when you can derive it from other values costs an extra render.",
-          "help": "Work out the value while rendering (or with useMemo if it's expensive) instead of copying it into useState through a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#updating-state-based-on-props-or-state",
-          "line": 139,
-          "column": 7,
-          "offset": 3571,
-          "length": 61,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/components/uzzina/ContentReorderDialog.tsx",
-          "plugin": "react-doctor",
           "rule": "no-pass-data-to-parent",
           "severity": "warning",
           "title": "Data passed to parent via effect",
@@ -905,20 +793,6 @@
           "column": 7,
           "offset": 3571,
           "length": 61,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/components/uzzina/InstagramContent.tsx",
-          "plugin": "react-doctor",
-          "rule": "rendering-hydration-mismatch-time",
-          "severity": "warning",
-          "title": "Time or random value in JSX",
-          "message": "This can cause a hydration mismatch because Date.now() reached from JSX gives a different value on the server than in the browser. Move it into useEffect+useState to run only in the browser, or add suppressHydrationWarning to the parent if it's on purpose.",
-          "help": "Move time or random values into useEffect+useState so they only run in the browser, or add suppressHydrationWarning to the parent if it's intentional",
-          "line": 53,
-          "column": 38,
-          "offset": 1828,
-          "length": 10,
           "category": "Bugs"
         },
         {
@@ -1029,104 +903,6 @@
           "line": 183,
           "column": 7,
           "category": "Maintainability"
-        },
-        {
-          "filePath": "app/hooks/useAppTheme.ts",
-          "plugin": "react-doctor",
-          "rule": "no-initialize-state",
-          "severity": "warning",
-          "title": "State initialized from a mount effect",
-          "message": "Your users see an extra render with empty \"primaryColorIndex\" because a useEffect sets its starting value.",
-          "help": "Pass the initial value directly to useState() instead of setting it from a mount-only useEffect. For SSR hydration, prefer useSyncExternalStore().",
-          "line": 71,
-          "column": 5,
-          "offset": 2885,
-          "length": 43,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/hooks/useAppTheme.ts",
-          "plugin": "react-doctor",
-          "rule": "no-initialize-state",
-          "severity": "warning",
-          "title": "State initialized from a mount effect",
-          "message": "Your users see an extra render with empty \"followPartnerColor\" because a useEffect sets its starting value.",
-          "help": "Pass the initial value directly to useState() instead of setting it from a mount-only useEffect. For SSR hydration, prefer useSyncExternalStore().",
-          "line": 72,
-          "column": 5,
-          "offset": 2934,
-          "length": 52,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/hooks/useAppTheme.ts",
-          "plugin": "react-doctor",
-          "rule": "no-initialize-state",
-          "severity": "warning",
-          "title": "State initialized from a mount effect",
-          "message": "Your users see an extra render with empty \"backgroundColor\" because a useEffect sets its starting value.",
-          "help": "Pass the initial value directly to useState() instead of setting it from a mount-only useEffect. For SSR hydration, prefer useSyncExternalStore().",
-          "line": 73,
-          "column": 5,
-          "offset": 2992,
-          "length": 46,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/hooks/useAppTheme.ts",
-          "plugin": "react-doctor",
-          "rule": "no-initialize-state",
-          "severity": "warning",
-          "title": "State initialized from a mount effect",
-          "message": "Your users see an extra render with empty \"customTheme\" because a useEffect sets its starting value.",
-          "help": "Pass the initial value directly to useState() instead of setting it from a mount-only useEffect. For SSR hydration, prefer useSyncExternalStore().",
-          "line": 74,
-          "column": 5,
-          "offset": 3044,
-          "length": 43,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/hooks/useAppTheme.ts",
-          "plugin": "react-doctor",
-          "rule": "no-event-handler",
-          "severity": "warning",
-          "title": "Event logic handled in an effect",
-          "message": "Faking an event handler with state plus a useEffect costs an extra render & runs late.",
-          "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-          "line": 119,
-          "column": 9,
-          "offset": 4705,
-          "length": 17,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/hooks/useAppTheme.ts",
-          "plugin": "react-doctor",
-          "rule": "no-event-handler",
-          "severity": "warning",
-          "title": "Event logic handled in an effect",
-          "message": "Faking an event handler with state plus a useEffect costs an extra render & runs late.",
-          "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-          "line": 119,
-          "column": 37,
-          "offset": 4733,
-          "length": 11,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/hooks/useAppTheme.ts",
-          "plugin": "react-doctor",
-          "rule": "no-event-handler",
-          "severity": "warning",
-          "title": "Event logic handled in an effect",
-          "message": "Faking an event handler with state plus a useEffect costs an extra render & runs late.",
-          "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-          "line": 216,
-          "column": 29,
-          "offset": 8418,
-          "length": 15,
-          "category": "Bugs"
         },
         {
           "filePath": "app/hooks/useAppTheme.ts",
@@ -1549,77 +1325,6 @@
         {
           "filePath": "app/routes/CreateAndEditAction.tsx",
           "plugin": "react-doctor",
-          "rule": "no-event-handler",
-          "severity": "warning",
-          "title": "Event logic handled in an effect",
-          "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
-          "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-          "line": 52,
-          "column": 9,
-          "offset": 1931,
-          "length": 10,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/routes/CreateAndEditAction.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-event-handler",
-          "severity": "warning",
-          "title": "Event logic handled in an effect",
-          "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
-          "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-          "line": 58,
-          "column": 41,
-          "offset": 2188,
-          "length": 14,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/routes/CreateAndEditAction.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-event-handler",
-          "severity": "warning",
-          "title": "Event logic handled in an effect",
-          "message": "Faking an event handler with state plus a useEffect costs an extra render & runs late.",
-          "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-          "line": 77,
-          "column": 31,
-          "offset": 2824,
-          "length": 9,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/routes/CreateAndEditAction.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-derived-state",
-          "severity": "warning",
-          "title": "Derived value copied into state",
-          "message": "Storing \"RawAction\" in state when you can derive it from other values costs an extra render.",
-          "help": "Work out the value while rendering (or with useMemo if it's expensive) instead of copying it into useState through a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#updating-state-based-on-props-or-state",
-          "line": 139,
-          "column": 7,
-          "offset": 5045,
-          "length": 24,
-          "category": "Bugs",
-          "fixGroupId": "afc5835b05a196e6"
-        },
-        {
-          "filePath": "app/routes/CreateAndEditAction.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-event-handler",
-          "severity": "warning",
-          "title": "Event logic handled in an effect",
-          "message": "Faking an event handler with state plus a useEffect costs an extra render & runs late.",
-          "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-          "line": 186,
-          "column": 12,
-          "offset": 6561,
-          "length": 9,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/routes/CreateAndEditAction.tsx",
-          "plugin": "react-doctor",
           "rule": "exhaustive-deps",
           "severity": "warning",
           "title": "Missing effect dependencies",
@@ -1634,35 +1339,6 @@
         {
           "filePath": "app/routes/CreateAndEditAction.tsx",
           "plugin": "react-doctor",
-          "rule": "no-event-handler",
-          "severity": "warning",
-          "title": "Event logic handled in an effect",
-          "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
-          "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-          "line": 243,
-          "column": 10,
-          "offset": 8293,
-          "length": 10,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/routes/CreateAndEditAction.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-derived-state",
-          "severity": "warning",
-          "title": "Derived value copied into state",
-          "message": "Storing \"RawAction\" in state when you can derive it from other values costs an extra render.",
-          "help": "Work out the value while rendering (or with useMemo if it's expensive) instead of copying it into useState through a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#updating-state-based-on-props-or-state",
-          "line": 250,
-          "column": 7,
-          "offset": 8512,
-          "length": 152,
-          "category": "Bugs",
-          "fixGroupId": "afc5835b05a196e6"
-        },
-        {
-          "filePath": "app/routes/CreateAndEditAction.tsx",
-          "plugin": "react-doctor",
           "rule": "rerender-state-only-in-handlers",
           "severity": "warning",
           "title": "State only used in handlers",
@@ -1673,36 +1349,6 @@
           "offset": 8917,
           "length": 63,
           "category": "Performance"
-        },
-        {
-          "filePath": "app/routes/CreateAndEditAction.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-derived-state",
-          "severity": "warning",
-          "title": "Derived value copied into state",
-          "message": "Storing \"RawAction\" in state when you can derive it from other values costs an extra render.",
-          "help": "Work out the value while rendering (or with useMemo if it's expensive) instead of copying it into useState through a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#updating-state-based-on-props-or-state",
-          "line": 328,
-          "column": 9,
-          "offset": 10923,
-          "length": 47,
-          "category": "Bugs",
-          "fixGroupId": "afc5835b05a196e6"
-        },
-        {
-          "filePath": "app/routes/CreateAndEditAction.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-derived-state",
-          "severity": "warning",
-          "title": "Derived value copied into state",
-          "message": "Storing \"RawAction\" in state when you can derive it from other values costs an extra render.",
-          "help": "Work out the value while rendering (or with useMemo if it's expensive) instead of copying it into useState through a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#updating-state-based-on-props-or-state",
-          "line": 345,
-          "column": 9,
-          "offset": 11446,
-          "length": 105,
-          "category": "Bugs",
-          "fixGroupId": "afc5835b05a196e6"
         },
         {
           "filePath": "app/routes/CreateAndEditAction.tsx",
@@ -1831,20 +1477,6 @@
           "category": "Bugs"
         },
         {
-          "filePath": "app/routes/app.profile.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-event-handler",
-          "severity": "warning",
-          "title": "Event logic handled in an effect",
-          "message": "Faking an event handler with state plus a useEffect costs an extra render & runs late.",
-          "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-          "line": 423,
-          "column": 11,
-          "offset": 11693,
-          "length": 18,
-          "category": "Bugs"
-        },
-        {
           "filePath": "app/routes/app.tsx",
           "plugin": "react-doctor",
           "rule": "click-events-have-key-events",
@@ -1871,34 +1503,6 @@
           "offset": 5136,
           "length": 3,
           "category": "Accessibility"
-        },
-        {
-          "filePath": "app/routes/dash.action.$id.tsx",
-          "plugin": "react-doctor",
-          "rule": "rendering-hydration-mismatch-time",
-          "severity": "warning",
-          "title": "Time or random value in JSX",
-          "message": "This can cause a hydration mismatch because Date.now() reached from JSX gives a different value on the server than in the browser. Move it into useEffect+useState to run only in the browser, or add suppressHydrationWarning to the parent if it's on purpose.",
-          "help": "Move time or random values into useEffect+useState so they only run in the browser, or add suppressHydrationWarning to the parent if it's intentional",
-          "line": 263,
-          "column": 40,
-          "offset": 9296,
-          "length": 10,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/routes/dash.tsx",
-          "plugin": "react-doctor",
-          "rule": "server-sequential-independent-await",
-          "severity": "warning",
-          "title": "Sequential independent awaits",
-          "message": "This await doesn't use the previous result, so your users wait twice as long for nothing.",
-          "help": "These two awaits don't depend on each other. Wrap them in `Promise.all([...])` so they run at the same time.",
-          "line": 68,
-          "column": 3,
-          "offset": 1907,
-          "length": 42,
-          "category": "Bugs"
         },
         {
           "filePath": "app/routes/reset-password.tsx",
@@ -2077,13 +1681,9 @@
         }
       ],
       "score": {
-        "score": 44,
+        "score": 46,
         "label": "Critical",
         "rules": {
-          "react-doctor/rendering-hydration-mismatch-time": {
-            "priority": 62,
-            "tier": "P2"
-          },
           "react-doctor/no-giant-component": {
             "priority": 30,
             "tier": "P3"
@@ -2094,10 +1694,6 @@
           },
           "react-doctor/no-autofocus": {
             "priority": 33,
-            "tier": "P3"
-          },
-          "react-doctor/no-event-handler": {
-            "priority": 44,
             "tier": "P3"
           },
           "react-doctor/only-export-components": {
@@ -2160,10 +1756,6 @@
             "priority": 66,
             "tier": "P2"
           },
-          "react-doctor/no-derived-state": {
-            "priority": 50,
-            "tier": "P2"
-          },
           "react-doctor/no-pass-data-to-parent": {
             "priority": 36,
             "tier": "P3"
@@ -2179,10 +1771,6 @@
           "react-doctor/jsx-no-constructed-context-values": {
             "priority": 56,
             "tier": "P2"
-          },
-          "react-doctor/no-initialize-state": {
-            "priority": 42,
-            "tier": "P3"
           },
           "react-doctor/js-flatmap-filter": {
             "priority": 28,
@@ -2208,10 +1796,6 @@
             "priority": 40,
             "tier": "P3"
           },
-          "react-doctor/server-sequential-independent-await": {
-            "priority": 60,
-            "tier": "P2"
-          },
           "react-doctor/artifact-baas-authority-surface": {
             "priority": 60,
             "tier": "P2"
@@ -2224,31 +1808,17 @@
       },
       "skippedChecks": [],
       "scannedFileCount": 162,
-      "elapsedMilliseconds": 2793.821875
+      "elapsedMilliseconds": 3713.931042
     }
   ],
   "diagnostics": [
-    {
-      "filePath": "app/components/features/ActionForm/ActionDatePicker.tsx",
-      "plugin": "react-doctor",
-      "rule": "rendering-hydration-mismatch-time",
-      "severity": "warning",
-      "title": "Time or random value in JSX",
-      "message": "This can cause a hydration mismatch because new Date() reached from JSX gives a different value on the server than in the browser. Move it into useEffect+useState to run only in the browser, or add suppressHydrationWarning to the parent if it's on purpose.",
-      "help": "Move time or random values into useEffect+useState so they only run in the browser, or add suppressHydrationWarning to the parent if it's intentional",
-      "line": 71,
-      "column": 31,
-      "offset": 2205,
-      "length": 10,
-      "category": "Bugs"
-    },
     {
       "filePath": "app/components/features/ActionForm/EssentialsTab.tsx",
       "plugin": "react-doctor",
       "rule": "no-giant-component",
       "severity": "warning",
       "title": "Large component is hard to read and change",
-      "message": "Component \"EssentialsTab\" is 333 lines long, which is hard to read & change. Split it into a few smaller components.",
+      "message": "Component \"EssentialsTab\" is 335 lines long, which is hard to read & change. Split it into a few smaller components.",
       "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
       "line": 56,
       "column": 17,
@@ -2267,21 +1837,7 @@
       "line": 69,
       "column": 24,
       "offset": 2159,
-      "length": 10975,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/components/features/ActionForm/EssentialsTab.tsx",
-      "plugin": "react-doctor",
-      "rule": "rendering-hydration-mismatch-time",
-      "severity": "warning",
-      "title": "Time or random value in JSX",
-      "message": "This can cause a hydration mismatch because Date.now() reached from JSX gives a different value on the server than in the browser. Move it into useEffect+useState to run only in the browser, or add suppressHydrationWarning to the parent if it's on purpose.",
-      "help": "Move time or random values into useEffect+useState so they only run in the browser, or add suppressHydrationWarning to the parent if it's intentional",
-      "line": 256,
-      "column": 38,
-      "offset": 8008,
-      "length": 10,
+      "length": 10646,
       "category": "Bugs"
     },
     {
@@ -2297,20 +1853,6 @@
       "offset": 3599,
       "length": 9,
       "category": "Accessibility"
-    },
-    {
-      "filePath": "app/components/features/ActionForm/ObservationsTab.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-event-handler",
-      "severity": "warning",
-      "title": "Event logic handled in an effect",
-      "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
-      "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-      "line": 26,
-      "column": 9,
-      "offset": 1023,
-      "length": 8,
-      "category": "Bugs"
     },
     {
       "filePath": "app/components/features/ActionForm/PartnerColorPicker.tsx",
@@ -2334,9 +1876,9 @@
       "title": "Large component is hard to read and change",
       "message": "Component \"ActionItem\" is 375 lines long, which is hard to read & change. Split it into a few smaller components.",
       "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
-      "line": 106,
+      "line": 105,
       "column": 17,
-      "offset": 3511,
+      "offset": 3510,
       "length": 10,
       "category": "Maintainability"
     },
@@ -2348,9 +1890,9 @@
       "title": "Role used instead of HTML tag",
       "message": "Screen reader users get more reliable semantics from `<button>` than `role=\"button\"`, so use `<button>` instead.",
       "help": "Use the matching HTML element when one exists so browsers and assistive tech get native semantics.",
-      "line": 435,
+      "line": 434,
       "column": 7,
-      "offset": 14415,
+      "offset": 14421,
       "length": 13,
       "category": "Accessibility"
     },
@@ -2362,9 +1904,9 @@
       "title": "Component rendered by inline function call",
       "message": "Your users lose state because \"renderActionVariant()\" builds UI from an inline call that React remounts, so pull it into its own component instead.",
       "help": "Make it a named component so React preserves its identity and does not remount its state.",
-      "line": 472,
+      "line": 471,
       "column": 8,
-      "offset": 15648,
+      "offset": 15654,
       "length": 21,
       "category": "Maintainability"
     },
@@ -2375,7 +1917,7 @@
       "severity": "warning",
       "message": "Unused export: `ActionItemDateTimeDisplay` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
       "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 487,
+      "line": 486,
       "column": 7,
       "category": "Maintainability"
     },
@@ -2386,7 +1928,7 @@
       "severity": "warning",
       "message": "Unused export: `ActionItemPartners` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
       "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 506,
+      "line": 505,
       "column": 7,
       "category": "Maintainability"
     },
@@ -2397,7 +1939,7 @@
       "severity": "warning",
       "message": "Unused export: `ActionItemResponsibles` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
       "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 561,
+      "line": 560,
       "column": 7,
       "category": "Maintainability"
     },
@@ -2408,7 +1950,7 @@
       "severity": "warning",
       "message": "Unused export: `ActionItemPriority` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
       "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 587,
+      "line": 586,
       "column": 7,
       "category": "Maintainability"
     },
@@ -2419,7 +1961,7 @@
       "severity": "warning",
       "message": "Unused export: `ActionItemSprint` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
       "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 603,
+      "line": 602,
       "column": 7,
       "category": "Maintainability"
     },
@@ -2480,41 +2022,13 @@
       "category": "Bugs"
     },
     {
-      "filePath": "app/components/features/Calendar.tsx",
-      "plugin": "react-doctor",
-      "rule": "rendering-hydration-mismatch-time",
-      "severity": "warning",
-      "title": "Time or random value in JSX",
-      "message": "This can cause a hydration mismatch because new Date() reached from JSX gives a different value on the server than in the browser. Move it into useEffect+useState to run only in the browser, or add suppressHydrationWarning to the parent if it's on purpose.",
-      "help": "Move time or random values into useEffect+useState so they only run in the browser, or add suppressHydrationWarning to the parent if it's intentional",
-      "line": 89,
-      "column": 43,
-      "offset": 2774,
-      "length": 10,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/components/features/CalendarDay.tsx",
-      "plugin": "react-doctor",
-      "rule": "rendering-hydration-mismatch-time",
-      "severity": "warning",
-      "title": "Time or random value in JSX",
-      "message": "This can cause a hydration mismatch because new Date() reached from JSX gives a different value on the server than in the browser. Move it into useEffect+useState to run only in the browser, or add suppressHydrationWarning to the parent if it's on purpose.",
-      "help": "Move time or random values into useEffect+useState so they only run in the browser, or add suppressHydrationWarning to the parent if it's intentional",
-      "line": 55,
-      "column": 60,
-      "offset": 1905,
-      "length": 10,
-      "category": "Bugs"
-    },
-    {
       "filePath": "app/components/features/CalendarDay.tsx",
       "plugin": "deslop",
       "rule": "unused-export",
       "severity": "warning",
       "message": "Unused export: `CelebrationContainer` is exported but no module imports it, so it expands the public surface and can mislead callers about supported API.",
       "help": "Drop the `export` keyword (or remove the declaration) if no other module uses this symbol.",
-      "line": 176,
+      "line": 172,
       "column": 7,
       "category": "Maintainability"
     },
@@ -2718,20 +2232,6 @@
       "offset": 2130,
       "length": 14,
       "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/ui/calendar.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-event-handler",
-      "severity": "warning",
-      "title": "Event logic handled in an effect",
-      "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
-      "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-      "line": 181,
-      "column": 9,
-      "offset": 6169,
-      "length": 9,
-      "category": "Bugs"
     },
     {
       "filePath": "app/components/ui/input-group.tsx",
@@ -3063,34 +2563,6 @@
     {
       "filePath": "app/components/uzzina/ContentReorderDialog.tsx",
       "plugin": "react-doctor",
-      "rule": "no-event-handler",
-      "severity": "warning",
-      "title": "Event logic handled in an effect",
-      "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
-      "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-      "line": 138,
-      "column": 10,
-      "offset": 3557,
-      "length": 4,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/components/uzzina/ContentReorderDialog.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-derived-state",
-      "severity": "warning",
-      "title": "Derived value copied into state",
-      "message": "Storing \"items\" in state when you can derive it from other values costs an extra render.",
-      "help": "Work out the value while rendering (or with useMemo if it's expensive) instead of copying it into useState through a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#updating-state-based-on-props-or-state",
-      "line": 139,
-      "column": 7,
-      "offset": 3571,
-      "length": 61,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/components/uzzina/ContentReorderDialog.tsx",
-      "plugin": "react-doctor",
       "rule": "no-pass-data-to-parent",
       "severity": "warning",
       "title": "Data passed to parent via effect",
@@ -3100,20 +2572,6 @@
       "column": 7,
       "offset": 3571,
       "length": 61,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/components/uzzina/InstagramContent.tsx",
-      "plugin": "react-doctor",
-      "rule": "rendering-hydration-mismatch-time",
-      "severity": "warning",
-      "title": "Time or random value in JSX",
-      "message": "This can cause a hydration mismatch because Date.now() reached from JSX gives a different value on the server than in the browser. Move it into useEffect+useState to run only in the browser, or add suppressHydrationWarning to the parent if it's on purpose.",
-      "help": "Move time or random values into useEffect+useState so they only run in the browser, or add suppressHydrationWarning to the parent if it's intentional",
-      "line": 53,
-      "column": 38,
-      "offset": 1828,
-      "length": 10,
       "category": "Bugs"
     },
     {
@@ -3224,104 +2682,6 @@
       "line": 183,
       "column": 7,
       "category": "Maintainability"
-    },
-    {
-      "filePath": "app/hooks/useAppTheme.ts",
-      "plugin": "react-doctor",
-      "rule": "no-initialize-state",
-      "severity": "warning",
-      "title": "State initialized from a mount effect",
-      "message": "Your users see an extra render with empty \"primaryColorIndex\" because a useEffect sets its starting value.",
-      "help": "Pass the initial value directly to useState() instead of setting it from a mount-only useEffect. For SSR hydration, prefer useSyncExternalStore().",
-      "line": 71,
-      "column": 5,
-      "offset": 2885,
-      "length": 43,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/hooks/useAppTheme.ts",
-      "plugin": "react-doctor",
-      "rule": "no-initialize-state",
-      "severity": "warning",
-      "title": "State initialized from a mount effect",
-      "message": "Your users see an extra render with empty \"followPartnerColor\" because a useEffect sets its starting value.",
-      "help": "Pass the initial value directly to useState() instead of setting it from a mount-only useEffect. For SSR hydration, prefer useSyncExternalStore().",
-      "line": 72,
-      "column": 5,
-      "offset": 2934,
-      "length": 52,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/hooks/useAppTheme.ts",
-      "plugin": "react-doctor",
-      "rule": "no-initialize-state",
-      "severity": "warning",
-      "title": "State initialized from a mount effect",
-      "message": "Your users see an extra render with empty \"backgroundColor\" because a useEffect sets its starting value.",
-      "help": "Pass the initial value directly to useState() instead of setting it from a mount-only useEffect. For SSR hydration, prefer useSyncExternalStore().",
-      "line": 73,
-      "column": 5,
-      "offset": 2992,
-      "length": 46,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/hooks/useAppTheme.ts",
-      "plugin": "react-doctor",
-      "rule": "no-initialize-state",
-      "severity": "warning",
-      "title": "State initialized from a mount effect",
-      "message": "Your users see an extra render with empty \"customTheme\" because a useEffect sets its starting value.",
-      "help": "Pass the initial value directly to useState() instead of setting it from a mount-only useEffect. For SSR hydration, prefer useSyncExternalStore().",
-      "line": 74,
-      "column": 5,
-      "offset": 3044,
-      "length": 43,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/hooks/useAppTheme.ts",
-      "plugin": "react-doctor",
-      "rule": "no-event-handler",
-      "severity": "warning",
-      "title": "Event logic handled in an effect",
-      "message": "Faking an event handler with state plus a useEffect costs an extra render & runs late.",
-      "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-      "line": 119,
-      "column": 9,
-      "offset": 4705,
-      "length": 17,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/hooks/useAppTheme.ts",
-      "plugin": "react-doctor",
-      "rule": "no-event-handler",
-      "severity": "warning",
-      "title": "Event logic handled in an effect",
-      "message": "Faking an event handler with state plus a useEffect costs an extra render & runs late.",
-      "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-      "line": 119,
-      "column": 37,
-      "offset": 4733,
-      "length": 11,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/hooks/useAppTheme.ts",
-      "plugin": "react-doctor",
-      "rule": "no-event-handler",
-      "severity": "warning",
-      "title": "Event logic handled in an effect",
-      "message": "Faking an event handler with state plus a useEffect costs an extra render & runs late.",
-      "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-      "line": 216,
-      "column": 29,
-      "offset": 8418,
-      "length": 15,
-      "category": "Bugs"
     },
     {
       "filePath": "app/hooks/useAppTheme.ts",
@@ -3744,77 +3104,6 @@
     {
       "filePath": "app/routes/CreateAndEditAction.tsx",
       "plugin": "react-doctor",
-      "rule": "no-event-handler",
-      "severity": "warning",
-      "title": "Event logic handled in an effect",
-      "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
-      "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-      "line": 52,
-      "column": 9,
-      "offset": 1931,
-      "length": 10,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/routes/CreateAndEditAction.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-event-handler",
-      "severity": "warning",
-      "title": "Event logic handled in an effect",
-      "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
-      "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-      "line": 58,
-      "column": 41,
-      "offset": 2188,
-      "length": 14,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/routes/CreateAndEditAction.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-event-handler",
-      "severity": "warning",
-      "title": "Event logic handled in an effect",
-      "message": "Faking an event handler with state plus a useEffect costs an extra render & runs late.",
-      "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-      "line": 77,
-      "column": 31,
-      "offset": 2824,
-      "length": 9,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/routes/CreateAndEditAction.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-derived-state",
-      "severity": "warning",
-      "title": "Derived value copied into state",
-      "message": "Storing \"RawAction\" in state when you can derive it from other values costs an extra render.",
-      "help": "Work out the value while rendering (or with useMemo if it's expensive) instead of copying it into useState through a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#updating-state-based-on-props-or-state",
-      "line": 139,
-      "column": 7,
-      "offset": 5045,
-      "length": 24,
-      "category": "Bugs",
-      "fixGroupId": "afc5835b05a196e6"
-    },
-    {
-      "filePath": "app/routes/CreateAndEditAction.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-event-handler",
-      "severity": "warning",
-      "title": "Event logic handled in an effect",
-      "message": "Faking an event handler with state plus a useEffect costs an extra render & runs late.",
-      "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-      "line": 186,
-      "column": 12,
-      "offset": 6561,
-      "length": 9,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/routes/CreateAndEditAction.tsx",
-      "plugin": "react-doctor",
       "rule": "exhaustive-deps",
       "severity": "warning",
       "title": "Missing effect dependencies",
@@ -3829,35 +3118,6 @@
     {
       "filePath": "app/routes/CreateAndEditAction.tsx",
       "plugin": "react-doctor",
-      "rule": "no-event-handler",
-      "severity": "warning",
-      "title": "Event logic handled in an effect",
-      "message": "Faking an event handler with a prop plus a useEffect costs an extra render & runs late.",
-      "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-      "line": 243,
-      "column": 10,
-      "offset": 8293,
-      "length": 10,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/routes/CreateAndEditAction.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-derived-state",
-      "severity": "warning",
-      "title": "Derived value copied into state",
-      "message": "Storing \"RawAction\" in state when you can derive it from other values costs an extra render.",
-      "help": "Work out the value while rendering (or with useMemo if it's expensive) instead of copying it into useState through a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#updating-state-based-on-props-or-state",
-      "line": 250,
-      "column": 7,
-      "offset": 8512,
-      "length": 152,
-      "category": "Bugs",
-      "fixGroupId": "afc5835b05a196e6"
-    },
-    {
-      "filePath": "app/routes/CreateAndEditAction.tsx",
-      "plugin": "react-doctor",
       "rule": "rerender-state-only-in-handlers",
       "severity": "warning",
       "title": "State only used in handlers",
@@ -3868,36 +3128,6 @@
       "offset": 8917,
       "length": 63,
       "category": "Performance"
-    },
-    {
-      "filePath": "app/routes/CreateAndEditAction.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-derived-state",
-      "severity": "warning",
-      "title": "Derived value copied into state",
-      "message": "Storing \"RawAction\" in state when you can derive it from other values costs an extra render.",
-      "help": "Work out the value while rendering (or with useMemo if it's expensive) instead of copying it into useState through a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#updating-state-based-on-props-or-state",
-      "line": 328,
-      "column": 9,
-      "offset": 10923,
-      "length": 47,
-      "category": "Bugs",
-      "fixGroupId": "afc5835b05a196e6"
-    },
-    {
-      "filePath": "app/routes/CreateAndEditAction.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-derived-state",
-      "severity": "warning",
-      "title": "Derived value copied into state",
-      "message": "Storing \"RawAction\" in state when you can derive it from other values costs an extra render.",
-      "help": "Work out the value while rendering (or with useMemo if it's expensive) instead of copying it into useState through a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#updating-state-based-on-props-or-state",
-      "line": 345,
-      "column": 9,
-      "offset": 11446,
-      "length": 105,
-      "category": "Bugs",
-      "fixGroupId": "afc5835b05a196e6"
     },
     {
       "filePath": "app/routes/CreateAndEditAction.tsx",
@@ -4026,20 +3256,6 @@
       "category": "Bugs"
     },
     {
-      "filePath": "app/routes/app.profile.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-event-handler",
-      "severity": "warning",
-      "title": "Event logic handled in an effect",
-      "message": "Faking an event handler with state plus a useEffect costs an extra render & runs late.",
-      "help": "Run the side effect in the event handler that triggers it, instead of watching its state from a useEffect. See https://react.dev/learn/you-might-not-need-an-effect#sharing-logic-between-event-handlers",
-      "line": 423,
-      "column": 11,
-      "offset": 11693,
-      "length": 18,
-      "category": "Bugs"
-    },
-    {
       "filePath": "app/routes/app.tsx",
       "plugin": "react-doctor",
       "rule": "click-events-have-key-events",
@@ -4066,34 +3282,6 @@
       "offset": 5136,
       "length": 3,
       "category": "Accessibility"
-    },
-    {
-      "filePath": "app/routes/dash.action.$id.tsx",
-      "plugin": "react-doctor",
-      "rule": "rendering-hydration-mismatch-time",
-      "severity": "warning",
-      "title": "Time or random value in JSX",
-      "message": "This can cause a hydration mismatch because Date.now() reached from JSX gives a different value on the server than in the browser. Move it into useEffect+useState to run only in the browser, or add suppressHydrationWarning to the parent if it's on purpose.",
-      "help": "Move time or random values into useEffect+useState so they only run in the browser, or add suppressHydrationWarning to the parent if it's intentional",
-      "line": 263,
-      "column": 40,
-      "offset": 9296,
-      "length": 10,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/routes/dash.tsx",
-      "plugin": "react-doctor",
-      "rule": "server-sequential-independent-await",
-      "severity": "warning",
-      "title": "Sequential independent awaits",
-      "message": "This await doesn't use the previous result, so your users wait twice as long for nothing.",
-      "help": "These two awaits don't depend on each other. Wrap them in `Promise.all([...])` so they run at the same time.",
-      "line": 68,
-      "column": 3,
-      "offset": 1907,
-      "length": 42,
-      "category": "Bugs"
     },
     {
       "filePath": "app/routes/reset-password.tsx",
@@ -4273,12 +3461,12 @@
   ],
   "summary": {
     "errorCount": 0,
-    "warningCount": 155,
-    "affectedFileCount": 68,
-    "totalDiagnosticCount": 155,
-    "score": 44,
+    "warningCount": 127,
+    "affectedFileCount": 61,
+    "totalDiagnosticCount": 127,
+    "score": 46,
     "scoreLabel": "Critical"
   },
-  "elapsedMilliseconds": 2833.7542909999997,
+  "elapsedMilliseconds": 3733.9322909999996,
   "error": null
 }

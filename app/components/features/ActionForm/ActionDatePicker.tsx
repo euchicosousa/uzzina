@@ -27,6 +27,27 @@ export function ActionDatePicker({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const handleCalendarSelect = (date: Date | undefined) => {
+    if (date) {
+      const newDate = selectedDate ? new Date(selectedDate) : new Date();
+      newDate.setFullYear(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+      );
+      setSelectedDate(newDate);
+    }
+  };
+
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (selectedDate) {
+      const [hours, minutes] = e.target.value.split(":").map(Number);
+      const newDate = new Date(selectedDate);
+      newDate.setHours(hours || 0, minutes || 0);
+      setSelectedDate(newDate);
+    }
+  };
+
   return (
     <Popover
       onOpenChange={(newIsOpen) => {
@@ -63,39 +84,15 @@ export function ActionDatePicker({
           className="w-full"
           locale={ptBR}
           mode="single"
-          onSelect={(date) => {
-            if (date) {
-              const newDate = selectedDate
-                ? new Date(selectedDate)
-                : (() => {
-                    const d = new Date();
-                    return d;
-                  })();
-              newDate.setFullYear(
-                date.getFullYear(),
-                date.getMonth(),
-                date.getDate(),
-              );
-              setSelectedDate(newDate);
-            }
-          }}
+          onSelect={handleCalendarSelect}
           selected={selectedDate}
         />
         <div className="flex items-center justify-between gap-4 border-t p-4">
           <div className="text-sm">Defina a hora</div>
           <Input
-            // value={"13:00"}
             className="w-auto appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-            onChange={(e) => {
-              if (selectedDate) {
-                const [hours, minutes] = e.target.value.split(":").map(Number);
-                const newDate = new Date(selectedDate);
-                newDate.setHours(hours || 0, minutes || 0);
-                setSelectedDate(newDate);
-              }
-            }}
+            onChange={handleTimeChange}
             type="time"
-            // step={1}
             value={selectedDate ? format(selectedDate, "HH:mm") : ""}
           />
         </div>
