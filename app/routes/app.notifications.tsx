@@ -125,10 +125,18 @@ export default function NotificationsPage() {
               return (
                 <div
                   key={notif.id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => handleNotificationClick(notif)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleNotificationClick(notif);
+                    }
+                  }}
                   className={cn(
-                    "relative flex cursor-pointer flex-col gap-2 p-6 text-left transition hover:bg-muted/30",
-                    !notif.read_at && "bg-primary/5 hover:bg-primary/10",
+                    "relative flex cursor-pointer flex-col gap-2 p-6 text-left transition hover:bg-muted/30 focus-visible:bg-muted/30 focus-visible:outline-none",
+                    !notif.read_at && "bg-primary/5 hover:bg-primary/10 focus-visible:bg-primary/10",
                   )}
                 >
                   {/* Linha indicadora de não lida */}

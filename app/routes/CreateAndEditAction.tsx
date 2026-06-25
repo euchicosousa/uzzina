@@ -20,6 +20,7 @@ function getCaptionTail(instagram_caption_tail: string | null) {
 }
 
 const DEFAULT_PARTNER_FILTERS: string[] = [];
+const DEFAULT_PARTNERS: Partner[] = [];
 
 export function CreateAndEditAction({
   BaseAction,
@@ -41,7 +42,7 @@ export function CreateAndEditAction({
     partners: Partner[];
   };
 
-  const partners = routePartners || [];
+  const partners = routePartners ?? DEFAULT_PARTNERS;
 
   const fetcher = useFetcher();
   const fetchers = useFetchers();
@@ -259,9 +260,9 @@ export function CreateAndEditAction({
     captionTailRef.current = currentPartners[0]?.instagram_caption_tail;
   }, [currentPartners]);
 
-  const [prevFetcherData, setPrevFetcherData] = useState<unknown>(null);
-  if (fetcher.data !== prevFetcherData) {
-    setPrevFetcherData(fetcher.data);
+  const prevFetcherDataRef = useRef<unknown>(null);
+  if (fetcher.data !== prevFetcherDataRef.current) {
+    prevFetcherDataRef.current = fetcher.data;
     if (fetcher.data) {
       const intent = fetcher.data.intent;
       const captionTail = captionTailRef.current;

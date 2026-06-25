@@ -1,16 +1,16 @@
 import { cn } from "~/lib/utils";
-
 interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   delay?: number;
 }
-
 export function Skeleton({ className, delay, ...props }: SkeletonProps) {
   const inlineStyles: React.CSSProperties = {
     ...(delay !== undefined
-      ? { animationDelay: `${delay}ms`, animationFillMode: "both" }
+      ? {
+          animationDelay: `${delay}ms`,
+          animationFillMode: "both",
+        }
       : {}),
   };
-
   return (
     <div
       className={cn("h-6 animate-pulse rounded-md bg-foreground/5", className)}
@@ -19,7 +19,12 @@ export function Skeleton({ className, delay, ...props }: SkeletonProps) {
     />
   );
 }
-
+const SKELETON_KEYS = Array.from(
+  {
+    length: 50,
+  },
+  (_, i) => `sk-${i}`,
+);
 export function SkeletonGroup({
   count = 4,
   className,
@@ -35,16 +40,21 @@ export function SkeletonGroup({
   isWrapped?: boolean;
 }) {
   const skeletons = [...Array(count)].map((_, i) => (
-    // biome-ignore lint/suspicious/noArrayIndexKey: static list of skeletons
-    <div className="flex w-full flex-col gap-2" key={i}>
+    <div
+      key={SKELETON_KEYS[i] || `sk-fallback-${i}`}
+      className="flex w-full flex-col gap-2"
+    >
       {variant === "profile" && (
         <ProfileSkeleton className={className} delay={delay * i} />
       )}
-      {variant === "line" && <Skeleton className={className} delay={delay * i} />}
-      {variant === "block" && <Skeleton className={className} delay={delay * i} />}
+      {variant === "line" && (
+        <Skeleton className={className} delay={delay * i} />
+      )}
+      {variant === "block" && (
+        <Skeleton className={className} delay={delay * i} />
+      )}
     </div>
   ));
-
   return !isWrapped ? (
     skeletons
   ) : (
@@ -60,7 +70,6 @@ export function SkeletonGroup({
     </div>
   );
 }
-
 function ProfileSkeleton({ className, delay, ...props }: SkeletonProps) {
   return (
     <div className={cn("flex items-center gap-2", className)} {...props}>

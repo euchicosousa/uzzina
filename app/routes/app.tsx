@@ -154,14 +154,17 @@ export default function Dashboard() {
 
             {BaseAction ? (
               <Suspense fallback={null}>
-                <div
-                  className="fixed inset-0 top-16 z-10 flex w-full shrink-0 flex-col bg-black/20 dark:bg-black/80"
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  aria-label="Fechar painel de edição"
+                  className="fixed inset-0 top-16 z-10 flex w-full shrink-0 flex-col bg-black/20 dark:bg-black/80 cursor-default"
                   onClick={(event) => {
                     event.preventDefault();
                     event.stopPropagation();
                     setBaseAction(null);
                   }}
-                ></div>
+                />
                 <CreateAndEditAction
                   BaseAction={BaseAction}
                   onClose={() => setBaseAction(null)}

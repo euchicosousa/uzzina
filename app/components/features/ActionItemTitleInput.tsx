@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { cn } from "~/lib/utils";
 export function ActionItemTitleInput({
   title,
@@ -8,7 +8,7 @@ export function ActionItemTitleInput({
   className,
   InputButtonClassName,
   lines = 1,
-  onChange,
+  onBlur,
 }: {
   title: string;
   isDragging?: boolean;
@@ -17,10 +17,17 @@ export function ActionItemTitleInput({
   className?: string;
   InputButtonClassName?: string;
   lines?: 1 | 2;
-  onChange?: (title: string) => void;
+  onBlur?: (title: string) => void;
 }) {
   const [overrideTitle, setOverrideTitle] = useState<string | null>(null);
   const localTitle = overrideTitle !== null ? overrideTitle : title;
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (isEditing) {
+      inputRef.current?.focus();
+    }
+  }, [isEditing]);
+
   return (
     <div
       className={cn(
@@ -31,11 +38,11 @@ export function ActionItemTitleInput({
     >
       {isEditing ? (
         <input
-          autoFocus
+          ref={inputRef}
           className={cn("w-full outline-none", InputButtonClassName)}
           onBlur={() => {
-            if (onChange) {
-              onChange(localTitle);
+            if (onBlur) {
+              onBlur(localTitle);
             }
             setOverrideTitle(null);
             setIsEditing(false);
@@ -43,8 +50,8 @@ export function ActionItemTitleInput({
           onChange={(e) => setOverrideTitle(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              if (onChange) {
-                onChange(localTitle);
+              if (onBlur) {
+                onBlur(localTitle);
               }
               setOverrideTitle(null);
               setIsEditing(false);

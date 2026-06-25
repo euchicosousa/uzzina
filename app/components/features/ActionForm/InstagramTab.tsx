@@ -105,7 +105,6 @@ export function InstagramTab({
           <AiProcessingMessage isAIProcessing={isAIProcessing} />
           <textarea
             disabled={isAIProcessing}
-            autoFocus
             value={
               RawAction.instagram_caption ||
               getCaptionTail(

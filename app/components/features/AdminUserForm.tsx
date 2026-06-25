@@ -185,7 +185,7 @@ export function AdminUserForm({
         {/* Áreas */}
         {areas.length > 0 && (
           <div className="grid gap-4">
-            <label className="font-medium">Áreas</label>
+            <span className="font-medium">Áreas</span>
             <div className="flex flex-wrap items-center gap-2">
               {areas.map((area) => (
                 <div key={area.slug}>

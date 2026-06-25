@@ -10,7 +10,6 @@ function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="input-group"
-      role="group"
       className={cn(
         "input-embossed",
         "group/input-group relative flex w-full items-center shadow-sm outline-none",
@@ -63,7 +62,8 @@ function InputGroupAddon({
 }: React.ComponentProps<"div"> & VariantProps<typeof inputGroupAddonVariants>) {
   return (
     <div
-      role="group"
+      role="button"
+      tabIndex={-1}
       data-slot="input-group-addon"
       data-align={align}
       className={cn(inputGroupAddonVariants({ align }), className)}
@@ -72,6 +72,15 @@ function InputGroupAddon({
           return;
         }
         e.currentTarget.parentElement?.querySelector("input")?.focus();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          if ((e.target as HTMLElement).closest("button")) {
+            return;
+          }
+          e.preventDefault();
+          e.currentTarget.parentElement?.querySelector("input")?.focus();
+        }
       }}
       {...props}
     />

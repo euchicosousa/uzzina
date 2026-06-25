@@ -45,8 +45,8 @@ import { fetchPeople } from "~/lib/supabase.queries";
 import { cn } from "~/lib/utils";
 
 // Types
- // Imported explicitly for subcomponents
- // Imported explicitly for subcomponents
+// Imported explicitly for subcomponents
+// Imported explicitly for subcomponents
 import type { AppLoaderData } from "~/routes/app";
 export type ActionDisplayFlags = {
   /** Whether to highlight the action if it is late */
@@ -227,7 +227,7 @@ export function ActionItem({
     if (isEditing) {
       baseStyles = cn(
         baseStyles,
-        "ring-foreground focus-within:ring-2 z-100 text-foreground",
+        "ring-primary focus-within:ring-2 z-100 text-foreground",
       );
     }
     return baseStyles;
@@ -264,6 +264,13 @@ export function ActionItem({
         }
       }}
       onKeyDown={(e) => {
+        if (
+          e.target instanceof HTMLInputElement ||
+          e.target instanceof HTMLTextAreaElement ||
+          (e.target as HTMLElement).isContentEditable
+        ) {
+          return;
+        }
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           if (isSelectionMode) {
@@ -317,21 +324,21 @@ export function ActionItem({
       )}
 
       <ActionVariantRenderer
-        variant={variant}
         action={action}
-        currentPhase={currentPhase}
         currentCategory={currentCategory}
         currentPartners={currentPartners}
+        currentPhase={currentPhase}
         currentResponsibles={currentResponsibles}
-        showCategory={showCategory}
-        showResponsibles={showResponsibles}
-        showPartner={showPartner}
-        showPriority={showPriority}
-        isEditing={isEditing}
-        handleSetIsEditing={handleSetIsEditing}
-        lines={lines}
         dateTimeDisplay={dateTimeDisplay}
         handleAction={handleAction}
+        handleSetIsEditing={handleSetIsEditing}
+        isEditing={isEditing}
+        lines={lines}
+        showCategory={showCategory}
+        showPartner={showPartner}
+        showPriority={showPriority}
+        showResponsibles={showResponsibles}
+        variant={variant}
       />
     </div>
   );
@@ -476,7 +483,6 @@ function ActionItemSprint({
     <Icons className={cn("size-4 shrink-0", className)} slug="sprint" />
   ) : null;
 }
-
 interface ActionVariantRendererProps {
   variant: (typeof VARIANT)[keyof typeof VARIANT];
   action: Action;
@@ -491,10 +497,15 @@ interface ActionVariantRendererProps {
   isEditing: boolean;
   handleSetIsEditing: (val: boolean) => void;
   lines: 1 | 2 | undefined;
-  dateTimeDisplay: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY] | undefined;
-  handleAction: (action: Action & { intent: string }) => void;
+  dateTimeDisplay:
+    | (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY]
+    | undefined;
+  handleAction: (
+    action: Action & {
+      intent: string;
+    },
+  ) => void;
 }
-
 function ActionVariantRenderer({
   variant,
   action,
@@ -544,6 +555,13 @@ function ActionVariantRenderer({
             className={"text-xl leading-tight font-medium"}
             isEditing={isEditing}
             lines={lines}
+            onBlur={(title) => {
+              handleAction({
+                ...action,
+                intent: INTENT.update_action,
+                title,
+              });
+            }}
             setIsEditing={handleSetIsEditing}
             title={action.title}
           />
@@ -596,7 +614,7 @@ function ActionVariantRenderer({
             <ActionItemTitleInput
               className="w-full lg:text-sm xl:text-base"
               isEditing={isEditing}
-              onChange={(title) => {
+              onBlur={(title) => {
                 handleAction({
                   ...action,
                   intent: INTENT.update_action,
@@ -617,10 +635,7 @@ function ActionVariantRenderer({
             )}
           >
             {(showPartner || currentPartners.length > 1) && (
-              <ActionItemPartners
-                action={action}
-                partners={currentPartners}
-              />
+              <ActionItemPartners action={action} partners={currentPartners} />
             )}
             {showResponsibles && (
               <ActionItemResponsibles

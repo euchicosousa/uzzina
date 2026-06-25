@@ -5,6 +5,7 @@ import {
   use,
   useEffect,
   useRef,
+  useMemo,
   type ReactNode,
 } from "react";
 import { useRouteLoaderData } from "react-router";
@@ -46,23 +47,30 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
   const person = appData?.person;
 
   // Registry: actionId → {action}
-  const actionsMapRef = useRef<Map<string, NonNullable<ActiveAction>>>(
-    new Map(),
+  const actionsMapRef = useRef<Map<string, NonNullable<ActiveAction>> | null>(
+    null,
   );
+
+  const getActionsMap = useCallback(() => {
+    if (!actionsMapRef.current) {
+      actionsMapRef.current = new Map();
+    }
+    return actionsMapRef.current;
+  }, []);
 
   // ID da ação que está em modo de edição (sem atalhos)
   const editingIdRef = useRef<string | null>(null);
 
   const registerAction = useCallback(
     (id: string, data: NonNullable<ActiveAction>) => {
-      actionsMapRef.current.set(id, data);
+      getActionsMap().set(id, data);
     },
-    [],
+    [getActionsMap],
   );
 
   const unregisterAction = useCallback((id: string) => {
-    actionsMapRef.current.delete(id);
-  }, []);
+    getActionsMap().delete(id);
+  }, [getActionsMap]);
 
   const setEditingId = useCallback((id: string | null) => {
     editingIdRef.current = id;
@@ -81,7 +89,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
       // Se o item está em modo de edição, ignora atalhos
       if (editingIdRef.current === actionId) return;
 
-      const active = actionsMapRef.current.get(actionId);
+      const active = getActionsMap().get(actionId);
       if (!active) return;
 
       const { action } = active;
@@ -160,12 +168,15 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
     // capture: true → captura antes do onKeyDown do dnd-kit interceptar
     document.addEventListener("keydown", keyDown, true);
     return () => document.removeEventListener("keydown", keyDown, true);
-  }, [handleAction, toggleSprintAction, person]);
+  }, [handleAction, toggleSprintAction, person, getActionsMap]);
+
+  const contextValue = useMemo(
+    () => ({ registerAction, unregisterAction, setEditingId }),
+    [registerAction, unregisterAction, setEditingId],
+  );
 
   return (
-    <ActionShortcutContext.Provider
-      value={{ registerAction, unregisterAction, setEditingId }}
-    >
+    <ActionShortcutContext.Provider value={contextValue}>
       {children}
     </ActionShortcutContext.Provider>
   );

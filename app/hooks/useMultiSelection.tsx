@@ -4,6 +4,7 @@ import {
   useState,
   useCallback,
   useEffect,
+  useMemo,
 } from "react";
 
 type MultiSelectionContextType = {
@@ -68,9 +69,10 @@ export function MultiSelectionProvider({
 
         e.preventDefault();
         const actionElements = document.querySelectorAll("[data-action-id]");
-        const ids = Array.from(actionElements)
-          .map((el) => el.getAttribute("data-action-id"))
-          .filter(Boolean) as string[];
+        const ids = Array.from(actionElements).flatMap((el) => {
+          const id = el.getAttribute("data-action-id");
+          return id ? [id] : [];
+        });
 
         setSelectedIds([...new Set(ids)]);
       }
@@ -80,17 +82,27 @@ export function MultiSelectionProvider({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isSelectionMode]);
 
+  const contextValue = useMemo(
+    () => ({
+      isSelectionMode,
+      selectedIds,
+      toggleSelectionMode,
+      toggleSelection,
+      selectAll,
+      clearSelection,
+    }),
+    [
+      isSelectionMode,
+      selectedIds,
+      toggleSelectionMode,
+      toggleSelection,
+      selectAll,
+      clearSelection,
+    ],
+  );
+
   return (
-    <MultiSelectionContext.Provider
-      value={{
-        isSelectionMode,
-        selectedIds,
-        toggleSelectionMode,
-        toggleSelection,
-        selectAll,
-        clearSelection,
-      }}
-    >
+    <MultiSelectionContext.Provider value={contextValue}>
       {children}
     </MultiSelectionContext.Provider>
   );

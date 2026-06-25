@@ -62,20 +62,6 @@
           "category": "Bugs"
         },
         {
-          "filePath": "app/components/features/ActionForm/InstagramTab.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-autofocus",
-          "severity": "warning",
-          "title": "Autofocus on an element",
-          "message": "`autoFocus` moves focus on load, which can disrupt screen reader and keyboard users. Remove it and let users choose where to focus.",
-          "help": "Do not use `autoFocus`. It disorients users on load.",
-          "line": 108,
-          "column": 13,
-          "offset": 3583,
-          "length": 9,
-          "category": "Accessibility"
-        },
-        {
           "filePath": "app/components/features/ActionItem.tsx",
           "plugin": "react-doctor",
           "rule": "prefer-tag-over-role",
@@ -83,9 +69,9 @@
           "title": "Role used instead of HTML tag",
           "message": "Screen reader users get more reliable semantics from `<button>` than `role=\"button\"`, so use `<button>` instead.",
           "help": "Use the matching HTML element when one exists so browsers and assistive tech get native semantics.",
-          "line": 280,
+          "line": 289,
           "column": 7,
-          "offset": 8686,
+          "offset": 8932,
           "length": 13,
           "category": "Accessibility"
         },
@@ -97,39 +83,11 @@
           "title": "Boolean prop combinations are hard to test",
           "message": "Component \"ActionVariantRenderer\" takes 5 on/off props (showCategory, showResponsibles, showPartner…), which is hard to combine & test. Split it into smaller components or named variants.",
           "help": "Split boolean-heavy APIs into smaller components or named variants so combinations stay testable.",
-          "line": 496,
+          "line": 509,
           "column": 10,
-          "offset": 14401,
+          "offset": 14822,
           "length": 21,
           "category": "Maintainability"
-        },
-        {
-          "filePath": "app/components/features/ActionItemTitleInput.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-autofocus",
-          "severity": "warning",
-          "title": "Autofocus on an element",
-          "message": "`autoFocus` moves focus on load, which can disrupt screen reader and keyboard users. Remove it and let users choose where to focus.",
-          "help": "Do not use `autoFocus`. It disorients users on load.",
-          "line": 34,
-          "column": 11,
-          "offset": 808,
-          "length": 9,
-          "category": "Accessibility"
-        },
-        {
-          "filePath": "app/components/features/AdminUserForm.tsx",
-          "plugin": "react-doctor",
-          "rule": "label-has-associated-control",
-          "severity": "warning",
-          "title": "Label missing associated control",
-          "message": "Screen reader users can't tell which input this label names because it's tied to none, so add `htmlFor` or wrap the input inside it.",
-          "help": "Tie every label to a control with `htmlFor`, or by nesting the input.",
-          "line": 188,
-          "column": 13,
-          "offset": 5868,
-          "length": 31,
-          "category": "Accessibility"
         },
         {
           "filePath": "app/components/features/BulkActionMenu.tsx",
@@ -165,69 +123,13 @@
           "rule": "prefer-tag-over-role",
           "severity": "warning",
           "title": "Role used instead of HTML tag",
-          "message": "Screen reader users get more reliable semantics from `<address>` than `role=\"group\"`, so use `<address>` instead.",
+          "message": "Screen reader users get more reliable semantics from `<button>` than `role=\"button\"`, so use `<button>` instead.",
           "help": "Use the matching HTML element when one exists so browsers and assistive tech get native semantics.",
-          "line": 13,
-          "column": 7,
-          "offset": 421,
-          "length": 12,
-          "category": "Accessibility"
-        },
-        {
-          "filePath": "app/components/ui/input-group.tsx",
-          "plugin": "react-doctor",
-          "rule": "click-events-have-key-events",
-          "severity": "warning",
-          "title": "Click handler missing keyboard handler",
-          "message": "Keyboard users can't trigger this click handler because there's no keyboard one, so add `onKeyUp`, `onKeyDown`, or `onKeyPress`.",
-          "help": "Pair `onClick` with a key handler so keyboard users can trigger it.",
           "line": 65,
-          "column": 6,
-          "offset": 2620,
-          "length": 3,
-          "category": "Accessibility"
-        },
-        {
-          "filePath": "app/components/ui/input-group.tsx",
-          "plugin": "react-doctor",
-          "rule": "prefer-tag-over-role",
-          "severity": "warning",
-          "title": "Role used instead of HTML tag",
-          "message": "Screen reader users get more reliable semantics from `<address>` than `role=\"group\"`, so use `<address>` instead.",
-          "help": "Use the matching HTML element when one exists so browsers and assistive tech get native semantics.",
-          "line": 66,
           "column": 7,
-          "offset": 2630,
-          "length": 12,
+          "offset": 2611,
+          "length": 13,
           "category": "Accessibility"
-        },
-        {
-          "filePath": "app/components/ui/skeleton.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-array-index-as-key",
-          "severity": "warning",
-          "title": "Array index used as a key",
-          "message": "Your users can see & submit the wrong data when this list reorders or filters, so use a stable id like `key={item.id}`, not the array index \"i\".",
-          "help": "Use a stable id from the item, like `key={item.id}` or `key={item.slug}`. Index keys break when the list reorders or filters.",
-          "line": 39,
-          "column": 49,
-          "offset": 1005,
-          "length": 7,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/components/uzzina/CloudinaryUpload.tsx",
-          "plugin": "react-doctor",
-          "rule": "exhaustive-deps",
-          "severity": "warning",
-          "title": "Missing effect dependencies",
-          "message": "Your cleanup may read the wrong node since the ref `destroyTimeoutRef.current` can change before it runs.",
-          "help": "Don't blindly add missing dependencies. Read the hook callback first.\n\nBad:\nuseEffect(() => {\n  setCount(count + 1);\n}, [count]);\n\nBetter:\nuseEffect(() => {\n  setCount((currentCount) => currentCount + 1);\n}, []);\n\nIf the missing value is recreated every render, move it inside the hook or stabilize it before adding it to deps.",
-          "line": 84,
-          "column": 13,
-          "offset": 2395,
-          "length": 209,
-          "category": "Bugs"
         },
         {
           "filePath": "app/components/uzzina/ContentReorderDialog.tsx",
@@ -244,74 +146,18 @@
           "category": "Bugs"
         },
         {
-          "filePath": "app/components/uzzina/UButtonAI.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-long-transition-duration",
-          "severity": "warning",
-          "title": "Transition duration too long",
-          "message": "Your users wait through a sluggish 3000ms transition, so keep UI transitions under 1000ms & save longer ones for big page-load animations.",
-          "help": "Keep UI transitions under 1s. Use about 100 to 150ms for instant feedback, 200 to 300ms for state changes, and 300 to 500ms for layout. Save longer ones for big page-load animations.",
-          "line": 29,
-          "column": 11,
-          "offset": 695,
-          "length": 45,
-          "category": "Performance"
-        },
-        {
           "filePath": "app/hooks/useActionShortcut.tsx",
           "plugin": "react-doctor",
-          "rule": "rerender-lazy-ref-init",
+          "rule": "prefer-use-effect-event",
           "severity": "warning",
-          "title": "Ref initializer runs on every render",
-          "message": "useRef(new Map()) rebuilds this value on every render & throws it away.",
-          "help": "Initialize the ref lazily so expensive values are not rebuilt and discarded on every render.",
-          "line": 50,
-          "column": 5,
-          "offset": 1840,
-          "length": 9,
-          "category": "Performance"
-        },
-        {
-          "filePath": "app/hooks/useActionShortcut.tsx",
-          "plugin": "react-doctor",
-          "rule": "jsx-no-constructed-context-values",
-          "severity": "warning",
-          "title": "Unstable context provider value",
-          "message": "Every reader of this context redraws on each render because you build its `value` inline.",
-          "help": "Wrap the context value in `useMemo` or move it outside the component so consumers do not redraw every render.",
-          "line": 167,
-          "column": 7,
-          "offset": 5494,
-          "length": 58,
-          "category": "Performance"
-        },
-        {
-          "filePath": "app/hooks/useMultiSelection.tsx",
-          "plugin": "react-doctor",
-          "rule": "js-flatmap-filter",
-          "severity": "warning",
-          "title": ".map().filter(Boolean) loops twice",
-          "message": "This loops over your list twice because .map().filter(Boolean) makes two passes, so use .flatMap() to change & drop items in one pass",
-          "help": "Use `.flatMap(item => condition ? [value] : [])` to change and drop items in one pass, instead of building a throwaway array in between",
-          "line": 71,
-          "column": 21,
-          "offset": 2097,
-          "length": 111,
-          "category": "Performance"
-        },
-        {
-          "filePath": "app/hooks/useMultiSelection.tsx",
-          "plugin": "react-doctor",
-          "rule": "jsx-no-constructed-context-values",
-          "severity": "warning",
-          "title": "Unstable context provider value",
-          "message": "Every reader of this context redraws on each render because you build its `value` inline.",
-          "help": "Wrap the context value in `useMemo` or move it outside the component so consumers do not redraw every render.",
-          "line": 85,
-          "column": 7,
-          "offset": 2487,
-          "length": 160,
-          "category": "Performance"
+          "title": "Effect re-subscribes on a changing callback",
+          "message": "Your effect re-subscribes whenever \"getActionsMap\" changes, even though it's only used inside `addEventListener`.",
+          "help": "Wrap the callback with `useEffectEvent(callback)` (React 19+) and call it inside the sub-handler. An Effect Event always sees the latest props and state but isn't a dependency, so the effect won't re-subscribe every time the parent redraws. See https://react.dev/reference/react/useEffectEvent",
+          "line": 171,
+          "column": 49,
+          "offset": 5629,
+          "length": 13,
+          "category": "Bugs"
         },
         {
           "filePath": "app/routes/CreateAndEditAction.tsx",
@@ -321,9 +167,9 @@
           "title": "Large component is hard to read and change",
           "message": "Component \"CreateAndEditAction\" is 484 lines long, which is hard to read & change. Split it into a few smaller components.",
           "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
-          "line": 24,
+          "line": 25,
           "column": 17,
-          "offset": 1171,
+          "offset": 1211,
           "length": 19,
           "category": "Maintainability"
         },
@@ -333,55 +179,13 @@
           "rule": "prefer-useReducer",
           "severity": "warning",
           "title": "Many related useState calls",
-          "message": "7 useState calls in \"CreateAndEditAction\" can each trigger a separate render.",
+          "message": "6 useState calls in \"CreateAndEditAction\" can each trigger a separate render.",
           "help": "Group related state in `useReducer` so one logical update does not fan out into separate renders.",
-          "line": 32,
+          "line": 33,
           "column": 4,
-          "offset": 1344,
-          "length": 15323,
+          "offset": 1384,
+          "length": 15336,
           "category": "Bugs"
-        },
-        {
-          "filePath": "app/routes/CreateAndEditAction.tsx",
-          "plugin": "react-doctor",
-          "rule": "exhaustive-deps",
-          "severity": "warning",
-          "title": "Missing effect dependencies",
-          "message": "`partners` is rebuilt every render, so `useMemo` runs every time.",
-          "help": "Don't blindly add missing dependencies. Read the hook callback first.\n\nBad:\nuseEffect(() => {\n  setCount(count + 1);\n}, [count]);\n\nBetter:\nuseEffect(() => {\n  setCount((currentCount) => currentCount + 1);\n}, []);\n\nIf the missing value is recreated every render, move it inside the hook or stabilize it before adding it to deps.",
-          "line": 188,
-          "column": 27,
-          "offset": 6685,
-          "length": 8,
-          "category": "Bugs"
-        },
-        {
-          "filePath": "app/routes/CreateAndEditAction.tsx",
-          "plugin": "react-doctor",
-          "rule": "rerender-state-only-in-handlers",
-          "severity": "warning",
-          "title": "State only used in handlers",
-          "message": "Each update to \"prevFetcherData\" redraws your component for nothing because this useState is set but never shown on screen.",
-          "help": "Use useRef instead of useState when the value is only set and never shown on screen. `ref.current = ...` updates it without redrawing the component.",
-          "line": 262,
-          "column": 9,
-          "offset": 8853,
-          "length": 63,
-          "category": "Performance"
-        },
-        {
-          "filePath": "app/routes/app.admin.clients.tsx",
-          "plugin": "react-doctor",
-          "rule": "js-flatmap-filter",
-          "severity": "warning",
-          "title": ".map().filter(Boolean) loops twice",
-          "message": "This loops over your list twice because .map().filter(Boolean) makes two passes, so use .flatMap() to change & drop items in one pass",
-          "help": "Use `.flatMap(item => condition ? [value] : [])` to change and drop items in one pass, instead of building a throwaway array in between",
-          "line": 45,
-          "column": 34,
-          "offset": 1574,
-          "length": 118,
-          "category": "Performance"
         },
         {
           "filePath": "app/routes/app.help.tsx",
@@ -400,44 +204,16 @@
         {
           "filePath": "app/routes/app.notifications.tsx",
           "plugin": "react-doctor",
-          "rule": "click-events-have-key-events",
+          "rule": "prefer-tag-over-role",
           "severity": "warning",
-          "title": "Click handler missing keyboard handler",
-          "message": "Keyboard users can't trigger this click handler because there's no keyboard one, so add `onKeyUp`, `onKeyDown`, or `onKeyPress`.",
-          "help": "Pair `onClick` with a key handler so keyboard users can trigger it.",
-          "line": 126,
-          "column": 18,
-          "offset": 5135,
-          "length": 3,
+          "title": "Role used instead of HTML tag",
+          "message": "Screen reader users get more reliable semantics from `<button>` than `role=\"button\"`, so use `<button>` instead.",
+          "help": "Use the matching HTML element when one exists so browsers and assistive tech get native semantics.",
+          "line": 128,
+          "column": 19,
+          "offset": 5190,
+          "length": 13,
           "category": "Accessibility"
-        },
-        {
-          "filePath": "app/routes/app.notifications.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-static-element-interactions",
-          "severity": "warning",
-          "title": "Interaction on static element",
-          "message": "Screen reader users can't tell this click handler is interactive because it has no `role`, so add a `role` or use a button or link.",
-          "help": "Give clickable static elements a `role`, or use a button or link.",
-          "line": 126,
-          "column": 18,
-          "offset": 5135,
-          "length": 3,
-          "category": "Accessibility"
-        },
-        {
-          "filePath": "app/routes/app.partner.$slug.tsx",
-          "plugin": "react-doctor",
-          "rule": "rerender-lazy-state-init",
-          "severity": "warning",
-          "title": "State initializer runs on every render",
-          "message": "useState(parseISO()) re-runs parseISO() on every render & throws the result away.",
-          "help": "Wrap expensive initial state in an arrow function so the initializer does not rerun and get thrown away on every render.",
-          "line": 150,
-          "column": 48,
-          "offset": 4844,
-          "length": 14,
-          "category": "Performance"
         },
         {
           "filePath": "app/routes/app.profile.tsx",
@@ -466,34 +242,6 @@
           "offset": 4782,
           "length": 32015,
           "category": "Bugs"
-        },
-        {
-          "filePath": "app/routes/app.tsx",
-          "plugin": "react-doctor",
-          "rule": "click-events-have-key-events",
-          "severity": "warning",
-          "title": "Click handler missing keyboard handler",
-          "message": "Keyboard users can't trigger this click handler because there's no keyboard one, so add `onKeyUp`, `onKeyDown`, or `onKeyPress`.",
-          "help": "Pair `onClick` with a key handler so keyboard users can trigger it.",
-          "line": 157,
-          "column": 18,
-          "offset": 5074,
-          "length": 3,
-          "category": "Accessibility"
-        },
-        {
-          "filePath": "app/routes/app.tsx",
-          "plugin": "react-doctor",
-          "rule": "no-static-element-interactions",
-          "severity": "warning",
-          "title": "Interaction on static element",
-          "message": "Screen reader users can't tell this click handler is interactive because it has no `role`, so add a `role` or use a button or link.",
-          "help": "Give clickable static elements a `role`, or use a button or link.",
-          "line": 157,
-          "column": 18,
-          "offset": 5074,
-          "length": 3,
-          "category": "Accessibility"
         },
         {
           "filePath": "app/routes/reset-password.tsx",
@@ -537,7 +285,7 @@
         }
       ],
       "score": {
-        "score": 68,
+        "score": 74,
         "label": "Needs work",
         "rules": {
           "react-doctor/no-giant-component": {
@@ -548,10 +296,6 @@
             "priority": 22,
             "tier": "P3"
           },
-          "react-doctor/no-autofocus": {
-            "priority": 33,
-            "tier": "P3"
-          },
           "react-doctor/prefer-tag-over-role": {
             "priority": 48,
             "tier": "P3"
@@ -560,53 +304,13 @@
             "priority": 24,
             "tier": "P3"
           },
-          "react-doctor/label-has-associated-control": {
-            "priority": 59,
-            "tier": "P2"
-          },
-          "react-doctor/click-events-have-key-events": {
-            "priority": 42,
-            "tier": "P3"
-          },
-          "react-doctor/no-array-index-as-key": {
-            "priority": 66,
-            "tier": "P2"
-          },
-          "react-doctor/exhaustive-deps": {
-            "priority": 66,
-            "tier": "P2"
-          },
           "react-doctor/no-pass-data-to-parent": {
             "priority": 36,
             "tier": "P3"
           },
-          "react-doctor/no-long-transition-duration": {
-            "priority": 24,
-            "tier": "P3"
-          },
-          "react-doctor/rerender-lazy-ref-init": {
-            "priority": 38,
-            "tier": "P3"
-          },
-          "react-doctor/jsx-no-constructed-context-values": {
-            "priority": 56,
+          "react-doctor/prefer-use-effect-event": {
+            "priority": 52,
             "tier": "P2"
-          },
-          "react-doctor/js-flatmap-filter": {
-            "priority": 28,
-            "tier": "P3"
-          },
-          "react-doctor/rerender-state-only-in-handlers": {
-            "priority": 46,
-            "tier": "P3"
-          },
-          "react-doctor/no-static-element-interactions": {
-            "priority": 48,
-            "tier": "P3"
-          },
-          "react-doctor/rerender-lazy-state-init": {
-            "priority": 40,
-            "tier": "P3"
           },
           "react-doctor/artifact-baas-authority-surface": {
             "priority": 60,
@@ -616,7 +320,7 @@
       },
       "skippedChecks": [],
       "scannedFileCount": 158,
-      "elapsedMilliseconds": 2746.075541
+      "elapsedMilliseconds": 2740.326791
     }
   ],
   "diagnostics": [
@@ -649,20 +353,6 @@
       "category": "Bugs"
     },
     {
-      "filePath": "app/components/features/ActionForm/InstagramTab.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-autofocus",
-      "severity": "warning",
-      "title": "Autofocus on an element",
-      "message": "`autoFocus` moves focus on load, which can disrupt screen reader and keyboard users. Remove it and let users choose where to focus.",
-      "help": "Do not use `autoFocus`. It disorients users on load.",
-      "line": 108,
-      "column": 13,
-      "offset": 3583,
-      "length": 9,
-      "category": "Accessibility"
-    },
-    {
       "filePath": "app/components/features/ActionItem.tsx",
       "plugin": "react-doctor",
       "rule": "prefer-tag-over-role",
@@ -670,9 +360,9 @@
       "title": "Role used instead of HTML tag",
       "message": "Screen reader users get more reliable semantics from `<button>` than `role=\"button\"`, so use `<button>` instead.",
       "help": "Use the matching HTML element when one exists so browsers and assistive tech get native semantics.",
-      "line": 280,
+      "line": 289,
       "column": 7,
-      "offset": 8686,
+      "offset": 8932,
       "length": 13,
       "category": "Accessibility"
     },
@@ -684,39 +374,11 @@
       "title": "Boolean prop combinations are hard to test",
       "message": "Component \"ActionVariantRenderer\" takes 5 on/off props (showCategory, showResponsibles, showPartner…), which is hard to combine & test. Split it into smaller components or named variants.",
       "help": "Split boolean-heavy APIs into smaller components or named variants so combinations stay testable.",
-      "line": 496,
+      "line": 509,
       "column": 10,
-      "offset": 14401,
+      "offset": 14822,
       "length": 21,
       "category": "Maintainability"
-    },
-    {
-      "filePath": "app/components/features/ActionItemTitleInput.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-autofocus",
-      "severity": "warning",
-      "title": "Autofocus on an element",
-      "message": "`autoFocus` moves focus on load, which can disrupt screen reader and keyboard users. Remove it and let users choose where to focus.",
-      "help": "Do not use `autoFocus`. It disorients users on load.",
-      "line": 34,
-      "column": 11,
-      "offset": 808,
-      "length": 9,
-      "category": "Accessibility"
-    },
-    {
-      "filePath": "app/components/features/AdminUserForm.tsx",
-      "plugin": "react-doctor",
-      "rule": "label-has-associated-control",
-      "severity": "warning",
-      "title": "Label missing associated control",
-      "message": "Screen reader users can't tell which input this label names because it's tied to none, so add `htmlFor` or wrap the input inside it.",
-      "help": "Tie every label to a control with `htmlFor`, or by nesting the input.",
-      "line": 188,
-      "column": 13,
-      "offset": 5868,
-      "length": 31,
-      "category": "Accessibility"
     },
     {
       "filePath": "app/components/features/BulkActionMenu.tsx",
@@ -752,69 +414,13 @@
       "rule": "prefer-tag-over-role",
       "severity": "warning",
       "title": "Role used instead of HTML tag",
-      "message": "Screen reader users get more reliable semantics from `<address>` than `role=\"group\"`, so use `<address>` instead.",
+      "message": "Screen reader users get more reliable semantics from `<button>` than `role=\"button\"`, so use `<button>` instead.",
       "help": "Use the matching HTML element when one exists so browsers and assistive tech get native semantics.",
-      "line": 13,
-      "column": 7,
-      "offset": 421,
-      "length": 12,
-      "category": "Accessibility"
-    },
-    {
-      "filePath": "app/components/ui/input-group.tsx",
-      "plugin": "react-doctor",
-      "rule": "click-events-have-key-events",
-      "severity": "warning",
-      "title": "Click handler missing keyboard handler",
-      "message": "Keyboard users can't trigger this click handler because there's no keyboard one, so add `onKeyUp`, `onKeyDown`, or `onKeyPress`.",
-      "help": "Pair `onClick` with a key handler so keyboard users can trigger it.",
       "line": 65,
-      "column": 6,
-      "offset": 2620,
-      "length": 3,
-      "category": "Accessibility"
-    },
-    {
-      "filePath": "app/components/ui/input-group.tsx",
-      "plugin": "react-doctor",
-      "rule": "prefer-tag-over-role",
-      "severity": "warning",
-      "title": "Role used instead of HTML tag",
-      "message": "Screen reader users get more reliable semantics from `<address>` than `role=\"group\"`, so use `<address>` instead.",
-      "help": "Use the matching HTML element when one exists so browsers and assistive tech get native semantics.",
-      "line": 66,
       "column": 7,
-      "offset": 2630,
-      "length": 12,
+      "offset": 2611,
+      "length": 13,
       "category": "Accessibility"
-    },
-    {
-      "filePath": "app/components/ui/skeleton.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-array-index-as-key",
-      "severity": "warning",
-      "title": "Array index used as a key",
-      "message": "Your users can see & submit the wrong data when this list reorders or filters, so use a stable id like `key={item.id}`, not the array index \"i\".",
-      "help": "Use a stable id from the item, like `key={item.id}` or `key={item.slug}`. Index keys break when the list reorders or filters.",
-      "line": 39,
-      "column": 49,
-      "offset": 1005,
-      "length": 7,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/components/uzzina/CloudinaryUpload.tsx",
-      "plugin": "react-doctor",
-      "rule": "exhaustive-deps",
-      "severity": "warning",
-      "title": "Missing effect dependencies",
-      "message": "Your cleanup may read the wrong node since the ref `destroyTimeoutRef.current` can change before it runs.",
-      "help": "Don't blindly add missing dependencies. Read the hook callback first.\n\nBad:\nuseEffect(() => {\n  setCount(count + 1);\n}, [count]);\n\nBetter:\nuseEffect(() => {\n  setCount((currentCount) => currentCount + 1);\n}, []);\n\nIf the missing value is recreated every render, move it inside the hook or stabilize it before adding it to deps.",
-      "line": 84,
-      "column": 13,
-      "offset": 2395,
-      "length": 209,
-      "category": "Bugs"
     },
     {
       "filePath": "app/components/uzzina/ContentReorderDialog.tsx",
@@ -831,74 +437,18 @@
       "category": "Bugs"
     },
     {
-      "filePath": "app/components/uzzina/UButtonAI.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-long-transition-duration",
-      "severity": "warning",
-      "title": "Transition duration too long",
-      "message": "Your users wait through a sluggish 3000ms transition, so keep UI transitions under 1000ms & save longer ones for big page-load animations.",
-      "help": "Keep UI transitions under 1s. Use about 100 to 150ms for instant feedback, 200 to 300ms for state changes, and 300 to 500ms for layout. Save longer ones for big page-load animations.",
-      "line": 29,
-      "column": 11,
-      "offset": 695,
-      "length": 45,
-      "category": "Performance"
-    },
-    {
       "filePath": "app/hooks/useActionShortcut.tsx",
       "plugin": "react-doctor",
-      "rule": "rerender-lazy-ref-init",
+      "rule": "prefer-use-effect-event",
       "severity": "warning",
-      "title": "Ref initializer runs on every render",
-      "message": "useRef(new Map()) rebuilds this value on every render & throws it away.",
-      "help": "Initialize the ref lazily so expensive values are not rebuilt and discarded on every render.",
-      "line": 50,
-      "column": 5,
-      "offset": 1840,
-      "length": 9,
-      "category": "Performance"
-    },
-    {
-      "filePath": "app/hooks/useActionShortcut.tsx",
-      "plugin": "react-doctor",
-      "rule": "jsx-no-constructed-context-values",
-      "severity": "warning",
-      "title": "Unstable context provider value",
-      "message": "Every reader of this context redraws on each render because you build its `value` inline.",
-      "help": "Wrap the context value in `useMemo` or move it outside the component so consumers do not redraw every render.",
-      "line": 167,
-      "column": 7,
-      "offset": 5494,
-      "length": 58,
-      "category": "Performance"
-    },
-    {
-      "filePath": "app/hooks/useMultiSelection.tsx",
-      "plugin": "react-doctor",
-      "rule": "js-flatmap-filter",
-      "severity": "warning",
-      "title": ".map().filter(Boolean) loops twice",
-      "message": "This loops over your list twice because .map().filter(Boolean) makes two passes, so use .flatMap() to change & drop items in one pass",
-      "help": "Use `.flatMap(item => condition ? [value] : [])` to change and drop items in one pass, instead of building a throwaway array in between",
-      "line": 71,
-      "column": 21,
-      "offset": 2097,
-      "length": 111,
-      "category": "Performance"
-    },
-    {
-      "filePath": "app/hooks/useMultiSelection.tsx",
-      "plugin": "react-doctor",
-      "rule": "jsx-no-constructed-context-values",
-      "severity": "warning",
-      "title": "Unstable context provider value",
-      "message": "Every reader of this context redraws on each render because you build its `value` inline.",
-      "help": "Wrap the context value in `useMemo` or move it outside the component so consumers do not redraw every render.",
-      "line": 85,
-      "column": 7,
-      "offset": 2487,
-      "length": 160,
-      "category": "Performance"
+      "title": "Effect re-subscribes on a changing callback",
+      "message": "Your effect re-subscribes whenever \"getActionsMap\" changes, even though it's only used inside `addEventListener`.",
+      "help": "Wrap the callback with `useEffectEvent(callback)` (React 19+) and call it inside the sub-handler. An Effect Event always sees the latest props and state but isn't a dependency, so the effect won't re-subscribe every time the parent redraws. See https://react.dev/reference/react/useEffectEvent",
+      "line": 171,
+      "column": 49,
+      "offset": 5629,
+      "length": 13,
+      "category": "Bugs"
     },
     {
       "filePath": "app/routes/CreateAndEditAction.tsx",
@@ -908,9 +458,9 @@
       "title": "Large component is hard to read and change",
       "message": "Component \"CreateAndEditAction\" is 484 lines long, which is hard to read & change. Split it into a few smaller components.",
       "help": "Pull each section into its own component so the parent is easier to read, test, and change.",
-      "line": 24,
+      "line": 25,
       "column": 17,
-      "offset": 1171,
+      "offset": 1211,
       "length": 19,
       "category": "Maintainability"
     },
@@ -920,55 +470,13 @@
       "rule": "prefer-useReducer",
       "severity": "warning",
       "title": "Many related useState calls",
-      "message": "7 useState calls in \"CreateAndEditAction\" can each trigger a separate render.",
+      "message": "6 useState calls in \"CreateAndEditAction\" can each trigger a separate render.",
       "help": "Group related state in `useReducer` so one logical update does not fan out into separate renders.",
-      "line": 32,
+      "line": 33,
       "column": 4,
-      "offset": 1344,
-      "length": 15323,
+      "offset": 1384,
+      "length": 15336,
       "category": "Bugs"
-    },
-    {
-      "filePath": "app/routes/CreateAndEditAction.tsx",
-      "plugin": "react-doctor",
-      "rule": "exhaustive-deps",
-      "severity": "warning",
-      "title": "Missing effect dependencies",
-      "message": "`partners` is rebuilt every render, so `useMemo` runs every time.",
-      "help": "Don't blindly add missing dependencies. Read the hook callback first.\n\nBad:\nuseEffect(() => {\n  setCount(count + 1);\n}, [count]);\n\nBetter:\nuseEffect(() => {\n  setCount((currentCount) => currentCount + 1);\n}, []);\n\nIf the missing value is recreated every render, move it inside the hook or stabilize it before adding it to deps.",
-      "line": 188,
-      "column": 27,
-      "offset": 6685,
-      "length": 8,
-      "category": "Bugs"
-    },
-    {
-      "filePath": "app/routes/CreateAndEditAction.tsx",
-      "plugin": "react-doctor",
-      "rule": "rerender-state-only-in-handlers",
-      "severity": "warning",
-      "title": "State only used in handlers",
-      "message": "Each update to \"prevFetcherData\" redraws your component for nothing because this useState is set but never shown on screen.",
-      "help": "Use useRef instead of useState when the value is only set and never shown on screen. `ref.current = ...` updates it without redrawing the component.",
-      "line": 262,
-      "column": 9,
-      "offset": 8853,
-      "length": 63,
-      "category": "Performance"
-    },
-    {
-      "filePath": "app/routes/app.admin.clients.tsx",
-      "plugin": "react-doctor",
-      "rule": "js-flatmap-filter",
-      "severity": "warning",
-      "title": ".map().filter(Boolean) loops twice",
-      "message": "This loops over your list twice because .map().filter(Boolean) makes two passes, so use .flatMap() to change & drop items in one pass",
-      "help": "Use `.flatMap(item => condition ? [value] : [])` to change and drop items in one pass, instead of building a throwaway array in between",
-      "line": 45,
-      "column": 34,
-      "offset": 1574,
-      "length": 118,
-      "category": "Performance"
     },
     {
       "filePath": "app/routes/app.help.tsx",
@@ -987,44 +495,16 @@
     {
       "filePath": "app/routes/app.notifications.tsx",
       "plugin": "react-doctor",
-      "rule": "click-events-have-key-events",
+      "rule": "prefer-tag-over-role",
       "severity": "warning",
-      "title": "Click handler missing keyboard handler",
-      "message": "Keyboard users can't trigger this click handler because there's no keyboard one, so add `onKeyUp`, `onKeyDown`, or `onKeyPress`.",
-      "help": "Pair `onClick` with a key handler so keyboard users can trigger it.",
-      "line": 126,
-      "column": 18,
-      "offset": 5135,
-      "length": 3,
+      "title": "Role used instead of HTML tag",
+      "message": "Screen reader users get more reliable semantics from `<button>` than `role=\"button\"`, so use `<button>` instead.",
+      "help": "Use the matching HTML element when one exists so browsers and assistive tech get native semantics.",
+      "line": 128,
+      "column": 19,
+      "offset": 5190,
+      "length": 13,
       "category": "Accessibility"
-    },
-    {
-      "filePath": "app/routes/app.notifications.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-static-element-interactions",
-      "severity": "warning",
-      "title": "Interaction on static element",
-      "message": "Screen reader users can't tell this click handler is interactive because it has no `role`, so add a `role` or use a button or link.",
-      "help": "Give clickable static elements a `role`, or use a button or link.",
-      "line": 126,
-      "column": 18,
-      "offset": 5135,
-      "length": 3,
-      "category": "Accessibility"
-    },
-    {
-      "filePath": "app/routes/app.partner.$slug.tsx",
-      "plugin": "react-doctor",
-      "rule": "rerender-lazy-state-init",
-      "severity": "warning",
-      "title": "State initializer runs on every render",
-      "message": "useState(parseISO()) re-runs parseISO() on every render & throws the result away.",
-      "help": "Wrap expensive initial state in an arrow function so the initializer does not rerun and get thrown away on every render.",
-      "line": 150,
-      "column": 48,
-      "offset": 4844,
-      "length": 14,
-      "category": "Performance"
     },
     {
       "filePath": "app/routes/app.profile.tsx",
@@ -1053,34 +533,6 @@
       "offset": 4782,
       "length": 32015,
       "category": "Bugs"
-    },
-    {
-      "filePath": "app/routes/app.tsx",
-      "plugin": "react-doctor",
-      "rule": "click-events-have-key-events",
-      "severity": "warning",
-      "title": "Click handler missing keyboard handler",
-      "message": "Keyboard users can't trigger this click handler because there's no keyboard one, so add `onKeyUp`, `onKeyDown`, or `onKeyPress`.",
-      "help": "Pair `onClick` with a key handler so keyboard users can trigger it.",
-      "line": 157,
-      "column": 18,
-      "offset": 5074,
-      "length": 3,
-      "category": "Accessibility"
-    },
-    {
-      "filePath": "app/routes/app.tsx",
-      "plugin": "react-doctor",
-      "rule": "no-static-element-interactions",
-      "severity": "warning",
-      "title": "Interaction on static element",
-      "message": "Screen reader users can't tell this click handler is interactive because it has no `role`, so add a `role` or use a button or link.",
-      "help": "Give clickable static elements a `role`, or use a button or link.",
-      "line": 157,
-      "column": 18,
-      "offset": 5074,
-      "length": 3,
-      "category": "Accessibility"
     },
     {
       "filePath": "app/routes/reset-password.tsx",
@@ -1125,12 +577,12 @@
   ],
   "summary": {
     "errorCount": 0,
-    "warningCount": 36,
-    "affectedFileCount": 23,
-    "totalDiagnosticCount": 36,
-    "score": 68,
+    "warningCount": 18,
+    "affectedFileCount": 13,
+    "totalDiagnosticCount": 18,
+    "score": 74,
     "scoreLabel": "Needs work"
   },
-  "elapsedMilliseconds": 2758.1865829999997,
+  "elapsedMilliseconds": 2748.6472919999997,
   "error": null
 }

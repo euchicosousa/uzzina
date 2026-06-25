@@ -82,12 +82,14 @@ export function CloudinaryUpload({
 
   // Limpa o widget e o timeout caso o componente seja desmontado
   useEffect(() => {
+    const destroyTimeout = destroyTimeoutRef;
+    const widget = widgetRef;
     return () => {
-      if (destroyTimeoutRef.current) {
-        clearTimeout(destroyTimeoutRef.current);
+      if (destroyTimeout.current) {
+        clearTimeout(destroyTimeout.current);
       }
-      if (widgetRef.current) {
-        widgetRef.current.destroy();
+      if (widget.current) {
+        widget.current.destroy();
       }
     };
   }, []);

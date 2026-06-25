@@ -22,11 +22,10 @@ export function UButtonAI({
       {...props}
     >
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 animate-spin-gradient"
         style={{
           background:
             "conic-gradient(from var(--gradient-angle), #fc6, #f63, #96f, #6cf, #fc6)",
-          animation: "spin-gradient 3s linear infinite",
         }}
       />
       <div className="bg-background relative flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold tracking-wide">

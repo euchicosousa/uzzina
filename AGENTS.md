@@ -46,6 +46,11 @@ Este repositório contém o sistema **Uzzina**, um painel e fluxo de gestão de 
 *   **Perfil (`/app/profile`)**: Oferece pré-visualização instantânea (usando `previewColorIndex()` e `previewTheme()` do hook `useAppTheme`) sem salvar no banco de dados até que o formulário completo seja submetido pelo usuário.
 *   **Flicker Prevention**: `app/root.tsx` tem um script inline síncrono no `<head>` que lê o `localStorage` e aplica as variáveis CSS antes da hidratação para evitar piscadas na tela.
 
+### Qualidade de Código e Tipagem Estrita
+*   **Sem `any`**: Nunca utilize `any`. O código TypeScript deve ser estritamente tipado. Use `unknown` com verificações de tipo (type guards) se os dados forem dinâmicos.
+*   **Sem Assertions de Não-Nulo (`!`)**: Nunca use asserções não-nulas (`!`) ou truques de tipagem como `null!`. Prefira usar getters seguros, inicializações opcionais ou validações explícitas de presença.
+*   **Conformidade com o Linter (Biome)**: Todas as alterações devem passar no comando `bun run lint` e no compilador `npx tsc`. Certifique-se de que não restem avisos ou erros.
+
 ---
 
 ## 4. Manutenção de Documentação (IMPORTANTE)

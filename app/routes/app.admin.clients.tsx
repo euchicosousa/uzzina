@@ -42,9 +42,10 @@ export default function AdminClientsPage() {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {clients.map((client) => {
-          const clientPartners = (client.partners || [])
-            .map((slug) => partners.find((p) => p.slug === slug))
-            .filter(Boolean);
+          const clientPartners = (client.partners || []).flatMap((slug) => {
+            const p = partners.find((p) => p.slug === slug);
+            return p ? [p] : [];
+          });
 
           return (
             <Link

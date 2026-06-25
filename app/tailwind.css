@@ -328,6 +328,10 @@ html {
   corner-shape: superellipse(1.5);
 }
 
+@utility animate-spin-gradient {
+  animation: spin-gradient 3s linear infinite;
+}
+
 /* Animated gradient angle for the AI button border */
 @property --gradient-angle {
   syntax: "<angle>";
@@ -424,7 +428,7 @@ iframe[data-test="uw-iframe"] {
 }
 
 .pressed {
-  @apply grid place-content-center rounded-xl p-0 shadow-white inset-shadow-black/20 transition-all squircle data-[state=on]:shadow-sm data-[state=on]:inset-shadow-sm dark:shadow-white/20;
+  @apply grid place-content-center rounded-xl p-0 shadow-white inset-shadow-black/20 transition-all squircle data-[state=on]:bg-input data-[state=on]:shadow-sm data-[state=on]:inset-shadow-sm dark:shadow-white/20;
 }
 
 .input-embossed {

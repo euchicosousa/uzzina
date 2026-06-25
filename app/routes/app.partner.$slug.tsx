@@ -48,7 +48,6 @@ import { getUserPreferences } from "~/lib/preferences";
 import { cn } from "~/lib/utils";
 import { getPartnerBySlug } from "~/models/partners.server";
 import { getUserId } from "~/services/auth.server";
-
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMatches } from "react-router";
 import { UToggle } from "~/components/uzzina/UToggle";
@@ -58,16 +57,12 @@ import {
   fetchPartnerActions,
 } from "~/lib/supabase.queries";
 import type { AppLoaderData } from "./app";
-
 export const runtime = "edge";
-
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { supabase } = await getUserId(request);
-
   const searchParams = new URL(request.url).searchParams;
   let date = searchParams.get("date");
   const skipActions = searchParams.get("skip_actions") === "true";
-
   if (!date) {
     date = format(new Date().setDate(15), "yyyy-MM-dd");
   } else {
@@ -75,7 +70,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       ? format(parseISO(date).setDate(15), "yyyy-MM-dd")
       : format(new Date().setDate(15), "yyyy-MM-dd");
   }
-
   const start = startOfDay(startOfWeek(startOfMonth(parseISO(date))));
   const end = endOfDay(endOfWeek(endOfMonth(parseISO(date))));
 
@@ -83,7 +77,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   invariant(params.slug, "Slug do parceiro não fornecido");
   const partner = await getPartnerBySlug(supabase, params.slug);
   invariant(partner);
-
   return data(
     {
       partner,
@@ -92,14 +85,16 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       endDateFormatted: format(end, "yyyy-MM-dd HH:mm:ss"),
       skipActions,
     },
-    { headers: { "Cache-Control": "no-store" } },
+    {
+      headers: {
+        "Cache-Control": "no-store",
+      },
+    },
   );
 };
-
 export default function PartnerPage() {
   const { partner, date, startDateFormatted, endDateFormatted, skipActions } =
     useLoaderData<typeof loader>();
-
   const queryClient = useQueryClient();
   const { person, partners } = useMatches()[1].loaderData as AppLoaderData;
 
@@ -147,9 +142,8 @@ export default function PartnerPage() {
   });
   const context = useOutletContext<OutletContext | undefined>();
   const setBaseAction = context?.setBaseAction;
-  const [currentDay, setCurrentDay] = useState(parseISO(date));
+  const [currentDay, setCurrentDay] = useState(() => parseISO(date));
   const [query, setQuery] = useState("");
-
   const { followPartnerColor, applyPartnerColors, restoreThemeColors } =
     useAppTheme();
 
@@ -171,9 +165,7 @@ export default function PartnerPage() {
     restoreThemeColors,
     applyPartnerColors,
   ]);
-
   const preferences = getUserPreferences(person);
-
   const [viewOptions, setViewOptions] = useViewOptions({
     sprint: true,
     variant: preferences.defaultViewVariant,
@@ -190,21 +182,15 @@ export default function PartnerPage() {
       filter_responsible: true,
     },
   });
-
   const filteredActions = filterActions(currentActions, viewOptions, query);
-
   const feedActions = getInstagramFeedActions(filteredActions).filter(
     (action) => action.phase !== PHASES.idea.slug,
   );
-
   const lateCount = currentLateActions.length;
-
   const navigate = useNavigate();
-
   const [view, setView] = useState<"calendar" | "feed">(
     preferences.showInstagramSidebar ? "feed" : "calendar",
   );
-
   return (
     <div className="page-height flex flex-col overflow-hidden">
       {/* Header */}
@@ -213,33 +199,33 @@ export default function PartnerPage() {
         <div className="order-1 flex w-full shrink-0 items-center justify-between gap-4 overflow-hidden border-b p-2 2xl:w-auto 2xl:border-b-0">
           <div className="flex shrink-0 items-center justify-between gap-2 overflow-hidden">
             <UAvatar
-              fallback={partner.short}
               backgroundColor={partner.colors[0]}
               color={partner.colors[1]}
-              size={SIZE.md}
+              fallback={partner.short}
               image={partner.image}
+              size={SIZE.md}
             />
             {lateCount > 0 && (
               <Popover>
                 <PopoverTrigger asChild>
                   <button
-                    type="button"
                     className="isolate -mt-4 -ml-4 cursor-pointer outline-none select-none"
+                    type="button"
                   >
-                    <UBadge value={lateCount} isDynamic />
+                    <UBadge isDynamic value={lateCount} />
                   </button>
                 </PopoverTrigger>
                 <PopoverContent
-                  className="max-h-[400px] w-[380px] overflow-y-auto bg-popover/50 p-4 backdrop-blur-lg"
                   align="start"
+                  className="max-h-[400px] w-[380px] overflow-y-auto bg-popover/50 p-4 backdrop-blur-lg"
                 >
                   <h3 className="text-lg tracking-normal">
                     Ações Atrasadas ({lateCount})
                   </h3>
                   <ActionContainer
                     actions={currentLateActions}
-                    variant="line"
                     onClick={(action) => setBaseAction?.(action)}
+                    variant="line"
                   />
                 </PopoverContent>
               </Popover>
@@ -254,13 +240,13 @@ export default function PartnerPage() {
 
           <CalendarButtons
             currentDay={currentDay}
+            days={30}
+            mode="month"
             setCurrentDay={(day: Date) => {
               setCurrentDay(day);
               navigate(`?date=${format(day, "yyyy-MM-dd")}`);
             }}
-            days={30}
             showDate
-            mode="month"
           />
 
           <InputGroup className="w-auto bg-input">
@@ -268,9 +254,9 @@ export default function PartnerPage() {
               <SearchIcon />
             </InputGroupAddon>
             <InputGroupInput
+              onChange={(event) => setQuery(event.target.value)}
               placeholder="Buscar ação..."
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
             />
           </InputGroup>
         </div>
@@ -278,20 +264,20 @@ export default function PartnerPage() {
         <div className="order-3 w-full overflow-hidden p-2 2xl:order-2">
           {/* Organização */}
           <ViewOptionsComponent
-            viewOptions={viewOptions}
-            setViewOptions={setViewOptions}
             endComponents={
               <UToggle
-                pressed={view === "feed"}
                 className="raised"
                 onPressedChange={() => {
                   const v = view === "calendar" ? "feed" : "calendar";
                   setView(v);
                 }}
+                pressed={view === "feed"}
               >
                 <Grid3X3Icon />
               </UToggle>
             }
+            setViewOptions={setViewOptions}
+            viewOptions={viewOptions}
           />
         </div>
       </div>
@@ -305,8 +291,8 @@ export default function PartnerPage() {
         >
           <ActionCalendarPartnerPage
             actions={filteredActions}
-            viewOptions={viewOptions}
             currentDay={currentDay}
+            viewOptions={viewOptions}
           />
         </div>
         <div
@@ -319,10 +305,10 @@ export default function PartnerPage() {
         >
           <FeedSection
             actions={feedActions}
+            currentPartner={partner}
             onActionClick={(action) => {
               setBaseAction?.(action);
             }}
-            currentPartner={partner}
           />
         </div>
       </div>
