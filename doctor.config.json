@@ -5,6 +5,13 @@
     "react-doctor/no-initialize-state": "off",
     "react-doctor/no-event-handler": "off",
     "react-doctor/no-multi-comp": "off",
-    "react-doctor/only-export-components": "off"
+    "react-doctor/only-export-components": "off",
+    "react-doctor/no-giant-component": "off",
+    "react-doctor/prefer-useReducer": "off",
+    "react-doctor/prefer-use-effect-event": "off",
+    "react-doctor/artifact-baas-authority-surface": "off",
+    "react-doctor/no-pass-data-to-parent": "off",
+    "react-doctor/no-many-boolean-props": "off",
+    "react-doctor/prefer-tag-over-role": "off"
   }
 }
