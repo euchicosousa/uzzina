@@ -193,20 +193,22 @@ export function ActionItem({
     }
   }, [variant]);
   const bgClasses = useMemo(() => {
-    let baseStyles = `shadow-xs
+    let baseStyles = `
+    text-foreground
+    bg-action
+    shadow-xs
       transition
+      duration-500
       ring
       ring-black/5
-      duration-500
       border-t
       border-white
-      dark:border-white/20
+      z-0 
       hover:z-10
-      z-0
-      bg-action
+      hover:shadow-black/20
       hover:shadow-lg
       hover:bg-action-hover
-      text-foreground
+      dark:border-white/20
       dark:shadow-black/80`;
 
     // 1. Determine base background/text colors based on priority states
