@@ -37,7 +37,7 @@ export async function createActionClient(
 /**
  * Update an existing action directly via browser Supabase client.
  * Applies the same business rules as the server:
- *   - phase = concluido → sprints = null
+ *   - phase = done → sprints = null
  *   - archived = true   → sprints = null
  */
 export async function updateActionClient(
@@ -53,7 +53,7 @@ export async function updateActionClient(
   const updateData = {
     ...result.data,
   };
-  if (updateData.phase === PHASES.concluido.slug) {
+  if (updateData.phase === PHASES.done.slug) {
     updateData.sprints = null;
   }
   if (updateData.archived === true) {

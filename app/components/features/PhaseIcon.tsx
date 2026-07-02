@@ -34,7 +34,7 @@ export function PhaseIcon({
   }
 
   // Se concluído, mostra o círculo preenchido com check
-  const isFinished = phase.slug === PHASES.concluido.slug;
+  const isFinished = phase.slug === PHASES.done.slug;
 
   if (size === "dot") {
     return (

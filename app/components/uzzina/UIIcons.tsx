@@ -3,7 +3,6 @@ import {
   BadgeCheckIcon,
   BinaryIcon,
   BlocksIcon,
-  BrainIcon,
   CameraIcon,
   CheckCircle2Icon,
   CircleFadingPlusIcon,
@@ -24,8 +23,6 @@ import {
   RabbitIcon,
   SplinePointerIcon,
   SunIcon,
-  UserCheck2Icon,
-  UsersIcon,
 } from "lucide-react";
 import { Theme } from "remix-themes";
 import { cn } from "~/lib/utils";
@@ -106,15 +103,9 @@ export function Icons({
     // Fases
     case "idea":
       return <LightbulbIcon className={cn(className)} style={style} />;
-    case "fazer":
-      return <BrainIcon className={cn(className)} style={style} />;
-    case "alinhamento":
-      return <UsersIcon className={cn(className)} style={style} />;
-    case "produzindo":
+    case "active":
       return <PenToolIcon className={cn(className)} style={style} />;
-    case "revisao":
-      return <UserCheck2Icon className={cn(className)} style={style} />;
-    case "concluido":
+    case "done":
       return <CheckCircle2Icon className={cn(className)} style={style} />;
 
     default:

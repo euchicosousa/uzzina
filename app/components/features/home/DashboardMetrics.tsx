@@ -53,7 +53,7 @@ export function DashboardMetrics({
     let periodCompleted = 0;
 
     for (const action of actions) {
-      const isCompleted = action.phase === "concluido";
+      const isCompleted = action.phase === "done";
       const actionDate = parseISO(action.date);
 
       // 1. Hoje
@@ -187,11 +187,8 @@ const ProgressBar = ({ actions, total }: { actions: Action[]; total: number }) =
 
   const counts = {
     idea: 0,
-    fazer: 0,
-    produzindo: 0,
-    alinhamento: 0,
-    revisao: 0,
-    concluido: 0,
+    active: 0,
+    done: 0,
   };
 
   for (const action of actions) {

@@ -68,7 +68,7 @@ export async function fetchAllLateActions(
     .or("archived.is.false,archived.is.null")
     .contains("responsibles", isAdmin ? [] : [userId])
     .overlaps("partners", partnerSlugs)
-    .neq("phase", "concluido")
+    .neq("phase", "done")
     .lt("date", format(new Date(), "yyyy-MM-dd HH:mm:ss"))
     .order("date", { ascending: false });
 

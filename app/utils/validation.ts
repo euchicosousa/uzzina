@@ -4,7 +4,7 @@ import { z } from "zod";
 import { PHASES } from "~/lib/CONSTANTS";
 
 export const isLateAction = (action: Action) =>
-  action.phase !== PHASES.concluido.slug &&
+  action.phase !== PHASES.done.slug &&
   isBefore(new Date(action.date), new Date());
 
 
