@@ -10,7 +10,7 @@ import type { AppLoaderData } from "./app";
 export const runtime = "edge";
 
 export default function TodayPage() {
-  const { person } = useMatches()[1].loaderData as AppLoaderData;
+  const { person, partners } = useMatches()[1].loaderData as AppLoaderData;
 
   const now = new Date();
 
@@ -22,7 +22,13 @@ export default function TodayPage() {
     useQuery({
       queryKey: QUERY_KEYS.actions.home(person.user_id),
       queryFn: () =>
-        fetchHomeActions(person.user_id, startDateISO, endDateISO, todayEndISO),
+        fetchHomeActions(
+          person.user_id,
+          startDateISO,
+          endDateISO,
+          todayEndISO,
+          partners.map((p) => p.slug),
+        ),
     });
 
   const { partnerFilters } = useOutletContext<OutletContext>();

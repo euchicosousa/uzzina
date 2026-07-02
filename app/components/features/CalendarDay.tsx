@@ -10,7 +10,6 @@ import { getInstagramFeedActions } from "~/utils/validation";
 import { PlusIcon } from "lucide-react";
 import { SkeletonGroup } from "../ui/skeleton";
 import { useLoading } from "~/hooks/useLoading";
-
 export function CalendarDay({
   currentDay,
   day,
@@ -45,9 +44,8 @@ export function CalendarDay({
 
   return (
     <div
-      ref={setNodeRef}
-      id={`day_${format(day, "yyyy-MM-dd")}`}
       key={format(day, "yyyy-MM-dd")}
+      ref={setNodeRef}
       className={cn(
         "group/column flex flex-col justify-between",
         showBorder && "border-b",
@@ -58,35 +56,39 @@ export function CalendarDay({
             ? "h-96 overflow-hidden"
             : "h-72 overflow-hidden",
       )}
+      id={`day_${format(day, "yyyy-MM-dd")}`}
     >
       <div className="flex h-full shrink flex-col gap-2 overflow-hidden p-1">
         <div className="flex items-center justify-between">
-          <div
-            suppressHydrationWarning
-            className={cn(
-              !isSameMonth(day, currentDay || today) ? "opacity-25" : "",
-            )}
-          >
+          <div className="gap-2 flex items-center">
             <div
-              suppressHydrationWarning
               className={cn(
-                "grid h-8 place-content-center text-lg font-medium",
-                isSameDay(day, today)
-                  ? "w-8 rounded-full bg-foreground text-background"
-                  : "",
+                !isSameMonth(day, currentDay || today) ? "opacity-25" : "",
               )}
+              suppressHydrationWarning
             >
-              {format(day, "d")}
+              <div
+                className={cn(
+                  "grid h-8 place-content-center text-lg font-medium",
+                  isSameDay(day, today)
+                    ? "w-8 rounded-full bg-foreground text-background"
+                    : "",
+                )}
+                suppressHydrationWarning
+              >
+                {format(day, "d")}
+              </div>
             </div>
+            <div className="text-xs opacity-30">({actions.length})</div>
           </div>
           {onCreateAction && (
-            <div className="isolate opacity-0 group-hover/column:opacity-100">
+            <div className="isolate transition duration-300 opacity-0 group-hover/column:opacity-100">
               <button
-                type="button"
                 className="grid size-6 cursor-pointer place-content-center rounded-full bg-primary text-primary-foreground"
                 onClick={() => {
                   onCreateAction(day);
                 }}
+                type="button"
               >
                 <PlusIcon className="size-4" />
               </button>
@@ -96,10 +98,10 @@ export function CalendarDay({
         <div className={cn("h-full overflow-hidden")}>
           {isLoading && actions.length === 0 && (
             <SkeletonGroup
-              orientation="vertical"
               className="gap-1"
-              delay={400}
               count={skeletonCount}
+              delay={400}
+              orientation="vertical"
             />
           )}
 
@@ -108,6 +110,7 @@ export function CalendarDay({
               {getInstagramFeedActions(actions).length > 0 && (
                 <ActionContainer
                   actions={getInstagramFeedActions(actions)}
+                  ascending={viewOptions.ascending}
                   dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
                   displayFlags={{
                     showCategory: viewOptions.category,
@@ -116,16 +119,16 @@ export function CalendarDay({
                     showLate: viewOptions.late,
                     showPriority: viewOptions.priority,
                   }}
-                  orderBy={viewOptions.order}
-                  ascending={viewOptions.ascending}
                   isCompact={isCompact}
-                  variant={viewOptions.variant}
                   isDraggable
+                  orderBy={viewOptions.order}
+                  variant={viewOptions.variant}
                 />
               )}
               {getInstagramFeedActions(actions, false).length > 0 && (
                 <ActionContainer
                   actions={getInstagramFeedActions(actions, false)}
+                  ascending={viewOptions.ascending}
                   dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
                   displayFlags={{
                     showCategory: viewOptions.category,
@@ -134,17 +137,17 @@ export function CalendarDay({
                     showLate: viewOptions.late,
                     showPriority: viewOptions.priority,
                   }}
-                  orderBy={viewOptions.order}
-                  ascending={viewOptions.ascending}
                   isCompact={isCompact}
-                  variant={VARIANT.line}
                   isDraggable
+                  orderBy={viewOptions.order}
+                  variant={VARIANT.line}
                 />
               )}
             </div>
           ) : (
             <ActionContainer
               actions={actions}
+              ascending={viewOptions.ascending}
               dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
               displayFlags={{
                 showCategory: viewOptions.category,
@@ -153,11 +156,10 @@ export function CalendarDay({
                 showLate: viewOptions.late,
                 showPriority: viewOptions.priority,
               }}
-              orderBy={viewOptions.order}
-              ascending={viewOptions.ascending}
               isCompact={isCompact}
-              variant={viewOptions.variant}
               isDraggable
+              orderBy={viewOptions.order}
+              variant={viewOptions.variant}
             />
           )}
         </div>
@@ -168,7 +170,6 @@ export function CalendarDay({
     </div>
   );
 }
-
 function CelebrationContainer({
   celebrations,
 }: {

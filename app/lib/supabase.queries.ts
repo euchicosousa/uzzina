@@ -13,6 +13,7 @@ export async function fetchHomeActions(
   startDateISO: string,
   endDateISO: string,
   todayEndISO: string,
+  partnerSlugs: string[],
 ) {
   const supabase = createSupabaseBrowserClient();
   const { data, error } = await supabase.rpc("get_home_actions", {
@@ -20,6 +21,7 @@ export async function fetchHomeActions(
     p_start_date: startDateISO,
     p_end_date: endDateISO,
     p_today_end: todayEndISO,
+    p_partner_slugs: partnerSlugs,
   });
 
   if (error) throw error;

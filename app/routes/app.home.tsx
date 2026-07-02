@@ -40,7 +40,13 @@ export default function AppHome() {
     useQuery({
       queryKey: QUERY_KEYS.actions.home(person.user_id),
       queryFn: () =>
-        fetchHomeActions(person.user_id, startDateISO, endDateISO, todayEndISO),
+        fetchHomeActions(
+          person.user_id,
+          startDateISO,
+          endDateISO,
+          todayEndISO,
+          partners.map((p) => p.slug),
+        ),
     });
 
   // Busca as lateActions no client usando TanStack Query

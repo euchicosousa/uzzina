@@ -89,7 +89,13 @@ export function Header({
   const { data: homeActions = [] } = useQuery<Action[]>({
     queryKey: QUERY_KEYS.actions.home(person.user_id),
     queryFn: () =>
-      fetchHomeActions(person.user_id, homeStartISO, homeEndISO, todayEndISO),
+      fetchHomeActions(
+        person.user_id,
+        homeStartISO,
+        homeEndISO,
+        todayEndISO,
+        partners.map((p) => p.slug),
+      ),
     enabled: isHome,
   });
 
