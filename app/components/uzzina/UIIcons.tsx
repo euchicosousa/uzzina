@@ -23,6 +23,11 @@ import {
   RabbitIcon,
   SplinePointerIcon,
   SunIcon,
+  // Stations
+  Layers2Icon,
+  CalendarDaysIcon,
+  PaletteIcon,
+  UserCheck2Icon,
 } from "lucide-react";
 import { Theme } from "remix-themes";
 import { cn } from "~/lib/utils";
@@ -107,6 +112,16 @@ export function Icons({
       return <PenToolIcon className={cn(className)} style={style} />;
     case "done":
       return <CheckCircle2Icon className={cn(className)} style={style} />;
+
+    // Estações (Stations)
+    case "flow":
+      return <Layers2Icon className={cn(className)} style={style} />;
+    case "planning":
+      return <CalendarDaysIcon className={cn(className)} style={style} />;
+    case "creation":
+      return <PaletteIcon className={cn(className)} style={style} />;
+    case "client":
+      return <UserCheck2Icon className={cn(className)} style={style} />;
 
     default:
       return <BlocksIcon className={cn(className)} style={style} />;

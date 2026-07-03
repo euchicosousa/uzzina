@@ -185,6 +185,57 @@ export const AREAS = {
 } as const;
 export type AREA = keyof typeof AREAS;
 export type AREA_TYPE = (typeof AREAS)[AREA];
+export const STATIONS = {
+  flow: {
+    slug: "flow",
+    title: "Fluxo",
+    color: "#f80",
+    shortcut: "w",
+    key: "KeyW",
+  },
+  planning: {
+    slug: "planning",
+    title: "Planejamento",
+    color: "#375bc8",
+    shortcut: "p",
+    key: "KeyP",
+  },
+  creation: {
+    slug: "creation",
+    title: "Criação",
+    color: "#aa00ff",
+    shortcut: "r",
+    key: "KeyR",
+  },
+  client: {
+    slug: "client",
+    title: "Cliente",
+    color: "#f49",
+    shortcut: "l",
+    key: "KeyL",
+  },
+} as const;
+export type STATION = keyof typeof STATIONS;
+export type STATION_TYPE = (typeof STATIONS)[STATION];
+
+/** Quais stations cada categoria pode usar (restrição de fluxo) */
+export const CATEGORY_STATIONS: Record<string, STATION[]> = {
+  // Grupo Criativo — pipeline completo
+  reels:    ["flow", "planning", "creation", "client"],
+  post:     ["flow", "planning", "creation", "client"],
+  stories:  ["flow", "planning", "creation", "client"],
+  carousel: ["flow", "planning", "creation", "client"],
+  capture:  ["flow", "planning", "creation", "client"],
+  design:   ["flow", "planning", "creation", "client"],
+  print:    ["flow", "planning", "creation", "client"],
+  ads:      ["flow", "planning", "creation", "client"],
+  dev:      ["flow", "planning", "creation", "client"],
+  // Grupo Operacional — fluxo interno + cliente quando necessário
+  todo:     ["flow", "client"],
+  meeting:  ["flow"],
+  sm:       ["flow", "client"],
+  finance:  ["flow", "client"],
+};
 export const SIZE = {
   xs: "xs",
   sm: "sm",

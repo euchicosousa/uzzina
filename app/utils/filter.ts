@@ -37,6 +37,11 @@ export function filterActions(
       if (!options.filter_phase.includes(action.phase ?? "idea")) return false;
     }
 
+    // 3.5 Filtro por Estação (Station)
+    if (options.filter_station && options.filter_station.length > 0) {
+      if (!options.filter_station.includes(action.station ?? "flow")) return false;
+    }
+
     // 4. Filtro por Responsável
     if (options.filter_responsible && options.filter_responsible.length > 0) {
       // Verifica se a ação tem algum dos responsáveis selecionados no filtro

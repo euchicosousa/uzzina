@@ -11,6 +11,7 @@ import { ActionColorDropdown } from "~/components/features/ActionForm/ActionColo
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { PartnersCombobox } from "~/components/features/PartnersCombobox";
 import { PhaseCombobox } from "~/components/features/PhaseCombobox";
+import { StationCombobox } from "~/components/features/StationCombobox";
 import { SprintCombobox } from "~/components/features/SprintCombobox";
 import { Button } from "~/components/ui/button";
 import { useActionMutations } from "~/hooks/useActionMutations";
@@ -65,11 +66,35 @@ export function ActionFormFooter({
             showText={false}
             iconVariant="progress"
             onSelect={async (selected) => {
+              let finalStation = RawAction.station;
+              if (selected === "idea") finalStation = "flow";
+              if (selected === "done") finalStation = null;
+
               setRawAction({
                 ...RawAction,
                 phase: selected,
+                station: finalStation,
               });
-              await updateAction({ phase: selected });
+              await updateAction({ phase: selected, station: finalStation });
+            }}
+          />
+        </div>
+        {/* Estação Station Combobox */}
+        <div>
+          <StationCombobox
+            selectedStation={RawAction.station}
+            category={RawAction.category}
+            tabIndex={0}
+            showText={false}
+            disabled={RawAction.phase === "idea" || RawAction.phase === "done"}
+            onSelect={async ({ station }) => {
+              if (station) {
+                setRawAction({
+                  ...RawAction,
+                  station: station,
+                });
+                await updateAction({ station: station });
+              }
             }}
           />
         </div>

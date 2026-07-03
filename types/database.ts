@@ -74,6 +74,7 @@ export type Database = {
           priority: string
           responsibles: string[]
           sprints: string[] | null
+          station: string | null
           time: number
           title: string
           updated_at: string
@@ -95,6 +96,7 @@ export type Database = {
           priority: string
           responsibles: string[]
           sprints?: string[] | null
+          station?: string | null
           time?: number
           title: string
           updated_at: string
@@ -116,6 +118,7 @@ export type Database = {
           priority?: string
           responsibles?: string[]
           sprints?: string[] | null
+          station?: string | null
           time?: number
           title?: string
           updated_at?: string
@@ -358,41 +361,80 @@ export type Database = {
     }
     Functions: {
       get_app_bootstrap: { Args: { p_user_id: string }; Returns: Json }
-      get_home_actions: {
-        Args: {
-          p_end_date: string
-          p_start_date: string
-          p_today_end: string
-          p_user_id: string
-        }
-        Returns: {
-          archived: boolean | null
-          category: string
-          color: string
-          content_files: string[] | null
-          created_at: string
-          date: string
-          description: string | null
-          id: string
-          instagram_caption: string | null
-          partners: string[]
-          phase: string
-          priority: string
-          responsibles: string[]
-          sprints: string[] | null
-          time: number
-          title: string
-          updated_at: string
-          user_id: string
-          work_files: string[] | null
-        }[]
-        SetofOptions: {
-          from: "*"
-          to: "actions"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
+      get_home_actions:
+        | {
+            Args: {
+              p_end_date: string
+              p_start_date: string
+              p_today_end: string
+              p_user_id: string
+            }
+            Returns: {
+              archived: boolean | null
+              category: string
+              color: string
+              content_files: string[] | null
+              created_at: string
+              date: string
+              description: string | null
+              id: string
+              instagram_caption: string | null
+              partners: string[]
+              phase: string
+              priority: string
+              responsibles: string[]
+              sprints: string[] | null
+              station: string | null
+              time: number
+              title: string
+              updated_at: string
+              user_id: string
+              work_files: string[] | null
+            }[]
+            SetofOptions: {
+              from: "*"
+              to: "actions"
+              isOneToOne: false
+              isSetofReturn: true
+            }
+          }
+        | {
+            Args: {
+              p_end_date: string
+              p_partner_slugs?: string[]
+              p_start_date: string
+              p_today_end: string
+              p_user_id: string
+            }
+            Returns: {
+              archived: boolean | null
+              category: string
+              color: string
+              content_files: string[] | null
+              created_at: string
+              date: string
+              description: string | null
+              id: string
+              instagram_caption: string | null
+              partners: string[]
+              phase: string
+              priority: string
+              responsibles: string[]
+              sprints: string[] | null
+              station: string | null
+              time: number
+              title: string
+              updated_at: string
+              user_id: string
+              work_files: string[] | null
+            }[]
+            SetofOptions: {
+              from: "*"
+              to: "actions"
+              isOneToOne: false
+              isSetofReturn: true
+            }
+          }
     }
     Enums: {
       sow: "marketing" | "socialmedia" | "demand"

@@ -38,7 +38,8 @@ import {
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { useActionMutations } from "~/hooks/useActionMutations";
-import { CATEGORIES, PHASES, PRIORITIES } from "~/lib/CONSTANTS";
+import { CATEGORIES, PHASES, PRIORITIES, STATIONS } from "~/lib/CONSTANTS";
+import { StationIcon } from "./StationIcon";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import type { Person } from "~/lib/supabase.queries";
 import { fetchPeople } from "~/lib/supabase.queries";
@@ -268,6 +269,28 @@ export function BulkActionMenu() {
                       {phase.title}
                     </DropdownMenuItem>
                   ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+
+          {/* Estação */}
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <KanbanIcon className="mr-2 size-4 opacity-70" /> Alterar Estação
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                {Object.values(STATIONS).map((station) => (
+                  <DropdownMenuItem
+                    key={station.slug}
+                    onClick={() => performBulkAction({ station: station.slug })}
+                  >
+                    <div className="mr-2">
+                      <StationIcon station={station} size="xs" />
+                    </div>
+                    {station.title}
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>

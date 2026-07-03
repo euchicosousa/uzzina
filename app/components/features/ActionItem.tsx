@@ -1,7 +1,7 @@
-import type { Action, Person, Partner } from "~/types";
 import { CalendarDaysIcon, SignalIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useOutletContext, useRouteLoaderData } from "react-router";
+import type { Action, Partner, Person } from "~/types";
 
 // UI Components
 import { Checkbox } from "~/components/ui/checkbox";
@@ -10,6 +10,7 @@ import { ActionItemTitleInput } from "./ActionItemTitleInput";
 import { Content } from "./Content";
 import { Draggable } from "./DnD";
 import { PhaseIcon } from "./PhaseIcon";
+import { StationIcon } from "./StationIcon";
 
 // Hooks
 import { useActionShortcutContext } from "~/hooks/useActionShortcut";
@@ -25,12 +26,14 @@ import {
   PHASES,
   PRIORITIES,
   SIZE,
+  STATIONS,
   VARIANT,
   type CATEGORY,
-  type PHASE,
-  type PRIORITY,
   type CATEGORY_TYPE,
+  type PHASE,
   type PHASE_TYPE,
+  type PRIORITY,
+  type STATION_TYPE,
 } from "~/lib/CONSTANTS";
 import {
   getFormattedDateTime,
@@ -154,6 +157,13 @@ export function ActionItem({
   const currentPhase = useMemo(
     () => PHASES[(action.phase as PHASE) || "idea"],
     [action.phase],
+  );
+  const currentStation = useMemo(
+    () =>
+      (action.station
+        ? (STATIONS[action.station as keyof typeof STATIONS] ?? null)
+        : null) as STATION_TYPE | null,
+    [action.station],
   );
   const currentPartners = useMemo(
     () =>
@@ -331,6 +341,7 @@ export function ActionItem({
         currentPartners={currentPartners}
         currentPhase={currentPhase}
         currentResponsibles={currentResponsibles}
+        currentStation={currentStation}
         dateTimeDisplay={dateTimeDisplay}
         handleAction={handleAction}
         handleSetIsEditing={handleSetIsEditing}
@@ -489,6 +500,7 @@ interface ActionVariantRendererProps {
   variant: (typeof VARIANT)[keyof typeof VARIANT];
   action: Action;
   currentPhase: PHASE_TYPE;
+  currentStation: STATION_TYPE | null;
   currentCategory: CATEGORY_TYPE;
   currentPartners: Partner[];
   currentResponsibles: Person[];
@@ -512,6 +524,7 @@ function ActionVariantRenderer({
   variant,
   action,
   currentPhase,
+  currentStation,
   currentCategory,
   currentPartners,
   currentResponsibles,
@@ -611,7 +624,10 @@ function ActionVariantRenderer({
       return (
         <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
           <div className="flex w-full items-center gap-2 overflow-hidden">
-            <PhaseIcon phase={currentPhase} size="dot" />
+            <div className="flex items-center gap-2">
+              <StationIcon size="short" station={currentStation} />
+              <PhaseIcon phase={currentPhase} size="dot" />
+            </div>
             {isLateAction(action) && <ActionItemSprint action={action} />}
             <ActionItemTitleInput
               className="w-full lg:text-sm xl:text-base"

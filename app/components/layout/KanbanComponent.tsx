@@ -93,7 +93,7 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
   return (
     <div className="w-full max-w-full overflow-hidden">
       <div className="overflow-x-auto pb-8">
-        <div className="grid min-w-[1500px] grid-cols-6 overflow-hidden">
+        <div className="grid  min-w-[1000px] grid-cols-3 overflow-hidden">
           <DragStateContext.Provider value={!!activeAction}>
             <DndContext
               id={"kanban"}
@@ -147,12 +147,15 @@ const KanbanColumn = ({
   phase: PHASE_TYPE;
 }) => {
   return (
-    <Droppable className="flex h-[30vh] flex-col overflow-hidden" id={id}>
+    <Droppable
+      className="flex h-[30vh] w-full  flex-col overflow-hidden"
+      id={id}
+    >
       {(isOver) => {
         return (
           <div
             className={cn(
-              "flex h-full flex-col overflow-hidden border-t transition-colors",
+              "flex h-full flex-col overflow-hidden border-t-4 transition-colors",
               isOver && "border-primary text-primary",
             )}
             style={{
