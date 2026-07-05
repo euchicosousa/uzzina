@@ -1,4 +1,4 @@
-import { endOfWeek, startOfDay } from "date-fns";
+import { endOfWeek, startOfDay, startOfWeek } from "date-fns";
 import { useMatches, useOutletContext, useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -38,16 +38,15 @@ export default function AppFlow() {
     urlPartner ? [urlPartner] : [],
   );
 
-  // Default date filter: from = undefined (get all late), to = Saturday of this week
   const now = new Date();
-  const defaultTo = endOfWeek(now, {
-    weekStartsOn: 0,
-  }); // Sábado
+  const defaultFrom = startOfWeek(now, { weekStartsOn: 0 }); // Domingo
+  const defaultTo = endOfWeek(now, { weekStartsOn: 0 }); // Sábado
+
   const [dateRange, setDateRange] = useState<{
     from?: Date;
     to: Date;
   }>({
-    from: undefined,
+    from: defaultFrom,
     to: defaultTo,
   });
 
@@ -56,12 +55,26 @@ export default function AppFlow() {
     localPartnerFilters.length > 0
       ? localPartnerFilters
       : partners.map((p) => p.slug);
-  const startDateISO = dateRange.from
-    ? startOfDay(dateRange.from).toISOString()
-    : undefined;
+
+  // Check if today is inside the selected date range
+  const isCurrentPeriod = useMemo(() => {
+    if (!dateRange.from) return true; // Se não tem início definido, assume período atual
+    const today = startOfDay(now);
+    const fromDate = startOfDay(dateRange.from);
+    const toDate = startOfDay(dateRange.to);
+    return today >= fromDate && today <= toDate;
+  }, [dateRange, now]);
+
+  const startDateISO = isCurrentPeriod
+    ? undefined // Se englobar hoje, traz todas as atrasadas (startDate = undefined na query)
+    : dateRange.from
+      ? startOfDay(dateRange.from).toISOString()
+      : undefined;
+
   const endDateISO = endOfWeek(dateRange.to, {
     weekStartsOn: 0,
   }).toISOString();
+
   const { data: actions = [], isLoading } = useQuery({
     queryKey: QUERY_KEYS.actions.flow(person.user_id, {
       from: startDateISO,

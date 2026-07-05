@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { format, endOfWeek, endOfMonth, isSameDay } from "date-fns";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { format, endOfWeek, endOfMonth, isSameDay, startOfWeek, startOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
@@ -12,47 +12,91 @@ interface FlowDateFilterProps {
   onChange: (range: { from?: Date; to: Date }) => void;
 }
 
+function getWeekRange(now: Date) {
+  return {
+    from: startOfWeek(now, { weekStartsOn: 0 }),
+    to: endOfWeek(now, { weekStartsOn: 0 }),
+  };
+}
+
+function getMonthRange(now: Date) {
+  return {
+    from: startOfWeek(startOfMonth(now), { weekStartsOn: 0 }),
+    to: endOfWeek(endOfMonth(now), { weekStartsOn: 0 }),
+  };
+}
+
 export function FlowDateFilter({ dateRange, onChange }: FlowDateFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const nowRef = useRef(new Date());
+  const now = nowRef.current;
+
+  const defaultRange = getWeekRange(now);
+
   const [tempRange, setTempRange] = useState<DateRange>({
-    from: dateRange.from,
-    to: dateRange.to,
+    from: dateRange.from || defaultRange.from,
+    to: dateRange.to || defaultRange.to,
   });
 
-  const now = new Date();
-  const defaultToWeek = endOfWeek(now, { weekStartsOn: 0 }); // Sábado
-  const defaultToMonth = endOfMonth(now);
+  useEffect(() => {
+    if (isOpen) {
+      const week = getWeekRange(now);
+      setTempRange({
+        from: dateRange.from || week.from,
+        to: dateRange.to || week.to,
+      });
+    }
+  }, [isOpen, dateRange, now]);
 
-  const isCurrentWeekSelected =
-    !dateRange.from && isSameDay(dateRange.to, defaultToWeek);
+  const isCurrentWeekSelected = useMemo(() => {
+    const week = getWeekRange(now);
+    return (
+      dateRange.from &&
+      isSameDay(dateRange.from, week.from) &&
+      isSameDay(dateRange.to, week.to)
+    );
+  }, [dateRange, now]);
 
-  const isCurrentMonthSelected =
-    !dateRange.from && isSameDay(dateRange.to, defaultToMonth);
+  const isCurrentMonthSelected = useMemo(() => {
+    const month = getMonthRange(now);
+    return (
+      dateRange.from &&
+      isSameDay(dateRange.from, month.from) &&
+      isSameDay(dateRange.to, month.to)
+    );
+  }, [dateRange, now]);
 
   const handleQuickSelectWeek = () => {
-    onChange({ from: undefined, to: defaultToWeek });
-    setTempRange({ from: undefined, to: defaultToWeek });
+    const week = getWeekRange(now);
+    onChange(week);
+    setTempRange(week);
     setIsOpen(false);
   };
 
   const handleQuickSelectMonth = () => {
-    onChange({ from: undefined, to: defaultToMonth });
-    setTempRange({ from: undefined, to: defaultToMonth });
+    const month = getMonthRange(now);
+    onChange(month);
+    setTempRange(month);
     setIsOpen(false);
   };
 
   const handleCalendarChange = (range: DateRange | undefined) => {
     if (!range) return;
     setTempRange(range);
-    
-    // Se o usuário selecionou tanto o "from" quanto o "to", nós salvamos.
-    if (range.from && range.to) {
-      onChange({ from: range.from, to: range.to });
+  };
+
+  const handleConfirm = () => {
+    if (tempRange.from) {
+      onChange({
+        from: tempRange.from,
+        to: tempRange.to || tempRange.from,
+      });
       setIsOpen(false);
-    } else if (range.from && !range.to) {
-      // Se selecionou apenas o primeiro dia, deixamos temporário até fechar ou selecionar o segundo.
-      onChange({ from: range.from, to: range.from });
     }
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
   };
 
   const displayText = () => {
@@ -72,8 +116,16 @@ export function FlowDateFilter({ dateRange, onChange }: FlowDateFilterProps) {
     return `Até ${format(dateRange.to, "dd 'de' MMM", { locale: ptBR })}`;
   };
 
+  const getPreviewText = () => {
+    if (!tempRange.from) return "Nenhuma data selecionada";
+    if (!tempRange.to || isSameDay(tempRange.from, tempRange.to)) {
+      return format(tempRange.from, "dd/MM/yyyy");
+    }
+    return `${format(tempRange.from, "dd/MM/yyyy")} a ${format(tempRange.to, "dd/MM/yyyy")}`;
+  };
+
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -113,6 +165,20 @@ export function FlowDateFilter({ dateRange, onChange }: FlowDateFilterProps) {
             numberOfMonths={1}
             disabled={(date) => date < new Date(2020, 0, 1)}
           />
+
+          <div className="border-t border-border/60 my-1 flex flex-col gap-2 pt-2">
+            <div className="text-xs text-center font-medium text-foreground/80">
+              {getPreviewText()}
+            </div>
+            <Button
+              size="sm"
+              className="w-full rounded-xl text-xs h-8"
+              disabled={!tempRange.from}
+              onClick={handleConfirm}
+            >
+              Confirmar
+            </Button>
+          </div>
         </div>
       </PopoverContent>
     </Popover>
