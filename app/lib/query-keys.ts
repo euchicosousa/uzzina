@@ -2,7 +2,7 @@ export const QUERY_KEYS = {
   actions: {
     all: () => ["actions"] as const,
     home: (userId: string) => ["actions", "home", userId] as const,
-    flow: (userId: string, dateFilters?: { from?: string; to: string }) => ["actions", "flow", userId, dateFilters] as const,
+    flow: (userId: string, dateFilters?: { from?: string; to: string; partners?: string[] }) => ["actions", "flow", userId, dateFilters] as const,
     partner: (slug: string, dateRange?: string) => ["actions", "partner", slug, dateRange] as const,
   },
   lateActions: {

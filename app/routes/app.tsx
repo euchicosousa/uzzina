@@ -17,6 +17,9 @@ import { Toaster } from "sonner";
 import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
 import { ActionShortcutProvider } from "~/hooks/useActionShortcut";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
+import { cn } from "~/lib/utils";
+import { useLocation } from "react-router";
+import { ChevronUpIcon } from "lucide-react";
 const CreateAndEditAction = lazy(() =>
   import("./CreateAndEditAction").then((module) => ({
     default: module.CreateAndEditAction,
@@ -68,6 +71,14 @@ export default function Dashboard() {
   const [BaseAction, setBaseAction] = useState<Action | null>(null);
   const [openCmdK, setOpenCmdK] = useState(false);
   const [partnerFilters, setPartnerFilters] = useState<string[]>([]);
+  const location = useLocation();
+  const [isAppBarVisible, setIsAppBarVisible] = useState(false);
+  const [appBarTimeout, setAppBarTimeout] = useState<ReturnType<
+    typeof setTimeout
+  > | null>(null);
+  const isHiddenByDefault =
+    location.pathname.startsWith("/app/partner/") ||
+    location.pathname === "/app/flow";
   useEffect(() => {
     if (typeof window !== "undefined" && person) {
       const prefs = getUserPreferences(person);
@@ -163,14 +174,51 @@ export default function Dashboard() {
           </div>
 
           {!BaseAction && (
-            <AppBar
-              partnerFilters={partnerFilters}
-              partners={partners}
-              person={person}
-              setBaseAction={setBaseAction}
-              setOpenCmdK={setOpenCmdK}
-              setPartnerFilters={setPartnerFilters}
-            />
+            <div
+              className={cn(
+                "fixed bottom-0 left-0 right-0 z-30 flex justify-center pb-4 transition-all duration-1000 ease-in-out  pointer-events-none",
+                isHiddenByDefault && !isAppBarVisible
+                  ? "translate-y-28 opacity-0"
+                  : "translate-y-0 opacity-100",
+              )}
+              onMouseEnter={() => {
+                if (appBarTimeout) {
+                  clearTimeout(appBarTimeout);
+                  setAppBarTimeout(null);
+                }
+                setIsAppBarVisible(true);
+              }}
+              onMouseLeave={() => {
+                if (isHiddenByDefault) {
+                  const timer = setTimeout(() => {
+                    setIsAppBarVisible(false);
+                  }, 500);
+                  setAppBarTimeout(timer);
+                }
+              }}
+            >
+              <div className="pointer-events-auto">
+                <AppBar
+                  partnerFilters={partnerFilters}
+                  partners={partners}
+                  person={person}
+                  setBaseAction={setBaseAction}
+                  setOpenCmdK={setOpenCmdK}
+                  setPartnerFilters={setPartnerFilters}
+                />
+              </div>
+            </div>
+          )}
+
+          {isHiddenByDefault && !isAppBarVisible && (
+            <div
+              className="fixed bottom-0 left-1/2 -translate-x-1/2 z-40 w-32 h-10 flex justify-center items-end pb-2 cursor-pointer transition-all hover:pb-3 pointer-events-auto"
+              onMouseEnter={() => {
+                setIsAppBarVisible(true);
+              }}
+            >
+              <ChevronUpIcon className="size-5 text-muted-foreground opacity-60 hover:opacity-100 transition-opacity" />
+            </div>
           )}
 
           <GlobalSearchCommand

@@ -1,5 +1,5 @@
 import { endOfWeek, startOfDay } from "date-fns";
-import { useMatches, useOutletContext } from "react-router";
+import { useMatches, useOutletContext, useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import KanbanStationsFlow from "~/components/layout/KanbanStationsFlow";
@@ -9,6 +9,8 @@ import type { AppLoaderData } from "./app";
 import { PhaseCombobox } from "~/components/features/PhaseCombobox";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { FlowDateFilter } from "~/components/features/FlowDateFilter";
+import { PartnersCombobox } from "~/components/features/PartnersCombobox";
+import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 export function meta() {
   return [
     {
@@ -23,11 +25,18 @@ export function meta() {
 export default function AppFlow() {
   const { person, partners } = useMatches()[1].loaderData as AppLoaderData;
   useOutletContext();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlPartner = searchParams.get("partner");
 
   // Local filters
   const [selectedPhases, setSelectedPhases] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [localPartnerFilters] = useState<string[]>([]);
+  const [selectedResponsibles, setSelectedResponsibles] = useState<string[]>(
+    [],
+  );
+  const [localPartnerFilters, setLocalPartnerFilters] = useState<string[]>(
+    urlPartner ? [urlPartner] : [],
+  );
 
   // Default date filter: from = undefined (get all late), to = Saturday of this week
   const now = new Date();
@@ -42,7 +51,7 @@ export default function AppFlow() {
     to: defaultTo,
   });
 
-  // If local partner filters exist, use them, otherwise use the ones the user has access to
+  // If local partner filters exist, use them, otherwise use all accessible partners
   const queryPartners =
     localPartnerFilters.length > 0
       ? localPartnerFilters
@@ -57,6 +66,7 @@ export default function AppFlow() {
     queryKey: QUERY_KEYS.actions.flow(person.user_id, {
       from: startDateISO,
       to: endDateISO,
+      partners: queryPartners,
     }),
     queryFn: () => fetchFlowActions(queryPartners, endDateISO, startDateISO),
   });
@@ -70,16 +80,40 @@ export default function AppFlow() {
         selectedCategories.includes(a.category || ""),
       );
     }
+    if (selectedResponsibles.length > 0) {
+      result = result.filter((a) =>
+        a.responsibles?.some((r) => selectedResponsibles.includes(r)),
+      );
+    }
     return result;
-  }, [actions, selectedPhases, selectedCategories]);
+  }, [actions, selectedPhases, selectedCategories, selectedResponsibles]);
+  const handlePartnerSelect = (slugs: string[]) => {
+    setLocalPartnerFilters(slugs);
+    if (slugs.length === 1) {
+      setSearchParams({
+        partner: slugs[0],
+      });
+    } else {
+      setSearchParams({});
+    }
+  };
+  const selectedPartnersObjects = partners.filter((p) =>
+    localPartnerFilters.includes(p.slug),
+  );
   return (
     <div className="page-height flex flex-col overflow-hidden">
       {/* Header and Filters */}
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 shrink-0 items-center p-4 xl:px-8">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 shrink-0 items-center p-4 xl:px-8 border-b">
         <h1 className="text-2xl font-bold tracking-tight text-foreground p-0">
           Flow
         </h1>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2">
+          {/* Partner Filter */}
+          <PartnersCombobox
+            onSelect={handlePartnerSelect}
+            selectedPartners={localPartnerFilters}
+            showText
+          />
           {/* Date Filter */}
           <FlowDateFilter
             dateRange={dateRange}
@@ -96,6 +130,17 @@ export default function AppFlow() {
             isMulti
             onSelect={({ categories }) => setSelectedCategories(categories)}
             selectedCategories={selectedCategories}
+          />
+          {/* Responsibles Filter */}
+          <ResponsiblesCombobox
+            currentPartners={
+              selectedPartnersObjects.length > 0
+                ? selectedPartnersObjects
+                : partners
+            }
+            onSelect={setSelectedResponsibles}
+            selectedResponsibles={selectedResponsibles}
+            variant="filter"
           />
         </div>
       </div>

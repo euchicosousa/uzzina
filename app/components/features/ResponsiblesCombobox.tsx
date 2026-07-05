@@ -1,6 +1,6 @@
 import type { Partner } from "~/types";
 import { useEffect, useRef, useState } from "react";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, User2Icon } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -25,10 +25,14 @@ export function ResponsiblesCombobox({
   selectedResponsibles,
   currentPartners,
   onSelect,
+  variant = "default",
+  className,
 }: {
   selectedResponsibles: string[];
   currentPartners: Partner[];
   onSelect?: (responsibles: string[]) => void;
+  variant?: "default" | "filter";
+  className?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   
@@ -76,12 +80,18 @@ export function ResponsiblesCombobox({
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="cursor-pointer underline-offset-4 outline-none hover:underline"
+          className={cn(
+            variant === "filter"
+              ? "raised flex h-9 place-content-center items-center rounded-xl border-b border-b-transparent px-3 squircle text-sm cursor-pointer outline-none hover:bg-card transition-colors gap-2"
+              : "cursor-pointer underline-offset-4 outline-none hover:underline",
+            className
+          )}
           title={getFormattedPeopleName(currentResponsibles)}
         >
           <ActionResponsiblesDisplay
             responsibles={selectedResponsibles}
             size={SIZE.sm}
+            variant={variant}
           />
         </button>
       </PopoverTrigger>
@@ -141,9 +151,11 @@ export function ResponsiblesCombobox({
 function ActionResponsiblesDisplay({
   responsibles: responsibles_,
   size = SIZE.md,
+  variant = "default",
 }: {
   responsibles: string[];
   size?: (typeof SIZE)[keyof typeof SIZE];
+  variant?: "default" | "filter";
 }) {
   const { data: people = [] } = useQuery({
     queryKey: QUERY_KEYS.people(),
@@ -155,7 +167,17 @@ function ActionResponsiblesDisplay({
     .map((r) => people.find((p) => p.user_id === r))
     .filter((p) => p !== undefined);
 
-  if (responsibles.length === 0) return null;
+  if (responsibles.length === 0) {
+    if (variant === "filter") {
+      return (
+        <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+          <User2Icon className="size-4" />
+          <span>Responsáveis</span>
+        </div>
+      );
+    }
+    return null;
+  }
 
   return (
     <div className="flex items-center gap-2">
