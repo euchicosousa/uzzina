@@ -68,9 +68,9 @@ export function AppBar({
   return (
     <div className="fixed bottom-4 left-1/2 z-20 flex -translate-x-1/2 justify-center">
       <div className="flex items-center gap-2 rounded-3xl border border-border bg-card/20 p-2 shadow-2xl backdrop-blur-xl squircle lg:gap-4">
-        {/* Slot 1: Stations */}
+        {/* Slot 1: Flow */}
         <Button asChild className={"rounded-xl"} variant={"ghost"}>
-          <Link title="Estações" to="/app/stations">
+          <Link title="Flow" to="/app/flow">
             <Layers2Icon />
           </Link>
         </Button>

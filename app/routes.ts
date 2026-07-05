@@ -16,7 +16,7 @@ export default [
     route("profile", "routes/app.profile.tsx"),
     route("help", "routes/app.help.tsx"),
     route("notifications", "routes/app.notifications.tsx"),
-    route("stations", "routes/app.stations.tsx"),
+    route("flow", "routes/app.flow.tsx"),
   ]),
   route("dash", "routes/dash.tsx", [
     index("routes/dash.home.tsx"),

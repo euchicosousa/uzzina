@@ -53,7 +53,23 @@ export async function fetchPartnerActions(
   return data as Action[];
 }
 
+export async function fetchFlowActions(
+  partnerSlugs: string[],
+  endDateISO: string,
+) {
+  const supabase = createSupabaseBrowserClient();
+  const { data, error } = await supabase
+    .from("actions")
+    .select("*")
+    .or("archived.is.false,archived.is.null")
+    .overlaps("partners", partnerSlugs)
+    .neq("phase", "done")
+    .lte("date", endDateISO)
+    .order("date", { ascending: true });
 
+  if (error) throw error;
+  return data as Action[];
+}
 
 /**
  * Fetch all late actions for all partners the user has access to

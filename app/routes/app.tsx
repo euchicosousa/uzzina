@@ -13,25 +13,21 @@ import { getCleanAction } from "~/lib/helpers";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { getUserId } from "~/services/auth.server";
 import { getUserPreferences } from "~/lib/preferences";
-
 import { Toaster } from "sonner";
 import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
 import { ActionShortcutProvider } from "~/hooks/useActionShortcut";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
-
 const CreateAndEditAction = lazy(() =>
   import("./CreateAndEditAction").then((module) => ({
     default: module.CreateAndEditAction,
   })),
 );
-
 export type AppLoaderData = {
   person: Person;
   partners: Partner[];
   cloudName: string;
   uploadPreset: string;
 };
-
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { user_id, supabase } = await getUserId(request);
 
@@ -39,19 +35,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { data: bootstrap, error } = await supabase.rpc("get_app_bootstrap", {
     p_user_id: user_id,
   });
-
   if (error || !bootstrap) {
     throw error || new Error("Falha no bootstrap da aplicação");
   }
-
   const { person, partners } = bootstrap as {
     person: Person;
     partners: Partner[];
   };
-
   invariant(person, "Person not found");
   invariant(partners, "Partners not found");
-
   return {
     person,
     partners,
@@ -59,10 +51,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || "",
   } as AppLoaderData;
 };
-
 export const meta: MetaFunction = () => {
   return [
-    { title: "ᴜᴢᴢɪɴa - Domine, Crie e Conquiste." },
+    {
+      title: "ᴜᴢᴢɪɴa - Domine, Crie e Conquiste.",
+    },
     {
       name: "description",
       content:
@@ -70,13 +63,11 @@ export const meta: MetaFunction = () => {
     },
   ];
 };
-
 export default function Dashboard() {
   const { person, partners } = useLoaderData<typeof loader>();
   const [BaseAction, setBaseAction] = useState<Action | null>(null);
   const [openCmdK, setOpenCmdK] = useState(false);
   const [partnerFilters, setPartnerFilters] = useState<string[]>([]);
-
   useEffect(() => {
     if (typeof window !== "undefined" && person) {
       const prefs = getUserPreferences(person);
@@ -91,7 +82,6 @@ export default function Dashboard() {
       window.dispatchEvent(new Event("uzzina-storage-update"));
     }
   }, [person]);
-
   useEffect(() => {
     // Inicializa o client Supabase no browser para gerenciar o refresh do token
     // automaticamente. Quando o access token expira, o @supabase/ssr o renova
@@ -107,7 +97,6 @@ export default function Dashboard() {
     });
     return () => subscription.unsubscribe();
   }, []);
-
   useEffect(() => {
     function keyDownGlobal(event: KeyboardEvent) {
       if (event.key === "k" && event.metaKey) {
@@ -123,17 +112,16 @@ export default function Dashboard() {
     document.addEventListener("keydown", keyDownGlobal);
     return () => document.removeEventListener("keydown", keyDownGlobal);
   }, [person.user_id]);
-
   return (
-    <div id="app" className="flex h-screen flex-col">
+    <div className="flex h-screen flex-col" id="app">
       <ActionShortcutProvider>
         <MultiSelectionProvider>
           {/* HEADER */}
 
           <Header
+            partnerFilters={partnerFilters}
             person={person}
             setBaseAction={setBaseAction}
-            partnerFilters={partnerFilters}
           />
           <div className="flex h-full w-full overflow-hidden">
             <div className="grow overflow-x-hidden overflow-y-auto">
@@ -155,8 +143,6 @@ export default function Dashboard() {
             {BaseAction ? (
               <Suspense fallback={null}>
                 <button
-                  type="button"
-                  tabIndex={-1}
                   aria-label="Fechar painel de edição"
                   className="fixed inset-0 top-16 z-10 flex w-full shrink-0 flex-col bg-black/20 dark:bg-black/80 cursor-default"
                   onClick={(event) => {
@@ -164,6 +150,8 @@ export default function Dashboard() {
                     event.stopPropagation();
                     setBaseAction(null);
                   }}
+                  tabIndex={-1}
+                  type="button"
                 />
                 <CreateAndEditAction
                   BaseAction={BaseAction}
@@ -176,18 +164,18 @@ export default function Dashboard() {
 
           {!BaseAction && (
             <AppBar
+              partnerFilters={partnerFilters}
               partners={partners}
               person={person}
               setBaseAction={setBaseAction}
               setOpenCmdK={setOpenCmdK}
-              partnerFilters={partnerFilters}
               setPartnerFilters={setPartnerFilters}
             />
           )}
 
           <GlobalSearchCommand
-            open={openCmdK}
             onOpenChange={setOpenCmdK}
+            open={openCmdK}
             partners={partners}
             setBaseAction={setBaseAction}
           />

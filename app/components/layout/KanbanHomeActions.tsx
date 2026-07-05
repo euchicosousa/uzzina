@@ -22,7 +22,10 @@ import { ActionItem } from "../features/ActionItem";
 import { Draggable, Droppable } from "../features/DnD";
 import { DragStateContext } from "../features/DragStateContext";
 import { UBadge } from "../uzzina/UBadge";
-export default function KanbanComponent({ actions }: { actions: Action[] }) {
+import { useIsDesktop } from "~/hooks/useIsDesktop";
+
+export default function KanbanHomeActions({ actions }: { actions: Action[] }) {
+  const isDesktop = useIsDesktop();
   const _queryClient = useQueryClient();
   const { handleAction } = useActionMutations();
   const [activeAction, setActiveAction] = useState<Action>();
@@ -95,42 +98,55 @@ export default function KanbanComponent({ actions }: { actions: Action[] }) {
       <div className="overflow-x-auto pb-8">
         <div className="grid  min-w-[1000px] grid-cols-3 overflow-hidden">
           <DragStateContext.Provider value={!!activeAction}>
-            <DndContext
-              id={"kanban"}
-              onDragEnd={handleDragEnd}
-              onDragStart={handleDragStart}
-              sensors={sensors}
-            >
-              {Object.values(PHASES).map((phase) => (
-                <KanbanColumn
-                  key={phase.slug}
-                  actions={actionsByPhase[phase.slug] ?? []}
-                  id={phase.slug}
-                  phase={phase}
-                />
-              ))}
-              <DragOverlay
-                adjustScale={false}
-                className="z-100"
-                dropAnimation={{
-                  duration: 150,
-                  easing: "ease-in-out",
-                }}
+            {isDesktop ? (
+              <DndContext
+                id={"kanban"}
+                onDragEnd={handleDragEnd}
+                onDragStart={handleDragStart}
+                sensors={sensors}
               >
-                {activeAction ? (
-                  <ActionItem
-                    action={activeAction}
-                    dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
-                    displayFlags={{
-                      showLate: true,
-                      showPartner: true,
-                      showCategory: true,
-                    }}
-                    isDragging
+                {Object.values(PHASES).map((phase) => (
+                  <KanbanColumn
+                    key={phase.slug}
+                    actions={actionsByPhase[phase.slug] ?? []}
+                    id={phase.slug}
+                    phase={phase}
                   />
-                ) : null}
-              </DragOverlay>
-            </DndContext>
+                ))}
+                <DragOverlay
+                  adjustScale={false}
+                  className="z-100"
+                  dropAnimation={{
+                    duration: 150,
+                    easing: "ease-in-out",
+                  }}
+                >
+                  {activeAction ? (
+                    <ActionItem
+                      action={activeAction}
+                      dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+                      displayFlags={{
+                        showLate: true,
+                        showPartner: true,
+                        showCategory: true,
+                      }}
+                      isDragging
+                    />
+                  ) : null}
+                </DragOverlay>
+              </DndContext>
+            ) : (
+              <>
+                {Object.values(PHASES).map((phase) => (
+                  <KanbanColumn
+                    key={phase.slug}
+                    actions={actionsByPhase[phase.slug] ?? []}
+                    id={phase.slug}
+                    phase={phase}
+                  />
+                ))}
+              </>
+            )}
           </DragStateContext.Provider>
         </div>
       </div>

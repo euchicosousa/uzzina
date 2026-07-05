@@ -11,7 +11,7 @@ import { useMemo, useState } from "react";
 import { CalendarButtons } from "~/components/features/Calendar";
 import { CategoriesComponent } from "~/components/layout/CategoriesComponent";
 import FeedComponent from "~/components/layout/FeedComponent";
-import KanbanComponent from "~/components/layout/KanbanComponent";
+import KanbanHomeActions from "~/components/layout/KanbanHomeActions";
 import { PartnersComponent } from "~/components/layout/PartnersComponent";
 import { UToggle } from "~/components/uzzina/UToggle";
 import { isInstagramFeed } from "~/lib/helpers";
@@ -105,7 +105,7 @@ export function TodayHomeComponent({
       }
     >
       <div className="px-8 xl:px-16">
-        {view === "kanban" && <KanbanComponent actions={filteredActions} />}
+        {view === "kanban" && <KanbanHomeActions actions={filteredActions} />}
         {view === "feed" && <FeedComponent actions={filteredActions} />}
         {view === "categories" && (
           <CategoriesComponent actions={filteredActions} />

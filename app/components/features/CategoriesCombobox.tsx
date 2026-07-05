@@ -117,7 +117,7 @@ export function CategoriesCombobox({
   }, []);
 
   const hasSelection =
-    currentCategories.filter((c) => c.slug !== "all").length === 0;
+    currentCategories.length > 0 && currentCategories[0].slug !== "all";
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -126,17 +126,17 @@ export function CategoriesCombobox({
           <button
             type="button"
             tabIndex={tabIndex}
-            data-state={!hasSelection && "on"}
+            data-state={hasSelection && "on"}
             className="raised flex h-9 place-content-center items-center rounded-xl border-b border-b-transparent px-3 squircle"
             title={
-              currentCategories[0].slug === "all"
+              currentCategories.length === 0 || currentCategories[0].slug === "all"
                 ? "Escolha a categoria"
                 : currentCategories
                     .map((category) => category.title)
                     .join(" • ")
             }
           >
-            {currentCategories[0].slug === "all" ? (
+            {currentCategories.length === 0 || currentCategories[0].slug === "all" ? (
               <Icons color="#666" slug="categories" className="size-4" />
             ) : (
               currentCategories.map((category) => (
