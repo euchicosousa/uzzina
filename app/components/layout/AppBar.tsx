@@ -1,11 +1,10 @@
-import type { Action, Person, Partner } from "~/types";
 import { useQuery } from "@tanstack/react-query";
 import {
   CopyCheckIcon,
   FilterIcon,
   FilterXIcon,
   HeartHandshakeIcon,
-  HomeIcon,
+  Layers2Icon,
   PlusIcon,
   SearchIcon,
   X as XIcon,
@@ -18,6 +17,7 @@ import { getCleanAction } from "~/lib/helpers";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchAllLateActions } from "~/lib/supabase.queries";
 import { cn } from "~/lib/utils";
+import type { Action, Partner, Person } from "~/types";
 import { Button } from "../ui/button";
 import {
   Command,
@@ -29,7 +29,6 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
-
 export function AppBar({
   partners,
   person,
@@ -50,9 +49,7 @@ export function AppBar({
   const params = useParams();
   const { isSelectionMode, toggleSelectionMode, clearSelection } =
     useMultiSelection();
-
   const isAtHome = location.pathname === "/app";
-
   const { data: lateActions = [] } = useQuery({
     queryKey: QUERY_KEYS.lateActions.user(person.user_id),
     queryFn: () =>
@@ -62,31 +59,29 @@ export function AppBar({
         partners.map((p) => p.slug),
       ),
   });
-
   const activePartners = partners.filter((p) =>
     partnerFilters.includes(p.slug),
   );
   const pagePartner = params.slug
     ? partners.find((p) => p.slug === params.slug)
     : null;
-
   return (
     <div className="fixed bottom-4 left-1/2 z-20 flex -translate-x-1/2 justify-center">
       <div className="flex items-center gap-2 rounded-3xl border border-border bg-card/20 p-2 shadow-2xl backdrop-blur-xl squircle lg:gap-4">
-        {/* Slot 1: Homepage */}
-        <Button asChild variant={"ghost"} className={"rounded-xl"}>
-          <Link to="/app">
-            <HomeIcon />
+        {/* Slot 1: Stations */}
+        <Button asChild className={"rounded-xl"} variant={"ghost"}>
+          <Link title="Estações" to="/app/stations">
+            <Layers2Icon />
           </Link>
         </Button>
         {/* Slot 2: Dropdown de Parceiros */}
         <Popover>
           <PopoverTrigger asChild>
             <Button
-              variant={partnerFilters.length > 0 ? "secondary" : "ghost"}
               className={cn(
                 "relative flex items-center justify-center rounded-2xl px-2 squircle",
               )}
+              variant={partnerFilters.length > 0 ? "secondary" : "ghost"}
             >
               {activePartners.length > 0 ? (
                 <UAvatarGroup
@@ -96,16 +91,16 @@ export function AppBar({
                     backgroundColor: partner.colors[0],
                     color: partner.colors[1],
                   }))}
-                  size={SIZE.sm}
                   clampAt={3}
+                  size={SIZE.sm}
                 />
               ) : pagePartner ? (
                 <UAvatar
-                  size={SIZE.sm}
-                  fallback={pagePartner.short}
-                  image={pagePartner.image}
                   backgroundColor={pagePartner.colors[0]}
                   color={pagePartner.colors[1]}
+                  fallback={pagePartner.short}
+                  image={pagePartner.image}
+                  size={SIZE.sm}
                 />
               ) : (
                 <HeartHandshakeIcon className="size-4" />
@@ -113,8 +108,8 @@ export function AppBar({
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            className="mx-2 w-64 bg-popover/20 p-0 backdrop-blur-2xl"
             align="start"
+            className="mx-2 w-64 bg-popover/20 p-0 backdrop-blur-2xl"
           >
             <Command className="bg-transparent">
               <CommandInput placeholder="Procurar parceiro..." />
@@ -130,7 +125,6 @@ export function AppBar({
                     action.partners.includes(partner.slug),
                   );
                   const isFiltered = partnerFilters.includes(partner.slug);
-
                   return (
                     <CommandItem
                       key={partner.id}
@@ -141,11 +135,11 @@ export function AppBar({
                     >
                       <div className="flex items-center gap-2 overflow-hidden">
                         <UAvatar
-                          size={SIZE.sm}
-                          fallback={partner.short}
-                          image={partner.image}
                           backgroundColor={partner.colors[0]}
                           color={partner.colors[1]}
+                          fallback={partner.short}
+                          image={partner.image}
+                          size={SIZE.sm}
                         />
                         <div className="truncate">{partner.title}</div>
                       </div>
@@ -156,14 +150,13 @@ export function AppBar({
                       >
                         {partnerLateActions.length > 0 && (
                           <UBadge
+                            isDynamic
                             size="sm"
                             value={partnerLateActions.length}
-                            isDynamic
                           />
                         )}
                         {isAtHome && (
                           <Button
-                            variant={isFiltered ? "secondary" : "ghost"}
                             className={cn(
                               "absolute right-1 size-6 cursor-pointer bg-accent transition",
                               !isFiltered
@@ -184,6 +177,7 @@ export function AppBar({
                                 ]);
                               }
                             }}
+                            variant={isFiltered ? "secondary" : "ghost"}
                           >
                             <FilterIcon className="size-3.5" />
                           </Button>
@@ -214,6 +208,7 @@ export function AppBar({
             <BulkActionMenu />
           ) : (
             <Button
+              className="flex items-center gap-1 rounded-xl px-3 squircle"
               onClick={() =>
                 setBaseAction({
                   ...getCleanAction({
@@ -225,7 +220,6 @@ export function AppBar({
                   responsibles: [person.user_id],
                 } as unknown as Action)
               }
-              className="flex items-center gap-1 rounded-xl px-3 squircle"
             >
               <PlusIcon className="size-4" />
               <span className="max-sm:hidden">Nova Ação</span>
@@ -238,22 +232,22 @@ export function AppBar({
         <div className="flex items-center">
           {isSelectionMode ? (
             <Button
-              variant="ghost"
-              size="icon"
               className="size-10 rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive"
               onClick={() => {
                 clearSelection();
                 toggleSelectionMode(false);
               }}
+              size="icon"
+              variant="ghost"
             >
               <XIcon className="size-4" />
             </Button>
           ) : (
             <Button
+              className="size-10 rounded-xl"
               id="appbar-toggle-multi-selection"
               onClick={() => toggleSelectionMode()}
               variant={"ghost"}
-              className="size-10 rounded-xl"
             >
               <CopyCheckIcon className="size-4" />
             </Button>
@@ -262,10 +256,10 @@ export function AppBar({
 
         {/* Slot 4: Busca / CmdK */}
         <Button
-          variant="ghost"
-          size="icon"
           className="size-10 rounded-xl"
           onClick={() => setOpenCmdK(true)}
+          size="icon"
+          variant="ghost"
         >
           <SearchIcon className="size-4" />
         </Button>
