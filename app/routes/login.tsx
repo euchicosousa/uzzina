@@ -19,23 +19,30 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-
   const { supabase, headers } = await createSupabaseClient(request);
-
   const {
     data: { user },
-  } = await supabase.auth.signInWithPassword({ email, password });
-
+  } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
   if (user) {
-    return redirect("/app", { headers });
+    return redirect("/app", {
+      headers,
+    });
   } else {
-    return { errors: { email: "Verifique o email ou a senha usada." } };
+    return {
+      errors: {
+        email: "Verifique o email ou a senha usada.",
+      },
+    };
   }
 };
-
 export const meta: MetaFunction = () => {
   return [
-    { title: "UZZINA" },
+    {
+      title: "UZZINA",
+    },
     {
       name: "description",
       content:
@@ -43,7 +50,6 @@ export const meta: MetaFunction = () => {
     },
   ];
 };
-
 const Login = () => {
   const actionData = useActionData<typeof action>();
   const [showPassword, setShowPassword] = useState(false);
@@ -57,8 +63,8 @@ const Login = () => {
         </div>
         {actionData && (
           <Alert
-            variant={"destructive"}
             className="mb-8 border-destructive/10 bg-destructive/5"
+            variant={"destructive"}
           >
             <CircleAlertIcon />
             <AlertTitle>Erro ao fazer login</AlertTitle>
@@ -69,32 +75,32 @@ const Login = () => {
         <form method="post">
           <div className="mb-4">
             <span className="mb-2 block w-full font-medium">E-mail</span>
-            <Input type="email" name="email" className="border border-border" />
+            <Input className="input-embossed pl-4" name="email" type="email" />
           </div>
 
           <div className="relative mb-4">
             <div className="mb-2 flex items-center justify-between">
               <span className="font-medium">Senha</span>
               <Link
-                to="/forgot-password"
                 className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+                to="/forgot-password"
               >
                 Esqueceu sua senha?
               </Link>
             </div>
             <Input
-              type={showPassword ? "text" : "password"}
+              className="input-embossed pl-4 pr-12"
               name="password"
-              className="border border-border pr-12"
+              type={showPassword ? "text" : "password"}
             />
             <Button
-              size={"icon"}
               className="absolute top-8 right-0"
-              variant={"ghost"}
               onClick={(event) => {
                 event.preventDefault();
                 setShowPassword(!showPassword);
               }}
+              size={"icon"}
+              variant={"ghost"}
             >
               {showPassword ? <EyeIcon /> : <EyeOffIcon />}
             </Button>
@@ -112,5 +118,4 @@ const Login = () => {
     </div>
   );
 };
-
 export default Login;

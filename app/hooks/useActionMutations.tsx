@@ -98,9 +98,19 @@ export function useActionMutations() {
         let nextData = [...oldData];
 
         if (intent === INTENT.update_action && id) {
-          nextData = nextData.map((action) =>
-            action.id === id ? ({ ...action, ...values } as Action) : action,
-          );
+          nextData = nextData.map((action) => {
+            if (action.id !== id) return action;
+            const updated = { ...action, ...values } as Action;
+            // Espelha as regras de negócio do servidor (supabase.mutations.ts)
+            if (updated.phase === "done") {
+              updated.sprints = null;
+              updated.station = null;
+            }
+            if (updated.archived) {
+              updated.sprints = null;
+            }
+            return updated;
+          });
         } else if (intent === INTENT.create_action) {
           const tempId = id || `temp-${Date.now()}`;
           if (!nextData.some((action) => action.id === tempId)) {
