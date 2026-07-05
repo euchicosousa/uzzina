@@ -5,6 +5,7 @@ import { cn } from "~/lib/utils";
 import { ActionItem } from "../features/ActionItem";
 import { UBadge } from "../uzzina/UBadge";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
+import { ActionContainer } from "../features/ActionContainer";
 export default function KanbanStationsFlow({ actions }: { actions: Action[] }) {
   const isDesktop = useIsDesktop();
 
@@ -28,7 +29,7 @@ export default function KanbanStationsFlow({ actions }: { actions: Action[] }) {
     return (
       <div className="flex flex-col h-full min-h-0 overflow-hidden">
         {/* Top 4 columns */}
-        <div className="grid grid-cols-4 flex-1 min-h-0 overflow-hidden">
+        <div className="grid grid-cols-4 flex-1 min-h-0 overflow-hidden pb-4">
           {Object.values(STATIONS).map((station) => (
             <KanbanColumn
               key={station.slug}
@@ -38,7 +39,7 @@ export default function KanbanStationsFlow({ actions }: { actions: Action[] }) {
           ))}
         </div>
         {/* Bottom row: Sem estação */}
-        <div className="h-[260px] shrink-0 border-t mt-8">
+        <div className="h-[260px] shrink-0 pt-4">
           <KanbanRow actions={actionsByStation.none ?? []} />
         </div>
       </div>
@@ -88,7 +89,7 @@ const KanbanColumn = ({
   return (
     <div
       className={cn(
-        "flex h-full px-4 flex-col overflow-hidden border-t-4 transition-colors",
+        "flex h-full flex-col overflow-hidden border-t-4 transition-colors px-4",
         className,
       )}
       style={{
@@ -100,29 +101,23 @@ const KanbanColumn = ({
         <UBadge value={actions.length} />
       </div>
 
-      <div className="flex h-full flex-col overflow-y-auto p-1">
-        <div className="flex flex-col gap-1">
-          {actions.map((action) => (
-            <ActionItem
-              key={action.id}
-              action={action}
-              dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
-              displayFlags={{
-                showLate: true,
-                showPartner: true,
-                showCategory: true,
-              }}
-            />
-          ))}
-          {/* Vamos colocar aqui aquele elemento que tem no actioncontainer que simula um fade, mas é só um div com bg linear. transforma em componente e coloca aqui ou então, seria possível a gente usar ActionContainer aqui e manter o DnD? - quero resposta */}
-        </div>
+      <div className="flex-1 min-h-0 overflow-hidden">
+        <ActionContainer
+          actions={actions}
+          dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
+          displayFlags={{
+            showLate: true,
+            showPartner: true,
+            showCategory: true,
+          }}
+        />
       </div>
     </div>
   );
 };
 const KanbanRow = ({ actions }: { actions: Action[] }) => {
   return (
-    <div className="flex flex-col h-full overflow-hidden border-t-4 border-gray-400 pt-2">
+    <div className="flex flex-col h-full overflow-hidden border-t-4 border-gray-400 pt-2 px-4">
       <div className="flex items-center gap-2 px-1 pb-2 text-lg font-medium tracking-tight">
         <div>Sem estação</div>
         <UBadge value={actions.length} />

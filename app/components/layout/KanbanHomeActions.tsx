@@ -136,16 +136,14 @@ export default function KanbanHomeActions({ actions }: { actions: Action[] }) {
                 </DragOverlay>
               </DndContext>
             ) : (
-              <>
-                {Object.values(PHASES).map((phase) => (
-                  <KanbanColumn
-                    key={phase.slug}
-                    actions={actionsByPhase[phase.slug] ?? []}
-                    id={phase.slug}
-                    phase={phase}
-                  />
-                ))}
-              </>
+              Object.values(PHASES).map((phase) => (
+                <KanbanColumn
+                  key={phase.slug}
+                  actions={actionsByPhase[phase.slug] ?? []}
+                  id={phase.slug}
+                  phase={phase}
+                />
+              ))
             )}
           </DragStateContext.Provider>
         </div>

@@ -24,10 +24,16 @@ export async function createActionClient(
       `Validação falhou: ${JSON.stringify(result.error.flatten().fieldErrors)}`,
     );
   }
+  const insertData = {
+    ...result.data,
+  };
+  if (!insertData.station && insertData.phase !== PHASES.done.slug) {
+    insertData.station = "flow";
+  }
   const supabase = createSupabaseBrowserClient();
   const { data, error } = await supabase
     .from("actions")
-    .insert(result.data as TablesInsert<"actions">)
+    .insert(insertData as TablesInsert<"actions">)
     .select()
     .single();
   if (error) throw error;

@@ -56,16 +56,22 @@ export async function fetchPartnerActions(
 export async function fetchFlowActions(
   partnerSlugs: string[],
   endDateISO: string,
+  startDateISO?: string,
 ) {
   const supabase = createSupabaseBrowserClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("actions")
     .select("*")
     .or("archived.is.false,archived.is.null")
     .overlaps("partners", partnerSlugs)
     .neq("phase", "done")
-    .lte("date", endDateISO)
-    .order("date", { ascending: true });
+    .lte("date", endDateISO);
+
+  if (startDateISO) {
+    query = query.gte("date", startDateISO);
+  }
+
+  const { data, error } = await query.order("date", { ascending: true });
 
   if (error) throw error;
   return data as Action[];
