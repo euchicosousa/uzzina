@@ -583,6 +583,7 @@ export default function ProfilePage() {
               <div className="grid gap-2">
                 <Label htmlFor="name">Nome</Label>
                 <Input
+                  variant="inset"
                   defaultValue={person.name}
                   id="name"
                   name="name"
@@ -593,6 +594,7 @@ export default function ProfilePage() {
               <div className="grid gap-2">
                 <Label htmlFor="surname">Sobrenome</Label>
                 <Input
+                  variant="inset"
                   defaultValue={person.surname}
                   id="surname"
                   name="surname"
@@ -604,6 +606,7 @@ export default function ProfilePage() {
                 <div className="grid gap-2">
                   <Label htmlFor="initials">Iniciais</Label>
                   <Input
+                    variant="inset"
                     defaultValue={person.initials}
                     id="initials"
                     maxLength={2}
@@ -616,6 +619,7 @@ export default function ProfilePage() {
                 <div className="grid gap-2">
                   <Label htmlFor="short">Nome Curto</Label>
                   <Input
+                    variant="inset"
                     defaultValue={person.short}
                     id="short"
                     name="short"
