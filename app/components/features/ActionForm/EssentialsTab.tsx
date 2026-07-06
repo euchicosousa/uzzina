@@ -188,16 +188,16 @@ export function EssentialsTab({
             selectedResponsibles={RawAction.responsibles}
           />
 
-          <button
-            type="button"
-            className="ml-auto rounded border bg-secondary p-1 font-mono text-[10px] cursor-pointer"
+          <Button
+            variant="muted"
+            className="ml-auto h-6 px-2 font-mono text-[10px]"
             onClick={() => {
               setisIDVisible(!isIDVisible);
             }}
             aria-label="Alternar exibição do ID da ação"
           >
             {isIDVisible ? RawAction.id : "ID"}
-          </button>
+          </Button>
         </div>
 
         <div className="flex justify-between gap-8 border-b px-4 py-1">

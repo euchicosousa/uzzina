@@ -150,10 +150,10 @@ export function ActionFormFooter({
                 });
               }}
             />
-            <button
-              type="button"
+            <Button
+              variant="muted"
+              size="icon"
               title="Duplicar ação (Shift+D)"
-              className="flex items-center gap-2 rounded-2xl p-2 text-sm opacity-50 hover:opacity-100 focus:opacity-100"
               onClick={() => {
                 handleAction({
                   id: RawAction.id,
@@ -162,13 +162,13 @@ export function ActionFormFooter({
                 handleClose();
               }}
             >
-              <CopyIcon className="size-5" />
-            </button>
+              <CopyIcon />
+            </Button>
             {!RawAction.archived && (
-              <button
-                type="button"
+              <Button
+                variant="muted"
+                size="icon"
                 title="Arquivar ação"
-                className="flex items-center gap-2 rounded-2xl p-2 text-sm opacity-50 hover:opacity-100 focus:opacity-100"
                 onClick={async () => {
                   if (confirm("Tem certeza que deseja arquivar esta ação?")) {
                     setRawAction({
@@ -181,14 +181,15 @@ export function ActionFormFooter({
                   }
                 }}
               >
-                <ArchiveIcon className="size-5" />
-              </button>
+                <ArchiveIcon />
+              </Button>
             )}
             {RawAction.archived && (
-              <button
-                type="button"
+              <Button
+                variant="muted"
+                size="icon"
                 title="Desarquivar ação"
-                className="flex items-center gap-2 rounded-2xl p-2 text-sm text-amber-500 opacity-80 hover:text-amber-600 hover:opacity-100 focus:opacity-100"
+                className="text-amber-500 hover:text-amber-600"
                 onClick={async () => {
                   if (
                     confirm("Tem certeza que deseja desarquivar esta ação?")
@@ -199,8 +200,8 @@ export function ActionFormFooter({
                   }
                 }}
               >
-                <ArchiveRestoreIcon className="size-5" />
-              </button>
+                <ArchiveRestoreIcon />
+              </Button>
             )}
           </>
         )}
