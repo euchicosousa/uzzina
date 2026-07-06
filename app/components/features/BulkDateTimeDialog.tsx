@@ -152,6 +152,7 @@ export function BulkDateTimeDialog({
                   Nova hora
                 </Label>
                 <Input
+                  variant="inset"
                   type="time"
                   value={pickedTime}
                   onChange={(e) => setPickedTime(e.target.value)}

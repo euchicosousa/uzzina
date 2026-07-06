@@ -90,6 +90,7 @@ export function ActionDatePicker({
         <div className="flex items-center justify-between gap-4 border-t p-4">
           <div className="text-sm">Defina a hora</div>
           <Input
+            variant="inset"
             className="w-auto appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
             onChange={handleTimeChange}
             type="time"

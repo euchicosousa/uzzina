@@ -139,6 +139,7 @@ function HexInput({
   };
   return (
     <Input
+      variant="inset"
       className={cn(
         "h-8 font-mono tracking-wider uppercase",
         isInvalid &&

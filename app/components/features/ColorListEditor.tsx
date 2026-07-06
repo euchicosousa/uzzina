@@ -201,6 +201,7 @@ function SortableColorItem({
           />
         </label>
         <Input
+          variant="inset"
           aria-label="Código Hexadecimal da Cor"
           className="flex-1 font-mono uppercase"
           id={`hex_${id}`}
