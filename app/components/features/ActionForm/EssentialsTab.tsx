@@ -77,8 +77,12 @@ export function EssentialsTab({
       }
     >
   >({});
-
-  const handleUpload = async (url: string, meta: { originalFilename?: string }) => {
+  const handleUpload = async (
+    url: string,
+    meta: {
+      originalFilename?: string;
+    },
+  ) => {
     const now = Date.now();
     workFilesMetaRef.current[url] = {
       name: meta.originalFilename || url,
@@ -109,7 +113,6 @@ export function EssentialsTab({
       work_files: next,
     });
   };
-
   const [isIDVisible, setisIDVisible] = useState(false);
   const [hooksOpen, setHooksOpen] = useState(false);
   const [hooks, setHooks] = useState<
@@ -189,12 +192,12 @@ export function EssentialsTab({
           />
 
           <Button
-            variant="muted"
+            aria-label="Alternar exibição do ID da ação"
             className="ml-auto h-6 px-2 font-mono text-[10px]"
             onClick={() => {
               setisIDVisible(!isIDVisible);
             }}
-            aria-label="Alternar exibição do ID da ação"
+            variant="muted"
           >
             {isIDVisible ? RawAction.id : "ID"}
           </Button>
@@ -296,40 +299,42 @@ export function EssentialsTab({
         </div>
       </div>
       {/* Descrição */}
-      <div className="h-full overflow-hidden p-4 focus-within:bg-secondary/50">
-        {/* Descrição */}
-        <div className="h-full overflow-hidden">
-          <Suspense
-            fallback={<div className="h-full w-full animate-pulse bg-muted" />}
-          >
-            <Tiptap
-              key={descriptionVersion}
-              className={cn("h-full w-full", isAIProcessing && "opacity-40")}
-              content={RawAction.description || ""}
-              disabled={isAIProcessing}
-              handleBlur={async (content) => {
-                if (content === RawAction.description) {
-                  return;
-                }
-                // Sync local state so RawAction stays consistent after blur
-                setRawAction({
-                  ...RawAction,
-                  description: content,
-                });
-                await updateAction({
-                  description: content,
-                });
-              }}
-              handleChange={(content) => {
-                // Update the ref in the parent (zero re-renders).
-                // The parent's handleSave reads from this ref so Cmd+Enter
-                // always includes the latest typed content.
-                onDescriptionChange?.(content);
-              }}
-              tabIndex={0}
-            />
-          </Suspense>
-        </div>
+      <div className="h-full">
+        <Suspense
+          fallback={
+            <div className="h-full w-full min-h-[200px] animate-pulse bg-muted rounded-2xl" />
+          }
+        >
+          <Tiptap
+            key={descriptionVersion}
+            className={cn(
+              "h-full w-full min-h-[200px]",
+              isAIProcessing && "opacity-40",
+            )}
+            content={RawAction.description || ""}
+            disabled={isAIProcessing}
+            handleBlur={async (content) => {
+              if (content === RawAction.description) {
+                return;
+              }
+              // Sync local state so RawAction stays consistent after blur
+              setRawAction({
+                ...RawAction,
+                description: content,
+              });
+              await updateAction({
+                description: content,
+              });
+            }}
+            handleChange={(content) => {
+              // Update the ref in the parent (zero re-renders).
+              // The parent's handleSave reads from this ref so Cmd+Enter
+              // always includes the latest typed content.
+              onDescriptionChange?.(content);
+            }}
+            tabIndex={0}
+          />
+        </Suspense>
       </div>
       <Sheet onOpenChange={setHooksOpen} open={hooksOpen}>
         <SheetContent className="max-h-[85vh] overflow-y-auto" side="bottom">
@@ -415,13 +420,13 @@ function HookItem({
 
       <div className="flex items-center gap-4">
         <textarea
+          aria-label="Texto de apoio da ação"
           className="w-full resize-none rounded-lg border bg-transparent px-4 py-2 outline-none"
           onChange={(e) => onChange(e.target.value)}
           style={{
             fieldSizing: "content",
           }}
           value={hook.texto}
-          aria-label="Texto de apoio da ação"
         />
         <Button
           className="h-8 w-8 shrink-0 rounded-full"
