@@ -79,7 +79,9 @@ export function CalendarDay({
                 {format(day, "d")}
               </div>
             </div>
-            <div className="text-xs opacity-30">({actions.length})</div>
+            {actions.length > 0 && (
+              <div className="text-xs opacity-30">({actions.length})</div>
+            )}
           </div>
           {onCreateAction && (
             <div className="isolate transition duration-300 opacity-0 group-hover/column:opacity-100">
