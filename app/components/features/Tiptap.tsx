@@ -1,4 +1,4 @@
-import { useEditor, EditorContent, EditorContext } from "@tiptap/react";
+import { useEditor, EditorContent, EditorContext, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useMemo } from "react";
@@ -14,7 +14,7 @@ import {
   Redo2,
 } from "lucide-react";
 interface TiptapToolbarProps {
-  editor: any;
+  editor: Editor | null;
 }
 function TiptapToolbar({ editor }: TiptapToolbarProps) {
   if (!editor) return null;
@@ -162,17 +162,12 @@ export function Tiptap({
     <EditorContext.Provider value={providedValue}>
       <div
         className={cn(
-          "flex flex-col h-full w-full bg-card/10 transition-all duration-200",
+          "flex flex-col h-full w-full bg-card/10 transition-all duration-200 focus-within:bg-secondary/50",
           className,
         )}
       >
         <TiptapToolbar editor={editor} />
-        <div className="flex-1 overflow-y-auto p-4 text-sm min-h-[150px]">
-          <EditorContent
-            className="outline-none h-full min-h-[120px]"
-            editor={editor}
-          />
-        </div>
+        <EditorContent className="flex-1 min-h-[150px]" editor={editor} />
       </div>
     </EditorContext.Provider>
   );

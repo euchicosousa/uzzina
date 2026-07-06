@@ -43,9 +43,10 @@ export function UAvatarGroup({
       className={cn(sizeClasses, "flex")}
       title={title || avatars.map((avatar) => avatar.fallback).join(", ")}
     >
-      {avatars.slice(0, effectiveClampAt).map((avatar) => (
+      {avatars.slice(0, effectiveClampAt).map((avatar, index) => (
         <UAvatar
-          key={`${avatar.id || avatar.fallback}`}
+          // biome-ignore lint/suspicious/noArrayIndexKey: index is required to guarantee uniqueness when duplicate avatars are mapped
+          key={`${avatar.id || avatar.fallback}-${index}`}
           {...avatar}
           size={size}
         />
