@@ -87,6 +87,7 @@ export default function DashLogin() {
               E-mail
             </label>
             <Input
+              variant="inset"
               id="email"
               name="email"
               type="email"
@@ -102,6 +103,7 @@ export default function DashLogin() {
               Senha
             </label>
             <Input
+              variant="inset"
               id="password"
               name="password"
               type="password"

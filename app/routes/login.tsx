@@ -75,7 +75,7 @@ const Login = () => {
         <form method="post">
           <div className="mb-4">
             <span className="mb-2 block w-full font-medium">E-mail</span>
-            <Input className="input-embossed pl-4" name="email" type="email" />
+            <Input variant="inset" name="email" type="email" />
           </div>
 
           <div className="relative mb-4">
@@ -89,7 +89,8 @@ const Login = () => {
               </Link>
             </div>
             <Input
-              className="input-embossed pl-4 pr-12"
+              variant="inset"
+              className="pr-12"
               name="password"
               type={showPassword ? "text" : "password"}
             />

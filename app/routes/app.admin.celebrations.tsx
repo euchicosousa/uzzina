@@ -101,11 +101,11 @@ export default function AdminCelebrationsPage() {
 
             <div className="flex w-full items-center gap-2">
               <Input
+                variant="inset"
                 name="title"
                 placeholder="Nome do feriado/data"
                 required
                 disabled={!selectedDate || isSubmitting}
-                className="squircle rounded-2xl"
               />
               <Button
                 type="submit"

@@ -178,6 +178,7 @@ export default function AdminClientPage() {
             Nome
           </label>
           <Input
+            variant="inset"
             id="name"
             name="name"
             defaultValue={client?.name || ""}
@@ -192,6 +193,7 @@ export default function AdminClientPage() {
               E-mail
             </label>
             <Input
+              variant="inset"
               id="email"
               name="email"
               type="email"
@@ -206,6 +208,7 @@ export default function AdminClientPage() {
               Senha
             </label>
             <Input
+              variant="inset"
               id="password"
               name="password"
               type="text"

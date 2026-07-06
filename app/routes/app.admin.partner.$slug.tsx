@@ -221,6 +221,7 @@ export default function AdminPartnerEditPage() {
               Nome
             </label>
             <Input
+              variant="inset"
               id="title"
               name="title"
               defaultValue={partner?.title}
@@ -234,6 +235,7 @@ export default function AdminPartnerEditPage() {
                 Sigla (4 letras)
               </label>
               <Input
+                variant="inset"
                 id="short"
                 name="short"
                 defaultValue={partner?.short}
@@ -246,6 +248,7 @@ export default function AdminPartnerEditPage() {
                 Slug
               </label>
               <Input
+                variant="inset"
                 id="slug"
                 name="slug"
                 defaultValue={partner?.slug}
@@ -264,7 +267,7 @@ export default function AdminPartnerEditPage() {
               name="context"
               value={contextValue}
             />
-            <div className="min-h-[100px] rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
+            <div className="min-h-[100px] bg-input dark:bg-input/30 input-embossed px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
               <Suspense
                 fallback={
                   <div className="h-full w-full animate-pulse bg-muted" />
@@ -284,7 +287,7 @@ export default function AdminPartnerEditPage() {
               Tom de Voz
             </label>
             <input type="hidden" id="voice" name="voice" value={voiceValue} />
-            <div className="min-h-[100px] rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
+            <div className="min-h-[100px] bg-input dark:bg-input/30 input-embossed px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
               <Suspense
                 fallback={
                   <div className="h-full w-full animate-pulse bg-muted" />
@@ -304,6 +307,7 @@ export default function AdminPartnerEditPage() {
               Assinatura do Instagram
             </label>
             <Textarea
+              variant="inset"
               id="instagram_caption_tail"
               name="instagram_caption_tail"
               defaultValue={partner?.instagram_caption_tail || ""}

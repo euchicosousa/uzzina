@@ -95,10 +95,10 @@ export default function ForgotPassword() {
             <div>
               <span className="mb-2 block w-full font-medium">E-mail</span>
               <Input
+                variant="inset"
                 type="email"
                 name="email"
                 required
-                className="border border-border"
                 placeholder="seu-email@dominio.com"
               />
             </div>

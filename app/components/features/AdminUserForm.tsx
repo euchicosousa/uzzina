@@ -4,6 +4,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
+import { SegmentedSelector } from "~/components/uzzina/SegmentedSelector";
 import {
   EyeIcon,
   EyeOffIcon,
@@ -11,12 +12,10 @@ import {
   UploadIcon,
   UserIcon,
 } from "lucide-react";
-
 interface Area {
   slug: string;
   title: string;
 }
-
 interface AdminUserFormProps {
   person: Person | null; // Tipagem básica para agilizar (idealmente seria importado do DB types ou loader)
   areas: Area[];
@@ -24,7 +23,6 @@ interface AdminUserFormProps {
   uploadPreset: string;
   isSubmitting: boolean;
 }
-
 export function AdminUserForm({
   person,
   areas,
@@ -37,28 +35,27 @@ export function AdminUserForm({
   const [imageUrl, setImageUrl] = useState<string | null>(
     person?.image || null,
   );
-
   return (
-    <Form method="post" className="flex flex-col gap-8">
+    <Form className="flex flex-col gap-8" method="post">
       {/* URL da imagem já enviada pelo widget — campo oculto */}
-      <input type="hidden" name="image" value={imageUrl || ""} />
+      <input name="image" type="hidden" value={imageUrl || ""} />
 
       <div className="grid gap-8">
         {/* Avatar / UploadIcon Widget */}
         <div className="flex items-center gap-6">
           <CloudinaryUpload
-            cloudName={cloudName}
-            uploadPreset={uploadPreset}
-            folder="uzzina/people"
-            square
-            outputWidth={400}
-            onUpload={(url) => setImageUrl(url)}
             className="group relative -ml-1 size-24 shrink-0 overflow-hidden rounded-full transition hover:opacity-90"
+            cloudName={cloudName}
+            folder="uzzina/people"
+            onUpload={(url) => setImageUrl(url)}
+            outputWidth={400}
+            square
+            uploadPreset={uploadPreset}
           >
             <UAvatar
               key={imageUrl ?? "empty"}
-              image={imageUrl}
               fallback={person?.initials || "?"}
+              image={imageUrl}
               size="2xl"
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
@@ -73,9 +70,9 @@ export function AdminUserForm({
             </p>
             {imageUrl && (
               <button
-                type="button"
-                onClick={() => setImageUrl(null)}
                 className="mt-1 text-left text-xs text-muted-foreground underline hover:text-foreground"
+                onClick={() => setImageUrl(null)}
+                type="button"
               >
                 Remover imagem
               </button>
@@ -89,17 +86,24 @@ export function AdminUserForm({
             <label className="font-medium" htmlFor="name">
               Nome
             </label>
-            <Input id="name" name="name" defaultValue={person?.name} required />
+            <Input
+              defaultValue={person?.name}
+              id="name"
+              name="name"
+              required
+              variant="inset"
+            />
           </div>
           <div className="grid gap-4">
             <label className="font-medium" htmlFor="surname">
               Sobrenome
             </label>
             <Input
+              defaultValue={person?.surname}
               id="surname"
               name="surname"
-              defaultValue={person?.surname}
               required
+              variant="inset"
             />
           </div>
         </div>
@@ -111,12 +115,13 @@ export function AdminUserForm({
               Iniciais
             </label>
             <Input
-              id="initials"
-              name="initials"
               defaultValue={person?.initials}
-              required
+              id="initials"
               maxLength={2}
+              name="initials"
               placeholder="AB"
+              required
+              variant="inset"
             />
           </div>
           <div className="grid gap-4">
@@ -124,10 +129,11 @@ export function AdminUserForm({
               Nome Curto
             </label>
             <Input
+              defaultValue={person?.short || ""}
               id="short"
               name="short"
-              defaultValue={person?.short || ""}
               placeholder="Como te chamam"
+              variant="inset"
             />
           </div>
         </div>
@@ -138,11 +144,12 @@ export function AdminUserForm({
             E-mail
           </label>
           <Input
+            defaultValue={person?.email || ""}
             id="email"
             name="email"
-            type="email"
-            defaultValue={person?.email || ""}
             required
+            type="email"
+            variant="inset"
           />
           {!isNew && (
             <p className="text-xs text-muted-foreground">
@@ -159,18 +166,19 @@ export function AdminUserForm({
             </label>
             <div className="relative">
               <Input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                required
-                minLength={6}
                 className="pr-10"
+                id="password"
+                minLength={6}
+                name="password"
+                required
+                type={showPassword ? "text" : "password"}
+                variant="inset"
               />
               <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                onClick={() => setShowPassword(!showPassword)}
+                type="button"
               >
                 {showPassword ? (
                   <EyeOffIcon className="size-4" />
@@ -186,74 +194,58 @@ export function AdminUserForm({
         {areas.length > 0 && (
           <div className="grid gap-4">
             <span className="font-medium">Áreas</span>
-            <div className="flex flex-wrap items-center gap-2">
-              {areas.map((area) => (
-                <div key={area.slug}>
-                  <input
-                    type="checkbox"
-                    id={`area-${area.slug}`}
-                    name="areas"
-                    value={area.slug}
-                    defaultChecked={person?.areas?.includes(area.slug)}
-                    className="peer sr-only absolute size-0"
-                    aria-label={area.title}
-                  />
-                  <label
-                    htmlFor={`area-${area.slug}`}
-                    className="squircle flex cursor-pointer items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:bg-muted peer-checked:opacity-100"
-                  >
-                    {area.title}
-                  </label>
-                </div>
-              ))}
-            </div>
+            <SegmentedSelector
+              columnsClassName="grid-cols-2 sm:grid-cols-4 gap-2"
+              defaultValue={person?.areas || []}
+              name="areas"
+              options={areas.map((area) => ({
+                value: area.slug,
+                label: area.title,
+              }))}
+            />
           </div>
         )}
 
         {/* Visibilidade e Admin */}
         <div className="flex items-end justify-between gap-4 border-t pt-8">
           <div className="flex items-center gap-4">
-            <div>
-              <input
-                type="checkbox"
-                id="visible"
-                name="visible"
-                defaultChecked={person?.visible ?? true}
-                className="peer sr-only absolute size-0"
-              />
-              <label
-                htmlFor="visible"
-                className="squircle flex cursor-pointer items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:bg-muted peer-checked:opacity-100"
-              >
-                Ativo / Visível
-              </label>
-            </div>
+            <SegmentedSelector
+              className="p-6"
+              columns={1}
+              defaultValue={(person?.visible ?? true) ? ["on"] : []}
+              name="visible"
+              options={[
+                {
+                  value: "on",
+                  label: "Ativo / Visível",
+                  icon: person?.visible ? EyeIcon : EyeOffIcon,
+                },
+              ]}
+              type="checkbox"
+            />
 
-            <div>
-              <input
-                type="checkbox"
-                id="admin"
-                name="admin"
-                defaultChecked={person?.admin || false}
-                className="peer sr-only absolute size-0"
-              />
-              <label
-                htmlFor="admin"
-                className="squircle flex cursor-pointer items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all peer-checked:bg-muted peer-checked:opacity-100"
-              >
-                <UserIcon className="size-4" />
-                Admin
-              </label>
-            </div>
+            <SegmentedSelector
+              className="p-6"
+              columns={1}
+              defaultValue={person?.admin ? ["on"] : []}
+              name="admin"
+              options={[
+                {
+                  value: "on",
+                  label: "Admin",
+                  icon: UserIcon,
+                },
+              ]}
+            />
           </div>
         </div>
       </div>
 
       <div className="flex justify-end gap-4 pb-8">
         <Button
-          type="submit"
-          disabled={isSubmitting}
           className="squircle rounded-2xl"
+          disabled={isSubmitting}
+          type="submit"
         >
           <SaveIcon className="mr-2 size-4" />
           {isSubmitting ? "Salvando..." : "Salvar Usuário"}

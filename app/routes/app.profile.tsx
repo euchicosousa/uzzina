@@ -30,7 +30,7 @@ import { UAvatar } from "~/components/uzzina/UAvatar";
 import { PreferenceSwitch } from "~/components/uzzina/PreferenceSwitch";
 import { SegmentedSelector } from "~/components/uzzina/SegmentedSelector";
 import { PALLETE } from "~/lib/CONSTANTS";
-import { getUserPreferences, } from "~/lib/preferences";
+import { getUserPreferences } from "~/lib/preferences";
 import { cn } from "~/lib/utils";
 import { getPersonByUserId } from "~/models/people.server";
 import { getUserId } from "~/services/auth.server";
@@ -42,13 +42,14 @@ import {
   deriveDarkBg,
   deriveDarkFg,
 } from "~/utils/color";
-
 export const runtime = "edge";
-
 export const meta: MetaFunction = () => {
-  return [{ title: "Minha Conta | Uzzina" }];
+  return [
+    {
+      title: "Minha Conta | Uzzina",
+    },
+  ];
 };
-
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { user_id, supabase } = await getUserId(request);
   const person = await getPersonByUserId(supabase, user_id);
@@ -56,21 +57,18 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   // Cloudinary credentials (publicly accessible)
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME || "";
   const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || "";
-
   return {
     person,
     cloudName,
     uploadPreset,
   };
 };
-
 export const action = async ({ request }: ActionFunctionArgs) => {
   const [auth, formData] = await Promise.all([
     getUserId(request),
     request.formData(),
   ]);
   const { user_id, supabase } = auth;
-
   const name = formData.get("name") as string;
   const surname = formData.get("surname") as string;
   const initials = formData.get("initials") as string;
@@ -95,7 +93,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const darkPrimaryFgHex = formData.get("custom_dark_primary_fg") as string;
     const darkBgHex = formData.get("custom_dark_bg") as string;
     const darkFgHex = formData.get("custom_dark_fg") as string;
-
     if (
       lightPrimaryHex &&
       lightPrimaryFgHex &&
@@ -122,7 +119,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       };
     }
   }
-
   const preferences = {
     theme,
     themeColorIndex,
@@ -131,7 +127,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     showInstagramSidebar,
     customTheme,
   };
-
   const { error } = await supabase
     .from("people")
     .update({
@@ -143,18 +138,22 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       preferences,
     })
     .eq("user_id", user_id);
-
   if (error) {
     console.error("Error updating profile:", error);
-    return { success: false, error: error.message };
+    return {
+      success: false,
+      error: error.message,
+    };
   }
 
   // Sync theme session cookie with remix-themes
   const resolver = await themeSessionResolver(request);
   resolver.setTheme(theme as Theme);
-
   return data(
-    { success: true, error: null },
+    {
+      success: true,
+      error: null,
+    },
     {
       headers: {
         "Set-Cookie": await resolver.commit(),
@@ -162,15 +161,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     },
   );
 };
-
 export default function ProfilePage() {
   const { person, cloudName, uploadPreset } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
-
   const preferences = getUserPreferences(person);
-
   const [theme, setTheme] = useTheme();
   const { previewColorIndex, previewCustomTheme, setCustomTheme } =
     useAppTheme();
@@ -248,18 +244,14 @@ export default function ProfilePage() {
       previewColorIndex(idx);
     }
   };
-
   const handleLightPrimaryChange = (val: string) => {
     setLightPrimary(val);
     const derivedAccent = deriveDarkAccent(val);
     setDarkPrimary(derivedAccent);
-
     const derivedLightFg = deriveAccentFg(val);
     setLightPrimaryFg(derivedLightFg);
-
     const derivedDarkFg = deriveAccentFg(derivedAccent);
     setDarkPrimaryFg(derivedDarkFg);
-
     previewCustomTheme({
       light: {
         primaryHex: val,
@@ -275,7 +267,6 @@ export default function ProfilePage() {
       },
     });
   };
-
   const handleLightPrimaryFgChange = (val: string) => {
     setLightPrimaryFg(val);
     previewCustomTheme({
@@ -293,7 +284,6 @@ export default function ProfilePage() {
       },
     });
   };
-
   const handleLightBgChange = (val: string) => {
     setLightBg(val);
     const derived = deriveDarkBg(val);
@@ -313,7 +303,6 @@ export default function ProfilePage() {
       },
     });
   };
-
   const handleLightFgChange = (val: string) => {
     setLightFg(val);
     const derived = deriveDarkFg(val);
@@ -333,7 +322,6 @@ export default function ProfilePage() {
       },
     });
   };
-
   const handleDarkPrimaryChange = (val: string) => {
     setDarkPrimary(val);
     const derivedDarkFg = deriveAccentFg(val);
@@ -353,7 +341,6 @@ export default function ProfilePage() {
       },
     });
   };
-
   const handleDarkPrimaryFgChange = (val: string) => {
     setDarkPrimaryFg(val);
     previewCustomTheme({
@@ -371,7 +358,6 @@ export default function ProfilePage() {
       },
     });
   };
-
   const handleDarkBgChange = (val: string) => {
     setDarkBg(val);
     previewCustomTheme({
@@ -389,7 +375,6 @@ export default function ProfilePage() {
       },
     });
   };
-
   const handleDarkFgChange = (val: string) => {
     setDarkFg(val);
     previewCustomTheme({
@@ -440,7 +425,20 @@ export default function ProfilePage() {
     } else if (actionData?.error) {
       toast.error(`Erro ao salvar configurações: ${actionData.error}`);
     }
-  }, [actionData, setCustomTheme, selectedThemeColor, selectedFollowPartnerColor, lightFg, lightPrimaryFg, lightBg, darkFg, lightPrimary, darkPrimaryFg, darkPrimary, darkBg]);
+  }, [
+    actionData,
+    setCustomTheme,
+    selectedThemeColor,
+    selectedFollowPartnerColor,
+    lightFg,
+    lightPrimaryFg,
+    lightBg,
+    darkFg,
+    lightPrimary,
+    darkPrimaryFg,
+    darkPrimary,
+    darkBg,
+  ]);
 
   // Lista estendida contendo o Sentinel personalizado
   const paletteOptions = [
@@ -481,7 +479,6 @@ export default function ProfilePage() {
       ),
     },
   ];
-
   return (
     <div className="mx-auto flex h-full w-full max-w-5xl flex-col p-6 sm:p-8">
       <div className="flex items-center justify-between border-b pb-6">
@@ -494,57 +491,46 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <Form method="post" className="flex flex-col gap-8">
+      <Form className="flex flex-col gap-8" method="post">
         {/* Hidden inputs to capture state changes */}
-        <input type="hidden" name="image" value={imageUrl || ""} />
-        <input type="hidden" name="theme" value={selectedTheme} />
+        <input name="image" type="hidden" value={imageUrl || ""} />
         <input
-          type="hidden"
-          name="themeColorIndex"
-          value={selectedThemeColor}
-        />
-        <input
-          type="hidden"
           name="followPartnerColor"
+          type="hidden"
           value={String(selectedFollowPartnerColor)}
         />
         <input
-          type="hidden"
-          name="defaultViewVariant"
-          value={selectedVariant}
-        />
-        <input
-          type="hidden"
           name="showInstagramSidebar"
+          type="hidden"
           value={String(showInstagramSidebar)}
         />
 
         {selectedThemeColor === -1 && (
           <>
             <input
-              type="hidden"
               name="custom_light_primary"
+              type="hidden"
               value={lightPrimary}
             />
             <input
-              type="hidden"
               name="custom_light_primary_fg"
+              type="hidden"
               value={lightPrimaryFg}
             />
-            <input type="hidden" name="custom_light_bg" value={lightBg} />
-            <input type="hidden" name="custom_light_fg" value={lightFg} />
+            <input name="custom_light_bg" type="hidden" value={lightBg} />
+            <input name="custom_light_fg" type="hidden" value={lightFg} />
             <input
-              type="hidden"
               name="custom_dark_primary"
+              type="hidden"
               value={darkPrimary}
             />
             <input
-              type="hidden"
               name="custom_dark_primary_fg"
+              type="hidden"
               value={darkPrimaryFg}
             />
-            <input type="hidden" name="custom_dark_bg" value={darkBg} />
-            <input type="hidden" name="custom_dark_fg" value={darkFg} />
+            <input name="custom_dark_bg" type="hidden" value={darkBg} />
+            <input name="custom_dark_fg" type="hidden" value={darkFg} />
           </>
         )}
 
@@ -556,18 +542,18 @@ export default function ProfilePage() {
             {/* Profile Avatar Upload */}
             <div className="flex items-center gap-4">
               <CloudinaryUpload
-                cloudName={cloudName}
-                uploadPreset={uploadPreset}
-                folder="uzzina/people"
-                square
-                outputWidth={400}
-                onUpload={(url) => setImageUrl(url)}
                 className="group relative size-20 shrink-0 cursor-pointer overflow-hidden rounded-full transition hover:opacity-90"
+                cloudName={cloudName}
+                folder="uzzina/people"
+                onUpload={(url) => setImageUrl(url)}
+                outputWidth={400}
+                square
+                uploadPreset={uploadPreset}
               >
                 <UAvatar
                   key={imageUrl ?? "empty"}
-                  image={imageUrl}
                   fallback={person.initials || "?"}
+                  image={imageUrl}
                   size="xl"
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
@@ -582,9 +568,9 @@ export default function ProfilePage() {
                 </span>
                 {imageUrl && (
                   <button
-                    type="button"
-                    onClick={() => setImageUrl(null)}
                     className="mt-0.5 text-left text-xs text-muted-foreground underline hover:text-foreground"
+                    onClick={() => setImageUrl(null)}
+                    type="button"
                   >
                     Remover foto
                   </button>
@@ -597,9 +583,9 @@ export default function ProfilePage() {
               <div className="grid gap-2">
                 <Label htmlFor="name">Nome</Label>
                 <Input
+                  defaultValue={person.name}
                   id="name"
                   name="name"
-                  defaultValue={person.name}
                   required
                 />
               </div>
@@ -607,9 +593,9 @@ export default function ProfilePage() {
               <div className="grid gap-2">
                 <Label htmlFor="surname">Sobrenome</Label>
                 <Input
+                  defaultValue={person.surname}
                   id="surname"
                   name="surname"
-                  defaultValue={person.surname}
                   required
                 />
               </div>
@@ -618,21 +604,21 @@ export default function ProfilePage() {
                 <div className="grid gap-2">
                   <Label htmlFor="initials">Iniciais</Label>
                   <Input
-                    id="initials"
-                    name="initials"
                     defaultValue={person.initials}
-                    required
+                    id="initials"
                     maxLength={2}
+                    name="initials"
                     placeholder="AB"
+                    required
                   />
                 </div>
 
                 <div className="grid gap-2">
                   <Label htmlFor="short">Nome Curto</Label>
                   <Input
+                    defaultValue={person.short}
                     id="short"
                     name="short"
-                    defaultValue={person.short}
                     placeholder="Nome de exibição preferido"
                   />
                 </div>
@@ -663,14 +649,29 @@ export default function ProfilePage() {
                 Tema do App
               </span>
               <SegmentedSelector
+                columns={3}
+                name="theme"
+                onChange={(val) =>
+                  handleThemeChange(val as "light" | "dark" | "system")
+                }
                 options={[
-                  { value: "light", label: "Claro", icon: SunIcon },
-                  { value: "dark", label: "Escuro", icon: MoonIcon },
-                  { value: "system", label: "Sistema", icon: LaptopIcon },
+                  {
+                    value: "light",
+                    label: "Claro",
+                    icon: SunIcon,
+                  },
+                  {
+                    value: "dark",
+                    label: "Escuro",
+                    icon: MoonIcon,
+                  },
+                  {
+                    value: "system",
+                    label: "Sistema",
+                    icon: LaptopIcon,
+                  },
                 ]}
                 value={selectedTheme}
-                onChange={(val) => handleThemeChange(val as "light" | "dark" | "system")}
-                columns={3}
               />
             </div>
 
@@ -687,13 +688,12 @@ export default function ProfilePage() {
               </div>
               <SegmentedSelector
                 columns={6}
-                options={paletteOptions}
-                value={selectedThemeColor}
-                onChange={handleColorChange}
                 columnsClassName="grid-cols-5 sm:grid-cols-9 gap-2"
                 hideLabelText
-                selectedClassName="border-primary bg-primary/20 scale-[1.02] shadow-sm"
-                unselectedClassName="border-border bg-transparent hover:bg-card/40"
+                name="themeColorIndex"
+                onChange={(val) => handleColorChange(val as number)}
+                options={paletteOptions}
+                value={selectedThemeColor}
               />
             </div>
 
@@ -721,15 +721,17 @@ export default function ProfilePage() {
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{ backgroundColor: lightPrimary }}
+                            style={{
+                              backgroundColor: lightPrimary,
+                            }}
                           />
                           <input
-                            type="color"
-                            value={lightPrimary}
+                            className="sr-only"
                             onChange={(e) =>
                               handleLightPrimaryChange(e.target.value)
                             }
-                            className="sr-only"
+                            type="color"
+                            value={lightPrimary}
                           />
                           <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
                             {lightPrimary}
@@ -745,15 +747,17 @@ export default function ProfilePage() {
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{ backgroundColor: lightPrimaryFg }}
+                            style={{
+                              backgroundColor: lightPrimaryFg,
+                            }}
                           />
                           <input
-                            type="color"
-                            value={lightPrimaryFg}
+                            className="sr-only"
                             onChange={(e) =>
                               handleLightPrimaryFgChange(e.target.value)
                             }
-                            className="sr-only"
+                            type="color"
+                            value={lightPrimaryFg}
                           />
                           <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
                             {lightPrimaryFg}
@@ -769,15 +773,17 @@ export default function ProfilePage() {
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{ backgroundColor: lightBg }}
+                            style={{
+                              backgroundColor: lightBg,
+                            }}
                           />
                           <input
-                            type="color"
-                            value={lightBg}
+                            className="sr-only"
                             onChange={(e) =>
                               handleLightBgChange(e.target.value)
                             }
-                            className="sr-only"
+                            type="color"
+                            value={lightBg}
                           />
                           <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
                             {lightBg}
@@ -793,15 +799,17 @@ export default function ProfilePage() {
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{ backgroundColor: lightFg }}
+                            style={{
+                              backgroundColor: lightFg,
+                            }}
                           />
                           <input
-                            type="color"
-                            value={lightFg}
+                            className="sr-only"
                             onChange={(e) =>
                               handleLightFgChange(e.target.value)
                             }
-                            className="sr-only"
+                            type="color"
+                            value={lightFg}
                           />
                           <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
                             {lightFg}
@@ -825,15 +833,17 @@ export default function ProfilePage() {
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{ backgroundColor: darkPrimary }}
+                            style={{
+                              backgroundColor: darkPrimary,
+                            }}
                           />
                           <input
-                            type="color"
-                            value={darkPrimary}
+                            className="sr-only"
                             onChange={(e) =>
                               handleDarkPrimaryChange(e.target.value)
                             }
-                            className="sr-only"
+                            type="color"
+                            value={darkPrimary}
                           />
                           <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
                             {darkPrimary}
@@ -849,15 +859,17 @@ export default function ProfilePage() {
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{ backgroundColor: darkPrimaryFg }}
+                            style={{
+                              backgroundColor: darkPrimaryFg,
+                            }}
                           />
                           <input
-                            type="color"
-                            value={darkPrimaryFg}
+                            className="sr-only"
                             onChange={(e) =>
                               handleDarkPrimaryFgChange(e.target.value)
                             }
-                            className="sr-only"
+                            type="color"
+                            value={darkPrimaryFg}
                           />
                           <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
                             {darkPrimaryFg}
@@ -873,13 +885,15 @@ export default function ProfilePage() {
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{ backgroundColor: darkBg }}
+                            style={{
+                              backgroundColor: darkBg,
+                            }}
                           />
                           <input
+                            className="sr-only"
+                            onChange={(e) => handleDarkBgChange(e.target.value)}
                             type="color"
                             value={darkBg}
-                            onChange={(e) => handleDarkBgChange(e.target.value)}
-                            className="sr-only"
                           />
                           <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
                             {darkBg}
@@ -895,13 +909,15 @@ export default function ProfilePage() {
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{ backgroundColor: darkFg }}
+                            style={{
+                              backgroundColor: darkFg,
+                            }}
                           />
                           <input
+                            className="sr-only"
+                            onChange={(e) => handleDarkFgChange(e.target.value)}
                             type="color"
                             value={darkFg}
-                            onChange={(e) => handleDarkFgChange(e.target.value)}
-                            className="sr-only"
                           />
                           <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
                             {darkFg}
@@ -947,10 +963,10 @@ export default function ProfilePage() {
 
             {/* Follow Partner Color Toggle */}
             <PreferenceSwitch
+              checked={selectedFollowPartnerColor}
+              description="Substitui as cores do tema do aplicativo pelas cores da marca do cliente ativo."
               id="followPartnerColor"
               label="Usar Cores dos Clientes"
-              description="Substitui as cores do tema do aplicativo pelas cores da marca do cliente ativo."
-              checked={selectedFollowPartnerColor}
               onCheckedChange={setSelectedFollowPartnerColor}
             />
 
@@ -966,22 +982,37 @@ export default function ProfilePage() {
                 </span>
               </div>
               <SegmentedSelector
+                name="defaultViewVariant"
+                onChange={(val) =>
+                  setSelectedVariant(val as "line" | "block" | "content")
+                }
                 options={[
-                  { value: "line", label: "Linha", icon: ListIcon },
-                  { value: "block", label: "Bloco", icon: LayoutGridIcon },
-                  { value: "content", label: "Conteúdo", icon: ImageIcon },
+                  {
+                    value: "line",
+                    label: "Linha",
+                    icon: ListIcon,
+                  },
+                  {
+                    value: "block",
+                    label: "Bloco",
+                    icon: LayoutGridIcon,
+                  },
+                  {
+                    value: "content",
+                    label: "Conteúdo",
+                    icon: ImageIcon,
+                  },
                 ]}
                 value={selectedVariant}
-                onChange={(val) => setSelectedVariant(val as "line" | "block" | "content")}
               />
             </div>
 
             {/* Show Instagram Sidebar by Default Toggle */}
             <PreferenceSwitch
+              checked={showInstagramSidebar}
+              description="Decida se o painel do feed do Instagram inicia aberto nas páginas dos clientes."
               id="showInstagramSidebar"
               label="Sidebar do Instagram por Padrão"
-              description="Decida se o painel do feed do Instagram inicia aberto nas páginas dos clientes."
-              checked={showInstagramSidebar}
               onCheckedChange={setShowInstagramSidebar}
             />
           </div>
@@ -990,9 +1021,9 @@ export default function ProfilePage() {
         {/* Action Button Row */}
         <div className="flex justify-end gap-4 border-t pt-6">
           <Button
-            type="submit"
-            disabled={isSubmitting}
             className="squircle h-11 rounded-2xl px-6 text-sm font-semibold"
+            disabled={isSubmitting}
+            type="submit"
           >
             <SaveIcon className="mr-2 size-4" />
             {isSubmitting ? "Salvando..." : "Salvar Configurações"}

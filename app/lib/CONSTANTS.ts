@@ -169,7 +169,7 @@ export type PRIORITY_TYPE = (typeof PRIORITIES)[PRIORITY];
 export const AREAS = {
   adm: {
     slug: "adm",
-    title: "Administrativo/Financeiro",
+    title: "Administrativo",
     role: 1,
   },
   account: {
@@ -221,20 +221,20 @@ export type STATION_TYPE = (typeof STATIONS)[STATION];
 /** Quais stations cada categoria pode usar (restrição de fluxo) */
 export const CATEGORY_STATIONS: Record<string, STATION[]> = {
   // Grupo Criativo — pipeline completo
-  reels:    ["flow", "planning", "creation", "client"],
-  post:     ["flow", "planning", "creation", "client"],
-  stories:  ["flow", "planning", "creation", "client"],
+  reels: ["flow", "planning", "creation", "client"],
+  post: ["flow", "planning", "creation", "client"],
+  stories: ["flow", "planning", "creation", "client"],
   carousel: ["flow", "planning", "creation", "client"],
-  capture:  ["flow", "planning", "creation", "client"],
-  design:   ["flow", "planning", "creation", "client"],
-  print:    ["flow", "planning", "creation", "client"],
-  ads:      ["flow", "planning", "creation", "client"],
-  dev:      ["flow", "planning", "creation", "client"],
+  capture: ["flow", "planning", "creation", "client"],
+  design: ["flow", "planning", "creation", "client"],
+  print: ["flow", "planning", "creation", "client"],
+  ads: ["flow", "planning", "creation", "client"],
+  dev: ["flow", "planning", "creation", "client"],
   // Grupo Operacional — fluxo interno + cliente quando necessário
-  todo:     ["flow", "client"],
-  meeting:  ["flow"],
-  sm:       ["flow", "client"],
-  finance:  ["flow", "client"],
+  todo: ["flow", "client"],
+  meeting: ["flow"],
+  sm: ["flow", "client"],
+  finance: ["flow", "client"],
 };
 export const SIZE = {
   xs: "xs",

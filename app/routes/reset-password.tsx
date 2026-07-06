@@ -167,15 +167,16 @@ export default function ResetPassword() {
               </p>
             </div>
 
-            <div className="relative">
+             <div className="relative">
               <span className="mb-2 block w-full font-medium">Nova Senha</span>
               <Input
+                variant="inset"
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="border border-border pr-12"
+                className="pr-12"
                 placeholder="Mínimo 6 caracteres"
               />
               <Button
@@ -192,12 +193,12 @@ export default function ResetPassword() {
             <div>
               <span className="mb-2 block w-full font-medium">Confirmar Nova Senha</span>
               <Input
+                variant="inset"
                 type="password"
                 name="confirmPassword"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                className="border border-border"
                 placeholder="Repita a nova senha"
               />
             </div>
