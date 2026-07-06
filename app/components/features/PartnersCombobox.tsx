@@ -17,26 +17,28 @@ import {
 } from "../ui/command";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { ComboboxTrigger } from "./ComboboxTrigger";
-
 export function PartnersCombobox({
   selectedPartners,
   onSelect,
   tabIndex,
-  showText = true,
+  showText,
+  variant = "form-footer",
 }: {
   selectedPartners?: string[];
   onSelect?: (partners: string[]) => void;
   tabIndex?: number;
   showText?: boolean;
+  variant?: "filter" | "form-footer";
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { partners } = useMatches()[1].loaderData as { partners: Partner[] };
+  const { partners } = useMatches()[1].loaderData as {
+    partners: Partner[];
+  };
   const [selected, setSelected] = useState<string[]>(selectedPartners || []);
   // Keep a ref so the memoized handleSelect callback always reads the latest
   // selected array without being recreated on every render.
   const selectedRef = useRef(selected);
   selectedRef.current = selected;
-
   const currentPartners = selected
     .map((slug) => partners.find((partner) => partner.slug === slug))
     .filter((partner): partner is Partner => partner !== undefined);
@@ -48,7 +50,6 @@ export function PartnersCombobox({
     (slug: string) => {
       const current = selectedRef.current;
       let newPartners: string[];
-
       if (isShiftPressedRef.current) {
         newPartners = [slug];
         setIsOpen(false);
@@ -58,7 +59,6 @@ export function PartnersCombobox({
           : [...current, slug];
         setIsOpen(false);
       }
-
       setSelected(newPartners);
       onSelect?.(newPartners);
     },
@@ -66,9 +66,7 @@ export function PartnersCombobox({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [onSelect],
   );
-
   const isShiftPressedRef = useRef(false);
-
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "Shift") isShiftPressedRef.current = true;
@@ -76,28 +74,27 @@ export function PartnersCombobox({
     const up = (e: KeyboardEvent) => {
       if (e.key === "Shift") isShiftPressedRef.current = false;
     };
-
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);
-
     return () => {
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
     };
   }, []);
 
+  const shouldShowText = showText !== undefined ? showText : variant !== "filter";
+
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover onOpenChange={setIsOpen} open={isOpen}>
       <PopoverTrigger asChild>
         <ComboboxTrigger
-          variant="form-footer"
-          title={getFormattedPartnersName(currentPartners)}
           tabIndex={tabIndex}
+          title={getFormattedPartnersName(currentPartners) || "Parceiros"}
+          variant={variant}
+          hasSelection={selected.length > 0}
         >
           {selected.length > 0 ? (
             <UAvatarGroup
-              clampAt={2}
-              size="sm"
               avatars={currentPartners.map((partner) => ({
                 id: partner.id,
                 fallback: partner?.short,
@@ -105,11 +102,13 @@ export function PartnersCombobox({
                 backgroundColor: partner?.colors[0],
                 color: partner?.colors[1],
               }))}
+              clampAt={2}
+              size="sm"
             />
           ) : (
-            <UAvatar size="sm" fallback="PR" />
+            <UAvatar fallback="PR" size="sm" />
           )}
-          {showText && (
+          {shouldShowText && currentPartners.length > 0 && (
             <div className="overflow-hidden text-ellipsis whitespace-nowrap">
               {getFormattedPartnersName(currentPartners)}
             </div>
@@ -124,16 +123,16 @@ export function PartnersCombobox({
             {partners.map((partner) => (
               <CommandItem
                 key={partner.id}
-                value={partner.slug}
                 className={cn("flex items-center gap-2")}
                 onSelect={() => handleSelect(partner.slug)}
+                value={partner.slug}
               >
                 <UAvatar
-                  fallback={partner.short}
-                  size="sm"
-                  image={partner.image}
                   backgroundColor={partner.colors[0]}
                   color={partner.colors[1]}
+                  fallback={partner.short}
+                  image={partner.image}
+                  size="sm"
                 />
                 {partner.title}
                 <CheckIcon

@@ -37,10 +37,13 @@ export default function AppFlow() {
   const [localPartnerFilters, setLocalPartnerFilters] = useState<string[]>(
     urlPartner ? [urlPartner] : [],
   );
-
   const now = new Date();
-  const defaultFrom = startOfWeek(now, { weekStartsOn: 0 }); // Domingo
-  const defaultTo = endOfWeek(now, { weekStartsOn: 0 }); // Sábado
+  const defaultFrom = startOfWeek(now, {
+    weekStartsOn: 0,
+  }); // Domingo
+  const defaultTo = endOfWeek(now, {
+    weekStartsOn: 0,
+  }); // Sábado
 
   const [dateRange, setDateRange] = useState<{
     from?: Date;
@@ -64,17 +67,14 @@ export default function AppFlow() {
     const toDate = startOfDay(dateRange.to);
     return today >= fromDate && today <= toDate;
   }, [dateRange, now]);
-
   const startDateISO = isCurrentPeriod
     ? undefined // Se englobar hoje, traz todas as atrasadas (startDate = undefined na query)
     : dateRange.from
       ? startOfDay(dateRange.from).toISOString()
       : undefined;
-
   const endDateISO = endOfWeek(dateRange.to, {
     weekStartsOn: 0,
   }).toISOString();
-
   const { data: actions = [], isLoading } = useQuery({
     queryKey: QUERY_KEYS.actions.flow(person.user_id, {
       from: startDateISO,
@@ -120,12 +120,12 @@ export default function AppFlow() {
         <h1 className="text-2xl font-bold tracking-tight text-foreground p-0">
           Flow
         </h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           {/* Partner Filter */}
           <PartnersCombobox
             onSelect={handlePartnerSelect}
             selectedPartners={localPartnerFilters}
-            showText
+            variant="filter"
           />
           {/* Date Filter */}
           <FlowDateFilter
