@@ -19,7 +19,6 @@ import { StationCombobox } from "~/components/features/StationCombobox";
 import { Button } from "~/components/ui/button";
 import { Toggle } from "~/components/ui/toggle";
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
-
 export type ViewOptions = {
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
   columns?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
@@ -51,7 +50,6 @@ export type ViewOptions = {
     filter_responsible?: boolean;
   };
 };
-
 import { useState } from "react";
 import { PhaseCombobox } from "./PhaseCombobox";
 
@@ -83,9 +81,11 @@ const DEFAULT_VIEW_OPTIONS = {
 export function useViewOptions(
   overrides: Partial<ViewOptions> & Pick<ViewOptions, "showOptions">,
 ) {
-  return useState<ViewOptions>({ ...DEFAULT_VIEW_OPTIONS, ...overrides });
+  return useState<ViewOptions>({
+    ...DEFAULT_VIEW_OPTIONS,
+    ...overrides,
+  });
 }
-
 export function ViewOptionsComponent({
   viewOptions,
   setViewOptions,
@@ -98,7 +98,6 @@ export function ViewOptionsComponent({
   endComponents?: React.ReactNode;
 }) {
   viewOptions.variant ||= VARIANT.line;
-
   return (
     <div className="flex w-full shrink flex-wrap justify-between gap-x-2 gap-y-2">
       {/* Componentes no começo */}
@@ -106,7 +105,8 @@ export function ViewOptionsComponent({
       {/* Mostrar botões de variantes */}
       {viewOptions.showOptions.variant && (
         <Button
-          variant={"ghost"}
+          variant="raised"
+          size="icon"
           title="Ação em formato de linha"
           onClick={() => {
             const variant =
@@ -131,7 +131,8 @@ export function ViewOptionsComponent({
       {viewOptions.variant === VARIANT.content &&
         viewOptions.showOptions.columns && (
           <Button
-            variant={"ghost"}
+            variant="raised"
+            size="icon"
             onClick={() => {
               if (viewOptions.columns === 4) {
                 setViewOptions({ ...viewOptions, columns: 6 });
@@ -153,17 +154,17 @@ export function ViewOptionsComponent({
           {/* Ordem Crescente ou Descencente */}
           {viewOptions.showOptions.ascending && (
             <Toggle
-              title={
-                viewOptions.ascending ? "Ordem Crescente" : "Ordem Descencente"
-              }
-              pressed={viewOptions.ascending}
               onPressedChange={(pressed) =>
                 setViewOptions({
                   ...viewOptions,
                   ascending: pressed,
                 })
               }
-              className="pressed"
+              pressed={viewOptions.ascending}
+              title={
+                viewOptions.ascending ? "Ordem Crescente" : "Ordem Descencente"
+              }
+              variant="pressed"
             >
               {viewOptions.ascending ? <ArrowUpAZIcon /> : <ArrowDownAZIcon />}
             </Toggle>
@@ -171,29 +172,29 @@ export function ViewOptionsComponent({
           {/* Ordem por Data  */}
           {viewOptions.showOptions.order && (
             <Toggle
-              title="Ordem por Data"
-              pressed={viewOptions.order === ORDER_BY.date}
               onPressedChange={(pressed) =>
                 setViewOptions({
                   ...viewOptions,
                   order: pressed ? ORDER_BY.date : ORDER_BY.phase,
                 })
               }
-              className="pressed"
+              pressed={viewOptions.order === ORDER_BY.date}
+              title="Ordem por Data"
+              variant="pressed"
             >
               <ClockIcon />
             </Toggle>
           )}
           <Toggle
-            title="Ordem por Fase"
-            pressed={viewOptions.order === ORDER_BY.phase}
             onPressedChange={(pressed) =>
               setViewOptions({
                 ...viewOptions,
                 order: pressed ? ORDER_BY.phase : ORDER_BY.date,
               })
             }
-            className="pressed"
+            pressed={viewOptions.order === ORDER_BY.phase}
+            title="Ordem por Fase"
+            variant="pressed"
           >
             <SquareCheckIcon />
           </Toggle>
@@ -207,44 +208,56 @@ export function ViewOptionsComponent({
         <div className="flex gap-1">
           {viewOptions.showOptions.responsibles && (
             <Toggle
-              className="pressed"
-              pressed={viewOptions.responsibles}
               onPressedChange={(value) =>
-                setViewOptions({ ...viewOptions, responsibles: value })
+                setViewOptions({
+                  ...viewOptions,
+                  responsibles: value,
+                })
               }
+              pressed={viewOptions.responsibles}
+              variant="pressed"
             >
               <UsersIcon />
             </Toggle>
           )}
           {viewOptions.showOptions.priority && (
             <Toggle
-              pressed={viewOptions.priority}
               onPressedChange={(value) =>
-                setViewOptions({ ...viewOptions, priority: value })
+                setViewOptions({
+                  ...viewOptions,
+                  priority: value,
+                })
               }
-              className="pressed"
+              pressed={viewOptions.priority}
+              variant="pressed"
             >
               <SignalIcon />
             </Toggle>
           )}
           {viewOptions.showOptions.category && (
             <Toggle
-              pressed={viewOptions.category}
               onPressedChange={(value) =>
-                setViewOptions({ ...viewOptions, category: value })
+                setViewOptions({
+                  ...viewOptions,
+                  category: value,
+                })
               }
-              className="pressed"
+              pressed={viewOptions.category}
+              variant="pressed"
             >
               <TagIcon />
             </Toggle>
           )}
           {viewOptions.showOptions.partner && (
             <Toggle
-              pressed={viewOptions.partner}
               onPressedChange={(value) =>
-                setViewOptions({ ...viewOptions, partner: value })
+                setViewOptions({
+                  ...viewOptions,
+                  partner: value,
+                })
               }
-              className="pressed"
+              pressed={viewOptions.partner}
+              variant="pressed"
             >
               <HeartHandshakeIcon />
             </Toggle>
@@ -260,8 +273,6 @@ export function ViewOptionsComponent({
           {viewOptions.showOptions.filter_category && (
             <CategoriesCombobox
               isMulti
-              showInstagramGroup
-              selectedCategories={viewOptions.filter_category || ["all"]}
               onSelect={({ categories }) => {
                 setViewOptions({
                   ...viewOptions,
@@ -269,30 +280,32 @@ export function ViewOptionsComponent({
                     categories[0] === "all" ? undefined : categories,
                 });
               }}
+              selectedCategories={viewOptions.filter_category || ["all"]}
+              showInstagramGroup
             />
           )}
           {viewOptions.showOptions.filter_phase && (
             <PhaseCombobox
               isMulti={true}
-              selectedPhases={viewOptions.filter_phase ?? ["all"]}
               onSelect={({ phases }) => {
                 setViewOptions({
                   ...viewOptions,
                   filter_phase: phases[0] === "all" ? undefined : phases,
                 });
               }}
+              selectedPhases={viewOptions.filter_phase ?? ["all"]}
             />
           )}
           {viewOptions.showOptions.filter_station && (
             <StationCombobox
               isMulti={true}
-              selectedStations={viewOptions.filter_station ?? ["all"]}
               onSelect={({ stations }) => {
                 setViewOptions({
                   ...viewOptions,
                   filter_station: stations[0] === "all" ? undefined : stations,
                 });
               }}
+              selectedStations={viewOptions.filter_station ?? ["all"]}
             />
           )}
         </div>

@@ -19,7 +19,7 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
-        raised: "bg-card border shadow-xs hover:shadow-md active:shadow-none transition-shadow raised",
+        raised: "bg-card border shadow-xs hover:shadow-md active:shadow-none active:scale-[0.96] transition-all duration-100 raised",
         muted: "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground",
         pressed: "pressed border-transparent text-foreground",
       },

@@ -1,7 +1,6 @@
 import { STATIONS, type STATION_TYPE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import { Icons } from "~/components/uzzina/UIIcons";
-
 export function StationIcon({
   station,
   size = "sm",
@@ -9,19 +8,29 @@ export function StationIcon({
   className,
 }: {
   station: STATION_TYPE | null | undefined;
-  size?: "short" | "dot" | "xs" | "sm" | "md";
+  size?: "short" | "dot" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
   showText?: boolean;
   className?: string;
 }) {
   const resolved = station ?? STATIONS.flow;
-
   const sizeClasses = {
     short: "",
-    dot: "size-2",
     xs: "size-3",
     sm: "size-4",
     md: "size-5",
+    lg: "size-6",
+    xl: "size-8",
+    "2xl": "size-12",
+    dot: "size-2",
   }[size];
+
+  // const sizeClasses = {
+  //   short: "",
+  //   dot: "size-2",
+  //   xs: "size-3",
+  //   sm: "size-4",
+  //   md: "size-5",
+  // }[size];
 
   if (size === "short") {
     return (
@@ -30,40 +39,43 @@ export function StationIcon({
       </div>
     );
   }
-
   if (size === "dot") {
     return (
       <div
         className={cn("shrink-0 rounded-full", sizeClasses, className)}
-        style={{ backgroundColor: resolved.color }}
+        style={{
+          backgroundColor: resolved.color,
+        }}
         title={resolved.title}
       />
     );
   }
-
   if (showText) {
     return (
       <div className={cn("flex items-center gap-1.5 text-xs", className)}>
         <Icons
-          slug={resolved.slug}
           className={cn("shrink-0", sizeClasses)}
-          style={{ color: resolved.color }}
+          slug={resolved.slug}
+          style={{
+            color: resolved.color,
+          }}
         />
         <span className="truncate">{resolved.title}</span>
       </div>
     );
   }
-
   return (
-    <div title={resolved.title} className="shrink-0">
+    <div className="shrink-0" title={resolved.title}>
       <Icons
-        slug={resolved.slug}
         className={cn(
           "animate-pop transition-colors duration-300",
           sizeClasses,
           className,
         )}
-        style={{ color: resolved.color }}
+        slug={resolved.slug}
+        style={{
+          color: resolved.color,
+        }}
       />
     </div>
   );

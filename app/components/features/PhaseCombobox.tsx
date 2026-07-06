@@ -17,6 +17,7 @@ import {
   CommandSeparator,
 } from "../ui/command";
 import { PhaseIcon } from "./PhaseIcon";
+import { ComboboxTrigger } from "./ComboboxTrigger";
 const ALL_PHASE = {
   slug: "all",
   title: "Todas as fases",
@@ -42,13 +43,10 @@ function MultiPhaseTrigger({
   ref?: React.Ref<HTMLButtonElement>;
 }) {
   return (
-    <button
+    <ComboboxTrigger
       ref={ref}
-      {...props}
-      className={cn(
-        "raised grid size-9 place-content-center rounded-xl border-b border-b-transparent squircle hover:text-foreground/50",
-        className,
-      )}
+      variant="filter"
+      hasSelection={hasRealSelection}
       data-state={hasRealSelection && "on"}
       tabIndex={tabIndex}
       title={
@@ -56,7 +54,8 @@ function MultiPhaseTrigger({
           ? "Filtrar por fase"
           : currentPhases.map((s) => s.title).join(" • ")
       }
-      type="button"
+      className={className}
+      {...props}
     >
       {!hasRealSelection ? (
         <FilterIcon className="size-4" />
@@ -73,7 +72,7 @@ function MultiPhaseTrigger({
           ))}
         </div>
       )}
-    </button>
+    </ComboboxTrigger>
   );
 }
 
@@ -96,21 +95,13 @@ function SinglePhaseTrigger({
   ref?: React.Ref<HTMLButtonElement>;
 }) {
   return (
-    <button
+    <ComboboxTrigger
       ref={ref}
-      {...props}
-      className={cn(
-        "flex items-center gap-1.5 transition-colors outline-none",
-        size === "sm"
-          ? cn(
-              "h-8 text-xs hover:bg-secondary",
-              !showText ? "w-8 justify-center p-0" : "justify-start px-3",
-            )
-          : "p-6 text-sm hover:bg-secondary focus:bg-secondary/50",
-        className,
-      )}
+      variant="form-inline"
+      size={size}
       tabIndex={tabIndex}
-      type="button"
+      className={className}
+      {...props}
     >
       {!showText ? (
         <PhaseIcon
@@ -129,7 +120,7 @@ function SinglePhaseTrigger({
           {currentPhase?.title}
         </>
       )}
-    </button>
+    </ComboboxTrigger>
   );
 }
 export function PhaseCombobox({

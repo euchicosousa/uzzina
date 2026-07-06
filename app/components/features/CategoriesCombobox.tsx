@@ -8,6 +8,7 @@ import {
 import { AREAS, CATEGORIES } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
+import { ComboboxTrigger } from "./ComboboxTrigger";
 import {
   Command,
   CommandEmpty,
@@ -123,11 +124,12 @@ export function CategoriesCombobox({
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         {isMulti ? (
-          <button
-            type="button"
+          <ComboboxTrigger
+            variant="filter"
             tabIndex={tabIndex}
+            hasSelection={hasSelection}
             data-state={hasSelection && "on"}
-            className="raised flex h-9 place-content-center items-center rounded-xl border-b border-b-transparent px-3 squircle"
+            className="flex h-9 px-3"
             title={
               currentCategories.length === 0 || currentCategories[0].slug === "all"
                 ? "Escolha a categoria"
@@ -148,21 +150,13 @@ export function CategoriesCombobox({
                 />
               ))
             )}
-          </button>
+          </ComboboxTrigger>
         ) : (
-          <button
-            type="button"
+          <ComboboxTrigger
+            variant="form-inline"
+            size={size}
             tabIndex={tabIndex}
-            className={cn(
-              "flex items-center gap-1.5 overflow-hidden transition-colors outline-none",
-              size === "sm"
-                ? cn(
-                    "h-8 text-xs hover:bg-secondary",
-                    !showText ? "w-8 justify-center p-0" : "justify-start px-3",
-                  )
-                : "p-6 text-sm hover:bg-secondary focus:bg-secondary/50",
-              className,
-            )}
+            className={className}
           >
             <Icons
               slug={currentCategories[0].slug}
@@ -174,7 +168,7 @@ export function CategoriesCombobox({
                 {currentCategories[0].title}
               </div>
             )}
-          </button>
+          </ComboboxTrigger>
         )}
       </PopoverTrigger>
       <PopoverContent className="p-0">

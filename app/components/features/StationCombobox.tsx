@@ -19,18 +19,14 @@ import {
   CommandList,
   CommandSeparator,
 } from "../ui/command";
+import { ComboboxTrigger } from "./ComboboxTrigger";
 import { StationIcon } from "./StationIcon";
-
 const ALL_STATION = {
   slug: "all",
   title: "Todas as estações",
   color: "#888",
 };
-
-type StationItem = typeof ALL_STATION | STATION_TYPE;
-
 const DEFAULT_SELECTED_STATIONS: string[] = [];
-
 export function StationCombobox({
   selectedStation,
   selectedStations = DEFAULT_SELECTED_STATIONS,
@@ -57,58 +53,63 @@ export function StationCombobox({
   const [isOpen, setIsOpen] = useState(false);
 
   // Determinar slugs válidos (filtrados por categoria se fornecida)
-  const allowedSlugs = category ? (CATEGORY_STATIONS[category] ?? Object.keys(STATIONS)) : Object.keys(STATIONS);
+  const allowedSlugs = category
+    ? (CATEGORY_STATIONS[category] ?? Object.keys(STATIONS))
+    : Object.keys(STATIONS);
   const stationsList = Object.values(STATIONS).filter((s) =>
     allowedSlugs.includes(s.slug),
   );
 
   // Mapeamento de seleção múltipla
-  const hasRealSelection = isMulti && selectedStations.length > 0 && !selectedStations.includes("all");
+  const hasRealSelection =
+    isMulti && selectedStations.length > 0 && !selectedStations.includes("all");
   const currentSelectedItems = hasRealSelection
     ? stationsList.filter((s) => selectedStations.includes(s.slug))
     : [ALL_STATION];
 
   // Caso seja seleção única
   const currentSingle: STATION_TYPE =
-    (Object.values(STATIONS).find((s) => s.slug === selectedStation) as STATION_TYPE | undefined)
-    ?? STATIONS.flow;
-
+    (Object.values(STATIONS).find((s) => s.slug === selectedStation) as
+      | STATION_TYPE
+      | undefined) ?? STATIONS.flow;
   const handleSelect = (slug: string) => {
     if (isMulti) {
       if (slug === "all") {
-        onSelect?.({ stations: ["all"] });
+        onSelect?.({
+          stations: ["all"],
+        });
       } else {
         const activeSelections = selectedStations.filter((s) => s !== "all");
         const next = activeSelections.includes(slug)
           ? activeSelections.filter((s) => s !== slug)
           : [...activeSelections, slug];
-        
-        onSelect?.({ stations: next.length === 0 ? ["all"] : next });
+        onSelect?.({
+          stations: next.length === 0 ? ["all"] : next,
+        });
       }
     } else {
-      onSelect?.({ station: slug, stations: [slug] });
+      onSelect?.({
+        station: slug,
+        stations: [slug],
+      });
       setIsOpen(false);
     }
   };
-
   return (
     <Popover onOpenChange={setIsOpen} open={isOpen && !disabled}>
       <PopoverTrigger asChild>
         {isMulti ? (
-          <button
-            type="button"
+          <ComboboxTrigger
+            className={className}
             disabled={disabled}
+            hasSelection={hasRealSelection}
             tabIndex={tabIndex}
             title={
               !hasRealSelection
                 ? "Filtrar por estação"
                 : currentSelectedItems.map((s) => s.title).join(" • ")
             }
-            className={cn(
-              "raised grid size-9 place-content-center rounded-xl border-b border-b-transparent squircle hover:text-foreground/50",
-              hasRealSelection && "bg-muted text-foreground",
-              className,
-            )}
+            variant="filter"
           >
             {!hasRealSelection ? (
               <FilterIcon className="size-4" />
@@ -125,30 +126,32 @@ export function StationCombobox({
                 ))}
               </div>
             )}
-          </button>
+          </ComboboxTrigger>
         ) : (
-          <button
-            type="button"
-            disabled={disabled}
-            tabIndex={tabIndex}
-            title={disabled ? "Ações com status Ideia ficam no Fluxo" : `Estação: ${currentSingle.title}`}
+          <ComboboxTrigger
             className={cn(
-              "flex items-center gap-1.5 transition-colors outline-none",
-              size === "sm"
-                ? cn(
-                    "h-8 text-xs hover:bg-secondary disabled:opacity-40",
-                    !showText ? "w-8 justify-center p-0" : "justify-start px-3",
-                  )
-                : "p-6 text-sm hover:bg-secondary focus:bg-secondary/50 disabled:opacity-40",
+              disabled && "opacity-40 pointer-events-none",
               className,
             )}
+            disabled={disabled}
+            size={size}
+            tabIndex={tabIndex}
+            title={
+              disabled
+                ? "Ações com status Ideia ficam no Fluxo"
+                : `Estação: ${currentSingle.title}`
+            }
+            variant="form-inline"
           >
             {showText ? (
-              <StationIcon station={currentSingle} size="dot" showText />
+              <StationIcon showText size="dot" station={currentSingle} />
             ) : (
-              <StationIcon station={currentSingle} size="sm" />
+              <StationIcon
+                size={size === "sm" ? "sm" : "md"}
+                station={currentSingle}
+              />
             )}
-          </button>
+          </ComboboxTrigger>
         )}
       </PopoverTrigger>
       <PopoverContent align="start" className="w-52 p-0">
@@ -159,15 +162,16 @@ export function StationCombobox({
             {isMulti && (
               <>
                 <CommandItem
-                  onSelect={() => handleSelect("all")}
                   className="flex items-center gap-2 font-semibold"
+                  onSelect={() => handleSelect("all")}
                 >
                   <div className="size-4 rounded-full border bg-secondary" />
                   <span>Todas as estações</span>
                   <CheckIcon
                     className={cn(
                       "ml-auto size-4",
-                      selectedStations.includes("all") || selectedStations.length === 0
+                      selectedStations.includes("all") ||
+                        selectedStations.length === 0
                         ? "visible"
                         : "invisible",
                     )}
@@ -180,14 +184,13 @@ export function StationCombobox({
               const isChecked = isMulti
                 ? selectedStations.includes(station.slug)
                 : selectedStation === station.slug;
-
               return (
                 <CommandItem
                   key={station.slug}
                   className="flex items-center gap-2"
                   onSelect={() => handleSelect(station.slug)}
                 >
-                  <StationIcon station={station} size="sm" />
+                  <StationIcon size="sm" station={station} />
                   <span className="truncate">{station.title}</span>
                   <CheckIcon
                     className={cn(

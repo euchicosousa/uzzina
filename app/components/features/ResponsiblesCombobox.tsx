@@ -16,6 +16,7 @@ import {
   CommandList,
 } from "../ui/command";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
+import { ComboboxTrigger } from "./ComboboxTrigger";
 import { SIZE } from "~/lib/CONSTANTS";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
@@ -78,14 +79,9 @@ export function ResponsiblesCombobox({
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <button
-          type="button"
-          className={cn(
-            variant === "filter"
-              ? "raised flex h-9 place-content-center items-center rounded-xl border-b border-b-transparent px-3 squircle text-sm cursor-pointer outline-none hover:bg-card transition-colors gap-2"
-              : "cursor-pointer underline-offset-4 outline-none hover:underline",
-            className
-          )}
+        <ComboboxTrigger
+          variant={variant === "filter" ? "filter" : "form-link"}
+          className={className}
           title={getFormattedPeopleName(currentResponsibles)}
         >
           <ActionResponsiblesDisplay
@@ -93,7 +89,7 @@ export function ResponsiblesCombobox({
             size={SIZE.sm}
             variant={variant}
           />
-        </button>
+        </ComboboxTrigger>
       </PopoverTrigger>
       <PopoverContent className="w-[400px] p-0">
         <Command>

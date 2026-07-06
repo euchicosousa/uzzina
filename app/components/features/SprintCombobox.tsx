@@ -20,6 +20,7 @@ import {
   CommandSeparator,
 } from "../ui/command";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
+import { ComboboxTrigger } from "./ComboboxTrigger";
 
 interface SprintComboboxProps {
   selectedSprints: string[];
@@ -88,22 +89,15 @@ export function SprintCombobox({
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <button
-          type="button"
+        <ComboboxTrigger
+          variant="form-inline"
+          size={size}
           className={cn(
-            "flex items-center outline-none transition-colors",
-            size === "sm"
-              ? cn(
-                "h-8 hover:bg-secondary text-xs justify-center",
-                selectedSprints.length > 0 ? "px-1.5" : "w-8 p-0"
-              )
-              : cn(
-                "hover:opacity-100 focus:opacity-100",
-                selectedSprints.length > 0
-                  ? "p-1 opacity-80"
-                  : "p-2 opacity-50"
-              ),
-            className,
+            size === "lg" && cn(
+              "hover:opacity-100 focus:opacity-100 rounded-xl",
+              selectedSprints.length > 0 ? "p-1 opacity-80" : "p-2 opacity-50"
+            ),
+            className
           )}
           title="Sprints"
           tabIndex={tabIndex}
@@ -121,7 +115,7 @@ export function SprintCombobox({
           ) : (
             <RabbitIcon className="size-5 shrink-0" />
           )}
-        </button>
+        </ComboboxTrigger>
       </PopoverTrigger>
       <PopoverContent className="w-[300px] p-0" align="end">
         <Command>

@@ -16,6 +16,7 @@ import {
   CommandList,
 } from "../ui/command";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
+import { ComboboxTrigger } from "./ComboboxTrigger";
 
 export function PartnersCombobox({
   selectedPartners,
@@ -88,9 +89,8 @@ export function PartnersCombobox({
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <button
-          type="button"
-          className="hover:bg-secondary focus:bg-secondary/50 flex w-full items-center gap-2 overflow-hidden px-6 py-5.5 text-sm outline-none"
+        <ComboboxTrigger
+          variant="form-footer"
           title={getFormattedPartnersName(currentPartners)}
           tabIndex={tabIndex}
         >
@@ -114,7 +114,7 @@ export function PartnersCombobox({
               {getFormattedPartnersName(currentPartners)}
             </div>
           )}
-        </button>
+        </ComboboxTrigger>
       </PopoverTrigger>
       <PopoverContent className="w-[400px] p-0">
         <Command>
