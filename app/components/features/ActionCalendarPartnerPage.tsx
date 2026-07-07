@@ -9,12 +9,13 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchCelebrations } from "~/lib/supabase.queries";
-import { useMatches, useOutletContext, useParams } from "react-router";
+import { useOutletContext, useParams } from "react-router";
 import invariant from "tiny-invariant";
 import { CalendarWithDnd } from "~/components/features/CalendarWithDnd";
 import { getCleanAction } from "~/lib/helpers";
-import type { AppLoaderData } from "~/routes/app";
 import type { ViewOptions } from "./ViewOptions";
+
+import { useAppContext } from "~/contexts/AppContext";
 
 export function ActionCalendarPartnerPage({
   currentDay = new Date(),
@@ -30,7 +31,7 @@ export function ActionCalendarPartnerPage({
     end: endOfWeek(endOfMonth(currentDay)),
   });
 
-  const { person, partners } = useMatches()[1].loaderData as AppLoaderData;
+  const { person, partners } = useAppContext();
 
   const { data: celebrations = [] } = useQuery({
     queryKey: QUERY_KEYS.celebrations(),

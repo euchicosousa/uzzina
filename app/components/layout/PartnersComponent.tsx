@@ -1,10 +1,10 @@
 import type { Action, Partner } from "~/types";
 import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
-import { Link, useOutletContext, useRouteLoaderData } from "react-router";
+import { Link, useOutletContext } from "react-router";
 import { DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
 import { getCleanAction } from "~/lib/helpers";
-import type { AppLoaderData } from "~/routes/app";
+import { useAppContext } from "~/contexts/AppContext";
 import { ActionContainer } from "../features/ActionContainer";
 import { Button } from "../ui/button";
 import { SkeletonGroup } from "../ui/skeleton";
@@ -17,12 +17,12 @@ export function PartnersComponent({
   actions: Action[];
   isLoading?: boolean;
 }) {
-  const { partners } = useRouteLoaderData("routes/app") as AppLoaderData;
+  const { partners } = useAppContext();
 
   // Descobre todos os parceiros presentes nas ações do dia
   const activePartners = useMemo(() => {
     const slugSet = new Set(actions.flatMap((a) => a.partners));
-    return partners.filter((p) => slugSet.has(p.slug));
+    return partners.filter((p: Partner) => slugSet.has(p.slug));
   }, [actions, partners]);
 
   return (
@@ -60,7 +60,7 @@ function PartnerColumn({
   partner: Partner;
   actions: Action[];
 }) {
-  const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
+  const { person } = useAppContext();
   const { setBaseAction } = useOutletContext<OutletContext>();
 
   return (

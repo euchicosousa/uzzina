@@ -12,7 +12,7 @@ import {
   XIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { useMatches, useParams } from "react-router";
+import { useParams } from "react-router";
 import { toast } from "sonner";
 import { PartnerColorPicker } from "~/components/features/ActionForm/PartnerColorPicker";
 import { Button } from "~/components/ui/button";
@@ -44,12 +44,13 @@ import { QUERY_KEYS } from "~/lib/query-keys";
 import type { Person } from "~/lib/supabase.queries";
 import { fetchPeople } from "~/lib/supabase.queries";
 import { cn } from "~/lib/utils";
-import type { AppLoaderData } from "~/routes/app";
 import {
   BulkDateTimeDialog,
   type BulkDateTimeResult,
 } from "./BulkDateTimeDialog";
 import { PhaseIcon } from "./PhaseIcon";
+
+import { useAppContext } from "~/contexts/AppContext";
 
 export function BulkActionMenu() {
   // ─── Multi-seleção ───────────────────────────────────────────────────────────
@@ -59,8 +60,7 @@ export function BulkActionMenu() {
     useActionMutations();
 
   // ─── Dados globais do app loader ─────────────────────────────────────────────
-  // useMatches()[1] é sempre o loader do route "routes/app" (app shell)
-  const { partners } = useMatches()[1].loaderData as AppLoaderData;
+  const { partners } = useAppContext();
   const { data: people = [] } = useQuery({
     queryKey: QUERY_KEYS.people(),
     queryFn: fetchPeople,

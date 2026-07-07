@@ -1,24 +1,15 @@
-import type { Partner } from "~/types";
+import type { Partner, Client } from "~/types";
 import {
   Outlet,
-  useLoaderData,
-  redirect,
   useSearchParams,
   useNavigate,
-  useSubmit,
-  type LoaderFunctionArgs,
   type MetaFunction,
 } from "react-router";
-import {
-  getClientSession,
-  dashSessionStorage,
-} from "~/services/client-auth.server";
 import { LogOutIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import { Form } from "react-router";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
 import { useAppTheme } from "~/hooks/useAppTheme";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import {
   Select,
@@ -27,72 +18,77 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import { getClientById } from "~/models/clients";
+import { DashContext } from "~/contexts/DashContext";
+
+import { useLoaderData } from "react-router";
 
 export const meta: MetaFunction = () => [{ title: "Portal do Cliente" }];
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const url = new URL(request.url);
-
-  // A página de login não precisa de auth
-  if (url.pathname.startsWith("/dash/login")) {
-    return {
-      clientName: null,
-      clientImage: null,
-      partnerSlugs: [] as string[],
-      partners: [] as Partner[],
-      cloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
-      uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || "",
-    };
-  }
-
-  const [session, clientSession] = await Promise.all([
-    dashSessionStorage.getSession(request.headers.get("Cookie")),
-    getClientSession(request),
-  ]);
-
-  const { name, image, partners } = clientSession;
+export const loader = async () => {
   return {
-    name,
-    image,
-    partners,
-    lastPartner: session.get("lastPartner") || null,
     cloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
     uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || "",
   };
 };
 
-export const action = async ({ request }: { request: Request }) => {
-  const [session, formData] = await Promise.all([
-    dashSessionStorage.getSession(request.headers.get("Cookie")),
-    request.formData(),
-  ]);
-  const intent = formData.get("intent");
-
-  if (intent === "set_partner") {
-    const partner = formData.get("partner") as string;
-    session.set("lastPartner", partner);
-    return new Response(JSON.stringify({ success: true }), {
-      headers: {
-        "Set-Cookie": await dashSessionStorage.commitSession(session),
-        "Content-Type": "application/json",
-      },
-    });
-  }
-
-  return redirect("/dash/login", {
-    headers: {
-      "Set-Cookie": await dashSessionStorage.destroySession(session),
-    },
-  });
-};
-
 export default function DashLayout() {
-  const { name, image, partners, lastPartner } = useLoaderData<typeof loader>();
-  const [params] = useSearchParams();
+  const { cloudName, uploadPreset } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
-  const submit = useSubmit();
+  const [params] = useSearchParams();
+  const supabase = createSupabaseBrowserClient();
+  
+  const [clientId, setClientId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [clientData, setClientData] = useState<Client | null>(null);
+  const [partners, setPartners] = useState<Partner[]>([]);
 
-  const currentPartnerSlug = params.get("partner") || lastPartner || partners[0]?.slug;
+  useEffect(() => {
+    // Apenas executa no navegador
+    const storedId = localStorage.getItem("uzzina_dash_client_id");
+    const isLoginPath = window.location.pathname.startsWith("/dash/login");
+
+    if (!storedId) {
+      if (!isLoginPath) {
+        navigate("/dash/login");
+      }
+      setLoading(false);
+      return;
+    }
+
+    setClientId(storedId);
+
+    async function bootstrapClient() {
+      try {
+        const client = await getClientById(supabase, storedId || "");
+        if (!client?.active) {
+          localStorage.removeItem("uzzina_dash_client_id");
+          navigate("/dash/login");
+          setLoading(false);
+          return;
+        }
+
+        const { data: partnersData } = await supabase
+          .from("partners")
+          .select("id, slug, title, short, colors")
+          .in("slug", client.partners || [])
+          .order("title");
+
+        setClientData(client);
+        setPartners((partnersData as Partner[]) || []);
+      } catch (err) {
+        console.error("Erro ao carregar dados do cliente:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    bootstrapClient();
+  }, [navigate, supabase
+          .from, supabase]);
+
+  const currentPartnerSlug = params.get("partner") || localStorage.getItem("uzzina_dash_last_partner") || partners[0]?.slug;
   const currentPartner =
     partners.find((p) => p.slug === currentPartnerSlug) || partners[0];
 
@@ -107,14 +103,46 @@ export default function DashLayout() {
     }
   }, [currentPartner, applyPartnerColors]);
 
+  const handleLogout = () => {
+    localStorage.removeItem("uzzina_dash_client_id");
+    localStorage.removeItem("uzzina_dash_last_partner");
+    navigate("/dash/login");
+  };
+
+  const handlePartnerChange = (val: string) => {
+    localStorage.setItem("uzzina_dash_last_partner", val);
+    navigate(`/dash?partner=${val}`);
+  };
+
+  const isLoginPath = typeof window !== "undefined" && window.location.pathname.startsWith("/dash/login");
+
+  if (loading && !isLoginPath) {
+    return (
+      <div className="flex h-screen w-screen flex-col items-center justify-center bg-background gap-4">
+        <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <p className="text-muted-foreground text-sm font-medium animate-pulse">
+          Carregando portal...
+        </p>
+      </div>
+    );
+  }
+
+  if (isLoginPath) {
+    return <Outlet context={{ setBaseAction: () => {} }} />;
+  }
+
+  if (!clientData) {
+    return null;
+  }
+
   return (
-    <div className="bg-background flex h-screen w-full flex-col">
-      {name && (
+    <DashContext.Provider value={{ name: clientData.name ?? "", image: clientData.image || null, partners, clientId: clientId || "", cloudName, uploadPreset }}>
+      <div className="bg-background flex h-screen w-full flex-col">
         <header className="border_after flex items-center justify-between px-6 py-3">
           <div className="flex items-center gap-3">
-            <UAvatar image={image} fallback={name} />
+            <UAvatar image={clientData.image ?? undefined} fallback={clientData.name ?? "Cliente"} />
             <span className="text-muted-foreground truncate text-sm">
-              Olá, <span className="text-foreground font-medium">{name}</span>
+              Olá, <span className="text-foreground font-medium">{clientData.name ?? "Cliente"}</span>
             </span>
           </div>
 
@@ -130,13 +158,7 @@ export default function DashLayout() {
               ) : (
                 <Select
                   value={currentPartnerSlug}
-                  onValueChange={(val) => {
-                    submit(
-                      { partner: val, intent: "set_partner" },
-                      { method: "post" },
-                    );
-                    navigate(`/dash?partner=${val}`);
-                  }}
+                  onValueChange={handlePartnerChange}
                 >
                   <SelectTrigger className="w-[180px] rounded-xl border-none text-sm font-semibold shadow-none">
                     <SelectValue />
@@ -153,19 +175,17 @@ export default function DashLayout() {
             </div>
           )}
 
-          <Form method="post">
-            <Button size="sm" variant="ghost" type="submit" className="gap-2">
-              <LogOutIcon className="size-4" />
-              Sair
-            </Button>
-          </Form>
+          <Button size="sm" variant="ghost" onClick={handleLogout} className="gap-2">
+            <LogOutIcon className="size-4" />
+            Sair
+          </Button>
         </header>
-      )}
-      <div className="flex min-h-0 flex-1">
-        <MultiSelectionProvider>
-          <Outlet context={{ setBaseAction: () => {} }} />
-        </MultiSelectionProvider>
+        <div className="flex min-h-0 flex-1">
+          <MultiSelectionProvider>
+            <Outlet context={{ setBaseAction: () => {} }} />
+          </MultiSelectionProvider>
+        </div>
       </div>
-    </div>
+    </DashContext.Provider>
   );
 }

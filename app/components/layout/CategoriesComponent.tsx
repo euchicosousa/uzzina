@@ -1,7 +1,7 @@
 import type { Action } from "~/types";
 import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
-import { useOutletContext, useRouteLoaderData } from "react-router";
+import { useOutletContext, } from "react-router";
 import {
   CATEGORIES,
   type ORDER_BY,
@@ -9,7 +9,6 @@ import {
   type CATEGORY_TYPE,
 } from "~/lib/CONSTANTS";
 import { getCleanAction, Icons } from "~/lib/helpers";
-import type { AppLoaderData } from "~/routes/app";
 import { ActionContainer } from "../features/ActionContainer";
 import { Button } from "../ui/button";
 import { UBadge } from "../uzzina/UBadge";
@@ -53,6 +52,8 @@ export function CategoriesComponent({
   );
 }
 
+import { useAppContext } from "~/contexts/AppContext";
+
 function CategoryColumn({
   category,
   actions,
@@ -64,7 +65,7 @@ function CategoryColumn({
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending?: boolean;
 }) {
-  const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
+  const { person } = useAppContext();
   const { setBaseAction } = useOutletContext<{
     setBaseAction: (action: Action) => void;
   }>();

@@ -1,12 +1,16 @@
 import type { Action } from "~/types";
 import Color from "color";
-import { useRouteLoaderData } from "react-router";
 import { type CATEGORIES, DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
 import { getFormattedDateTime, Icons, isSprint } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import { UAvatarGroup } from "../uzzina/UAvatar";
 import { getPeople } from "~/utils/filter";
 import { safeColor } from "~/lib/uzzina-utils";
+import { useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { fetchPeople } from "~/lib/supabase.queries";
+import { useAppContext } from "~/contexts/AppContext";
+
 export function Content({
   action,
   category,
@@ -24,14 +28,12 @@ export function Content({
   showResponsibles?: boolean;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
 }) {
-  const appData = useRouteLoaderData("routes/app") as
-    | {
-        person?: Person;
-        people?: Person[];
-      }
-    | undefined;
-  const person = appData?.person;
-  const people = appData?.people || [];
+  const { person } = useAppContext();
+  const { data: people = [] } = useQuery({
+    queryKey: QUERY_KEYS.people(),
+    queryFn: fetchPeople,
+    staleTime: 30 * 60 * 1000,
+  });
 
   // Normaliza e valida a cor — nunca quebra mesmo se action.color vier inválido do banco
   const actionColor = safeColor(action.color);

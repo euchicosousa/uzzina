@@ -1,6 +1,6 @@
 import type { LoaderFunctionArgs } from "react-router";
 import { getUserId } from "~/services/auth.server";
-import { getPartnersByUserId } from "~/models/partners.server";
+import { getPartnersByUserId } from "~/models/partners";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);

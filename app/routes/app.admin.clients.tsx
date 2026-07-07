@@ -1,35 +1,30 @@
 import { UserPlusIcon } from "lucide-react";
-import {
-  Link,
-  useLoaderData,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "react-router";
+import { Link, type MetaFunction } from "react-router";
 import { Button } from "~/components/ui/button";
-import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
-import { getAllClients } from "~/models/clients.server";
-import { getAllPartners } from "~/models/partners.server";
-import { getUserId } from "~/services/auth.server";
-
-export const meta: MetaFunction = () => [{ title: "Admin | Clientes" }];
-
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { supabase } = await getUserId(request);
-  const [clients, partners] = await Promise.all([
-    getAllClients(supabase),
-    getAllPartners(supabase),
-  ]);
-  return { clients, partners };
-};
-
+import { UAvatarGroup } from "~/components/uzzina/UAvatar";
+import { getAllClients } from "~/models/clients";
+export const meta: MetaFunction = () => [
+  {
+    title: "Admin | Clientes",
+  },
+];
+import { AdminItemCard } from "~/components/uzzina/AdminItemCard";
+import { useAppContext } from "~/contexts/AppContext";
+import { useQuery } from "@tanstack/react-query";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import type { Client, Partner } from "~/types";
 export default function AdminClientsPage() {
-  const { clients, partners } = useLoaderData<typeof loader>();
-
+  const { partners } = useAppContext();
+  const supabase = createSupabaseBrowserClient();
+  const { data: clients = [] } = useQuery({
+    queryKey: ["clients"],
+    queryFn: () => getAllClients(supabase),
+  });
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-8">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="pb-0 text-2xl font-bold">Clientes</h1>
-        <Button variant="secondary" asChild className="squircle rounded-2xl">
+        <Button asChild className="squircle rounded-2xl" variant="secondary">
           <Link to="/app/admin/clients/new">
             Novo Cliente <UserPlusIcon />
           </Link>
@@ -41,39 +36,33 @@ export default function AdminClientsPage() {
       )}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {clients.map((client) => {
-          const clientPartners = (client.partners || []).flatMap((slug) => {
-            const p = partners.find((p) => p.slug === slug);
-            return p ? [p] : [];
-          });
-
+        {clients.map((client: Client) => {
+          const clientPartners = (client.partners || []).flatMap(
+            (slug: string) => {
+              const p = partners.find((p: Partner) => p.slug === slug);
+              return p ? [p] : [];
+            },
+          );
           return (
-            <Link
+            <AdminItemCard
               key={client.id}
-              to={`/app/admin/clients/${client.id}`}
-              className="hover:bg-muted/50 squircle flex items-center gap-4 rounded-3xl border p-4 transition-colors"
-            >
-              <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-                <UAvatar
-                  image={client.image}
-                  fallback={client.name || "??"}
-                  size="lg"
+              badge={
+                <UAvatarGroup
+                  avatars={clientPartners.slice(0, 3).map((p: Partner) => ({
+                    id: p?.id || "",
+                    fallback: p?.short || "?",
+                    image: p?.image,
+                    backgroundColor: p?.colors?.[0],
+                    color: p?.colors?.[1],
+                  }))}
+                  size="sm"
                 />
-                <div className="mb-1 w-full truncate text-xl font-medium">
-                  {client.name}
-                </div>
-              </div>
-              <UAvatarGroup
-                avatars={clientPartners.slice(0, 3).map((p) => ({
-                  id: p?.id || "",
-                  fallback: p?.short || "?",
-                  image: p?.image,
-                  backgroundColor: p?.colors?.[0],
-                  color: p?.colors?.[1],
-                }))}
-                size="sm"
-              />
-            </Link>
+              }
+              fallback={client.name || "??"}
+              image={client.image}
+              title={client.name || ""}
+              to={`/app/admin/clients/${client.id}`}
+            />
           );
         })}
       </div>

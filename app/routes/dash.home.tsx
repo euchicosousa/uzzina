@@ -3,72 +3,63 @@ import { addDays, format } from "date-fns";
 import { SidebarClose } from "lucide-react";
 import { useState } from "react";
 import {
-  useLoaderData,
   useNavigate,
   useSearchParams,
-  type LoaderFunctionArgs,
 } from "react-router";
 import { ClientCalendar } from "~/components/client/ClientCalendar";
 import { FeedSection } from "~/components/features/FeedSection";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
-import {
-  dashSessionStorage,
-  getClientSession,
-} from "~/services/client-auth.server";
-import { getInstagramFeedActions } from "~/utils/validation";
+import { useQuery } from "@tanstack/react-query";
+import { useDashContext } from "~/contexts/DashContext";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import { getInstagramFeedActions } from "~/lib/helpers";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { supabase, partners } = await getClientSession(request);
+export default function DashHome() {
+  const { partners } = useDashContext();
+  const supabase = createSupabaseBrowserClient();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [currentDay, setCurrentDay] = useState(new Date());
+  const [mobileTab, setMobileTab] = useState<"calendar" | "feed">("calendar");
+  const [calendarView, setCalendarView] = useState<"month" | "week">("month");
 
-  if (partners.length === 0) {
-    return { actions: [] as Action[], currentPartner: null };
-  }
-
-  const session = await dashSessionStorage.getSession(
-    request.headers.get("Cookie"),
-  );
-  const lastPartner = session.get("lastPartner");
-
-  const url = new URL(request.url);
-  const partnerQuery = url.searchParams.get("partner");
+  const partnerQuery = searchParams.get("partner");
+  const lastPartner = typeof window !== "undefined" ? localStorage.getItem("uzzina_dash_last_partner") : null;
 
   const currentPartnerSlug =
     partnerQuery && partners.some((p) => p.slug === partnerQuery)
       ? partnerQuery
       : lastPartner && partners.some((p) => p.slug === lastPartner)
         ? lastPartner
-        : partners[0].slug;
+        : partners[0]?.slug || "";
 
   const currentPartner =
     partners.find((p) => p.slug === currentPartnerSlug) || partners[0];
 
-  // Janela de 3 meses centrada no hoje
   const today = new Date();
   const start = format(addDays(today, -30), "yyyy-MM-dd HH:mm:ss");
   const end = format(addDays(today, 90), "yyyy-MM-dd HH:mm:ss");
 
-  const { data: actions } = await supabase
-    .from("actions")
-    .select("*")
-    .is("archived", false)
-    .contains("partners", [currentPartnerSlug])
-    .neq("phase", "idea")
-    .gte("date", start)
-    .lte("date", end)
-    .order("date", { ascending: true })
-    .limit(2000);
-
-  return { actions: (actions ?? []) as Action[], currentPartner };
-};
-
-export default function DashHome() {
-  const { actions, currentPartner } = useLoaderData<typeof loader>();
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [currentDay, setCurrentDay] = useState(new Date());
-  const [mobileTab, setMobileTab] = useState<"calendar" | "feed">("calendar");
-  const [calendarView, setCalendarView] = useState<"month" | "week">("month");
+  const { data: actions = [], isLoading } = useQuery({
+    queryKey: ["dashActions", currentPartnerSlug],
+    queryFn: async () => {
+      if (!currentPartnerSlug) return [];
+      const { data, error } = await supabase
+        .from("actions")
+        .select("*")
+        .is("archived", false)
+        .contains("partners", [currentPartnerSlug])
+        .neq("phase", "idea")
+        .gte("date", start)
+        .lte("date", end)
+        .order("date", { ascending: true })
+        .limit(2000);
+      if (error) throw error;
+      return data as Action[];
+    },
+    enabled: !!currentPartnerSlug,
+  });
 
   const isSidebarVisible = searchParams.get("sidebar") !== "false";
 
@@ -84,7 +75,16 @@ export default function DashHome() {
     setSearchParams(nextParams, { replace: true });
   };
 
-  if (!currentPartner) return null;
+  if (isLoading || !currentPartner) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center bg-background gap-4">
+        <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <p className="text-muted-foreground text-sm font-medium animate-pulse">
+          Carregando calendário...
+        </p>
+      </div>
+    );
+  }
 
   const handleActionClick = (action: Action) => {
     const searchParams = new URLSearchParams(window.location.search);

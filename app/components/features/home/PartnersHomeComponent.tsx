@@ -1,14 +1,13 @@
-import type { Action, Partner } from "~/types";
 import { useMemo } from "react";
-import { Link, useRouteLoaderData } from "react-router";
-import { getShortText } from "~/components/uzzina/UAvatar";
+import { Link } from "react-router";
+import { getShortText, UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
+import { useAppContext } from "~/contexts/AppContext";
 import { cn } from "~/lib/utils";
+import type { Action } from "~/types";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
-  const { partners } = useRouteLoaderData("routes/app") as {
-    partners: Partner[];
-  };
+  const { partners } = useAppContext();
   const sortedPartners = [...partners].sort((a, b) =>
     a.title.localeCompare(b.title),
   );
@@ -59,14 +58,6 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
             }}
             to={`/app/partner/${partner.slug}`}
           >
-            {/* {partner.image && (
-              <div
-                className="absolute top-0 right-0 left-0 bottom-0 h-full w-full bg-cover bg-center opacity-0 group-hover/partner:opacity-100 transition duration-500"
-                style={{
-                  backgroundImage: `url(${partner.image})`,
-                }}
-              />
-             )} */}
             <div className="relative group-hover/partner:opacity-50 transition duration-500 group-hover/partner:scale-80">
               {getShortText(partner.short)}
 
@@ -74,6 +65,14 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
                 <UBadge isDynamic size="sm" value={partner.lateActionsLength} />
               </div>
             </div>
+            {partner.image && (
+              <UAvatar
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-120 duration-500 opacity-0 group-hover/partner:opacity-100 group-hover/partner:scale-100"
+                fallback={partner.short}
+                image={partner.image}
+                size="xl"
+              />
+            )}
           </Link>
         ))}
       </div>

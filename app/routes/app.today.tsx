@@ -1,16 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { endOfDay, startOfDay } from "date-fns";
 import { useMemo } from "react";
-import { useMatches, useOutletContext } from "react-router";
+import { useOutletContext } from "react-router";
 import { TodayHomeComponent } from "~/components/features/home/TodayHomeComponent";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchHomeActions } from "~/lib/supabase.queries";
-import type { AppLoaderData } from "./app";
 
 export const runtime = "edge";
 
+import { useAppContext } from "~/contexts/AppContext";
+import type { Partner } from "~/types";
+
 export default function TodayPage() {
-  const { person, partners } = useMatches()[1].loaderData as AppLoaderData;
+  const { person, partners } = useAppContext();
 
   const now = new Date();
 
@@ -27,7 +29,7 @@ export default function TodayPage() {
           startDateISO,
           endDateISO,
           todayEndISO,
-          partners.map((p) => p.slug),
+          partners.map((p: Partner) => p.slug),
         ),
     });
 

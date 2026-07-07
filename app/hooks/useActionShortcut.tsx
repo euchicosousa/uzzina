@@ -8,7 +8,6 @@ import {
   useMemo,
   type ReactNode,
 } from "react";
-import { useRouteLoaderData } from "react-router";
 import { addDays, addMinutes, isAfter, parseISO } from "date-fns";
 import { toast } from "sonner";
 import { INTENT, PHASES } from "~/lib/CONSTANTS";
@@ -16,7 +15,6 @@ import {
   getNewDateForAction,
 } from "~/lib/helpers";
 import { useActionMutations } from "~/hooks/useActionMutations";
-import type { AppLoaderData } from "~/routes/app";
 
 type ActiveAction = { action: Action } | null;
 
@@ -41,10 +39,11 @@ const ActionShortcutContext = createContext<{
  *  3. Usa capture phase (terceiro arg true) para garantir que o evento chegue
  *     antes do onKeyDown do dnd-kit ter chance de bloqueá-lo
  */
+import { useAppContext } from "~/contexts/AppContext";
+
 export function ActionShortcutProvider({ children }: { children: ReactNode }) {
   const { handleAction, toggleSprintAction } = useActionMutations();
-  const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
-  const person = appData?.person;
+  const { person } = useAppContext();
 
   // Registry: actionId → {action}
   const actionsMapRef = useRef<Map<string, NonNullable<ActiveAction>> | null>(

@@ -1,14 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
-import { useFetcher, useRouteLoaderData } from "react-router";
-import { INTENT } from "~/lib/CONSTANTS";
+import { useMemo, useState } from "react";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
-import type { AugmentedComment } from "~/models/action_comments.server";
-import type { AppLoaderData } from "~/routes/app";
 import { CommentInput } from "../ActionComments/CommentInput";
 import { CommentList } from "../ActionComments/CommentList";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import {
+  getAllCommentsByAction,
+  createComment,
+  updateComment,
+  deleteComment,
+} from "~/models/action_comments";
+import { createNotificationsForMentions } from "~/models/notifications";
+import { toast } from "sonner";
+
 const DEFAULT_PARTNER_USERS_IDS: string[] = [];
+import { useAppContext } from "~/contexts/AppContext";
+
 export function ObservationsTab({
   actionId,
   partnerUsersIds = DEFAULT_PARTNER_USERS_IDS,
@@ -16,17 +25,17 @@ export function ObservationsTab({
   actionId: string;
   partnerUsersIds?: string[];
 }) {
-  const { person } = useRouteLoaderData("routes/app") as AppLoaderData;
-  const fetcher = useFetcher<{
-    comments: AugmentedComment[];
-  }>();
-  const commentFetcher = useFetcher();
-  const [newComment, setNewComment] = useState("");
-  useEffect(() => {
-    if (actionId) {
-      fetcher.load(`/action/handle-action?actionId=${actionId}`);
-    }
-  }, [actionId, fetcher.load]);
+  const { person } = useAppContext();
+  const supabase = createSupabaseBrowserClient();
+  const queryClient = useQueryClient();
+
+  // Busca os comentários no client usando TanStack Query
+  const { data: comments = [] } = useQuery({
+    queryKey: ["comments", actionId],
+    queryFn: () => getAllCommentsByAction(supabase, actionId),
+    enabled: !!actionId,
+  });
+
   const { data: allPeople = [] } = useQuery({
     queryKey: QUERY_KEYS.people(),
     queryFn: fetchPeople,
@@ -37,24 +46,91 @@ export function ObservationsTab({
   const mentionablePeople = useMemo(() => {
     return allPeople.filter((p) => partnerUsersIds.includes(p.user_id));
   }, [allPeople, partnerUsersIds]);
-  const comments = fetcher.data?.comments || [];
-  const handleCreate = (content: string, mentions: string[]) => {
-    if (!content.trim()) return;
-    commentFetcher.submit(
-      {
-        intent: INTENT.create_comment,
-        actionId,
+
+  // Mutations
+  const createCommentMutation = useMutation({
+    mutationFn: async ({ content, mentions }: { content: string; mentions: string[] }) => {
+      const [personRes, actionRes] = await Promise.all([
+        supabase.from("people").select("name").eq("user_id", person.user_id).single(),
+        supabase.from("actions").select("title").eq("id", actionId).single(),
+      ]);
+
+      const authorName = personRes.data?.name || "Agência";
+      const actionTitle = actionRes.data?.title || "Ação";
+
+      const insertedComment = await createComment(supabase, {
+        action_id: actionId,
+        author_id: person.user_id,
+        author_name: authorName,
         content,
-        isInternal: "false",
-        mentions: JSON.stringify(mentions),
-      },
-      {
-        method: "post",
-        action: `/action/handle-action`,
-      },
-    );
+        is_internal: false,
+        is_user: true,
+        mentions,
+      });
+
+      if (mentions.length > 0) {
+        const plainText = content.replace(/<[^>]*>/g, "");
+        const commentExcerpt = plainText.length > 100 ? `${plainText.substring(0, 100)}...` : plainText;
+        await createNotificationsForMentions(supabase, {
+          commentId: insertedComment.id,
+          actionId,
+          actionTitle,
+          authorName,
+          commentExcerpt,
+          authorId: person.user_id,
+          mentionedIds: mentions,
+        });
+      }
+      return insertedComment;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", actionId] });
+    },
+    onError: (error) => {
+      console.error("Erro ao criar comentário:", error);
+      toast.error("Não foi possível salvar o comentário.");
+    },
+  });
+
+  const updateCommentMutation = useMutation({
+    mutationFn: async ({ commentId, content }: { commentId: string; content: string }) => {
+      await updateComment(supabase, commentId, content, person.user_id, true);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", actionId] });
+    },
+    onError: (error) => {
+      console.error("Erro ao atualizar comentário:", error);
+      toast.error("Não foi possível atualizar o comentário.");
+    },
+  });
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (commentId: string) => {
+      await deleteComment(supabase, commentId, person.user_id, true);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", actionId] });
+    },
+    onError: (error) => {
+      console.error("Erro ao excluir comentário:", error);
+      toast.error("Não foi possível excluir o comentário.");
+    },
+  });
+
+  const [newComment, setNewComment] = useState("");
+
+  const handleCreate = async (content: string, mentions: string[]) => {
+    if (!content.trim()) return;
+    await createCommentMutation.mutateAsync({ content, mentions });
     setNewComment("");
   };
+
+  const isMutating =
+    createCommentMutation.isPending ||
+    updateCommentMutation.isPending ||
+    deleteCommentMutation.isPending;
+
   return (
     <div className="flex h-full flex-col overflow-hidden bg-muted/30">
       <div className="flex-1 overflow-y-auto p-6">
@@ -66,37 +142,18 @@ export function ObservationsTab({
           mentionablePeople={mentionablePeople}
           onDelete={(commentId) => {
             if (confirm("Tem certeza que deseja excluir esta observação?")) {
-              commentFetcher.submit(
-                {
-                  intent: INTENT.delete_comment,
-                  commentId,
-                },
-                {
-                  method: "post",
-                  action: `/action/handle-action`,
-                },
-              );
+              deleteCommentMutation.mutate(commentId);
             }
           }}
           onUpdate={(commentId, content) => {
-            commentFetcher.submit(
-              {
-                intent: INTENT.update_comment,
-                commentId,
-                content,
-              },
-              {
-                method: "post",
-                action: `/action/handle-action`,
-              },
-            );
+            updateCommentMutation.mutate({ commentId, content });
           }}
         />
       </div>
 
       <div className="border-t bg-background p-4">
         <CommentInput
-          isSubmitting={commentFetcher.state !== "idle"}
+          isSubmitting={isMutating}
           mentionablePeople={mentionablePeople}
           onChange={setNewComment}
           onSend={handleCreate}

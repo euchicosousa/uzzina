@@ -1,39 +1,24 @@
 import { UserPlusIcon } from "lucide-react";
-import {
-  Link,
-  useLoaderData,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "react-router";
-import invariant from "tiny-invariant";
+import { Link, type MetaFunction } from "react-router";
 import { Button } from "~/components/ui/button";
-import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
-import { getUserId } from "~/services/auth.server";
-
 export const meta: MetaFunction = () => {
-  return [{ title: "Admin | Usuários" }];
+  return [
+    {
+      title: "Admin | Usuários",
+    },
+  ];
 };
-
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { supabase } = await getUserId(request);
-
-  const { data: people } = await supabase
-    .from("people")
-    .select("*")
-    .order("name", { ascending: true });
-
-  invariant(people, "People not found");
-
-  return { people };
-};
-
+import { useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { fetchPeople } from "~/lib/supabase.queries";
 export default function AdminUsersPage() {
-  const { people }: { people: Person[] } = useLoaderData<typeof loader>();
-
+  const { data: people = [] } = useQuery({
+    queryKey: QUERY_KEYS.people(),
+    queryFn: fetchPeople,
+  });
   const archivedPeople: Person[] = [];
   const activePeople: Person[] = [];
-
   people.forEach((person) => {
     if (!person.visible) {
       archivedPeople.push(person);
@@ -41,12 +26,11 @@ export default function AdminUsersPage() {
       activePeople.push(person);
     }
   });
-
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-8">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="pb-0 text-2xl font-bold">Usuários</h1>
-        <Button variant={"secondary"} asChild className="squircle rounded-2xl">
+        <Button asChild className="squircle rounded-2xl" variant={"secondary"}>
           <Link to="/app/admin/user/new">
             Novo Usuário <UserPlusIcon />
           </Link>
@@ -74,34 +58,26 @@ export default function AdminUsersPage() {
     </div>
   );
 }
+import { AdminItemCard } from "~/components/uzzina/AdminItemCard";
 
 function UserItem({ person }: { person: Person }) {
   return (
-    <Link
-      key={person.id}
+    <AdminItemCard
       to={`/app/admin/user/${person.user_id}`}
-      className={`hover:bg-muted/50 squircle flex items-center gap-4 rounded-3xl border p-4 transition-colors`}
-    >
-      <UAvatar fallback={person.initials} image={person.image} size="lg" />
-
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <div className="flex-1 truncate font-medium">
-            {person.name} {person.surname}
-          </div>
-          {person.admin && (
-            <UBadge
-              size="sm"
-              variant="default"
-              className="text-[10px]"
-              text="Admin"
-            />
-          )}
-        </div>
-        <div className="text-muted-foreground truncate text-xs">
-          {person.email}
-        </div>
-      </div>
-    </Link>
+      image={person.image}
+      fallback={person.initials}
+      title={`${person.name} ${person.surname}`}
+      subtitle={person.email}
+      badge={
+        person.admin && (
+          <UBadge
+            className="text-[10px]"
+            size="sm"
+            text="Admin"
+            variant="default"
+          />
+        )
+      }
+    />
   );
 }

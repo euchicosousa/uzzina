@@ -10,6 +10,7 @@ import {
   useSearchParams,
   useMatches,
 } from "react-router";
+import { useAppContext } from "~/contexts/AppContext";
 import { useQuery } from "@tanstack/react-query";
 import {
   endOfDay,
@@ -35,7 +36,6 @@ import {
   fetchHomeActions,
   fetchPartnerActions,
 } from "~/lib/supabase.queries";
-import type { AppLoaderData } from "~/routes/app";
 import { cn } from "~/lib/utils";
 import { UzzinaLogo } from "../logo";
 import { Button } from "../ui/button";
@@ -70,15 +70,14 @@ export function Header({
   const location = useLocation();
   const params = useParams();
   const [searchParams] = useSearchParams();
-  const matches = useMatches();
+  const _matches = useMatches();
 
   const isHome = location.pathname === "/app";
   const isPartner = location.pathname.startsWith("/app/partner/");
   const showMetrics = isHome || isPartner;
 
-  // Get partners list from app layout loader (route index 1)
-  const appData = matches[1]?.loaderData as AppLoaderData | undefined;
-  const partners = appData?.partners || [];
+  // Get partners list from AppContext
+  const { partners } = useAppContext();
 
   // 1. Queries for Home page actions
   const now = new Date();
@@ -467,9 +466,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
             <DropdownMenuItem asChild>
               <Link to="/app/admin/celebrations">Datas Comemorativas</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/schedule">Programação</Link>
-            </DropdownMenuItem>
+
           </DropdownMenuGroup>
         )}
       </DropdownMenuContent>

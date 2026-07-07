@@ -1,3 +1,8 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import { useParams, useNavigate, Link, type MetaFunction } from "react-router";
+import { toast } from "sonner";
+import { fetchPeople } from "~/lib/supabase.queries";
 import {
   ArchiveIcon,
   BadgeCheckIcon,
@@ -5,20 +10,9 @@ import {
   MailCheckIcon,
   MegaphoneIcon,
   PrinterIcon,
+  UploadIcon,
 } from "lucide-react";
-import {
-  Form,
-  Link,
-  useLoaderData,
-  useRouteLoaderData,
-  useNavigation,
-  redirect,
-  type ActionFunctionArgs,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "react-router";
-import invariant from "tiny-invariant";
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useState, useEffect } from "react";
 import { ColorListEditor } from "~/components/features/ColorListEditor";
 import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
 import { Button } from "~/components/ui/button";
@@ -27,9 +21,8 @@ import { Textarea } from "~/components/ui/textarea";
 import { UToggleInput } from "~/components/uzzina/UToggle";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
-import { getUserId } from "~/services/auth.server";
-import { UploadIcon } from "lucide-react";
-import type { AppLoaderData } from "~/routes/app";
+import type { Partner } from "~/types";
+
 export const meta: MetaFunction = () => {
   return [
     {
@@ -42,102 +35,118 @@ const Tiptap = lazy(() =>
     default: module.Tiptap,
   })),
 );
-export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const { supabase } = await getUserId(request);
-  const { slug } = params;
-  if (slug === "new" || !slug) {
-    const { data: people } = await supabase
-      .from("people")
-      .select("*")
-      .eq("visible", true)
-      .order("name", {
-        ascending: true,
-      });
-    return {
-      partner: null,
-      people: people || [],
-    };
-  }
-  const [peopleResult, partnerResult] = await Promise.all([
-    supabase.from("people").select("*").eq("visible", true).order("name", {
-      ascending: true,
-    }),
-    supabase.from("partners").select("*").eq("slug", slug).single(),
-  ]);
-  const { data: people } = peopleResult;
-  const { data: partnerData } = partnerResult;
-  const partner = partnerData as Partner;
-  if (!partner) {
-    return redirect("/app/admin/partners");
-  }
-  invariant(partner, "Partner not found");
-  invariant(people, "People not found");
-  return {
-    partner,
-    people,
-  };
-};
-export const action = async ({ request, params }: ActionFunctionArgs) => {
-  const [auth, formData] = await Promise.all([
-    getUserId(request),
-    request.formData(),
-  ]);
-  const { supabase } = auth;
-  const updates = Object.fromEntries(formData);
-  const colors = formData.getAll("colors") as string[];
-  const { slug } = params;
-  if (!slug) {
-    throw new Error("Slug is required");
-  }
-  const isNew = slug === "new";
-  const partnerData = {
-    title: updates.title as string,
-    slug: updates.slug as string,
-    colors: colors.length > 0 ? colors : ["#000000", "#ffffff"],
-    archived: updates.archived === "on",
-    users_ids: formData.getAll("users_ids") as string[],
-    short: (updates.short as string) || "",
-    context: (updates.context as string) || null,
-    voice: (updates.voice as string) || null,
-    image: (updates.image as string) || null,
-    instagram_caption_tail: (updates.instagram_caption_tail as string) || null,
-    sow: (updates.sow as "marketing" | "socialmedia" | "demand") || "marketing",
-  };
-  if (isNew) {
-    const { data: existing } = await supabase
-      .from("partners")
-      .select("id")
-      .eq("slug", partnerData.slug)
-      .single();
-    if (existing) {
-      return {
-        error: "Slug already exists",
-      };
-    }
-    const { error } = await supabase.from("partners").insert(partnerData);
-    if (error) throw error;
-    return redirect(`/app/admin/partner/${partnerData.slug}`);
-  } else {
-    const { error } = await supabase
-      .from("partners")
-      .update(partnerData)
-      .eq("slug", slug);
-    if (error) throw error;
-  }
-  return {
-    success: true,
-  };
-};
+
+import { useAppContext } from "~/contexts/AppContext";
+
 export default function AdminPartnerEditPage() {
-  const { partner, people } = useLoaderData<typeof loader>();
-  const appData = useRouteLoaderData("routes/app") as AppLoaderData;
-  const navigation = useNavigation();
-  const isSubmitting = navigation.state === "submitting";
-  const [contextValue, setContextValue] = useState(partner?.context || "");
-  const [imageUrl, setImageUrl] = useState<string | null>(
-    partner?.image || null,
-  );
-  const [voiceValue, setVoiceValue] = useState(partner?.voice || "");
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const supabase = createSupabaseBrowserClient();
+  const queryClient = useQueryClient();
+  const appData = useAppContext();
+
+  // Queries client-side
+  const { data: people = [] } = useQuery({
+    queryKey: ["people", "visible"],
+    queryFn: fetchPeople,
+  });
+
+  const { data: partner, isLoading: isLoadingPartner } = useQuery({
+    queryKey: ["partner", slug],
+    queryFn: async () => {
+      if (slug === "new" || !slug) return null;
+      const { data, error } = await supabase
+        .from("partners")
+        .select("*")
+        .eq("slug", slug)
+        .single();
+      if (error) throw error;
+      return data as Partner;
+    },
+    enabled: !!slug && slug !== "new",
+  });
+
+  // Mutation para salvar
+  const saveMutation = useMutation({
+    mutationFn: async (partnerData: Omit<Partner, "id" | "created_at">) => {
+      if (slug === "new") {
+        const { data: existing } = await supabase
+          .from("partners")
+          .select("id")
+          .eq("slug", partnerData.slug)
+          .single();
+        if (existing) {
+          throw new Error("Este slug já está em uso.");
+        }
+        const { error } = await supabase.from("partners").insert(partnerData);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("partners")
+          .update(partnerData)
+          .eq("slug", slug || "");
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["partner", slug] });
+      queryClient.invalidateQueries({ queryKey: ["partners"] });
+      toast.success("Parceiro salvo com sucesso!");
+      navigate("/app/admin/partners");
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Erro desconhecido";
+      toast.error(`Erro ao salvar: ${message}`);
+    },
+  });
+
+  const isSubmitting = saveMutation.isPending;
+  const [contextValue, setContextValue] = useState("");
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [voiceValue, setVoiceValue] = useState("");
+
+  // Inicializa estados quando o parceiro for carregado
+  useEffect(() => {
+    if (partner) {
+      setContextValue(partner.context || "");
+      setImageUrl(partner.image || null);
+      setVoiceValue(partner.voice || "");
+    }
+  }, [partner]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const updates = Object.fromEntries(formData);
+    const colors = formData.getAll("colors") as string[];
+    
+    const partnerData = {
+      title: updates.title as string,
+      slug: updates.slug as string,
+      colors: colors.length > 0 ? colors : ["#000000", "#ffffff"],
+      archived: updates.archived === "on",
+      users_ids: formData.getAll("users_ids") as string[],
+      short: (updates.short as string) || "",
+      context: contextValue || null,
+      voice: voiceValue || null,
+      image: imageUrl || null,
+      instagram_caption_tail: (updates.instagram_caption_tail as string) || null,
+      sow: (updates.sow as "marketing" | "socialmedia" | "demand") || "marketing",
+    };
+
+    await saveMutation.mutateAsync(partnerData);
+  };
+
+  if (isLoadingPartner) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-background gap-4">
+        <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <p className="text-muted-foreground text-sm font-medium animate-pulse">
+          Carregando parceiro...
+        </p>
+      </div>
+    );
+  }
   return (
     <div className="mx-auto flex h-full w-full max-w-3xl flex-col p-8">
       <div className="flex justify-between gap-8">
@@ -160,10 +169,10 @@ export default function AdminPartnerEditPage() {
           </Link>
         </div>
       </div>
-      <Form
+      <form
+        onSubmit={handleSubmit}
         key={partner?.slug ?? "new"}
         className="flex flex-col gap-8"
-        method="post"
       >
         <input name="image" type="hidden" value={imageUrl || ""} />
 
@@ -267,7 +276,7 @@ export default function AdminPartnerEditPage() {
                 <Tiptap
                   className="prose prose-sm dark:prose-invert h-full max-w-none focus:outline-none"
                   content={contextValue}
-                  handleChange={(content) => setContextValue(content)}
+                  handleChange={(content: string) => setContextValue(content)}
                 />
               </Suspense>
             </div>
@@ -287,7 +296,7 @@ export default function AdminPartnerEditPage() {
                 <Tiptap
                   className="prose prose-sm dark:prose-invert h-full max-w-none focus:outline-none"
                   content={voiceValue}
-                  handleChange={(content) => setVoiceValue(content)}
+                  handleChange={(content: string) => setVoiceValue(content)}
                 />
               </Suspense>
             </div>
@@ -388,7 +397,7 @@ export default function AdminPartnerEditPage() {
             <CloudUploadIcon className="size-4" />
           </Button>
         </div>
-      </Form>
+        </form>
     </div>
   );
 }

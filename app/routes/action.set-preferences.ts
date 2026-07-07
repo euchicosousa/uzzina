@@ -1,7 +1,7 @@
 import type { ActionFunctionArgs } from "react-router";
 import { data } from "react-router";
 import { getUserId } from "~/services/auth.server";
-import { getPersonByUserId } from "~/models/people.server";
+import { getPersonByUserId } from "~/models/people";
 import { themeSessionResolver } from "~/sessions.server";
 import type { Theme } from "remix-themes";
 

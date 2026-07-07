@@ -3,7 +3,7 @@ import { IconBrandInstagram } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { ArchiveIcon, HeartIcon, MessageSquareIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useFetcher, useFetchers, useRouteLoaderData } from "react-router";
+import { useFetcher, useFetchers, } from "react-router";
 import { toast } from "sonner";
 import { ActionFormFooter } from "~/components/features/ActionForm/ActionFormFooter";
 import { EssentialsTab } from "~/components/features/ActionForm/EssentialsTab";
@@ -13,7 +13,6 @@ import { INTENT } from "~/lib/CONSTANTS";
 import { isInstagramFeed } from "~/lib/helpers";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { cn } from "~/lib/utils";
-import type { AppLoaderData } from "~/routes/app";
 
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
@@ -21,6 +20,8 @@ function getCaptionTail(instagram_caption_tail: string | null) {
 
 const DEFAULT_PARTNER_FILTERS: string[] = [];
 const DEFAULT_PARTNERS: Partner[] = [];
+
+import { useAppContext } from "~/contexts/AppContext";
 
 export function CreateAndEditAction({
   BaseAction,
@@ -38,9 +39,7 @@ export function CreateAndEditAction({
     partners: routePartners,
     cloudName,
     uploadPreset,
-  } = useRouteLoaderData("routes/app") as AppLoaderData & {
-    partners: Partner[];
-  };
+  } = useAppContext();
 
   const partners = routePartners ?? DEFAULT_PARTNERS;
 

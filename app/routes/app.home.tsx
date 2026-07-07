@@ -7,12 +7,11 @@ import {
 } from "date-fns";
 
 import { useMemo } from "react";
-import { useMatches, useOutletContext } from "react-router";
+import { useOutletContext } from "react-router";
 
 import { useQuery } from "@tanstack/react-query";
 import { ORDER_BY } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
-import type { AppLoaderData } from "./app";
 
 import { CalendarHomeComponent } from "~/components/features/home/CalendarHomeComponent";
 import { LateHomeComponent } from "~/components/features/home/LateHomeComponent";
@@ -26,8 +25,11 @@ import { Footer } from "~/components/layout/Footer";
 
 export const runtime = "edge";
 
+import { useAppContext } from "~/contexts/AppContext";
+import type { Partner } from "~/types";
+
 export default function AppHome() {
-  const { person, partners } = useMatches()[1].loaderData as AppLoaderData;
+  const { person, partners } = useAppContext();
 
   const now = new Date();
 
@@ -45,7 +47,7 @@ export default function AppHome() {
           startDateISO,
           endDateISO,
           todayEndISO,
-          partners.map((p) => p.slug),
+          partners.map((p: Partner) => p.slug),
         ),
     });
 
@@ -56,7 +58,7 @@ export default function AppHome() {
       fetchAllLateActions(
         person.user_id,
         person.admin,
-        partners.map((p) => p.slug),
+        partners.map((p: Partner) => p.slug),
       ),
   });
 

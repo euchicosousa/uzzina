@@ -1,4 +1,4 @@
-import type { AugmentedComment } from "~/models/action_comments.server";
+import type { AugmentedComment } from "~/models/action_comments";
 import { CommentItem } from "./CommentItem";
 
 interface Person {

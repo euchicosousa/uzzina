@@ -1,17 +1,8 @@
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowLeftIcon, PlusIcon } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
-import {
-  Link,
-  useActionData,
-  useLoaderData,
-  useNavigation,
-  useRouteLoaderData,
-  useSubmit,
-  type ActionFunctionArgs,
-  type LoaderFunctionArgs,
-} from "react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router";
 import { CommentInput } from "~/components/features/ActionComments/CommentInput";
 import { CommentList } from "~/components/features/ActionComments/CommentList";
 import { WorkFileThumbnail } from "~/components/features/ActionForm/WorkFileThumbnail";
@@ -25,109 +16,117 @@ import {
   deleteComment,
   getCommentsByAction,
   updateComment,
-} from "~/models/action_comments.server";
-import type { loader as DashLoader } from "~/routes/dash";
-import { getClientSession } from "~/services/client-auth.server";
-
-export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const {
-    supabase,
-    name: clientName,
-    id: clientId,
-  } = await getClientSession(request);
-  const { id } = params;
-  if (!id) {
-    throw new Response("ID não fornecido", { status: 400 });
-  }
-
-  const [{ data: action }, comments] = await Promise.all([
-    supabase.from("actions").select("*").eq("id", id).single(),
-    getCommentsByAction(supabase, id),
-  ]);
-
-  if (!action) throw new Response("Ação não encontrada", { status: 404 });
-
-  return { action, comments, clientName, clientId };
-};
-
-export const action = async ({ request, params }: ActionFunctionArgs) => {
-  const {
-    supabase,
-    name: clientName,
-    id: clientId,
-  } = await getClientSession(request);
-  const { id } = params;
-  if (!id) {
-    return { error: "ID não fornecido" };
-  }
-  const formData = await request.formData();
-
-  const workFilesRaw = formData.get("work_files");
-  if (workFilesRaw) {
-    const work_files = JSON.parse(workFilesRaw as string);
-    const { error } = await supabase
-      .from("actions")
-      .update({ work_files })
-      .eq("id", id);
-    if (error) return { error: error.message };
-    return { error: null };
-  }
-
-  const intent = formData.get("intent") as string;
-
-  if (intent === "edit_comment") {
-    const commentId = formData.get("commentId") as string;
-    const content = (formData.get("content") as string)?.trim();
-    if (!content) return { error: "O comentário não pode estar vazio." };
-
-    try {
-      await updateComment(supabase, commentId, content, clientId, false);
-      return { error: null };
-    } catch (e) {
-      const errorMsg = e instanceof Error ? e.message : "Erro desconhecido";
-      return { error: errorMsg };
-    }
-  }
-
-  if (intent === "delete_comment") {
-    const commentId = formData.get("commentId") as string;
-    try {
-      await deleteComment(supabase, commentId, clientId, false);
-      return { error: null };
-    } catch (e) {
-      const errorMsg = e instanceof Error ? e.message : "Erro desconhecido";
-      return { error: errorMsg };
-    }
-  }
-
-  const content = (formData.get("content") as string)?.trim();
-  if (!content) return { error: "Escreva um comentário antes de enviar." };
-
-  await createComment(supabase, {
-    action_id: id,
-    author_id: clientId,
-    author_name: clientName || "Cliente",
-    content,
-    is_internal: false,
-    is_user: false,
-  });
-
-  return { error: null };
-};
-
-type ActionData = Awaited<ReturnType<typeof action>>;
+} from "~/models/action_comments";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useDashContext } from "~/contexts/DashContext";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import { toast } from "sonner";
 
 export default function DashActionDetail() {
-  const { action, comments, clientId } = useLoaderData<typeof loader>();
-  const actionData = useActionData<ActionData>();
-  const navigation = useNavigation();
-  const isSubmitting = navigation.state === "submitting";
-  const submit = useSubmit();
+  const { id: actionId } = useParams();
+  const { name: clientName, clientId, cloudName, uploadPreset } = useDashContext();
+  const supabase = createSupabaseBrowserClient();
+  const queryClient = useQueryClient();
+  const _navigate = useNavigate();
+
+  // Query para a Ação
+  const { data: action, isLoading: isLoadingAction } = useQuery({
+    queryKey: ["action", actionId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("actions")
+        .select("*")
+        .eq("id", actionId || "")
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!actionId,
+  });
+
+  // Query para os Comentários
+  const { data: comments = [], isLoading: isLoadingComments } = useQuery({
+    queryKey: ["comments", actionId],
+    queryFn: () => getCommentsByAction(supabase, actionId || ""),
+    enabled: !!actionId,
+  });
+
+  // Mutação para Atualizar arquivos anexos (work_files)
+  const updateWorkFilesMutation = useMutation({
+    mutationFn: async (work_files: string[]) => {
+      const { error } = await supabase
+        .from("actions")
+        .update({ work_files })
+        .eq("id", actionId || "");
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["action", actionId] });
+      toast.success("Arquivos atualizados com sucesso!");
+    },
+    onError: (error) => {
+      console.error("Erro ao salvar arquivos:", error);
+      toast.error("Não foi possível salvar os arquivos.");
+    },
+  });
+
+  // Mutações de Comentários
+  const createCommentMutation = useMutation({
+    mutationFn: async (content: string) => {
+      await createComment(supabase, {
+        action_id: actionId || "",
+        author_id: clientId,
+        author_name: clientName || "Cliente",
+        content,
+        is_internal: false,
+        is_user: false,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", actionId] });
+    },
+    onError: (error) => {
+      console.error("Erro ao criar comentário:", error);
+      toast.error("Não foi possível salvar o comentário.");
+    },
+  });
+
+  const updateCommentMutation = useMutation({
+    mutationFn: async ({ commentId, content }: { commentId: string; content: string }) => {
+      await updateComment(supabase, commentId, content, clientId, false);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", actionId] });
+    },
+    onError: (error) => {
+      console.error("Erro ao editar comentário:", error);
+      toast.error("Não foi possível salvar a alteração.");
+    },
+  });
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (commentId: string) => {
+      await deleteComment(supabase, commentId, clientId, false);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", actionId] });
+    },
+    onError: (error) => {
+      console.error("Erro ao deletar comentário:", error);
+      toast.error("Não foi possível excluir o comentário.");
+    },
+  });
 
   const [newComment, setNewComment] = useState("");
-  const appData = useRouteLoaderData<typeof DashLoader>("routes/dash");
+  const [workFiles, setWorkFiles] = useState<string[]>([]);
 
-  const [workFiles, setWorkFiles] = useState<string[]>(action.work_files || []);
+  // Sincroniza workFiles locais quando a action carregar
+  useEffect(() => {
+    if (action?.work_files) {
+      setWorkFiles(action.work_files);
+    }
+  }, [action?.work_files]);
+
   const workFilesRef = useRef(workFiles);
   workFilesRef.current = workFiles;
 
@@ -162,20 +161,34 @@ export default function DashActionDetail() {
 
     workFilesRef.current = next;
     setWorkFiles(next);
-    submit(
-      { work_files: JSON.stringify(next) },
-      { method: "post" },
-    );
+    updateWorkFilesMutation.mutate(next);
   };
 
   const currentPhase = useMemo(
-    () => PHASES[(action.phase as PHASE) || "idea"],
-    [action.phase],
+    () => {
+      if (!action) return PHASES.idea;
+      return PHASES[(action.phase as PHASE) || "idea"];
+    },
+    [action?.phase, action],
   );
   const currentCategory = useMemo(
-    () => CATEGORIES[action.category as CATEGORY],
-    [action.category],
+    () => {
+      if (!action) return CATEGORIES.design;
+      return CATEGORIES[action.category as CATEGORY];
+    },
+    [action?.category, action],
   );
+
+  if (isLoadingAction || !action) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center bg-background gap-4">
+        <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <p className="text-muted-foreground text-sm font-medium animate-pulse">
+          Carregando detalhes...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
@@ -275,16 +288,13 @@ export default function DashActionDetail() {
                   onRemove={() => {
                     const next = workFiles.filter((_, idx) => idx !== i);
                     setWorkFiles(next);
-                    submit(
-                      { work_files: JSON.stringify(next) },
-                      { method: "post" },
-                    );
+                    updateWorkFilesMutation.mutate(next);
                   }}
                 />
               ))}
               <CloudinaryUpload
-                cloudName={appData?.cloudName || ""}
-                uploadPreset={appData?.uploadPreset || ""}
+                cloudName={cloudName}
+                uploadPreset={uploadPreset}
                 folder="uzzina/work"
                 resourceType="auto"
                 multiple
@@ -315,26 +325,13 @@ export default function DashActionDetail() {
                 currentUserId={clientId}
                 isUser={false}
                 onUpdate={(commentId, content) => {
-                  submit(
-                    {
-                      intent: "edit_comment",
-                      commentId,
-                      content,
-                    },
-                    { method: "post" },
-                  );
+                  updateCommentMutation.mutate({ commentId, content });
                 }}
                 onDelete={(commentId) => {
                   if (
                     confirm("Tem certeza que deseja excluir esta observação?")
                   ) {
-                    submit(
-                      {
-                        intent: "delete_comment",
-                        commentId,
-                      },
-                      { method: "post" },
-                    );
+                    deleteCommentMutation.mutate(commentId);
                   }
                 }}
                 emptyMessage="Nenhuma observação ainda."
@@ -343,25 +340,15 @@ export default function DashActionDetail() {
 
             {/* Formulário de novo comentário */}
             <div className="border-t pt-4">
-              {actionData?.error && (
-                <p className="mb-2 text-sm text-destructive">
-                  {actionData.error}
-                </p>
-              )}
               <CommentInput
                 value={newComment}
                 onChange={setNewComment}
                 onSend={() => {
                   if (!newComment.trim()) return;
-                  submit(
-                    {
-                      content: newComment,
-                    },
-                    { method: "post" },
-                  );
+                  createCommentMutation.mutate(newComment);
                   setNewComment("");
                 }}
-                isSubmitting={isSubmitting}
+                isSubmitting={createCommentMutation.isPending}
               />
             </div>
           </div>

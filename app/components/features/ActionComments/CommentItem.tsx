@@ -3,7 +3,7 @@ import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Pencil, Trash } from "lucide-react";
 import { UAvatar } from "~/components/uzzina/UAvatar";
-import type { AugmentedComment } from "~/models/action_comments.server";
+import type { AugmentedComment } from "~/models/action_comments";
 import { CommentInput } from "./CommentInput";
 
 interface Person {

@@ -2,36 +2,21 @@ import type { Action, Notification } from "~/types";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowLeftIcon, BellIcon, CheckCheckIcon } from "lucide-react";
-import { Link, useNavigate, useOutletContext, useLoaderData, type LoaderFunctionArgs } from "react-router";
+import { Link, useNavigate, useOutletContext, } from "react-router";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { useNotifications } from "~/hooks/useNotifications";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { cn } from "~/lib/utils";
-import { getUserId } from "~/services/auth.server";
-import { listNotifications, getUnreadCount } from "~/models/notifications.server";
 
-
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { supabase, user_id } = await getUserId(request);
-  const [notifications, unreadCount] = await Promise.all([
-    listNotifications(supabase, user_id),
-    getUnreadCount(supabase, user_id),
-  ]);
-  return { initialNotifications: notifications, initialUnreadCount: unreadCount };
-}
 
 export default function NotificationsPage() {
   const navigate = useNavigate();
-  const { initialNotifications, initialUnreadCount } = useLoaderData<typeof loader>();
-  const { notifications: activeNotifications, unreadCount: activeUnreadCount, markAsRead, markAllAsRead, isLoading } =
+  const { notifications, unreadCount, markAsRead, markAllAsRead, isLoading } =
     useNotifications();
   const { setBaseAction } = useOutletContext<{
     setBaseAction: (action: Action | null) => void;
   }>();
-
-  const notifications = activeNotifications.length > 0 || isLoading ? activeNotifications : initialNotifications;
-  const unreadCount = activeNotifications.length > 0 || isLoading ? activeUnreadCount : initialUnreadCount;
 
   const handleNotificationClick = async (notif: Notification) => {
     if (!notif.read_at) {

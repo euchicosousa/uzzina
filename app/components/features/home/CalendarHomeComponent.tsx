@@ -9,7 +9,6 @@ import {
 } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { useState } from "react";
-import { useMatches } from "react-router";
 import { CalendarWithDnd } from "~/components/features/CalendarWithDnd";
 import {
   ViewOptionsComponent,
@@ -18,12 +17,13 @@ import {
 import { Toggle } from "~/components/ui/toggle";
 import { getCleanAction } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
-import type { AppLoaderData } from "~/routes/app";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchCelebrations } from "~/lib/supabase.queries";
+
+import { useAppContext } from "~/contexts/AppContext";
 
 export function CalendarHomeComponent({
   actions,
@@ -32,7 +32,7 @@ export function CalendarHomeComponent({
   actions: Action[];
   setBaseAction: (action: Action | null) => void;
 }) {
-  const { person } = useMatches()[1].loaderData as AppLoaderData;
+  const { person } = useAppContext();
 
   const { data: celebrations = [] } = useQuery({
     queryKey: QUERY_KEYS.celebrations(),

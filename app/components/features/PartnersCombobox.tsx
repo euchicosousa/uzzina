@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useMatches } from "react-router";
 import { CheckIcon } from "lucide-react";
 import {
   Popover,
@@ -17,6 +16,8 @@ import {
 } from "../ui/command";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { ComboboxTrigger } from "./ComboboxTrigger";
+import { useAppContext } from "~/contexts/AppContext";
+
 export function PartnersCombobox({
   selectedPartners,
   onSelect,
@@ -31,9 +32,7 @@ export function PartnersCombobox({
   variant?: "filter" | "form-footer";
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { partners } = useMatches()[1].loaderData as {
-    partners: Partner[];
-  };
+  const { partners } = useAppContext();
   const [selected, setSelected] = useState<string[]>(selectedPartners || []);
   // Keep a ref so the memoized handleSelect callback always reads the latest
   // selected array without being recreated on every render.

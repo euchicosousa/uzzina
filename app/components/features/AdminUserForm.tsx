@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Form } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
@@ -22,6 +21,7 @@ interface AdminUserFormProps {
   cloudName: string;
   uploadPreset: string;
   isSubmitting: boolean;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 export function AdminUserForm({
   person,
@@ -29,6 +29,7 @@ export function AdminUserForm({
   cloudName,
   uploadPreset,
   isSubmitting,
+  onSubmit,
 }: AdminUserFormProps) {
   const isNew = !person;
   const [showPassword, setShowPassword] = useState(false);
@@ -36,7 +37,7 @@ export function AdminUserForm({
     person?.image || null,
   );
   return (
-    <Form className="flex flex-col gap-8" method="post">
+    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       {/* URL da imagem já enviada pelo widget — campo oculto */}
       <input name="image" type="hidden" value={imageUrl || ""} />
 
@@ -251,6 +252,6 @@ export function AdminUserForm({
           {isSubmitting ? "Salvando..." : "Salvar Usuário"}
         </Button>
       </div>
-    </Form>
+    </form>
   );
 }

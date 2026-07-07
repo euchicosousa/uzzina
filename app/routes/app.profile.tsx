@@ -14,10 +14,8 @@ import {
   Form,
   data,
   useActionData,
-  useLoaderData,
   useNavigation,
   type ActionFunctionArgs,
-  type LoaderFunctionArgs,
   type MetaFunction,
 } from "react-router";
 import { Theme, useTheme } from "remix-themes";
@@ -32,7 +30,6 @@ import { SegmentedSelector } from "~/components/uzzina/SegmentedSelector";
 import { PALLETE } from "~/lib/CONSTANTS";
 import { getUserPreferences } from "~/lib/preferences";
 import { cn } from "~/lib/utils";
-import { getPersonByUserId } from "~/models/people.server";
 import { getUserId } from "~/services/auth.server";
 import { themeSessionResolver } from "~/sessions.server";
 import { useAppTheme } from "~/hooks/useAppTheme";
@@ -50,19 +47,7 @@ export const meta: MetaFunction = () => {
     },
   ];
 };
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { user_id, supabase } = await getUserId(request);
-  const person = await getPersonByUserId(supabase, user_id);
-
-  // Cloudinary credentials (publicly accessible)
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME || "";
-  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || "";
-  return {
-    person,
-    cloudName,
-    uploadPreset,
-  };
-};
+// Loader is removed since profile reads from useAppContext client-side
 export const action = async ({ request }: ActionFunctionArgs) => {
   const [auth, formData] = await Promise.all([
     getUserId(request),
@@ -161,8 +146,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     },
   );
 };
+import { useAppContext } from "~/contexts/AppContext";
+
 export default function ProfilePage() {
-  const { person, cloudName, uploadPreset } = useLoaderData<typeof loader>();
+  const { person, cloudName, uploadPreset } = useAppContext();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";

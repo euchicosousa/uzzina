@@ -1,148 +1,177 @@
-import { createClient } from "@supabase/supabase-js";
-import {
-  Link,
-  redirect,
-  useLoaderData,
-  useNavigation,
-  type ActionFunctionArgs,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "react-router";
-import type { Database } from "types/database";
+
+import { Link, useParams, useNavigate, type MetaFunction } from "react-router";
 import { AdminUserForm } from "~/components/features/AdminUserForm";
-import { getUserId } from "~/services/auth.server";
 import { AREAS } from "~/lib/CONSTANTS";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import { toast } from "sonner";
+import type { Person } from "~/types";
+import { useAppContext } from "~/contexts/AppContext";
 
-export const meta: MetaFunction = () => {
-  return [{ title: "Admin | Editar Usuário" }];
-};
+export const meta: MetaFunction = () => [{ title: "Admin | Editar Usuário" }];
 
-export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const { supabase } = await getUserId(request);
-  const user_id = params.userId || params.user_id;
-  if (!user_id) {
-    throw new Response("User ID não fornecido", { status: 400 });
-  }
+interface UserFormData {
+  name: string;
+  surname: string;
+  email: string;
+  password?: string;
+  initials: string;
+  short: string;
+  image: string | null;
+  admin: boolean;
+  visible: boolean;
+  areas: string[];
+}
 
+export default function AdminUserPage() {
+  const params = useParams();
+  const userId = params.userId || params.user_id;
+  const navigate = useNavigate();
+  const supabase = createSupabaseBrowserClient();
+  const queryClient = useQueryClient();
   const areas = Object.values(AREAS);
 
-  // Passamos cloud_name e upload_preset ao cliente (são públicos — sem risco)
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME || "";
-  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || "";
+  const isNew = userId === "new" || !userId;
 
-  if (user_id === "new") {
-    return { person: null, areas: areas ?? [], cloudName, uploadPreset };
-  }
+  // Query do Membro
+  const { data: person, isLoading: isLoadingPerson } = useQuery({
+    queryKey: ["person", userId],
+    queryFn: async () => {
+      if (isNew) return null;
+      const { data, error } = await supabase
+        .from("people")
+        .select("*")
+        .eq("user_id", userId || "")
+        .single();
+      if (error) throw error;
+      return data as Person;
+    },
+    enabled: !!userId,
+  });
 
-  const { data: person } = await supabase
-    .from("people")
-    .select("*")
-    .eq("user_id", user_id)
-    .single();
+  // Mutation para salvar
+  const saveMutation = useMutation({
+    mutationFn: async (userData: UserFormData) => {
+      if (isNew) {
+        // 1. Obter token de acesso do admin logado
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error("Você não está autenticado.");
 
-  return { person, areas: areas ?? [], cloudName, uploadPreset };
-};
+        // 2. Chamar a API Serverless para criar o usuário Auth com segurança
+        const res = await fetch("/api/create-user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            email: userData.email,
+            password: userData.password,
+            name: userData.name,
+          }),
+        });
 
-export const action = async ({ request, params }: ActionFunctionArgs) => {
-  const [auth, formData] = await Promise.all([
-    getUserId(request),
-    request.formData(),
-  ]);
-  const { supabase } = auth;
-  const supabaseUrl = process.env.SUPABASE_URL || "";
-  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-  const supabaseAdmin = createClient<Database>(
-    supabaseUrl,
-    supabaseServiceRoleKey,
-  );
-  const user_id = params.userId || params.user_id;
-  if (!user_id) {
-    throw new Response("User ID não fornecido", { status: 400 });
-  }
+        const resData = await res.json();
+        if (!res.ok) {
+          throw new Error(resData.error || "Falha ao criar credenciais do usuário.");
+        }
 
-  const name = formData.get("name") as string;
-  const surname = formData.get("surname") as string;
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const initials = formData.get("initials") as string;
-  const short = formData.get("short") as string;
-  const admin = formData.get("admin") === "on";
-  const visible = formData.get("visible") === "on";
-  const areas = formData.getAll("areas") as string[];
-  // URL vinda diretamente do Cloudinary UploadIcon Widget (já enviada pelo widget)
-  const image = (formData.get("image") as string) || null;
+        const newAuthId = resData.user.id;
 
-  if (user_id === "new") {
-    const { data: authUser, error: authError } =
-      await supabaseAdmin.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true,
-        user_metadata: { name },
-      });
+        // 3. Inserir na tabela "people"
+        const { error: dbError } = await supabase.from("people").insert({
+          user_id: newAuthId,
+          name: userData.name,
+          surname: userData.surname,
+          email: userData.email,
+          initials: userData.initials,
+          short: userData.short || userData.name,
+          image: userData.image,
+          admin: userData.admin,
+          visible: userData.visible,
+          areas: userData.areas,
+        });
 
-    if (authError) {
-      console.error("Auth Create Error:", authError);
-      throw new Response(authError.message, { status: 400 });
-    }
+        if (dbError) throw dbError;
+      } else {
+        const { error } = await supabase
+          .from("people")
+          .update({
+            name: userData.name,
+            surname: userData.surname,
+            email: userData.email,
+            initials: userData.initials,
+            short: userData.short,
+            image: userData.image,
+            admin: userData.admin,
+            visible: userData.visible,
+            areas: userData.areas,
+          })
+          .eq("user_id", userId || "");
 
-    if (!authUser.user) {
-      throw new Response("Failed to create user", { status: 500 });
-    }
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["person", userId] });
+      queryClient.invalidateQueries({ queryKey: ["people"] });
+      toast.success("Membro salvo com sucesso!");
+      navigate("/app/admin/users");
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Erro desconhecido";
+      toast.error(`Erro ao salvar: ${message}`);
+    },
+  });
 
-    const { error: dbError } = await supabase.from("people").insert({
-      user_id: authUser.user.id,
+  const isSubmitting = saveMutation.isPending;
+  const appData = useAppContext();
+  const { cloudName, uploadPreset } = appData;
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
+    const surname = formData.get("surname") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const initials = formData.get("initials") as string;
+    const short = formData.get("short") as string;
+    const admin = formData.get("admin") === "on";
+    const visible = formData.get("visible") === "on";
+    const userAreas = formData.getAll("areas") as string[];
+    const image = (formData.get("image") as string) || null;
+
+    await saveMutation.mutateAsync({
       name,
       surname,
       email,
+      password,
       initials,
       short: short || name,
       image,
       admin,
       visible,
-      areas,
+      areas: userAreas,
     });
+  };
 
-    if (dbError) {
-      console.error("DB Insert Error:", dbError);
-      throw new Response(dbError.message, { status: 500 });
-    }
-  } else {
-    const { error } = await supabase
-      .from("people")
-      .update({
-        name,
-        surname,
-        email,
-        initials,
-        short,
-        image,
-        admin,
-        visible,
-        areas,
-      })
-      .eq("user_id", user_id);
-
-    if (error) {
-      return { error: error.message };
-    }
+  if (isLoadingPerson) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-background gap-4">
+        <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <p className="text-muted-foreground text-sm font-medium animate-pulse">
+          Carregando membro...
+        </p>
+      </div>
+    );
   }
-
-  return redirect("/app/admin/users");
-};
-
-export default function AdminUserPage() {
-  const { person, areas, cloudName, uploadPreset } =
-    useLoaderData<typeof loader>();
-  const navigation = useNavigation();
-  const isSubmitting = navigation.state === "submitting";
-  const isNew = !person;
 
   return (
     <div className="mx-auto flex h-full w-full max-w-3xl flex-col p-8">
       <div className="mb-16 flex items-center justify-between gap-8">
         <h1 className="pb-0 text-2xl font-bold">
-          {isNew ? "Novo Usuário" : `Editar ${person.name}`}
+          {isNew ? "Novo Usuário" : `Editar ${person?.name || ""}`}
         </h1>
         <Link to="/app/admin/users" className="font-medium hover:underline">
           Voltar
@@ -150,11 +179,12 @@ export default function AdminUserPage() {
       </div>
 
       <AdminUserForm
-        person={person}
+        person={person || null}
         areas={areas}
         cloudName={cloudName}
         uploadPreset={uploadPreset}
         isSubmitting={isSubmitting}
+        onSubmit={handleSubmit}
       />
     </div>
   );

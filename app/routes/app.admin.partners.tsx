@@ -1,51 +1,32 @@
 import { FolderPlusIcon } from "lucide-react";
-import {
-  Link,
-  useLoaderData,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "react-router";
-import invariant from "tiny-invariant";
+import { Link, type MetaFunction } from "react-router";
 import { Button } from "~/components/ui/button";
-import { UAvatar } from "~/components/uzzina/UAvatar";
-import { getUserId } from "~/services/auth.server";
-
+import { AdminItemCard } from "~/components/uzzina/AdminItemCard";
+import { useAppContext } from "~/contexts/AppContext";
+import type { Partner } from "~/types";
 export const meta: MetaFunction = () => {
-  return [{ title: "Admin | Partners" }];
+  return [
+    {
+      title: "Admin | Partners",
+    },
+  ];
 };
-
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { supabase } = await getUserId(request);
-
-  const { data: partners } = await supabase
-    .from("partners")
-    .select("*")
-    .order("title", { ascending: true });
-
-  invariant(partners, "Partners not found");
-
-  return { partners };
-};
-
 export default function AdminPartnersPage() {
-  const { partners }: { partners: Partner[] } = useLoaderData<typeof loader>();
-
+  const { partners } = useAppContext();
   const archivedPartners: Partner[] = [];
   const activePartners: Partner[] = [];
-
-  partners.forEach((partner) => {
+  partners.forEach((partner: Partner) => {
     if (partner.archived) {
       archivedPartners.push(partner);
     } else {
       activePartners.push(partner);
     }
   });
-
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-8">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="pb-0 text-2xl font-bold">Parceiros</h1>
-        <Button variant={"secondary"} asChild className="squircle rounded-2xl">
+        <Button asChild className="squircle rounded-2xl" variant={"raised"}>
           <Link to="/app/admin/partner/new">
             Novo Parceiro <FolderPlusIcon />
           </Link>
@@ -54,26 +35,16 @@ export default function AdminPartnersPage() {
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
         {activePartners.map((partner) => (
-          <Link
+          <AdminItemCard
             key={partner.id}
+            avatarBgColor={partner.colors[0]}
+            avatarColor={partner.colors[1]}
+            fallback={partner.short}
+            image={partner.image}
+            subtitle={partner.slug}
+            title={partner.title}
             to={`/app/admin/partner/${partner.slug}`}
-            className="hover:bg-muted/50 squircle flex items-center gap-4 rounded-3xl border p-4 transition-colors"
-          >
-            <UAvatar
-              fallback={partner.short}
-              backgroundColor={partner.colors[0]}
-              color={partner.colors[1]}
-              size="lg"
-              image={partner.image}
-            />
-
-            <div className="min-w-0 flex-1">
-              <div className="truncate font-medium">{partner.title}</div>
-              <div className="text-muted-foreground truncate text-xs">
-                {partner.slug}
-              </div>
-            </div>
-          </Link>
+          />
         ))}
       </div>
 
@@ -84,26 +55,17 @@ export default function AdminPartnersPage() {
           </div>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {archivedPartners.map((partner) => (
-              <Link
+              <AdminItemCard
                 key={partner.id}
+                avatarBgColor={partner.colors[0]}
+                avatarColor={partner.colors[1]}
+                className="opacity-70"
+                fallback={partner.short}
+                image={partner.image}
+                subtitle={partner.slug}
+                title={partner.title}
                 to={`/app/admin/partner/${partner.slug}`}
-                className="hover:bg-muted/50 squircle flex items-center gap-4 rounded-3xl border p-4 opacity-70 transition-colors"
-              >
-                <UAvatar
-                  fallback={partner.short}
-                  backgroundColor={partner.colors[0]}
-                  color={partner.colors[1]}
-                  size="lg"
-                  image={partner.image}
-                />
-
-                <div className="">
-                  <div className="truncate font-medium">{partner.title}</div>
-                  <div className="text-muted-foreground truncate text-xs">
-                    {partner.slug}
-                  </div>
-                </div>
-              </Link>
+              />
             ))}
           </div>
         </>

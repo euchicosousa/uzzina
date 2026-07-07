@@ -1,11 +1,10 @@
 import { endOfWeek, startOfDay, startOfWeek } from "date-fns";
-import { useMatches, useOutletContext, useSearchParams } from "react-router";
+import { useOutletContext, useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import KanbanStationsFlow from "~/components/layout/KanbanStationsFlow";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchFlowActions } from "~/lib/supabase.queries";
-import type { AppLoaderData } from "./app";
 import { PhaseCombobox } from "~/components/features/PhaseCombobox";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { FlowDateFilter } from "~/components/features/FlowDateFilter";
@@ -22,8 +21,11 @@ export function meta() {
     },
   ];
 }
+import { useAppContext } from "~/contexts/AppContext";
+import type { Partner } from "~/types";
+
 export default function AppFlow() {
-  const { person, partners } = useMatches()[1].loaderData as AppLoaderData;
+  const { person, partners } = useAppContext();
   useOutletContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const urlPartner = searchParams.get("partner");
@@ -57,7 +59,7 @@ export default function AppFlow() {
   const queryPartners =
     localPartnerFilters.length > 0
       ? localPartnerFilters
-      : partners.map((p) => p.slug);
+      : partners.map((p: Partner) => p.slug);
 
   // Check if today is inside the selected date range
   const isCurrentPeriod = useMemo(() => {
@@ -110,7 +112,7 @@ export default function AppFlow() {
       setSearchParams({});
     }
   };
-  const selectedPartnersObjects = partners.filter((p) =>
+  const selectedPartnersObjects = partners.filter((p: Partner) =>
     localPartnerFilters.includes(p.slug),
   );
   return (

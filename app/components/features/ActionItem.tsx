@@ -1,6 +1,7 @@
 import { CalendarDaysIcon, SignalIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { useOutletContext, useRouteLoaderData } from "react-router";
+import { useOutletContext, } from "react-router";
+import { useAppContext } from "~/contexts/AppContext";
 import type { Action, Partner, Person } from "~/types";
 
 // UI Components
@@ -47,10 +48,6 @@ import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
 import { cn } from "~/lib/utils";
 
-// Types
-// Imported explicitly for subcomponents
-// Imported explicitly for subcomponents
-import type { AppLoaderData } from "~/routes/app";
 export type ActionDisplayFlags = {
   /** Whether to highlight the action if it is late */
   showLate?: boolean;
@@ -105,7 +102,7 @@ interface OutletContext {
  * Integrates drag-and-drop capability, selection mode, inline title editing, and action shortcuts.
  */
 const DEFAULT_DISPLAY_FLAGS: ActionDisplayFlags = {};
-const DEFAULT_PARTNERS: Partner[] = [];
+const _DEFAULT_PARTNERS: Partner[] = [];
 const DEFAULT_PEOPLE: Person[] = [];
 export function ActionItem({
   action,
@@ -126,14 +123,12 @@ export function ActionItem({
     showResponsibles = false,
     showPriority = false,
   } = displayFlags;
-  const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
+  const { partners, person } = useAppContext();
   const { data: people = DEFAULT_PEOPLE } = useQuery({
     queryKey: QUERY_KEYS.people(),
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });
-  const partners = appData?.partners || DEFAULT_PARTNERS;
-  const person = appData?.person;
   const { isSelectionMode, selectedIds, toggleSelection } = useMultiSelection();
   const isSelected = selectedIds.includes(action.id);
   const { handleAction } = useActionMutations();
@@ -168,8 +163,8 @@ export function ActionItem({
   const currentPartners = useMemo(
     () =>
       action.partners
-        .map((partner) => partners.find((p) => p.slug === partner))
-        .filter((p) => p !== undefined),
+        .map((partner) => partners.find((p: Partner) => p.slug === partner))
+        .filter((p): p is Partner => p !== undefined),
     [action.partners, partners],
   );
   const currentResponsibles = useMemo(
@@ -490,8 +485,7 @@ function ActionItemSprint({
   action: Action;
   className?: string;
 }) {
-  const appData = useRouteLoaderData("routes/app") as AppLoaderData | undefined;
-  const person = appData?.person;
+  const { person } = useAppContext();
   return isSprint(action, person) ? (
     <Icons className={cn("size-4 shrink-0", className)} slug="sprint" />
   ) : null;

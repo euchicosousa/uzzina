@@ -1,75 +1,67 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
-import {
-  Form,
-  useLoaderData,
-  useNavigation,
-  type ActionFunctionArgs,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "react-router";
-import invariant from "tiny-invariant";
+import type { MetaFunction } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Calendar } from "~/components/ui/calendar";
 import { Input } from "~/components/ui/input";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
   createCelebration,
   deleteCelebration,
   getAllCelebrations,
-} from "~/models/celebrations.server";
-import { getUserId } from "~/services/auth.server";
-
+} from "~/models/celebrations";
 export const meta: MetaFunction = () => {
-  return [{ title: "Admin | Datas Comemorativas" }];
+  return [
+    {
+      title: "Admin | Datas Comemorativas",
+    },
+  ];
 };
-
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { supabase } = await getUserId(request);
-  const celebrations = await getAllCelebrations(supabase);
-
-  invariant(celebrations, "Celebrations not found");
-
-  return { celebrations };
-};
-
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const [auth, formData] = await Promise.all([
-    getUserId(request),
-    request.formData(),
-  ]);
-  const { supabase } = auth;
-  const intent = formData.get("intent");
-
-  if (intent === "create") {
-    const title = formData.get("title") as string;
-    const date = formData.get("date") as string;
-
-    if (title && date) {
-      await createCelebration(supabase, title, date);
-    }
-  } else if (intent === "delete") {
-    const id = formData.get("id") as string;
-    if (id) {
-      await deleteCelebration(supabase, id);
-    }
-  }
-
-  return { success: true };
-};
-
 export default function AdminCelebrationsPage() {
-  const { celebrations } = useLoaderData<typeof loader>();
+  const supabase = createSupabaseBrowserClient();
+  const queryClient = useQueryClient();
+  const { data: celebrations = [] } = useQuery({
+    queryKey: ["celebrations"],
+    queryFn: () => getAllCelebrations(supabase),
+  });
+  const createMutation = useMutation({
+    mutationFn: async ({ title, date }: { title: string; date: string }) => {
+      await createCelebration(supabase, title, date);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["celebrations"],
+      });
+    },
+  });
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await deleteCelebration(supabase, id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["celebrations"],
+      });
+    },
+  });
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     new Date(),
   );
-  const navigation = useNavigation();
-  const isSubmitting = navigation.state === "submitting";
-
-  const isAdding =
-    isSubmitting && navigation.formData?.get("intent") === "create";
-
+  const [title, setTitle] = useState("");
+  const isSubmitting = createMutation.isPending || deleteMutation.isPending;
+  const isAdding = createMutation.isPending;
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim() || !selectedDate) return;
+    await createMutation.mutateAsync({
+      title,
+      date: format(selectedDate, "yyyy-MM-dd"),
+    });
+    setTitle("");
+  };
   return (
     <div className="page-height mx-auto flex w-full max-w-7xl flex-col overflow-y-auto md:flex-row md:overflow-hidden">
       {/* Coluna da Esquerda: Adicionar Novo */}
@@ -84,34 +76,29 @@ export default function AdminCelebrationsPage() {
 
         <div className="flex flex-col items-center gap-6">
           <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={setSelectedDate}
             className="w-full"
             locale={ptBR}
+            mode="single"
+            onSelect={setSelectedDate}
+            selected={selectedDate}
           />
 
-          <Form method="post" className="flex w-full flex-col gap-4">
-            <input type="hidden" name="intent" value="create" />
-            <input
-              type="hidden"
-              name="date"
-              value={selectedDate ? format(selectedDate, "yyyy-MM-dd") : ""}
-            />
-
+          <form className="flex w-full flex-col gap-4" onSubmit={handleCreate}>
             <div className="flex w-full items-center gap-2">
               <Input
-                variant="inset"
+                disabled={!selectedDate || isSubmitting}
                 name="title"
+                onChange={(e) => setTitle(e.target.value)}
                 placeholder="Nome do feriado/data"
                 required
-                disabled={!selectedDate || isSubmitting}
+                value={title}
+                variant="inset"
               />
               <Button
-                type="submit"
-                disabled={!selectedDate || isSubmitting}
                 className="squircle shrink-0 rounded-2xl"
+                disabled={!selectedDate || isSubmitting}
                 size="icon"
+                type="submit"
               >
                 {isAdding ? (
                   <div className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -120,7 +107,7 @@ export default function AdminCelebrationsPage() {
                 )}
               </Button>
             </div>
-          </Form>
+          </form>
         </div>
       </div>
 
@@ -139,7 +126,7 @@ export default function AdminCelebrationsPage() {
               {format(month, "MMM", { locale: ptBR })}
             </a>
           ))}
-        </div> */}
+         </div> */}
 
         {celebrations.length === 0 ? (
           <div className="text-muted-foreground rounded-2xl border border-dashed p-8 text-center">
@@ -164,7 +151,9 @@ export default function AdminCelebrationsPage() {
               <div
                 key={month}
                 className="flex flex-col"
-                id={`#${format(month, "MMM", { locale: ptBR })}`}
+                id={`#${format(month, "MMM", {
+                  locale: ptBR,
+                })}`}
               >
                 <h3 className="mb-3 pb-2 text-2xl first-letter:capitalize">
                   {month}
@@ -173,36 +162,30 @@ export default function AdminCelebrationsPage() {
                   {monthCelebrations.map((celebration) => (
                     <div
                       key={celebration.id}
-                      className="group hover:bg-muted/50 flex items-center justify-between rounded-xl p-2 px-3 transition-colors"
+                      className="group flex relative items-center justify-between rounded-xl py-2 px-3 transition-colors hover:bg-card"
                     >
+                      <div className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 absolute h-full top-1 left-1">
+                        <Button
+                          disabled={isSubmitting}
+                          onClick={() => deleteMutation.mutate(celebration.id)}
+                          size="icon-sm"
+                          variant="destructive"
+                        >
+                          <TrashIcon className="size-4" />
+                        </Button>
+                      </div>
                       <div className="flex items-center gap-4 overflow-hidden">
-                        <span className="text-muted-foreground w-6 text-center text-sm font-medium">
+                        <span className="text-muted-foreground w-6 text-center text-sm font-medium group-hover:opacity-0 transition-opacity">
                           {format(
                             new Date(`${celebration.date}T00:00:00`),
                             "dd",
                           )}
                         </span>
+
                         <span className="truncate font-medium tracking-tight">
                           {celebration.title}
                         </span>
                       </div>
-
-                      <Form
-                        method="post"
-                        className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100"
-                      >
-                        <input type="hidden" name="intent" value="delete" />
-                        <input type="hidden" name="id" value={celebration.id} />
-                        <Button
-                          type="submit"
-                          variant="ghost"
-                          size="icon"
-                          className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive size-8 rounded-full"
-                          disabled={isSubmitting}
-                        >
-                          <TrashIcon className="size-4" />
-                        </Button>
-                      </Form>
                     </div>
                   ))}
                 </div>

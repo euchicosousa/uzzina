@@ -1,116 +1,119 @@
-import { useState } from "react";
-import {
-  Form,
-  Link,
-  redirect,
-  useActionData,
-  useLoaderData,
-  useNavigation,
-  type ActionFunctionArgs,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "react-router";
+import { UploadIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, type MetaFunction } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
-import { UploadIcon } from "lucide-react";
 import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
 import {
-  getClientById,
-  createClient,
-  updateClient,
   archiveClient,
-} from "~/models/clients.server";
-import { getAllPartners } from "~/models/partners.server";
-import { getUserId } from "~/services/auth.server";
-
-export const meta: MetaFunction = () => [{ title: "Admin | Editar Cliente" }];
-
-export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const { supabase } = await getUserId(request);
-  const { userId } = params;
-  if (!userId) {
-    throw new Error("userId parameter is required.");
-  }
-
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
-
-  if (!cloudName || !uploadPreset) {
-    throw new Error(
-      "CLOUDINARY_CLOUD_NAME and CLOUDINARY_UPLOAD_PRESET environment variables are required.",
-    );
-  }
-
-  const [partners, client] = await Promise.all([
-    getAllPartners(supabase),
-    userId !== "new" ? getClientById(supabase, userId) : Promise.resolve(null),
-  ]);
-
-  return { client, partners, cloudName, uploadPreset };
-};
-
-export const action = async ({ request, params }: ActionFunctionArgs) => {
-  const [auth, formData] = await Promise.all([
-    getUserId(request),
-    request.formData(),
-  ]);
-  const { supabase } = auth;
-  const intent = formData.get("intent") as string;
-  const { userId } = params;
-  if (!userId) {
-    throw new Error("userId parameter is required.");
-  }
-
-  // Arquivar cliente
-  if (intent === "archive_client" && userId !== "new") {
-    await archiveClient(supabase, userId);
-    return redirect("/app/admin/clients");
-  }
-
-  const name = formData.get("name") as string;
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const image = (formData.get("image") as string) || null;
-  const partnerSlugs = formData.getAll("partner_slugs") as string[];
-
-  if (userId === "new") {
-    if (!email || !password || !name) {
-      return { error: "Nome, e-mail e senha são obrigatórios." };
-    }
-    await createClient(supabase, {
-      name,
-      email,
-      password,
-      image,
-      partners: partnerSlugs,
-    });
-  } else {
-    await updateClient(supabase, userId, {
-      name,
-      email,
-      password,
-      image,
-      partners: partnerSlugs,
-    });
-  }
-
-  return redirect("/app/admin/clients");
-};
-
+  createClient,
+  getClientById,
+  updateClient,
+} from "~/models/clients";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router";
+import { toast } from "sonner";
+import { useAppContext } from "~/contexts/AppContext";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import type { Client } from "~/types";
+export const meta: MetaFunction = () => [
+  {
+    title: "Admin | Editar Cliente",
+  },
+];
 export default function AdminClientPage() {
-  const { client, partners, cloudName, uploadPreset } =
-    useLoaderData<typeof loader>();
-  const actionData = useActionData<typeof action>();
-  const navigation = useNavigation();
-  const isSubmitting = navigation.state === "submitting";
-  const isNew = !client;
+  const { userId } = useParams();
+  const navigate = useNavigate();
+  const supabase = createSupabaseBrowserClient();
+  const queryClient = useQueryClient();
+  const appData = useAppContext();
+  const { partners } = appData;
+  const isNew = userId === "new" || !userId;
 
-  const [imageUrl, setImageUrl] = useState<string | null>(
-    client?.image || null,
-  );
+  // Query do Cliente
+  const { data: client, isLoading: isLoadingClient } = useQuery({
+    queryKey: ["client", userId],
+    queryFn: async () => {
+      if (isNew) return null;
+      return getClientById(supabase, userId || "");
+    },
+    enabled: !!userId,
+  });
 
+  // Mutation para salvar
+  const saveMutation = useMutation({
+    mutationFn: async (
+      clientData: Omit<Client, "id" | "created_at" | "active">,
+    ) => {
+      if (isNew) {
+        await createClient(supabase, clientData);
+      } else {
+        await updateClient(supabase, userId || "", clientData);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["client", userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["clients"],
+      });
+      toast.success("Cliente salvo com sucesso!");
+      navigate("/app/admin/clients");
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Erro desconhecido";
+      toast.error(`Erro ao salvar: ${message}`);
+    },
+  });
+
+  // Mutation para arquivar
+  const archiveMutation = useMutation({
+    mutationFn: async () => {
+      await archiveClient(supabase, userId || "");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["clients"],
+      });
+      toast.success("Cliente arquivado com sucesso!");
+      navigate("/app/admin/clients");
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Erro desconhecido";
+      toast.error(`Erro ao arquivar: ${message}`);
+    },
+  });
+  const isSubmitting = saveMutation.isPending || archiveMutation.isPending;
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  // Sincroniza imagem quando o cliente carregar
+  useEffect(() => {
+    if (client) {
+      setImageUrl(client.image || null);
+    }
+  }, [client]);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const partnerSlugs = formData.getAll("partner_slugs") as string[];
+    if (!name || !email || !password) {
+      toast.error("Preencha todos os campos obrigatórios.");
+      return;
+    }
+    await saveMutation.mutateAsync({
+      name,
+      email,
+      password,
+      image: imageUrl,
+      partners: partnerSlugs,
+    });
+  };
   return (
     <div
       key={client?.id || "new"}
@@ -118,37 +121,31 @@ export default function AdminClientPage() {
     >
       <div className="mb-8 flex items-center justify-between gap-8">
         <h1 className="pb-0 text-2xl font-bold">
-          {isNew ? "Novo Cliente" : `Editar ${client.name}`}
+          {isNew ? "Novo Cliente" : `Editar ${client?.name || ""}`}
         </h1>
-        <Link to="/app/admin/clients" className="font-medium hover:underline">
+        <Link className="font-medium hover:underline" to="/app/admin/clients">
           Voltar
         </Link>
       </div>
 
-      <Form method="post" className="flex flex-col gap-8">
-        <input type="hidden" name="image" value={imageUrl || ""} />
-
-        {(actionData as { error?: string })?.error && (
-          <div className="border-destructive/20 bg-destructive/5 text-destructive rounded-lg border px-4 py-3 text-sm">
-            {(actionData as { error?: string }).error}
-          </div>
-        )}
+      <form className="flex flex-col gap-8" onSubmit={handleSubmit}>
+        <input name="image" type="hidden" value={imageUrl || ""} />
 
         {/* Avatar / UploadIcon Widget */}
         <div className="flex items-center gap-6">
           <CloudinaryUpload
-            cloudName={cloudName}
-            uploadPreset={uploadPreset}
-            folder="uzzina/clients"
-            square
-            outputWidth={400}
-            onUpload={(url: string) => setImageUrl(url)}
             className="group relative -ml-1 size-24 shrink-0 overflow-hidden rounded-full transition hover:opacity-90"
+            cloudName={appData.cloudName}
+            folder="uzzina/clients"
+            onUpload={(url: string) => setImageUrl(url)}
+            outputWidth={400}
+            square
+            uploadPreset={appData.uploadPreset}
           >
             <UAvatar
               key={imageUrl ?? "empty"}
-              image={imageUrl}
               fallback={client?.name || "?"}
+              image={imageUrl}
               size="2xl"
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
@@ -163,9 +160,9 @@ export default function AdminClientPage() {
             </p>
             {imageUrl && (
               <button
-                type="button"
-                onClick={() => setImageUrl(null)}
                 className="text-muted-foreground hover:text-foreground mt-1 text-left text-xs underline"
+                onClick={() => setImageUrl(null)}
+                type="button"
               >
                 Remover imagem
               </button>
@@ -178,12 +175,12 @@ export default function AdminClientPage() {
             Nome
           </label>
           <Input
-            variant="inset"
+            defaultValue={client?.name || ""}
             id="name"
             name="name"
-            defaultValue={client?.name || ""}
-            required
             placeholder="Nome do cliente"
+            required
+            variant="inset"
           />
         </div>
 
@@ -193,13 +190,13 @@ export default function AdminClientPage() {
               E-mail
             </label>
             <Input
-              variant="inset"
+              defaultValue={client?.email || ""}
               id="email"
               name="email"
-              type="email"
-              defaultValue={client?.email || ""}
-              required
               placeholder="cliente@empresa.com"
+              required
+              type="email"
+              variant="inset"
             />
           </div>
 
@@ -208,13 +205,13 @@ export default function AdminClientPage() {
               Senha
             </label>
             <Input
-              variant="inset"
+              defaultValue={client?.password || ""}
               id="password"
               name="password"
-              type="text"
-              defaultValue={client?.password || ""}
-              required
               placeholder="Senha de acesso"
+              required
+              type="text"
+              variant="inset"
             />
           </div>
         </div>
@@ -222,6 +219,7 @@ export default function AdminClientPage() {
         <div className="grid gap-4">
           <div className="font-medium">Partners com acesso</div>
           <UAvatarSelector
+            initialSelectedIds={client?.partners || []}
             name="partner_slugs"
             options={partners
               .filter((p) => !p.archived)
@@ -234,7 +232,6 @@ export default function AdminClientPage() {
                 color: p.colors[1],
                 title: p.title,
               }))}
-            initialSelectedIds={client?.partners || []}
           />
         </div>
 
@@ -242,33 +239,29 @@ export default function AdminClientPage() {
           {!isNew && (
             <div className="flex gap-2">
               <Button
-                type="submit"
-                name="intent"
-                value="archive_client"
-                variant="destructive"
                 className="squircle bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-2xl"
                 disabled={isSubmitting}
-                onClick={(e) => {
-                  if (
-                    !confirm("Tem certeza que deseja ocultar este cliente?")
-                  ) {
-                    e.preventDefault();
+                onClick={() => {
+                  if (confirm("Tem certeza que deseja ocultar este cliente?")) {
+                    archiveMutation.mutate();
                   }
                 }}
+                type="button"
+                variant="destructive"
               >
                 Arquivar Cliente
               </Button>
             </div>
           )}
           <Button
-            type="submit"
             className="squircle ml-auto rounded-2xl"
             disabled={isSubmitting}
+            type="submit"
           >
             {isSubmitting ? "Salvando..." : isNew ? "Criar Cliente" : "Salvar"}
           </Button>
         </div>
-      </Form>
+      </form>
     </div>
   );
 }

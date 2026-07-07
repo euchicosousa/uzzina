@@ -14,13 +14,9 @@ import { Grid3X3Icon, SearchIcon, SettingsIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   Link,
-  data,
-  useLoaderData,
   useNavigate,
   useOutletContext,
-  type LoaderFunctionArgs,
 } from "react-router";
-import invariant from "tiny-invariant";
 import { ActionCalendarPartnerPage } from "~/components/features/ActionCalendarPartnerPage";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import { CalendarButtons } from "~/components/features/Calendar";
@@ -46,79 +42,66 @@ import { PHASES, SIZE } from "~/lib/CONSTANTS";
 import { filterActions, getInstagramFeedActions } from "~/lib/helpers";
 import { getUserPreferences } from "~/lib/preferences";
 import { cn } from "~/lib/utils";
-import { getPartnerBySlug } from "~/models/partners.server";
-import { getUserId } from "~/services/auth.server";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMatches } from "react-router";
 import { UToggle } from "~/components/uzzina/UToggle";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import {
   fetchAllLateActions,
   fetchPartnerActions,
 } from "~/lib/supabase.queries";
-import type { AppLoaderData } from "./app";
 export const runtime = "edge";
-export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const { supabase } = await getUserId(request);
-  const searchParams = new URL(request.url).searchParams;
-  let date = searchParams.get("date");
+import { useParams, useSearchParams } from "react-router";
+import { useAppContext } from "~/contexts/AppContext";
+import type { Partner } from "~/types";
+
+export const loader = async () => {
+  return null;
+};
+
+export default function PartnerPage() {
+  const { slug } = useParams();
+  const { person, partners } = useAppContext();
+  
+  const partner = partners.find((p: Partner) => p.slug === slug);
+  const partnerSlug = partner?.slug || "";
+  const partnerColors = partner?.colors || [];
+
+  const [searchParams] = useSearchParams();
+  let dateParam = searchParams.get("date");
   const skipActions = searchParams.get("skip_actions") === "true";
-  if (!date) {
-    date = format(new Date().setDate(15), "yyyy-MM-dd");
+  if (!dateParam) {
+    dateParam = format(new Date().setDate(15), "yyyy-MM-dd");
   } else {
-    date = isValid(new Date(date))
-      ? format(parseISO(date).setDate(15), "yyyy-MM-dd")
+    dateParam = isValid(new Date(dateParam))
+      ? format(parseISO(dateParam).setDate(15), "yyyy-MM-dd")
       : format(new Date().setDate(15), "yyyy-MM-dd");
   }
-  const start = startOfDay(startOfWeek(startOfMonth(parseISO(date))));
-  const end = endOfDay(endOfWeek(endOfMonth(parseISO(date))));
+  const start = startOfDay(startOfWeek(startOfMonth(parseISO(dateParam))));
+  const end = endOfDay(endOfWeek(endOfMonth(parseISO(dateParam))));
+  const startDateFormatted = format(start, "yyyy-MM-dd HH:mm:ss");
+  const endDateFormatted = format(end, "yyyy-MM-dd HH:mm:ss");
 
-  // Loader simplificado: apenas partner e datas (sem queries de actions)
-  invariant(params.slug, "Slug do parceiro não fornecido");
-  const partner = await getPartnerBySlug(supabase, params.slug);
-  invariant(partner);
-  return data(
-    {
-      partner,
-      date,
-      startDateFormatted: format(start, "yyyy-MM-dd HH:mm:ss"),
-      endDateFormatted: format(end, "yyyy-MM-dd HH:mm:ss"),
-      skipActions,
-    },
-    {
-      headers: {
-        "Cache-Control": "no-store",
-      },
-    },
-  );
-};
-export default function PartnerPage() {
-  const { partner, date, startDateFormatted, endDateFormatted, skipActions } =
-    useLoaderData<typeof loader>();
   const queryClient = useQueryClient();
-  const { person, partners } = useMatches()[1].loaderData as AppLoaderData;
-
-  // Actions do parceiro — client-side via React Query
   const dateRange = `${startDateFormatted}_${endDateFormatted}`;
   const { data: currentActions = [] } = useQuery({
-    queryKey: QUERY_KEYS.actions.partner(partner.slug, dateRange),
+    queryKey: QUERY_KEYS.actions.partner(partnerSlug, dateRange),
     queryFn: () =>
       fetchPartnerActions(
-        partner.slug,
+        partnerSlug,
         person.user_id,
         person.admin,
         startDateFormatted,
         endDateFormatted,
       ),
-    enabled: !skipActions,
+    enabled: !skipActions && !!partnerSlug,
     initialData: () => {
       // Tenta recuperar do cache da Home e filtrar pelo parceiro
       const cachedHomeActions = queryClient.getQueryData<Action[]>(
         QUERY_KEYS.actions.home(person.user_id),
       );
-      if (cachedHomeActions) {
+      if (cachedHomeActions && partnerSlug) {
         return cachedHomeActions.filter((action) =>
-          action.partners?.includes(partner.slug),
+          action.partners?.includes(partnerSlug),
         );
       }
       return undefined;
@@ -132,25 +115,25 @@ export default function PartnerPage() {
       fetchAllLateActions(
         person.user_id,
         person.admin,
-        partners.map((p) => p.slug),
+        partners.map((p: Partner) => p.slug),
       ),
     select: (allLateActions) =>
       allLateActions.filter((action) =>
-        action.partners?.includes(partner.slug),
+        action.partners?.includes(partnerSlug),
       ),
-    enabled: !skipActions,
+    enabled: !skipActions && !!partnerSlug,
   });
   const context = useOutletContext<OutletContext | undefined>();
   const setBaseAction = context?.setBaseAction;
-  const [currentDay, setCurrentDay] = useState(() => parseISO(date));
+  const [currentDay, setCurrentDay] = useState(() => parseISO(dateParam));
   const [query, setQuery] = useState("");
   const { followPartnerColor, applyPartnerColors, restoreThemeColors } =
     useAppTheme();
 
   // Aplica as cores do parceiro quando a flag está ativa
   useEffect(() => {
-    if (followPartnerColor && partner.colors.length >= 2) {
-      applyPartnerColors(partner.colors[0], partner.colors[1]);
+    if (followPartnerColor && partnerColors.length >= 2) {
+      applyPartnerColors(partnerColors[0], partnerColors[1]);
     } else {
       restoreThemeColors();
     }
@@ -161,7 +144,7 @@ export default function PartnerPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     followPartnerColor,
-    partner.colors,
+    partnerColors,
     restoreThemeColors,
     applyPartnerColors,
   ]);
@@ -191,6 +174,14 @@ export default function PartnerPage() {
   const [view, setView] = useState<"calendar" | "feed">(
     preferences.showInstagramSidebar ? "feed" : "calendar",
   );
+
+  if (!partner) {
+    return (
+      <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+        Parceiro não encontrado ou acesso não autorizado.
+      </div>
+    );
+  }
   return (
     <div className="page-height flex flex-col overflow-hidden">
       {/* Header */}
