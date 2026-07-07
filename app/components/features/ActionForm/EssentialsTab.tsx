@@ -12,7 +12,6 @@ import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "./WorkFileThumbnail";
 import { ArrowRightIcon } from "lucide-react";
-import type { FetcherWithComponents } from "react-router";
 import { Button } from "~/components/ui/button";
 import {
   Sheet,
@@ -39,18 +38,9 @@ interface EssentialsTabProps {
   cloudName: string;
   uploadPreset: string;
   isAIProcessing: boolean;
-  fetcher: FetcherWithComponents<{
-    intent?: string;
-    output?: {
-      racional?: string;
-      hooks?: {
-        tipo: string;
-        texto: string;
-      }[];
-    };
-  }>;
   onDescriptionChange?: (description: string) => void;
   descriptionVersion?: number;
+  triggerAIAction: (intent: string, customPayload?: Record<string, string | string[] | null>) => Promise<unknown>;
 }
 export function EssentialsTab({
   RawAction,
@@ -61,7 +51,7 @@ export function EssentialsTab({
   currentPartners,
   cloudName,
   isAIProcessing,
-  fetcher,
+  triggerAIAction,
   uploadPreset,
   onDescriptionChange,
   descriptionVersion,
@@ -123,30 +113,15 @@ export function EssentialsTab({
   >([]);
   const [racional, setRacional] = useState("");
   const [isCreatingPost, setIsCreatingPost] = useState(false);
-  const lastDataRef = useRef(fetcher.data);
-  if (fetcher.data !== lastDataRef.current) {
-    lastDataRef.current = fetcher.data;
-    if (fetcher.data?.intent === INTENT.ai_hooks && fetcher.data.output) {
-      setRacional(fetcher.data.output.racional ?? "");
-      setHooks(fetcher.data.output.hooks ?? []);
+  const handleTriggerAI = async () => {
+    const res = await triggerAIAction(INTENT.ai_hooks);
+    const data = res as { intent: string; output: { racional?: string; hooks?: { tipo: string; texto: string }[] } } | undefined;
+    if (data?.output) {
+      setRacional(data.output.racional ?? "");
+      setHooks(data.output.hooks ?? []);
       setHooksOpen(true);
-      setIsCreatingPost(false);
     }
-    if (
-      fetcher.data?.intent &&
-      (
-        [
-          INTENT.ai_post,
-          INTENT.ai_carousel,
-          INTENT.ai_stories,
-          INTENT.ai_reels,
-        ] as string[]
-      ).includes(fetcher.data.intent)
-    ) {
-      setHooksOpen(false);
-      setIsCreatingPost(false);
-    }
-  }
+  };
   return (
     <div className="flex h-full flex-col overflow-hidden">
       {/* Título */}
@@ -243,20 +218,7 @@ export function EssentialsTab({
             )}
             <UButtonAI
               disabled={isAIProcessing}
-              onClick={() => {
-                fetcher.submit(
-                  {
-                    intent: INTENT.ai_hooks,
-                    title: RawAction.title,
-                    description: RawAction.description,
-                    partner_context: currentPartners[0].context,
-                  },
-                  {
-                    method: "post",
-                    action: "/action/handle-ai",
-                  },
-                );
-              }}
+              onClick={handleTriggerAI}
             >
               CRIAR COM IA
             </UButtonAI>
@@ -373,12 +335,12 @@ export function EssentialsTab({
                       ),
                     );
                   }}
-                  onSubmit={(data) => {
+                  onSubmit={async (data) => {
+                    const intent = data.intent as string;
                     setIsCreatingPost(true);
-                    fetcher.submit(data, {
-                      method: "post",
-                      action: "/action/handle-ai",
-                    });
+                    await triggerAIAction(intent, data);
+                    setIsCreatingPost(false);
+                    setHooksOpen(false);
                   }}
                   partner_context={currentPartners[0]?.context || ""}
                   racional={racional}

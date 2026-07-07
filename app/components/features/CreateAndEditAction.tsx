@@ -3,7 +3,6 @@ import { IconBrandInstagram } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { ArchiveIcon, HeartIcon, MessageSquareIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useFetcher, useFetchers, } from "react-router";
 import { toast } from "sonner";
 import { ActionFormFooter } from "~/components/features/ActionForm/ActionFormFooter";
 import { EssentialsTab } from "~/components/features/ActionForm/EssentialsTab";
@@ -43,8 +42,6 @@ export function CreateAndEditAction({
 
   const partners = routePartners ?? DEFAULT_PARTNERS;
 
-  const fetcher = useFetcher();
-  const fetchers = useFetchers();
   const { handleAction, isLoading: isMutationLoading } = useActionMutations();
 
   const [RawAction, setRawAction] = useState<Action>(() => {
@@ -142,44 +139,83 @@ export function CreateAndEditAction({
   const [isAIProcessing, setIsAIProcessing] = useState(false);
   const [descriptionVersion, setDescriptionVersion] = useState(0);
 
-  const isPending =
-    isMutationLoading || fetchers.some((f) => f.state === "submitting");
+  const isPending = isMutationLoading || isAIProcessing;
 
-  // Effect for AI Processing indicator
-  useEffect(() => {
-    setIsAIProcessing(
-      fetchers.filter(
-        (f) =>
-          f.formData?.get("intent") === INTENT.ai_caption ||
-          f.formData?.get("intent") === INTENT.ai_hooks ||
-          f.formData?.get("intent") === INTENT.ai_post ||
-          f.formData?.get("intent") === INTENT.ai_carousel ||
-          f.formData?.get("intent") === INTENT.ai_stories ||
-          f.formData?.get("intent") === INTENT.ai_reels,
-      ).length > 0,
-    );
-  }, [fetchers]);
+  const triggerAIAction = async (intent: string, customPayload?: Record<string, string | string[] | null>) => {
+    setIsAIProcessing(true);
+    try {
+      const body = new URLSearchParams();
+      body.append("intent", intent);
+      body.append("title", RawAction.title || "");
+      body.append("description", descriptionRef.current || "");
+      body.append("partner_context", `${currentPartners[0]?.context || ""} — ${RawAction.category || ""}`);
 
-  // Effect for capturing new action ID from create_action fetcher
-  useEffect(() => {
-    fetchers.forEach((f) => {
-      const payload = (f as { json?: { intent?: string } }).json;
-      if (payload && f.data) {
-        const intent = payload.intent;
-
-        if (intent === INTENT.create_action) {
-          const newId = f.data?.id;
-          if (newId) {
-            isCreatingRef.current = false; // release lock after server responds
-            setRawAction((prev) => {
-              if (prev.id === newId) return prev;
-              return { ...prev, id: newId };
-            });
+      if (customPayload) {
+        for (const [key, val] of Object.entries(customPayload)) {
+          if (val !== null && val !== undefined) {
+            body.append(key, String(val));
           }
         }
       }
-    });
-  }, [fetchers]);
+
+      const res = await fetch("/action/handle-ai", {
+        method: "POST",
+        body,
+      });
+      const data = await res.json() as { intent: string; output: unknown };
+
+      if (data?.output) {
+        const captionTail = captionTailRef.current;
+
+        if (intent === INTENT.ai_caption) {
+          const captionText = typeof data.output === "string" ? data.output : (data.output as { caption?: string }).caption;
+          const newCaption = (captionText || "").concat(getCaptionTail(captionTail));
+          setRawAction((prev) => ({
+            ...prev,
+            instagram_caption: newCaption,
+          }));
+          updateAction({ instagram_caption: newCaption });
+        }
+
+        if (
+          [
+            INTENT.ai_post,
+            INTENT.ai_carousel,
+            INTENT.ai_stories,
+            INTENT.ai_reels,
+          ].includes(intent as "ai-post" | "ai-carousel" | "ai-stories" | "ai-reels")
+        ) {
+          const out = data.output as { content?: string; caption?: string };
+          const content = out.content || "";
+          const caption = out.caption || "";
+          const newCaption = (caption || "").concat(getCaptionTail(captionTail));
+
+          const currentDescription = rawActionRef.current.description || "";
+          const newDescription = `${content}<hr />${currentDescription}`;
+
+          setRawAction((prev) => ({
+            ...prev,
+            description: newDescription,
+            instagram_caption: newCaption,
+          }));
+
+          descriptionRef.current = newDescription;
+          setDescriptionVersion((v) => v + 1);
+
+          updateAction({
+            description: newDescription,
+            instagram_caption: newCaption,
+          });
+        }
+      }
+      return data;
+    } catch (err) {
+      console.error("Erro no processamento de IA:", err);
+      toast.error("Falha ao gerar conteúdo com IA.");
+    } finally {
+      setIsAIProcessing(false);
+    }
+  };
 
   const currentPartners = useMemo(() => {
     return RawAction.partners
@@ -258,96 +294,6 @@ export function CreateAndEditAction({
   useEffect(() => {
     captionTailRef.current = currentPartners[0]?.instagram_caption_tail;
   }, [currentPartners]);
-
-  const prevFetcherDataRef = useRef<unknown>(null);
-  if (fetcher.data !== prevFetcherDataRef.current) {
-    prevFetcherDataRef.current = fetcher.data;
-    if (fetcher.data) {
-      const intent = fetcher.data.intent;
-      const captionTail = captionTailRef.current;
-
-      if (intent === INTENT.ai_caption) {
-        const captionText =
-          typeof fetcher.data.output === "string"
-            ? fetcher.data.output
-            : fetcher.data.output.caption;
-
-        const newCaption = (captionText || "").concat(
-          getCaptionTail(captionTail),
-        );
-        setRawAction((prev) => ({
-          ...prev,
-          instagram_caption: newCaption,
-        }));
-      }
-
-      if (
-        [
-          INTENT.ai_post,
-          INTENT.ai_carousel,
-          INTENT.ai_stories,
-          INTENT.ai_reels,
-        ].includes(intent)
-      ) {
-        const { content, caption } = fetcher.data.output;
-        const newCaption = (caption || "").concat(getCaptionTail(captionTail));
-
-        const currentDescription = rawActionRef.current.description || "";
-        const newDescription = `${content}<hr />${currentDescription}`;
-
-        setRawAction((prev) => ({
-          ...prev,
-          description: newDescription,
-          instagram_caption: newCaption,
-        }));
-
-        // Atualiza a ref da descrição para o Tiptap não sobrescrever
-        descriptionRef.current = newDescription;
-
-        // Incrementa a versão para forçar o Tiptap a remontar com o novo conteúdo
-        setDescriptionVersion((v) => v + 1);
-      }
-    }
-  }
-
-  useEffect(() => {
-    if (fetcher.data) {
-      const intent = fetcher.data.intent;
-      const captionTail = captionTailRef.current;
-
-      if (intent === INTENT.ai_caption) {
-        const captionText =
-          typeof fetcher.data.output === "string"
-            ? fetcher.data.output
-            : fetcher.data.output.caption;
-
-        const newCaption = (captionText || "").concat(
-          getCaptionTail(captionTail),
-        );
-        updateAction({ instagram_caption: newCaption });
-      }
-
-      if (
-        [
-          INTENT.ai_post,
-          INTENT.ai_carousel,
-          INTENT.ai_stories,
-          INTENT.ai_reels,
-        ].includes(intent)
-      ) {
-        const { content, caption } = fetcher.data.output;
-        const newCaption = (caption || "").concat(getCaptionTail(captionTail));
-
-        const currentDescription = rawActionRef.current.description || "";
-        const newDescription = `${content}<hr />${currentDescription}`;
-
-        updateAction({
-          description: newDescription,
-          instagram_caption: newCaption,
-        });
-      }
-    }
-  }, [fetcher.data, updateAction]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -451,7 +397,7 @@ export function CreateAndEditAction({
             >
               <EssentialsTab
                 isAIProcessing={isAIProcessing}
-                fetcher={fetcher}
+                triggerAIAction={triggerAIAction}
                 RawAction={RawAction}
                 setRawAction={setRawAction}
                 updateAction={updateAction}
@@ -478,7 +424,7 @@ export function CreateAndEditAction({
                 cloudName={cloudName}
                 uploadPreset={uploadPreset}
                 isAIProcessing={isAIProcessing}
-                fetcher={fetcher}
+                triggerAIAction={triggerAIAction}
               />
             </div>
           )}

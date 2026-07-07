@@ -48,6 +48,14 @@ export function FlowDateFilter({ dateRange, onChange }: FlowDateFilterProps) {
     }
   }, [isOpen, dateRange, now]);
 
+  const isTodaySelected = useMemo(() => {
+    return (
+      dateRange.from &&
+      isSameDay(dateRange.from, now) &&
+      isSameDay(dateRange.to, now)
+    );
+  }, [dateRange, now]);
+
   const isCurrentWeekSelected = useMemo(() => {
     const week = getWeekRange(now);
     return (
@@ -65,6 +73,13 @@ export function FlowDateFilter({ dateRange, onChange }: FlowDateFilterProps) {
       isSameDay(dateRange.to, month.to)
     );
   }, [dateRange, now]);
+
+  const handleQuickSelectToday = () => {
+    const todayRange = { from: now, to: now };
+    onChange(todayRange);
+    setTempRange(todayRange);
+    setIsOpen(false);
+  };
 
   const handleQuickSelectWeek = () => {
     const week = getWeekRange(now);
@@ -100,6 +115,7 @@ export function FlowDateFilter({ dateRange, onChange }: FlowDateFilterProps) {
   };
 
   const displayText = () => {
+    if (isTodaySelected) return "Hoje";
     if (isCurrentWeekSelected) return "Esta semana";
     if (isCurrentMonthSelected) return "Esse mês";
     
@@ -139,6 +155,13 @@ export function FlowDateFilter({ dateRange, onChange }: FlowDateFilterProps) {
         <div className="flex flex-col gap-3">
           {/* Quick select buttons */}
           <div className="flex gap-2">
+            <Button
+              variant={isTodaySelected ? "secondary" : "ghost"}
+              className="flex-1 rounded-lg text-xs h-8"
+              onClick={handleQuickSelectToday}
+            >
+              Hoje
+            </Button>
             <Button
               variant={isCurrentWeekSelected ? "secondary" : "ghost"}
               className="flex-1 rounded-lg text-xs h-8"

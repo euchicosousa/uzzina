@@ -1,1 +1,0 @@
-import{a as e,n as t}from"./jsx-runtime-n5LQ9ujS.js";var n=e(t(),1),r=(0,n.createContext)(null);function i(){let e=(0,n.useContext)(r);if(!e)throw Error(`useDashContext must be used within a DashContextProvider`);return e}export{i as n,r as t};

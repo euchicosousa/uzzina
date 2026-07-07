@@ -1,6 +1,5 @@
-import type { Action } from "~/types";
+import type { Action, Partner } from "~/types";
 import { LoaderIcon } from "lucide-react";
-import type { FetcherWithComponents } from "react-router";
 import {
   ContentFilesManager,
   InstagramPreview,
@@ -22,7 +21,7 @@ interface InstagramTabProps {
   cloudName: string;
   uploadPreset: string;
   isAIProcessing: boolean;
-  fetcher: FetcherWithComponents<unknown>;
+  triggerAIAction: (intent: string, customPayload?: Record<string, string | string[] | null>) => Promise<unknown>;
 }
 
 function getCaptionTail(instagram_caption_tail: string | null) {
@@ -52,7 +51,7 @@ export function InstagramTab({
   cloudName,
   uploadPreset,
   isAIProcessing,
-  fetcher,
+  triggerAIAction,
 }: InstagramTabProps) {
   return (
     <div className="flex h-full flex-col overflow-y-auto md:flex-row">
@@ -83,20 +82,7 @@ export function InstagramTab({
           </div>
           <UButtonAI
             disabled={isAIProcessing}
-            onClick={() => {
-              fetcher.submit(
-                {
-                  intent: INTENT.ai_caption,
-                  title: RawAction.title,
-                  description: RawAction.description,
-                  partner_context: `${currentPartners[0].context} — ${RawAction.category}`,
-                },
-                {
-                  method: "post",
-                  action: "/action/handle-ai",
-                },
-              );
-            }}
+            onClick={() => triggerAIAction(INTENT.ai_caption)}
           >
             GERAR LEGENDA
           </UButtonAI>

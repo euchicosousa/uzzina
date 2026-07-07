@@ -14,7 +14,7 @@ import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
 import { cn } from "~/lib/utils";
 import { ChevronUpIcon } from "lucide-react";
 const CreateAndEditAction = lazy(() =>
-  import("./-CreateAndEditAction").then((module) => ({
+  import("~/components/features/CreateAndEditAction").then((module) => ({
     default: module.CreateAndEditAction,
   })),
 );
