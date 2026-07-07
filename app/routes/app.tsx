@@ -1,10 +1,6 @@
 import type { Partner } from "~/types";
 import { lazy, Suspense, useEffect, useState } from "react";
-import {
-  Outlet,
-  useLoaderData,
-  type MetaFunction,
-} from "react-router";
+import { Outlet, useLocation, createFileRoute } from "@tanstack/react-router";
 import invariant from "tiny-invariant";
 import { Header } from "~/components/layout/Header";
 import { AppBar } from "~/components/layout/AppBar";
@@ -16,43 +12,23 @@ import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
 import { ActionShortcutProvider } from "~/hooks/useActionShortcut";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
 import { cn } from "~/lib/utils";
-import { useLocation } from "react-router";
 import { ChevronUpIcon } from "lucide-react";
 const CreateAndEditAction = lazy(() =>
-  import("./CreateAndEditAction").then((module) => ({
+  import("./-CreateAndEditAction").then((module) => ({
     default: module.CreateAndEditAction,
   })),
 );
 
-export type AppLoaderData = {
-  cloudName: string;
-  uploadPreset: string;
-};
-
 import { AppContext } from "~/contexts/AppContext";
 
-export const loader = async () => {
-  return {
-    cloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
-    uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || "",
-  } as AppLoaderData;
-};
+export const Route = createFileRoute("/app")({
+  component: Dashboard,
+});
 
-export const meta: MetaFunction = () => {
-  return [
-    {
-      title: "ᴜᴢᴢɪɴa - Domine, Crie e Conquiste.",
-    },
-    {
-      name: "description",
-      content:
-        "Aplicativo de Gestão de Projetos Criado e Mantido pela Agência CNVT®. ",
-    },
-  ];
-};
+const cloudName = (import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string) || "dvfpxjskm";
+const uploadPreset = (import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET as string) || "bussola_unsigned";
 
-export default function Dashboard() {
-  const { cloudName, uploadPreset } = useLoaderData<typeof loader>();
+function Dashboard() {
   const [person, setPerson] = useState<Person | null>(null);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
@@ -161,7 +137,7 @@ export default function Dashboard() {
   }
 
   return (
-    <AppContext.Provider value={{ person, partners, cloudName, uploadPreset }}>
+    <AppContext.Provider value={{ person, partners, cloudName, uploadPreset, setBaseAction, partnerFilters, setPartnerFilters }}>
       <div className="flex h-screen flex-col" id="app">
         <ActionShortcutProvider>
           <MultiSelectionProvider>
@@ -176,14 +152,7 @@ export default function Dashboard() {
               <div className="grow overflow-x-hidden overflow-y-auto">
                 <div className="flex min-h-full grow flex-col">
                   <div className="flex min-h-full w-full shrink flex-col">
-                    <Outlet
-                      context={{
-                        BaseAction,
-                        setBaseAction,
-                        partnerFilters,
-                        setPartnerFilters,
-                      }}
-                    />
+                    <Outlet />
                   </div>
                 </div>
               </div>

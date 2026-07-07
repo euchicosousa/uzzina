@@ -9,7 +9,7 @@ import {
   SearchIcon,
   X as XIcon,
 } from "lucide-react";
-import { Link, useLocation, useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams, useLocation } from "@tanstack/react-router";
 import { BulkActionMenu } from "~/components/features/BulkActionMenu";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { SIZE } from "~/lib/CONSTANTS";
@@ -46,7 +46,7 @@ export function AppBar({
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const params = useParams();
+  const params = useParams({ strict: false }) as Record<string, string | undefined>;
   const { isSelectionMode, toggleSelectionMode, clearSelection } =
     useMultiSelection();
   const isAtHome = location.pathname === "/app";
@@ -130,7 +130,7 @@ export function AppBar({
                       key={partner.id}
                       className="group flex cursor-pointer items-center justify-between gap-2"
                       onSelect={() => {
-                        navigate(`/app/partner/${partner.slug}`);
+                        navigate({ to: "/app/partner/$slug", params: { slug: partner.slug } });
                       }}
                     >
                       <div className="flex items-center gap-2 overflow-hidden">

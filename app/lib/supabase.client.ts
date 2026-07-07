@@ -1,19 +1,11 @@
-import { createBrowserClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import type { Database } from "types/database";
 
 /**
- * Client Supabase para uso no browser (client-side).
- *
- * Responsabilidade principal: manter a sessão viva automaticamente.
- * O @supabase/ssr no browser detecta quando o access token está prestes a
- * expirar e faz o refresh automaticamente, atualizando os cookies — de modo
- * que o servidor nunca precise fazer refresh por conta própria.
- *
- * Deve ser inicializado UMA VEZ no layout raiz via useEffect.
+ * Client Supabase para uso no browser (client-side) usando a biblioteca padrão.
  */
 export function createSupabaseBrowserClient() {
-  return createBrowserClient<Database>(
-    window.__env.SUPABASE_URL,
-    window.__env.SUPABASE_PUBLISHABLE_KEY,
-  );
+  const url = import.meta.env.VITE_SUPABASE_URL as string;
+  const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+  return createClient<Database>(url, key);
 }

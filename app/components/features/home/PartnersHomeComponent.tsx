@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Link } from "react-router";
+import { Link } from "@tanstack/react-router";
 import { getShortText, UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { useAppContext } from "~/contexts/AppContext";
@@ -56,7 +56,8 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
               backgroundColor: partner.colors[0],
               color: partner.colors[1],
             }}
-            to={`/app/partner/${partner.slug}`}
+            to="/app/partner/$slug"
+            params={{ slug: partner.slug }}
           >
             <div className="relative group-hover/partner:opacity-50 transition duration-500 group-hover/partner:scale-80">
               {getShortText(partner.short)}

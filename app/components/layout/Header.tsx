@@ -2,14 +2,10 @@ import type { Notification } from "~/types";
 import { CheckIcon, BellIcon } from "lucide-react";
 import {
   Link,
-  useFetcher,
-  useFetchers,
-  useNavigation,
   useLocation,
   useParams,
-  useSearchParams,
-  useMatches,
-} from "react-router";
+  useNavigate,
+} from "@tanstack/react-router";
 import { useAppContext } from "~/contexts/AppContext";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -26,7 +22,7 @@ import {
 import { toast } from "sonner";
 import { useNotifications } from "~/hooks/useNotifications";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-import { Theme, useTheme } from "remix-themes";
+import { useTheme, Theme } from "~/components/theme-provider";
 import { useAppTheme } from "~/hooks/useAppTheme";
 import { PALLETE, SIZE } from "~/lib/CONSTANTS";
 import { getThemeIcon } from "~/lib/helpers";
@@ -68,9 +64,9 @@ export function Header({
   const { notifications, unreadCount, markAsRead, markAllAsRead } =
     useNotifications();
   const location = useLocation();
-  const params = useParams();
-  const [searchParams] = useSearchParams();
-  const _matches = useMatches();
+  const params = useParams({ strict: false });
+  const _navigate = useNavigate();
+  const searchParams = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
 
   const isHome = location.pathname === "/app";
   const isPartner = location.pathname.startsWith("/app/partner/");
@@ -110,7 +106,7 @@ export function Header({
   });
 
   // 2. Queries for Partner page actions
-  const slug = params.slug;
+  const slug = (params as Record<string, string | undefined>).slug;
   let partnerDate = searchParams.get("date");
   if (!partnerDate) {
     partnerDate = format(new Date().setDate(15), "yyyy-MM-dd");
@@ -316,11 +312,6 @@ const HeaderMenu = ({ person }: { person: Person }) => {
     followPartnerColor,
     setFollowPartnerColor,
   } = useAppTheme();
-  const fetchers = useFetchers();
-  const navigation = useNavigation();
-  const isLoading = fetchers.length > 0 || navigation.state !== "idle";
-  const fetcher = useFetcher();
-
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const pendingPrefsRef = useRef<Record<string, string>>({});
 
@@ -332,10 +323,8 @@ const HeaderMenu = ({ person }: { person: Person }) => {
     }
 
     debounceTimerRef.current = setTimeout(() => {
-      fetcher.submit(pendingPrefsRef.current, {
-        method: "post",
-        action: "/action/set-preferences",
-      });
+      const body = new URLSearchParams(pendingPrefsRef.current);
+      fetch("/action/set-preferences", { method: "post", body });
       pendingPrefsRef.current = {};
     }, 300);
   };
@@ -359,9 +348,6 @@ const HeaderMenu = ({ person }: { person: Person }) => {
       <DropdownMenu>
       {/* Perfil */}
       <DropdownMenuTrigger className="relative outline-none" aria-label="Menu do perfil do usuário">
-        {isLoading && (
-          <div className="absolute top-0 left-0 size-11 -translate-1.5 animate-spin rounded-full border-4 border-primary border-b-transparent"></div>
-        )}
         <UAvatar size={SIZE.md} fallback={person.short} image={person.image} />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mx-2 bg-popover/20 backdrop-blur-lg">
@@ -446,21 +432,21 @@ const HeaderMenu = ({ person }: { person: Person }) => {
               <Link to="/app/admin/partners">Parceiros</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/app/admin/partner/new">Novo Parceiro</Link>
+              <Link to="/app/admin/partner/$slug" params={{ slug: "new" }}>Novo Parceiro</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link to="/app/admin/users">Usuários</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/app/admin/user/new">Novo Usuário</Link>
+              <Link to="/app/admin/user/$userId" params={{ userId: "new" }}>Novo Usuário</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link to="/app/admin/clients">Clientes</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/app/admin/clients/new">Novo Cliente</Link>
+              <Link to="/app/admin/clients/$userId" params={{ userId: "new" }}>Novo Cliente</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

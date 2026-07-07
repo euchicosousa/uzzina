@@ -1,58 +1,44 @@
 import { CircleAlertIcon, EyeIcon, EyeOffIcon, LogInIcon } from "lucide-react";
 import { useState } from "react";
-import {
-  Link,
-  redirect,
-  useActionData,
-  type ActionFunctionArgs,
-  type MetaFunction,
-} from "react-router";
+import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import { UzzinaLogo } from "~/components/logo";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { createSupabaseClient } from "~/lib/supabase";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 
-// export const config = { runtime: "edge" };
+export const Route = createFileRoute("/login")({
+  component: Login,
+});
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData();
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const { supabase, headers } = await createSupabaseClient(request);
-  const {
-    data: { user },
-  } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-  if (user) {
-    return redirect("/app", {
-      headers,
-    });
-  } else {
-    return {
-      errors: {
-        email: "Verifique o email ou a senha usada.",
-      },
-    };
-  }
-};
-export const meta: MetaFunction = () => {
-  return [
-    {
-      title: "UZZINA",
-    },
-    {
-      name: "description",
-      content:
-        "Aplicativo de Gestão de Projetos Criado e Mantido pela Agência CNVT®. ",
-    },
-  ];
-};
-const Login = () => {
-  const actionData = useActionData<typeof action>();
+function Login() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const supabase = createSupabaseBrowserClient();
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (signInError) throw signInError;
+      navigate({ to: "/app" });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Verifique o email ou a senha usada.";
+      setError(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="grid h-screen grid-cols-[2rem_20rem_2rem] justify-center overflow-x-hidden md:grid-cols-[2rem_30rem_2rem]">
       <div className="border-r"></div>
@@ -61,21 +47,28 @@ const Login = () => {
         <div className="mb-12">
           <UzzinaLogo className="h-12" />
         </div>
-        {actionData && (
+        {error && (
           <Alert
             className="mb-8 border-destructive/10 bg-destructive/5"
             variant={"destructive"}
           >
             <CircleAlertIcon />
             <AlertTitle>Erro ao fazer login</AlertTitle>
-            <AlertDescription>{actionData.errors.email}</AlertDescription>
+            <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
 
-        <form method="post">
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <span className="mb-2 block w-full font-medium">E-mail</span>
-            <Input variant="inset" name="email" type="email" />
+            <Input
+              variant="inset"
+              name="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
 
           <div className="relative mb-4">
@@ -93,6 +86,9 @@ const Login = () => {
               className="pr-12"
               name="password"
               type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
             <Button
               className="absolute top-8 right-0"
@@ -102,14 +98,16 @@ const Login = () => {
               }}
               size={"icon"}
               variant={"ghost"}
+              type="button"
             >
               {showPassword ? <EyeIcon /> : <EyeOffIcon />}
             </Button>
           </div>
 
           <div className="flex justify-end">
-            <Button type="submit">
-              Fazer Login <LogInIcon className="ml-2 size-3" />
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Entrando..." : "Fazer Login"}{" "}
+              <LogInIcon className="ml-2 size-3" />
             </Button>
           </div>
         </form>
@@ -118,5 +116,6 @@ const Login = () => {
       <div className="border-l"></div>
     </div>
   );
-};
+}
+
 export default Login;

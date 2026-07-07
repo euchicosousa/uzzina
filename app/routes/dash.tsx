@@ -1,10 +1,5 @@
 import type { Partner, Client } from "~/types";
-import {
-  Outlet,
-  useSearchParams,
-  useNavigate,
-  type MetaFunction,
-} from "react-router";
+import { Outlet, useNavigate, createFileRoute } from "@tanstack/react-router";
 import { LogOutIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
@@ -21,23 +16,25 @@ import {
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { getClientById } from "~/models/clients";
 import { DashContext } from "~/contexts/DashContext";
+import { z } from "zod";
 
-import { useLoaderData } from "react-router";
+const dashSearchSchema = z.object({
+  partner: z.string().optional(),
+  sidebar: z.string().optional(),
+});
 
-export const meta: MetaFunction = () => [{ title: "Portal do Cliente" }];
+export const Route = createFileRoute("/dash")({
+  validateSearch: dashSearchSchema,
+  component: DashLayout,
+});
 
-export const loader = async () => {
-  return {
-    cloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
-    uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || "",
-  };
-};
+const cloudName = (import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string) || "dvfpxjskm";
+const uploadPreset = (import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET as string) || "bussola_unsigned";
 
-export default function DashLayout() {
-  const { cloudName, uploadPreset } = useLoaderData<typeof loader>();
-  const navigate = useNavigate();
-  const [params] = useSearchParams();
+function DashLayout() {
+  const navigate = useNavigate({ from: "/dash" });
   const supabase = createSupabaseBrowserClient();
+  const searchParams = Route.useSearch();
   
   const [clientId, setClientId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,7 +48,7 @@ export default function DashLayout() {
 
     if (!storedId) {
       if (!isLoginPath) {
-        navigate("/dash/login");
+        navigate({ to: "/dash/login" });
       }
       setLoading(false);
       return;
@@ -61,22 +58,28 @@ export default function DashLayout() {
 
     async function bootstrapClient() {
       try {
-        const client = await getClientById(supabase, storedId || "");
-        if (!client?.active) {
+        const data = await getClientById(supabase, storedId || "");
+        if (!data) {
           localStorage.removeItem("uzzina_dash_client_id");
-          navigate("/dash/login");
-          setLoading(false);
+          if (!isLoginPath) {
+            navigate({ to: "/dash/login" });
+          }
           return;
         }
 
-        const { data: partnersData } = await supabase
-          .from("partners")
-          .select("id, slug, title, short, colors")
-          .in("slug", client.partners || [])
-          .order("title");
+        setClientData(data);
 
-        setClientData(client);
-        setPartners((partnersData as Partner[]) || []);
+        // Busca parceiros do cliente
+        if (data.partners && data.partners.length > 0) {
+          const { data: partnersData, error } = await supabase
+            .from("partners")
+            .select("*")
+            .in("slug", data.partners)
+            .order("title", { ascending: true });
+
+          if (error) throw error;
+          setPartners(partnersData as Partner[]);
+        }
       } catch (err) {
         console.error("Erro ao carregar dados do cliente:", err);
       } finally {
@@ -85,10 +88,9 @@ export default function DashLayout() {
     }
 
     bootstrapClient();
-  }, [navigate, supabase
-          .from, supabase]);
+  }, [navigate, supabase]);
 
-  const currentPartnerSlug = params.get("partner") || localStorage.getItem("uzzina_dash_last_partner") || partners[0]?.slug;
+  const currentPartnerSlug = searchParams.partner || localStorage.getItem("uzzina_dash_last_partner") || partners[0]?.slug;
   const currentPartner =
     partners.find((p) => p.slug === currentPartnerSlug) || partners[0];
 
@@ -106,12 +108,17 @@ export default function DashLayout() {
   const handleLogout = () => {
     localStorage.removeItem("uzzina_dash_client_id");
     localStorage.removeItem("uzzina_dash_last_partner");
-    navigate("/dash/login");
+    navigate({ to: "/dash/login" });
   };
 
   const handlePartnerChange = (val: string) => {
     localStorage.setItem("uzzina_dash_last_partner", val);
-    navigate(`/dash?partner=${val}`);
+    navigate({
+      search: (old) => ({
+        ...old,
+        partner: val,
+      }),
+    });
   };
 
   const isLoginPath = typeof window !== "undefined" && window.location.pathname.startsWith("/dash/login");
@@ -128,7 +135,7 @@ export default function DashLayout() {
   }
 
   if (isLoginPath) {
-    return <Outlet context={{ setBaseAction: () => {} }} />;
+    return <Outlet />;
   }
 
   if (!clientData) {
@@ -182,7 +189,7 @@ export default function DashLayout() {
         </header>
         <div className="flex min-h-0 flex-1">
           <MultiSelectionProvider>
-            <Outlet context={{ setBaseAction: () => {} }} />
+            <Outlet />
           </MultiSelectionProvider>
         </div>
       </div>

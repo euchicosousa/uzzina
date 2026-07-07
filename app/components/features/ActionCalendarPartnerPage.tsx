@@ -9,7 +9,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchCelebrations } from "~/lib/supabase.queries";
-import { useOutletContext, useParams } from "react-router";
+import { useParams } from "@tanstack/react-router";
 import invariant from "tiny-invariant";
 import { CalendarWithDnd } from "~/components/features/CalendarWithDnd";
 import { getCleanAction } from "~/lib/helpers";
@@ -31,7 +31,10 @@ export function ActionCalendarPartnerPage({
     end: endOfWeek(endOfMonth(currentDay)),
   });
 
-  const { person, partners } = useAppContext();
+  const { person, partners, setBaseAction } = useAppContext();
+  const params = useParams({ strict: false }) as Record<string, string | undefined>;
+  const partnerSlug = params.slug;
+  invariant(partnerSlug);
 
   const { data: celebrations = [] } = useQuery({
     queryKey: QUERY_KEYS.celebrations(),
@@ -39,16 +42,8 @@ export function ActionCalendarPartnerPage({
     staleTime: 30 * 60 * 1000,
   });
 
-  const params = useParams();
-  const partnerSlug = params.slug;
-  invariant(partnerSlug);
-
-  const { setBaseAction } = useOutletContext<{
-    setBaseAction: (action: Action | null) => void;
-  }>();
-
   const responsibles = partners.filter((p) => p.slug === partnerSlug)[0]
-    .users_ids;
+    ?.users_ids ?? [];
 
   return (
     <CalendarWithDnd

@@ -1,7 +1,7 @@
 import type { Action } from "~/types";
 import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
-import { useOutletContext, } from "react-router";
+
 import {
   CATEGORIES,
   type ORDER_BY,
@@ -65,10 +65,7 @@ function CategoryColumn({
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending?: boolean;
 }) {
-  const { person } = useAppContext();
-  const { setBaseAction } = useOutletContext<{
-    setBaseAction: (action: Action) => void;
-  }>();
+  const { person, setBaseAction } = useAppContext();
 
   return (
     <div className="group/column flex flex-col overflow-hidden">

@@ -1,7 +1,7 @@
 import type { Action, Partner } from "~/types";
 import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
-import { Link, useOutletContext } from "react-router";
+import { Link } from "@tanstack/react-router";
 import { DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
 import { getCleanAction } from "~/lib/helpers";
 import { useAppContext } from "~/contexts/AppContext";
@@ -60,15 +60,15 @@ function PartnerColumn({
   partner: Partner;
   actions: Action[];
 }) {
-  const { person } = useAppContext();
-  const { setBaseAction } = useOutletContext<OutletContext>();
+  const { person, setBaseAction } = useAppContext();
 
   return (
     <div className="group/column flex flex-col overflow-hidden">
       {/* Header do parceiro */}
       <div className="flex items-center justify-between gap-4 overflow-hidden p-2 pb-4">
         <Link
-          to={`/app/partner/${partner.slug}`}
+          to="/app/partner/$slug"
+          params={{ slug: partner.slug }}
           className="group flex items-center gap-2 overflow-hidden"
         >
           <UAvatarGroup

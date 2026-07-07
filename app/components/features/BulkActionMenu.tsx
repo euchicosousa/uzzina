@@ -12,7 +12,7 @@ import {
   XIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { useParams } from "react-router";
+import { useParams } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { PartnerColorPicker } from "~/components/features/ActionForm/PartnerColorPicker";
 import { Button } from "~/components/ui/button";
@@ -66,7 +66,7 @@ export function BulkActionMenu() {
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });
-  const params = useParams();
+  const params = useParams({ strict: false }) as Record<string, string | undefined>;
 
   // ─── Parceiro da página atual ────────────────────────────────────────────────
   // Usa params.slug igual ao Header.tsx — undefined quando não há slug ou é "new"

@@ -1,6 +1,6 @@
 import { CalendarDaysIcon, SignalIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { useOutletContext, } from "react-router";
+
 import { useAppContext } from "~/contexts/AppContext";
 import type { Action, Partner, Person } from "~/types";
 
@@ -88,12 +88,7 @@ type ActionItemProps = {
   lines?: 1 | 2;
 };
 
-/**
- * Interface representing the context structure returned by React Router's useOutletContext.
- */
-interface OutletContext {
-  setBaseAction: (action: Action) => void;
-}
+
 
 /**
  * ActionItem Component
@@ -147,8 +142,7 @@ export function ActionItem({
     setEditingId(value ? action.id : null);
     setIsEditing(value);
   };
-  const context = useOutletContext<OutletContext | undefined>();
-  const setBaseAction = context?.setBaseAction;
+  const { setBaseAction } = useAppContext();
   const currentPhase = useMemo(
     () => PHASES[(action.phase as PHASE) || "idea"],
     [action.phase],

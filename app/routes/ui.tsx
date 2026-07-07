@@ -1,5 +1,5 @@
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
-import { Theme, useTheme } from "remix-themes";
+import { useTheme, Theme } from "~/components/theme-provider";
 import { PhaseIcon } from "~/components/features/PhaseIcon";
 import { Button } from "~/components/ui/button";
 import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";

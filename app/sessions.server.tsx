@@ -4,9 +4,9 @@ import { createThemeSessionResolver } from "remix-themes";
 // You can default to 'development' if process.env.NODE_ENV is not set
 // const isProduction = process.env.NODE_ENV === "production";
 
-const sessionSecret = process.env.SESSION_SECRET;
+const sessionSecret = process.env.VITE_SESSION_SECRET;
 if (!sessionSecret) {
-  throw new Error("SESSION_SECRET variable de ambiente é necessária!");
+  throw new Error("VITE_SESSION_SECRET variable de ambiente é necessária!");
 }
 
 const sessionStorage = createCookieSessionStorage({

@@ -1,6 +1,6 @@
 import type { Action } from "~/types";
 import { useState, useEffect } from "react";
-import { useNavigate, useFetcher, useLocation } from "react-router";
+import { useNavigate, useLocation } from "@tanstack/react-router";
 import { ArchiveIcon } from "lucide-react";
 import {
   Command,
@@ -38,7 +38,8 @@ export function GlobalSearchCommand({
   setBaseAction,
 }: GlobalSearchCommandProps) {
   const navigate = useNavigate();
-  const fetcher = useFetcher<{ actions: Action[] }>();
+  const [searchResults, setSearchResults] = useState<{ actions: Action[] } | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
   const [query, setQuery] = useState("");
   const [includeArchived, setIncludeArchived] = useState(false);
   const location = useLocation();
@@ -51,14 +52,11 @@ export function GlobalSearchCommand({
 
   // Debounce the search query to avoid spamming the database on every keystroke
   useEffect(() => {
-    // Check if the query has the 'p:' modifier or is just text
     const hasModifier = query.includes("p:");
-    // If it has 'p:', we still need at least 3 characters total (like 'p:a' or 'a p:a') to search
-    // Otherwise standard 3 chars rule
     const shouldSearch = hasModifier ? query.length >= 3 : query.length >= 3;
 
     if (shouldSearch) {
-      const delayDebounceFn = setTimeout(() => {
+      const delayDebounceFn = setTimeout(async () => {
         const searchUrl = new URLSearchParams({ q: query });
         if (activePartnerSlug) {
           searchUrl.append("partner", activePartnerSlug);
@@ -66,12 +64,16 @@ export function GlobalSearchCommand({
         if (includeArchived) {
           searchUrl.append("archived", "true");
         }
-        fetcher.load(`/api/search?${searchUrl.toString()}`);
-      }, 500); // 500ms debounce
+        setIsSearching(true);
+        const res = await fetch(`/api/search?${searchUrl.toString()}`);
+        const json = await res.json() as { actions: Action[] };
+        setSearchResults(json);
+        setIsSearching(false);
+      }, 500);
 
       return () => clearTimeout(delayDebounceFn);
     }
-  }, [query, activePartnerSlug, includeArchived, fetcher.load]);
+  }, [query, activePartnerSlug, includeArchived]);
 
   const filteredPartners =
     query.trim() === ""
@@ -82,10 +84,9 @@ export function GlobalSearchCommand({
             p.slug.toLowerCase().includes(query.toLowerCase()),
         );
 
-  const searchedActions = fetcher.data?.actions || [];
+  const searchedActions = searchResults?.actions || [];
   const hasModifier = query.includes("p:");
   const shouldSearch = hasModifier ? query.length >= 3 : query.length >= 3;
-  const isSearching = fetcher.state === "loading" && shouldSearch;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -115,7 +116,7 @@ export function GlobalSearchCommand({
                     key={partner.id}
                     value={`partner-${partner.slug}`}
                     onSelect={() => {
-                      navigate(`/app/partner/${partner.slug}`);
+                      navigate({ to: "/app/partner/$slug", params: { slug: partner.slug } });
                       onOpenChange(false);
                       setQuery("");
                     }}

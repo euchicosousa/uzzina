@@ -1,48 +1,48 @@
 import { CircleAlertIcon, ArrowLeftIcon, MailCheckIcon } from "lucide-react";
-import {
-  Link,
-  data,
-  useActionData,
-  type ActionFunctionArgs,
-  type MetaFunction,
-} from "react-router";
+import { useState } from "react";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { UzzinaLogo } from "~/components/logo";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { createSupabaseClient } from "~/lib/supabase";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData();
-  const email = formData.get("email") as string;
-
-  if (!email?.trim()) {
-    return data({ error: "Por favor, digite um e-mail válido.", success: false });
-  }
-
-  const { supabase, headers } = await createSupabaseClient(request);
-  const redirectTo = `${new URL(request.url).origin}/reset-password`;
-
-  const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-    redirectTo,
-  });
-
-  if (error) {
-    return data(
-      { error: error.message || "Erro ao solicitar recuperação de senha.", success: false },
-      { headers }
-    );
-  }
-
-  return data({ error: null, success: true }, { headers });
-};
-
-export const meta: MetaFunction = () => {
-  return [{ title: "Recuperar Senha - UZZINA" }];
-};
+export const Route = createFileRoute("/forgot-password")({
+  component: ForgotPassword,
+});
 
 export default function ForgotPassword() {
-  const actionData = useActionData<typeof action>();
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!email.trim()) {
+      setError("Por favor, digite um e-mail válido.");
+      return;
+    }
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const supabase = createSupabaseBrowserClient();
+      const redirectTo = `${window.location.origin}/reset-password`;
+
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo,
+      });
+
+      if (resetError) throw resetError;
+      setSuccess(true);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erro ao solicitar recuperação de senha.";
+      setError(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="grid h-screen grid-cols-[2rem_20rem_2rem] justify-center overflow-x-hidden md:grid-cols-[2rem_30rem_2rem]">
@@ -60,18 +60,18 @@ export default function ForgotPassword() {
           </Link>
         </div>
 
-        {actionData?.error && (
+        {error && (
           <Alert
             variant="destructive"
             className="mb-8 border-destructive/10 bg-destructive/5"
           >
             <CircleAlertIcon className="size-4" />
             <AlertTitle>Erro ao solicitar</AlertTitle>
-            <AlertDescription>{actionData.error}</AlertDescription>
+            <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
 
-        {actionData?.success ? (
+        {success ? (
           <div className="flex flex-col items-center justify-center py-6 text-center">
             <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
               <MailCheckIcon className="size-6" />
@@ -84,7 +84,7 @@ export default function ForgotPassword() {
             </p>
           </div>
         ) : (
-          <form method="post" className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <h2 className="text-xl font-semibold mb-2">Recuperar Senha</h2>
               <p className="text-xs text-muted-foreground mb-6">
@@ -98,14 +98,16 @@ export default function ForgotPassword() {
                 variant="inset"
                 type="email"
                 name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="seu-email@dominio.com"
               />
             </div>
 
             <div className="flex justify-end pt-2">
-              <Button type="submit" className="w-full">
-                Enviar E-mail de Recuperação
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? "Enviando..." : "Enviar E-mail de Recuperação"}
               </Button>
             </div>
           </form>

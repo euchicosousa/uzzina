@@ -1,6 +1,6 @@
 import { CircleAlertIcon, EyeIcon, EyeOffIcon, KeyRoundIcon } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, type MetaFunction } from "react-router";
+import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { UzzinaLogo } from "~/components/logo";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
@@ -8,9 +8,9 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 
-export const meta: MetaFunction = () => {
-  return [{ title: "Redefinir Senha - UZZINA" }];
-};
+export const Route = createFileRoute("/reset-password")({
+  component: ResetPassword,
+});
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -120,7 +120,7 @@ export default function ResetPassword() {
 
       toast.success("Senha atualizada com sucesso!");
       // Após atualizar a senha com sucesso, redireciona o usuário logado para a dashboard
-      navigate("/app", { replace: true });
+      navigate({ to: "/app", replace: true });
     } catch (err) {
       const message =
         err instanceof Error
