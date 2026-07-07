@@ -43,9 +43,13 @@ export function ResponsiblesCombobox({
     staleTime: 30 * 60 * 1000,
   });
 
-  const [selected, setSelected] = useState<string[]>(
-    selectedResponsibles || [],
+  const [selected, setSelected] = useState<string[]>(() =>
+    Array.from(new Set(selectedResponsibles || [])),
   );
+
+  useEffect(() => {
+    setSelected(Array.from(new Set(selectedResponsibles || [])));
+  }, [selectedResponsibles]);
   
   const currentResponsibles = selected
     .map((slug) => allPeople.find((person) => person.user_id === slug))
@@ -159,7 +163,7 @@ function ActionResponsiblesDisplay({
     staleTime: 30 * 60 * 1000,
   });
 
-  const responsibles = responsibles_
+  const responsibles = Array.from(new Set(responsibles_))
     .map((r) => people.find((p) => p.user_id === r))
     .filter((p) => p !== undefined);
 
