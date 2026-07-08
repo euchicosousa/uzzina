@@ -106,7 +106,7 @@ function SinglePhaseTrigger({
       {!showText ? (
         <PhaseIcon
           phase={currentPhase as PHASE_TYPE}
-          size="sm"
+          size="md"
           variant={iconVariant}
         />
       ) : (

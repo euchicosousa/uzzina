@@ -152,7 +152,7 @@ export function CategoriesCombobox({
             variant="form-inline"
           >
             <Icons
-              className={!showText ? "size-4" : size === "sm" ? "size-4" : "size-5"}
+              className={!showText ? "size-5" : size === "sm" ? "size-4" : "size-5"}
               color={currentCategories[0].color}
               slug={currentCategories[0].slug}
             />
