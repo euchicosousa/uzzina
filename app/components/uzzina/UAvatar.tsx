@@ -45,9 +45,9 @@ export function UAvatarGroup({
     >
       {avatars.slice(0, effectiveClampAt).map((avatar, index) => (
         <UAvatar
+          {...avatar}
           // biome-ignore lint/suspicious/noArrayIndexKey: index is required to guarantee uniqueness when duplicate avatars are mapped
           key={`${avatar.id || avatar.fallback}-${index}`}
-          {...avatar}
           size={size}
         />
       ))}

@@ -11,10 +11,6 @@ import {
   UploadIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-export const Route = createFileRoute("/app/profile")({
-  component: ProfilePage,
-});
 import { toast } from "sonner";
 import { Theme, useTheme } from "~/components/theme-provider";
 import { Button } from "~/components/ui/button";
@@ -28,6 +24,7 @@ import { useAppContext } from "~/contexts/AppContext";
 import { useAppTheme } from "~/hooks/useAppTheme";
 import { PALLETE } from "~/lib/CONSTANTS";
 import { getUserPreferences } from "~/lib/preferences";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { cn } from "~/lib/utils";
 import {
   deriveAccentFg,
@@ -35,8 +32,11 @@ import {
   deriveDarkBg,
   deriveDarkFg,
 } from "~/utils/color";
+export const Route = createFileRoute("/app/profile")({
+  component: ProfilePage,
+});
 export const runtime = "edge";
-export default function ProfilePage() {
+export function ProfilePage() {
   const { person, cloudName, uploadPreset } = useAppContext();
   const preferences = getUserPreferences(person);
   const [theme, setTheme] = useTheme();

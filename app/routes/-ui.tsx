@@ -6,18 +6,8 @@ import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { CATEGORIES, SIZE, PHASES } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
-
-export const meta = () => {
-  return [
-    {
-      title: "UI UZZINA",
-    },
-  ];
-};
-
 export default function UITestingPage() {
   const [theme, setTheme] = useTheme();
-
   return (
     <div className="container mx-auto px-8">
       {/* Header */}
@@ -59,7 +49,7 @@ export default function UITestingPage() {
       </div>
 
       {/* Headings */}
-      <div id="headings" className="border_after py-8">
+      <div className="border_after py-8" id="headings">
         <div className="">
           <h2>Headings</h2>
         </div>
@@ -72,7 +62,7 @@ export default function UITestingPage() {
         </div>
       </div>
       {/* Cores */}
-      <div id="colors" className="border_after py-8">
+      <div className="border_after py-8" id="colors">
         <h2>Colors</h2>
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {[
@@ -120,7 +110,7 @@ export default function UITestingPage() {
         </div>
       </div>
       {/* Badges */}
-      <div id="badges" className="border_after py-8">
+      <div className="border_after py-8" id="badges">
         <div>
           <h2>Badges</h2>
         </div>
@@ -133,44 +123,44 @@ export default function UITestingPage() {
           </div>
           <div className="flex flex-wrap items-center gap-4">
             <h5 className="w-full">Badge dinâmico</h5>
-            <UBadge size={SIZE.sm} value={2} isDynamic />
-            <UBadge size={SIZE.md} value={6} isDynamic />
-            <UBadge size={SIZE.lg} value={22998.8} isDynamic />
+            <UBadge isDynamic size={SIZE.sm} value={2} />
+            <UBadge isDynamic size={SIZE.md} value={6} />
+            <UBadge isDynamic size={SIZE.lg} value={22998.8} />
           </div>
           <div className="flex flex-wrap items-center gap-4">
             <h5 className="w-full">Badge arredondado</h5>
 
-            <UBadge size={SIZE.sm} value={3} isRounded />
-            <UBadge size={SIZE.md} value={6} isRounded />
-            <UBadge size={SIZE.lg} value={22} isRounded />
+            <UBadge isRounded size={SIZE.sm} value={3} />
+            <UBadge isRounded size={SIZE.md} value={6} />
+            <UBadge isRounded size={SIZE.lg} value={22} />
           </div>
           <div className="flex flex-wrap items-center gap-4">
             <h5 className="w-full">Badge pers. com sufixo e prefixo</h5>
 
             <UBadge
-              size={SIZE.sm}
-              value={3}
-              prefix="+"
-              suffix="pts"
               className="bg-success text-success-foreground"
+              prefix="+"
+              size={SIZE.sm}
+              suffix="pts"
+              value={3}
             />
             <UBadge
-              size={SIZE.md}
-              value={36}
-              suffix="º"
               className="rounded-none bg-pink-400 text-pink-200"
+              size={SIZE.md}
+              suffix="º"
+              value={36}
             />
             <UBadge
+              className="border border-amber-200 bg-amber-100 text-amber-600 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200"
+              prefix="R$ "
               size={SIZE.lg}
               value={221.39}
-              prefix="R$ "
-              className="border border-amber-200 bg-amber-100 text-amber-600 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200"
             />
           </div>
         </div>
       </div>
       {/* Avatars */}
-      <div id="avatars" className="border_after py-8">
+      <div className="border_after py-8" id="avatars">
         <div>
           <h2>Avatars</h2>
         </div>
@@ -274,7 +264,6 @@ export default function UITestingPage() {
           <div className="flex flex-wrap gap-4">
             <h5 className="w-full">Grupo de Avatares xs</h5>
             <UAvatarGroup
-              size={SIZE.xs}
               avatars={[
                 {
                   fallback: "AC",
@@ -293,12 +282,12 @@ export default function UITestingPage() {
                   image: "https://github.com/shadcn.png",
                 },
               ]}
+              size={SIZE.xs}
             />
           </div>
           <div className="flex flex-wrap gap-4">
             <h5 className="w-full">Grupo de Avatares sm</h5>
             <UAvatarGroup
-              size={SIZE.sm}
               avatars={[
                 {
                   fallback: "AC",
@@ -317,6 +306,7 @@ export default function UITestingPage() {
                   image: "https://github.com/shadcn.png",
                 },
               ]}
+              size={SIZE.sm}
             />
           </div>
           <div className="flex flex-wrap gap-4">
@@ -345,7 +335,6 @@ export default function UITestingPage() {
           <div className="flex flex-wrap gap-4">
             <h5 className="w-full">Grupo de Avatares lg</h5>
             <UAvatarGroup
-              size={SIZE.lg}
               avatars={[
                 {
                   fallback: "AC",
@@ -364,12 +353,12 @@ export default function UITestingPage() {
                   image: "https://github.com/shadcn.png",
                 },
               ]}
+              size={SIZE.lg}
             />
           </div>
           <div className="flex flex-wrap gap-4">
             <h5 className="w-full">Grupo de Avatares xl</h5>
             <UAvatarGroup
-              size={SIZE.xl}
               avatars={[
                 {
                   fallback: "AC",
@@ -388,12 +377,13 @@ export default function UITestingPage() {
                   image: "https://github.com/shadcn.png",
                 },
               ]}
+              size={SIZE.xl}
             />
           </div>
         </div>
       </div>
       {/* Categorias */}
-      <div id="categories" className="border_after py-8">
+      <div className="border_after py-8" id="categories">
         <div>
           <h2>Ícones das Categorias</h2>
         </div>
@@ -403,19 +393,19 @@ export default function UITestingPage() {
               <div className="mb-2 font-medium">{category.title}</div>
               <div className="flex items-center justify-center gap-2">
                 <Icons
-                  slug={category.slug}
                   className="size-4"
                   color={category.color}
+                  slug={category.slug}
                 />
                 <Icons
-                  slug={category.slug}
                   className="size-6"
                   color={category.color}
+                  slug={category.slug}
                 />
                 <Icons
-                  slug={category.slug}
                   className="size-8"
                   color={category.color}
+                  slug={category.slug}
                 />
               </div>
             </div>
@@ -423,7 +413,7 @@ export default function UITestingPage() {
         </div>
       </div>
       {/* Phases */}
-      <div id="phases" className="border_after py-8">
+      <div className="border_after py-8" id="phases">
         <div>
           <h2>Phases</h2>
         </div>
@@ -432,7 +422,12 @@ export default function UITestingPage() {
             <div className="mb-4 font-medium">Tamanho {SIZE.xs}</div>
             <div className="flex gap-4">
               {Object.values(PHASES).map((phase, _index) => (
-                <PhaseIcon key={phase.slug} phase={phase} size={SIZE.xs} variant="icon" />
+                <PhaseIcon
+                  key={phase.slug}
+                  phase={phase}
+                  size={SIZE.xs}
+                  variant="icon"
+                />
               ))}
             </div>
           </div>
@@ -440,7 +435,12 @@ export default function UITestingPage() {
             <div className="mb-4 font-medium">Tamanho {SIZE.sm}</div>
             <div className="flex gap-4">
               {Object.values(PHASES).map((phase, _index) => (
-                <PhaseIcon key={phase.slug} phase={phase} size={SIZE.sm} variant="icon" />
+                <PhaseIcon
+                  key={phase.slug}
+                  phase={phase}
+                  size={SIZE.sm}
+                  variant="icon"
+                />
               ))}
             </div>
           </div>
@@ -448,7 +448,12 @@ export default function UITestingPage() {
             <div className="mb-4 font-medium">Tamanho {SIZE.md}</div>
             <div className="flex gap-4">
               {Object.values(PHASES).map((phase, _index) => (
-                <PhaseIcon key={phase.slug} phase={phase} size={SIZE.md} variant="icon" />
+                <PhaseIcon
+                  key={phase.slug}
+                  phase={phase}
+                  size={SIZE.md}
+                  variant="icon"
+                />
               ))}
             </div>
           </div>
@@ -456,7 +461,12 @@ export default function UITestingPage() {
             <div className="mb-4 font-medium">Tamanho {SIZE.lg}</div>
             <div className="flex gap-4">
               {Object.values(PHASES).map((phase, _index) => (
-                <PhaseIcon key={phase.slug} phase={phase} size={SIZE.lg} variant="icon" />
+                <PhaseIcon
+                  key={phase.slug}
+                  phase={phase}
+                  size={SIZE.lg}
+                  variant="icon"
+                />
               ))}
             </div>
           </div>
@@ -464,7 +474,12 @@ export default function UITestingPage() {
             <div className="mb-4 font-medium">Tamanho {SIZE.xl}</div>
             <div className="flex gap-4">
               {Object.values(PHASES).map((phase, _index) => (
-                <PhaseIcon key={phase.slug} phase={phase} size={SIZE.xl} variant="icon" />
+                <PhaseIcon
+                  key={phase.slug}
+                  phase={phase}
+                  size={SIZE.xl}
+                  variant="icon"
+                />
               ))}
             </div>
           </div>
@@ -472,7 +487,12 @@ export default function UITestingPage() {
             <div className="mb-4 font-medium">Tamanho {SIZE["2xl"]}</div>
             <div className="flex gap-4">
               {Object.values(PHASES).map((phase, _index) => (
-                <PhaseIcon key={phase.slug} phase={phase} size={SIZE["2xl"]} variant="icon" />
+                <PhaseIcon
+                  key={phase.slug}
+                  phase={phase}
+                  size={SIZE["2xl"]}
+                  variant="icon"
+                />
               ))}
             </div>
           </div>
@@ -550,7 +570,7 @@ export default function UITestingPage() {
             </div>
           );
         })}
-      </div> */}
+       </div> */}
     </div>
   );
 }

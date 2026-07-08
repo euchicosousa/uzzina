@@ -1,4 +1,3 @@
-import { redirect } from "react-router";
 import { createSupabaseClient } from "~/lib/supabase";
 
 /**
@@ -22,14 +21,14 @@ export async function getUserId(request: Request) {
   const { data, error } = await supabase.auth.getClaims();
 
   if (error || !data?.claims) {
-    throw redirect("/login");
+    throw Response.redirect(new URL("/login", request.url).toString(), 302);
   }
 
   // O user_id está em claims.sub (campo padrão JWT para subject)
   const user_id = data.claims.sub;
 
   if (!user_id) {
-    throw redirect("/login");
+    throw Response.redirect(new URL("/login", request.url).toString(), 302);
   }
 
   return { user_id, supabase };

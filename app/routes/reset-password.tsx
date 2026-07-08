@@ -12,7 +12,7 @@ export const Route = createFileRoute("/reset-password")({
   component: ResetPassword,
 });
 
-export default function ResetPassword() {
+function ResetPassword() {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

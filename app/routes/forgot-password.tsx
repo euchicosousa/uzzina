@@ -11,7 +11,7 @@ export const Route = createFileRoute("/forgot-password")({
   component: ForgotPassword,
 });
 
-export default function ForgotPassword() {
+function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
