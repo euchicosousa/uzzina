@@ -1,11 +1,7 @@
-import type { ActionFunctionArgs } from "react-router";
-import { data } from "react-router";
 import { getUserId } from "~/services/auth.server";
 import { getPersonByUserId } from "~/models/people";
-import { themeSessionResolver } from "~/sessions.server";
-import type { Theme } from "remix-themes";
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request }: { request: Request }) => {
   const [auth, formData] = await Promise.all([
     getUserId(request),
     request.formData(),
@@ -48,22 +44,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   if (error) {
     console.error("Error updating quick preferences:", error);
-    return data({ success: false, error: error.message }, { status: 400 });
+    return Response.json({ success: false, error: error.message }, { status: 400 });
   }
 
-  // Sincroniza o cookie do remix-themes caso o tema tenha mudado
-  if (theme) {
-    const resolver = await themeSessionResolver(request);
-    resolver.setTheme(theme as Theme);
-    return data(
-      { success: true },
-      {
-        headers: {
-          "Set-Cookie": await resolver.commit(),
-        },
-      },
-    );
-  }
-
-  return data({ success: true });
+  return Response.json({ success: true });
 };

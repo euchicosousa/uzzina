@@ -29,7 +29,7 @@ import {
   PaletteIcon,
   UserCheck2Icon,
 } from "lucide-react";
-import { Theme } from "remix-themes";
+import { Theme } from "~/components/theme-provider";
 import { cn } from "~/lib/utils";
 
 export function Icons({

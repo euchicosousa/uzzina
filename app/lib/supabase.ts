@@ -1,8 +1,4 @@
-import {
-  createServerClient,
-  parseCookieHeader,
-  serializeCookieHeader,
-} from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import type { Database } from "types/database";
 
 export const createSupabaseClient = (request: Request) => {
@@ -16,30 +12,19 @@ export const createSupabaseClient = (request: Request) => {
   }
 
   const headers = new Headers();
-  const supabase = createServerClient<Database>(
-    supabaseUrl,
-    supabaseKey,
-    {
-      cookies: {
-        getAll() {
-          return parseCookieHeader(request.headers.get("Cookie") ?? "").map(
-            (cookie) => ({
-              name: cookie.name,
-              value: cookie.value || "",
-            }),
-          );
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            headers.append(
-              "Set-Cookie",
-              serializeCookieHeader(name, value, options),
-            );
-          });
-        },
-      },
+  const cookies = request.headers.get("Cookie") || "";
+  const tokenMatch = cookies.match(/sb-[a-z]+-auth-token=([^;]+)/);
+  const accessToken = tokenMatch ? JSON.parse(decodeURIComponent(tokenMatch[1]))?.access_token : undefined;
+
+  const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
     },
-  );
+    global: {
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+    },
+  });
 
   return { supabase, headers };
 };

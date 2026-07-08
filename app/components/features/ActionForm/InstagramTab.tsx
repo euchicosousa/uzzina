@@ -8,29 +8,26 @@ import { UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UButtonAI } from "~/components/uzzina/UButtonAI";
 import { INTENT } from "~/lib/CONSTANTS";
 import { getFormattedPartnersLinks } from "~/utils/format";
-
 interface InstagramTabProps {
   RawAction: Action;
-
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;
   updateAction: (data?: { [key: string]: unknown }) => Promise<void>;
-
   contentFiles: string[];
   updateContentFiles: (files: string[]) => void;
   currentPartners: Partner[];
   cloudName: string;
   uploadPreset: string;
   isAIProcessing: boolean;
-  triggerAIAction: (intent: string, customPayload?: Record<string, string | string[] | null>) => Promise<unknown>;
+  triggerAIAction: (
+    intent: string,
+    customPayload?: Record<string, string | string[] | null>,
+  ) => Promise<unknown>;
 }
-
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
 }
-
 function AiProcessingMessage({ isAIProcessing }: { isAIProcessing: boolean }) {
   if (!isAIProcessing) return null;
-
   return (
     <div className="flex w-full items-center justify-center gap-2 border-b py-4 text-xs font-medium">
       <div className="relative flex items-center justify-center">
@@ -40,7 +37,6 @@ function AiProcessingMessage({ isAIProcessing }: { isAIProcessing: boolean }) {
     </div>
   );
 }
-
 export function InstagramTab({
   RawAction,
   setRawAction,
@@ -58,9 +54,9 @@ export function InstagramTab({
       <div className="mx-auto flex shrink-0 flex-col p-6 md:w-2/5 lg:w-1/2">
         <InstagramPreview files={contentFiles} />
         <ContentFilesManager
+          cloudName={cloudName}
           files={contentFiles}
           onChange={updateContentFiles}
-          cloudName={cloudName}
           uploadPreset={uploadPreset}
         />
       </div>
@@ -76,7 +72,6 @@ export function InstagramTab({
               }))}
             />
             <div className="text-sm font-medium">
-              {/* {getFormattedPartnersName(currentPartners)} */}
               {getFormattedPartnersLinks(currentPartners)}
             </div>
           </div>
@@ -90,7 +85,21 @@ export function InstagramTab({
         <div className="flex h-full flex-col">
           <AiProcessingMessage isAIProcessing={isAIProcessing} />
           <textarea
+            aria-label="Legenda do Instagram"
+            className="h-full w-full resize-none p-4 outline-none disabled:opacity-50 md:pl-0"
             disabled={isAIProcessing}
+            onBlur={async () =>
+              await updateAction({
+                instagram_caption: RawAction.instagram_caption,
+              })
+            }
+            onChange={(e) =>
+              setRawAction((prev) => ({
+                ...prev,
+                instagram_caption: e.target.value,
+              }))
+            }
+            placeholder="Legenda"
             value={
               RawAction.instagram_caption ||
               getCaptionTail(
@@ -99,20 +108,6 @@ export function InstagramTab({
                   : "",
               )
             }
-            onChange={(e) =>
-              setRawAction((prev) => ({
-                ...prev,
-                instagram_caption: e.target.value,
-              }))
-            }
-            onBlur={async () =>
-              await updateAction({
-                instagram_caption: RawAction.instagram_caption,
-              })
-            }
-            placeholder="Legenda"
-            className="h-full w-full resize-none p-4 outline-none disabled:opacity-50 md:pl-0"
-            aria-label="Legenda do Instagram"
           />
         </div>
       </div>

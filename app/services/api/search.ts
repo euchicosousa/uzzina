@@ -1,8 +1,7 @@
-import type { LoaderFunctionArgs } from "react-router";
 import { getUserId } from "~/services/auth.server";
 import { getPartnersByUserId } from "~/models/partners";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
   const rawQuery = url.searchParams.get("q") || "";
   const targetPartner = url.searchParams.get("partner") || null;

@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import type { ActionFunctionArgs } from "react-router";
 import { INTENT } from "~/lib/CONSTANTS";
 
 const CNVT_CORE_PERSONA = `
@@ -453,7 +452,7 @@ ${CNVT_QUALITY_CHECK}
 `,
 };
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request }: { request: Request }) => {
   const formData = Object.fromEntries(await request.formData());
   const { intent } = formData;
 

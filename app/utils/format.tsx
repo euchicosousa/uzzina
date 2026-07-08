@@ -1,5 +1,5 @@
 import type { Person, Partner } from "~/types";
-import { Link } from "react-router";
+import { Link } from "@tanstack/react-router";
 
 export function getFormattedPartnersName(partners: Partner[]) {
   return partners.map((partner) => partner.title).join(", ");
@@ -10,7 +10,8 @@ export function getFormattedPartnersLinks(partners: Partner[]) {
     <span key={partner.id}>
       {index > 0 && ", "}
       <Link
-        to={`/app/partner/${partner.slug}`}
+        to="/app/partner/$slug"
+        params={{ slug: partner.slug }}
         className="hover:underline"
         onClick={(e) => e.stopPropagation()}
       >
