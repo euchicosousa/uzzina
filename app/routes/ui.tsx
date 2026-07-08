@@ -1,12 +1,12 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
-import { useTheme, Theme } from "~/components/theme-provider";
 import { PhaseIcon } from "~/components/features/PhaseIcon";
+import { Theme, useTheme } from "~/components/theme-provider";
 import { Button } from "~/components/ui/button";
 import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
-import { CATEGORIES, SIZE, PHASES } from "~/lib/CONSTANTS";
+import { CATEGORIES, PHASES, SIZE } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
-import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/ui")({
   component: UITestingPage,
 });
