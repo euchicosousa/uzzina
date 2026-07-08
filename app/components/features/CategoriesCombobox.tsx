@@ -18,9 +18,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "../ui/command";
-
 const AREA_ORDER = ["all", "instagram", "creative", "account", "adm"];
-
 export function CategoriesCombobox({
   selectedCategories,
   onSelect,
@@ -47,9 +45,7 @@ export function CategoriesCombobox({
   size?: "sm" | "lg";
 }) {
   const [isOpen, setIsOpen] = useState(false);
-
   const CATEGORIES_LIST = Object.values(CATEGORIES);
-
   let categoriesList = showInstagramGroup
     ? [
         {
@@ -60,7 +56,6 @@ export function CategoriesCombobox({
         ...CATEGORIES_LIST,
       ]
     : CATEGORIES_LIST;
-
   categoriesList = isMulti
     ? [
         {
@@ -71,7 +66,6 @@ export function CategoriesCombobox({
         ...categoriesList,
       ]
     : categoriesList;
-
   const currentCategories = categoriesList.filter(
     (category) =>
       selectedCategories.find((slug) => slug === category.slug) !== undefined,
@@ -80,7 +74,12 @@ export function CategoriesCombobox({
   // Agrupamento por área
   const groupedCategories = categoriesList.reduce(
     (acc, category) => {
-      let area = (category as { area?: string }).area || "other";
+      let area =
+        (
+          category as {
+            area?: string;
+          }
+        ).area || "other";
       if (category.slug === "all") area = "all";
 
       // Move os itens de postagem para o grupo do Instagram
@@ -90,16 +89,13 @@ export function CategoriesCombobox({
       ) {
         area = "instagram";
       }
-
       if (!acc[area]) acc[area] = [];
       acc[area].push(category);
       return acc;
     },
     {} as Record<string, typeof categoriesList>,
   );
-
   const isShiftPressedRef = useRef(false);
-
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "Shift") isShiftPressedRef.current = true;
@@ -107,61 +103,58 @@ export function CategoriesCombobox({
     const up = (e: KeyboardEvent) => {
       if (e.key === "Shift") isShiftPressedRef.current = false;
     };
-
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);
-
     return () => {
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
     };
   }, []);
-
   const hasSelection =
     currentCategories.length > 0 && currentCategories[0].slug !== "all";
-
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover onOpenChange={setIsOpen} open={isOpen}>
       <PopoverTrigger asChild>
         {isMulti ? (
           <ComboboxTrigger
-            variant="filter"
-            tabIndex={tabIndex}
-            hasSelection={hasSelection}
             data-state={hasSelection && "on"}
-            className="flex h-9 px-3"
+            hasSelection={hasSelection}
+            tabIndex={tabIndex}
             title={
-              currentCategories.length === 0 || currentCategories[0].slug === "all"
+              currentCategories.length === 0 ||
+              currentCategories[0].slug === "all"
                 ? "Escolha a categoria"
                 : currentCategories
                     .map((category) => category.title)
                     .join(" • ")
             }
+            variant="filter"
           >
-            {currentCategories.length === 0 || currentCategories[0].slug === "all" ? (
-              <Icons color="#666" slug="categories" className="size-4" />
+            {currentCategories.length === 0 ||
+            currentCategories[0].slug === "all" ? (
+              <Icons className="size-4" color="#666" slug="categories" />
             ) : (
               currentCategories.map((category) => (
                 <Icons
                   key={category.slug}
-                  slug={category.slug}
-                  color={category.color}
                   className="size-4"
+                  color={category.color}
+                  slug={category.slug}
                 />
               ))
             )}
           </ComboboxTrigger>
         ) : (
           <ComboboxTrigger
-            variant="form-inline"
+            className={className}
             size={size}
             tabIndex={tabIndex}
-            className={className}
+            variant="form-inline"
           >
             <Icons
-              slug={currentCategories[0].slug}
-              className={size === "sm" ? "size-4" : "size-5"}
+              className={!showText ? "size-4" : size === "sm" ? "size-4" : "size-5"}
               color={currentCategories[0].color}
+              slug={currentCategories[0].slug}
             />
             {showText && (
               <div className="overflow-hidden text-ellipsis whitespace-nowrap">
@@ -179,14 +172,12 @@ export function CategoriesCombobox({
             {AREA_ORDER.map((areaSlug, index) => {
               const items = groupedCategories[areaSlug];
               if (!items || items.length === 0) return null;
-
               const areaTitle =
                 areaSlug === "all"
                   ? "Filtros"
                   : areaSlug === "instagram"
                     ? "Instagram"
                     : AREAS[areaSlug as keyof typeof AREAS]?.title || "Outros";
-
               return (
                 <Fragment key={areaSlug}>
                   <CommandGroup heading={areaTitle}>
@@ -197,7 +188,6 @@ export function CategoriesCombobox({
                         onSelect={() => {
                           if (isMulti) {
                             let newCategories = selectedCategories;
-
                             if (category.slug === "all") {
                               newCategories = ["all"];
                             } else if (category.slug === "instagram") {
@@ -209,7 +199,6 @@ export function CategoriesCombobox({
                                 newCategories = selectedCategories.filter(
                                   (slug) => slug !== "all",
                                 );
-
                                 if (newCategories.includes(category.slug)) {
                                   newCategories = newCategories.filter(
                                     (slug) => slug !== category.slug,
@@ -221,13 +210,11 @@ export function CategoriesCombobox({
                                   ];
                                 }
                               }
-
                               newCategories =
                                 newCategories.length === 0
                                   ? ["all"]
                                   : newCategories;
                             }
-
                             onSelect?.({
                               categories: newCategories,
                               category: "",
@@ -242,9 +229,9 @@ export function CategoriesCombobox({
                         }}
                       >
                         <Icons
-                          slug={category.slug}
                           className="size-5"
                           color={category.color}
+                          slug={category.slug}
                         />
                         {category.title}
                         <CheckIcon

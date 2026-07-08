@@ -50,33 +50,35 @@ export function PhaseIcon({
     return (
       <div
         className={cn(
-          "grid aspect-square place-content-center rounded-full",
+          "grid aspect-square place-content-center rounded-full shrink-0",
           sizeClasses,
           "animate-pop",
         )}
         style={{ backgroundColor: phase.color }}
       >
-        <CheckIcon className={cn("scale-75 text-white", sizeClasses)} />
+        <CheckIcon className="size-[65%] text-white" />
       </div>
     );
   }
 
   return (
-    <div className="relative">
+    <div className={cn("relative shrink-0", sizeClasses)}>
       {/* Background circle (shadow) */}
       <svg
-        className={`absolute top-0 left-0 stroke-4 ${sizeClasses} opacity-10`}
+        className="absolute inset-0 stroke-2 opacity-10 size-full"
         viewBox="0 0 20 20"
         stroke="currentColor"
       >
+        <title>Progresso Fundo</title>
         <circle cx="10" cy="10" r="8" fill="none" />
       </svg>
       {/* Progress circle */}
       <svg
-        className={`-rotate-90 stroke-4 transition-all duration-500 ${sizeClasses}`}
+        className="-rotate-90 stroke-2 transition-all duration-500 size-full"
         style={{ color: phase.color }}
         viewBox="0 0 20 20"
       >
+        <title>Progresso</title>
         <circle
           cx="10"
           cy="10"
