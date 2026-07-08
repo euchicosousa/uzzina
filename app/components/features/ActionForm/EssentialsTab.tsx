@@ -40,7 +40,10 @@ interface EssentialsTabProps {
   isAIProcessing: boolean;
   onDescriptionChange?: (description: string) => void;
   descriptionVersion?: number;
-  triggerAIAction: (intent: string, customPayload?: Record<string, string | string[] | null>) => Promise<unknown>;
+  triggerAIAction: (
+    intent: string,
+    customPayload?: Record<string, string | string[] | null>,
+  ) => Promise<unknown>;
 }
 export function EssentialsTab({
   RawAction,
@@ -115,7 +118,18 @@ export function EssentialsTab({
   const [isCreatingPost, setIsCreatingPost] = useState(false);
   const handleTriggerAI = async () => {
     const res = await triggerAIAction(INTENT.ai_hooks);
-    const data = res as { intent: string; output: { racional?: string; hooks?: { tipo: string; texto: string }[] } } | undefined;
+    const data = res as
+      | {
+          intent: string;
+          output: {
+            racional?: string;
+            hooks?: {
+              tipo: string;
+              texto: string;
+            }[];
+          };
+        }
+      | undefined;
     if (data?.output) {
       setRacional(data.output.racional ?? "");
       setHooks(data.output.hooks ?? []);
@@ -216,10 +230,7 @@ export function EssentialsTab({
                 <FishingHookIcon />
               </Button>
             )}
-            <UButtonAI
-              disabled={isAIProcessing}
-              onClick={handleTriggerAI}
-            >
+            <UButtonAI disabled={isAIProcessing} onClick={handleTriggerAI}>
               CRIAR COM IA
             </UButtonAI>
           </div>
@@ -261,7 +272,7 @@ export function EssentialsTab({
         </div>
       </div>
       {/* Descrição */}
-      <div className="h-full">
+      <div className="h-full overflow-hidden">
         <Suspense
           fallback={
             <div className="h-full w-full min-h-[200px] animate-pulse bg-muted rounded-2xl" />

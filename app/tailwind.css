@@ -346,15 +346,19 @@ html {
 
 /* Títulos básicos */
 .tiptap.ProseMirror h1 {
-  @apply mt-4 mb-2 text-xl font-bold;
+  @apply mt-8 mb-4 p-0 text-3xl font-normal;
 }
 
 .tiptap.ProseMirror h2 {
-  @apply mt-3 mb-1.5 text-lg font-bold;
+  @apply mt-6 mb-3 p-0 text-2xl font-normal;
 }
 
 .tiptap.ProseMirror h3 {
-  @apply mt-2 mb-1 text-base font-semibold;
+  @apply mt-4 mb-2 p-0 text-base font-normal tracking-wider uppercase;
+}
+
+.tiptap.ProseMirror hr {
+  @apply my-8;
 }
 
 .tiptap.ProseMirror p.is-editor-empty:first-child::before {

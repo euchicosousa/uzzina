@@ -360,8 +360,8 @@ function ProfilePage() {
       body.append("followPartnerColor", String(selectedFollowPartnerColor));
       body.append("defaultViewVariant", selectedVariant);
       body.append("showInstagramSidebar", String(showInstagramSidebar));
-      await fetch("/action/set-preferences", {
-        method: "post",
+      await fetch("/api/set-preferences", {
+        method: "POST",
         body,
       });
       toast.success("Perfil e preferências salvos com sucesso!");

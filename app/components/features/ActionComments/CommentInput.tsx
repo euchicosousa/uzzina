@@ -67,15 +67,15 @@ export function CommentInput({
   return (
     <div className="relative flex flex-col gap-2 bg-input dark:bg-input/30 input-embossed p-3 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary">
       <Textarea
-        variant="ghost"
-        className="min-h-[80px] w-full p-0 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
+        className="min-h-[80px] w-full p-4 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Escreva uma observação..."
         value={value}
+        variant="ghost"
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/50 pt-2">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-2">
         {/* Seletor de Notificação */}
         <div className="flex items-center gap-2">
           <Popover onOpenChange={setIsOpen} open={isOpen}>

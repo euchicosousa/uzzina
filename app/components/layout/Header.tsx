@@ -309,7 +309,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
     }
     debounceTimerRef.current = setTimeout(() => {
       const body = new URLSearchParams(pendingPrefsRef.current);
-      fetch("/action/set-preferences", {
+      fetch("/api/set-preferences", {
         method: "post",
         body,
       });
