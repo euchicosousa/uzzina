@@ -36,7 +36,7 @@ export const Route = createFileRoute("/app/profile")({
   component: ProfilePage,
 });
 export const runtime = "edge";
-export function ProfilePage() {
+function ProfilePage() {
   const { person, cloudName, uploadPreset } = useAppContext();
   const preferences = getUserPreferences(person);
   const [theme, setTheme] = useTheme();

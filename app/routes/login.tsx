@@ -6,11 +6,9 @@ import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-
 export const Route = createFileRoute("/login")({
   component: Login,
 });
-
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -18,7 +16,6 @@ function Login() {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
@@ -30,15 +27,19 @@ function Login() {
         password,
       });
       if (signInError) throw signInError;
-      navigate({ to: "/app" });
+      navigate({
+        to: "/app",
+      });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Verifique o email ou a senha usada.";
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "Verifique o email ou a senha usada.";
       setError(msg);
     } finally {
       setIsSubmitting(false);
     }
   };
-
   return (
     <div className="grid h-screen grid-cols-[2rem_20rem_2rem] justify-center overflow-x-hidden md:grid-cols-[2rem_30rem_2rem]">
       <div className="border-r"></div>
@@ -62,12 +63,12 @@ function Login() {
           <div className="mb-4">
             <span className="mb-2 block w-full font-medium">E-mail</span>
             <Input
-              variant="inset"
               name="email"
-              type="email"
-              value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              type="email"
+              value={email}
+              variant="inset"
             />
           </div>
 
@@ -82,13 +83,13 @@ function Login() {
               </Link>
             </div>
             <Input
-              variant="inset"
               className="pr-12"
               name="password"
-              type={showPassword ? "text" : "password"}
-              value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              type={showPassword ? "text" : "password"}
+              value={password}
+              variant="inset"
             />
             <Button
               className="absolute top-8 right-0"
@@ -97,15 +98,15 @@ function Login() {
                 setShowPassword(!showPassword);
               }}
               size={"icon"}
-              variant={"ghost"}
               type="button"
+              variant={"ghost"}
             >
               {showPassword ? <EyeIcon /> : <EyeOffIcon />}
             </Button>
           </div>
 
           <div className="flex justify-end">
-            <Button type="submit" disabled={isSubmitting}>
+            <Button disabled={isSubmitting} type="submit">
               {isSubmitting ? "Entrando..." : "Fazer Login"}{" "}
               <LogInIcon className="ml-2 size-3" />
             </Button>
@@ -117,5 +118,3 @@ function Login() {
     </div>
   );
 }
-
-export default Login;
