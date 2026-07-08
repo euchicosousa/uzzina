@@ -6,7 +6,11 @@ import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { CATEGORIES, SIZE, PHASES } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
-export default function UITestingPage() {
+import { createFileRoute } from "@tanstack/react-router";
+export const Route = createFileRoute("/ui")({
+  component: UITestingPage,
+});
+function UITestingPage() {
   const [theme, setTheme] = useTheme();
   return (
     <div className="container mx-auto px-8">

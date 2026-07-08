@@ -1,38 +1,35 @@
-import type { Notification } from "~/types";
-import { CheckIcon, BellIcon } from "lucide-react";
-import {
-  Link,
-  useLocation,
-  useParams,
-  useNavigate,
-} from "@tanstack/react-router";
-import { useAppContext } from "~/contexts/AppContext";
 import { useQuery } from "@tanstack/react-query";
+import { Link, useLocation, useParams } from "@tanstack/react-router";
 import {
   endOfDay,
-  endOfWeek,
-  startOfWeek,
-  startOfMonth,
   endOfMonth,
-  startOfDay,
+  endOfWeek,
   format,
   isValid,
   parseISO,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
 } from "date-fns";
+import { BellIcon, CheckIcon } from "lucide-react";
+import { useMemo, useRef } from "react";
 import { toast } from "sonner";
-import { useNotifications } from "~/hooks/useNotifications";
-import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-import { useTheme, Theme } from "~/components/theme-provider";
+import { Theme, useTheme } from "~/components/theme-provider";
+import { useAppContext } from "~/contexts/AppContext";
 import { useAppTheme } from "~/hooks/useAppTheme";
+import { useNotifications } from "~/hooks/useNotifications";
 import { PALLETE, SIZE } from "~/lib/CONSTANTS";
 import { getThemeIcon } from "~/lib/helpers";
 import { QUERY_KEYS } from "~/lib/query-keys";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
   fetchAllLateActions,
   fetchHomeActions,
   fetchPartnerActions,
 } from "~/lib/supabase.queries";
 import { cn } from "~/lib/utils";
+import type { Notification } from "~/types";
+import { DashboardMetrics } from "../features/home/DashboardMetrics";
 import { UzzinaLogo } from "../logo";
 import { Button } from "../ui/button";
 import {
@@ -47,11 +44,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { UAvatar } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
-import { useRef, useMemo } from "react";
-import { DashboardMetrics } from "../features/home/DashboardMetrics";
-
 const DEFAULT_PARTNER_FILTERS: string[] = [];
-
 export function Header({
   person,
   setBaseAction,
@@ -64,12 +57,15 @@ export function Header({
   const { notifications, unreadCount, markAsRead, markAllAsRead } =
     useNotifications();
   const location = useLocation();
-  const params = useParams({ strict: false });
-  const _navigate = useNavigate();
-  const searchParams = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
-
-  const isHome = location.pathname === "/app";
-  const isPartner = location.pathname.startsWith("/app/partner/");
+  const params = useParams({
+    strict: false,
+  });
+  const searchParams = new URLSearchParams(
+    typeof window !== "undefined" ? window.location.search : "",
+  );
+  const cleanPath = location.pathname.replace(/\/$/, "");
+  const isHome = cleanPath === "/app";
+  const isPartner = cleanPath.startsWith("/app/partner");
   const showMetrics = isHome || isPartner;
 
   // Get partners list from AppContext
@@ -80,7 +76,6 @@ export function Header({
   const homeStartISO = startOfWeek(startOfMonth(now)).toISOString();
   const homeEndISO = endOfDay(endOfWeek(endOfMonth(now))).toISOString();
   const todayEndISO = endOfDay(now).toISOString();
-
   const { data: homeActions = [] } = useQuery<Action[]>({
     queryKey: QUERY_KEYS.actions.home(person.user_id),
     queryFn: () =>
@@ -93,7 +88,6 @@ export function Header({
       ),
     enabled: isHome,
   });
-
   const { data: homeLateActions = [] } = useQuery<Action[]>({
     queryKey: QUERY_KEYS.lateActions.user(person.user_id),
     queryFn: () =>
@@ -115,13 +109,11 @@ export function Header({
       ? format(parseISO(partnerDate).setDate(15), "yyyy-MM-dd")
       : format(new Date().setDate(15), "yyyy-MM-dd");
   }
-
   const pStart = startOfDay(startOfWeek(startOfMonth(parseISO(partnerDate))));
   const pEnd = endOfDay(endOfWeek(endOfMonth(parseISO(partnerDate))));
   const pStartStr = format(pStart, "yyyy-MM-dd HH:mm:ss");
   const pEndStr = format(pEnd, "yyyy-MM-dd HH:mm:ss");
   const partnerDateRange = `${pStartStr}_${pEndStr}`;
-
   const { data: partnerActions = [] } = useQuery<Action[]>({
     queryKey: QUERY_KEYS.actions.partner(slug || "", partnerDateRange),
     queryFn: () =>
@@ -134,7 +126,6 @@ export function Header({
       ),
     enabled: isPartner && !!slug,
   });
-
   const { data: partnerAllLateActions = [] } = useQuery<Action[]>({
     queryKey: QUERY_KEYS.lateActions.user(person.user_id),
     queryFn: () =>
@@ -145,16 +136,13 @@ export function Header({
       ),
     enabled: isPartner && !!slug,
   });
-
   const partnerLateActions = useMemo(() => {
     if (!slug) return [];
     return partnerAllLateActions.filter((action) =>
       action.partners?.includes(slug),
     );
   }, [partnerAllLateActions, slug]);
-
   const referenceDate = now;
-
   const filteredActions = useMemo(() => {
     const active = isHome ? homeActions : isPartner ? partnerActions : [];
     if (partnerFilters.length === 0) return active;
@@ -162,15 +150,17 @@ export function Header({
       action.partners?.some((p: string) => partnerFilters.includes(p)),
     );
   }, [isHome, homeActions, isPartner, partnerActions, partnerFilters]);
-
   const filteredLateActions = useMemo(() => {
-    const active = isHome ? homeLateActions : isPartner ? partnerLateActions : [];
+    const active = isHome
+      ? homeLateActions
+      : isPartner
+        ? partnerLateActions
+        : [];
     if (partnerFilters.length === 0) return active;
     return active.filter((action: Action) =>
       action.partners?.some((p: string) => partnerFilters.includes(p)),
     );
   }, [isHome, homeLateActions, isPartner, partnerLateActions, partnerFilters]);
-
   const handleNotificationClick = async (notif: Notification) => {
     const supabase = createSupabaseBrowserClient();
     if (!notif.read_at) {
@@ -191,7 +181,6 @@ export function Header({
       toast.error("Não foi possível carregar o detalhe da ação.");
     }
   };
-
   return (
     <div className="border_after flex w-full items-center justify-between px-2 lg:px-8">
       <div className="flex items-center gap-2 py-4">
@@ -208,8 +197,8 @@ export function Header({
           <DashboardMetrics
             actions={filteredActions}
             lateActions={filteredLateActions}
-            showToday={isHome}
             referenceDate={referenceDate}
+            showToday={isHome}
           />
         )}
       </div>
@@ -218,24 +207,24 @@ export function Header({
         <Popover>
           <PopoverTrigger asChild>
             <Button
-              variant="ghost"
-              size="icon"
               className="relative rounded-full"
+              size="icon"
+              variant="ghost"
             >
               <BellIcon className="size-5" />
               {unreadCount > 0 ? (
                 <UBadge
+                  className="absolute -top-1 -right-1"
+                  isDynamic
                   size="sm"
                   value={unreadCount}
-                  isDynamic
-                  className="absolute -top-1 -right-1"
                 />
               ) : null}
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            className="w-80 overflow-hidden rounded-2xl border border-border bg-popover/20 p-0 shadow-xl backdrop-blur-lg"
             align="end"
+            className="w-80 overflow-hidden rounded-2xl border border-border bg-popover/20 p-0 shadow-xl backdrop-blur-lg"
           >
             <div className="flex items-center justify-between border-b bg-muted/20 px-4 py-3">
               <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
@@ -243,9 +232,9 @@ export function Header({
               </span>
               {unreadCount > 0 && (
                 <button
-                  type="button"
-                  onClick={() => markAllAsRead()}
                   className="text-xs font-medium text-primary transition-colors hover:underline"
+                  onClick={() => markAllAsRead()}
+                  type="button"
                 >
                   Marcar todas como lidas
                 </button>
@@ -259,13 +248,13 @@ export function Header({
               ) : (
                 notifications.map((notif) => (
                   <button
-                    type="button"
                     key={notif.id}
-                    onClick={() => handleNotificationClick(notif)}
                     className={cn(
                       "flex w-full flex-col gap-1 p-4 text-left transition hover:bg-muted/50",
                       !notif.read_at && "bg-primary/5",
                     )}
+                    onClick={() => handleNotificationClick(notif)}
+                    type="button"
                   >
                     <div className="flex w-full items-start justify-between gap-2">
                       <span className="text-xs font-semibold text-foreground">
@@ -289,8 +278,8 @@ export function Header({
             </div>
             <div className="border-t bg-muted/10 p-2 text-center">
               <Link
-                to="/app/notifications"
                 className="block w-full py-1.5 text-xs font-semibold text-primary hover:underline"
+                to="/app/notifications"
               >
                 Ver todas as notificações →
               </Link>
@@ -303,7 +292,6 @@ export function Header({
     </div>
   );
 }
-
 const HeaderMenu = ({ person }: { person: Person }) => {
   const [theme, setTheme] = useTheme();
   const {
@@ -314,41 +302,40 @@ const HeaderMenu = ({ person }: { person: Person }) => {
   } = useAppTheme();
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const pendingPrefsRef = useRef<Record<string, string>>({});
-
   const queuePreference = (key: string, value: string) => {
     pendingPrefsRef.current[key] = value;
-
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
-
     debounceTimerRef.current = setTimeout(() => {
       const body = new URLSearchParams(pendingPrefsRef.current);
-      fetch("/action/set-preferences", { method: "post", body });
+      fetch("/action/set-preferences", {
+        method: "post",
+        body,
+      });
       pendingPrefsRef.current = {};
     }, 300);
   };
-
   const changeTheme = (newTheme: Theme) => {
     setTheme(newTheme);
     queuePreference("theme", newTheme);
   };
-
   const changeColorIndex = (index: number) => {
     setPrimaryColorIndex(index);
     queuePreference("themeColorIndex", String(index));
   };
-
   const changeFollowPartner = (value: boolean) => {
     setFollowPartnerColor(value);
     queuePreference("followPartnerColor", String(value));
   };
-
   return (
-      <DropdownMenu>
+    <DropdownMenu>
       {/* Perfil */}
-      <DropdownMenuTrigger className="relative outline-none" aria-label="Menu do perfil do usuário">
-        <UAvatar size={SIZE.md} fallback={person.short} image={person.image} />
+      <DropdownMenuTrigger
+        aria-label="Menu do perfil do usuário"
+        className="relative outline-none"
+      >
+        <UAvatar fallback={person.short} image={person.image} size={SIZE.md} />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mx-2 bg-popover/20 backdrop-blur-lg">
         {theme === Theme.DARK ? (
@@ -367,38 +354,38 @@ const HeaderMenu = ({ person }: { person: Person }) => {
             const isSelected = primaryColorIndex === i;
             return (
               <button
-                type="button"
+                key={paletteConfig.id}
+                aria-label={`Paleta ${paletteConfig.label}`}
+                className="flex justify-center rounded-xl p-2 squircle hover:opacity-80"
                 onClick={() => {
                   changeColorIndex(i);
                 }}
-                key={paletteConfig.id}
-                title={paletteConfig.label}
-                aria-label={`Paleta ${paletteConfig.label}`}
-                className="flex justify-center rounded-xl p-2 squircle hover:opacity-80"
                 style={{
                   backgroundColor: isSelected
                     ? `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`
                     : "",
                 }}
+                title={paletteConfig.label}
+                type="button"
               >
                 <div
+                  className={`size-4 rounded-lg`}
                   style={{
                     backgroundColor: isSelected
                       ? `oklch(${currentColors.bg.l} ${currentColors.bg.c} ${currentColors.bg.h})`
                       : `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`,
                   }}
-                  className={`size-4 rounded-lg`}
                 ></div>
               </button>
             );
           })}
         </div>
         <DropdownMenuItem
-          onClick={() => changeFollowPartner(!followPartnerColor)}
           className={cn(
             "flex items-center justify-between",
             followPartnerColor ? "bg-secondary" : "",
           )}
+          onClick={() => changeFollowPartner(!followPartnerColor)}
         >
           Cores do parceiro
           {followPartnerColor ? <CheckIcon /> : null}
@@ -410,11 +397,11 @@ const HeaderMenu = ({ person }: { person: Person }) => {
           <Link to="/app/profile">Minha Conta</Link>
         </DropdownMenuItem>
         <DropdownMenuItem
+          className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
           onClick={async () => {
             const supabase = createSupabaseBrowserClient();
             await supabase.auth.signOut();
           }}
-          className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
         >
           Sair
         </DropdownMenuItem>
@@ -432,27 +419,47 @@ const HeaderMenu = ({ person }: { person: Person }) => {
               <Link to="/app/admin/partners">Parceiros</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/app/admin/partner/$slug" params={{ slug: "new" }}>Novo Parceiro</Link>
+              <Link
+                params={{
+                  slug: "new",
+                }}
+                to="/app/admin/partner/$slug"
+              >
+                Novo Parceiro
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link to="/app/admin/users">Usuários</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/app/admin/user/$userId" params={{ userId: "new" }}>Novo Usuário</Link>
+              <Link
+                params={{
+                  userId: "new",
+                }}
+                to="/app/admin/user/$userId"
+              >
+                Novo Usuário
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link to="/app/admin/clients">Clientes</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/app/admin/clients/$userId" params={{ userId: "new" }}>Novo Cliente</Link>
+              <Link
+                params={{
+                  userId: "new",
+                }}
+                to="/app/admin/clients/$userId"
+              >
+                Novo Cliente
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link to="/app/admin/celebrations">Datas Comemorativas</Link>
             </DropdownMenuItem>
-
           </DropdownMenuGroup>
         )}
       </DropdownMenuContent>

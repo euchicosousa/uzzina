@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UiRouteImport } from './routes/ui'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -33,6 +34,11 @@ import { Route as AppAdminUserUserIdRouteImport } from './routes/app/admin/user/
 import { Route as AppAdminPartnerSlugRouteImport } from './routes/app/admin/partner/$slug'
 import { Route as AppAdminClientsUserIdRouteImport } from './routes/app/admin/clients/$userId'
 
+const UiRoute = UiRouteImport.update({
+  id: '/ui',
+  path: '/ui',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -156,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/ui': typeof UiRoute
   '/app/flow': typeof AppFlowRoute
   '/app/help': typeof AppHelpRoute
   '/app/notifications': typeof AppNotificationsRoute
@@ -179,6 +186,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/ui': typeof UiRoute
   '/app/flow': typeof AppFlowRoute
   '/app/help': typeof AppHelpRoute
   '/app/notifications': typeof AppNotificationsRoute
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/ui': typeof UiRoute
   '/app/flow': typeof AppFlowRoute
   '/app/help': typeof AppHelpRoute
   '/app/notifications': typeof AppNotificationsRoute
@@ -232,6 +241,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/reset-password'
+    | '/ui'
     | '/app/flow'
     | '/app/help'
     | '/app/notifications'
@@ -255,6 +265,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/reset-password'
+    | '/ui'
     | '/app/flow'
     | '/app/help'
     | '/app/notifications'
@@ -280,6 +291,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/reset-password'
+    | '/ui'
     | '/app/flow'
     | '/app/help'
     | '/app/notifications'
@@ -306,10 +318,18 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  UiRoute: typeof UiRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/ui': {
+      id: '/ui'
+      path: '/ui'
+      fullPath: '/ui'
+      preLoaderRoute: typeof UiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -541,6 +561,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  UiRoute: UiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
