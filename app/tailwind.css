@@ -316,7 +316,7 @@ html {
 }
 
 .tiptap.ProseMirror {
-  @apply h-full overflow-y-auto p-4 text-sm outline-none;
+  @apply h-full overflow-y-auto p-4 text-base outline-none;
 }
 
 /* Espaçamento de parágrafos (corrige percepção do Enter) */
@@ -354,7 +354,7 @@ html {
 }
 
 .tiptap.ProseMirror h3 {
-  @apply mt-4 mb-2 p-0 text-base font-normal tracking-wider uppercase;
+  @apply mt-4 mb-2 p-0 text-xl font-normal tracking-wider uppercase;
 }
 
 .tiptap.ProseMirror hr {
