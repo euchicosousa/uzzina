@@ -1,4 +1,5 @@
 import { useEditor, EditorContent, EditorContext, useEditorState, type Editor } from "@tiptap/react";
+import { BubbleMenu as BubbleMenuComponent } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useMemo } from "react";
@@ -148,6 +149,7 @@ function TiptapToolbar({ editor }: TiptapToolbarProps) {
     </div>
   );
 }
+
 export function Tiptap({
   content,
   handleBlur,
@@ -204,6 +206,49 @@ export function Tiptap({
     }),
     [editor],
   );
+
+  const bubbleButtons = useMemo<ToolbarButtonDef[]>(() => {
+    if (!editor) return [];
+    return [
+      {
+        icon: Heading1,
+        label: "Título 1",
+        action: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
+        selector: (e) => e.isActive("heading", { level: 1 }),
+      },
+      {
+        icon: Heading2,
+        label: "Título 2",
+        action: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
+        selector: (e) => e.isActive("heading", { level: 2 }),
+      },
+      {
+        icon: Heading3,
+        label: "Título 3",
+        action: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
+        selector: (e) => e.isActive("heading", { level: 3 }),
+      },
+      {
+        icon: Bold,
+        label: "Negrito",
+        action: () => editor.chain().focus().toggleBold().run(),
+        selector: (e) => e.isActive("bold"),
+      },
+      {
+        icon: Italic,
+        label: "Itálico",
+        action: () => editor.chain().focus().toggleItalic().run(),
+        selector: (e) => e.isActive("italic"),
+      },
+      {
+        icon: Strikethrough,
+        label: "Tachado",
+        action: () => editor.chain().focus().toggleStrike().run(),
+        selector: (e) => e.isActive("strike"),
+      },
+    ];
+  }, [editor]);
+
   return (
     <EditorContext.Provider value={providedValue}>
       <div
@@ -213,6 +258,16 @@ export function Tiptap({
         )}
       >
         <TiptapToolbar editor={editor} />
+        {editor && (
+          <BubbleMenuComponent
+            editor={editor}
+            className="flex items-center gap-0.5 rounded-xl border border-border bg-background/95 p-1 shadow-lg backdrop-blur-md"
+          >
+            {bubbleButtons.map((btn) => (
+              <ToolbarButton key={`bubble-${btn.label}`} {...btn} editor={editor} />
+            ))}
+          </BubbleMenuComponent>
+        )}
         <EditorContent className="flex-1 min-h-[150px]" editor={editor} />
       </div>
     </EditorContext.Provider>
