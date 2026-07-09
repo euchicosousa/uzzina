@@ -47,7 +47,7 @@ export function CalendarDay({
       key={format(day, "yyyy-MM-dd")}
       ref={setNodeRef}
       className={cn(
-        "group/column flex flex-col justify-between",
+        "group/column flex flex-col justify-between hover:bg-foreground/5 duration-500",
         showBorder && "border-b",
         highlightThisWeek && isSameWeek(day, currentDay || today) && "",
         viewOptions.variant === VARIANT.content

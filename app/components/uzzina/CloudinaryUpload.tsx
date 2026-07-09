@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-// Tipagem mínima do Cloudinary UploadIcon Widget global
+// Tipagem mínima do Cloudinary Upload Widget global
 declare global {
   interface Window {
     cloudinary?: {
@@ -16,15 +16,19 @@ declare global {
               resource_type?: string;
               format?: string;
               original_filename?: string;
-              coordinates?: { custom?: number[][] };
+              coordinates?: {
+                custom?: number[][];
+              };
             };
           },
         ) => void,
-      ) => { open: () => void; destroy: () => void };
+      ) => {
+        open: () => void;
+        destroy: () => void;
+      };
     };
   }
 }
-
 interface CloudinaryUploadProps {
   cloudName: string;
   uploadPreset: string;
@@ -41,7 +45,7 @@ interface CloudinaryUploadProps {
   resourceType?: "image" | "video" | "auto";
   /**
    * Se true, permite selecionar múltiplos arquivos por sessão.
-   * onUpload é chamado individualmente para cada arquivo.
+   * onUpload é chamado individualmente para cada arquivo concluído.
    */
   multiple?: boolean;
   /** Largura máxima do output (padrão: 800px, ignorado para não-imagem) */
@@ -49,12 +53,15 @@ interface CloudinaryUploadProps {
   /** Chamado após cada upload com a URL final e metadados do arquivo */
   onUpload: (
     url: string,
-    meta: { resourceType: string; format: string; originalFilename?: string },
+    meta: {
+      resourceType: string;
+      format: string;
+      originalFilename?: string;
+    },
   ) => void;
   children: React.ReactNode;
   className?: string;
 }
-
 export function CloudinaryUpload({
   cloudName,
   uploadPreset,
@@ -67,32 +74,18 @@ export function CloudinaryUpload({
   children,
   className,
 }: CloudinaryUploadProps) {
-  const widgetRef = useRef<{ open: () => void; destroy: () => void } | null>(
-    null,
-  );
-  const destroyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const widgetRef = useRef<{
+    open: () => void;
+    destroy: () => void;
+  } | null>(null);
 
-  // Mantém sempre a referência mais recente do onUpload.
-  // Isso resolve o problema de closure estale quando o widget é criado uma vez
-  // mas o conteúdo de onUpload muda entre renders (ex: workFiles atualiza).
+  // Mantém sempre a referência mais recente do onUpload para evitar closures stale.
+  // O widget é criado uma única vez — sem este ref o callback ficaria preso
+  // à versão do onUpload capturada no render de criação.
   const onUploadRef = useRef(onUpload);
   useEffect(() => {
     onUploadRef.current = onUpload;
   });
-
-  // Limpa o widget e o timeout caso o componente seja desmontado
-  useEffect(() => {
-    const destroyTimeout = destroyTimeoutRef;
-    const widget = widgetRef;
-    return () => {
-      if (destroyTimeout.current) {
-        clearTimeout(destroyTimeout.current);
-      }
-      if (widget.current) {
-        widget.current.destroy();
-      }
-    };
-  }, []);
 
   // Carrega o script do widget uma única vez por página
   useEffect(() => {
@@ -104,6 +97,13 @@ export function CloudinaryUpload({
     document.head.appendChild(script);
   }, []);
 
+  // Destrói o widget ao desmontar o componente
+  useEffect(() => {
+    return () => {
+      widgetRef.current?.destroy();
+      widgetRef.current = null;
+    };
+  }, []);
   function openWidget() {
     if (!uploadPreset) {
       console.error("CloudinaryUpload: uploadPreset não configurado.");
@@ -114,18 +114,14 @@ export function CloudinaryUpload({
       return;
     }
 
-    // Se houver um timeout de destruição ativo (porque o widget acabou de fechar),
-    // cancela a destruição e reutiliza o mesmo widget.
-    if (destroyTimeoutRef.current) {
-      clearTimeout(destroyTimeoutRef.current);
-      destroyTimeoutRef.current = null;
-    }
-
+    // Reutiliza o widget já existente.
+    // IMPORTANTE: Não destruir o widget no evento `close` — em uploads múltiplos
+    // o evento `close` pode chegar ANTES de todos os eventos `success`, o que
+    // causava que apenas o último arquivo enviado fosse registrado.
     if (widgetRef.current) {
       widgetRef.current.open();
       return;
     }
-
     widgetRef.current = window.cloudinary.createUploadWidget(
       {
         cloudName,
@@ -144,42 +140,36 @@ export function CloudinaryUpload({
             const isDark = document.documentElement.classList.contains("dark");
             return isDark
               ? {
-                  window: "#09090b", // card / background dark
-                  sourceBg: "#18181b", // secondary dark
-                  windowBorder: "#27272a", // border dark
-                  tabIcon: "#fafafa", // primary foreground dark
-                  inactiveTabIcon: "#a1a1aa", // muted foreground dark
-                  menuIcons: "#a1a1aa", // muted foreground dark
-                  link: "#fafafa", // primary dark
-                  action: "#fafafa", // primary dark
-                  inProgress: "#fafafa", // primary dark
-                  complete: "#22c55e", // success (green-500)
-                  error: "#ef4444", // destructve (red-500)
-                  textDark: "#fafafa", // foreground dark
-                  textLight: "#09090b", // background dark (contrast)
+                  window: "#09090b",
+                  sourceBg: "#18181b",
+                  windowBorder: "#27272a",
+                  tabIcon: "#fafafa",
+                  inactiveTabIcon: "#a1a1aa",
+                  menuIcons: "#a1a1aa",
+                  link: "#fafafa",
+                  action: "#fafafa",
+                  inProgress: "#fafafa",
+                  complete: "#22c55e",
+                  error: "#ef4444",
+                  textDark: "#fafafa",
+                  textLight: "#09090b",
                 }
               : {
-                  window: "#ffffff", // card / background light
-                  sourceBg: "#f4f4f5", // secondary light
-                  windowBorder: "#e4e4e7", // border light
-                  tabIcon: "#18181b", // primary foreground light
-                  inactiveTabIcon: "#71717a", // muted foreground light
-                  menuIcons: "#71717a", // muted foreground light
-                  link: "#18181b", // primary light
-                  action: "#18181b", // primary light
-                  inProgress: "#18181b", // primary light
-                  complete: "#22c55e", // success (green-500)
-                  error: "#ef4444", // destructve (red-500)
-                  textDark: "#09090b", // foreground light
-                  textLight: "#ffffff", // background light (contrast)
+                  window: "#ffffff",
+                  sourceBg: "#f4f4f5",
+                  windowBorder: "#e4e4e7",
+                  tabIcon: "#18181b",
+                  inactiveTabIcon: "#71717a",
+                  menuIcons: "#71717a",
+                  link: "#18181b",
+                  action: "#18181b",
+                  inProgress: "#18181b",
+                  complete: "#22c55e",
+                  error: "#ef4444",
+                  textDark: "#09090b",
+                  textLight: "#ffffff",
                 };
           })(),
-          // fonts: {
-          //   "'Inter', sans-serif": {
-          //     url: "https://fonts.googleapis.com/css?family=Inter",
-          //     active: true,
-          //   },
-          // },
         },
       },
       (error, result) => {
@@ -192,9 +182,7 @@ export function CloudinaryUpload({
             format = "",
             original_filename = "",
           } = result.info;
-
           let finalUrl: string;
-
           if (square && resource_type === "image") {
             // Crop 1:1 manual usando coordenadas selecionadas pelo usuário (avatar)
             const ext = format ? `.${format}` : "";
@@ -206,40 +194,21 @@ export function CloudinaryUpload({
               finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/c_fill,ar_1:1,w_${outputWidth},q_auto/${public_id}${ext}`;
             }
           } else {
-            // Para todos os outros casos (work_files, content_files, etc.),
-            // usa a secure_url diretamente — ela já é a URL correta fornecida pelo Cloudinary
+            // Para todos os outros casos usa a secure_url diretamente
             finalUrl = secure_url;
           }
-
-          // Usa ref para garantir que o onUpload mais recente seja chamado,
-          // mesmo que o widget tenha sido criado em um render anterior
           onUploadRef.current(finalUrl, {
             resourceType: resource_type,
             format,
             originalFilename: original_filename,
           });
         }
-        // Destrói o widget ao fechar para garantir sessão limpa na próxima abertura.
-        // Sem isso, o widget cached re-emite eventos `success` de sessões anteriores.
-        // Adicionamos um setTimeout para evitar que a destruição síncrona interrompa
-        // a limpeza interna e a animação do widget (o que gerava o elemento sombra na tela).
-        if (!error && result.event === "close") {
-          destroyTimeoutRef.current = setTimeout(() => {
-            if (widgetRef.current) {
-              widgetRef.current.destroy();
-              widgetRef.current = null;
-            }
-            destroyTimeoutRef.current = null;
-          }, 300);
-        }
       },
     );
-
     widgetRef.current.open();
   }
-
   return (
-    <button type="button" onClick={openWidget} className={className}>
+    <button className={className} onClick={openWidget} type="button">
       {children}
     </button>
   );
