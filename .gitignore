@@ -6,3 +6,17 @@
 .env
 force-reset.tsx
 .vercel
+
+# Build outputs
+/dist/
+/.react-router/
+.cache/
+*.tsbuildinfo
+
+# Local envs / logs
+.env.local
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun.lockb

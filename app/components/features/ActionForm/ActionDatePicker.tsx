@@ -26,7 +26,7 @@ export function ActionDatePicker({
   size?: "sm" | "lg";
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(date);
   const handleCalendarSelect = (date: Date | undefined) => {
     if (date) {
       const newDate = selectedDate ? new Date(selectedDate) : new Date();

@@ -211,7 +211,6 @@ export function EssentialsTab({
                   ...getNewDateForAction(RawAction, date),
                 });
                 await updateAction({
-                  ...RawAction,
                   ...getNewDateForAction(RawAction, date),
                 });
               }}
