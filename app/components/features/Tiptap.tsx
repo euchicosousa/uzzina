@@ -24,9 +24,14 @@ import {
   Heading3,
   Link as LinkIcon,
   Minus,
-  Trash2,
+  RemoveFormatting,
   Table as TableIcon,
   Highlighter,
+  ChevronDown,
+  ChevronRight,
+  Rows,
+  Columns,
+  Trash2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -152,11 +157,21 @@ function TiptapToolbar({ editor }: TiptapToolbarProps) {
     {
       icon: TableIcon,
       label: "Tabela",
-      action: () => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
+      action: () => {
+        const colsStr = window.prompt("Quantas Colunas deseja na tabela?", "3");
+        if (colsStr === null) return;
+        const rowsStr = window.prompt("Quantas Linhas deseja na tabela?", "3");
+        if (rowsStr === null) return;
+
+        const cols = Number.parseInt(colsStr, 10) || 3;
+        const rows = Number.parseInt(rowsStr, 10) || 3;
+
+        editor.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run();
+      },
       selector: (e) => e.isActive("table"),
     },
     {
-      icon: Trash2,
+      icon: RemoveFormatting,
       label: "Remover Formatação",
       action: () => editor.chain().focus().clearNodes().unsetAllMarks().run(),
       selector: () => false,
@@ -265,6 +280,11 @@ export function Tiptap({
     [editor],
   );
 
+  const isSelectionInTable = useEditorState({
+    editor,
+    selector: ({ editor: e }) => e?.isActive("table") ?? false,
+  });
+
   const bubbleButtons = useMemo<ToolbarButtonDef[]>(() => {
     if (!editor) return [];
     return [
@@ -311,10 +331,45 @@ export function Tiptap({
         selector: (e) => e.isActive("highlight"),
       },
       {
-        icon: Trash2,
+        icon: RemoveFormatting,
         label: "Remover Formatação",
         action: () => editor.chain().focus().clearNodes().unsetAllMarks().run(),
         selector: () => false,
+      },
+    ];
+  }, [editor]);
+
+  const tableButtons = useMemo<Omit<ToolbarButtonDef, "selector">[]>(() => {
+    if (!editor) return [];
+    return [
+      {
+        icon: ChevronDown,
+        label: "Inserir Linha Abaixo",
+        action: () => editor.chain().focus().addRowAfter().run(),
+      },
+      {
+        icon: ChevronRight,
+        label: "Inserir Coluna à Direita",
+        action: () => editor.chain().focus().addColumnAfter().run(),
+      },
+      {
+        icon: Rows,
+        label: "Excluir Linha",
+        action: () => editor.chain().focus().deleteRow().run(),
+      },
+      {
+        icon: Columns,
+        label: "Excluir Coluna",
+        action: () => editor.chain().focus().deleteColumn().run(),
+      },
+      {
+        icon: Trash2,
+        label: "Excluir Tabela",
+        action: () => {
+          if (window.confirm("Deseja realmente excluir a tabela inteira?")) {
+            editor.chain().focus().deleteTable().run();
+          }
+        },
       },
     ];
   }, [editor]);
@@ -333,9 +388,21 @@ export function Tiptap({
             editor={editor}
             className="flex items-center gap-0.5 rounded-xl border border-border bg-background/95 p-1 shadow-lg backdrop-blur-md"
           >
-            {bubbleButtons.map((btn) => (
-              <ToolbarButton key={`bubble-${btn.label}`} {...btn} editor={editor} />
-            ))}
+            {isSelectionInTable
+              ? tableButtons.map((btn) => (
+                  <button
+                    key={`table-control-${btn.label}`}
+                    type="button"
+                    className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground border border-transparent transition-all outline-none"
+                    onClick={btn.action}
+                    title={btn.label}
+                  >
+                    <btn.icon className="size-4" />
+                  </button>
+                ))
+              : bubbleButtons.map((btn) => (
+                  <ToolbarButton key={`bubble-${btn.label}`} {...btn} editor={editor} />
+                ))}
           </BubbleMenuComponent>
         )}
         <EditorContent className="flex-1 min-h-[150px]" editor={editor} />
