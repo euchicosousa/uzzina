@@ -2,6 +2,12 @@ import { useEditor, EditorContent, EditorContext, useEditorState, type Editor } 
 import { BubbleMenu as BubbleMenuComponent } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import { Link } from "@tiptap/extension-link";
+import { Table } from "@tiptap/extension-table";
+import { TableRow } from "@tiptap/extension-table-row";
+import { TableCell } from "@tiptap/extension-table-cell";
+import { TableHeader } from "@tiptap/extension-table-header";
+import { Highlight } from "@tiptap/extension-highlight";
 import { useMemo } from "react";
 import { cn } from "~/lib/utils";
 import {
@@ -16,6 +22,11 @@ import {
   Heading1,
   Heading2,
   Heading3,
+  Link as LinkIcon,
+  Minus,
+  Trash2,
+  Table as TableIcon,
+  Highlighter,
   type LucideIcon,
 } from "lucide-react";
 
@@ -117,6 +128,39 @@ function TiptapToolbar({ editor }: TiptapToolbarProps) {
       action: () => editor.chain().focus().toggleBlockquote().run(),
       selector: (e) => e.isActive("blockquote"),
     },
+    {
+      icon: LinkIcon,
+      label: "Link",
+      action: () => {
+        const previousUrl = editor.getAttributes("link").href;
+        const url = window.prompt("Digite o endereço do Link:", previousUrl);
+        if (url === null) return;
+        if (url === "") {
+          editor.chain().focus().unsetLink().run();
+          return;
+        }
+        editor.chain().focus().setLink({ href: url }).run();
+      },
+      selector: (e) => e.isActive("link"),
+    },
+    {
+      icon: Minus,
+      label: "Linha Divisória",
+      action: () => editor.chain().focus().setHorizontalRule().run(),
+      selector: () => false,
+    },
+    {
+      icon: TableIcon,
+      label: "Tabela",
+      action: () => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
+      selector: (e) => e.isActive("table"),
+    },
+    {
+      icon: Trash2,
+      label: "Remover Formatação",
+      action: () => editor.chain().focus().clearNodes().unsetAllMarks().run(),
+      selector: () => false,
+    },
   ];
 
   return (
@@ -177,6 +221,20 @@ export function Tiptap({
       }),
       Placeholder.configure({
         placeholder: placeholder || "Escreva algo...",
+      }),
+      Link.configure({
+        openOnClick: false,
+        autolink: true,
+        linkOnPaste: true,
+      }),
+      Table.configure({
+        resizable: false,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
+      Highlight.configure({
+        multicolor: false,
       }),
     ],
     content,
@@ -245,6 +303,18 @@ export function Tiptap({
         label: "Tachado",
         action: () => editor.chain().focus().toggleStrike().run(),
         selector: (e) => e.isActive("strike"),
+      },
+      {
+        icon: Highlighter,
+        label: "Marca-Texto",
+        action: () => editor.chain().focus().toggleHighlight().run(),
+        selector: (e) => e.isActive("highlight"),
+      },
+      {
+        icon: Trash2,
+        label: "Remover Formatação",
+        action: () => editor.chain().focus().clearNodes().unsetAllMarks().run(),
+        selector: () => false,
       },
     ];
   }, [editor]);

@@ -358,7 +358,31 @@ html {
 }
 
 .tiptap.ProseMirror hr {
-  @apply my-8;
+  @apply my-8 border-border;
+}
+
+/* Links */
+.tiptap.ProseMirror a {
+  @apply text-primary underline underline-offset-4 decoration-primary/40 hover:decoration-primary transition-colors cursor-pointer;
+}
+
+/* Highlights */
+.tiptap.ProseMirror mark {
+  @apply bg-amber-200 dark:bg-amber-500/30 rounded px-0.5 text-inherit;
+}
+
+/* Tabelas */
+.tiptap.ProseMirror table {
+  @apply border-collapse border border-border table-fixed w-full my-4 rounded-xl overflow-hidden;
+}
+
+.tiptap.ProseMirror th,
+.tiptap.ProseMirror td {
+  @apply border border-border p-2 text-sm text-left relative min-w-[50px] align-top;
+}
+
+.tiptap.ProseMirror th {
+  @apply bg-muted font-semibold;
 }
 
 .tiptap.ProseMirror p.is-editor-empty:first-child::before {

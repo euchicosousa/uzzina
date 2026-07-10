@@ -3,6 +3,7 @@ import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { ContentReorderDialog } from "./ContentReorderDialog";
 import { detectPostType } from "./InstagramHelpers";
 import { PlusIcon, SlidersHorizontalIcon } from "lucide-react";
+import { cn } from "~/lib/utils";
 export { InstagramPreview } from "./InstagramPreview";
 
 // ---------------------------------------------------------------------------
@@ -71,20 +72,23 @@ export function ContentFilesManager({
       <div className="flex items-center justify-between py-2">
         <div className="flex items-center gap-2">
           {/* UploadIcon rápido (primeiro arquivo) */}
-          {files.length === 0 ? (
-            <CloudinaryUpload
-              cloudName={cloudName}
-              uploadPreset={uploadPreset}
-              folder="uzzina/content"
-              resourceType="auto"
-              multiple
-              onUpload={handleUpload}
-              className="flex items-center gap-1.5 rounded-lg border border-dashed px-3 py-1.5 text-xs opacity-60 transition hover:opacity-100"
-            >
-              <PlusIcon className="size-3.5" />
-              Adicionar conteúdo
-            </CloudinaryUpload>
-          ) : (
+          <CloudinaryUpload
+            cloudName={cloudName}
+            uploadPreset={uploadPreset}
+            folder="uzzina/content"
+            resourceType="auto"
+            multiple
+            onUpload={handleUpload}
+            className={cn(
+              "flex items-center gap-1.5 rounded-lg border border-dashed px-3 py-1.5 text-xs opacity-60 transition hover:opacity-100",
+              files.length > 0 && "hidden"
+            )}
+          >
+            <PlusIcon className="size-3.5" />
+            Adicionar conteúdo
+          </CloudinaryUpload>
+
+          {files.length > 0 && (
             <span className="bg-muted rounded-full px-2 py-0.5 text-[10px] font-medium capitalize">
               {type === "image"
                 ? "Imagem"

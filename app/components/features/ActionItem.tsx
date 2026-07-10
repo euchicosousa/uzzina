@@ -1,6 +1,5 @@
 import { CalendarDaysIcon, SignalIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-
 import { useAppContext } from "~/contexts/AppContext";
 import type { Action, Partner, Person } from "~/types";
 
@@ -47,7 +46,6 @@ import {
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
 import { cn } from "~/lib/utils";
-
 export type ActionDisplayFlags = {
   /** Whether to highlight the action if it is late */
   showLate?: boolean;
@@ -87,8 +85,6 @@ type ActionItemProps = {
   /** Max lines for the title layout in certain variants */
   lines?: 1 | 2;
 };
-
-
 
 /**
  * ActionItem Component
