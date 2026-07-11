@@ -1,7 +1,7 @@
 import { CircleAlertIcon, EyeIcon, EyeOffIcon, LogInIcon } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
-import { UzzinaLogo } from "~/components/logo";
+import { UZZINALogo } from "~/components/logo";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -46,7 +46,7 @@ function Login() {
 
       <div className="border_after border_before relative my-auto p-8">
         <div className="mb-12">
-          <UzzinaLogo className="h-12" />
+          <UZZINALogo className="h-12" />
         </div>
         {error && (
           <Alert

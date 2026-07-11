@@ -1,17 +1,20 @@
-import { CircleAlertIcon, EyeIcon, EyeOffIcon, KeyRoundIcon } from "lucide-react";
+import {
+  CircleAlertIcon,
+  EyeIcon,
+  EyeOffIcon,
+  KeyRoundIcon,
+} from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { UzzinaLogo } from "~/components/logo";
+import { UZZINALogo } from "~/components/logo";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-
 export const Route = createFileRoute("/reset-password")({
   component: ResetPassword,
 });
-
 function ResetPassword() {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
@@ -20,9 +23,9 @@ function ResetPassword() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
-
-  const supabaseRef = useRef<ReturnType<typeof createSupabaseBrowserClient> | null>(null);
-
+  const supabaseRef = useRef<ReturnType<
+    typeof createSupabaseBrowserClient
+  > | null>(null);
   useEffect(() => {
     const client = createSupabaseBrowserClient();
     supabaseRef.current = client;
@@ -33,21 +36,28 @@ function ResetPassword() {
         console.log("URL completa:", window.location.href);
         console.log("Search (query):", window.location.search);
         console.log("Hash:", window.location.hash);
-
         const urlParams = new URLSearchParams(window.location.search);
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        
+        const hashParams = new URLSearchParams(
+          window.location.hash.substring(1),
+        );
+
         // Verifica se o Supabase redirecionou de volta com erro
-        const errorDesc = urlParams.get("error_description") || hashParams.get("error_description");
+        const errorDesc =
+          urlParams.get("error_description") ||
+          hashParams.get("error_description");
         if (errorDesc) {
-          const formattedError = decodeURIComponent(errorDesc).replace(/\+/g, " ");
+          const formattedError = decodeURIComponent(errorDesc).replace(
+            /\+/g,
+            " ",
+          );
           setError(formattedError);
           setCheckingSession(false);
           return;
         }
 
         // Fluxo 1: Verificação direta via token_hash (Evita problemas com Scanners de E-mail)
-        const tokenHash = urlParams.get("token_hash") || hashParams.get("token_hash");
+        const tokenHash =
+          urlParams.get("token_hash") || hashParams.get("token_hash");
         if (tokenHash) {
           console.log("Verificando token_hash...");
           const { error: verifyError } = await client.auth.verifyOtp({
@@ -63,10 +73,10 @@ function ResetPassword() {
           // Fluxo 2: Troca tradicional de código (PKCE)
           const code = urlParams.get("code");
           console.log("Code obtido:", code);
-
           if (code) {
             console.log("Trocando código por sessão...");
-            const { error: exchangeError } = await client.auth.exchangeCodeForSession(code);
+            const { error: exchangeError } =
+              await client.auth.exchangeCodeForSession(code);
             if (exchangeError) {
               console.error("Erro na troca do código:", exchangeError);
               throw exchangeError;
@@ -74,53 +84,51 @@ function ResetPassword() {
             console.log("Troca de código concluída com sucesso!");
           }
         }
-
         const { data } = await client.auth.getSession();
         console.log("Sessão obtida:", data.session);
         if (!data.session) {
           // Se após ler os hashes/code não houver uma sessão ativa, o link pode ser inválido
-          setError("Link de recuperação inválido ou expirado. Por favor, solicite um novo.");
+          setError(
+            "Link de recuperação inválido ou expirado. Por favor, solicite um novo.",
+          );
         }
       } catch (err) {
         console.error("Erro ao validar sessão:", err);
-        setError("Link de recuperação inválido ou expirado. Por favor, solicite um novo.");
+        setError(
+          "Link de recuperação inválido ou expirado. Por favor, solicite um novo.",
+        );
       } finally {
         setCheckingSession(false);
       }
     };
-
     checkSession();
   }, []);
-
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!supabaseRef.current) return;
     setError(null);
-
     if (password.length < 6) {
       setError("A senha deve ter pelo menos 6 caracteres.");
       return;
     }
-
     if (password !== confirmPassword) {
       setError("As senhas não coincidem.");
       return;
     }
-
     setLoading(true);
-
     try {
       const { error: updateError } = await supabaseRef.current.auth.updateUser({
         password: password,
       });
-
       if (updateError) {
         throw updateError;
       }
-
       toast.success("Senha atualizada com sucesso!");
       // Após atualizar a senha com sucesso, redireciona o usuário logado para a dashboard
-      navigate({ to: "/app", replace: true });
+      navigate({
+        to: "/app",
+        replace: true,
+      });
     } catch (err) {
       const message =
         err instanceof Error
@@ -130,20 +138,19 @@ function ResetPassword() {
       setLoading(false);
     }
   };
-
   return (
     <div className="grid h-screen grid-cols-[2rem_20rem_2rem] justify-center overflow-x-hidden md:grid-cols-[2rem_30rem_2rem]">
       <div className="border-r"></div>
 
       <div className="border_after border_before relative my-auto p-8">
         <div className="mb-12">
-          <UzzinaLogo className="h-12" />
+          <UZZINALogo className="h-12" />
         </div>
 
         {error && (
           <Alert
-            variant="destructive"
             className="mb-8 border-destructive/10 bg-destructive/5"
+            variant="destructive"
           >
             <CircleAlertIcon className="size-4" />
             <AlertTitle>Erro ao redefinir</AlertTitle>
@@ -159,7 +166,7 @@ function ResetPassword() {
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <h2 className="text-xl font-semibold mb-2">Criar Nova Senha</h2>
               <p className="text-xs text-muted-foreground mb-6">
@@ -167,44 +174,50 @@ function ResetPassword() {
               </p>
             </div>
 
-             <div className="relative">
+            <div className="relative">
               <span className="mb-2 block w-full font-medium">Nova Senha</span>
               <Input
-                variant="inset"
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
                 className="pr-12"
+                name="password"
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Mínimo 6 caracteres"
+                required
+                type={showPassword ? "text" : "password"}
+                value={password}
+                variant="inset"
               />
               <Button
-                size={"icon"}
                 className="absolute top-8 right-0"
-                variant={"ghost"}
-                type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                size={"icon"}
+                type="button"
+                variant={"ghost"}
               >
                 {showPassword ? <EyeIcon /> : <EyeOffIcon />}
               </Button>
             </div>
 
             <div>
-              <span className="mb-2 block w-full font-medium">Confirmar Nova Senha</span>
+              <span className="mb-2 block w-full font-medium">
+                Confirmar Nova Senha
+              </span>
               <Input
-                variant="inset"
-                type="password"
                 name="confirmPassword"
-                value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                required
                 placeholder="Repita a nova senha"
+                required
+                type="password"
+                value={confirmPassword}
+                variant="inset"
               />
             </div>
 
             <div className="flex justify-end pt-4">
-              <Button type="submit" disabled={loading || !!error} className="w-full">
+              <Button
+                className="w-full"
+                disabled={loading || !!error}
+                type="submit"
+              >
                 {loading ? "Salvando..." : "Redefinir Senha e Entrar"}
                 {!loading && <KeyRoundIcon className="ml-2 size-4" />}
               </Button>

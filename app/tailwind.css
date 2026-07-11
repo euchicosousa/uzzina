@@ -52,7 +52,7 @@
   --sidebar-border: oklch(from var(--foreground) l c h / 8%);
   --sidebar-ring: oklch(0.708 0 0);
 
-  /* Uzzina colors */
+  /* UZZINA colors */
 
   --action: oklch(from var(--background) 0.98 c h);
   --action-hover: oklch(1 0 1);
@@ -363,22 +363,22 @@ html {
 
 /* Links */
 .tiptap.ProseMirror a {
-  @apply text-primary underline underline-offset-4 decoration-primary/40 hover:decoration-primary transition-colors cursor-pointer;
+  @apply cursor-pointer text-primary underline decoration-primary/40 underline-offset-4 transition-colors hover:decoration-primary;
 }
 
 /* Highlights */
 .tiptap.ProseMirror mark {
-  @apply bg-amber-200 dark:bg-amber-500/30 rounded px-0.5 text-inherit;
+  @apply rounded bg-amber-200 px-0.5 text-inherit dark:bg-amber-500/30;
 }
 
 /* Tabelas */
 .tiptap.ProseMirror table {
-  @apply border-collapse border border-border table-fixed w-full my-4 rounded-xl overflow-hidden;
+  @apply my-4 w-full table-fixed border-collapse overflow-hidden rounded-xl border border-border;
 }
 
 .tiptap.ProseMirror th,
 .tiptap.ProseMirror td {
-  @apply border border-border p-2 text-sm text-left relative min-w-[50px] align-top;
+  @apply relative min-w-[50px] border border-border p-2 text-left align-top text-sm;
 }
 
 .tiptap.ProseMirror th {

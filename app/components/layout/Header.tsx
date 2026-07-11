@@ -30,7 +30,7 @@ import {
 import { cn } from "~/lib/utils";
 import type { Notification } from "~/types";
 import { DashboardMetrics } from "../features/home/DashboardMetrics";
-import { UzzinaLogo } from "../logo";
+import { UZZINALogo } from "../logo";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -186,8 +186,8 @@ export function Header({
       <div className="flex items-center gap-2 py-4">
         {/* Logo */}
         <Link to="/app">
-          <UzzinaLogo className="hidden h-8 sm:block" />
-          <UzzinaLogo className="h-8 sm:hidden" model="logo" />
+          <UZZINALogo className="hidden h-8 sm:block" />
+          <UZZINALogo className="h-8 sm:hidden" model="logo" />
         </Link>
       </div>
 

@@ -14,26 +14,38 @@ import {
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { cn } from "~/lib/utils";
-
 export const Route = createFileRoute("/app/help")({
   component: HelpPage,
 });
-
 const sections = [
-  { id: "filosofia", title: "Filosofia do Uzzina", icon: CompassIcon },
+  {
+    id: "filosofia",
+    title: "Filosofia do UZZINA",
+    icon: CompassIcon,
+  },
   {
     id: "visualizacoes",
     title: "Visualizações & Painéis",
     icon: CalendarIcon,
   },
-  { id: "fluxo", title: "Fases do Fluxo", icon: GitCommitIcon },
-  { id: "atalhos", title: "Atalhos de Teclado", icon: KeyboardIcon },
-  { id: "selecao-multipla", title: "Seleção & Lote", icon: CheckSquareIcon },
+  {
+    id: "fluxo",
+    title: "Fases do Fluxo",
+    icon: GitCommitIcon,
+  },
+  {
+    id: "atalhos",
+    title: "Atalhos de Teclado",
+    icon: KeyboardIcon,
+  },
+  {
+    id: "selecao-multipla",
+    title: "Seleção & Lote",
+    icon: CheckSquareIcon,
+  },
 ];
-
 function HelpPage() {
   const [activeSection, setActiveSection] = useState("filosofia");
-
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -48,12 +60,10 @@ function HelpPage() {
         threshold: 0.1,
       },
     );
-
     sections.forEach((section) => {
       const element = document.getElementById(section.id);
       if (element) observer.observe(element);
     });
-
     return () => {
       sections.forEach((section) => {
         const element = document.getElementById(section.id);
@@ -61,16 +71,17 @@ function HelpPage() {
       });
     };
   }, []);
-
   const handleScrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      el.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
       window.history.pushState(null, "", `#${id}`);
       setActiveSection(id);
     }
   };
-
   return (
     <div className="mx-auto flex h-full w-full max-w-6xl flex-col p-6 sm:p-8">
       {/* Header da Página */}
@@ -80,7 +91,7 @@ function HelpPage() {
           Ajuda & Documentação
         </h1>
         <div className="hidden text-muted-foreground sm:block">
-          Guia de uso e comandos rápidos do Uzzina.
+          Guia de uso e comandos rápidos do UZZINA.
         </div>
       </div>
 
@@ -96,15 +107,15 @@ function HelpPage() {
               const isSelected = activeSection === section.id;
               return (
                 <button
-                  type="button"
                   key={section.id}
-                  onClick={() => handleScrollTo(section.id)}
                   className={cn(
                     "squircle flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-left text-sm font-semibold transition-all duration-200",
                     isSelected
                       ? "border-primary bg-primary text-primary-foreground shadow-sm"
                       : "border-transparent bg-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground",
                   )}
+                  onClick={() => handleScrollTo(section.id)}
+                  type="button"
                 >
                   <Icon className="size-4 shrink-0" />
                   <span>{section.title}</span>
@@ -120,15 +131,15 @@ function HelpPage() {
             const isSelected = activeSection === section.id;
             return (
               <button
-                type="button"
                 key={section.id}
-                onClick={() => handleScrollTo(section.id)}
                 className={cn(
                   "squircle rounded-xl border px-4 py-2 text-sm font-semibold whitespace-nowrap transition-all duration-200",
                   isSelected
                     ? "border-primary bg-primary text-primary-foreground shadow-sm"
                     : "border-border bg-card/40 text-muted-foreground hover:bg-card",
                 )}
+                onClick={() => handleScrollTo(section.id)}
+                type="button"
               >
                 {section.title}
               </button>
@@ -138,14 +149,14 @@ function HelpPage() {
 
         {/* Conteúdo Principal */}
         <div className="flex flex-col gap-12 pb-16 leading-relaxed">
-          {/* 1. Filosofia do Uzzina */}
-          <section id="filosofia" className="flex scroll-mt-24 flex-col gap-4">
+          {/* 1. Filosofia do UZZINA */}
+          <section className="flex scroll-mt-24 flex-col gap-4" id="filosofia">
             <div className="flex items-center gap-2 border-b py-4">
               <CompassIcon className="size-8 text-primary" />
-              <h2 className="p-0 text-2xl font-bold">Filosofia do Uzzina</h2>
+              <h2 className="p-0 text-2xl font-bold">Filosofia do UZZINA</h2>
             </div>
             <p className="text-muted-foreground">
-              O Uzzina foi desenhado sob a premissa de que{" "}
+              O UZZINA foi desenhado sob a premissa de que{" "}
               <strong className="text-foreground">
                 Estratégia e Execução devem ocupar o mesmo tempo físico
               </strong>
@@ -155,7 +166,7 @@ function HelpPage() {
             </p>
             <p className="text-muted-foreground">
               Ao unificar calendários de postagem, briefings de ações e
-              acompanhamentos dinâmicos em um único lugar, o Uzzina permite que
+              acompanhamentos dinâmicos em um único lugar, o UZZINA permite que
               sua agência, gestores e clientes alinhem a estratégia macro com as
               tarefas de criação e publicação diárias de forma instantânea. Cada
               ação planejada é uma ação executada em tempo real.
@@ -184,8 +195,8 @@ function HelpPage() {
 
           {/* 2. Visualizações & Painéis */}
           <section
-            id="visualizacoes"
             className="flex scroll-mt-24 flex-col gap-4"
+            id="visualizacoes"
           >
             <div className="flex items-center gap-2 border-b py-4">
               <CalendarIcon className="size-8 text-primary" />
@@ -195,7 +206,7 @@ function HelpPage() {
             </div>
             <p className="text-muted-foreground">
               A visualização padrão de calendário dos clientes e parceiros pode
-              ser customizada no Uzzina em três formatos para diferentes
+              ser customizada no UZZINA em três formatos para diferentes
               momentos de planejamento e análise:
             </p>
             <div className="grid gap-4 sm:grid-cols-3">
@@ -242,7 +253,7 @@ function HelpPage() {
           </section>
 
           {/* 3. Fases do Fluxo de Trabalho */}
-          <section id="fluxo" className="flex scroll-mt-24 flex-col gap-4">
+          <section className="flex scroll-mt-24 flex-col gap-4" id="fluxo">
             <div className="flex items-center gap-2 border-b py-4">
               <GitCommitIcon className="size-8 text-primary" />
               <h2 className="p-0 text-2xl font-bold">
@@ -250,7 +261,7 @@ function HelpPage() {
               </h2>
             </div>
             <p className="text-muted-foreground">
-              Cada publicação ou atividade no Uzzina é representada por uma
+              Cada publicação ou atividade no UZZINA é representada por uma
               "Ação", que progride sequencialmente por fases de andamento bem
               definidas:
             </p>
@@ -324,7 +335,7 @@ function HelpPage() {
           </section>
 
           {/* 4. Atalhos de Teclado & Ações Rápidas */}
-          <section id="atalhos" className="flex scroll-mt-24 flex-col gap-4">
+          <section className="flex scroll-mt-24 flex-col gap-4" id="atalhos">
             <div className="flex items-center gap-2 border-b py-4">
               <KeyboardIcon className="size-8 text-primary" />
               <h2 className="p-0 text-2xl font-bold">
@@ -332,7 +343,7 @@ function HelpPage() {
               </h2>
             </div>
             <p className="text-muted-foreground">
-              O Uzzina possui um motor avançado de atalhos globais e de atalhos
+              O UZZINA possui um motor avançado de atalhos globais e de atalhos
               contextuais. Para usar os
               <strong className="text-foreground">
                 {" "}
@@ -496,8 +507,8 @@ function HelpPage() {
 
           {/* 5. Seleção Múltipla & Ações em Lote */}
           <section
-            id="selecao-multipla"
             className="flex scroll-mt-24 flex-col gap-4"
+            id="selecao-multipla"
           >
             <div className="flex items-center gap-2 border-b py-4">
               <CheckSquareIcon className="size-8 text-primary" />
@@ -507,7 +518,7 @@ function HelpPage() {
             </div>
             <p className="text-muted-foreground">
               Precisa mover, atualizar ou remover muitas ações de uma vez? O
-              Uzzina oferece uma ferramenta completa de gerenciamento em lote:
+              UZZINA oferece uma ferramenta completa de gerenciamento em lote:
             </p>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex gap-4 p-4">
