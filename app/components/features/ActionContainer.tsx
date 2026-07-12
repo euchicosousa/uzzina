@@ -124,7 +124,7 @@ export function ActionContainer({
       className={cn(
         "relative transition-all duration-300",
         !isCompact ? "h-full overflow-y-auto" : "",
-        "p-0.5 pb-6",
+        "p-1 pb-6",
       )}
       onScroll={handleScroll}
       style={maskStyle}

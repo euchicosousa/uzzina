@@ -232,7 +232,7 @@ export function ActionItem({
   const content = (
     <div
       className={cn(
-        "group/action @container relative shrink-0 cursor-pointer overflow-hidden rounded-2xl squircle",
+        "group/action @container relative shrink-0 cursor-pointer overflow-hidden rounded-2xl squircle hover:scale-101",
         variantClasses,
         bgClasses,
         className,
@@ -549,7 +549,10 @@ function ActionVariantRenderer({
       );
     case VARIANT.block:
       return (
-        <div className="flex flex-col gap-2 pb-2">
+        <div
+          className="flex flex-col gap-2 pb-2 scale-98 
+        group-hover/action:scale-100 transition duration-500"
+        >
           <ActionItemTitleInput
             className={"text-xl leading-tight font-medium"}
             isEditing={isEditing}
@@ -606,7 +609,7 @@ function ActionVariantRenderer({
       );
     default:
       return (
-        <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
+        <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1 scale-95 hover:scale-102 transition duration-500">
           <div className="flex w-full items-center gap-2 overflow-hidden">
             <div className="flex items-center gap-2">
               <StationIcon size="short" station={currentStation} />
