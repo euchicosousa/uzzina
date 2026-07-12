@@ -34,6 +34,11 @@ const sections = [
     icon: GitCommitIcon,
   },
   {
+    id: "editor",
+    title: "Editor de Briefing",
+    icon: SlidersIcon,
+  },
+  {
     id: "atalhos",
     title: "Atalhos de Teclado",
     icon: KeyboardIcon,
@@ -332,6 +337,35 @@ function HelpPage() {
                 </p>
               </div>
             </div>
+          </section>
+
+          {/* Editor de Briefing */}
+          <section className="flex scroll-mt-24 flex-col gap-4" id="editor">
+            <div className="flex items-center gap-2 border-b py-4">
+              <SlidersIcon className="size-8 text-primary" />
+              <h2 className="p-0 text-2xl font-bold">Editor de Briefing (Descrição)</h2>
+            </div>
+            <p className="text-muted-foreground">
+              A área de descrição das ações utiliza um editor **Tiptap Rich Text** moderno com suporte a Markdown, tabelas dinâmicas e menu flutuante inteligente:
+            </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-2xl border p-4">
+                <span className="mb-2 block text-sm font-bold text-foreground">Menu de Seleção Rápida (Bubble Menu)</span>
+                <span className="text-sm text-muted-foreground">
+                  Ao selecionar qualquer trecho de texto com o mouse, um menu flutuante surge logo acima dele. Use-o para formatar em **Negrito**, *Itálico*, ~~Tachado~~, aplicar Títulos (H1, H2, H3) ou destacar frases importantes usando a ferramenta de **Marca-Texto**.
+                </span>
+              </div>
+              <div className="rounded-2xl border p-4">
+                <span className="mb-2 block text-sm font-bold text-foreground">Inserção de Tabelas Flexíveis</span>
+                <span className="text-sm text-muted-foreground">
+                  Ao clicar no botão de Tabela no menu superior, você escolhe dinamicamente a quantidade de Linhas e Colunas do grid. Quando estiver dentro da tabela, o Bubble Menu muda automaticamente e exibe opções para adicionar/excluir linhas e colunas rapidamente.
+                </span>
+              </div>
+            </div>
+            <p className="text-muted-foreground">
+              Você também pode digitar atalhos de escrita (Markdown) que são convertidos automaticamente:
+              Digite <code className="font-mono text-primary bg-muted px-1 rounded"># </code> no início da linha para Título 1, <code className="font-mono text-primary bg-muted px-1 rounded">&gt; </code> para citação, ou <code className="font-mono text-primary bg-muted px-1 rounded">- </code> para listas.
+            </p>
           </section>
 
           {/* 4. Atalhos de Teclado & Ações Rápidas */}

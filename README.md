@@ -6,11 +6,12 @@ O **UZZINA** é o sistema de gestão de projetos, sprints, calendário operacion
 
 ## 🚀 Stack de Tecnologias
 
-- **Framework**: [React Router v7](https://reactrouter.com/) (executando em modo full-stack com SSR e loader/action pattern).
+- **Framework**: [TanStack Router](https://tanstack.com/router/latest) (executando em modo Single Page Application - SPA com rotas tipadas).
 - **Banco de Dados & Autenticação**: [Supabase](https://supabase.com/) (PostgreSQL) + Supabase Auth.
 - **Gerenciamento de Estado & Cache**: [TanStack React Query v5](https://tanstack.com/query/latest) (otimizando buscas de dados e provendo sincronização de estado com atualizações otimistas instantâneas).
 - **Estilização**: [Tailwind CSS v4](https://tailwindcss.com/) (incluindo classes customizadas do design system como `squircle` e `border_after`).
-- **Storage**: Cloudinary (hospedagem de imagens de referência e entregáveis).
+- **Storage**: Cloudinary (hospedagem de imagens de referência e entregáveis via upload widget resiliente).
+- **Editor Rich Text**: Tiptap v3 (com extensões para links automáticos, highlights de texto, tabelas integradas e bubble menus contextuais para melhoria da experiência de briefings).
 - **Deploy**: Vercel.
 
 ---

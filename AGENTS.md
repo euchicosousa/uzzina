@@ -6,12 +6,14 @@ Este repositório contém o sistema **UZZINA**, um painel e fluxo de gestão de 
 
 ## 1. Stack de Tecnologias
 
-- **Framework**: React Router v7 (SSR) com Loader/Action pattern.
+- **Framework**: TanStack Router (SPA) com rotas fortemente tipadas.
 - **Database & Auth**: Supabase (PostgreSQL) + Supabase Auth.
+  - *Cliente Supabase*: A inicialização do cliente no navegador (`app/lib/supabase.client.ts`) é feita como **Singleton** para garantir que o timer do `autoRefreshToken` funcione de forma correta e ininterrupta.
 - **Estilização**: Tailwind CSS v4 (com classes estendidas como `squircle` e `border_after` declaradas no `tailwind.css`).
-- **Deploy**: Vercel.
-- **Storage**: Imagens hospedadas via Cloudinary.
+- **Deploy**: Vercel. A pasta `/dist/` e artefatos de build estão ignorados no git para evitar envio de segredos.
+- **Storage**: Imagens hospedadas via Cloudinary. O widget de upload é mantido montado no DOM para uploads múltiplos robustos e sem interrupções.
 - **AI**: OpenAI API.
+- **Rich Text Editor**: Tiptap v3 com suporte a BubbleMenu contextual para tabelas (ChevronDown/ChevronRight/Rows/Columns/Trash2), Links com estilo visual destacado e Highlights de texto.
 
 ---
 
