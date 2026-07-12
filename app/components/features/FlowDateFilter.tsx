@@ -153,9 +153,9 @@ export function FlowDateFilter({ dateRange, onChange }: FlowDateFilterProps) {
   return (
     <Popover onOpenChange={handleOpenChange} open={isOpen}>
       <PopoverTrigger asChild>
-        <ComboboxTrigger variant="filter">
-          <CalendarIcon className="size-4 text-muted-foreground" />
-          <span>{displayText()}</span>
+        <ComboboxTrigger className="overflow-hidden" variant="filter">
+          <CalendarIcon className="size-5" />
+          <span className="truncate">{displayText()}</span>
         </ComboboxTrigger>
       </PopoverTrigger>
       <PopoverContent

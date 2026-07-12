@@ -33,6 +33,10 @@ export function PartnersCombobox({
   const [isOpen, setIsOpen] = useState(false);
   const { partners } = useAppContext();
   const [selected, setSelected] = useState<string[]>(selectedPartners || []);
+  useEffect(() => {
+    setSelected(selectedPartners || []);
+  }, [selectedPartners]);
+
   // Keep a ref so the memoized handleSelect callback always reads the latest
   // selected array without being recreated on every render.
   const selectedRef = useRef(selected);
@@ -40,6 +44,7 @@ export function PartnersCombobox({
   const currentPartners = selected
     .map((slug) => partners.find((partner) => partner.slug === slug))
     .filter((partner): partner is Partner => partner !== undefined);
+  const hasSelection = currentPartners.length > 0;
 
   // Stable per-partner callback — only recreated when partner.slug changes
   // (i.e. never, since slugs are static). This prevents cmdk from
@@ -84,12 +89,12 @@ export function PartnersCombobox({
       <PopoverTrigger asChild>
         <ComboboxTrigger
           className={"flex items-center gap-2 overflow-hidden"}
-          hasSelection={selected.length > 0}
+          hasSelection={hasSelection}
           tabIndex={tabIndex}
           title={getFormattedPartnersName(currentPartners) || "Parceiros"}
           variant={variant}
         >
-          {selected.length > 0 ? (
+          {hasSelection ? (
             <UAvatarGroup
               avatars={currentPartners.map((partner) => ({
                 id: partner.id,
@@ -105,8 +110,8 @@ export function PartnersCombobox({
             <UAvatar fallback="PA" size="sm" />
           )}
           {showText && (
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap text-xs text-muted-foreground">
-              {currentPartners.length > 0
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+              {hasSelection
                 ? getFormattedPartnersName(currentPartners)
                 : "Parceiros"}
             </div>

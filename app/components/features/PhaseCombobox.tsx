@@ -25,14 +25,13 @@ const ALL_PHASE = {
   foreground: "#fff",
 };
 type PhaseItem = typeof ALL_PHASE | PHASE_TYPE;
-
 const DEFAULT_SELECTED_PHASES: string[] = [];
-
 function MultiPhaseTrigger({
   tabIndex,
   className,
   currentPhases,
   hasRealSelection,
+  showText,
   ref,
   ...props
 }: {
@@ -40,42 +39,53 @@ function MultiPhaseTrigger({
   className?: string;
   currentPhases: PhaseItem[];
   hasRealSelection: boolean;
+  showText?: boolean;
   ref?: React.Ref<HTMLButtonElement>;
 }) {
   return (
     <ComboboxTrigger
       ref={ref}
-      variant="filter"
+      className={cn(className, "overflow-hidden")}
       hasSelection={hasRealSelection}
-      data-state={hasRealSelection && "on"}
       tabIndex={tabIndex}
       title={
         !hasRealSelection
           ? "Filtrar por fase"
-          : currentPhases.map((s) => s.title).join(" • ")
+          : currentPhases.map((s) => s.title).join(", ")
       }
-      className={className}
+      variant="filter"
       {...props}
     >
       {!hasRealSelection ? (
-        <FilterIcon className="size-4" />
+        <>
+          <FilterIcon className="size-4 shrink-0" />
+          {showText && (
+            <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+              Fases
+            </span>
+          )}
+        </>
       ) : (
-        <div className="flex -space-x-2">
-          {currentPhases.map((s) => (
-            <div
-              key={s.slug}
-              className="size-4 rounded-full border"
-              style={{
-                backgroundColor: s.color,
-              }}
-            />
-          ))}
-        </div>
+        <>
+          <div className="flex -space-x-2">
+            {currentPhases.map((s) => (
+              <div
+                key={s.slug}
+                className="size-4 rounded-full border"
+                style={{
+                  backgroundColor: s.color,
+                }}
+              />
+            ))}
+          </div>
+          <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+            {currentPhases.map((s) => s.title).join(", ")}
+          </div>
+        </>
       )}
     </ComboboxTrigger>
   );
 }
-
 function SinglePhaseTrigger({
   tabIndex,
   className,
@@ -97,10 +107,10 @@ function SinglePhaseTrigger({
   return (
     <ComboboxTrigger
       ref={ref}
-      variant="form-inline"
+      className={className}
       size={size}
       tabIndex={tabIndex}
-      className={className}
+      variant="form-inline"
       {...props}
     >
       {!showText ? (
@@ -179,12 +189,13 @@ export function PhaseCombobox({
     isMulti && currentPhases.filter((s) => s.slug !== "all").length > 0;
   return (
     <Popover onOpenChange={setIsOpen} open={isOpen}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger asChild className="debug-1">
         {isMulti ? (
           <MultiPhaseTrigger
             className={className}
             currentPhases={currentPhases}
             hasRealSelection={hasRealSelection}
+            showText
             tabIndex={tabIndex}
           />
         ) : (

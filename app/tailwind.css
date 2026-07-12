@@ -504,3 +504,7 @@ input.input-embossed {
 .raised {
   @apply ring-black/5 transition-all data-[state=on]:border-t data-[state=on]:border-white data-[state=on]:bg-card/50 data-[state=on]:shadow data-[state=on]:ring hover:data-[state=on]:bg-card dark:data-[state=on]:border-white/30;
 }
+
+.button-raised {
+  @apply border-t border-transparent ring-black/5 transition-all hover:border-white hover:bg-card/50 hover:hover:bg-card hover:shadow hover:ring dark:hover:border-white/30;
+}

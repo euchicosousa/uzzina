@@ -9,29 +9,22 @@ export interface ComboboxTriggerProps extends React.ButtonHTMLAttributes<HTMLBut
 export function ComboboxTrigger({
   variant = "form-inline",
   size = "lg",
-  hasSelection = false,
+  hasSelection,
   className,
   children,
   ref,
   type = "button",
   ...props
 }: ComboboxTriggerProps) {
-  console.log({
-    hasSelection,
-  });
-  hasSelection;
   return (
     <button
       ref={ref}
       className={cn(
         // Base transition and outline
-        "outline-none transition-colors text-sm flex gap-2",
+        "outline-none transition-colors text-sm flex gap-2  items-center",
         // Variant Styles
         variant === "filter" &&
-          cn(
-            "raised hover:text-foreground/50",
-            hasSelection && "bg-muted text-foreground",
-          ),
+          cn("px-3 rounded-2xl squircle h-10 button-raised"),
         variant === "form-inline" &&
           cn(
             "flex items-center gap-1.5",

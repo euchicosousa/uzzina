@@ -75,7 +75,7 @@ export function ResponsiblesCombobox({
     <Popover onOpenChange={setIsOpen} open={isOpen}>
       <PopoverTrigger asChild>
         <ComboboxTrigger
-          className={cn(className)}
+          className={cn(className, "overflow-hidden")}
           title={getFormattedPeopleName(currentResponsibles)}
           variant={variant === "filter" ? "filter" : "form-link"}
         >
@@ -154,32 +154,32 @@ function ActionResponsiblesDisplay({
   const responsibles = Array.from(new Set(responsibles_))
     .map((r) => people.find((p) => p.user_id === r))
     .filter((p) => p !== undefined);
-  if (responsibles.length === 0) {
-    if (variant === "filter") {
-      return (
-        <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
-          <User2Icon className="size-4" />
-          <span>Responsáveis</span>
-        </div>
-      );
-    }
-    return null;
-  }
   return (
-    <div className="flex items-center gap-2">
-      <UAvatarGroup
-        avatars={responsibles.map((p) => ({
-          image: p?.image,
-          id: p?.id,
-          fallback: p?.short,
-        }))}
-        size={size}
-      />
-      <div className="opacity-50">
-        {responsibles.length > 1
-          ? responsibles.map((p) => p.name).join(", ")
-          : `${responsibles[0]?.name} ${responsibles[0]?.surname}`}
-      </div>
+    <div className="flex items-center overflow-hidden gap-2 text-xs text-muted-foreground">
+      {responsibles.length === 0 ? (
+        variant === "filter" && (
+          <>
+            <User2Icon className="size-4" />
+            <span className="truncate">Responsáveis</span>
+          </>
+        )
+      ) : (
+        <>
+          <UAvatarGroup
+            avatars={responsibles.map((p) => ({
+              image: p?.image,
+              id: p?.id,
+              fallback: p?.short,
+            }))}
+            size={size}
+          />
+          <div className="truncate">
+            {responsibles.length > 1
+              ? responsibles.map((p) => p.name).join(", ")
+              : `${responsibles[0]?.name} ${responsibles[0]?.surname}`}
+          </div>
+        </>
+      )}
     </div>
   );
 }

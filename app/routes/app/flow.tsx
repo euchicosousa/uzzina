@@ -94,10 +94,10 @@ function AppFlow() {
   });
   const filteredActions = useMemo(() => {
     let result = actions;
-    if (selectedPhases.length > 0) {
+    if (selectedPhases.length > 0 && !selectedPhases.includes("all")) {
       result = result.filter((a) => selectedPhases.includes(a.phase || "idea"));
     }
-    if (selectedCategories.length > 0) {
+    if (selectedCategories.length > 0 && !selectedCategories.includes("all")) {
       result = result.filter((a) =>
         selectedCategories.includes(a.category || ""),
       );
@@ -133,11 +133,11 @@ function AppFlow() {
   return (
     <div className="page-height flex flex-col overflow-hidden">
       {/* Header and Filters */}
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 shrink-0 items-center p-4 xl:px-8 border-b w-full">
+      <div className="flex justify-between gap-4 sm:gap-16 shrink-0 items-center p-4 xl:px-8 border-b w-full">
         <h1 className="text-2xl font-bold tracking-tight text-foreground p-0 ">
           Flow
         </h1>
-        <div className="flex items-center gap-4 overflow-hidden debug-2 w-full">
+        <div className="flex items-center gap-2 overflow-hidden p-1">
           {/* Partner Filter */}
           <PartnersCombobox
             onSelect={handlePartnerSelect}
@@ -155,6 +155,7 @@ function AppFlow() {
             isMulti
             onSelect={({ phases }) => setSelectedPhases(phases)}
             selectedPhases={selectedPhases}
+            showText
           />
           {/* Categories Filter */}
           <CategoriesCombobox
