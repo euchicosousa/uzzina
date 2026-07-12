@@ -11,22 +11,20 @@ import { FlowDateFilter } from "~/components/features/FlowDateFilter";
 import { PartnersCombobox } from "~/components/features/PartnersCombobox";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 import { z } from "zod";
-
 const flowSearchSchema = z.object({
   partner: z.string().optional(),
 });
-
 export const Route = createFileRoute("/app/flow")({
   validateSearch: flowSearchSchema,
   component: AppFlow,
 });
-
 import { useAppContext } from "~/contexts/AppContext";
 import type { Partner } from "~/types";
-
 function AppFlow() {
   const { person, partners } = useAppContext();
-  const navigate = useNavigate({ from: "/app/flow" });
+  const navigate = useNavigate({
+    from: "/app/flow",
+  });
   const searchParams = Route.useSearch();
   const urlPartner = searchParams.partner;
 
@@ -41,12 +39,20 @@ function AppFlow() {
   );
   const nowRef = useRef(new Date());
   const now = nowRef.current;
-  const defaultFrom = useMemo(() => startOfWeek(now, {
-    weekStartsOn: 0,
-  }), [now]); // Domingo
-  const defaultTo = useMemo(() => endOfWeek(now, {
-    weekStartsOn: 0,
-  }), [now]); // Sábado
+  const defaultFrom = useMemo(
+    () =>
+      startOfWeek(now, {
+        weekStartsOn: 0,
+      }),
+    [now],
+  ); // Domingo
+  const defaultTo = useMemo(
+    () =>
+      endOfWeek(now, {
+        weekStartsOn: 0,
+      }),
+    [now],
+  ); // Sábado
 
   const [dateRange, setDateRange] = useState<{
     from?: Date;
@@ -107,11 +113,17 @@ function AppFlow() {
     setLocalPartnerFilters(slugs);
     if (slugs.length === 1) {
       navigate({
-        search: (old) => ({ ...old, partner: slugs[0] }),
+        search: (old) => ({
+          ...old,
+          partner: slugs[0],
+        }),
       });
     } else {
       navigate({
-        search: (old) => ({ ...old, partner: undefined }),
+        search: (old) => ({
+          ...old,
+          partner: undefined,
+        }),
       });
     }
   };
@@ -121,15 +133,16 @@ function AppFlow() {
   return (
     <div className="page-height flex flex-col overflow-hidden">
       {/* Header and Filters */}
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 shrink-0 items-center p-4 xl:px-8 border-b">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground p-0">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 shrink-0 items-center p-4 xl:px-8 border-b w-full">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground p-0 ">
           Flow
         </h1>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 overflow-hidden debug-2 w-full">
           {/* Partner Filter */}
           <PartnersCombobox
             onSelect={handlePartnerSelect}
             selectedPartners={localPartnerFilters}
+            showText
             variant="filter"
           />
           {/* Date Filter */}

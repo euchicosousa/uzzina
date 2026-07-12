@@ -59,6 +59,7 @@ export type ActionDisplayFlags = {
   showResponsibles?: boolean;
   /** Whether to show the priority icon indicator */
   showPriority?: boolean;
+  showStation?: boolean;
 };
 
 /**
@@ -492,6 +493,7 @@ interface ActionVariantRendererProps {
   showResponsibles?: boolean;
   showPartner?: boolean;
   showPriority?: boolean;
+  showStation?: boolean;
   isEditing: boolean;
   handleSetIsEditing: (val: boolean) => void;
   lines: 1 | 2 | undefined;
@@ -516,6 +518,7 @@ function ActionVariantRenderer({
   showResponsibles,
   showPartner,
   showPriority,
+  showStation,
   isEditing,
   handleSetIsEditing,
   lines,
@@ -612,7 +615,9 @@ function ActionVariantRenderer({
         <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1 scale-95 hover:scale-102 transition duration-500">
           <div className="flex w-full items-center gap-2 overflow-hidden">
             <div className="flex items-center gap-2">
-              <StationIcon size="short" station={currentStation} />
+              {showStation && (
+                <StationIcon size="short" station={currentStation} />
+              )}
               <PhaseIcon phase={currentPhase} size="dot" />
             </div>
             {isLateAction(action) && <ActionItemSprint action={action} />}

@@ -17,7 +17,6 @@ import {
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { ComboboxTrigger } from "./ComboboxTrigger";
 import { useAppContext } from "~/contexts/AppContext";
-
 export function PartnersCombobox({
   selectedPartners,
   onSelect,
@@ -80,17 +79,15 @@ export function PartnersCombobox({
       window.removeEventListener("keyup", up);
     };
   }, []);
-
-  const shouldShowText = showText !== undefined ? showText : variant !== "filter";
-
   return (
     <Popover onOpenChange={setIsOpen} open={isOpen}>
       <PopoverTrigger asChild>
         <ComboboxTrigger
+          className={"flex items-center gap-2 overflow-hidden"}
+          hasSelection={selected.length > 0}
           tabIndex={tabIndex}
           title={getFormattedPartnersName(currentPartners) || "Parceiros"}
           variant={variant}
-          hasSelection={selected.length > 0}
         >
           {selected.length > 0 ? (
             <UAvatarGroup
@@ -105,11 +102,13 @@ export function PartnersCombobox({
               size="sm"
             />
           ) : (
-            <UAvatar fallback="PR" size="sm" />
+            <UAvatar fallback="PA" size="sm" />
           )}
-          {shouldShowText && currentPartners.length > 0 && (
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-              {getFormattedPartnersName(currentPartners)}
+          {showText && (
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap text-xs text-muted-foreground">
+              {currentPartners.length > 0
+                ? getFormattedPartnersName(currentPartners)
+                : "Parceiros"}
             </div>
           )}
         </ComboboxTrigger>

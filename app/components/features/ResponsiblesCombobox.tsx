@@ -21,7 +21,6 @@ import { SIZE } from "~/lib/CONSTANTS";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
-
 export function ResponsiblesCombobox({
   selectedResponsibles,
   currentPartners,
@@ -36,33 +35,28 @@ export function ResponsiblesCombobox({
   className?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  
   const { data: allPeople = [] } = useQuery({
     queryKey: QUERY_KEYS.people(),
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });
-
   const [selected, setSelected] = useState<string[]>(() =>
     Array.from(new Set(selectedResponsibles || [])),
   );
-
   useEffect(() => {
     setSelected(Array.from(new Set(selectedResponsibles || [])));
   }, [selectedResponsibles]);
-  
   const currentResponsibles = selected
     .map((slug) => allPeople.find((person) => person.user_id === slug))
-    .filter((person): person is typeof allPeople[number] => person !== undefined);
-
+    .filter(
+      (person): person is (typeof allPeople)[number] => person !== undefined,
+    );
   const peopleFiltered = allPeople.filter((person) =>
     currentPartners
       .map((partner) => partner.users_ids.includes(person.user_id))
       .includes(true),
   );
-
   const isShiftPressedRef = useRef(false);
-
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "Shift") isShiftPressedRef.current = true;
@@ -70,23 +64,20 @@ export function ResponsiblesCombobox({
     const up = (e: KeyboardEvent) => {
       if (e.key === "Shift") isShiftPressedRef.current = false;
     };
-
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);
-
     return () => {
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
     };
   }, []);
-
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover onOpenChange={setIsOpen} open={isOpen}>
       <PopoverTrigger asChild>
         <ComboboxTrigger
-          variant={variant === "filter" ? "filter" : "form-link"}
-          className={className}
+          className={cn(className)}
           title={getFormattedPeopleName(currentResponsibles)}
+          variant={variant === "filter" ? "filter" : "form-link"}
         >
           <ActionResponsiblesDisplay
             responsibles={selectedResponsibles}
@@ -118,7 +109,6 @@ export function ResponsiblesCombobox({
                     } else {
                       newResponsibles.push(person.user_id);
                     }
-
                     setSelected(newResponsibles);
                     onSelect?.(newResponsibles);
                     setIsOpen(false);
@@ -127,8 +117,8 @@ export function ResponsiblesCombobox({
               >
                 <UAvatar
                   fallback={person.name}
-                  size="sm"
                   image={person.image}
+                  size="sm"
                 />
                 {person.name}
                 <CheckIcon
@@ -147,7 +137,6 @@ export function ResponsiblesCombobox({
     </Popover>
   );
 }
-
 function ActionResponsiblesDisplay({
   responsibles: responsibles_,
   size = SIZE.md,
@@ -162,11 +151,9 @@ function ActionResponsiblesDisplay({
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });
-
   const responsibles = Array.from(new Set(responsibles_))
     .map((r) => people.find((p) => p.user_id === r))
     .filter((p) => p !== undefined);
-
   if (responsibles.length === 0) {
     if (variant === "filter") {
       return (
@@ -178,7 +165,6 @@ function ActionResponsiblesDisplay({
     }
     return null;
   }
-
   return (
     <div className="flex items-center gap-2">
       <UAvatarGroup
