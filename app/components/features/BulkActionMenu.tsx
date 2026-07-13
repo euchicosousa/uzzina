@@ -49,9 +49,8 @@ import {
   type BulkDateTimeResult,
 } from "./BulkDateTimeDialog";
 import { PhaseIcon } from "./PhaseIcon";
-
 import { useAppContext } from "~/contexts/AppContext";
-
+import { getGridCols } from "~/lib/uzzina-utils";
 export function BulkActionMenu() {
   // ─── Multi-seleção ───────────────────────────────────────────────────────────
   const { isSelectionMode, selectedIds, clearSelection } = useMultiSelection();
@@ -66,7 +65,9 @@ export function BulkActionMenu() {
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });
-  const params = useParams({ strict: false }) as Record<string, string | undefined>;
+  const params = useParams({
+    strict: false,
+  }) as Record<string, string | undefined>;
 
   // ─── Parceiro da página atual ────────────────────────────────────────────────
   // Usa params.slug igual ao Header.tsx — undefined quando não há slug ou é "new"
@@ -101,7 +102,9 @@ export function BulkActionMenu() {
   const applyDateTime = (result: BulkDateTimeResult) => {
     if (result.mode === "datetime") {
       // Situação 1: substitui data + hora completos
-      performBulkAction({ date: result.date });
+      performBulkAction({
+        date: result.date,
+      });
     } else if (result.mode === "date_only") {
       // Situação 2: só a data — servidor preserva a hora de cada ação
       handleBulkDateOnly(selectedIds, result.dateOnly);
@@ -120,15 +123,15 @@ export function BulkActionMenu() {
     setPickedResponsibles([]);
     setPartnersOpen(true);
   };
-
   const toggleResponsible = (id: string) => {
     setPickedResponsibles((prev) =>
       prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id],
     );
   };
-
   const applyResponsibles = () => {
-    performBulkAction({ responsibles: pickedResponsibles });
+    performBulkAction({
+      responsibles: pickedResponsibles,
+    });
     setPartnersOpen(false);
   };
 
@@ -137,10 +140,11 @@ export function BulkActionMenu() {
     setPickedColor("");
     setColorOpen(true);
   };
-
   const applyColor = () => {
     if (!pickedColor) return;
-    performBulkAction({ color: pickedColor });
+    performBulkAction({
+      color: pickedColor,
+    });
     setColorOpen(false);
   };
 
@@ -149,13 +153,13 @@ export function BulkActionMenu() {
     <>
       {/* ── Dialog: Data e Hora ─────────────────────────────────────────────── */}
       <BulkDateTimeDialog
-        open={dateTimeOpen}
-        onOpenChange={setDateTimeOpen}
         onApply={applyDateTime}
+        onOpenChange={setDateTimeOpen}
+        open={dateTimeOpen}
       />
 
       {/* ── Dialog: Seleção de responsáveis ───────────────────────────────── */}
-      <Dialog open={partnersOpen} onOpenChange={setPartnersOpen}>
+      <Dialog onOpenChange={setPartnersOpen} open={partnersOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Alterar Responsáveis</DialogTitle>
@@ -171,16 +175,16 @@ export function BulkActionMenu() {
               return (
                 <button
                   key={person.user_id}
-                  type="button"
-                  onClick={() => toggleResponsible(person.user_id)}
                   className={cn(
                     "flex flex-col items-center gap-2 rounded-lg p-3 transition-all hover:bg-muted/50",
                     isSelected ? "bg-muted text-foreground" : "opacity-50",
                   )}
+                  onClick={() => toggleResponsible(person.user_id)}
+                  type="button"
                 >
                   <UAvatar
-                    image={person.image ?? undefined}
                     fallback={person.initials}
+                    image={person.image ?? undefined}
                     size="md"
                   />
                   <span className="w-full truncate text-center text-xs leading-tight font-medium">
@@ -191,12 +195,12 @@ export function BulkActionMenu() {
             })}
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setPartnersOpen(false)}>
+            <Button onClick={() => setPartnersOpen(false)} variant="outline">
               Cancelar
             </Button>
             <Button
-              onClick={applyResponsibles}
               disabled={pickedResponsibles.length === 0}
+              onClick={applyResponsibles}
             >
               Aplicar ({pickedResponsibles.length} selecionado
               {pickedResponsibles.length !== 1 ? "s" : ""})
@@ -206,7 +210,7 @@ export function BulkActionMenu() {
       </Dialog>
 
       {/* ── Dialog: Seleção de cor do parceiro ────────────────────────────── */}
-      <Dialog open={colorOpen} onOpenChange={setColorOpen}>
+      <Dialog onOpenChange={setColorOpen} open={colorOpen}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>Alterar Cor</DialogTitle>
@@ -216,17 +220,21 @@ export function BulkActionMenu() {
           </DialogHeader>
           <div className="py-2">
             {/* Swatches + hex input unificados — mesmo componente do ActionColorDropdown */}
+
+            {/* <DropdownMenuContent className={cn("w-40 p-2")}> */}
+
             <PartnerColorPicker
+              className={getGridCols(partnerColors.length)}
               colors={partnerColors}
-              value={pickedColor}
               onChange={setPickedColor}
+              value={pickedColor}
             />
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setColorOpen(false)}>
+            <Button onClick={() => setColorOpen(false)} variant="outline">
               Cancelar
             </Button>
-            <Button onClick={applyColor} disabled={!pickedColor}>
+            <Button disabled={!pickedColor} onClick={applyColor}>
               Aplicar
             </Button>
           </DialogFooter>
@@ -237,9 +245,9 @@ export function BulkActionMenu() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="secondary"
             className="h-10 rounded-xl px-4 font-semibold"
             disabled={selectedIds.length === 0}
+            variant="secondary"
           >
             {selectedIds.length > 0
               ? `${selectedIds.length} Selecionado${selectedIds.length > 1 ? "s" : ""}`
@@ -261,7 +269,11 @@ export function BulkActionMenu() {
                   .map((phase) => (
                     <DropdownMenuItem
                       key={phase.slug}
-                      onClick={() => performBulkAction({ phase: phase.slug })}
+                      onClick={() =>
+                        performBulkAction({
+                          phase: phase.slug,
+                        })
+                      }
                     >
                       <div className="mr-2">
                         <PhaseIcon phase={phase} size="xs" variant="icon" />
@@ -283,10 +295,14 @@ export function BulkActionMenu() {
                 {Object.values(STATIONS).map((station) => (
                   <DropdownMenuItem
                     key={station.slug}
-                    onClick={() => performBulkAction({ station: station.slug })}
+                    onClick={() =>
+                      performBulkAction({
+                        station: station.slug,
+                      })
+                    }
                   >
                     <div className="mr-2">
-                      <StationIcon station={station} size="xs" />
+                      <StationIcon size="xs" station={station} />
                     </div>
                     {station.title}
                   </DropdownMenuItem>
@@ -312,11 +328,17 @@ export function BulkActionMenu() {
                   .map((cat) => (
                     <DropdownMenuItem
                       key={cat.slug}
-                      onClick={() => performBulkAction({ category: cat.slug })}
+                      onClick={() =>
+                        performBulkAction({
+                          category: cat.slug,
+                        })
+                      }
                     >
                       <span
                         className="mr-2 size-2 rounded-full"
-                        style={{ backgroundColor: cat.color }}
+                        style={{
+                          backgroundColor: cat.color,
+                        }}
                       />
                       {cat.title}
                     </DropdownMenuItem>
@@ -344,7 +366,9 @@ export function BulkActionMenu() {
                     <DropdownMenuItem
                       key={priority.slug}
                       onClick={() =>
-                        performBulkAction({ priority: priority.slug })
+                        performBulkAction({
+                          priority: priority.slug,
+                        })
                       }
                     >
                       <SignalIcon className={`mr-2 size-4 ${iconClass}`} />
@@ -370,7 +394,11 @@ export function BulkActionMenu() {
 
           {/* Arquivar todas as selecionadas de uma vez */}
           <DropdownMenuItem
-            onClick={() => performBulkAction({ archived: true })}
+            onClick={() =>
+              performBulkAction({
+                archived: true,
+              })
+            }
           >
             <ArchiveIcon className="mr-2 size-4 opacity-70" /> Arquivar
           </DropdownMenuItem>

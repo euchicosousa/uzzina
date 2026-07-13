@@ -242,8 +242,8 @@ export function ActionItem({
           (variant !== VARIANT.content
             ? "relative pl-8 transition-all"
             : "relative transition-all"),
-        isSelectionMode && isSelected && "ring-2 ring-primary ring-inset",
-        isSelected && variant === VARIANT.content && "rounded-3xl p-2 squircle",
+        isSelectionMode && isSelected && "ring-2 ring-primary",
+        // isSelected && variant === VARIANT.content && "rounded-3xl p-2 squircle",
       )}
       data-action-id={action.id}
       onClick={(e) => {
@@ -298,7 +298,7 @@ export function ActionItem({
                 ? "top-3 left-3"
                 : showLate && isLateAction(action)
                   ? "top-2 left-2"
-                  : "top-1 left-1",
+                  : "top-3 left-3",
           )}
         >
           <Checkbox
