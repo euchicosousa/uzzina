@@ -65,10 +65,15 @@ export function GlobalSearchCommand({
           searchUrl.append("archived", "true");
         }
         setIsSearching(true);
-        const res = await fetch(`/api/search?${searchUrl.toString()}`);
-        const json = await res.json() as { actions: Action[] };
-        setSearchResults(json);
-        setIsSearching(false);
+        try {
+          const res = await fetch(`/api/search?${searchUrl.toString()}`);
+          const json = await res.json() as { actions: Action[] };
+          setSearchResults(json);
+        } catch (error) {
+          console.error("Error searching actions:", error);
+        } finally {
+          setIsSearching(false);
+        }
       }, 500);
 
       return () => clearTimeout(delayDebounceFn);
