@@ -189,7 +189,7 @@ export function PhaseCombobox({
     isMulti && currentPhases.filter((s) => s.slug !== "all").length > 0;
   return (
     <Popover onOpenChange={setIsOpen} open={isOpen}>
-      <PopoverTrigger asChild className="debug-1">
+      <PopoverTrigger asChild>
         {isMulti ? (
           <MultiPhaseTrigger
             className={className}

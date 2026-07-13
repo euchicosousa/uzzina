@@ -233,7 +233,7 @@ export function ActionItem({
   const content = (
     <div
       className={cn(
-        "group/action @container relative shrink-0 cursor-pointer overflow-hidden rounded-2xl squircle hover:scale-101",
+        "group/action @container relative shrink-0 cursor-pointer overflow-hidden rounded-2xl squircle",
         variantClasses,
         bgClasses,
         className,
@@ -498,8 +498,7 @@ interface ActionVariantRendererProps {
   handleSetIsEditing: (val: boolean) => void;
   lines: 1 | 2 | undefined;
   dateTimeDisplay:
-    | (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY]
-    | undefined;
+    (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY] | undefined;
   handleAction: (
     action: Action & {
       intent: string;
@@ -612,7 +611,7 @@ function ActionVariantRenderer({
       );
     default:
       return (
-        <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1 scale-95 hover:scale-102 transition duration-500">
+        <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1 scale-95 hover:scale-100 transition duration-500">
           <div className="flex w-full items-center gap-2 overflow-hidden">
             <div className="flex items-center gap-2">
               {showStation && (
