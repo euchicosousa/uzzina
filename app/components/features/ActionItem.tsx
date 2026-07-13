@@ -667,7 +667,7 @@ function ActionVariantRenderer({
             )}
           </div>
           {dateTimeDisplay && !isEditing && (
-            <div className="absolute right-0 flex translate-x-[90px] justify-end overflow-hidden transition-transform duration-500 group-hover/action:-translate-x-3 @md:w-[90px]">
+            <div className="absolute right-0 flex translate-x-[90px] justify-end overflow-hidden transition-transform duration-500 group-hover/action:translate-x-0 @md:w-[90px]">
               <ActionItemDateTimeDisplay
                 action={action}
                 dateTimeDisplay={dateTimeDisplay}
