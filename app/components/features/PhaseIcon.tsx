@@ -2,7 +2,6 @@ import { PHASES, type SIZE, type PHASE_TYPE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import { CheckIcon } from "lucide-react";
 import { Icons } from "~/components/uzzina/UIIcons";
-
 export function PhaseIcon({
   phase,
   size = "sm",
@@ -26,26 +25,26 @@ export function PhaseIcon({
   if (variant === "icon") {
     return (
       <Icons
-        slug={phase.slug}
         className={cn(sizeClasses, "transition-colors duration-500")}
         color={phase.color}
+        slug={phase.slug}
       />
     );
   }
 
   // Se concluído, mostra o círculo preenchido com check
   const isFinished = phase.slug === PHASES.done.slug;
-
   if (size === "dot") {
     return (
       <div
         key={phase.color}
         className="size-2 shrink-0 animate-pop rounded-full"
-        style={{ backgroundColor: phase.color }}
+        style={{
+          backgroundColor: phase.color,
+        }}
       ></div>
     );
   }
-
   if (isFinished) {
     return (
       <div
@@ -54,39 +53,44 @@ export function PhaseIcon({
           sizeClasses,
           "animate-pop",
         )}
-        style={{ backgroundColor: phase.color }}
+        style={{
+          backgroundColor: phase.color,
+        }}
       >
-        <CheckIcon className="size-[65%] text-white" />
+        <CheckIcon
+          className={cn(sizeClasses, "shrink-0 scale-70 text-white")}
+        />
       </div>
     );
   }
-
   return (
     <div className={cn("relative shrink-0", sizeClasses)}>
       {/* Background circle (shadow) */}
       <svg
         className="absolute inset-0 stroke-2 opacity-10 size-full"
-        viewBox="0 0 20 20"
         stroke="currentColor"
+        viewBox="0 0 20 20"
       >
         <title>Progresso Fundo</title>
-        <circle cx="10" cy="10" r="8" fill="none" />
+        <circle cx="10" cy="10" fill="none" r="8" />
       </svg>
       {/* Progress circle */}
       <svg
         className="-rotate-90 stroke-2 transition-all duration-500 size-full"
-        style={{ color: phase.color }}
+        style={{
+          color: phase.color,
+        }}
         viewBox="0 0 20 20"
       >
         <title>Progresso</title>
         <circle
+          className="transition-all duration-500"
           cx="10"
           cy="10"
-          r="8"
           fill="none"
+          r="8"
           stroke="currentColor"
           strokeDasharray={`${Math.floor(phase.order * 8.5)},51`}
-          className="transition-all duration-500"
         />
       </svg>
     </div>

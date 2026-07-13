@@ -2,7 +2,7 @@ import { useEditor, EditorContent, EditorContext, useEditorState, type Editor } 
 import { BubbleMenu as BubbleMenuComponent } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
-import { Link } from "@tiptap/extension-link";
+
 import { Table } from "@tiptap/extension-table";
 import { TableRow } from "@tiptap/extension-table-row";
 import { TableCell } from "@tiptap/extension-table-cell";
@@ -226,31 +226,32 @@ export function Tiptap({
   disabled?: boolean;
   placeholder?: string;
 }) {
-  const [extensions] = useState(() => [
-    StarterKit.configure({
-      // Ensure standard heading, paragraph, and bullet list support are active
-      heading: {
-        levels: [1, 2, 3],
+  const [extensions] = useState(() => {
+    const kit = StarterKit.configure({
+      heading: { levels: [1, 2, 3] },
+      link: {
+        openOnClick: false,
+        autolink: true,
+        linkOnPaste: true,
       },
-    }),
-    Placeholder.configure({
-      placeholder: placeholder || "Escreva algo...",
-    }),
-    Link.configure({
-      openOnClick: false,
-      autolink: true,
-      linkOnPaste: true,
-    }),
-    Table.configure({
-      resizable: false,
-    }),
-    TableRow,
-    TableHeader,
-    TableCell,
-    Highlight.configure({
-      multicolor: false,
-    }),
-  ]);
+    });
+    
+    return [
+      kit,
+      Placeholder.configure({
+        placeholder: placeholder || "Escreva algo...",
+      }),
+      Table.configure({
+        resizable: false,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
+      Highlight.configure({
+        multicolor: false,
+      }),
+    ];
+  });
 
   const editor = useEditor({
     extensions,
