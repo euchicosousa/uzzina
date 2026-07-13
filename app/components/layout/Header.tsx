@@ -27,6 +27,7 @@ import {
   fetchHomeActions,
   fetchPartnerActions,
 } from "~/lib/supabase.queries";
+import type { Json } from "types/database";
 import { cn } from "~/lib/utils";
 import type { Notification } from "~/types";
 import { DashboardMetrics } from "../features/home/DashboardMetrics";
@@ -301,18 +302,31 @@ const HeaderMenu = ({ person }: { person: Person }) => {
     setFollowPartnerColor,
   } = useAppTheme();
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const pendingPrefsRef = useRef<Record<string, string>>({});
-  const queuePreference = (key: string, value: string) => {
+  const pendingPrefsRef = useRef<Record<string, unknown>>({});
+  const queuePreference = (key: string, value: unknown) => {
     pendingPrefsRef.current[key] = value;
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
-    debounceTimerRef.current = setTimeout(() => {
-      const body = new URLSearchParams(pendingPrefsRef.current);
-      fetch("/api/set-preferences", {
-        method: "post",
-        body,
-      });
+    debounceTimerRef.current = setTimeout(async () => {
+      const supabase = createSupabaseBrowserClient();
+      const currentPrefs = (person.preferences && typeof person.preferences === "object" && !Array.isArray(person.preferences))
+        ? (person.preferences as Record<string, unknown>)
+        : {};
+      
+      const updatedPrefs: Record<string, unknown> = {
+        ...currentPrefs,
+        ...pendingPrefsRef.current,
+      };
+
+      const { error } = await supabase
+        .from("people")
+        .update({ preferences: updatedPrefs as unknown as Json })
+        .eq("user_id", person.user_id);
+
+      if (error) {
+        console.error("Error updating preferences:", error);
+      }
       pendingPrefsRef.current = {};
     }, 300);
   };
@@ -322,11 +336,11 @@ const HeaderMenu = ({ person }: { person: Person }) => {
   };
   const changeColorIndex = (index: number) => {
     setPrimaryColorIndex(index);
-    queuePreference("themeColorIndex", String(index));
+    queuePreference("themeColorIndex", index);
   };
   const changeFollowPartner = (value: boolean) => {
     setFollowPartnerColor(value);
-    queuePreference("followPartnerColor", String(value));
+    queuePreference("followPartnerColor", value);
   };
   return (
     <DropdownMenu>

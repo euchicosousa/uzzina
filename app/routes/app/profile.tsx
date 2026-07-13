@@ -353,17 +353,6 @@ function ProfilePage() {
       }
       window.dispatchEvent(new Event("uzzina-storage-update"));
 
-      // Also set the theme resolution session
-      const body = new URLSearchParams();
-      body.append("theme", selectedTheme);
-      body.append("themeColorIndex", String(themeColorIndexVal));
-      body.append("followPartnerColor", String(selectedFollowPartnerColor));
-      body.append("defaultViewVariant", selectedVariant);
-      body.append("showInstagramSidebar", String(showInstagramSidebar));
-      await fetch("/api/set-preferences", {
-        method: "POST",
-        body,
-      });
       toast.success("Perfil e preferências salvos com sucesso!");
     } catch (err) {
       console.error(err);
