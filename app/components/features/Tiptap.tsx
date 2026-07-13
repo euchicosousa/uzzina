@@ -8,7 +8,7 @@ import { TableRow } from "@tiptap/extension-table-row";
 import { TableCell } from "@tiptap/extension-table-cell";
 import { TableHeader } from "@tiptap/extension-table-header";
 import { Highlight } from "@tiptap/extension-highlight";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "~/lib/utils";
 import {
   Bold,
@@ -226,32 +226,34 @@ export function Tiptap({
   disabled?: boolean;
   placeholder?: string;
 }) {
+  const [extensions] = useState(() => [
+    StarterKit.configure({
+      // Ensure standard heading, paragraph, and bullet list support are active
+      heading: {
+        levels: [1, 2, 3],
+      },
+    }),
+    Placeholder.configure({
+      placeholder: placeholder || "Escreva algo...",
+    }),
+    Link.configure({
+      openOnClick: false,
+      autolink: true,
+      linkOnPaste: true,
+    }),
+    Table.configure({
+      resizable: false,
+    }),
+    TableRow,
+    TableHeader,
+    TableCell,
+    Highlight.configure({
+      multicolor: false,
+    }),
+  ]);
+
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        // Ensure standard heading, paragraph, and bullet list support are active
-        heading: {
-          levels: [1, 2, 3],
-        },
-      }),
-      Placeholder.configure({
-        placeholder: placeholder || "Escreva algo...",
-      }),
-      Link.configure({
-        openOnClick: false,
-        autolink: true,
-        linkOnPaste: true,
-      }),
-      Table.configure({
-        resizable: false,
-      }),
-      TableRow,
-      TableHeader,
-      TableCell,
-      Highlight.configure({
-        multicolor: false,
-      }),
-    ],
+    extensions,
     content,
     // initial content
     immediatelyRender: false,

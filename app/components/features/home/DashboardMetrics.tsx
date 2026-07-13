@@ -5,6 +5,7 @@ import {
   endOfWeek,
   format,
   isSameDay,
+  isSameMonth,
   isWithinInterval,
   parseISO,
   startOfMonth,
@@ -37,10 +38,16 @@ export function DashboardMetrics({
 }: DashboardMetricsProps) {
   const refDate = useMemo(() => referenceDate || new Date(), [referenceDate]);
 
+  const isCurrentMonth = useMemo(
+    () => isSameMonth(refDate, new Date()),
+    [refDate]
+  );
+
   // Calculations
   const stats = useMemo(() => {
-    const weekStart = startOfWeek(refDate);
-    const weekEnd = endOfWeek(refDate);
+    const now = new Date();
+    const weekStart = startOfWeek(now);
+    const weekEnd = endOfWeek(now);
     const periodStart = startOfWeek(startOfMonth(refDate));
     const periodEnd = endOfDay(endOfWeek(endOfMonth(refDate)));
 
@@ -57,7 +64,7 @@ export function DashboardMetrics({
       const actionDate = parseISO(action.date);
 
       // 1. Hoje
-      if (isSameDay(actionDate, refDate)) {
+      if (isSameDay(actionDate, now)) {
         todayActions.push(action);
         if (isCompleted) todayCompleted++;
       }
@@ -112,12 +119,14 @@ export function DashboardMetrics({
             completed={stats.today.completed}
           />
         )}
-        <MetricPill
-          title={"Semana"}
-          actions={stats.week.actions}
-          total={stats.week.total}
-          completed={stats.week.completed}
-        />
+        {isCurrentMonth && (
+          <MetricPill
+            title={"Semana"}
+            actions={stats.week.actions}
+            total={stats.week.total}
+            completed={stats.week.completed}
+          />
+        )}
         <MetricPill
           title={format(refDate, "MMMM", { locale: ptBR })}
           actions={stats.period.actions}
@@ -151,13 +160,15 @@ export function DashboardMetrics({
                 isMobile={true}
               />
             )}
-            <MetricPill
-              title={"Semana"}
-              actions={stats.week.actions}
-              total={stats.week.total}
-              completed={stats.week.completed}
-              isMobile={true}
-            />
+            {isCurrentMonth && (
+              <MetricPill
+                title={"Semana"}
+                actions={stats.week.actions}
+                total={stats.week.total}
+                completed={stats.week.completed}
+                isMobile={true}
+              />
+            )}
             <MetricPill
               title={format(refDate, "MMMM", { locale: ptBR })}
               actions={stats.period.actions}

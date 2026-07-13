@@ -126,7 +126,7 @@ function PartnerPage() {
     enabled: !skipActions && !!partnerSlug,
   });
   const { setBaseAction } = useAppContext();
-  const [currentDay, setCurrentDay] = useState(() => parseISO(dateParam));
+  const currentDay = parseISO(dateParam);
   const [query, setQuery] = useState("");
   const { followPartnerColor, applyPartnerColors, restoreThemeColors } =
     useAppTheme();
@@ -235,7 +235,6 @@ function PartnerPage() {
             days={30}
             mode="month"
             setCurrentDay={(day: Date) => {
-              setCurrentDay(day);
               navigate({
                 search: (old) => ({
                   ...old,

@@ -52,9 +52,9 @@ export function CalendarDay({
         highlightThisWeek && isSameWeek(day, currentDay || today) && "",
         viewOptions.variant === VARIANT.content
           ? ""
-          : !isCompact
-            ? "h-96 overflow-hidden"
-            : "h-72 overflow-hidden",
+          : isCompact
+            ? "h-72 overflow-hidden"
+            : "h-96 overflow-hidden",
       )}
       id={`day_${format(day, "yyyy-MM-dd")}`}
     >

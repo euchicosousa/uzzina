@@ -143,7 +143,7 @@ export function Header({
       action.partners?.includes(slug),
     );
   }, [partnerAllLateActions, slug]);
-  const referenceDate = now;
+  const referenceDate = isPartner && partnerDate ? parseISO(partnerDate) : now;
   const filteredActions = useMemo(() => {
     const active = isHome ? homeActions : isPartner ? partnerActions : [];
     if (partnerFilters.length === 0) return active;
