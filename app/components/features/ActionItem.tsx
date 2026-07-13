@@ -240,10 +240,9 @@ export function ActionItem({
         isDragging && "cursor-grabbing",
         isSelectionMode &&
           (variant !== VARIANT.content
-            ? "relative pl-8 transition-all"
-            : "relative transition-all"),
+            ? "pl-8 transition-all"
+            : "transition-all"),
         isSelectionMode && isSelected && "ring-2 ring-primary",
-        // isSelected && variant === VARIANT.content && "rounded-3xl p-2 squircle",
       )}
       data-action-id={action.id}
       onClick={(e) => {
@@ -542,12 +541,15 @@ function ActionVariantRenderer({
       );
     case VARIANT.content:
       return (
-        <Content
-          action={action}
-          category={showCategory ? currentCategory : undefined}
-          isSquared
-          showResponsibles={showResponsibles}
-        />
+        <>
+          <Content
+            action={action}
+            category={showCategory ? currentCategory : undefined}
+            isSquared
+            showResponsibles={showResponsibles}
+          />
+          <div className=" absolute z-10 h-12 bottom-0 rounded-2xl border-b-2  w-full border-white/20 squircle"></div>
+        </>
       );
     case VARIANT.block:
       return (
