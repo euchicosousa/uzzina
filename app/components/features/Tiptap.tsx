@@ -230,7 +230,7 @@ export function Tiptap({
     const kit = StarterKit.configure({
       heading: { levels: [1, 2, 3] },
       link: {
-        openOnClick: false,
+        openOnClick: true,
         autolink: true,
         linkOnPaste: true,
       },
