@@ -209,9 +209,9 @@ export function ActionItem({
 
     // 1. Determine base background/text colors based on priority states
     if (showLate && isLateAction(action)) {
-      if (variant === VARIANT.content) {
-        baseStyles = cn(baseStyles, "p-1 rounded-xl");
-      }
+      // if (variant === VARIANT.content) {
+      // baseStyles = cn(baseStyles, "p-1 rounded-xl");
+      // }
       baseStyles = cn(
         baseStyles,
         "bg-late text-destructive hover:bg-late-hover ring-destructive",
@@ -229,7 +229,7 @@ export function ActionItem({
       );
     }
     return baseStyles;
-  }, [variant, isEditing, showLate, action, person, showSprint]);
+  }, [isEditing, showLate, action, person, showSprint]);
   const content = (
     <div
       className={cn(

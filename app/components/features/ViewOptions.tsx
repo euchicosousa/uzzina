@@ -105,9 +105,6 @@ export function ViewOptionsComponent({
       {/* Mostrar botões de variantes */}
       {viewOptions.showOptions.variant && (
         <Button
-          variant="raised"
-          size="icon"
-          title="Ação em formato de linha"
           onClick={() => {
             const variant =
               viewOptions.variant === VARIANT.line
@@ -115,8 +112,14 @@ export function ViewOptionsComponent({
                 : viewOptions.variant === VARIANT.block
                   ? VARIANT.content
                   : VARIANT.line;
-            setViewOptions({ ...viewOptions, variant });
+            setViewOptions({
+              ...viewOptions,
+              variant,
+            });
           }}
+          size="icon"
+          title="Ação em formato de linha"
+          variant="raised"
         >
           {viewOptions.variant === VARIANT.line ? (
             <Rows3Icon />
@@ -131,17 +134,26 @@ export function ViewOptionsComponent({
       {viewOptions.variant === VARIANT.content &&
         viewOptions.showOptions.columns && (
           <Button
-            variant="raised"
-            size="icon"
             onClick={() => {
               if (viewOptions.columns === 4) {
-                setViewOptions({ ...viewOptions, columns: 6 });
+                setViewOptions({
+                  ...viewOptions,
+                  columns: 6,
+                });
               } else if (viewOptions.columns === 6) {
-                setViewOptions({ ...viewOptions, columns: 7 });
+                setViewOptions({
+                  ...viewOptions,
+                  columns: 7,
+                });
               } else {
-                setViewOptions({ ...viewOptions, columns: 4 });
+                setViewOptions({
+                  ...viewOptions,
+                  columns: 4,
+                });
               }
             }}
+            size="icon"
+            variant="raised"
           >
             {viewOptions.columns === 4 && <Columns2Icon />}
             {viewOptions.columns === 6 && <Columns3Icon />}

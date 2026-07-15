@@ -9,7 +9,12 @@ import {
   SearchIcon,
   X as XIcon,
 } from "lucide-react";
-import { Link, useNavigate, useParams, useLocation } from "@tanstack/react-router";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useLocation,
+} from "@tanstack/react-router";
 import { BulkActionMenu } from "~/components/features/BulkActionMenu";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { SIZE } from "~/lib/CONSTANTS";
@@ -46,7 +51,9 @@ export function AppBar({
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const params = useParams({ strict: false }) as Record<string, string | undefined>;
+  const params = useParams({
+    strict: false,
+  }) as Record<string, string | undefined>;
   const { isSelectionMode, toggleSelectionMode, clearSelection } =
     useMultiSelection();
   const isAtHome = location.pathname === "/app";
@@ -67,7 +74,7 @@ export function AppBar({
     : null;
   return (
     <div className="fixed bottom-4 left-1/2 z-20 flex -translate-x-1/2 justify-center">
-      <div className="flex items-center gap-2 rounded-3xl border border-border bg-card/20 p-2 shadow-2xl backdrop-blur-xl squircle lg:gap-4">
+      <div className="flex items-center gap-2 rounded-3xl border border-border bg-card/80 p-2 shadow-2xl backdrop-blur-xl squircle lg:gap-4">
         {/* Slot 1: Flow */}
         <Button asChild className={"rounded-xl"} variant={"ghost"}>
           <Link title="Flow" to="/app/flow">
@@ -130,7 +137,12 @@ export function AppBar({
                       key={partner.id}
                       className="group flex cursor-pointer items-center justify-between gap-2"
                       onSelect={() => {
-                        navigate({ to: "/app/partner/$slug", params: { slug: partner.slug } });
+                        navigate({
+                          to: "/app/partner/$slug",
+                          params: {
+                            slug: partner.slug,
+                          },
+                        });
                       }}
                     >
                       <div className="flex items-center gap-2 overflow-hidden">
