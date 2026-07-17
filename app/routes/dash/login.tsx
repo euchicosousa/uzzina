@@ -1,9 +1,15 @@
-import { LogInIcon } from "lucide-react";
+import { LogInIcon, EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { UZZINALogo } from "~/components/logo";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import {
+  InputGroup,
+  InputGroupInput,
+  InputGroupAddon,
+  InputGroupButton,
+} from "~/components/ui/input-group";
 import { authenticateClient } from "~/models/clients";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 export const Route = createFileRoute("/dash/login")({
@@ -14,6 +20,7 @@ function DashLogin() {
   const supabase = createSupabaseBrowserClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const handleSubmit = async (e: React.FormEvent) => {
@@ -90,17 +97,33 @@ function DashLogin() {
             <label className="text-sm font-medium" htmlFor="password">
               Senha
             </label>
-            <Input
-              autoComplete="current-password"
-              id="password"
-              name="password"
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="*******"
-              required
-              type="password"
-              value={password}
-              variant="inset"
-            />
+            <InputGroup>
+              <InputGroupInput
+                autoComplete="current-password"
+                className="px-4"
+                id="password"
+                name="password"
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="*******"
+                required
+                type={showPassword ? "text" : "password"}
+                value={password}
+              />
+              <InputGroupAddon align="inline-end">
+                <InputGroupButton
+                  onClick={() => setShowPassword(!showPassword)}
+                  size="icon-xs"
+                  title={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  type="button"
+                >
+                  {showPassword ? (
+                    <EyeOffIcon className="size-4" />
+                  ) : (
+                    <EyeIcon className="size-4" />
+                  )}
+                </InputGroupButton>
+              </InputGroupAddon>
+            </InputGroup>
           </div>
 
           <Button

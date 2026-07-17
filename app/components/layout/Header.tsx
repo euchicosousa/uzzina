@@ -465,7 +465,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
                 params={{
                   userId: "new",
                 }}
-                to="/app/admin/clients/$userId"
+                to="/app/admin/client/$userId"
               >
                 Novo Cliente
               </Link>

@@ -32,7 +32,7 @@ import { Route as AppAdminClientsRouteImport } from './routes/app/admin/clients'
 import { Route as AppAdminCelebrationsRouteImport } from './routes/app/admin/celebrations'
 import { Route as AppAdminUserUserIdRouteImport } from './routes/app/admin/user/$userId'
 import { Route as AppAdminPartnerSlugRouteImport } from './routes/app/admin/partner/$slug'
-import { Route as AppAdminClientsUserIdRouteImport } from './routes/app/admin/clients/$userId'
+import { Route as AppAdminClientUserIdRouteImport } from './routes/app/admin/client/$userId'
 
 const UiRoute = UiRouteImport.update({
   id: '/ui',
@@ -149,10 +149,10 @@ const AppAdminPartnerSlugRoute = AppAdminPartnerSlugRouteImport.update({
   path: '/admin/partner/$slug',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAdminClientsUserIdRoute = AppAdminClientsUserIdRouteImport.update({
-  id: '/$userId',
-  path: '/$userId',
-  getParentRoute: () => AppAdminClientsRoute,
+const AppAdminClientUserIdRoute = AppAdminClientUserIdRouteImport.update({
+  id: '/admin/client/$userId',
+  path: '/admin/client/$userId',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -172,12 +172,12 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AppIndexRoute
   '/dash/': typeof DashIndexRoute
   '/app/admin/celebrations': typeof AppAdminCelebrationsRoute
-  '/app/admin/clients': typeof AppAdminClientsRouteWithChildren
+  '/app/admin/clients': typeof AppAdminClientsRoute
   '/app/admin/partners': typeof AppAdminPartnersRoute
   '/app/admin/users': typeof AppAdminUsersRoute
   '/app/partner/$slug': typeof AppPartnerSlugRoute
   '/dash/action/$id': typeof DashActionIdRoute
-  '/app/admin/clients/$userId': typeof AppAdminClientsUserIdRoute
+  '/app/admin/client/$userId': typeof AppAdminClientUserIdRoute
   '/app/admin/partner/$slug': typeof AppAdminPartnerSlugRoute
   '/app/admin/user/$userId': typeof AppAdminUserUserIdRoute
 }
@@ -196,12 +196,12 @@ export interface FileRoutesByTo {
   '/app': typeof AppIndexRoute
   '/dash': typeof DashIndexRoute
   '/app/admin/celebrations': typeof AppAdminCelebrationsRoute
-  '/app/admin/clients': typeof AppAdminClientsRouteWithChildren
+  '/app/admin/clients': typeof AppAdminClientsRoute
   '/app/admin/partners': typeof AppAdminPartnersRoute
   '/app/admin/users': typeof AppAdminUsersRoute
   '/app/partner/$slug': typeof AppPartnerSlugRoute
   '/dash/action/$id': typeof DashActionIdRoute
-  '/app/admin/clients/$userId': typeof AppAdminClientsUserIdRoute
+  '/app/admin/client/$userId': typeof AppAdminClientUserIdRoute
   '/app/admin/partner/$slug': typeof AppAdminPartnerSlugRoute
   '/app/admin/user/$userId': typeof AppAdminUserUserIdRoute
 }
@@ -223,12 +223,12 @@ export interface FileRoutesById {
   '/app/': typeof AppIndexRoute
   '/dash/': typeof DashIndexRoute
   '/app/admin/celebrations': typeof AppAdminCelebrationsRoute
-  '/app/admin/clients': typeof AppAdminClientsRouteWithChildren
+  '/app/admin/clients': typeof AppAdminClientsRoute
   '/app/admin/partners': typeof AppAdminPartnersRoute
   '/app/admin/users': typeof AppAdminUsersRoute
   '/app/partner/$slug': typeof AppPartnerSlugRoute
   '/dash/action/$id': typeof DashActionIdRoute
-  '/app/admin/clients/$userId': typeof AppAdminClientsUserIdRoute
+  '/app/admin/client/$userId': typeof AppAdminClientUserIdRoute
   '/app/admin/partner/$slug': typeof AppAdminPartnerSlugRoute
   '/app/admin/user/$userId': typeof AppAdminUserUserIdRoute
 }
@@ -256,7 +256,7 @@ export interface FileRouteTypes {
     | '/app/admin/users'
     | '/app/partner/$slug'
     | '/dash/action/$id'
-    | '/app/admin/clients/$userId'
+    | '/app/admin/client/$userId'
     | '/app/admin/partner/$slug'
     | '/app/admin/user/$userId'
   fileRoutesByTo: FileRoutesByTo
@@ -280,7 +280,7 @@ export interface FileRouteTypes {
     | '/app/admin/users'
     | '/app/partner/$slug'
     | '/dash/action/$id'
-    | '/app/admin/clients/$userId'
+    | '/app/admin/client/$userId'
     | '/app/admin/partner/$slug'
     | '/app/admin/user/$userId'
   id:
@@ -306,7 +306,7 @@ export interface FileRouteTypes {
     | '/app/admin/users'
     | '/app/partner/$slug'
     | '/dash/action/$id'
-    | '/app/admin/clients/$userId'
+    | '/app/admin/client/$userId'
     | '/app/admin/partner/$slug'
     | '/app/admin/user/$userId'
   fileRoutesById: FileRoutesById
@@ -484,27 +484,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminPartnerSlugRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/admin/clients/$userId': {
-      id: '/app/admin/clients/$userId'
-      path: '/$userId'
-      fullPath: '/app/admin/clients/$userId'
-      preLoaderRoute: typeof AppAdminClientsUserIdRouteImport
-      parentRoute: typeof AppAdminClientsRoute
+    '/app/admin/client/$userId': {
+      id: '/app/admin/client/$userId'
+      path: '/admin/client/$userId'
+      fullPath: '/app/admin/client/$userId'
+      preLoaderRoute: typeof AppAdminClientUserIdRouteImport
+      parentRoute: typeof AppRoute
     }
   }
 }
-
-interface AppAdminClientsRouteChildren {
-  AppAdminClientsUserIdRoute: typeof AppAdminClientsUserIdRoute
-}
-
-const AppAdminClientsRouteChildren: AppAdminClientsRouteChildren = {
-  AppAdminClientsUserIdRoute: AppAdminClientsUserIdRoute,
-}
-
-const AppAdminClientsRouteWithChildren = AppAdminClientsRoute._addFileChildren(
-  AppAdminClientsRouteChildren,
-)
 
 interface AppRouteChildren {
   AppFlowRoute: typeof AppFlowRoute
@@ -514,10 +502,11 @@ interface AppRouteChildren {
   AppTodayRoute: typeof AppTodayRoute
   AppIndexRoute: typeof AppIndexRoute
   AppAdminCelebrationsRoute: typeof AppAdminCelebrationsRoute
-  AppAdminClientsRoute: typeof AppAdminClientsRouteWithChildren
+  AppAdminClientsRoute: typeof AppAdminClientsRoute
   AppAdminPartnersRoute: typeof AppAdminPartnersRoute
   AppAdminUsersRoute: typeof AppAdminUsersRoute
   AppPartnerSlugRoute: typeof AppPartnerSlugRoute
+  AppAdminClientUserIdRoute: typeof AppAdminClientUserIdRoute
   AppAdminPartnerSlugRoute: typeof AppAdminPartnerSlugRoute
   AppAdminUserUserIdRoute: typeof AppAdminUserUserIdRoute
 }
@@ -530,10 +519,11 @@ const AppRouteChildren: AppRouteChildren = {
   AppTodayRoute: AppTodayRoute,
   AppIndexRoute: AppIndexRoute,
   AppAdminCelebrationsRoute: AppAdminCelebrationsRoute,
-  AppAdminClientsRoute: AppAdminClientsRouteWithChildren,
+  AppAdminClientsRoute: AppAdminClientsRoute,
   AppAdminPartnersRoute: AppAdminPartnersRoute,
   AppAdminUsersRoute: AppAdminUsersRoute,
   AppPartnerSlugRoute: AppPartnerSlugRoute,
+  AppAdminClientUserIdRoute: AppAdminClientUserIdRoute,
   AppAdminPartnerSlugRoute: AppAdminPartnerSlugRoute,
   AppAdminUserUserIdRoute: AppAdminUserUserIdRoute,
 }

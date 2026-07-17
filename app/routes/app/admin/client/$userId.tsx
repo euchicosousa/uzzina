@@ -1,8 +1,14 @@
-import { UploadIcon } from "lucide-react";
+import { UploadIcon, EyeIcon, EyeOffIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import {
+  InputGroup,
+  InputGroupInput,
+  InputGroupAddon,
+  InputGroupButton,
+} from "~/components/ui/input-group";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
@@ -17,7 +23,7 @@ import { toast } from "sonner";
 import { useAppContext } from "~/contexts/AppContext";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import type { Client } from "~/types";
-export const Route = createFileRoute("/app/admin/clients/$userId")({
+export const Route = createFileRoute("/app/admin/client/$userId")({
   component: AdminClientPage,
 });
 function AdminClientPage() {
@@ -89,6 +95,7 @@ function AdminClientPage() {
   });
   const isSubmitting = saveMutation.isPending || archiveMutation.isPending;
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Sincroniza imagem quando o cliente carregar
   useEffect(() => {
@@ -205,15 +212,30 @@ function AdminClientPage() {
             <label className="font-medium" htmlFor="password">
               Senha
             </label>
-            <Input
-              defaultValue={client?.password || ""}
-              id="password"
-              name="password"
-              placeholder="Senha de acesso"
-              required
-              type="text"
-              variant="inset"
-            />
+            <InputGroup>
+              <InputGroupInput
+                defaultValue={client?.password || ""}
+                id="password"
+                name="password"
+                placeholder="Senha de acesso"
+                required
+                type={showPassword ? "text" : "password"}
+              />
+              <InputGroupAddon align="inline-end">
+                <InputGroupButton
+                  size="icon-xs"
+                  onClick={() => setShowPassword(!showPassword)}
+                  title={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  type="button"
+                >
+                  {showPassword ? (
+                    <EyeOffIcon className="size-4" />
+                  ) : (
+                    <EyeIcon className="size-4" />
+                  )}
+                </InputGroupButton>
+              </InputGroupAddon>
+            </InputGroup>
           </div>
         </div>
 

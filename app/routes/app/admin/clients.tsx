@@ -25,7 +25,7 @@ function AdminClientsPage() {
       <div className="mb-4 flex items-center justify-between">
         <h1 className="pb-0 text-2xl font-bold">Clientes</h1>
         <Button asChild className="squircle rounded-2xl" variant="secondary">
-          <Link to="/app/admin/clients/$userId" params={{ userId: "new" }}>
+          <Link to="/app/admin/client/$userId" params={{ userId: "new" }}>
             Novo Cliente <UserPlusIcon />
           </Link>
         </Button>
@@ -61,7 +61,7 @@ function AdminClientsPage() {
               fallback={client.name || "??"}
               image={client.image}
               title={client.name || ""}
-              to={`/app/admin/clients/${client.id}`}
+              to={`/app/admin/client/${client.id}`}
             />
           );
         })}
