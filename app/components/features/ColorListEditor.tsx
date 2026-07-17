@@ -99,12 +99,16 @@ export function ColorListEditor({
     });
   };
   const updateColor = (id: string, newValue: string) => {
+    let formatted = newValue.trim().replace(/^#+/, "");
+    if (formatted) {
+      formatted = `#${formatted}`;
+    }
     setItems((items) => {
       const next = items.map((item) =>
         item.id === id
           ? {
               ...item,
-              value: newValue,
+              value: formatted,
             }
           : item,
       );
@@ -113,7 +117,33 @@ export function ColorListEditor({
   };
 
   const handleBlurColor = () => {
-    triggerChange(items);
+    setItems((currentItems) => {
+      const sanitized = currentItems.map((item) => {
+        let val = item.value.trim();
+        if (!val || val === "#") {
+          val = "#000000";
+        }
+        if (!val.startsWith("#")) {
+          val = `#${val}`;
+        }
+        const hexRegex = /^#[0-9A-Fa-f]{3,6}$/;
+        if (!hexRegex.test(val)) {
+          val = "#000000";
+        } else if (val.length !== 4 && val.length !== 7) {
+          if (val.length < 7) {
+            val = val.padEnd(7, "0");
+          } else {
+            val = val.slice(0, 7);
+          }
+        }
+        return {
+          ...item,
+          value: val,
+        };
+      });
+      triggerChange(sanitized);
+      return sanitized;
+    });
   };
 
   return (

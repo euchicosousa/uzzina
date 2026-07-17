@@ -69,6 +69,7 @@ export function InstagramTab({
                 fallback: partner.short,
                 backgroundColor: partner.colors[0],
                 color: partner.colors[1],
+                image: partner.image,
               }))}
             />
             <div className="text-sm font-medium">
