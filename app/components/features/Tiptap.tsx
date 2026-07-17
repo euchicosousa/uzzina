@@ -1,8 +1,13 @@
-import { useEditor, EditorContent, EditorContext, useEditorState, type Editor } from "@tiptap/react";
+import {
+  useEditor,
+  EditorContent,
+  EditorContext,
+  useEditorState,
+  type Editor,
+} from "@tiptap/react";
 import { BubbleMenu as BubbleMenuComponent } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
-
 import { Table } from "@tiptap/extension-table";
 import { TableRow } from "@tiptap/extension-table-row";
 import { TableCell } from "@tiptap/extension-table-cell";
@@ -34,33 +39,31 @@ import {
   Trash2,
   type LucideIcon,
 } from "lucide-react";
-
 interface TiptapToolbarProps {
   editor: Editor | null;
+  isRounded?: boolean;
 }
-
 interface ToolbarButtonDef {
   icon: LucideIcon;
   label: string;
   action: () => void;
   selector: (editor: Editor) => boolean;
 }
-
 function ToolbarButton({
   icon: Icon,
   label,
   action,
   editor,
   selector,
-}: ToolbarButtonDef & { editor: Editor }) {
+}: ToolbarButtonDef & {
+  editor: Editor;
+}) {
   const isActive = useEditorState({
     editor,
     selector: ({ editor: e }) => selector(e),
   });
-
   return (
     <button
-      type="button"
       className={cn(
         "flex size-8 items-center justify-center rounded-lg transition-all outline-none",
         isActive
@@ -69,33 +72,62 @@ function ToolbarButton({
       )}
       onClick={action}
       title={label}
+      type="button"
     >
       <Icon className="size-4" />
     </button>
   );
 }
-
-function TiptapToolbar({ editor }: TiptapToolbarProps) {
+function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
   if (!editor) return null;
-
   const buttons: ToolbarButtonDef[] = [
     {
       icon: Heading1,
       label: "Título 1",
-      action: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
-      selector: (e) => e.isActive("heading", { level: 1 }),
+      action: () =>
+        editor
+          .chain()
+          .focus()
+          .toggleHeading({
+            level: 1,
+          })
+          .run(),
+      selector: (e) =>
+        e.isActive("heading", {
+          level: 1,
+        }),
     },
     {
       icon: Heading2,
       label: "Título 2",
-      action: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
-      selector: (e) => e.isActive("heading", { level: 2 }),
+      action: () =>
+        editor
+          .chain()
+          .focus()
+          .toggleHeading({
+            level: 2,
+          })
+          .run(),
+      selector: (e) =>
+        e.isActive("heading", {
+          level: 2,
+        }),
     },
     {
       icon: Heading3,
       label: "Título 3",
-      action: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
-      selector: (e) => e.isActive("heading", { level: 3 }),
+      action: () =>
+        editor
+          .chain()
+          .focus()
+          .toggleHeading({
+            level: 3,
+          })
+          .run(),
+      selector: (e) =>
+        e.isActive("heading", {
+          level: 3,
+        }),
     },
     {
       icon: Bold,
@@ -144,7 +176,13 @@ function TiptapToolbar({ editor }: TiptapToolbarProps) {
           editor.chain().focus().unsetLink().run();
           return;
         }
-        editor.chain().focus().setLink({ href: url }).run();
+        editor
+          .chain()
+          .focus()
+          .setLink({
+            href: url,
+          })
+          .run();
       },
       selector: (e) => e.isActive("link"),
     },
@@ -162,11 +200,17 @@ function TiptapToolbar({ editor }: TiptapToolbarProps) {
         if (colsStr === null) return;
         const rowsStr = window.prompt("Quantas Linhas deseja na tabela?", "3");
         if (rowsStr === null) return;
-
         const cols = Number.parseInt(colsStr, 10) || 3;
         const rows = Number.parseInt(rowsStr, 10) || 3;
-
-        editor.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run();
+        editor
+          .chain()
+          .focus()
+          .insertTable({
+            rows,
+            cols,
+            withHeaderRow: true,
+          })
+          .run();
       },
       selector: (e) => e.isActive("table"),
     },
@@ -177,9 +221,13 @@ function TiptapToolbar({ editor }: TiptapToolbarProps) {
       selector: () => false,
     },
   ];
-
   return (
-    <div className="flex flex-wrap items-center gap-1 border-b border-border bg-card/60 p-1.5 shrink-0">
+    <div
+      className={cn(
+        "flex flex-wrap items-center gap-1 border-b border-border bg-card/60 p-1.5 shrink-0",
+        isRounded && "rounded-t-xl squircle",
+      )}
+    >
       {buttons.map((btn) => (
         <ToolbarButton key={btn.label} {...btn} editor={editor} />
       ))}
@@ -208,7 +256,6 @@ function TiptapToolbar({ editor }: TiptapToolbarProps) {
     </div>
   );
 }
-
 export function Tiptap({
   content,
   handleBlur,
@@ -217,6 +264,7 @@ export function Tiptap({
   tabIndex,
   disabled,
   placeholder,
+  isRounded,
 }: {
   content: string;
   handleBlur?: (content: string) => void;
@@ -225,17 +273,19 @@ export function Tiptap({
   tabIndex?: number;
   disabled?: boolean;
   placeholder?: string;
+  isRounded?: boolean;
 }) {
   const [extensions] = useState(() => {
     const kit = StarterKit.configure({
-      heading: { levels: [1, 2, 3] },
+      heading: {
+        levels: [1, 2, 3],
+      },
       link: {
         openOnClick: true,
         autolink: true,
         linkOnPaste: true,
       },
     });
-    
     return [
       kit,
       Placeholder.configure({
@@ -252,7 +302,6 @@ export function Tiptap({
       }),
     ];
   });
-
   const editor = useEditor({
     extensions,
     content,
@@ -282,32 +331,60 @@ export function Tiptap({
     }),
     [editor],
   );
-
   const isSelectionInTable = useEditorState({
     editor,
     selector: ({ editor: e }) => e?.isActive("table") ?? false,
   });
-
   const bubbleButtons = useMemo<ToolbarButtonDef[]>(() => {
     if (!editor) return [];
     return [
       {
         icon: Heading1,
         label: "Título 1",
-        action: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
-        selector: (e) => e.isActive("heading", { level: 1 }),
+        action: () =>
+          editor
+            .chain()
+            .focus()
+            .toggleHeading({
+              level: 1,
+            })
+            .run(),
+        selector: (e) =>
+          e.isActive("heading", {
+            level: 1,
+          }),
       },
       {
         icon: Heading2,
         label: "Título 2",
-        action: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
-        selector: (e) => e.isActive("heading", { level: 2 }),
+        action: () =>
+          editor
+            .chain()
+            .focus()
+            .toggleHeading({
+              level: 2,
+            })
+            .run(),
+        selector: (e) =>
+          e.isActive("heading", {
+            level: 2,
+          }),
       },
       {
         icon: Heading3,
         label: "Título 3",
-        action: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
-        selector: (e) => e.isActive("heading", { level: 3 }),
+        action: () =>
+          editor
+            .chain()
+            .focus()
+            .toggleHeading({
+              level: 3,
+            })
+            .run(),
+        selector: (e) =>
+          e.isActive("heading", {
+            level: 3,
+          }),
       },
       {
         icon: Bold,
@@ -341,7 +418,6 @@ export function Tiptap({
       },
     ];
   }, [editor]);
-
   const tableButtons = useMemo<Omit<ToolbarButtonDef, "selector">[]>(() => {
     if (!editor) return [];
     return [
@@ -376,7 +452,6 @@ export function Tiptap({
       },
     ];
   }, [editor]);
-
   return (
     <EditorContext.Provider value={providedValue}>
       <div
@@ -385,26 +460,30 @@ export function Tiptap({
           className,
         )}
       >
-        <TiptapToolbar editor={editor} />
+        <TiptapToolbar editor={editor} isRounded={isRounded} />
         {editor && (
           <BubbleMenuComponent
-            editor={editor}
             className="flex items-center gap-0.5 rounded-xl border border-border bg-background/95 p-1 shadow-lg backdrop-blur-md"
+            editor={editor}
           >
             {isSelectionInTable
               ? tableButtons.map((btn) => (
                   <button
                     key={`table-control-${btn.label}`}
-                    type="button"
                     className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground border border-transparent transition-all outline-none"
                     onClick={btn.action}
                     title={btn.label}
+                    type="button"
                   >
                     <btn.icon className="size-4" />
                   </button>
                 ))
               : bubbleButtons.map((btn) => (
-                  <ToolbarButton key={`bubble-${btn.label}`} {...btn} editor={editor} />
+                  <ToolbarButton
+                    key={`bubble-${btn.label}`}
+                    {...btn}
+                    editor={editor}
+                  />
                 ))}
           </BubbleMenuComponent>
         )}

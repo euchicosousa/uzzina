@@ -2,6 +2,7 @@ import { useState } from "react";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
+import { toast } from "sonner";
 
 export interface AvatarSelectorOption {
   id: string; // O ID ou Slug original que será enviado no form state
@@ -17,6 +18,8 @@ interface UAvatarSelectorProps {
   options: AvatarSelectorOption[];
   initialSelectedIds?: string[];
   name: string; // Nome do input para FormData (ex: 'users_ids' ou 'partner_slugs')
+  onChange?: (selectedIds: string[]) => void;
+  minSelected?: number;
 }
 const DEFAULT_INITIAL_SELECTED_IDS: string[] = [];
 
@@ -24,16 +27,26 @@ export function UAvatarSelector({
   options,
   initialSelectedIds = DEFAULT_INITIAL_SELECTED_IDS,
   name,
+  onChange,
+  minSelected,
 }: UAvatarSelectorProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedIds);
 
   const toggleOption = (id: string) => {
     setSelectedIds((current) => {
-      if (current.includes(id)) {
-        return current.filter((currentId) => currentId !== id);
+      const isSelected = current.includes(id);
+      let next: string[];
+      if (isSelected) {
+        if (minSelected !== undefined && current.length <= minSelected) {
+          toast.warning(`Você precisa manter pelo menos ${minSelected} selecionado(s).`);
+          return current;
+        }
+        next = current.filter((currentId) => currentId !== id);
       } else {
-        return [...current, id];
+        next = [...current, id];
       }
+      onChange?.(next);
+      return next;
     });
   };
 
@@ -79,3 +92,4 @@ export function UAvatarSelector({
     </div>
   );
 }
+

@@ -21,23 +21,23 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { normalizeHexColor } from "~/lib/uzzina-utils";
+
 interface ColorItem {
   id: string;
   value: string;
 }
 interface ColorListProps {
   initialColors?: string[];
+  onChange?: (colors: string[]) => void;
 }
-
-// Helper to ensure 3-char hex like #fff becomes 6-char #ffffff for the native color input
 
 const DEFAULT_INITIAL_COLORS: string[] = [];
 export function ColorListEditor({
   initialColors = DEFAULT_INITIAL_COLORS,
+  onChange,
 }: ColorListProps) {
   const dndId = useId();
 
-  // Use unique IDs for dnd-kit, initialized from colors or empty
   const [items, setItems] = useState<ColorItem[]>(() =>
     initialColors && initialColors.length > 0
       ? initialColors.map((color) => ({
@@ -49,11 +49,10 @@ export function ColorListEditor({
             id: crypto.randomUUID(),
             value: "#000000",
           },
-          // Default primary
           {
             id: crypto.randomUUID(),
             value: "#ffffff",
-          }, // Default secondary
+          },
         ],
   );
   const sensors = useSensors(
@@ -62,40 +61,61 @@ export function ColorListEditor({
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
+
+  const triggerChange = (updatedItems: ColorItem[]) => {
+    onChange?.(updatedItems.map((item) => item.value));
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
       setItems((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
+        const next = arrayMove(items, oldIndex, newIndex);
+        triggerChange(next);
+        return next;
       });
     }
   };
   const addColor = () => {
-    setItems((items) => [
-      ...items,
-      {
-        id: crypto.randomUUID(),
-        value: "#000000",
-      },
-    ]);
+    setItems((items) => {
+      const next = [
+        ...items,
+        {
+          id: crypto.randomUUID(),
+          value: "#000000",
+        },
+      ];
+      triggerChange(next);
+      return next;
+    });
   };
   const removeColor = (id: string) => {
-    setItems((items) => items.filter((item) => item.id !== id));
+    setItems((items) => {
+      const next = items.filter((item) => item.id !== id);
+      triggerChange(next);
+      return next;
+    });
   };
   const updateColor = (id: string, newValue: string) => {
-    setItems((items) =>
-      items.map((item) =>
+    setItems((items) => {
+      const next = items.map((item) =>
         item.id === id
           ? {
               ...item,
               value: newValue,
             }
           : item,
-      ),
-    );
+      );
+      return next;
+    });
   };
+
+  const handleBlurColor = () => {
+    triggerChange(items);
+  };
+
   return (
     <div className="space-y-4">
       <DndContext
@@ -115,6 +135,7 @@ export function ColorListEditor({
                 id={item.id}
                 index={index}
                 onChange={(val) => updateColor(item.id, val)}
+                onBlur={handleBlurColor}
                 onRemove={() => removeColor(item.id)}
                 value={item.value}
               />
@@ -142,12 +163,14 @@ interface SortableItemProps {
   index: number;
   onRemove: () => void;
   onChange: (value: string) => void;
+  onBlur?: () => void;
 }
 function SortableColorItem({
   id,
   value,
   onRemove,
   onChange,
+  onBlur,
 }: SortableItemProps) {
   const {
     attributes,
@@ -163,7 +186,6 @@ function SortableColorItem({
     transform: CSS.Transform.toString(transform),
     transition,
     zIndex: isDragging ? 1 : 0,
-    // opacity: isDragging ? 0.5 : 1,
   };
   return (
     <div
@@ -196,6 +218,7 @@ function SortableColorItem({
             id={`color_${id}`}
             name={`color_${id}`}
             onChange={(e) => onChange(e.target.value)}
+            onBlur={onBlur}
             type="color"
             value={normalizeHexColor(value)}
           />
@@ -208,14 +231,12 @@ function SortableColorItem({
           maxLength={9}
           name={`hex_${id}`}
           onChange={(e) => onChange(e.target.value)}
+          onBlur={onBlur}
           type="text"
           value={value}
         />
       </div>
 
-      {/* Hidden input to submit the value. Name is "colors" to get array in action. */}
-      {/* Important: Only include validation attributes if needed, but since it's dynamic, native validation might be tricky. */}
-      {/* We add index to maybe track order if needed, but simple arrays usually work by document order. */}
       <input name="colors" type="hidden" value={value} />
 
       <Button
@@ -231,3 +252,4 @@ function SortableColorItem({
     </div>
   );
 }
+

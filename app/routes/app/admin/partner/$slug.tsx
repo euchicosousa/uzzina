@@ -11,8 +11,9 @@ import {
   MegaphoneIcon,
   PrinterIcon,
   UploadIcon,
+  CheckIcon,
 } from "lucide-react";
-import { Suspense, lazy, useState, useEffect } from "react";
+import { Suspense, lazy, useState, useEffect, useRef } from "react";
 import { ColorListEditor } from "~/components/features/ColorListEditor";
 import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
 import { Button } from "~/components/ui/button";
@@ -22,36 +23,33 @@ import { UToggleInput } from "~/components/uzzina/UToggle";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import type { Partner } from "~/types";
-
 const Tiptap = lazy(() =>
   import("~/components/features/Tiptap").then((module) => ({
     default: module.Tiptap,
   })),
 );
-
 import { useAppContext } from "~/contexts/AppContext";
-
+import { ULoader } from "~/components/uzzina/ULoader";
 export const Route = createFileRoute("/app/admin/partner/$slug")({
   component: AdminPartnerEditPage,
 });
-
 function AdminPartnerEditPage() {
   const { slug } = Route.useParams();
   const navigate = useNavigate();
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
   const appData = useAppContext();
+  const isNew = slug === "new" || !slug;
 
   // Queries client-side
   const { data: people = [] } = useQuery({
     queryKey: ["people", "visible"],
     queryFn: fetchPeople,
   });
-
   const { data: partner, isLoading: isLoadingPartner } = useQuery({
     queryKey: ["partner", slug],
     queryFn: async () => {
-      if (slug === "new" || !slug) return null;
+      if (isNew) return null;
       const { data, error } = await supabase
         .from("partners")
         .select("*")
@@ -60,13 +58,52 @@ function AdminPartnerEditPage() {
       if (error) throw error;
       return data as Partner;
     },
-    enabled: !!slug && slug !== "new",
+    enabled: !isNew,
   });
+  const [contextValue, setContextValue] = useState("");
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [voiceValue, setVoiceValue] = useState("");
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [brandColors, setBrandColors] = useState<string[]>([]);
+  const [justSaved, setJustSaved] = useState(false);
+  const [savingFields, setSavingFields] = useState<Set<string>>(new Set());
+
+  // Armazena valores atuais de formulário para referência rápida e mutações parciais
+  const stateRef = useRef({
+    title: "",
+    short: "",
+    slug: "",
+    instagram_caption_tail: "",
+    sow: "marketing" as "marketing" | "socialmedia" | "demand",
+    archived: false,
+  });
+
+  // Inicializa estados quando o parceiro for carregado
+  useEffect(() => {
+    if (partner) {
+      setContextValue(partner.context || "");
+      setImageUrl(partner.image || null);
+      setVoiceValue(partner.voice || "");
+      setSelectedUsers(partner.users_ids || []);
+      setBrandColors(partner.colors || []);
+      stateRef.current = {
+        title: partner.title || "",
+        short: partner.short || "",
+        slug: partner.slug || "",
+        instagram_caption_tail: partner.instagram_caption_tail || "",
+        sow: partner.sow || "marketing",
+        archived: partner.archived || false,
+      };
+    }
+  }, [partner]);
 
   // Mutation para salvar
   const saveMutation = useMutation({
     mutationFn: async (partnerData: Omit<Partner, "id" | "created_at">) => {
-      if (slug === "new") {
+      if (partnerData.users_ids.length === 0) {
+        throw new Error("Selecione pelo menos um responsável para o parceiro.");
+      }
+      if (isNew) {
         const { data: existing } = await supabase
           .from("partners")
           .select("id")
@@ -86,54 +123,107 @@ function AdminPartnerEditPage() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["partner", slug] });
-      queryClient.invalidateQueries({ queryKey: ["partners"] });
-      toast.success("Parceiro salvo com sucesso!");
-      navigate({ to: "/app/admin/partners" });
+      queryClient.invalidateQueries({
+        queryKey: ["partner", slug],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["partners"],
+      });
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 2000);
+      if (isNew) {
+        toast.success("Parceiro criado com sucesso!");
+        navigate({
+          to: "/app/admin/partners",
+        });
+      }
     },
     onError: (err: unknown) => {
       const message = err instanceof Error ? err.message : "Erro desconhecido";
       toast.error(`Erro ao salvar: ${message}`);
     },
   });
-
   const isSubmitting = saveMutation.isPending;
-  const [contextValue, setContextValue] = useState("");
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [voiceValue, setVoiceValue] = useState("");
 
-  // Inicializa estados quando o parceiro for carregado
-  useEffect(() => {
-    if (partner) {
-      setContextValue(partner.context || "");
-      setImageUrl(partner.image || null);
-      setVoiceValue(partner.voice || "");
+  // Função auxiliar para disparar salvamento automático de campos individuais (apenas na edição)
+  const triggerAutoSave = async (
+    patch: Partial<Omit<Partner, "id" | "created_at">>,
+  ) => {
+    if (isNew) return; // Não salvar automaticamente na tela de novo parceiro
+
+    const currentData = {
+      title: stateRef.current.title,
+      slug: stateRef.current.slug,
+      colors: brandColors.length > 0 ? brandColors : ["#000000", "#ffffff"],
+      archived: stateRef.current.archived,
+      users_ids: selectedUsers,
+      short: stateRef.current.short,
+      context: contextValue || null,
+      voice: voiceValue || null,
+      image: imageUrl || null,
+      instagram_caption_tail: stateRef.current.instagram_caption_tail || null,
+      sow: stateRef.current.sow,
+      ...patch,
+    };
+
+    // Validar antes de enviar
+    if (currentData.users_ids.length === 0) {
+      toast.error("O parceiro precisa ter ao menos um responsável.");
+      return;
     }
-  }, [partner]);
-
+    const keys = Object.keys(patch);
+    setSavingFields((prev) => {
+      const next = new Set(prev);
+      for (const key of keys) next.add(key);
+      return next;
+    });
+    try {
+      await saveMutation.mutateAsync(currentData);
+    } catch {
+      // O erro já é tratado no onError da mutation
+    } finally {
+      setSavingFields((prev) => {
+        const next = new Set(prev);
+        for (const key of keys) next.delete(key);
+        return next;
+      });
+    }
+  };
+  const handleBlurField = <K extends keyof typeof stateRef.current>(
+    fieldName: K,
+    value: (typeof stateRef.current)[K],
+  ) => {
+    const currentValue = stateRef.current[fieldName];
+    if (currentValue !== value) {
+      stateRef.current[fieldName] = value;
+      triggerAutoSave({
+        [fieldName]: value,
+      });
+    }
+  };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const updates = Object.fromEntries(formData);
-    const colors = formData.getAll("colors") as string[];
-    
+    const colors =
+      brandColors.length > 0 ? brandColors : ["#000000", "#ffffff"];
     const partnerData = {
       title: updates.title as string,
-      slug: updates.slug as string,
-      colors: colors.length > 0 ? colors : ["#000000", "#ffffff"],
+      slug: (isNew ? updates.slug : slug) as string,
+      colors,
       archived: updates.archived === "on",
-      users_ids: formData.getAll("users_ids") as string[],
+      users_ids: selectedUsers,
       short: (updates.short as string) || "",
       context: contextValue || null,
       voice: voiceValue || null,
       image: imageUrl || null,
-      instagram_caption_tail: (updates.instagram_caption_tail as string) || null,
-      sow: (updates.sow as "marketing" | "socialmedia" | "demand") || "marketing",
+      instagram_caption_tail:
+        (updates.instagram_caption_tail as string) || null,
+      sow:
+        (updates.sow as "marketing" | "socialmedia" | "demand") || "marketing",
     };
-
     await saveMutation.mutateAsync(partnerData);
   };
-
   if (isLoadingPartner) {
     return (
       <div className="flex h-full w-full items-center justify-center bg-background gap-4">
@@ -158,20 +248,22 @@ function AdminPartnerEditPage() {
           >
             Parceiros
           </Link>
-          <a
-            className="hover:underline"
-            href={`/print/partner/${partner?.slug}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <PrinterIcon className="size-5" />
-          </a>
+          {!isNew && (
+            <a
+              className="hover:underline"
+              href={`/print/partner/${partner?.slug}`}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <PrinterIcon className="size-5" />
+            </a>
+          )}
         </div>
       </div>
       <form
-        onSubmit={handleSubmit}
         key={partner?.slug ?? "new"}
         className="flex flex-col gap-8"
+        onSubmit={handleSubmit}
       >
         <input name="image" type="hidden" value={imageUrl || ""} />
 
@@ -181,7 +273,12 @@ function AdminPartnerEditPage() {
             className="group relative -ml-1 size-24 shrink-0 overflow-hidden rounded-full transition hover:opacity-90"
             cloudName={appData.cloudName}
             folder="uzzina/partners"
-            onUpload={(url: string) => setImageUrl(url)}
+            onUpload={(url: string) => {
+              setImageUrl(url);
+              triggerAutoSave({
+                image: url,
+              });
+            }}
             outputWidth={400}
             square
             uploadPreset={appData.uploadPreset}
@@ -197,15 +294,23 @@ function AdminPartnerEditPage() {
             </div>
           </CloudinaryUpload>
 
-          <div className="flex flex-col gap-1">
-            <div className="font-medium">Logotipo da Marca</div>
+          <div className="flex-1 flex flex-col gap-1">
+            <div className="flex items-center justify-between gap-2 font-medium">
+              <span>Logotipo da Marca</span>
+              {savingFields.has("image") && <ULoader />}
+            </div>
             <div className="text-sm text-muted-foreground">
               Clique para fazer upload e recortar
             </div>
             {imageUrl && (
               <button
                 className="mt-1 text-left text-xs text-muted-foreground underline hover:text-foreground"
-                onClick={() => setImageUrl(null)}
+                onClick={() => {
+                  setImageUrl(null);
+                  triggerAutoSave({
+                    image: null,
+                  });
+                }}
                 type="button"
               >
                 Remover imagem
@@ -216,13 +321,17 @@ function AdminPartnerEditPage() {
 
         <div className="grid gap-8">
           <div className="grid gap-4">
-            <label className="font-medium" htmlFor="title">
-              Nome
-            </label>
+            <div className="flex items-center justify-between gap-2">
+              <label className="font-medium" htmlFor="title">
+                Nome
+              </label>
+              {savingFields.has("title") && <ULoader />}
+            </div>
             <Input
               defaultValue={partner?.title}
               id="title"
               name="title"
+              onBlur={(e) => handleBlurField("title", e.target.value)}
               required
               variant="inset"
             />
@@ -230,26 +339,35 @@ function AdminPartnerEditPage() {
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="grid gap-4">
-              <label className="font-medium" htmlFor="short">
-                Sigla (4 letras)
-              </label>
+              <div className="flex items-center justify-between gap-2">
+                <label className="font-medium" htmlFor="short">
+                  Sigla (4 letras)
+                </label>
+                {savingFields.has("short") && <ULoader />}
+              </div>
               <Input
                 defaultValue={partner?.short}
                 id="short"
                 name="short"
+                onBlur={(e) => handleBlurField("short", e.target.value)}
                 required
                 variant="inset"
               />
             </div>
 
             <div className="grid gap-4">
-              <label className="font-medium" htmlFor="slug">
-                Slug
-              </label>
+              <div className="flex items-center justify-between gap-2">
+                <label className="font-medium" htmlFor="slug">
+                  Slug
+                </label>
+                {savingFields.has("slug") && <ULoader />}
+              </div>
               <Input
                 defaultValue={partner?.slug}
+                disabled={!isNew}
                 id="slug"
                 name="slug"
+                onBlur={(e) => handleBlurField("slug", e.target.value)}
                 required
                 variant="inset"
               />
@@ -257,34 +375,46 @@ function AdminPartnerEditPage() {
           </div>
 
           <div className="grid gap-4">
-            <label className="font-medium" htmlFor="context">
-              Contexto
-            </label>
+            <div className="flex items-center justify-between gap-2">
+              <label className="font-medium" htmlFor="context">
+                Contexto
+              </label>
+              {savingFields.has("context") && <ULoader />}
+            </div>
             <input
               id="context"
               name="context"
               type="hidden"
               value={contextValue}
             />
-            <div className="min-h-[100px] bg-input dark:bg-input/30 input-embossed px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
+            <div className="min-h-[100px] bg-input dark:bg-input/30 input-embossed px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm rounded-2xl">
               <Suspense
                 fallback={
                   <div className="h-full w-full animate-pulse bg-muted" />
                 }
               >
                 <Tiptap
-                  className="prose prose-sm dark:prose-invert h-full max-w-none focus:outline-none"
+                  className="prose prose-sm dark:prose-invert h-full max-w-none focus:outline-none rounded-2xl"
                   content={contextValue}
-                  handleChange={(content: string) => setContextValue(content)}
+                  handleBlur={(content: string) => {
+                    setContextValue(content);
+                    triggerAutoSave({
+                      context: content,
+                    });
+                  }}
+                  isRounded
                 />
               </Suspense>
             </div>
           </div>
 
           <div className="grid gap-4">
-            <label className="font-medium" htmlFor="voice">
-              Tom de Voz
-            </label>
+            <div className="flex items-center justify-between gap-2">
+              <label className="font-medium" htmlFor="voice">
+                Tom de Voz
+              </label>
+              {savingFields.has("voice") && <ULoader />}
+            </div>
             <input id="voice" name="voice" type="hidden" value={voiceValue} />
             <div className="min-h-[100px] bg-input dark:bg-input/30 input-embossed px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
               <Suspense
@@ -295,31 +425,53 @@ function AdminPartnerEditPage() {
                 <Tiptap
                   className="prose prose-sm dark:prose-invert h-full max-w-none focus:outline-none"
                   content={voiceValue}
-                  handleChange={(content: string) => setVoiceValue(content)}
+                  handleBlur={(content: string) => {
+                    setVoiceValue(content);
+                    triggerAutoSave({
+                      voice: content,
+                    });
+                  }}
+                  isRounded
                 />
               </Suspense>
             </div>
           </div>
 
           <div className="grid gap-4">
-            <label className="font-medium" htmlFor="instagram_caption_tail">
-              Assinatura do Instagram
-            </label>
+            <div className="flex items-center justify-between gap-2">
+              <label className="font-medium" htmlFor="instagram_caption_tail">
+                Assinatura do Instagram
+              </label>
+              {savingFields.has("instagram_caption_tail") && <ULoader />}
+            </div>
             <Textarea
               className="min-h-[80px]"
               defaultValue={partner?.instagram_caption_tail || ""}
               id="instagram_caption_tail"
               name="instagram_caption_tail"
+              onBlur={(e) =>
+                handleBlurField("instagram_caption_tail", e.target.value)
+              }
               placeholder="#hashtags @mentions..."
               variant="inset"
             />
           </div>
 
           <div className="grid gap-4">
-            <div className="font-medium">Usuários Vinculados</div>
+            <div className="flex items-center justify-between gap-2 font-medium">
+              <span>Usuários Vinculados</span>
+              {savingFields.has("users_ids") && <ULoader />}
+            </div>
             <UAvatarSelector
               initialSelectedIds={partner?.users_ids || []}
+              minSelected={1}
               name="users_ids"
+              onChange={(ids) => {
+                setSelectedUsers(ids);
+                triggerAutoSave({
+                  users_ids: ids,
+                });
+              }}
               options={people.map((person) => ({
                 id: person.user_id,
                 fallback: person.initials,
@@ -331,18 +483,40 @@ function AdminPartnerEditPage() {
           </div>
 
           <div className="grid gap-4">
-            <div className="font-medium">Cores da Marca</div>
-            <ColorListEditor initialColors={partner?.colors || []} />
+            <div className="flex items-center justify-between gap-2 font-medium">
+              <span>Cores da Marca</span>
+              {savingFields.has("colors") && <ULoader />}
+            </div>
+            <ColorListEditor
+              initialColors={partner?.colors || []}
+              onChange={(colors) => {
+                setBrandColors(colors);
+                triggerAutoSave({
+                  colors,
+                });
+              }}
+            />
           </div>
 
           <div className="flex items-end justify-between gap-4">
             <div className="grid gap-4">
-              <div className="font-medium">Escopo de Trabalho (SOW)</div>
+              <div className="flex items-center justify-between gap-2 font-medium">
+                <span>Escopo de Trabalho (SOW)</span>
+                {savingFields.has("sow") && <ULoader />}
+              </div>
               <div className="flex items-center gap-4">
                 <UToggleInput
                   defaultChecked={partner?.sow === "marketing" || !partner?.sow}
                   id="sow-marketing"
                   name="sow"
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      stateRef.current.sow = "marketing";
+                      triggerAutoSave({
+                        sow: "marketing",
+                      });
+                    }
+                  }}
                   type="radio"
                   value="marketing"
                 >
@@ -354,6 +528,14 @@ function AdminPartnerEditPage() {
                   defaultChecked={partner?.sow === "socialmedia"}
                   id="sow-socialmedia"
                   name="sow"
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      stateRef.current.sow = "socialmedia";
+                      triggerAutoSave({
+                        sow: "socialmedia",
+                      });
+                    }
+                  }}
                   type="radio"
                   value="socialmedia"
                 >
@@ -365,6 +547,14 @@ function AdminPartnerEditPage() {
                   defaultChecked={partner?.sow === "demand"}
                   id="sow-demand"
                   name="sow"
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      stateRef.current.sow = "demand";
+                      triggerAutoSave({
+                        sow: "demand",
+                      });
+                    }
+                  }}
                   type="radio"
                   value="demand"
                 >
@@ -381,9 +571,19 @@ function AdminPartnerEditPage() {
             defaultChecked={partner?.archived || false}
             id="archived"
             name="archived"
+            onCheckedChange={(checked) => {
+              stateRef.current.archived = checked;
+              triggerAutoSave({
+                archived: checked,
+              });
+            }}
             variant="destructive"
           >
-            <ArchiveIcon className="size-4" />
+            {savingFields.has("archived") ? (
+              <ULoader className="size-4 text-white" />
+            ) : (
+              <ArchiveIcon className="size-4" />
+            )}
             {partner?.archived ? "Arquivado" : "Visível"}
           </UToggleInput>
 
@@ -392,11 +592,21 @@ function AdminPartnerEditPage() {
             disabled={isSubmitting}
             type="submit"
           >
-            {isSubmitting ? "Salvando..." : "Salvar"}
-            <CloudUploadIcon className="size-4" />
+            {isSubmitting ? (
+              "Salvando..."
+            ) : justSaved ? (
+              <>
+                Salvo <CheckIcon className="size-4" />
+              </>
+            ) : (
+              <>
+                {isNew ? "Criar Parceiro" : "Salvar"}
+                <CloudUploadIcon className="size-4" />
+              </>
+            )}
           </Button>
         </div>
-        </form>
+      </form>
     </div>
   );
 }

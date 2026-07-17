@@ -501,6 +501,10 @@ input.input-embossed {
   @apply px-4;
 }
 
+textarea.input-embossed {
+  @apply py-3 px-4;
+}
+
 .raised {
   @apply ring-black/5 transition-all data-[state=on]:border-t data-[state=on]:border-white data-[state=on]:bg-card/50 data-[state=on]:shadow data-[state=on]:ring hover:data-[state=on]:bg-card dark:data-[state=on]:border-white/30;
 }

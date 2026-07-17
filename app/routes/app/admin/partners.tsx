@@ -2,7 +2,8 @@ import { FolderPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Button } from "~/components/ui/button";
 import { AdminItemCard } from "~/components/uzzina/AdminItemCard";
-import { useAppContext } from "~/contexts/AppContext";
+import { useQuery } from "@tanstack/react-query";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import type { Partner } from "~/types";
 
 export const Route = createFileRoute("/app/admin/partners")({
@@ -10,7 +11,30 @@ export const Route = createFileRoute("/app/admin/partners")({
 });
 
 function AdminPartnersPage() {
-  const { partners } = useAppContext();
+  const supabase = createSupabaseBrowserClient();
+  const { data: partners = [], isLoading } = useQuery({
+    queryKey: ["partners"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("partners")
+        .select("*")
+        .order("title", { ascending: true });
+      if (error) throw error;
+      return data as Partner[];
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-background gap-4 p-8 min-h-[300px]">
+        <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <p className="text-muted-foreground text-sm font-medium animate-pulse">
+          Carregando parceiros...
+        </p>
+      </div>
+    );
+  }
+
   const archivedPartners: Partner[] = [];
   const activePartners: Partner[] = [];
   partners.forEach((partner: Partner) => {
@@ -20,6 +44,7 @@ function AdminPartnersPage() {
       activePartners.push(partner);
     }
   });
+
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-8">
       <div className="mb-4 flex items-center justify-between">
