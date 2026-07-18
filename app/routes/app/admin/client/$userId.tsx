@@ -48,7 +48,7 @@ function AdminClientPage() {
   // Mutation para salvar
   const saveMutation = useMutation({
     mutationFn: async (
-      clientData: Omit<Client, "id" | "created_at" | "active">,
+      clientData: Omit<Client, "id" | "created_at" | "active" | "password_hash">,
     ) => {
       if (isNew) {
         await createClient(supabase, clientData);

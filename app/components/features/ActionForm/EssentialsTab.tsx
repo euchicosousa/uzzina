@@ -1,17 +1,17 @@
-import type { Action, Partner } from "~/types";
 import { parseISO } from "date-fns";
-import { CalendarDaysIcon, FishingHookIcon, PlusIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  CalendarDaysIcon,
+  FishingHookIcon,
+  PlusIcon,
+} from "lucide-react";
 import { Suspense, lazy, useRef, useState } from "react";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
-import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
-import { UButtonAI } from "~/components/uzzina/UButtonAI";
-import { getNewDateForAction, isLateAction } from "~/lib/helpers";
-import { cn } from "~/lib/utils";
-import { ActionDatePicker } from "./ActionDatePicker";
-import { ActionTimeDisplay } from "./ActionTimeDisplay";
-import { ActionTitleInput } from "./ActionTitleInput";
-import { WorkFileThumbnail } from "./WorkFileThumbnail";
-import { ArrowRightIcon } from "lucide-react";
+const Tiptap = lazy(() =>
+  import("~/components/features/Tiptap").then((module) => ({
+    default: module.Tiptap,
+  })),
+);
 import { Button } from "~/components/ui/button";
 import {
   Sheet,
@@ -19,12 +19,16 @@ import {
   SheetDescription,
   SheetTitle,
 } from "~/components/ui/sheet";
+import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
+import { UButtonAI } from "~/components/uzzina/UButtonAI";
 import { INTENT } from "~/lib/CONSTANTS";
-const Tiptap = lazy(() =>
-  import("~/components/features/Tiptap").then((module) => ({
-    default: module.Tiptap,
-  })),
-);
+import { getNewDateForAction, isLateAction } from "~/lib/helpers";
+import { cn } from "~/lib/utils";
+import type { Action, Partner } from "~/types";
+import { ActionDatePicker } from "./ActionDatePicker";
+import { ActionTimeDisplay } from "./ActionTimeDisplay";
+import { ActionTitleInput } from "./ActionTitleInput";
+import { WorkFileThumbnail } from "./WorkFileThumbnail";
 interface EssentialsTabProps {
   RawAction: Action;
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;

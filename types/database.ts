@@ -158,6 +158,7 @@ export type Database = {
           name: string | null
           partners: string[]
           password: string
+          password_hash: string | null
         }
         Insert: {
           active?: boolean
@@ -168,6 +169,7 @@ export type Database = {
           name?: string | null
           partners: string[]
           password: string
+          password_hash?: string | null
         }
         Update: {
           active?: boolean
@@ -178,6 +180,7 @@ export type Database = {
           name?: string | null
           partners?: string[]
           password?: string
+          password_hash?: string | null
         }
         Relationships: []
       }

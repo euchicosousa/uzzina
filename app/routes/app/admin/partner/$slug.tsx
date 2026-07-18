@@ -1,35 +1,35 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-import { useNavigate, Link, createFileRoute } from "@tanstack/react-router";
-import { toast } from "sonner";
-import { fetchPeople } from "~/lib/supabase.queries";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   ArchiveIcon,
   BadgeCheckIcon,
+  CheckIcon,
   CloudUploadIcon,
   MailCheckIcon,
   MegaphoneIcon,
   PrinterIcon,
   UploadIcon,
-  CheckIcon,
 } from "lucide-react";
-import { Suspense, lazy, useState, useEffect, useRef } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { ColorListEditor } from "~/components/features/ColorListEditor";
-import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Textarea } from "~/components/ui/textarea";
-import { UToggleInput } from "~/components/uzzina/UToggle";
-import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
-import { UAvatar } from "~/components/uzzina/UAvatar";
-import type { Partner } from "~/types";
 const Tiptap = lazy(() =>
   import("~/components/features/Tiptap").then((module) => ({
     default: module.Tiptap,
   })),
 );
-import { useAppContext } from "~/contexts/AppContext";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Textarea } from "~/components/ui/textarea";
+import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
+import { UAvatar } from "~/components/uzzina/UAvatar";
+import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
 import { ULoader } from "~/components/uzzina/ULoader";
+import { UToggleInput } from "~/components/uzzina/UToggle";
+import { useAppContext } from "~/contexts/AppContext";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import { fetchPeople } from "~/lib/supabase.queries";
+import type { Partner } from "~/types";
 export const Route = createFileRoute("/app/admin/partner/$slug")({
   component: AdminPartnerEditPage,
 });

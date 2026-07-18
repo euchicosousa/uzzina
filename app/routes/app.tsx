@@ -1,38 +1,41 @@
-import type { Partner } from "~/types";
-import { lazy, Suspense, useEffect, useState } from "react";
-import { Outlet, useLocation, createFileRoute } from "@tanstack/react-router";
-import invariant from "tiny-invariant";
-import { Header } from "~/components/layout/Header";
-import { AppBar } from "~/components/layout/AppBar";
-import { getCleanAction } from "~/lib/helpers";
-import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-import { getUserPreferences } from "~/lib/preferences";
-import { Toaster } from "sonner";
-import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
-import { ActionShortcutProvider } from "~/hooks/useActionShortcut";
-import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
-import { cn } from "~/lib/utils";
+import {
+  createFileRoute,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "@tanstack/react-router";
 import { ChevronUpIcon } from "lucide-react";
+import { Suspense, lazy, useEffect, useState } from "react";
+import { Toaster } from "sonner";
+import invariant from "tiny-invariant";
 const CreateAndEditAction = lazy(() =>
   import("~/components/features/CreateAndEditAction").then((module) => ({
     default: module.CreateAndEditAction,
   })),
 );
-
+import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
+import { AppBar } from "~/components/layout/AppBar";
+import { Header } from "~/components/layout/Header";
+import { ActionShortcutProvider } from "~/hooks/useActionShortcut";
+import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
+import { getCleanAction } from "~/lib/helpers";
+import { getUserPreferences } from "~/lib/preferences";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import { cn } from "~/lib/utils";
+import type { Partner } from "~/types";
 import { AppContext } from "~/contexts/AppContext";
-
 export const Route = createFileRoute("/app")({
   component: Dashboard,
 });
-
-const cloudName = (import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string) || "dvfpxjskm";
-const uploadPreset = (import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET as string) || "bussola_unsigned";
-
+const cloudName =
+  (import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string) || "dvfpxjskm";
+const uploadPreset =
+  (import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET as string) ||
+  "bussola_unsigned";
 function Dashboard() {
   const [person, setPerson] = useState<Person | null>(null);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [BaseAction, setBaseAction] = useState<Action | null>(null);
   const [openCmdK, setOpenCmdK] = useState(false);
   const [partnerFilters, setPartnerFilters] = useState<string[]>([]);
@@ -43,7 +46,6 @@ function Dashboard() {
   > | null>(null);
   const isHiddenByDefault =
     location.pathname !== "/app" && location.pathname !== "/app/";
-
   useEffect(() => {
     if (typeof window !== "undefined" && person) {
       const prefs = getUserPreferences(person);
@@ -58,55 +60,57 @@ function Dashboard() {
       window.dispatchEvent(new Event("uzzina-storage-update"));
     }
   }, [person]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
-
     async function initAuth() {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-
       if (!session) {
-        window.location.href = "/login";
+        navigate({
+          to: "/login",
+          replace: true,
+        });
         return;
       }
-
-      const { data: bootstrap, error } = await supabase.rpc("get_app_bootstrap", {
-        p_user_id: session.user.id,
-      });
-
+      const { data: bootstrap, error } = await supabase.rpc(
+        "get_app_bootstrap",
+        {
+          p_user_id: session.user.id,
+        },
+      );
       if (error || !bootstrap) {
         console.error("Falha no bootstrap da aplicação:", error);
-        window.location.href = "/login";
+        navigate({
+          to: "/login",
+          replace: true,
+        });
         return;
       }
-
       const { person, partners } = bootstrap as {
         person: Person;
         partners: Partner[];
       };
-
       invariant(person, "Person not found");
       invariant(partners, "Partners not found");
-
       setPerson(person);
       setPartners(partners);
       setLoading(false);
     }
-
     initAuth();
-
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (!session && event !== "INITIAL_SESSION") {
-        window.location.href = "/login";
+        navigate({
+          to: "/login",
+          replace: true,
+        });
       }
     });
     return () => subscription.unsubscribe();
-  }, []);
-
+  }, [navigate]);
   useEffect(() => {
     if (!person) return;
     const userId = person.user_id;
@@ -124,7 +128,6 @@ function Dashboard() {
     document.addEventListener("keydown", keyDownGlobal);
     return () => document.removeEventListener("keydown", keyDownGlobal);
   }, [person]);
-
   if (loading || !person) {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center bg-background gap-4">
@@ -135,9 +138,18 @@ function Dashboard() {
       </div>
     );
   }
-
   return (
-    <AppContext.Provider value={{ person, partners, cloudName, uploadPreset, setBaseAction, partnerFilters, setPartnerFilters }}>
+    <AppContext.Provider
+      value={{
+        person,
+        partners,
+        cloudName,
+        uploadPreset,
+        setBaseAction,
+        partnerFilters,
+        setPartnerFilters,
+      }}
+    >
       <div className="flex h-screen flex-col" id="app">
         <ActionShortcutProvider>
           <MultiSelectionProvider>
