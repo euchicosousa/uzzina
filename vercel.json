@@ -1,8 +1,1 @@
-{
-  "git": {
-    "deploymentEnabled": {
-      "production": "main",
-      "preview": true
-    }
-  }
-}
+{}
