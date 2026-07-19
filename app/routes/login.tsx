@@ -74,47 +74,40 @@ function Login() {
               required
               type="email"
               value={email}
-              variant="default"
             />
           </div>
 
-          <div className="relative mb-4">
-            <div className="mb-2 flex items-center justify-between">
-              <span className="font-medium text-sm">Senha</span>
-              <Link
-                className="text-xs text-muted-foreground hover:text-foreground hover:underline"
-                to="/forgot-password"
-              >
-                Esqueceu sua senha?
-              </Link>
-            </div>
-            <div className="relative">
-              <PrismInput
-                inputClassName="pr-12"
-                name="password"
-                onChange={setPassword}
-                required
-                type={showPassword ? "text" : "password"}
-                value={password}
-                variant="default"
-              />
-              <PrismButton
-                className="absolute top-0 right-0 h-9"
-                onClick={(event) => {
-                  event.preventDefault();
-                  setShowPassword(!showPassword);
-                }}
-                size="icon"
-                type="button"
-                variant="ghost"
-              >
-                {showPassword ? (
-                  <IconEye className="size-4" />
-                ) : (
-                  <IconEyeOff className="size-4" />
-                )}
-              </PrismButton>
-            </div>
+          <div className="mb-4">
+            <PrismInput
+              label="Senha"
+              labelAction={
+                <Link
+                  className="text-sm text-muted-foreground hover:text-foreground hover:underline"
+                  to="/forgot-password"
+                >
+                  Esqueceu sua senha?
+                </Link>
+              }
+              name="password"
+              onChange={setPassword}
+              required
+              suffix={
+                <PrismButton
+                  className="rounded-l-none"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setShowPassword(!showPassword);
+                  }}
+                  size="icon"
+                  type="button"
+                  variant="ghost"
+                >
+                  {showPassword ? <IconEye /> : <IconEyeOff />}
+                </PrismButton>
+              }
+              type={showPassword ? "text" : "password"}
+              value={password}
+            />
           </div>
 
           <div className="flex justify-end mt-6">
@@ -124,7 +117,7 @@ function Login() {
               variant="default"
             >
               {isSubmitting ? "Entrando..." : "Fazer Login"}
-              <IconLogin className="ml-2 size-3" />
+              <IconLogin />
             </PrismButton>
           </div>
         </form>

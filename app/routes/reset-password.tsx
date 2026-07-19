@@ -176,35 +176,29 @@ function ResetPassword() {
             </div>
 
             <div className="space-y-4">
-              <div className="relative">
-                <PrismInput
-                  inputClassName="pr-12"
-                  label="Nova Senha"
-                  name="password"
-                  onChange={setPassword}
-                  placeholder="Mínimo 6 caracteres"
-                  required
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  variant="default"
-                />
-                <PrismButton
-                  className="absolute top-6 right-0 h-9"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    setShowPassword(!showPassword);
-                  }}
-                  size="icon"
-                  type="button"
-                  variant="ghost"
-                >
-                  {showPassword ? (
-                    <IconEye className="size-4" />
-                  ) : (
-                    <IconEyeOff className="size-4" />
-                  )}
-                </PrismButton>
-              </div>
+              <PrismInput
+                label="Nova Senha"
+                name="password"
+                onChange={setPassword}
+                placeholder="Mínimo 6 caracteres"
+                required
+                suffix={
+                  <PrismButton
+                    className="rounded-l-none"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setShowPassword(!showPassword);
+                    }}
+                    size="icon"
+                    type="button"
+                    variant="ghost"
+                  >
+                    {showPassword ? <IconEye /> : <IconEyeOff />}
+                  </PrismButton>
+                }
+                type={showPassword ? "text" : "password"}
+                value={password}
+              />
 
               <div>
                 <PrismInput
@@ -215,7 +209,6 @@ function ResetPassword() {
                   required
                   type="password"
                   value={confirmPassword}
-                  variant="default"
                 />
               </div>
             </div>

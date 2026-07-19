@@ -107,7 +107,6 @@ function ForgotPassword() {
                 required
                 type="email"
                 value={email}
-                variant="default"
               />
             </div>
 
