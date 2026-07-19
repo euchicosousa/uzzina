@@ -6,7 +6,7 @@ const prismAlertVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-surface text-surface-foreground border-border",
+        default: "bg-card text-card-foreground border-border",
         error:
           "text-error border-error/50 bg-error-background dark:bg-error-background",
         success:

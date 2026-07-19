@@ -8,8 +8,8 @@
   --radius: 0.65rem;
   --background: var(--background-override, oklch(1 0 0));
   --foreground: var(--foreground-override, oklch(0.141 0.005 285.823));
-  --surface: oklch(1 0 1);
-  --surface-foreground: var(--foreground);
+  --card: oklch(0.97 0 0);
+  --card-foreground: var(--foreground);
   --popover: oklch(1 0 0);
   --popover-foreground: var(--foreground);
 
@@ -95,9 +95,9 @@
   --background: var(--dark-background-override, oklch(0.4 0.01 285.823));
   --foreground: var(--dark-foreground-override, oklch(0.985 0 0));
 
-  --surface: oklch(0.4 0.02 270);
-  --surface-foreground: var(--foreground);
-  --popover: oklch(0 0 0);
+  --card: oklch(0.4 0.02 270);
+  --card-foreground: var(--foreground);
+  --popover: oklch(0.2 0.01 270);
   --popover-foreground: var(--foreground);
 
   /* Dark mode variables injected by JS */
@@ -188,8 +188,8 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --color-surface: var(--surface);
-  --color-surface-foreground: var(--surface-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
 
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);

@@ -36,11 +36,11 @@
           document.documentElement.className = theme;
 
           // 2. Recupera o índice de cor (Acentuação OKLCH)
-          let idx = localStorage.getItem("uzzina-accent-color-index");
-          let n = idx !== null && idx !== "" ? parseInt(idx, 10) : 0;
+          const idx = localStorage.getItem("uzzina-accent-color-index");
+          const n = idx !== null && idx !== "" ? parseInt(idx, 10) : 0;
 
           // Paleta de cores mapeada em OKLCH (12 opções)
-          let palette = [
+          const palette = [
             ["35%", "0.068", "19.34"],
             // CNVT Red
             ["61.91%", "0.143", "147.28"],
@@ -65,7 +65,7 @@
             // Magenta
             ["44.15%", "0.076", "233.15"], // Deep Indigo
           ];
-          let c = palette[n] || palette[0];
+          const c = palette[n] || palette[0];
           document.documentElement.style.setProperty("--primary-l", c[0]);
           document.documentElement.style.setProperty("--primary-c", c[1]);
           document.documentElement.style.setProperty("--primary-h", c[2]);

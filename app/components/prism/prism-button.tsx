@@ -15,7 +15,7 @@ const prismButtonVariants = cva(
         default:
           "bg-primary text-primary-foreground data-[hovered]:bg-primary/90 data-[pressed]:scale-[0.97]",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground data-[hovered]:bg-accent/50 data-[pressed]:bg-accent/70",
+          "hover:bg-accent hover:text-accent-foreground data-[hovered]:bg-accent/50 data-[pressed]:bg-accent/70 data-[pressed]:scale-[0.97]",
       },
       size: {
         default: "h-12 px-5",
