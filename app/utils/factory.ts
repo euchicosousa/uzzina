@@ -1,5 +1,6 @@
 import { addMinutes, format, isToday } from "date-fns";
 import { PHASES, PRIORITIES } from "~/lib/CONSTANTS";
+import { DEFAULT_ACTION_COLOR } from "~/lib/uzzina-utils";
 
 export const getCleanAction = ({
   user_id,
@@ -27,7 +28,7 @@ export const getCleanAction = ({
     priority: PRIORITIES.medium.slug,
     category: "post",
     responsibles: [user_id],
-    color: "#999",
+    color: DEFAULT_ACTION_COLOR,
     date: _date,
     partners: partners || [],
     time: 10,
