@@ -17,7 +17,9 @@ import {
   IconAlertTriangle,
   IconInfoCircle,
   IconPalette,
-  IconComponents,
+  IconPaletteFilled,
+  IconCategory,
+  IconCategoryFilled,
 } from "@tabler/icons-react";
 import cn from "cnfast";
 export const Route = createFileRoute("/ui")({
@@ -29,7 +31,6 @@ function UIPage() {
     "tokens",
   );
   const [activeAnchor, setActiveAnchor] = useState<string>("");
-
   const handleSectionChange = (section: "tokens" | "components") => {
     setActiveSection(section);
     setActiveAnchor("");
@@ -41,19 +42,17 @@ function UIPage() {
 
   // Monitora a rolagem para destacar dinamicamente o link âncora ativo
   useEffect(() => {
-    const targets = activeSection === "tokens" 
-      ? ["colors", "spacing"] 
-      : ["prism-button", "prism-input", "prism-alert", "prism-popover"];
-
+    const targets =
+      activeSection === "tokens"
+        ? ["colors", "spacing"]
+        : ["prism-button", "prism-input", "prism-alert", "prism-popover"];
     setActiveAnchor(targets[0]);
-
     const handleScroll = () => {
       // Se estiver muito próximo do topo da página, ativa o primeiro item de forma garantida
       if (window.scrollY < 80) {
         setActiveAnchor(targets[0]);
         return;
       }
-
       let currentActive = targets[0];
       for (const id of targets) {
         const el = document.getElementById(id);
@@ -67,14 +66,13 @@ function UIPage() {
       }
       setActiveAnchor(currentActive);
     };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
     // Executa uma vez para sincronizar o estado
     handleScroll();
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, [activeSection]);
-
   return (
     <div className="min-h-screen">
       {/* Grid Principal com Sidebar Stick */}
@@ -89,13 +87,13 @@ function UIPage() {
           </div>
 
           <nav className="flex flex-row lg:flex-col gap-2 border-b lg:border-b-0 p-4 pt-0 lg:p-0 overflow-x-auto lg:overflow-x-visible">
-            <button
-              className={`flex items-center gap-3 px-4 py-3 text-sm font-semibold tracking-tight transition-all rounded-xl cursor-pointer shrink-0 ${activeSection === "tokens" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}`}
+            <SidebarTabButton
+              activeIcon={<IconPaletteFilled className="size-5 opacity-60" />}
+              inactiveIcon={<IconPalette className="size-5 opacity-60" />}
+              isActive={activeSection === "tokens"}
+              label="Tokens de Design"
               onClick={() => handleSectionChange("tokens")}
-            >
-              <IconPalette className="size-4" />
-              Tokens de Design
-            </button>
+            />
             {activeSection === "tokens" && (
               <div className="flex flex-col text-sm ml-4">
                 <SidebarAnchorLink
@@ -103,21 +101,21 @@ function UIPage() {
                   label="Cores Semânticas"
                   targetId="colors"
                 />
-                <SidebarAnchorLink 
+                <SidebarAnchorLink
                   active={activeAnchor === "spacing"}
-                  label="Espaçamento" 
-                  targetId="spacing" 
+                  label="Espaçamento"
+                  targetId="spacing"
                 />
               </div>
             )}
 
-            <button
-              className={`flex items-center gap-3 px-4 py-3 text-sm font-semibold tracking-tight transition-all rounded-xl cursor-pointer shrink-0 ${activeSection === "components" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}`}
+            <SidebarTabButton
+              activeIcon={<IconCategoryFilled className="size-5 opacity-60" />}
+              inactiveIcon={<IconCategory className="size-5 opacity-60" />}
+              isActive={activeSection === "components"}
+              label="Componentes de UI"
               onClick={() => handleSectionChange("components")}
-            >
-              <IconComponents className="size-4" />
-              Componentes de UI
-            </button>
+            />
             {activeSection === "components" && (
               <div className="flex flex-col text-sm ml-4">
                 <SidebarAnchorLink
@@ -125,15 +123,15 @@ function UIPage() {
                   label="PrismButton"
                   targetId="prism-button"
                 />
-                <SidebarAnchorLink 
+                <SidebarAnchorLink
                   active={activeAnchor === "prism-input"}
-                  label="PrismInput" 
-                  targetId="prism-input" 
+                  label="PrismInput"
+                  targetId="prism-input"
                 />
-                <SidebarAnchorLink 
+                <SidebarAnchorLink
                   active={activeAnchor === "prism-alert"}
-                  label="PrismAlert" 
-                  targetId="prism-alert" 
+                  label="PrismAlert"
+                  targetId="prism-alert"
                 />
                 <SidebarAnchorLink
                   active={activeAnchor === "prism-popover"}
@@ -607,5 +605,29 @@ function SidebarAnchorLink({
     >
       {label}
     </a>
+  );
+}
+interface SidebarTabButtonProps {
+  isActive: boolean;
+  onClick: () => void;
+  label: string;
+  activeIcon: React.ReactNode;
+  inactiveIcon: React.ReactNode;
+}
+function SidebarTabButton({
+  isActive,
+  onClick,
+  label,
+  activeIcon,
+  inactiveIcon,
+}: SidebarTabButtonProps) {
+  return (
+    <button
+      className={`flex items-center gap-3 px-4 py-3 text-sm font-semibold tracking-tight transition-all rounded-xl cursor-pointer shrink-0 hover:bg-card ${isActive ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+      onClick={onClick}
+    >
+      {isActive ? activeIcon : inactiveIcon}
+      {label}
+    </button>
   );
 }
