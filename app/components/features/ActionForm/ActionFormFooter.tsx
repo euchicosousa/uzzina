@@ -1,4 +1,4 @@
-import type { Action, Partner } from "~/types";
+import type { Action, Partner, PartnerTopic } from "~/types";
 import {
   ArchiveIcon,
   ArchiveRestoreIcon,
@@ -50,11 +50,25 @@ export function ActionFormFooter({
             tabIndex={0}
             showText={false}
             onSelect={async (selected) => {
+              // Limpa tópicos órfãos calculando o conjunto dos tópicos dos novos parceiros selecionados
+              const availableTopicIds = new Set(
+                currentPartners
+                  .filter((p) => selected.includes(p.slug))
+                  .flatMap((p) => (((p.topics as unknown) as PartnerTopic[]) || []).map((t) => t.id))
+              );
+              const filteredTopicIds = (RawAction.topic_ids || []).filter(
+                (id) => availableTopicIds.has(id)
+              );
+
               setRawAction({
                 ...RawAction,
                 partners: selected,
+                topic_ids: filteredTopicIds,
               });
-              await updateAction({ partners: selected });
+              await updateAction({
+                partners: selected,
+                topic_ids: filteredTopicIds,
+              });
             }}
           />
         </div>

@@ -24,11 +24,12 @@ import { UButtonAI } from "~/components/uzzina/UButtonAI";
 import { INTENT } from "~/lib/CONSTANTS";
 import { getNewDateForAction, isLateAction } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
-import type { Action, Partner } from "~/types";
+import type { Action, Partner, PartnerTopic } from "~/types";
 import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "./WorkFileThumbnail";
+import { TopicsCombobox } from "~/components/features/TopicsCombobox";
 interface EssentialsTabProps {
   RawAction: Action;
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;
@@ -63,6 +64,11 @@ export function EssentialsTab({
   onDescriptionChange,
   descriptionVersion,
 }: EssentialsTabProps) {
+  // Coleta todos os tópicos disponíveis baseados nos parceiros associados à ação
+  const partnerSlugSet = new Set(RawAction.partners || []);
+  const availableTopics = currentPartners
+    .filter((p) => partnerSlugSet.has(p.slug))
+    .flatMap((p) => (((p.topics as unknown) as PartnerTopic[]) || []));
   const workFilesRef = useRef(workFiles);
   workFilesRef.current = workFiles;
   const workFilesMetaRef = useRef<
@@ -182,6 +188,20 @@ export function EssentialsTab({
               });
             }}
             selectedResponsibles={RawAction.responsibles}
+          />
+
+          <TopicsCombobox
+            availableTopics={availableTopics}
+            selectedTopicIds={RawAction.topic_ids || []}
+            onSelect={async (topic_ids) => {
+              setRawAction({
+                ...RawAction,
+                topic_ids,
+              });
+              await updateAction({
+                topic_ids,
+              });
+            }}
           />
 
           <Button

@@ -118,8 +118,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     return res.status(400).json({ error: "Intent inválido ou não suportado." });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Erro no processamento da API de IA:", error);
-    return res.status(500).json({ error: error.message || "Erro interno do servidor." });
+    const errorMessage = error instanceof Error ? error.message : "Erro interno do servidor.";
+    return res.status(500).json({ error: errorMessage });
   }
 }

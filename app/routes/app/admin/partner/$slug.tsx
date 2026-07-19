@@ -13,6 +13,8 @@ import {
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ColorListEditor } from "~/components/features/ColorListEditor";
+import { PartnerTopicsEditor } from "~/components/features/PartnerTopicsEditor";
+import type { PartnerTopic } from "~/types";
 const Tiptap = lazy(() =>
   import("~/components/features/Tiptap").then((module) => ({
     default: module.Tiptap,
@@ -65,6 +67,7 @@ function AdminPartnerEditPage() {
   const [voiceValue, setVoiceValue] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [brandColors, setBrandColors] = useState<string[]>([]);
+  const [topics, setTopics] = useState<PartnerTopic[]>([]);
   const [justSaved, setJustSaved] = useState(false);
   const [savingFields, setSavingFields] = useState<Set<string>>(new Set());
 
@@ -86,6 +89,7 @@ function AdminPartnerEditPage() {
       setVoiceValue(partner.voice || "");
       setSelectedUsers(partner.users_ids || []);
       setBrandColors(partner.colors || []);
+      setTopics(((partner.topics as unknown) as PartnerTopic[]) || []);
       stateRef.current = {
         title: partner.title || "",
         short: partner.short || "",
@@ -163,6 +167,7 @@ function AdminPartnerEditPage() {
       image: imageUrl || null,
       instagram_caption_tail: stateRef.current.instagram_caption_tail || null,
       sow: stateRef.current.sow,
+      topics: (topics as unknown) as import("types/database").Json,
       ...patch,
     };
 
@@ -218,9 +223,10 @@ function AdminPartnerEditPage() {
       voice: voiceValue || null,
       image: imageUrl || null,
       instagram_caption_tail:
-        (updates.instagram_caption_tail as string) || null,
+          (updates.instagram_caption_tail as string) || null,
       sow:
-        (updates.sow as "marketing" | "socialmedia" | "demand") || "marketing",
+          (updates.sow as "marketing" | "socialmedia" | "demand") || "marketing",
+      topics: (topics as unknown) as import("types/database").Json,
     };
     await saveMutation.mutateAsync(partnerData);
   };
@@ -493,6 +499,20 @@ function AdminPartnerEditPage() {
                 setBrandColors(colors);
                 triggerAutoSave({
                   colors,
+                });
+              }}
+            />
+          </div>
+
+          <div className="grid gap-4 border rounded-2xl p-6 bg-input/10">
+            <PartnerTopicsEditor
+              topics={topics}
+              brandColors={brandColors}
+              isSaving={savingFields.has("topics")}
+              onChange={(updatedTopics) => {
+                setTopics(updatedTopics);
+                triggerAutoSave({
+                  topics: (updatedTopics as unknown) as import("types/database").Json,
                 });
               }}
             />

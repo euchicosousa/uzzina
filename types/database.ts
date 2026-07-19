@@ -77,6 +77,7 @@ export type Database = {
           station: string | null
           time: number
           title: string
+          topic_ids: string[]
           updated_at: string
           user_id: string
           work_files: string[] | null
@@ -99,6 +100,7 @@ export type Database = {
           station?: string | null
           time?: number
           title: string
+          topic_ids?: string[]
           updated_at: string
           user_id?: string
           work_files?: string[] | null
@@ -121,6 +123,7 @@ export type Database = {
           station?: string | null
           time?: number
           title?: string
+          topic_ids?: string[]
           updated_at?: string
           user_id?: string
           work_files?: string[] | null
@@ -275,6 +278,7 @@ export type Database = {
           slug: string
           sow: Database["public"]["Enums"]["sow"]
           title: string
+          topics: Json
           users_ids: string[]
           voice: string | null
         }
@@ -290,6 +294,7 @@ export type Database = {
           slug: string
           sow?: Database["public"]["Enums"]["sow"]
           title: string
+          topics?: Json
           users_ids: string[]
           voice?: string | null
         }
@@ -305,6 +310,7 @@ export type Database = {
           slug?: string
           sow?: Database["public"]["Enums"]["sow"]
           title?: string
+          topics?: Json
           users_ids?: string[]
           voice?: string | null
         }
@@ -390,6 +396,7 @@ export type Database = {
               station: string | null
               time: number
               title: string
+              topic_ids: string[]
               updated_at: string
               user_id: string
               work_files: string[] | null
@@ -427,6 +434,7 @@ export type Database = {
               station: string | null
               time: number
               title: string
+              topic_ids: string[]
               updated_at: string
               user_id: string
               work_files: string[] | null
