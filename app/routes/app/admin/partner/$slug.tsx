@@ -89,7 +89,7 @@ function AdminPartnerEditPage() {
       setVoiceValue(partner.voice || "");
       setSelectedUsers(partner.users_ids || []);
       setBrandColors(partner.colors || []);
-      setTopics(((partner.topics as unknown) as PartnerTopic[]) || []);
+      setTopics((partner.topics as unknown as PartnerTopic[]) || []);
       stateRef.current = {
         title: partner.title || "",
         short: partner.short || "",
@@ -167,7 +167,7 @@ function AdminPartnerEditPage() {
       image: imageUrl || null,
       instagram_caption_tail: stateRef.current.instagram_caption_tail || null,
       sow: stateRef.current.sow,
-      topics: (topics as unknown) as import("types/database").Json,
+      topics: topics as unknown as import("types/database").Json,
       ...patch,
     };
 
@@ -223,10 +223,10 @@ function AdminPartnerEditPage() {
       voice: voiceValue || null,
       image: imageUrl || null,
       instagram_caption_tail:
-          (updates.instagram_caption_tail as string) || null,
+        (updates.instagram_caption_tail as string) || null,
       sow:
-          (updates.sow as "marketing" | "socialmedia" | "demand") || "marketing",
-      topics: (topics as unknown) as import("types/database").Json,
+        (updates.sow as "marketing" | "socialmedia" | "demand") || "marketing",
+      topics: topics as unknown as import("types/database").Json,
     };
     await saveMutation.mutateAsync(partnerData);
   };
@@ -504,19 +504,18 @@ function AdminPartnerEditPage() {
             />
           </div>
 
-          <div className="grid gap-4 border rounded-2xl p-6 bg-input/10">
-            <PartnerTopicsEditor
-              topics={topics}
-              brandColors={brandColors}
-              isSaving={savingFields.has("topics")}
-              onChange={(updatedTopics) => {
-                setTopics(updatedTopics);
-                triggerAutoSave({
-                  topics: (updatedTopics as unknown) as import("types/database").Json,
-                });
-              }}
-            />
-          </div>
+          <PartnerTopicsEditor
+            brandColors={brandColors}
+            isSaving={savingFields.has("topics")}
+            onChange={(updatedTopics) => {
+              setTopics(updatedTopics);
+              triggerAutoSave({
+                topics:
+                  updatedTopics as unknown as import("types/database").Json,
+              });
+            }}
+            topics={topics}
+          />
 
           <div className="flex items-end justify-between gap-4">
             <div className="grid gap-4">

@@ -1,15 +1,9 @@
+import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
-import { PlusIcon, Trash2Icon, TagIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { ULoader } from "~/components/uzzina/ULoader";
-import { PartnerColorPicker } from "~/components/features/ActionForm/PartnerColorPicker";
-import { getGridCols } from "~/lib/uzzina-utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
+import { normalizeHexColor } from "~/lib/uzzina-utils";
 import type { PartnerTopic } from "~/types";
 
 interface PartnerTopicsEditorProps {
@@ -30,15 +24,32 @@ export function PartnerTopicsEditor({
     brandColors[0] || "#3b82f6",
   );
 
+  const handleColorChange = (raw: string) => {
+    let formatted = raw.trim().replace(/^#+/, "");
+    if (formatted) formatted = `#${formatted}`;
+    setSelectedColor(formatted);
+  };
+
+  const handleColorBlur = () => {
+    let val = selectedColor.trim();
+    if (!val || val === "#") val = "#000000";
+    if (!val.startsWith("#")) val = `#${val}`;
+    const hexRegex = /^#[0-9A-Fa-f]{3,6}$/;
+    if (!hexRegex.test(val)) {
+      val = "#000000";
+    } else if (val.length !== 4 && val.length !== 7) {
+      val = val.length < 7 ? val.padEnd(7, "0") : val.slice(0, 7);
+    }
+    setSelectedColor(val);
+  };
+
   const handleAddTopic = () => {
     if (!newTitle.trim()) return;
-
     const newTopic: PartnerTopic = {
       id: crypto.randomUUID(),
       title: newTitle.trim(),
       color: selectedColor,
     };
-
     const updated = [...topics, newTopic];
     onChange(updated);
     setNewTitle("");
@@ -50,10 +61,9 @@ export function PartnerTopicsEditor({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="grid gap-4 border rounded-2xl p-6 bg-input/10 space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-lg flex items-center gap-2">
-          <TagIcon className="size-4 opacity-75" />
           Tópicos de Assunto
         </h3>
         {isSaving && <ULoader />}
@@ -72,14 +82,16 @@ export function PartnerTopicsEditor({
             >
               <div
                 className="size-2 rounded-full shrink-0"
-                style={{ backgroundColor: topic.color }}
+                style={{
+                  backgroundColor: topic.color,
+                }}
               />
               <span className="text-foreground">{topic.title}</span>
               <button
-                type="button"
-                onClick={() => handleRemoveTopic(topic.id)}
                 className="p-1 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition"
+                onClick={() => handleRemoveTopic(topic.id)}
                 title="Remover Tópico"
+                type="button"
               >
                 <Trash2Icon className="size-3" />
               </button>
@@ -94,32 +106,36 @@ export function PartnerTopicsEditor({
 
       {/* Formulário Inline para Adicionar */}
       <div className="flex items-center gap-2 max-w-md pt-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className="size-9 rounded-xl border flex items-center justify-center shrink-0 hover:bg-secondary transition focus:outline-none"
-              title="Escolher cor do tópico"
-            >
-              <div
-                className="size-5 rounded-full border border-black/5"
-                style={{ backgroundColor: selectedColor }}
-              />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-40 p-2" align="start">
-            <PartnerColorPicker
-              colors={brandColors}
-              onChange={setSelectedColor}
-              value={selectedColor}
-              className={getGridCols(brandColors.length)}
+        {/* Seletor de cor: igual ao ColorListEditor — círculo clicável + input hex */}
+        <div className="flex items-center gap-2">
+          <label className="relative cursor-pointer" title="Escolher cor do tópico">
+            <div
+              className="size-6 rounded-full border"
+              style={{ backgroundColor: normalizeHexColor(selectedColor) }}
             />
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <input
+              aria-label="Escolher cor visualmente"
+              className="absolute inset-0 size-0 cursor-pointer p-0.5"
+              onChange={(e) => setSelectedColor(e.target.value)}
+              onBlur={handleColorBlur}
+              type="color"
+              value={normalizeHexColor(selectedColor)}
+            />
+          </label>
+          <Input
+            aria-label="Código Hexadecimal da Cor do Tópico"
+            className="w-24 font-mono uppercase"
+            maxLength={9}
+            onBlur={handleColorBlur}
+            onChange={(e) => handleColorChange(e.target.value)}
+            type="text"
+            value={selectedColor}
+            variant="inset"
+          />
+        </div>
 
         <Input
-          placeholder="Nome do novo tópico..."
-          value={newTitle}
+          className="flex-1"
           onChange={(e) => setNewTitle(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -127,16 +143,17 @@ export function PartnerTopicsEditor({
               handleAddTopic();
             }
           }}
-          className="flex-1"
+          placeholder="Nome do novo tópico..."
+          value={newTitle}
           variant="inset"
         />
 
         <Button
-          type="button"
-          onClick={handleAddTopic}
-          disabled={!newTitle.trim()}
-          size="sm"
           className="rounded-xl px-3"
+          disabled={!newTitle.trim()}
+          onClick={handleAddTopic}
+          size="sm"
+          type="button"
         >
           <PlusIcon className="size-4 mr-1" />
           Adicionar
