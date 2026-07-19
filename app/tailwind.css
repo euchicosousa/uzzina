@@ -8,8 +8,8 @@
   --radius: 0.65rem;
   --background: var(--background-override, oklch(1 0 0));
   --foreground: var(--foreground-override, oklch(0.141 0.005 285.823));
-  --card: oklch(1 0 1);
-  --card-foreground: var(--foreground);
+  --surface: oklch(1 0 1);
+  --surface-foreground: var(--foreground);
   --popover: oklch(1 0 0);
   --popover-foreground: var(--foreground);
 
@@ -59,6 +59,35 @@
 
   --late: oklch(from var(--destructive) 0.9 0.05 h);
   --late-hover: oklch(from var(--destructive) 0.95 0.15 h);
+
+  --error-hue: 16.339;
+  --success-hue: 130;
+  --warning-hue: 90;
+  --info-hue: 250;
+  --luminosity: 0.5;
+  --luminosity-background: 0.96;
+  --chroma: 0.2;
+  --chroma-background: 0.02;
+
+  --color-error: oklch(var(--luminosity) var(--chroma) var(--error-hue));
+  --color-error-background: oklch(
+    var(--luminosity-background) var(--chroma-background) var(--error-hue)
+  );
+
+  --color-warning: oklch(var(--luminosity) var(--chroma) var(--warning-hue));
+  --color-warning-background: oklch(
+    var(--luminosity-background) var(--chroma-background) var(--warning-hue)
+  );
+
+  --color-success: oklch(var(--luminosity) var(--chroma) var(--success-hue));
+  --color-success-background: oklch(
+    var(--luminosity-background) var(--chroma-background) var(--success-hue)
+  );
+
+  --color-info: oklch(var(--luminosity) var(--chroma) var(--info-hue));
+  --color-info-background: oklch(
+    var(--luminosity-background) var(--chroma-background) var(--info-hue)
+  );
 }
 
 .dark,
@@ -66,8 +95,8 @@
   --background: var(--dark-background-override, oklch(0.4 0.01 285.823));
   --foreground: var(--dark-foreground-override, oklch(0.985 0 0));
 
-  --card: oklch(0.4 0.02 270);
-  --card-foreground: var(--foreground);
+  --surface: oklch(0.4 0.02 270);
+  --surface-foreground: var(--foreground);
   --popover: oklch(0 0 0);
   --popover-foreground: var(--foreground);
 
@@ -113,11 +142,14 @@
   --sidebar-border: oklch(from var(--foreground) l c h / 10%);
   --sidebar-ring: oklch(0.439 0 0);
 
+  --error-hue: 16.339;
+  --success-hue: 130;
   --warning-hue: 90;
+  --info-hue: 250;
 
   --luminosity: 0.7;
   --luminosity-background: 0.3;
-  /* --chroma: 0.2; */
+  --chroma: 0.2;
   --chroma-background: 0.1;
 
   --color-error: oklch(var(--luminosity) var(--chroma) var(--error-hue));
@@ -156,8 +188,8 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
 
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
@@ -211,6 +243,15 @@
 
   --color-late: var(--late);
   --color-late-hover: var(--late-hover);
+
+  --color-error: var(--color-error);
+  --color-error-background: var(--color-error-background);
+  --color-warning: var(--color-warning);
+  --color-warning-background: var(--color-warning-background);
+  --color-success: var(--color-success);
+  --color-success-background: var(--color-success-background);
+  --color-info: var(--color-info);
+  --color-info-background: var(--color-info-background);
 }
 
 @layer base {
@@ -225,23 +266,23 @@
 
 @layer components {
   h1 {
-    @apply pb-8 text-5xl leading-none font-bold tracking-tighter;
+    @apply text-5xl leading-none font-bold tracking-tighter;
   }
 
   h2 {
-    @apply pb-6 text-4xl leading-none font-bold tracking-tighter;
+    @apply text-4xl leading-none font-bold tracking-tighter;
   }
 
   h3 {
-    @apply pb-4 text-3xl leading-none font-semibold tracking-tighter;
+    @apply text-3xl leading-none font-semibold tracking-tighter;
   }
 
   h4 {
-    @apply pb-2 text-2xl leading-none font-semibold tracking-tight;
+    @apply text-2xl leading-none font-semibold tracking-tight;
   }
 
   h5 {
-    @apply pb-2 text-xl leading-none font-medium tracking-tight;
+    @apply text-xl leading-none font-medium tracking-tight;
   }
 
   .lead {
@@ -259,11 +300,11 @@ html {
 }
 
 .border_after {
-  @apply relative after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-screen after:-translate-x-1/2 after:bg-border dark:after:bg-white/10;
+  @apply relative after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-screen after:-translate-x-1/2 after:bg-border;
 }
 
 .border_before {
-  @apply relative before:absolute before:top-0 before:left-1/2 before:h-px before:w-screen before:-translate-x-1/2 before:bg-border dark:before:bg-white/10;
+  @apply relative before:absolute before:top-0 before:left-1/2 before:h-px before:w-screen before:-translate-x-1/2 before:bg-border;
 }
 
 ::-webkit-scrollbar {
@@ -502,7 +543,7 @@ input.input-embossed {
 }
 
 textarea.input-embossed {
-  @apply py-3 px-4;
+  @apply px-4 py-3;
 }
 
 .raised {

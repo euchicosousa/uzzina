@@ -23,11 +23,11 @@
 
     <!-- Flicker Prevention Script - Executa antes da renderização do React -->
     <script>
-      (function () {
+      (() => {
         try {
           // 1. Recupera o tema (Light/Dark)
-          var storedTheme = localStorage.getItem("uzzina-theme");
-          var theme = storedTheme;
+          const storedTheme = localStorage.getItem("uzzina-theme");
+          let theme = storedTheme;
           if (!theme || theme === "system") {
             theme = window.matchMedia("(prefers-color-scheme: dark)").matches
               ? "dark"
@@ -36,11 +36,11 @@
           document.documentElement.className = theme;
 
           // 2. Recupera o índice de cor (Acentuação OKLCH)
-          var idx = localStorage.getItem("uzzina-accent-color-index");
-          var n = idx !== null && idx !== "" ? parseInt(idx, 10) : 0;
+          let idx = localStorage.getItem("uzzina-accent-color-index");
+          let n = idx !== null && idx !== "" ? parseInt(idx, 10) : 0;
 
           // Paleta de cores mapeada em OKLCH (12 opções)
-          var palette = [
+          let palette = [
             ["35%", "0.068", "19.34"],
             // CNVT Red
             ["61.91%", "0.143", "147.28"],
@@ -65,7 +65,7 @@
             // Magenta
             ["44.15%", "0.076", "233.15"], // Deep Indigo
           ];
-          var c = palette[n] || palette[0];
+          let c = palette[n] || palette[0];
           document.documentElement.style.setProperty("--primary-l", c[0]);
           document.documentElement.style.setProperty("--primary-c", c[1]);
           document.documentElement.style.setProperty("--primary-h", c[2]);

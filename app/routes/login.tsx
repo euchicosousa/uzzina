@@ -1,10 +1,19 @@
-import { CircleAlertIcon, EyeIcon, EyeOffIcon, LogInIcon } from "lucide-react";
+import {
+  IconAlertTriangle,
+  IconEye,
+  IconEyeOff,
+  IconLogin,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import { UZZINALogo } from "~/components/logo";
-import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
+import {
+  PrismButton,
+  PrismInput,
+  PrismAlert,
+  PrismAlertTitle,
+  PrismAlertDescription,
+} from "~/components/prism";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -41,40 +50,37 @@ function Login() {
     }
   };
   return (
-    <div className="grid h-screen grid-cols-[2rem_20rem_2rem] justify-center overflow-x-hidden md:grid-cols-[2rem_30rem_2rem]">
+    <div className="grid h-screen grid-cols-[2rem_28rem_2rem] justify-center overflow-x-hidden">
       <div className="border-r"></div>
 
-      <div className="border_after border_before relative my-auto p-8">
-        <div className="mb-12">
+      <div className="border_after border_before relative my-auto flex flex-col gap-12 p-8">
+        <div>
           <UZZINALogo className="h-12" />
         </div>
         {error && (
-          <Alert
-            className="mb-8 border-destructive/10 bg-destructive/5"
-            variant={"destructive"}
-          >
-            <CircleAlertIcon />
-            <AlertTitle>Erro ao fazer login</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
+          <PrismAlert variant="error">
+            <IconAlertTriangle />
+            <PrismAlertTitle>Erro ao fazer login</PrismAlertTitle>
+            <PrismAlertDescription>{error}</PrismAlertDescription>
+          </PrismAlert>
         )}
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <span className="mb-2 block w-full font-medium">E-mail</span>
-            <Input
+            <PrismInput
+              label="E-mail"
               name="email"
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={setEmail}
               required
               type="email"
               value={email}
-              variant="inset"
+              variant="default"
             />
           </div>
 
           <div className="relative mb-4">
             <div className="mb-2 flex items-center justify-between">
-              <span className="font-medium">Senha</span>
+              <span className="font-medium text-sm">Senha</span>
               <Link
                 className="text-xs text-muted-foreground hover:text-foreground hover:underline"
                 to="/forgot-password"
@@ -82,34 +88,44 @@ function Login() {
                 Esqueceu sua senha?
               </Link>
             </div>
-            <Input
-              className="pr-12"
-              name="password"
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              type={showPassword ? "text" : "password"}
-              value={password}
-              variant="inset"
-            />
-            <Button
-              className="absolute top-8 right-0"
-              onClick={(event) => {
-                event.preventDefault();
-                setShowPassword(!showPassword);
-              }}
-              size={"icon"}
-              type="button"
-              variant={"ghost"}
-            >
-              {showPassword ? <EyeIcon /> : <EyeOffIcon />}
-            </Button>
+            <div className="relative">
+              <PrismInput
+                inputClassName="pr-12"
+                name="password"
+                onChange={setPassword}
+                required
+                type={showPassword ? "text" : "password"}
+                value={password}
+                variant="default"
+              />
+              <PrismButton
+                className="absolute top-0 right-0 h-9"
+                onClick={(event) => {
+                  event.preventDefault();
+                  setShowPassword(!showPassword);
+                }}
+                size="icon"
+                type="button"
+                variant="ghost"
+              >
+                {showPassword ? (
+                  <IconEye className="size-4" />
+                ) : (
+                  <IconEyeOff className="size-4" />
+                )}
+              </PrismButton>
+            </div>
           </div>
 
-          <div className="flex justify-end">
-            <Button disabled={isSubmitting} type="submit">
-              {isSubmitting ? "Entrando..." : "Fazer Login"}{" "}
-              <LogInIcon className="ml-2 size-3" />
-            </Button>
+          <div className="flex justify-end mt-6">
+            <PrismButton
+              disabled={isSubmitting}
+              type="submit"
+              variant="default"
+            >
+              {isSubmitting ? "Entrando..." : "Fazer Login"}
+              <IconLogin className="ml-2 size-3" />
+            </PrismButton>
           </div>
         </form>
       </div>

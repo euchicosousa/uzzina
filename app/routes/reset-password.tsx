@@ -1,16 +1,20 @@
 import {
-  CircleAlertIcon,
-  EyeIcon,
-  EyeOffIcon,
-  KeyRoundIcon,
-} from "lucide-react";
+  IconAlertTriangle,
+  IconEye,
+  IconEyeOff,
+  IconKey,
+} from "@tabler/icons-react";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { UZZINALogo } from "~/components/logo";
-import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
+import {
+  PrismButton,
+  PrismInput,
+  PrismAlert,
+  PrismAlertTitle,
+  PrismAlertDescription,
+} from "~/components/prism";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 export const Route = createFileRoute("/reset-password")({
   component: ResetPassword,
@@ -142,20 +146,17 @@ function ResetPassword() {
     <div className="grid h-screen grid-cols-[2rem_20rem_2rem] justify-center overflow-x-hidden md:grid-cols-[2rem_30rem_2rem]">
       <div className="border-r"></div>
 
-      <div className="border_after border_before relative my-auto p-8">
-        <div className="mb-12">
+      <div className="border_after border_before relative my-auto flex flex-col gap-12 p-8">
+        <div>
           <UZZINALogo className="h-12" />
         </div>
 
         {error && (
-          <Alert
-            className="mb-8 border-destructive/10 bg-destructive/5"
-            variant="destructive"
-          >
-            <CircleAlertIcon className="size-4" />
-            <AlertTitle>Erro ao redefinir</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
+          <PrismAlert variant="error">
+            <IconAlertTriangle />
+            <PrismAlertTitle>Erro ao redefinir</PrismAlertTitle>
+            <PrismAlertDescription>{error}</PrismAlertDescription>
+          </PrismAlert>
         )}
 
         {checkingSession ? (
@@ -166,61 +167,69 @@ function ResetPassword() {
             </p>
           </div>
         ) : (
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Criar Nova Senha</h2>
-              <p className="text-xs text-muted-foreground mb-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              <h3>Criar Nova Senha</h3>
+              <p className="text-muted-foreground">
                 Insira sua nova senha de acesso segura para a sua conta.
               </p>
             </div>
 
-            <div className="relative">
-              <span className="mb-2 block w-full font-medium">Nova Senha</span>
-              <Input
-                className="pr-12"
-                name="password"
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Mínimo 6 caracteres"
-                required
-                type={showPassword ? "text" : "password"}
-                value={password}
-                variant="inset"
-              />
-              <Button
-                className="absolute top-8 right-0"
-                onClick={() => setShowPassword(!showPassword)}
-                size={"icon"}
-                type="button"
-                variant={"ghost"}
-              >
-                {showPassword ? <EyeIcon /> : <EyeOffIcon />}
-              </Button>
+            <div className="space-y-4">
+              <div className="relative">
+                <PrismInput
+                  inputClassName="pr-12"
+                  label="Nova Senha"
+                  name="password"
+                  onChange={setPassword}
+                  placeholder="Mínimo 6 caracteres"
+                  required
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  variant="default"
+                />
+                <PrismButton
+                  className="absolute top-6 right-0 h-9"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setShowPassword(!showPassword);
+                  }}
+                  size="icon"
+                  type="button"
+                  variant="ghost"
+                >
+                  {showPassword ? (
+                    <IconEye className="size-4" />
+                  ) : (
+                    <IconEyeOff className="size-4" />
+                  )}
+                </PrismButton>
+              </div>
+
+              <div>
+                <PrismInput
+                  label="Confirmar Nova Senha"
+                  name="confirmPassword"
+                  onChange={setConfirmPassword}
+                  placeholder="Repita a nova senha"
+                  required
+                  type="password"
+                  value={confirmPassword}
+                  variant="default"
+                />
+              </div>
             </div>
 
-            <div>
-              <span className="mb-2 block w-full font-medium">
-                Confirmar Nova Senha
-              </span>
-              <Input
-                name="confirmPassword"
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Repita a nova senha"
-                required
-                type="password"
-                value={confirmPassword}
-                variant="inset"
-              />
-            </div>
-
-            <div className="flex justify-end pt-4">
-              <Button
+            <div className="flex justify-end pt-2">
+              <PrismButton
                 className="w-full"
                 disabled={loading || !!error}
                 type="submit"
+                variant="default"
               >
                 {loading ? "Salvando..." : "Redefinir Senha e Entrar"}
-                {!loading && <KeyRoundIcon className="ml-2 size-4" />}
-              </Button>
+                {!loading && <IconKey className="ml-2 size-3.5" />}
+              </PrismButton>
             </div>
           </form>
         )}

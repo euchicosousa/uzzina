@@ -1,580 +1,406 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
-import { PhaseIcon } from "~/components/features/PhaseIcon";
-import { Theme, useTheme } from "~/components/theme-provider";
-import { Button } from "~/components/ui/button";
-import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
-import { UBadge } from "~/components/uzzina/UBadge";
-import { CATEGORIES, PHASES, SIZE } from "~/lib/CONSTANTS";
-import { Icons } from "~/lib/helpers";
+import {
+  PrismButton,
+  PrismInput,
+  PrismAlert,
+  PrismAlertTitle,
+  PrismAlertDescription,
+} from "~/components/prism";
+import { useState } from "react";
+import {
+  IconSend,
+  IconTrash,
+  IconAlertCircle,
+  IconCheck,
+  IconAlertTriangle,
+  IconInfoCircle,
+} from "@tabler/icons-react";
 export const Route = createFileRoute("/ui")({
-  component: UITestingPage,
+  component: UIPage,
 });
-function UITestingPage() {
-  const [theme, setTheme] = useTheme();
+function UIPage() {
+  const [inputValue, setInputValue] = useState("");
+  const [activeSection, setActiveSection] = useState<"tokens" | "components">(
+    "tokens",
+  );
   return (
-    <div className="container mx-auto px-8">
-      {/* Header */}
-      <div className="border_after flex items-center justify-between py-8">
-        <h1 className="p-0">UI Testing Page</h1>
-
-        <div className="flex items-center gap-1">
-          <Button
-            onClick={() => setTheme(Theme.LIGHT)}
-            variant={Theme.LIGHT === theme ? "outline" : "ghost"}
-          >
-            <SunIcon />
-          </Button>
-          <Button
-            onClick={() => setTheme(Theme.DARK)}
-            variant={Theme.DARK === theme ? "outline" : "ghost"}
-          >
-            <MoonIcon />
-          </Button>
-          <Button
-            onClick={() => setTheme(null)}
-            variant={
-              ![Theme.DARK, Theme.LIGHT].find((t) => t === theme)
-                ? "outline"
-                : "ghost"
-            }
-          >
-            <MonitorIcon />
-          </Button>
+    <div className="container mx-auto px-8 py-12 space-y-12">
+      <div className="flex flex-col">
+        <div className="border_after pb-8 lg:flex justify-between items-end gap-8">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tighter">Prism</h1>
+            <p className="text-muted-foreground mt-2">
+              Design System proprietário do Uzzina, focado em flexibilidade,
+              acessibilidade (React Aria) e estética OKLCH.
+            </p>
+          </div>
         </div>
-      </div>
-      <div className="border_after flex items-center gap-8 py-4 *:underline-offset-2 *:hover:underline">
-        <a href="#headings">Headings</a>
-        <a href="#colors">Colors</a>
-        <a href="#badges">Badges</a>
-        <a href="#avatars">Avatars</a>
-        <a href="#categories">Categories</a>
-        <a href="#phases">Phases</a>
+
+        {/* Menu de Navegação Semântica */}
+        <PrismNav activeSection={activeSection} onChange={setActiveSection} />
       </div>
 
-      {/* Headings */}
-      <div className="border_after py-8" id="headings">
-        <div className="">
-          <h2>Headings</h2>
-        </div>
-        <div>
-          <h1>h1 – Lorem ipsum dolor sit amet consectetur adipisicing elit.</h1>
-          <h2>h2 – Lorem ipsum dolor sit amet consectetur adipisicing elit.</h2>
-          <h3>h3 – Lorem ipsum dolor sit amet consectetur adipisicing elit.</h3>
-          <h4>h4 – Lorem ipsum dolor sit amet consectetur adipisicing elit.</h4>
-          <h5>h5 – Lorem ipsum dolor sit amet consectetur adipisicing elit.</h5>
-        </div>
-      </div>
-      {/* Cores */}
-      <div className="border_after py-8" id="colors">
-        <h2>Colors</h2>
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-          {[
-            {
-              background: "bg-background",
-              text: "text-foreground",
-            },
-            {
-              background: "bg-card",
-              text: "text-card-foreground",
-            },
-            {
-              background: "bg-popover",
-              text: "text-popover-foreground",
-            },
-            {
-              background: "bg-primary",
-              text: "text-primary-foreground",
-            },
-            {
-              background: "bg-secondary",
-              text: "text-secondary-foreground",
-            },
-            {
-              background: "bg-muted",
-              text: "text-muted-foreground",
-            },
-            {
-              background: "bg-accent",
-              text: "text-accent-foreground",
-            },
-            {
-              background: "bg-input",
-              text: "text-foreground",
-            },
-          ].map((colors) => (
-            <div
-              key={colors.background}
-              className={`${colors.background} ${colors.text} flex flex-col gap-2 border p-8`}
-            >
-              <code>.{colors.background}</code>
-              <code>.{colors.text}</code>
-            </div>
-          ))}
-        </div>
-      </div>
-      {/* Badges */}
-      <div className="border_after py-8" id="badges">
-        <div>
-          <h2>Badges</h2>
-        </div>
-        <div className="grid grid-cols-2 gap-8">
-          <div className="flex flex-wrap items-center gap-4">
-            <h5 className="w-full">Badge comum</h5>
-            <UBadge size={SIZE.sm} value={12} />
-            <UBadge size={SIZE.md} value={17} />
-            <UBadge size={SIZE.lg} value={22} />
-          </div>
-          <div className="flex flex-wrap items-center gap-4">
-            <h5 className="w-full">Badge dinâmico</h5>
-            <UBadge isDynamic size={SIZE.sm} value={2} />
-            <UBadge isDynamic size={SIZE.md} value={6} />
-            <UBadge isDynamic size={SIZE.lg} value={22998.8} />
-          </div>
-          <div className="flex flex-wrap items-center gap-4">
-            <h5 className="w-full">Badge arredondado</h5>
-
-            <UBadge isRounded size={SIZE.sm} value={3} />
-            <UBadge isRounded size={SIZE.md} value={6} />
-            <UBadge isRounded size={SIZE.lg} value={22} />
-          </div>
-          <div className="flex flex-wrap items-center gap-4">
-            <h5 className="w-full">Badge pers. com sufixo e prefixo</h5>
-
-            <UBadge
-              className="bg-success text-success-foreground"
-              prefix="+"
-              size={SIZE.sm}
-              suffix="pts"
-              value={3}
+      {activeSection === "tokens" ? (
+        <div className="flex flex-col">
+          {/* Seção: Cores Semânticas OKLCH */}
+          <GallerySection separator>
+            <GallerySectionHeader
+              title="Cores Semânticas OKLCH"
+              description="Mapeamento das variáveis de cores ativas e corrigidas no tailwind.css."
             />
-            <UBadge
-              className="rounded-none bg-pink-400 text-pink-200"
-              size={SIZE.md}
-              suffix="º"
-              value={36}
-            />
-            <UBadge
-              className="border border-amber-200 bg-amber-100 text-amber-600 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200"
-              prefix="R$ "
-              size={SIZE.lg}
-              value={221.39}
-            />
-          </div>
-        </div>
-      </div>
-      {/* Avatars */}
-      <div className="border_after py-8" id="avatars">
-        <div>
-          <h2>Avatars</h2>
-        </div>
-        <div className="grid grid-cols-2 gap-8">
-          <div className="flex flex-wrap gap-4">
-            <h5 className="w-full">Avatar com fallback 2</h5>
-            <UAvatar fallback="cs" size={SIZE.xs} />
-            <UAvatar fallback="cs" size={SIZE.sm} />
-            <UAvatar fallback="cs" size={SIZE.md} />
-            <UAvatar fallback="cs" size={SIZE.lg} />
-            <UAvatar fallback="cs" size={SIZE.xl} />
-          </div>
-          <div className="flex flex-wrap gap-4">
-            <h5 className="w-full">Avatar com fallback 2+</h5>
-            <UAvatar fallback="chico" size={SIZE.xs} />
-            <UAvatar fallback="smart" size={SIZE.sm} />
-            <UAvatar fallback="cnvt" size={SIZE.md} />
-            <UAvatar fallback="ana" size={SIZE.lg} />
-            <UAvatar fallback="videre" size={SIZE.xl} />
-          </div>
-          <div className="flex flex-wrap gap-4">
-            <h5 className="w-full">Avatar Squircle</h5>
-            <UAvatar
-              fallback="CN"
-              image="https://github.com/shadcn.png"
-              size={SIZE.xs}
-            />
-            <UAvatar
-              fallback="CN"
-              image="https://github.com/shadcn.png"
-              size={SIZE.sm}
-            />
-            <UAvatar
-              fallback="CN"
-              image="https://github.com/shadcn.png"
-              size={SIZE.md}
-            />
-            <UAvatar
-              fallback="CN"
-              image="https://github.com/shadcn.png"
-              size={SIZE.lg}
-            />
-            <UAvatar
-              fallback="CN"
-              image="https://github.com/shadcn.png"
-              size={SIZE.xl}
-            />
-          </div>
-          <div className="flex flex-wrap gap-4">
-            <h5 className="w-full">Grupo de Avatares Squircle</h5>
-            <UAvatarGroup
-              avatars={[
-                {
-                  fallback: "AC",
-                },
-                {
-                  fallback: "CSS",
-                },
-                {
-                  fallback: "CNVT",
-                },
-                {
-                  fallback: "CS",
-                },
-                {
-                  fallback: "CN",
-                  image: "https://github.com/shadcn.png",
-                },
-              ]}
-            />
-          </div>
-          <div className="flex flex-wrap gap-4">
-            <h5 className="w-full">Avatar com Imagens</h5>
-            <UAvatar
-              fallback="CN"
-              image="https://github.com/shadcn.png"
-              size={SIZE.xs}
-            />
-            <UAvatar
-              fallback="CN"
-              image="https://github.com/shadcn.png"
-              size={SIZE.sm}
-            />
-            <UAvatar
-              fallback="CN"
-              image="https://github.com/shadcn.png"
-              size={SIZE.md}
-            />
-            <UAvatar
-              fallback="CN"
-              image="https://github.com/shadcn.png"
-              size={SIZE.lg}
-            />
-            <UAvatar
-              fallback="CN"
-              image="https://github.com/shadcn.png"
-              size={SIZE.xl}
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-4">
-            <h5 className="w-full">Grupo de Avatares xs</h5>
-            <UAvatarGroup
-              avatars={[
-                {
-                  fallback: "AC",
-                },
-                {
-                  fallback: "CSS",
-                },
-                {
-                  fallback: "CNVT",
-                },
-                {
-                  fallback: "CS",
-                },
-                {
-                  fallback: "CN",
-                  image: "https://github.com/shadcn.png",
-                },
-              ]}
-              size={SIZE.xs}
-            />
-          </div>
-          <div className="flex flex-wrap gap-4">
-            <h5 className="w-full">Grupo de Avatares sm</h5>
-            <UAvatarGroup
-              avatars={[
-                {
-                  fallback: "AC",
-                },
-                {
-                  fallback: "CSS",
-                },
-                {
-                  fallback: "CNVT",
-                },
-                {
-                  fallback: "CS",
-                },
-                {
-                  fallback: "CN",
-                  image: "https://github.com/shadcn.png",
-                },
-              ]}
-              size={SIZE.sm}
-            />
-          </div>
-          <div className="flex flex-wrap gap-4">
-            <h5 className="w-full">Grupo de Avatares md</h5>
-            <UAvatarGroup
-              avatars={[
-                {
-                  fallback: "AC",
-                },
-                {
-                  fallback: "CSS",
-                },
-                {
-                  fallback: "CNVT",
-                },
-                {
-                  fallback: "CS",
-                },
-                {
-                  fallback: "CN",
-                  image: "https://github.com/shadcn.png",
-                },
-              ]}
-            />
-          </div>
-          <div className="flex flex-wrap gap-4">
-            <h5 className="w-full">Grupo de Avatares lg</h5>
-            <UAvatarGroup
-              avatars={[
-                {
-                  fallback: "AC",
-                },
-                {
-                  fallback: "CSS",
-                },
-                {
-                  fallback: "CNVT",
-                },
-                {
-                  fallback: "CS",
-                },
-                {
-                  fallback: "CN",
-                  image: "https://github.com/shadcn.png",
-                },
-              ]}
-              size={SIZE.lg}
-            />
-          </div>
-          <div className="flex flex-wrap gap-4">
-            <h5 className="w-full">Grupo de Avatares xl</h5>
-            <UAvatarGroup
-              avatars={[
-                {
-                  fallback: "AC",
-                },
-                {
-                  fallback: "CSS",
-                },
-                {
-                  fallback: "CNVT",
-                },
-                {
-                  fallback: "CS",
-                },
-                {
-                  fallback: "CN",
-                  image: "https://github.com/shadcn.png",
-                },
-              ]}
-              size={SIZE.xl}
-            />
-          </div>
-        </div>
-      </div>
-      {/* Categorias */}
-      <div className="border_after py-8" id="categories">
-        <div>
-          <h2>Ícones das Categorias</h2>
-        </div>
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {Object.values(CATEGORIES).map((category) => (
-            <div key={category.slug} className="p-4 text-center">
-              <div className="mb-2 font-medium">{category.title}</div>
-              <div className="flex items-center justify-center gap-2">
-                <Icons
-                  className="size-4"
-                  color={category.color}
-                  slug={category.slug}
-                />
-                <Icons
-                  className="size-6"
-                  color={category.color}
-                  slug={category.slug}
-                />
-                <Icons
-                  className="size-8"
-                  color={category.color}
-                  slug={category.slug}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      {/* Phases */}
-      <div className="border_after py-8" id="phases">
-        <div>
-          <h2>Phases</h2>
-        </div>
-        <div className="grid gap-8 md:grid-cols-3">
-          <div>
-            <div className="mb-4 font-medium">Tamanho {SIZE.xs}</div>
-            <div className="flex gap-4">
-              {Object.values(PHASES).map((phase, _index) => (
-                <PhaseIcon
-                  key={phase.slug}
-                  phase={phase}
-                  size={SIZE.xs}
-                  variant="icon"
-                />
-              ))}
-            </div>
-          </div>
-          <div>
-            <div className="mb-4 font-medium">Tamanho {SIZE.sm}</div>
-            <div className="flex gap-4">
-              {Object.values(PHASES).map((phase, _index) => (
-                <PhaseIcon
-                  key={phase.slug}
-                  phase={phase}
-                  size={SIZE.sm}
-                  variant="icon"
-                />
-              ))}
-            </div>
-          </div>
-          <div>
-            <div className="mb-4 font-medium">Tamanho {SIZE.md}</div>
-            <div className="flex gap-4">
-              {Object.values(PHASES).map((phase, _index) => (
-                <PhaseIcon
-                  key={phase.slug}
-                  phase={phase}
-                  size={SIZE.md}
-                  variant="icon"
-                />
-              ))}
-            </div>
-          </div>
-          <div>
-            <div className="mb-4 font-medium">Tamanho {SIZE.lg}</div>
-            <div className="flex gap-4">
-              {Object.values(PHASES).map((phase, _index) => (
-                <PhaseIcon
-                  key={phase.slug}
-                  phase={phase}
-                  size={SIZE.lg}
-                  variant="icon"
-                />
-              ))}
-            </div>
-          </div>
-          <div>
-            <div className="mb-4 font-medium">Tamanho {SIZE.xl}</div>
-            <div className="flex gap-4">
-              {Object.values(PHASES).map((phase, _index) => (
-                <PhaseIcon
-                  key={phase.slug}
-                  phase={phase}
-                  size={SIZE.xl}
-                  variant="icon"
-                />
-              ))}
-            </div>
-          </div>
-          <div>
-            <div className="mb-4 font-medium">Tamanho {SIZE["2xl"]}</div>
-            <div className="flex gap-4">
-              {Object.values(PHASES).map((phase, _index) => (
-                <PhaseIcon
-                  key={phase.slug}
-                  phase={phase}
-                  size={SIZE["2xl"]}
-                  variant="icon"
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* <div id="font-sizes" className="border_after py-8">
-        <div>
-          <h2>Font-sizes</h2>
-        </div>
-        <div className="mb-12 grid grid-cols-2 gap-8">
-          {webFontSizes.map((fs, i) => {
-            return (
-              <div className="text-muted-foreground grid grid-cols-2 gap-4">
-                <div key={i}>
-                  <div className="text-foreground mb-2 text-xs font-medium">
-                    WEB
+            <GallerySectionContent className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Cores Base */}
+              <GalleryItem label="Base Surfaces">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="size-8 rounded-lg border bg-background" />
+                    <div>
+                      <div className="text-sm font-medium">Background</div>
+                      <div className="text-xs text-muted-foreground">
+                        bg-background
+                      </div>
+                    </div>
                   </div>
-                  <div>Font-size: {fs.fontSize}px</div>
-                  <div>Line-height: {fs.lineHeight}px</div>
-                </div>
-                <div key={i}>
-                  <div className="text-foreground mb-2 text-xs font-medium">
-                    SOCIAL
+                  <div className="flex items-center gap-3">
+                    <div className="size-8 rounded-lg border bg-surface" />
+                    <div>
+                      <div className="text-sm font-medium">
+                        Surface (Substituiu o Card)
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        bg-surface
+                      </div>
+                    </div>
                   </div>
-                  <div>Font-size: {fontSizes[i].fontSize}px</div>
-                  <div>Line-height: {fontSizes[i].lineHeight}px</div>
                 </div>
-              </div>
-            );
-          })}
+              </GalleryItem>
+
+              {/* Feedback Semântico */}
+              <GalleryItem label="Feedback Colors" className="md:col-span-2">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="size-8 rounded-lg border bg-error-background border-error/20" />
+                    <div>
+                      <div className="text-sm font-medium text-error">
+                        Error
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        text-error / bg-error-background
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="size-8 rounded-lg border bg-success-background border-success/20" />
+                    <div>
+                      <div className="text-sm font-medium text-success">
+                        Success
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        text-success / bg-success-background
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="size-8 rounded-lg border bg-warning-background border-warning/20" />
+                    <div>
+                      <div className="text-sm font-medium text-warning">
+                        Warning
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        text-warning / bg-warning-background
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="size-8 rounded-lg border bg-info-background border-info/20" />
+                    <div>
+                      <div className="text-sm font-medium text-info">Info</div>
+                      <div className="text-xs text-muted-foreground">
+                        text-info / bg-info-background
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </GalleryItem>
+            </GallerySectionContent>
+          </GallerySection>
+
+          {/* Seção: Escala de Espaçamento */}
+          <GallerySection>
+            <GallerySectionHeader
+              title="Espaçamento Exponencial"
+              description="Garante que os layouts dobrem as margens a cada nível da escala para manter a fluidez visual."
+            />
+            <GallerySectionContent>
+              <GalleryItem label="Escala Modular" className="w-full max-w-md space-y-4">
+                <div className="flex items-center gap-4">
+                  <span className="w-12 text-xs font-mono">4px (xs)</span>
+                  <div
+                    className="h-4 bg-primary rounded"
+                    style={{
+                      width: "4px",
+                    }}
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="w-12 text-xs font-mono">8px (sm)</span>
+                  <div
+                    className="h-4 bg-primary rounded"
+                    style={{
+                      width: "8px",
+                    }}
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="w-12 text-xs font-mono">16px (md)</span>
+                  <div
+                    className="h-4 bg-primary rounded"
+                    style={{
+                      width: "16px",
+                    }}
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="w-12 text-xs font-mono">32px (lg)</span>
+                  <div
+                    className="h-4 bg-primary rounded"
+                    style={{
+                      width: "32px",
+                    }}
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="w-12 text-xs font-mono">64px (xl)</span>
+                  <div
+                    className="h-4 bg-primary rounded"
+                    style={{
+                      width: "64px",
+                    }}
+                  />
+                </div>
+              </GalleryItem>
+            </GallerySectionContent>
+          </GallerySection>
         </div>
-        {webFontSizes.map((fs, i) => {
-          return (
-            <div key={i} className="grid grid-cols-2 gap-8">
-              <div>
-                <div className="flex justify-between gap-2 opacity-50">
-                  <p className="text-[12px]">Font-size: {fs.fontSize}px</p>
-                  <p className="text-[12px]">Line-height: {fs.lineHeight}px</p>
+      ) : (
+        <div className="flex flex-col">
+          {/* Seção: PrismButton */}
+          <GallerySection separator>
+            <GallerySectionHeader
+              description="Componente de botão baseado no React Aria Components com suporte a estados nativos e ícones do Tabler."
+              title="PrismButton"
+            />
+            <GallerySectionContent>
+              <GalleryItem label="Default Variant">
+                <div className="flex gap-2">
+                  <PrismButton variant="default">Button</PrismButton>
+                  <PrismButton isDisabled variant="default">
+                    Disabled
+                  </PrismButton>
                 </div>
-                <div
-                  style={{
-                    fontSize: `${fs.fontSize}px`,
-                    lineHeight: `${fs.lineHeight}px`,
-                  }}
-                >
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eum
-                  enim unde soluta eaque assumenda quae doloremque deleniti
-                  recusandae, ad voluptates ut, consequatur sunt dolor.
-                  Voluptatum officia laudantium porro. Odio, laborum.
+              </GalleryItem>
+
+              <GalleryItem label="Ghost Variant">
+                <div className="flex gap-2">
+                  <PrismButton variant="ghost">Ghost</PrismButton>
+                  <PrismButton isDisabled variant="ghost">
+                    Disabled
+                  </PrismButton>
                 </div>
-              </div>
-              <div>
-                <div className="flex justify-between gap-2 opacity-50">
-                  <p className="text-[12px]">
-                    Font-size: {fontSizes[i].fontSize}px
-                  </p>
-                  <p className="text-[12px]">
-                    Line-height: {fontSizes[i].lineHeight}px
-                  </p>
+              </GalleryItem>
+
+              <GalleryItem label="Com Ícones (Tabler Icons)">
+                <div className="flex gap-2">
+                  <PrismButton variant="default">
+                    <IconSend className="size-4" />
+                    Enviar
+                  </PrismButton>
+                  <PrismButton size="icon" title="Excluir item" variant="ghost">
+                    <IconTrash className="size-4 text-destructive" />
+                  </PrismButton>
                 </div>
-                <div
-                  style={{
-                    fontSize: `${fontSizes[i].fontSize}px`,
-                    lineHeight: `${fontSizes[i].lineHeight}px`,
-                  }}
-                  className="line-clamp-3"
-                >
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eum
-                  enim unde soluta eaque assumenda quae doloremque deleniti
-                  recusandae, ad voluptates ut, consequatur sunt dolor.
-                  Voluptatum officia laudantium porro. Odio, laborum.
+              </GalleryItem>
+            </GallerySectionContent>
+          </GallerySection>
+
+          {/* Seção: PrismInput */}
+          <GallerySection separator>
+            <GallerySectionHeader
+              description="TextField acoplado com suporte a labels acessíveis e estilos visuais do Uzzina."
+              title="PrismInput"
+            />
+            <GallerySectionContent>
+              <GalleryItem label="Default Variant">
+                <PrismInput
+                  label="Nome do Usuário"
+                  onChange={setInputValue}
+                  placeholder="Ex: Francisco Sousa"
+                  value={inputValue}
+                />
+              </GalleryItem>
+
+              <GalleryItem label="Inset (Embossed) Variant">
+                <PrismInput
+                  label="Senha de Acesso"
+                  placeholder="••••••••"
+                  type="password"
+                  variant="inset"
+                />
+              </GalleryItem>
+
+              <GalleryItem className="md:col-span-2" label="Disabled States">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <PrismInput
+                    isDisabled
+                    label="E-mail (Desabilitado)"
+                    value="contato@cnvt.com.br"
+                  />
+                  <PrismInput
+                    isDisabled
+                    label="Token (Inset Desabilitado)"
+                    value="A39F-84JD-2947"
+                    variant="inset"
+                  />
                 </div>
-              </div>
-            </div>
-          );
-        })}
-       </div> */}
+              </GalleryItem>
+            </GallerySectionContent>
+          </GallerySection>
+
+          {/* Seção: PrismAlert */}
+          <GallerySection>
+            <GallerySectionHeader
+              description="Componentes de notificação semântica utilizando a paleta de cores corrigida no OKLCH."
+              title="PrismAlert"
+            />
+            <GallerySectionContent>
+              <GalleryItem label="Default">
+                <PrismAlert>
+                  <IconInfoCircle />
+                  <PrismAlertTitle>Informações Gerais</PrismAlertTitle>
+                  <PrismAlertDescription>
+                    Este alerta usa o tema padrão neutro do card.
+                  </PrismAlertDescription>
+                </PrismAlert>
+              </GalleryItem>
+              <GalleryItem label="Error">
+                <PrismAlert variant="error">
+                  <IconAlertTriangle />
+                  <PrismAlertTitle>Acesso Recusado</PrismAlertTitle>
+                  <PrismAlertDescription>
+                    Suas credenciais de login não são válidas no sistema.
+                  </PrismAlertDescription>
+                </PrismAlert>
+              </GalleryItem>
+              <GalleryItem label="Sucess">
+                <PrismAlert variant="success">
+                  <IconCheck />
+                  <PrismAlertTitle>Senha Redefinida</PrismAlertTitle>
+                  <PrismAlertDescription>
+                    Sua senha foi atualizada com sucesso.
+                  </PrismAlertDescription>
+                </PrismAlert>
+              </GalleryItem>
+              <GalleryItem label="Warning">
+                <PrismAlert variant="warning">
+                  <IconAlertCircle />
+                  <PrismAlertTitle>Aviso de Sessão</PrismAlertTitle>
+                  <PrismAlertDescription>
+                    Sua conexão irá expirar em breve por inatividade.
+                  </PrismAlertDescription>
+                </PrismAlert>
+              </GalleryItem>
+              <GalleryItem label="Sucess">
+                <PrismAlert variant="info">
+                  <IconInfoCircle />
+                  <PrismAlertTitle>Atualização Disponível</PrismAlertTitle>
+                  <PrismAlertDescription>
+                    Uma nova versão do Prism foi implementada.
+                  </PrismAlertDescription>
+                </PrismAlert>
+              </GalleryItem>
+            </GallerySectionContent>
+          </GallerySection>
+        </div>
+      )}
+    </div>
+  );
+}
+interface PrismNavProps {
+  activeSection: "tokens" | "components";
+  onChange: (section: "tokens" | "components") => void;
+}
+function PrismNav({ activeSection, onChange }: PrismNavProps) {
+  return (
+    <div className="flex w-full border_after">
+      <button
+        className={`px-4 py-3 text-sm font-semibold tracking-tight transition-all relative border-b-2 ${activeSection === "tokens" ? "text-primary border-primary" : "text-muted-foreground hover:text-foreground border-transparent"}`}
+        onClick={() => onChange("tokens")}
+      >
+        Tokens de Design
+      </button>
+      <button
+        className={`px-4 py-3 text-sm font-semibold tracking-tight transition-all relative border-b-2 ${activeSection === "components" ? "text-primary border-primary" : "text-muted-foreground hover:text-foreground border-transparent"}`}
+        onClick={() => onChange("components")}
+      >
+        Componentes de UI
+      </button>
+    </div>
+  );
+}
+
+// Componentes auxiliares de exibição da Galeria
+interface GallerySectionProps {
+  children: React.ReactNode;
+  separator?: boolean;
+}
+function GallerySection({ children, separator = false }: GallerySectionProps) {
+  return (
+    <section className={`space-y-6 py-12 ${separator ? "border_after" : ""}`}>
+      {children}
+    </section>
+  );
+}
+interface GallerySectionHeaderProps {
+  title: string;
+  description: string;
+}
+function GallerySectionHeader({
+  title,
+  description,
+}: GallerySectionHeaderProps) {
+  return (
+    <div className="flex flex-col gap-4">
+      <h3>{title}</h3>
+      <p className="text-sm text-muted-foreground">{description}</p>
+    </div>
+  );
+}
+interface GallerySectionContentProps {
+  children: React.ReactNode;
+  className?: string;
+}
+function GallerySectionContent({
+  children,
+  className,
+}: GallerySectionContentProps) {
+  return (
+    <div className={className || "flex flex-wrap gap-8 items-center"}>
+      {children}
+    </div>
+  );
+}
+interface GalleryItemProps {
+  children: React.ReactNode;
+  label: string;
+  className?: string;
+}
+function GalleryItem({ children, label, className = "" }: GalleryItemProps) {
+  return (
+    <div className={`flex flex-col gap-4 ${className}`}>
+      <span className="text-xs font-semibold text-muted-foreground uppercase">
+        {label}
+      </span>
+      {children}
     </div>
   );
 }
