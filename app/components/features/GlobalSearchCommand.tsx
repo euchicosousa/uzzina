@@ -13,7 +13,7 @@ import {
   PrismListBoxItem,
   PrismListBoxSection,
   PrismListBoxHeader,
-} from "~/components/prism";
+} from "~/components/old-prism";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UToggleInput } from "~/components/uzzina/UToggle";
 import { DATE_TIME_DISPLAY, SIZE, PHASES, type PHASE } from "~/lib/CONSTANTS";

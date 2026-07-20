@@ -3,18 +3,25 @@ import {
   IconEye,
   IconEyeOff,
   IconLogin,
+  IconLock,
+  IconAt,
 } from "@tabler/icons-react";
 import { useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
+import { TextField, Label } from "react-aria-components";
 import { UZZINALogo } from "~/components/logo";
 import {
-  PrismButton,
-  PrismInput,
   PrismAlert,
   PrismAlertTitle,
   PrismAlertDescription,
-} from "~/components/prism";
+} from "~/components/old-prism";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import {
+  PrismButton,
+  PrismInputGroup,
+  PrismInputGroupAddon,
+  PrismInputGroupInput,
+} from "~/components/prism";
 export const Route = createFileRoute("/login")({
   component: Login,
 });
@@ -66,53 +73,81 @@ function Login() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <PrismInput
-              label="E-mail"
-              name="email"
-              onChange={setEmail}
-              required
-              type="email"
-              value={email}
-            />
-          </div>
+          <TextField
+            className="mb-6"
+            isRequired
+            name="email"
+            onChange={setEmail}
+            value={email}
+          >
+            <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+              E-mail
+            </Label>
+            <PrismInputGroup>
+              <PrismInputGroupAddon
+                align="inline-start"
+                className="[&_svg]:text-foreground/40 pl-4 pr-1"
+              >
+                <IconAt className="size-5" />
+              </PrismInputGroupAddon>
+              <PrismInputGroupInput
+                className="px-3 h-full"
+                placeholder="name@example.com"
+                type="email"
+              />
+            </PrismInputGroup>
+          </TextField>
 
-          <div className="mb-4">
-            <PrismInput
-              label="Senha"
-              labelAction={
-                <Link
-                  className="text-sm text-muted-foreground hover:text-foreground hover:underline"
-                  to="/forgot-password"
-                >
-                  Esqueceu sua senha?
-                </Link>
-              }
-              name="password"
-              onChange={setPassword}
-              required
-              suffix={
+          <TextField
+            className="mb-6"
+            isRequired
+            name="password"
+            onChange={setPassword}
+            value={password}
+          >
+            <div className="flex items-center justify-between w-full mb-1.5">
+              <Label className="block font-medium text-foreground cursor-pointer">
+                Senha
+              </Label>
+              <Link
+                className="text-sm text-muted-foreground hover:text-foreground hover:underline"
+                to="/forgot-password"
+              >
+                Esqueceu sua senha?
+              </Link>
+            </div>
+            <PrismInputGroup className="squircle">
+              <PrismInputGroupAddon
+                align="inline-start"
+                className="[&_svg]:text-foreground/40 pl-4 pr-1"
+              >
+                <IconLock className="size-5" />
+              </PrismInputGroupAddon>
+              <PrismInputGroupInput
+                className="px-3 h-full"
+                placeholder="••••••••"
+                type={showPassword ? "text" : "password"}
+              />
+              <PrismInputGroupAddon align="inline-end" className="pr-2 pl-1">
                 <PrismButton
-                  className="rounded-l-none"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    setShowPassword(!showPassword);
-                  }}
-                  size="icon"
+                  onPress={() => setShowPassword(!showPassword)}
+                  size="icon-sm"
                   type="button"
                   variant="ghost"
                 >
-                  {showPassword ? <IconEye /> : <IconEyeOff />}
+                  {showPassword ? (
+                    <IconEye className="size-4" />
+                  ) : (
+                    <IconEyeOff className="size-4" />
+                  )}
                 </PrismButton>
-              }
-              type={showPassword ? "text" : "password"}
-              value={password}
-            />
-          </div>
+              </PrismInputGroupAddon>
+            </PrismInputGroup>
+          </TextField>
 
           <div className="flex justify-end mt-6">
             <PrismButton
-              disabled={isSubmitting}
+              isDisabled={isSubmitting}
               type="submit"
               variant="default"
             >
@@ -121,9 +156,9 @@ function Login() {
             </PrismButton>
           </div>
         </form>
-      </div>
 
-      <div className="border-l"></div>
+        <div className="border-l"></div>
+      </div>
     </div>
   );
 }

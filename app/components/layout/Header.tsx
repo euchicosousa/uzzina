@@ -32,13 +32,10 @@ import { cn } from "~/lib/utils";
 import type { Notification } from "~/types";
 import { DashboardMetrics } from "../features/home/DashboardMetrics";
 import { UZZINALogo } from "../logo";
-import {
-  PrismButton,
-  PrismPopover,
-  PrismPopoverContent,
-} from "~/components/prism";
+import { PrismPopover, PrismPopoverContent } from "~/components/old-prism";
 import { UAvatar } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
+import { PrismButton } from "../prism";
 const DEFAULT_PARTNER_FILTERS: string[] = [];
 export function Header({
   person,
@@ -393,6 +390,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
             return (
               <PrismButton
                 key={paletteConfig.id}
+                aria-label={paletteConfig.label}
                 className="flex justify-center rounded-xl p-2 squircle"
                 onClick={() => {
                   changeColorIndex(i);
@@ -403,7 +401,6 @@ const HeaderMenu = ({ person }: { person: Person }) => {
                     ? `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`
                     : "",
                 }}
-                title={paletteConfig.label}
                 type="button"
                 variant={"ghost"}
               >

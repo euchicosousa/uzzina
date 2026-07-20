@@ -3,19 +3,25 @@ import {
   IconEye,
   IconEyeOff,
   IconKey,
+  IconLock,
 } from "@tabler/icons-react";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
+import { TextField, Label } from "react-aria-components";
 import { toast } from "sonner";
 import { UZZINALogo } from "~/components/logo";
 import {
-  PrismButton,
-  PrismInput,
   PrismAlert,
   PrismAlertTitle,
   PrismAlertDescription,
-} from "~/components/prism";
+} from "~/components/old-prism";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import {
+  PrismButton,
+  PrismInputGroup,
+  PrismInputGroupAddon,
+  PrismInputGroupInput,
+} from "~/components/prism";
 export const Route = createFileRoute("/reset-password")({
   component: ResetPassword,
 });
@@ -175,48 +181,77 @@ function ResetPassword() {
               </p>
             </div>
 
-            <div className="space-y-4">
-              <PrismInput
-                label="Nova Senha"
+            <div className="space-y-6">
+              <TextField
+                isRequired
                 name="password"
                 onChange={setPassword}
-                placeholder="Mínimo 6 caracteres"
-                required
-                suffix={
-                  <PrismButton
-                    className="rounded-l-none"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      setShowPassword(!showPassword);
-                    }}
-                    size="icon"
-                    type="button"
-                    variant="ghost"
-                  >
-                    {showPassword ? <IconEye /> : <IconEyeOff />}
-                  </PrismButton>
-                }
-                type={showPassword ? "text" : "password"}
                 value={password}
-              />
+              >
+                <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+                  Nova Senha
+                </Label>
+                <PrismInputGroup>
+                  <PrismInputGroupAddon
+                    align="inline-start"
+                    className="[&_svg]:text-foreground/40 pl-4 pr-1"
+                  >
+                    <IconLock className="size-5" />
+                  </PrismInputGroupAddon>
+                  <PrismInputGroupInput
+                    className="px-3 h-full"
+                    placeholder="Mínimo 6 caracteres"
+                    type={showPassword ? "text" : "password"}
+                  />
+                  <PrismInputGroupAddon
+                    align="inline-end"
+                    className="pr-2 pl-1"
+                  >
+                    <PrismButton
+                      onPress={() => setShowPassword(!showPassword)}
+                      size="icon-sm"
+                      type="button"
+                      variant="ghost"
+                    >
+                      {showPassword ? (
+                        <IconEye className="size-4" />
+                      ) : (
+                        <IconEyeOff className="size-4" />
+                      )}
+                    </PrismButton>
+                  </PrismInputGroupAddon>
+                </PrismInputGroup>
+              </TextField>
 
-              <div>
-                <PrismInput
-                  label="Confirmar Nova Senha"
-                  name="confirmPassword"
-                  onChange={setConfirmPassword}
-                  placeholder="Repita a nova senha"
-                  required
-                  type="password"
-                  value={confirmPassword}
-                />
-              </div>
+              <TextField
+                isRequired
+                name="confirmPassword"
+                onChange={setConfirmPassword}
+                value={confirmPassword}
+              >
+                <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+                  Confirmar Nova Senha
+                </Label>
+                <PrismInputGroup>
+                  <PrismInputGroupAddon
+                    align="inline-start"
+                    className="[&_svg]:text-foreground/40 pl-4 pr-1"
+                  >
+                    <IconLock className="size-5" />
+                  </PrismInputGroupAddon>
+                  <PrismInputGroupInput
+                    className="px-3 h-full"
+                    placeholder="Repita a nova senha"
+                    type="password"
+                  />
+                </PrismInputGroup>
+              </TextField>
             </div>
 
             <div className="flex justify-end pt-2">
               <PrismButton
                 className="w-full"
-                disabled={loading || !!error}
+                isDisabled={loading || !!error}
                 type="submit"
                 variant="default"
               >

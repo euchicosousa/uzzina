@@ -2,18 +2,24 @@ import {
   IconArrowLeft,
   IconAlertTriangle,
   IconMailOpened,
+  IconAt,
 } from "@tabler/icons-react";
 import { useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { TextField, Label } from "react-aria-components";
 import { UZZINALogo } from "~/components/logo";
 import {
-  PrismButton,
-  PrismInput,
   PrismAlert,
   PrismAlertTitle,
   PrismAlertDescription,
-} from "~/components/prism";
+} from "~/components/old-prism";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import {
+  PrismButton,
+  PrismInputGroup,
+  PrismInputGroupAddon,
+  PrismInputGroupInput,
+} from "~/components/prism";
 export const Route = createFileRoute("/forgot-password")({
   component: ForgotPassword,
 });
@@ -99,21 +105,35 @@ function ForgotPassword() {
             </div>
 
             <div className="space-y-4">
-              <PrismInput
-                label="E-mail"
+              <TextField
+                isRequired
                 name="email"
                 onChange={setEmail}
-                placeholder="seu-email@dominio.com"
-                required
-                type="email"
                 value={email}
-              />
+              >
+                <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+                  E-mail
+                </Label>
+                <PrismInputGroup>
+                  <PrismInputGroupAddon
+                    align="inline-start"
+                    className="[&_svg]:text-foreground/40 pl-4 pr-1"
+                  >
+                    <IconAt className="size-5" />
+                  </PrismInputGroupAddon>
+                  <PrismInputGroupInput
+                    className="px-3 h-full"
+                    placeholder="seu-email@dominio.com"
+                    type="email"
+                  />
+                </PrismInputGroup>
+              </TextField>
             </div>
 
             <div className="flex justify-end pt-2">
               <PrismButton
                 className="w-full"
-                disabled={isSubmitting}
+                isDisabled={isSubmitting}
                 type="submit"
                 variant="default"
               >

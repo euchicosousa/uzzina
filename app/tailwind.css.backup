@@ -1,7 +1,4 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-@import "@fontsource-variable/inter";
 
 /* @import "tw-animate-css"; */
 
@@ -91,11 +88,6 @@
   --color-info-background: oklch(
     var(--luminosity-background) var(--chroma-background) var(--info-hue)
   );
-  
-  --font-heading: var(--font-sans);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 .dark,
@@ -269,14 +261,6 @@
 
   body {
     @apply bg-background text-foreground;
-  }
-  
-  button:not(:disabled), [role="button"]:not(:disabled) {
-    cursor: pointer;
-  }
-  
-  html {
-    @apply font-sans;
   }
 }
 

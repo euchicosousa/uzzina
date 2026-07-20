@@ -1,13 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  PrismButton,
-  PrismInput,
   PrismAlert,
   PrismAlertTitle,
   PrismAlertDescription,
   PrismPopover,
   PrismPopoverContent,
-} from "~/components/prism";
+  PrismMenu,
+  PrismMenuContent,
+  PrismMenuItem,
+  PrismMenuSeparator,
+  PrismDialogTrigger,
+  PrismDialogOverlay,
+  PrismDialogContent,
+  PrismDialogTitle,
+  PrismCombobox,
+  PrismComboboxInputGroup,
+  PrismComboboxInput,
+  PrismComboboxDropdown,
+  PrismListBoxItem,
+} from "~/components/old-prism";
 import { useState, useEffect } from "react";
 import {
   IconSend,
@@ -21,8 +32,19 @@ import {
   IconCategory,
   IconCategoryFilled,
   IconCheckFilled,
+  IconEye,
+  IconLock,
+  IconAt,
 } from "@tabler/icons-react";
 import cn from "cnfast";
+import { TextField, Label } from "react-aria-components";
+import {
+  PrismButton,
+  PrismInput,
+  PrismInputGroup,
+  PrismInputGroupAddon,
+  PrismInputGroupInput,
+} from "~/components/prism";
 export const Route = createFileRoute("/ui")({
   component: UIPage,
 });
@@ -46,7 +68,15 @@ function UIPage() {
     const targets =
       activeSection === "tokens"
         ? ["colors", "spacing"]
-        : ["prism-button", "prism-input", "prism-alert", "prism-popover"];
+        : [
+            "prism-button",
+            "prism-input",
+            "prism-alert",
+            "prism-popover",
+            "prism-menu",
+            "prism-dialog",
+            "prism-combobox",
+          ];
     setActiveAnchor(targets[0]);
     const handleScroll = () => {
       // Se estiver muito próximo do topo da página, ativa o primeiro item de forma garantida
@@ -139,6 +169,21 @@ function UIPage() {
                   label="PrismPopover"
                   targetId="prism-popover"
                 />
+                <SidebarAnchorLink
+                  active={activeAnchor === "prism-menu"}
+                  label="PrismMenu"
+                  targetId="prism-menu"
+                />
+                <SidebarAnchorLink
+                  active={activeAnchor === "prism-dialog"}
+                  label="PrismDialog"
+                  targetId="prism-dialog"
+                />
+                <SidebarAnchorLink
+                  active={activeAnchor === "prism-combobox"}
+                  label="PrismCombobox"
+                  targetId="prism-combobox"
+                />
               </div>
             )}
           </nav>
@@ -167,13 +212,61 @@ function UIPage() {
                         id: "card",
                         label: "Base Surfaces",
                         title: "Card",
-                        code: "bg-card text-foreground",
+                        code: "bg-card text-foreground border",
                       },
                       {
                         id: "popover",
-                        label: "Aero Surfaces",
+                        label: "Base Surfaces",
                         title: "Popover",
-                        code: "bg-popover text-foreground",
+                        code: "bg-popover text-foreground border",
+                      },
+                      {
+                        id: "primary",
+                        label: "Base Surfaces",
+                        title: "Primary (Accent Knob)",
+                        code: "bg-primary text-primary-foreground",
+                      },
+                      {
+                        id: "secondary",
+                        label: "Base Surfaces",
+                        title: "Secondary",
+                        code: "bg-secondary text-secondary-foreground border",
+                      },
+                      {
+                        id: "muted",
+                        label: "Base Surfaces",
+                        title: "Muted",
+                        code: "bg-muted text-muted-foreground",
+                      },
+                      {
+                        id: "accent",
+                        label: "Base Surfaces",
+                        title: "Accent",
+                        code: "bg-accent text-accent-foreground border",
+                      },
+                      {
+                        id: "border",
+                        label: "Aero Borders & Controls",
+                        title: "Border Color",
+                        code: "border-border text-foreground border",
+                      },
+                      {
+                        id: "input",
+                        label: "Aero Borders & Controls",
+                        title: "Input Background",
+                        code: "bg-input text-foreground border",
+                      },
+                      {
+                        id: "action",
+                        label: "Uzzina Workflows",
+                        title: "Action State",
+                        code: "bg-action text-foreground border",
+                      },
+                      {
+                        id: "late",
+                        label: "Uzzina Workflows",
+                        title: "Late State (Atrasado)",
+                        code: "bg-late text-destructive border",
                       },
                     ].map((item) => (
                       <GalleryItem key={item.id} label={item.label}>
@@ -325,51 +418,51 @@ function UIPage() {
                     description="Componente de botão baseado no React Aria Components com suporte a estados nativos e ícones do Tabler."
                     title="PrismButton"
                   />
-                  <GallerySectionContent>
-                    <GalleryItem label="Default Variant">
-                      <div className="flex gap-2">
-                        <PrismButton variant="default">Button</PrismButton>
-                        <PrismButton isDisabled variant="default">
-                          Disabled
-                        </PrismButton>
-                      </div>
-                    </GalleryItem>
-
-                    <GalleryItem label="Ghost Variant">
-                      <div className="flex gap-2">
+                  <GallerySectionContent className="grid gap-6">
+                    <GalleryItem label="Variants (default, secondary, outline, ghost, destructive, link)">
+                      <div className="flex flex-wrap gap-3">
+                        <PrismButton variant="default">Default</PrismButton>
+                        <PrismButton variant="secondary">Secondary</PrismButton>
+                        <PrismButton variant="outline">Outline</PrismButton>
                         <PrismButton variant="ghost">Ghost</PrismButton>
-                        <PrismButton isDisabled variant="ghost">
-                          Disabled
+                        <PrismButton variant="destructive">
+                          Destructive
                         </PrismButton>
+                        <PrismButton variant="link">Link</PrismButton>
                       </div>
                     </GalleryItem>
 
-                    <GalleryItem label="Com Ícones (Tabler Icons)">
-                      <div className="flex gap-2">
+                    <GalleryItem label="Sizes (xs, sm, default, lg)">
+                      <div className="flex items-center flex-wrap gap-3">
+                        <PrismButton size="xs">Extra Small (xs)</PrismButton>
+                        <PrismButton size="sm">Small (sm)</PrismButton>
+                        <PrismButton size="default">Default</PrismButton>
+                        <PrismButton size="lg">Large (lg)</PrismButton>
+                      </div>
+                    </GalleryItem>
+
+                    <GalleryItem label="Icon Buttons & Disabled States">
+                      <div className="flex flex-wrap items-center gap-3">
                         <PrismButton variant="default">
                           <IconSend className="size-5" />
                           Enviar
                         </PrismButton>
                         <PrismButton
+                          aria-label="Excluir item"
                           size="icon"
-                          title="Excluir item"
                           variant="ghost"
                         >
                           <IconTrash className="size-5 text-destructive" />
                         </PrismButton>
-                      </div>
-                    </GalleryItem>
-                    <GalleryItem label="Tamanhos (sm)">
-                      <div className="flex gap-2">
-                        <PrismButton size={"sm"} variant="default">
-                          Enviar
-                        </PrismButton>
                         <PrismButton
+                          aria-label="Confirmar"
                           size="icon-sm"
-                          title="Confirmar"
                           variant="secondary"
                         >
                           <IconCheckFilled className="size-5" />
+                        </PrismButton>
+                        <PrismButton isDisabled variant="default">
+                          Disabled
                         </PrismButton>
                       </div>
                     </GalleryItem>
@@ -384,32 +477,62 @@ function UIPage() {
                       title="PrismInput"
                     />
                     <GallerySectionContent>
-                      <GalleryItem label="Default Variant">
-                        <PrismInput
-                          label="Nome do Usuário"
-                          onChange={setInputValue}
-                          placeholder="Ex: Francisco Sousa"
-                          value={inputValue}
-                        />
+                      <GalleryItem label="Default Input (Simple)">
+                        <TextField onChange={setInputValue} value={inputValue}>
+                          <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+                            Nome do Usuário
+                          </Label>
+                          <PrismInput placeholder="Ex: Francisco Sousa" />
+                        </TextField>
                       </GalleryItem>
 
-                      <GalleryItem label="With Prefix & Suffix">
-                        <PrismInput
-                          label="Pesquisar Projetos"
-                          placeholder="Digite um termo..."
-                          prefix={
-                            <IconInfoCircle className="text-muted-foreground mx-3" />
-                          }
-                          suffix={
-                            <PrismButton
-                              className="rounded-l-none"
-                              size="icon"
-                              variant="ghost"
+                      <GalleryItem label="Input Group (With Prefix @)">
+                        <TextField>
+                          <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+                            Recuperar Usuário
+                          </Label>
+                          <PrismInputGroup>
+                            <PrismInputGroupAddon
+                              align="inline-start"
+                              className="[&_svg]:text-foreground/40 pl-4 pr-1"
                             >
-                              <IconSend />
-                            </PrismButton>
-                          }
-                        />
+                              <IconAt className="size-5" />
+                            </PrismInputGroupAddon>
+                            <PrismInputGroupInput
+                              className="px-3 h-full"
+                              placeholder="seu-username"
+                            />
+                          </PrismInputGroup>
+                        </TextField>
+                      </GalleryItem>
+
+                      <GalleryItem label="Input Group (Password Toggle)">
+                        <TextField>
+                          <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+                            Senha Secreta
+                          </Label>
+                          <PrismInputGroup>
+                            <PrismInputGroupAddon
+                              align="inline-start"
+                              className="[&_svg]:text-foreground/40 pl-4 pr-1"
+                            >
+                              <IconLock className="size-5" />
+                            </PrismInputGroupAddon>
+                            <PrismInputGroupInput
+                              className="px-3 h-full"
+                              placeholder="••••••••"
+                              type="password"
+                            />
+                            <PrismInputGroupAddon
+                              align="inline-end"
+                              className="pr-2 pl-1"
+                            >
+                              <PrismButton size="icon-sm" variant="ghost">
+                                <IconEye className="size-4" />
+                              </PrismButton>
+                            </PrismInputGroupAddon>
+                          </PrismInputGroup>
+                        </TextField>
                       </GalleryItem>
 
                       <GalleryItem
@@ -417,11 +540,12 @@ function UIPage() {
                         label="Disabled States"
                       >
                         <div className="grid md:grid-cols-2 gap-4">
-                          <PrismInput
-                            isDisabled
-                            label="E-mail (Desabilitado)"
-                            value="contato@cnvt.com.br"
-                          />
+                          <TextField isDisabled value="contato@cnvt.com.br">
+                            <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+                              E-mail (Desabilitado)
+                            </Label>
+                            <PrismInput />
+                          </TextField>
                         </div>
                       </GalleryItem>
                     </GallerySectionContent>
@@ -535,11 +659,196 @@ function UIPage() {
                     </GallerySectionContent>
                   </GallerySection>
                 </div>
+
+                {/* Seção: PrismMenu */}
+                <div id="prism-menu">
+                  <GallerySection>
+                    <GallerySectionHeader
+                      description="Dropdown Menu flutuante composto por itens clicáveis e divisores semânticos OKLCH."
+                      title="PrismMenu"
+                    />
+                    <GallerySectionContent>
+                      <GalleryItem label="Menu de Opções">
+                        <PrismMenu>
+                          <PrismButton variant="default">
+                            Ações do Perfil
+                          </PrismButton>
+                          <PrismMenuContent placement="bottom start">
+                            <PrismMenuItem
+                              onAction={() => alert("Minha Conta")}
+                            >
+                              Minha Conta
+                            </PrismMenuItem>
+                            <PrismMenuItem
+                              onAction={() => alert("Configurações")}
+                            >
+                              Configurações
+                            </PrismMenuItem>
+                            <PrismMenuSeparator />
+                            <PrismMenuItem
+                              className="text-destructive"
+                              onAction={() => alert("Sair")}
+                            >
+                              Sair
+                            </PrismMenuItem>
+                          </PrismMenuContent>
+                        </PrismMenu>
+                      </GalleryItem>
+                    </GallerySectionContent>
+                  </GallerySection>
+                </div>
+
+                {/* Seção: PrismDialog */}
+                <div id="prism-dialog">
+                  <GallerySection>
+                    <GallerySectionHeader
+                      description="Modais de caixa de diálogo com tratamento nativo de foco, acessibilidade e escurecimento do fundo."
+                      title="PrismDialog"
+                    />
+                    <GallerySectionContent>
+                      <GalleryItem label="Modal Simples">
+                        <PrismDialogTrigger>
+                          <PrismButton variant="default">
+                            Abrir Modal
+                          </PrismButton>
+                          <PrismDialogOverlay>
+                            <PrismDialogContent>
+                              <PrismDialogTitle>
+                                Título do Modal
+                              </PrismDialogTitle>
+                              <p className="text-sm text-muted-foreground mt-2">
+                                Este é um modal simples construído com o design
+                                system Prism do Uzzina.
+                              </p>
+                            </PrismDialogContent>
+                          </PrismDialogOverlay>
+                        </PrismDialogTrigger>
+                      </GalleryItem>
+                    </GallerySectionContent>
+                  </GallerySection>
+                </div>
+
+                {/* Seção: PrismCombobox */}
+                <div id="prism-combobox">
+                  <GallerySection>
+                    <GallerySectionHeader
+                      description="Inputs de seleção com preenchimento automático filtrado (Combobox/Autocomplete)."
+                      title="PrismCombobox"
+                    />
+                    <GallerySectionContent>
+                      <GalleryItem label="Combobox Simples">
+                        <PrismCombobox>
+                          <PrismComboboxInputGroup className="w-64">
+                            <PrismComboboxInput placeholder="Selecione um animal..." />
+                          </PrismComboboxInputGroup>
+                          <PrismComboboxDropdown>
+                            <PrismListBoxItem id="cat">
+                              🐱 Gato
+                            </PrismListBoxItem>
+                            <PrismListBoxItem id="dog">
+                              🐶 Cachorro
+                            </PrismListBoxItem>
+                            <PrismListBoxItem id="lion">
+                              🦁 Leão
+                            </PrismListBoxItem>
+                          </PrismComboboxDropdown>
+                        </PrismCombobox>
+                      </GalleryItem>
+
+                      <GalleryItem label="Combobox Múltiplo (Tags/Frutas)">
+                        <FruitsMultiSelect />
+                      </GalleryItem>
+                    </GallerySectionContent>
+                  </GallerySection>
+                </div>
               </div>
             </div>
           )}
         </main>
       </div>
+    </div>
+  );
+}
+function FruitsMultiSelect() {
+  const [selectedFruits, setSelectedFruits] = useState<string[]>([]);
+  const [query, setQuery] = useState("");
+  const fruitItems = [
+    {
+      id: "apple",
+      label: "🍎 Maçã",
+    },
+    {
+      id: "banana",
+      label: "🍌 Banana",
+    },
+    {
+      id: "grape",
+      label: "🍇 Uva",
+    },
+    {
+      id: "strawberry",
+      label: "🍓 Morango",
+    },
+    {
+      id: "watermelon",
+      label: "🍉 Melancia",
+    },
+  ];
+  const filteredItems = fruitItems.filter(
+    (item) =>
+      !selectedFruits.includes(item.id) &&
+      item.label.toLowerCase().includes(query.toLowerCase()),
+  );
+  return (
+    <div className="flex flex-col gap-2 w-80">
+      {/* Selected tags */}
+
+      <PrismCombobox
+        inputValue={query}
+        onInputChange={setQuery}
+        onSelectionChange={(key) => {
+          if (key) {
+            setSelectedFruits([...selectedFruits, key as string]);
+            setQuery("");
+          }
+        }}
+      >
+        <PrismComboboxInputGroup>
+          <PrismComboboxInput placeholder="Selecione frutas..." />
+        </PrismComboboxInputGroup>
+        <PrismComboboxDropdown>
+          {filteredItems.map((item) => (
+            <PrismListBoxItem key={item.id} id={item.id}>
+              {item.label}
+            </PrismListBoxItem>
+          ))}
+        </PrismComboboxDropdown>
+      </PrismCombobox>
+
+      {selectedFruits.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 p-1 bg-muted/20 border rounded-xl squircle">
+          {selectedFruits.map((fruitId) => {
+            const fruit = fruitItems.find((f) => f.id === fruitId);
+            return (
+              <button
+                key={fruitId}
+                className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-secondary hover:bg-secondary/80 text-foreground rounded-lg transition-colors border"
+                onClick={() =>
+                  setSelectedFruits(
+                    selectedFruits.filter((id) => id !== fruitId),
+                  )
+                }
+                type="button"
+              >
+                <span>{fruit?.label}</span>
+                <span className="text-muted-foreground hover:text-foreground">
+                  ×
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   CopyCheckIcon,
@@ -23,17 +24,17 @@ import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchAllLateActions } from "~/lib/supabase.queries";
 import { cn } from "~/lib/utils";
 import type { Action, Partner, Person } from "~/types";
-import { Button } from "../ui/button";
 import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "../ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+  PrismPopoverContent,
+  PrismCombobox,
+  PrismComboboxInput,
+  PrismListBox,
+  PrismListBoxItem,
+} from "~/components/old-prism";
+import { Button } from "../ui/button";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
+import { PrismButton } from "../prism";
 export function AppBar({
   partners,
   person,
@@ -75,145 +76,24 @@ export function AppBar({
   return (
     <div className="fixed bottom-4 left-1/2 z-20 flex -translate-x-1/2 justify-center">
       <div className="flex items-center gap-2 rounded-3xl border border-border bg-card/80 p-2 shadow-2xl backdrop-blur-xl squircle lg:gap-4">
-        {/* Slot 1: Flow */}
-        <Button asChild className={"rounded-xl"} variant={"ghost"}>
-          <Link title="Flow" to="/app/flow">
-            <Layers2Icon />
-          </Link>
-        </Button>
-        {/* Slot 2: Dropdown de Parceiros */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              className={cn(
-                "relative flex items-center justify-center rounded-2xl px-2 squircle",
-              )}
-              variant={partnerFilters.length > 0 ? "secondary" : "ghost"}
-            >
-              {activePartners.length > 0 ? (
-                <UAvatarGroup
-                  avatars={activePartners.map((partner) => ({
-                    fallback: partner.short,
-                    image: partner.image,
-                    backgroundColor: partner.colors[0],
-                    color: partner.colors[1],
-                  }))}
-                  clampAt={3}
-                  size={SIZE.sm}
-                />
-              ) : pagePartner ? (
-                <UAvatar
-                  backgroundColor={pagePartner.colors[0]}
-                  color={pagePartner.colors[1]}
-                  fallback={pagePartner.short}
-                  image={pagePartner.image}
-                  size={SIZE.sm}
-                />
-              ) : (
-                <HeartHandshakeIcon className="size-4" />
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            align="start"
-            className="mx-2 w-64 bg-popover/20 p-0 backdrop-blur-2xl"
-          >
-            <Command className="bg-transparent">
-              <CommandInput placeholder="Procurar parceiro..." />
-              <CommandList
-                className={cn(
-                  "p-2 outline-none",
-                  partnerFilters.length > 0 && "pb-8",
-                )}
-              >
-                <CommandEmpty>Nenhum parceiro encontrado.</CommandEmpty>
-                {partners.map((partner) => {
-                  const partnerLateActions = lateActions.filter((action) =>
-                    action.partners.includes(partner.slug),
-                  );
-                  const isFiltered = partnerFilters.includes(partner.slug);
-                  return (
-                    <CommandItem
-                      key={partner.id}
-                      className="group flex cursor-pointer items-center justify-between gap-2"
-                      onSelect={() => {
-                        navigate({
-                          to: "/app/partner/$slug",
-                          params: {
-                            slug: partner.slug,
-                          },
-                        });
-                      }}
-                    >
-                      <div className="flex items-center gap-2 overflow-hidden">
-                        <UAvatar
-                          backgroundColor={partner.colors[0]}
-                          color={partner.colors[1]}
-                          fallback={partner.short}
-                          image={partner.image}
-                          size={SIZE.sm}
-                        />
-                        <div className="truncate">{partner.title}</div>
-                      </div>
-
-                      <div
-                        className="flex items-center gap-1.5"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {partnerLateActions.length > 0 && (
-                          <UBadge
-                            isDynamic
-                            size="sm"
-                            value={partnerLateActions.length}
-                          />
-                        )}
-                        {isAtHome && (
-                          <Button
-                            className={cn(
-                              "absolute right-1 size-6 cursor-pointer bg-accent transition",
-                              !isFiltered
-                                ? "opacity-0 ring-black/5 group-hover:opacity-100 hover:bg-card hover:shadow-xs hover:ring max-sm:opacity-100"
-                                : "bg-card shadow-xs ring ring-black/5",
-                            )}
-                            onClick={() => {
-                              if (isFiltered) {
-                                setPartnerFilters(
-                                  partnerFilters.filter(
-                                    (s) => s !== partner.slug,
-                                  ),
-                                );
-                              } else {
-                                setPartnerFilters([
-                                  ...partnerFilters,
-                                  partner.slug,
-                                ]);
-                              }
-                            }}
-                            variant={isFiltered ? "secondary" : "ghost"}
-                          >
-                            <FilterIcon className="size-3.5" />
-                          </Button>
-                        )}
-                      </div>
-                    </CommandItem>
-                  );
-                })}
-                {partnerFilters.length > 0 && (
-                  <div className="absolute right-5 bottom-2 left-4 text-center">
-                    <Button
-                      className="z-1 h-6 w-full rounded-xl bg-foreground/50 text-xs text-background backdrop-blur-md"
-                      onClick={() => setPartnerFilters([])}
-                    >
-                      Limpar seleção
-                      <FilterXIcon className="ml-1" />
-                    </Button>
-                  </div>
-                )}
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
-
+        {/* Home */}
+        <Link
+          className="flex h-9 px-3 items-center justify-center rounded-lg hover:bg-accent hover:text-accent-foreground transition-all duration-200"
+          title="Flow"
+          to="/app/flow"
+        >
+          <Layers2Icon className="size-5" />
+        </Link>{" "}
+        <PartnerFilterPopover
+          activePartners={activePartners}
+          isAtHome={isAtHome}
+          lateActions={lateActions}
+          navigate={navigate}
+          pagePartner={pagePartner}
+          partnerFilters={partnerFilters}
+          partners={partners}
+          setPartnerFilters={setPartnerFilters}
+        />
         {/* Slot 3: Nova Ação OU BulkActionMenu */}
         <div className="flex items-center">
           {isSelectionMode ? (
@@ -239,7 +119,6 @@ export function AppBar({
             </Button>
           )}
         </div>
-
         {/* Slot 3: Multi-seleção Toggle */}
         <div className="flex items-center">
           {isSelectionMode ? (
@@ -265,7 +144,6 @@ export function AppBar({
             </Button>
           )}
         </div>
-
         {/* Slot 4: Busca / CmdK */}
         <Button
           className="size-10 rounded-xl"
@@ -277,5 +155,172 @@ export function AppBar({
         </Button>
       </div>
     </div>
+  );
+}
+interface PartnerFilterPopoverProps {
+  partners: Partner[];
+  partnerFilters: string[];
+  setPartnerFilters: (slugs: string[]) => void;
+  activePartners: Partner[];
+  pagePartner: Partner | null | undefined;
+  lateActions: Action[];
+  isAtHome: boolean;
+  navigate: ReturnType<typeof useNavigate>;
+}
+function PartnerFilterPopover({
+  partners,
+  partnerFilters,
+  setPartnerFilters,
+  activePartners,
+  pagePartner,
+  lateActions,
+  isAtHome,
+  navigate,
+}: PartnerFilterPopoverProps) {
+  const [partnerQuery, setPartnerQuery] = React.useState("");
+  const [isFilterMode, setIsFilterMode] = React.useState(false);
+  return (
+    <PrismCombobox
+      allowsEmptyCollection
+      inputValue={partnerQuery}
+      items={partners}
+      menuTrigger="focus"
+      onInputChange={setPartnerQuery}
+    >
+      <PrismButton
+        size="sm"
+        variant={partnerFilters.length > 0 ? "secondary" : "ghost"}
+      >
+        {activePartners.length > 0 ? (
+          <UAvatarGroup
+            avatars={activePartners.map((partner) => ({
+              fallback: partner.short,
+              image: partner.image,
+              backgroundColor: partner.colors[0],
+              color: partner.colors[1],
+            }))}
+            clampAt={3}
+            size={SIZE.sm}
+          />
+        ) : pagePartner ? (
+          <UAvatar
+            backgroundColor={pagePartner.colors[0]}
+            color={pagePartner.colors[1]}
+            fallback={pagePartner.short}
+            image={pagePartner.image}
+            size={SIZE.sm}
+          />
+        ) : (
+          <HeartHandshakeIcon />
+        )}
+      </PrismButton>
+      <PrismPopoverContent
+        className="mx-2 w-64 p-0 flex flex-col overflow-hidden"
+        placement="bottom start"
+      >
+        <div className="flex h-11 w-full items-center border-b bg-transparent px-3 gap-2">
+          <SearchIcon className="size-4 text-muted-foreground shrink-0" />
+          <PrismComboboxInput
+            className="flex h-full w-full bg-transparent text-xs text-foreground placeholder:text-muted-foreground/50 outline-none border-0"
+            placeholder="Procurar parceiro..."
+          />
+          {isAtHome && (
+            <button
+              className={cn(
+                "size-7 rounded-lg flex items-center justify-center border transition-colors shrink-0",
+                isFilterMode
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "hover:bg-secondary border-border text-muted-foreground",
+              )}
+              onClick={() => setIsFilterMode(!isFilterMode)}
+              title={isFilterMode ? "Modo Filtro Ativo" : "Ativar Modo Filtro"}
+              type="button"
+            >
+              <FilterIcon className="size-3.5" />
+            </button>
+          )}
+        </div>
+
+        <PrismListBox
+          aria-label="Filtro de parceiros"
+          className={cn(
+            "max-h-60 overflow-y-auto p-1",
+            partnerFilters.length > 0 && "pb-9",
+          )}
+        >
+          {(partner: Partner) => {
+            const partnerLateActions = lateActions.filter((action) =>
+              action.partners.includes(partner.slug),
+            );
+            const isSelected = partnerFilters.includes(partner.slug);
+            return (
+              <PrismListBoxItem
+                className={cn(
+                  "group flex justify-between items-center py-1.5",
+                  isFilterMode && isSelected && "bg-primary/10 text-primary",
+                )}
+                id={partner.slug}
+                onAction={() => {
+                  if (isFilterMode) {
+                    if (isSelected) {
+                      setPartnerFilters(
+                        partnerFilters.filter((s) => s !== partner.slug),
+                      );
+                    } else {
+                      setPartnerFilters([...partnerFilters, partner.slug]);
+                    }
+                  } else {
+                    navigate({
+                      to: "/app/partner/$slug",
+                      params: {
+                        slug: partner.slug,
+                      },
+                    });
+                  }
+                }}
+                textValue={partner.title}
+              >
+                <div className="flex flex-1 items-center gap-2 overflow-hidden">
+                  <UAvatar
+                    backgroundColor={partner.colors[0]}
+                    color={partner.colors[1]}
+                    fallback={partner.short}
+                    image={partner.image}
+                    size={SIZE.sm}
+                  />
+                  <div className="truncate text-sm">{partner.title}</div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  {partnerLateActions.length > 0 && (
+                    <UBadge
+                      isDynamic
+                      size="sm"
+                      value={partnerLateActions.length}
+                    />
+                  )}
+                  {isFilterMode && isSelected && (
+                    <div className="size-2 rounded-full bg-primary shrink-0 animate-in fade-in zoom-in" />
+                  )}
+                </div>
+              </PrismListBoxItem>
+            );
+          }}
+        </PrismListBox>
+
+        {partnerFilters.length > 0 && (
+          <div className="absolute right-2 bottom-1 left-2 text-center bg-popover/40 backdrop-blur-md pt-1.5 border-t border-t-border/20 z-10">
+            <button
+              className="z-10 h-7 w-full rounded-xl bg-foreground/60 hover:bg-foreground/80 text-[11px] font-semibold text-background flex items-center justify-center gap-1 transition-colors"
+              onClick={() => setPartnerFilters([])}
+              type="button"
+            >
+              Limpar seleção
+              <FilterXIcon className="size-3.5" />
+            </button>
+          </div>
+        )}
+      </PrismPopoverContent>
+    </PrismCombobox>
   );
 }

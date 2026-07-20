@@ -27,10 +27,10 @@ import {
   InputGroupInput,
 } from "~/components/ui/input-group";
 import {
-  PrismButton,
   PrismPopover,
   PrismPopoverContent,
-} from "~/components/prism";
+} from "~/components/old-prism";
+import { PrismButton } from "~/components/prism";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { useAppTheme } from "~/hooks/useAppTheme";
@@ -193,8 +193,8 @@ function PartnerPage() {
               <PrismPopover>
                 <PrismButton
                   className="isolate -mt-4 -ml-4 cursor-pointer outline-none select-none"
-                  variant="unstyled"
                   size="unstyled"
+                  variant="unstyled"
                 >
                   <UBadge isDynamic value={lateCount} />
                 </PrismButton>

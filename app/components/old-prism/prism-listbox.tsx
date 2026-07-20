@@ -34,9 +34,9 @@ export function PrismListBoxItem<T extends object>({
     <RAListBoxItem
       className={(renderProps) =>
         cn(
-          "flex w-full items-center gap-2 px-3 py-2 rounded-xl squircle cursor-pointer outline-none transition-colors",
-          "data-focused:bg-secondary data-focused:text-foreground text-muted-foreground hover:text-foreground",
-          "data-selected:bg-primary/10 data-selected:text-primary",
+          "flex justify-between w-full items-center gap-2 px-3 py-2 rounded-xl squircle cursor-pointer outline-none transition-colors",
+          "data-focused:bg-secondary data-focused:text-foreground text-muted-foreground data-hovered:text-foreground data-hovered:bg-secondary",
+          "data-selected:bg-primary data-selected:text-primary",
           "data-disabled:pointer-events-none data-disabled:opacity-50",
           typeof className === "function" ? className(renderProps) : className,
         )

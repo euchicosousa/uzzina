@@ -1,29 +1,6 @@
-export { PrismButton } from "./prism-button";
-export { PrismInput } from "./prism-input";
-export { PrismAlert, PrismAlertTitle, PrismAlertDescription } from "./prism-alert";
-export { PrismPopover, PrismPopoverTrigger, PrismPopoverContent } from "./prism-popover";
-export {
-  PrismMenu,
-  PrismMenuTrigger,
-  PrismMenuContent,
-  PrismMenuItem,
-  PrismMenuSeparator,
-} from "./prism-menu";
-export {
-  PrismDialogTrigger,
-  PrismDialogOverlay,
-  PrismDialogContent,
-  PrismDialogTitle,
-} from "./prism-dialog";
-export {
-  PrismListBox,
-  PrismListBoxItem,
-  PrismListBoxSection,
-  PrismListBoxHeader,
-} from "./prism-listbox";
-export {
-  PrismCombobox,
-  PrismComboboxInputGroup,
-  PrismComboboxInput,
-  PrismComboboxDropdown,
-} from "./prism-combobox";
+export { Button as PrismButton } from "./button";
+export { PrismInput } from "./input";
+export { InputGroup as PrismInputGroup, InputGroupAddon as PrismInputGroupAddon, InputGroupButton as PrismInputGroupButton, InputGroupInput as PrismInputGroupInput, InputGroupText as PrismInputGroupText } from "./input-group";
+export { Textarea as PrismTextarea } from "./textarea";
+export { ButtonGroup as PrismButtonGroup, ButtonGroupSeparator as PrismButtonGroupSeparator, ButtonGroupText as PrismButtonGroupText } from "./button-group";
+export { Separator as PrismSeparator } from "./separator";
