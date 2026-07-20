@@ -20,6 +20,7 @@ import {
   IconPaletteFilled,
   IconCategory,
   IconCategoryFilled,
+  IconCheckFilled,
 } from "@tabler/icons-react";
 import cn from "cnfast";
 export const Route = createFileRoute("/ui")({
@@ -358,6 +359,20 @@ function UIPage() {
                         </PrismButton>
                       </div>
                     </GalleryItem>
+                    <GalleryItem label="Tamanhos (sm)">
+                      <div className="flex gap-2">
+                        <PrismButton size={"sm"} variant="default">
+                          Enviar
+                        </PrismButton>
+                        <PrismButton
+                          size="icon-sm"
+                          title="Confirmar"
+                          variant="secondary"
+                        >
+                          <IconCheckFilled className="size-5" />
+                        </PrismButton>
+                      </div>
+                    </GalleryItem>
                   </GallerySectionContent>
                 </GallerySection>
 
@@ -561,11 +576,7 @@ function GallerySectionContent({
   children,
   className,
 }: GallerySectionContentProps) {
-  return (
-    <div className={className || "flex flex-wrap gap-8 items-center"}>
-      {children}
-    </div>
-  );
+  return <div className={className || "flex flex-wrap gap-8"}>{children}</div>;
 }
 interface GalleryItemProps {
   children: React.ReactNode;

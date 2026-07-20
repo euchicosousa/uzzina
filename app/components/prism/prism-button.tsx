@@ -14,7 +14,9 @@ const prismButtonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground data-[hovered]:bg-primary/90 data-[pressed]:scale-[0.97]",
+          "bg-primary text-primary-foreground data-[hovered]:bg-primary/70 data-[pressed]:scale-[0.97]",
+        secondary:
+          "bg-secondary text-secondary-foreground data-[hovered]:bg-secondary/70 data-[pressed]:scale-[0.97]",
         ghost:
           "hover:bg-accent hover:text-accent-foreground data-[hovered]:bg-accent/50 data-[pressed]:bg-accent/70 data-[pressed]:scale-[0.97]",
         unstyled:
@@ -22,8 +24,9 @@ const prismButtonVariants = cva(
       },
       size: {
         default: "h-12 px-5",
-        icon: "size-12 rounded-xl squircle",
-        "icon-sm": "size-9 rounded-lg squircle",
+        sm: "h-9 px-3 rounded-lg",
+        icon: "size-12",
+        "icon-sm": "size-9 rounded-lg",
         unstyled: "",
       },
     },
@@ -43,6 +46,7 @@ export interface PrismButtonProps
     VariantProps<typeof prismButtonVariants> {
   className?: string | ((values: ButtonRenderProps) => string);
   children?: React.ReactNode;
+  size?: "default" | "sm" | "icon" | "icon-sm" | "unstyled";
 }
 export const PrismButton = React.forwardRef<
   HTMLButtonElement,

@@ -24,6 +24,7 @@ import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { cn } from "~/lib/utils";
 import type { Partner } from "~/types";
 import { AppContext } from "~/contexts/AppContext";
+import { UZZINALogo } from "~/components/logo";
 export const Route = createFileRoute("/app")({
   component: Dashboard,
 });
@@ -131,10 +132,11 @@ function Dashboard() {
   if (loading || !person) {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center bg-background gap-4">
-        <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        <p className="text-muted-foreground text-xl animate-pulse">
+        <UZZINALogo className="h-24 scale-down" model="logo" />
+        {/* <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+         <p className="text-muted-foreground text-xl animate-pulse">
           Carregando UZZINA...
-        </p>
+         </p> */}
       </div>
     );
   }
