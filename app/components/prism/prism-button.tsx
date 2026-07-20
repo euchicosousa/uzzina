@@ -1,3 +1,4 @@
+import * as React from "react";
 import {
   Button as RAButton,
   type ButtonProps as RAButtonProps,
@@ -16,10 +17,14 @@ const prismButtonVariants = cva(
           "bg-primary text-primary-foreground data-[hovered]:bg-primary/90 data-[pressed]:scale-[0.97]",
         ghost:
           "hover:bg-accent hover:text-accent-foreground data-[hovered]:bg-accent/50 data-[pressed]:bg-accent/70 data-[pressed]:scale-[0.97]",
+        unstyled:
+          "bg-transparent text-inherit p-0 rounded-none squircle-none data-[pressed]:scale-100",
       },
       size: {
         default: "h-12 px-5",
         icon: "size-12 rounded-xl squircle",
+        "icon-sm": "size-9 rounded-lg squircle",
+        unstyled: "",
       },
     },
     defaultVariants: {
@@ -39,14 +44,13 @@ export interface PrismButtonProps
   className?: string | ((values: ButtonRenderProps) => string);
   children?: React.ReactNode;
 }
-export function PrismButton({
-  className,
-  variant,
-  size,
-  ...props
-}: PrismButtonProps) {
+export const PrismButton = React.forwardRef<
+  HTMLButtonElement,
+  PrismButtonProps
+>(({ className, variant, size, ...props }, ref) => {
   return (
     <RAButton
+      ref={ref}
       className={(renderProps) =>
         cn(
           prismButtonVariants({
@@ -62,4 +66,5 @@ export function PrismButton({
       {...props}
     />
   );
-}
+});
+PrismButton.displayName = "PrismButton";

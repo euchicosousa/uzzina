@@ -32,17 +32,11 @@ import { cn } from "~/lib/utils";
 import type { Notification } from "~/types";
 import { DashboardMetrics } from "../features/home/DashboardMetrics";
 import { UZZINALogo } from "../logo";
-import { Button } from "../ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+  PrismButton,
+  PrismPopover,
+  PrismPopoverContent,
+} from "~/components/prism";
 import { UAvatar } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
 const DEFAULT_PARTNER_FILTERS: string[] = [];
@@ -205,35 +199,31 @@ export function Header({
       </div>
 
       <div className="flex items-center gap-2">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              className="relative rounded-full"
-              size="icon"
-              variant="ghost"
-            >
-              <BellIcon className="size-5" />
-              {unreadCount > 0 ? (
-                <UBadge
-                  className="absolute -top-1 -right-1"
-                  isDynamic
-                  size="sm"
-                  value={unreadCount}
-                />
-              ) : null}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            align="end"
-            className="w-80 overflow-hidden rounded-2xl border border-border bg-popover/20 p-0 shadow-xl backdrop-blur-lg"
+        <PrismPopover>
+          <PrismButton
+            className="relative rounded-full"
+            size="icon-sm"
+            variant="ghost"
+          >
+            <BellIcon className="size-5" />
+            {unreadCount > 0 ? (
+              <UBadge
+                className="absolute -top-1 -right-1"
+                isDynamic
+                size="sm"
+                value={unreadCount}
+              />
+            ) : null}
+          </PrismButton>
+          <PrismPopoverContent
+            className="w-80 overflow-hidden rounded-2xl p-0"
+            placement="bottom end"
           >
             <div className="flex items-center justify-between border-b bg-muted/20 px-4 py-3">
-              <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                Notificações
-              </span>
+              <h5>Notificações</h5>
               {unreadCount > 0 && (
                 <button
-                  className="text-xs font-medium text-primary transition-colors hover:underline"
+                  className="text-sm text-primary transition-colors hover:underline"
                   onClick={() => markAllAsRead()}
                   type="button"
                 >
@@ -243,7 +233,7 @@ export function Header({
             </div>
             <div className="max-h-[300px] divide-y divide-border overflow-y-auto">
               {notifications.length === 0 ? (
-                <div className="p-8 text-center text-xs text-muted-foreground">
+                <div className="p-8 text-center text-sm">
                   Você não tem nenhuma notificação.
                 </div>
               ) : (
@@ -251,24 +241,28 @@ export function Header({
                   <button
                     key={notif.id}
                     className={cn(
-                      "flex w-full flex-col gap-1 p-4 text-left transition hover:bg-muted/50",
-                      !notif.read_at && "bg-primary/5",
+                      "flex w-full flex-col gap-1 py-2 px-4 text-left transition hover:bg-card",
+                      !notif.read_at && "bg-card",
                     )}
                     onClick={() => handleNotificationClick(notif)}
                     type="button"
                   >
-                    <div className="flex w-full items-start justify-between gap-2">
-                      <span className="text-xs font-semibold text-foreground">
-                        {notif.author_name} mencionou você
+                    <div className="flex w-full items-start justify-between gap-1">
+                      <span className="text-sm tracking-tight text-foreground/80">
+                        <span className="font-bold">{notif.author_name}</span>{" "}
+                        mencionou você na ação{" "}
+                        <span className="font-bold">{notif.action_title}</span>{" "}
+                        às{" "}
+                        <span className="font-bold">
+                          {format(notif.created_at, "hh'h'mm 'de' dd/MM/yyyy")}
+                        </span>
                       </span>
                       {!notif.read_at && (
                         <span className="mt-1 size-2 shrink-0 rounded-full bg-primary" />
                       )}
                     </div>
-                    <span className="line-clamp-1 text-[11px] font-medium text-muted-foreground">
-                      na ação: {notif.action_title}
-                    </span>
-                    <p className="mt-1 line-clamp-2 rounded-lg border border-border/50 bg-muted/30 p-2 text-xs text-foreground/80">
+
+                    <p className="mt-1 line-clamp-2 border-l pl-2 text-sm text-foreground/60">
                       {notif.comment_excerpt
                         ? notif.comment_excerpt.replace(/<[^>]*>/g, "")
                         : ""}
@@ -279,14 +273,14 @@ export function Header({
             </div>
             <div className="border-t bg-muted/10 p-2 text-center">
               <Link
-                className="block w-full py-1.5 text-xs font-semibold text-primary hover:underline"
+                className="block w-full py-1 text-sm hover:underline"
                 to="/app/notifications"
               >
                 Ver todas as notificações →
               </Link>
             </div>
-          </PopoverContent>
-        </Popover>
+          </PrismPopoverContent>
+        </PrismPopover>
 
         <HeaderMenu person={person} />
       </div>
@@ -310,20 +304,22 @@ const HeaderMenu = ({ person }: { person: Person }) => {
     }
     debounceTimerRef.current = setTimeout(async () => {
       const supabase = createSupabaseBrowserClient();
-      const currentPrefs = (person.preferences && typeof person.preferences === "object" && !Array.isArray(person.preferences))
-        ? (person.preferences as Record<string, unknown>)
-        : {};
-      
+      const currentPrefs =
+        person.preferences &&
+        typeof person.preferences === "object" &&
+        !Array.isArray(person.preferences)
+          ? (person.preferences as Record<string, unknown>)
+          : {};
       const updatedPrefs: Record<string, unknown> = {
         ...currentPrefs,
         ...pendingPrefsRef.current,
       };
-
       const { error } = await supabase
         .from("people")
-        .update({ preferences: updatedPrefs as unknown as Json })
+        .update({
+          preferences: updatedPrefs as unknown as Json,
+        })
         .eq("user_id", person.user_id);
-
       if (error) {
         console.error("Error updating preferences:", error);
       }
@@ -343,37 +339,65 @@ const HeaderMenu = ({ person }: { person: Person }) => {
     queuePreference("followPartnerColor", value);
   };
   return (
-    <DropdownMenu>
+    <PrismPopover>
       {/* Perfil */}
-      <DropdownMenuTrigger
+      <PrismButton
         aria-label="Menu do perfil do usuário"
-        className="relative outline-none"
+        className="relative rounded-full"
+        size="unstyled"
+        variant="unstyled"
       >
         <UAvatar fallback={person.short} image={person.image} size={SIZE.md} />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="mx-2 bg-popover/20 backdrop-blur-lg">
+      </PrismButton>
+      <PrismPopoverContent
+        className="w-64 overflow-hidden rounded-3xl p-2 bg-popover shadow-xl border flex flex-col gap-1"
+        placement="bottom end"
+      >
         {theme === Theme.DARK ? (
-          <DropdownMenuItem onClick={() => changeTheme(Theme.LIGHT)}>
-            {getThemeIcon(Theme.LIGHT, "size-4")} Tema claro
-          </DropdownMenuItem>
+          <PrismButton
+            className="font-medium text-muted-foreground hover:text-foreground hover:bg-secondary justify-between w-full h-9 px-3"
+            onClick={() => changeTheme(Theme.LIGHT)}
+            variant="ghost"
+          >
+            <span>Tema claro</span>
+            {getThemeIcon(Theme.LIGHT, "size-4")}
+          </PrismButton>
         ) : (
-          <DropdownMenuItem onClick={() => changeTheme(Theme.DARK)}>
-            {getThemeIcon(Theme.DARK, "size-4")} Tema escuro
-          </DropdownMenuItem>
+          <PrismButton
+            className="font-medium text-muted-foreground hover:text-foreground hover:bg-secondary justify-between w-full h-9 px-3"
+            onClick={() => changeTheme(Theme.DARK)}
+            variant="ghost"
+          >
+            Tema escuro
+            {getThemeIcon(Theme.DARK, "size-4")}
+          </PrismButton>
         )}
+        <PrismButton
+          className={cn(
+            "w-full justify-between font-medium text-muted-foreground hover:text-foreground hover:bg-secondary h-9 px-3",
+            followPartnerColor ? "bg-secondary" : "",
+          )}
+          onClick={() => changeFollowPartner(!followPartnerColor)}
+          variant="ghost"
+        >
+          Cores do parceiro
+          {followPartnerColor ? <CheckIcon className="size-4" /> : null}
+        </PrismButton>
+
+        <hr className="my-1 -mx-2" />
         <div className="grid grid-cols-6 justify-between p-2">
           {PALLETE.map((paletteConfig, i) => {
             const { light, dark } = paletteConfig;
             const currentColors = theme === Theme.DARK ? dark : light;
             const isSelected = primaryColorIndex === i;
             return (
-              <button
+              <PrismButton
                 key={paletteConfig.id}
-                aria-label={`Paleta ${paletteConfig.label}`}
-                className="flex justify-center rounded-xl p-2 squircle hover:opacity-80"
+                className="flex justify-center rounded-xl p-2 squircle"
                 onClick={() => {
                   changeColorIndex(i);
                 }}
+                size="icon-sm"
                 style={{
                   backgroundColor: isSelected
                     ? `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`
@@ -381,102 +405,113 @@ const HeaderMenu = ({ person }: { person: Person }) => {
                 }}
                 title={paletteConfig.label}
                 type="button"
+                variant={"ghost"}
               >
                 <div
-                  className={`size-4 rounded-lg`}
+                  className="size-4 rounded-lg"
                   style={{
                     backgroundColor: isSelected
                       ? `oklch(${currentColors.bg.l} ${currentColors.bg.c} ${currentColors.bg.h})`
                       : `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`,
                   }}
-                ></div>
-              </button>
+                />
+              </PrismButton>
             );
           })}
         </div>
-        <DropdownMenuItem
-          className={cn(
-            "flex items-center justify-between",
-            followPartnerColor ? "bg-secondary" : "",
-          )}
-          onClick={() => changeFollowPartner(!followPartnerColor)}
+
+        <hr className="my-1 -mx-2" />
+
+        <Link
+          className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+          to="/app/profile"
         >
-          Cores do parceiro
-          {followPartnerColor ? <CheckIcon /> : null}
-        </DropdownMenuItem>
-
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem asChild>
-          <Link to="/app/profile">Minha Conta</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
+          Minha Conta
+        </Link>
+        <PrismButton
+          className="w-full justify-start font-medium text-destructive hover:bg-destructive/10 focus:bg-destructive/10 h-9 px-3"
           onClick={async () => {
             const supabase = createSupabaseBrowserClient();
             await supabase.auth.signOut();
           }}
+          variant="ghost"
         >
           Sair
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link to="/app/help">Ajuda & Documentação</Link>
-        </DropdownMenuItem>
+        </PrismButton>
+
+        <hr className="my-1 -mx-2" />
+
+        <Link
+          className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+          to="/app/help"
+        >
+          Ajuda & Documentação
+        </Link>
 
         {person.admin && (
-          <DropdownMenuGroup className="-mx-1 -mb-1 bg-secondary px-1 pb-1">
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel>Admin</DropdownMenuLabel>
+          <div className="bg-card px-2 pb-2 rounded-b-xl -mx-2 -mb-2 mt-1">
+            <hr className="mb-2 -mx-2" />
+            <div className="px-3 py-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              Admin
+            </div>
 
-            <DropdownMenuItem asChild>
-              <Link to="/app/admin/partners">Parceiros</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                params={{
-                  slug: "new",
-                }}
-                to="/app/admin/partner/$slug"
-              >
-                Novo Parceiro
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to="/app/admin/users">Usuários</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                params={{
-                  userId: "new",
-                }}
-                to="/app/admin/user/$userId"
-              >
-                Novo Usuário
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to="/app/admin/clients">Clientes</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                params={{
-                  userId: "new",
-                }}
-                to="/app/admin/client/$userId"
-              >
-                Novo Cliente
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to="/app/admin/celebrations">Datas Comemorativas</Link>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
+            <Link
+              className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              to="/app/admin/partners"
+            >
+              Parceiros
+            </Link>
+            <Link
+              className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              params={{
+                slug: "new",
+              }}
+              to="/app/admin/partner/$slug"
+            >
+              Novo Parceiro
+            </Link>
+            <hr className="my-2 -mx-2" />
+            <Link
+              className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              to="/app/admin/users"
+            >
+              Usuários
+            </Link>
+            <Link
+              className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              params={{
+                userId: "new",
+              }}
+              to="/app/admin/user/$userId"
+            >
+              Novo Usuário
+            </Link>
+            <hr className="my-2 -mx-2" />
+            <Link
+              className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              to="/app/admin/clients"
+            >
+              Clientes
+            </Link>
+            <Link
+              className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              params={{
+                userId: "new",
+              }}
+              to="/app/admin/client/$userId"
+            >
+              Novo Cliente
+            </Link>
+            <hr className="my-2 -mx-2" />
+            <Link
+              className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              to="/app/admin/celebrations"
+            >
+              Datas Comemorativas
+            </Link>
+          </div>
         )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </PrismPopoverContent>
+    </PrismPopover>
   );
 };

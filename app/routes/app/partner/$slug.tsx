@@ -27,10 +27,10 @@ import {
   InputGroupInput,
 } from "~/components/ui/input-group";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
+  PrismButton,
+  PrismPopover,
+  PrismPopoverContent,
+} from "~/components/prism";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { useAppTheme } from "~/hooks/useAppTheme";
@@ -46,28 +46,22 @@ import {
   fetchPartnerActions,
 } from "~/lib/supabase.queries";
 import { z } from "zod";
-
 const partnerSearchSchema = z.object({
   date: z.string().optional(),
   skip_actions: z.string().optional(),
 });
-
 export const Route = createFileRoute("/app/partner/$slug")({
   validateSearch: partnerSearchSchema,
   component: PartnerPage,
 });
-
 import { useAppContext } from "~/contexts/AppContext";
 import type { Partner } from "~/types";
-
 function PartnerPage() {
   const { slug } = Route.useParams();
   const { person, partners } = useAppContext();
-  
   const partner = partners.find((p: Partner) => p.slug === slug);
   const partnerSlug = partner?.slug || "";
   const partnerColors = partner?.colors || [];
-
   const searchParams = Route.useSearch();
   let dateParam = searchParams.date;
   const skipActions = searchParams.skip_actions === "true";
@@ -82,7 +76,6 @@ function PartnerPage() {
   const end = endOfDay(endOfWeek(endOfMonth(parseISO(dateParam))));
   const startDateFormatted = format(start, "yyyy-MM-dd HH:mm:ss");
   const endDateFormatted = format(end, "yyyy-MM-dd HH:mm:ss");
-
   const queryClient = useQueryClient();
   const dateRange = `${startDateFormatted}_${endDateFormatted}`;
   const { data: currentActions = [] } = useQuery({
@@ -120,9 +113,7 @@ function PartnerPage() {
         partners.map((p: Partner) => p.slug),
       ),
     select: (allLateActions) =>
-      allLateActions.filter((action) =>
-        action.partners?.includes(partnerSlug),
-      ),
+      allLateActions.filter((action) => action.partners?.includes(partnerSlug)),
     enabled: !skipActions && !!partnerSlug,
   });
   const { setBaseAction } = useAppContext();
@@ -171,11 +162,12 @@ function PartnerPage() {
     (action) => action.phase !== PHASES.idea.slug,
   );
   const lateCount = currentLateActions.length;
-  const navigate = useNavigate({ from: "/app/partner/$slug" });
+  const navigate = useNavigate({
+    from: "/app/partner/$slug",
+  });
   const [view, setView] = useState<"calendar" | "feed">(
     preferences.showInstagramSidebar ? "feed" : "calendar",
   );
-
   if (!partner) {
     return (
       <div className="flex h-full w-full items-center justify-center text-muted-foreground">
@@ -198,34 +190,36 @@ function PartnerPage() {
               size={SIZE.md}
             />
             {lateCount > 0 && (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    className="isolate -mt-4 -ml-4 cursor-pointer outline-none select-none"
-                    type="button"
-                  >
-                    <UBadge isDynamic value={lateCount} />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent
-                  align="start"
-                  className="max-h-[400px] w-[380px] overflow-y-auto bg-popover/50 p-4 backdrop-blur-lg"
+              <PrismPopover>
+                <PrismButton
+                  className="isolate -mt-4 -ml-4 cursor-pointer outline-none select-none"
+                  variant="unstyled"
+                  size="unstyled"
                 >
-                  <h3 className="text-lg tracking-normal">
-                    Ações Atrasadas ({lateCount})
-                  </h3>
+                  <UBadge isDynamic value={lateCount} />
+                </PrismButton>
+                <PrismPopoverContent
+                  className="max-h-[400px] w-[380px] overflow-y-auto space-y-4"
+                  placement="bottom start"
+                >
+                  <h5>Ações Atrasadas ({lateCount})</h5>
                   <ActionContainer
                     actions={currentLateActions}
                     onClick={(action) => setBaseAction?.(action)}
                     variant="line"
                   />
-                </PopoverContent>
-              </Popover>
+                </PrismPopoverContent>
+              </PrismPopover>
             )}
             <div className="hidden truncate p-0 py-2 text-lg font-medium sm:block">
               {partner.title}
             </div>
-            <Link to="/app/admin/partner/$slug" params={{ slug: partner.slug }}>
+            <Link
+              params={{
+                slug: partner.slug,
+              }}
+              to="/app/admin/partner/$slug"
+            >
               {person.admin && <SettingsIcon className="size-5" />}
             </Link>
           </div>
