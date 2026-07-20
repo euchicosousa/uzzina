@@ -217,17 +217,18 @@ export function GlobalSearchCommand({
               </div>
             )}
           </div>
-
-          <div className="flex items-center justify-center border-t p-2">
-            <UToggleInput
-              checked={includeArchived}
-              className="w-auto scale-90 px-3 py-1 opacity-70 hover:opacity-100"
-              id="searchArchived"
-              onCheckedChange={(checked) => setIncludeArchived(checked)}
-            >
-              <ArchiveIcon className="size-4" /> Ações arquivadas
-            </UToggleInput>
-          </div>
+          {searchedActions.length > 0 && (
+            <div className="flex items-center justify-center border-t p-2">
+              <UToggleInput
+                checked={includeArchived}
+                className="w-auto scale-90 px-3 py-1 opacity-70 hover:opacity-100"
+                id="searchArchived"
+                onCheckedChange={(checked) => setIncludeArchived(checked)}
+              >
+                <ArchiveIcon className="size-4" /> Ações arquivadas
+              </UToggleInput>
+            </div>
+          )}
         </PrismCombobox>
       </PrismDialogContent>
     </PrismDialogOverlay>
