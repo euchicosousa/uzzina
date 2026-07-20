@@ -4,3 +4,18 @@ export { InputGroup as PrismInputGroup, InputGroupAddon as PrismInputGroupAddon,
 export { Textarea as PrismTextarea } from "./textarea";
 export { ButtonGroup as PrismButtonGroup, ButtonGroupSeparator as PrismButtonGroupSeparator, ButtonGroupText as PrismButtonGroupText } from "./button-group";
 export { Separator as PrismSeparator } from "./separator";
+export { PrismAlert, PrismAlertTitle, PrismAlertDescription, PrismAlertAction } from "./alert";
+export { PrismPopover, PrismPopoverTrigger, PrismPopoverHeader, PrismPopoverTitle, PrismPopoverDescription } from "./popover";
+export {
+  PrismMenu,
+  PrismMenuTrigger,
+  PrismMenuContent,
+  PrismMenuItem,
+  PrismMenuSeparator,
+  PrismMenuLabel,
+  PrismMenuGroup,
+  PrismMenuSub,
+  PrismMenuSubTrigger,
+  PrismMenuSubContent,
+  PrismMenuShortcut,
+} from "./dropdown-menu";

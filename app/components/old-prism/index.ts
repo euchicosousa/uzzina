@@ -1,12 +1,3 @@
-export { PrismAlert, PrismAlertTitle, PrismAlertDescription } from "./prism-alert";
-export { PrismPopover, PrismPopoverTrigger, PrismPopoverContent } from "./prism-popover";
-export {
-  PrismMenu,
-  PrismMenuTrigger,
-  PrismMenuContent,
-  PrismMenuItem,
-  PrismMenuSeparator,
-} from "./prism-menu";
 export {
   PrismDialogTrigger,
   PrismDialogOverlay,

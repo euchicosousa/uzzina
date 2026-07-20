@@ -10,17 +10,15 @@ import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { TextField, Label } from "react-aria-components";
 import { toast } from "sonner";
 import { UZZINALogo } from "~/components/logo";
-import {
-  PrismAlert,
-  PrismAlertTitle,
-  PrismAlertDescription,
-} from "~/components/old-prism";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
   PrismButton,
   PrismInputGroup,
   PrismInputGroupAddon,
   PrismInputGroupInput,
+  PrismAlert,
+  PrismAlertTitle,
+  PrismAlertDescription,
 } from "~/components/prism";
 export const Route = createFileRoute("/reset-password")({
   component: ResetPassword,

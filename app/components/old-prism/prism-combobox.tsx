@@ -7,7 +7,7 @@ import {
   Group as RAGroup,
 } from "react-aria-components";
 import { cn } from "~/lib/utils";
-import { PrismPopoverContent } from "./prism-popover";
+import { PrismPopover } from "~/components/prism";
 import { PrismListBox } from "./prism-listbox";
 export interface PrismComboboxProps<T extends object> extends Omit<
   RAComboBoxProps<T>,
@@ -86,7 +86,7 @@ export function PrismComboboxDropdown<T extends object>({
   items,
 }: PrismComboboxDropdownProps<T>) {
   return (
-    <PrismPopoverContent
+    <PrismPopover
       className={cn(
         "w-[280px] overflow-hidden rounded-2xl p-1 bg-popover shadow-xl border border-border",
         popoverClassName,
@@ -96,6 +96,6 @@ export function PrismComboboxDropdown<T extends object>({
       <PrismListBox className={listBoxClassName} items={items}>
         {children}
       </PrismListBox>
-    </PrismPopoverContent>
+    </PrismPopover>
   );
 }

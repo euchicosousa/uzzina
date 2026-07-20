@@ -14,6 +14,7 @@ import {
 import { BellIcon, CheckIcon } from "lucide-react";
 import { useMemo, useRef } from "react";
 import { toast } from "sonner";
+import type { Json } from "types/database";
 import { Theme, useTheme } from "~/components/theme-provider";
 import { useAppContext } from "~/contexts/AppContext";
 import { useAppTheme } from "~/hooks/useAppTheme";
@@ -27,15 +28,13 @@ import {
   fetchHomeActions,
   fetchPartnerActions,
 } from "~/lib/supabase.queries";
-import type { Json } from "types/database";
 import { cn } from "~/lib/utils";
 import type { Notification } from "~/types";
 import { DashboardMetrics } from "../features/home/DashboardMetrics";
 import { UZZINALogo } from "../logo";
-import { PrismPopover, PrismPopoverContent } from "~/components/old-prism";
+import { PrismButton, PrismPopover, PrismPopoverTrigger } from "../prism";
 import { UAvatar } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
-import { PrismButton } from "../prism";
 const DEFAULT_PARTNER_FILTERS: string[] = [];
 export function Header({
   person,
@@ -212,7 +211,7 @@ export function Header({
               />
             ) : null}
           </PrismButton>
-          <PrismPopoverContent
+          <PrismPopover
             className="w-80 overflow-hidden rounded-2xl p-0"
             placement="bottom end"
           >
@@ -276,7 +275,7 @@ export function Header({
                 Ver todas as notificações →
               </Link>
             </div>
-          </PrismPopoverContent>
+          </PrismPopover>
         </PrismPopover>
 
         <HeaderMenu person={person} />
@@ -336,7 +335,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
     queuePreference("followPartnerColor", value);
   };
   return (
-    <PrismPopover>
+    <PrismPopoverTrigger>
       {/* Perfil */}
       <PrismButton
         aria-label="Menu do perfil do usuário"
@@ -346,7 +345,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
       >
         <UAvatar fallback={person.short} image={person.image} size={SIZE.md} />
       </PrismButton>
-      <PrismPopoverContent
+      <PrismPopover
         className="w-64 overflow-hidden rounded-3xl p-2 bg-popover shadow-xl border flex flex-col gap-1"
         placement="bottom end"
       >
@@ -508,7 +507,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
             </Link>
           </div>
         )}
-      </PrismPopoverContent>
-    </PrismPopover>
+      </PrismPopover>
+    </PrismPopoverTrigger>
   );
 };

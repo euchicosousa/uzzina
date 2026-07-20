@@ -25,7 +25,6 @@ import { fetchAllLateActions } from "~/lib/supabase.queries";
 import { cn } from "~/lib/utils";
 import type { Action, Partner, Person } from "~/types";
 import {
-  PrismPopoverContent,
   PrismCombobox,
   PrismComboboxInput,
   PrismListBox,
@@ -34,7 +33,7 @@ import {
 import { Button } from "../ui/button";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
-import { PrismButton } from "../prism";
+import { PrismButton, PrismPopover } from "../prism";
 export function AppBar({
   partners,
   person,
@@ -214,7 +213,7 @@ function PartnerFilterPopover({
           <HeartHandshakeIcon />
         )}
       </PrismButton>
-      <PrismPopoverContent
+      <PrismPopover
         className="mx-2 w-64 p-0 flex flex-col overflow-hidden"
         placement="bottom start"
       >
@@ -320,7 +319,7 @@ function PartnerFilterPopover({
             </button>
           </div>
         )}
-      </PrismPopoverContent>
+      </PrismPopover>
     </PrismCombobox>
   );
 }

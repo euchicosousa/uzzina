@@ -26,11 +26,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "~/components/ui/input-group";
-import {
-  PrismPopover,
-  PrismPopoverContent,
-} from "~/components/old-prism";
-import { PrismButton } from "~/components/prism";
+import { PrismButton, PrismPopover, PrismPopoverTrigger } from "~/components/prism";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { useAppTheme } from "~/hooks/useAppTheme";
@@ -190,7 +186,7 @@ function PartnerPage() {
               size={SIZE.md}
             />
             {lateCount > 0 && (
-              <PrismPopover>
+              <PrismPopoverTrigger>
                 <PrismButton
                   className="isolate -mt-4 -ml-4 cursor-pointer outline-none select-none"
                   size="unstyled"
@@ -198,7 +194,7 @@ function PartnerPage() {
                 >
                   <UBadge isDynamic value={lateCount} />
                 </PrismButton>
-                <PrismPopoverContent
+                <PrismPopover
                   className="max-h-[400px] w-[380px] overflow-y-auto space-y-4"
                   placement="bottom start"
                 >
@@ -208,8 +204,8 @@ function PartnerPage() {
                     onClick={(action) => setBaseAction?.(action)}
                     variant="line"
                   />
-                </PrismPopoverContent>
-              </PrismPopover>
+                </PrismPopover>
+              </PrismPopoverTrigger>
             )}
             <div className="hidden truncate p-0 py-2 text-lg font-medium sm:block">
               {partner.title}
