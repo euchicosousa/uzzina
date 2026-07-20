@@ -1,9 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  PrismDialogTrigger,
-  PrismDialogOverlay,
-  PrismDialogContent,
-  PrismDialogTitle,
   PrismCombobox,
   PrismComboboxInputGroup,
   PrismComboboxInput,
@@ -49,6 +45,13 @@ import {
   PrismMenuSubContent,
   PrismMenuShortcut,
   PrismMenuLabel,
+  PrismDialog,
+  PrismDialogTrigger,
+  PrismDialogHeader,
+  PrismDialogFooter,
+  PrismDialogTitle,
+  PrismDialogDescription,
+  PrismDialogClose,
 } from "~/components/prism";
 import {
   IconSettings,
@@ -835,17 +838,34 @@ function UIPage() {
                           <PrismButton variant="default">
                             Abrir Modal
                           </PrismButton>
-                          <PrismDialogOverlay>
-                            <PrismDialogContent>
+                          <PrismDialog>
+                            <PrismDialogHeader>
                               <PrismDialogTitle>
                                 Título do Modal
                               </PrismDialogTitle>
-                              <p className="text-sm text-muted-foreground mt-2">
+                              <PrismDialogDescription>
                                 Este é um modal simples construído com o design
                                 system Prism do Uzzina.
+                              </PrismDialogDescription>
+                            </PrismDialogHeader>
+                            <div className="flex flex-col gap-2 py-4">
+                              <p className="text-sm text-foreground">
+                                Conteúdo dinâmico do modal. Suporta inputs,
+                                tabelas e botões adicionais de ação.
                               </p>
-                            </PrismDialogContent>
-                          </PrismDialogOverlay>
+                            </div>
+                            <PrismDialogFooter>
+                              <PrismDialogClose variant="outline">
+                                Cancelar
+                              </PrismDialogClose>
+                              <PrismButton
+                                onPress={() => alert("Confirmado!")}
+                                variant="default"
+                              >
+                                Confirmar Ação
+                              </PrismButton>
+                            </PrismDialogFooter>
+                          </PrismDialog>
                         </PrismDialogTrigger>
                       </GalleryItem>
                     </GallerySectionContent>

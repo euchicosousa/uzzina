@@ -24,15 +24,10 @@ import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchAllLateActions } from "~/lib/supabase.queries";
 import { cn } from "~/lib/utils";
 import type { Action, Partner, Person } from "~/types";
-import {
-  PrismCombobox,
-  PrismComboboxInput,
-  PrismListBox,
-  PrismListBoxItem,
-} from "~/components/old-prism";
+import { PrismCombobox, PrismComboboxInput } from "~/components/prism";
 import { Button } from "../ui/button";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
-import { UBadge } from "../uzzina/UBadge";
+// import { UBadge } from "../uzzina/UBadge";
 import { PrismButton, PrismPopover } from "../prism";
 export function AppBar({
   partners,
@@ -240,13 +235,13 @@ function PartnerFilterPopover({
           )}
         </div>
 
-        <PrismListBox
+        {/* <PrismListBox
           aria-label="Filtro de parceiros"
           className={cn(
             "max-h-60 overflow-y-auto p-1",
             partnerFilters.length > 0 && "pb-9",
           )}
-        >
+         >
           {(partner: Partner) => {
             const partnerLateActions = lateActions.filter((action) =>
               action.partners.includes(partner.slug),
@@ -289,8 +284,7 @@ function PartnerFilterPopover({
                   />
                   <div className="truncate text-sm">{partner.title}</div>
                 </div>
-
-                <div className="flex items-center gap-2 shrink-0">
+                 <div className="flex items-center gap-2 shrink-0">
                   {partnerLateActions.length > 0 && (
                     <UBadge
                       isDynamic
@@ -305,7 +299,7 @@ function PartnerFilterPopover({
               </PrismListBoxItem>
             );
           }}
-        </PrismListBox>
+         </PrismListBox> */}
 
         {partnerFilters.length > 0 && (
           <div className="absolute right-2 bottom-1 left-2 text-center bg-popover/40 backdrop-blur-md pt-1.5 border-t border-t-border/20 z-10">

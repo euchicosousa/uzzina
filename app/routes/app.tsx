@@ -132,7 +132,7 @@ function Dashboard() {
   if (loading || !person) {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center bg-background gap-4">
-        <UZZINALogo className="h-24 scale-down" model="logo" />
+        <UZZINALogo className="h-24 scale-down opacity-20" model="logo" />
         {/* <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
          <p className="text-muted-foreground text-xl animate-pulse">
           Carregando UZZINA...
