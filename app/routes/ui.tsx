@@ -28,7 +28,7 @@ import {
   IconAt,
 } from "@tabler/icons-react";
 import cn from "cnfast";
-import { TextField, Label } from "react-aria-components";
+import { TextField, Label, type Selection } from "react-aria-components";
 import {
   PrismButton,
   PrismInput,
@@ -44,12 +44,30 @@ import {
   PrismMenuContent,
   PrismMenuItem,
   PrismMenuSeparator,
+  PrismMenuSub,
+  PrismMenuSubTrigger,
+  PrismMenuSubContent,
+  PrismMenuShortcut,
+  PrismMenuLabel,
 } from "~/components/prism";
+import {
+  IconSettings,
+  IconUser,
+  IconLogout,
+  IconKeyboard,
+  IconSun,
+  IconMoon,
+  IconDeviceLaptop,
+} from "@tabler/icons-react";
 export const Route = createFileRoute("/ui")({
   component: UIPage,
 });
 function UIPage() {
   const [inputValue, setInputValue] = useState("");
+  const [notificationKeys, setNotificationKeys] = useState<Selection>(
+    new Set(["notifications"]),
+  );
+  const [themeKeys, setThemeKeys] = useState<Selection>(new Set(["system"]));
   const [activeSection, setActiveSection] = useState<"tokens" | "components">(
     "tokens",
   );
@@ -619,80 +637,186 @@ function UIPage() {
                       description="Popover contextual construído sobre o React Aria Components com posicionamento automático e transições suaves."
                       title="PrismPopover"
                     />
-                     <GallerySectionContent>
-                       <GalleryItem label="Default Popover">
-                         <PrismPopoverTrigger>
-                           <PrismButton variant="default">
-                             Abrir Popover
-                           </PrismButton>
-                           <PrismPopover>
-                             <div className="flex flex-col gap-2 w-48">
-                               <span className="font-semibold text-sm">
-                                 Opções Rápidas
-                               </span>
-                               <p className="text-xs text-muted-foreground">
-                                 Este é o conteúdo do popover de exemplo.
-                               </p>
-                             </div>
-                           </PrismPopover>
-                         </PrismPopoverTrigger>
-                       </GalleryItem>
+                    <GallerySectionContent>
+                      <GalleryItem label="Default Popover">
+                        <PrismPopoverTrigger>
+                          <PrismButton variant="default">
+                            Abrir Popover
+                          </PrismButton>
+                          <PrismPopover>
+                            <div className="flex flex-col gap-2 w-48">
+                              <span className="font-semibold text-sm">
+                                Opções Rápidas
+                              </span>
+                              <p className="text-xs text-muted-foreground">
+                                Este é o conteúdo do popover de exemplo.
+                              </p>
+                            </div>
+                          </PrismPopover>
+                        </PrismPopoverTrigger>
+                      </GalleryItem>
 
-                       <GalleryItem label="Popover alinhado no Topo">
-                         <PrismPopoverTrigger>
-                           <PrismButton variant="ghost">
-                             Ver Notificação
-                           </PrismButton>
-                           <PrismPopover placement="top">
-                             <div className="flex flex-col gap-1 w-64">
-                               <span className="font-semibold text-xs text-primary">
-                                 NOVO AVISO
-                               </span>
-                               <p className="text-xs">
-                                 O PrismPopover se alinha perfeitamente com
-                                 qualquer gatilho.
-                               </p>
-                             </div>
-                           </PrismPopover>
-                         </PrismPopoverTrigger>
-                       </GalleryItem>
-                     </GallerySectionContent>
-                   </GallerySection>
+                      <GalleryItem label="Popover alinhado no Topo">
+                        <PrismPopoverTrigger>
+                          <PrismButton variant="ghost">
+                            Ver Notificação
+                          </PrismButton>
+                          <PrismPopover placement="top">
+                            <div className="flex flex-col gap-1 w-64">
+                              <span className="font-semibold text-xs text-primary">
+                                NOVO AVISO
+                              </span>
+                              <p className="text-xs">
+                                O PrismPopover se alinha perfeitamente com
+                                qualquer gatilho.
+                              </p>
+                            </div>
+                          </PrismPopover>
+                        </PrismPopoverTrigger>
+                      </GalleryItem>
+                    </GallerySectionContent>
+                  </GallerySection>
                 </div>
 
                 {/* Seção: PrismMenu */}
                 <div id="prism-menu">
                   <GallerySection>
                     <GallerySectionHeader
-                      description="Dropdown Menu flutuante composto por itens clicáveis e divisores semânticos OKLCH."
+                      description="Menu suspenso avançado contendo agrupamentos, atalhos, itens de seleção múltipla (checkbox), itens destrutivos e submenus aninhados."
                       title="PrismMenu"
                     />
                     <GallerySectionContent>
-                      <GalleryItem label="Menu de Opções">
-                        <PrismMenu>
-                          <PrismButton variant="default">
-                            Ações do Perfil
-                          </PrismButton>
-                          <PrismMenuContent placement="bottom start">
-                            <PrismMenuItem
-                              onAction={() => alert("Minha Conta")}
+                      <GalleryItem label="Menu de Ações Completo">
+                        <div className="flex gap-4 items-center">
+                          <PrismMenu>
+                            <PrismButton variant="default">
+                              Abrir Menu Avançado
+                            </PrismButton>
+                            <PrismMenuContent
+                              className="w-64"
+                              placement="bottom start"
                             >
-                              Minha Conta
-                            </PrismMenuItem>
-                            <PrismMenuItem
-                              onAction={() => alert("Configurações")}
+                              <PrismMenuLabel>Minha Conta</PrismMenuLabel>
+                              <PrismMenuItem onAction={() => alert("Perfil")}>
+                                <IconUser className="size-4 mr-2 text-muted-foreground" />
+                                <span>Meu Perfil</span>
+                                <PrismMenuShortcut>⌘P</PrismMenuShortcut>
+                              </PrismMenuItem>
+                              <PrismMenuItem
+                                onAction={() => alert("Configurações")}
+                              >
+                                <IconSettings className="size-4 mr-2 text-muted-foreground" />
+                                <span>Configurações</span>
+                                <PrismMenuShortcut>⌘S</PrismMenuShortcut>
+                              </PrismMenuItem>
+
+                              <PrismMenuSeparator />
+
+                              <PrismMenuSub>
+                                <PrismMenuSubTrigger>
+                                  <IconKeyboard className="size-4 mr-2 text-muted-foreground" />
+                                  <span>Preferências</span>
+                                </PrismMenuSubTrigger>
+                                <PrismMenuSubContent className="w-48">
+                                  <PrismMenuItem
+                                    onAction={() => alert("Tema Escuro")}
+                                  >
+                                    Tema Escuro
+                                  </PrismMenuItem>
+                                  <PrismMenuItem
+                                    onAction={() => alert("Tema Claro")}
+                                  >
+                                    Tema Claro
+                                  </PrismMenuItem>
+                                </PrismMenuSubContent>
+                              </PrismMenuSub>
+
+                              <PrismMenuSeparator />
+
+                              <PrismMenuItem
+                                className="text-destructive"
+                                onAction={() => alert("Sair")}
+                                variant="destructive"
+                              >
+                                <IconLogout className="size-4 mr-2" />
+                                <span>Sair da Conta</span>
+                                <PrismMenuShortcut>⇧⌘Q</PrismMenuShortcut>
+                              </PrismMenuItem>
+                            </PrismMenuContent>
+                          </PrismMenu>
+                        </div>
+                      </GalleryItem>
+
+                      <GalleryItem label="Menu com Checkbox (Seleção Múltipla)">
+                        <div className="flex gap-4 items-center">
+                          <PrismMenu>
+                            <PrismButton variant="secondary">
+                              Opções de Notificação
+                            </PrismButton>
+                            <PrismMenuContent
+                              className="w-56"
+                              onSelectionChange={setNotificationKeys}
+                              placement="bottom start"
+                              selectedKeys={notificationKeys}
+                              selectionMode="multiple"
                             >
-                              Configurações
-                            </PrismMenuItem>
-                            <PrismMenuSeparator />
-                            <PrismMenuItem
-                              className="text-destructive"
-                              onAction={() => alert("Sair")}
+                              <PrismMenuLabel>Notificações</PrismMenuLabel>
+                              <PrismMenuItem id="notifications">
+                                Ativar Notificações
+                              </PrismMenuItem>
+                              <PrismMenuItem id="sounds">
+                                Efeitos Sonoros
+                              </PrismMenuItem>
+                            </PrismMenuContent>
+                          </PrismMenu>
+                        </div>
+                      </GalleryItem>
+
+                      <GalleryItem label="Menu com Radio (Seleção Única)">
+                        <div className="flex gap-4 items-center">
+                          <PrismMenu>
+                            <PrismButton
+                              aria-label="Seletor de Tema"
+                              className="rounded-full"
+                              size="icon"
+                              variant="ghost"
                             >
-                              Sair
-                            </PrismMenuItem>
-                          </PrismMenuContent>
-                        </PrismMenu>
+                              {themeKeys !== "all" &&
+                                themeKeys.has("light") && (
+                                  <IconSun className="size-5" />
+                                )}
+                              {themeKeys !== "all" && themeKeys.has("dark") && (
+                                <IconMoon className="size-5" />
+                              )}
+                              {themeKeys !== "all" &&
+                                themeKeys.has("system") && (
+                                  <IconDeviceLaptop className="size-5" />
+                                )}
+                            </PrismButton>
+                            <PrismMenuContent
+                              onSelectionChange={setThemeKeys}
+                              placement="bottom start"
+                              selectedKeys={themeKeys}
+                              selectionMode="single"
+                            >
+                              <PrismMenuLabel>Tema do Sistema</PrismMenuLabel>
+                              <PrismMenuItem id="light">
+                                <IconSun className="size-4 mr-2 text-muted-foreground shrink-0" />
+                                <span className="truncate">Claro</span>
+                              </PrismMenuItem>
+                              <PrismMenuItem id="dark">
+                                <IconMoon className="size-4 mr-2 text-muted-foreground shrink-0" />
+                                <span className="truncate">Escuro</span>
+                              </PrismMenuItem>
+                              <PrismMenuItem id="system">
+                                <IconDeviceLaptop className="size-4 mr-2 text-muted-foreground shrink-0" />
+                                <span className="truncate">
+                                  Padrão do Sistema
+                                </span>
+                              </PrismMenuItem>
+                            </PrismMenuContent>
+                          </PrismMenu>
+                        </div>
                       </GalleryItem>
                     </GallerySectionContent>
                   </GallerySection>

@@ -43,7 +43,7 @@ function DropdownMenu({
   return (
     <PopoverPrimitive
       className={cn(
-        "z-50 w-(--trigger-width) min-w-32 origin-(--trigger-anchor-point) overflow-x-hidden overflow-y-auto rounded-3xl bg-popover p-1 text-popover-foreground shadow-lg ring-1 ring-foreground/5 outline-none data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:overflow-hidden data-exiting:fade-out-0 data-exiting:zoom-out-95 data-[placement=bottom]:slide-in-from-top-2 data-[placement=left]:slide-in-from-right-2 data-[placement=right]:slide-in-from-left-2 data-[placement=top]:slide-in-from-bottom-2 **:data-[slot$=-item]:data-focused:bg-foreground/10 dark:ring-foreground/10 squircle",
+        "z-50 w-(--trigger-width) min-w-48 origin-(--trigger-anchor-point) overflow-x-hidden overflow-y-auto rounded-3xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/5 outline-none data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:overflow-hidden data-exiting:fade-out-0 data-exiting:zoom-out-95 data-[placement=bottom]:slide-in-from-top-2 data-[placement=left]:slide-in-from-right-2 data-[placement=right]:slide-in-from-left-2 data-[placement=top]:slide-in-from-bottom-2 **:data-[slot$=-item]:data-focused:bg-foreground/10 dark:ring-foreground/10 squircle",
         className,
       )}
       crossOffset={crossOffset}
@@ -77,7 +77,7 @@ function DropdownMenuLabel({
   return (
     <HeaderPrimitive
       className={cn(
-        "px-2 py-1 text-xs text-muted-foreground data-inset:pl-7",
+        "px-2 py-2 text-xs uppercase truncate tracking-wide font-medium text-muted-foreground data-inset:pl-7",
         className,
       )}
       data-inset={inset}
@@ -87,15 +87,15 @@ function DropdownMenuLabel({
   );
 }
 const dropdownMenuItemVariants = cva(
-  "group/dropdown-menu-item relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "group/dropdown-menu-item relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 min-w-0",
   {
     variants: {
       selectionMode: {
-        none: "min-h-7 gap-2 rounded-xl px-2 py-1.5 text-sm focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4",
+        none: "min-h-7 gap-2 rounded-lg px-3 py-1.5 text-sm focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
         single:
-          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-2 text-sm focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4",
+          "min-h-7 gap-2 rounded-lg py-1.5 pr-8 pl-3 text-sm focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
         multiple:
-          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-2 text-sm focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4",
+          "min-h-7 gap-2 rounded-lg py-1.5 pr-8 pl-3 text-sm focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
       },
     },
   },
@@ -103,7 +103,6 @@ const dropdownMenuItemVariants = cva(
 function DropdownMenuItem({
   className,
   inset,
-  variant = "default",
   children,
   ...props
 }: MenuItemPrimitiveProps<object> & {
@@ -122,7 +121,7 @@ function DropdownMenuItem({
       )}
       data-inset={inset}
       data-slot="dropdown-menu-item"
-      data-variant={variant}
+      data-variant={props.variant}
       textValue={typeof children === "string" ? children : props.textValue}
       {...props}
     >
@@ -130,20 +129,16 @@ function DropdownMenuItem({
         children,
         (children, { isSelected, selectionMode }) => (
           <>
+            {children}
             {selectionMode !== "none" ? (
               <span
-                data-slot="menu-item-indicator"
+                className="pointer-events-none absolute right-3 flex items-center justify-center size-4 shrink-0"
                 data-selected={isSelected}
-                className={
-                  selectionMode === "single"
-                    ? "dropdown-menu-radio-item-indicator"
-                    : "dropdown-menu-checkbox-item-indicator"
-                }
+                data-slot="menu-item-indicator"
               >
                 {isSelected ? <IconCheck /> : null}
               </span>
             ) : null}
-            {children}
           </>
         ),
       )}
@@ -165,7 +160,7 @@ function DropdownMenuSubTrigger({
   return (
     <MenuItemPrimitive
       className={cn(
-        "flex min-h-7 cursor-default items-center gap-2 rounded-xl px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-7 data-open:bg-accent data-open:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "flex min-h-7 cursor-default items-center gap-2 rounded-lg px-3 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-7 data-open:bg-accent data-open:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       data-inset={inset}
@@ -191,7 +186,7 @@ function DropdownMenuSubContent({
   return (
     <DropdownMenu
       className={cn(
-        "w-auto min-w-[96px] rounded-3xl bg-popover p-1 text-popover-foreground shadow-lg ring-1 ring-foreground/5 duration-100 dark:ring-foreground/10 squircle",
+        "w-auto min-w-[96px] rounded-3xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/5 duration-100 dark:ring-foreground/10 squircle",
         className,
       )}
       crossOffset={crossOffset}
@@ -208,7 +203,7 @@ function DropdownMenuSeparator({
 }: SeparatorPrimitiveProps) {
   return (
     <SeparatorPrimitive
-      className={cn("-mx-1 my-1 h-px bg-border/50", className)}
+      className={cn("-mx-1 my-2 h-px bg-border/50", className)}
       data-slot="dropdown-menu-separator"
       {...props}
     />
