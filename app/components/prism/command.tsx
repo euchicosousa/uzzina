@@ -159,7 +159,11 @@ function CommandGroup<T extends object>({
       data-slot="command-group"
       {...props}
     >
-      {heading && <Header cmdk-group-heading="">{heading}</Header>}
+      {heading && (
+        <Header className="uppercase tracking-wide" cmdk-group-heading="">
+          {heading}
+        </Header>
+      )}
       <Collection items={items}>{children}</Collection>
     </MenuSection>
   );
