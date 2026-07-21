@@ -1,34 +1,39 @@
-import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "@tanstack/react-router";
 import {
   CopyCheckIcon,
   FilterIcon,
-  FilterXIcon,
   HeartHandshakeIcon,
   Layers2Icon,
   PlusIcon,
   SearchIcon,
   X as XIcon,
 } from "lucide-react";
-import {
-  Link,
-  useNavigate,
-  useParams,
-  useLocation,
-} from "@tanstack/react-router";
+import { useState } from "react";
 import { BulkActionMenu } from "~/components/features/BulkActionMenu";
+import {
+  PrismButton,
+  PrismCommand,
+  PrismCommandEmpty,
+  PrismCommandGroup,
+  PrismCommandInput,
+  PrismCommandItem,
+  PrismCommandList,
+  PrismPopover,
+  PrismPopoverTrigger,
+} from "~/components/prism";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { SIZE } from "~/lib/CONSTANTS";
 import { getCleanAction } from "~/lib/helpers";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchAllLateActions } from "~/lib/supabase.queries";
-import { cn } from "~/lib/utils";
 import type { Action, Partner, Person } from "~/types";
-import { PrismCombobox, PrismComboboxInput } from "~/components/prism";
-import { Button } from "../ui/button";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
-// import { UBadge } from "../uzzina/UBadge";
-import { PrismButton, PrismPopover } from "../prism";
 export function AppBar({
   partners,
   person,
@@ -64,7 +69,7 @@ export function AppBar({
   const activePartners = partners.filter((p) =>
     partnerFilters.includes(p.slug),
   );
-  const pagePartner = params.slug
+  const isAtPagePartner = params.slug
     ? partners.find((p) => p.slug === params.slug)
     : null;
   return (
@@ -77,13 +82,13 @@ export function AppBar({
           to="/app/flow"
         >
           <Layers2Icon className="size-5" />
-        </Link>{" "}
+        </Link>
         <PartnerFilterPopover
           activePartners={activePartners}
           isAtHome={isAtHome}
+          isAtPagePartner={isAtPagePartner}
           lateActions={lateActions}
           navigate={navigate}
-          pagePartner={pagePartner}
           partnerFilters={partnerFilters}
           partners={partners}
           setPartnerFilters={setPartnerFilters}
@@ -93,7 +98,7 @@ export function AppBar({
           {isSelectionMode ? (
             <BulkActionMenu />
           ) : (
-            <Button
+            <PrismButton
               className="flex items-center gap-1 rounded-xl px-3 squircle"
               onClick={() =>
                 setBaseAction({
@@ -110,13 +115,13 @@ export function AppBar({
               <PlusIcon className="size-4" />
               <span className="max-sm:hidden">Nova Ação</span>
               <span className="sm:hidden">Ação +</span>
-            </Button>
+            </PrismButton>
           )}
         </div>
         {/* Slot 3: Multi-seleção Toggle */}
         <div className="flex items-center">
           {isSelectionMode ? (
-            <Button
+            <PrismButton
               className="size-10 rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive"
               onClick={() => {
                 clearSelection();
@@ -126,27 +131,27 @@ export function AppBar({
               variant="ghost"
             >
               <XIcon className="size-4" />
-            </Button>
+            </PrismButton>
           ) : (
-            <Button
+            <PrismButton
               className="size-10 rounded-xl"
               id="appbar-toggle-multi-selection"
               onClick={() => toggleSelectionMode()}
               variant={"ghost"}
             >
               <CopyCheckIcon className="size-4" />
-            </Button>
+            </PrismButton>
           )}
         </div>
         {/* Slot 4: Busca / CmdK */}
-        <Button
+        <PrismButton
           className="size-10 rounded-xl"
           onClick={() => setOpenCmdK(true)}
           size="icon"
           variant="ghost"
         >
           <SearchIcon className="size-4" />
-        </Button>
+        </PrismButton>
       </div>
     </div>
   );
@@ -156,7 +161,7 @@ interface PartnerFilterPopoverProps {
   partnerFilters: string[];
   setPartnerFilters: (slugs: string[]) => void;
   activePartners: Partner[];
-  pagePartner: Partner | null | undefined;
+  isAtPagePartner: Partner | null | undefined;
   lateActions: Action[];
   isAtHome: boolean;
   navigate: ReturnType<typeof useNavigate>;
@@ -166,26 +171,21 @@ function PartnerFilterPopover({
   partnerFilters,
   setPartnerFilters,
   activePartners,
-  pagePartner,
   lateActions,
+  isAtPagePartner,
   isAtHome,
   navigate,
 }: PartnerFilterPopoverProps) {
-  const [partnerQuery, setPartnerQuery] = React.useState("");
-  const [isFilterMode, setIsFilterMode] = React.useState(false);
+  // const [partnerQuery, setPartnerQuery] = useState("");
+  const [isFilterMode, setIsFilterMode] = useState(false);
   return (
-    <PrismCombobox
-      allowsEmptyCollection
-      inputValue={partnerQuery}
-      items={partners}
-      menuTrigger="focus"
-      onInputChange={setPartnerQuery}
-    >
+    <PrismPopoverTrigger>
       <PrismButton
-        size="sm"
-        variant={partnerFilters.length > 0 ? "secondary" : "ghost"}
+        className="sm"
+        size={partnerFilters.length > 1 ? "default" : "icon"}
+        variant={"ghost"}
       >
-        {activePartners.length > 0 ? (
+        {partnerFilters.length > 0 ? (
           <UAvatarGroup
             avatars={activePartners.map((partner) => ({
               fallback: partner.short,
@@ -196,124 +196,77 @@ function PartnerFilterPopover({
             clampAt={3}
             size={SIZE.sm}
           />
-        ) : pagePartner ? (
-          <UAvatar
-            backgroundColor={pagePartner.colors[0]}
-            color={pagePartner.colors[1]}
-            fallback={pagePartner.short}
-            image={pagePartner.image}
-            size={SIZE.sm}
-          />
         ) : (
           <HeartHandshakeIcon />
         )}
       </PrismButton>
-      <PrismPopover
-        className="mx-2 w-64 p-0 flex flex-col overflow-hidden"
-        placement="bottom start"
-      >
-        <div className="flex h-11 w-full items-center border-b bg-transparent px-3 gap-2">
-          <SearchIcon className="size-4 text-muted-foreground shrink-0" />
-          <PrismComboboxInput
-            className="flex h-full w-full bg-transparent text-xs text-foreground placeholder:text-muted-foreground/50 outline-none border-0"
-            placeholder="Procurar parceiro..."
-          />
-          {isAtHome && (
-            <button
-              className={cn(
-                "size-7 rounded-lg flex items-center justify-center border transition-colors shrink-0",
-                isFilterMode
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "hover:bg-secondary border-border text-muted-foreground",
-              )}
-              onClick={() => setIsFilterMode(!isFilterMode)}
-              title={isFilterMode ? "Modo Filtro Ativo" : "Ativar Modo Filtro"}
-              type="button"
-            >
-              <FilterIcon className="size-3.5" />
-            </button>
-          )}
-        </div>
-
-        {/* <PrismListBox
-          aria-label="Filtro de parceiros"
-          className={cn(
-            "max-h-60 overflow-y-auto p-1",
-            partnerFilters.length > 0 && "pb-9",
-          )}
-         >
-          {(partner: Partner) => {
-            const partnerLateActions = lateActions.filter((action) =>
-              action.partners.includes(partner.slug),
-            );
-            const isSelected = partnerFilters.includes(partner.slug);
-            return (
-              <PrismListBoxItem
-                className={cn(
-                  "group flex justify-between items-center py-1.5",
-                  isFilterMode && isSelected && "bg-primary/10 text-primary",
-                )}
-                id={partner.slug}
-                onAction={() => {
+      <PrismPopover className="p-0 rounded-[32px]">
+        <PrismCommand className="p-0">
+          <div className="flex items-center border-b">
+            <PrismCommandInput placeholder="Parceiro..." />
+            {isAtHome && (
+              <PrismButton
+                className="mr-2"
+                onPress={() => {
                   if (isFilterMode) {
-                    if (isSelected) {
-                      setPartnerFilters(
-                        partnerFilters.filter((s) => s !== partner.slug),
-                      );
-                    } else {
-                      setPartnerFilters([...partnerFilters, partner.slug]);
-                    }
+                    setPartnerFilters([]);
+                    setIsFilterMode(false);
                   } else {
-                    navigate({
-                      to: "/app/partner/$slug",
-                      params: {
-                        slug: partner.slug,
-                      },
-                    });
+                    setIsFilterMode(true);
                   }
                 }}
-                textValue={partner.title}
+                size={"icon-sm"}
+                variant={isFilterMode ? "default" : "ghost"}
               >
-                <div className="flex flex-1 items-center gap-2 overflow-hidden">
-                  <UAvatar
-                    backgroundColor={partner.colors[0]}
-                    color={partner.colors[1]}
-                    fallback={partner.short}
-                    image={partner.image}
-                    size={SIZE.sm}
-                  />
-                  <div className="truncate text-sm">{partner.title}</div>
-                </div>
-                 <div className="flex items-center gap-2 shrink-0">
-                  {partnerLateActions.length > 0 && (
-                    <UBadge
-                      isDynamic
-                      size="sm"
-                      value={partnerLateActions.length}
-                    />
-                  )}
-                  {isFilterMode && isSelected && (
-                    <div className="size-2 rounded-full bg-primary shrink-0 animate-in fade-in zoom-in" />
-                  )}
-                </div>
-              </PrismListBoxItem>
-            );
-          }}
-         </PrismListBox> */}
-
-        {partnerFilters.length > 0 && (
-          <div className="absolute right-2 bottom-1 left-2 text-center bg-popover/40 backdrop-blur-md pt-1.5 border-t border-t-border/20 z-10">
-            <button
-              className="z-10 h-7 w-full rounded-xl bg-foreground/60 hover:bg-foreground/80 text-[11px] font-semibold text-background flex items-center justify-center gap-1 transition-colors"
-              onClick={() => setPartnerFilters([])}
-              type="button"
-            >
-              Limpar seleção
-              <FilterXIcon className="size-3.5" />
-            </button>
+                <FilterIcon />
+              </PrismButton>
+            )}
           </div>
-        )}
+          <PrismCommandList
+            renderEmptyState={() => (
+              <PrismCommandEmpty>Nenhum parceiro encontrado.</PrismCommandEmpty>
+            )}
+          >
+            <PrismCommandGroup>
+              {partners.map((partner) => {
+                const isSelected = partnerFilters.includes(partner.slug);
+                return (
+                  <PrismCommandItem
+                    key={partner.slug}
+                    className={isSelected ? "bg-secondary" : ""}
+                    data-checked={isSelected}
+                    onPress={() => {
+                      if (isFilterMode) {
+                        if (isSelected) {
+                          setPartnerFilters(
+                            partnerFilters.filter((s) => s !== partner.slug),
+                          );
+                        } else {
+                          setPartnerFilters([...partnerFilters, partner.slug]);
+                        }
+                      } else {
+                        navigate({
+                          to: `/app/partner/${partner.slug}`,
+                        });
+                      }
+                    }}
+                    textValue={partner.title}
+                  >
+                    <UAvatar
+                      backgroundColor={partner.colors[0]}
+                      color={partner.colors[1]}
+                      fallback={partner.short}
+                      image={partner.image}
+                      size="sm"
+                    />
+                    <span>{partner.title}</span>
+                  </PrismCommandItem>
+                );
+              })}
+            </PrismCommandGroup>
+          </PrismCommandList>
+        </PrismCommand>
       </PrismPopover>
-    </PrismCombobox>
+    </PrismPopoverTrigger>
   );
 }

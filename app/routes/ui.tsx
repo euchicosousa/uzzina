@@ -1,11 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
   PrismCombobox,
-  PrismComboboxInputGroup,
   PrismComboboxInput,
-  PrismComboboxDropdown,
-  PrismListBoxItem,
-} from "~/components/old-prism";
+  PrismComboboxItem,
+} from "~/components/prism";
 import { useState, useEffect } from "react";
 import {
   IconSend,
@@ -52,6 +50,8 @@ import {
   PrismDialogTitle,
   PrismDialogDescription,
   PrismDialogClose,
+  PrismComboboxContent,
+  PrismComboboxList,
 } from "~/components/prism";
 import {
   IconSettings,
@@ -881,24 +881,17 @@ function UIPage() {
                     />
                     <GallerySectionContent>
                       <GalleryItem label="Combobox Simples">
-                        <PrismCombobox>
-                          <PrismComboboxInputGroup className="w-64">
-                            <PrismComboboxInput placeholder="Selecione um animal..." />
-                          </PrismComboboxInputGroup>
-                          <PrismComboboxDropdown>
-                            <PrismListBoxItem id="cat">
-                              🐱 Gato
-                            </PrismListBoxItem>
-                            <PrismListBoxItem id="dog">
-                              🐶 Cachorro
-                            </PrismListBoxItem>
-                            <PrismListBoxItem id="lion">
-                              🦁 Leão
-                            </PrismListBoxItem>
-                          </PrismComboboxDropdown>
+                        <PrismCombobox className="w-64">
+                          <PrismComboboxInput placeholder="Selecione um animal..." />
+                          <PrismComboboxContent>
+                            <PrismComboboxList>
+                              <PrismComboboxItem id="cat">🐱 Gato</PrismComboboxItem>
+                              <PrismComboboxItem id="dog">🐶 Cachorro</PrismComboboxItem>
+                              <PrismComboboxItem id="lion">🦁 Leão</PrismComboboxItem>
+                            </PrismComboboxList>
+                          </PrismComboboxContent>
                         </PrismCombobox>
                       </GalleryItem>
-
                       <GalleryItem label="Combobox Múltiplo (Tags/Frutas)">
                         <FruitsMultiSelect />
                       </GalleryItem>
@@ -957,16 +950,16 @@ function FruitsMultiSelect() {
           }
         }}
       >
-        <PrismComboboxInputGroup>
-          <PrismComboboxInput placeholder="Selecione frutas..." />
-        </PrismComboboxInputGroup>
-        <PrismComboboxDropdown>
-          {filteredItems.map((item) => (
-            <PrismListBoxItem key={item.id} id={item.id}>
-              {item.label}
-            </PrismListBoxItem>
-          ))}
-        </PrismComboboxDropdown>
+        <PrismComboboxInput placeholder="Selecione frutas..." />
+        <PrismComboboxContent>
+          <PrismComboboxList>
+            {filteredItems.map((item) => (
+              <PrismComboboxItem key={item.id} id={item.id}>
+                {item.label}
+              </PrismComboboxItem>
+            ))}
+          </PrismComboboxList>
+        </PrismComboboxContent>
       </PrismCombobox>
 
       {selectedFruits.length > 0 && (

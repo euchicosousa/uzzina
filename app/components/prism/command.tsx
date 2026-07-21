@@ -25,7 +25,7 @@ import {
   PrismDialogTitle,
 } from "~/components/prism";
 import { InputGroup, InputGroupAddon } from "~/components/prism/input-group";
-import { IconSearch, IconCheck } from "@tabler/icons-react";
+import { IconSearch, IconCircleCheckFilled } from "@tabler/icons-react";
 function Command({
   className,
   dir,
@@ -42,7 +42,7 @@ function Command({
   return (
     <div
       className={cn(
-        "flex size-full flex-col overflow-hidden rounded-3xl bg-popover p-1 text-popover-foreground",
+        "flex size-full flex-col overflow-hidden rounded-3xl bg-popover p-2 text-popover-foreground",
         className,
       )}
       data-slot="command"
@@ -101,10 +101,10 @@ function CommandInput({ className, ...props }: InputProps) {
     <SearchField
       aria-label={props.placeholder || "Search"}
       autoFocus
-      className="p-1 pb-0"
+      className="p-2 w-full"
       data-slot="command-input-wrapper"
     >
-      <InputGroup className="h-10 bg-input rounded-3xl squircle">
+      <InputGroup className="h-10 bg-input rounded-2xl squircle">
         <Input
           {...props}
           className={cn(
@@ -153,7 +153,7 @@ function CommandGroup<T extends object>({
   return (
     <MenuSection
       className={cn(
-        "overflow-hidden p-1 text-foreground **:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium **:[[cmdk-group-heading]]:text-muted-foreground",
+        "overflow-hidden space-y-1 p-2 text-foreground **:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium **:[[cmdk-group-heading]]:text-muted-foreground",
         className,
       )}
       data-slot="command-group"
@@ -187,7 +187,7 @@ function CommandItem<T extends object>({
     <MenuItem
       {...props}
       className={cn(
-        "group/command-item relative squircle flex min-h-7 cursor-default items-center gap-2 rounded-2xl px-4 h-10 outline-hidden select-none in-data-[slot=dialog-content]:rounded-2xl data-focused:bg-muted data-focused:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-muted data-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-focused:*:[svg]:text-foreground data-selected:*:[svg]:text-foreground",
+        "group/command-item relative squircle flex min-h-7 cursor-default items-center gap-2 rounded-2xl px-4 h-10 outline-hidden select-none in-data-[slot=dialog-content]:rounded-2xl data-focused:bg-muted data-focused:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-muted data-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-selected:*:[svg]:text-foreground",
         className,
       )}
       data-slot="command-item"
@@ -198,7 +198,7 @@ function CommandItem<T extends object>({
       {composeRenderProps(children, (children) => (
         <>
           {children}
-          <IconCheck className="ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100" />
+          <IconCircleCheckFilled className="ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100" />
         </>
       ))}
     </MenuItem>
