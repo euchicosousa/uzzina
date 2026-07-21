@@ -51,6 +51,7 @@ import {
 import { PhaseIcon } from "./PhaseIcon";
 import { useAppContext } from "~/contexts/AppContext";
 import { getGridCols } from "~/lib/uzzina-utils";
+import { PrismButton } from "../prism";
 export function BulkActionMenu() {
   // ─── Multi-seleção ───────────────────────────────────────────────────────────
   const { isSelectionMode, selectedIds, clearSelection } = useMultiSelection();
@@ -244,15 +245,14 @@ export function BulkActionMenu() {
       {/* ── Dropdown principal de ações em lote ───────────────────────────── */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            className="h-10 rounded-xl px-4 font-semibold"
-            disabled={selectedIds.length === 0}
+          <PrismButton
+            isDisabled={selectedIds.length === 0}
             variant="secondary"
           >
             {selectedIds.length > 0
               ? `${selectedIds.length} Selecionado${selectedIds.length > 1 ? "s" : ""}`
               : "Selecione as ações"}
-          </Button>
+          </PrismButton>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
           {/* Estado */}

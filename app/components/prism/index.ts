@@ -80,3 +80,4 @@ export {
   PrismCommandShortcut,
   PrismCommandSeparator,
 } from "./command";
+export { PrismBadge } from "./badge";

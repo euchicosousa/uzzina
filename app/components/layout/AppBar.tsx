@@ -1,3 +1,4 @@
+import { IconCirclePlus, IconX } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Link,
@@ -10,13 +11,12 @@ import {
   FilterIcon,
   HeartHandshakeIcon,
   Layers2Icon,
-  PlusIcon,
   SearchIcon,
-  X as XIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { BulkActionMenu } from "~/components/features/BulkActionMenu";
 import {
+  PrismBadge,
   PrismButton,
   PrismCommand,
   PrismCommandEmpty,
@@ -27,6 +27,7 @@ import {
   PrismPopover,
   PrismPopoverTrigger,
 } from "~/components/prism";
+import { buttonVariants } from "~/components/prism/button";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { SIZE } from "~/lib/CONSTANTS";
 import { getCleanAction } from "~/lib/helpers";
@@ -69,15 +70,18 @@ export function AppBar({
   const activePartners = partners.filter((p) =>
     partnerFilters.includes(p.slug),
   );
-  const isAtPagePartner = params.slug
+  const pagePartner = params.slug
     ? partners.find((p) => p.slug === params.slug)
     : null;
   return (
     <div className="fixed bottom-4 left-1/2 z-20 flex -translate-x-1/2 justify-center">
-      <div className="flex items-center gap-2 rounded-3xl border border-border bg-card/80 p-2 shadow-2xl backdrop-blur-xl squircle lg:gap-4">
+      <div className="flex items-center gap-1 rounded-3xl border border-border bg-card/80 p-2 shadow-2xl backdrop-blur-xl squircle">
         {/* Home */}
         <Link
-          className="flex h-9 px-3 items-center justify-center rounded-lg hover:bg-accent hover:text-accent-foreground transition-all duration-200"
+          className={buttonVariants({
+            variant: "ghost",
+            size: "icon",
+          })}
           title="Flow"
           to="/app/flow"
         >
@@ -86,9 +90,9 @@ export function AppBar({
         <PartnerFilterPopover
           activePartners={activePartners}
           isAtHome={isAtHome}
-          isAtPagePartner={isAtPagePartner}
           lateActions={lateActions}
           navigate={navigate}
+          partner={pagePartner}
           partnerFilters={partnerFilters}
           partners={partners}
           setPartnerFilters={setPartnerFilters}
@@ -99,7 +103,6 @@ export function AppBar({
             <BulkActionMenu />
           ) : (
             <PrismButton
-              className="flex items-center gap-1 rounded-xl px-3 squircle"
               onClick={() =>
                 setBaseAction({
                   ...getCleanAction({
@@ -112,9 +115,9 @@ export function AppBar({
                 } as unknown as Action)
               }
             >
-              <PlusIcon className="size-4" />
               <span className="max-sm:hidden">Nova Ação</span>
-              <span className="sm:hidden">Ação +</span>
+              <span className="sm:hidden">Ação</span>
+              <IconCirclePlus />
             </PrismButton>
           )}
         </div>
@@ -122,35 +125,33 @@ export function AppBar({
         <div className="flex items-center">
           {isSelectionMode ? (
             <PrismButton
-              className="size-10 rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive"
               onClick={() => {
                 clearSelection();
                 toggleSelectionMode(false);
               }}
               size="icon"
-              variant="ghost"
+              variant="destructive"
             >
-              <XIcon className="size-4" />
+              <IconX />
             </PrismButton>
           ) : (
             <PrismButton
-              className="size-10 rounded-xl"
               id="appbar-toggle-multi-selection"
               onClick={() => toggleSelectionMode()}
+              size={"icon"}
               variant={"ghost"}
             >
-              <CopyCheckIcon className="size-4" />
+              <CopyCheckIcon />
             </PrismButton>
           )}
         </div>
         {/* Slot 4: Busca / CmdK */}
         <PrismButton
-          className="size-10 rounded-xl"
           onClick={() => setOpenCmdK(true)}
           size="icon"
           variant="ghost"
         >
-          <SearchIcon className="size-4" />
+          <SearchIcon />
         </PrismButton>
       </div>
     </div>
@@ -161,7 +162,7 @@ interface PartnerFilterPopoverProps {
   partnerFilters: string[];
   setPartnerFilters: (slugs: string[]) => void;
   activePartners: Partner[];
-  isAtPagePartner: Partner | null | undefined;
+  partner: Partner | null | undefined;
   lateActions: Action[];
   isAtHome: boolean;
   navigate: ReturnType<typeof useNavigate>;
@@ -172,7 +173,7 @@ function PartnerFilterPopover({
   setPartnerFilters,
   activePartners,
   lateActions,
-  isAtPagePartner,
+  partner,
   isAtHome,
   navigate,
 }: PartnerFilterPopoverProps) {
@@ -185,15 +186,27 @@ function PartnerFilterPopover({
         size={partnerFilters.length > 1 ? "default" : "icon"}
         variant={"ghost"}
       >
-        {partnerFilters.length > 0 ? (
-          <UAvatarGroup
-            avatars={activePartners.map((partner) => ({
-              fallback: partner.short,
-              image: partner.image,
-              backgroundColor: partner.colors[0],
-              color: partner.colors[1],
-            }))}
-            clampAt={3}
+        {isAtHome ? (
+          partnerFilters.length > 0 ? (
+            <UAvatarGroup
+              avatars={activePartners.map((partner) => ({
+                fallback: partner.short,
+                image: partner.image,
+                backgroundColor: partner.colors[0],
+                color: partner.colors[1],
+              }))}
+              clampAt={3}
+              size={SIZE.sm}
+            />
+          ) : (
+            <HeartHandshakeIcon />
+          )
+        ) : partner ? (
+          <UAvatar
+            backgroundColor={partner.colors[0]}
+            color={partner.colors[1]}
+            fallback={partner.short}
+            image={partner.image}
             size={SIZE.sm}
           />
         ) : (
@@ -230,6 +243,9 @@ function PartnerFilterPopover({
             <PrismCommandGroup>
               {partners.map((partner) => {
                 const isSelected = partnerFilters.includes(partner.slug);
+                const lateActionCount = lateActions.filter((action) =>
+                  action.partners.find((p) => p === partner.slug),
+                ).length;
                 return (
                   <PrismCommandItem
                     key={partner.slug}
@@ -260,6 +276,14 @@ function PartnerFilterPopover({
                       size="sm"
                     />
                     <span>{partner.title}</span>
+                    {lateActionCount > 0 && (
+                      <PrismBadge
+                        className="absolute right-3"
+                        variant={lateActionCount >= 3 ? "error" : "warning"}
+                      >
+                        {lateActionCount}
+                      </PrismBadge>
+                    )}
                   </PrismCommandItem>
                 );
               })}

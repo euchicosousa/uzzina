@@ -1,6 +1,3 @@
-"use client";
-
-import * as React from "react";
 import {
   Dialog as DialogPrimitive,
   DialogTrigger as DialogTriggerPrimitive,
@@ -77,7 +74,7 @@ function Dialog({
         data-slot="dialog-content"
       >
         <DialogPrimitive
-          className="[display:inherit] [gap:inherit] outline-none"
+          className="[display:inherit] gap-[inherit] outline-none"
           data-slot="dialog"
         >
           {children}
