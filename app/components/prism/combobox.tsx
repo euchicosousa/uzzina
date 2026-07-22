@@ -98,16 +98,15 @@ function ComboboxInput({
   return (
     <InputGroup className={cn("w-auto", className)}>
       <InputGroupInput disabled={disabled} {...props} />
-      <InputGroupAddon align="inline-end">
+      <InputGroupAddon align="inline-end" className="pr-3">
         {showTrigger && (
           <InputGroupButton
-            className="group-has-data-[slot=combobox-clear]/input-group:hidden data-pressed:bg-transparent [&_svg:not([class*='size-'])]:size-4"
             data-slot="combobox-trigger"
             isDisabled={disabled}
-            size="icon-xs"
+            size="icon-sm"
             variant="ghost"
           >
-            <IconChevronDown className="pointer-events-none size-4 text-muted-foreground" />
+            <IconChevronDown className="pointer-events-none" />
           </InputGroupButton>
         )}
         {showClear && <ComboboxClear isDisabled={disabled} />}

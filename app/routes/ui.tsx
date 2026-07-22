@@ -52,6 +52,17 @@ import {
   PrismDialogClose,
   PrismComboboxContent,
   PrismComboboxList,
+  PrismCommand,
+  PrismCommandDialog,
+  PrismCommandInput,
+  PrismCommandList,
+  PrismCommandEmpty,
+  PrismCommandGroup,
+  PrismCommandItem,
+  PrismCommandSeparator,
+  PrismCommandShortcut,
+  PrismToggle,
+  PrismBadge,
 } from "~/components/prism";
 import {
   IconSettings,
@@ -61,6 +72,11 @@ import {
   IconSun,
   IconMoon,
   IconDeviceLaptop,
+  IconSearch,
+  IconFilter,
+  IconCommand,
+  IconHeartHandshake,
+  IconCalendar,
 } from "@tabler/icons-react";
 export const Route = createFileRoute("/ui")({
   component: UIPage,
