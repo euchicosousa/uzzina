@@ -1,12 +1,20 @@
-import { IconSend, IconTrash, IconCheckFilled } from "@tabler/icons-react";
-import { PrismButton } from "~/components/prism";
 import {
-  GallerySection,
-  GallerySectionHeader,
-  GallerySectionContent,
+  IconCheckFilled,
+  IconChevronDown,
+  IconSend,
+  IconTrash,
+} from "@tabler/icons-react";
+import {
+  PrismButton,
+  PrismButtonGroup,
+  PrismButtonGroupSeparator,
+} from "~/components/prism";
+import {
   GalleryItem,
+  GallerySection,
+  GallerySectionContent,
+  GallerySectionHeader,
 } from "./GalleryHelperComponents";
-
 export function ButtonSection() {
   return (
     <div id="prism-button">
@@ -59,6 +67,24 @@ export function ButtonSection() {
               <PrismButton isDisabled variant="default">
                 Disabled
               </PrismButton>
+            </div>
+          </GalleryItem>
+
+          <GalleryItem label="PrismButtonGroup (Botões Conectados)">
+            <div className="flex flex-wrap items-center gap-4">
+              <PrismButtonGroup>
+                <PrismButton variant="outline">Anterior</PrismButton>
+                <PrismButtonGroupSeparator />
+                <PrismButton variant="outline">Próximo</PrismButton>
+              </PrismButtonGroup>
+
+              <PrismButtonGroup>
+                <PrismButton variant="default">Salvar</PrismButton>
+                <PrismButtonGroupSeparator />
+                <PrismButton size="icon" variant="default">
+                  <IconChevronDown />
+                </PrismButton>
+              </PrismButtonGroup>
             </div>
           </GalleryItem>
         </GallerySectionContent>

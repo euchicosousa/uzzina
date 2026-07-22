@@ -7,9 +7,9 @@ export {
 export { PrismBadge } from "./badge";
 export { Button as PrismButton } from "./button";
 export {
-  ButtonGroup as PrismButtonGroup,
-  ButtonGroupSeparator as PrismButtonGroupSeparator,
-  ButtonGroupText as PrismButtonGroupText,
+  PrismButtonGroup,
+  PrismButtonGroupSeparator,
+  PrismButtonGroupText,
 } from "./button-group";
 export {
   PrismCombobox,

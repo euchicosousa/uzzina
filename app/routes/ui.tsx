@@ -13,22 +13,29 @@ import {
   TokensSpacingSection,
   ButtonSection,
   InputSection,
+  TextareaSection,
   AlertSection,
+  BadgeSection,
+  ToggleSection,
   PopoverSection,
   MenuSection,
   DialogSection,
   ComboboxSection,
   CommandSection,
   ToasterSection,
+  SeparatorSection,
 } from "~/components/ui-sections";
+
 export const Route = createFileRoute("/ui")({
   component: UIPage,
 });
+
 function UIPage() {
   const [activeSection, setActiveSection] = useState<"tokens" | "components">(
     "tokens",
   );
   const [activeAnchor, setActiveAnchor] = useState<string>("");
+
   const handleSectionChange = (section: "tokens" | "components") => {
     setActiveSection(section);
     setActiveAnchor("");
@@ -37,6 +44,7 @@ function UIPage() {
       behavior: "smooth",
     });
   };
+
   useEffect(() => {
     const targets =
       activeSection === "tokens"
@@ -44,6 +52,9 @@ function UIPage() {
         : [
             "prism-button",
             "prism-input",
+            "prism-textarea",
+            "prism-badge",
+            "prism-toggle",
             "prism-alert",
             "prism-popover",
             "prism-menu",
@@ -51,6 +62,7 @@ function UIPage() {
             "prism-combobox",
             "prism-command",
             "prism-toaster",
+            "prism-separator",
           ];
     setActiveAnchor(targets[0]);
     const handleScroll = () => {
@@ -70,11 +82,13 @@ function UIPage() {
       }
       setActiveAnchor(currentActive);
     };
+
     window.addEventListener("scroll", handleScroll, {
       passive: true,
     });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [activeSection]);
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
       {/* Top Header Fixado */}
@@ -148,6 +162,21 @@ function UIPage() {
                   targetId="prism-input"
                 />
                 <SidebarAnchorLink
+                  active={activeAnchor === "prism-textarea"}
+                  label="PrismTextarea"
+                  targetId="prism-textarea"
+                />
+                <SidebarAnchorLink
+                  active={activeAnchor === "prism-badge"}
+                  label="PrismBadge"
+                  targetId="prism-badge"
+                />
+                <SidebarAnchorLink
+                  active={activeAnchor === "prism-toggle"}
+                  label="PrismToggle"
+                  targetId="prism-toggle"
+                />
+                <SidebarAnchorLink
                   active={activeAnchor === "prism-alert"}
                   label="PrismAlert"
                   targetId="prism-alert"
@@ -182,6 +211,11 @@ function UIPage() {
                   label="PrismToaster"
                   targetId="prism-toaster"
                 />
+                <SidebarAnchorLink
+                  active={activeAnchor === "prism-separator"}
+                  label="PrismSeparator"
+                  targetId="prism-separator"
+                />
               </div>
             )}
           </nav>
@@ -198,6 +232,9 @@ function UIPage() {
             <div className="flex flex-col">
               <ButtonSection />
               <InputSection />
+              <TextareaSection />
+              <BadgeSection />
+              <ToggleSection />
               <AlertSection />
               <PopoverSection />
               <MenuSection />
@@ -205,6 +242,7 @@ function UIPage() {
               <ComboboxSection />
               <CommandSection />
               <ToasterSection />
+              <SeparatorSection />
             </div>
           )}
         </main>

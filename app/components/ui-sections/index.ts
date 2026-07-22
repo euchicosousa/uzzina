@@ -10,3 +10,7 @@ export * from "./DialogSection";
 export * from "./ComboboxSection";
 export * from "./CommandSection";
 export * from "./ToasterSection";
+export * from "./BadgeSection";
+export * from "./ToggleSection";
+export * from "./TextareaSection";
+export * from "./SeparatorSection";
