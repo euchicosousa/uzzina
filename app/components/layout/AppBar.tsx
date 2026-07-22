@@ -58,7 +58,7 @@ export function AppBar({
   const params = useParams({
     strict: false,
   }) as Record<string, string | undefined>;
-  const { isSelectionMode, toggleSelectionMode, clearSelection } =
+  const { isSelectionMode, toggleSelectionMode } =
     useMultiSelection();
   const isAtHome = location.pathname === "/app";
   const { data: lateActions = [] } = useQuery({
@@ -126,19 +126,27 @@ export function AppBar({
         </div>
         {/* Slot 3: Multi-seleção Toggle */}
         <div className="flex items-center">
-          <PrismToggle
-            id="appbar-toggle-multi-selection"
-            isSelected={isSelectionMode}
-            onChange={(selected) => {
-              if (!selected) {
-                clearSelection();
-              }
-              toggleSelectionMode(selected);
-            }}
-            variant={isSelectionMode ? "destructive" : "default"}
-          >
-            {isSelectionMode ? <IconX /> : <IconCopyCheck />}
-          </PrismToggle>
+          {isSelectionMode ? (
+            <PrismButton
+              onPress={() => {
+                toggleSelectionMode();
+              }}
+              size={"icon"}
+              variant={"destructive"}
+            >
+              <IconX />
+            </PrismButton>
+          ) : (
+            <PrismButton
+              onPress={() => {
+                toggleSelectionMode();
+              }}
+              size={"icon"}
+              variant={"ghost"}
+            >
+              <IconCopyCheck />
+            </PrismButton>
+          )}
         </div>
         {/* Slot 4: Busca / CmdK */}
         <PrismButton

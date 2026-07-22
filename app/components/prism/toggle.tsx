@@ -5,15 +5,12 @@ import {
 } from "react-aria-components";
 import { cn } from "~/lib/utils";
 const toggleVariants = cva(
-  "group/toggle inline-flex border border-transparent items-center justify-center gap-1 rounded-2xl squircle text-sm font-medium whitespace-nowrap transition-colors outline-none hover:bg-muted hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 aria-pressed:bg-muted dark:aria-invalid:ring-destructive/40 data-selected:bg-muted [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
+  "group/toggle inline-flex border border-transparent items-center justify-center gap-1 rounded-2xl squircle text-sm font-medium whitespace-nowrap transition-colors outline-none hover:bg-secondary hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 aria-pressed:bg-secondary dark:aria-invalid:ring-destructive/40 data-selected:bg-secondary [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
   {
     variants: {
       variant: {
-        default:
-          "hover:bg-secondary hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
-        outline: "border border-input bg-transparent hover:bg-muted",
-        destructive:
-          "bg-destructive/10 hover:text-destructive aria-pressed:bg-destructive/20 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+        default: "aria-expanded:bg-secondary aria-expanded:text-foreground",
+        outline: "border border-input bg-transparent",
       },
       size: {
         default:

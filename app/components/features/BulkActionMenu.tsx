@@ -1,57 +1,48 @@
-import type { Partner } from "~/types";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  ArchiveIcon,
-  CalendarIcon,
-  FlagIcon,
-  KanbanIcon,
-  PaletteIcon,
-  SignalIcon,
-  TagIcon,
-  UserIcon,
-  XIcon,
-} from "lucide-react";
-import { useState } from "react";
+  IconArchive,
+  IconCalendar,
+  IconFlag,
+  IconLayoutKanban,
+  IconPalette,
+  IconTag,
+  IconUser,
+  IconX,
+} from "@tabler/icons-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
+import { useState } from "react";
 import { toast } from "sonner";
 import { PartnerColorPicker } from "~/components/features/ActionForm/PartnerColorPicker";
-import { Button } from "~/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "~/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
 import { UAvatar } from "~/components/uzzina/UAvatar";
-import { useMultiSelection } from "~/hooks/useMultiSelection";
+import { useAppContext } from "~/contexts/AppContext";
 import { useActionMutations } from "~/hooks/useActionMutations";
+import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { CATEGORIES, PHASES, PRIORITIES, STATIONS } from "~/lib/CONSTANTS";
-import { StationIcon } from "./StationIcon";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import type { Person } from "~/lib/supabase.queries";
 import { fetchPeople } from "~/lib/supabase.queries";
 import { cn } from "~/lib/utils";
-import {
-  BulkDateTimeDialog,
-  type BulkDateTimeResult,
-} from "./BulkDateTimeDialog";
-import { PhaseIcon } from "./PhaseIcon";
-import { useAppContext } from "~/contexts/AppContext";
 import { getGridCols } from "~/lib/uzzina-utils";
-import { PrismButton } from "../prism";
+import type { Partner } from "~/types";
+import {
+  PrismButton,
+  PrismDialog,
+  PrismDialogDescription,
+  PrismDialogFooter,
+  PrismDialogHeader,
+  PrismDialogTitle,
+  PrismMenu,
+  PrismMenuContent,
+  PrismMenuItem,
+  PrismMenuSeparator,
+  PrismMenuSub,
+  PrismMenuSubContent,
+  PrismMenuSubTrigger,
+  PrismMenuTrigger,
+} from "../prism";
+import { Icons } from "../uzzina/UIIcons";
+import type { BulkDateTimeResult } from "./BulkDateTimeDialog";
+import { BulkDateTimeDialog } from "./BulkDateTimeDialog";
 export function BulkActionMenu() {
   // ─── Multi-seleção ───────────────────────────────────────────────────────────
   const { isSelectionMode, selectedIds, clearSelection } = useMultiSelection();
@@ -160,16 +151,20 @@ export function BulkActionMenu() {
       />
 
       {/* ── Dialog: Seleção de responsáveis ───────────────────────────────── */}
-      <Dialog onOpenChange={setPartnersOpen} open={partnersOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Alterar Responsáveis</DialogTitle>
-            <DialogDescription>
+      {partnersOpen && (
+        <PrismDialog
+          className="max-w-md"
+          isDismissable
+          onOpenChange={setPartnersOpen}
+        >
+          <PrismDialogHeader>
+            <PrismDialogTitle>Alterar Responsáveis</PrismDialogTitle>
+            <PrismDialogDescription>
               Clique para multi-selecionar.{" "}
               <kbd className="rounded bg-muted px-1 text-xs">Shift</kbd>+clique
               para selecionar somente um.
-            </DialogDescription>
-          </DialogHeader>
+            </PrismDialogDescription>
+          </PrismDialogHeader>
           <div className="grid grid-cols-3 gap-3 py-2 sm:grid-cols-4">
             {people.map((person: Person) => {
               const isSelected = pickedResponsibles.includes(person.user_id);
@@ -195,35 +190,38 @@ export function BulkActionMenu() {
               );
             })}
           </div>
-          <DialogFooter className="gap-2">
-            <Button onClick={() => setPartnersOpen(false)} variant="outline">
+          <PrismDialogFooter className="gap-2">
+            <PrismButton
+              onClick={() => setPartnersOpen(false)}
+              variant="outline"
+            >
               Cancelar
-            </Button>
-            <Button
-              disabled={pickedResponsibles.length === 0}
+            </PrismButton>
+            <PrismButton
+              isDisabled={pickedResponsibles.length === 0}
               onClick={applyResponsibles}
             >
               Aplicar ({pickedResponsibles.length} selecionado
               {pickedResponsibles.length !== 1 ? "s" : ""})
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </PrismButton>
+          </PrismDialogFooter>
+        </PrismDialog>
+      )}
 
       {/* ── Dialog: Seleção de cor do parceiro ────────────────────────────── */}
-      <Dialog onOpenChange={setColorOpen} open={colorOpen}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Alterar Cor</DialogTitle>
-            <DialogDescription>
+      {colorOpen && (
+        <PrismDialog
+          className="max-w-sm"
+          isDismissable
+          onOpenChange={setColorOpen}
+        >
+          <PrismDialogHeader>
+            <PrismDialogTitle>Alterar Cor</PrismDialogTitle>
+            <PrismDialogDescription>
               Escolha uma cor do parceiro para {selectedIds.length} ação(ões)
-            </DialogDescription>
-          </DialogHeader>
+            </PrismDialogDescription>
+          </PrismDialogHeader>
           <div className="py-2">
-            {/* Swatches + hex input unificados — mesmo componente do ActionColorDropdown */}
-
-            {/* <DropdownMenuContent className={cn("w-40 p-2")}> */}
-
             <PartnerColorPicker
               className={getGridCols(partnerColors.length)}
               colors={partnerColors}
@@ -231,186 +229,191 @@ export function BulkActionMenu() {
               value={pickedColor}
             />
           </div>
-          <DialogFooter className="gap-2">
-            <Button onClick={() => setColorOpen(false)} variant="outline">
+          <PrismDialogFooter className="gap-2">
+            <PrismButton onClick={() => setColorOpen(false)} variant="outline">
               Cancelar
-            </Button>
-            <Button disabled={!pickedColor} onClick={applyColor}>
+            </PrismButton>
+            <PrismButton isDisabled={!pickedColor} onClick={applyColor}>
               Aplicar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </PrismButton>
+          </PrismDialogFooter>
+        </PrismDialog>
+      )}
 
       {/* ── Dropdown principal de ações em lote ───────────────────────────── */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      <PrismMenu>
+        <PrismMenuTrigger>
           <PrismButton
             isDisabled={selectedIds.length === 0}
             variant="secondary"
           >
             {selectedIds.length > 0
-              ? `${selectedIds.length} Selecionado${selectedIds.length > 1 ? "s" : ""}`
+              ? `${selectedIds.length} Selecionada${selectedIds.length > 1 ? "s" : ""}`
               : "Selecione as ações"}
           </PrismButton>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          {/* Estado */}
-
+        </PrismMenuTrigger>
+        <PrismMenuContent className="w-56" placement="top end">
           {/* Fase */}
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <KanbanIcon className="mr-2 size-4 opacity-70" /> Alterar Fase
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                {Object.values(PHASES)
-                  .sort((a, b) => a.order - b.order)
-                  .map((phase) => (
-                    <DropdownMenuItem
-                      key={phase.slug}
-                      onClick={() =>
-                        performBulkAction({
-                          phase: phase.slug,
-                        })
-                      }
-                    >
-                      <div className="mr-2">
-                        <PhaseIcon phase={phase} size="xs" variant="icon" />
-                      </div>
-                      {phase.title}
-                    </DropdownMenuItem>
-                  ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-
-          {/* Estação */}
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <KanbanIcon className="mr-2 size-4 opacity-70" /> Alterar Estação
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                {Object.values(STATIONS).map((station) => (
-                  <DropdownMenuItem
-                    key={station.slug}
-                    onClick={() =>
+          <PrismMenuSub>
+            <PrismMenuSubTrigger textValue="Fase">
+              <IconLayoutKanban /> Alterar Fase
+            </PrismMenuSubTrigger>
+            <PrismMenuSubContent>
+              {Object.values(PHASES)
+                .sort((a, b) => a.order - b.order)
+                .map((phase) => (
+                  <PrismMenuItem
+                    key={phase.slug}
+                    onAction={() =>
                       performBulkAction({
-                        station: station.slug,
+                        phase: phase.slug,
                       })
                     }
+                    textValue={phase.title}
                   >
-                    <div className="mr-2">
-                      <StationIcon size="xs" station={station} />
-                    </div>
-                    {station.title}
-                  </DropdownMenuItem>
+                    <Icons
+                      slug={phase.slug}
+                      style={{
+                        color: phase.color,
+                      }}
+                    />
+                    {phase.title}
+                  </PrismMenuItem>
                 ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
+            </PrismMenuSubContent>
+          </PrismMenuSub>
 
-          {/* Data e Hora */}
-          <DropdownMenuItem onSelect={() => setDateTimeOpen(true)}>
-            <CalendarIcon className="size-4 opacity-70" /> Alterar Data e Hora
-          </DropdownMenuItem>
+          {/* Estação */}
+          <PrismMenuSub>
+            <PrismMenuSubTrigger textValue="Estação">
+              <IconLayoutKanban /> Alterar Estação
+            </PrismMenuSubTrigger>
+            <PrismMenuSubContent>
+              {Object.values(STATIONS).map((station) => (
+                <PrismMenuItem
+                  key={station.slug}
+                  onAction={() =>
+                    performBulkAction({
+                      station: station.slug,
+                    })
+                  }
+                  textValue={station.title}
+                >
+                  <Icons
+                    slug={station.slug}
+                    style={{
+                      color: station.color,
+                    }}
+                  />
+
+                  {station.title}
+                </PrismMenuItem>
+              ))}
+            </PrismMenuSubContent>
+          </PrismMenuSub>
 
           {/* Categoria */}
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <TagIcon className="mr-2 size-4 opacity-70" /> Alterar Categoria
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent className="max-h-72 overflow-y-auto">
-                {Object.values(CATEGORIES)
-                  .sort((a, b) => a.title.localeCompare(b.title))
-                  .map((cat) => (
-                    <DropdownMenuItem
-                      key={cat.slug}
-                      onClick={() =>
-                        performBulkAction({
-                          category: cat.slug,
-                        })
-                      }
-                    >
-                      <span
-                        className="mr-2 size-2 rounded-full"
-                        style={{
-                          backgroundColor: cat.color,
-                        }}
-                      />
-                      {cat.title}
-                    </DropdownMenuItem>
-                  ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
+          <PrismMenuSub>
+            <PrismMenuSubTrigger textValue="Categoria">
+              <IconTag /> Alterar Categoria
+            </PrismMenuSubTrigger>
+            <PrismMenuSubContent className="max-h-72 overflow-y-auto">
+              {Object.values(CATEGORIES)
+                .sort((a, b) => a.title.localeCompare(b.title))
+                .map((category) => (
+                  <PrismMenuItem
+                    key={category.slug}
+                    onAction={() =>
+                      performBulkAction({
+                        category: category.slug,
+                      })
+                    }
+                    textValue={category.title}
+                  >
+                    <Icons
+                      slug={category.slug}
+                      style={{
+                        color: category.color,
+                      }}
+                    />
+                    {category.title}
+                  </PrismMenuItem>
+                ))}
+            </PrismMenuSubContent>
+          </PrismMenuSub>
 
           {/* Prioridade */}
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <FlagIcon className="mr-2 size-4 opacity-70" /> Alterar Prioridade
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                {Object.values(PRIORITIES).map((priority) => {
-                  // Mapeia slug → classe de cor semântica do design system
-                  const iconClass =
-                    priority.slug === "low"
-                      ? "text-info"
-                      : priority.slug === "high"
-                        ? "text-error"
-                        : "text-success";
-                  return (
-                    <DropdownMenuItem
-                      key={priority.slug}
-                      onClick={() =>
-                        performBulkAction({
-                          priority: priority.slug,
-                        })
-                      }
-                    >
-                      <SignalIcon className={`mr-2 size-4 ${iconClass}`} />
-                      {priority.title}
-                    </DropdownMenuItem>
-                  );
-                })}
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
+          <PrismMenuSub>
+            <PrismMenuSubTrigger textValue="Prioridade">
+              <IconFlag /> Alterar Prioridade
+            </PrismMenuSubTrigger>
+            <PrismMenuSubContent>
+              {Object.values(PRIORITIES).map((priority) => {
+                const className =
+                  priority.slug === "low"
+                    ? "text-info"
+                    : priority.slug === "high"
+                      ? "text-error"
+                      : "text-warning";
+                return (
+                  <PrismMenuItem
+                    key={priority.slug}
+                    className={className}
+                    onAction={() =>
+                      performBulkAction({
+                        priority: priority.slug,
+                      })
+                    }
+                    textValue={priority.title}
+                  >
+                    <IconFlag />
+                    {priority.title}
+                  </PrismMenuItem>
+                );
+              })}
+            </PrismMenuSubContent>
+          </PrismMenuSub>
+
+          {/* Data e Hora */}
+          <PrismMenuItem
+            onAction={() => setDateTimeOpen(true)}
+            textValue="Data e Hora"
+          >
+            <IconCalendar /> Alterar Data e Hora
+          </PrismMenuItem>
 
           {/* Cor — abre o dialog com as cores do parceiro atual */}
-          <DropdownMenuItem onSelect={openColorDialog}>
-            <PaletteIcon className="mr-2 size-4 opacity-70" /> Alterar Cor
-          </DropdownMenuItem>
+          <PrismMenuItem onAction={openColorDialog} textValue="Cor">
+            <IconPalette /> Alterar Cor
+          </PrismMenuItem>
 
           {/* Responsáveis — abre o dialog de seleção de pessoas */}
-          <DropdownMenuItem onSelect={openPartnersDialog}>
-            <UserIcon className="mr-2 size-4 opacity-70" /> Alterar Responsáveis
-          </DropdownMenuItem>
+          <PrismMenuItem onAction={openPartnersDialog} textValue="Responsáveis">
+            <IconUser /> Alterar Responsáveis
+          </PrismMenuItem>
 
-          <DropdownMenuSeparator />
+          <PrismMenuSeparator />
 
           {/* Arquivar todas as selecionadas de uma vez */}
-          <DropdownMenuItem
-            onClick={() =>
+          <PrismMenuItem
+            onAction={() =>
               performBulkAction({
                 archived: true,
               })
             }
+            textValue="Arquivar"
           >
-            <ArchiveIcon className="mr-2 size-4 opacity-70" /> Arquivar
-          </DropdownMenuItem>
+            <IconArchive /> Arquivar
+          </PrismMenuItem>
 
-          <DropdownMenuSeparator />
+          <PrismMenuSeparator />
 
           {/* Sai do modo de seleção sem aplicar nada */}
-          <DropdownMenuItem onClick={clearSelection}>
-            <XIcon className="mr-2 size-4 opacity-70" /> Limpar Seleção
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          <PrismMenuItem onAction={clearSelection} textValue="Limpar Seleção">
+            <IconX /> Limpar Seleção
+          </PrismMenuItem>
+        </PrismMenuContent>
+      </PrismMenu>
     </>
   );
 }
