@@ -33,7 +33,7 @@ export function GlobalSearchCommand({
   } | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [query, setQuery] = useState("");
-  const [includeArchived, setIncludeArchived] = useState(false);
+  // const [includeArchived, setIncludeArchived] = useState(false);
   const location = useLocation();
 
   // Extract the partner slug if the user is currently looking at a partner page
@@ -59,9 +59,9 @@ export function GlobalSearchCommand({
           if (activePartnerSlug) {
             baseQuery = baseQuery.contains("partners", [activePartnerSlug]);
           }
-          if (!includeArchived) {
-            baseQuery = baseQuery.eq("archived", false);
-          }
+          // if (!includeArchived) {
+          //   baseQuery = baseQuery.eq("archived", false);
+          // }
           const { data, error } = await baseQuery.limit(10);
           if (error) throw error;
           setSearchResults({
@@ -78,7 +78,7 @@ export function GlobalSearchCommand({
       setSearchResults(null);
       setIsSearching(false);
     }
-  }, [query, activePartnerSlug, includeArchived, partners]);
+  }, [query, activePartnerSlug, partners]);
   const filteredPartners =
     query.trim() === ""
       ? partners
@@ -91,11 +91,13 @@ export function GlobalSearchCommand({
   return (
     <PrismCommandDialog onOpenChange={onOpenChange} open={open}>
       <PrismCommand
+        className="p-1"
         inputValue={query}
         onInputChange={(value) => setQuery(value)}
       >
         <PrismCommandInput placeholder="Faça sua busca..." />
         <PrismCommandList
+          className={"-mb-1"}
           renderEmptyState={() => (
             <PrismCommandEmpty>
               {isSearching ? "Buscando..." : "Nenhum item foi encontrado."}

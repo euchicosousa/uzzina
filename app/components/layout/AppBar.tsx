@@ -1,4 +1,12 @@
-import { IconCirclePlus, IconX } from "@tabler/icons-react";
+import {
+  IconBrain,
+  IconCirclePlus,
+  IconCopyCheck,
+  IconFilter,
+  IconHeartHandshake,
+  IconSearch,
+  IconX,
+} from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Link,
@@ -6,13 +14,6 @@ import {
   useNavigate,
   useParams,
 } from "@tanstack/react-router";
-import {
-  CopyCheckIcon,
-  FilterIcon,
-  HeartHandshakeIcon,
-  Layers2Icon,
-  SearchIcon,
-} from "lucide-react";
 import { useState } from "react";
 import { BulkActionMenu } from "~/components/features/BulkActionMenu";
 import {
@@ -26,6 +27,7 @@ import {
   PrismCommandList,
   PrismPopover,
   PrismPopoverTrigger,
+  PrismToggle,
 } from "~/components/prism";
 import { buttonVariants } from "~/components/prism/button";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
@@ -33,6 +35,7 @@ import { SIZE } from "~/lib/CONSTANTS";
 import { getCleanAction } from "~/lib/helpers";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchAllLateActions } from "~/lib/supabase.queries";
+import { cn } from "~/lib/utils";
 import type { Action, Partner, Person } from "~/types";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 export function AppBar({
@@ -75,7 +78,7 @@ export function AppBar({
     : null;
   return (
     <div className="fixed bottom-4 left-1/2 z-20 flex -translate-x-1/2 justify-center">
-      <div className="flex items-center gap-1 rounded-3xl border border-border bg-card/80 p-2 shadow-2xl backdrop-blur-xl squircle">
+      <div className="flex items-center gap-1 rounded-3xl border bg-card p-2 hover:shadow-2xl squircle hover:shadow-black/50 transition-all duration-500 shadow-lg">
         {/* Home */}
         <Link
           className={buttonVariants({
@@ -85,7 +88,7 @@ export function AppBar({
           title="Flow"
           to="/app/flow"
         >
-          <Layers2Icon className="size-5" />
+          <IconBrain className="size-5" />
         </Link>
         <PartnerFilterPopover
           activePartners={activePartners}
@@ -123,27 +126,19 @@ export function AppBar({
         </div>
         {/* Slot 3: Multi-seleção Toggle */}
         <div className="flex items-center">
-          {isSelectionMode ? (
-            <PrismButton
-              onClick={() => {
+          <PrismToggle
+            id="appbar-toggle-multi-selection"
+            isSelected={isSelectionMode}
+            onChange={(selected) => {
+              if (!selected) {
                 clearSelection();
-                toggleSelectionMode(false);
-              }}
-              size="icon"
-              variant="destructive"
-            >
-              <IconX />
-            </PrismButton>
-          ) : (
-            <PrismButton
-              id="appbar-toggle-multi-selection"
-              onClick={() => toggleSelectionMode()}
-              size={"icon"}
-              variant={"ghost"}
-            >
-              <CopyCheckIcon />
-            </PrismButton>
-          )}
+              }
+              toggleSelectionMode(selected);
+            }}
+            variant={isSelectionMode ? "destructive" : "default"}
+          >
+            {isSelectionMode ? <IconX /> : <IconCopyCheck />}
+          </PrismToggle>
         </div>
         {/* Slot 4: Busca / CmdK */}
         <PrismButton
@@ -151,7 +146,7 @@ export function AppBar({
           size="icon"
           variant="ghost"
         >
-          <SearchIcon />
+          <IconSearch />
         </PrismButton>
       </div>
     </div>
@@ -199,7 +194,7 @@ function PartnerFilterPopover({
               size={SIZE.sm}
             />
           ) : (
-            <HeartHandshakeIcon />
+            <IconHeartHandshake />
           )
         ) : partner ? (
           <UAvatar
@@ -210,7 +205,7 @@ function PartnerFilterPopover({
             size={SIZE.sm}
           />
         ) : (
-          <HeartHandshakeIcon />
+          <IconHeartHandshake />
         )}
       </PrismButton>
       <PrismPopover className="p-0 rounded-[32px]">
@@ -218,21 +213,26 @@ function PartnerFilterPopover({
           <div className="flex items-center border-b">
             <PrismCommandInput placeholder="Parceiro..." />
             {isAtHome && (
-              <PrismButton
-                className="mr-2"
-                onPress={() => {
-                  if (isFilterMode) {
+              <PrismToggle
+                className={({ isSelected }) =>
+                  cn(
+                    buttonVariants({
+                      variant: isSelected ? "default" : "ghost",
+                      size: "icon-xs",
+                    }),
+                    "mr-2 cursor-pointer",
+                  )
+                }
+                isSelected={isFilterMode}
+                onChange={(selected) => {
+                  if (!selected) {
                     setPartnerFilters([]);
-                    setIsFilterMode(false);
-                  } else {
-                    setIsFilterMode(true);
                   }
+                  setIsFilterMode(selected);
                 }}
-                size={"icon-sm"}
-                variant={isFilterMode ? "default" : "ghost"}
               >
-                <FilterIcon />
-              </PrismButton>
+                <IconFilter />
+              </PrismToggle>
             )}
           </div>
           <PrismCommandList
