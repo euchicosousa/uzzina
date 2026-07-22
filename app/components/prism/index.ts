@@ -83,3 +83,4 @@ export { Separator as PrismSeparator } from "./separator";
 export { Textarea as PrismTextarea } from "./textarea";
 export { PrismToggle, toggleVariants } from "./toggle";
 export { PrismToggleGroup, PrismToggleGroupItem } from "./toggle-group";
+export { PrismToaster, toast } from "./sonner";

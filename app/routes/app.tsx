@@ -6,7 +6,6 @@ import {
 } from "@tanstack/react-router";
 import { ChevronUpIcon } from "lucide-react";
 import { Suspense, lazy, useEffect, useState } from "react";
-import { Toaster } from "sonner";
 import invariant from "tiny-invariant";
 const CreateAndEditAction = lazy(() =>
   import("~/components/features/CreateAndEditAction").then((module) => ({
@@ -170,7 +169,6 @@ function Dashboard() {
                   </div>
                 </div>
               </div>
-              <Toaster richColors />
 
               {BaseAction ? (
                 <Suspense fallback={null}>

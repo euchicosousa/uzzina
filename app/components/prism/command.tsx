@@ -187,7 +187,7 @@ function CommandItem<T extends object>({
     <MenuItem
       {...props}
       className={cn(
-        "group/command-item relative squircle flex min-h-7 cursor-default items-center gap-2 rounded-2xl px-4 h-10 outline-hidden select-none in-data-[slot=dialog-content]:rounded-2xl data-focused:bg-muted data-focused:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-muted data-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-selected:*:[svg]:text-foreground",
+        "group/command-item relative squircle flex min-h-7 cursor-default items-center gap-2 rounded-2xl px-4 h-10 outline-hidden select-none in-data-[slot=dialog-content]:rounded-2xl data-focused:bg-secondary data-focused:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-secondary data-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-selected:*:[svg]:text-foreground",
         className,
       )}
       data-slot="command-item"
