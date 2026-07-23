@@ -14,22 +14,19 @@ import {
 import { ptBR } from "date-fns/locale";
 import { BarChart3Icon } from "lucide-react";
 import { useMemo } from "react";
-import { Button } from "~/components/ui/button";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
+  PrismButton,
+  PrismPopover,
+  PrismPopoverTrigger,
+} from "~/components/prism";
 import { PHASES } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
-
 interface DashboardMetricsProps {
   actions: Action[];
   lateActions: Action[];
   showToday?: boolean;
   referenceDate?: Date;
 }
-
 export function DashboardMetrics({
   actions,
   lateActions,
@@ -37,10 +34,9 @@ export function DashboardMetrics({
   referenceDate,
 }: DashboardMetricsProps) {
   const refDate = useMemo(() => referenceDate || new Date(), [referenceDate]);
-
   const isCurrentMonth = useMemo(
     () => isSameMonth(refDate, new Date()),
-    [refDate]
+    [refDate],
   );
 
   // Calculations
@@ -50,15 +46,12 @@ export function DashboardMetrics({
     const weekEnd = endOfWeek(now);
     const periodStart = startOfWeek(startOfMonth(refDate));
     const periodEnd = endOfDay(endOfWeek(endOfMonth(refDate)));
-
     const todayActions: Action[] = [];
     const weekActions: Action[] = [];
     const periodActions: Action[] = [];
-
     let todayCompleted = 0;
     let weekCompleted = 0;
     let periodCompleted = 0;
-
     for (const action of actions) {
       const isCompleted = action.phase === "done";
       const actionDate = parseISO(action.date);
@@ -70,20 +63,27 @@ export function DashboardMetrics({
       }
 
       // 2. Semana
-      if (isWithinInterval(actionDate, { start: weekStart, end: weekEnd })) {
+      if (
+        isWithinInterval(actionDate, {
+          start: weekStart,
+          end: weekEnd,
+        })
+      ) {
         weekActions.push(action);
         if (isCompleted) weekCompleted++;
       }
 
       // 3. Período (Mês Comercial)
       if (
-        isWithinInterval(actionDate, { start: periodStart, end: periodEnd })
+        isWithinInterval(actionDate, {
+          start: periodStart,
+          end: periodEnd,
+        })
       ) {
         periodActions.push(action);
         if (isCompleted) periodCompleted++;
       }
     }
-
     return {
       today: {
         actions: todayActions,
@@ -102,41 +102,41 @@ export function DashboardMetrics({
       },
     };
   }, [actions, refDate]);
-
   if (!actions) {
     return <div>Carregando métricas</div>;
   }
-
   return (
     <div className="flex items-center justify-center">
       {/* Desktop Layout - Side-by-side pills */}
       <div className="hidden w-full items-center justify-center gap-2 lg:flex">
         {showToday && (
           <MetricPill
-            title={"hoje"}
             actions={stats.today.actions}
-            total={stats.today.total}
             completed={stats.today.completed}
+            title={"hoje"}
+            total={stats.today.total}
           />
         )}
         {isCurrentMonth && (
           <MetricPill
-            title={"Semana"}
             actions={stats.week.actions}
-            total={stats.week.total}
             completed={stats.week.completed}
+            title={"Semana"}
+            total={stats.week.total}
           />
         )}
         <MetricPill
-          title={format(refDate, "MMMM", { locale: ptBR })}
           actions={stats.period.actions}
-          total={stats.period.total}
           completed={stats.period.completed}
+          title={format(refDate, "MMMM", {
+            locale: ptBR,
+          })}
+          total={stats.period.total}
         />
         {lateActions.length > 0 && (
           <MetricPill
-            title={"Atrasadas"}
             actions={lateActions}
+            title={"Atrasadas"}
             total={lateActions.length}
           />
         )}
@@ -144,71 +144,73 @@ export function DashboardMetrics({
 
       {/* Mobile Layout - Single chart button with Popover */}
       <div className="flex justify-center lg:hidden">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative">
-              <BarChart3Icon className="size-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="flex w-52 flex-col gap-2 rounded-xl border-border bg-popover/40 p-2.5 backdrop-blur-2xl">
+        <PrismPopoverTrigger>
+          <PrismButton aria-label="Ver métricas" size="icon-sm" variant="ghost">
+            <BarChart3Icon className="size-4" />
+          </PrismButton>
+          <PrismPopover className="flex max-w-60 flex-col gap-2 rounded-2xl border-border bg-popover/80 p-2.5 backdrop-blur-2xl">
             {showToday && (
               <MetricPill
-                title={"hoje"}
                 actions={stats.today.actions}
-                total={stats.today.total}
                 completed={stats.today.completed}
                 isMobile={true}
+                title={"hoje"}
+                total={stats.today.total}
               />
             )}
             {isCurrentMonth && (
               <MetricPill
-                title={"Semana"}
                 actions={stats.week.actions}
-                total={stats.week.total}
                 completed={stats.week.completed}
                 isMobile={true}
+                title={"Semana"}
+                total={stats.week.total}
               />
             )}
             <MetricPill
-              title={format(refDate, "MMMM", { locale: ptBR })}
               actions={stats.period.actions}
-              total={stats.period.total}
               completed={stats.period.completed}
               isMobile={true}
+              title={format(refDate, "MMMM", {
+                locale: ptBR,
+              })}
+              total={stats.period.total}
             />
             {lateActions.length > 0 && (
               <MetricPill
-                title={"Atrasadas"}
                 actions={lateActions}
-                total={lateActions.length}
                 isMobile={true}
+                title={"Atrasadas"}
+                total={lateActions.length}
               />
             )}
-          </PopoverContent>
-        </Popover>
+          </PrismPopover>
+        </PrismPopoverTrigger>
       </div>
     </div>
   );
 }
-
-const ProgressBar = ({ actions, total }: { actions: Action[]; total: number }) => {
+const ProgressBar = ({
+  actions,
+  total,
+}: {
+  actions: Action[];
+  total: number;
+}) => {
   if (total === 0) {
-    return <div className="h-1.5 w-14 shrink-0 rounded-full bg-muted/20" />;
+    return <div className="h-1.5 w-14 shrink-0 rounded-full bg-secondary" />;
   }
-
   const counts = {
     idea: 0,
     active: 0,
     done: 0,
   };
-
   for (const action of actions) {
     const phase = action.phase as keyof typeof counts;
     if (phase in counts) {
       counts[phase]++;
     }
   }
-
   return (
     <div className="flex h-1.5 w-14 shrink-0 overflow-hidden rounded-full bg-muted/20">
       {Object.entries(PHASES).map(([key, phaseInfo]) => {
@@ -218,18 +220,17 @@ const ProgressBar = ({ actions, total }: { actions: Action[]; total: number }) =
         return (
           <div
             key={key}
+            className="h-full transition-all duration-300 ease-in-out first:rounded-l-full last:rounded-r-full"
             style={{
               width: `${pct}%`,
               backgroundColor: phaseInfo.color,
             }}
-            className="h-full transition-all duration-300 ease-in-out first:rounded-l-full last:rounded-r-full"
           />
         );
       })}
     </div>
   );
 };
-
 const MetricPill = ({
   title,
   actions,

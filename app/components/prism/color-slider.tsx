@@ -47,7 +47,7 @@ function PrismColorSlider({
       >
         <ColorThumbPrimitive
           className={cn(
-            "top-[50%] size-4 rounded-full border-2 border-white shadow-md shadow-black/40 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 data-[dragging]:scale-125 transition-transform box-border",
+            "top-[50%] size-4 rounded-full border-2 border-white shadow-md shadow-black/40 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 data-dragging:scale-125 transition-transform box-border",
             thumbClassName,
           )}
         />
