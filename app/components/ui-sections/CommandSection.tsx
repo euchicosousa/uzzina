@@ -30,16 +30,26 @@ import {
   GallerySectionContent,
   GalleryItem,
 } from "./GalleryHelperComponents";
-
 function CommandPopoverDemo() {
   const [partnerFilters, setPartnerFilters] = useState<string[]>([]);
   const [isFilterMode, setIsFilterMode] = useState(false);
   const partners = [
-    { slug: "cnvt", title: "CNVT Creative", short: "CNVT" },
-    { slug: "uzzina", title: "Uzzina Tech", short: "UZZ" },
-    { slug: "acme", title: "Acme Corp", short: "ACM" },
+    {
+      slug: "cnvt",
+      title: "CNVT Creative",
+      short: "CNVT",
+    },
+    {
+      slug: "uzzina",
+      title: "Uzzina Tech",
+      short: "UZZ",
+    },
+    {
+      slug: "acme",
+      title: "Acme Corp",
+      short: "ACM",
+    },
   ];
-
   return (
     <PrismPopoverTrigger>
       <PrismButton className="relative" size="icon" variant="ghost">
@@ -49,7 +59,7 @@ function CommandPopoverDemo() {
           <IconHeartHandshake />
         )}
       </PrismButton>
-      <PrismPopover className="p-0 rounded-[32px]">
+      <PrismPopover className="p-0 rounded-4xl">
         <PrismCommand className="p-0 w-72">
           <div className="flex items-center border-b px-1">
             <PrismCommandInput placeholder="Parceiro..." />
@@ -107,11 +117,9 @@ function CommandPopoverDemo() {
     </PrismPopoverTrigger>
   );
 }
-
 function CommandDialogDemo() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -122,7 +130,6 @@ function CommandDialogDemo() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
-
   const items = [
     {
       id: "cal",
@@ -144,17 +151,14 @@ function CommandDialogDemo() {
       shortcut: "⌘S",
     },
   ];
-
   const filtered =
     query.trim() === ""
       ? items
       : items.filter((i) =>
           i.title.toLowerCase().includes(query.toLowerCase()),
         );
-
   const actions = filtered.filter((i) => i.group === "Ações Rápidas");
   const system = filtered.filter((i) => i.group === "Sistema");
-
   return (
     <div className="flex flex-col gap-3">
       <PrismButton
@@ -235,7 +239,6 @@ function CommandDialogDemo() {
     </div>
   );
 }
-
 export function CommandSection() {
   return (
     <div id="prism-command">

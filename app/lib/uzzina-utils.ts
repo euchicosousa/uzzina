@@ -1,7 +1,10 @@
 import Color from "color";
-export const getGridCols = (count: number) => {
+export const getGridCols = (count: number, max = 5) => {
   // Se for muito item, não tentamos ser espertos, usamos um padrão
   if (count > 20) return "grid-cols-4 sm:grid-cols-5";
+  if (max >= 8 && count % 8 === 0) return "grid-cols-8";
+  if (max >= 8 && count % 7 === 0) return "grid-cols-7";
+  if (max >= 8 && count % 6 === 0) return "grid-cols-6";
   if (count % 5 === 0) return "grid-cols-5";
   if (count % 4 === 0) return "grid-cols-4";
   if (count % 3 === 0) return "grid-cols-3";

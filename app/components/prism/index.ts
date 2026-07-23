@@ -41,6 +41,9 @@ export {
   PrismCommandSeparator,
   PrismCommandShortcut,
 } from "./command";
+export { PrismColorArea } from "./color-area";
+export { PrismColorField } from "./color-field";
+export { PrismColorSlider } from "./color-slider";
 export {
   PrismDialog,
   PrismDialogClose,
@@ -81,6 +84,7 @@ export {
 } from "./popover";
 export { Separator as PrismSeparator } from "./separator";
 export { Textarea as PrismTextarea } from "./textarea";
+export { PrismTimeField } from "./time-field";
 export { PrismToggle, toggleVariants } from "./toggle";
 export { PrismToggleGroup, PrismToggleGroupItem } from "./toggle-group";
 export { PrismToaster, toast } from "./sonner";

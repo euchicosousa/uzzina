@@ -10,27 +10,26 @@ import {
 } from "@tabler/icons-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { toHex } from "~/components/features/ActionForm/PartnerColorPicker";
 import { toast } from "sonner";
-import { PartnerColorPicker } from "~/components/features/ActionForm/PartnerColorPicker";
-import { UAvatar } from "~/components/uzzina/UAvatar";
+import {
+  BulkArchiveDialog,
+  BulkColorDialog,
+  BulkDateTimeDialog,
+  type BulkDateTimeResult,
+  BulkResponsiblesDialog,
+  BulkSprintDialog,
+} from "~/components/features/bulk";
 import { useAppContext } from "~/contexts/AppContext";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { CATEGORIES, PHASES, PRIORITIES, STATIONS } from "~/lib/CONSTANTS";
 import { QUERY_KEYS } from "~/lib/query-keys";
-import type { Person } from "~/lib/supabase.queries";
 import { fetchPeople } from "~/lib/supabase.queries";
-import { cn } from "~/lib/utils";
-import { getGridCols } from "~/lib/uzzina-utils";
 import type { Partner } from "~/types";
 import {
   PrismButton,
-  PrismDialog,
-  PrismDialogDescription,
-  PrismDialogFooter,
-  PrismDialogHeader,
-  PrismDialogTitle,
   PrismMenu,
   PrismMenuContent,
   PrismMenuItem,
@@ -41,8 +40,7 @@ import {
   PrismMenuTrigger,
 } from "../prism";
 import { Icons } from "../uzzina/UIIcons";
-import type { BulkDateTimeResult } from "./BulkDateTimeDialog";
-import { BulkDateTimeDialog } from "./BulkDateTimeDialog";
+
 export function BulkActionMenu() {
   // ─── Multi-seleção ───────────────────────────────────────────────────────────
   const { isSelectionMode, selectedIds, clearSelection } = useMultiSelection();
@@ -62,28 +60,83 @@ export function BulkActionMenu() {
   }) as Record<string, string | undefined>;
 
   // ─── Parceiro da página atual ────────────────────────────────────────────────
-  // Usa params.slug igual ao Header.tsx — undefined quando não há slug ou é "new"
   const currentPartner: Partner | undefined =
     params.slug && params.slug !== "new"
       ? partners.find((p) => p.slug === params.slug)
       : undefined;
 
-  // Cores brutas do parceiro atual — PartnerColorPicker cuida da normalização internamente
-  const partnerColors = currentPartner?.colors ?? [];
+  const partnerColors = useMemo(() => {
+    if (selectedIds.length === 0) return [];
+
+    const cachedQueries = _queryClient.getQueriesData<unknown>({
+      queryKey: QUERY_KEYS.actions.all(),
+    });
+
+    const selectedPartnerSlugs = new Set<string>();
+
+    for (const [_, data] of cachedQueries) {
+      if (Array.isArray(data)) {
+        for (const act of data) {
+          if (
+            act &&
+            typeof act === "object" &&
+            "id" in act &&
+            selectedIds.includes(String(act.id))
+          ) {
+            if ("partners" in act && Array.isArray(act.partners)) {
+              for (const slug of act.partners) {
+                if (slug) selectedPartnerSlugs.add(String(slug));
+              }
+            } else if ("partner_slug" in act && act.partner_slug) {
+              selectedPartnerSlugs.add(String(act.partner_slug));
+            }
+          }
+        }
+      }
+    }
+
+    const colorsSet = new Set<string>();
+    if (selectedPartnerSlugs.size > 0) {
+      for (const slug of selectedPartnerSlugs) {
+        const partner = partners.find((p) => p.slug === slug);
+        if (partner?.colors) {
+          for (const c of partner.colors) {
+            if (c) colorsSet.add(toHex(c));
+          }
+        }
+      }
+    }
+
+    if (colorsSet.size === 0) {
+      if (currentPartner?.colors && currentPartner.colors.length > 0) {
+        for (const c of currentPartner.colors) {
+          if (c) colorsSet.add(toHex(c));
+        }
+      } else {
+        for (const partner of partners) {
+          if (partner.colors) {
+            for (const c of partner.colors) {
+              if (c) colorsSet.add(toHex(c));
+            }
+          }
+        }
+      }
+    }
+
+    return Array.from(colorsSet);
+  }, [selectedIds, partners, currentPartner, _queryClient]);
 
   // ─── Estados dos dialogs ─────────────────────────────────────────────────────
   const [dateTimeOpen, setDateTimeOpen] = useState(false);
-  const [partnersOpen, setPartnersOpen] = useState(false);
-  const [pickedResponsibles, setPickedResponsibles] = useState<string[]>([]);
+  const [responsiblesOpen, setResponsiblesOpen] = useState(false);
   const [colorOpen, setColorOpen] = useState(false);
-  const [pickedColor, setPickedColor] = useState("");
+  const [sprintOpen, setSprintOpen] = useState(false);
+  const [archiveOpen, setArchiveOpen] = useState(false);
 
   // Early return: nada a mostrar fora do modo de seleção
   if (!isSelectionMode) return null;
 
   // ─── Helpers de ação em lote ─────────────────────────────────────────────────
-
-  /** Aplica `updates` em todas as ações selecionadas e limpa a seleção */
   const performBulkAction = (updates: Record<string, unknown>) => {
     handleBulkAction(selectedIds, updates);
     clearSelection();
@@ -93,17 +146,14 @@ export function BulkActionMenu() {
   // ─── Handlers: Data/Hora ─────────────────────────────────────────────────────
   const applyDateTime = (result: BulkDateTimeResult) => {
     if (result.mode === "datetime") {
-      // Situação 1: substitui data + hora completos
       performBulkAction({
         date: result.date,
       });
     } else if (result.mode === "date_only") {
-      // Situação 2: só a data — servidor preserva a hora de cada ação
       handleBulkDateOnly(selectedIds, result.dateOnly);
       clearSelection();
       toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
     } else {
-      // Situação 3: só a hora — servidor preserva a data de cada ação
       handleBulkTimeOnly(selectedIds, result.timeOnly);
       clearSelection();
       toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
@@ -111,134 +161,74 @@ export function BulkActionMenu() {
   };
 
   // ─── Handlers: Responsáveis ──────────────────────────────────────────────────
-  const openPartnersDialog = () => {
-    setPickedResponsibles([]);
-    setPartnersOpen(true);
-  };
-  const toggleResponsible = (id: string) => {
-    setPickedResponsibles((prev) =>
-      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id],
-    );
-  };
-  const applyResponsibles = () => {
+  const applyResponsibles = (responsibles: string[]) => {
     performBulkAction({
-      responsibles: pickedResponsibles,
+      responsibles,
     });
-    setPartnersOpen(false);
   };
 
   // ─── Handlers: Cor ───────────────────────────────────────────────────────────
-  const openColorDialog = () => {
-    setPickedColor("");
-    setColorOpen(true);
-  };
-  const applyColor = () => {
-    if (!pickedColor) return;
+  const applyColor = (color: string) => {
     performBulkAction({
-      color: pickedColor,
+      color,
     });
-    setColorOpen(false);
+  };
+
+  // ─── Handlers: Sprints ───────────────────────────────────────────────────────
+  const applySprints = (sprints: string[] | null) => {
+    performBulkAction({
+      sprints,
+    });
+  };
+
+  // ─── Handlers: Arquivar ──────────────────────────────────────────────────────
+  const applyArchive = () => {
+    performBulkAction({
+      archived: true,
+    });
+    setArchiveOpen(false);
   };
 
   // ─── Render ──────────────────────────────────────────────────────────────────
   return (
     <>
-      {/* ── Dialog: Data e Hora ─────────────────────────────────────────────── */}
+      {/* ── Dialogs Modulares ───────────────────────────────────────────────── */}
       <BulkDateTimeDialog
         onApply={applyDateTime}
         onOpenChange={setDateTimeOpen}
         open={dateTimeOpen}
       />
 
-      {/* ── Dialog: Seleção de responsáveis ───────────────────────────────── */}
-      {partnersOpen && (
-        <PrismDialog
-          className="max-w-md"
-          isDismissable
-          onOpenChange={setPartnersOpen}
-        >
-          <PrismDialogHeader>
-            <PrismDialogTitle>Alterar Responsáveis</PrismDialogTitle>
-            <PrismDialogDescription>
-              Clique para multi-selecionar.{" "}
-              <kbd className="rounded bg-muted px-1 text-xs">Shift</kbd>+clique
-              para selecionar somente um.
-            </PrismDialogDescription>
-          </PrismDialogHeader>
-          <div className="grid grid-cols-3 gap-3 py-2 sm:grid-cols-4">
-            {people.map((person: Person) => {
-              const isSelected = pickedResponsibles.includes(person.user_id);
-              return (
-                <button
-                  key={person.user_id}
-                  className={cn(
-                    "flex flex-col items-center gap-2 rounded-lg p-3 transition-all hover:bg-muted/50",
-                    isSelected ? "bg-muted text-foreground" : "opacity-50",
-                  )}
-                  onClick={() => toggleResponsible(person.user_id)}
-                  type="button"
-                >
-                  <UAvatar
-                    fallback={person.initials}
-                    image={person.image ?? undefined}
-                    size="md"
-                  />
-                  <span className="w-full truncate text-center text-xs leading-tight font-medium">
-                    {person.name}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-          <PrismDialogFooter className="gap-2">
-            <PrismButton
-              onClick={() => setPartnersOpen(false)}
-              variant="outline"
-            >
-              Cancelar
-            </PrismButton>
-            <PrismButton
-              isDisabled={pickedResponsibles.length === 0}
-              onClick={applyResponsibles}
-            >
-              Aplicar ({pickedResponsibles.length} selecionado
-              {pickedResponsibles.length !== 1 ? "s" : ""})
-            </PrismButton>
-          </PrismDialogFooter>
-        </PrismDialog>
-      )}
+      <BulkResponsiblesDialog
+        onApply={applyResponsibles}
+        onOpenChange={setResponsiblesOpen}
+        open={responsiblesOpen}
+        people={people}
+        selectedCount={selectedIds.length}
+      />
 
-      {/* ── Dialog: Seleção de cor do parceiro ────────────────────────────── */}
-      {colorOpen && (
-        <PrismDialog
-          className="max-w-sm"
-          isDismissable
-          onOpenChange={setColorOpen}
-        >
-          <PrismDialogHeader>
-            <PrismDialogTitle>Alterar Cor</PrismDialogTitle>
-            <PrismDialogDescription>
-              Escolha uma cor do parceiro para {selectedIds.length} ação(ões)
-            </PrismDialogDescription>
-          </PrismDialogHeader>
-          <div className="py-2">
-            <PartnerColorPicker
-              className={getGridCols(partnerColors.length)}
-              colors={partnerColors}
-              onChange={setPickedColor}
-              value={pickedColor}
-            />
-          </div>
-          <PrismDialogFooter className="gap-2">
-            <PrismButton onClick={() => setColorOpen(false)} variant="outline">
-              Cancelar
-            </PrismButton>
-            <PrismButton isDisabled={!pickedColor} onClick={applyColor}>
-              Aplicar
-            </PrismButton>
-          </PrismDialogFooter>
-        </PrismDialog>
-      )}
+      <BulkColorDialog
+        onApply={applyColor}
+        onOpenChange={setColorOpen}
+        open={colorOpen}
+        partnerColors={partnerColors}
+        selectedCount={selectedIds.length}
+      />
+
+      <BulkSprintDialog
+        onApply={applySprints}
+        onOpenChange={setSprintOpen}
+        open={sprintOpen}
+        people={people}
+        selectedCount={selectedIds.length}
+      />
+
+      <BulkArchiveDialog
+        onConfirm={applyArchive}
+        onOpenChange={setArchiveOpen}
+        open={archiveOpen}
+        selectedCount={selectedIds.length}
+      />
 
       {/* ── Dropdown principal de ações em lote ───────────────────────────── */}
       <PrismMenu>
@@ -374,6 +364,14 @@ export function BulkActionMenu() {
             </PrismMenuSubContent>
           </PrismMenuSub>
 
+          {/* Sprints — abre o dialog de atribuição de sprints */}
+          <PrismMenuItem
+            onAction={() => setSprintOpen(true)}
+            textValue="Sprints"
+          >
+            <Icons slug="sprint" /> Alterar Sprints
+          </PrismMenuItem>
+
           {/* Data e Hora */}
           <PrismMenuItem
             onAction={() => setDateTimeOpen(true)}
@@ -383,24 +381,26 @@ export function BulkActionMenu() {
           </PrismMenuItem>
 
           {/* Cor — abre o dialog com as cores do parceiro atual */}
-          <PrismMenuItem onAction={openColorDialog} textValue="Cor">
+          <PrismMenuItem
+            onAction={() => setColorOpen(true)}
+            textValue="Cor"
+          >
             <IconPalette /> Alterar Cor
           </PrismMenuItem>
 
           {/* Responsáveis — abre o dialog de seleção de pessoas */}
-          <PrismMenuItem onAction={openPartnersDialog} textValue="Responsáveis">
+          <PrismMenuItem
+            onAction={() => setResponsiblesOpen(true)}
+            textValue="Responsáveis"
+          >
             <IconUser /> Alterar Responsáveis
           </PrismMenuItem>
 
           <PrismMenuSeparator />
 
-          {/* Arquivar todas as selecionadas de uma vez */}
+          {/* Arquivar — abre o dialog de confirmação */}
           <PrismMenuItem
-            onAction={() =>
-              performBulkAction({
-                archived: true,
-              })
-            }
+            onAction={() => setArchiveOpen(true)}
             textValue="Arquivar"
           >
             <IconArchive /> Arquivar
@@ -408,7 +408,7 @@ export function BulkActionMenu() {
 
           <PrismMenuSeparator />
 
-          {/* Sai do modo de seleção sem aplicar nada */}
+          {/* Limpar Seleção */}
           <PrismMenuItem onAction={clearSelection} textValue="Limpar Seleção">
             <IconX /> Limpar Seleção
           </PrismMenuItem>

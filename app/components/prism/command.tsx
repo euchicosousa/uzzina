@@ -79,7 +79,7 @@ function CommandDialog({
   return (
     <PrismDialog
       className={cn(
-        "top-1/3 translate-y-0 overflow-hidden rounded-3xl! p-0",
+        "top-1/3 translate-y-0 overflow-hidden rounded-3xl!",
         className,
       )}
       isDismissable

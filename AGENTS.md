@@ -197,17 +197,11 @@ Componente de notificação semântica com ícone decorativo de fundo.
 
 ### Galeria de UI: `/ui`
 
-A rota `/ui` é a documentação viva do Prism design system. É organizada com uma **sidebar sticky** de navegação à esquerda e um `<main>` de conteúdo à direita.
-
-**Layout:**
-
-- Container: `grid grid-cols-1 lg:grid-cols-[320px_1fr]`
-- Sidebar: `lg:sticky top-0 lg:min-h-screen lg:border-r`
-- Seções de conteúdo: componentes auxiliares `GallerySection`, `GallerySectionHeader`, `GallerySectionContent`, `GalleryItem` definidos localmente no arquivo.
+A rota `/ui` é a documentação viva do Prism design system. É organizada modularmente com componentes auxiliares em `app/components/ui-sections/`, contendo uma **sidebar sticky** de navegação à esquerda e um `<main>` de conteúdo à direita.
 
 **Abas disponíveis:**
 
 - **Tokens de Design**: Cores semânticas OKLCH, escala de espaçamento exponencial.
-- **Componentes de UI**: `PrismButton`, `PrismInput`, `PrismAlert`.
+- **Componentes de UI**: Todos os 16 primitivos do Prism catalogados: `PrismButton`, `PrismButtonGroup`, `PrismInput`, `PrismInputGroup`, `PrismTextarea`, `PrismBadge`, `PrismToggle`, `PrismToggleGroup`, `PrismAlert`, `PrismPopover`, `PrismMenu`, `PrismDialog`, `PrismCombobox`, `PrismCommand`, `PrismToaster` (Sonner), e `PrismSeparator`.
 
-**Regra**: Sempre que adicionar um novo componente Prism, adicionar uma seção correspondente na aba "Componentes de UI" da `/ui`.
+**Regra**: Sempre que adicionar um novo componente Prism, adicionar uma seção correspondente em `app/components/ui-sections/` e integrá-lo na rota `/ui`.

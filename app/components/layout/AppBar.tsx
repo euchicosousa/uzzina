@@ -1,9 +1,9 @@
 import {
   IconBrain,
-  IconCirclePlus,
   IconCopyCheck,
   IconFilter,
   IconHeartHandshake,
+  IconPlus,
   IconSearch,
   IconX,
 } from "@tabler/icons-react";
@@ -58,8 +58,7 @@ export function AppBar({
   const params = useParams({
     strict: false,
   }) as Record<string, string | undefined>;
-  const { isSelectionMode, toggleSelectionMode } =
-    useMultiSelection();
+  const { isSelectionMode, toggleSelectionMode } = useMultiSelection();
   const isAtHome = location.pathname === "/app";
   const { data: lateActions = [] } = useQuery({
     queryKey: QUERY_KEYS.lateActions.user(person.user_id),
@@ -120,7 +119,7 @@ export function AppBar({
             >
               <span className="max-sm:hidden">Nova Ação</span>
               <span className="sm:hidden">Ação</span>
-              <IconCirclePlus />
+              <IconPlus />
             </PrismButton>
           )}
         </div>
@@ -216,7 +215,7 @@ function PartnerFilterPopover({
           <IconHeartHandshake />
         )}
       </PrismButton>
-      <PrismPopover className="p-0 rounded-[32px]">
+      <PrismPopover className="p-0 rounded-4xl">
         <PrismCommand className="p-0">
           <div className="flex items-center border-b">
             <PrismCommandInput placeholder="Parceiro..." />

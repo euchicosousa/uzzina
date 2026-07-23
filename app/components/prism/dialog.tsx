@@ -9,8 +9,8 @@ import {
   type ModalOverlayProps as ModalOverlayPrimitiveProps,
 } from "react-aria-components";
 import { cn } from "~/lib/utils";
-import { Button } from "~/components/prism/button";
 import { IconX } from "@tabler/icons-react";
+import { PrismButton } from ".";
 function DialogTrigger({ ...props }: DialogTriggerPrimitiveProps) {
   return <DialogTriggerPrimitive data-slot="dialog-trigger" {...props} />;
 }
@@ -19,12 +19,12 @@ function DialogClose({
   variant = "outline",
   size = "default",
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<typeof PrismButton>) {
   return (
-    <Button
+    <PrismButton
       className={cn(className)}
       data-slot="dialog-close"
-      size={size}
+      size={size || "sm"}
       slot="close"
       variant={variant}
       {...props}
@@ -68,7 +68,7 @@ function Dialog({
     <DialogOverlay isDismissable={isDismissable} {...props}>
       <ModalPrimitive
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 rounded-[min(var(--radius-4xl),24px)] bg-popover p-6 text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 sm:max-w-md dark:ring-foreground/10",
+          "fixed squircle top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-[min(var(--radius-4xl),24px)] bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 sm:max-w-md dark:ring-foreground/10",
           className,
         )}
         data-slot="dialog-content"
@@ -80,9 +80,9 @@ function Dialog({
           {children}
           {showCloseButton && (
             <DialogClose
-              className="absolute top-4 right-4 bg-secondary"
-              size="icon-sm"
-              variant="ghost"
+              className="absolute top-2 right-2"
+              size="icon-xs"
+              variant={"ghost"}
             >
               <IconX />
               <span className="sr-only">Close</span>
@@ -96,7 +96,7 @@ function Dialog({
 function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
-      className={cn("flex flex-col gap-1.5", className)}
+      className={cn("flex flex-col gap-2 px-5 py-4", className)}
       data-slot="dialog-header"
       {...props}
     />
@@ -113,14 +113,14 @@ function DialogFooter({
   return (
     <div
       className={cn(
-        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end px-5 py-4",
         className,
       )}
       data-slot="dialog-footer"
       {...props}
     >
       {children}
-      {showCloseButton && <DialogClose variant="outline">Close</DialogClose>}
+      {showCloseButton && <DialogClose variant="ghost">Close</DialogClose>}
     </div>
   );
 }
@@ -130,10 +130,7 @@ function DialogTitle({
 }: Omit<React.ComponentProps<typeof Heading>, "slot">) {
   return (
     <Heading
-      className={cn(
-        "font-heading text-base leading-none font-medium",
-        className,
-      )}
+      className={cn("font-heading text-xl leading-none font-medium", className)}
       data-slot="dialog-title"
       slot="title"
       {...props}

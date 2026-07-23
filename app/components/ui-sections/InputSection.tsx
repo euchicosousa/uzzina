@@ -7,6 +7,10 @@ import {
   PrismInputGroupAddon,
   PrismInputGroupInput,
   PrismButton,
+  PrismTimeField,
+  PrismColorField,
+  PrismColorArea,
+  PrismColorSlider,
 } from "~/components/prism";
 import {
   GallerySection,
@@ -95,6 +99,28 @@ export function InputSection() {
                 </Label>
                 <PrismInput />
               </TextField>
+
+              <div>
+                <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+                  PrismTimeField (RAC)
+                </Label>
+                <PrismTimeField aria-label="Horário" />
+              </div>
+
+              <div>
+                <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+                  PrismColorField (RAC)
+                </Label>
+                <PrismColorField aria-label="Código Hex de Cor" defaultValue="#FF5733" />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+                  PrismColorArea & PrismColorSlider (RAC)
+                </Label>
+                <PrismColorArea defaultValue="#FF5733" />
+                <PrismColorSlider defaultValue="#FF5733" />
+              </div>
             </div>
           </GalleryItem>
         </GallerySectionContent>

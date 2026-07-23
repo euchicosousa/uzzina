@@ -25,17 +25,14 @@ import {
   ToasterSection,
   SeparatorSection,
 } from "~/components/ui-sections";
-
 export const Route = createFileRoute("/ui")({
   component: UIPage,
 });
-
 function UIPage() {
   const [activeSection, setActiveSection] = useState<"tokens" | "components">(
     "tokens",
   );
   const [activeAnchor, setActiveAnchor] = useState<string>("");
-
   const handleSectionChange = (section: "tokens" | "components") => {
     setActiveSection(section);
     setActiveAnchor("");
@@ -44,7 +41,6 @@ function UIPage() {
       behavior: "smooth",
     });
   };
-
   useEffect(() => {
     const targets =
       activeSection === "tokens"
@@ -82,13 +78,11 @@ function UIPage() {
       }
       setActiveAnchor(currentActive);
     };
-
     window.addEventListener("scroll", handleScroll, {
       passive: true,
     });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [activeSection]);
-
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
       {/* Top Header Fixado */}
@@ -126,7 +120,7 @@ function UIPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] flex-1">
         {/* Sidebar Sticky */}
-        <aside className="p-6 border-b lg:border-b-0 lg:border-r border-border bg-background lg:sticky lg:top-[65px] lg:h-[calc(100vh-65px)] lg:overflow-y-auto">
+        <aside className="p-6 border-b lg:border-b-0 lg:border-r border-border bg-background lg:sticky lg:top-16 lg:h-[calc(100vh-65px)] lg:overflow-y-auto">
           <nav className="flex flex-col gap-6">
             <span className="text-xs font-bold tracking-wider text-muted-foreground uppercase px-4">
               {activeSection === "tokens"

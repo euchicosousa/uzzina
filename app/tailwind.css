@@ -91,7 +91,7 @@
   --color-info-background: oklch(
     var(--luminosity-background) var(--chroma-background) var(--info-hue)
   );
-  
+
   --font-heading: var(--font-sans);
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
@@ -270,11 +270,12 @@
   body {
     @apply bg-background text-foreground;
   }
-  
-  button:not(:disabled), [role="button"]:not(:disabled) {
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
     cursor: pointer;
   }
-  
+
   html {
     @apply font-sans;
   }
@@ -435,7 +436,7 @@ html {
 
 .tiptap.ProseMirror th,
 .tiptap.ProseMirror td {
-  @apply relative min-w-[50px] border border-border p-2 text-left align-top text-sm;
+  @apply relative min-w-48 border border-border p-2 text-left align-top text-sm;
 }
 
 .tiptap.ProseMirror th {

@@ -113,6 +113,7 @@ export function GlobalSearchCommand({
                   navigate({
                     to: `/app/partner/${partner.slug}`,
                   });
+                  setQuery("");
                   onOpenChange(false);
                 }}
                 textValue={partner.title}
@@ -143,6 +144,7 @@ export function GlobalSearchCommand({
                   onPress={() => {
                     setBaseAction(action);
                     onOpenChange(false);
+                    setQuery("");
                   }}
                   textValue={action.title}
                 >
