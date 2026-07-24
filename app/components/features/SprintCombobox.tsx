@@ -1,24 +1,21 @@
-import type { Person, Partner } from "~/types";
-import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { RabbitIcon } from "lucide-react";
+import { useState } from "react";
+import {
+  PrismCommand,
+  PrismCommandEmpty,
+  PrismCommandGroup,
+  PrismCommandInput,
+  PrismCommandItem,
+  PrismCommandList,
+  PrismCommandSeparator,
+  PrismPopover,
+  PrismPopoverTrigger,
+} from "~/components/prism";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
-import { CheckIcon, RabbitIcon } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
 import { cn } from "~/lib/utils";
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandGroup,
-  CommandSeparator,
-} from "../ui/command";
+import type { Partner, Person } from "~/types";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { ComboboxTrigger } from "./ComboboxTrigger";
 
@@ -30,16 +27,18 @@ interface SprintComboboxProps {
   tabIndex?: number;
   className?: string;
   size?: "sm" | "lg";
+  disabled?: boolean;
 }
 
 export function SprintCombobox({
-  selectedSprints,
-  responsibles,
+  selectedSprints = [],
+  responsibles = [],
   currentPartners,
   onSelect,
   tabIndex,
   className,
   size = "lg",
+  disabled = false,
 }: SprintComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { data: people = [] } = useQuery({
@@ -47,25 +46,6 @@ export function SprintCombobox({
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });
-
-  const isShiftPressedRef = useRef(false);
-
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "Shift") isShiftPressedRef.current = true;
-    };
-    const up = (e: KeyboardEvent) => {
-      if (e.key === "Shift") isShiftPressedRef.current = false;
-    };
-
-    window.addEventListener("keydown", down);
-    window.addEventListener("keyup", up);
-
-    return () => {
-      window.removeEventListener("keydown", down);
-      window.removeEventListener("keyup", up);
-    };
-  }, []);
 
   // Filter people to only those who have access to current partners
   const availablePeople = people.filter((person: Person) =>
@@ -86,155 +66,132 @@ export function SprintCombobox({
     .map((id) => people.find((p: Person) => p.user_id === id))
     .filter((p): p is Person => !!p);
 
+  const handleSelect = (userId: string) => {
+    const isShiftPressed = (
+      window.event as MouseEvent | undefined
+    )?.shiftKey;
+
+    if (isShiftPressed) {
+      const newSprints = [userId];
+      const newResponsibles = responsibles.includes(userId)
+        ? responsibles
+        : [...responsibles, userId];
+      onSelect(newSprints, newResponsibles);
+      setIsOpen(false);
+    } else {
+      let newSprints = [...selectedSprints];
+      const newResponsibles = [...responsibles];
+
+      if (newSprints.includes(userId)) {
+        newSprints = newSprints.filter((id) => id !== userId);
+      } else {
+        newSprints.push(userId);
+        if (!newResponsibles.includes(userId)) {
+          newResponsibles.push(userId);
+        }
+      }
+      onSelect(newSprints, newResponsibles);
+      setIsOpen(false);
+    }
+  };
+
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        <ComboboxTrigger
-          variant="form-inline"
-          size={size}
-          className={cn(
-            size === "lg" && cn(
-              "hover:opacity-100 focus:opacity-100 rounded-xl",
-              selectedSprints.length > 0 ? "p-1 opacity-80" : "p-2 opacity-50"
-            ),
-            className
-          )}
-          title="Sprints"
-          tabIndex={tabIndex}
-        >
-          {selectedSprints.length > 0 ? (
-            <UAvatarGroup
-              clampAt={2}
-              size={size === "sm" ? "sm" : "md"}
-              avatars={selectedPeople.map((person) => ({
-                id: person.id,
-                fallback: person.short,
-                image: person.image,
-              }))}
-            />
-          ) : (
-            <RabbitIcon className="size-5 shrink-0" />
-          )}
-        </ComboboxTrigger>
-      </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0" align="end">
-        <Command>
-          <CommandInput placeholder="Procurar usuário para sprint..." />
-          <CommandEmpty>Nenhum usuário encontrado.</CommandEmpty>
-          <CommandList className="outline-none">
+    <PrismPopoverTrigger
+      isOpen={isOpen && !disabled}
+      onOpenChange={(open) => !disabled && setIsOpen(open)}
+    >
+      <ComboboxTrigger
+        variant="form-inline"
+        size={size}
+        disabled={disabled}
+        className={cn(
+          size === "lg" && cn(
+            "hover:opacity-100 focus:opacity-100 rounded-xl",
+            selectedSprints.length > 0 ? "p-1 opacity-80" : "p-2 opacity-50"
+          ),
+          className
+        )}
+        title="Sprints"
+        tabIndex={tabIndex}
+      >
+        {selectedSprints.length > 0 ? (
+          <UAvatarGroup
+            clampAt={2}
+            size={size === "sm" ? "sm" : "md"}
+            avatars={selectedPeople.map((person) => ({
+              id: person.id,
+              fallback: person.short,
+              image: person.image,
+            }))}
+          />
+        ) : (
+          <RabbitIcon className="size-5 shrink-0" />
+        )}
+      </ComboboxTrigger>
+
+      <PrismPopover className="w-[300px] p-0 border rounded-3xl squircle shadow-xl bg-popover overflow-hidden" placement="bottom end">
+        <PrismCommand className="p-0">
+          <PrismCommandInput placeholder="Procurar usuário para sprint..." />
+          <PrismCommandList
+            renderEmptyState={() => (
+              <PrismCommandEmpty>Nenhum usuário encontrado.</PrismCommandEmpty>
+            )}
+          >
             {/* Responsible group */}
             {responsiblePeople.length > 0 && (
-              <CommandGroup heading="Responsáveis">
+              <PrismCommandGroup heading="Responsáveis">
                 {responsiblePeople.map((person: Person) => (
-                  <CommandItem
+                  <PrismCommandItem
                     key={person.id}
                     className="flex cursor-pointer items-center gap-2"
-                    onSelect={() => {
-                      if (isShiftPressedRef.current) {
-                        const newSprints = [person.user_id];
-                        const newResponsibles = responsibles.includes(person.user_id)
-                          ? responsibles
-                          : [...responsibles, person.user_id];
-                        onSelect(newSprints, newResponsibles);
-                        setIsOpen(false);
-                      } else {
-                        let newSprints = [...selectedSprints];
-                        const newResponsibles = [...responsibles];
-
-                        if (newSprints.includes(person.user_id)) {
-                          newSprints = newSprints.filter((id) => id !== person.user_id);
-                        } else {
-                          newSprints.push(person.user_id);
-                          if (!newResponsibles.includes(person.user_id)) {
-                            newResponsibles.push(person.user_id);
-                          }
-                        }
-                        onSelect(newSprints, newResponsibles);
-                        setIsOpen(false);
-                      }
-                    }}
+                    isSelected={selectedSprints.includes(person.user_id)}
+                    onAction={() => handleSelect(person.user_id)}
+                    textValue={`${person.name} ${person.surname}`}
                   >
                     <UAvatar
                       fallback={person.short}
                       size="sm"
                       image={person.image}
                     />
-                    <span className="text-sm font-medium">
+                    <span className="truncate">
                       {person.name} {person.surname}
                     </span>
-                    <CheckIcon
-                      className={cn(
-                        "ml-auto size-4",
-                        selectedSprints.includes(person.user_id)
-                          ? "visible"
-                          : "invisible",
-                      )}
-                    />
-                  </CommandItem>
+                  </PrismCommandItem>
                 ))}
-              </CommandGroup>
+              </PrismCommandGroup>
             )}
 
             {responsiblePeople.length > 0 &&
               nonResponsiblePeople.length > 0 && (
-                <CommandSeparator className="my-1" />
+                <PrismCommandSeparator className="-mx-2 my-1" />
               )}
 
             {/* Non-responsible group */}
             {nonResponsiblePeople.length > 0 && (
-              <CommandGroup heading="Não estão na lista de responsáveis">
+              <PrismCommandGroup heading="Não estão na lista de responsáveis">
                 {nonResponsiblePeople.map((person: Person) => (
-                  <CommandItem
+                  <PrismCommandItem
                     key={person.id}
                     className="flex cursor-pointer items-center gap-2"
-                    onSelect={() => {
-                      if (isShiftPressedRef.current) {
-                        const newSprints = [person.user_id];
-                        const newResponsibles = responsibles.includes(person.user_id)
-                          ? responsibles
-                          : [...responsibles, person.user_id];
-                        onSelect(newSprints, newResponsibles);
-                        setIsOpen(false);
-                      } else {
-                        let newSprints = [...selectedSprints];
-                        const newResponsibles = [...responsibles];
-
-                        if (newSprints.includes(person.user_id)) {
-                          newSprints = newSprints.filter((id) => id !== person.user_id);
-                        } else {
-                          newSprints.push(person.user_id);
-                          if (!newResponsibles.includes(person.user_id)) {
-                            newResponsibles.push(person.user_id);
-                          }
-                        }
-                        onSelect(newSprints, newResponsibles);
-                        setIsOpen(false);
-                      }
-                    }}
+                    isSelected={selectedSprints.includes(person.user_id)}
+                    onAction={() => handleSelect(person.user_id)}
+                    textValue={`${person.name} ${person.surname}`}
                   >
                     <UAvatar
                       fallback={person.short}
                       size="sm"
                       image={person.image}
                     />
-                    <span className="text-sm font-medium">
+                    <span className="truncate">
                       {person.name} {person.surname}
                     </span>
-                    <CheckIcon
-                      className={cn(
-                        "ml-auto size-4",
-                        selectedSprints.includes(person.user_id)
-                          ? "visible"
-                          : "invisible",
-                      )}
-                    />
-                  </CommandItem>
+                  </PrismCommandItem>
                 ))}
-              </CommandGroup>
+              </PrismCommandGroup>
             )}
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+          </PrismCommandList>
+        </PrismCommand>
+      </PrismPopover>
+    </PrismPopoverTrigger>
   );
 }

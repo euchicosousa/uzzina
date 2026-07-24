@@ -1,154 +1,130 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { CheckIcon } from "lucide-react";
+import { useState } from "react";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
+  PrismCommand,
+  PrismCommandEmpty,
+  PrismCommandGroup,
+  PrismCommandInput,
+  PrismCommandItem,
+  PrismCommandList,
+  PrismPopover,
+  PrismPopoverTrigger,
+} from "~/components/prism";
+import { useAppContext } from "~/contexts/AppContext";
 import { getFormattedPartnersName } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "../ui/command";
+import type { Partner } from "~/types";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { ComboboxTrigger } from "./ComboboxTrigger";
-import { useAppContext } from "~/contexts/AppContext";
+
 export function PartnersCombobox({
-  selectedPartners,
+  selectedPartners = [],
   onSelect,
   tabIndex,
   showText,
   variant = "form-footer",
+  disabled = false,
 }: {
   selectedPartners?: string[];
   onSelect?: (partners: string[]) => void;
   tabIndex?: number;
   showText?: boolean;
   variant?: "filter" | "form-footer";
+  disabled?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const { partners } = useAppContext();
-  const [selected, setSelected] = useState<string[]>(selectedPartners || []);
-  useEffect(() => {
-    setSelected(selectedPartners || []);
-  }, [selectedPartners]);
 
-  // Keep a ref so the memoized handleSelect callback always reads the latest
-  // selected array without being recreated on every render.
-  const selectedRef = useRef(selected);
-  selectedRef.current = selected;
-  const currentPartners = selected
+  const currentPartners = selectedPartners
     .map((slug) => partners.find((partner) => partner.slug === slug))
     .filter((partner): partner is Partner => partner !== undefined);
+
   const hasSelection = currentPartners.length > 0;
 
-  // Stable per-partner callback — only recreated when partner.slug changes
-  // (i.e. never, since slugs are static). This prevents cmdk from
-  // re-registering items on every render and calling setState in a loop.
-  const handleSelect = useCallback(
-    (slug: string) => {
-      const current = selectedRef.current;
-      let newPartners: string[];
-      if (isShiftPressedRef.current) {
-        newPartners = [slug];
-        setIsOpen(false);
-      } else {
-        newPartners = current.includes(slug)
-          ? current.filter((s) => s !== slug)
-          : [...current, slug];
-        setIsOpen(false);
-      }
-      setSelected(newPartners);
-      onSelect?.(newPartners);
-    },
-    // onSelect is from parent — stabilise with useCallback there if needed.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onSelect],
-  );
-  const isShiftPressedRef = useRef(false);
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "Shift") isShiftPressedRef.current = true;
-    };
-    const up = (e: KeyboardEvent) => {
-      if (e.key === "Shift") isShiftPressedRef.current = false;
-    };
-    window.addEventListener("keydown", down);
-    window.addEventListener("keyup", up);
-    return () => {
-      window.removeEventListener("keydown", down);
-      window.removeEventListener("keyup", up);
-    };
-  }, []);
+  const handleSelect = (slug: string) => {
+    const isShiftPressed = (
+      window.event as MouseEvent | undefined
+    )?.shiftKey;
+
+    let newPartners: string[];
+    if (isShiftPressed) {
+      newPartners = [slug];
+      setIsOpen(false);
+    } else {
+      newPartners = selectedPartners.includes(slug)
+        ? selectedPartners.filter((s) => s !== slug)
+        : [...selectedPartners, slug];
+    }
+    onSelect?.(newPartners);
+  };
+
   return (
-    <Popover onOpenChange={setIsOpen} open={isOpen}>
-      <PopoverTrigger asChild>
-        <ComboboxTrigger
-          className={"flex items-center gap-2 overflow-hidden"}
-          hasSelection={hasSelection}
-          tabIndex={tabIndex}
-          title={getFormattedPartnersName(currentPartners) || "Parceiros"}
-          variant={variant}
-        >
-          {hasSelection ? (
-            <UAvatarGroup
-              avatars={currentPartners.map((partner) => ({
-                id: partner.id,
-                fallback: partner?.short,
-                image: partner.image,
-                backgroundColor: partner?.colors[0],
-                color: partner?.colors[1],
-              }))}
-              clampAt={2}
-              size="sm"
-            />
-          ) : (
-            <UAvatar fallback="PA" size="sm" />
-          )}
-          {showText && (
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-              {hasSelection
-                ? getFormattedPartnersName(currentPartners)
-                : "Parceiros"}
-            </div>
-          )}
-        </ComboboxTrigger>
-      </PopoverTrigger>
-      <PopoverContent className="w-[400px] p-0">
-        <Command>
-          <CommandInput placeholder="Procurar parceiro..." />
-          <CommandEmpty>Nenhum parceiro encontrado.</CommandEmpty>
-          <CommandList className="p-2 outline-none">
-            {partners.map((partner) => (
-              <CommandItem
-                key={partner.id}
-                className={cn("flex items-center gap-2")}
-                onSelect={() => handleSelect(partner.slug)}
-                value={partner.slug}
-              >
-                <UAvatar
-                  backgroundColor={partner.colors[0]}
-                  color={partner.colors[1]}
-                  fallback={partner.short}
-                  image={partner.image}
-                  size="sm"
-                />
-                {partner.title}
-                <CheckIcon
-                  className={cn(
-                    "ml-auto size-4",
-                    selected?.includes(partner.slug) ? "visible" : "invisible",
-                  )}
-                />
-              </CommandItem>
-            ))}
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+    <PrismPopoverTrigger
+      isOpen={isOpen && !disabled}
+      onOpenChange={(open) => !disabled && setIsOpen(open)}
+    >
+      <ComboboxTrigger
+        className={cn("flex items-center gap-2 overflow-hidden")}
+        disabled={disabled}
+        hasSelection={hasSelection}
+        tabIndex={tabIndex}
+        title={getFormattedPartnersName(currentPartners) || "Parceiros"}
+        variant={variant}
+      >
+        {hasSelection ? (
+          <UAvatarGroup
+            avatars={currentPartners.map((partner) => ({
+              id: partner.id,
+              fallback: partner?.short,
+              image: partner.image,
+              backgroundColor: partner?.colors[0],
+              color: partner?.colors[1],
+            }))}
+            clampAt={2}
+            size="sm"
+          />
+        ) : (
+          <UAvatar fallback="PA" size="sm" />
+        )}
+        {showText && (
+          <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+            {hasSelection
+              ? getFormattedPartnersName(currentPartners)
+              : "Parceiros"}
+          </div>
+        )}
+      </ComboboxTrigger>
+
+      <PrismPopover className="w-[320px] p-0 border rounded-3xl squircle shadow-xl bg-popover overflow-hidden">
+        <PrismCommand className="p-0">
+          <PrismCommandInput placeholder="Procurar parceiro..." />
+          <PrismCommandList
+            renderEmptyState={() => (
+              <PrismCommandEmpty>Nenhum parceiro encontrado.</PrismCommandEmpty>
+            )}
+          >
+            <PrismCommandGroup>
+              {partners.map((partner) => (
+                <PrismCommandItem
+                  key={partner.id}
+                  className="flex items-center gap-2 cursor-pointer"
+                  isSelected={selectedPartners.includes(partner.slug)}
+                  onAction={() => handleSelect(partner.slug)}
+                  textValue={partner.title}
+                >
+                  <UAvatar
+                    backgroundColor={partner.colors[0]}
+                    color={partner.colors[1]}
+                    fallback={partner.short}
+                    image={partner.image}
+                    size="sm"
+                  />
+                  <span className="truncate">{partner.title}</span>
+                </PrismCommandItem>
+              ))}
+            </PrismCommandGroup>
+          </PrismCommandList>
+        </PrismCommand>
+      </PrismPopover>
+    </PrismPopoverTrigger>
   );
 }

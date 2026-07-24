@@ -5,11 +5,9 @@ import { AdminItemCard } from "~/components/uzzina/AdminItemCard";
 import { useQuery } from "@tanstack/react-query";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import type { Partner } from "~/types";
-
 export const Route = createFileRoute("/app/admin/partners")({
   component: AdminPartnersPage,
 });
-
 function AdminPartnersPage() {
   const supabase = createSupabaseBrowserClient();
   const { data: partners = [], isLoading } = useQuery({
@@ -18,15 +16,16 @@ function AdminPartnersPage() {
       const { data, error } = await supabase
         .from("partners")
         .select("*")
-        .order("title", { ascending: true });
+        .order("title", {
+          ascending: true,
+        });
       if (error) throw error;
       return data as Partner[];
     },
   });
-
   if (isLoading) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-background gap-4 p-8 min-h-[300px]">
+      <div className="flex h-full w-full items-center justify-center bg-background gap-4 p-8 min-h-75">
         <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
         <p className="text-muted-foreground text-sm font-medium animate-pulse">
           Carregando parceiros...
@@ -34,7 +33,6 @@ function AdminPartnersPage() {
       </div>
     );
   }
-
   const archivedPartners: Partner[] = [];
   const activePartners: Partner[] = [];
   partners.forEach((partner: Partner) => {
@@ -44,13 +42,17 @@ function AdminPartnersPage() {
       activePartners.push(partner);
     }
   });
-
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-8">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="pb-0 text-2xl font-bold">Parceiros</h1>
         <Button asChild className="squircle rounded-2xl" variant={"raised"}>
-          <Link to="/app/admin/partner/$slug" params={{ slug: "new" }}>
+          <Link
+            params={{
+              slug: "new",
+            }}
+            to="/app/admin/partner/$slug"
+          >
             Novo Parceiro <FolderPlusIcon />
           </Link>
         </Button>

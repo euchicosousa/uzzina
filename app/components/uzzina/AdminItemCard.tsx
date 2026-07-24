@@ -26,7 +26,7 @@ export function AdminItemCard({
   return (
     <Link
       className={cn(
-        "bg-card/50 squircle flex items-center gap-4 rounded-3xl border p-4 shadow-xs hover:shadow-black/20",
+        "bg-action squircle flex items-center gap-4 rounded-3xl border p-4 shadow-xs hover:shadow-black/20",
         "transition duration-500 ring ring-black/5 border-t border-white z-0 hover:z-10 hover:shadow-lg hover:bg-action-hover",
         "dark:border-white/20 dark:shadow-black/80 min-w-0 flex-1",
         className,
@@ -47,9 +47,7 @@ export function AdminItemCard({
           {badge}
         </div>
         {subtitle && (
-          <div className="text-muted-foreground truncate text-xs">
-            {subtitle}
-          </div>
+          <div className="opacity-50 truncate text-xs">{subtitle}</div>
         )}
       </div>
     </Link>

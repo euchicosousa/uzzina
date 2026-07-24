@@ -1,38 +1,39 @@
-import type { Partner } from "~/types";
-import { useEffect, useRef, useState } from "react";
-import { CheckIcon, User2Icon } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
-import { getFormattedPeopleName } from "~/lib/helpers";
-import { cn } from "~/lib/utils";
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "../ui/command";
-import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
-import { ComboboxTrigger } from "./ComboboxTrigger";
-import { SIZE } from "~/lib/CONSTANTS";
 import { useQuery } from "@tanstack/react-query";
+import { User2Icon } from "lucide-react";
+import { useState } from "react";
+import {
+  PrismCommand,
+  PrismCommandEmpty,
+  PrismCommandGroup,
+  PrismCommandInput,
+  PrismCommandItem,
+  PrismCommandList,
+  PrismPopover,
+  PrismPopoverTrigger,
+} from "~/components/prism";
+import { SIZE } from "~/lib/CONSTANTS";
+import { getFormattedPeopleName } from "~/lib/helpers";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
+import { cn } from "~/lib/utils";
+import type { Partner } from "~/types";
+import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
+import { ComboboxTrigger } from "./ComboboxTrigger";
+
 export function ResponsiblesCombobox({
-  selectedResponsibles,
+  selectedResponsibles = [],
   currentPartners,
   onSelect,
   variant = "default",
   className,
+  disabled = false,
 }: {
   selectedResponsibles: string[];
   currentPartners: Partner[];
   onSelect?: (responsibles: string[]) => void;
   variant?: "default" | "filter";
   className?: string;
+  disabled?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const { data: allPeople = [] } = useQuery({
@@ -40,103 +41,89 @@ export function ResponsiblesCombobox({
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });
-  const [selected, setSelected] = useState<string[]>(() =>
-    Array.from(new Set(selectedResponsibles || [])),
-  );
-  useEffect(() => {
-    setSelected(Array.from(new Set(selectedResponsibles || [])));
-  }, [selectedResponsibles]);
+
+  const selected = Array.from(new Set(selectedResponsibles || []));
+
   const currentResponsibles = selected
     .map((slug) => allPeople.find((person) => person.user_id === slug))
     .filter(
       (person): person is (typeof allPeople)[number] => person !== undefined,
     );
+
   const peopleFiltered = allPeople.filter((person) =>
     currentPartners
       .map((partner) => partner.users_ids.includes(person.user_id))
       .includes(true),
   );
-  const isShiftPressedRef = useRef(false);
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "Shift") isShiftPressedRef.current = true;
-    };
-    const up = (e: KeyboardEvent) => {
-      if (e.key === "Shift") isShiftPressedRef.current = false;
-    };
-    window.addEventListener("keydown", down);
-    window.addEventListener("keyup", up);
-    return () => {
-      window.removeEventListener("keydown", down);
-      window.removeEventListener("keyup", up);
-    };
-  }, []);
+
+  const handleSelect = (userId: string) => {
+    const isShiftPressed = (
+      window.event as MouseEvent | undefined
+    )?.shiftKey;
+
+    let newResponsibles: string[];
+    if (isShiftPressed) {
+      newResponsibles = [userId];
+      setIsOpen(false);
+    } else {
+      newResponsibles = selected.includes(userId)
+        ? selected.filter((slug) => slug !== userId)
+        : [...selected, userId];
+    }
+    onSelect?.(newResponsibles);
+  };
+
   return (
-    <Popover onOpenChange={setIsOpen} open={isOpen}>
-      <PopoverTrigger asChild>
-        <ComboboxTrigger
-          className={cn(className, "overflow-hidden")}
-          title={getFormattedPeopleName(currentResponsibles)}
-          variant={variant === "filter" ? "filter" : "form-link"}
-        >
-          <ActionResponsiblesDisplay
-            responsibles={selectedResponsibles}
-            size={SIZE.sm}
-            variant={variant}
-          />
-        </ComboboxTrigger>
-      </PopoverTrigger>
-      <PopoverContent className="w-[400px] p-0">
-        <Command>
-          <CommandInput placeholder="Procurar responsável..." />
-          <CommandEmpty>Nenhum responsável encontrado.</CommandEmpty>
-          <CommandList className="p-2 outline-none">
-            {peopleFiltered.map((person) => (
-              <CommandItem
-                key={person.id}
-                className={cn("flex items-center gap-2")}
-                onSelect={() => {
-                  if (isShiftPressedRef.current) {
-                    setSelected([person.user_id]);
-                    onSelect?.([person.user_id]);
-                    setIsOpen(false);
-                  } else {
-                    let newResponsibles = [...selected];
-                    if (selected.includes(person.user_id)) {
-                      newResponsibles = newResponsibles.filter(
-                        (slug) => slug !== person.user_id,
-                      );
-                    } else {
-                      newResponsibles.push(person.user_id);
-                    }
-                    setSelected(newResponsibles);
-                    onSelect?.(newResponsibles);
-                    setIsOpen(false);
-                  }
-                }}
-              >
-                <UAvatar
-                  fallback={person.name}
-                  image={person.image}
-                  size="sm"
-                />
-                {person.name}
-                <CheckIcon
-                  className={cn(
-                    "ml-auto size-4",
-                    selected?.includes(person.user_id)
-                      ? "visible"
-                      : "invisible",
-                  )}
-                />
-              </CommandItem>
-            ))}
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+    <PrismPopoverTrigger
+      isOpen={isOpen && !disabled}
+      onOpenChange={(open) => !disabled && setIsOpen(open)}
+    >
+      <ComboboxTrigger
+        className={cn(className, "overflow-hidden")}
+        disabled={disabled}
+        title={getFormattedPeopleName(currentResponsibles)}
+        variant={variant === "filter" ? "filter" : "form-link"}
+      >
+        <ActionResponsiblesDisplay
+          responsibles={selectedResponsibles}
+          size={SIZE.sm}
+          variant={variant}
+        />
+      </ComboboxTrigger>
+
+      <PrismPopover className="w-[320px] p-0 border rounded-3xl squircle shadow-xl bg-popover overflow-hidden">
+        <PrismCommand className="p-0">
+          <PrismCommandInput placeholder="Procurar responsável..." />
+          <PrismCommandList
+            renderEmptyState={() => (
+              <PrismCommandEmpty>Nenhum responsável encontrado.</PrismCommandEmpty>
+            )}
+          >
+            <PrismCommandGroup>
+              {peopleFiltered.map((person) => (
+                <PrismCommandItem
+                  key={person.id}
+                  className="flex items-center gap-2 cursor-pointer"
+                  isSelected={selected.includes(person.user_id)}
+                  onAction={() => handleSelect(person.user_id)}
+                  textValue={person.name}
+                >
+                  <UAvatar
+                    fallback={person.name}
+                    image={person.image}
+                    size="sm"
+                  />
+                  <span className="truncate">{person.name}</span>
+                </PrismCommandItem>
+              ))}
+            </PrismCommandGroup>
+          </PrismCommandList>
+        </PrismCommand>
+      </PrismPopover>
+    </PrismPopoverTrigger>
   );
 }
+
 function ActionResponsiblesDisplay({
   responsibles: responsibles_,
   size = SIZE.md,
@@ -154,6 +141,7 @@ function ActionResponsiblesDisplay({
   const responsibles = Array.from(new Set(responsibles_))
     .map((r) => people.find((p) => p.user_id === r))
     .filter((p) => p !== undefined);
+
   return (
     <div className="flex items-center overflow-hidden gap-2 text-xs text-muted-foreground">
       {responsibles.length === 0 ? (
