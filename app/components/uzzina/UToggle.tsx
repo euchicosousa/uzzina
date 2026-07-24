@@ -1,25 +1,5 @@
 import type React from "react";
 import { cn } from "~/lib/utils";
-import { Toggle } from "../ui/toggle";
-
-/**
- * UToggle — button-based toggle (not form-linked)
- */
-export function UToggle({
-  children,
-  pressed,
-  className,
-  ...props
-}: Omit<React.ComponentProps<typeof Toggle>, "children"> & {
-  pressed: boolean;
-  children: React.ReactElement;
-}) {
-  return (
-    <Toggle {...props} pressed={pressed} className={className}>
-      {children}
-    </Toggle>
-  );
-}
 
 /**
  * UToggleInput — form-linked radio/checkbox toggle using CSS peer pattern.

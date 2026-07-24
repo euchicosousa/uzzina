@@ -110,3 +110,11 @@ export {
   PrismSelectValue,
   PrismSelectEmpty,
 } from "./select";
+export {
+  PrismAvatar,
+  PrismAvatarImage,
+  PrismAvatarFallback,
+  PrismAvatarGroup,
+  PrismAvatarGroupCount,
+  PrismAvatarBadge,
+} from "./avatar";

@@ -31,6 +31,7 @@ import {
   PrismButton,
   PrismPopover,
   PrismPopoverTrigger,
+  PrismToggle,
 } from "~/components/prism";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { useAppTheme } from "~/hooks/useAppTheme";
@@ -39,7 +40,6 @@ import { filterActions, getInstagramFeedActions } from "~/lib/helpers";
 import { getUserPreferences } from "~/lib/preferences";
 import { cn } from "~/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { UToggle } from "~/components/uzzina/UToggle";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import {
   fetchAllLateActions,
@@ -254,16 +254,17 @@ function PartnerPage() {
           {/* Organização */}
           <ViewOptionsComponent
             endComponents={
-              <UToggle
-                className="raised"
-                onPressedChange={() => {
+              <PrismToggle
+                aria-label="Alternar Visão Feed"
+                isSelected={view === "feed"}
+                onChange={() => {
                   const v = view === "calendar" ? "feed" : "calendar";
                   setView(v);
                 }}
-                pressed={view === "feed"}
+                size="sm"
               >
                 <Grid3X3Icon />
-              </UToggle>
+              </PrismToggle>
             }
             setViewOptions={setViewOptions}
             viewOptions={viewOptions}

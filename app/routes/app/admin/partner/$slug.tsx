@@ -32,6 +32,7 @@ import { useAppContext } from "~/contexts/AppContext";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { fetchPeople } from "~/lib/supabase.queries";
 import type { Partner } from "~/types";
+import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
 export const Route = createFileRoute("/app/admin/partner/$slug")({
   component: AdminPartnerEditPage,
 });
@@ -80,6 +81,23 @@ function AdminPartnerEditPage() {
     sow: "marketing" as "marketing" | "socialmedia" | "demand",
     archived: false,
   });
+  const sow_list = [
+    {
+      id: "marketing",
+      title: "Marketing",
+      icon: <MegaphoneIcon className="size-8" />,
+    },
+    {
+      id: "socialmedia",
+      title: "Social Media",
+      icon: <BadgeCheckIcon className="size-8" />,
+    },
+    {
+      id: "demand",
+      title: "Demanda",
+      icon: <MailCheckIcon className="size-8" />,
+    },
+  ] as const;
 
   // Inicializa estados quando o parceiro for carregado
   useEffect(() => {
@@ -393,7 +411,7 @@ function AdminPartnerEditPage() {
               type="hidden"
               value={contextValue}
             />
-            <div className="min-h-[100px] bg-input dark:bg-input/30 input-embossed px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm rounded-2xl">
+            <div className="min-h-25 bg-input dark:bg-input/30 input-embossed px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm rounded-2xl">
               <Suspense
                 fallback={
                   <div className="h-full w-full animate-pulse bg-muted" />
@@ -422,7 +440,7 @@ function AdminPartnerEditPage() {
               {savingFields.has("voice") && <ULoader />}
             </div>
             <input id="voice" name="voice" type="hidden" value={voiceValue} />
-            <div className="min-h-[100px] bg-input dark:bg-input/30 input-embossed px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
+            <div className="min-h-25 bg-input dark:bg-input/30 input-embossed px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
               <Suspense
                 fallback={
                   <div className="h-full w-full animate-pulse bg-muted" />
@@ -451,7 +469,7 @@ function AdminPartnerEditPage() {
               {savingFields.has("instagram_caption_tail") && <ULoader />}
             </div>
             <Textarea
-              className="min-h-[80px]"
+              className="min-h-20"
               defaultValue={partner?.instagram_caption_tail || ""}
               id="instagram_caption_tail"
               name="instagram_caption_tail"
@@ -518,68 +536,33 @@ function AdminPartnerEditPage() {
           />
 
           <div className="flex items-end justify-between gap-4">
-            <div className="grid gap-4">
+            <div className="grid gap-4 w-full">
               <div className="flex items-center justify-between gap-2 font-medium">
                 <span>Escopo de Trabalho (SOW)</span>
                 {savingFields.has("sow") && <ULoader />}
               </div>
-              <div className="flex items-center gap-4">
-                <UToggleInput
-                  defaultChecked={partner?.sow === "marketing" || !partner?.sow}
-                  id="sow-marketing"
-                  name="sow"
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      stateRef.current.sow = "marketing";
-                      triggerAutoSave({
-                        sow: "marketing",
-                      });
-                    }
-                  }}
-                  type="radio"
-                  value="marketing"
-                >
-                  <MegaphoneIcon className="size-4" />
-                  Marketing
-                </UToggleInput>
-
-                <UToggleInput
-                  defaultChecked={partner?.sow === "socialmedia"}
-                  id="sow-socialmedia"
-                  name="sow"
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      stateRef.current.sow = "socialmedia";
-                      triggerAutoSave({
-                        sow: "socialmedia",
-                      });
-                    }
-                  }}
-                  type="radio"
-                  value="socialmedia"
-                >
-                  <BadgeCheckIcon className="size-4" />
-                  Social Media
-                </UToggleInput>
-
-                <UToggleInput
-                  defaultChecked={partner?.sow === "demand"}
-                  id="sow-demand"
-                  name="sow"
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      stateRef.current.sow = "demand";
-                      triggerAutoSave({
-                        sow: "demand",
-                      });
-                    }
-                  }}
-                  type="radio"
-                  value="demand"
-                >
-                  <MailCheckIcon className="size-4" />
-                  Demand
-                </UToggleInput>
+              <div className="flex items-center gap-4 w-full">
+                <PrismToggleGroup className={"grid grid-cols-3 w-full"}>
+                  {sow_list.map((item) => (
+                    <PrismToggleGroupItem
+                      key={item.id}
+                      className={"h-auto py-4"}
+                      isSelected={partner?.sow === item.id}
+                      onChange={(isSelected) => {
+                        if (isSelected) {
+                          triggerAutoSave({
+                            sow: item.id,
+                          });
+                        }
+                      }}
+                    >
+                      <div className="flex flex-col gap-2 items-center justify-center">
+                        {item.icon}
+                        <div className="text-lg">{item.title}</div>
+                      </div>
+                    </PrismToggleGroupItem>
+                  ))}
+                </PrismToggleGroup>
               </div>
             </div>
           </div>

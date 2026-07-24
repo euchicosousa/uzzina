@@ -5,14 +5,12 @@ import { Input } from "~/components/ui/input";
 import { ULoader } from "~/components/uzzina/ULoader";
 import { normalizeHexColor } from "~/lib/uzzina-utils";
 import type { PartnerTopic } from "~/types";
-
 interface PartnerTopicsEditorProps {
   topics: PartnerTopic[];
   brandColors: string[];
   isSaving?: boolean;
   onChange: (topics: PartnerTopic[]) => void;
 }
-
 export function PartnerTopicsEditor({
   topics,
   brandColors,
@@ -23,13 +21,11 @@ export function PartnerTopicsEditor({
   const [selectedColor, setSelectedColor] = useState(
     brandColors[0] || "#3b82f6",
   );
-
   const handleColorChange = (raw: string) => {
     let formatted = raw.trim().replace(/^#+/, "");
     if (formatted) formatted = `#${formatted}`;
     setSelectedColor(formatted);
   };
-
   const handleColorBlur = () => {
     let val = selectedColor.trim();
     if (!val || val === "#") val = "#000000";
@@ -42,7 +38,6 @@ export function PartnerTopicsEditor({
     }
     setSelectedColor(val);
   };
-
   const handleAddTopic = () => {
     if (!newTitle.trim()) return;
     const newTopic: PartnerTopic = {
@@ -54,14 +49,12 @@ export function PartnerTopicsEditor({
     onChange(updated);
     setNewTitle("");
   };
-
   const handleRemoveTopic = (id: string) => {
     const updated = topics.filter((t) => t.id !== id);
     onChange(updated);
   };
-
   return (
-    <div className="grid gap-4 border rounded-2xl p-6 bg-input/10 space-y-4">
+    <div className="grid gap-4 space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-lg flex items-center gap-2">
           Tópicos de Assunto
@@ -108,16 +101,21 @@ export function PartnerTopicsEditor({
       <div className="flex items-center gap-2 max-w-md pt-2">
         {/* Seletor de cor: igual ao ColorListEditor — círculo clicável + input hex */}
         <div className="flex items-center gap-2">
-          <label className="relative cursor-pointer" title="Escolher cor do tópico">
+          <label
+            className="relative cursor-pointer"
+            title="Escolher cor do tópico"
+          >
             <div
               className="size-6 rounded-full border"
-              style={{ backgroundColor: normalizeHexColor(selectedColor) }}
+              style={{
+                backgroundColor: normalizeHexColor(selectedColor),
+              }}
             />
             <input
               aria-label="Escolher cor visualmente"
               className="absolute inset-0 size-0 cursor-pointer p-0.5"
-              onChange={(e) => setSelectedColor(e.target.value)}
               onBlur={handleColorBlur}
+              onChange={(e) => setSelectedColor(e.target.value)}
               type="color"
               value={normalizeHexColor(selectedColor)}
             />
