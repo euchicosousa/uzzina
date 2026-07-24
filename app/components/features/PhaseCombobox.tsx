@@ -1,23 +1,19 @@
-import { CheckIcon, FilterIcon } from "lucide-react";
-import { Fragment, useEffect, useRef, useState } from "react";
-import type * as React from "react";
+import { FilterIcon } from "lucide-react";
+import { useState } from "react";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
+  PrismCommand,
+  PrismCommandEmpty,
+  PrismCommandInput,
+  PrismCommandItem,
+  PrismCommandList,
+  PrismPopover,
+  PrismPopoverTrigger,
+} from "~/components/prism";
 import { PHASES, type PHASE_TYPE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from "../ui/command";
-import { PhaseIcon } from "./PhaseIcon";
 import { ComboboxTrigger } from "./ComboboxTrigger";
+import { PhaseIcon } from "./PhaseIcon";
+
 const ALL_PHASE = {
   slug: "all",
   title: "Todas as fases",
@@ -26,13 +22,13 @@ const ALL_PHASE = {
 };
 type PhaseItem = typeof ALL_PHASE | PHASE_TYPE;
 const DEFAULT_SELECTED_PHASES: string[] = [];
+
 function MultiPhaseTrigger({
   tabIndex,
   className,
   currentPhases,
   hasRealSelection,
   showText,
-  ref,
   ...props
 }: {
   tabIndex?: number;
@@ -40,11 +36,9 @@ function MultiPhaseTrigger({
   currentPhases: PhaseItem[];
   hasRealSelection: boolean;
   showText?: boolean;
-  ref?: React.Ref<HTMLButtonElement>;
 }) {
   return (
     <ComboboxTrigger
-      ref={ref}
       className={cn(className, "overflow-hidden")}
       hasSelection={hasRealSelection}
       tabIndex={tabIndex}
@@ -86,6 +80,7 @@ function MultiPhaseTrigger({
     </ComboboxTrigger>
   );
 }
+
 function SinglePhaseTrigger({
   tabIndex,
   className,
@@ -93,7 +88,6 @@ function SinglePhaseTrigger({
   showText,
   iconVariant,
   currentPhase,
-  ref,
   ...props
 }: {
   tabIndex?: number;
@@ -102,11 +96,9 @@ function SinglePhaseTrigger({
   showText?: boolean;
   iconVariant?: "progress" | "icon";
   currentPhase: PhaseItem;
-  ref?: React.Ref<HTMLButtonElement>;
 }) {
   return (
     <ComboboxTrigger
-      ref={ref}
       className={className}
       size={size}
       tabIndex={tabIndex}
@@ -133,6 +125,7 @@ function SinglePhaseTrigger({
     </ComboboxTrigger>
   );
 }
+
 export function PhaseCombobox({
   selectedPhase,
   selectedPhases = DEFAULT_SELECTED_PHASES,
@@ -146,7 +139,7 @@ export function PhaseCombobox({
 }: {
   selectedPhase?: string;
   selectedPhases?: string[];
-  // biome-ignore lint/suspicious/noExplicitAny: onSelect callback handles polymorphic inputs (string slug or multi-select object payload) depending on isMulti
+  // biome-ignore lint/suspicious/noExplicitAny: polymorphic inputs onSelect
   onSelect?: (args: any) => void;
   isMulti?: boolean;
   tabIndex?: number;
@@ -156,21 +149,6 @@ export function PhaseCombobox({
   size?: "sm" | "lg";
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const isShiftPressedRef = useRef(false);
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "Shift") isShiftPressedRef.current = true;
-    };
-    const up = (e: KeyboardEvent) => {
-      if (e.key === "Shift") isShiftPressedRef.current = false;
-    };
-    window.addEventListener("keydown", down);
-    window.addEventListener("keyup", up);
-    return () => {
-      window.removeEventListener("keydown", down);
-      window.removeEventListener("keyup", up);
-    };
-  }, []);
   const PHASES_LIST = Object.values(PHASES);
   const phasesList = isMulti ? [ALL_PHASE, ...PHASES_LIST] : PHASES_LIST;
 
@@ -187,89 +165,87 @@ export function PhaseCombobox({
   }
   const hasRealSelection =
     isMulti && currentPhases.filter((s) => s.slug !== "all").length > 0;
+
   return (
-    <Popover onOpenChange={setIsOpen} open={isOpen}>
-      <PopoverTrigger asChild>
-        {isMulti ? (
-          <MultiPhaseTrigger
-            className={className}
-            currentPhases={currentPhases}
-            hasRealSelection={hasRealSelection}
-            showText
-            tabIndex={tabIndex}
-          />
-        ) : (
-          <SinglePhaseTrigger
-            className={className}
-            currentPhase={currentPhases[0]}
-            iconVariant={iconVariant}
-            showText={showText}
-            size={size}
-            tabIndex={tabIndex}
-          />
-        )}
-      </PopoverTrigger>
-      <PopoverContent align="start" className="w-56 p-0">
-        <Command>
-          <CommandInput placeholder="Procurar fase..." />
-          <CommandEmpty>Nenhuma fase encontrada.</CommandEmpty>
-          <CommandList className="p-1 outline-none">
+    <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
+      {isMulti ? (
+        <MultiPhaseTrigger
+          className={className}
+          currentPhases={currentPhases}
+          hasRealSelection={hasRealSelection}
+          showText
+          tabIndex={tabIndex}
+        />
+      ) : (
+        <SinglePhaseTrigger
+          className={className}
+          currentPhase={currentPhases[0]}
+          iconVariant={iconVariant}
+          showText={showText}
+          size={size}
+          tabIndex={tabIndex}
+        />
+      )}
+      <PrismPopover className="w-56 p-0 border rounded-3xl squircle shadow-xl bg-popover overflow-hidden">
+        <PrismCommand className="p-0">
+          <PrismCommandInput placeholder="Procurar fase..." />
+          <PrismCommandList
+            className="p-1 outline-none border-t"
+            renderEmptyState={() => (
+              <PrismCommandEmpty>Nenhuma fase encontrada.</PrismCommandEmpty>
+            )}
+          >
             {phasesList.map((phase) => (
-              <Fragment key={phase.slug}>
-                <CommandItem
-                  className={cn("flex items-center gap-2")}
-                  onSelect={() => {
-                    if (isMulti) {
-                      let newPhases: string[];
-                      if (phase.slug === "all") {
-                        newPhases = ["all"];
-                      } else if (isShiftPressedRef.current) {
-                        newPhases = [phase.slug];
-                      } else {
-                        newPhases = selectedPhases.filter(
-                          (slug) => slug !== "all",
-                        );
-                        if (newPhases.includes(phase.slug)) {
-                          newPhases = newPhases.filter(
-                            (slug) => slug !== phase.slug,
-                          );
-                        } else {
-                          newPhases = [...newPhases, phase.slug];
-                        }
-                        newPhases =
-                          newPhases.length === 0 ? ["all"] : newPhases;
-                      }
-                      onSelect?.({
-                        phases: newPhases,
-                        phase: phase.slug,
-                      });
+              <PrismCommandItem
+                key={phase.slug}
+                className={cn("flex items-center gap-2 cursor-pointer")}
+                isSelected={
+                  isMulti
+                    ? selectedPhases.includes(phase.slug)
+                    : selectedPhase === phase.slug
+                }
+                onAction={() => {
+                  if (isMulti) {
+                    let newPhases: string[];
+                    const isShiftPressed = (
+                      window.event as MouseEvent | undefined
+                    )?.shiftKey;
+                    if (phase.slug === "all") {
+                      newPhases = ["all"];
+                    } else if (isShiftPressed) {
+                      newPhases = [phase.slug];
                     } else {
-                      onSelect?.(phase.slug);
-                      setIsOpen(false);
+                      newPhases = selectedPhases.filter(
+                        (slug) => slug !== "all",
+                      );
+                      if (newPhases.includes(phase.slug)) {
+                        newPhases = newPhases.filter(
+                          (slug) => slug !== phase.slug,
+                        );
+                      } else {
+                        newPhases = [...newPhases, phase.slug];
+                      }
+                      newPhases =
+                        newPhases.length === 0 ? ["all"] : newPhases;
                     }
-                  }}
-                >
-                  <PhaseIcon phase={phase as PHASE_TYPE} variant={"icon"} />
-                  <span className="truncate">{phase.title}</span>
-                  <CheckIcon
-                    className={cn(
-                      "ml-auto size-4",
-                      isMulti
-                        ? selectedPhases.includes(phase.slug)
-                          ? "visible"
-                          : "invisible"
-                        : selectedPhase === phase.slug
-                          ? "visible"
-                          : "invisible",
-                    )}
-                  />
-                </CommandItem>
-                {phase.slug === "all" && <CommandSeparator className="my-1" />}
-              </Fragment>
+                    onSelect?.({
+                      phases: newPhases,
+                      phase: phase.slug,
+                    });
+                  } else {
+                    onSelect?.(phase.slug);
+                    setIsOpen(false);
+                  }
+                }}
+                textValue={phase.title}
+              >
+                <PhaseIcon phase={phase as PHASE_TYPE} variant={"icon"} />
+                <span className="truncate">{phase.title}</span>
+              </PrismCommandItem>
             ))}
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+          </PrismCommandList>
+        </PrismCommand>
+      </PrismPopover>
+    </PrismPopoverTrigger>
   );
 }

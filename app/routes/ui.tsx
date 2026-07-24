@@ -169,6 +169,11 @@ function UIPage() {
                   label="CategoriesCombobox"
                   targetId="uzzina-categories-combobox"
                 />
+                <SidebarAnchorLink
+                  active={activeAnchor === "uzzina-phase-combobox"}
+                  label="PhaseCombobox"
+                  targetId="uzzina-phase-combobox"
+                />
               </div>
             )}
 

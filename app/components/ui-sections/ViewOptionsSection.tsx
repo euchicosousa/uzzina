@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
+import { PhaseCombobox } from "~/components/features/PhaseCombobox";
 import {
   ViewOptionsComponent,
   type ViewOptions,
@@ -146,6 +147,23 @@ export function ViewOptionsSection() {
           </GallerySectionContent>
         </GallerySection>
       </div>
+
+      <div className="mt-8" id="uzzina-phase-combobox">
+        <GallerySection>
+          <GallerySectionHeader
+            description="Seletor de Fase refatorado para o Prism com suporte a estados de progresso, ícones coloridos e seleção única/múltipla."
+            title="PhaseCombobox"
+          />
+          <GallerySectionContent className="grid gap-6">
+            <GalleryItem label="Modo Filtro Múltiplo (isMulti)">
+              <PhaseDemoMulti />
+            </GalleryItem>
+            <GalleryItem label="Modo Formulário Único (Form-Inline)">
+              <PhaseDemoSingle />
+            </GalleryItem>
+          </GallerySectionContent>
+        </GallerySection>
+      </div>
     </div>
   );
 }
@@ -187,6 +205,37 @@ function CategoriesDemoSingle({
         showText={showText}
         size={size}
         triggerVariant={triggerVariant}
+      />
+      <span className="font-mono text-xs text-muted-foreground">
+        Selecionado: {selected}
+      </span>
+    </div>
+  );
+}
+
+function PhaseDemoMulti() {
+  const [selected, setSelected] = useState<string[]>(["all"]);
+  return (
+    <div className="flex flex-col gap-2">
+      <PhaseCombobox
+        isMulti
+        onSelect={({ phases }) => setSelected(phases)}
+        selectedPhases={selected}
+      />
+      <span className="font-mono text-xs text-muted-foreground">
+        Selecionados: {selected.join(", ")}
+      </span>
+    </div>
+  );
+}
+
+function PhaseDemoSingle() {
+  const [selected, setSelected] = useState<string>("to_do");
+  return (
+    <div className="flex flex-col gap-2">
+      <PhaseCombobox
+        onSelect={(phase) => setSelected(phase)}
+        selectedPhase={selected}
       />
       <span className="font-mono text-xs text-muted-foreground">
         Selecionado: {selected}
