@@ -1,7 +1,6 @@
 import { Time } from "@internationalized/date";
 import type { TimeValue } from "react-aria-components";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale/pt-BR";
 import { useState } from "react";
 import {
   PrismButton,
@@ -11,7 +10,7 @@ import {
   PrismDialogTitle,
   PrismTimeField,
 } from "~/components/prism";
-import { Calendar } from "~/components/ui/calendar";
+import { PrismCalendar } from "~/components/prism";
 import { Checkbox } from "~/components/ui/checkbox";
 import { cn } from "~/lib/utils";
 export type BulkDateTimeResult =
@@ -111,11 +110,8 @@ export function BulkDateTimeDialog({
               : "pointer-events-none max-h-0 opacity-0",
           )}
         >
-          <Calendar
-            autoFocus={changeDate && !changeTime}
+          <PrismCalendar
             className="w-full p-0 flex justify-center"
-            locale={ptBR}
-            mode="single"
             onSelect={setPickedDate}
             selected={pickedDate}
           />

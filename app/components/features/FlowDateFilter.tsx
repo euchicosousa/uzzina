@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import { CalendarDate } from "@internationalized/date";
 import {
   format,
   endOfWeek,
@@ -15,7 +16,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { Button } from "~/components/ui/button";
-import { Calendar } from "~/components/ui/calendar";
+import { RangeCalendar } from "~/components/prism";
 import type { DateRange } from "react-day-picker";
 import { ComboboxTrigger } from "./ComboboxTrigger";
 interface FlowDateFilterProps {
@@ -191,11 +192,16 @@ export function FlowDateFilter({ dateRange, onChange }: FlowDateFilterProps) {
           <div className="border-t border-border/60 my-1" />
 
           {/* Calendar Picker */}
-          <Calendar
-            disabled={(date) => date < new Date(2020, 0, 1)}
-            mode="range"
+          <RangeCalendar
+            isCellDisabled={(date: CalendarDate) => date.compare(new CalendarDate(2020, 1, 1)) < 0}
             numberOfMonths={1}
-            onSelect={handleCalendarChange}
+            onSelect={(range: { from?: Date; to?: Date } | undefined) => {
+              if (range) {
+                handleCalendarChange({ from: range.from, to: range.to });
+              } else {
+                handleCalendarChange(undefined);
+              }
+            }}
             selected={tempRange}
           />
 

@@ -1,4 +1,5 @@
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
+import { parseU } from "~/utils/date";
 import { ptBR } from "date-fns/locale";
 import { ArrowLeftIcon, PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -228,7 +229,7 @@ function DashActionDetail() {
                 Data de publicar
               </div>
               <div className="font-medium">
-                {format(parseISO(action.date), "d 'de' MMMM 'às' HH:mm", {
+                {format(parseU(action.date), "d 'de' MMMM 'às' HH:mm", {
                   locale: ptBR,
                 })}
               </div>
@@ -287,7 +288,7 @@ function DashActionDetail() {
             <div className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
               Legenda
             </div>
-            <div className="min-h-[200px] w-full resize-none whitespace-pre-wrap">
+            <div className="min-h-50 w-full resize-none whitespace-pre-wrap">
               {action.instagram_caption}
             </div>
           </div>

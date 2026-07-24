@@ -1,5 +1,5 @@
 import type { Action } from "~/types";
-import { parseISO } from "date-fns";
+import { parseU } from "~/utils/date";
 import {
   ORDER_BY,
   PRIORITIES,
@@ -48,7 +48,7 @@ export function sortActions(
     case ORDER_BY.date:
       sorted.sort((a, b) => {
         const primary =
-          (parseISO(a.date).getTime() - parseISO(b.date).getTime()) *
+          (parseU(a.date).getTime() - parseU(b.date).getTime()) *
           (ascending ? 1 : -1);
         return primary !== 0 ? primary : byTitle(a, b);
       });

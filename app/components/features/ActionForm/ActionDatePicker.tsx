@@ -1,8 +1,7 @@
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale/pt-BR";
 import { CalendarDaysIcon } from "lucide-react";
 import { useState } from "react";
-import { Calendar } from "~/components/ui/calendar";
+import { PrismCalendar } from "~/components/prism";
 import { Input } from "~/components/ui/input";
 import {
   Popover,
@@ -80,10 +79,8 @@ export function ActionDatePicker({
         </button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
-        <Calendar
+        <PrismCalendar
           className="w-full"
-          locale={ptBR}
-          mode="single"
           onSelect={handleCalendarSelect}
           selected={selectedDate}
         />

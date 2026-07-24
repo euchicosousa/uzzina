@@ -2,9 +2,41 @@ import type { Action } from "~/types";
 import {
   format,
   formatDistanceToNow,
+  parseISO,
 } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
+
+/**
+ * Parses a date string from Uzzina sources into a local `Date`, safe from
+ * UTC timezone drift.
+ *
+ * Use this instead of `parseISO` for:
+ *   - action.date         → "yyyy-MM-dd HH:mm:ss"  (banco, sem TZ)
+ *   - URL ?date= params   → "yyyy-MM-dd"            (só data, sem TZ)
+ *   - celebration.date    → "yyyy-MM-dd"            (só data, sem TZ)
+ *
+ * Do NOT replace `parseISO` with this for fields that already carry timezone:
+ *   - comment.created_at  → "...Z" (Supabase ISO com TZ, parseISO já correto)
+ *   - notif.created_at    → "...Z" (idem)
+ *
+ * If a string with explicit TZ is passed anyway, this function detects it and
+ * delegates to `parseISO` — so it is safe in all cases.
+ */
+export function parseU(str: string): Date {
+  // If the string already carries timezone info, parseISO handles it correctly.
+  if (str.includes("Z") || /[+-]\d{2}:\d{2}$/.test(str)) {
+    return parseISO(str);
+  }
+  // Normalize the database separator space → T, then split manually.
+  // Using the Date(y, m, d, h, min, s) constructor always uses LOCAL time.
+  const normalized = str.replace(" ", "T");
+  const [datePart, timePart = "00:00:00"] = normalized.split("T");
+  const [y, m, d] = (datePart ?? "").split("-").map(Number);
+  const [h = 0, min = 0, s = 0] = (timePart ?? "").split(":").map(Number);
+  if (!y || !m || !d) return parseISO(str); // fallback for malformed strings
+  return new Date(y, m - 1, d, h, min, s);
+}
 
 export function getFormattedDateTime(
   date: Date | string,

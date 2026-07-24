@@ -6,11 +6,11 @@ import {
   endOfWeek,
   format,
   isValid,
-  parseISO,
   startOfDay,
   startOfMonth,
   startOfWeek,
 } from "date-fns";
+import { parseU } from "~/utils/date";
 import { BellIcon, CheckIcon } from "lucide-react";
 import { useMemo, useRef } from "react";
 import { toast } from "sonner";
@@ -107,11 +107,11 @@ export function Header({
     partnerDate = format(new Date().setDate(15), "yyyy-MM-dd");
   } else {
     partnerDate = isValid(new Date(partnerDate))
-      ? format(parseISO(partnerDate).setDate(15), "yyyy-MM-dd")
+      ? format(parseU(partnerDate).setDate(15), "yyyy-MM-dd")
       : format(new Date().setDate(15), "yyyy-MM-dd");
   }
-  const pStart = startOfDay(startOfWeek(startOfMonth(parseISO(partnerDate))));
-  const pEnd = endOfDay(endOfWeek(endOfMonth(parseISO(partnerDate))));
+  const pStart = startOfDay(startOfWeek(startOfMonth(parseU(partnerDate))));
+  const pEnd = endOfDay(endOfWeek(endOfMonth(parseU(partnerDate))));
   const pStartStr = format(pStart, "yyyy-MM-dd HH:mm:ss");
   const pEndStr = format(pEnd, "yyyy-MM-dd HH:mm:ss");
   const partnerDateRange = `${pStartStr}_${pEndStr}`;
@@ -143,7 +143,7 @@ export function Header({
       action.partners?.includes(slug),
     );
   }, [partnerAllLateActions, slug]);
-  const referenceDate = isPartner && partnerDate ? parseISO(partnerDate) : now;
+  const referenceDate = isPartner && partnerDate ? parseU(partnerDate) : now;
   const filteredActions = useMemo(() => {
     const active = isHome ? homeActions : isPartner ? partnerActions : [];
     if (partnerFilters.length === 0) return active;

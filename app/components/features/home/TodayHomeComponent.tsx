@@ -1,5 +1,5 @@
-import type { Action } from "~/types";
-import { format, isSameDay, isToday, parseISO } from "date-fns";
+import { format, isSameDay, isToday } from "date-fns";
+import { parseU } from "~/utils/date";
 import { ptBR } from "date-fns/locale/pt-BR";
 import {
   BlocksIcon,
@@ -13,8 +13,9 @@ import { CategoriesBoardComponent } from "~/components/layout/CategoriesBoardCom
 import FeedComponent from "~/components/layout/FeedComponent";
 import KanbanHomeActions from "~/components/layout/KanbanHomeActions";
 import { PartnersComponent } from "~/components/layout/PartnersComponent";
-import { UToggle } from "~/components/uzzina/UToggle";
+import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
 import { isInstagramFeed } from "~/lib/helpers";
+import type { Action } from "~/types";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 
 export function TodayHomeComponent({
@@ -34,12 +35,12 @@ export function TodayHomeComponent({
     return view === "feed"
       ? actions.filter((action) => {
           return (
-            isSameDay(parseISO(action.date), currentDay) &&
+            isSameDay(parseU(action.date), currentDay) &&
             isInstagramFeed(action.category)
           );
         })
       : actions.filter((action) => {
-          return isSameDay(parseISO(action.date), currentDay);
+          return isSameDay(parseU(action.date), currentDay);
         });
   }, [actions, view, currentDay]);
 
@@ -63,36 +64,29 @@ export function TodayHomeComponent({
               showDate
             />
           </div>
-          <div className="flex gap-1">
-            <UToggle
-              pressed={view === "kanban"}
-              onClick={() => setView("kanban")}
-              className="raised"
-            >
+          <PrismToggleGroup
+            aria-label="Alternar Visão"
+            size="sm"
+            selectionMode="single"
+            selectedKeys={new Set([view])}
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0] as typeof view;
+              if (selected) setView(selected);
+            }}
+          >
+            <PrismToggleGroupItem aria-label="Visão por Kanban" id="kanban">
               <KanbanIcon />
-            </UToggle>
-            <UToggle
-              pressed={view === "categories"}
-              onClick={() => setView("categories")}
-              className="raised"
-            >
+            </PrismToggleGroupItem>
+            <PrismToggleGroupItem aria-label="Visão por Categorias" id="categories">
               <Grid3x3Icon />
-            </UToggle>
-            <UToggle
-              pressed={view === "feed"}
-              title="Visão por Feed"
-              onPressedChange={() => setView("feed")}
-            >
+            </PrismToggleGroupItem>
+            <PrismToggleGroupItem aria-label="Visão por Feed" id="feed">
               <BlocksIcon />
-            </UToggle>
-            <UToggle
-              pressed={view === "partners"}
-              title="Visão por Parceiros"
-              onPressedChange={() => setView("partners")}
-            >
+            </PrismToggleGroupItem>
+            <PrismToggleGroupItem aria-label="Visão por Parceiros" id="partners">
               <HeartHandshakeIcon />
-            </UToggle>
-          </div>
+            </PrismToggleGroupItem>
+          </PrismToggleGroup>
         </div>
       }
     >

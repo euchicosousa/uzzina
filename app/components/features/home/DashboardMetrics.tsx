@@ -7,10 +7,10 @@ import {
   isSameDay,
   isSameMonth,
   isWithinInterval,
-  parseISO,
   startOfMonth,
   startOfWeek,
 } from "date-fns";
+import { parseU } from "~/utils/date";
 import { ptBR } from "date-fns/locale";
 import { BarChart3Icon } from "lucide-react";
 import { useMemo } from "react";
@@ -54,7 +54,7 @@ export function DashboardMetrics({
     let periodCompleted = 0;
     for (const action of actions) {
       const isCompleted = action.phase === "done";
-      const actionDate = parseISO(action.date);
+      const actionDate = parseU(action.date);
 
       // 1. Hoje
       if (isSameDay(actionDate, now)) {

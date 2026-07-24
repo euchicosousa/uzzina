@@ -111,7 +111,6 @@ export function BulkColorDialog({
                 style={{
                   backgroundColor: hex,
                 }}
-                title={hex}
               />
             ))}
           </PrismToggleGroup>

@@ -8,7 +8,8 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import { format, isSameDay, parseISO } from "date-fns";
+import { format, isSameDay } from "date-fns";
+import { parseU } from "~/utils/date";
 import { useState } from "react";
 import { ActionItem } from "~/components/features/ActionItem";
 import {
@@ -65,10 +66,10 @@ export function CalendarWithDnd({
     if (event.over && activeAction) {
       const key = "date";
       const value = format(
-        parseISO(event.over.id as string),
+        parseU(event.over.id as string),
         "yyyy-MM-dd",
       ).concat(format(activeAction[key], " HH:mm:ss"));
-      const newDates = getNewDateForAction(activeAction, parseISO(value));
+      const newDates = getNewDateForAction(activeAction, parseU(value));
       setDateOverrides((prev) => ({
         ...prev,
         [activeAction.id]: newDates,
@@ -92,9 +93,9 @@ export function CalendarWithDnd({
   const calendar = calendarDays.map((date) => ({
     date,
     actions: actionsWithOverrides.filter((action) =>
-      isSameDay(parseISO(action.date), date),
+      isSameDay(parseU(action.date), date),
     ),
-    celebrations: celebrations.filter((c) => isSameDay(parseISO(c.date), date)),
+    celebrations: celebrations.filter((c) => isSameDay(parseU(c.date), date)),
   }));
   return (
     <DragStateContext.Provider value={!!activeAction}>

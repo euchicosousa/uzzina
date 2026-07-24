@@ -5,7 +5,7 @@ import { PlusIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "~/components/ui/button";
-import { Calendar } from "~/components/ui/calendar";
+import { PrismCalendar } from "~/components/prism";
 import { Input } from "~/components/ui/input";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
@@ -73,10 +73,8 @@ function AdminCelebrationsPage() {
         </div>
 
         <div className="flex flex-col items-center gap-6">
-          <Calendar
+          <PrismCalendar
             className="w-full"
-            locale={ptBR}
-            mode="single"
             onSelect={setSelectedDate}
             selected={selectedDate}
           />

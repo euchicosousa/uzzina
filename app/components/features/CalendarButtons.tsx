@@ -1,9 +1,4 @@
 import {
-  CalendarDaysIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "lucide-react";
-import {
   addDays,
   addYears,
   eachMonthOfInterval,
@@ -15,15 +10,19 @@ import {
   subYears,
 } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
-import { cn } from "~/lib/utils";
-import { Button } from "../ui/button";
-import { Calendar } from "../ui/calendar";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-
+  CalendarDaysIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "lucide-react";
+import { useState } from "react";
+import {
+  PrismButton,
+  PrismCalendar,
+  PrismPopover,
+  PrismPopoverTrigger,
+} from "~/components/prism";
+import { cn } from "~/lib/utils";
 export function CalendarButtons({
   currentDay,
   setCurrentDay,
@@ -37,102 +36,61 @@ export function CalendarButtons({
   showDate?: boolean;
   mode?: "day" | "month";
 }) {
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="flex">
-      <Button
+    <div className="flex items-center gap-1">
+      <PrismButton
         className="hidden md:flex"
-        variant="ghost"
         onClick={() => {
           setCurrentDay(addDays(currentDay, -days));
         }}
+        size="icon"
+        variant="ghost"
       >
         <ChevronLeftIcon />
-      </Button>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost">
-            <CalendarDaysIcon />
-            {showDate && (
-              <>
-                <span className="hidden capitalize md:block">
-                  {format(currentDay, "MMMM/yy", { locale: ptBR })}
-                </span>
-                <span className="block capitalize md:hidden">
-                  {format(currentDay, "MM/yy", { locale: ptBR })}
-                </span>
-              </>
-            )}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="p-0">
-          {mode === "day" ? (
-            <Calendar
-              captionLayout="dropdown"
-              selected={currentDay}
-              onSelect={(day) => {
-                if (day) {
-                  setCurrentDay(day);
-                }
-              }}
-              mode="single"
-            />
-          ) : (
-            <div>
-              <div className="flex justify-center gap-2 border-b p-4">
-                {eachYearOfInterval({
-                  start: subYears(currentDay, 1),
-                  end: addYears(currentDay, 1),
-                }).map((year) => {
-                  return (
-                    <button
-                      type="button"
-                      key={year.toISOString()}
-                      onClick={() => {
-                        setCurrentDay(year);
-                      }}
-                      className={cn(
-                        "hover:bg-secondary h-8 w-full rounded-full leading-none tracking-tighter capitalize",
-                        isSameYear(year, currentDay)
-                          ? "bg-primary hover:bg-primary/80 font-medium text-white"
-                          : "",
-                      )}
-                    >
-                      {format(year, "yyyy", { locale: ptBR })}
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="grid grid-cols-3">
-                {eachMonthOfInterval({
-                  start: startOfYear(currentDay),
-                  end: endOfYear(currentDay),
-                }).map((day) => (
-                  <button
-                    type="button"
-                    key={day.toISOString()}
-                    onClick={() => {
-                      setCurrentDay(day);
-                    }}
-                    className="hover:bg-secondary h-12 w-18 text-xl leading-none font-medium tracking-tighter capitalize"
-                  >
-                    {format(day, "MMM", { locale: ptBR })}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      </PrismButton>
 
-      <Button
-        variant="ghost"
+      <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
+        <PrismButton variant="ghost">
+          <CalendarDaysIcon />
+          {showDate && (
+            <>
+              <span className="hidden capitalize md:block">
+                {format(currentDay, "MMMM/yy", {
+                  locale: ptBR,
+                })}
+              </span>
+              <span className="block capitalize md:hidden">
+                {format(currentDay, "MM/yy", {
+                  locale: ptBR,
+                })}
+              </span>
+            </>
+          )}
+        </PrismButton>
+        <PrismPopover className="w-fit" placement="bottom">
+          <PrismCalendar
+            onSelect={(day) => {
+              if (day) {
+                setCurrentDay(day);
+                setIsOpen(false);
+              }
+            }}
+            selected={currentDay}
+          />
+        </PrismPopover>
+      </PrismPopoverTrigger>
+
+      <PrismButton
         className="hidden md:flex"
         onClick={() => {
           setCurrentDay(addDays(currentDay, days));
         }}
+        size="icon"
+        variant="ghost"
       >
         <ChevronRightIcon />
-      </Button>
+      </PrismButton>
     </div>
   );
 }

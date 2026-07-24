@@ -69,10 +69,7 @@ function ToggleGroupItem({
   variant,
   size,
   ...props
-}: ToggleButtonProps &
-  VariantProps<typeof toggleVariants> & {
-    title?: string;
-  }) {
+}: ToggleButtonProps & VariantProps<typeof toggleVariants>) {
   const context = useContext(ToggleGroupContext);
   const effectiveVariant = context.variant || variant || "default";
   const effectiveSize = context.size || size || "default";

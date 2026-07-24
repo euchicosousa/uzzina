@@ -1,4 +1,4 @@
-import { parseISO } from "date-fns";
+import { parseU } from "~/utils/date";
 import {
   ArrowRightIcon,
   CalendarDaysIcon,
@@ -68,7 +68,7 @@ export function EssentialsTab({
   const partnerSlugSet = new Set(RawAction.partners || []);
   const availableTopics = currentPartners
     .filter((p) => partnerSlugSet.has(p.slug))
-    .flatMap((p) => (((p.topics as unknown) as PartnerTopic[]) || []));
+    .flatMap((p) => (p.topics as unknown as PartnerTopic[]) || []);
   const workFilesRef = useRef(workFiles);
   workFilesRef.current = workFiles;
   const workFilesMetaRef = useRef<
@@ -192,7 +192,6 @@ export function EssentialsTab({
 
           <TopicsCombobox
             availableTopics={availableTopics}
-            selectedTopicIds={RawAction.topic_ids || []}
             onSelect={async (topic_ids) => {
               setRawAction({
                 ...RawAction,
@@ -202,6 +201,7 @@ export function EssentialsTab({
                 topic_ids,
               });
             }}
+            selectedTopicIds={RawAction.topic_ids || []}
           />
 
           <Button
@@ -228,7 +228,7 @@ export function EssentialsTab({
               className={cn(
                 isLateAction(RawAction) ? "text-destructive" : "opacity-50",
               )}
-              date={parseISO(RawAction.date)}
+              date={parseU(RawAction.date)}
               onSelect={async (date) => {
                 setRawAction({
                   ...RawAction,
@@ -298,13 +298,13 @@ export function EssentialsTab({
       <div className="h-full overflow-hidden">
         <Suspense
           fallback={
-            <div className="h-full w-full min-h-[200px] animate-pulse bg-muted rounded-2xl" />
+            <div className="h-full w-full min-h-50 animate-pulse bg-muted rounded-2xl" />
           }
         >
           <Tiptap
             key={descriptionVersion}
             className={cn(
-              "h-full w-full min-h-[200px]",
+              "h-full w-full min-h-50",
               isAIProcessing && "opacity-40",
             )}
             content={RawAction.description || ""}

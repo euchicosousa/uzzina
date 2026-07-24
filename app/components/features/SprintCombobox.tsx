@@ -18,7 +18,6 @@ import { cn } from "~/lib/utils";
 import type { Partner, Person } from "~/types";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { ComboboxTrigger } from "./ComboboxTrigger";
-
 interface SprintComboboxProps {
   selectedSprints: string[];
   responsibles: string[];
@@ -29,7 +28,6 @@ interface SprintComboboxProps {
   size?: "sm" | "lg";
   disabled?: boolean;
 }
-
 export function SprintCombobox({
   selectedSprints = [],
   responsibles = [],
@@ -61,16 +59,11 @@ export function SprintCombobox({
   const nonResponsiblePeople = availablePeople.filter(
     (p: Person) => !responsibles.includes(p.user_id),
   );
-
   const selectedPeople = selectedSprints
     .map((id) => people.find((p: Person) => p.user_id === id))
     .filter((p): p is Person => !!p);
-
   const handleSelect = (userId: string) => {
-    const isShiftPressed = (
-      window.event as MouseEvent | undefined
-    )?.shiftKey;
-
+    const isShiftPressed = (window.event as MouseEvent | undefined)?.shiftKey;
     if (isShiftPressed) {
       const newSprints = [userId];
       const newResponsibles = responsibles.includes(userId)
@@ -81,7 +74,6 @@ export function SprintCombobox({
     } else {
       let newSprints = [...selectedSprints];
       const newResponsibles = [...responsibles];
-
       if (newSprints.includes(userId)) {
         newSprints = newSprints.filter((id) => id !== userId);
       } else {
@@ -94,42 +86,45 @@ export function SprintCombobox({
       setIsOpen(false);
     }
   };
-
   return (
     <PrismPopoverTrigger
       isOpen={isOpen && !disabled}
       onOpenChange={(open) => !disabled && setIsOpen(open)}
     >
       <ComboboxTrigger
-        variant="form-inline"
-        size={size}
-        disabled={disabled}
         className={cn(
-          size === "lg" && cn(
-            "hover:opacity-100 focus:opacity-100 rounded-xl",
-            selectedSprints.length > 0 ? "p-1 opacity-80" : "p-2 opacity-50"
-          ),
-          className
+          size === "lg" &&
+            cn(
+              "hover:opacity-100 focus:opacity-100 rounded-xl",
+              selectedSprints.length > 0 ? "p-1 opacity-80" : "p-2 opacity-50",
+            ),
+          className,
         )}
-        title="Sprints"
+        disabled={disabled}
+        size={size}
         tabIndex={tabIndex}
+        title="Sprints"
+        variant="form-inline"
       >
         {selectedSprints.length > 0 ? (
           <UAvatarGroup
-            clampAt={2}
-            size={size === "sm" ? "sm" : "md"}
             avatars={selectedPeople.map((person) => ({
               id: person.id,
               fallback: person.short,
               image: person.image,
             }))}
+            clampAt={2}
+            size={size === "sm" ? "sm" : "md"}
           />
         ) : (
           <RabbitIcon className="size-5 shrink-0" />
         )}
       </ComboboxTrigger>
 
-      <PrismPopover className="w-[300px] p-0 border rounded-3xl squircle shadow-xl bg-popover overflow-hidden" placement="bottom end">
+      <PrismPopover
+        className="w-75 p-0 border rounded-3xl squircle shadow-xl bg-popover overflow-hidden"
+        placement="bottom end"
+      >
         <PrismCommand className="p-0">
           <PrismCommandInput placeholder="Procurar usuário para sprint..." />
           <PrismCommandList
@@ -150,8 +145,8 @@ export function SprintCombobox({
                   >
                     <UAvatar
                       fallback={person.short}
-                      size="sm"
                       image={person.image}
+                      size="sm"
                     />
                     <span className="truncate">
                       {person.name} {person.surname}
@@ -179,8 +174,8 @@ export function SprintCombobox({
                   >
                     <UAvatar
                       fallback={person.short}
-                      size="sm"
                       image={person.image}
+                      size="sm"
                     />
                     <span className="truncate">
                       {person.name} {person.surname}

@@ -8,7 +8,8 @@ import {
   useMemo,
   type ReactNode,
 } from "react";
-import { addDays, addMinutes, isAfter, parseISO } from "date-fns";
+import { addDays, addMinutes, isAfter } from "date-fns";
+import { parseU } from "~/utils/date";
 import { toast } from "sonner";
 import { INTENT, PHASES } from "~/lib/CONSTANTS";
 import {
@@ -105,7 +106,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
 
       const getFutureTarget = () => {
         const str = action.date;
-        const d = parseISO(str.replace(" ", "T"));
+        const d = parseU(str);
         return isAfter(d, new Date()) ? d : new Date();
       };
 

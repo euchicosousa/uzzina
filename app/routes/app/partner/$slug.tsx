@@ -5,11 +5,11 @@ import {
   endOfWeek,
   format,
   isValid,
-  parseISO,
   startOfDay,
   startOfMonth,
   startOfWeek,
 } from "date-fns";
+import { parseU } from "~/utils/date";
 import { Grid3X3Icon, SearchIcon, SettingsIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
@@ -26,7 +26,11 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "~/components/ui/input-group";
-import { PrismButton, PrismPopover, PrismPopoverTrigger } from "~/components/prism";
+import {
+  PrismButton,
+  PrismPopover,
+  PrismPopoverTrigger,
+} from "~/components/prism";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { useAppTheme } from "~/hooks/useAppTheme";
@@ -65,11 +69,11 @@ function PartnerPage() {
     dateParam = format(new Date().setDate(15), "yyyy-MM-dd");
   } else {
     dateParam = isValid(new Date(dateParam))
-      ? format(parseISO(dateParam).setDate(15), "yyyy-MM-dd")
+      ? format(parseU(dateParam).setDate(15), "yyyy-MM-dd")
       : format(new Date().setDate(15), "yyyy-MM-dd");
   }
-  const start = startOfDay(startOfWeek(startOfMonth(parseISO(dateParam))));
-  const end = endOfDay(endOfWeek(endOfMonth(parseISO(dateParam))));
+  const start = startOfDay(startOfWeek(startOfMonth(parseU(dateParam))));
+  const end = endOfDay(endOfWeek(endOfMonth(parseU(dateParam))));
   const startDateFormatted = format(start, "yyyy-MM-dd HH:mm:ss");
   const endDateFormatted = format(end, "yyyy-MM-dd HH:mm:ss");
   const queryClient = useQueryClient();
@@ -113,7 +117,7 @@ function PartnerPage() {
     enabled: !skipActions && !!partnerSlug,
   });
   const { setBaseAction } = useAppContext();
-  const currentDay = parseISO(dateParam);
+  const currentDay = parseU(dateParam);
   const [query, setQuery] = useState("");
   const { followPartnerColor, applyPartnerColors, restoreThemeColors } =
     useAppTheme();
@@ -195,7 +199,7 @@ function PartnerPage() {
                   <UBadge isDynamic value={lateCount} />
                 </PrismButton>
                 <PrismPopover
-                  className="max-h-[400px] w-[380px] overflow-y-auto space-y-4"
+                  className="max-h-100 w-95 overflow-y-auto space-y-4"
                   placement="bottom start"
                 >
                   <h5>Ações Atrasadas ({lateCount})</h5>
@@ -285,7 +289,7 @@ function PartnerPage() {
           className={cn(
             "overflow-hidden overflow-y-auto border-l",
             view === "feed"
-              ? "flex min-w-full md:w-[540px] md:min-w-auto md:shrink-0"
+              ? "flex min-w-full md:w-135 md:min-w-auto md:shrink-0"
               : "hidden",
           )}
         >

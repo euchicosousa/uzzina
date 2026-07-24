@@ -127,15 +127,15 @@ export function ViewOptionsComponent({
           selectionMode="single"
           size="sm"
         >
-          <PrismToggleGroupItem id={VARIANT.line} title="Exibição em Linha">
+          <PrismToggleGroupItem aria-label="Exibição em Linha" id={VARIANT.line}>
             <Rows3Icon />
           </PrismToggleGroupItem>
-          <PrismToggleGroupItem id={VARIANT.block} title="Exibição em Bloco">
+          <PrismToggleGroupItem aria-label="Exibição em Bloco" id={VARIANT.block}>
             <Rows2Icon />
           </PrismToggleGroupItem>
           <PrismToggleGroupItem
+            aria-label="Exibição em Conteúdo"
             id={VARIANT.content}
-            title="Exibição em Conteúdo"
           >
             <ImageIcon />
           </PrismToggleGroupItem>
@@ -165,13 +165,13 @@ export function ViewOptionsComponent({
             selectionMode="single"
             size="sm"
           >
-            <PrismToggleGroupItem id="4" title="4 Colunas">
+            <PrismToggleGroupItem aria-label="4 Colunas" id="4">
               <Columns2Icon />
             </PrismToggleGroupItem>
-            <PrismToggleGroupItem id="6" title="6 Colunas">
+            <PrismToggleGroupItem aria-label="6 Colunas" id="6">
               <Columns3Icon />
             </PrismToggleGroupItem>
-            <PrismToggleGroupItem id="7" title="7 Colunas">
+            <PrismToggleGroupItem aria-label="7 Colunas" id="7">
               <Columns4Icon />
             </PrismToggleGroupItem>
           </PrismToggleGroup>
@@ -199,14 +199,15 @@ export function ViewOptionsComponent({
             </PrismToggle>
           )}
 
-          {/* 4. Critério de Ordenação (Data / Fase) */}
+          {/* 4. Critério de Ordenação (Data ou Fase) */}
           {viewOptions.showOptions.order && (
             <PrismToggleGroup
               aria-label="Critério de Ordenação"
               className={"gap-1"}
               onSelectionChange={(keys) => {
                 const selected = Array.from(keys)[0] as
-                  (typeof ORDER_BY)[keyof typeof ORDER_BY] | undefined;
+                  | (typeof ORDER_BY)[keyof typeof ORDER_BY]
+                  | undefined;
                 if (selected) {
                   setViewOptions({
                     ...viewOptions,
@@ -220,10 +221,10 @@ export function ViewOptionsComponent({
               selectionMode="single"
               size="sm"
             >
-              <PrismToggleGroupItem id={ORDER_BY.date} title="Ordem por Data">
+              <PrismToggleGroupItem aria-label="Ordem por Data" id={ORDER_BY.date}>
                 <ClockIcon />
               </PrismToggleGroupItem>
-              <PrismToggleGroupItem id={ORDER_BY.phase} title="Ordem por Fase">
+              <PrismToggleGroupItem aria-label="Ordem por Fase" id={ORDER_BY.phase}>
                 <SquareCheckIcon />
               </PrismToggleGroupItem>
             </PrismToggleGroup>
@@ -263,22 +264,22 @@ export function ViewOptionsComponent({
           size="sm"
         >
           {viewOptions.showOptions.responsibles && (
-            <PrismToggleGroupItem id="responsibles" title="Responsáveis">
+            <PrismToggleGroupItem aria-label="Responsáveis" id="responsibles">
               <UsersIcon />
             </PrismToggleGroupItem>
           )}
           {viewOptions.showOptions.priority && (
-            <PrismToggleGroupItem id="priority" title="Prioridade">
+            <PrismToggleGroupItem aria-label="Prioridade" id="priority">
               <SignalIcon />
             </PrismToggleGroupItem>
           )}
           {viewOptions.showOptions.category && (
-            <PrismToggleGroupItem id="category" title="Categoria">
+            <PrismToggleGroupItem aria-label="Categoria" id="category">
               <TagIcon />
             </PrismToggleGroupItem>
           )}
           {viewOptions.showOptions.partner && (
-            <PrismToggleGroupItem id="partner" title="Parceiro">
+            <PrismToggleGroupItem aria-label="Parceiro" id="partner">
               <HeartHandshakeIcon />
             </PrismToggleGroupItem>
           )}
