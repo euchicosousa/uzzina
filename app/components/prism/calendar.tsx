@@ -23,7 +23,6 @@ import { buttonVariants } from "~/components/prism/button";
 import {
   PrismSelect,
   PrismSelectContent,
-  PrismSelectGroup,
   PrismSelectItem,
   PrismSelectTrigger,
   PrismSelectValue,

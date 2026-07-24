@@ -14,7 +14,7 @@ import {
   ViewOptionsComponent,
   useViewOptions,
 } from "~/components/features/ViewOptions";
-import { Toggle } from "~/components/ui/toggle";
+import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
 import { getCleanAction } from "~/lib/helpers";
 import { cn } from "~/lib/utils";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
@@ -75,24 +75,23 @@ export function CalendarHomeComponent({
       }
       OptionsComponent={
         <div className="flex items-center gap-8">
-          <div className="flex gap-1">
-            <Toggle
-              pressed={period === "week"}
-              onClick={() => setPeriod("week")}
-              className="raised"
-              key="week-toggle"
-            >
+          <PrismToggleGroup
+            aria-label="Alternar Período"
+            selectedKeys={new Set([period])}
+            selectionMode="single"
+            size="sm"
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0] as typeof period;
+              if (selected) setPeriod(selected);
+            }}
+          >
+            <PrismToggleGroupItem id="week">
               Semana
-            </Toggle>
-            <Toggle
-              pressed={period === "month"}
-              onClick={() => setPeriod("month")}
-              className="raised"
-              key="month-toggle"
-            >
+            </PrismToggleGroupItem>
+            <PrismToggleGroupItem id="month">
               Mês
-            </Toggle>
-          </div>
+            </PrismToggleGroupItem>
+          </PrismToggleGroup>
           <ViewOptionsComponent
             viewOptions={viewOptions}
             setViewOptions={setViewOptions}
