@@ -112,6 +112,7 @@ function InputGroupButton({
   type = "button",
   variant = "ghost",
   size = "xs",
+  ...props
 }: React.ComponentProps<typeof PrismButton> &
   VariantProps<typeof inputGroupButtonVariants>) {
   return (

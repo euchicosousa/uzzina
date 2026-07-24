@@ -1,6 +1,5 @@
 import { FolderPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { PrismButton } from "~/components/prism";
 import { AdminItemCard } from "~/components/uzzina/AdminItemCard";
 import { useQuery } from "@tanstack/react-query";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";

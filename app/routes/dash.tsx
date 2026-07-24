@@ -1,18 +1,18 @@
 import type { Partner, Client } from "~/types";
 import { Outlet, useNavigate, createFileRoute } from "@tanstack/react-router";
 import { LogOutIcon } from "lucide-react";
-import { PrismButton } from "~/components/prism";
+import {
+  PrismButton,
+  PrismSelect,
+  PrismSelectContent,
+  PrismSelectItem,
+  PrismSelectTrigger,
+  PrismSelectValue,
+} from "~/components/prism";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
 import { useAppTheme } from "~/hooks/useAppTheme";
 import { useEffect, useState } from "react";
 import { UAvatar } from "~/components/uzzina/UAvatar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { getClientById } from "~/models/clients";
 import { DashContext } from "~/contexts/DashContext";
@@ -171,21 +171,24 @@ function DashLayout() {
                   </span>
                 </div>
               ) : (
-                <Select
-                  onValueChange={handlePartnerChange}
-                  value={currentPartnerSlug}
+                <PrismSelect
+                  aria-label="Selecione o parceiro"
+                  onSelectionChange={(key) => {
+                    if (key) handlePartnerChange(String(key));
+                  }}
+                  selectedKey={currentPartnerSlug}
                 >
-                  <SelectTrigger className="w-45 rounded-xl border-none text-sm font-semibold shadow-none">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl">
-                    {partners.map((p) => (
-                      <SelectItem key={p.slug} value={p.slug}>
-                        {p.title}
-                      </SelectItem>
+                  <PrismSelectTrigger className="w-45 rounded-xl border-none text-sm font-semibold shadow-none">
+                    <PrismSelectValue />
+                  </PrismSelectTrigger>
+                  <PrismSelectContent>
+                    {partners.map((partner) => (
+                      <PrismSelectItem key={partner.slug} id={partner.slug}>
+                        {partner.title}
+                      </PrismSelectItem>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </PrismSelectContent>
+                </PrismSelect>
               )}
             </div>
           )}

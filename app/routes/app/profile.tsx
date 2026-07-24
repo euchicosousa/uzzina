@@ -1,13 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  CloudIcon,
   ImageIcon,
   LaptopIcon,
   LayoutGridIcon,
   ListIcon,
   MoonIcon,
   PipetteIcon,
-  SaveIcon,
   SunIcon,
   UploadIcon,
 } from "lucide-react";

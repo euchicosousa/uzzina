@@ -4,14 +4,14 @@ import { format } from "date-fns";
 import { useState } from "react";
 import {
   PrismButton,
+  PrismCheckbox,
   PrismDialog,
   PrismDialogFooter,
   PrismDialogHeader,
   PrismDialogTitle,
   PrismTimeField,
+  PrismCalendar,
 } from "~/components/prism";
-import { PrismCalendar } from "~/components/prism";
-import { Checkbox } from "~/components/ui/checkbox";
 import { cn } from "~/lib/utils";
 export type BulkDateTimeResult =
   | {
@@ -91,13 +91,13 @@ export function BulkDateTimeDialog({
         {/* ── Seção: Mudar Data ────────────────────────────────────────── */}
 
         <label
-          className="flex cursor-pointer items-center gap-2 font-medium text-sm text-foreground select-none px-5 py-4 border-b"
+          className="flex cursor-pointer items-center gap-2.5 font-medium text-sm text-foreground select-none px-5 py-4"
           htmlFor="bulk-change-date"
         >
-          <Checkbox
-            checked={changeDate}
+          <PrismCheckbox
+            isSelected={changeDate}
             id="bulk-change-date"
-            onCheckedChange={(v) => setChangeDate(!!v)}
+            onChange={(v) => setChangeDate(v)}
           />
           <span>Mudar Data</span>
         </label>
@@ -123,10 +123,10 @@ export function BulkDateTimeDialog({
           className="flex cursor-pointer items-center gap-2.5 font-medium text-sm text-foreground select-none px-5 py-4"
           htmlFor="bulk-change-time"
         >
-          <Checkbox
-            checked={changeTime}
+          <PrismCheckbox
+            isSelected={changeTime}
             id="bulk-change-time"
-            onCheckedChange={(v) => setChangeTime(!!v)}
+            onChange={(v) => setChangeTime(v)}
           />
           <span>Mudar Hora</span>
         </label>

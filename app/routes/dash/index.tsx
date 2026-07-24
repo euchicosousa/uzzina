@@ -6,7 +6,6 @@ import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { ClientCalendar } from "~/components/client/ClientCalendar";
 import { FeedSection } from "~/components/features/FeedSection";
 import { PrismButton } from "~/components/prism";
-import { cn } from "~/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useDashContext } from "~/contexts/DashContext";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";

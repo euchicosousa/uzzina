@@ -1,6 +1,5 @@
 import { UserPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { PrismButton } from "~/components/prism";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { getAllClients } from "~/models/clients";
 import { AdminItemCard } from "~/components/uzzina/AdminItemCard";

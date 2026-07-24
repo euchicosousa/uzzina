@@ -3,8 +3,6 @@ import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   ArchiveIcon,
   BadgeCheckIcon,
-  CheckIcon,
-  CloudUploadIcon,
   MailCheckIcon,
   MegaphoneIcon,
   PrinterIcon,
@@ -70,7 +68,7 @@ function AdminPartnerEditPage() {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [brandColors, setBrandColors] = useState<string[]>([]);
   const [topics, setTopics] = useState<PartnerTopic[]>([]);
-  const [justSaved, setJustSaved] = useState(false);
+  const [_justSaved, setJustSaved] = useState(false);
   const [savingFields, setSavingFields] = useState<Set<string>>(new Set());
 
   // Armazena valores atuais de formulário para referência rápida e mutações parciais
