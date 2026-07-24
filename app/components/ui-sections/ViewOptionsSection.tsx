@@ -252,7 +252,7 @@ function PhaseDemoSingle() {
   return (
     <div className="flex flex-col gap-2">
       <PhaseCombobox
-        onSelect={(phase) => setSelected(phase)}
+        onSelect={({ phase }) => setSelected(phase || "to_do")}
         selectedPhase={selected}
       />
       <span className="font-mono text-xs text-muted-foreground">

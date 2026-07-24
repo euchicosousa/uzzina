@@ -80,16 +80,18 @@ export function ActionFormFooter({
             showText={false}
             iconVariant="progress"
             onSelect={async (selected) => {
+              const phaseValue =
+                typeof selected === "string" ? selected : (selected as { phase: string }).phase;
               let finalStation = RawAction.station;
-              if (selected === "idea") finalStation = "flow";
-              if (selected === "done") finalStation = null;
+              if (phaseValue === "idea") finalStation = "flow";
+              if (phaseValue === "done") finalStation = null;
 
               setRawAction({
                 ...RawAction,
-                phase: selected,
+                phase: phaseValue as Action["phase"],
                 station: finalStation,
               });
-              await updateAction({ phase: selected, station: finalStation });
+              await updateAction({ phase: phaseValue, station: finalStation });
             }}
           />
         </div>

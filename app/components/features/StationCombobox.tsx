@@ -10,7 +10,6 @@ import {
   PrismCommandSeparator,
   PrismPopover,
   PrismPopoverTrigger,
-  PrismSeparator,
 } from "~/components/prism";
 import {
   CATEGORY_STATIONS,
@@ -153,7 +152,7 @@ export function StationCombobox({
           )}
         </ComboboxTrigger>
       )}
-      <PrismPopover className="w-52 p-0 border rounded-3xl squircle shadow-xl bg-popover overflow-hidden">
+      <PrismPopover className="w-52 p-0">
         <PrismCommand>
           <PrismCommandInput placeholder="Procurar estação..." />
           <PrismCommandList
