@@ -5,6 +5,8 @@ import {
   IconPaletteFilled,
   IconCategory,
   IconCategoryFilled,
+  IconApps,
+  IconAppsFilled,
 } from "@tabler/icons-react";
 import {
   SidebarTabButton,
@@ -24,16 +26,17 @@ import {
   CommandSection,
   ToasterSection,
   SeparatorSection,
+  ViewOptionsSection,
 } from "~/components/ui-sections";
 export const Route = createFileRoute("/ui")({
   component: UIPage,
 });
 function UIPage() {
-  const [activeSection, setActiveSection] = useState<"tokens" | "components">(
-    "tokens",
-  );
+  const [activeSection, setActiveSection] = useState<
+    "tokens" | "components" | "uzzina"
+  >("tokens");
   const [activeAnchor, setActiveAnchor] = useState<string>("");
-  const handleSectionChange = (section: "tokens" | "components") => {
+  const handleSectionChange = (section: "tokens" | "components" | "uzzina") => {
     setActiveSection(section);
     setActiveAnchor("");
     window.scrollTo({
@@ -45,21 +48,23 @@ function UIPage() {
     const targets =
       activeSection === "tokens"
         ? ["colors", "spacing"]
-        : [
-            "prism-button",
-            "prism-input",
-            "prism-textarea",
-            "prism-badge",
-            "prism-toggle",
-            "prism-alert",
-            "prism-popover",
-            "prism-menu",
-            "prism-dialog",
-            "prism-combobox",
-            "prism-command",
-            "prism-toaster",
-            "prism-separator",
-          ];
+        : activeSection === "uzzina"
+          ? ["uzzina-view-options"]
+          : [
+              "prism-button",
+              "prism-input",
+              "prism-textarea",
+              "prism-badge",
+              "prism-toggle",
+              "prism-alert",
+              "prism-popover",
+              "prism-menu",
+              "prism-dialog",
+              "prism-combobox",
+              "prism-command",
+              "prism-toaster",
+              "prism-separator",
+            ];
     setActiveAnchor(targets[0]);
     const handleScroll = () => {
       if (window.scrollY < 80) {
@@ -115,17 +120,26 @@ function UIPage() {
             label="Componentes de UI"
             onClick={() => handleSectionChange("components")}
           />
+          <SidebarTabButton
+            activeIcon={<IconAppsFilled className="size-4 text-primary" />}
+            inactiveIcon={<IconApps className="size-4" />}
+            isActive={activeSection === "uzzina"}
+            label="Componentes Uzzina"
+            onClick={() => handleSectionChange("uzzina")}
+          />
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] flex-1">
+      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] flex-1 lg:h-[calc(100vh-65px)]">
         {/* Sidebar Sticky */}
-        <aside className="p-6 border-b lg:border-b-0 lg:border-r border-border bg-background lg:sticky lg:top-16 lg:h-[calc(100vh-65px)] lg:overflow-y-auto">
+        <aside className="p-6 border-b lg:border-b-0 lg:border-r bg-background lg:sticky lg:top-19 lg:h-[calc(100vh-78px)] lg:overflow-y-auto">
           <nav className="flex flex-col gap-6">
             <span className="text-xs font-bold tracking-wider text-muted-foreground uppercase px-4">
               {activeSection === "tokens"
                 ? "Tokens de Design"
-                : "Componentes de UI"}
+                : activeSection === "uzzina"
+                  ? "Componentes Uzzina"
+                  : "Componentes de UI"}
             </span>
 
             {activeSection === "tokens" && (
@@ -139,6 +153,16 @@ function UIPage() {
                   active={activeAnchor === "spacing"}
                   label="Escala de Espaçamento"
                   targetId="spacing"
+                />
+              </div>
+            )}
+
+            {activeSection === "uzzina" && (
+              <div className="flex flex-col text-sm ml-4">
+                <SidebarAnchorLink
+                  active={activeAnchor === "uzzina-view-options"}
+                  label="ViewOptionsComponent"
+                  targetId="uzzina-view-options"
                 />
               </div>
             )}
@@ -221,6 +245,10 @@ function UIPage() {
             <div className="flex flex-col">
               <TokensColorsSection />
               <TokensSpacingSection />
+            </div>
+          ) : activeSection === "uzzina" ? (
+            <div className="flex flex-col">
+              <ViewOptionsSection />
             </div>
           ) : (
             <div className="flex flex-col">

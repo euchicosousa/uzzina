@@ -16,8 +16,11 @@ import {
 } from "lucide-react";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { StationCombobox } from "~/components/features/StationCombobox";
-import { Button } from "~/components/ui/button";
-import { Toggle } from "~/components/ui/toggle";
+import {
+  PrismToggle,
+  PrismToggleGroup,
+  PrismToggleGroupItem,
+} from "~/components/prism";
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 export type ViewOptions = {
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
@@ -102,179 +105,184 @@ export function ViewOptionsComponent({
     <div className="flex w-full shrink flex-wrap justify-between gap-x-2 gap-y-2">
       {/* Componentes no começo */}
       {startComponents}
-      {/* Mostrar botões de variantes */}
+
+      {/* 1. Seleção de Modo de Exibição (Linha / Bloco / Conteúdo) */}
       {viewOptions.showOptions.variant && (
-        <Button
-          onClick={() => {
-            const variant =
-              viewOptions.variant === VARIANT.line
-                ? VARIANT.block
-                : viewOptions.variant === VARIANT.block
-                  ? VARIANT.content
-                  : VARIANT.line;
-            setViewOptions({
-              ...viewOptions,
-              variant,
-            });
+        <PrismToggleGroup
+          aria-label="Modo de Exibição"
+          className={"gap-1"}
+          onSelectionChange={(keys) => {
+            const selected = Array.from(keys)[0] as
+              (typeof VARIANT)[keyof typeof VARIANT] | undefined;
+            if (selected) {
+              setViewOptions({
+                ...viewOptions,
+                variant: selected,
+              });
+            }
           }}
-          size="icon"
-          title="Ação em formato de linha"
-          variant="raised"
+          selectedKeys={
+            viewOptions.variant ? new Set([viewOptions.variant]) : new Set()
+          }
+          selectionMode="single"
+          size="sm"
         >
-          {viewOptions.variant === VARIANT.line ? (
+          <PrismToggleGroupItem id={VARIANT.line} title="Exibição em Linha">
             <Rows3Icon />
-          ) : viewOptions.variant === VARIANT.block ? (
+          </PrismToggleGroupItem>
+          <PrismToggleGroupItem id={VARIANT.block} title="Exibição em Bloco">
             <Rows2Icon />
-          ) : (
+          </PrismToggleGroupItem>
+          <PrismToggleGroupItem
+            id={VARIANT.content}
+            title="Exibição em Conteúdo"
+          >
             <ImageIcon />
-          )}
-        </Button>
+          </PrismToggleGroupItem>
+        </PrismToggleGroup>
       )}
 
+      {/* 2. Seleção de Colunas */}
       {viewOptions.variant === VARIANT.content &&
         viewOptions.showOptions.columns && (
-          <Button
-            onClick={() => {
-              if (viewOptions.columns === 4) {
+          <PrismToggleGroup
+            aria-label="Número de Colunas"
+            className={"gap-1"}
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0] as string | undefined;
+              if (selected) {
                 setViewOptions({
                   ...viewOptions,
-                  columns: 6,
-                });
-              } else if (viewOptions.columns === 6) {
-                setViewOptions({
-                  ...viewOptions,
-                  columns: 7,
-                });
-              } else {
-                setViewOptions({
-                  ...viewOptions,
-                  columns: 4,
+                  columns: Number(selected) as 4 | 6 | 7,
                 });
               }
             }}
-            size="icon"
-            variant="raised"
+            selectedKeys={
+              viewOptions.columns
+                ? new Set([String(viewOptions.columns)])
+                : new Set(["4"])
+            }
+            selectionMode="single"
+            size="sm"
           >
-            {viewOptions.columns === 4 && <Columns2Icon />}
-            {viewOptions.columns === 6 && <Columns3Icon />}
-            {viewOptions.columns === 7 && <Columns4Icon />}
-          </Button>
+            <PrismToggleGroupItem id="4" title="4 Colunas">
+              <Columns2Icon />
+            </PrismToggleGroupItem>
+            <PrismToggleGroupItem id="6" title="6 Colunas">
+              <Columns3Icon />
+            </PrismToggleGroupItem>
+            <PrismToggleGroupItem id="7" title="7 Colunas">
+              <Columns4Icon />
+            </PrismToggleGroupItem>
+          </PrismToggleGroup>
         )}
 
+      {/* 3 & 4. Ordenação (Direção + Critério) */}
       {(viewOptions.showOptions.order || viewOptions.showOptions.ascending) && (
         <div className="flex gap-1">
-          {/* Ordem Crescente ou Descencente */}
+          {/* 3. Ordem Crescente ou Descendente */}
           {viewOptions.showOptions.ascending && (
-            <Toggle
-              onPressedChange={(pressed) =>
+            <PrismToggle
+              aria-label={
+                viewOptions.ascending ? "Ordem Crescente" : "Ordem Descendente"
+              }
+              isSelected={!!viewOptions.ascending}
+              onChange={(pressed) =>
                 setViewOptions({
                   ...viewOptions,
                   ascending: pressed,
                 })
               }
-              pressed={viewOptions.ascending}
-              title={
-                viewOptions.ascending ? "Ordem Crescente" : "Ordem Descencente"
-              }
-              variant="pressed"
+              size="sm"
             >
               {viewOptions.ascending ? <ArrowUpAZIcon /> : <ArrowDownAZIcon />}
-            </Toggle>
+            </PrismToggle>
           )}
-          {/* Ordem por Data  */}
+
+          {/* 4. Critério de Ordenação (Data / Fase) */}
           {viewOptions.showOptions.order && (
-            <Toggle
-              onPressedChange={(pressed) =>
-                setViewOptions({
-                  ...viewOptions,
-                  order: pressed ? ORDER_BY.date : ORDER_BY.phase,
-                })
+            <PrismToggleGroup
+              aria-label="Critério de Ordenação"
+              className={"gap-1"}
+              onSelectionChange={(keys) => {
+                const selected = Array.from(keys)[0] as
+                  (typeof ORDER_BY)[keyof typeof ORDER_BY] | undefined;
+                if (selected) {
+                  setViewOptions({
+                    ...viewOptions,
+                    order: selected,
+                  });
+                }
+              }}
+              selectedKeys={
+                viewOptions.order ? new Set([viewOptions.order]) : new Set()
               }
-              pressed={viewOptions.order === ORDER_BY.date}
-              title="Ordem por Data"
-              variant="pressed"
+              selectionMode="single"
+              size="sm"
             >
-              <ClockIcon />
-            </Toggle>
+              <PrismToggleGroupItem id={ORDER_BY.date} title="Ordem por Data">
+                <ClockIcon />
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem id={ORDER_BY.phase} title="Ordem por Fase">
+                <SquareCheckIcon />
+              </PrismToggleGroupItem>
+            </PrismToggleGroup>
           )}
-          <Toggle
-            onPressedChange={(pressed) =>
-              setViewOptions({
-                ...viewOptions,
-                order: pressed ? ORDER_BY.phase : ORDER_BY.date,
-              })
-            }
-            pressed={viewOptions.order === ORDER_BY.phase}
-            title="Ordem por Fase"
-            variant="pressed"
-          >
-            <SquareCheckIcon />
-          </Toggle>
         </div>
       )}
 
+      {/* 5. Toggles de Exibição de Campos */}
       {(viewOptions.showOptions.responsibles ||
         viewOptions.showOptions.priority ||
         viewOptions.showOptions.partner ||
         viewOptions.showOptions.category) && (
-        <div className="flex gap-1">
+        <PrismToggleGroup
+          aria-label="Exibição de Campos"
+          className={"gap-1"}
+          onSelectionChange={(keys) => {
+            const selectedSet = new Set(Array.from(keys) as string[]);
+            setViewOptions({
+              ...viewOptions,
+              responsibles: selectedSet.has("responsibles"),
+              priority: selectedSet.has("priority"),
+              category: selectedSet.has("category"),
+              partner: selectedSet.has("partner"),
+            });
+          }}
+          selectedKeys={
+            new Set(
+              [
+                viewOptions.responsibles && "responsibles",
+                viewOptions.priority && "priority",
+                viewOptions.category && "category",
+                viewOptions.partner && "partner",
+              ].filter(Boolean) as string[],
+            )
+          }
+          selectionMode="multiple"
+          size="sm"
+        >
           {viewOptions.showOptions.responsibles && (
-            <Toggle
-              onPressedChange={(value) =>
-                setViewOptions({
-                  ...viewOptions,
-                  responsibles: value,
-                })
-              }
-              pressed={viewOptions.responsibles}
-              variant="pressed"
-            >
+            <PrismToggleGroupItem id="responsibles" title="Responsáveis">
               <UsersIcon />
-            </Toggle>
+            </PrismToggleGroupItem>
           )}
           {viewOptions.showOptions.priority && (
-            <Toggle
-              onPressedChange={(value) =>
-                setViewOptions({
-                  ...viewOptions,
-                  priority: value,
-                })
-              }
-              pressed={viewOptions.priority}
-              variant="pressed"
-            >
+            <PrismToggleGroupItem id="priority" title="Prioridade">
               <SignalIcon />
-            </Toggle>
+            </PrismToggleGroupItem>
           )}
           {viewOptions.showOptions.category && (
-            <Toggle
-              onPressedChange={(value) =>
-                setViewOptions({
-                  ...viewOptions,
-                  category: value,
-                })
-              }
-              pressed={viewOptions.category}
-              variant="pressed"
-            >
+            <PrismToggleGroupItem id="category" title="Categoria">
               <TagIcon />
-            </Toggle>
+            </PrismToggleGroupItem>
           )}
           {viewOptions.showOptions.partner && (
-            <Toggle
-              onPressedChange={(value) =>
-                setViewOptions({
-                  ...viewOptions,
-                  partner: value,
-                })
-              }
-              pressed={viewOptions.partner}
-              variant="pressed"
-            >
+            <PrismToggleGroupItem id="partner" title="Parceiro">
               <HeartHandshakeIcon />
-            </Toggle>
+            </PrismToggleGroupItem>
           )}
-        </div>
+        </PrismToggleGroup>
       )}
 
       {(viewOptions.showOptions.filter_category ||
