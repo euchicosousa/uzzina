@@ -1,6 +1,10 @@
 import { SIZE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import {
+  PrismAvatar,
+  PrismAvatarFallback,
+  PrismAvatarImage,
+} from "~/components/prism";
 
 type UAvatarGroupProps = {
   avatars: UAvatarItem[];
@@ -121,31 +125,23 @@ export function UAvatar({
     backgroundColor && color ? { backgroundColor, color } : undefined;
 
   return (
-    <Avatar
+    <PrismAvatar
       id={id}
-      // style={avatarStyles}
       className={cn(
         sizeClasses,
         textClasses,
-        "rounded-full",
         "p-0 leading-none font-bold",
-        "ring-[1px] ring-black/5",
         className,
       )}
     >
-      {image ? (
-        <AvatarImage src={image} alt={alt || ""} />
-      ) : (
-        <AvatarFallback
-          className={cn(
-            "grid place-content-center bg-secondary text-center text-secondary-foreground",
-          )}
-          style={styles}
-        >
-          {getShortText(fallbackText)}
-        </AvatarFallback>
-      )}
-    </Avatar>
+      {image && <PrismAvatarImage src={image} alt={alt || ""} />}
+      <PrismAvatarFallback
+        className="grid place-content-center bg-secondary text-center text-secondary-foreground"
+        style={styles}
+      >
+        {getShortText(fallbackText)}
+      </PrismAvatarFallback>
+    </PrismAvatar>
   );
 }
 
