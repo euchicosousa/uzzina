@@ -227,7 +227,6 @@ function PartnerPage() {
           <CalendarButtons
             currentDay={currentDay}
             days={30}
-            mode="month"
             setCurrentDay={(day: Date) => {
               navigate({
                 search: (old) => ({

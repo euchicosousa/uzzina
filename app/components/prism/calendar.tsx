@@ -317,14 +317,12 @@ function MonthDropdown({ format }: { format?: Intl.DateTimeFormatOptions }) {
           <PrismSelectTrigger>
             <PrismSelectValue />
           </PrismSelectTrigger>
-          <PrismSelectContent className="min-w-0">
-            <PrismSelectGroup>
-              {props.items.map((item) => (
-                <PrismSelectItem key={item.id} id={item.id}>
-                  {item.formatted}
-                </PrismSelectItem>
-              ))}
-            </PrismSelectGroup>
+          <PrismSelectContent className="min-w-24">
+            {props.items.map((item) => (
+              <PrismSelectItem key={item.id} id={item.id}>
+                {item.formatted}
+              </PrismSelectItem>
+            ))}
           </PrismSelectContent>
         </PrismSelect>
       )}
@@ -339,7 +337,7 @@ function YearDropdown({ format }: { format?: Intl.DateTimeFormatOptions }) {
           <PrismSelectTrigger>
             <PrismSelectValue />
           </PrismSelectTrigger>
-          <PrismSelectContent className="min-w-0">
+          <PrismSelectContent className="min-w-24">
             {props.items.map((item) => (
               <PrismSelectItem key={item.id} id={item.id}>
                 {item.formatted}

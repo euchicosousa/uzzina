@@ -28,13 +28,11 @@ export function CalendarButtons({
   setCurrentDay,
   days = 1,
   showDate,
-  mode = "day",
 }: {
   currentDay: Date;
   setCurrentDay: (day: Date) => void;
   days?: number;
   showDate?: boolean;
-  mode?: "day" | "month";
 }) {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -70,6 +68,7 @@ export function CalendarButtons({
         </PrismButton>
         <PrismPopover className="w-fit" placement="bottom">
           <PrismCalendar
+            captionLayout="dropdown"
             onSelect={(day) => {
               if (day) {
                 setCurrentDay(day);
