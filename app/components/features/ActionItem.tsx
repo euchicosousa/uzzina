@@ -4,7 +4,7 @@ import { useAppContext } from "~/contexts/AppContext";
 import type { Action, Partner, Person } from "~/types";
 
 // UI Components
-import { Checkbox } from "~/components/ui/checkbox";
+import { PrismCheckbox } from "~/components/prism";
 import { UAvatarGroup } from "../uzzina/UAvatar";
 import { ActionItemTitleInput } from "./ActionItemTitleInput";
 import { Content } from "./Content";
@@ -300,9 +300,11 @@ export function ActionItem({
                   : "top-3 left-3",
           )}
         >
-          <Checkbox
-            checked={isSelected}
-            className="pointer-events-none bg-background"
+          <PrismCheckbox
+            boxClassName="bg-background"
+            className="pointer-events-none"
+            isSelected={isSelected}
+            size="sm"
           />
         </div>
       )}
@@ -667,7 +669,7 @@ function ActionVariantRenderer({
             )}
           </div>
           {dateTimeDisplay && !isEditing && (
-            <div className="absolute right-0 flex translate-x-[90px] justify-end overflow-hidden transition-transform duration-500 group-hover/action:translate-x-0 @md:w-[90px]">
+            <div className="absolute right-0 flex translate-x-22 justify-end overflow-hidden transition-transform duration-500 group-hover/action:translate-x-0 @md:w-22">
               <ActionItemDateTimeDisplay
                 action={action}
                 dateTimeDisplay={dateTimeDisplay}

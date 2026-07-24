@@ -19,6 +19,8 @@ import {
   AlertSection,
   BadgeSection,
   ToggleSection,
+  CheckboxSection,
+  RadioGroupSection,
   PopoverSection,
   MenuSection,
   DialogSection,
@@ -210,6 +212,16 @@ function UIPage() {
                   targetId="prism-toggle"
                 />
                 <SidebarAnchorLink
+                  active={activeAnchor === "prism-checkbox"}
+                  label="PrismCheckbox"
+                  targetId="prism-checkbox"
+                />
+                <SidebarAnchorLink
+                  active={activeAnchor === "prism-radio-group"}
+                  label="PrismRadioGroup"
+                  targetId="prism-radio-group"
+                />
+                <SidebarAnchorLink
                   active={activeAnchor === "prism-alert"}
                   label="PrismAlert"
                   targetId="prism-alert"
@@ -272,6 +284,8 @@ function UIPage() {
               <TextareaSection />
               <BadgeSection />
               <ToggleSection />
+              <CheckboxSection />
+              <RadioGroupSection />
               <AlertSection />
               <PopoverSection />
               <MenuSection />

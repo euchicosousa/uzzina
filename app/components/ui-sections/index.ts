@@ -14,5 +14,7 @@ export * from "./BadgeSection";
 export * from "./ToggleSection";
 export * from "./TextareaSection";
 export * from "./SeparatorSection";
+export * from "./CheckboxSection";
+export * from "./RadioGroupSection";
 export * from "./ViewOptionsSection";
 

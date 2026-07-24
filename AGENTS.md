@@ -202,7 +202,7 @@ A rota `/ui` é a documentação viva do Prism design system. É organizada modu
 **Abas disponíveis:**
 
 - **Tokens de Design**: Cores semânticas OKLCH, escala de espaçamento exponencial.
-- **Componentes de UI**: Todos os primitivos do Prism catalogados: `PrismButton`, `PrismButtonGroup`, `PrismInput`, `PrismInputGroup`, `PrismTextarea`, `PrismBadge`, `PrismToggle`, `PrismToggleGroup`, `PrismAlert`, `PrismPopover`, `PrismMenu`, `PrismDialog`, `PrismCombobox`, `PrismCommand`, `PrismToaster` (Sonner), e `PrismSeparator`.
-- **Componentes Uzzina**: Componentes de alto nível do Uzzina (ex: `ViewOptionsComponent`).
+- **Componentes de UI**: Todos os primitivos do Prism catalogados: `PrismButton`, `PrismButtonGroup`, `PrismInput`, `PrismInputGroup`, `PrismTextarea`, `PrismBadge`, `PrismToggle`, `PrismToggleGroup`, `PrismCheckbox`, `PrismRadioGroup`, `PrismAlert`, `PrismPopover`, `PrismMenu`, `PrismDialog`, `PrismCombobox`, `PrismCommand`, `PrismToaster` (Sonner), e `PrismSeparator`.
+- **Componentes Uzzina**: Componentes de alto nível do Uzzina (ex: `ViewOptionsComponent`, `CategoriesCombobox`, `PhaseCombobox`, `StationCombobox`).
 
 **Regra**: Sempre que adicionar um novo componente Prism ou componente Uzzina de alto nível, adicionar uma seção correspondente em `app/components/ui-sections/` e integrá-lo na rota `/ui`.

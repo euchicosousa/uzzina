@@ -6,6 +6,7 @@ export {
 } from "./alert";
 export { PrismBadge } from "./badge";
 export { Button as PrismButton } from "./button";
+export { PrismCheckbox, PrismCheckboxGroup } from "./checkbox";
 export {
   PrismButtonGroup,
   PrismButtonGroupSeparator,
@@ -88,4 +89,5 @@ export { PrismSkeleton } from "./skeleton";
 export { PrismTimeField } from "./time-field";
 export { PrismToggle, toggleVariants } from "./toggle";
 export { PrismToggleGroup, PrismToggleGroupItem } from "./toggle-group";
+export { PrismRadio, PrismRadioGroup, PrismRadioGroupItem } from "./radio-group";
 export { PrismToaster, toast } from "./sonner";
