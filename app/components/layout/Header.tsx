@@ -45,7 +45,6 @@ import {
   PrismPopover,
 } from "../prism";
 import { UAvatar } from "../uzzina/UAvatar";
-import { UBadge } from "../uzzina/UBadge";
 const DEFAULT_PARTNER_FILTERS: string[] = [];
 export function Header({
   person,

@@ -21,7 +21,6 @@ import { cn } from "~/lib/utils";
 import { ActionItem } from "../features/ActionItem";
 import { Draggable, Droppable } from "../features/DnD";
 import { DragStateContext } from "../features/DragStateContext";
-import { UBadge } from "../uzzina/UBadge";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { PrismBadge } from "../prism";
 export default function KanbanHomeActions({ actions }: { actions: Action[] }) {
@@ -96,7 +95,7 @@ export default function KanbanHomeActions({ actions }: { actions: Action[] }) {
   return (
     <div className="w-full max-w-full overflow-hidden">
       <div className="overflow-x-auto pb-8">
-        <div className="grid  min-w-[1000px] grid-cols-3 overflow-hidden">
+        <div className="grid  min-w-250 grid-cols-3 overflow-hidden">
           <DragStateContext.Provider value={!!activeAction}>
             {isDesktop ? (
               <DndContext

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { PrismBadge } from "~/components/prism";
-import { UBadge } from "~/components/uzzina/UBadge";
 import { cn } from "~/lib/utils";
 interface ActionTitleInputProps {
   title: string;

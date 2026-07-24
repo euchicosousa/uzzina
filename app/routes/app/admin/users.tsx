@@ -1,7 +1,6 @@
 import { UserPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Button } from "~/components/ui/button";
-import { UBadge } from "~/components/uzzina/UBadge";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";

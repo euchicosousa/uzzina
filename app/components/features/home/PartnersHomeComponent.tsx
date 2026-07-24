@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { getShortText, UAvatar } from "~/components/uzzina/UAvatar";
-import { UBadge } from "~/components/uzzina/UBadge";
 import { useAppContext } from "~/contexts/AppContext";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/types";

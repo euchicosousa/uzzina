@@ -33,7 +33,6 @@ import {
   PrismPopoverTrigger,
 } from "~/components/prism";
 import { UAvatar } from "~/components/uzzina/UAvatar";
-import { UBadge } from "~/components/uzzina/UBadge";
 import { useAppTheme } from "~/hooks/useAppTheme";
 import { PHASES, SIZE } from "~/lib/CONSTANTS";
 import { filterActions, getInstagramFeedActions } from "~/lib/helpers";

@@ -12,7 +12,6 @@ import {
 import { DATE_TIME_DISPLAY, INTENT, STATIONS } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import { ActionItem } from "../features/ActionItem";
-import { UBadge } from "../uzzina/UBadge";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { ActionContainer } from "../features/ActionContainer";
 import { Droppable } from "../features/DnD";
@@ -113,7 +112,7 @@ export default function KanbanStationsFlow({ actions }: { actions: Action[] }) {
               ))}
             </div>
             {/* Bottom row: Sem estação */}
-            <div className="h-[220px] shrink pt-4">
+            <div className="h-55 shrink pt-4">
               <KanbanRow
                 actions={actionsByStation.none ?? []}
                 isDraggable={true}
@@ -156,14 +155,14 @@ export default function KanbanStationsFlow({ actions }: { actions: Action[] }) {
             <KanbanColumn
               key={station.slug}
               actions={actionsByStation[station.slug] ?? []}
-              className="w-[300px]"
+              className="w-75"
               isDraggable={false}
               station={station}
             />
           ))}
           <KanbanColumn
             actions={actionsByStation.none ?? []}
-            className="w-[300px]"
+            className="w-75"
             isDraggable={false}
             station={{
               slug: "none",
@@ -257,7 +256,7 @@ const KanbanRow = ({
           </div>
           <div className="flex overflow-x-auto gap-2 p-1 h-full">
             {sortedActions.map((action) => (
-              <div key={action.id} className="w-[300px] shrink-0">
+              <div key={action.id} className="w-75 shrink-0">
                 <ActionItem
                   action={action}
                   dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}

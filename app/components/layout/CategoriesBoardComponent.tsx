@@ -11,7 +11,6 @@ import {
 import { getCleanAction, Icons } from "~/lib/helpers";
 import { ActionContainer } from "../features/ActionContainer";
 import { Button } from "../ui/button";
-import { UBadge } from "../uzzina/UBadge";
 import { PrismBadge } from "../prism";
 
 /**
