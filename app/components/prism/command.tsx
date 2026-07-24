@@ -42,7 +42,7 @@ function Command({
   return (
     <div
       className={cn(
-        "flex size-full flex-col overflow-hidden rounded-3xl bg-popover p-2 text-popover-foreground squircle",
+        "flex size-full flex-col overflow-hidden rounded-3xl bg-popover text-popover-foreground squircle",
         className,
       )}
       data-slot="command"
@@ -78,10 +78,7 @@ function CommandDialog({
 }) {
   return (
     <PrismDialog
-      className={cn(
-        "top-1/3 translate-y-0 overflow-hidden rounded-3xl!",
-        className,
-      )}
+      className={cn("top-1/3 translate-y-0 overflow-hidden", className)}
       isDismissable
       isOpen={open}
       onOpenChange={onOpenChange}
@@ -125,7 +122,7 @@ function CommandList<T extends object>({ className, ...props }: MenuProps<T>) {
     <Menu
       {...props}
       className={cn(
-        "no-scrollbar max-h-72 scroll-py-1 overflow-x-hidden overflow-y-auto outline-none",
+        "no-scrollbar max-h-72 scroll-py-1 overflow-x-hidden overflow-y-auto outline-none border-t",
         className,
       )}
       data-slot="command-list"
@@ -171,7 +168,7 @@ function CommandGroup<T extends object>({
 function CommandSeparator({ className, ...props }: SeparatorProps) {
   return (
     <Separator
-      className={cn("my-1 h-px bg-border/50", className)}
+      className={cn("my-2 h-px bg-border", className)}
       data-slot="command-separator"
       {...props}
     />
@@ -183,16 +180,18 @@ function CommandItem<T extends object>({
   textValue,
   isSelected,
   ...props
-}: MenuItemProps<T> & { isSelected?: boolean }) {
+}: MenuItemProps<T> & {
+  isSelected?: boolean;
+}) {
   return (
     <MenuItem
       {...props}
-      data-checked={isSelected || undefined}
-      data-selected={isSelected || undefined}
       className={cn(
         "group/command-item relative squircle flex min-h-7 cursor-default items-center gap-2 rounded-2xl px-4 h-8 outline-hidden select-none in-data-[slot=dialog-content]:rounded-2xl data-focused:bg-secondary data-focused:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-secondary data-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-selected:*:[svg]:text-foreground",
         className,
       )}
+      data-checked={isSelected || undefined}
+      data-selected={isSelected || undefined}
       data-slot="command-item"
       textValue={
         textValue || (typeof children === "string" ? children : undefined)

@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
   PrismCommand,
   PrismCommandEmpty,
+  PrismCommandGroup,
   PrismCommandInput,
   PrismCommandItem,
   PrismCommandList,
@@ -13,7 +14,6 @@ import { PHASES, type PHASE_TYPE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import { ComboboxTrigger } from "./ComboboxTrigger";
 import { PhaseIcon } from "./PhaseIcon";
-
 const ALL_PHASE = {
   slug: "all",
   title: "Todas as fases",
@@ -22,7 +22,6 @@ const ALL_PHASE = {
 };
 type PhaseItem = typeof ALL_PHASE | PHASE_TYPE;
 const DEFAULT_SELECTED_PHASES: string[] = [];
-
 function MultiPhaseTrigger({
   tabIndex,
   className,
@@ -80,7 +79,6 @@ function MultiPhaseTrigger({
     </ComboboxTrigger>
   );
 }
-
 function SinglePhaseTrigger({
   tabIndex,
   className,
@@ -125,7 +123,6 @@ function SinglePhaseTrigger({
     </ComboboxTrigger>
   );
 }
-
 export function PhaseCombobox({
   selectedPhase,
   selectedPhases = DEFAULT_SELECTED_PHASES,
@@ -165,7 +162,6 @@ export function PhaseCombobox({
   }
   const hasRealSelection =
     isMulti && currentPhases.filter((s) => s.slug !== "all").length > 0;
-
   return (
     <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
       {isMulti ? (
@@ -186,63 +182,65 @@ export function PhaseCombobox({
           tabIndex={tabIndex}
         />
       )}
-      <PrismPopover className="w-56 p-0 border rounded-3xl squircle shadow-xl bg-popover overflow-hidden">
-        <PrismCommand className="p-0">
+      <PrismPopover className="w-56 p-0">
+        <PrismCommand>
           <PrismCommandInput placeholder="Procurar fase..." />
+
           <PrismCommandList
-            className="p-1 outline-none border-t"
             renderEmptyState={() => (
               <PrismCommandEmpty>Nenhuma fase encontrada.</PrismCommandEmpty>
             )}
           >
-            {phasesList.map((phase) => (
-              <PrismCommandItem
-                key={phase.slug}
-                className={cn("flex items-center gap-2 cursor-pointer")}
-                isSelected={
-                  isMulti
-                    ? selectedPhases.includes(phase.slug)
-                    : selectedPhase === phase.slug
-                }
-                onAction={() => {
-                  if (isMulti) {
-                    let newPhases: string[];
-                    const isShiftPressed = (
-                      window.event as MouseEvent | undefined
-                    )?.shiftKey;
-                    if (phase.slug === "all") {
-                      newPhases = ["all"];
-                    } else if (isShiftPressed) {
-                      newPhases = [phase.slug];
-                    } else {
-                      newPhases = selectedPhases.filter(
-                        (slug) => slug !== "all",
-                      );
-                      if (newPhases.includes(phase.slug)) {
-                        newPhases = newPhases.filter(
-                          (slug) => slug !== phase.slug,
-                        );
-                      } else {
-                        newPhases = [...newPhases, phase.slug];
-                      }
-                      newPhases =
-                        newPhases.length === 0 ? ["all"] : newPhases;
-                    }
-                    onSelect?.({
-                      phases: newPhases,
-                      phase: phase.slug,
-                    });
-                  } else {
-                    onSelect?.(phase.slug);
-                    setIsOpen(false);
+            <PrismCommandGroup>
+              {phasesList.map((phase) => (
+                <PrismCommandItem
+                  key={phase.slug}
+                  className={cn("flex items-center gap-2 cursor-pointer")}
+                  isSelected={
+                    isMulti
+                      ? selectedPhases.includes(phase.slug)
+                      : selectedPhase === phase.slug
                   }
-                }}
-                textValue={phase.title}
-              >
-                <PhaseIcon phase={phase as PHASE_TYPE} variant={"icon"} />
-                <span className="truncate">{phase.title}</span>
-              </PrismCommandItem>
-            ))}
+                  onAction={() => {
+                    if (isMulti) {
+                      let newPhases: string[];
+                      const isShiftPressed = (
+                        window.event as MouseEvent | undefined
+                      )?.shiftKey;
+                      if (phase.slug === "all") {
+                        newPhases = ["all"];
+                      } else if (isShiftPressed) {
+                        newPhases = [phase.slug];
+                      } else {
+                        newPhases = selectedPhases.filter(
+                          (slug) => slug !== "all",
+                        );
+                        if (newPhases.includes(phase.slug)) {
+                          newPhases = newPhases.filter(
+                            (slug) => slug !== phase.slug,
+                          );
+                        } else {
+                          newPhases = [...newPhases, phase.slug];
+                        }
+                        newPhases =
+                          newPhases.length === 0 ? ["all"] : newPhases;
+                      }
+                      onSelect?.({
+                        phases: newPhases,
+                        phase: phase.slug,
+                      });
+                    } else {
+                      onSelect?.(phase.slug);
+                      setIsOpen(false);
+                    }
+                  }}
+                  textValue={phase.title}
+                >
+                  <PhaseIcon phase={phase as PHASE_TYPE} variant={"icon"} />
+                  <span className="truncate">{phase.title}</span>
+                </PrismCommandItem>
+              ))}
+            </PrismCommandGroup>
           </PrismCommandList>
         </PrismCommand>
       </PrismPopover>

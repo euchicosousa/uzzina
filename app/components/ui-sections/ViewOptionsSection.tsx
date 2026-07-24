@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { PhaseCombobox } from "~/components/features/PhaseCombobox";
+import { StationCombobox } from "~/components/features/StationCombobox";
 import {
   ViewOptionsComponent,
   type ViewOptions,
@@ -164,6 +165,23 @@ export function ViewOptionsSection() {
           </GallerySectionContent>
         </GallerySection>
       </div>
+
+      <div className="mt-8" id="uzzina-station-combobox">
+        <GallerySection>
+          <GallerySectionHeader
+            description="Seletor de Estação refatorado para o Prism com suporte a pontos coloridos de estações e filtro por categoria."
+            title="StationCombobox"
+          />
+          <GallerySectionContent className="grid gap-6">
+            <GalleryItem label="Modo Filtro Múltiplo (isMulti)">
+              <StationDemoMulti />
+            </GalleryItem>
+            <GalleryItem label="Modo Formulário Único (Form-Inline)">
+              <StationDemoSingle />
+            </GalleryItem>
+          </GallerySectionContent>
+        </GallerySection>
+      </div>
     </div>
   );
 }
@@ -236,6 +254,37 @@ function PhaseDemoSingle() {
       <PhaseCombobox
         onSelect={(phase) => setSelected(phase)}
         selectedPhase={selected}
+      />
+      <span className="font-mono text-xs text-muted-foreground">
+        Selecionado: {selected}
+      </span>
+    </div>
+  );
+}
+
+function StationDemoMulti() {
+  const [selected, setSelected] = useState<string[]>(["all"]);
+  return (
+    <div className="flex flex-col gap-2">
+      <StationCombobox
+        isMulti
+        onSelect={({ stations }) => setSelected(stations)}
+        selectedStations={selected}
+      />
+      <span className="font-mono text-xs text-muted-foreground">
+        Selecionados: {selected.join(", ")}
+      </span>
+    </div>
+  );
+}
+
+function StationDemoSingle() {
+  const [selected, setSelected] = useState<string>("flow");
+  return (
+    <div className="flex flex-col gap-2">
+      <StationCombobox
+        onSelect={({ station }) => setSelected(station || "flow")}
+        selectedStation={selected}
       />
       <span className="font-mono text-xs text-muted-foreground">
         Selecionado: {selected}

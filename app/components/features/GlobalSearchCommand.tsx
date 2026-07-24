@@ -91,13 +91,11 @@ export function GlobalSearchCommand({
   return (
     <PrismCommandDialog onOpenChange={onOpenChange} open={open}>
       <PrismCommand
-        className="p-1"
         inputValue={query}
         onInputChange={(value) => setQuery(value)}
       >
         <PrismCommandInput placeholder="Faça sua busca..." />
         <PrismCommandList
-          className={"-mb-1"}
           renderEmptyState={() => (
             <PrismCommandEmpty>
               {isSearching ? "Buscando..." : "Nenhum item foi encontrado."}
@@ -109,6 +107,7 @@ export function GlobalSearchCommand({
             {filteredPartners.map((partner) => (
               <PrismCommandItem
                 key={partner.slug}
+                className={"h-10"}
                 onPress={() => {
                   navigate({
                     to: `/app/partner/${partner.slug}`,
@@ -140,7 +139,7 @@ export function GlobalSearchCommand({
               return (
                 <PrismCommandItem
                   key={action.id}
-                  className={"flex justify-between w-full"}
+                  className={"flex justify-between w-full h-10"}
                   onPress={() => {
                     setBaseAction(action);
                     onOpenChange(false);

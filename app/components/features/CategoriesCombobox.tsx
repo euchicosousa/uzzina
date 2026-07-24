@@ -146,11 +146,10 @@ export function CategoriesCombobox({
         </ComboboxTrigger>
       )}
       <PrismPopover className="p-0">
-        <PrismCommand className="p-0">
-          <PrismCommandInput className="" placeholder="Procurar categoria..." />
+        <PrismCommand>
+          <PrismCommandInput placeholder="Procurar categoria..." />
 
           <PrismCommandList
-            className="p-0 border-t"
             renderEmptyState={() => (
               <PrismCommandEmpty>
                 Nenhuma categoria encontrada.
@@ -167,11 +166,7 @@ export function CategoriesCombobox({
                     ? "Instagram"
                     : AREAS[areaSlug as keyof typeof AREAS]?.title || "Outros";
               return (
-                <PrismCommandGroup
-                  key={areaSlug}
-                  className="py-2"
-                  heading={areaTitle}
-                >
+                <PrismCommandGroup key={areaSlug} heading={areaTitle}>
                   {items.map((category) => (
                     <PrismCommandItem
                       key={category.slug}
