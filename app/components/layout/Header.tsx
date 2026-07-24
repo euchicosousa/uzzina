@@ -32,7 +32,17 @@ import { cn } from "~/lib/utils";
 import type { Notification } from "~/types";
 import { DashboardMetrics } from "../features/home/DashboardMetrics";
 import { UZZINALogo } from "../logo";
-import { PrismButton, PrismPopover, PrismPopoverTrigger } from "../prism";
+import {
+  PrismButton,
+  PrismMenu,
+  PrismMenuContent,
+  PrismMenuGroup,
+  PrismMenuItem,
+  PrismMenuLabel,
+  PrismMenuSeparator,
+  PrismMenuTrigger,
+  PrismPopover,
+} from "../prism";
 import { UAvatar } from "../uzzina/UAvatar";
 import { UBadge } from "../uzzina/UBadge";
 const DEFAULT_PARTNER_FILTERS: string[] = [];
@@ -227,7 +237,7 @@ export function Header({
                 </button>
               )}
             </div>
-            <div className="max-h-[300px] divide-y divide-border overflow-y-auto">
+            <div className="max-h-75 divide-y divide-border overflow-y-auto">
               {notifications.length === 0 ? (
                 <div className="p-8 text-center text-sm">
                   Você não tem nenhuma notificação.
@@ -335,179 +345,151 @@ const HeaderMenu = ({ person }: { person: Person }) => {
     queuePreference("followPartnerColor", value);
   };
   return (
-    <PrismPopoverTrigger>
-      {/* Perfil */}
-      <PrismButton
-        aria-label="Menu do perfil do usuário"
-        className="relative rounded-full"
-        size="unstyled"
-        variant="unstyled"
-      >
-        <UAvatar fallback={person.short} image={person.image} size={SIZE.md} />
-      </PrismButton>
-      <PrismPopover
-        className="w-64 overflow-hidden rounded-3xl p-2 bg-popover shadow-xl border flex flex-col gap-1"
-        placement="bottom end"
-      >
-        {theme === Theme.DARK ? (
-          <PrismButton
-            className="font-medium text-muted-foreground hover:text-foreground hover:bg-secondary justify-between w-full h-9 px-3"
-            onClick={() => changeTheme(Theme.LIGHT)}
-            variant="ghost"
-          >
-            <span>Tema claro</span>
-            {getThemeIcon(Theme.LIGHT, "size-4")}
-          </PrismButton>
-        ) : (
-          <PrismButton
-            className="font-medium text-muted-foreground hover:text-foreground hover:bg-secondary justify-between w-full h-9 px-3"
-            onClick={() => changeTheme(Theme.DARK)}
-            variant="ghost"
-          >
-            Tema escuro
-            {getThemeIcon(Theme.DARK, "size-4")}
-          </PrismButton>
-        )}
+    <PrismMenu>
+      <PrismMenuTrigger>
         <PrismButton
-          className={cn(
-            "w-full justify-between font-medium text-muted-foreground hover:text-foreground hover:bg-secondary h-9 px-3",
-            followPartnerColor ? "bg-secondary" : "",
-          )}
-          onClick={() => changeFollowPartner(!followPartnerColor)}
-          variant="ghost"
+          aria-label="Menu do perfil do usuário"
+          className="relative rounded-full cursor-pointer"
+          size="unstyled"
+          variant="unstyled"
         >
-          Cores do parceiro
-          {followPartnerColor ? <CheckIcon className="size-4" /> : null}
+          <UAvatar
+            fallback={person.short}
+            image={person.image}
+            size={SIZE.md}
+          />
         </PrismButton>
+      </PrismMenuTrigger>
+      <PrismMenuContent className="w-64 p-0" placement="bottom end">
+        <PrismMenuGroup className="p-2">
+          <PrismMenuItem
+            onAction={() =>
+              changeTheme(theme === Theme.DARK ? Theme.LIGHT : Theme.DARK)
+            }
+            textValue={theme === Theme.DARK ? "Tema claro" : "Tema escuro"}
+          >
+            <span>{theme === Theme.DARK ? "Tema claro" : "Tema escuro"}</span>
+            {getThemeIcon(
+              theme === Theme.DARK ? Theme.LIGHT : Theme.DARK,
+              "size-4 ml-auto",
+            )}
+          </PrismMenuItem>
 
-        <hr className="my-1 -mx-2" />
-        <div className="grid grid-cols-6 justify-between p-2">
+          <PrismMenuItem
+            onAction={() => changeFollowPartner(!followPartnerColor)}
+            textValue="Cores do parceiro"
+          >
+            <span>Cores do parceiro</span>
+            {followPartnerColor ? (
+              <CheckIcon className="size-4 ml-auto text-primary" />
+            ) : null}
+          </PrismMenuItem>
+        </PrismMenuGroup>
+
+        <PrismMenuSeparator />
+
+        <PrismMenuGroup className="grid grid-cols-6 gap-1 px-4">
+          <PrismMenuLabel className="col-span-6">Cor de Acento</PrismMenuLabel>
+
           {PALLETE.map((paletteConfig, i) => {
             const { light, dark } = paletteConfig;
             const currentColors = theme === Theme.DARK ? dark : light;
             const isSelected = primaryColorIndex === i;
             return (
-              <PrismButton
+              <PrismMenuItem
                 key={paletteConfig.id}
                 aria-label={paletteConfig.label}
-                className="flex justify-center rounded-xl p-2 squircle"
-                onClick={() => {
-                  changeColorIndex(i);
-                }}
-                size="icon-sm"
+                className="size-7 min-w-0 p-1 rounded-2xl squircle"
+                onAction={() => changeColorIndex(i)}
                 style={{
                   backgroundColor: isSelected
                     ? `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`
                     : "",
                 }}
-                type="button"
-                variant={"ghost"}
+                textValue={paletteConfig.label}
               >
                 <div
-                  className="size-4 rounded-lg"
+                  className="size-5 rounded-xl squircle"
                   style={{
                     backgroundColor: isSelected
                       ? `oklch(${currentColors.bg.l} ${currentColors.bg.c} ${currentColors.bg.h})`
                       : `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`,
                   }}
                 />
-              </PrismButton>
+              </PrismMenuItem>
             );
           })}
-        </div>
+        </PrismMenuGroup>
 
-        <hr className="my-1 -mx-2" />
+        <PrismMenuSeparator />
 
-        <Link
-          className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-          to="/app/profile"
-        >
-          Minha Conta
-        </Link>
-        <PrismButton
-          className="w-full justify-start font-medium text-destructive hover:bg-destructive/10 focus:bg-destructive/10 h-9 px-3"
-          onClick={async () => {
-            const supabase = createSupabaseBrowserClient();
-            await supabase.auth.signOut();
-          }}
-          variant="ghost"
-        >
-          Sair
-        </PrismButton>
+        <PrismMenuGroup className="px-2">
+          <PrismMenuItem href="/app/profile" textValue="Minha Conta">
+            Minha Conta
+          </PrismMenuItem>
 
-        <hr className="my-1 -mx-2" />
+          <PrismMenuItem href="/app/help" textValue="Ajuda & Documentação">
+            Ajuda & Documentação
+          </PrismMenuItem>
 
-        <Link
-          className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-          to="/app/help"
-        >
-          Ajuda & Documentação
-        </Link>
+          <PrismMenuItem
+            className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+            onAction={async () => {
+              const supabase = createSupabaseBrowserClient();
+              await supabase.auth.signOut();
+            }}
+            textValue="Sair"
+            variant="destructive"
+          >
+            Sair
+          </PrismMenuItem>
+        </PrismMenuGroup>
 
         {person.admin && (
-          <div className="bg-card px-2 pb-2 rounded-b-xl -mx-2 -mb-2 mt-1">
-            <hr className="mb-2 -mx-2" />
-            <div className="px-3 py-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-              Admin
-            </div>
-
-            <Link
-              className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              to="/app/admin/partners"
-            >
-              Parceiros
-            </Link>
-            <Link
-              className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              params={{
-                slug: "new",
-              }}
-              to="/app/admin/partner/$slug"
-            >
-              Novo Parceiro
-            </Link>
-            <hr className="my-2 -mx-2" />
-            <Link
-              className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              to="/app/admin/users"
-            >
-              Usuários
-            </Link>
-            <Link
-              className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              params={{
-                userId: "new",
-              }}
-              to="/app/admin/user/$userId"
-            >
-              Novo Usuário
-            </Link>
-            <hr className="my-2 -mx-2" />
-            <Link
-              className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              to="/app/admin/clients"
-            >
-              Clientes
-            </Link>
-            <Link
-              className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              params={{
-                userId: "new",
-              }}
-              to="/app/admin/client/$userId"
-            >
-              Novo Cliente
-            </Link>
-            <hr className="my-2 -mx-2" />
-            <Link
-              className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-xl squircle text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              to="/app/admin/celebrations"
-            >
-              Datas Comemorativas
-            </Link>
-          </div>
+          <>
+            <PrismMenuSeparator />
+            <PrismMenuGroup className="bg-secondary  px-2 -mt-2 pb-2">
+              <PrismMenuLabel>Admin</PrismMenuLabel>
+              <PrismMenuItem href="/app/admin/partners" textValue="Parceiros">
+                Parceiros
+              </PrismMenuItem>
+              <PrismMenuItem
+                href="/app/admin/partner/new"
+                textValue="Novo Parceiro"
+              >
+                Novo Parceiro
+              </PrismMenuItem>
+              <PrismMenuSeparator />
+              <PrismMenuItem href="/app/admin/users" textValue="Usuários">
+                Usuários
+              </PrismMenuItem>
+              <PrismMenuItem
+                href="/app/admin/user/new"
+                textValue="Novo Usuário"
+              >
+                Novo Usuário
+              </PrismMenuItem>
+              <PrismMenuSeparator />
+              <PrismMenuItem href="/app/admin/clients" textValue="Clientes">
+                Clientes
+              </PrismMenuItem>
+              <PrismMenuItem
+                href="/app/admin/client/new"
+                textValue="Novo Cliente"
+              >
+                Novo Cliente
+              </PrismMenuItem>
+              <PrismMenuSeparator />
+              <PrismMenuItem
+                href="/app/admin/celebrations"
+                textValue="Datas Comemorativas"
+              >
+                Datas Comemorativas
+              </PrismMenuItem>
+            </PrismMenuGroup>
+          </>
         )}
-      </PrismPopover>
-    </PrismPopoverTrigger>
+      </PrismMenuContent>
+    </PrismMenu>
   );
 };

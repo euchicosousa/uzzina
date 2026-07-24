@@ -6,7 +6,7 @@ import {
 } from "~/components/features/ViewOptions";
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
-import { Skeleton } from "~/components/ui/skeleton";
+import { PrismSkeleton } from "~/components/prism";
 import { useLoading } from "~/hooks/useLoading";
 
 export function SprintHomeComponent({ actions }: { actions: Action[] }) {
@@ -36,7 +36,7 @@ export function SprintHomeComponent({ actions }: { actions: Action[] }) {
         {isLoading && actions.length === 0 ? (
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton
+              <PrismSkeleton
                 // biome-ignore lint/suspicious/noArrayIndexKey: static list of skeleton loaders
                 key={index}
                 delay={index * 200}
