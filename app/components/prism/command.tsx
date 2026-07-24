@@ -42,7 +42,7 @@ function Command({
   return (
     <div
       className={cn(
-        "flex size-full flex-col overflow-hidden rounded-3xl bg-popover p-2 text-popover-foreground",
+        "flex size-full flex-col overflow-hidden rounded-3xl bg-popover p-2 text-popover-foreground squircle",
         className,
       )}
       data-slot="command"
@@ -181,13 +181,16 @@ function CommandItem<T extends object>({
   className,
   children,
   textValue,
+  isSelected,
   ...props
-}: MenuItemProps<T>) {
+}: MenuItemProps<T> & { isSelected?: boolean }) {
   return (
     <MenuItem
       {...props}
+      data-checked={isSelected || undefined}
+      data-selected={isSelected || undefined}
       className={cn(
-        "group/command-item relative squircle flex min-h-7 cursor-default items-center gap-2 rounded-2xl px-4 h-10 outline-hidden select-none in-data-[slot=dialog-content]:rounded-2xl data-focused:bg-secondary data-focused:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-secondary data-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-selected:*:[svg]:text-foreground",
+        "group/command-item relative squircle flex min-h-7 cursor-default items-center gap-2 rounded-2xl px-4 h-8 outline-hidden select-none in-data-[slot=dialog-content]:rounded-2xl data-focused:bg-secondary data-focused:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-secondary data-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-selected:*:[svg]:text-foreground",
         className,
       )}
       data-slot="command-item"

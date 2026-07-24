@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CalendarButtons } from "~/components/features/Calendar";
-import { CategoriesComponent } from "~/components/layout/CategoriesComponent";
+import { CategoriesBoardComponent } from "~/components/layout/CategoriesBoardComponent";
 import FeedComponent from "~/components/layout/FeedComponent";
 import KanbanHomeActions from "~/components/layout/KanbanHomeActions";
 import { PartnersComponent } from "~/components/layout/PartnersComponent";
@@ -57,19 +57,12 @@ export function TodayHomeComponent({
       OptionsComponent={
         <div className="flex flex-wrap items-center gap-2 xl:gap-6">
           <div className="flex items-center gap-8">
-            {/* Opções de calendario  */}
             <CalendarButtons
               currentDay={currentDay}
               setCurrentDay={setCurrentDay}
               showDate
             />
-            {/* Opções de visualização  */}
-            {/* <ViewOptionsComponent
-              viewOptions={viewOptions}
-              setViewOptions={setViewOptions}
-            /> */}
           </div>
-          {/* Opções de Views  */}
           <div className="flex gap-1">
             <UToggle
               pressed={view === "kanban"}
@@ -78,25 +71,24 @@ export function TodayHomeComponent({
             >
               <KanbanIcon />
             </UToggle>
-
-            <UToggle
-              pressed={view === "feed"}
-              onClick={() => setView("feed")}
-              className="raised"
-            >
-              <Grid3x3Icon />
-            </UToggle>
             <UToggle
               pressed={view === "categories"}
               onClick={() => setView("categories")}
               className="raised"
             >
+              <Grid3x3Icon />
+            </UToggle>
+            <UToggle
+              pressed={view === "feed"}
+              title="Visão por Feed"
+              onPressedChange={() => setView("feed")}
+            >
               <BlocksIcon />
             </UToggle>
             <UToggle
               pressed={view === "partners"}
-              onClick={() => setView("partners")}
-              className="raised"
+              title="Visão por Parceiros"
+              onPressedChange={() => setView("partners")}
             >
               <HeartHandshakeIcon />
             </UToggle>
@@ -108,7 +100,7 @@ export function TodayHomeComponent({
         {view === "kanban" && <KanbanHomeActions actions={filteredActions} />}
         {view === "feed" && <FeedComponent actions={filteredActions} />}
         {view === "categories" && (
-          <CategoriesComponent actions={filteredActions} />
+          <CategoriesBoardComponent actions={filteredActions} />
         )}
         {view === "partners" && (
           <PartnersComponent actions={filteredActions} isLoading={isLoading} />

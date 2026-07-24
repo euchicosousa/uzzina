@@ -1,12 +1,13 @@
-import type { Action } from "~/types";
 import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
+import type { Action } from "~/types";
 
+import { useAppContext } from "~/contexts/AppContext";
 import {
   CATEGORIES,
+  type CATEGORY_TYPE,
   type ORDER_BY,
   VARIANT,
-  type CATEGORY_TYPE,
 } from "~/lib/CONSTANTS";
 import { getCleanAction, Icons } from "~/lib/helpers";
 import { ActionContainer } from "../features/ActionContainer";
@@ -14,10 +15,10 @@ import { Button } from "../ui/button";
 import { UBadge } from "../uzzina/UBadge";
 
 /**
- * Visualização de ações agrupadas por categoria.
+ * Visualização Kanban/Board de ações agrupadas por categoria.
  * Exibe apenas as categorias que possuem pelo menos uma ação no dia.
  */
-export function CategoriesComponent({
+export function CategoriesBoardComponent({
   actions,
   orderBy,
 }: {
@@ -41,8 +42,8 @@ export function CategoriesComponent({
           return (
             <CategoryColumn
               key={category.slug}
-              category={category}
               actions={categoryActions}
+              category={category}
               orderBy={orderBy}
             />
           );
@@ -51,8 +52,6 @@ export function CategoriesComponent({
     </div>
   );
 }
-
-import { useAppContext } from "~/contexts/AppContext";
 
 function CategoryColumn({
   category,
@@ -79,7 +78,7 @@ function CategoryColumn({
               color: category.color,
             }}
           >
-            <Icons slug={category.slug} className="size-4" />
+            <Icons className="size-4" slug={category.slug} />
           </div>
           <span className="truncate text-sm font-medium tracking-tight">
             {category.title}
@@ -88,8 +87,6 @@ function CategoryColumn({
         </div>
 
         <Button
-          size="icon"
-          variant="ghost"
           className="size-6 opacity-0 group-hover/column:opacity-100"
           onClick={() =>
             setBaseAction({
@@ -99,6 +96,8 @@ function CategoryColumn({
               category: category.slug,
             })
           }
+          size="icon"
+          variant="ghost"
         >
           <PlusIcon className="size-4" />
         </Button>
@@ -107,13 +106,13 @@ function CategoryColumn({
       {/* Lista de ações */}
       <ActionContainer
         actions={actions}
-        variant={VARIANT.hair}
+        ascending={ascending}
         displayFlags={{
           showPartner: true,
           showLate: true,
         }}
         orderBy={orderBy}
-        ascending={ascending}
+        variant={VARIANT.hair}
       />
     </div>
   );

@@ -164,6 +164,11 @@ function UIPage() {
                   label="ViewOptionsComponent"
                   targetId="uzzina-view-options"
                 />
+                <SidebarAnchorLink
+                  active={activeAnchor === "uzzina-categories-combobox"}
+                  label="CategoriesCombobox"
+                  targetId="uzzina-categories-combobox"
+                />
               </div>
             )}
 

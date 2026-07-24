@@ -1,23 +1,17 @@
-import { CheckIcon } from "lucide-react";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
+  PrismCommand,
+  PrismCommandEmpty,
+  PrismCommandGroup,
+  PrismCommandInput,
+  PrismCommandItem,
+  PrismCommandList,
+  PrismPopover,
+  PrismPopoverTrigger,
+} from "~/components/prism";
 import { AREAS, CATEGORIES } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
-import { cn } from "~/lib/utils";
 import { ComboboxTrigger } from "./ComboboxTrigger";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from "../ui/command";
 const AREA_ORDER = ["all", "instagram", "creative", "account", "adm"];
 export function CategoriesCombobox({
   selectedCategories,
@@ -28,6 +22,7 @@ export function CategoriesCombobox({
   tabIndex,
   showText = true,
   size = "lg",
+  triggerVariant,
 }: {
   selectedCategories: string[];
   onSelect?: ({
@@ -43,6 +38,7 @@ export function CategoriesCombobox({
   tabIndex?: number;
   showText?: boolean;
   size?: "sm" | "lg";
+  triggerVariant?: "filter" | "form-inline" | "form-link" | "form-footer";
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const CATEGORIES_LIST = Object.values(CATEGORIES);
@@ -95,81 +91,73 @@ export function CategoriesCombobox({
     },
     {} as Record<string, typeof categoriesList>,
   );
-  const isShiftPressedRef = useRef(false);
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "Shift") isShiftPressedRef.current = true;
-    };
-    const up = (e: KeyboardEvent) => {
-      if (e.key === "Shift") isShiftPressedRef.current = false;
-    };
-    window.addEventListener("keydown", down);
-    window.addEventListener("keyup", up);
-    return () => {
-      window.removeEventListener("keydown", down);
-      window.removeEventListener("keyup", up);
-    };
-  }, []);
   const hasSelection =
     currentCategories.length > 0 && currentCategories[0].slug !== "all";
+  const effectiveVariant =
+    triggerVariant || (isMulti ? "filter" : "form-inline");
   return (
-    <Popover onOpenChange={setIsOpen} open={isOpen}>
-      <PopoverTrigger asChild>
-        {isMulti ? (
-          <ComboboxTrigger
-            data-state={hasSelection && "on"}
-            hasSelection={hasSelection}
-            tabIndex={tabIndex}
-            title={
-              currentCategories.length === 0 ||
-              currentCategories[0].slug === "all"
-                ? "Escolha a categoria"
-                : currentCategories
-                    .map((category) => category.title)
-                    .join(" • ")
+    <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
+      {isMulti && effectiveVariant === "filter" ? (
+        <ComboboxTrigger
+          data-state={hasSelection && "on"}
+          hasSelection={hasSelection}
+          tabIndex={tabIndex}
+          title={
+            currentCategories.length === 0 ||
+            currentCategories[0].slug === "all"
+              ? "Escolha a categoria"
+              : currentCategories.map((category) => category.title).join(" • ")
+          }
+          variant="filter"
+        >
+          {currentCategories.length === 0 ||
+          currentCategories[0].slug === "all" ? (
+            <Icons className="size-4" color="#666" slug="categories" />
+          ) : (
+            currentCategories.map((category) => (
+              <Icons
+                key={category.slug}
+                className="size-4"
+                color={category.color}
+                slug={category.slug}
+              />
+            ))
+          )}
+        </ComboboxTrigger>
+      ) : (
+        <ComboboxTrigger
+          className={className}
+          size={size}
+          tabIndex={tabIndex}
+          variant={effectiveVariant}
+        >
+          <Icons
+            className={
+              !showText ? "size-5" : size === "sm" ? "size-4" : "size-5"
             }
-            variant="filter"
-          >
-            {currentCategories.length === 0 ||
-            currentCategories[0].slug === "all" ? (
-              <Icons className="size-4" color="#666" slug="categories" />
-            ) : (
-              currentCategories.map((category) => (
-                <Icons
-                  key={category.slug}
-                  className="size-4"
-                  color={category.color}
-                  slug={category.slug}
-                />
-              ))
+            color={currentCategories[0]?.color || "#666"}
+            slug={currentCategories[0]?.slug || "categories"}
+          />
+          {showText && (
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+              {currentCategories[0]?.title || "Selecione..."}
+            </div>
+          )}
+        </ComboboxTrigger>
+      )}
+      <PrismPopover className="p-0">
+        <PrismCommand className="p-0">
+          <PrismCommandInput className="" placeholder="Procurar categoria..." />
+
+          <PrismCommandList
+            className="p-0 border-t"
+            renderEmptyState={() => (
+              <PrismCommandEmpty>
+                Nenhuma categoria encontrada.
+              </PrismCommandEmpty>
             )}
-          </ComboboxTrigger>
-        ) : (
-          <ComboboxTrigger
-            className={className}
-            size={size}
-            tabIndex={tabIndex}
-            variant="form-inline"
           >
-            <Icons
-              className={!showText ? "size-5" : size === "sm" ? "size-4" : "size-5"}
-              color={currentCategories[0].color}
-              slug={currentCategories[0].slug}
-            />
-            {showText && (
-              <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-                {currentCategories[0].title}
-              </div>
-            )}
-          </ComboboxTrigger>
-        )}
-      </PopoverTrigger>
-      <PopoverContent className="p-0">
-        <Command>
-          <CommandInput placeholder="Procurar estado..." />
-          <CommandEmpty>Nenhum estado encontrado.</CommandEmpty>
-          <CommandList className="p-1 outline-none">
-            {AREA_ORDER.map((areaSlug, index) => {
+            {AREA_ORDER.map((areaSlug) => {
               const items = groupedCategories[areaSlug];
               if (!items || items.length === 0) return null;
               const areaTitle =
@@ -179,91 +167,85 @@ export function CategoriesCombobox({
                     ? "Instagram"
                     : AREAS[areaSlug as keyof typeof AREAS]?.title || "Outros";
               return (
-                <Fragment key={areaSlug}>
-                  <CommandGroup heading={areaTitle}>
-                    {items.map((category) => (
-                      <CommandItem
-                        key={category.slug}
-                        className={cn("flex items-center gap-2")}
-                        onSelect={() => {
-                          if (isMulti) {
-                            let newCategories = selectedCategories;
-                            if (category.slug === "all") {
-                              newCategories = ["all"];
-                            } else if (category.slug === "instagram") {
-                              newCategories = ["post", "reels", "carousel"];
-                            } else {
-                              if (isShiftPressedRef.current) {
-                                newCategories = [category.slug];
-                              } else {
-                                newCategories = selectedCategories.filter(
-                                  (slug) => slug !== "all",
-                                );
-                                if (newCategories.includes(category.slug)) {
-                                  newCategories = newCategories.filter(
-                                    (slug) => slug !== category.slug,
-                                  );
-                                } else {
-                                  newCategories = [
-                                    ...newCategories,
-                                    category.slug,
-                                  ];
-                                }
-                              }
-                              newCategories =
-                                newCategories.length === 0
-                                  ? ["all"]
-                                  : newCategories;
-                            }
-                            onSelect?.({
-                              categories: newCategories,
-                              category: "",
-                            });
+                <PrismCommandGroup
+                  key={areaSlug}
+                  className="py-2"
+                  heading={areaTitle}
+                >
+                  {items.map((category) => (
+                    <PrismCommandItem
+                      key={category.slug}
+                      isSelected={
+                        category.slug === "instagram"
+                          ? selectedCategories.filter(
+                              (s) =>
+                                s === "post" ||
+                                s === "reels" ||
+                                s === "carousel",
+                            ).length === 3
+                          : selectedCategories.includes(category.slug)
+                      }
+                      onAction={() => {
+                        if (isMulti) {
+                          let newCategories = selectedCategories;
+                          if (category.slug === "all") {
+                            newCategories = ["all"];
+                          } else if (category.slug === "instagram") {
+                            newCategories = ["post", "reels", "carousel"];
                           } else {
-                            onSelect?.({
-                              category: category.slug,
-                              categories: [],
-                            });
+                            const isShiftPressed = (
+                              window.event as MouseEvent | undefined
+                            )?.shiftKey;
+                            if (isShiftPressed) {
+                              newCategories = [category.slug];
+                            } else {
+                              newCategories = selectedCategories.filter(
+                                (slug) => slug !== "all",
+                              );
+                              if (newCategories.includes(category.slug)) {
+                                newCategories = newCategories.filter(
+                                  (slug) => slug !== category.slug,
+                                );
+                              } else {
+                                newCategories = [
+                                  ...newCategories,
+                                  category.slug,
+                                ];
+                              }
+                            }
+                            newCategories =
+                              newCategories.length === 0
+                                ? ["all"]
+                                : newCategories;
                           }
-                          setIsOpen(false);
-                        }}
-                      >
-                        <Icons
-                          className="size-5"
-                          color={category.color}
-                          slug={category.slug}
-                        />
-                        {category.title}
-                        <CheckIcon
-                          className={cn(
-                            "ml-auto size-4",
-                            category.slug === "instagram"
-                              ? selectedCategories.filter(
-                                  (s) =>
-                                    s === "post" ||
-                                    s === "reels" ||
-                                    s === "carousel",
-                                ).length === 3
-                                ? "visible"
-                                : "invisible"
-                              : selectedCategories.includes(category.slug)
-                                ? "visible"
-                                : "invisible",
-                          )}
-                        />
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                  {index < AREA_ORDER.length - 1 &&
-                    groupedCategories[AREA_ORDER[index + 1]]?.length > 0 && (
-                      <CommandSeparator className="my-1" />
-                    )}
-                </Fragment>
+                          onSelect?.({
+                            categories: newCategories,
+                            category: "",
+                          });
+                        } else {
+                          onSelect?.({
+                            category: category.slug,
+                            categories: [],
+                          });
+                        }
+                        setIsOpen(false);
+                      }}
+                      textValue={category.title}
+                    >
+                      <Icons
+                        className="size-4"
+                        color={category.color}
+                        slug={category.slug}
+                      />
+                      <span>{category.title}</span>
+                    </PrismCommandItem>
+                  ))}
+                </PrismCommandGroup>
               );
             })}
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+          </PrismCommandList>
+        </PrismCommand>
+      </PrismPopover>
+    </PrismPopoverTrigger>
   );
 }

@@ -1,30 +1,40 @@
-import type * as React from "react";
+import { Button as ButtonPrimitive, type ButtonProps } from "react-aria-components";
 import { cn } from "~/lib/utils";
-export interface ComboboxTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+import { buttonVariants } from "../prism/button";
+
+export interface ComboboxTriggerProps extends Omit<ButtonProps, "className"> {
   variant?: "filter" | "form-inline" | "form-link" | "form-footer";
   size?: "sm" | "lg";
   hasSelection?: boolean;
+  className?: string;
+  tabIndex?: number;
+  title?: string;
+  disabled?: boolean;
   ref?: React.Ref<HTMLButtonElement>;
 }
+
 export function ComboboxTrigger({
   variant = "form-inline",
   size = "lg",
   hasSelection,
   className,
   children,
-  ref,
   type = "button",
   ...props
 }: ComboboxTriggerProps) {
   return (
-    <button
-      ref={ref}
+    <ButtonPrimitive
       className={cn(
         // Base transition and outline
-        "outline-none transition-colors text-sm flex gap-2  items-center",
+        "outline-none transition-colors text-sm flex gap-2 items-center cursor-pointer",
         // Variant Styles
         variant === "filter" &&
-          cn("px-3 rounded-2xl squircle h-10 button-raised"),
+          cn(
+            buttonVariants({
+              variant: "ghost",
+              size: "sm",
+            }),
+          ),
         variant === "form-inline" &&
           cn(
             "flex items-center gap-1.5",
@@ -42,6 +52,6 @@ export function ComboboxTrigger({
       {...props}
     >
       {children}
-    </button>
+    </ButtonPrimitive>
   );
 }

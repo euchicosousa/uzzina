@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import {
   ViewOptionsComponent,
   type ViewOptions,
@@ -110,6 +111,86 @@ export function ViewOptionsSection() {
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>
+
+      <div className="mt-8" id="uzzina-categories-combobox">
+        <GallerySection>
+          <GallerySectionHeader
+            description="Seletor de Categoria refatorado para o Prism exibindo todas as variantes de gatilhos (filter, form-inline lg/sm, icon-only, form-link e form-footer)."
+            title="CategoriesCombobox (Todas as Variantes)"
+          />
+          <GallerySectionContent className="grid gap-6">
+            <GalleryItem label="1. Modo Filtro Múltiplo (variant='filter' + isMulti)">
+              <CategoriesDemoMulti />
+            </GalleryItem>
+            <GalleryItem label="2. Modo Form-Inline Grande (variant='form-inline', size='lg')">
+              <CategoriesDemoSingle size="lg" triggerVariant="form-inline" />
+            </GalleryItem>
+            <GalleryItem label="3. Modo Form-Inline Pequeno (variant='form-inline', size='sm')">
+              <CategoriesDemoSingle size="sm" triggerVariant="form-inline" />
+            </GalleryItem>
+            <GalleryItem label="4. Modo Apenas Ícone (variant='form-inline', showText=false)">
+              <CategoriesDemoSingle
+                showText={false}
+                size="sm"
+                triggerVariant="form-inline"
+              />
+            </GalleryItem>
+            <GalleryItem label="5. Modo Form-Link (variant='form-link')">
+              <CategoriesDemoSingle triggerVariant="form-link" />
+            </GalleryItem>
+            <GalleryItem label="6. Modo Form-Footer (variant='form-footer')">
+              <div className="max-w-md rounded-2xl border bg-surface/80 p-2 squircle">
+                <CategoriesDemoSingle triggerVariant="form-footer" />
+              </div>
+            </GalleryItem>
+          </GallerySectionContent>
+        </GallerySection>
+      </div>
+    </div>
+  );
+}
+
+function CategoriesDemoMulti() {
+  const [selected, setSelected] = useState<string[]>(["all"]);
+  return (
+    <div className="flex flex-col gap-2">
+      <CategoriesCombobox
+        isMulti
+        onSelect={({ categories }) => setSelected(categories)}
+        selectedCategories={selected}
+        showInstagramGroup
+        triggerVariant="filter"
+      />
+      <span className="font-mono text-xs text-muted-foreground">
+        Selecionados: {selected.join(", ")}
+      </span>
+    </div>
+  );
+}
+
+function CategoriesDemoSingle({
+  triggerVariant,
+  size = "lg",
+  showText = true,
+}: {
+  triggerVariant: "form-inline" | "form-link" | "form-footer";
+  size?: "sm" | "lg";
+  showText?: boolean;
+}) {
+  const [selected, setSelected] = useState<string>("post");
+  return (
+    <div className="flex flex-col gap-2">
+      <CategoriesCombobox
+        onSelect={({ category }) => setSelected(category)}
+        selectedCategories={[selected]}
+        showInstagramGroup
+        showText={showText}
+        size={size}
+        triggerVariant={triggerVariant}
+      />
+      <span className="font-mono text-xs text-muted-foreground">
+        Selecionado: {selected}
+      </span>
     </div>
   );
 }
