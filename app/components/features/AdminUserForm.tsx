@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { SegmentedSelector } from "~/components/uzzina/SegmentedSelector";
@@ -11,6 +9,7 @@ import {
   UploadIcon,
   UserIcon,
 } from "lucide-react";
+import { PrismButton, PrismInput } from "../prism";
 interface Area {
   slug: string;
   title: string;
@@ -87,24 +86,22 @@ export function AdminUserForm({
             <label className="font-medium" htmlFor="name">
               Nome
             </label>
-            <Input
+            <PrismInput
               defaultValue={person?.name}
               id="name"
               name="name"
               required
-              variant="inset"
             />
           </div>
           <div className="grid gap-4">
             <label className="font-medium" htmlFor="surname">
               Sobrenome
             </label>
-            <Input
+            <PrismInput
               defaultValue={person?.surname}
               id="surname"
               name="surname"
               required
-              variant="inset"
             />
           </div>
         </div>
@@ -115,26 +112,24 @@ export function AdminUserForm({
             <label className="font-medium" htmlFor="initials">
               Iniciais
             </label>
-            <Input
+            <PrismInput
               defaultValue={person?.initials}
               id="initials"
               maxLength={2}
               name="initials"
               placeholder="AB"
               required
-              variant="inset"
             />
           </div>
           <div className="grid gap-4">
             <label className="font-medium" htmlFor="short">
               Nome Curto
             </label>
-            <Input
+            <PrismInput
               defaultValue={person?.short || ""}
               id="short"
               name="short"
               placeholder="Como te chamam"
-              variant="inset"
             />
           </div>
         </div>
@@ -144,13 +139,12 @@ export function AdminUserForm({
           <label className="font-medium" htmlFor="email">
             E-mail
           </label>
-          <Input
+          <PrismInput
             defaultValue={person?.email || ""}
             id="email"
             name="email"
             required
             type="email"
-            variant="inset"
           />
           {!isNew && (
             <p className="text-xs text-muted-foreground">
@@ -166,14 +160,13 @@ export function AdminUserForm({
               Senha Provisória
             </label>
             <div className="relative">
-              <Input
+              <PrismInput
                 className="pr-10"
                 id="password"
                 minLength={6}
                 name="password"
                 required
                 type={showPassword ? "text" : "password"}
-                variant="inset"
               />
               <button
                 aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
@@ -243,14 +236,14 @@ export function AdminUserForm({
       </div>
 
       <div className="flex justify-end gap-4 pb-8">
-        <Button
+        <PrismButton
           className="squircle rounded-2xl"
-          disabled={isSubmitting}
+          isDisabled={isSubmitting}
           type="submit"
         >
           <SaveIcon className="mr-2 size-4" />
           {isSubmitting ? "Salvando..." : "Salvar Usuário"}
-        </Button>
+        </PrismButton>
       </div>
     </form>
   );

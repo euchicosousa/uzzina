@@ -1,10 +1,10 @@
 import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
+import { PrismInput } from "~/components/prism";
 import { ULoader } from "~/components/uzzina/ULoader";
 import { normalizeHexColor } from "~/lib/uzzina-utils";
 import type { PartnerTopic } from "~/types";
+import { PrismButton } from "../prism";
 interface PartnerTopicsEditorProps {
   topics: PartnerTopic[];
   brandColors: string[];
@@ -120,7 +120,7 @@ export function PartnerTopicsEditor({
               value={normalizeHexColor(selectedColor)}
             />
           </label>
-          <Input
+          <PrismInput
             aria-label="Código Hexadecimal da Cor do Tópico"
             className="w-24 font-mono uppercase"
             maxLength={9}
@@ -128,11 +128,10 @@ export function PartnerTopicsEditor({
             onChange={(e) => handleColorChange(e.target.value)}
             type="text"
             value={selectedColor}
-            variant="inset"
           />
         </div>
 
-        <Input
+        <PrismInput
           className="flex-1"
           onChange={(e) => setNewTitle(e.target.value)}
           onKeyDown={(e) => {
@@ -143,19 +142,17 @@ export function PartnerTopicsEditor({
           }}
           placeholder="Nome do novo tópico..."
           value={newTitle}
-          variant="inset"
         />
 
-        <Button
+        <PrismButton
           className="rounded-xl px-3"
-          disabled={!newTitle.trim()}
+          isDisabled={!newTitle.trim()}
           onClick={handleAddTopic}
           size="sm"
-          type="button"
         >
           <PlusIcon className="size-4 mr-1" />
           Adicionar
-        </Button>
+        </PrismButton>
       </div>
     </div>
   );

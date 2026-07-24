@@ -15,8 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
-import { Button } from "~/components/ui/button";
-import { RangeCalendar } from "~/components/prism";
+import { PrismButton, RangeCalendar } from "~/components/prism";
 import type { DateRange } from "react-day-picker";
 import { ComboboxTrigger } from "./ComboboxTrigger";
 interface FlowDateFilterProps {
@@ -166,38 +165,50 @@ export function FlowDateFilter({ dateRange, onChange }: FlowDateFilterProps) {
         <div className="flex flex-col gap-3">
           {/* Quick select buttons */}
           <div className="flex gap-2">
-            <Button
+            <PrismButton
               className="flex-1 rounded-lg text-xs h-8"
               onClick={handleQuickSelectToday}
               variant={isTodaySelected ? "secondary" : "ghost"}
             >
               Hoje
-            </Button>
-            <Button
+            </PrismButton>
+            <PrismButton
               className="flex-1 rounded-lg text-xs h-8"
               onClick={handleQuickSelectWeek}
               variant={isCurrentWeekSelected ? "secondary" : "ghost"}
             >
               Esta Semana
-            </Button>
-            <Button
+            </PrismButton>
+            <PrismButton
               className="flex-1 rounded-lg text-xs h-8"
               onClick={handleQuickSelectMonth}
               variant={isCurrentMonthSelected ? "secondary" : "ghost"}
             >
               Esse Mês
-            </Button>
+            </PrismButton>
           </div>
 
           <div className="border-t border-border/60 my-1" />
 
           {/* Calendar Picker */}
           <RangeCalendar
-            isCellDisabled={(date: CalendarDate) => date.compare(new CalendarDate(2020, 1, 1)) < 0}
+            isCellDisabled={(date: CalendarDate) =>
+              date.compare(new CalendarDate(2020, 1, 1)) < 0
+            }
             numberOfMonths={1}
-            onSelect={(range: { from?: Date; to?: Date } | undefined) => {
+            onSelect={(
+              range:
+                | {
+                    from?: Date;
+                    to?: Date;
+                  }
+                | undefined,
+            ) => {
               if (range) {
-                handleCalendarChange({ from: range.from, to: range.to });
+                handleCalendarChange({
+                  from: range.from,
+                  to: range.to,
+                });
               } else {
                 handleCalendarChange(undefined);
               }
@@ -209,14 +220,14 @@ export function FlowDateFilter({ dateRange, onChange }: FlowDateFilterProps) {
             <div className="text-xs text-center font-medium text-foreground/80">
               {getPreviewText()}
             </div>
-            <Button
+            <PrismButton
               className="w-full rounded-xl text-xs h-8"
-              disabled={!tempRange.from}
+              isDisabled={!tempRange.from}
               onClick={handleConfirm}
               size="sm"
             >
               Confirmar
-            </Button>
+            </PrismButton>
           </div>
         </div>
       </PopoverContent>

@@ -20,7 +20,7 @@ const Tiptap = lazy(() =>
     default: module.Tiptap,
   })),
 );
-import { Button } from "~/components/ui/button";
+import { PrismButton } from "~/components/prism";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
@@ -33,6 +33,7 @@ import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { fetchPeople } from "~/lib/supabase.queries";
 import type { Partner } from "~/types";
 import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
+import { IconCloud } from "@tabler/icons-react";
 export const Route = createFileRoute("/app/admin/partner/$slug")({
   component: AdminPartnerEditPage,
 });
@@ -589,24 +590,19 @@ function AdminPartnerEditPage() {
             {partner?.archived ? "Arquivado" : "Visível"}
           </UToggleInput>
 
-          <Button
+          <PrismButton
             className="rounded-2xl squircle"
-            disabled={isSubmitting}
+            isDisabled={isSubmitting}
             type="submit"
           >
             {isSubmitting ? (
               "Salvando..."
-            ) : justSaved ? (
-              <>
-                Salvo <CheckIcon className="size-4" />
-              </>
             ) : (
               <>
-                {isNew ? "Criar Parceiro" : "Salvar"}
-                <CloudUploadIcon className="size-4" />
+                <IconCloud /> Salvar Tudo
               </>
             )}
-          </Button>
+          </PrismButton>
         </div>
       </form>
     </div>

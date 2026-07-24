@@ -12,7 +12,6 @@ const Tiptap = lazy(() =>
     default: module.Tiptap,
   })),
 );
-import { Button } from "~/components/ui/button";
 import {
   Sheet,
   SheetContent,
@@ -30,6 +29,7 @@ import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "./WorkFileThumbnail";
 import { TopicsCombobox } from "~/components/features/TopicsCombobox";
+import { PrismButton } from "~/components/prism";
 interface EssentialsTabProps {
   RawAction: Action;
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;
@@ -204,16 +204,16 @@ export function EssentialsTab({
             selectedTopicIds={RawAction.topic_ids || []}
           />
 
-          <Button
+          <PrismButton
             aria-label="Alternar exibição do ID da ação"
             className="ml-auto h-6 px-2 font-mono text-[10px]"
             onClick={() => {
               setisIDVisible(!isIDVisible);
             }}
-            variant="muted"
+            variant="ghost"
           >
             {isIDVisible ? RawAction.id : "ID"}
-          </Button>
+          </PrismButton>
         </div>
 
         <div className="flex justify-between gap-8 border-b px-4 py-1">
@@ -243,7 +243,7 @@ export function EssentialsTab({
 
           <div className="flex gap-1">
             {hooks.length > 0 && (
-              <Button
+              <PrismButton
                 onClick={() => {
                   setHooksOpen(true);
                 }}
@@ -251,7 +251,7 @@ export function EssentialsTab({
                 variant={"secondary"}
               >
                 <FishingHookIcon />
-              </Button>
+              </PrismButton>
             )}
             <UButtonAI disabled={isAIProcessing} onClick={handleTriggerAI}>
               CRIAR COM IA
@@ -424,7 +424,7 @@ function HookItem({
           }}
           value={hook.texto}
         />
-        <Button
+        <PrismButton
           className="h-8 w-8 shrink-0 rounded-full"
           onClick={() => {
             const intent = {
@@ -446,7 +446,7 @@ function HookItem({
           variant="secondary"
         >
           <ArrowRightIcon className="size-4" />
-        </Button>
+        </PrismButton>
       </div>
     </div>
   );

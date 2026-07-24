@@ -86,7 +86,7 @@ export {
 } from "./popover";
 export { Separator as PrismSeparator } from "./separator";
 export { Textarea as PrismTextarea } from "./textarea";
-export { PrismSkeleton } from "./skeleton";
+export { PrismSkeleton, PrismSkeletonGroup } from "./skeleton";
 export { PrismTimeField } from "./time-field";
 export { PrismToggle, toggleVariants } from "./toggle";
 export { PrismToggleGroup, PrismToggleGroupItem } from "./toggle-group";

@@ -2,7 +2,7 @@ import type * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "~/lib/utils";
-import { Button } from "~/components/ui/button";
+import { PrismButton } from "~/components/prism";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 
@@ -112,11 +112,10 @@ function InputGroupButton({
   type = "button",
   variant = "ghost",
   size = "xs",
-  ...props
-}: Omit<React.ComponentProps<typeof Button>, "size"> &
+}: React.ComponentProps<typeof PrismButton> &
   VariantProps<typeof inputGroupButtonVariants>) {
   return (
-    <Button
+    <PrismButton
       type={type}
       data-size={size}
       variant={variant}

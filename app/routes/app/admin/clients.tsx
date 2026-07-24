@@ -1,6 +1,6 @@
 import { UserPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { Button } from "~/components/ui/button";
+import { PrismButton } from "~/components/prism";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { getAllClients } from "~/models/clients";
 import { AdminItemCard } from "~/components/uzzina/AdminItemCard";
@@ -8,11 +8,10 @@ import { useAppContext } from "~/contexts/AppContext";
 import { useQuery } from "@tanstack/react-query";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import type { Client, Partner } from "~/types";
-
+import { buttonVariants } from "~/components/prism/button";
 export const Route = createFileRoute("/app/admin/clients")({
   component: AdminClientsPage,
 });
-
 function AdminClientsPage() {
   const { partners } = useAppContext();
   const supabase = createSupabaseBrowserClient();
@@ -24,11 +23,17 @@ function AdminClientsPage() {
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-8">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="pb-0 text-2xl font-bold">Clientes</h1>
-        <Button asChild className="squircle rounded-2xl" variant="secondary">
-          <Link to="/app/admin/client/$userId" params={{ userId: "new" }}>
-            Novo Cliente <UserPlusIcon />
-          </Link>
-        </Button>
+        <Link
+          className={buttonVariants({
+            variant: "ghost",
+          })}
+          params={{
+            userId: "new",
+          }}
+          to="/app/admin/client/$userId"
+        >
+          Novo Cliente <UserPlusIcon />
+        </Link>
       </div>
 
       {clients.length === 0 && (

@@ -10,8 +10,7 @@ import {
 } from "~/lib/CONSTANTS";
 import { getCleanAction, Icons } from "~/lib/helpers";
 import { ActionContainer } from "../features/ActionContainer";
-import { Button } from "../ui/button";
-import { PrismBadge } from "../prism";
+import { PrismBadge, PrismButton } from "../prism";
 
 /**
  * Visualização Kanban/Board de ações agrupadas por categoria.
@@ -82,7 +81,7 @@ function CategoryColumn({
           <PrismBadge>actions.length</PrismBadge>
         </div>
 
-        <Button
+        <PrismButton
           className="size-6 opacity-0 group-hover/column:opacity-100"
           onClick={() =>
             setBaseAction({
@@ -96,7 +95,7 @@ function CategoryColumn({
           variant="ghost"
         >
           <PlusIcon className="size-4" />
-        </Button>
+        </PrismButton>
       </div>
 
       {/* Lista de ações */}

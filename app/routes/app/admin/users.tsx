@@ -1,6 +1,6 @@
 import { UserPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { Button } from "~/components/ui/button";
+import { PrismButton } from "~/components/prism";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
@@ -25,16 +25,18 @@ function AdminUsersPage() {
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-8">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="pb-0 text-2xl font-bold">Usuários</h1>
-        <Button asChild className="squircle rounded-2xl" variant={"secondary"}>
-          <Link
-            params={{
-              userId: "new",
-            }}
-            to="/app/admin/user/$userId"
-          >
-            Novo Usuário <UserPlusIcon />
-          </Link>
-        </Button>
+
+        <Link
+          className={buttonVariants({
+            variant: "ghost",
+          })}
+          params={{
+            userId: "new",
+          }}
+          to="/app/admin/user/$userId"
+        >
+          Novo Usuário <UserPlusIcon />
+        </Link>
       </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
@@ -60,6 +62,7 @@ function AdminUsersPage() {
 }
 import { AdminItemCard } from "~/components/uzzina/AdminItemCard";
 import { PrismBadge } from "~/components/prism";
+import { buttonVariants } from "~/components/prism/button";
 function UserItem({ person }: { person: Person }) {
   return (
     <AdminItemCard

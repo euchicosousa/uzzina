@@ -14,7 +14,7 @@ import { parseU } from "~/utils/date";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useMemo } from "react";
-import { Button } from "~/components/ui/button";
+import { PrismButton } from "~/components/prism";
 import { DATE_TIME_DISPLAY, PHASES, type PHASE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import { getFormattedDateTime } from "~/utils/date";
@@ -75,13 +75,13 @@ export function ClientCalendar({
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex items-center justify-between border-b px-4 py-3">
         <div className="flex items-center gap-2">
-          <Button onClick={onPrev} size="icon" variant="ghost">
+          <PrismButton onClick={onPrev} size="icon" variant="ghost">
             <ChevronLeftIcon className="size-4" />
-          </Button>
+          </PrismButton>
           <span className="text-sm font-medium capitalize">{title}</span>
-          <Button onClick={onNext} size="icon" variant="ghost">
+          <PrismButton onClick={onNext} size="icon" variant="ghost">
             <ChevronRightIcon className="size-4" />
-          </Button>
+          </PrismButton>
         </div>
 
         <div className="flex rounded-lg border text-sm">

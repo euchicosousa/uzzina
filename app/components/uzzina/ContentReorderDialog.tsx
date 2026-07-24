@@ -24,7 +24,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
-import { Button } from "~/components/ui/button";
+import { PrismButton } from "~/components/prism";
 import {
   Dialog,
   DialogContent,
@@ -291,7 +291,7 @@ export function ContentReorderDialog({
             </CloudinaryUpload>
 
             {items.length > 0 && (
-              <Button
+              <PrismButton
                 variant="ghost"
                 size="sm"
                 className="text-destructive hover:text-destructive"
@@ -302,13 +302,13 @@ export function ContentReorderDialog({
               >
                 <Trash2Icon className="size-4" />
                 Limpar
-              </Button>
+              </PrismButton>
             )}
           </div>
 
-          <Button size="sm" onClick={() => onOpenChange(false)}>
+          <PrismButton size="sm" onClick={() => onOpenChange(false)}>
             Concluir
-          </Button>
+          </PrismButton>
         </div>
       </DialogContent>
     </Dialog>

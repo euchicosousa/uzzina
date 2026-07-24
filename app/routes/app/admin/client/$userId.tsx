@@ -1,7 +1,7 @@
 import { UploadIcon, EyeIcon, EyeOffIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
-import { Button } from "~/components/ui/button";
+import { PrismButton } from "~/components/prism";
 import { Input } from "~/components/ui/input";
 import {
   InputGroup,
@@ -48,7 +48,10 @@ function AdminClientPage() {
   // Mutation para salvar
   const saveMutation = useMutation({
     mutationFn: async (
-      clientData: Omit<Client, "id" | "created_at" | "active" | "password_hash">,
+      clientData: Omit<
+        Client,
+        "id" | "created_at" | "active" | "password_hash"
+      >,
     ) => {
       if (isNew) {
         await createClient(supabase, clientData);
@@ -223,9 +226,9 @@ function AdminClientPage() {
               />
               <InputGroupAddon align="inline-end">
                 <InputGroupButton
-                  size="icon-xs"
+                  arial-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   onClick={() => setShowPassword(!showPassword)}
-                  title={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  size="icon-xs"
                   type="button"
                 >
                   {showPassword ? (
@@ -261,9 +264,9 @@ function AdminClientPage() {
         <div className="flex items-center justify-between gap-4 border-t pt-6">
           {!isNew && (
             <div className="flex gap-2">
-              <Button
+              <PrismButton
                 className="squircle bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-2xl"
-                disabled={isSubmitting}
+                isDisabled={isSubmitting}
                 onClick={() => {
                   if (confirm("Tem certeza que deseja ocultar este cliente?")) {
                     archiveMutation.mutate();
@@ -273,16 +276,16 @@ function AdminClientPage() {
                 variant="destructive"
               >
                 Arquivar Cliente
-              </Button>
+              </PrismButton>
             </div>
           )}
-          <Button
+          <PrismButton
             className="squircle ml-auto rounded-2xl"
-            disabled={isSubmitting}
+            isDisabled={isSubmitting}
             type="submit"
           >
             {isSubmitting ? "Salvando..." : isNew ? "Criar Cliente" : "Salvar"}
-          </Button>
+          </PrismButton>
         </div>
       </form>
     </div>

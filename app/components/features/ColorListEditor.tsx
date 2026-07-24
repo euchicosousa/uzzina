@@ -1,4 +1,3 @@
-import { GripVerticalIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import {
   DndContext,
   KeyboardSensor,
@@ -17,11 +16,11 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useId, useState } from "react";
-import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { normalizeHexColor } from "~/lib/uzzina-utils";
-
+import { PrismButton } from "../prism";
+import { IconGripVertical, IconPlus, IconTrash } from "@tabler/icons-react";
 interface ColorItem {
   id: string;
   value: string;
@@ -30,14 +29,12 @@ interface ColorListProps {
   initialColors?: string[];
   onChange?: (colors: string[]) => void;
 }
-
 const DEFAULT_INITIAL_COLORS: string[] = [];
 export function ColorListEditor({
   initialColors = DEFAULT_INITIAL_COLORS,
   onChange,
 }: ColorListProps) {
   const dndId = useId();
-
   const [items, setItems] = useState<ColorItem[]>(() =>
     initialColors && initialColors.length > 0
       ? initialColors.map((color) => ({
@@ -61,11 +58,9 @@ export function ColorListEditor({
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
-
   const triggerChange = (updatedItems: ColorItem[]) => {
     onChange?.(updatedItems.map((item) => item.value));
   };
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
@@ -115,7 +110,6 @@ export function ColorListEditor({
       return next;
     });
   };
-
   const handleBlurColor = () => {
     setItems((currentItems) => {
       const sanitized = currentItems.map((item) => {
@@ -145,7 +139,6 @@ export function ColorListEditor({
       return sanitized;
     });
   };
-
   return (
     <div className="space-y-4">
       <DndContext
@@ -164,8 +157,8 @@ export function ColorListEditor({
                 key={item.id}
                 id={item.id}
                 index={index}
-                onChange={(val) => updateColor(item.id, val)}
                 onBlur={handleBlurColor}
+                onChange={(val) => updateColor(item.id, val)}
                 onRemove={() => removeColor(item.id)}
                 value={item.value}
               />
@@ -174,16 +167,10 @@ export function ColorListEditor({
         </SortableContext>
       </DndContext>
 
-      <Button
-        className="flex items-center gap-2"
-        onClick={addColor}
-        size="sm"
-        type="button"
-        variant="outline"
-      >
-        <PlusIcon className="h-4 w-4" />
+      <PrismButton onClick={addColor} size="sm" variant="outline">
+        <IconPlus />
         Adicionar Cor
-      </Button>
+      </PrismButton>
     </div>
   );
 }
@@ -231,7 +218,7 @@ function SortableColorItem({
         {...listeners}
         className="cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing"
       >
-        <GripVerticalIcon className="size-4" />
+        <IconGripVertical className="size-4" />
       </div>
 
       <div className="flex flex-1 items-center gap-2">
@@ -247,39 +234,37 @@ function SortableColorItem({
             className="absolute inset-0 size-0 cursor-pointer p-0.5"
             id={`color_${id}`}
             name={`color_${id}`}
-            onChange={(e) => onChange(e.target.value)}
             onBlur={onBlur}
+            onChange={(e) => onChange(e.target.value)}
             type="color"
             value={normalizeHexColor(value)}
           />
         </label>
         <Input
-          variant="inset"
           aria-label="Código Hexadecimal da Cor"
           className="flex-1 font-mono uppercase"
           id={`hex_${id}`}
           maxLength={9}
           name={`hex_${id}`}
-          onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
+          onChange={(e) => onChange(e.target.value)}
           type="text"
           value={value}
+          variant="inset"
         />
       </div>
 
       <input name="colors" type="hidden" value={value} />
 
-      <Button
-        className="h-9 w-9 text-muted-foreground hover:text-destructive"
+      <PrismButton
+        aria-label="Remover cor"
         onClick={onRemove}
         size="icon"
-        title="Remover cor"
         type="button"
-        variant="ghost"
+        variant="destructive"
       >
-        <Trash2Icon className="h-4 w-4" />
-      </Button>
+        <IconTrash />
+      </PrismButton>
     </div>
   );
 }
-

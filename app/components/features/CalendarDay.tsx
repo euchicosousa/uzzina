@@ -8,7 +8,7 @@ import type { ViewOptions } from "~/components/features/ViewOptions";
 import { ActionContainer } from "./ActionContainer";
 import { getInstagramFeedActions } from "~/utils/validation";
 import { PlusIcon } from "lucide-react";
-import { SkeletonGroup } from "../ui/skeleton";
+import { PrismSkeletonGroup } from "~/components/prism";
 import { useLoading } from "~/hooks/useLoading";
 export function CalendarDay({
   currentDay,
@@ -99,7 +99,7 @@ export function CalendarDay({
         </div>
         <div className={cn("h-full overflow-hidden")}>
           {isLoading && actions.length === 0 && (
-            <SkeletonGroup
+            <PrismSkeletonGroup
               className="gap-1"
               count={skeletonCount}
               delay={400}

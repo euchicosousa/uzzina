@@ -2,7 +2,7 @@ import { LogInIcon, EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { UZZINALogo } from "~/components/logo";
-import { Button } from "~/components/ui/button";
+import { PrismButton } from "~/components/prism";
 import { Input } from "~/components/ui/input";
 import {
   InputGroup,
@@ -111,9 +111,9 @@ function DashLogin() {
               />
               <InputGroupAddon align="inline-end">
                 <InputGroupButton
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   onClick={() => setShowPassword(!showPassword)}
                   size="icon-xs"
-                  title={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   type="button"
                 >
                   {showPassword ? (
@@ -126,14 +126,14 @@ function DashLogin() {
             </InputGroup>
           </div>
 
-          <Button
+          <PrismButton
             className="squircle w-full rounded-2xl"
-            disabled={isSubmitting}
+            isDisabled={isSubmitting}
             type="submit"
           >
+            {isSubmitting ? "Entrando..." : "Entrar no Portal"}
             <LogInIcon className="size-4" />
-            {isSubmitting ? "Entrando..." : "Entrar"}
-          </Button>
+          </PrismButton>
         </form>
       </div>
 

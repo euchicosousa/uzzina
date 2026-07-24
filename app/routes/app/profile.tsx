@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
+  CloudIcon,
   ImageIcon,
   LaptopIcon,
   LayoutGridIcon,
@@ -13,7 +14,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { Theme, useTheme } from "~/components/theme-provider";
-import { Button } from "~/components/ui/button";
+import { PrismButton } from "~/components/prism";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
@@ -32,6 +33,7 @@ import {
   deriveDarkBg,
   deriveDarkFg,
 } from "~/utils/color";
+import { IconCloud } from "@tabler/icons-react";
 export const Route = createFileRoute("/app/profile")({
   component: ProfilePage,
 });
@@ -352,7 +354,6 @@ function ProfilePage() {
         });
       }
       window.dispatchEvent(new Event("uzzina-storage-update"));
-
       toast.success("Perfil e preferências salvos com sucesso!");
     } catch (err) {
       console.error(err);
@@ -945,15 +946,15 @@ function ProfilePage() {
         </div>
 
         {/* Action Button Row */}
-        <div className="flex justify-end gap-4 border-t pt-6">
-          <Button
-            className="squircle h-11 rounded-2xl px-6 text-sm font-semibold"
-            disabled={isSubmitting}
+        <div className="flex justify-end pt-4">
+          <PrismButton
+            className="rounded-2xl squircle"
+            isDisabled={isSubmitting}
             type="submit"
           >
-            <SaveIcon className="mr-2 size-4" />
-            {isSubmitting ? "Salvando..." : "Salvar Configurações"}
-          </Button>
+            <IconCloud />
+            {isSubmitting ? "Salvando..." : "Salvar Alterações"}
+          </PrismButton>
         </div>
       </form>
     </div>

@@ -1,10 +1,11 @@
 import { FolderPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { Button } from "~/components/ui/button";
+import { PrismButton } from "~/components/prism";
 import { AdminItemCard } from "~/components/uzzina/AdminItemCard";
 import { useQuery } from "@tanstack/react-query";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import type { Partner } from "~/types";
+import { buttonVariants } from "~/components/prism/button";
 export const Route = createFileRoute("/app/admin/partners")({
   component: AdminPartnersPage,
 });
@@ -46,16 +47,18 @@ function AdminPartnersPage() {
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-8">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="pb-0 text-2xl font-bold">Parceiros</h1>
-        <Button asChild className="squircle rounded-2xl" variant={"raised"}>
-          <Link
-            params={{
-              slug: "new",
-            }}
-            to="/app/admin/partner/$slug"
-          >
-            Novo Parceiro <FolderPlusIcon />
-          </Link>
-        </Button>
+
+        <Link
+          className={buttonVariants({
+            variant: "ghost",
+          })}
+          params={{
+            slug: "new",
+          }}
+          to="/app/admin/partner/$slug"
+        >
+          Novo Parceiro <FolderPlusIcon />
+        </Link>
       </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">

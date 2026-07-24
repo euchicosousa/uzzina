@@ -4,7 +4,7 @@ import { ptBR } from "date-fns/locale/pt-BR";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Button } from "~/components/ui/button";
+import { PrismButton } from "~/components/prism";
 import { PrismCalendar } from "~/components/prism";
 import { Input } from "~/components/ui/input";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
@@ -13,11 +13,9 @@ import {
   deleteCelebration,
   getAllCelebrations,
 } from "~/models/celebrations";
-
 export const Route = createFileRoute("/app/admin/celebrations")({
   component: AdminCelebrationsPage,
 });
-
 function AdminCelebrationsPage() {
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
@@ -90,9 +88,9 @@ function AdminCelebrationsPage() {
                 value={title}
                 variant="inset"
               />
-              <Button
+              <PrismButton
                 className="squircle shrink-0 rounded-2xl"
-                disabled={!selectedDate || isSubmitting}
+                isDisabled={!selectedDate || isSubmitting}
                 size="icon"
                 type="submit"
               >
@@ -101,7 +99,7 @@ function AdminCelebrationsPage() {
                 ) : (
                   <PlusIcon />
                 )}
-              </Button>
+              </PrismButton>
             </div>
           </form>
         </div>
@@ -161,14 +159,14 @@ function AdminCelebrationsPage() {
                       className="group flex relative items-center justify-between rounded-xl py-2 px-3 transition-colors hover:bg-card"
                     >
                       <div className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 absolute h-full top-1 left-1">
-                        <Button
-                          disabled={isSubmitting}
+                        <PrismButton
+                          isDisabled={isSubmitting}
                           onClick={() => deleteMutation.mutate(celebration.id)}
                           size="icon-sm"
                           variant="destructive"
                         >
                           <TrashIcon className="size-4" />
-                        </Button>
+                        </PrismButton>
                       </div>
                       <div className="flex items-center gap-4 overflow-hidden">
                         <span className="text-muted-foreground w-6 text-center text-sm font-medium group-hover:opacity-0 transition-opacity">

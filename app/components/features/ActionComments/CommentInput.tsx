@@ -1,6 +1,6 @@
 import { CheckIcon, SendIcon } from "lucide-react";
 import { useState } from "react";
-import { Button } from "~/components/ui/button";
+import { PrismButton } from "~/components/prism";
 import {
   Command,
   CommandEmpty,
@@ -67,7 +67,7 @@ export function CommentInput({
   return (
     <div className="relative flex flex-col gap-2 bg-input dark:bg-input/30 input-embossed p-3 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary">
       <Textarea
-        className="min-h-[80px] w-full p-4 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
+        className="min-h-20 w-full p-4 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Escreva uma observação..."
@@ -80,7 +80,7 @@ export function CommentInput({
         <div className="flex items-center gap-2">
           <Popover onOpenChange={setIsOpen} open={isOpen}>
             <PopoverTrigger asChild>
-              <Button size="sm" variant="ghost">
+              <PrismButton size="sm" variant="ghost">
                 {/* Avatares das pessoas selecionadas */}
                 {selectedPeople.length > 0 ? (
                   <div className="flex items-center gap-1.5">
@@ -96,9 +96,9 @@ export function CommentInput({
                 ) : (
                   <span>Responsáveis</span>
                 )}
-              </Button>
+              </PrismButton>
             </PopoverTrigger>
-            <PopoverContent align="start" className="w-[240px] p-0">
+            <PopoverContent align="start" className="w-60 p-0">
               <Command>
                 <CommandInput
                   className="h-9 text-xs"
@@ -107,7 +107,7 @@ export function CommentInput({
                 <CommandEmpty className="py-3 text-center text-xs">
                   Nenhum membro encontrado.
                 </CommandEmpty>
-                <CommandList className="max-h-[200px] p-1">
+                <CommandList className="max-h-50 p-1">
                   {mentionablePeople.map((person) => {
                     const isSelected = selectedMentions.includes(
                       person.user_id,
@@ -147,7 +147,7 @@ export function CommentInput({
             Cmd + Enter para {submitLabel === "Salvar" ? "salvar" : "enviar"}
           </span>
           {onCancel && (
-            <Button
+            <PrismButton
               className="h-8 rounded-lg px-3 text-xs"
               onClick={onCancel}
               size="sm"
@@ -155,11 +155,11 @@ export function CommentInput({
               variant="ghost"
             >
               Cancelar
-            </Button>
+            </PrismButton>
           )}
-          <Button
+          <PrismButton
             className="squircle h-8 rounded-lg px-3.5 text-xs font-semibold"
-            disabled={isSubmitting || !value.trim()}
+            isDisabled={isSubmitting || !value.trim()}
             onClick={handleSend}
             size="sm"
           >
@@ -167,7 +167,7 @@ export function CommentInput({
               <SendIcon className="mr-1.5 size-3.5" />
             )}
             {submitLabel || "Enviar"}
-          </Button>
+          </PrismButton>
         </div>
       </div>
     </div>

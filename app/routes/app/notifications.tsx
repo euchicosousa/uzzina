@@ -4,7 +4,7 @@ import { ptBR } from "date-fns/locale";
 import { ArrowLeftIcon, BellIcon, CheckCheckIcon } from "lucide-react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Button } from "~/components/ui/button";
+import { PrismButton } from "~/components/prism";
 import { useNotifications } from "~/hooks/useNotifications";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { cn } from "~/lib/utils";
@@ -48,14 +48,14 @@ function NotificationsPage() {
       {/* Header com botão de voltar */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <Button
+          <PrismButton
             variant="ghost"
             size="icon"
             onClick={() => window.history.back()}
             className="rounded-full"
           >
             <ArrowLeftIcon className="size-5" />
-          </Button>
+          </PrismButton>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Notificações</h1>
             <p className="text-sm text-muted-foreground">
@@ -65,7 +65,7 @@ function NotificationsPage() {
         </div>
 
         {unreadCount > 0 && (
-          <Button
+          <PrismButton
             variant="outline"
             size="sm"
             onClick={() => markAllAsRead()}
@@ -73,7 +73,7 @@ function NotificationsPage() {
           >
             <CheckCheckIcon className="mr-2 size-4" />
             Marcar todas como lidas
-          </Button>
+          </PrismButton>
         )}
       </div>
 
@@ -96,7 +96,7 @@ function NotificationsPage() {
             você em um comentário de ação, ela aparecerá aqui.
           </p>
           <Link to="/app" className="mt-6">
-            <Button className="squircle rounded-xl">Ir para o início</Button>
+            <PrismButton className="squircle rounded-xl">Ir para o início</PrismButton>
           </Link>
         </div>
       ) : (
