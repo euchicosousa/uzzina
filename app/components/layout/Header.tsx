@@ -33,6 +33,7 @@ import type { Notification } from "~/types";
 import { DashboardMetrics } from "../features/home/DashboardMetrics";
 import { UZZINALogo } from "../logo";
 import {
+  PrismBadge,
   PrismButton,
   PrismMenu,
   PrismMenuContent,
@@ -212,14 +213,7 @@ export function Header({
             variant="ghost"
           >
             <BellIcon className="size-5" />
-            {unreadCount > 0 ? (
-              <UBadge
-                className="absolute -top-1 -right-1"
-                isDynamic
-                size="sm"
-                value={unreadCount}
-              />
-            ) : null}
+            {unreadCount > 0 ? <PrismBadge>{unreadCount}</PrismBadge> : null}
           </PrismButton>
           <PrismPopover
             className="w-80 overflow-hidden rounded-2xl p-0"

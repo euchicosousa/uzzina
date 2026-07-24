@@ -23,7 +23,7 @@ import { Draggable, Droppable } from "../features/DnD";
 import { DragStateContext } from "../features/DragStateContext";
 import { UBadge } from "../uzzina/UBadge";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
-
+import { PrismBadge } from "../prism";
 export default function KanbanHomeActions({ actions }: { actions: Action[] }) {
   const isDesktop = useIsDesktop();
   const _queryClient = useQueryClient();
@@ -178,7 +178,7 @@ const KanbanColumn = ({
           >
             <div className="flex items-center gap-2 px-1 py-2 text-lg font-medium tracking-tight">
               <div>{phase.title}</div>
-              <UBadge value={actions.length} />
+              <PrismBadge>{actions.length}</PrismBadge>
             </div>
 
             <div className="flex h-full flex-col overflow-y-auto p-1">

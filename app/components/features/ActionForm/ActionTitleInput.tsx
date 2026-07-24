@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { PrismBadge } from "~/components/prism";
 import { UBadge } from "~/components/uzzina/UBadge";
 import { cn } from "~/lib/utils";
 interface ActionTitleInputProps {
@@ -29,6 +30,7 @@ export function ActionTitleInput({
       )}
     >
       <textarea
+        aria-label="Título da ação"
         autoFocus={autoFocus}
         className={cn(
           "w-full shrink-0 resize-none overflow-hidden pt-2 pb-1 leading-none outline-none",
@@ -50,11 +52,12 @@ export function ActionTitleInput({
         }}
         tabIndex={tabIndex}
         value={localTitle}
-        aria-label="Título da ação"
       />
       {localTitle.length > 70 && !textareaClassName && (
         <div className="absolute right-0 bottom-0">
-          <UBadge isDynamic value={localTitle.length} />
+          <PrismBadge variant={localTitle.length > 100 ? "error" : "warning"}>
+            {localTitle.length}
+          </PrismBadge>
         </div>
       )}
     </div>

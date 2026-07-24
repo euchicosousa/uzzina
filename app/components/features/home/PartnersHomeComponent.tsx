@@ -6,6 +6,7 @@ import { useAppContext } from "~/contexts/AppContext";
 import { cn } from "~/lib/utils";
 import type { Action } from "~/types";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
+import { PrismBadge } from "~/components/prism";
 export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
   const { partners } = useAppContext();
   const sortedPartners = [...partners].sort((a, b) =>
@@ -52,18 +53,24 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
           <Link
             key={partner.id}
             className="group/partner relative grid place-content-center p-8"
+            params={{
+              slug: partner.slug,
+            }}
             style={{
               backgroundColor: partner.colors[0],
               color: partner.colors[1],
             }}
             to="/app/partner/$slug"
-            params={{ slug: partner.slug }}
           >
             <div className="relative group-hover/partner:opacity-50 transition duration-500 group-hover/partner:scale-80">
               {getShortText(partner.short)}
 
               <div className="absolute -top-2 -right-6 flex">
-                <UBadge isDynamic size="sm" value={partner.lateActionsLength} />
+                <PrismBadge
+                  variant={partner.lateActionsLength > 3 ? "error" : "warning"}
+                >
+                  {partner.lateActionsLength}
+                </PrismBadge>
               </div>
             </div>
             {partner.image && (

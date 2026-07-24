@@ -27,6 +27,7 @@ import {
   InputGroupInput,
 } from "~/components/ui/input-group";
 import {
+  PrismBadge,
   PrismButton,
   PrismPopover,
   PrismPopoverTrigger,
@@ -196,7 +197,7 @@ function PartnerPage() {
                   size="unstyled"
                   variant="unstyled"
                 >
-                  <UBadge isDynamic value={lateCount} />
+                  <PrismBadge>{lateCount}</PrismBadge>
                 </PrismButton>
                 <PrismPopover
                   className="max-h-100 w-95 overflow-y-auto space-y-4"

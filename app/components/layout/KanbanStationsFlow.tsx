@@ -18,6 +18,7 @@ import { ActionContainer } from "../features/ActionContainer";
 import { Droppable } from "../features/DnD";
 import { DragStateContext } from "../features/DragStateContext";
 import { useActionMutations } from "~/hooks/useActionMutations";
+import { PrismBadge } from "../prism";
 export default function KanbanStationsFlow({ actions }: { actions: Action[] }) {
   const isDesktop = useIsDesktop();
   const { handleAction } = useActionMutations();
@@ -192,14 +193,14 @@ const KanbanColumn = ({
 }) => {
   return (
     <Droppable
-      id={station.slug}
       className={cn("flex h-full flex-col overflow-hidden", className)}
+      id={station.slug}
     >
       {(isOver) => (
         <div
           className={cn(
             "flex h-full w-full flex-col overflow-hidden border-t-4 transition-colors px-4",
-            isOver && "border-primary/50 bg-primary/5"
+            isOver && "border-primary/50 bg-primary/5",
           )}
           style={{
             borderTopColor: station.color,
@@ -207,21 +208,21 @@ const KanbanColumn = ({
         >
           <div className="flex items-center gap-2 px-1 py-2 text-lg font-medium tracking-tight">
             <div>{station.title}</div>
-            <UBadge value={actions.length} />
+            <PrismBadge>{actions.length}</PrismBadge>
           </div>
 
           <div className="flex-1 min-h-0 overflow-hidden">
             <ActionContainer
               actions={actions}
-              isDraggable={isDraggable}
-              dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
-              orderBy="date"
               ascending={true}
+              dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
               displayFlags={{
                 showLate: true,
                 showPartner: true,
                 showCategory: true,
               }}
+              isDraggable={isDraggable}
+              orderBy="date"
             />
           </div>
         </div>
@@ -229,41 +230,43 @@ const KanbanColumn = ({
     </Droppable>
   );
 };
-const KanbanRow = ({ actions, isDraggable }: { actions: Action[]; isDraggable: boolean }) => {
+const KanbanRow = ({
+  actions,
+  isDraggable,
+}: {
+  actions: Action[];
+  isDraggable: boolean;
+}) => {
   const sortedActions = useMemo(() => {
     return [...actions].sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
   }, [actions]);
-
   return (
-    <Droppable
-      id="none"
-      className="flex h-full flex-col overflow-hidden"
-    >
+    <Droppable className="flex h-full flex-col overflow-hidden" id="none">
       {(isOver) => (
         <div
           className={cn(
             "flex flex-col h-full overflow-hidden border-t-4 border-gray-400 pt-2 px-4 transition-colors",
-            isOver && "border-primary/50 bg-primary/5"
+            isOver && "border-primary/50 bg-primary/5",
           )}
         >
           <div className="flex items-center gap-2 px-1 pb-2 text-lg font-medium tracking-tight">
             <div>Sem estação</div>
-            <UBadge value={actions.length} />
+            <PrismBadge>{actions.length}</PrismBadge>
           </div>
           <div className="flex overflow-x-auto gap-2 p-1 h-full">
             {sortedActions.map((action) => (
               <div key={action.id} className="w-[300px] shrink-0">
                 <ActionItem
                   action={action}
-                  isDraggable={isDraggable}
                   dateTimeDisplay={DATE_TIME_DISPLAY.TimeOnly}
                   displayFlags={{
                     showLate: true,
                     showPartner: true,
                     showCategory: true,
                   }}
+                  isDraggable={isDraggable}
                 />
               </div>
             ))}

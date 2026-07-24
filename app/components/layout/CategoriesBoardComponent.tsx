@@ -1,7 +1,6 @@
 import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
 import type { Action } from "~/types";
-
 import { useAppContext } from "~/contexts/AppContext";
 import {
   CATEGORIES,
@@ -13,6 +12,7 @@ import { getCleanAction, Icons } from "~/lib/helpers";
 import { ActionContainer } from "../features/ActionContainer";
 import { Button } from "../ui/button";
 import { UBadge } from "../uzzina/UBadge";
+import { PrismBadge } from "../prism";
 
 /**
  * Visualização Kanban/Board de ações agrupadas por categoria.
@@ -31,7 +31,6 @@ export function CategoriesBoardComponent({
     const slugSet = new Set(actions.map((a) => a.category));
     return Object.values(CATEGORIES).filter((c) => slugSet.has(c.slug));
   }, [actions]);
-
   return (
     <div className="w-full">
       <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
@@ -52,7 +51,6 @@ export function CategoriesBoardComponent({
     </div>
   );
 }
-
 function CategoryColumn({
   category,
   actions,
@@ -65,7 +63,6 @@ function CategoryColumn({
   ascending?: boolean;
 }) {
   const { person, setBaseAction } = useAppContext();
-
   return (
     <div className="group/column flex flex-col overflow-hidden">
       {/* Header da categoria */}
@@ -83,7 +80,7 @@ function CategoryColumn({
           <span className="truncate text-sm font-medium tracking-tight">
             {category.title}
           </span>
-          <UBadge value={actions.length} />
+          <PrismBadge>actions.length</PrismBadge>
         </div>
 
         <Button
