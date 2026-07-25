@@ -12,9 +12,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { Theme, useTheme } from "~/components/theme-provider";
-import { PrismButton } from "~/components/prism";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
+import { PrismButton, PrismInput, PrismLabel } from "~/components/prism";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { PreferenceSwitch } from "~/components/uzzina/PreferenceSwitch";
 import { SegmentedSelector } from "~/components/uzzina/SegmentedSelector";
@@ -502,49 +500,45 @@ function ProfilePage() {
             {/* Fields */}
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="name">Nome</Label>
-                <Input
+                <PrismLabel htmlFor="name">Nome</PrismLabel>
+                <PrismInput
                   defaultValue={person.name}
                   id="name"
                   name="name"
                   required
-                  variant="inset"
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="surname">Sobrenome</Label>
-                <Input
+                <PrismLabel htmlFor="surname">Sobrenome</PrismLabel>
+                <PrismInput
                   defaultValue={person.surname}
                   id="surname"
                   name="surname"
                   required
-                  variant="inset"
                 />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="grid gap-2">
-                  <Label htmlFor="initials">Iniciais</Label>
-                  <Input
+                  <PrismLabel htmlFor="initials">Iniciais</PrismLabel>
+                  <PrismInput
                     defaultValue={person.initials}
                     id="initials"
                     maxLength={2}
                     name="initials"
                     placeholder="AB"
                     required
-                    variant="inset"
                   />
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="short">Nome Curto</Label>
-                  <Input
+                  <PrismLabel htmlFor="short">Nome Curto</PrismLabel>
+                  <PrismInput
                     defaultValue={person.short}
                     id="short"
                     name="short"
                     placeholder="Nome de exibição preferido"
-                    variant="inset"
                   />
                 </div>
               </div>
@@ -640,9 +634,9 @@ function ProfilePage() {
                     <div className="grid gap-3">
                       {/* Destaque (Accent) */}
                       <div className="flex flex-col gap-1.5">
-                        <Label className="text-xs text-muted-foreground">
+                        <PrismLabel className="text-xs text-muted-foreground">
                           Destaque (Accent)
-                        </Label>
+                        </PrismLabel>
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
@@ -666,9 +660,9 @@ function ProfilePage() {
 
                       {/* Texto no Destaque (Accent Fg) */}
                       <div className="flex flex-col gap-1.5">
-                        <Label className="text-xs text-muted-foreground">
+                        <PrismLabel className="text-xs text-muted-foreground">
                           Texto no Destaque (Accent Fg)
-                        </Label>
+                        </PrismLabel>
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
@@ -692,9 +686,9 @@ function ProfilePage() {
 
                       {/* Fundo (Background) */}
                       <div className="flex flex-col gap-1.5">
-                        <Label className="text-xs text-muted-foreground">
+                        <PrismLabel className="text-xs text-muted-foreground">
                           Fundo (Background)
-                        </Label>
+                        </PrismLabel>
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
@@ -718,9 +712,9 @@ function ProfilePage() {
 
                       {/* Texto (Foreground) */}
                       <div className="flex flex-col gap-1.5">
-                        <Label className="text-xs text-muted-foreground">
+                        <PrismLabel className="text-xs text-muted-foreground">
                           Texto (Foreground)
-                        </Label>
+                        </PrismLabel>
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
@@ -752,9 +746,9 @@ function ProfilePage() {
                     <div className="grid gap-3">
                       {/* Destaque (Accent) */}
                       <div className="flex flex-col gap-1.5">
-                        <Label className="text-xs text-muted-foreground">
+                        <PrismLabel className="text-xs text-muted-foreground">
                           Destaque (Accent)
-                        </Label>
+                        </PrismLabel>
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
@@ -778,9 +772,9 @@ function ProfilePage() {
 
                       {/* Texto no Destaque (Accent Fg) */}
                       <div className="flex flex-col gap-1.5">
-                        <Label className="text-xs text-muted-foreground">
+                        <PrismLabel className="text-xs text-muted-foreground">
                           Texto no Destaque (Accent Fg)
-                        </Label>
+                        </PrismLabel>
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
@@ -804,9 +798,9 @@ function ProfilePage() {
 
                       {/* Fundo (Background) */}
                       <div className="flex flex-col gap-1.5">
-                        <Label className="text-xs text-muted-foreground">
+                        <PrismLabel className="text-xs text-muted-foreground">
                           Fundo (Background)
-                        </Label>
+                        </PrismLabel>
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
@@ -828,9 +822,9 @@ function ProfilePage() {
 
                       {/* Texto (Foreground) */}
                       <div className="flex flex-col gap-1.5">
-                        <Label className="text-xs text-muted-foreground">
+                        <PrismLabel className="text-xs text-muted-foreground">
                           Texto (Foreground)
-                        </Label>
+                        </PrismLabel>
                         <label className="group flex cursor-pointer items-center gap-2">
                           <div
                             className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"

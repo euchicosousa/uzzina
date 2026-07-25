@@ -1,6 +1,6 @@
-import type * as React from "react";
-import { cva } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import * as React from "react";
 import {
   Calendar as AriaCalendar,
   CalendarGridHeader as AriaCalendarGridHeader,
@@ -17,18 +17,19 @@ import {
   type DateValue,
   type RangeCalendarProps,
 } from "react-aria-components";
-import { cn } from "~/lib/utils";
-import { PrismButton } from "~/components/prism/";
-import { buttonVariants } from "~/components/prism/button";
 import {
+  PrismButton,
   PrismSelect,
   PrismSelectContent,
+  PrismSelectGroup,
   PrismSelectItem,
   PrismSelectTrigger,
   PrismSelectValue,
 } from "~/components/prism";
+import { cn } from "~/lib/utils";
+import { buttonVariants } from "./button";
 const cellVariants = cva(
-  "group/day relative mt-2 aspect-square h-full w-full cursor-default rounded-(--cell-radius) text-center select-none [&:is(:last-child>[data-selected=true])>div]:rounded-r-(--cell-radius)",
+  "group/day relative mt-2 aspect-square h-full w-full cursor-default rounded-(--cell-radius) p-0 text-center select-none [&:is(:last-child>[data-selected=true])>div]:rounded-r-(--cell-radius)",
   {
     variants: {
       showWeekNumber: {
@@ -37,7 +38,7 @@ const cellVariants = cva(
         true: "[&:is(:nth-child(2)>[data-selected=true])>div]:rounded-l-(--cell-radius)",
       },
       isToday: {
-        true: "rounded-(--cell-radius) bg-muted text-foreground data-[selected=true]:rounded-none",
+        true: "rounded-(--cell-radius) bg-muted text-foreground",
       },
       isSelectionStart: {
         true: "relative isolate z-0 rounded-l-(--cell-radius) bg-muted after:absolute after:inset-y-0 after:right-0 after:w-4 after:bg-muted",
@@ -57,66 +58,31 @@ const cellVariants = cva(
     },
   },
 );
-import { CalendarDate } from "@internationalized/date";
-
-/** Converts a JS Date (local time) → CalendarDate (year/month/day, no TZ). */
-function toCalendarDate(date: Date): CalendarDate {
-  return new CalendarDate(
-    date.getFullYear(),
-    date.getMonth() + 1,
-    date.getDate(),
-  );
-}
-
-/** Converts a CalendarDate → JS Date in LOCAL time (no UTC drift). */
-function fromCalendarDate(value: DateValue): Date {
-  return new Date(value.year, value.month - 1, value.day);
-}
-
-/** Extra Prism-specific props shared by both Calendar wrappers. */
-type PrismCalendarExtra = {
-  buttonVariant?: React.ComponentProps<typeof PrismButton>["variant"];
-  captionLayout?: "label" | "dropdown";
-  numberOfMonths?: number;
-  showWeekNumber?: boolean;
-  headerFormat?: Intl.DateTimeFormatOptions;
-  isCellDisabled?: (date: CalendarDate) => boolean;
-  isDisabled?: boolean;
-  minValue?: CalendarDate;
-  maxValue?: CalendarDate;
-  renderCell?: (
-    renderProps: CalendarCellRenderProps & {
-      defaultChildren: React.ReactNode;
-    },
-  ) => React.ReactNode;
-};
-
-/** Single-date selection calendar. Accepts and returns plain JS `Date`. */
-type PrismCalendarProps = Omit<
-  CalendarProps<CalendarDate>,
-  "value" | "defaultValue" | "onChange" | "visibleDuration"
-> &
-  PrismCalendarExtra & {
-    /** Currently selected date (JS `Date`). */
-    selected?: Date;
-    /** Called when the user picks a date. Receives a JS `Date`. */
-    onSelect?: (date: Date | undefined) => void;
-  };
-function Calendar({ selected, onSelect, ...props }: PrismCalendarProps) {
-  const ariaValue = selected ? toCalendarDate(selected) : undefined;
-  const handleChange = (v: CalendarDate | null) => {
-    onSelect?.(v ? fromCalendarDate(v) : undefined);
-  };
+function Calendar<
+  T extends DateValue,
+  M extends "single" | "multiple" = "single",
+>(
+  props: Omit<CalendarProps<T, M>, "visibleDuration"> & {
+    buttonVariant?: React.ComponentProps<typeof PrismButton>["variant"];
+    captionLayout?: "label" | "dropdown";
+    numberOfMonths?: number;
+    showWeekNumber?: boolean;
+    headerFormat?: Intl.DateTimeFormatOptions;
+    renderCell?: (
+      renderProps: CalendarCellRenderProps & {
+        defaultChildren: React.ReactNode;
+      },
+    ) => React.ReactNode;
+  },
+) {
   return (
     <AriaCalendar
       {...props}
       className={cn(
-        "group/calendar w-fit bg-background [--cell-radius:var(--radius-md)] [--cell-size:--spacing(8)] in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
+        "group/calendar w-fit bg-background [--cell-radius:var(--radius-2xl)] [--cell-size:--spacing(7)] in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
         props.className,
       )}
       data-slot="calendar"
-      onChange={handleChange}
-      value={ariaValue ?? null}
       visibleDuration={{
         months: props.numberOfMonths || 1,
       }}
@@ -125,65 +91,28 @@ function Calendar({ selected, onSelect, ...props }: PrismCalendarProps) {
     </AriaCalendar>
   );
 }
-
-/** Date-range selection calendar. Accepts `{ from?, to? }` and returns the same. */
-type PrismRangeCalendarProps = Omit<
-  RangeCalendarProps<CalendarDate>,
-  "value" | "defaultValue" | "onChange" | "visibleDuration"
-> &
-  PrismCalendarExtra & {
-    /** Currently selected range (`from` / `to` are plain JS `Date`). */
-    selected?: {
-      from?: Date;
-      to?: Date;
-    };
-    /** Called when the user picks a range. */
-    onSelect?: (
-      range:
-        | {
-            from: Date;
-            to: Date;
-          }
-        | undefined,
-    ) => void;
-  };
-function RangeCalendar({
-  selected,
-  onSelect,
-  ...props
-}: PrismRangeCalendarProps) {
-  const ariaValue =
-    selected?.from && selected?.to
-      ? {
-          start: toCalendarDate(selected.from),
-          end: toCalendarDate(selected.to),
-        }
-      : null;
-  const handleChange = (
-    v: {
-      start: CalendarDate;
-      end: CalendarDate;
-    } | null,
-  ) => {
-    onSelect?.(
-      v
-        ? {
-            from: fromCalendarDate(v.start),
-            to: fromCalendarDate(v.end),
-          }
-        : undefined,
-    );
-  };
+function RangeCalendar<T extends DateValue>(
+  props: RangeCalendarProps<T> & {
+    buttonVariant?: React.ComponentProps<typeof PrismButton>["variant"];
+    captionLayout?: "label" | "dropdown";
+    headerFormat?: Intl.DateTimeFormatOptions;
+    numberOfMonths?: number;
+    showWeekNumber?: boolean;
+    renderCell?: (
+      renderProps: CalendarCellRenderProps & {
+        defaultChildren: React.ReactNode;
+      },
+    ) => React.ReactNode;
+  },
+) {
   return (
     <AriaRangeCalendar
       {...props}
       className={cn(
-        "group/calendar w-fit bg-background p-2 [--cell-radius:var(--radius-md)] [--cell-size:--spacing(7)] in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
+        "group/calendar w-fit bg-background [--cell-radius:var(--radius-2xl)] [--cell-size:--spacing(7)] in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
         props.className,
       )}
       data-slot="calendar"
-      onChange={handleChange}
-      value={ariaValue}
       visibleDuration={{
         months: props.numberOfMonths || 1,
       }}
@@ -216,10 +145,18 @@ function CalendarInner({
   return (
     <div className="relative flex flex-col gap-4 md:flex-row">
       <header className="absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1">
-        <PrismButton size={"icon-xs"} slot="previous" variant={buttonVariant}>
+        <PrismButton
+          className="size-(--cell-size) p-0 select-none aria-disabled:opacity-50"
+          slot="previous"
+          variant={buttonVariant}
+        >
           <ChevronLeftIcon className="cn-rtl-flip size-4" />
         </PrismButton>
-        <PrismButton size={"icon-xs"} slot="next" variant={buttonVariant}>
+        <PrismButton
+          className="size-(--cell-size) p-0 select-none aria-disabled:opacity-50"
+          slot="next"
+          variant={buttonVariant}
+        >
           <ChevronRightIcon className="cn-rtl-flip size-4" />
         </PrismButton>
       </header>
@@ -228,7 +165,6 @@ function CalendarInner({
           length: numberOfMonths,
         },
         (_, i) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: month-offset is stable within a fixed numberOfMonths
           <div key={i} className="flex w-full flex-col gap-4">
             <div className="flex h-(--cell-size) w-full items-center justify-center gap-1 px-(--cell-size)">
               {captionLayout === "dropdown" ? (
@@ -238,7 +174,7 @@ function CalendarInner({
                 </>
               ) : (
                 <CalendarHeading
-                  className="text-base font-medium select-none tracking-normal"
+                  className="text-base tra font-medium select-none"
                   format={headerFormat}
                   offset={{
                     months: i,
@@ -316,12 +252,14 @@ function MonthDropdown({ format }: { format?: Intl.DateTimeFormatOptions }) {
           <PrismSelectTrigger>
             <PrismSelectValue />
           </PrismSelectTrigger>
-          <PrismSelectContent className="min-w-24">
-            {props.items.map((item) => (
-              <PrismSelectItem key={item.id} id={item.id}>
-                {item.formatted}
-              </PrismSelectItem>
-            ))}
+          <PrismSelectContent className="min-w-0">
+            <PrismSelectGroup>
+              {props.items.map((item) => (
+                <PrismSelectItem key={item.id} id={item.id}>
+                  {item.formatted}
+                </PrismSelectItem>
+              ))}
+            </PrismSelectGroup>
           </PrismSelectContent>
         </PrismSelect>
       )}
@@ -336,7 +274,7 @@ function YearDropdown({ format }: { format?: Intl.DateTimeFormatOptions }) {
           <PrismSelectTrigger>
             <PrismSelectValue />
           </PrismSelectTrigger>
-          <PrismSelectContent className="min-w-24">
+          <PrismSelectContent className="min-w-0">
             {props.items.map((item) => (
               <PrismSelectItem key={item.id} id={item.id}>
                 {item.formatted}
@@ -348,4 +286,4 @@ function YearDropdown({ format }: { format?: Intl.DateTimeFormatOptions }) {
     </CalendarYearPicker>
   );
 }
-export { Calendar as PrismCalendar, RangeCalendar };
+export { Calendar as PrismCalendar, RangeCalendar as PrismRangeCalendar };

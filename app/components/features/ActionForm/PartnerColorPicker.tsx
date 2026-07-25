@@ -1,6 +1,6 @@
 import Color from "color";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Input } from "~/components/ui/input";
+import { PrismInput } from "~/components/prism";
 import { cn } from "~/lib/utils";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -68,6 +68,7 @@ export function PartnerColorPicker({
           {hexColors.map((hex) => (
             <button
               key={hex}
+              aria-label={`Cor ${hex}`}
               className={cn(
                 "w-fill aspect-3/4 rounded border border-black/5 transition-all hover:opacity-80",
                 value.toLowerCase() === hex.toLowerCase() &&
@@ -79,7 +80,6 @@ export function PartnerColorPicker({
               }}
               title={hex}
               type="button"
-              aria-label={`Cor ${hex}`}
             />
           ))}
         </div>
@@ -138,8 +138,7 @@ function HexInput({
     }
   };
   return (
-    <Input
-      variant="inset"
+    <PrismInput
       className={cn(
         "h-8 font-mono tracking-wider uppercase",
         isInvalid &&

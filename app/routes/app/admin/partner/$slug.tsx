@@ -18,9 +18,8 @@ const Tiptap = lazy(() =>
     default: module.Tiptap,
   })),
 );
-import { PrismButton } from "~/components/prism";
+import { PrismButton, PrismTextarea } from "~/components/prism";
 import { Input } from "~/components/ui/input";
-import { Textarea } from "~/components/ui/textarea";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
@@ -467,7 +466,7 @@ function AdminPartnerEditPage() {
               </label>
               {savingFields.has("instagram_caption_tail") && <ULoader />}
             </div>
-            <Textarea
+            <PrismTextarea
               className="min-h-20"
               defaultValue={partner?.instagram_caption_tail || ""}
               id="instagram_caption_tail"
@@ -476,7 +475,6 @@ function AdminPartnerEditPage() {
                 handleBlurField("instagram_caption_tail", e.target.value)
               }
               placeholder="#hashtags @mentions..."
-              variant="inset"
             />
           </div>
 

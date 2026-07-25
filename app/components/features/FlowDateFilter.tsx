@@ -1,22 +1,13 @@
-import { useState, useEffect, useRef, useMemo } from "react";
 import { CalendarDate } from "@internationalized/date";
-import {
-  format,
-  endOfWeek,
-  endOfMonth,
-  isSameDay,
-  startOfWeek,
-  startOfMonth,
-} from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
+import { useState } from "react";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
-import { PrismButton, RangeCalendar } from "~/components/prism";
-import type { DateRange } from "react-day-picker";
+  PrismPopover,
+  PrismPopoverTrigger,
+  PrismRangeCalendar,
+} from "~/components/prism";
 import { ComboboxTrigger } from "./ComboboxTrigger";
 interface FlowDateFilterProps {
   dateRange: {
@@ -25,212 +16,74 @@ interface FlowDateFilterProps {
   };
   onChange: (range: { from?: Date; to: Date }) => void;
 }
-function getWeekRange(now: Date) {
-  return {
-    from: startOfWeek(now, {
-      weekStartsOn: 0,
-    }),
-    to: endOfWeek(now, {
-      weekStartsOn: 0,
-    }),
-  };
-}
-function getMonthRange(now: Date) {
-  return {
-    from: startOfWeek(startOfMonth(now), {
-      weekStartsOn: 0,
-    }),
-    to: endOfWeek(endOfMonth(now), {
-      weekStartsOn: 0,
-    }),
-  };
-}
 export function FlowDateFilter({ dateRange, onChange }: FlowDateFilterProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const nowRef = useRef(new Date());
-  const now = nowRef.current;
-  const defaultRange = getWeekRange(now);
-  const [tempRange, setTempRange] = useState<DateRange>({
-    from: dateRange.from || defaultRange.from,
-    to: dateRange.to || defaultRange.to,
-  });
-  useEffect(() => {
-    if (isOpen) {
-      const week = getWeekRange(now);
-      setTempRange({
-        from: dateRange.from || week.from,
-        to: dateRange.to || week.to,
-      });
-    }
-  }, [isOpen, dateRange, now]);
-  const isTodaySelected = useMemo(() => {
-    return (
-      dateRange.from &&
-      isSameDay(dateRange.from, now) &&
-      isSameDay(dateRange.to, now)
-    );
-  }, [dateRange, now]);
-  const isCurrentWeekSelected = useMemo(() => {
-    const week = getWeekRange(now);
-    return (
-      dateRange.from &&
-      isSameDay(dateRange.from, week.from) &&
-      isSameDay(dateRange.to, week.to)
-    );
-  }, [dateRange, now]);
-  const isCurrentMonthSelected = useMemo(() => {
-    const month = getMonthRange(now);
-    return (
-      dateRange.from &&
-      isSameDay(dateRange.from, month.from) &&
-      isSameDay(dateRange.to, month.to)
-    );
-  }, [dateRange, now]);
-  const handleQuickSelectToday = () => {
-    const todayRange = {
-      from: now,
-      to: now,
-    };
-    onChange(todayRange);
-    setTempRange(todayRange);
-    setIsOpen(false);
-  };
-  const handleQuickSelectWeek = () => {
-    const week = getWeekRange(now);
-    onChange(week);
-    setTempRange(week);
-    setIsOpen(false);
-  };
-  const handleQuickSelectMonth = () => {
-    const month = getMonthRange(now);
-    onChange(month);
-    setTempRange(month);
-    setIsOpen(false);
-  };
-  const handleCalendarChange = (range: DateRange | undefined) => {
-    if (!range) return;
-    setTempRange(range);
-  };
-  const handleConfirm = () => {
-    if (tempRange.from) {
-      onChange({
-        from: tempRange.from,
-        to: tempRange.to || tempRange.from,
-      });
-      setIsOpen(false);
-    }
-  };
-  const handleOpenChange = (open: boolean) => {
-    setIsOpen(open);
-  };
+  const [tempRange, setTempRange] = useState<{
+    from?: Date;
+    to?: Date;
+  }>(dateRange);
   const displayText = () => {
-    if (isTodaySelected) return "Hoje";
-    if (isCurrentWeekSelected) return "Esta semana";
-    if (isCurrentMonthSelected) return "Esse mês";
-    if (dateRange.from) {
-      if (isSameDay(dateRange.from, dateRange.to)) {
-        return format(dateRange.from, "dd 'de' MMM", {
-          locale: ptBR,
-        });
-      }
-      return `${format(dateRange.from, "dd MMM", {
-        locale: ptBR,
-      })} - ${format(dateRange.to, "dd MMM", {
+    if (!dateRange.from) {
+      return `Até ${format(dateRange.to, "dd 'de' MMM", {
         locale: ptBR,
       })}`;
     }
-    return `Até ${format(dateRange.to, "dd 'de' MMM", {
+    if (isSameDay(dateRange.from, dateRange.to)) {
+      return format(dateRange.from, "dd 'de' MMM", {
+        locale: ptBR,
+      });
+    }
+    return `${format(dateRange.from, "dd MMM", {
+      locale: ptBR,
+    })} - ${format(dateRange.to, "dd MMM", {
       locale: ptBR,
     })}`;
   };
-  const getPreviewText = () => {
-    if (!tempRange.from) return "Nenhuma data selecionada";
-    if (!tempRange.to || isSameDay(tempRange.from, tempRange.to)) {
-      return format(tempRange.from, "dd/MM/yyyy");
-    }
-    return `${format(tempRange.from, "dd/MM/yyyy")} a ${format(tempRange.to, "dd/MM/yyyy")}`;
-  };
   return (
-    <Popover onOpenChange={handleOpenChange} open={isOpen}>
-      <PopoverTrigger asChild>
-        <ComboboxTrigger className="overflow-hidden" variant="filter">
-          <CalendarIcon className="size-5" />
-          <span className="truncate">{displayText()}</span>
-        </ComboboxTrigger>
-      </PopoverTrigger>
-      <PopoverContent
-        align="end"
-        className="w-auto p-3 bg-popover/40 backdrop-blur-xl border border-border rounded-2xl shadow-xl"
-      >
-        <div className="flex flex-col gap-3">
-          {/* Quick select buttons */}
-          <div className="flex gap-2">
-            <PrismButton
-              className="flex-1 rounded-lg text-xs h-8"
-              onClick={handleQuickSelectToday}
-              variant={isTodaySelected ? "secondary" : "ghost"}
-            >
-              Hoje
-            </PrismButton>
-            <PrismButton
-              className="flex-1 rounded-lg text-xs h-8"
-              onClick={handleQuickSelectWeek}
-              variant={isCurrentWeekSelected ? "secondary" : "ghost"}
-            >
-              Esta Semana
-            </PrismButton>
-            <PrismButton
-              className="flex-1 rounded-lg text-xs h-8"
-              onClick={handleQuickSelectMonth}
-              variant={isCurrentMonthSelected ? "secondary" : "ghost"}
-            >
-              Esse Mês
-            </PrismButton>
-          </div>
+    <PrismPopoverTrigger>
+      <ComboboxTrigger className="overflow-hidden" variant="filter">
+        <CalendarIcon className="size-5" />
+        <span className="truncate">{displayText()}</span>
+      </ComboboxTrigger>
 
-          <div className="border-t border-border/60 my-1" />
-
-          {/* Calendar Picker */}
-          <RangeCalendar
-            isCellDisabled={(date: CalendarDate) =>
-              date.compare(new CalendarDate(2020, 1, 1)) < 0
+      <PrismPopover className="w-auto" placement="bottom end">
+        <PrismRangeCalendar
+          numberOfMonths={1}
+          onChange={(range) => {
+            if (range) {
+              const newRange = {
+                from: new Date(
+                  range.start.year,
+                  range.start.month - 1,
+                  range.start.day,
+                ),
+                to: new Date(
+                  range.end.year,
+                  range.end.month - 1,
+                  range.end.day,
+                ),
+              };
+              setTempRange(newRange);
+              onChange(newRange);
             }
-            numberOfMonths={1}
-            onSelect={(
-              range:
-                | {
-                    from?: Date;
-                    to?: Date;
-                  }
-                | undefined,
-            ) => {
-              if (range) {
-                handleCalendarChange({
-                  from: range.from,
-                  to: range.to,
-                });
-              } else {
-                handleCalendarChange(undefined);
-              }
-            }}
-            selected={tempRange}
-          />
-
-          <div className="border-t border-border/60 my-1 flex flex-col gap-2 pt-2">
-            <div className="text-xs text-center font-medium text-foreground/80">
-              {getPreviewText()}
-            </div>
-            <PrismButton
-              className="w-full rounded-xl text-xs h-8"
-              isDisabled={!tempRange.from}
-              onClick={handleConfirm}
-              size="sm"
-            >
-              Confirmar
-            </PrismButton>
-          </div>
-        </div>
-      </PopoverContent>
-    </Popover>
+          }}
+          value={
+            tempRange.from && tempRange.to
+              ? {
+                  start: new CalendarDate(
+                    tempRange.from.getFullYear(),
+                    tempRange.from.getMonth() + 1,
+                    tempRange.from.getDate(),
+                  ),
+                  end: new CalendarDate(
+                    tempRange.to.getFullYear(),
+                    tempRange.to.getMonth() + 1,
+                    tempRange.to.getDate(),
+                  ),
+                }
+              : null
+          }
+        />
+      </PrismPopover>
+    </PrismPopoverTrigger>
   );
 }

@@ -1,4 +1,4 @@
-import { Time } from "@internationalized/date";
+import { CalendarDate, Time } from "@internationalized/date";
 import type { TimeValue } from "react-aria-components";
 import { format } from "date-fns";
 import { useState } from "react";
@@ -95,8 +95,8 @@ export function BulkDateTimeDialog({
           htmlFor="bulk-change-date"
         >
           <PrismCheckbox
-            isSelected={changeDate}
             id="bulk-change-date"
+            isSelected={changeDate}
             onChange={(v) => setChangeDate(v)}
           />
           <span>Mudar Data</span>
@@ -112,8 +112,20 @@ export function BulkDateTimeDialog({
         >
           <PrismCalendar
             className="w-full p-0 flex justify-center"
-            onSelect={setPickedDate}
-            selected={pickedDate}
+            onChange={(day) => {
+              if (day) {
+                setPickedDate(new Date(day.year, day.month - 1, day.day));
+              }
+            }}
+            value={
+              pickedDate
+                ? new CalendarDate(
+                    pickedDate.getFullYear(),
+                    pickedDate.getMonth() + 1,
+                    pickedDate.getDate(),
+                  )
+                : undefined
+            }
           />
         </div>
 
@@ -124,8 +136,8 @@ export function BulkDateTimeDialog({
           htmlFor="bulk-change-time"
         >
           <PrismCheckbox
-            isSelected={changeTime}
             id="bulk-change-time"
+            isSelected={changeTime}
             onChange={(v) => setChangeTime(v)}
           />
           <span>Mudar Hora</span>

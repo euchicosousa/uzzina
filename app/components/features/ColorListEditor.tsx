@@ -16,10 +16,9 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useId, useState } from "react";
-import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
 import { normalizeHexColor } from "~/lib/uzzina-utils";
-import { PrismButton } from "../prism";
+import { PrismButton, PrismInput } from "../prism";
 import { IconGripVertical, IconPlus, IconTrash } from "@tabler/icons-react";
 interface ColorItem {
   id: string;
@@ -240,7 +239,7 @@ function SortableColorItem({
             value={normalizeHexColor(value)}
           />
         </label>
-        <Input
+        <PrismInput
           aria-label="Código Hexadecimal da Cor"
           className="flex-1 font-mono uppercase"
           id={`hex_${id}`}
@@ -250,7 +249,6 @@ function SortableColorItem({
           onChange={(e) => onChange(e.target.value)}
           type="text"
           value={value}
-          variant="inset"
         />
       </div>
 

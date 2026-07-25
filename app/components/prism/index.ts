@@ -6,7 +6,7 @@ export {
 } from "./alert";
 export { PrismBadge } from "./badge";
 export { Button as PrismButton } from "./button";
-export { PrismCalendar, RangeCalendar } from "./calendar";
+export { PrismCalendar, PrismRangeCalendar } from "./calendar";
 export { PrismCheckbox, PrismCheckboxGroup } from "./checkbox";
 export {
   PrismButtonGroup,
@@ -118,3 +118,4 @@ export {
   PrismAvatarGroupCount,
   PrismAvatarBadge,
 } from "./avatar";
+export { Label as PrismLabel } from "./label";

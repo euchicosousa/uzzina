@@ -1,11 +1,11 @@
+import { CalendarDate } from "@internationalized/date";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { PrismButton } from "~/components/prism";
-import { PrismCalendar } from "~/components/prism";
+import { PrismButton, PrismCalendar } from "~/components/prism";
 import { Input } from "~/components/ui/input";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
@@ -73,8 +73,19 @@ function AdminCelebrationsPage() {
         <div className="flex flex-col items-center gap-6">
           <PrismCalendar
             className="w-full"
-            onSelect={setSelectedDate}
-            selected={selectedDate}
+            onChange={(day) => {
+              if (day)
+                setSelectedDate(new Date(day.year, day.month - 1, day.day));
+            }}
+            value={
+              selectedDate
+                ? new CalendarDate(
+                    selectedDate.getFullYear(),
+                    selectedDate.getMonth() + 1,
+                    selectedDate.getDate(),
+                  )
+                : undefined
+            }
           />
 
           <form className="flex w-full flex-col gap-4" onSubmit={handleCreate}>

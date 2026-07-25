@@ -2,9 +2,8 @@ import type * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "~/lib/utils";
-import { PrismButton } from "~/components/prism";
+import { PrismButton, PrismTextarea } from "~/components/prism";
 import { Input } from "~/components/ui/input";
-import { Textarea } from "~/components/ui/textarea";
 
 function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -158,13 +157,12 @@ function InputGroupInput({
 function InputGroupTextarea({
   className,
   ...props
-}: React.ComponentProps<typeof Textarea>) {
+}: React.ComponentProps<typeof PrismTextarea>) {
   return (
-    <Textarea
-      variant="ghost"
-      data-slot="input-group-control"
+    <PrismTextarea
+      data-slot="input-group-textarea"
       className={cn(
-        "flex-1 resize-none rounded-none border-0 bg-transparent py-3 shadow-none focus-visible:ring-0 dark:bg-transparent",
+        "flex-1 bg-transparent border-0 shadow-none focus-visible:ring-0 focus-visible:outline-none",
         className,
       )}
       {...props}

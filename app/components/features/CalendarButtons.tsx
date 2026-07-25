@@ -5,6 +5,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "lucide-react";
+import { CalendarDate } from "@internationalized/date";
 import { useState } from "react";
 import {
   PrismButton,
@@ -55,16 +56,22 @@ export function CalendarButtons({
             </>
           )}
         </PrismButton>
-        <PrismPopover className="w-fit" placement="bottom">
+        <PrismPopover className="w-auto" placement="bottom">
           <PrismCalendar
             captionLayout="dropdown"
-            onSelect={(day) => {
+            onChange={(day) => {
               if (day) {
-                setCurrentDay(day);
+                setCurrentDay(new Date(day.year, day.month - 1, day.day));
                 setIsOpen(false);
               }
             }}
-            selected={currentDay}
+            value={
+              new CalendarDate(
+                currentDay.getFullYear(),
+                currentDay.getMonth() + 1,
+                currentDay.getDate(),
+              )
+            }
           />
         </PrismPopover>
       </PrismPopoverTrigger>

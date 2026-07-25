@@ -1,13 +1,15 @@
-import { format } from "date-fns";
 import { CalendarDaysIcon } from "lucide-react";
 import { useState } from "react";
-import { PrismCalendar } from "~/components/prism";
-import { Input } from "~/components/ui/input";
+import { Pressable } from "react-aria-components";
+import { CalendarDate, Time } from "@internationalized/date";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
+  PrismCalendar,
+  PrismLabel,
+  PrismPopover,
+  PrismPopoverTrigger,
+  PrismSeparator,
+  PrismTimeField,
+} from "~/components/prism";
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 import { getFormattedDateTime } from "~/utils/date";
@@ -24,51 +26,30 @@ export function ActionDatePicker({
   className?: string;
   size?: "sm" | "lg";
 }) {
-  const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(date);
-  const handleCalendarSelect = (date: Date | undefined) => {
-    if (date) {
-      const newDate = selectedDate ? new Date(selectedDate) : new Date();
-      newDate.setFullYear(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-      );
-      setSelectedDate(newDate);
+  const handleCalendarSelect = (newDate: CalendarDate | null) => {
+    if (newDate) {
+      const current = selectedDate ? new Date(selectedDate) : new Date();
+      current.setFullYear(newDate.year, newDate.month - 1, newDate.day);
+      setSelectedDate(current);
     }
   };
-
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (selectedDate) {
-      const [hours, minutes] = e.target.value.split(":").map(Number);
-      const newDate = new Date(selectedDate);
-      newDate.setHours(hours || 0, minutes || 0);
-      setSelectedDate(newDate);
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen) {
+      setSelectedDate(date);
+    } else if (onSelect && selectedDate) {
+      onSelect(selectedDate);
     }
   };
-
   return (
-    <Popover
-      onOpenChange={(newIsOpen) => {
-        setIsOpen(newIsOpen);
-        if (newIsOpen) {
-          setSelectedDate(date);
-        } else if (onSelect && selectedDate) {
-          onSelect(selectedDate);
-        }
-      }}
-      open={isOpen}
-    >
-      <PopoverTrigger asChild>
-        <button
+    <PrismPopoverTrigger onOpenChange={handleOpenChange}>
+      <Pressable>
+        <div
           className={cn(
-            "flex items-center gap-1.5 transition-colors outline-none",
-            size === "sm"
-              ? "h-8 hover:bg-secondary text-xs px-3 cursor-pointer"
-              : "cursor-pointer underline-offset-2 hover:underline",
+            "underline-offset-2 hover:underline cursor-pointer",
             className,
           )}
-          type="button"
+          role="button"
         >
           {size === "sm" && (
             <CalendarDaysIcon className="size-3.5 text-muted-foreground shrink-0" />
@@ -76,25 +57,42 @@ export function ActionDatePicker({
           {date
             ? getFormattedDateTime(date, dateTimeDisplay)
             : "Escolha a data"}
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="p-0">
+        </div>
+      </Pressable>
+
+      <PrismPopover className="w-auto">
         <PrismCalendar
-          className="w-full"
-          onSelect={handleCalendarSelect}
-          selected={selectedDate}
+          onChange={handleCalendarSelect}
+          value={
+            selectedDate
+              ? new CalendarDate(
+                  selectedDate.getFullYear(),
+                  selectedDate.getMonth() + 1,
+                  selectedDate.getDate(),
+                )
+              : undefined
+          }
         />
-        <div className="flex items-center justify-between gap-4 border-t p-4">
-          <div className="text-sm">Defina a hora</div>
-          <Input
-            variant="inset"
-            className="w-auto appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-            onChange={handleTimeChange}
-            type="time"
-            value={selectedDate ? format(selectedDate, "HH:mm") : ""}
+        <hr className="-mx-4" />
+        <div className="flex justify-between items-center gap-2">
+          <PrismLabel>Defina a hora</PrismLabel>
+          <PrismTimeField
+            aria-label="Defina a hora"
+            onChange={(time) => {
+              if (selectedDate && time) {
+                const newDate = new Date(selectedDate);
+                newDate.setHours(time.hour, time.minute);
+                setSelectedDate(newDate);
+              }
+            }}
+            value={
+              selectedDate
+                ? new Time(selectedDate.getHours(), selectedDate.getMinutes())
+                : undefined
+            }
           />
         </div>
-      </PopoverContent>
-    </Popover>
+      </PrismPopover>
+    </PrismPopoverTrigger>
   );
 }

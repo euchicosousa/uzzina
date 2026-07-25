@@ -64,13 +64,17 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
             <div className="relative group-hover/partner:opacity-50 transition duration-500 group-hover/partner:scale-80">
               {getShortText(partner.short)}
 
-              <div className="absolute -top-2 -right-6 flex">
-                <PrismBadge
-                  variant={partner.lateActionsLength > 3 ? "error" : "warning"}
-                >
-                  {partner.lateActionsLength}
-                </PrismBadge>
-              </div>
+              {partner.lateActionsLength > 0 && (
+                <div className="absolute -top-2 -right-6 flex">
+                  <PrismBadge
+                    variant={
+                      partner.lateActionsLength > 3 ? "error" : "warning"
+                    }
+                  >
+                    {partner.lateActionsLength}
+                  </PrismBadge>
+                </div>
+              )}
             </div>
             {partner.image && (
               <UAvatar
