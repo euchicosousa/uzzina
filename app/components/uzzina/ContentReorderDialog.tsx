@@ -1,14 +1,6 @@
-import { useEffect, useState, useRef } from "react";
 import {
-  GripVerticalIcon,
-  PlusIcon,
-  SlidersHorizontalIcon,
-  Trash2Icon,
-  XIcon,
-} from "lucide-react";
-import {
-  DndContext,
   closestCenter,
+  DndContext,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -17,21 +9,28 @@ import {
 } from "@dnd-kit/core";
 import {
   arrayMove,
+  rectSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
-  rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
+import {
+  GripVerticalIcon,
+  PlusIcon,
+  SlidersHorizontalIcon,
+  Trash2Icon,
+  XIcon,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import {
   PrismButton,
   PrismDialog,
-  PrismDialogContent,
   PrismDialogDescription,
   PrismDialogHeader,
-  PrismDialogTitle,
+  PrismDialogTitle
 } from "~/components/prism";
+import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { detectPostType, isImageUrl } from "./InstagramHelpers";
 
 function SortableThumbnail({
@@ -207,7 +206,6 @@ export function ContentReorderDialog({
 
   return (
     <PrismDialog isOpen={open} onOpenChange={onOpenChange}>
-      <PrismDialogContent className="max-w-lg">
         <PrismDialogHeader>
           <PrismDialogTitle className="flex items-center gap-2">
             <SlidersHorizontalIcon className="size-4" />
@@ -310,7 +308,6 @@ export function ContentReorderDialog({
             Concluir
           </PrismButton>
         </div>
-      </PrismDialogContent>
     </PrismDialog>
   );
 }

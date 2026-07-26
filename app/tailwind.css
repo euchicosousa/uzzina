@@ -1,6 +1,4 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -8,9 +6,9 @@
   --radius: 0.65rem;
   --background: var(--background-override, oklch(1 0 0));
   --foreground: var(--foreground-override, oklch(0.141 0.005 285.823));
-  --card: oklch(0.97 0 0);
+  --card: oklch(from var(--background) calc(l - 0.02) c h);
   --card-foreground: var(--foreground);
-  --popover: oklch(1 0 0);
+  --popover: oklch(from var(--background) l c h);
   --popover-foreground: var(--foreground);
 
   /* Accent color knobs — overrideable by JS for theme color picker */
@@ -28,11 +26,11 @@
   --secondary-foreground: var(--foreground);
   --muted: oklch(from var(--background) l c h / 96.7%);
   --muted-foreground: oklch(from var(--foreground) l c h / 55.2%);
-  --accent: oklch(0.9 0.005 250);
+  --accent: oklch(from var(--background) calc(l - 0.04) c h);
   --accent-foreground: var(--foreground);
   --destructive: oklch(66.147% 0.2279 16.339);
-  --border: oklch(from var(--foreground) l c h / 10%);
-  --input: oklch(from var(--foreground) l c h / 5%);
+  --border: oklch(from var(--background) calc(l - 0.12) c h);
+  --input: oklch(from var(--background) calc(l - 0.05) c h);
   /* --input: oklch(0.92 0 0); */
   --ring: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
   --chart-1: oklch(0.809 0.105 251.813);
@@ -100,9 +98,9 @@
   --background: var(--dark-background-override, oklch(0.4 0.01 285.823));
   --foreground: var(--dark-foreground-override, oklch(0.985 0 0));
 
-  --card: oklch(0.4 0.02 270);
+  --card: oklch(from var(--background) calc(l + 0.05) c h);
   --card-foreground: var(--foreground);
-  --popover: oklch(0.2 0.01 270);
+  --popover: oklch(from var(--background) calc(l - 0.03) c h);
   --popover-foreground: var(--foreground);
 
   /* Dark mode variables injected by JS */
@@ -123,11 +121,11 @@
   --secondary-foreground: var(--foreground);
   --muted: oklch(from var(--background) l c h / 90%);
   --muted-foreground: oklch(from var(--foreground) l c h / 70.5%);
-  --accent: oklch(0.3 0.02 270);
+  --accent: oklch(from var(--background) calc(l + 0.08) c h);
   --accent-foreground: var(--foreground);
   --destructive: oklch(66.147% 0.2279 16.339);
-  --border: oklch(from var(--foreground) l c h / 10%);
-  --input: oklch(from var(--foreground) l c h / 15%);
+  --border: oklch(from var(--background) calc(l + 0.2) c h);
+  --input: oklch(from var(--background) calc(l + 0.05) c h);
   --ring: oklch(var(--dark-accent-l) var(--dark-accent-c) var(--dark-accent-h));
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);

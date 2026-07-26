@@ -75,7 +75,7 @@ export function PartnersCombobox({
             size="sm"
           />
         ) : (
-          <UAvatar fallback="PA" size="sm" />
+          <UAvatar fallback="P" size="sm" />
         )}
         {showText && (
           <div className="overflow-hidden text-ellipsis whitespace-nowrap">

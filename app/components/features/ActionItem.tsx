@@ -192,26 +192,14 @@ export function ActionItem({
     let baseStyles = `
     text-foreground
     bg-action
-    shadow-xs
       transition
       duration-500
       ring
-      ring-black/5
-      border-t
-      border-white
-      z-0 
-      hover:z-10
-      hover:shadow-black/20
-      hover:shadow-lg
-      hover:bg-action-hover
-      dark:border-white/20
-      dark:shadow-black/80`;
+      ring-border
+      hover:bg-action-hover`;
 
     // 1. Determine base background/text colors based on priority states
     if (showLate && isLateAction(action)) {
-      // if (variant === VARIANT.content) {
-      // baseStyles = cn(baseStyles, "p-1 rounded-xl");
-      // }
       baseStyles = cn(
         baseStyles,
         "bg-late text-destructive hover:bg-late-hover ring-destructive",
@@ -550,14 +538,13 @@ function ActionVariantRenderer({
             isSquared
             showResponsibles={showResponsibles}
           />
-          <div className=" absolute z-10 h-12 bottom-0 rounded-2xl border-b-2  w-full border-white/20 squircle"></div>
+          <div className=" absolute h-12 bottom-0 rounded-2xl  w-full squircle"></div>
         </>
       );
     case VARIANT.block:
       return (
         <div
-          className="flex flex-col gap-2 pb-2 scale-98 
-        group-hover/action:scale-100 transition duration-500"
+          className="flex flex-col gap-2 pb-2"
         >
           <ActionItemTitleInput
             className={"text-xl leading-tight font-medium"}
@@ -615,7 +602,7 @@ function ActionVariantRenderer({
       );
     default:
       return (
-        <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1 scale-95 hover:scale-100 transition duration-500">
+        <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
           <div className="flex w-full items-center gap-2 overflow-hidden">
             <div className="flex items-center gap-2">
               {showStation && (
@@ -669,7 +656,7 @@ function ActionVariantRenderer({
             )}
           </div>
           {dateTimeDisplay && !isEditing && (
-            <div className="absolute right-0 flex translate-x-22 justify-end overflow-hidden transition-transform duration-500 group-hover/action:translate-x-0 @md:w-22">
+            <div className="absolute right-0 flex justify-end opacity-0 overflow-hidden transition duration-500 group-hover/action:opacity-100 group-hover/action:-translate-x-3 @md:w-22">
               <ActionItemDateTimeDisplay
                 action={action}
                 dateTimeDisplay={dateTimeDisplay}
