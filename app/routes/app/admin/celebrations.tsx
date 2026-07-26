@@ -90,11 +90,11 @@ function AdminCelebrationsPage() {
           <form className="flex w-full flex-col gap-4" onSubmit={handleCreate}>
             <div className="flex w-full items-center gap-2">
               <PrismInput
-                isDisabled={!selectedDate || isSubmitting}
+                disabled={!selectedDate || isSubmitting}
                 name="title"
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Nome do feriado/data"
-                isRequired
+                required
                 value={title}
               />
               <PrismButton

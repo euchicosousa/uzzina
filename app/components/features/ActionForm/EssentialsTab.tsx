@@ -385,7 +385,8 @@ export function EssentialsTab({
           )}
         </PrismSheetContent>
       </PrismSheet>
-    </div>
+      </div>
+      </div>
   );
 }
 function HookItem({
