@@ -6,7 +6,7 @@ import {
   type ToggleButtonProps,
 } from "react-aria-components";
 import { PrismToggle, type toggleVariants } from "~/components/prism";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 const ToggleGroupContext = createContext<
   VariantProps<typeof toggleVariants> & {
     spacing?: number;
@@ -73,7 +73,6 @@ function ToggleGroupItem({
   const context = useContext(ToggleGroupContext);
   const effectiveVariant = context.variant || variant || "default";
   const effectiveSize = context.size || size || "default";
-
   return (
     <PrismToggle
       className={cn(

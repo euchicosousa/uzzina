@@ -22,7 +22,7 @@ import { useAppTheme } from "~/hooks/useAppTheme";
 import { PALLETE } from "~/lib/CONSTANTS";
 import { getUserPreferences } from "~/lib/preferences";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import {
   deriveAccentFg,
   deriveDarkAccent,

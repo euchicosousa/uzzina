@@ -3,7 +3,7 @@ import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { ContentReorderDialog } from "./ContentReorderDialog";
 import { detectPostType } from "./InstagramHelpers";
 import { PlusIcon, SlidersHorizontalIcon } from "lucide-react";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 export { InstagramPreview } from "./InstagramPreview";
 
 // ---------------------------------------------------------------------------
@@ -29,21 +29,28 @@ export function ContentFilesManager({
 }: ContentFilesManagerProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const type = !files || files.length === 0 ? "empty" : detectPostType(files);
-
   const filesRef = useRef(files);
   filesRef.current = files;
-
   const filesMetaRef = useRef<
-    Record<string, { name: string; addedAt: number }>
+    Record<
+      string,
+      {
+        name: string;
+        addedAt: number;
+      }
+    >
   >({});
-
-  const handleUpload = (url: string, meta: { originalFilename?: string }) => {
+  const handleUpload = (
+    url: string,
+    meta: {
+      originalFilename?: string;
+    },
+  ) => {
     const now = Date.now();
     filesMetaRef.current[url] = {
       name: meta.originalFilename || url,
       addedAt: now,
     };
-
     let next = [...filesRef.current, url];
 
     // Sort only the recently uploaded batch (last 5 seconds) to prevent mixing with old files
@@ -51,7 +58,6 @@ export function ContentFilesManager({
       const m = filesMetaRef.current[u];
       return m && m.addedAt > now - 5000;
     });
-
     if (splitIndex !== -1) {
       const oldUrls = next.slice(0, splitIndex);
       const recentUrls = next.slice(splitIndex);
@@ -62,27 +68,25 @@ export function ContentFilesManager({
       });
       next = [...oldUrls, ...recentUrls];
     }
-
     filesRef.current = next;
     onChange(next);
   };
-
   return (
     <>
       <div className="flex items-center justify-between py-2">
         <div className="flex items-center gap-2">
           {/* UploadIcon rápido (primeiro arquivo) */}
           <CloudinaryUpload
-            cloudName={cloudName}
-            uploadPreset={uploadPreset}
-            folder="uzzina/content"
-            resourceType="auto"
-            multiple
-            onUpload={handleUpload}
             className={cn(
               "flex items-center gap-1.5 rounded-lg border border-dashed px-3 py-1.5 text-xs opacity-60 transition hover:opacity-100",
-              files.length > 0 && "hidden"
+              files.length > 0 && "hidden",
             )}
+            cloudName={cloudName}
+            folder="uzzina/content"
+            multiple
+            onUpload={handleUpload}
+            resourceType="auto"
+            uploadPreset={uploadPreset}
           >
             <PlusIcon className="size-3.5" />
             Adicionar conteúdo
@@ -101,9 +105,9 @@ export function ContentFilesManager({
 
         {/* Botão gerenciar (sempre visível quando há arquivos, ou para adicionar) */}
         <button
-          type="button"
-          onClick={() => setDialogOpen(true)}
           className="hover:bg-muted flex items-center gap-1 rounded-lg px-2 py-1 text-xs opacity-50 transition hover:opacity-100"
+          onClick={() => setDialogOpen(true)}
+          type="button"
         >
           <SlidersHorizontalIcon className="size-3.5" />
           {files.length === 0
@@ -113,11 +117,11 @@ export function ContentFilesManager({
       </div>
 
       <ContentReorderDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        cloudName={cloudName}
         files={files}
         onChange={onChange}
-        cloudName={cloudName}
+        onOpenChange={setDialogOpen}
+        open={dialogOpen}
         uploadPreset={uploadPreset}
       />
     </>

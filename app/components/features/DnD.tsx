@@ -4,9 +4,8 @@ import {
   type UniqueIdentifier,
 } from "@dnd-kit/core";
 import React from "react";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { CSS } from "@dnd-kit/utilities";
-
 export function Droppable({
   id,
   children,
@@ -16,14 +15,15 @@ export function Droppable({
   children: (isOver: boolean) => React.ReactNode;
   className?: string;
 }) {
-  const { isOver, setNodeRef } = useDroppable({ id });
+  const { isOver, setNodeRef } = useDroppable({
+    id,
+  });
   return (
     <div ref={setNodeRef} className={cn(className)}>
       {children(isOver)}
     </div>
   );
 }
-
 export function Draggable({
   id,
   children,
@@ -35,13 +35,11 @@ export function Draggable({
     useDraggable({
       id,
     });
-
   const style = {
     transform: CSS.Transform.toString(transform),
   };
   const child = React.Children.only(children);
   const isDOMElement = typeof child.type === "string";
-
   return (
     <div
       ref={setNodeRef}

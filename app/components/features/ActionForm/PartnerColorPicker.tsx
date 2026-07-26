@@ -1,7 +1,7 @@
 import Color from "color";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PrismInput } from "~/components/prism";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

@@ -13,7 +13,7 @@ import {
   type MenuSectionProps as MenuSectionPrimitiveProps,
   type SeparatorProps as SeparatorPrimitiveProps,
 } from "react-aria-components";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { IconCheck, IconChevronRight } from "@tabler/icons-react";
 function DropdownMenuTrigger({
   ...props

@@ -1,11 +1,10 @@
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import {
   GallerySection,
   GallerySectionHeader,
   GallerySectionContent,
   GalleryItem,
 } from "./GalleryHelperComponents";
-
 export function TokensColorsSection() {
   const colorItems = [
     {
@@ -75,7 +74,6 @@ export function TokensColorsSection() {
       code: "bg-late text-destructive border",
     },
   ];
-
   return (
     <div id="colors">
       <GallerySection>

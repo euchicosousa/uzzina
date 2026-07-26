@@ -3,7 +3,7 @@ import {
   ToggleButton as TogglePrimitive,
   type ToggleButtonProps,
 } from "react-aria-components";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 const toggleVariants = cva(
   "group/toggle inline-flex border border-transparent items-center justify-center gap-1 rounded-2xl squircle text-sm font-medium whitespace-nowrap transition-colors outline-none hover:bg-secondary hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 aria-pressed:bg-secondary dark:aria-invalid:ring-destructive/40 data-selected:bg-secondary [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
   {
@@ -33,7 +33,13 @@ function Toggle({
 }: ToggleButtonProps & VariantProps<typeof toggleVariants>) {
   return (
     <TogglePrimitive
-      className={cn(toggleVariants({ variant, size }), className)}
+      className={cn(
+        toggleVariants({
+          variant,
+          size,
+        }),
+        className,
+      )}
       data-slot="toggle"
       {...props}
     />

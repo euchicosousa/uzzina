@@ -1,18 +1,16 @@
 import { SIZE } from "~/lib/CONSTANTS";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import {
   PrismAvatar,
   PrismAvatarFallback,
   PrismAvatarImage,
 } from "~/components/prism";
-
 type UAvatarGroupProps = {
   avatars: UAvatarItem[];
   size?: (typeof SIZE)[keyof typeof SIZE];
   clampAt?: number;
   title?: string;
 };
-
 type UAvatarItem = {
   id?: string;
   fallback: string;
@@ -23,7 +21,6 @@ type UAvatarItem = {
   backgroundColor?: string;
   color?: string;
 };
-
 export function UAvatarGroup({
   avatars,
   size = SIZE.md,
@@ -39,9 +36,7 @@ export function UAvatarGroup({
       xl: "-space-x-2",
       "2xl": "-space-x-2",
     }[size as keyof typeof SIZE] || "-space-x-2";
-
   const effectiveClampAt = clampAt || avatars.length;
-
   return (
     <div
       className={cn(sizeClasses, "flex")}
@@ -64,7 +59,6 @@ export function UAvatarGroup({
     </div>
   );
 }
-
 export function UAvatar({
   id,
   fallback,
@@ -82,7 +76,6 @@ export function UAvatar({
         ? fallback.substring(0, 2)
         : fallback
   ).toUpperCase();
-
   const sizeClasses =
     {
       xs: `size-4`,
@@ -92,7 +85,6 @@ export function UAvatar({
       xl: `size-18`,
       "2xl": `size-24`,
     }[size as keyof typeof SIZE] || `size-8`;
-
   const textClasses =
     fallbackText.length <= 2
       ? {
@@ -120,21 +112,24 @@ export function UAvatar({
             xl: "text-[20px] tracking-[2px]",
             "2xl": "text-[30px] tracking-[2px]",
           }[size as keyof typeof SIZE];
-
   const styles =
-    backgroundColor && color ? { backgroundColor, color } : undefined;
-
+    backgroundColor && color
+      ? {
+          backgroundColor,
+          color,
+        }
+      : undefined;
   return (
     <PrismAvatar
-      id={id}
       className={cn(
         sizeClasses,
         textClasses,
         "p-0 leading-none font-bold",
         className,
       )}
+      id={id}
     >
-      {image && <PrismAvatarImage src={image} alt={alt || ""} />}
+      {image && <PrismAvatarImage alt={alt || ""} src={image} />}
       <PrismAvatarFallback
         className="grid place-content-center bg-secondary text-center text-secondary-foreground"
         style={styles}
@@ -144,7 +139,6 @@ export function UAvatar({
     </PrismAvatar>
   );
 }
-
 export function getShortText(text: string) {
   return text.length <= 3 ? (
     text

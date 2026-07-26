@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { getShortText, UAvatar } from "~/components/uzzina/UAvatar";
 import { useAppContext } from "~/contexts/AppContext";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import type { Action } from "~/types";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
 import { PrismBadge } from "~/components/prism";

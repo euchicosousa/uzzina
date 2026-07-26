@@ -1,12 +1,10 @@
 import { Loader2 } from "lucide-react";
 import type { SIZE } from "~/lib/CONSTANTS";
-import { cn } from "~/lib/utils";
-
+import { cn } from "cnfast";
 interface ULoaderProps {
   className?: string;
   size?: keyof typeof SIZE;
 }
-
 export function ULoader({ className, size = "sm" }: ULoaderProps) {
   const sizeClasses = {
     xs: "size-3",
@@ -16,7 +14,6 @@ export function ULoader({ className, size = "sm" }: ULoaderProps) {
     xl: "size-8",
     "2xl": "size-12",
   }[size];
-
   return (
     <Loader2
       className={cn(

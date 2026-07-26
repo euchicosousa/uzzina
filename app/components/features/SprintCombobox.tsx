@@ -14,7 +14,7 @@ import {
 } from "~/components/prism";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import type { Partner, Person } from "~/types";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { ComboboxTrigger } from "./ComboboxTrigger";

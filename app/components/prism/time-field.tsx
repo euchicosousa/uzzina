@@ -5,7 +5,7 @@ import {
   type TimeFieldProps as TimeFieldPrimitiveProps,
   type TimeValue,
 } from "react-aria-components";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 export interface PrismTimeFieldProps<
   T extends TimeValue = TimeValue,
 > extends Omit<TimeFieldPrimitiveProps<T>, "className"> {

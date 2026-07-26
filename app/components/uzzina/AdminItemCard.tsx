@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { UAvatar } from "./UAvatar";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 interface AdminItemCardProps {
   to: string;
   image?: string | null;

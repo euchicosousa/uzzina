@@ -11,7 +11,7 @@ import { ObservationsTab } from "~/components/features/ActionForm/ObservationsTa
 import { INTENT } from "~/lib/CONSTANTS";
 import { isInstagramFeed } from "~/lib/helpers";
 import { useActionMutations } from "~/hooks/useActionMutations";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
 }

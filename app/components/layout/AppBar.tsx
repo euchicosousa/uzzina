@@ -35,7 +35,7 @@ import { SIZE } from "~/lib/CONSTANTS";
 import { getCleanAction } from "~/lib/helpers";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchAllLateActions } from "~/lib/supabase.queries";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import type { Action, Partner, Person } from "~/types";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 export function AppBar({

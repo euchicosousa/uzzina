@@ -13,14 +13,12 @@ import {
 } from "~/components/prism";
 import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
-import { cn } from "~/lib/utils";
-
+import { cn } from "cnfast";
 interface Person {
   user_id: string;
   name: string;
   image: string | null;
 }
-
 interface CommentInputProps {
   value: string;
   onCancel?: () => void;
@@ -30,9 +28,7 @@ interface CommentInputProps {
   mentionablePeople?: Person[];
   submitLabel?: string;
 }
-
 const DEFAULT_MENTIONABLE_PEOPLE: Person[] = [];
-
 export function CommentInput({
   value,
   onChange,
@@ -44,20 +40,17 @@ export function CommentInput({
 }: CommentInputProps) {
   const [selectedMentions, setSelectedMentions] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-
   const handleSend = () => {
     if (!value.trim()) return;
     onSend(value, selectedMentions);
     setSelectedMentions([]);
   };
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
       handleSend();
     }
   };
-
   const toggleMention = (userId: string) => {
     setSelectedMentions((prev) =>
       prev.includes(userId)
@@ -65,11 +58,9 @@ export function CommentInput({
         : [...prev, userId],
     );
   };
-
   const selectedPeople = mentionablePeople.filter((p) =>
     selectedMentions.includes(p.user_id),
   );
-
   return (
     <div className="relative flex flex-col gap-2 bg-input dark:bg-input/30 input-embossed p-3 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary">
       <PrismTextarea

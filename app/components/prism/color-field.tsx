@@ -3,14 +3,14 @@ import {
   Input as InputPrimitive,
   type ColorFieldProps as ColorFieldPrimitiveProps,
 } from "react-aria-components";
-import { cn } from "~/lib/utils";
-
-export interface PrismColorFieldProps
-  extends Omit<ColorFieldPrimitiveProps, "className"> {
+import { cn } from "cnfast";
+export interface PrismColorFieldProps extends Omit<
+  ColorFieldPrimitiveProps,
+  "className"
+> {
   className?: string;
   inputClassName?: string;
 }
-
 function PrismColorField({
   className,
   inputClassName,
@@ -33,5 +33,4 @@ function PrismColorField({
     </ColorFieldPrimitive>
   );
 }
-
 export { PrismColorField };

@@ -7,7 +7,7 @@ import {
   IconAlertOctagon,
   IconLoader,
 } from "@tabler/icons-react";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 const PrismToaster = ({ ...props }: ToasterProps) => {
   const [theme = "system"] = useTheme();
   return (

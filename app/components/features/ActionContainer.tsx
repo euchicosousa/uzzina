@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import type { DATE_TIME_DISPLAY, ORDER_BY } from "~/lib/CONSTANTS";
 import { VARIANT } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { getGridClasses } from "~/lib/uzzina-utils";
 import { ActionItem, type ActionDisplayFlags } from "./ActionItem";
 type ActionContainerProps = {

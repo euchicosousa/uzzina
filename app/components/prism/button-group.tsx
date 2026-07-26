@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { Separator } from "~/components/prism/separator";
 const buttonGroupVariants = cva(
   "inline-flex w-fit items-stretch group/button-group *:focus-visible:relative *:focus-visible:z-10 *:hover:z-10",

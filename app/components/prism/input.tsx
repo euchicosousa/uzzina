@@ -2,7 +2,7 @@ import {
   composeRenderProps,
   Input as InputPrimitive,
 } from "react-aria-components";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 function PrismInput({
   className,
   type,

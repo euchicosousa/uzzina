@@ -36,7 +36,7 @@ import { useAppTheme } from "~/hooks/useAppTheme";
 import { PHASES, SIZE } from "~/lib/CONSTANTS";
 import { filterActions, getInstagramFeedActions } from "~/lib/helpers";
 import { getUserPreferences } from "~/lib/preferences";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import {

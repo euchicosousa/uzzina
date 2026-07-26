@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 export interface SelectorOption<T> {
   value: T;
   label: React.ReactNode;

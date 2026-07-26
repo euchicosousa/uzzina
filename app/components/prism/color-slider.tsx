@@ -5,7 +5,7 @@ import {
   type ColorSliderProps as ColorSliderPrimitiveProps,
   type ColorChannel,
 } from "react-aria-components";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 export interface PrismColorSliderProps extends Omit<
   ColorSliderPrimitiveProps,
   "className" | "channel"

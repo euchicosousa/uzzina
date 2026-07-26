@@ -16,7 +16,7 @@ import {
   STATIONS,
   type STATION_TYPE,
 } from "~/lib/CONSTANTS";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { ComboboxTrigger } from "./ComboboxTrigger";
 import { StationIcon } from "./StationIcon";
 const ALL_STATION = {

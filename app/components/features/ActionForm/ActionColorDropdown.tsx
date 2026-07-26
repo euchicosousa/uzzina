@@ -12,7 +12,7 @@ import {
 } from "~/components/prism";
 import { ComboboxTrigger } from "~/components/features/ComboboxTrigger";
 import { toHex } from "~/components/features/ActionForm/PartnerColorPicker";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { getGridCols, safeColor } from "~/lib/uzzina-utils";
 interface ActionColorDropdownProps {
   action: Action;

@@ -10,7 +10,7 @@ import {
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { DATE_TIME_DISPLAY, INTENT, STATIONS } from "~/lib/CONSTANTS";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { ActionItem } from "../features/ActionItem";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { ActionContainer } from "../features/ActionContainer";

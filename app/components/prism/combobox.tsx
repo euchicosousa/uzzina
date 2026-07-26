@@ -29,7 +29,7 @@ import {
   type TagListProps,
   type TagProps,
 } from "react-aria-components";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { Button } from "~/components/prism/button";
 import {
   InputGroup,

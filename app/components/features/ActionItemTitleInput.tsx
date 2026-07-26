@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 export function ActionItemTitleInput({
   title,
   isDragging,
@@ -27,7 +27,6 @@ export function ActionItemTitleInput({
       inputRef.current?.focus();
     }
   }, [isEditing]);
-
   return (
     <div
       className={cn(
@@ -39,6 +38,7 @@ export function ActionItemTitleInput({
       {isEditing ? (
         <input
           ref={inputRef}
+          aria-label="Editar título da ação"
           className={cn("w-full outline-none", InputButtonClassName)}
           onBlur={() => {
             if (onBlur) {
@@ -62,11 +62,9 @@ export function ActionItemTitleInput({
           }}
           type="text"
           value={localTitle}
-          aria-label="Editar título da ação"
         />
       ) : (
         <button
-          type="button"
           className={cn(
             "w-full cursor-text text-left",
             lines === 1
@@ -80,6 +78,7 @@ export function ActionItemTitleInput({
             event.stopPropagation();
             setIsEditing(true);
           }}
+          type="button"
         >
           {localTitle}
         </button>

@@ -1,5 +1,5 @@
 import { STATIONS, type STATION_TYPE } from "~/lib/CONSTANTS";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { Icons } from "~/components/uzzina/UIIcons";
 export function StationIcon({
   station,

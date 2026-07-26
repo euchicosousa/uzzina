@@ -5,7 +5,7 @@ import type * as React from "react";
 import { Group, type GroupProps } from "react-aria-components";
 import { PrismInput } from "~/components/prism/input";
 import { Textarea } from "~/components/prism/textarea";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { PrismButton } from ".";
 function InputGroup({ className, ...props }: GroupProps) {
   return (

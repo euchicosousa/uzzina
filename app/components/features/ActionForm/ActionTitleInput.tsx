@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { PrismBadge } from "~/components/prism";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 interface ActionTitleInputProps {
   title: string;
   onChange: (title: string) => void;

@@ -11,7 +11,7 @@ import {
   PrismTimeField,
 } from "~/components/prism";
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { getFormattedDateTime } from "~/utils/date";
 export function ActionDatePicker({
   onSelect,

@@ -1,10 +1,7 @@
-import { cn } from "~/lib/utils";
-
-export interface PrismSkeletonProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+import { cn } from "cnfast";
+export interface PrismSkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   delay?: number;
 }
-
 export function PrismSkeleton({
   className,
   delay,
@@ -18,7 +15,6 @@ export function PrismSkeleton({
         }
       : {}),
   };
-
   return (
     <div
       className={cn(
@@ -30,14 +26,12 @@ export function PrismSkeleton({
     />
   );
 }
-
 const SKELETON_KEYS = Array.from(
   {
     length: 50,
   },
   (_, i) => `sk-${i}`,
 );
-
 export function PrismSkeletonGroup({
   count = 4,
   className,
@@ -83,7 +77,6 @@ export function PrismSkeletonGroup({
     </div>
   );
 }
-
 function ProfileSkeleton({ className, delay, ...props }: PrismSkeletonProps) {
   return (
     <div className={cn("flex items-center gap-2", className)} {...props}>

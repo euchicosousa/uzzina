@@ -3,7 +3,7 @@ import {
   composeRenderProps,
   TextArea as TextareaPrimitive,
 } from "react-aria-components";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 function Textarea({
   className,
   ...props

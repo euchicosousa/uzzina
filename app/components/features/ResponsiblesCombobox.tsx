@@ -15,11 +15,10 @@ import { SIZE } from "~/lib/CONSTANTS";
 import { getFormattedPeopleName } from "~/lib/helpers";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import type { Partner } from "~/types";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { ComboboxTrigger } from "./ComboboxTrigger";
-
 export function ResponsiblesCombobox({
   selectedResponsibles = [],
   currentPartners,
@@ -41,26 +40,19 @@ export function ResponsiblesCombobox({
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });
-
   const selected = Array.from(new Set(selectedResponsibles || []));
-
   const currentResponsibles = selected
     .map((slug) => allPeople.find((person) => person.user_id === slug))
     .filter(
       (person): person is (typeof allPeople)[number] => person !== undefined,
     );
-
   const peopleFiltered = allPeople.filter((person) =>
     currentPartners
       .map((partner) => partner.users_ids.includes(person.user_id))
       .includes(true),
   );
-
   const handleSelect = (userId: string) => {
-    const isShiftPressed = (
-      window.event as MouseEvent | undefined
-    )?.shiftKey;
-
+    const isShiftPressed = (window.event as MouseEvent | undefined)?.shiftKey;
     let newResponsibles: string[];
     if (isShiftPressed) {
       newResponsibles = [userId];
@@ -72,7 +64,6 @@ export function ResponsiblesCombobox({
     }
     onSelect?.(newResponsibles);
   };
-
   return (
     <PrismPopoverTrigger
       isOpen={isOpen && !disabled}
@@ -96,7 +87,9 @@ export function ResponsiblesCombobox({
           <PrismCommandInput placeholder="Procurar responsável..." />
           <PrismCommandList
             renderEmptyState={() => (
-              <PrismCommandEmpty>Nenhum responsável encontrado.</PrismCommandEmpty>
+              <PrismCommandEmpty>
+                Nenhum responsável encontrado.
+              </PrismCommandEmpty>
             )}
           >
             <PrismCommandGroup>
@@ -123,7 +116,6 @@ export function ResponsiblesCombobox({
     </PrismPopoverTrigger>
   );
 }
-
 function ActionResponsiblesDisplay({
   responsibles: responsibles_,
   size = SIZE.md,
@@ -141,7 +133,6 @@ function ActionResponsiblesDisplay({
   const responsibles = Array.from(new Set(responsibles_))
     .map((r) => people.find((p) => p.user_id === r))
     .filter((p) => p !== undefined);
-
   return (
     <div className="flex items-center overflow-hidden gap-2 text-xs text-muted-foreground">
       {responsibles.length === 0 ? (

@@ -28,8 +28,7 @@ import {
 } from "@tabler/icons-react";
 import Color from "color";
 import { Theme } from "~/components/theme-provider";
-import { cn } from "~/lib/utils";
-
+import { cn } from "cnfast";
 export function Icons({
   slug,
   className,
@@ -49,7 +48,6 @@ export function Icons({
           fill: Color(color).desaturate(0.3).alpha(0.1).hsl().toString(),
         }
       : undefined;
-
   switch (slug) {
     case "ads":
       return <IconVolume className={cn(className)} style={style} />;
@@ -124,7 +122,6 @@ export function Icons({
       return <IconHelp className={cn(className)} style={style} />;
   }
 }
-
 export const getThemeIcon = (theme: Theme | null, className?: string) => {
   switch (theme) {
     case Theme.DARK:

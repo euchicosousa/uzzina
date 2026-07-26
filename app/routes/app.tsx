@@ -20,7 +20,7 @@ import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
 import { getCleanAction } from "~/lib/helpers";
 import { getUserPreferences } from "~/lib/preferences";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import type { Partner } from "~/types";
 import { AppContext } from "~/contexts/AppContext";
 import { UZZINALogo } from "~/components/logo";

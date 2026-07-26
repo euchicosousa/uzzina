@@ -1,10 +1,7 @@
 import { SparklesIcon } from "lucide-react";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import type React from "react";
-
-interface UButtonAIProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
-
+interface UButtonAIProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 export function UButtonAI({
   children,
   className,
@@ -13,12 +10,12 @@ export function UButtonAI({
 }: UButtonAIProps) {
   return (
     <button
-      type="button"
       className={cn(
         "relative overflow-hidden rounded-full p-0.5 disabled:opacity-50",
         className,
       )}
       disabled={disabled}
+      type="button"
       {...props}
     >
       <div

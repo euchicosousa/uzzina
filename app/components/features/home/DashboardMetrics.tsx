@@ -20,7 +20,7 @@ import {
   PrismPopoverTrigger,
 } from "~/components/prism";
 import { PHASES } from "~/lib/CONSTANTS";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 interface DashboardMetricsProps {
   actions: Action[];
   lateActions: Action[];

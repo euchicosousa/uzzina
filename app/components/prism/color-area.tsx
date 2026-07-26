@@ -3,7 +3,7 @@ import {
   ColorThumb as ColorThumbPrimitive,
   type ColorAreaProps as ColorAreaPrimitiveProps,
 } from "react-aria-components";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 export interface PrismColorAreaProps extends Omit<
   ColorAreaPrimitiveProps,
   "className"

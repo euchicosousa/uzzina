@@ -17,7 +17,7 @@ import {
   PHASES,
   type PHASE_TYPE,
 } from "~/lib/CONSTANTS";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { ActionItem } from "../features/ActionItem";
 import { Draggable, Droppable } from "../features/DnD";
 import { DragStateContext } from "../features/DragStateContext";

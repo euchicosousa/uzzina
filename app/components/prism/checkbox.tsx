@@ -6,7 +6,7 @@ import {
   type CheckboxGroupProps,
   type CheckboxProps,
 } from "react-aria-components";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 const checkboxVariants = cva(
   "group flex cursor-pointer items-center gap-2 text-sm font-medium transition-colors select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
   {

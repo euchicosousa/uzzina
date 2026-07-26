@@ -8,7 +8,7 @@ import {
   type DialogTriggerProps as DialogTriggerPrimitiveProps,
   type ModalOverlayProps as ModalOverlayPrimitiveProps,
 } from "react-aria-components";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { IconX } from "@tabler/icons-react";
 import { PrismButton } from ".";
 function DialogTrigger({ ...props }: DialogTriggerPrimitiveProps) {

@@ -17,7 +17,7 @@ import {
   type MenuSectionProps,
   type SeparatorProps,
 } from "react-aria-components";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import {
   PrismDialog,
   PrismDialogDescription,

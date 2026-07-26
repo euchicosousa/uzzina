@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { toast } from "sonner";
-
 export interface AvatarSelectorOption {
   id: string; // O ID ou Slug original que será enviado no form state
   fallback: string;
@@ -13,7 +12,6 @@ export interface AvatarSelectorOption {
   title: string;
   subtitle?: string;
 }
-
 interface UAvatarSelectorProps {
   options: AvatarSelectorOption[];
   initialSelectedIds?: string[];
@@ -22,7 +20,6 @@ interface UAvatarSelectorProps {
   minSelected?: number;
 }
 const DEFAULT_INITIAL_SELECTED_IDS: string[] = [];
-
 export function UAvatarSelector({
   options,
   initialSelectedIds = DEFAULT_INITIAL_SELECTED_IDS,
@@ -31,14 +28,15 @@ export function UAvatarSelector({
   minSelected,
 }: UAvatarSelectorProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedIds);
-
   const toggleOption = (id: string) => {
     setSelectedIds((current) => {
       const isSelected = current.includes(id);
       let next: string[];
       if (isSelected) {
         if (minSelected !== undefined && current.length <= minSelected) {
-          toast.warning(`Você precisa manter pelo menos ${minSelected} selecionado(s).`);
+          toast.warning(
+            `Você precisa manter pelo menos ${minSelected} selecionado(s).`,
+          );
           return current;
         }
         next = current.filter((currentId) => currentId !== id);
@@ -49,7 +47,6 @@ export function UAvatarSelector({
       return next;
     });
   };
-
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
       {options.map((option) => {
@@ -57,18 +54,18 @@ export function UAvatarSelector({
         return (
           <button
             key={option.id}
-            type="button"
-            onClick={() => toggleOption(option.id)}
             className={cn(
               "hover:bg-muted/50 relative flex flex-col items-center gap-2 overflow-hidden rounded-lg p-4 transition-all",
               isSelected ? "text-foreground bg-muted" : "opacity-50",
             )}
+            onClick={() => toggleOption(option.id)}
+            type="button"
           >
             <UAvatar
-              image={option.image}
-              fallback={option.fallback}
               backgroundColor={option.backgroundColor}
               color={option.color}
+              fallback={option.fallback}
+              image={option.image}
               size={SIZE.lg}
             />
 
@@ -84,7 +81,7 @@ export function UAvatarSelector({
             </div>
 
             {isSelected && (
-              <input type="hidden" name={name} value={option.id} />
+              <input name={name} type="hidden" value={option.id} />
             )}
           </button>
         );
@@ -92,4 +89,3 @@ export function UAvatarSelector({
     </div>
   );
 }
-

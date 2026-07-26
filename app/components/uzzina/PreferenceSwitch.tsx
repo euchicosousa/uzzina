@@ -1,7 +1,5 @@
-
 import { PrismLabel, PrismToggle } from "~/components/prism";
-import { cn } from "~/lib/utils";
-
+import { cn } from "cnfast";
 interface PreferenceSwitchProps {
   id: string;
   label: string;
@@ -10,7 +8,6 @@ interface PreferenceSwitchProps {
   onCheckedChange: (checked: boolean) => void;
   className?: string;
 }
-
 export function PreferenceSwitch({
   id,
   label,
@@ -30,7 +27,10 @@ export function PreferenceSwitch({
       )}
     >
       <div className="flex flex-col gap-0.5">
-        <PrismLabel htmlFor={id} className="cursor-pointer text-sm font-semibold">
+        <PrismLabel
+          className="cursor-pointer text-sm font-semibold"
+          htmlFor={id}
+        >
           {label}
         </PrismLabel>
         <span className="pr-4 text-xs text-muted-foreground">
@@ -41,8 +41,8 @@ export function PreferenceSwitch({
         id={id}
         isSelected={checked}
         onChange={onCheckedChange}
-        variant="outline"
         size="sm"
+        variant="outline"
       >
         {checked ? "Ativo" : "Inativo"}
       </PrismToggle>

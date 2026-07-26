@@ -1,5 +1,5 @@
 import { Separator as SeparatorPrimitive } from "react-aria-components";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 function Separator({
   className,
   orientation = "horizontal",

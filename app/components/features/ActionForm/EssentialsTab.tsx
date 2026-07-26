@@ -23,7 +23,7 @@ import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { UButtonAI } from "~/components/uzzina/UButtonAI";
 import { INTENT } from "~/lib/CONSTANTS";
 import { getNewDateForAction, isLateAction } from "~/lib/helpers";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import type { Action, Partner, PartnerTopic } from "~/types";
 import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";

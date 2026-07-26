@@ -14,7 +14,7 @@ import { TableCell } from "@tiptap/extension-table-cell";
 import { TableHeader } from "@tiptap/extension-table-header";
 import { Highlight } from "@tiptap/extension-highlight";
 import { useMemo, useState } from "react";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import {
   Bold,
   Italic,

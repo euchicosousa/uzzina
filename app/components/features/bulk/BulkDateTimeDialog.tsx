@@ -12,7 +12,7 @@ import {
   PrismTimeField,
   PrismCalendar,
 } from "~/components/prism";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 export type BulkDateTimeResult =
   | {
       mode: "datetime";

@@ -1,5 +1,5 @@
 import type React from "react";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 
 /**
  * UToggleInput — form-linked radio/checkbox toggle using CSS peer pattern.
@@ -29,8 +29,8 @@ export function UToggleInput({
   return (
     <div>
       <input
-        type={type}
         id={id}
+        type={type}
         {...inputProps}
         className="peer sr-only absolute size-0"
         onChange={(e) => {
@@ -38,7 +38,6 @@ export function UToggleInput({
         }}
       />
       <label
-        htmlFor={id}
         className={cn(
           "flex items-center gap-2 rounded-2xl border-transparent bg-transparent p-4 font-semibold opacity-50 transition-all squircle peer-checked:opacity-100 hover:opacity-100 focus:opacity-100",
           variant === "destructive"
@@ -46,6 +45,7 @@ export function UToggleInput({
             : "hover:bg-opacity-100 peer-checked:bg-muted",
           className,
         )}
+        htmlFor={id}
       >
         {children}
       </label>

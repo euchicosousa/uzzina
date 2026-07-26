@@ -45,7 +45,7 @@ import {
 } from "~/lib/helpers";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 export type ActionDisplayFlags = {
   /** Whether to highlight the action if it is late */
   showLate?: boolean;

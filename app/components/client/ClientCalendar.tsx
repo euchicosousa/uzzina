@@ -16,7 +16,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useMemo } from "react";
 import { PrismButton } from "~/components/prism";
 import { DATE_TIME_DISPLAY, PHASES, type PHASE } from "~/lib/CONSTANTS";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { getFormattedDateTime } from "~/utils/date";
 import { Content } from "../features/Content";
 import { PhaseIcon } from "../features/PhaseIcon";

@@ -28,7 +28,7 @@ import {
   fetchHomeActions,
   fetchPartnerActions,
 } from "~/lib/supabase.queries";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import type { Notification } from "~/types";
 import { DashboardMetrics } from "../features/home/DashboardMetrics";
 import { UZZINALogo } from "../logo";

@@ -16,15 +16,12 @@ import {
 } from "~/components/features/ViewOptions";
 import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
 import { getCleanAction } from "~/lib/helpers";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { HomeComponentWrapper } from "./HomeComponentWrapper";
-
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchCelebrations } from "~/lib/supabase.queries";
-
 import { useAppContext } from "~/contexts/AppContext";
-
 export function CalendarHomeComponent({
   actions,
   setBaseAction,
@@ -33,16 +30,13 @@ export function CalendarHomeComponent({
   setBaseAction: (action: Action | null) => void;
 }) {
   const { person } = useAppContext();
-
   const { data: celebrations = [] } = useQuery({
     queryKey: QUERY_KEYS.celebrations(),
     queryFn: fetchCelebrations,
     staleTime: 30 * 60 * 1000, // 30 minutos (celebrations são semi-estáticos)
   });
-
   const [period, setPeriod] = useState<"week" | "month">("week");
   const [currentDate] = useState(new Date());
-
   const calendarDays = eachDayOfInterval({
     start:
       period === "week"
@@ -53,7 +47,6 @@ export function CalendarHomeComponent({
         ? endOfWeek(currentDate)
         : endOfWeek(endOfMonth(currentDate)),
   });
-
   const [viewOptions, setViewOptions] = useViewOptions({
     partner: true,
     showOptions: {
@@ -61,42 +54,39 @@ export function CalendarHomeComponent({
       order: true,
     },
   });
-
   return (
     <HomeComponentWrapper
+      OptionsComponent={
+        <div className="flex items-center gap-8">
+          <PrismToggleGroup
+            aria-label="Alternar Período"
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0] as typeof period;
+              if (selected) setPeriod(selected);
+            }}
+            selectedKeys={new Set([period])}
+            selectionMode="single"
+            size="sm"
+          >
+            <PrismToggleGroupItem id="week">Semana</PrismToggleGroupItem>
+            <PrismToggleGroupItem id="month">Mês</PrismToggleGroupItem>
+          </PrismToggleGroup>
+          <ViewOptionsComponent
+            setViewOptions={setViewOptions}
+            viewOptions={viewOptions}
+          />
+        </div>
+      }
       title={
         period === "week" ? (
           "Essa Semana"
         ) : (
           <span className="capitalize">
-            {format(currentDate, "MMMM", { locale: ptBR })}
+            {format(currentDate, "MMMM", {
+              locale: ptBR,
+            })}
           </span>
         )
-      }
-      OptionsComponent={
-        <div className="flex items-center gap-8">
-          <PrismToggleGroup
-            aria-label="Alternar Período"
-            selectedKeys={new Set([period])}
-            selectionMode="single"
-            size="sm"
-            onSelectionChange={(keys) => {
-              const selected = Array.from(keys)[0] as typeof period;
-              if (selected) setPeriod(selected);
-            }}
-          >
-            <PrismToggleGroupItem id="week">
-              Semana
-            </PrismToggleGroupItem>
-            <PrismToggleGroupItem id="month">
-              Mês
-            </PrismToggleGroupItem>
-          </PrismToggleGroup>
-          <ViewOptionsComponent
-            viewOptions={viewOptions}
-            setViewOptions={setViewOptions}
-          />
-        </div>
       }
     >
       <div
@@ -109,7 +99,6 @@ export function CalendarHomeComponent({
           actions={actions}
           calendarDays={calendarDays}
           celebrations={celebrations}
-          viewOptions={viewOptions}
           layoutOptions={{
             isCompact: period === "month",
             showBorder: period === "month",
@@ -122,6 +111,7 @@ export function CalendarHomeComponent({
               }) as unknown as Action),
             });
           }}
+          viewOptions={viewOptions}
         />
       </div>
     </HomeComponentWrapper>

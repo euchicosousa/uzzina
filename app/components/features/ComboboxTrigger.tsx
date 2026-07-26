@@ -1,7 +1,9 @@
-import { Button as ButtonPrimitive, type ButtonProps } from "react-aria-components";
-import { cn } from "~/lib/utils";
+import {
+  Button as ButtonPrimitive,
+  type ButtonProps,
+} from "react-aria-components";
+import { cn } from "cnfast";
 import { buttonVariants } from "../prism/button";
-
 export interface ComboboxTriggerProps extends Omit<ButtonProps, "className"> {
   variant?: "filter" | "form-inline" | "form-link" | "form-footer";
   size?: "sm" | "lg";
@@ -12,7 +14,6 @@ export interface ComboboxTriggerProps extends Omit<ButtonProps, "className"> {
   disabled?: boolean;
   ref?: React.Ref<HTMLButtonElement>;
 }
-
 export function ComboboxTrigger({
   variant = "form-inline",
   size = "lg",

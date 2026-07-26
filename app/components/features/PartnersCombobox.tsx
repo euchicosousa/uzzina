@@ -11,11 +11,10 @@ import {
 } from "~/components/prism";
 import { useAppContext } from "~/contexts/AppContext";
 import { getFormattedPartnersName } from "~/lib/helpers";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import type { Partner } from "~/types";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { ComboboxTrigger } from "./ComboboxTrigger";
-
 export function PartnersCombobox({
   selectedPartners = [],
   onSelect,
@@ -33,18 +32,12 @@ export function PartnersCombobox({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const { partners } = useAppContext();
-
   const currentPartners = selectedPartners
     .map((slug) => partners.find((partner) => partner.slug === slug))
     .filter((partner): partner is Partner => partner !== undefined);
-
   const hasSelection = currentPartners.length > 0;
-
   const handleSelect = (slug: string) => {
-    const isShiftPressed = (
-      window.event as MouseEvent | undefined
-    )?.shiftKey;
-
+    const isShiftPressed = (window.event as MouseEvent | undefined)?.shiftKey;
     let newPartners: string[];
     if (isShiftPressed) {
       newPartners = [slug];
@@ -56,7 +49,6 @@ export function PartnersCombobox({
     }
     onSelect?.(newPartners);
   };
-
   return (
     <PrismPopoverTrigger
       isOpen={isOpen && !disabled}

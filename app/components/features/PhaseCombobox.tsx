@@ -12,7 +12,7 @@ import {
   PrismPopoverTrigger,
 } from "~/components/prism";
 import { PHASES, type PHASE_TYPE } from "~/lib/CONSTANTS";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import { ComboboxTrigger } from "./ComboboxTrigger";
 import { PhaseIcon } from "./PhaseIcon";
 const DEFAULT_SELECTED_PHASES: string[] = [];

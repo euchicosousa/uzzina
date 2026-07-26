@@ -5,7 +5,7 @@ import {
   type DialogTriggerProps,
   type PopoverProps as PopoverPrimitiveProps,
 } from "react-aria-components";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 function PopoverTrigger({ children, ...props }: DialogTriggerProps) {
   return (
     <DialogTrigger data-slot="popover-trigger" {...props}>

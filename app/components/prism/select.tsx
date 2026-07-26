@@ -17,7 +17,7 @@ import {
   type SelectProps,
   type SelectValueProps,
 } from "react-aria-components";
-import { cn } from "~/lib/utils";
+import { cn } from "cnfast";
 import {
   InputGroup,
   InputGroupAddon,
