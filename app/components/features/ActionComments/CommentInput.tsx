@@ -1,26 +1,26 @@
 import { CheckIcon, SendIcon } from "lucide-react";
 import { useState } from "react";
-import { PrismButton, PrismTextarea } from "~/components/prism";
 import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "~/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
+  PrismButton,
+  PrismCommand,
+  PrismCommandEmpty,
+  PrismCommandInput,
+  PrismCommandItem,
+  PrismCommandList,
+  PrismPopover,
+  PrismPopoverTrigger,
+  PrismTextarea,
+} from "~/components/prism";
 import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
+
 interface Person {
   user_id: string;
   name: string;
   image: string | null;
 }
+
 interface CommentInputProps {
   value: string;
   onCancel?: () => void;
@@ -30,7 +30,9 @@ interface CommentInputProps {
   mentionablePeople?: Person[];
   submitLabel?: string;
 }
+
 const DEFAULT_MENTIONABLE_PEOPLE: Person[] = [];
+
 export function CommentInput({
   value,
   onChange,
@@ -42,17 +44,20 @@ export function CommentInput({
 }: CommentInputProps) {
   const [selectedMentions, setSelectedMentions] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+
   const handleSend = () => {
     if (!value.trim()) return;
     onSend(value, selectedMentions);
     setSelectedMentions([]);
   };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
       handleSend();
     }
   };
+
   const toggleMention = (userId: string) => {
     setSelectedMentions((prev) =>
       prev.includes(userId)
@@ -60,9 +65,11 @@ export function CommentInput({
         : [...prev, userId],
     );
   };
+
   const selectedPeople = mentionablePeople.filter((p) =>
     selectedMentions.includes(p.user_id),
   );
+
   return (
     <div className="relative flex flex-col gap-2 bg-input dark:bg-input/30 input-embossed p-3 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary">
       <PrismTextarea
@@ -76,45 +83,45 @@ export function CommentInput({
       <div className="flex flex-wrap items-center justify-between gap-3 p-2">
         {/* Seletor de Notificação */}
         <div className="flex items-center gap-2">
-          <Popover onOpenChange={setIsOpen} open={isOpen}>
-            <PopoverTrigger asChild>
-              <PrismButton size="sm" variant="ghost">
-                {/* Avatares das pessoas selecionadas */}
-                {selectedPeople.length > 0 ? (
-                  <div className="flex items-center gap-1.5">
-                    <UAvatarGroup
-                      avatars={selectedPeople.map((p) => ({
-                        image: p.image,
-                        id: p.user_id,
-                        fallback: p.name.substring(0, 2).toUpperCase(),
-                      }))}
-                      size={SIZE.sm}
-                    />
-                  </div>
-                ) : (
-                  <span>Responsáveis</span>
-                )}
-              </PrismButton>
-            </PopoverTrigger>
-            <PopoverContent align="start" className="w-60 p-0">
-              <Command>
-                <CommandInput
-                  className="h-9 text-xs"
-                  placeholder="Procurar membro..."
-                />
-                <CommandEmpty className="py-3 text-center text-xs">
-                  Nenhum membro encontrado.
-                </CommandEmpty>
-                <CommandList className="max-h-50 p-1">
+          <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
+            <PrismButton size="sm" variant="ghost">
+              {/* Avatares das pessoas selecionadas */}
+              {selectedPeople.length > 0 ? (
+                <div className="flex items-center gap-1.5">
+                  <UAvatarGroup
+                    avatars={selectedPeople.map((p) => ({
+                      image: p.image,
+                      id: p.user_id,
+                      fallback: p.name.substring(0, 2).toUpperCase(),
+                    }))}
+                    size={SIZE.sm}
+                  />
+                </div>
+              ) : (
+                <span>Responsáveis</span>
+              )}
+            </PrismButton>
+            <PrismPopover className="w-60 p-0" placement="bottom start">
+              <PrismCommand>
+                <PrismCommandInput placeholder="Procurar membro..." />
+                <PrismCommandList
+                  className="max-h-50"
+                  renderEmptyState={() => (
+                    <PrismCommandEmpty className="py-3 text-center text-xs">
+                      Nenhum membro encontrado.
+                    </PrismCommandEmpty>
+                  )}
+                >
                   {mentionablePeople.map((person) => {
                     const isSelected = selectedMentions.includes(
                       person.user_id,
                     );
                     return (
-                      <CommandItem
+                      <PrismCommandItem
                         key={person.user_id}
                         className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs hover:bg-muted"
-                        onSelect={() => toggleMention(person.user_id)}
+                        isSelected={isSelected}
+                        onAction={() => toggleMention(person.user_id)}
                       >
                         <UAvatar
                           fallback={person.name}
@@ -130,13 +137,13 @@ export function CommentInput({
                             isSelected ? "opacity-100" : "opacity-0",
                           )}
                         />
-                      </CommandItem>
+                      </PrismCommandItem>
                     );
                   })}
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+                </PrismCommandList>
+              </PrismCommand>
+            </PrismPopover>
+          </PrismPopoverTrigger>
         </div>
 
         {/* Ações */}
@@ -148,22 +155,17 @@ export function CommentInput({
             <PrismButton
               className="h-8 rounded-lg px-3 text-xs"
               onClick={onCancel}
-              size="sm"
-              type="button"
               variant="ghost"
             >
               Cancelar
             </PrismButton>
           )}
           <PrismButton
-            className="squircle h-8 rounded-lg px-3.5 text-xs font-semibold"
+            className="h-8 rounded-lg px-3 text-xs"
             isDisabled={isSubmitting || !value.trim()}
             onClick={handleSend}
-            size="sm"
           >
-            {submitLabel !== "Salvar" && (
-              <SendIcon className="mr-1.5 size-3.5" />
-            )}
+            <SendIcon className="mr-1.5 size-3.5" />
             {submitLabel || "Enviar"}
           </PrismButton>
         </div>

@@ -18,8 +18,7 @@ const Tiptap = lazy(() =>
     default: module.Tiptap,
   })),
 );
-import { PrismButton, PrismTextarea } from "~/components/prism";
-import { Input } from "~/components/ui/input";
+import { PrismButton, PrismInput, PrismTextarea } from "~/components/prism";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
@@ -349,13 +348,12 @@ function AdminPartnerEditPage() {
               </label>
               {savingFields.has("title") && <ULoader />}
             </div>
-            <Input
+            <PrismInput
               defaultValue={partner?.title}
               id="title"
               name="title"
               onBlur={(e) => handleBlurField("title", e.target.value)}
               required
-              variant="inset"
             />
           </div>
 
@@ -367,13 +365,12 @@ function AdminPartnerEditPage() {
                 </label>
                 {savingFields.has("short") && <ULoader />}
               </div>
-              <Input
+              <PrismInput
                 defaultValue={partner?.short}
                 id="short"
                 name="short"
                 onBlur={(e) => handleBlurField("short", e.target.value)}
                 required
-                variant="inset"
               />
             </div>
 
@@ -384,14 +381,13 @@ function AdminPartnerEditPage() {
                 </label>
                 {savingFields.has("slug") && <ULoader />}
               </div>
-              <Input
+              <PrismInput
                 defaultValue={partner?.slug}
                 disabled={!isNew}
                 id="slug"
                 name="slug"
                 onBlur={(e) => handleBlurField("slug", e.target.value)}
                 required
-                variant="inset"
               />
             </div>
           </div>

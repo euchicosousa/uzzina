@@ -119,3 +119,14 @@ export {
   PrismAvatarBadge,
 } from "./avatar";
 export { Label as PrismLabel } from "./label";
+export {
+  PrismSheet,
+  PrismSheetTrigger,
+  PrismSheetClose,
+  PrismSheetContent,
+  PrismSheetHeader,
+  PrismSheetFooter,
+  PrismSheetTitle,
+  PrismSheetDescription,
+} from "./sheet";
+

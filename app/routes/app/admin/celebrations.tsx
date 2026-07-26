@@ -5,8 +5,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
-import { PrismButton, PrismCalendar } from "~/components/prism";
-import { Input } from "~/components/ui/input";
+import { PrismButton, PrismCalendar, PrismInput } from "~/components/prism";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
   createCelebration,
@@ -90,14 +89,13 @@ function AdminCelebrationsPage() {
 
           <form className="flex w-full flex-col gap-4" onSubmit={handleCreate}>
             <div className="flex w-full items-center gap-2">
-              <Input
-                disabled={!selectedDate || isSubmitting}
+              <PrismInput
+                isDisabled={!selectedDate || isSubmitting}
                 name="title"
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Nome do feriado/data"
-                required
+                isRequired
                 value={title}
-                variant="inset"
               />
               <PrismButton
                 className="squircle shrink-0 rounded-2xl"

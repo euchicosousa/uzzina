@@ -5,7 +5,8 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
+        default:
+          "bg-card text-card-foreground [a]:hover:bg-card/80 border-foreground/20 ",
         secondary:
           "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
         destructive:
@@ -16,8 +17,7 @@ const badgeVariants = cva(
           "bg-warning-background text-warning border-warning/20 dark:bg-warning-background/25 [a]:hover:bg-warning-background/30",
         error:
           "bg-error-background text-error border-error/20 dark:bg-error-background/25 [a]:hover:bg-error-background/30",
-        info:
-          "bg-info-background text-info border-info/20 dark:bg-info-background/25 [a]:hover:bg-info-background/30",
+        info: "bg-info-background text-info border-info/20 dark:bg-info-background/25 [a]:hover:bg-info-background/30",
         outline:
           "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
         ghost:

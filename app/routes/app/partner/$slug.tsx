@@ -22,13 +22,11 @@ import {
   useViewOptions,
 } from "~/components/features/ViewOptions";
 import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "~/components/ui/input-group";
-import {
   PrismBadge,
   PrismButton,
+  PrismInputGroup,
+  PrismInputGroupAddon,
+  PrismInputGroupInput,
   PrismPopover,
   PrismPopoverTrigger,
   PrismToggle,
@@ -238,16 +236,16 @@ function PartnerPage() {
             showDate
           />
 
-          <InputGroup className="w-auto bg-input">
-            <InputGroupAddon>
+          <PrismInputGroup className="w-auto bg-input">
+            <PrismInputGroupAddon>
               <SearchIcon />
-            </InputGroupAddon>
-            <InputGroupInput
+            </PrismInputGroupAddon>
+            <PrismInputGroupInput
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Buscar ação..."
               value={query}
             />
-          </InputGroup>
+          </PrismInputGroup>
         </div>
         {/* Mobile Bottom */}
         <div className="order-3 w-full overflow-hidden p-2 2xl:order-2">

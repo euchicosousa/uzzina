@@ -1,14 +1,13 @@
 import { UploadIcon, EyeIcon, EyeOffIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
-import { PrismButton } from "~/components/prism";
-import { Input } from "~/components/ui/input";
 import {
-  InputGroup,
-  InputGroupInput,
-  InputGroupAddon,
-  InputGroupButton,
-} from "~/components/ui/input-group";
+  PrismButton,
+  PrismInputGroup,
+  PrismInputGroupAddon,
+  PrismInputGroupButton,
+  PrismInputGroupInput,
+} from "~/components/prism";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
@@ -185,13 +184,12 @@ function AdminClientPage() {
           <label className="font-medium" htmlFor="name">
             Nome
           </label>
-          <Input
+          <PrismInputGroupInput
             defaultValue={client?.name || ""}
             id="name"
             name="name"
             placeholder="Nome do cliente"
             required
-            variant="inset"
           />
         </div>
 
@@ -200,14 +198,13 @@ function AdminClientPage() {
             <label className="font-medium" htmlFor="email">
               E-mail
             </label>
-            <Input
+            <PrismInputGroupInput
               defaultValue={client?.email || ""}
               id="email"
               name="email"
               placeholder="cliente@empresa.com"
               required
               type="email"
-              variant="inset"
             />
           </div>
 
@@ -215,8 +212,8 @@ function AdminClientPage() {
             <label className="font-medium" htmlFor="password">
               Senha
             </label>
-            <InputGroup>
-              <InputGroupInput
+            <PrismInputGroup>
+              <PrismInputGroupInput
                 defaultValue={client?.password || ""}
                 id="password"
                 name="password"
@@ -224,8 +221,8 @@ function AdminClientPage() {
                 required
                 type={showPassword ? "text" : "password"}
               />
-              <InputGroupAddon align="inline-end">
-                <InputGroupButton
+              <PrismInputGroupAddon align="inline-end">
+                <PrismInputGroupButton
                   arial-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   onClick={() => setShowPassword(!showPassword)}
                   size="icon-xs"
@@ -236,9 +233,9 @@ function AdminClientPage() {
                   ) : (
                     <EyeIcon className="size-4" />
                   )}
-                </InputGroupButton>
-              </InputGroupAddon>
-            </InputGroup>
+                </PrismInputGroupButton>
+              </PrismInputGroupAddon>
+            </PrismInputGroup>
           </div>
         </div>
 

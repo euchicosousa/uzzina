@@ -24,14 +24,14 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
-import { PrismButton } from "~/components/prism";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "~/components/ui/dialog";
+  PrismButton,
+  PrismDialog,
+  PrismDialogContent,
+  PrismDialogDescription,
+  PrismDialogHeader,
+  PrismDialogTitle,
+} from "~/components/prism";
 import { detectPostType, isImageUrl } from "./InstagramHelpers";
 
 function SortableThumbnail({
@@ -206,17 +206,17 @@ export function ContentReorderDialog({
   const postType = detectPostType(items.map((i) => i.url));
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg" onInteractOutside={(e) => e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <PrismDialog isOpen={open} onOpenChange={onOpenChange}>
+      <PrismDialogContent className="max-w-lg">
+        <PrismDialogHeader>
+          <PrismDialogTitle className="flex items-center gap-2">
             <SlidersHorizontalIcon className="size-4" />
             Gerenciar conteúdo
-          </DialogTitle>
-          <DialogDescription className="sr-only">
+          </PrismDialogTitle>
+          <PrismDialogDescription className="sr-only">
             Selecione, reordene ou remova os arquivos de mídia desta ação.
-          </DialogDescription>
-        </DialogHeader>
+          </PrismDialogDescription>
+        </PrismDialogHeader>
 
         {/* InfoIcon do tipo detectado */}
         <div className="text-muted-foreground flex items-center justify-between text-xs">
@@ -310,7 +310,7 @@ export function ContentReorderDialog({
             Concluir
           </PrismButton>
         </div>
-      </DialogContent>
-    </Dialog>
+      </PrismDialogContent>
+    </PrismDialog>
   );
 }

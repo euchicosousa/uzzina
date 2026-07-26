@@ -2,14 +2,13 @@ import { LogInIcon, EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { UZZINALogo } from "~/components/logo";
-import { PrismButton } from "~/components/prism";
-import { Input } from "~/components/ui/input";
 import {
-  InputGroup,
-  InputGroupInput,
-  InputGroupAddon,
-  InputGroupButton,
-} from "~/components/ui/input-group";
+  PrismButton,
+  PrismInputGroup,
+  PrismInputGroupAddon,
+  PrismInputGroupButton,
+  PrismInputGroupInput,
+} from "~/components/prism";
 import { authenticateClient } from "~/models/clients";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 export const Route = createFileRoute("/dash/login")({
@@ -79,7 +78,7 @@ function DashLogin() {
             <label className="text-sm font-medium" htmlFor="email">
               E-mail
             </label>
-            <Input
+            <PrismInputGroupInput
               autoComplete="email"
               autoFocus
               id="email"
@@ -89,7 +88,6 @@ function DashLogin() {
               required
               type="email"
               value={email}
-              variant="inset"
             />
           </div>
 
@@ -97,8 +95,8 @@ function DashLogin() {
             <label className="text-sm font-medium" htmlFor="password">
               Senha
             </label>
-            <InputGroup>
-              <InputGroupInput
+            <PrismInputGroup>
+              <PrismInputGroupInput
                 autoComplete="current-password"
                 className="px-4"
                 id="password"
@@ -109,8 +107,8 @@ function DashLogin() {
                 type={showPassword ? "text" : "password"}
                 value={password}
               />
-              <InputGroupAddon align="inline-end">
-                <InputGroupButton
+              <PrismInputGroupAddon align="inline-end">
+                <PrismInputGroupButton
                   aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   onClick={() => setShowPassword(!showPassword)}
                   size="icon-xs"
@@ -121,9 +119,9 @@ function DashLogin() {
                   ) : (
                     <EyeIcon className="size-4" />
                   )}
-                </InputGroupButton>
-              </InputGroupAddon>
-            </InputGroup>
+                </PrismInputGroupButton>
+              </PrismInputGroupAddon>
+            </PrismInputGroup>
           </div>
 
           <PrismButton

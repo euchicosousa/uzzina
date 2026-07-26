@@ -13,11 +13,12 @@ const Tiptap = lazy(() =>
   })),
 );
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetTitle,
-} from "~/components/ui/sheet";
+  PrismSheet,
+  PrismSheetContent,
+  PrismSheetDescription,
+  PrismSheetHeader,
+  PrismSheetTitle,
+} from "~/components/prism";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
 import { UButtonAI } from "~/components/uzzina/UButtonAI";
 import { INTENT } from "~/lib/CONSTANTS";
@@ -331,13 +332,12 @@ export function EssentialsTab({
             tabIndex={0}
           />
         </Suspense>
-      </div>
-      <Sheet onOpenChange={setHooksOpen} open={hooksOpen}>
-        <SheetContent className="max-h-[85vh] overflow-y-auto" side="bottom">
-          <div className="sr-only">
-            <SheetTitle>Hooks gerados pela IA</SheetTitle>
-            <SheetDescription>{racional}</SheetDescription>
-          </div>
+      <PrismSheet isOpen={hooksOpen} onOpenChange={setHooksOpen}>
+        <PrismSheetContent className="max-h-[85vh] overflow-y-auto" side="bottom">
+          <PrismSheetHeader className="sr-only">
+            <PrismSheetTitle>Hooks gerados pela IA</PrismSheetTitle>
+            <PrismSheetDescription>{racional}</PrismSheetDescription>
+          </PrismSheetHeader>
           {isCreatingPost ? (
             <div className="flex flex-col items-center justify-center gap-4 py-20">
               <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -383,8 +383,8 @@ export function EssentialsTab({
               ))}
             </div>
           )}
-        </SheetContent>
-      </Sheet>
+        </PrismSheetContent>
+      </PrismSheet>
     </div>
   );
 }
