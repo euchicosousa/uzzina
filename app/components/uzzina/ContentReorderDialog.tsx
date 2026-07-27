@@ -206,9 +206,9 @@ export function ContentReorderDialog({
 
   return (
     <PrismDialog isOpen={open} onOpenChange={onOpenChange}>
-        <PrismDialogHeader>
+        <PrismDialogHeader className="border-b">
           <PrismDialogTitle className="flex items-center gap-2">
-            <SlidersHorizontalIcon className="size-4" />
+            <SlidersHorizontalIcon />
             Gerenciar conteúdo
           </PrismDialogTitle>
           <PrismDialogDescription className="sr-only">
@@ -217,7 +217,7 @@ export function ContentReorderDialog({
         </PrismDialogHeader>
 
         {/* InfoIcon do tipo detectado */}
-        <div className="text-muted-foreground flex items-center justify-between text-xs">
+        <div className="text-muted-foreground flex items-center justify-between text-xs px-5 pt-3">
           <span>
             Tipo detectado:{" "}
             <strong className="text-foreground capitalize">
@@ -244,7 +244,7 @@ export function ContentReorderDialog({
 
         {/* Grid DnD */}
         {items.length === 0 ? (
-          <div className="text-muted-foreground flex h-32 items-center justify-center rounded-xl border border-dashed text-sm">
+          <div className="text-muted-foreground flex h-32 items-center justify-center rounded-xl border border-dashed text-sm m-5 bg-muted">
             Nenhum arquivo adicionado ainda
           </div>
         ) : (
@@ -257,7 +257,7 @@ export function ContentReorderDialog({
               items={items.map((i) => i.id)}
               strategy={rectSortingStrategy}
             >
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-2 px-5 py-3">
                 {items.map((item, index) => (
                   <SortableThumbnail
                     key={item.id}
@@ -273,8 +273,8 @@ export function ContentReorderDialog({
         )}
 
         {/* Toolbar inferior */}
-        <div className="flex items-center justify-between border-t pt-3">
-          <div className="flex gap-2">
+        <div className="flex items-center justify-between border-t py-3 px-5">
+          <div className="flex gap-2 items-center">
             <CloudinaryUpload
               cloudName={cloudName}
               uploadPreset={uploadPreset}
@@ -282,29 +282,27 @@ export function ContentReorderDialog({
               resourceType="auto"
               multiple
               onUpload={handleAdd}
-              className="hover:bg-muted flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm transition disabled:opacity-50"
             >
-              <PlusIcon className="size-4" />
+              <PlusIcon />
               Adicionar
             </CloudinaryUpload>
 
             {items.length > 0 && (
               <PrismButton
-                variant="ghost"
-                size="sm"
-                className="text-destructive hover:text-destructive"
+                variant="destructive"
+                size="xs"
                 onClick={() => {
                   setItems([]);
                   onChange([]);
                 }}
+              aria-label="Limpar"
               >
                 <Trash2Icon className="size-4" />
-                Limpar
               </PrismButton>
             )}
           </div>
 
-          <PrismButton size="sm" onClick={() => onOpenChange(false)}>
+          <PrismButton size="xs" onClick={() => onOpenChange(false)}>
             Concluir
           </PrismButton>
         </div>

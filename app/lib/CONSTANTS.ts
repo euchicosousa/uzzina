@@ -298,7 +298,7 @@ export const PALLETE = [
       inputLDelta: -0.05,
       actionLDelta: 0.03,
       actionHoverLDelta: 0.1,
-      popoverLDelta: 0,
+      popoverLDelta: 0.02,
     },
     dark: {
       primary: { h: 0, c: 0, l: 1 },
