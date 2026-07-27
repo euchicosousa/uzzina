@@ -181,8 +181,6 @@ export function ActionItem({
         return "flex-col gap-2";
       case VARIANT.block:
         return "flex-col gap-2 px-4 py-3";
-      case VARIANT.hair:
-        return "rounded-xl px-3 py-0 transition-colors @xs:p-0";
       // case VARIANT.line:
       default:
         return "rounded-xl px-3 py-1 transition-colors @xs:p-1";
@@ -522,21 +520,6 @@ function ActionVariantRenderer({
   handleAction,
 }: ActionVariantRendererProps) {
   switch (variant) {
-    case VARIANT.hair:
-      return (
-        <div className="flex items-center justify-between gap-1 overflow-hidden text-sm">
-          <div className="flex items-center gap-2 overflow-hidden">
-            <PhaseIcon phase={currentPhase} size="dot" />
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-              {action.title}
-            </div>
-          </div>
-
-          <div className="text-xs opacity-50">
-            {getFormattedDateTime(action.date, DATE_TIME_DISPLAY.TimeOnly)}
-          </div>
-        </div>
-      );
     case VARIANT.content:
       return (
         <>

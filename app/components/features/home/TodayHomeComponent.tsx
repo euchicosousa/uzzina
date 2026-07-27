@@ -97,7 +97,7 @@ export function TodayHomeComponent({
           <CategoriesBoardComponent actions={filteredActions} />
         )}
         {view === "partners" && (
-          <PartnersComponent actions={filteredActions} isLoading={isLoading} />
+          <PartnersComponent actions={filteredActions} isLoading={isLoading} currentDay={currentDay} />
         )}
       </div>
     </HomeComponentWrapper>

@@ -292,12 +292,12 @@ export const PALLETE = [
     light: {
       primary: { h: 0, c: 0, l: 0 },
       primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 240, c: 0.001, l: 0.96 },
+      bg: { h: 230, c: 0.01, l: 0.92 },
       fg: { h: 0, c: 0, l: 0 },
       borderLDelta: -0.05,
       inputLDelta: -0.05,
-      actionLDelta: 0.02,
-      actionHoverLDelta: 0.04,
+      actionLDelta: 0.04,
+      actionHoverLDelta: 0.1,
     },
     dark: {
       primary: { h: 0, c: 0, l: 1 },

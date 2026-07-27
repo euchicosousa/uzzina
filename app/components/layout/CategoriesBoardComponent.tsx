@@ -107,7 +107,6 @@ function CategoryColumn({
           showLate: true,
         }}
         orderBy={orderBy}
-        variant={VARIANT.hair}
       />
     </div>
   );

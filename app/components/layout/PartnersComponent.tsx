@@ -8,12 +8,15 @@ import { useAppContext } from "~/contexts/AppContext";
 import { ActionContainer } from "../features/ActionContainer";
 import { PrismButton, PrismSkeletonGroup } from "~/components/prism";
 import { UAvatarGroup } from "../uzzina/UAvatar";
+import { format } from "path";
 export function PartnersComponent({
   actions,
   isLoading,
+  currentDay
 }: {
   actions: Action[];
-  isLoading?: boolean;
+    isLoading?: boolean;
+  currentDay: Date
 }) {
   const { partners } = useAppContext();
 
@@ -42,6 +45,7 @@ export function PartnersComponent({
               key={partner.id}
               actions={partnerActions}
               partner={partner}
+              currentDay={currentDay}
             />
           );
         })}
@@ -52,9 +56,11 @@ export function PartnersComponent({
 function PartnerColumn({
   partner,
   actions,
+  currentDay
 }: {
   partner: Partner;
   actions: Action[];
+  currentDay:Date
 }) {
   const { person, setBaseAction } = useAppContext();
   return (
@@ -92,6 +98,7 @@ function PartnerColumn({
               ...(getCleanAction({
                 user_id: person.user_id,
                 partners: [partner.slug],
+                date: currentDay
               }) as unknown as Action),
               responsibles: partner.users_ids,
             })
