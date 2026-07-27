@@ -165,12 +165,20 @@ export function useAppTheme() {
       primaryFg?: { h: number; c: number; l: number } | null;
       bg?: { h: number; c: number; l: number } | null;
       fg?: { h: number; c: number; l: number } | null;
+      borderLDelta?: number;
+      inputLDelta?: number;
+      actionLDelta?: number;
+      actionHoverLDelta?: number;
     };
     dark: {
       primary: { h: number; c: number; l: number };
       primaryFg?: { h: number; c: number; l: number } | null;
       bg?: { h: number; c: number; l: number } | null;
       fg?: { h: number; c: number; l: number } | null;
+      borderLDelta?: number;
+      inputLDelta?: number;
+      actionLDelta?: number;
+      actionHoverLDelta?: number;
     };
   }) => {
     const root = document.documentElement;
@@ -215,6 +223,49 @@ export function useAppTheme() {
     if (dark.fg) {
       const fgStr = `oklch(${dark.fg.l} ${dark.fg.c} ${dark.fg.h})`;
       root.style.setProperty("--dark-foreground-override", fgStr);
+    }
+
+    // 3. Deltas de border, input, action e action-hover (Light e Dark)
+    if (light.borderLDelta !== undefined) {
+      root.style.setProperty("--border-l-delta", String(light.borderLDelta));
+    } else {
+      root.style.removeProperty("--border-l-delta");
+    }
+    if (light.inputLDelta !== undefined) {
+      root.style.setProperty("--input-l-delta", String(light.inputLDelta));
+    } else {
+      root.style.removeProperty("--input-l-delta");
+    }
+    if (light.actionLDelta !== undefined) {
+      root.style.setProperty("--action-l-delta", String(light.actionLDelta));
+    } else {
+      root.style.removeProperty("--action-l-delta");
+    }
+    if (light.actionHoverLDelta !== undefined) {
+      root.style.setProperty("--action-hover-l-delta", String(light.actionHoverLDelta));
+    } else {
+      root.style.removeProperty("--action-hover-l-delta");
+    }
+
+    if (dark.borderLDelta !== undefined) {
+      root.style.setProperty("--dark-border-l-delta", String(dark.borderLDelta));
+    } else {
+      root.style.removeProperty("--dark-border-l-delta");
+    }
+    if (dark.inputLDelta !== undefined) {
+      root.style.setProperty("--dark-input-l-delta", String(dark.inputLDelta));
+    } else {
+      root.style.removeProperty("--dark-input-l-delta");
+    }
+    if (dark.actionLDelta !== undefined) {
+      root.style.setProperty("--dark-action-l-delta", String(dark.actionLDelta));
+    } else {
+      root.style.removeProperty("--dark-action-l-delta");
+    }
+    if (dark.actionHoverLDelta !== undefined) {
+      root.style.setProperty("--dark-action-hover-l-delta", String(dark.actionHoverLDelta));
+    } else {
+      root.style.removeProperty("--dark-action-hover-l-delta");
     }
   }, []);
 

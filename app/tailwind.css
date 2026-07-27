@@ -29,8 +29,10 @@
   --accent: oklch(from var(--background) calc(l - 0.04) c h);
   --accent-foreground: var(--foreground);
   --destructive: oklch(66.147% 0.2279 16.339);
-  --border: oklch(from var(--background) calc(l - 0.12) c h);
-  --input: oklch(from var(--background) calc(l - 0.05) c h);
+  --border-l-delta: -0.05;
+  --border: oklch(from var(--background) calc(l + var(--border-l-delta)) c h);
+  --input-l-delta: -0.05;
+  --input: oklch(from var(--background) calc(l + var(--input-l-delta)) c h);
   /* --input: oklch(0.92 0 0); */
   --ring: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
   --chart-1: oklch(0.809 0.105 251.813);
@@ -50,10 +52,10 @@
   --sidebar-border: oklch(from var(--foreground) l c h / 8%);
   --sidebar-ring: oklch(0.708 0 0);
 
-  /* UZZINA colors */
-
-  --action: oklch(from var(--background) 0.98 c h);
-  --action-hover: oklch(1 0 1);
+  --action-l-delta: 0.02;
+  --action-hover-l-delta: 0.04;
+  --action: oklch(from var(--background) calc(l + var(--action-l-delta)) c h);
+  --action-hover: oklch(from var(--background) calc(l + var(--action-hover-l-delta)) c h);
 
   --late: oklch(from var(--destructive) 0.9 0.05 h);
   --late-hover: oklch(from var(--destructive) 0.95 0.15 h);
@@ -124,8 +126,10 @@
   --accent: oklch(from var(--background) calc(l + 0.08) c h);
   --accent-foreground: var(--foreground);
   --destructive: oklch(66.147% 0.2279 16.339);
-  --border: oklch(from var(--background) calc(l + 0.2) c h);
-  --input: oklch(from var(--background) calc(l + 0.05) c h);
+  --dark-border-l-delta: 0.2;
+  --border: oklch(from var(--background) calc(l + var(--dark-border-l-delta)) c h);
+  --dark-input-l-delta: 0.05;
+  --input: oklch(from var(--background) calc(l + var(--dark-input-l-delta)) c h);
   --ring: oklch(var(--dark-accent-l) var(--dark-accent-c) var(--dark-accent-h));
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);
@@ -175,8 +179,10 @@
     var(--luminosity-background) var(--chroma-background) var(--info-hue)
   );
 
-  --action: oklch(from var(--background) calc(l + 0.1) c h);
-  --action-hover: oklch(from var(--background) calc(l + 0.2) c h);
+  --dark-action-l-delta: 0.1;
+  --dark-action-hover-l-delta: 0.2;
+  --action: oklch(from var(--background) calc(l + var(--dark-action-l-delta)) c h);
+  --action-hover: oklch(from var(--background) calc(l + var(--dark-action-hover-l-delta)) c h);
 
   --late: oklch(from var(--destructive) 0.4 0.15 h);
   --late-hover: oklch(from var(--destructive) 0.45 0.15 h);

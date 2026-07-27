@@ -192,11 +192,19 @@ export function ActionItem({
     let baseStyles = `
     text-foreground
     bg-action
-      transition
-      duration-500
-      ring
-      ring-border
-      hover:bg-action-hover`;
+    transition-all
+    duration-500
+    shadow-sm
+    shadow-black/10
+    border-t
+    border-white
+    z-0
+    hover:z-10
+    hover:shadow-lg
+    hover:bg-action-hover
+    dark:border-white/10
+    dark:shadow-black/20
+    `;
 
     // 1. Determine base background/text colors based on priority states
     if (showLate && isLateAction(action)) {
