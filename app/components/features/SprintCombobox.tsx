@@ -95,8 +95,8 @@ export function SprintCombobox({
         className={cn(
           size === "lg" &&
             cn(
-              "hover:opacity-100 focus:opacity-100 rounded-xl",
-              selectedSprints.length > 0 ? "p-1 opacity-80" : "p-2 opacity-50",
+              "hover:opacity-100 focus:opacity-100 rounded-2xl squircle p-2",
+              selectedSprints.length > 0 ? "opacity-80" : "opacity-50",
             ),
           className,
         )}

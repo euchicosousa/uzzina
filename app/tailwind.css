@@ -57,8 +57,8 @@
   --action: oklch(from var(--background) calc(l + var(--action-l-delta)) c h);
   --action-hover: oklch(from var(--background) calc(l + var(--action-hover-l-delta)) c h);
 
-  --late: oklch( 0.98 0.12 15);
-  --late-hover: oklch( 0.9 0.12 10);
+  --late: oklch( 0.96 0.08 25);
+  --late-hover: oklch( 0.94 0.12 20);
   --late-foreground: oklch( 0.4 0.5 20);
 
   --error-hue: 16.339;

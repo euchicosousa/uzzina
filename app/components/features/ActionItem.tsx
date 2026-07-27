@@ -220,7 +220,7 @@ export function ActionItem({
     if (isEditing) {
       baseStyles = cn(
         baseStyles,
-        "ring-primary focus-within:ring-2 z-100 text-foreground",
+        "ring-primary focus-within:ring-2 z-100",
       );
     }
     return baseStyles;
