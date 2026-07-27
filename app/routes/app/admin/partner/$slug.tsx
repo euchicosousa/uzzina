@@ -405,14 +405,14 @@ function AdminPartnerEditPage() {
               type="hidden"
               value={contextValue}
             />
-            <div className="min-h-25 bg-input dark:bg-input/30 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm rounded-2xl">
+            <div className="min-h-25 bg-input/50 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm rounded-2xl">
               <Suspense
                 fallback={
                   <div className="h-full w-full animate-pulse bg-muted" />
                 }
               >
                 <Tiptap
-                  className="prose prose-sm dark:prose-invert h-full max-w-none focus:outline-none rounded-2xl"
+                  className="prose prose-sm dark:prose-invert h-full max-w-none focus:outline-none rounded-3xl"
                   content={contextValue}
                   handleBlur={(content: string) => {
                     setContextValue(content);
@@ -434,7 +434,9 @@ function AdminPartnerEditPage() {
               {savingFields.has("voice") && <ULoader />}
             </div>
             <input id="voice" name="voice" type="hidden" value={voiceValue} />
-            <div className="min-h-25 bg-input dark:bg-input/30 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
+            <div className="min-h-25 bg-input/50 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm rounded-2xl">
+              
+              
               <Suspense
                 fallback={
                   <div className="h-full w-full animate-pulse bg-muted" />

@@ -1,44 +1,44 @@
+import { Highlight } from "@tiptap/extension-highlight";
+import Placeholder from "@tiptap/extension-placeholder";
+import { Table } from "@tiptap/extension-table";
+import { TableCell } from "@tiptap/extension-table-cell";
+import { TableHeader } from "@tiptap/extension-table-header";
+import { TableRow } from "@tiptap/extension-table-row";
 import {
-  useEditor,
   EditorContent,
   EditorContext,
+  useEditor,
   useEditorState,
   type Editor,
 } from "@tiptap/react";
 import { BubbleMenu as BubbleMenuComponent } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
-import { Table } from "@tiptap/extension-table";
-import { TableRow } from "@tiptap/extension-table-row";
-import { TableCell } from "@tiptap/extension-table-cell";
-import { TableHeader } from "@tiptap/extension-table-header";
-import { Highlight } from "@tiptap/extension-highlight";
-import { useMemo, useState } from "react";
 import { cn } from "cnfast";
 import {
   Bold,
-  Italic,
-  Strikethrough,
-  List,
-  ListOrdered,
-  Quote,
-  Undo2,
-  Redo2,
+  ChevronDown,
+  ChevronRight,
+  Columns,
   Heading1,
   Heading2,
   Heading3,
-  Link as LinkIcon,
-  Minus,
-  RemoveFormatting,
-  Table as TableIcon,
   Highlighter,
-  ChevronDown,
-  ChevronRight,
+  Italic,
+  Link as LinkIcon,
+  List,
+  ListOrdered,
+  Minus,
+  Quote,
+  Redo2,
+  RemoveFormatting,
   Rows,
-  Columns,
+  Strikethrough,
+  Table as TableIcon,
   Trash2,
+  Undo2,
   type LucideIcon,
 } from "lucide-react";
+import { useMemo, useState } from "react";
 interface TiptapToolbarProps {
   editor: Editor | null;
   isRounded?: boolean;
@@ -225,7 +225,7 @@ function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
     <div
       className={cn(
         "flex flex-wrap items-center gap-1 border-b border-border bg-card/60 p-1.5 shrink-0",
-        isRounded && "rounded-t-xl squircle",
+        isRounded && "rounded-t-3xl squircle",
       )}
     >
       {buttons.map((btn) => (
@@ -456,14 +456,14 @@ export function Tiptap({
     <EditorContext.Provider value={providedValue}>
       <div
         className={cn(
-          "flex flex-col h-full w-full bg-card/10 transition-all duration-200 focus-within:bg-secondary/50",
+          "flex flex-col h-full w-full transition-all duration-200",
           className,
         )}
       >
         <TiptapToolbar editor={editor} isRounded={isRounded} />
         {editor && (
           <BubbleMenuComponent
-            className="flex items-center gap-0.5 rounded-xl border border-border bg-background/95 p-1 shadow-lg backdrop-blur-md"
+            className="flex items-center gap-0.5 rounded-2xl squircle border bg-background/95 p-1 shadow-lg backdrop-blur-md"
             editor={editor}
           >
             {isSelectionInTable
@@ -487,7 +487,7 @@ export function Tiptap({
                 ))}
           </BubbleMenuComponent>
         )}
-        <EditorContent className="flex-1 min-h-[150px]" editor={editor} />
+        <EditorContent className="flex-1 min-h-30" editor={editor} />
       </div>
     </EditorContext.Provider>
   );
