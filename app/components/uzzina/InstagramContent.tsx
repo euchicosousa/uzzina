@@ -4,6 +4,8 @@ import { ContentReorderDialog } from "./ContentReorderDialog";
 import { detectPostType } from "./InstagramHelpers";
 import { PlusIcon, SlidersHorizontalIcon } from "lucide-react";
 import { cn } from "cnfast";
+import { PrismButton } from "../prism";
+import { IconAdjustments, IconAdjustmentsHorizontal } from "@tabler/icons-react";
 export { InstagramPreview } from "./InstagramPreview";
 
 // ---------------------------------------------------------------------------
@@ -78,7 +80,6 @@ export function ContentFilesManager({
           {/* UploadIcon rápido (primeiro arquivo) */}
           <CloudinaryUpload
             className={cn(
-              "flex items-center gap-1.5 rounded-lg border border-dashed px-3 py-1.5 text-xs opacity-60 transition hover:opacity-100",
               files.length > 0 && "hidden",
             )}
             cloudName={cloudName}
@@ -104,16 +105,17 @@ export function ContentFilesManager({
         </div>
 
         {/* Botão gerenciar (sempre visível quando há arquivos, ou para adicionar) */}
-        <button
-          className="hover:bg-muted flex items-center gap-1 rounded-lg px-2 py-1 text-xs opacity-50 transition hover:opacity-100"
+        <PrismButton
+          variant={"ghost"}
+          size={"xs"}
           onClick={() => setDialogOpen(true)}
           type="button"
         >
-          <SlidersHorizontalIcon className="size-3.5" />
+          <SlidersHorizontalIcon/>
           {files.length === 0
             ? "Gerenciar"
             : `${files.length} arquivo${files.length !== 1 ? "s" : ""}`}
-        </button>
+        </PrismButton>
       </div>
 
       <ContentReorderDialog

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { PrismButton } from "../prism";
 
 // Tipagem mínima do Cloudinary Upload Widget global
 declare global {
@@ -208,8 +209,8 @@ export function CloudinaryUpload({
     widgetRef.current.open();
   }
   return (
-    <button className={className} onClick={openWidget} type="button">
+    <PrismButton className={className} onClick={openWidget} type="button" variant={"secondary"} size={"xs"}>
       {children}
-    </button>
+    </PrismButton>
   );
 }

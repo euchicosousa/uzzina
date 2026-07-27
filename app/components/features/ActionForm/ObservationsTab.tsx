@@ -151,7 +151,7 @@ export function ObservationsTab({
         />
       </div>
 
-      <div className="border-t bg-background p-4">
+      <div className="border-t">
         <CommentInput
           isSubmitting={isMutating}
           mentionablePeople={mentionablePeople}
