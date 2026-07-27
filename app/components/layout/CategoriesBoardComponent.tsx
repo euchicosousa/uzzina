@@ -69,20 +69,20 @@ function CategoryColumn({
           <div
             className="flex size-6 shrink-0 items-center justify-center rounded-lg"
             style={{
-              backgroundColor: `${category.color}15`,
               color: category.color,
             }}
           >
-            <Icons className="size-4" slug={category.slug} />
+            <Icons className="size-5" slug={category.slug} />
           </div>
           <span className="truncate text-sm font-medium tracking-tight">
             {category.title}
           </span>
-          <PrismBadge>actions.length</PrismBadge>
+          <PrismBadge>{actions.length}</PrismBadge>
         </div>
 
         <PrismButton
-          className="size-6 opacity-0 group-hover/column:opacity-100"
+          
+          className="opacity-0 group-hover/column:opacity-100"
           onClick={() =>
             setBaseAction({
               ...(getCleanAction({
@@ -91,8 +91,8 @@ function CategoryColumn({
               category: category.slug,
             })
           }
-          size="icon"
-          variant="ghost"
+          size="icon-xs"
+          variant="secondary"
         >
           <PlusIcon className="size-4" />
         </PrismButton>
