@@ -316,8 +316,8 @@ export function CreateAndEditAction({
         view === "instagram" ? "lg:w-4xl" : "lg:w-2xl",
       )}
     >
-      {RawAction.archived && (
-        <div className="flex shrink-0 items-center justify-center gap-2 bg-amber-500 p-2 text-sm font-medium text-amber-50 dark:text-amber-950">
+      { RawAction.archived && (
+        <div className="flex shrink-0 items-center justify-center gap-2 bg-error-background p-2 text-sm font-medium text-error border-b">
           <ArchiveIcon className="size-4" />
           Esta ação está arquivada.
           <button
@@ -383,7 +383,7 @@ export function CreateAndEditAction({
 
       <div className="relative flex h-full grow flex-col overflow-hidden">
         {/* Essencial */}
-        <div className="flex h-full w-full divide-x overflow-hidden">
+        <div className="flex h-full w-full divide-x overflow-hidden bg-popover">
           {view === "essential" && (
             <div
               className={cn(
@@ -451,5 +451,5 @@ export function CreateAndEditAction({
 const tabClass = (active: boolean) =>
   cn(
     "flex w-full cursor-pointer items-center justify-center gap-2 border-b p-4 text-sm font-medium",
-    active ? "bg-background border-b-transparent" : "bg-muted border-border",
+    active ? "bg-popover border-b-transparent" : "bg-muted border-border",
   );

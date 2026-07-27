@@ -224,7 +224,7 @@ function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center gap-1 border-b border-border bg-card/60 p-1.5 shrink-0",
+        "flex flex-wrap items-center gap-1 border-b bg-popover p-1.5 shrink-0",
         isRounded && "rounded-t-3xl squircle",
       )}
     >

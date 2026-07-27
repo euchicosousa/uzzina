@@ -305,7 +305,7 @@ export function EssentialsTab({
           <Tiptap
             key={descriptionVersion}
             className={cn(
-              "h-full w-full min-h-50",
+              "h-full w-full min-h-50 bg-popover",
               isAIProcessing && "opacity-40",
             )}
             content={RawAction.description || ""}

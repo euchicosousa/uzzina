@@ -298,6 +298,7 @@ export const PALLETE = [
       inputLDelta: -0.05,
       actionLDelta: 0.03,
       actionHoverLDelta: 0.1,
+      popoverLDelta: 0,
     },
     dark: {
       primary: { h: 0, c: 0, l: 1 },
@@ -308,6 +309,7 @@ export const PALLETE = [
       inputLDelta: 0.05,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
+      popoverLDelta: -0.03,
     },
   },
   {
@@ -322,6 +324,7 @@ export const PALLETE = [
       inputLDelta: -0.05,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
+      popoverLDelta: 0,
     },
     dark: {
       primary: { h: 120, c: 0.26, l: 0.9 },
@@ -332,6 +335,7 @@ export const PALLETE = [
       inputLDelta: 0.05,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
+      popoverLDelta: -0.03,
     },
   },
   {
@@ -346,6 +350,7 @@ export const PALLETE = [
       inputLDelta: -0.05,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
+      popoverLDelta: 0,
     },
     dark: {
       primary: { h: 264, c: 0.31, l: 0.58 },
@@ -356,6 +361,7 @@ export const PALLETE = [
       inputLDelta: 0.05,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
+      popoverLDelta: -0.03,
     },
   },
   {
@@ -370,6 +376,7 @@ export const PALLETE = [
       inputLDelta: -0.05,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
+      popoverLDelta: 0,
     },
     dark: {
       primary: { h: 290, c: 0.28, l: 0.68 },
@@ -380,6 +387,7 @@ export const PALLETE = [
       inputLDelta: 0.05,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
+      popoverLDelta: -0.03,
     },
   },
   {
@@ -394,6 +402,7 @@ export const PALLETE = [
       inputLDelta: -0.05,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
+      popoverLDelta: 0,
     },
     dark: {
       primary: { h: 350, c: 0.4, l: 0.8 },
@@ -404,6 +413,7 @@ export const PALLETE = [
       inputLDelta: 0.05,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
+      popoverLDelta: -0.03,
     },
   },
   {
@@ -418,6 +428,7 @@ export const PALLETE = [
       inputLDelta: -0.05,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
+      popoverLDelta: 0,
     },
     dark: {
       primary: { h: 20, c: 0.25, l: 0.68 },
@@ -428,6 +439,7 @@ export const PALLETE = [
       inputLDelta: 0.05,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
+      popoverLDelta: -0.03,
     },
   },
   {
@@ -442,6 +454,7 @@ export const PALLETE = [
       inputLDelta: -0.05,
       actionLDelta: 0.02,
       actionHoverLDelta: 1,
+      popoverLDelta: 0.03,
     },
     dark: {
       primary: { h: 25, c: 0.18, l: 0.65 },
@@ -452,6 +465,7 @@ export const PALLETE = [
       inputLDelta: -0.05,
       actionLDelta: 0.07,
       actionHoverLDelta: 0.2,
+      popoverLDelta: -0.03,
     },
   },
   {
@@ -466,6 +480,7 @@ export const PALLETE = [
       inputLDelta: -0.05,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
+      popoverLDelta: 0,
     },
     dark: {
       primary: { h: 100, c: 0.4, l: 0.8 },
@@ -476,6 +491,7 @@ export const PALLETE = [
       inputLDelta: 0.05,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
+      popoverLDelta: -0.03,
     },
   },
   {
@@ -490,6 +506,7 @@ export const PALLETE = [
       inputLDelta: -0.05,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
+      popoverLDelta: 0,
     },
     dark: {
       primary: { h: 130, c: 0.2, l: 0.65 },
@@ -500,6 +517,7 @@ export const PALLETE = [
       inputLDelta: 0.05,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
+      popoverLDelta: -0.03,
     },
   },
   {
@@ -514,6 +532,7 @@ export const PALLETE = [
       inputLDelta: -0.05,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
+      popoverLDelta: 0,
     },
     dark: {
       primary: { h: 200, c: 0.2, l: 0.65 },
@@ -524,6 +543,7 @@ export const PALLETE = [
       inputLDelta: 0.05,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
+      popoverLDelta: -0.03,
     },
   },
   {
@@ -538,6 +558,7 @@ export const PALLETE = [
       inputLDelta: -0.05,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
+      popoverLDelta: 0,
     },
     dark: {
       primary: { h: 240, c: 0.22, l: 0.65 },
@@ -548,6 +569,7 @@ export const PALLETE = [
       inputLDelta: 0.05,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
+      popoverLDelta: -0.03,
     },
   },
   {
@@ -562,6 +584,7 @@ export const PALLETE = [
       inputLDelta: -0.05,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
+      popoverLDelta: 0,
     },
     dark: {
       primary: { h: 250, c: 0.12, l: 0.6 },
@@ -572,6 +595,7 @@ export const PALLETE = [
       inputLDelta: 0.05,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
+      popoverLDelta: -0.03,
     },
   },
 ];

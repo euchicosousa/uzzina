@@ -169,6 +169,7 @@ export function useAppTheme() {
       inputLDelta?: number;
       actionLDelta?: number;
       actionHoverLDelta?: number;
+      popoverLDelta?: number;
     };
     dark: {
       primary: { h: number; c: number; l: number };
@@ -179,6 +180,7 @@ export function useAppTheme() {
       inputLDelta?: number;
       actionLDelta?: number;
       actionHoverLDelta?: number;
+      popoverLDelta?: number;
     };
   }) => {
     const root = document.documentElement;
@@ -225,7 +227,7 @@ export function useAppTheme() {
       root.style.setProperty("--dark-foreground-override", fgStr);
     }
 
-    // 3. Deltas de border, input, action e action-hover (Light e Dark)
+    // 3. Deltas de border, input, action, action-hover e popover (Light e Dark)
     if (light.borderLDelta !== undefined) {
       root.style.setProperty("--border-l-delta", String(light.borderLDelta));
     } else {
@@ -245,6 +247,11 @@ export function useAppTheme() {
       root.style.setProperty("--action-hover-l-delta", String(light.actionHoverLDelta));
     } else {
       root.style.removeProperty("--action-hover-l-delta");
+    }
+    if (light.popoverLDelta !== undefined) {
+      root.style.setProperty("--popover-l-delta", String(light.popoverLDelta));
+    } else {
+      root.style.removeProperty("--popover-l-delta");
     }
 
     if (dark.borderLDelta !== undefined) {
@@ -266,6 +273,11 @@ export function useAppTheme() {
       root.style.setProperty("--dark-action-hover-l-delta", String(dark.actionHoverLDelta));
     } else {
       root.style.removeProperty("--dark-action-hover-l-delta");
+    }
+    if (dark.popoverLDelta !== undefined) {
+      root.style.setProperty("--dark-popover-l-delta", String(dark.popoverLDelta));
+    } else {
+      root.style.removeProperty("--dark-popover-l-delta");
     }
   }, []);
 

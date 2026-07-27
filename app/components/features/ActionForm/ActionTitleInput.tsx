@@ -24,7 +24,7 @@ export function ActionTitleInput({
   return (
     <div
       className={cn(
-        "relative px-4 py-2 focus-within:bg-secondary/50",
+        "relative px-4 py-2 border-b",
         className,
       )}
     >

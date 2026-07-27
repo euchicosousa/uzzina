@@ -8,7 +8,8 @@
   --foreground: var(--foreground-override, oklch(0.141 0.005 285.823));
   --card: oklch(from var(--background) calc(l - 0.02) c h);
   --card-foreground: var(--foreground);
-  --popover: oklch(from var(--background) l c h);
+  --popover-l-delta: 0;
+  --popover: oklch(from var(--background) calc(l + var(--popover-l-delta)) c h);
   --popover-foreground: var(--foreground);
 
   /* Accent color knobs — overrideable by JS for theme color picker */
@@ -103,7 +104,8 @@
 
   --card: oklch(from var(--background) calc(l + 0.05) c h);
   --card-foreground: var(--foreground);
-  --popover: oklch(from var(--background) calc(l - 0.03) c h);
+  --dark-popover-l-delta: -0.03;
+  --popover: oklch(from var(--background) calc(l + var(--dark-popover-l-delta)) c h);
   --popover-foreground: var(--foreground);
 
   /* Dark mode variables injected by JS */
