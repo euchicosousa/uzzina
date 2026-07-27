@@ -61,7 +61,7 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
             }}
             to="/app/partner/$slug"
           >
-            <div className="relative group-hover/partner:opacity-50 transition duration-500 group-hover/partner:scale-80">
+            <div className="relative transition duration-500 group-hover/partner:scale-80">
               {getShortText(partner.short)}
 
               {partner.lateActionsLength > 0 && (
@@ -76,14 +76,7 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
                 </div>
               )}
             </div>
-            {partner.image && (
-              <UAvatar
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-120 duration-500 opacity-0 group-hover/partner:opacity-100 group-hover/partner:scale-100"
-                fallback={partner.short}
-                image={partner.image}
-                size="xl"
-              />
-            )}
+            
           </Link>
         ))}
       </div>

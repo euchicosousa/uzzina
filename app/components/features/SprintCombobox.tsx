@@ -1,5 +1,6 @@
+import { IconBolt } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
-import { RabbitIcon } from "lucide-react";
+import { cn } from "cnfast";
 import { useState } from "react";
 import {
   PrismCommand,
@@ -14,7 +15,6 @@ import {
 } from "~/components/prism";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
-import { cn } from "cnfast";
 import type { Partner, Person } from "~/types";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { ComboboxTrigger } from "./ComboboxTrigger";
@@ -117,7 +117,7 @@ export function SprintCombobox({
             size={size === "sm" ? "sm" : "md"}
           />
         ) : (
-          <RabbitIcon className="size-5 shrink-0" />
+          <IconBolt />
         )}
       </ComboboxTrigger>
 

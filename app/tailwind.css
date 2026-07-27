@@ -57,8 +57,9 @@
   --action: oklch(from var(--background) calc(l + var(--action-l-delta)) c h);
   --action-hover: oklch(from var(--background) calc(l + var(--action-hover-l-delta)) c h);
 
-  --late: oklch(from var(--destructive) 0.9 0.05 h);
-  --late-hover: oklch(from var(--destructive) 0.95 0.15 h);
+  --late: oklch( 0.98 0.12 15);
+  --late-hover: oklch( 0.9 0.12 10);
+  --late-foreground: oklch( 0.4 0.5 20);
 
   --error-hue: 16.339;
   --success-hue: 130;
@@ -184,8 +185,9 @@
   --action: oklch(from var(--background) calc(l + var(--dark-action-l-delta)) c h);
   --action-hover: oklch(from var(--background) calc(l + var(--dark-action-hover-l-delta)) c h);
 
-  --late: oklch(from var(--destructive) 0.4 0.15 h);
-  --late-hover: oklch(from var(--destructive) 0.45 0.15 h);
+  --late: oklch(from var(--destructive) 0.3 0.1 h);
+  --late-hover: oklch(from var(--destructive) 0.35 0.15 h);
+  --late-foreground: oklch(80% 0.1 10);
 }
 
 @theme inline {
@@ -247,6 +249,7 @@
 
   --color-late: var(--late);
   --color-late-hover: var(--late-hover);
+  --color-late-foreground: var(--late-foreground);
 
   --color-error: var(--color-error);
   --color-error-background: var(--color-error-background);
@@ -543,29 +546,8 @@ iframe[data-test="uw-iframe"] {
   @apply font-semibold underline underline-offset-4;
 }
 
-.pressed {
-  @apply grid place-content-center rounded-xl p-0 shadow-white inset-shadow-black/20 transition-all squircle data-[state=on]:bg-input data-[state=on]:shadow-sm data-[state=on]:inset-shadow-sm dark:shadow-white/20;
-}
 
-.input-embossed {
-  @apply rounded-xl p-0 shadow-sm inset-shadow-sm shadow-white inset-shadow-black/20 transition-all squircle dark:shadow-white/30;
-}
 
-input.input-embossed {
-  @apply px-4;
-}
-
-textarea.input-embossed {
-  @apply px-4 py-3;
-}
-
-.raised {
-  @apply ring-black/5 transition-all data-[state=on]:border-t data-[state=on]:border-white data-[state=on]:bg-card/50 data-[state=on]:shadow data-[state=on]:ring hover:data-[state=on]:bg-card dark:data-[state=on]:border-white/30;
-}
-
-.button-raised {
-  @apply border-t border-transparent ring-black/5 transition-all hover:border-white hover:bg-card/50 hover:hover:bg-card hover:shadow hover:ring dark:hover:border-white/30;
-}
 
 @keyframes scaledown {
   0% {

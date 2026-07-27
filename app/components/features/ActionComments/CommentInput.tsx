@@ -62,7 +62,7 @@ export function CommentInput({
     selectedMentions.includes(p.user_id),
   );
   return (
-    <div className="relative flex flex-col gap-2 bg-input dark:bg-input/30 input-embossed p-3 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary">
+    <div className="relative flex flex-col gap-2 bg-input dark:bg-input/30 p-3 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary">
       <PrismTextarea
         className="min-h-20 w-full p-4 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
         onChange={(e) => onChange(e.target.value)}

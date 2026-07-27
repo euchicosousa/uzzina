@@ -15,6 +15,7 @@ import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { getFormattedDateTime } from "~/utils/date";
 import { UAvatar } from "../uzzina/UAvatar";
 import { PhaseIcon } from "./PhaseIcon";
+import { IconArchive } from "@tabler/icons-react";
 type GlobalSearchCommandProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -155,6 +156,10 @@ export function GlobalSearchCommand({
                     size="sm"
                   />
                   <div className="truncate w-full">{action.title}</div>
+                  {
+                    action.archived &&
+                  <IconArchive className="size-3 opacity-50" />
+                  }
                   <div className="opacity-40 text-xs">
                     {getFormattedDateTime(
                       action.date,

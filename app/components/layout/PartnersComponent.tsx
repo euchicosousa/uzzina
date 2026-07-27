@@ -8,7 +8,7 @@ import { useAppContext } from "~/contexts/AppContext";
 import { ActionContainer } from "../features/ActionContainer";
 import { PrismButton, PrismSkeletonGroup } from "~/components/prism";
 import { UAvatarGroup } from "../uzzina/UAvatar";
-import { format } from "path";
+
 export function PartnersComponent({
   actions,
   isLoading,

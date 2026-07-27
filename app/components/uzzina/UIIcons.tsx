@@ -1,34 +1,35 @@
 import {
-  IconBrain,
-  IconVolume,
-  IconCamera,
-  IconLayersDifference,
-  IconVectorSpline,
+  IconBallpen,
   IconBinary,
-  IconCoins,
-  IconPresentation,
-  IconPhoto,
-  IconPrinter,
-  IconPlayerPlay,
-  IconRosette,
+  IconBolt,
+  IconBrain,
+  IconBulb,
+  IconCalendarEvent,
+  IconCamera,
+  IconCircleCheck,
   IconCirclePlus,
   IconClipboardCheck,
-  IconBallpen,
-  IconLayoutGrid,
-  IconFilter,
-  IconBulb,
-  IconCircleCheck,
-  IconCalendarEvent,
-  IconPalette,
-  IconUserCheck,
-  IconHelp,
-  IconSun,
-  IconMoon,
+  IconCoins,
   IconDeviceDesktop,
+  IconFilter,
+  IconHelp,
+  IconLayersDifference,
+  IconLayoutGrid,
+  IconMoon,
+  IconPalette,
+  IconPhoto,
+  IconPlayerPlay,
+  IconPresentation,
+  IconPrinter,
+  IconRosetteDiscountCheck,
+  IconSun,
+  IconUserCheck,
+  IconVectorSpline,
+  IconVolume,
 } from "@tabler/icons-react";
+import { cn } from "cnfast";
 import Color from "color";
 import { Theme } from "~/components/theme-provider";
-import { cn } from "cnfast";
 export function Icons({
   slug,
   className,
@@ -70,13 +71,13 @@ export function Icons({
     case "reels":
       return <IconPlayerPlay className={cn(className)} style={style} />;
     case "sm":
-      return <IconRosette className={cn(className)} style={style} />;
+      return <IconRosetteDiscountCheck className={cn(className)} style={style} />;
     case "stories":
       return <IconCirclePlus className={cn(className)} style={style} />;
     case "todo":
       return <IconClipboardCheck className={cn(className)} style={style} />;
     case "sprint":
-      return <IconBallpen className={cn(className)} style={style} />;
+      return <IconBolt className={cn(className)} style={style} />;
     case "categories":
       return <IconLayoutGrid className={cn(className)} style={style} />;
     case "filter":

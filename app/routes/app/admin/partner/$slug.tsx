@@ -405,7 +405,7 @@ function AdminPartnerEditPage() {
               type="hidden"
               value={contextValue}
             />
-            <div className="min-h-25 bg-input dark:bg-input/30 input-embossed px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm rounded-2xl">
+            <div className="min-h-25 bg-input dark:bg-input/30 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm rounded-2xl">
               <Suspense
                 fallback={
                   <div className="h-full w-full animate-pulse bg-muted" />
@@ -434,7 +434,7 @@ function AdminPartnerEditPage() {
               {savingFields.has("voice") && <ULoader />}
             </div>
             <input id="voice" name="voice" type="hidden" value={voiceValue} />
-            <div className="min-h-25 bg-input dark:bg-input/30 input-embossed px-3 py-2 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
+            <div className="min-h-25 bg-input dark:bg-input/30 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
               <Suspense
                 fallback={
                   <div className="h-full w-full animate-pulse bg-muted" />

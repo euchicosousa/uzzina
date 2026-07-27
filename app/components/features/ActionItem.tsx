@@ -197,6 +197,7 @@ export function ActionItem({
     border-t
     border-white
     z-0
+    ring ring-foreground/3
     hover:z-10
     hover:shadow-lg
     hover:bg-action-hover
@@ -208,7 +209,7 @@ export function ActionItem({
     if (showLate && isLateAction(action)) {
       baseStyles = cn(
         baseStyles,
-        "bg-late text-destructive hover:bg-late-hover ring-destructive",
+        "bg-late text-late-foreground hover:bg-late-hover border-t-white/50 ring ring-destructive/50",
       );
     }
     if (showSprint && person && isSprint(action, person)) {

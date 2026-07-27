@@ -292,11 +292,11 @@ export const PALLETE = [
     light: {
       primary: { h: 0, c: 0, l: 0 },
       primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 230, c: 0.01, l: 0.92 },
+      bg: { h: 230, c: 0.005, l: 0.92 },
       fg: { h: 0, c: 0, l: 0 },
       borderLDelta: -0.05,
       inputLDelta: -0.05,
-      actionLDelta: 0.04,
+      actionLDelta: 0.03,
       actionHoverLDelta: 0.1,
     },
     dark: {
@@ -446,10 +446,10 @@ export const PALLETE = [
     dark: {
       primary: { h: 25, c: 0.18, l: 0.65 },
       primaryFg: { h: 130, c: 0.02, l: 0.9 },
-      bg: { h: 180, c: 0.015, l: 0.25 },
+      bg: { h: 190, c: 0.01, l: 0.25 },
       fg: { h: 130, c: 0.01, l: 0.95 },
-      borderLDelta: 0.15,
-      inputLDelta: 0.05,
+      borderLDelta: 0.1,
+      inputLDelta: -0.05,
       actionLDelta: 0.07,
       actionHoverLDelta: 0.2,
     },
