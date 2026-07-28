@@ -158,6 +158,7 @@ export function ActionColorDropdown({
             className="w-32"
             onChange={handleLocalColorChange}
             value={colorValue}
+            size="sm"
           />
         </div>
       </PrismPopover>

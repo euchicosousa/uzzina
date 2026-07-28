@@ -67,7 +67,7 @@ export function PartnerTopicsEditor({
           {topics.map((topic) => (
             <div
               key={topic.id}
-              className="flex items-center gap-1.5 rounded-full pl-3 pr-1 py-1 border text-sm font-medium transition hover:border-foreground/30"
+              className="flex items-center gap-1.5 rounded-full pl-3 pr-1 py-1  border text-sm font-medium transition hover:border-foreground/30"
               style={{
                 borderColor: `${topic.color}40`,
                 backgroundColor: `${topic.color}10`,
@@ -98,7 +98,7 @@ export function PartnerTopicsEditor({
       )}
 
       {/* Formulário Inline para Adicionar */}
-      <div className="flex items-center gap-2 max-w-md pt-2">
+      <div className="flex items-center gap-2 py-2">
         {/* Seletor de cor: igual ao ColorListEditor — círculo clicável + input hex */}
         <div className="flex items-center gap-2">
           <label
@@ -122,17 +122,18 @@ export function PartnerTopicsEditor({
           </label>
           <PrismInput
             aria-label="Código Hexadecimal da Cor do Tópico"
-            className="w-24 font-mono uppercase"
+            className="w-32 font-mono uppercase"
             maxLength={9}
             onBlur={handleColorBlur}
             onChange={(e) => handleColorChange(e.target.value)}
             type="text"
+            size={"sm"}
             value={selectedColor}
           />
         </div>
 
         <PrismInput
-          className="flex-1"
+          className="flex-1 shrink-0"
           onChange={(e) => setNewTitle(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -140,6 +141,7 @@ export function PartnerTopicsEditor({
               handleAddTopic();
             }
           }}
+          size={"sm"}
           placeholder="Nome do novo tópico..."
           value={newTitle}
         />

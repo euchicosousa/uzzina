@@ -1,4 +1,12 @@
-import { addMinutes, format, isToday } from "date-fns";
+import {
+  addMinutes,
+  format,
+  isToday,
+  setHours,
+  setMilliseconds,
+  setMinutes,
+  setSeconds,
+} from "date-fns";
 import { PHASES, PRIORITIES } from "~/lib/CONSTANTS";
 import { DEFAULT_ACTION_COLOR } from "~/lib/uzzina-utils";
 
@@ -11,15 +19,28 @@ export const getCleanAction = ({
   date?: Date;
   partners?: string[];
 }) => {
-  date = date || new Date();
-  const _date = format(
-    isToday(date)
-      ? date.getHours() < 11
-        ? date.setHours(11, 0, 0)
-        : addMinutes(date, 10)
-      : date.setHours(11, 0, 0),
-    "yyyy-MM-dd HH:mm:ss",
-  );
+  const now = new Date();
+  const targetDate = date ? new Date(date) : now;
+
+  let finalDate: Date;
+
+  if (isToday(targetDate)) {
+    if (now.getHours() < 11) {
+      finalDate = setMilliseconds(
+        setSeconds(setMinutes(setHours(targetDate, 11), 0), 0),
+        0,
+      );
+    } else {
+      finalDate = addMinutes(now, 10);
+    }
+  } else {
+    finalDate = setMilliseconds(
+      setSeconds(setMinutes(setHours(targetDate, 11), 0), 0),
+      0,
+    );
+  }
+
+  const _date = format(finalDate, "yyyy-MM-dd HH:mm:ss");
 
   return {
     title: "",
@@ -35,3 +56,4 @@ export const getCleanAction = ({
     archived: false,
   };
 };
+
