@@ -29,7 +29,7 @@ import {
 } from "@tabler/icons-react";
 import { cn } from "cnfast";
 import Color from "color";
-import { Theme } from "~/components/theme-provider";
+import { Theme } from "~/hooks/useAppTheme";
 export function Icons({
   slug,
   className,

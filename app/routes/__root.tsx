@@ -1,6 +1,6 @@
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import type { QueryClient } from "@tanstack/react-query";
-import { ThemeProvider } from "~/components/theme-provider";
+import { AppThemeProvider } from "~/hooks/useAppTheme";
 import { PrismToaster } from "~/components/prism";
 export interface RouterContext {
   queryClient: QueryClient;
@@ -10,9 +10,9 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 function RootComponent() {
   return (
-    <ThemeProvider>
+    <AppThemeProvider>
       <Outlet />
       <PrismToaster richColors />
-    </ThemeProvider>
+    </AppThemeProvider>
   );
 }

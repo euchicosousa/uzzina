@@ -1,4 +1,4 @@
-import { useTheme } from "~/components/theme-provider";
+import { useAppThemeContext } from "~/hooks/useAppTheme";
 import { Toaster as Sonner, toast, type ToasterProps } from "sonner";
 import {
   IconCircleCheck,
@@ -9,9 +9,10 @@ import {
 } from "@tabler/icons-react";
 import { cn } from "cnfast";
 const PrismToaster = ({ ...props }: ToasterProps) => {
-  const [theme = "system"] = useTheme();
+  const { theme } = useAppThemeContext();
   return (
     <Sonner
+      theme={theme}
       className="toaster group"
       icons={{
         success: <IconCircleCheck className="size-5" />,
@@ -41,7 +42,6 @@ const PrismToaster = ({ ...props }: ToasterProps) => {
           "--info-border": "var(--color-info)",
         } as React.CSSProperties
       }
-      theme={(theme || "system") as ToasterProps["theme"]}
       toastOptions={{
         classNames: {
           toast: cn(

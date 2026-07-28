@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, createContext, useContext } from "react";
 import { PALLETE } from "~/lib/CONSTANTS";
 import { hexToOklch } from "~/utils/color";
 import type { CustomTheme } from "~/lib/preferences";
@@ -69,11 +69,28 @@ const restoreThemeColors = () => {
   root.style.removeProperty("--ring");
 };
 
+export enum Theme {
+  LIGHT = "light",
+  DARK = "dark",
+}
+
+const THEME_KEY = "uzzina-theme";
+
+function getStoredTheme(): Theme {
+  if (typeof window === "undefined") return Theme.LIGHT;
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved === "light") return Theme.LIGHT;
+  if (saved === "dark") return Theme.DARK;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? Theme.DARK
+    : Theme.LIGHT;
+}
+
 /**
- * Hook para gerenciar as cores da marca (Tema) do aplicativo.
- * Gerencia a cor primária e a cor de fundo padrão.
+ * Hook para gerenciar as cores da marca e o modo de tema (Light/Dark) do aplicativo.
  */
 export function useAppTheme() {
+  const [theme, setThemeState] = useState<Theme>(Theme.LIGHT);
   const [primaryColorIndex, setPrimaryColorIndexState] = useState<number>(0);
   const [followPartnerColor, setFollowPartnerColorState] =
     useState<boolean>(false);
@@ -82,17 +99,29 @@ export function useAppTheme() {
 
   // Lê o localStorage só no cliente, após a hidratação
   useEffect(() => {
+    setThemeState(getStoredTheme());
     setPrimaryColorIndexState(getStoredIndex());
     setFollowPartnerColorState(getStoredFollowPartner());
     setBackgroundColorState(getStoredBackground());
     setCustomThemeState(getStoredCustomTheme());
   }, []);
 
+  // Aplica classe no documentElement quando o tema muda
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const root = window.document.documentElement;
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
+  }, [theme]);
+
   // Sincroniza entre abas e instâncias no mesmo documento
   useEffect(() => {
     const handleStorage = (event: StorageEvent) => {
       const { key, newValue } = event;
-      if (key === STORAGE_KEY) {
+      if (key === THEME_KEY) {
+        if (newValue === "light") setThemeState(Theme.LIGHT);
+        else if (newValue === "dark") setThemeState(Theme.DARK);
+      } else if (key === STORAGE_KEY) {
         setPrimaryColorIndexState(
           newValue === null || newValue === "" ? 0 : Number(newValue),
         );
@@ -115,6 +144,7 @@ export function useAppTheme() {
     };
 
     const handleLocalUpdate = () => {
+      setThemeState(getStoredTheme());
       setPrimaryColorIndexState(getStoredIndex());
       setFollowPartnerColorState(getStoredFollowPartner());
       setBackgroundColorState(getStoredBackground());
@@ -128,6 +158,19 @@ export function useAppTheme() {
       window.removeEventListener("uzzina-storage-update", handleLocalUpdate);
     };
   }, []);
+
+  const setTheme = (newTheme: Theme) => {
+    localStorage.setItem(THEME_KEY, newTheme);
+    setThemeState(newTheme);
+    window.dispatchEvent(new Event("uzzina-storage-update"));
+  };
+
+  const previewTheme = (newTheme: Theme) => {
+    if (typeof window === "undefined") return;
+    const root = window.document.documentElement;
+    root.classList.remove("light", "dark");
+    root.classList.add(newTheme);
+  };
 
   const selectedPalette = useMemo(() => {
     if (primaryColorIndex === -1 && customTheme) {
@@ -377,9 +420,10 @@ export function useAppTheme() {
     });
   };
 
-
-
   return {
+    theme,
+    setTheme,
+    previewTheme,
     primaryColorIndex,
     selectedPalette,
     setPrimaryColorIndex,
@@ -399,4 +443,19 @@ export function useAppTheme() {
     setColorIndex: setPrimaryColorIndex,
     restoreAccentColors: restoreThemeColors
   };
+}
+
+const AppThemeContext = createContext<ReturnType<typeof useAppTheme> | undefined>(undefined);
+
+export function AppThemeProvider({ children }: { children: React.ReactNode }) {
+  const appTheme = useAppTheme();
+  return React.createElement(AppThemeContext.Provider, { value: appTheme }, children);
+}
+
+export function useAppThemeContext() {
+  const context = useContext(AppThemeContext);
+  if (!context) {
+    throw new Error("useAppThemeContext must be used within an AppThemeProvider");
+  }
+  return context;
 }

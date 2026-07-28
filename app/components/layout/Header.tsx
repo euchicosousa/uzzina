@@ -15,9 +15,8 @@ import { BellIcon, CheckIcon } from "lucide-react";
 import { useMemo, useRef } from "react";
 import { toast } from "sonner";
 import type { Json } from "types/database";
-import { Theme, useTheme } from "~/components/theme-provider";
 import { useAppContext } from "~/contexts/AppContext";
-import { useAppTheme } from "~/hooks/useAppTheme";
+import { Theme, useAppThemeContext } from "~/hooks/useAppTheme";
 import { useNotifications } from "~/hooks/useNotifications";
 import { PALLETE, SIZE } from "~/lib/CONSTANTS";
 import { getThemeIcon } from "~/lib/helpers";
@@ -287,13 +286,14 @@ export function Header({
   );
 }
 const HeaderMenu = ({ person }: { person: Person }) => {
-  const [theme, setTheme] = useTheme();
   const {
+    theme,
+    setTheme,
     setPrimaryColorIndex,
     primaryColorIndex,
     followPartnerColor,
     setFollowPartnerColor,
-  } = useAppTheme();
+  } = useAppThemeContext();
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const pendingPrefsRef = useRef<Record<string, unknown>>({});
   const queuePreference = (key: string, value: unknown) => {

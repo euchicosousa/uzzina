@@ -11,14 +11,16 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Theme, useTheme } from "~/components/theme-provider";
+import {
+  Theme,
+  useAppThemeContext,
+} from "~/hooks/useAppTheme";
 import { PrismButton, PrismInput, PrismLabel } from "~/components/prism";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { PreferenceSwitch } from "~/components/uzzina/PreferenceSwitch";
 import { SegmentedSelector } from "~/components/uzzina/SegmentedSelector";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { useAppContext } from "~/contexts/AppContext";
-import { useAppTheme } from "~/hooks/useAppTheme";
 import { PALLETE } from "~/lib/CONSTANTS";
 import { getUserPreferences } from "~/lib/preferences";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
@@ -37,9 +39,8 @@ export const runtime = "edge";
 function ProfilePage() {
   const { person, cloudName, uploadPreset } = useAppContext();
   const preferences = getUserPreferences(person);
-  const [theme, setTheme] = useTheme();
-  const { previewColorIndex, previewCustomTheme, setCustomTheme } =
-    useAppTheme();
+  const { theme, setTheme, previewColorIndex, previewCustomTheme, setCustomTheme } =
+    useAppThemeContext();
   const [imageUrl, setImageUrl] = useState<string | null>(person.image || null);
   const [selectedTheme, setSelectedTheme] = useState<
     "light" | "dark" | "system"
