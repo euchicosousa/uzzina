@@ -344,13 +344,13 @@ export const PALLETE = [
     light: {
       primary: { h: 264, c: 0.31, l: 0.45 },
       primaryFg: { h: 0, c: 0, l: 1 },
-      bg: { h: 0, c: 0, l: 1 },
+      bg: { h: 0, c: 0, l: 0.99 },
       fg: { h: 0, c: 0, l: 0 },
       borderLDelta: -0.05,
       inputLDelta: -0.05,
-      actionLDelta: -0.04,
-      actionHoverLDelta: 0.04,
-      popoverLDelta: 0,
+      actionLDelta: -0.02,
+      actionHoverLDelta: 0.02,
+      popoverLDelta: 0.1,
     },
     dark: {
       primary: { h: 264, c: 0.31, l: 0.58 },
