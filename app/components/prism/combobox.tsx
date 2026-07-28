@@ -91,7 +91,8 @@ function ComboboxInput({
   showTrigger = true,
   showClear = false,
   ...props
-}: React.ComponentProps<"input"> & {
+}: Omit<React.ComponentProps<"input">, "size"> & {
+  size?: "default" | "sm";
   showTrigger?: boolean;
   showClear?: boolean;
 }) {

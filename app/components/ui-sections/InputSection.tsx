@@ -30,12 +30,21 @@ export function InputSection() {
           title="PrismInput"
         />
         <GallerySectionContent>
-          <GalleryItem label="Default Input (Simple)">
+          <GalleryItem label="Default Input (Simple - h-12)">
             <TextField onChange={setInputValue} value={inputValue}>
-              <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
-                Nome do Usuário
+              <Label className="block font-medium text-foreground cursor-pointer mb-1.5 text-sm">
+                Nome do Usuário (Default - 48px)
               </Label>
-              <PrismInput placeholder="Ex: Francisco Sousa" />
+              <PrismInput placeholder="Ex: Francisco Sousa" size="default" />
+            </TextField>
+          </GalleryItem>
+
+          <GalleryItem label="Small Input (sm - h-10)">
+            <TextField>
+              <Label className="block font-medium text-foreground cursor-pointer mb-1.5 text-sm">
+                Nome do Usuário (Small - 40px)
+              </Label>
+              <PrismInput placeholder="Ex: Chico Sousa" size="sm" />
             </TextField>
           </GalleryItem>
 

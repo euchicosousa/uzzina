@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { PrismButton } from "../prism";
+import { PrismButton } from "~/components/prism";
 
 // Tipagem mínima do Cloudinary Upload Widget global
 declare global {

@@ -77,7 +77,7 @@ export function AppBar({
     : null;
   return (
     <div className="fixed bottom-4 left-1/2 z-20 flex -translate-x-1/2 justify-center">
-      <div className="flex items-center gap-1 rounded-3xl border bg-background p-2 squircle transition-all duration-500 hover:bg-action-hover dark:hover:bg-card">
+      <div className="flex items-center gap-1 rounded-3xl border bg-popover p-2 squircle">
         {/* Home */}
         <Link
           className={buttonVariants({

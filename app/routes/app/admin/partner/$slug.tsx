@@ -19,7 +19,7 @@ const Tiptap = lazy(() =>
   })),
 );
 import { PrismButton, PrismInput, PrismTextarea } from "~/components/prism";
-import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
+import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
 import { ULoader } from "~/components/uzzina/ULoader";

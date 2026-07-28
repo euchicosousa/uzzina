@@ -92,7 +92,7 @@ function PartnerColumn({
         </Link>
 
         <PrismButton
-          className="size-6 opacity-0 group-hover/column:opacity-100"
+          className="opacity-0 group-hover/column:opacity-100"
           onClick={() =>
             setBaseAction({
               ...(getCleanAction({
@@ -103,7 +103,8 @@ function PartnerColumn({
               responsibles: partner.users_ids,
             })
           }
-          size="icon"
+          size="icon-xs"
+          variant={"secondary"}
         >
           <PlusIcon />
         </PrismButton>

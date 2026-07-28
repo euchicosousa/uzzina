@@ -8,8 +8,8 @@ import { CommentInput } from "~/components/features/ActionComments/CommentInput"
 import { CommentList } from "~/components/features/ActionComments/CommentList";
 import { WorkFileThumbnail } from "~/components/features/ActionForm/WorkFileThumbnail";
 import { PhaseIcon } from "~/components/features/PhaseIcon";
-import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
-import { InstagramPreview } from "~/components/uzzina/InstagramPreview";
+import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
+import { InstagramPreview } from "~/components/features/media/InstagramPreview";
 import { CATEGORIES, PHASES, type CATEGORY, type PHASE } from "~/lib/CONSTANTS";
 import { Icons } from "~/lib/helpers";
 import {

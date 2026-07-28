@@ -7,7 +7,6 @@ import {
   PrismLabel,
   PrismPopover,
   PrismPopoverTrigger,
-  PrismSeparator,
   PrismTimeField,
 } from "~/components/prism";
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
@@ -77,6 +76,7 @@ export function ActionDatePicker({
         <div className="flex justify-between items-center gap-2">
           <PrismLabel>Defina a hora</PrismLabel>
           <PrismTimeField
+          size={"sm"}
             aria-label="Defina a hora"
             onChange={(time) => {
               if (selectedDate && time) {

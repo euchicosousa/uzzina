@@ -1,6 +1,6 @@
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
+import { cn } from "cnfast";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import * as React from "react";
 import {
   Calendar as AriaCalendar,
   CalendarGridHeader as AriaCalendarGridHeader,
@@ -26,7 +26,6 @@ import {
   PrismSelectTrigger,
   PrismSelectValue,
 } from "~/components/prism";
-import { cn } from "cnfast";
 import { buttonVariants } from "./button";
 const cellVariants = cva(
   "group/day relative mt-2 aspect-square h-full w-full cursor-default rounded-(--cell-radius) p-0 text-center select-none [&:is(:last-child>[data-selected=true])>div]:rounded-r-(--cell-radius)",
@@ -165,7 +164,8 @@ function CalendarInner({
           length: numberOfMonths,
         },
         (_, i) => (
-          <div key={i} className="flex w-full flex-col gap-4">
+          // biome-ignore lint/suspicious/noArrayIndexKey: O número de meses renderizados é um range sequencial estático
+          <div key={`month-offset-${i}`} className="flex w-full flex-col gap-4">
             <div className="flex h-(--cell-size) w-full items-center justify-center gap-1 px-(--cell-size)">
               {captionLayout === "dropdown" ? (
                 <>

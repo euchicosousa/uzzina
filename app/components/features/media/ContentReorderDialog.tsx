@@ -30,7 +30,7 @@ import {
   PrismDialogHeader,
   PrismDialogTitle
 } from "~/components/prism";
-import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
+import { CloudinaryUpload } from "./CloudinaryUpload";
 import { detectPostType, isImageUrl } from "./InstagramHelpers";
 
 function SortableThumbnail({

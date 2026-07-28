@@ -1,9 +1,7 @@
 import type { Action, Partner } from "~/types";
 import { LoaderIcon } from "lucide-react";
-import {
-  ContentFilesManager,
-  InstagramPreview,
-} from "~/components/uzzina/InstagramContent";
+import { ContentFilesManager } from "~/components/features/media/InstagramContent";
+import { InstagramPreview } from "~/components/features/media/InstagramPreview";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { UButtonAI } from "~/components/uzzina/UButtonAI";
 import { INTENT } from "~/lib/CONSTANTS";

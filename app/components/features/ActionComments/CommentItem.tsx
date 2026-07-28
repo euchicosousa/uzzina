@@ -1,16 +1,11 @@
-import { useState } from "react";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Pencil, Trash } from "lucide-react";
+import { useState } from "react";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import type { AugmentedComment } from "~/models/action_comments";
 import { CommentInput } from "./CommentInput";
 
-interface Person {
-  user_id: string;
-  name: string;
-  image: string | null;
-}
 
 interface CommentItemProps {
   comment: AugmentedComment;
@@ -65,7 +60,7 @@ export function CommentItem({
         }`}
       >
         {editing ? (
-          <div className="mt-2 w-full min-w-[280px] text-foreground">
+          <div className="mt-2 w-full min-w-70 text-foreground">
             <CommentInput
               value={editContent}
               onChange={setOverrideContent}

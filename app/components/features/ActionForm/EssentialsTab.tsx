@@ -19,7 +19,7 @@ import {
   PrismSheetHeader,
   PrismSheetTitle,
 } from "~/components/prism";
-import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
+import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { UButtonAI } from "~/components/uzzina/UButtonAI";
 import { INTENT } from "~/lib/CONSTANTS";
 import { getNewDateForAction, isLateAction } from "~/lib/helpers";
@@ -152,7 +152,7 @@ export function EssentialsTab({
       {/* Título */}
       <ActionTitleInput
         autoFocus
-        className="font-bold tracking-[-5%]"
+        className="font-medium tracking-[-5%]"
         onBlur={async (title) => {
           await updateAction(
             {

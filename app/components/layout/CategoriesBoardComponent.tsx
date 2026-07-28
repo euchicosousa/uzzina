@@ -5,8 +5,7 @@ import { useAppContext } from "~/contexts/AppContext";
 import {
   CATEGORIES,
   type CATEGORY_TYPE,
-  type ORDER_BY,
-  VARIANT,
+  type ORDER_BY
 } from "~/lib/CONSTANTS";
 import { getCleanAction, Icons } from "~/lib/helpers";
 import { ActionContainer } from "../features/ActionContainer";

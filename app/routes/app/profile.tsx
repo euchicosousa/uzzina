@@ -13,7 +13,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Theme, useTheme } from "~/components/theme-provider";
 import { PrismButton, PrismInput, PrismLabel } from "~/components/prism";
-import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
+import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { PreferenceSwitch } from "~/components/uzzina/PreferenceSwitch";
 import { SegmentedSelector } from "~/components/uzzina/SegmentedSelector";
 import { UAvatar } from "~/components/uzzina/UAvatar";
