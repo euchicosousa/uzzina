@@ -1,11 +1,10 @@
-import { useState, useRef } from "react";
+import { cn } from "cnfast";
+import { PlusIcon, SlidersHorizontalIcon } from "lucide-react";
+import { useRef, useState } from "react";
 import { CloudinaryUpload } from "~/components/uzzina/CloudinaryUpload";
+import { PrismButton } from "../prism";
 import { ContentReorderDialog } from "./ContentReorderDialog";
 import { detectPostType } from "./InstagramHelpers";
-import { PlusIcon, SlidersHorizontalIcon } from "lucide-react";
-import { cn } from "cnfast";
-import { PrismButton } from "../prism";
-import { IconAdjustments, IconAdjustmentsHorizontal } from "@tabler/icons-react";
 export { InstagramPreview } from "./InstagramPreview";
 
 // ---------------------------------------------------------------------------
