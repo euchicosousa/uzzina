@@ -29,20 +29,19 @@ export function WorkFileThumbnail({
     "HEIC",
     "AVIF",
   ].includes(ext);
-
   return (
-    <div className="group relative size-10 shrink-0">
+    <div className="group relative size-8 shrink-0">
       <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
         className="block size-full"
+        href={url}
+        rel="noopener noreferrer"
+        target="_blank"
       >
         {isImage ? (
           <img
-            src={url}
             alt=""
-            className="size-full rounded-lg border object-cover"
+            className="size-full rounded-2xl squircle object-cover"
+            src={url}
           />
         ) : (
           <div className="bg-muted flex size-full items-center justify-center rounded-lg border text-[8px] font-bold tracking-wide uppercase opacity-70">
@@ -51,13 +50,13 @@ export function WorkFileThumbnail({
         )}
       </a>
       <button
-        type="button"
+        className="bg-destructive absolute -top-1.5 -right-1.5 hidden size-4 items-center justify-center rounded-full text-white group-hover:flex"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           onRemove();
         }}
-        className="bg-destructive absolute -top-1.5 -right-1.5 hidden size-4 items-center justify-center rounded-full text-white group-hover:flex"
+        type="button"
       >
         <XIcon className="size-2.5" />
       </button>

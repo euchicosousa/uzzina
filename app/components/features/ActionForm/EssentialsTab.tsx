@@ -2,6 +2,7 @@ import { parseU } from "~/utils/date";
 import {
   ArrowRightIcon,
   CalendarDaysIcon,
+  FilePlus,
   FishingHookIcon,
   PlusIcon,
 } from "lucide-react";
@@ -261,7 +262,7 @@ export function EssentialsTab({
         </div>
 
         <div className="flex items-start gap-2 border-b px-4 py-1">
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1">
             {workFiles.map((url, i) => (
               <WorkFileThumbnail
                 key={url}
@@ -280,17 +281,22 @@ export function EssentialsTab({
               />
             ))}
             <CloudinaryUpload
-              className={`text-foreground/50 ${workFiles.length === 0 ? "text-md flex items-center gap-1.5 py-1.5 underline-offset-2 hover:underline" : "squircle flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary transition hover:bg-secondary/50"}`}
+              className={cn(
+                workFiles.length === 0 &&
+                  "h-8 p-0 text-muted-foreground gap-1 font-normal hover:underline",
+              )}
               cloudName={cloudName}
               folder="uzzina/work"
               multiple
               onUpload={handleUpload}
               outputWidth={1200}
               resourceType="auto"
+              size={workFiles.length === 0 ? "sm" : "icon-xs"}
               uploadPreset={uploadPreset}
+              variant={workFiles.length === 0 ? "unstyled" : "secondary"}
             >
+              <FilePlus className="size-4" />
               {workFiles.length === 0 && <span>Adicionar arquivo</span>}
-              <PlusIcon className="size-3" />
             </CloudinaryUpload>
           </div>
         </div>
@@ -332,61 +338,64 @@ export function EssentialsTab({
             tabIndex={0}
           />
         </Suspense>
-      <PrismSheet isOpen={hooksOpen} onOpenChange={setHooksOpen}>
-        <PrismSheetContent className="max-h-[85vh] overflow-y-auto" side="bottom">
-          <PrismSheetHeader className="sr-only">
-            <PrismSheetTitle>Hooks gerados pela IA</PrismSheetTitle>
-            <PrismSheetDescription>{racional}</PrismSheetDescription>
-          </PrismSheetHeader>
-          {isCreatingPost ? (
-            <div className="flex flex-col items-center justify-center gap-4 py-20">
-              <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-              <div className="text-center">
-                <h3 className="text-xl font-bold">Criando conteúdo...</h3>
-                <p className="text-sm text-muted-foreground">
-                  Isso pode levar alguns segundos.
-                </p>
+        <PrismSheet isOpen={hooksOpen} onOpenChange={setHooksOpen}>
+          <PrismSheetContent
+            className="max-h-[85vh] overflow-y-auto"
+            side="bottom"
+          >
+            <PrismSheetHeader className="sr-only">
+              <PrismSheetTitle>Hooks gerados pela IA</PrismSheetTitle>
+              <PrismSheetDescription>{racional}</PrismSheetDescription>
+            </PrismSheetHeader>
+            {isCreatingPost ? (
+              <div className="flex flex-col items-center justify-center gap-4 py-20">
+                <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                <div className="text-center">
+                  <h3 className="text-xl font-bold">Criando conteúdo...</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Isso pode levar alguns segundos.
+                  </p>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-4 p-4 pb-12 lg:p-8">
-              <div className="pt-8 text-3xl font-bold">Hooks</div>
-              <div className="pb-8 text-xl">{racional}</div>
-              {hooks.map((hook, i) => (
-                <HookItem
-                  key={hook.tipo}
-                  category={RawAction.category}
-                  hook={hook}
-                  onChange={(texto) => {
-                    setHooks((prev) =>
-                      prev.map((h, j) =>
-                        j === i
-                          ? {
-                              ...h,
-                              texto,
-                            }
-                          : h,
-                      ),
-                    );
-                  }}
-                  onSubmit={async (data) => {
-                    const intent = data.intent as string;
-                    setIsCreatingPost(true);
-                    await triggerAIAction(intent, data);
-                    setIsCreatingPost(false);
-                    setHooksOpen(false);
-                  }}
-                  partner_context={currentPartners[0]?.context || ""}
-                  racional={racional}
-                  RawAction={RawAction}
-                />
-              ))}
-            </div>
-          )}
-        </PrismSheetContent>
-      </PrismSheet>
+            ) : (
+              <div className="flex flex-col gap-4 p-4 pb-12 lg:p-8">
+                <div className="pt-8 text-3xl font-bold">Hooks</div>
+                <div className="pb-8 text-xl">{racional}</div>
+                {hooks.map((hook, i) => (
+                  <HookItem
+                    key={hook.tipo}
+                    category={RawAction.category}
+                    hook={hook}
+                    onChange={(texto) => {
+                      setHooks((prev) =>
+                        prev.map((h, j) =>
+                          j === i
+                            ? {
+                                ...h,
+                                texto,
+                              }
+                            : h,
+                        ),
+                      );
+                    }}
+                    onSubmit={async (data) => {
+                      const intent = data.intent as string;
+                      setIsCreatingPost(true);
+                      await triggerAIAction(intent, data);
+                      setIsCreatingPost(false);
+                      setHooksOpen(false);
+                    }}
+                    partner_context={currentPartners[0]?.context || ""}
+                    racional={racional}
+                    RawAction={RawAction}
+                  />
+                ))}
+              </div>
+            )}
+          </PrismSheetContent>
+        </PrismSheet>
       </div>
-      </div>
+    </div>
   );
 }
 function HookItem({

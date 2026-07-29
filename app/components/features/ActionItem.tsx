@@ -219,10 +219,7 @@ export function ActionItem({
 
     // 2. Apply editing ring/focus overrides on top of the base style
     if (isEditing) {
-      baseStyles = cn(
-        baseStyles,
-        "ring-primary focus-within:ring-2 z-100",
-      );
+      baseStyles = cn(baseStyles, "ring-primary focus-within:ring-2 z-100");
     }
     return baseStyles;
   }, [isEditing, showLate, action, person, showSprint]);
@@ -536,9 +533,7 @@ function ActionVariantRenderer({
       );
     case VARIANT.block:
       return (
-        <div
-          className="flex flex-col gap-2 pb-2"
-        >
+        <div className="flex flex-col gap-2 pb-2">
           <ActionItemTitleInput
             className={"text-2xl leading-tight font-medium pb-2"}
             isEditing={isEditing}
@@ -554,42 +549,41 @@ function ActionVariantRenderer({
             title={action.title}
           />
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between overflow-hidden gap-4">
+            <div className="flex items-center gap-2 overflow-hidden">
               {showPartner && (
                 <ActionItemPartners
                   action={action}
                   partners={currentPartners}
+                  size="xs"
                 />
               )}
 
               {showCategory && (
                 <Icons
-                  className={cn("size-4")}
+                  className={cn("size-4 shrink-0")}
                   color={currentCategory.color}
                   slug={currentCategory.slug}
                 />
               )}
 
-              <PhaseStationIcon phase={currentPhase} station={currentStation} />
+              {/* <PhaseStationIcon phase={currentPhase} station={currentStation} /> */}
 
-              {/* <PhaseIcon phase={currentPhase} size="dot" /> */}
+              <PhaseIcon phase={currentPhase} size="sm" />
 
               {showResponsibles && (
                 <ActionItemResponsibles
                   action={action}
                   responsibles={currentResponsibles}
-                  size={SIZE.sm}
+                  size={SIZE.xs}
                 />
               )}
             </div>
 
-            <div className="flex items-center gap-2 text-xs">
-              <div className="flex items-center gap-2 text-xs">
-                <div className="flex items-center gap-1">
-                  <CalendarDaysIcon className="size-3 opacity-50" />
-                  {getFormattedDateTime(action.date, dateTimeDisplay)}
-                </div>
+            <div className="flex items-center shrink-0 gap-2 text-xs opacity-50">
+              <CalendarDaysIcon className="size-3 opacity-50" />
+              <div className="font-medium">
+                {getFormattedDateTime(action.date, dateTimeDisplay)}
               </div>
             </div>
           </div>

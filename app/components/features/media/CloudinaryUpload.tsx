@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { PrismButton } from "~/components/prism";
+import { PrismButton, type PrismButtonVariantProps } from "~/components/prism";
 
 // Tipagem mínima do Cloudinary Upload Widget global
 declare global {
@@ -62,6 +62,8 @@ interface CloudinaryUploadProps {
   ) => void;
   children: React.ReactNode;
   className?: string;
+  variant?: NonNullable<PrismButtonVariantProps["variant"]>;
+  size?: NonNullable<PrismButtonVariantProps["size"]>;
 }
 export function CloudinaryUpload({
   cloudName,
@@ -74,6 +76,8 @@ export function CloudinaryUpload({
   onUpload,
   children,
   className,
+  variant = "secondary",
+  size = "xs",
 }: CloudinaryUploadProps) {
   const widgetRef = useRef<{
     open: () => void;
@@ -209,7 +213,13 @@ export function CloudinaryUpload({
     widgetRef.current.open();
   }
   return (
-    <PrismButton className={className} onClick={openWidget} type="button" variant={"secondary"} size={"xs"}>
+    <PrismButton
+      className={className}
+      onClick={openWidget}
+      size={size}
+      type="button"
+      variant={variant}
+    >
       {children}
     </PrismButton>
   );

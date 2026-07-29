@@ -6,6 +6,7 @@ export {
 } from "./alert";
 export { PrismBadge } from "./badge";
 export { Button as PrismButton } from "./button";
+export type { PrismButtonVariantProps } from "./button";
 export { PrismCalendar, PrismRangeCalendar } from "./calendar";
 export { PrismCheckbox, PrismCheckboxGroup } from "./checkbox";
 export {
