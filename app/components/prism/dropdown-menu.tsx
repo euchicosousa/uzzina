@@ -186,7 +186,7 @@ function DropdownMenuSubContent({
   return (
     <DropdownMenu
       className={cn(
-        "w-auto min-w-[96px] rounded-3xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/5 duration-100 dark:ring-foreground/10 squircle",
+        "w-auto min-w-24 rounded-3xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/5 duration-100 dark:ring-foreground/10 squircle",
         className,
       )}
       crossOffset={crossOffset}
