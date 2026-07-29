@@ -1,9 +1,5 @@
 import { PrismBadge } from "~/components/prism";
-import {
-  IconCheck,
-  IconAlertTriangle,
-  IconInfoCircle,
-} from "@tabler/icons-react";
+import { CheckIcon, XIcon, StarIcon } from "lucide-react";
 import {
   GallerySection,
   GallerySectionHeader,
@@ -32,19 +28,19 @@ export function BadgeSection() {
           <GalleryItem label="Variants Semânticas OKLCH (success, error, warning, info)">
             <div className="flex flex-wrap gap-3 items-center">
               <PrismBadge variant="success">
-                <IconCheck />
+                <CheckIcon />
                 Aprovado
               </PrismBadge>
               <PrismBadge variant="error">
-                <IconAlertTriangle />
+                <XIcon />
                 Erro
               </PrismBadge>
               <PrismBadge variant="warning">
-                <IconAlertTriangle />
+                <StarIcon />
                 Pendente
               </PrismBadge>
               <PrismBadge variant="info">
-                <IconInfoCircle />
+                <CheckIcon />
                 Processando
               </PrismBadge>
             </div>

@@ -46,6 +46,7 @@ import {
 } from "~/lib/helpers";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
+import { PhaseStationIcon } from "./PhaseStationIcon";
 export type ActionDisplayFlags = {
   /** Whether to highlight the action if it is late */
   showLate?: boolean;
@@ -313,7 +314,7 @@ export function ActionItem({
           <div className="w-full overflow-hidden text-xs leading-none font-medium text-ellipsis whitespace-nowrap">
             {getFormattedPartnersName(currentPartners || [])}
           </div>
-          <PhaseIcon phase={currentPhase} />
+          <PhaseStationIcon phase={currentPhase} station={currentStation} />
         </div>
       )}
 
@@ -539,7 +540,7 @@ function ActionVariantRenderer({
           className="flex flex-col gap-2 pb-2"
         >
           <ActionItemTitleInput
-            className={"text-xl leading-tight font-medium"}
+            className={"text-2xl leading-tight font-medium pb-2"}
             isEditing={isEditing}
             lines={lines}
             onBlur={(title) => {
@@ -570,13 +571,15 @@ function ActionVariantRenderer({
                 />
               )}
 
-              <PhaseIcon phase={currentPhase} size="dot" />
+              <PhaseStationIcon phase={currentPhase} station={currentStation} />
+
+              {/* <PhaseIcon phase={currentPhase} size="dot" /> */}
 
               {showResponsibles && (
                 <ActionItemResponsibles
                   action={action}
                   responsibles={currentResponsibles}
-                  size={SIZE.xs}
+                  size={SIZE.sm}
                 />
               )}
             </div>

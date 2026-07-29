@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import {
-  IconSearch,
-  IconFilter,
-  IconHeartHandshake,
-  IconCalendar,
-  IconUser,
-  IconSettings,
-} from "@tabler/icons-react";
+  SearchIcon,
+  FilterIcon,
+  HandshakeIcon,
+  CalendarIcon,
+  UserIcon,
+  SettingsIcon,
+} from "lucide-react";
 import {
   PrismCommand,
   PrismCommandDialog,
@@ -56,7 +56,7 @@ function CommandPopoverDemo() {
         {partnerFilters.length > 0 ? (
           <PrismBadge variant="info">{partnerFilters.length}</PrismBadge>
         ) : (
-          <IconHeartHandshake />
+          <HandshakeIcon />
         )}
       </PrismButton>
       <PrismPopover className="p-0 rounded-4xl">
@@ -74,7 +74,7 @@ function CommandPopoverDemo() {
               }}
               size="sm"
             >
-              <IconFilter />
+              <FilterIcon />
             </PrismToggle>
           </div>
           <PrismCommandList
@@ -101,7 +101,7 @@ function CommandPopoverDemo() {
                           setPartnerFilters([...partnerFilters, partner.slug]);
                         }
                       } else {
-                        toast.info(`Navegar para ${partner.title}`);
+                        toast.info(`Selecionou parceiro ${partner.title}`);
                       }
                     }}
                     textValue={partner.title}
@@ -121,33 +121,33 @@ function CommandDialogDemo() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen((prev) => !prev);
+        setOpen((open) => !open);
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
   }, []);
   const items = [
     {
       id: "cal",
       title: "Ver Calendário",
       group: "Ações Rápidas",
-      icon: <IconCalendar className="size-4" />,
+      icon: <CalendarIcon className="size-4" />,
     },
     {
       id: "user",
       title: "Perfil do Usuário",
       group: "Ações Rápidas",
-      icon: <IconUser className="size-4" />,
+      icon: <UserIcon className="size-4" />,
     },
     {
       id: "settings",
       title: "Configurações da Conta",
       group: "Sistema",
-      icon: <IconSettings className="size-4" />,
+      icon: <SettingsIcon className="size-4" />,
       shortcut: "⌘S",
     },
   ];
@@ -167,7 +167,7 @@ function CommandDialogDemo() {
         variant="ghost"
       >
         <span className="flex items-center gap-2 text-muted-foreground text-sm">
-          <IconSearch className="size-4" />
+          <SearchIcon className="size-4" />
           Faça sua busca...
         </span>
         <kbd className="px-2 py-0.5 text-xs bg-muted rounded border text-muted-foreground">

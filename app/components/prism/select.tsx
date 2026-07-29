@@ -23,7 +23,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "~/components/prism/input-group";
-import { IconSelector, IconSearch, IconCheck } from "@tabler/icons-react";
+import { ChevronsUpDownIcon, SearchIcon, CheckIcon } from "lucide-react";
 function Select<T extends object, M extends "single" | "multiple" = "single">({
   className,
   ...props
@@ -89,7 +89,7 @@ function SelectTrigger({
       {...props}
     >
       {children}
-      <IconSelector className="pointer-events-none size-4 text-muted-foreground" />
+      <ChevronsUpDownIcon className="pointer-events-none size-4 text-muted-foreground" />
     </ButtonPrimitive>
   );
 }
@@ -178,7 +178,7 @@ function SelectInput({ className, ...props }: SearchFieldProps) {
           data-slot="select-input"
         />
         <InputGroupAddon>
-          <IconSearch className="size-4 shrink-0 opacity-50" />
+          <SearchIcon className="size-4 shrink-0 opacity-50" />
         </InputGroupAddon>
       </InputGroup>
     </SearchField>
@@ -217,7 +217,7 @@ function SelectItem({
             {children}
           </span>
           <span className="pointer-events-none absolute right-2 flex size-4 items-center justify-center">
-            {isSelected ? <IconCheck className="pointer-events-none" /> : null}
+            {isSelected ? <CheckIcon className="pointer-events-none" /> : null}
           </span>
         </>
       ))}

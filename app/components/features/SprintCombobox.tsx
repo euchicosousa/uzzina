@@ -1,4 +1,4 @@
-import { IconBolt } from "@tabler/icons-react";
+import { ZapIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "cnfast";
 import { useState } from "react";
@@ -117,7 +117,7 @@ export function SprintCombobox({
             size={size === "sm" ? "sm" : "md"}
           />
         ) : (
-          <IconBolt />
+          <ZapIcon />
         )}
       </ComboboxTrigger>
 

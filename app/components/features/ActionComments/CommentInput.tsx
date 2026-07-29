@@ -14,7 +14,7 @@ import {
 import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
-import { IconUser } from "@tabler/icons-react";
+import { UserIcon } from "lucide-react";
 import { getFormattedPeopleName } from "~/utils/format";
 
 interface CommentInputProps {
@@ -75,7 +75,7 @@ export function CommentInput({
           <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
             <PrismButton size="xs" variant="ghost">
               {selectedPeople.length === 0 ? <>
-                <div className="size-4 grid place-content-center rounded-full bg-background"><IconUser className="size-3" /></div>
+                <div className="size-4 grid place-content-center rounded-full bg-background"><UserIcon className="size-3" /></div>
                 <span>Notificar responsáveis</span></> :
                 <UAvatarGroup
                   avatars={selectedPeople.length > 0 ? selectedPeople.map((p) => ({

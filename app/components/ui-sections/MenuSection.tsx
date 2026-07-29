@@ -1,14 +1,14 @@
 import { useState } from "react";
 import type { Selection } from "react-aria-components";
 import {
-  IconUser,
-  IconSettings,
-  IconKeyboard,
-  IconLogout,
-  IconSun,
-  IconMoon,
-  IconDeviceLaptop,
-} from "@tabler/icons-react";
+  UserIcon,
+  SettingsIcon,
+  KeyboardIcon,
+  LogOutIcon,
+  SunIcon,
+  MoonIcon,
+  MonitorIcon,
+} from "lucide-react";
 import {
   PrismMenu,
   PrismMenuContent,
@@ -55,14 +55,14 @@ export function MenuSection() {
                 >
                   <PrismMenuLabel>Minha Conta</PrismMenuLabel>
                   <PrismMenuItem onAction={() => toast.info("Navegar para Perfil")}>
-                    <IconUser className="size-4 mr-2 text-muted-foreground" />
+                    <UserIcon className="size-4 mr-2 text-muted-foreground" />
                     <span>Meu Perfil</span>
                     <PrismMenuShortcut>⌘P</PrismMenuShortcut>
                   </PrismMenuItem>
                   <PrismMenuItem
                     onAction={() => toast.info("Navegar para Configurações")}
                   >
-                    <IconSettings className="size-4 mr-2 text-muted-foreground" />
+                    <SettingsIcon className="size-4 mr-2 text-muted-foreground" />
                     <span>Configurações</span>
                     <PrismMenuShortcut>⌘S</PrismMenuShortcut>
                   </PrismMenuItem>
@@ -71,7 +71,7 @@ export function MenuSection() {
 
                   <PrismMenuSub>
                     <PrismMenuSubTrigger>
-                      <IconKeyboard className="size-4 mr-2 text-muted-foreground" />
+                      <KeyboardIcon className="size-4 mr-2 text-muted-foreground" />
                       <span>Preferências</span>
                     </PrismMenuSubTrigger>
                     <PrismMenuSubContent className="w-48">
@@ -95,7 +95,7 @@ export function MenuSection() {
                     onAction={() => toast.warning("Saindo da conta...")}
                     variant="destructive"
                   >
-                    <IconLogout className="size-4 mr-2" />
+                    <LogOutIcon className="size-4 mr-2" />
                     <span>Sair da Conta</span>
                     <PrismMenuShortcut>⇧⌘Q</PrismMenuShortcut>
                   </PrismMenuItem>
@@ -140,14 +140,14 @@ export function MenuSection() {
                 >
                   {themeKeys !== "all" &&
                     themeKeys.has("light") && (
-                      <IconSun className="size-5" />
+                      <SunIcon className="size-5" />
                     )}
                   {themeKeys !== "all" && themeKeys.has("dark") && (
-                    <IconMoon className="size-5" />
+                    <MoonIcon className="size-5" />
                   )}
                   {themeKeys !== "all" &&
                     themeKeys.has("system") && (
-                      <IconDeviceLaptop className="size-5" />
+                      <MonitorIcon className="size-5" />
                     )}
                 </PrismButton>
                 <PrismMenuContent
@@ -158,15 +158,15 @@ export function MenuSection() {
                 >
                   <PrismMenuLabel>Tema do Sistema</PrismMenuLabel>
                   <PrismMenuItem id="light">
-                    <IconSun className="size-4 mr-2 text-muted-foreground shrink-0" />
+                    <SunIcon className="size-4 mr-2 text-muted-foreground shrink-0" />
                     <span className="truncate">Claro</span>
                   </PrismMenuItem>
                   <PrismMenuItem id="dark">
-                    <IconMoon className="size-4 mr-2 text-muted-foreground shrink-0" />
+                    <MoonIcon className="size-4 mr-2 text-muted-foreground shrink-0" />
                     <span className="truncate">Escuro</span>
                   </PrismMenuItem>
                   <PrismMenuItem id="system">
-                    <IconDeviceLaptop className="size-4 mr-2 text-muted-foreground shrink-0" />
+                    <MonitorIcon className="size-4 mr-2 text-muted-foreground shrink-0" />
                     <span className="truncate">
                       Padrão do Sistema
                     </span>

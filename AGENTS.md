@@ -81,7 +81,7 @@ O **Prism** é o design system proprietário do Uzzina. Todos os novos component
 - **Variantes**: `class-variance-authority` (CVA) para variantes de estilo declarativas.
 - **Utilitário**: `cn()` de `~/lib/utils` para merging condicional de classes.
 - **Tokens visuais**: Classes semânticas OKLCH do `tailwind.css` (ver abaixo).
-- **Ícones**: Tabler Icons (`@tabler/icons-react`). Tamanho padrão automático nos botões: `size-5` (via `[&_svg:not([class*='size-'])]:size-5`).
+- **Ícones**: Lucide React (`lucide-react`) utilizando a convenção com o sufixo `Icon` (ex: `XIcon`, `CheckIcon`). Tamanho padrão automático nos botões: `size-5` (via `[&_svg:not([class*='size-'])]:size-5`).
 
 ### Tokens de Cores OKLCH (tailwind.css)
 

@@ -37,7 +37,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "~/components/prism/input-group";
-import { IconChevronDown, IconX, IconCheck } from "@tabler/icons-react";
+import { ChevronDownIcon, XIcon, CheckIcon } from "lucide-react";
 function ComboboxValue<T>({ ...props }: ComboBoxValueProps<T>) {
   return <ComboBoxValuePrimitive data-slot="combobox-value" {...props} />;
 }
@@ -55,7 +55,7 @@ function ComboboxTrigger({
       {...props}
     >
       {children}
-      <IconChevronDown className="pointer-events-none size-4 text-muted-foreground" />
+      <ChevronDownIcon className="pointer-events-none size-4 text-muted-foreground" />
     </ButtonPrimitive>
   );
 }
@@ -80,7 +80,7 @@ function ComboboxClear({
       variant="ghost"
       {...props}
     >
-      <IconX className="pointer-events-none" />
+      <XIcon className="pointer-events-none" />
     </InputGroupButton>
   );
 }
@@ -107,7 +107,7 @@ function ComboboxInput({
             size="icon-sm"
             variant="ghost"
           >
-            <IconChevronDown className="pointer-events-none" />
+            <ChevronDownIcon className="pointer-events-none" />
           </InputGroupButton>
         )}
         {showClear && <ComboboxClear isDisabled={disabled} />}
@@ -180,7 +180,7 @@ function ComboboxItem<T extends object>({
         <>
           {children}
           <span className="pointer-events-none absolute right-2 flex size-4 items-center justify-center">
-            {isSelected ? <IconCheck className="pointer-events-none" /> : null}
+            {isSelected ? <CheckIcon className="pointer-events-none" /> : null}
           </span>
         </>
       ))}
@@ -298,7 +298,7 @@ function ComboboxChip({
           slot="remove"
           variant="ghost"
         >
-          <IconX className="pointer-events-none" />
+          <XIcon className="pointer-events-none" />
         </Button>
       )}
     </TagPrimitive>

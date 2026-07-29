@@ -1,9 +1,9 @@
 import {
-  IconCheckFilled,
-  IconChevronDown,
-  IconSend,
-  IconTrash,
-} from "@tabler/icons-react";
+  CheckCircle2Icon,
+  ChevronDownIcon,
+  SendIcon,
+  Trash2Icon,
+} from "lucide-react";
 import {
   PrismButton,
   PrismButtonGroup,
@@ -47,7 +47,7 @@ export function ButtonSection() {
           <GalleryItem label="Icon Buttons & Disabled States">
             <div className="flex flex-wrap items-center gap-3">
               <PrismButton variant="default">
-                <IconSend className="size-5" />
+                <SendIcon className="size-5" />
                 Enviar
               </PrismButton>
               <PrismButton
@@ -55,14 +55,14 @@ export function ButtonSection() {
                 size="icon"
                 variant="ghost"
               >
-                <IconTrash className="size-5 text-destructive" />
+                <Trash2Icon className="size-5 text-destructive" />
               </PrismButton>
               <PrismButton
                 aria-label="Confirmar"
                 size="icon-sm"
                 variant="secondary"
               >
-                <IconCheckFilled className="size-5" />
+                <CheckCircle2Icon className="size-5" />
               </PrismButton>
               <PrismButton isDisabled variant="default">
                 Disabled
@@ -82,7 +82,7 @@ export function ButtonSection() {
                 <PrismButton variant="default">Salvar</PrismButton>
                 <PrismButtonGroupSeparator />
                 <PrismButton size="icon" variant="default">
-                  <IconChevronDown />
+                  <ChevronDownIcon />
                 </PrismButton>
               </PrismButtonGroup>
             </div>

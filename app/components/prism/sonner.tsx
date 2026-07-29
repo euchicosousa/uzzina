@@ -1,12 +1,12 @@
 import { useAppThemeContext } from "~/hooks/useAppTheme";
 import { Toaster as Sonner, toast, type ToasterProps } from "sonner";
 import {
-  IconCircleCheck,
-  IconInfoCircle,
-  IconAlertTriangle,
-  IconAlertOctagon,
-  IconLoader,
-} from "@tabler/icons-react";
+  CheckCircle2Icon,
+  InfoIcon,
+  AlertTriangleIcon,
+  OctagonAlertIcon,
+  Loader2Icon,
+} from "lucide-react";
 import { cn } from "cnfast";
 const PrismToaster = ({ ...props }: ToasterProps) => {
   const { theme } = useAppThemeContext();
@@ -15,11 +15,11 @@ const PrismToaster = ({ ...props }: ToasterProps) => {
       theme={theme}
       className="toaster group"
       icons={{
-        success: <IconCircleCheck className="size-5" />,
-        info: <IconInfoCircle className="size-5" />,
-        warning: <IconAlertTriangle className="size-5" />,
-        error: <IconAlertOctagon className="size-5" />,
-        loading: <IconLoader className="size-5 animate-spin" />,
+        success: <CheckCircle2Icon className="size-5" />,
+        info: <InfoIcon className="size-5" />,
+        warning: <AlertTriangleIcon className="size-5" />,
+        error: <OctagonAlertIcon className="size-5" />,
+        loading: <Loader2Icon className="size-5 animate-spin" />,
       }}
       style={
         {

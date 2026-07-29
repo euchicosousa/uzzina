@@ -1,10 +1,10 @@
 import {
-  IconAlertTriangle,
-  IconEye,
-  IconEyeOff,
-  IconKey,
-  IconLock,
-} from "@tabler/icons-react";
+  AlertTriangleIcon,
+  EyeIcon,
+  EyeOffIcon,
+  KeyIcon,
+  LockIcon,
+} from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { TextField, Label } from "react-aria-components";
@@ -157,7 +157,7 @@ function ResetPassword() {
 
         {error && (
           <PrismAlert variant="error">
-            <IconAlertTriangle />
+            <AlertTriangleIcon />
             <PrismAlertTitle>Erro ao redefinir</PrismAlertTitle>
             <PrismAlertDescription>{error}</PrismAlertDescription>
           </PrismAlert>
@@ -194,7 +194,7 @@ function ResetPassword() {
                     align="inline-start"
                     className="[&_svg]:text-foreground/40 pl-4 pr-1"
                   >
-                    <IconLock className="size-5" />
+                    <LockIcon className="size-5" />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput
                     className="px-3 h-full"
@@ -212,9 +212,9 @@ function ResetPassword() {
                       variant="ghost"
                     >
                       {showPassword ? (
-                        <IconEye className="size-4" />
+                        <EyeIcon className="size-4" />
                       ) : (
-                        <IconEyeOff className="size-4" />
+                        <EyeOffIcon className="size-4" />
                       )}
                     </PrismButton>
                   </PrismInputGroupAddon>
@@ -235,7 +235,7 @@ function ResetPassword() {
                     align="inline-start"
                     className="[&_svg]:text-foreground/40 pl-4 pr-1"
                   >
-                    <IconLock className="size-5" />
+                    <LockIcon className="size-5" />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput
                     className="px-3 h-full"
@@ -254,7 +254,7 @@ function ResetPassword() {
                 variant="default"
               >
                 {loading ? "Salvando..." : "Redefinir Senha e Entrar"}
-                {!loading && <IconKey className="ml-2 size-3.5" />}
+                {!loading && <KeyIcon className="ml-2 size-3.5" />}
               </PrismButton>
             </div>
           </form>

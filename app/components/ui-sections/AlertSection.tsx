@@ -1,9 +1,8 @@
 import {
-  IconInfoCircle,
-  IconAlertTriangle,
-  IconCheck,
-  IconAlertCircle,
-} from "@tabler/icons-react";
+  AlertTriangleIcon,
+  CheckCircle2Icon,
+  InfoIcon,
+} from "lucide-react";
 import {
   PrismAlert,
   PrismAlertTitle,
@@ -27,7 +26,7 @@ export function AlertSection() {
         <GallerySectionContent>
           <GalleryItem label="Default">
             <PrismAlert>
-              <IconInfoCircle />
+              <InfoIcon />
               <PrismAlertTitle>Informações Gerais</PrismAlertTitle>
               <PrismAlertDescription>
                 Este alerta usa o tema padrão neutro do card.
@@ -36,7 +35,7 @@ export function AlertSection() {
           </GalleryItem>
           <GalleryItem label="Error">
             <PrismAlert variant="error">
-              <IconAlertTriangle />
+              <AlertTriangleIcon />
               <PrismAlertTitle>Acesso Recusado</PrismAlertTitle>
               <PrismAlertDescription>
                 Suas credenciais de login não são válidas no sistema.
@@ -45,7 +44,7 @@ export function AlertSection() {
           </GalleryItem>
           <GalleryItem label="Sucess">
             <PrismAlert variant="success">
-              <IconCheck />
+              <CheckCircle2Icon />
               <PrismAlertTitle>Senha Redefinida</PrismAlertTitle>
               <PrismAlertDescription>
                 Sua senha foi atualizada com sucesso.
@@ -54,7 +53,7 @@ export function AlertSection() {
           </GalleryItem>
           <GalleryItem label="Warning">
             <PrismAlert variant="warning">
-              <IconAlertCircle />
+              <AlertTriangleIcon />
               <PrismAlertTitle>Aviso de Sessão</PrismAlertTitle>
               <PrismAlertDescription>
                 Sua conexão irá expirar em breve por inatividade.
@@ -63,7 +62,7 @@ export function AlertSection() {
           </GalleryItem>
           <GalleryItem label="Info">
             <PrismAlert variant="info">
-              <IconInfoCircle />
+              <InfoIcon />
               <PrismAlertTitle>Atualização Disponível</PrismAlertTitle>
               <PrismAlertDescription>
                 Uma nova versão do Prism foi implementada.

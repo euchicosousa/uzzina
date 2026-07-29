@@ -1,12 +1,12 @@
 import {
-  IconBrain,
-  IconCopyCheck,
-  IconFilter,
-  IconHeartHandshake,
-  IconPlus,
-  IconSearch,
-  IconX,
-} from "@tabler/icons-react";
+  BrainIcon,
+  CheckCheckIcon,
+  FilterIcon,
+  HandshakeIcon,
+  PlusIcon,
+  SearchIcon,
+  XIcon,
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Link,
@@ -87,7 +87,7 @@ export function AppBar({
           title="Flow"
           to="/app/flow"
         >
-          <IconBrain className="size-5" />
+          <BrainIcon className="size-5" />
         </Link>
         <PartnerFilterPopover
           activePartners={activePartners}
@@ -119,7 +119,7 @@ export function AppBar({
             >
               <span className="max-sm:hidden">Nova Ação</span>
               <span className="sm:hidden">Ação</span>
-              <IconPlus />
+              <PlusIcon />
             </PrismButton>
           )}
         </div>
@@ -133,7 +133,7 @@ export function AppBar({
               size={"icon"}
               variant={"destructive"}
             >
-              <IconX />
+              <XIcon />
             </PrismButton>
           ) : (
             <PrismButton
@@ -143,7 +143,7 @@ export function AppBar({
               size={"icon"}
               variant={"ghost"}
             >
-              <IconCopyCheck />
+              <CheckCheckIcon />
             </PrismButton>
           )}
         </div>
@@ -153,7 +153,7 @@ export function AppBar({
           size="icon"
           variant="ghost"
         >
-          <IconSearch />
+          <SearchIcon />
         </PrismButton>
       </div>
     </div>
@@ -201,7 +201,7 @@ function PartnerFilterPopover({
               size={SIZE.sm}
             />
           ) : (
-            <IconHeartHandshake />
+            <HandshakeIcon />
           )
         ) : partner ? (
           <UAvatar
@@ -212,7 +212,7 @@ function PartnerFilterPopover({
             size={SIZE.sm}
           />
         ) : (
-          <IconHeartHandshake />
+          <HandshakeIcon />
         )}
       </PrismButton>
       <PrismPopover className="p-0 rounded-4xl">
@@ -238,7 +238,7 @@ function PartnerFilterPopover({
                   setIsFilterMode(selected);
                 }}
               >
-                <IconFilter />
+                <FilterIcon />
               </PrismToggle>
             )}
           </div>

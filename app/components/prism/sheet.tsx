@@ -13,7 +13,7 @@ import {
 } from "react-aria-components";
 import { cn } from "cnfast";
 import { Button } from "~/components/prism/button";
-import { IconX } from "@tabler/icons-react";
+import { XIcon } from "lucide-react";
 function SheetTrigger({ ...props }: SheetTriggerPrimitiveProps) {
   return <SheetTriggerPrimitive data-slot="sheet-trigger" {...props} />;
 }
@@ -90,7 +90,7 @@ function Sheet({
               size="icon-sm"
               variant="ghost"
             >
-              <IconX />
+              <XIcon />
               <span className="sr-only">Close</span>
             </SheetClose>
           )}

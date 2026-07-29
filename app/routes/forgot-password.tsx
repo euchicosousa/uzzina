@@ -1,9 +1,9 @@
 import {
-  IconArrowLeft,
-  IconAlertTriangle,
-  IconMailOpened,
-  IconAt,
-} from "@tabler/icons-react";
+  ArrowLeftIcon,
+  AlertTriangleIcon,
+  MailOpenIcon,
+  AtSignIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { TextField, Label } from "react-aria-components";
@@ -66,14 +66,14 @@ function ForgotPassword() {
             className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
             to="/login"
           >
-            <IconArrowLeft className="size-3" />
+            <ArrowLeftIcon className="size-3" />
             Voltar ao login
           </Link>
         </div>
 
         {error && (
           <PrismAlert variant="error">
-            <IconAlertTriangle />
+            <AlertTriangleIcon />
             <PrismAlertTitle>Erro ao solicitar</PrismAlertTitle>
             <PrismAlertDescription>{error}</PrismAlertDescription>
           </PrismAlert>
@@ -82,7 +82,7 @@ function ForgotPassword() {
         {success ? (
           <div className="flex flex-col items-center justify-center py-6 text-center animate-pop">
             <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-success-background border border-success/20 text-success">
-              <IconMailOpened className="size-6" />
+              <MailOpenIcon className="size-6" />
             </div>
             <h3 className="mb-2 text-lg font-semibold text-foreground">
               E-mail enviado!
@@ -117,7 +117,7 @@ function ForgotPassword() {
                     align="inline-start"
                     className="[&_svg]:text-foreground/40 pl-4 pr-1"
                   >
-                    <IconAt className="size-5" />
+                    <AtSignIcon className="size-5" />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput
                     className="px-3 h-full"

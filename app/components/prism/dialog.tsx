@@ -9,7 +9,7 @@ import {
   type ModalOverlayProps as ModalOverlayPrimitiveProps,
 } from "react-aria-components";
 import { cn } from "cnfast";
-import { IconX } from "@tabler/icons-react";
+import { XIcon } from "lucide-react";
 import { PrismButton } from ".";
 function DialogTrigger({ ...props }: DialogTriggerPrimitiveProps) {
   return <DialogTriggerPrimitive data-slot="dialog-trigger" {...props} />;
@@ -84,7 +84,7 @@ function Dialog({
               size="icon-xs"
               variant={"ghost"}
             >
-              <IconX />
+              <XIcon />
               <span className="sr-only">Close</span>
             </DialogClose>
           )}

@@ -14,7 +14,7 @@ import {
   type SeparatorProps as SeparatorPrimitiveProps,
 } from "react-aria-components";
 import { cn } from "cnfast";
-import { IconCheck, IconChevronRight } from "@tabler/icons-react";
+import { CheckIcon, ChevronRightIcon } from "lucide-react";
 function DropdownMenuTrigger({
   ...props
 }: React.ComponentProps<typeof MenuTriggerPrimitive>) {
@@ -136,7 +136,7 @@ function DropdownMenuItem({
                 data-selected={isSelected}
                 data-slot="menu-item-indicator"
               >
-                {isSelected ? <IconCheck /> : null}
+                {isSelected ? <CheckIcon /> : null}
               </span>
             ) : null}
           </>
@@ -170,7 +170,7 @@ function DropdownMenuSubTrigger({
       {composeRenderProps(props.children, (children) => (
         <>
           {children}
-          <IconChevronRight className="ml-auto size-4" />
+          <ChevronRightIcon className="ml-auto size-4" />
         </>
       ))}
     </MenuItemPrimitive>

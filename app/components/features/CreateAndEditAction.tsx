@@ -1,7 +1,7 @@
 import type { Action, Partner } from "~/types";
-import { IconBrandInstagram } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { ArchiveIcon, HeartIcon, MessageSquareIcon, XIcon } from "lucide-react";
+import { Icons } from "~/components/uzzina/UIIcons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ActionFormFooter } from "~/components/features/ActionForm/ActionFormFooter";
@@ -357,7 +357,7 @@ export function CreateAndEditAction({
             role="tab"
             type="button"
           >
-            INSTAGRAM <IconBrandInstagram className="size-4" />
+            INSTAGRAM <Icons className="size-4" slug="instagram" />
           </button>
         )}
         <button

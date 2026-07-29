@@ -25,7 +25,7 @@ import {
   PrismDialogTitle,
 } from "~/components/prism";
 import { InputGroup, InputGroupAddon } from "~/components/prism/input-group";
-import { IconSearch, IconCircleCheckFilled } from "@tabler/icons-react";
+import { SearchIcon, CheckCircle2Icon } from "lucide-react";
 function Command({
   className,
   dir,
@@ -111,7 +111,7 @@ function CommandInput({ className, ...props }: InputProps) {
           data-slot="command-input"
         />
         <InputGroupAddon>
-          <IconSearch className="size-4 shrink-0 opacity-50" />
+          <SearchIcon className="size-4 shrink-0 opacity-50" />
         </InputGroupAddon>
       </InputGroup>
     </SearchField>
@@ -200,7 +200,7 @@ function CommandItem<T extends object>({
       {composeRenderProps(children, (children) => (
         <>
           {children}
-          <IconCircleCheckFilled className="ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100" />
+          <CheckCircle2Icon className="ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100" />
         </>
       ))}
     </MenuItem>

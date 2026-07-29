@@ -1,13 +1,12 @@
 import { useState } from "react";
 import {
-  IconBold,
-  IconItalic,
-  IconUnderline,
-  IconList,
-  IconLayoutGrid,
-  IconStar,
-  IconStarFilled,
-} from "@tabler/icons-react";
+  BoldIcon,
+  ItalicIcon,
+  UnderlineIcon,
+  ListIcon,
+  LayoutGridIcon,
+  StarIcon,
+} from "lucide-react";
 import {
   PrismToggle,
   PrismToggleGroup,
@@ -41,9 +40,9 @@ export function ToggleSection() {
                 onChange={setIsStarred}
               >
                 {isStarred ? (
-                  <IconStarFilled className="size-5 text-amber-500" />
+                  <StarIcon className="size-5 text-amber-500 fill-amber-500" />
                 ) : (
-                  <IconStar className="size-5" />
+                  <StarIcon className="size-5" />
                 )}
                 <span>{isStarred ? "Favoritado" : "Favoritar"}</span>
               </PrismToggle>
@@ -61,13 +60,13 @@ export function ToggleSection() {
               selectionMode="multiple"
             >
               <PrismToggleGroupItem aria-label="Negrito" id="bold">
-                <IconBold className="size-4" />
+                <BoldIcon className="size-4" />
               </PrismToggleGroupItem>
               <PrismToggleGroupItem aria-label="Itálico" id="italic">
-                <IconItalic className="size-4" />
+                <ItalicIcon className="size-4" />
               </PrismToggleGroupItem>
               <PrismToggleGroupItem aria-label="Sublinhado" id="underline">
-                <IconUnderline className="size-4" />
+                <UnderlineIcon className="size-4" />
               </PrismToggleGroupItem>
             </PrismToggleGroup>
           </GalleryItem>
@@ -83,11 +82,11 @@ export function ToggleSection() {
               variant="outline"
             >
               <PrismToggleGroupItem aria-label="Lista" id="list">
-                <IconList className="size-4" />
+                <ListIcon className="size-4" />
                 <span>Lista</span>
               </PrismToggleGroupItem>
               <PrismToggleGroupItem aria-label="Grade" id="grid">
-                <IconLayoutGrid className="size-4" />
+                <LayoutGridIcon className="size-4" />
                 <span>Grade</span>
               </PrismToggleGroupItem>
             </PrismToggleGroup>

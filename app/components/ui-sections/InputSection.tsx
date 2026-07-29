@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { TextField, Label } from "react-aria-components";
-import { IconAt, IconLock, IconEye } from "@tabler/icons-react";
+import { AtSignIcon, LockIcon, EyeIcon } from "lucide-react";
 import {
   PrismInput,
   PrismInputGroup,
@@ -58,7 +58,7 @@ export function InputSection() {
                   align="inline-start"
                   className="[&_svg]:text-foreground/40 pl-4 pr-1"
                 >
-                  <IconAt className="size-5" />
+                  <AtSignIcon className="size-5" />
                 </PrismInputGroupAddon>
                 <PrismInputGroupInput
                   className="px-3 h-full"
@@ -78,7 +78,7 @@ export function InputSection() {
                   align="inline-start"
                   className="[&_svg]:text-foreground/40 pl-4 pr-1"
                 >
-                  <IconLock className="size-5" />
+                  <LockIcon className="size-5" />
                 </PrismInputGroupAddon>
                 <PrismInputGroupInput
                   className="px-3 h-full"
@@ -90,7 +90,7 @@ export function InputSection() {
                   className="pr-2 pl-1"
                 >
                   <PrismButton size="icon-sm" variant="ghost">
-                    <IconEye className="size-4" />
+                    <EyeIcon className="size-4" />
                   </PrismButton>
                 </PrismInputGroupAddon>
               </PrismInputGroup>

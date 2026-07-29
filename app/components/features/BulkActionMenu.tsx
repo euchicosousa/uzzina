@@ -1,13 +1,13 @@
 import {
-  IconArchive,
-  IconCalendar,
-  IconFlag,
-  IconLayoutKanban,
-  IconPalette,
-  IconTag,
-  IconUser,
-  IconX,
-} from "@tabler/icons-react";
+  ArchiveIcon,
+  CalendarIcon,
+  FlagIcon,
+  KanbanIcon,
+  PaletteIcon,
+  TagIcon,
+  UserIcon,
+  XIcon,
+} from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
@@ -246,7 +246,7 @@ export function BulkActionMenu() {
           {/* Fase */}
           <PrismMenuSub>
             <PrismMenuSubTrigger textValue="Fase">
-              <IconLayoutKanban /> Alterar Fase
+              <KanbanIcon /> Alterar Fase
             </PrismMenuSubTrigger>
             <PrismMenuSubContent>
               {Object.values(PHASES)
@@ -276,7 +276,7 @@ export function BulkActionMenu() {
           {/* Estação */}
           <PrismMenuSub>
             <PrismMenuSubTrigger textValue="Estação">
-              <IconLayoutKanban /> Alterar Estação
+              <KanbanIcon /> Alterar Estação
             </PrismMenuSubTrigger>
             <PrismMenuSubContent>
               {Object.values(STATIONS).map((station) => (
@@ -305,7 +305,7 @@ export function BulkActionMenu() {
           {/* Categoria */}
           <PrismMenuSub>
             <PrismMenuSubTrigger textValue="Categoria">
-              <IconTag /> Alterar Categoria
+              <TagIcon /> Alterar Categoria
             </PrismMenuSubTrigger>
             <PrismMenuSubContent className="max-h-72 overflow-y-auto">
               {Object.values(CATEGORIES)
@@ -335,7 +335,7 @@ export function BulkActionMenu() {
           {/* Prioridade */}
           <PrismMenuSub>
             <PrismMenuSubTrigger textValue="Prioridade">
-              <IconFlag /> Alterar Prioridade
+              <FlagIcon /> Alterar Prioridade
             </PrismMenuSubTrigger>
             <PrismMenuSubContent>
               {Object.values(PRIORITIES).map((priority) => {
@@ -356,7 +356,7 @@ export function BulkActionMenu() {
                     }
                     textValue={priority.title}
                   >
-                    <IconFlag />
+                    <FlagIcon />
                     {priority.title}
                   </PrismMenuItem>
                 );
@@ -377,7 +377,7 @@ export function BulkActionMenu() {
             onAction={() => setDateTimeOpen(true)}
             textValue="Data e Hora"
           >
-            <IconCalendar /> Alterar Data e Hora
+            <CalendarIcon /> Alterar Data e Hora
           </PrismMenuItem>
 
           {/* Cor — abre o dialog com as cores do parceiro atual */}
@@ -385,7 +385,7 @@ export function BulkActionMenu() {
             onAction={() => setColorOpen(true)}
             textValue="Cor"
           >
-            <IconPalette /> Alterar Cor
+            <PaletteIcon /> Alterar Cor
           </PrismMenuItem>
 
           {/* Responsáveis — abre o dialog de seleção de pessoas */}
@@ -393,7 +393,7 @@ export function BulkActionMenu() {
             onAction={() => setResponsiblesOpen(true)}
             textValue="Responsáveis"
           >
-            <IconUser /> Alterar Responsáveis
+            <UserIcon /> Alterar Responsáveis
           </PrismMenuItem>
 
           <PrismMenuSeparator />
@@ -403,14 +403,14 @@ export function BulkActionMenu() {
             onAction={() => setArchiveOpen(true)}
             textValue="Arquivar"
           >
-            <IconArchive /> Arquivar
+            <ArchiveIcon /> Arquivar
           </PrismMenuItem>
 
           <PrismMenuSeparator />
 
           {/* Limpar Seleção */}
           <PrismMenuItem onAction={clearSelection} textValue="Limpar Seleção">
-            <IconX /> Limpar Seleção
+            <XIcon /> Limpar Seleção
           </PrismMenuItem>
         </PrismMenuContent>
       </PrismMenu>

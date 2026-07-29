@@ -31,7 +31,7 @@ import {
   deriveDarkBg,
   deriveDarkFg,
 } from "~/utils/color";
-import { IconCloud } from "@tabler/icons-react";
+import { CloudIcon } from "lucide-react";
 export const Route = createFileRoute("/app/profile")({
   component: ProfilePage,
 });
@@ -945,7 +945,7 @@ function ProfilePage() {
             isDisabled={isSubmitting}
             type="submit"
           >
-            <IconCloud />
+            <CloudIcon />
             {isSubmitting ? "Salvando..." : "Salvar Alterações"}
           </PrismButton>
         </div>

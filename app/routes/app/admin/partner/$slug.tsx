@@ -29,7 +29,7 @@ import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { fetchPeople } from "~/lib/supabase.queries";
 import type { Partner } from "~/types";
 import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
-import { IconCloud } from "@tabler/icons-react";
+import { CloudIcon } from "lucide-react";
 export const Route = createFileRoute("/app/admin/partner/$slug")({
   component: AdminPartnerEditPage,
 });
@@ -593,7 +593,7 @@ function AdminPartnerEditPage() {
               "Salvando..."
             ) : (
               <>
-                <IconCloud /> Salvar Tudo
+                <CloudIcon /> Salvar Tudo
               </>
             )}
           </PrismButton>

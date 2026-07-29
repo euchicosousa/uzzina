@@ -1,11 +1,11 @@
 import {
-  IconAlertTriangle,
-  IconEye,
-  IconEyeOff,
-  IconLogin,
-  IconLock,
-  IconAt,
-} from "@tabler/icons-react";
+  AlertTriangleIcon,
+  EyeIcon,
+  EyeOffIcon,
+  LogInIcon,
+  LockIcon,
+  AtSignIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import { TextField, Label } from "react-aria-components";
@@ -64,7 +64,7 @@ function Login() {
         </div>
         {error && (
           <PrismAlert variant="error">
-            <IconAlertTriangle />
+            <AlertTriangleIcon />
             <PrismAlertTitle>Erro ao fazer login</PrismAlertTitle>
             <PrismAlertDescription>{error}</PrismAlertDescription>
           </PrismAlert>
@@ -86,7 +86,7 @@ function Login() {
                 align="inline-start"
                 className="[&_svg]:text-foreground/40 pl-4 pr-1"
               >
-                <IconAt className="size-5" />
+                <AtSignIcon className="size-5" />
               </PrismInputGroupAddon>
               <PrismInputGroupInput
                 className="px-3 h-full"
@@ -119,7 +119,7 @@ function Login() {
                 align="inline-start"
                 className="[&_svg]:text-foreground/40 pl-4 pr-1"
               >
-                <IconLock className="size-5" />
+                <LockIcon className="size-5" />
               </PrismInputGroupAddon>
               <PrismInputGroupInput
                 className="px-3 h-full"
@@ -134,9 +134,9 @@ function Login() {
                   variant="ghost"
                 >
                   {showPassword ? (
-                    <IconEye className="size-4" />
+                    <EyeIcon className="size-4" />
                   ) : (
-                    <IconEyeOff className="size-4" />
+                    <EyeOffIcon className="size-4" />
                   )}
                 </PrismButton>
               </PrismInputGroupAddon>
@@ -150,7 +150,7 @@ function Login() {
               variant="default"
             >
               {isSubmitting ? "Entrando..." : "Fazer Login"}
-              <IconLogin />
+              <LogInIcon />
             </PrismButton>
           </div>
         </form>

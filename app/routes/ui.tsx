@@ -1,13 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import {
-  IconPalette,
-  IconPaletteFilled,
-  IconCategory,
-  IconCategoryFilled,
-  IconApps,
-  IconAppsFilled,
-} from "@tabler/icons-react";
+import { PaletteIcon, LayoutGridIcon } from "lucide-react";
 import {
   SidebarTabButton,
   SidebarAnchorLink,
@@ -109,22 +102,22 @@ function UIPage() {
         {/* Alternador de Abas Principais */}
         <div className="flex gap-1">
           <SidebarTabButton
-            activeIcon={<IconPaletteFilled className="size-4 text-primary" />}
-            inactiveIcon={<IconPalette className="size-4" />}
+            activeIcon={<PaletteIcon className="size-4 text-primary" />}
+            inactiveIcon={<PaletteIcon className="size-4" />}
             isActive={activeSection === "tokens"}
             label="Design Tokens"
             onClick={() => handleSectionChange("tokens")}
           />
           <SidebarTabButton
-            activeIcon={<IconCategoryFilled className="size-4 text-primary" />}
-            inactiveIcon={<IconCategory className="size-4" />}
+            activeIcon={<LayoutGridIcon className="size-4 text-primary" />}
+            inactiveIcon={<LayoutGridIcon className="size-4" />}
             isActive={activeSection === "components"}
             label="Componentes de UI"
             onClick={() => handleSectionChange("components")}
           />
           <SidebarTabButton
-            activeIcon={<IconAppsFilled className="size-4 text-primary" />}
-            inactiveIcon={<IconApps className="size-4" />}
+            activeIcon={<LayoutGridIcon className="size-4 text-primary" />}
+            inactiveIcon={<LayoutGridIcon className="size-4" />}
             isActive={activeSection === "uzzina"}
             label="Componentes Uzzina"
             onClick={() => handleSectionChange("uzzina")}

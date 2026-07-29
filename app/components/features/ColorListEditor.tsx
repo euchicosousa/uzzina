@@ -19,7 +19,7 @@ import { useId, useState } from "react";
 import { cn } from "cnfast";
 import { normalizeHexColor } from "~/lib/uzzina-utils";
 import { PrismButton, PrismInput } from "../prism";
-import { IconGripVertical, IconPlus, IconTrash } from "@tabler/icons-react";
+import { GripVerticalIcon, PlusIcon, Trash2Icon } from "lucide-react";
 interface ColorItem {
   id: string;
   value: string;
@@ -167,7 +167,7 @@ export function ColorListEditor({
       </DndContext>
 
       <PrismButton onClick={addColor} size="sm" variant="outline">
-        <IconPlus />
+        <PlusIcon />
         Adicionar Cor
       </PrismButton>
     </div>
@@ -217,7 +217,7 @@ function SortableColorItem({
         {...listeners}
         className="cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing"
       >
-        <IconGripVertical className="size-4" />
+        <GripVerticalIcon className="size-4" />
       </div>
 
       <div className="flex flex-1 items-center gap-2">
@@ -261,7 +261,7 @@ function SortableColorItem({
         type="button"
         variant="destructive"
       >
-        <IconTrash />
+        <Trash2Icon />
       </PrismButton>
     </div>
   );
