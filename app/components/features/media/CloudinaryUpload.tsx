@@ -81,6 +81,7 @@ export function CloudinaryUpload({
 }: CloudinaryUploadProps) {
   const widgetRef = useRef<{
     open: () => void;
+    close?: (options?: { quiet?: boolean }) => void;
     destroy: () => void;
   } | null>(null);
 
@@ -105,8 +106,23 @@ export function CloudinaryUpload({
   // Destrói o widget ao desmontar o componente
   useEffect(() => {
     return () => {
-      widgetRef.current?.destroy();
-      widgetRef.current = null;
+      if (widgetRef.current) {
+        try {
+          widgetRef.current.close?.({ quiet: true });
+        } catch {
+          // Ignores
+        }
+        widgetRef.current.destroy();
+        widgetRef.current = null;
+      }
+      // Remove resíduos de overlay que possam ter ficado no DOM
+      document
+        .querySelectorAll("[id^='cloudinary-'], [class*='cloudinary-']")
+        .forEach((el) => {
+          if (el.tagName === "IFRAME" || el.classList.contains("cloudinary-overlay")) {
+            el.remove();
+          }
+        });
     };
   }, []);
   function openWidget() {

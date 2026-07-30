@@ -2,15 +2,10 @@ import type { Action } from "~/types";
 import {
   DndContext,
   DragOverlay,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-  type DragStartEvent,
 } from "@dnd-kit/core";
-import { useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useActionMutations } from "~/hooks/useActionMutations";
+import { useKanbanDnd } from "~/hooks/useKanbanDnd";
 import {
   DATE_TIME_DISPLAY,
   INTENT,
@@ -23,64 +18,29 @@ import { Draggable, Droppable } from "../features/DnD";
 import { DragStateContext } from "../features/DragStateContext";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { PrismBadge } from "../prism";
+
 export default function KanbanHomeActions({ actions }: { actions: Action[] }) {
   const isDesktop = useIsDesktop();
-  const _queryClient = useQueryClient();
   const { handleAction } = useActionMutations();
-  const [activeAction, setActiveAction] = useState<Action>();
 
-  // Local override: maps action.id → new phase slug
-  const [phaseOverrides, setPhaseOverrides] = useState<Record<string, string>>(
-    {},
-  );
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-  );
-  const handleDragStart = (event: DragStartEvent) => {
-    const found = actions.find((action) => action.id === event.active.id);
-    if (found) {
-      setActiveAction(found);
-    }
-  };
-  const handleDragEnd = (event: DragEndEvent) => {
-    if (event.over && activeAction) {
-      const newPhase = event.over.id as string;
-
-      // 1. Apply override locally
-      setPhaseOverrides((prev) => ({
-        ...prev,
-        [activeAction.id]: newPhase,
-      }));
-
-      // 2. Persist to server
+  const {
+    activeAction,
+    actionsWithOverrides,
+    sensors,
+    handleDragStart,
+    handleDragEnd,
+  } = useKanbanDnd<string>({
+    actions,
+    fieldKey: "phase",
+    parseTarget: (overId) => overId,
+    onDrop: (action, newPhase) => {
       handleAction({
-        ...activeAction,
+        ...action,
         intent: INTENT.update_action,
         phase: newPhase,
       });
-    }
-
-    // 3. Clear overlay
-    setActiveAction(undefined);
-  };
-
-  // Apply local overrides on top of server-supplied actions
-  const actionsWithOverrides = useMemo(
-    () =>
-      actions.map((action) =>
-        phaseOverrides[action.id]
-          ? {
-              ...action,
-              phase: phaseOverrides[action.id],
-            }
-          : action,
-      ),
-    [actions, phaseOverrides],
-  );
+    },
+  });
 
   // Pre-group by phase so each KanbanColumn doesn't re-filter on every render
   const actionsByPhase = useMemo(() => {

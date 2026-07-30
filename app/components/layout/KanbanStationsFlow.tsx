@@ -1,13 +1,8 @@
 import type { Action } from "~/types";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   DndContext,
   DragOverlay,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-  type DragStartEvent,
 } from "@dnd-kit/core";
 import { DATE_TIME_DISPLAY, INTENT, STATIONS } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
@@ -17,62 +12,31 @@ import { ActionContainer } from "../features/ActionContainer";
 import { Droppable } from "../features/DnD";
 import { DragStateContext } from "../features/DragStateContext";
 import { useActionMutations } from "~/hooks/useActionMutations";
+import { useKanbanDnd } from "~/hooks/useKanbanDnd";
 import { PrismBadge } from "../prism";
+
 export default function KanbanStationsFlow({ actions }: { actions: Action[] }) {
   const isDesktop = useIsDesktop();
   const { handleAction } = useActionMutations();
-  const [activeAction, setActiveAction] = useState<Action>();
 
-  // Local overrides: maps action.id -> new station slug
-  const [stationOverrides, setStationOverrides] = useState<
-    Record<string, string | null>
-  >({});
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-  );
-  const handleDragStart = (event: DragStartEvent) => {
-    const found = actions.find((action) => action.id === event.active.id);
-    if (found) {
-      setActiveAction(found);
-    }
-  };
-  const handleDragEnd = (event: DragEndEvent) => {
-    if (event.over && activeAction) {
-      const targetStation =
-        event.over.id === "none" ? null : (event.over.id as string);
-
-      // 1. Apply local override
-      setStationOverrides((prev) => ({
-        ...prev,
-        [activeAction.id]: targetStation,
-      }));
-
-      // 2. Persist mutation
+  const {
+    activeAction,
+    actionsWithOverrides,
+    sensors,
+    handleDragStart,
+    handleDragEnd,
+  } = useKanbanDnd<string | null>({
+    actions,
+    fieldKey: "station",
+    parseTarget: (overId) => (overId === "none" ? null : overId),
+    onDrop: (action, newStation) => {
       handleAction({
-        ...activeAction,
+        ...action,
         intent: INTENT.update_action,
-        station: targetStation,
+        station: newStation,
       });
-    }
-    setActiveAction(undefined);
-  };
-
-  // Merge overrides into actions
-  const actionsWithOverrides = useMemo(() => {
-    return actions.map((action) => {
-      if (stationOverrides[action.id] !== undefined) {
-        return {
-          ...action,
-          station: stationOverrides[action.id],
-        };
-      }
-      return action;
-    });
-  }, [actions, stationOverrides]);
+    },
+  });
 
   // Pre-group by station
   const actionsByStation = useMemo(() => {

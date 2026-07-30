@@ -7,7 +7,7 @@ import { getCleanAction } from "~/lib/helpers";
 import { useAppContext } from "~/contexts/AppContext";
 import { ActionContainer } from "../features/ActionContainer";
 import { PrismButton, PrismSkeletonGroup } from "~/components/prism";
-import { UAvatarGroup } from "../uzzina/UAvatar";
+import { UAvatar } from "../uzzina/UAvatar";
 
 export function PartnersComponent({
   actions,
@@ -74,16 +74,12 @@ function PartnerColumn({
           }}
           to="/app/partner/$slug"
         >
-          <UAvatarGroup
-            avatars={[
-              {
-                id: partner.id,
-                fallback: partner.short,
-                image: partner.image,
-                backgroundColor: partner.colors[0],
-                color: partner.colors[1],
-              },
-            ]}
+          <UAvatar
+            id={partner.id}
+            fallback={partner.short}
+            image={partner.image}
+            backgroundColor={partner.colors[0]}
+            color={partner.colors[1]}
             size={SIZE.md}
           />
           <span className="truncate text-sm font-medium tracking-tight underline-offset-3 group-hover:underline">

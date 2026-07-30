@@ -14,7 +14,7 @@ import { parseU } from "~/utils/date";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useMemo } from "react";
-import { PrismButton } from "~/components/prism";
+import { PrismButton, PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
 import { DATE_TIME_DISPLAY, PHASES, type PHASE } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
 import { getFormattedDateTime } from "~/utils/date";
@@ -84,22 +84,20 @@ export function ClientCalendar({
           </PrismButton>
         </div>
 
-        <div className="flex rounded-lg border text-sm">
-          <button
-            className={`rounded-l-lg px-3 py-1 font-medium transition-colors ${calendarView === "week" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
-            onClick={() => setCalendarView?.("week")}
-            type="button"
+        {setCalendarView && (
+          <PrismToggleGroup
+            aria-label="Visualização do calendário"
+            selectedKeys={calendarView ? [calendarView] : [view]}
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0] as "week" | "month";
+              if (selected) setCalendarView(selected);
+            }}
+            size="sm"
           >
-            Semana
-          </button>
-          <button
-            className={`rounded-r-lg px-3 py-1 font-medium transition-colors ${calendarView === "month" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
-            onClick={() => setCalendarView?.("month")}
-            type="button"
-          >
-            Mês
-          </button>
-        </div>
+            <PrismToggleGroupItem id="week">Semana</PrismToggleGroupItem>
+            <PrismToggleGroupItem id="month">Mês</PrismToggleGroupItem>
+          </PrismToggleGroup>
+        )}
       </div>
 
       {/* Container com rolagem global nos 2 eixos divididos */}

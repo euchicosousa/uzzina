@@ -10,9 +10,10 @@ import {
 import { useMemo, useState } from "react";
 import { CalendarButtons } from "~/components/features/Calendar";
 import { CategoriesBoardComponent } from "~/components/layout/CategoriesBoardComponent";
-import FeedComponent from "~/components/layout/FeedComponent";
 import KanbanHomeActions from "~/components/layout/KanbanHomeActions";
 import { PartnersComponent } from "~/components/layout/PartnersComponent";
+import { ActionContainer } from "~/components/features/ActionContainer";
+import { VARIANT } from "~/lib/CONSTANTS";
 import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
 import { isInstagramFeed } from "~/lib/helpers";
 import type { Action } from "~/types";
@@ -92,7 +93,19 @@ export function TodayHomeComponent({
     >
       <div className="px-8 xl:px-16">
         {view === "kanban" && <KanbanHomeActions actions={filteredActions} />}
-        {view === "feed" && <FeedComponent actions={filteredActions} />}
+        {view === "feed" && (
+          <div className="w-full max-w-full overflow-hidden">
+            <h5 className="pb-8">Feed do Instagram</h5>
+            <div className="pb-8">
+              <ActionContainer
+                columns={6}
+                actions={filteredActions}
+                variant={VARIANT.content}
+                displayFlags={{ showCategory: true }}
+              />
+            </div>
+          </div>
+        )}
         {view === "categories" && (
           <CategoriesBoardComponent actions={filteredActions} />
         )}

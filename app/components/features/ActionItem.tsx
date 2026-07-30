@@ -7,6 +7,10 @@ import type { Action, Partner, Person } from "~/types";
 import { PrismCheckbox } from "~/components/prism";
 import { UAvatarGroup } from "../uzzina/UAvatar";
 import { ActionItemTitleInput } from "./ActionItemTitleInput";
+import { ActionBlockVariant } from "./ActionVariants/ActionBlockVariant";
+import { ActionContentVariant } from "./ActionVariants/ActionContentVariant";
+import { ActionLineVariant } from "./ActionVariants/ActionLineVariant";
+import type { ActionVariantRendererProps } from "./ActionVariants/types";
 import { Content } from "./Content";
 import { Draggable } from "./DnD";
 import { PhaseIcon } from "./PhaseIcon";
@@ -347,7 +351,7 @@ export function ActionItem({
  *
  * Renders the formatted date and time for an action.
  */
-function ActionItemDateTimeDisplay({
+export function ActionItemDateTimeDisplay({
   action,
   dateTimeDisplay,
 }: {
@@ -361,12 +365,7 @@ function ActionItemDateTimeDisplay({
   );
 }
 
-/**
- * ActionItemPartners Component
- *
- * Renders avatar(s) for the partner(s) associated with an action.
- */
-function ActionItemPartners({
+export function ActionItemPartners({
   action,
   partners,
   size,
@@ -416,12 +415,7 @@ function ActionItemPartners({
   );
 }
 
-/**
- * ActionItemResponsibles Component
- *
- * Renders an avatar group representing the team members responsible for the action.
- */
-function ActionItemResponsibles({
+export function ActionItemResponsibles({
   action,
   responsibles,
   size,
@@ -447,7 +441,7 @@ function ActionItemResponsibles({
  *
  * Renders a priority indicator icon colored according to the action's priority level.
  */
-function ActionItemPriority({ priority }: { priority: PRIORITY }) {
+export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
   switch (priority) {
     case PRIORITIES.low.slug:
       return <SignalIcon className="text-info size-4" />;
@@ -463,7 +457,7 @@ function ActionItemPriority({ priority }: { priority: PRIORITY }) {
  *
  * Displays a sprint icon if the action belongs to the active user's current sprint.
  */
-function ActionItemSprint({
+export function ActionItemSprint({
   action,
   className,
 }: {
@@ -475,184 +469,14 @@ function ActionItemSprint({
     <Icons className={cn("size-4 shrink-0", className)} slug="sprint" />
   ) : null;
 }
-interface ActionVariantRendererProps {
-  variant: (typeof VARIANT)[keyof typeof VARIANT];
-  action: Action;
-  currentPhase: PHASE_TYPE;
-  currentStation: STATION_TYPE | null;
-  currentCategory: CATEGORY_TYPE;
-  currentPartners: Partner[];
-  currentResponsibles: Person[];
-  showCategory?: boolean;
-  showResponsibles?: boolean;
-  showPartner?: boolean;
-  showPriority?: boolean;
-  showStation?: boolean;
-  isEditing: boolean;
-  handleSetIsEditing: (val: boolean) => void;
-  lines: 1 | 2 | undefined;
-  dateTimeDisplay:
-    (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY] | undefined;
-  handleAction: (
-    action: Action & {
-      intent: string;
-    },
-  ) => void;
-}
-function ActionVariantRenderer({
-  variant,
-  action,
-  currentPhase,
-  currentStation,
-  currentCategory,
-  currentPartners,
-  currentResponsibles,
-  showCategory,
-  showResponsibles,
-  showPartner,
-  showPriority,
-  showStation,
-  isEditing,
-  handleSetIsEditing,
-  lines,
-  dateTimeDisplay,
-  handleAction,
-}: ActionVariantRendererProps) {
-  switch (variant) {
+
+function ActionVariantRenderer(props: ActionVariantRendererProps) {
+  switch (props.variant) {
     case VARIANT.content:
-      return (
-        <>
-          <Content
-            action={action}
-            category={showCategory ? currentCategory : undefined}
-            isSquared
-            showResponsibles={showResponsibles}
-          />
-          <div className=" absolute h-12 bottom-0 rounded-2xl  w-full squircle"></div>
-        </>
-      );
+      return <ActionContentVariant {...props} />;
     case VARIANT.block:
-      return (
-        <div className="flex flex-col gap-2 pb-2">
-          <ActionItemTitleInput
-            className={"text-2xl leading-tight font-medium pb-2"}
-            isEditing={isEditing}
-            lines={lines}
-            onBlur={(title) => {
-              handleAction({
-                ...action,
-                intent: INTENT.update_action,
-                title,
-              });
-            }}
-            setIsEditing={handleSetIsEditing}
-            title={action.title}
-          />
-
-          <div className="flex items-center justify-between overflow-hidden gap-4">
-            <div className="flex items-center gap-2 overflow-hidden">
-              {showPartner && (
-                <ActionItemPartners
-                  action={action}
-                  partners={currentPartners}
-                  size="xs"
-                />
-              )}
-
-              {showCategory && (
-                <Icons
-                  className={cn("size-4 shrink-0")}
-                  color={currentCategory.color}
-                  slug={currentCategory.slug}
-                />
-              )}
-
-              {/* <PhaseStationIcon phase={currentPhase} station={currentStation} /> */}
-
-              <PhaseIcon phase={currentPhase} size="sm" />
-
-              {showResponsibles && (
-                <ActionItemResponsibles
-                  action={action}
-                  responsibles={currentResponsibles}
-                  size={SIZE.xs}
-                />
-              )}
-            </div>
-
-            <div className="flex items-center shrink-0 gap-2 text-xs opacity-50">
-              <CalendarDaysIcon className="size-3 opacity-50" />
-              <div className="font-medium">
-                {getFormattedDateTime(action.date, dateTimeDisplay)}
-              </div>
-            </div>
-          </div>
-        </div>
-      );
+      return <ActionBlockVariant {...props} />;
     default:
-      return (
-        <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
-          <div className="flex w-full items-center gap-2 overflow-hidden">
-            <div className="flex items-center gap-2">
-              {showStation && (
-                <StationIcon size="short" station={currentStation} />
-              )}
-              <PhaseIcon phase={currentPhase} size="dot" />
-            </div>
-            {isLateAction(action) && <ActionItemSprint action={action} />}
-            <ActionItemTitleInput
-              className="w-full lg:text-sm xl:text-base"
-              isEditing={isEditing}
-              onBlur={(title) => {
-                handleAction({
-                  ...action,
-                  intent: INTENT.update_action,
-                  title,
-                });
-              }}
-              setIsEditing={handleSetIsEditing}
-              title={action.title}
-            />
-          </div>
-          <div
-            className={cn(
-              "items-center gap-1",
-              isEditing ? "hidden @md:flex" : "flex",
-              dateTimeDisplay
-                ? "transition duration-500 group-hover/action:-translate-x-3 group-hover/action:opacity-0"
-                : "",
-            )}
-          >
-            {(showPartner || currentPartners.length > 1) && (
-              <ActionItemPartners action={action} partners={currentPartners} />
-            )}
-            {showResponsibles && (
-              <ActionItemResponsibles
-                action={action}
-                responsibles={currentResponsibles}
-                size="xs"
-              />
-            )}
-            {showPriority && (
-              <ActionItemPriority priority={action.priority as PRIORITY} />
-            )}
-            {showCategory && (
-              <Icons
-                className={cn("size-4")}
-                color={currentCategory.color}
-                slug={currentCategory.slug}
-              />
-            )}
-          </div>
-          {dateTimeDisplay && !isEditing && (
-            <div className="absolute right-0 flex justify-end opacity-0 overflow-hidden transition duration-500 group-hover/action:opacity-100 group-hover/action:-translate-x-3 @md:w-22">
-              <ActionItemDateTimeDisplay
-                action={action}
-                dateTimeDisplay={dateTimeDisplay}
-              />
-            </div>
-          )}
-        </div>
-      );
+      return <ActionLineVariant {...props} />;
   }
 }
