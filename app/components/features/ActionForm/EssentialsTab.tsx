@@ -5,6 +5,7 @@ import {
   FilePlus,
   FishingHookIcon,
   PlusIcon,
+  SparklesIcon,
 } from "lucide-react";
 import { Suspense, lazy, useRef, useState } from "react";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
@@ -14,6 +15,7 @@ const Tiptap = lazy(() =>
   })),
 );
 import {
+  PrismButton,
   PrismSheet,
   PrismSheetContent,
   PrismSheetDescription,
@@ -21,7 +23,6 @@ import {
   PrismSheetTitle,
 } from "~/components/prism";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
-import { UButtonAI } from "~/components/uzzina/UButtonAI";
 import { INTENT } from "~/lib/CONSTANTS";
 import { getNewDateForAction, isLateAction } from "~/lib/helpers";
 import { cn } from "cnfast";
@@ -31,7 +32,6 @@ import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "./WorkFileThumbnail";
 import { TopicsCombobox } from "~/components/features/TopicsCombobox";
-import { PrismButton } from "~/components/prism";
 interface EssentialsTabProps {
   RawAction: Action;
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;
@@ -255,9 +255,14 @@ export function EssentialsTab({
                 <FishingHookIcon />
               </PrismButton>
             )}
-            <UButtonAI disabled={isAIProcessing} onClick={handleTriggerAI}>
+            <PrismButton
+              isDisabled={isAIProcessing}
+              onClick={handleTriggerAI}
+              size="sm"
+            >
               CRIAR COM IA
-            </UButtonAI>
+              <SparklesIcon />
+            </PrismButton>
           </div>
         </div>
 

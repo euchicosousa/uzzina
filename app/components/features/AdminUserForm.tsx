@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
-import { SegmentedSelector } from "~/components/uzzina/SegmentedSelector";
 import {
   EyeIcon,
   EyeOffIcon,
@@ -9,7 +8,13 @@ import {
   UploadIcon,
   UserIcon,
 } from "lucide-react";
-import { PrismButton, PrismInput } from "../prism";
+import {
+  PrismButton,
+  PrismCheckbox,
+  PrismInput,
+  PrismToggleGroup,
+  PrismToggleGroupItem,
+} from "../prism";
 interface Area {
   slug: string;
   title: string;
@@ -188,50 +193,41 @@ export function AdminUserForm({
         {areas.length > 0 && (
           <div className="grid gap-4">
             <span className="font-medium">Áreas</span>
-            <SegmentedSelector
-              columnsClassName="grid-cols-2 sm:grid-cols-4 gap-2"
-              defaultValue={person?.areas || []}
-              name="areas"
-              options={areas.map((area) => ({
-                value: area.slug,
-                label: area.title,
-              }))}
-            />
+            <PrismToggleGroup
+              aria-label="Áreas de atuação"
+              defaultSelectedKeys={person?.areas || []}
+              selectionMode="multiple"
+            >
+              {areas.map((area) => (
+                <PrismToggleGroupItem id={area.slug} key={area.slug}>
+                  {area.title}
+                </PrismToggleGroupItem>
+              ))}
+            </PrismToggleGroup>
+            {/* Input oculto para submissão nativa do form com nome 'areas' */}
+            {(person?.areas || []).map((areaSlug) => (
+              <input key={areaSlug} name="areas" type="hidden" value={areaSlug} />
+            ))}
           </div>
         )}
 
         {/* Visibilidade e Admin */}
-        <div className="flex items-end justify-between gap-4 border-t pt-8">
-          <div className="flex items-center gap-4">
-            <SegmentedSelector
-              className="p-6"
-              columns={1}
-              defaultValue={(person?.visible ?? true) ? ["on"] : []}
-              name="visible"
-              options={[
-                {
-                  value: "on",
-                  label: "Ativo / Visível",
-                  icon: person?.visible ? EyeIcon : EyeOffIcon,
-                },
-              ]}
-              type="checkbox"
-            />
+        <div className="flex items-center gap-6 border-t pt-6">
+          <PrismCheckbox
+            defaultSelected={person?.visible ?? true}
+            name="visible"
+            value="on"
+          >
+            Ativo / Visível
+          </PrismCheckbox>
 
-            <SegmentedSelector
-              className="p-6"
-              columns={1}
-              defaultValue={person?.admin ? ["on"] : []}
-              name="admin"
-              options={[
-                {
-                  value: "on",
-                  label: "Admin",
-                  icon: UserIcon,
-                },
-              ]}
-            />
-          </div>
+          <PrismCheckbox
+            defaultSelected={person?.admin ?? false}
+            name="admin"
+            value="on"
+          >
+            Admin
+          </PrismCheckbox>
         </div>
       </div>
 

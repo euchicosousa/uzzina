@@ -1,9 +1,8 @@
-import type { Action, Partner } from "~/types";
-import { LoaderIcon } from "lucide-react";
+import { LoaderIcon, SparklesIcon } from "lucide-react";
 import { ContentFilesManager } from "~/components/features/media/InstagramContent";
 import { InstagramPreview } from "~/components/features/media/InstagramPreview";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
-import { UButtonAI } from "~/components/uzzina/UButtonAI";
+import { PrismButton } from "~/components/prism";
 import { INTENT } from "~/lib/CONSTANTS";
 import { getFormattedPartnersLinks } from "~/utils/format";
 interface InstagramTabProps {
@@ -74,12 +73,14 @@ export function InstagramTab({
               {getFormattedPartnersLinks(currentPartners)}
             </div>
           </div>
-          <UButtonAI
-            disabled={isAIProcessing}
+          <PrismButton
+            isDisabled={isAIProcessing}
             onClick={() => triggerAIAction(INTENT.ai_caption)}
+            size="sm"
           >
             GERAR LEGENDA
-          </UButtonAI>
+            <SparklesIcon />
+          </PrismButton>
         </div>
         <div className="flex h-full flex-col">
           <AiProcessingMessage isAIProcessing={isAIProcessing} />

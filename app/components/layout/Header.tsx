@@ -402,7 +402,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
                 textValue={paletteConfig.label}
               >
                 <div
-                  className="size-5 rounded-xl squircle"
+                  className="size-5 rounded-[9px] squircle"
                   style={{
                     backgroundColor: isSelected
                       ? `oklch(${currentColors.bg.l} ${currentColors.bg.c} ${currentColors.bg.h})`

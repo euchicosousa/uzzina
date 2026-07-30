@@ -136,7 +136,7 @@ const KanbanColumn = ({
             }}
           >
             <div className="flex items-center gap-2 px-1 py-2 text-lg font-medium tracking-tight">
-              <div>{phase.title}</div>
+              <h3>{phase.title}</h3>
               <PrismBadge>{actions.length}</PrismBadge>
             </div>
 

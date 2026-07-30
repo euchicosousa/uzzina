@@ -1,34 +1,34 @@
+import { cn } from "cnfast";
+import Color from "color";
 import {
-  PenIcon,
+  BadgeCheckIcon,
   BinaryIcon,
-  ZapIcon,
   BrainIcon,
-  LightbulbIcon,
   CalendarIcon,
   CameraIcon,
   CheckCircle2Icon,
-  PlusCircleIcon,
+  CircleFadingPlusIcon,
   ClipboardCheckIcon,
   CoinsIcon,
-  MonitorIcon,
   FilterIcon,
+  GalleryHorizontalIcon,
   HelpCircleIcon,
-  LayersIcon,
+  ImageIcon,
   LayoutGridIcon,
+  LightbulbIcon,
+  MonitorIcon,
   MoonIcon,
   PaletteIcon,
-  ImageIcon,
+  PenIcon,
+  PenToolIcon,
   PlayIcon,
   PresentationIcon,
   PrinterIcon,
-  BadgeCheckIcon,
   SunIcon,
   UserCheckIcon,
-  SplineIcon,
   Volume2Icon,
+  ZapIcon,
 } from "lucide-react";
-import { cn } from "cnfast";
-import Color from "color";
 import { Theme } from "~/hooks/useAppTheme";
 export function Icons({
   slug,
@@ -55,9 +55,9 @@ export function Icons({
     case "capture":
       return <CameraIcon className={cn(className)} style={style} />;
     case "carousel":
-      return <LayersIcon className={cn(className)} style={style} />;
+      return <GalleryHorizontalIcon className={cn(className)} style={style} />;
     case "design":
-      return <SplineIcon className={cn(className)} style={style} />;
+      return <PenToolIcon className={cn(className)} style={style} />;
     case "dev":
       return <BinaryIcon className={cn(className)} style={style} />;
     case "finance":
@@ -73,7 +73,7 @@ export function Icons({
     case "sm":
       return <BadgeCheckIcon className={cn(className)} style={style} />;
     case "stories":
-      return <PlusCircleIcon className={cn(className)} style={style} />;
+      return <CircleFadingPlusIcon className={cn(className)} style={style} />;
     case "todo":
       return <ClipboardCheckIcon className={cn(className)} style={style} />;
     case "sprint":

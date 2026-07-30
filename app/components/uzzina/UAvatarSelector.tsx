@@ -54,6 +54,7 @@ export function UAvatarSelector({
         return (
           <button
             key={option.id}
+            aria-pressed={isSelected}
             className={cn(
               "hover:bg-muted/50 relative flex flex-col items-center gap-2 overflow-hidden rounded-lg p-4 transition-all",
               isSelected ? "text-foreground bg-muted" : "opacity-50",

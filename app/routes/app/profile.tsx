@@ -15,10 +15,15 @@ import {
   Theme,
   useAppThemeContext,
 } from "~/hooks/useAppTheme";
-import { PrismButton, PrismInput, PrismLabel } from "~/components/prism";
+import {
+  PrismButton,
+  PrismInput,
+  PrismLabel,
+  PrismToggleGroup,
+  PrismToggleGroupItem,
+} from "~/components/prism";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { PreferenceSwitch } from "~/components/uzzina/PreferenceSwitch";
-import { SegmentedSelector } from "~/components/uzzina/SegmentedSelector";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { useAppContext } from "~/contexts/AppContext";
 import { PALLETE } from "~/lib/CONSTANTS";
@@ -568,31 +573,27 @@ function ProfilePage() {
               <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 Tema do App
               </span>
-              <SegmentedSelector
-                columns={3}
-                name="theme"
-                onChange={(val) =>
-                  handleThemeChange(val as "light" | "dark" | "system")
-                }
-                options={[
-                  {
-                    value: "light",
-                    label: "Claro",
-                    icon: SunIcon,
-                  },
-                  {
-                    value: "dark",
-                    label: "Escuro",
-                    icon: MoonIcon,
-                  },
-                  {
-                    value: "system",
-                    label: "Sistema",
-                    icon: LaptopIcon,
-                  },
-                ]}
-                value={selectedTheme}
-              />
+              <PrismToggleGroup
+                aria-label="Tema do App"
+                selectedKeys={[selectedTheme]}
+                onSelectionChange={(keys) => {
+                  const val = Array.from(keys)[0] as "light" | "dark" | "system";
+                  if (val) handleThemeChange(val);
+                }}
+              >
+                <PrismToggleGroupItem id="light">
+                  <SunIcon />
+                  Claro
+                </PrismToggleGroupItem>
+                <PrismToggleGroupItem id="dark">
+                  <MoonIcon />
+                  Escuro
+                </PrismToggleGroupItem>
+                <PrismToggleGroupItem id="system">
+                  <LaptopIcon />
+                  Sistema
+                </PrismToggleGroupItem>
+              </PrismToggleGroup>
             </div>
 
             {/* Accent Theme Color Selection */}
@@ -606,15 +607,20 @@ function ProfilePage() {
                   aplicativo.
                 </span>
               </div>
-              <SegmentedSelector
-                columns={6}
-                columnsClassName="grid-cols-5 sm:grid-cols-9 gap-2"
-                hideLabelText
-                name="themeColorIndex"
-                onChange={(val) => handleColorChange(val as number)}
-                options={paletteOptions}
-                value={selectedThemeColor}
-              />
+              <PrismToggleGroup
+                aria-label="Cor de Destaque"
+                selectedKeys={[String(selectedThemeColor)]}
+                onSelectionChange={(keys) => {
+                  const val = Array.from(keys)[0];
+                  if (val !== undefined) handleColorChange(Number(val));
+                }}
+              >
+                {paletteOptions.map((opt) => (
+                  <PrismToggleGroupItem id={String(opt.value)} key={opt.value}>
+                    {opt.label}
+                  </PrismToggleGroupItem>
+                ))}
+              </PrismToggleGroup>
             </div>
 
             {/* Painel Customizado */}
@@ -901,30 +907,27 @@ function ProfilePage() {
                   os painéis de clientes.
                 </span>
               </div>
-              <SegmentedSelector
-                name="defaultViewVariant"
-                onChange={(val) =>
-                  setSelectedVariant(val as "line" | "block" | "content")
-                }
-                options={[
-                  {
-                    value: "line",
-                    label: "Linha",
-                    icon: ListIcon,
-                  },
-                  {
-                    value: "block",
-                    label: "Bloco",
-                    icon: LayoutGridIcon,
-                  },
-                  {
-                    value: "content",
-                    label: "Conteúdo",
-                    icon: ImageIcon,
-                  },
-                ]}
-                value={selectedVariant}
-              />
+              <PrismToggleGroup
+                aria-label="Layout padrão"
+                selectedKeys={[selectedVariant]}
+                onSelectionChange={(keys) => {
+                  const val = Array.from(keys)[0] as "line" | "block" | "content";
+                  if (val) setSelectedVariant(val);
+                }}
+              >
+                <PrismToggleGroupItem id="line">
+                  <ListIcon />
+                  Linha
+                </PrismToggleGroupItem>
+                <PrismToggleGroupItem id="block">
+                  <LayoutGridIcon />
+                  Bloco
+                </PrismToggleGroupItem>
+                <PrismToggleGroupItem id="content">
+                  <ImageIcon />
+                  Conteúdo
+                </PrismToggleGroupItem>
+              </PrismToggleGroup>
             </div>
 
             {/* Show Instagram Sidebar by Default Toggle */}
