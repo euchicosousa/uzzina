@@ -17,4 +17,5 @@ export * from "./SeparatorSection";
 export * from "./CheckboxSection";
 export * from "./RadioGroupSection";
 export * from "./ViewOptionsSection";
+export * from "./UzzinaComponentsSection";
 

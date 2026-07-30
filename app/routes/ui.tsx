@@ -22,6 +22,7 @@ import {
   ToasterSection,
   SeparatorSection,
   ViewOptionsSection,
+  UzzinaComponentsSection,
 } from "~/components/ui-sections";
 export const Route = createFileRoute("/ui")({
   component: UIPage,
@@ -44,7 +45,7 @@ function UIPage() {
       activeSection === "tokens"
         ? ["colors", "spacing"]
         : activeSection === "uzzina"
-          ? ["uzzina-view-options"]
+          ? ["uzzina-view-options", "uzzina-components"]
           : [
               "prism-button",
               "prism-input",
@@ -160,19 +161,9 @@ function UIPage() {
                   targetId="uzzina-view-options"
                 />
                 <SidebarAnchorLink
-                  active={activeAnchor === "uzzina-categories-combobox"}
-                  label="CategoriesCombobox"
-                  targetId="uzzina-categories-combobox"
-                />
-                <SidebarAnchorLink
-                  active={activeAnchor === "uzzina-phase-combobox"}
-                  label="PhaseCombobox"
-                  targetId="uzzina-phase-combobox"
-                />
-                <SidebarAnchorLink
-                  active={activeAnchor === "uzzina-station-combobox"}
-                  label="StationCombobox"
-                  targetId="uzzina-station-combobox"
+                  active={activeAnchor === "uzzina-components"}
+                  label="Icons & UAvatar"
+                  targetId="uzzina-components"
                 />
               </div>
             )}
@@ -269,6 +260,7 @@ function UIPage() {
           ) : activeSection === "uzzina" ? (
             <div className="flex flex-col">
               <ViewOptionsSection />
+              <UzzinaComponentsSection />
             </div>
           ) : (
             <div className="flex flex-col">
