@@ -50,11 +50,11 @@ export function CalendarDay({
         "group/column flex flex-col justify-between hover:bg-foreground/5 duration-500",
         showBorder && "border-b",
         highlightThisWeek && isSameWeek(day, currentDay || today) && "",
-        viewOptions.variant === VARIANT.content
-          ? ""
-          : isCompact
-            ? "h-72 overflow-hidden"
-            : "h-96 overflow-hidden",
+        // viewOptions.variant === VARIANT.content
+        //   ? ""
+        //   : isCompact
+        //     ? "h-72 overflow-hidden"
+        //     : "h-96 overflow-hidden",
       )}
       id={`day_${format(day, "yyyy-MM-dd")}`}
     >
