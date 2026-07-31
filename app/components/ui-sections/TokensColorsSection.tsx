@@ -22,39 +22,110 @@ import { cn } from "cnfast";
 // 1. Definição das Camadas Semânticas de Cores do Sistema
 const COLOR_SWATCHES = [
   // Camada 1: Superfícies e Estrutura
-  { name: "Background", bg: "bg-background", fg: "text-foreground", group: "Superfícies" },
-  { name: "Card", bg: "bg-card", fg: "text-card-foreground", group: "Superfícies" },
-  { name: "Popover", bg: "bg-popover", fg: "text-popover-foreground", group: "Superfícies" },
-  { name: "Input", bg: "bg-input", fg: "text-foreground", group: "Superfícies" },
-  { name: "Muted", bg: "bg-muted", fg: "text-muted-foreground", group: "Superfícies" },
-  
+  {
+    name: "Background",
+    bg: "bg-background",
+    fg: "text-foreground",
+    group: "Superfícies",
+  },
+  {
+    name: "Card",
+    bg: "bg-card",
+    fg: "text-card-foreground",
+    group: "Superfícies",
+  },
+  {
+    name: "Popover",
+    bg: "bg-popover",
+    fg: "text-popover-foreground",
+    group: "Superfícies",
+  },
+  {
+    name: "Input",
+    bg: "bg-input",
+    fg: "text-foreground",
+    group: "Superfícies",
+  },
+  {
+    name: "Muted",
+    bg: "bg-muted",
+    fg: "text-muted-foreground",
+    group: "Superfícies",
+  },
   // Camada 2: Marca, Interação e Workflow
-  { name: "Primary", bg: "bg-primary", fg: "text-primary-foreground", group: "Marca & Ações" },
-  { name: "Secondary", bg: "bg-secondary", fg: "text-secondary-foreground", group: "Marca & Ações" },
-  { name: "Accent", bg: "bg-accent", fg: "text-accent-foreground", group: "Marca & Ações" },
-  { name: "Border", bg: "bg-border", fg: "text-foreground", group: "Marca & Ações" },
-  { name: "Action", bg: "bg-action", fg: "text-foreground", group: "Marca & Ações" },
-
+  {
+    name: "Primary",
+    bg: "bg-primary",
+    fg: "text-primary-foreground",
+    group: "Marca & Ações",
+  },
+  {
+    name: "Secondary",
+    bg: "bg-secondary",
+    fg: "text-secondary-foreground",
+    group: "Marca & Ações",
+  },
+  {
+    name: "Accent",
+    bg: "bg-accent",
+    fg: "text-accent-foreground",
+    group: "Marca & Ações",
+  },
+  {
+    name: "Border",
+    bg: "bg-border",
+    fg: "text-foreground",
+    group: "Marca & Ações",
+  },
+  {
+    name: "Action",
+    bg: "bg-action",
+    fg: "text-foreground",
+    group: "Marca & Ações",
+  },
   // Camada 3: Status e Feedbacks
-  { name: "Late", bg: "bg-late", fg: "text-late-foreground", group: "Status & Feedback" },
-  { name: "Error", bg: "bg-error-background", fg: "text-error", group: "Status & Feedback" },
-  { name: "Success", bg: "bg-success-background", fg: "text-success", group: "Status & Feedback" },
-  { name: "Warning", bg: "bg-warning-background", fg: "text-warning", group: "Status & Feedback" },
-  { name: "Info", bg: "bg-info-background", fg: "text-info", group: "Status & Feedback" },
+  {
+    name: "Late",
+    bg: "bg-late",
+    fg: "text-late-foreground",
+    group: "Status & Feedback",
+  },
+  {
+    name: "Error",
+    bg: "bg-error-background",
+    fg: "text-error",
+    group: "Status & Feedback",
+  },
+  {
+    name: "Success",
+    bg: "bg-success-background",
+    fg: "text-success",
+    group: "Status & Feedback",
+  },
+  {
+    name: "Warning",
+    bg: "bg-warning-background",
+    fg: "text-warning",
+    group: "Status & Feedback",
+  },
+  {
+    name: "Info",
+    bg: "bg-info-background",
+    fg: "text-info",
+    group: "Status & Feedback",
+  },
 ];
-
 export function TokensColorsSection() {
   const { theme, setTheme, primaryColorIndex, setPrimaryColorIndex } =
     useAppThemeContext();
-
   return (
     <div id="colors">
       <GallerySection>
         {/* Cabeçalho Limpo + Seletor Elegante de Tema e Cores em Swatches Círculos */}
         <div className="flex flex-col gap-6 pb-6 border-b">
           <GallerySectionHeader
-            title="Cores Semânticas OKLCH"
             description="Organização das camadas de superfície, marca e feedbacks com alternância dinâmica de modo e paletas."
+            title="Cores Semânticas OKLCH"
           />
 
           <div className="flex flex-wrap items-center justify-between gap-6 rounded-2xl border border-border/50 bg-card p-4 shadow-xs">
@@ -65,11 +136,11 @@ export function TokensColorsSection() {
               </span>
               <PrismToggleGroup
                 aria-label="Modo de Tema"
-                selectedKeys={[theme]}
                 onSelectionChange={(keys) => {
                   const selected = Array.from(keys)[0] as Theme;
                   if (selected) setTheme(selected);
                 }}
+                selectedKeys={[theme]}
                 size="sm"
               >
                 <PrismToggleGroupItem id={Theme.LIGHT}>
@@ -93,24 +164,26 @@ export function TokensColorsSection() {
                   const p = isDark ? item.dark.primary : item.light.primary;
                   // Calcula cor no formato OKLCH inline para o botão circular
                   const bgStyle = `oklch(${p.l} ${p.c} ${p.h})`;
-
                   return (
                     <button
                       key={item.id}
-                      type="button"
-                      onClick={() => setPrimaryColorIndex(idx)}
-                      title={item.label}
                       className={cn(
                         "relative size-7 rounded-full transition-transform hover:scale-110 focus:outline-none flex items-center justify-center border border-black/10 dark:border-white/20",
-                        isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background scale-105"
+                        isSelected &&
+                          "ring-2 ring-primary ring-offset-2 ring-offset-background scale-105",
                       )}
-                      style={{ backgroundColor: bgStyle }}
+                      onClick={() => setPrimaryColorIndex(idx)}
+                      style={{
+                        backgroundColor: bgStyle,
+                      }}
+                      title={item.label}
+                      type="button"
                     >
                       {isSelected && (
                         <CheckIcon
                           className={cn(
-                            "size-3.5 stroke-[3]",
-                            p.l > 0.6 ? "text-black" : "text-white"
+                            "size-3.5 stroke-3",
+                            p.l > 0.6 ? "text-black" : "text-white",
                           )}
                         />
                       )}
@@ -185,17 +258,25 @@ export function TokensColorsSection() {
                 </span>
                 <div className="rounded-2xl border border-border bg-popover p-4 text-popover-foreground shadow-md space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-xs">Painel Popover</span>
+                    <span className="font-semibold text-xs">
+                      Painel Popover
+                    </span>
                     <span className="text-[10px] rounded-full bg-accent px-2 py-0.5 text-accent-foreground font-semibold">
                       bg-accent
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Elemento flutuante de camada <code className="text-foreground font-mono">bg-popover</code>.
+                    Elemento flutuante de camada{" "}
+                    <code className="text-foreground font-mono">
+                      bg-popover
+                    </code>
+                    .
                   </p>
                 </div>
                 <div className="rounded-xl bg-action p-3 text-xs flex items-center justify-between border border-border/40">
-                  <span>Ação (<code className="font-mono">bg-action</code>)</span>
+                  <span>
+                    Ação (<code className="font-mono">bg-action</code>)
+                  </span>
                   <span className="rounded-md bg-late px-2 py-0.5 text-[10px] text-late-foreground font-bold">
                     Late (Atrasado)
                   </span>

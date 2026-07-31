@@ -25,7 +25,7 @@ import {
   PrismDialogTitle,
 } from "~/components/prism";
 import { InputGroup, InputGroupAddon } from "~/components/prism/input-group";
-import { SearchIcon, CheckCircle2Icon } from "lucide-react";
+import { SearchIcon, CheckCircle2Icon, CheckIcon } from "lucide-react";
 function Command({
   className,
   dir,
@@ -200,7 +200,9 @@ function CommandItem<T extends object>({
       {composeRenderProps(children, (children) => (
         <>
           {children}
-          <CheckCircle2Icon className="ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100" />
+          <div className="ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100 bg-success rounded-full size-5 grid place-content-center">
+            <CheckIcon className="size-3 text-succes-background" />
+          </div>
         </>
       ))}
     </MenuItem>
