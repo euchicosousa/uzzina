@@ -76,9 +76,10 @@ export function InstagramTab({
           <PrismButton
             isDisabled={isAIProcessing}
             onClick={() => triggerAIAction(INTENT.ai_caption)}
-            size="sm"
+            size="xs"
+            variant={"secondary"}
           >
-            GERAR LEGENDA
+            Gerar legenda
             <SparklesIcon />
           </PrismButton>
         </div>

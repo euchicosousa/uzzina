@@ -315,7 +315,8 @@ export function ActionItem({
           <div className="w-full overflow-hidden text-xs leading-none font-medium text-ellipsis whitespace-nowrap">
             {getFormattedPartnersName(currentPartners || [])}
           </div>
-          <PhaseStationIcon phase={currentPhase} station={currentStation} />
+          <PhaseIcon phase={currentPhase} />
+          {/* <PhaseStationIcon phase={currentPhase} station={currentStation} /> */}
         </div>
       )}
 
@@ -364,7 +365,6 @@ export function ActionItemDateTimeDisplay({
     </div>
   );
 }
-
 export function ActionItemPartners({
   action,
   partners,
@@ -414,7 +414,6 @@ export function ActionItemPartners({
     </>
   );
 }
-
 export function ActionItemResponsibles({
   action,
   responsibles,
@@ -469,7 +468,6 @@ export function ActionItemSprint({
     <Icons className={cn("size-4 shrink-0", className)} slug="sprint" />
   ) : null;
 }
-
 function ActionVariantRenderer(props: ActionVariantRendererProps) {
   switch (props.variant) {
     case VARIANT.content:

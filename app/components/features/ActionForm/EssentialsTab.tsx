@@ -258,7 +258,8 @@ export function EssentialsTab({
             <PrismButton
               isDisabled={isAIProcessing}
               onClick={handleTriggerAI}
-              size="sm"
+              size="xs"
+              variant={"secondary"}
             >
               CRIAR COM IA
               <SparklesIcon />
