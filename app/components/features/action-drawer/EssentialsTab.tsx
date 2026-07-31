@@ -30,7 +30,7 @@ import type { Action, Partner, PartnerTopic } from "~/types";
 import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
-import { WorkFileThumbnail } from "./WorkFileThumbnail";
+import { WorkFileThumbnail } from "~/components/features/media/WorkFileThumbnail";
 import { TopicsCombobox } from "~/components/features/TopicsCombobox";
 interface EssentialsTabProps {
   RawAction: Action;

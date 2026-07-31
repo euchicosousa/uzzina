@@ -7,7 +7,7 @@ import {
   LoaderIcon,
   PlusIcon,
 } from "lucide-react";
-import { ActionColorDropdown } from "~/components/features/ActionForm/ActionColorDropdown";
+import { ActionColorDropdown } from "./ActionColorDropdown";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { PartnersCombobox } from "~/components/features/PartnersCombobox";
 import { PhaseCombobox } from "~/components/features/PhaseCombobox";

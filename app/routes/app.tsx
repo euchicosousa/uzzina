@@ -7,9 +7,9 @@ import {
 import { ChevronUpIcon } from "lucide-react";
 import { Suspense, lazy, useEffect, useState } from "react";
 import invariant from "tiny-invariant";
-const CreateAndEditAction = lazy(() =>
-  import("~/components/features/CreateAndEditAction").then((module) => ({
-    default: module.CreateAndEditAction,
+const ActionFormDrawer = lazy(() =>
+  import("~/components/features/action-drawer/ActionFormDrawer").then((module) => ({
+    default: module.ActionFormDrawer,
   })),
 );
 import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
@@ -183,11 +183,11 @@ function Dashboard() {
                     tabIndex={-1}
                     type="button"
                   />
-                  <CreateAndEditAction
-                    BaseAction={BaseAction}
-                    onClose={() => setBaseAction(null)}
-                    partnerFilters={partnerFilters}
-                  />
+                  <ActionFormDrawer
+                  BaseAction={BaseAction}
+                  onClose={() => setBaseAction(null)}
+                  partnerFilters={partnerFilters}
+                />
                 </Suspense>
               ) : null}
             </div>

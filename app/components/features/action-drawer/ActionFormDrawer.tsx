@@ -4,10 +4,10 @@ import { ArchiveIcon, HeartIcon, MessageSquareIcon, XIcon } from "lucide-react";
 import { Icons } from "~/components/uzzina/UIIcons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { ActionFormFooter } from "~/components/features/ActionForm/ActionFormFooter";
-import { EssentialsTab } from "~/components/features/ActionForm/EssentialsTab";
-import { InstagramTab } from "~/components/features/ActionForm/InstagramTab";
-import { ObservationsTab } from "~/components/features/ActionForm/ObservationsTab";
+import { ActionFormFooter } from "./ActionFormFooter";
+import { EssentialsTab } from "./EssentialsTab";
+import { InstagramTab } from "./InstagramTab";
+import { ObservationsTab } from "./ObservationsTab";
 import { INTENT } from "~/lib/CONSTANTS";
 import { isInstagramFeed } from "~/lib/helpers";
 import { useActionMutations } from "~/hooks/useActionMutations";
@@ -19,7 +19,7 @@ const DEFAULT_PARTNER_FILTERS: string[] = [];
 const DEFAULT_PARTNERS: Partner[] = [];
 import { useAppContext } from "~/contexts/AppContext";
 import { callAI, type AIPayload } from "~/services/ai";
-export function CreateAndEditAction({
+export function ActionFormDrawer({
   BaseAction,
   onClose,
   partnerFilters = DEFAULT_PARTNER_FILTERS,

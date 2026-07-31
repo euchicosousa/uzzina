@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import { CommentInput } from "~/components/features/ActionComments/CommentInput";
 import { CommentList } from "~/components/features/ActionComments/CommentList";
-import { WorkFileThumbnail } from "~/components/features/ActionForm/WorkFileThumbnail";
+import { WorkFileThumbnail } from "~/components/features/media/WorkFileThumbnail";
 import { PhaseIcon } from "~/components/features/PhaseIcon";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { InstagramPreview } from "~/components/features/media/InstagramPreview";
