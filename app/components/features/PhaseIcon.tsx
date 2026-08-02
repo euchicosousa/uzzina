@@ -1,7 +1,7 @@
 import { PHASES, type SIZE, type PHASE_TYPE } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
 import { CheckIcon } from "lucide-react";
-import { Icons } from "~/components/uzzina/UIIcons";
+import { Icons } from "~/components/uzzina/UIcons";
 export function PhaseIcon({
   phase,
   size = "sm",

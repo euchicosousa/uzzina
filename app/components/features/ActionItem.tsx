@@ -50,7 +50,7 @@ import {
 } from "~/lib/helpers";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
-import { PhaseStationIcon } from "./PhaseStationIcon";
+import { PhaseStationBadges } from "./PhaseStationBadges";
 export type ActionDisplayFlags = {
   /** Whether to highlight the action if it is late */
   showLate?: boolean;

@@ -39,7 +39,7 @@ import {
   PrismMenuSubTrigger,
   PrismMenuTrigger,
 } from "../prism";
-import { Icons } from "../uzzina/UIIcons";
+import { Icons } from "../uzzina/UIcons";
 
 export function BulkActionMenu() {
   // ─── Multi-seleção ───────────────────────────────────────────────────────────

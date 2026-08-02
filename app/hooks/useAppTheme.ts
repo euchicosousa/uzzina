@@ -213,6 +213,10 @@ export function useAppTheme() {
       actionLDelta?: number;
       actionHoverLDelta?: number;
       popoverLDelta?: number;
+      secondaryLDelta?: number;
+      mutedLDelta?: number;
+      cardLDelta?: number;
+      mutedForegroundLDelta?: number;
     };
     dark: {
       primary: { h: number; c: number; l: number };
@@ -224,6 +228,10 @@ export function useAppTheme() {
       actionLDelta?: number;
       actionHoverLDelta?: number;
       popoverLDelta?: number;
+      secondaryLDelta?: number;
+      mutedLDelta?: number;
+      cardLDelta?: number;
+      mutedForegroundLDelta?: number;
     };
   }) => {
     const root = document.documentElement;
@@ -270,7 +278,7 @@ export function useAppTheme() {
       root.style.setProperty("--dark-foreground-override", fgStr);
     }
 
-    // 3. Deltas de border, input, action, action-hover e popover (Light e Dark)
+    // 3. Deltas de border, input, action, action-hover, popover, secondary, muted, card (Light e Dark)
     if (light.borderLDelta !== undefined) {
       root.style.setProperty("--border-l-delta", String(light.borderLDelta));
     } else {
@@ -295,6 +303,26 @@ export function useAppTheme() {
       root.style.setProperty("--popover-l-delta", String(light.popoverLDelta));
     } else {
       root.style.removeProperty("--popover-l-delta");
+    }
+    if (light.secondaryLDelta !== undefined) {
+      root.style.setProperty("--secondary-l-delta", String(light.secondaryLDelta));
+    } else {
+      root.style.removeProperty("--secondary-l-delta");
+    }
+    if (light.mutedLDelta !== undefined) {
+      root.style.setProperty("--muted-l-delta", String(light.mutedLDelta));
+    } else {
+      root.style.removeProperty("--muted-l-delta");
+    }
+    if (light.cardLDelta !== undefined) {
+      root.style.setProperty("--card-l-delta", String(light.cardLDelta));
+    } else {
+      root.style.removeProperty("--card-l-delta");
+    }
+    if (light.mutedForegroundLDelta !== undefined) {
+      root.style.setProperty("--muted-foreground-l-delta", String(light.mutedForegroundLDelta));
+    } else {
+      root.style.removeProperty("--muted-foreground-l-delta");
     }
 
     if (dark.borderLDelta !== undefined) {
@@ -321,6 +349,26 @@ export function useAppTheme() {
       root.style.setProperty("--dark-popover-l-delta", String(dark.popoverLDelta));
     } else {
       root.style.removeProperty("--dark-popover-l-delta");
+    }
+    if (dark.secondaryLDelta !== undefined) {
+      root.style.setProperty("--dark-secondary-l-delta", String(dark.secondaryLDelta));
+    } else {
+      root.style.removeProperty("--dark-secondary-l-delta");
+    }
+    if (dark.mutedLDelta !== undefined) {
+      root.style.setProperty("--dark-muted-l-delta", String(dark.mutedLDelta));
+    } else {
+      root.style.removeProperty("--dark-muted-l-delta");
+    }
+    if (dark.cardLDelta !== undefined) {
+      root.style.setProperty("--dark-card-l-delta", String(dark.cardLDelta));
+    } else {
+      root.style.removeProperty("--dark-card-l-delta");
+    }
+    if (dark.mutedForegroundLDelta !== undefined) {
+      root.style.setProperty("--dark-muted-foreground-l-delta", String(dark.mutedForegroundLDelta));
+    } else {
+      root.style.removeProperty("--dark-muted-foreground-l-delta");
     }
   }, []);
 

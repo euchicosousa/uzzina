@@ -13,11 +13,11 @@ import { useQuery } from "@tanstack/react-query";
 import { ORDER_BY } from "~/lib/CONSTANTS";
 import { sortActions } from "~/lib/helpers";
 
-import { CalendarHomeComponent } from "~/components/features/home/CalendarHomeComponent";
-import { LateHomeComponent } from "~/components/features/home/LateHomeComponent";
-import { PartnersHomeComponent } from "~/components/features/home/PartnersHomeComponent";
-import { SprintHomeComponent } from "~/components/features/home/SprintHomeComponent";
-import { TodayHomeComponent } from "~/components/features/home/TodayHomeComponent";
+import { HomeCalendarView } from "~/components/features/home/HomeCalendarView";
+import { HomeLateView } from "~/components/features/home/HomeLateView";
+import { HomePartnersView } from "~/components/features/home/HomePartnersView";
+import { HomeSprintView } from "~/components/features/home/HomeSprintView";
+import { HomeTodayView } from "~/components/features/home/HomeTodayView";
 
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchAllLateActions, fetchHomeActions } from "~/lib/supabase.queries";
@@ -95,22 +95,22 @@ function AppHome() {
     <>
       {sprintActions.length > 0 && (
         <>
-          <SprintHomeComponent actions={sprintActions} />
+          <HomeSprintView actions={sprintActions} />
           {/* <div className="-mx-8 h-2 border-b"></div> */}
         </>
       )}
 
-      <TodayHomeComponent
+      <HomeTodayView
         actions={filteredActions}
         isLoading={isLoadingHomeActions}
       />
       {/* <div className="-mx-8 h-2 border-b"></div> */}
-      <CalendarHomeComponent
+      <HomeCalendarView
         actions={filteredActions}
         setBaseAction={setBaseAction}
       />
-      <PartnersHomeComponent actions={filteredLateActions} />
-      <LateHomeComponent actions={filteredLateActions} />
+      <HomePartnersView actions={filteredLateActions} />
+      <HomeLateView actions={filteredLateActions} />
       <Footer />
     </>
   );

@@ -12,9 +12,8 @@ import { addDays, addMinutes, isAfter } from "date-fns";
 import { parseU } from "~/utils/date";
 import { toast } from "sonner";
 import { INTENT, PHASES } from "~/lib/CONSTANTS";
-import {
-  getNewDateForAction,
-} from "~/lib/helpers";
+import { getNewDateForAction } from "~/lib/helpers";
+import { isInputFocused } from "~/lib/uzzina-utils";
 import { useActionMutations } from "~/hooks/useActionMutations";
 
 type ActiveAction = { action: Action } | null;
@@ -78,6 +77,8 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     function keyDown(event: KeyboardEvent) {
+      if (isInputFocused(event)) return;
+
       // Descobre o elemento mais interno sob o cursor que tenha data-action-id
       const hovered = [
         ...document.querySelectorAll("[data-action-id]:hover"),

@@ -1,11 +1,6 @@
 import type { AugmentedComment } from "~/models/action_comments";
+import type { Person } from "~/types";
 import { CommentItem } from "./CommentItem";
-
-interface Person {
-  user_id: string;
-  name: string;
-  image: string | null;
-}
 
 interface CommentListProps {
   comments: AugmentedComment[];

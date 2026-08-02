@@ -3,7 +3,7 @@ import { UAvatar } from "../uzzina/UAvatar";
 import { Content } from "./Content";
 import { CATEGORIES, type CATEGORY } from "~/lib/CONSTANTS";
 
-export function FeedSection({
+export function InstagramFeedSection({
   actions,
   onActionClick,
   currentPartner,

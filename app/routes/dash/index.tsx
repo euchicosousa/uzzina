@@ -4,7 +4,7 @@ import { SidebarClose } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { ClientCalendar } from "~/components/client/ClientCalendar";
-import { FeedSection } from "~/components/features/FeedSection";
+import { InstagramFeedSection } from "~/components/features/InstagramFeedSection";
 import { PrismButton } from "~/components/prism";
 import { useQuery } from "@tanstack/react-query";
 import { useDashContext } from "~/contexts/DashContext";
@@ -145,7 +145,7 @@ function DashHome() {
             />
           ) : (
             <div className="h-full w-full overflow-y-auto">
-              <FeedSection
+              <InstagramFeedSection
                 actions={feedActions}
                 currentPartner={currentPartner as Partner}
                 onActionClick={handleActionClick}
@@ -175,7 +175,7 @@ function DashHome() {
         <div
           className={`w-full ${isSidebarVisible ? "max-w-140" : "max-w-0"} shrink-0 overflow-y-auto border-l`}
         >
-          <FeedSection
+          <InstagramFeedSection
             actions={feedActions}
             currentPartner={currentPartner as Partner}
             onActionClick={handleActionClick}

@@ -15,9 +15,10 @@ import { PrismBadge, PrismButton } from "../prism";
  * Visualização Kanban/Board de ações agrupadas por categoria.
  * Exibe apenas as categorias que possuem pelo menos uma ação no dia.
  */
-export function CategoriesBoardComponent({
+export function CategoriesBoard({
   actions,
   orderBy,
+  ascending,
 }: {
   actions: Action[];
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];

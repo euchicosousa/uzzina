@@ -115,9 +115,11 @@ function Dashboard() {
     if (!person) return;
     const userId = person.user_id;
     function keyDownGlobal(event: KeyboardEvent) {
-      if (event.key === "k" && event.metaKey) {
+      if ((event.key === "k" || event.key === "K") && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
         setOpenCmdK((prev) => !prev);
-      } else if (event.code === "KeyA" && event.altKey && event.metaKey) {
+      } else if (event.code === "KeyA" && event.altKey && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
         setBaseAction({
           ...(getCleanAction({
             user_id: userId,
@@ -125,8 +127,8 @@ function Dashboard() {
         });
       }
     }
-    document.addEventListener("keydown", keyDownGlobal);
-    return () => document.removeEventListener("keydown", keyDownGlobal);
+    document.addEventListener("keydown", keyDownGlobal, true);
+    return () => document.removeEventListener("keydown", keyDownGlobal, true);
   }, [person]);
   if (loading || !person) {
     return (

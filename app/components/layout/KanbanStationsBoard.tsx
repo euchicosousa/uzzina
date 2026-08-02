@@ -15,7 +15,7 @@ import { useActionMutations } from "~/hooks/useActionMutations";
 import { useKanbanDnd } from "~/hooks/useKanbanDnd";
 import { PrismBadge } from "../prism";
 
-export default function KanbanStationsFlow({ actions }: { actions: Action[] }) {
+export default function KanbanStationsBoard({ actions }: { actions: Action[] }) {
   const isDesktop = useIsDesktop();
   const { handleAction } = useActionMutations();
 

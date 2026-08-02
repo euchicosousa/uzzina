@@ -19,7 +19,7 @@ import { DragStateContext } from "../features/DragStateContext";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { PrismBadge } from "../prism";
 
-export default function KanbanHomeActions({ actions }: { actions: Action[] }) {
+export default function KanbanPhasesBoard({ actions }: { actions: Action[] }) {
   const isDesktop = useIsDesktop();
   const { handleAction } = useActionMutations();
 

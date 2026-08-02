@@ -17,12 +17,12 @@ import {
 import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
 import { getCleanAction } from "~/lib/helpers";
 import { cn } from "cnfast";
-import { HomeComponentWrapper } from "./HomeComponentWrapper";
+import { HomeViewWrapper } from "./HomeViewWrapper";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchCelebrations } from "~/lib/supabase.queries";
 import { useAppContext } from "~/contexts/AppContext";
-export function CalendarHomeComponent({
+export function HomeCalendarView({
   actions,
   setBaseAction,
 }: {
@@ -55,7 +55,7 @@ export function CalendarHomeComponent({
     },
   });
   return (
-    <HomeComponentWrapper
+    <HomeViewWrapper
       OptionsComponent={
         <div className="flex items-center gap-8">
           <PrismToggleGroup
@@ -114,6 +114,6 @@ export function CalendarHomeComponent({
           viewOptions={viewOptions}
         />
       </div>
-    </HomeComponentWrapper>
+    </HomeViewWrapper>
   );
 }

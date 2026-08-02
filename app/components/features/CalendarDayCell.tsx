@@ -10,7 +10,7 @@ import { getInstagramFeedActions } from "~/utils/validation";
 import { PlusIcon } from "lucide-react";
 import { PrismSkeletonGroup } from "~/components/prism";
 import { useLoading } from "~/hooks/useLoading";
-export function CalendarDay({
+export function CalendarDayCell({
   currentDay,
   day,
   onCreateAction,
@@ -50,11 +50,11 @@ export function CalendarDay({
         "group/column flex flex-col justify-between hover:bg-foreground/5 duration-500",
         showBorder && "border-b",
         highlightThisWeek && isSameWeek(day, currentDay || today) && "",
-        // viewOptions.variant === VARIANT.content
-        //   ? ""
-        //   : isCompact
-        //     ? "h-72 overflow-hidden"
-        //     : "h-96 overflow-hidden",
+        viewOptions.variant === VARIANT.content
+          ? ""
+          : isCompact
+            ? "h-72 overflow-hidden"
+            : "h-96 overflow-hidden",
       )}
       id={`day_${format(day, "yyyy-MM-dd")}`}
     >

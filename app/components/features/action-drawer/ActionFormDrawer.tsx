@@ -1,7 +1,7 @@
 import type { Action, Partner } from "~/types";
 import { format } from "date-fns";
 import { ArchiveIcon, HeartIcon, MessageSquareIcon, XIcon } from "lucide-react";
-import { Icons } from "~/components/uzzina/UIIcons";
+import { Icons } from "~/components/uzzina/UIcons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ActionFormFooter } from "./ActionFormFooter";

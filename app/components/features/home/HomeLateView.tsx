@@ -4,10 +4,10 @@ import {
   ViewOptionsComponent,
   useViewOptions,
 } from "~/components/features/ViewOptions";
-import { HomeComponentWrapper } from "./HomeComponentWrapper";
+import { HomeViewWrapper } from "./HomeViewWrapper";
 import { VARIANT } from "~/lib/CONSTANTS";
 
-export function LateHomeComponent({ actions }: { actions: Action[] }) {
+export function HomeLateView({ actions }: { actions: Action[] }) {
   const [viewOptions, setViewOptions] = useViewOptions({
     partner: true,
     variant: VARIANT.block,
@@ -21,9 +21,8 @@ export function LateHomeComponent({ actions }: { actions: Action[] }) {
     },
   });
   return (
-    <HomeComponentWrapper
-      title="Atrasados"
-      borderAfter={false}
+    <HomeViewWrapper
+      title="Atrasadas"
       OptionsComponent={
         <ViewOptionsComponent
           viewOptions={viewOptions}
@@ -31,20 +30,22 @@ export function LateHomeComponent({ actions }: { actions: Action[] }) {
         />
       }
     >
-      <div className="p-8 xl:px-16">
+      <div className="px-8 xl:px-16">
         <ActionContainer
-          orderBy={viewOptions.order}
-          ascending={viewOptions.ascending}
-          variant={viewOptions.variant}
           actions={actions}
-          columns={viewOptions.variant !== "content" ? 4 : 6}
+          ascending={viewOptions.ascending}
+          columns={viewOptions.columns}
           displayFlags={{
-            showResponsibles: viewOptions.responsibles,
-            showPartner: viewOptions.partner,
             showCategory: viewOptions.category,
+            showLate: viewOptions.late,
+            showPartner: viewOptions.partner,
+            showPriority: viewOptions.priority,
+            showResponsibles: viewOptions.responsibles,
           }}
+          orderBy={viewOptions.order}
+          variant={viewOptions.variant}
         />
       </div>
-    </HomeComponentWrapper>
+    </HomeViewWrapper>
   );
 }

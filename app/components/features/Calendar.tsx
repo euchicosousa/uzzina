@@ -3,8 +3,9 @@ import { eachDayOfInterval, endOfWeek, format, startOfWeek } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import type { ViewOptions } from "~/components/features/ViewOptions";
 import { cn } from "cnfast";
-import { CalendarDay } from "./CalendarDay";
-export { CalendarButtons } from "./CalendarButtons";
+import { CalendarDayCell } from "./CalendarDayCell";
+export { CalendarToolbar } from "./CalendarToolbar";
+export { CalendarToolbar as CalendarButtons } from "./CalendarToolbar";
 export type CalendarLayoutOptions = {
   isCompact?: boolean;
   showBorder?: boolean;
@@ -34,13 +35,13 @@ export function CalendarActions({
     layoutOptions;
   return (
     <div className="w-full overflow-x-auto overflow-y-hidden">
-      <div className="flex h-full w-full min-w-[1500px] flex-col overflow-hidden lg:min-w-[900px]">
+      <div className="flex h-full w-full min-w-375 flex-col overflow-hidden lg:min-w-225">
         <WeekHeader />
         <div className="grid h-full shrink grid-cols-7 overflow-y-auto">
           {calendar.map((day, i) => {
             const isLastRow = i >= Math.floor((calendar.length - 1) / 7) * 7;
             return (
-              <CalendarDay
+              <CalendarDayCell
                 key={format(day.date, "yyyy-MM-dd")}
                 actions={day.actions || []}
                 celebrations={day.celebrations}

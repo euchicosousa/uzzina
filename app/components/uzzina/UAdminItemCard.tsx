@@ -12,7 +12,7 @@ interface AdminItemCardProps {
   badge?: React.ReactNode;
   className?: string;
 }
-export function AdminItemCard({
+export function UAdminItemCard({
   to,
   image,
   fallback,

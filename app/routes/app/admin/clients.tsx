@@ -2,7 +2,7 @@ import { UserPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { getAllClients } from "~/models/clients";
-import { AdminItemCard } from "~/components/uzzina/AdminItemCard";
+import { UAdminItemCard } from "~/components/uzzina/UAdminItemCard";
 import { useAppContext } from "~/contexts/AppContext";
 import { useQuery } from "@tanstack/react-query";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
@@ -48,7 +48,7 @@ function AdminClientsPage() {
             },
           );
           return (
-            <AdminItemCard
+            <UAdminItemCard
               key={client.id}
               badge={
                 <UAvatarGroup

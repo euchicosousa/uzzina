@@ -59,12 +59,12 @@ function AdminUsersPage() {
     </div>
   );
 }
-import { AdminItemCard } from "~/components/uzzina/AdminItemCard";
+import { UAdminItemCard } from "~/components/uzzina/UAdminItemCard";
 import { PrismBadge } from "~/components/prism";
 import { buttonVariants } from "~/components/prism/button";
 function UserItem({ person }: { person: Person }) {
   return (
-    <AdminItemCard
+    <UAdminItemCard
       badge={person.admin && <PrismBadge>Admin</PrismBadge>}
       fallback={person.initials}
       image={person.image}

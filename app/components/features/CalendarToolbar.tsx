@@ -13,7 +13,7 @@ import {
   PrismPopover,
   PrismPopoverTrigger,
 } from "~/components/prism";
-export function CalendarButtons({
+export function CalendarToolbar({
   currentDay,
   setCurrentDay,
   days = 1,

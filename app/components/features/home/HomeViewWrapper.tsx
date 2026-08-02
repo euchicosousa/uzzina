@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "cnfast";
-export function HomeComponentWrapper({
+export function HomeViewWrapper({
   children,
   title,
   OptionsComponent,

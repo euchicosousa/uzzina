@@ -13,10 +13,10 @@ import { parseU } from "~/utils/date";
 import { Grid3X3Icon, SearchIcon, SettingsIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
-import { ActionCalendarPartnerPage } from "~/components/features/ActionCalendarPartnerPage";
+import { PartnerCalendarBoard } from "~/components/features/PartnerCalendarBoard";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import { CalendarButtons } from "~/components/features/Calendar";
-import { FeedSection } from "~/components/features/FeedSection";
+import { InstagramFeedSection } from "~/components/features/InstagramFeedSection";
 import {
   ViewOptionsComponent,
   useViewOptions,
@@ -277,7 +277,7 @@ function PartnerPage() {
             view === "calendar" ? "" : "hidden md:flex",
           )}
         >
-          <ActionCalendarPartnerPage
+          <PartnerCalendarBoard
             actions={filteredActions}
             currentDay={currentDay}
             viewOptions={viewOptions}
@@ -291,7 +291,7 @@ function PartnerPage() {
               : "hidden",
           )}
         >
-          <FeedSection
+          <InstagramFeedSection
             actions={feedActions}
             currentPartner={partner}
             onActionClick={(action) => {

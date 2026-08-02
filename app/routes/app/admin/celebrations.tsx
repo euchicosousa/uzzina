@@ -167,14 +167,14 @@ function AdminCelebrationsPage() {
                       key={celebration.id}
                       className="group flex relative items-center justify-between rounded-xl py-2 px-3 transition-colors hover:bg-card"
                     >
-                      <div className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 absolute h-full top-1 left-1">
+                      <div className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 absolute h-full top-1 left-1 z-10">
                         <PrismButton
                           isDisabled={isSubmitting}
                           onClick={() => deleteMutation.mutate(celebration.id)}
-                          size="icon-sm"
+                          size="icon-xs"
                           variant="destructive"
                         >
-                          <TrashIcon className="size-4" />
+                          <TrashIcon />
                         </PrismButton>
                       </div>
                       <div className="flex items-center gap-4 overflow-hidden">

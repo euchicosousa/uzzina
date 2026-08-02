@@ -1,6 +1,6 @@
 import { FolderPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { AdminItemCard } from "~/components/uzzina/AdminItemCard";
+import { UAdminItemCard } from "~/components/uzzina/UAdminItemCard";
 import { useQuery } from "@tanstack/react-query";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import type { Partner } from "~/types";
@@ -62,13 +62,13 @@ function AdminPartnersPage() {
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
         {activePartners.map((partner) => (
-          <AdminItemCard
+          <UAdminItemCard
             key={partner.id}
             avatarBgColor={partner.colors[0]}
             avatarColor={partner.colors[1]}
             fallback={partner.short}
             image={partner.image}
-            subtitle={partner.slug}
+            subtitle={partner.users_ids?.length > 0 ? `${partner.users_ids.length} membro(s)` : undefined}
             title={partner.title}
             to={`/app/admin/partner/${partner.slug}`}
           />
@@ -82,7 +82,7 @@ function AdminPartnersPage() {
           </div>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {archivedPartners.map((partner) => (
-              <AdminItemCard
+              <UAdminItemCard
                 key={partner.id}
                 avatarBgColor={partner.colors[0]}
                 avatarColor={partner.colors[1]}

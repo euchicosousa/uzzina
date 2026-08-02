@@ -8,7 +8,7 @@ export * from "~/utils/validation";
 export * from "~/utils/factory";
 export * from "~/utils/sort";
 export * from "~/utils/filter";
-export * from "~/components/uzzina/UIIcons";
+export * from "~/components/uzzina/UIcons";
 
 export { createSupabaseClient } from "./supabase";
 

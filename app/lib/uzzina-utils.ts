@@ -60,3 +60,24 @@ export function safeColor(raw: string | null | undefined): string {
     return DEFAULT_ACTION_COLOR;
   }
 }
+
+/**
+ * Verifica se um evento de teclado (ou o foco ativo atual) se origina dentro
+ * de um campo de entrada de texto (input, textarea, contenteditable ou combobox).
+ */
+export function isInputFocused(event?: KeyboardEvent): boolean {
+  const target = (event?.target ||
+    (typeof document !== "undefined" ? document.activeElement : null)) as HTMLElement | null;
+  if (!target) return false;
+  const tagName = target.tagName;
+  if (tagName === "INPUT" || tagName === "TEXTAREA") return true;
+  if (target.isContentEditable) return true;
+  if (
+    target.closest &&
+    (target.closest('[contenteditable="true"]') || target.closest('[role="combobox"]'))
+  ) {
+    return true;
+  }
+  return false;
+}
+

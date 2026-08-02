@@ -1,6 +1,7 @@
 import {
   BrainIcon,
   CheckCheckIcon,
+  CircleCheckBigIcon,
   FilterIcon,
   HandshakeIcon,
   PlusIcon,
@@ -77,7 +78,7 @@ export function AppBar({
     : null;
   return (
     <div className="fixed bottom-4 left-1/2 z-20 flex -translate-x-1/2 justify-center">
-      <div className="flex items-center gap-1 rounded-3xl border bg-popover p-2 squircle">
+      <div className="flex items-center gap-2 rounded-3xl border bg-popover p-2 squircle">
         {/* Home */}
         <Link
           className={buttonVariants({
@@ -143,7 +144,7 @@ export function AppBar({
               size={"icon"}
               variant={"ghost"}
             >
-              <CheckCheckIcon />
+              <CircleCheckBigIcon />
             </PrismButton>
           )}
         </div>

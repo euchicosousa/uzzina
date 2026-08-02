@@ -2,7 +2,7 @@ import { cn } from "cnfast";
 import { PHASES, type PHASE_TYPE, type STATION_TYPE } from "~/lib/CONSTANTS";
 import { PhaseIcon } from "./PhaseIcon";
 import Color from "color";
-export function PhaseStationIcon({
+export function PhaseStationBadges({
   phase,
   station,
 }: {

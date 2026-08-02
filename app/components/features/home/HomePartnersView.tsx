@@ -4,9 +4,9 @@ import { getShortText } from "~/components/uzzina/UAvatar";
 import { useAppContext } from "~/contexts/AppContext";
 import { cn } from "cnfast";
 import type { Action } from "~/types";
-import { HomeComponentWrapper } from "./HomeComponentWrapper";
+import { HomeViewWrapper } from "./HomeViewWrapper";
 import { PrismBadge } from "~/components/prism";
-export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
+export function HomePartnersView({ actions }: { actions: Action[] }) {
   const { partners } = useAppContext();
   const sortedPartners = [...partners].sort((a, b) =>
     a.title.localeCompare(b.title),
@@ -37,7 +37,7 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
     }));
   }, [sortedPartners, actions]);
   return (
-    <HomeComponentWrapper title="Parceiros">
+    <HomeViewWrapper title="Parceiros">
       <div
         className={cn(
           "grid grid-cols-2 px-8 text-center text-3xl leading-none font-bold uppercase sm:grid-cols-3 md:grid-cols-4 xl:px-16",
@@ -80,6 +80,6 @@ export function PartnersHomeComponent({ actions }: { actions: Action[] }) {
           </Link>
         ))}
       </div>
-    </HomeComponentWrapper>
+    </HomeViewWrapper>
   );
 }

@@ -17,7 +17,7 @@ import type { ViewOptions } from "./ViewOptions";
 
 import { useAppContext } from "~/contexts/AppContext";
 
-export function ActionCalendarPartnerPage({
+export function PartnerCalendarBoard({
   currentDay = new Date(),
   actions,
   viewOptions,

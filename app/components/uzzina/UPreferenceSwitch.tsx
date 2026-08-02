@@ -8,7 +8,7 @@ interface PreferenceSwitchProps {
   onCheckedChange: (checked: boolean) => void;
   className?: string;
 }
-export function PreferenceSwitch({
+export function UPreferenceSwitch({
   id,
   label,
   description,

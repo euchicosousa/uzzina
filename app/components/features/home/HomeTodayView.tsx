@@ -8,18 +8,18 @@ import {
   KanbanIcon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { CalendarButtons } from "~/components/features/Calendar";
-import { CategoriesBoardComponent } from "~/components/layout/CategoriesBoardComponent";
-import KanbanHomeActions from "~/components/layout/KanbanHomeActions";
-import { PartnersComponent } from "~/components/layout/PartnersComponent";
+import { CalendarToolbar } from "~/components/features/CalendarToolbar";
+import { CategoriesBoard } from "~/components/layout/CategoriesBoard";
+import KanbanPhasesBoard from "~/components/layout/KanbanPhasesBoard";
+import { PartnersBoard } from "~/components/layout/PartnersBoard";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import { VARIANT } from "~/lib/CONSTANTS";
 import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
 import { isInstagramFeed } from "~/lib/helpers";
 import type { Action } from "~/types";
-import { HomeComponentWrapper } from "./HomeComponentWrapper";
+import { HomeViewWrapper } from "./HomeViewWrapper";
 
-export function TodayHomeComponent({
+export function HomeTodayView({
   actions,
   isLoading,
 }: {
@@ -54,26 +54,19 @@ export function TodayHomeComponent({
   }, [currentDay]);
 
   return (
-    <HomeComponentWrapper
+    <HomeViewWrapper
       title={title}
       OptionsComponent={
-        <div className="flex flex-wrap items-center gap-2 xl:gap-6">
-          <div className="flex items-center gap-8">
-            <CalendarButtons
-              currentDay={currentDay}
-              setCurrentDay={setCurrentDay}
-              showDate
-            />
-          </div>
+        <div className="flex items-center gap-2">
+          <CalendarToolbar currentDay={currentDay} setCurrentDay={setCurrentDay} />
           <PrismToggleGroup
-            aria-label="Alternar Visão"
-            size="sm"
-            selectionMode="single"
-            selectedKeys={new Set([view])}
+            aria-label="Opções de Visualização da Home"
+            selectedKeys={[view]}
             onSelectionChange={(keys) => {
               const selected = Array.from(keys)[0] as typeof view;
               if (selected) setView(selected);
             }}
+            size="sm"
           >
             <PrismToggleGroupItem aria-label="Visão por Kanban" id="kanban">
               <KanbanIcon />
@@ -92,7 +85,7 @@ export function TodayHomeComponent({
       }
     >
       <div className="px-8 xl:px-16">
-        {view === "kanban" && <KanbanHomeActions actions={filteredActions} />}
+        {view === "kanban" && <KanbanPhasesBoard actions={filteredActions} />}
         {view === "feed" && (
           <div className="w-full max-w-full overflow-hidden">
             <h5 className="pb-8">Feed do Instagram</h5>
@@ -107,12 +100,12 @@ export function TodayHomeComponent({
           </div>
         )}
         {view === "categories" && (
-          <CategoriesBoardComponent actions={filteredActions} />
+          <CategoriesBoard actions={filteredActions} />
         )}
         {view === "partners" && (
-          <PartnersComponent actions={filteredActions} isLoading={isLoading} currentDay={currentDay} />
+          <PartnersBoard actions={filteredActions} isLoading={isLoading} currentDay={currentDay} />
         )}
       </div>
-    </HomeComponentWrapper>
+    </HomeViewWrapper>
   );
 }

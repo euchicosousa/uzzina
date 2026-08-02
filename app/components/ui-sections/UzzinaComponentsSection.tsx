@@ -1,4 +1,4 @@
-import { Icons } from "~/components/uzzina/UIIcons";
+import { Icons } from "~/components/uzzina/UIcons";
 import { UAvatar, UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { SIZE } from "~/lib/CONSTANTS";
 import {

@@ -14,7 +14,7 @@ import { ColorListEditor } from "~/components/features/ColorListEditor";
 import { PartnerTopicsEditor } from "~/components/features/PartnerTopicsEditor";
 import type { PartnerTopic } from "~/types";
 const Tiptap = lazy(() =>
-  import("~/components/features/Tiptap").then((module) => ({
+  import("~/components/features/RichTextEditor").then((module) => ({
     default: module.Tiptap,
   })),
 );

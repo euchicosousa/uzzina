@@ -5,11 +5,11 @@ import {
   useViewOptions,
 } from "~/components/features/ViewOptions";
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
-import { HomeComponentWrapper } from "./HomeComponentWrapper";
+import { HomeViewWrapper } from "./HomeViewWrapper";
 import { PrismSkeleton } from "~/components/prism";
 import { useLoading } from "~/hooks/useLoading";
 
-export function SprintHomeComponent({ actions }: { actions: Action[] }) {
+export function HomeSprintView({ actions }: { actions: Action[] }) {
   const isLoading = useLoading(["actions"]);
   const [viewOptions, setViewOptions] = useViewOptions({
     variant: VARIANT.block,
@@ -20,46 +20,39 @@ export function SprintHomeComponent({ actions }: { actions: Action[] }) {
   });
 
   return (
-    <HomeComponentWrapper
-      title="Sprints"
+    <HomeViewWrapper
+      title="Sprint"
       OptionsComponent={
-        <div className="flex items-center gap-4">
-          <div></div>
-          <ViewOptionsComponent
-            viewOptions={viewOptions}
-            setViewOptions={setViewOptions}
-          />
-        </div>
+        <ViewOptionsComponent
+          viewOptions={viewOptions}
+          setViewOptions={setViewOptions}
+        />
       }
     >
-      <div className="px-8 pb-8 xl:px-16">
-        {isLoading && actions.length === 0 ? (
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <PrismSkeleton
-                // biome-ignore lint/suspicious/noArrayIndexKey: static list of skeleton loaders
-                key={index}
-                delay={index * 200}
-                className="h-23 w-full rounded-2xl"
-              />
+      <div className="px-8 xl:px-16">
+        {isLoading ? (
+          <div className="grid grid-cols-4 gap-4 py-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <PrismSkeleton key={`sprint-skeleton-${i}`} className="h-32 rounded-2xl" />
             ))}
           </div>
         ) : (
           <ActionContainer
-            displayFlags={{
-              showCategory: true,
-              showPartner: true,
-              showResponsibles: true,
-              showLate: true,
-              showSprint: false,
-            }}
             actions={actions}
-            columns={viewOptions.columns || 4}
+            ascending={viewOptions.ascending}
+            columns={viewOptions.columns}
+            displayFlags={{
+              showCategory: viewOptions.category,
+              showLate: viewOptions.late,
+              showPartner: viewOptions.partner,
+              showPriority: viewOptions.priority,
+              showResponsibles: viewOptions.responsibles,
+            }}
+            orderBy={viewOptions.order}
             variant={viewOptions.variant}
-            orderBy={ORDER_BY.phase}
           />
         )}
       </div>
-    </HomeComponentWrapper>
+    </HomeViewWrapper>
   );
 }

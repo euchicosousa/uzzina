@@ -10,7 +10,7 @@ import {
 import { Suspense, lazy, useRef, useState } from "react";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 const Tiptap = lazy(() =>
-  import("~/components/features/Tiptap").then((module) => ({
+  import("~/components/features/RichTextEditor").then((module) => ({
     default: module.Tiptap,
   })),
 );

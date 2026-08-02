@@ -2,7 +2,7 @@ import { endOfWeek, startOfDay, startOfWeek } from "date-fns";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useRef, useState } from "react";
-import KanbanStationsFlow from "~/components/layout/KanbanStationsFlow";
+import KanbanStationsBoard from "~/components/layout/KanbanStationsBoard";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchFlowActions } from "~/lib/supabase.queries";
 import { PhaseCombobox } from "~/components/features/PhaseCombobox";
@@ -184,7 +184,7 @@ function AppFlow() {
             Carregando ações...
           </div>
         ) : (
-          <KanbanStationsFlow actions={filteredActions} />
+          <KanbanStationsBoard actions={filteredActions} />
         )}
       </div>
     </div>

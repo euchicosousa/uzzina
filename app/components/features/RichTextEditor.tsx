@@ -256,7 +256,7 @@ function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
     </div>
   );
 }
-export function Tiptap({
+export function RichTextEditor({
   content,
   handleBlur,
   handleChange,
@@ -492,3 +492,5 @@ export function Tiptap({
     </EditorContext.Provider>
   );
 }
+
+export { RichTextEditor as Tiptap };

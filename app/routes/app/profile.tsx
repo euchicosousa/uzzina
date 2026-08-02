@@ -23,7 +23,7 @@ import {
   PrismToggleGroupItem,
 } from "~/components/prism";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
-import { PreferenceSwitch } from "~/components/uzzina/PreferenceSwitch";
+import { UPreferenceSwitch } from "~/components/uzzina/UPreferenceSwitch";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { useAppContext } from "~/contexts/AppContext";
 import { PALLETE } from "~/lib/CONSTANTS";
@@ -888,7 +888,7 @@ function ProfilePage() {
             )}
 
             {/* Follow Partner Color Toggle */}
-            <PreferenceSwitch
+            <UPreferenceSwitch
               checked={selectedFollowPartnerColor}
               description="Substitui as cores do tema do aplicativo pelas cores da marca do cliente ativo."
               id="followPartnerColor"
@@ -896,11 +896,11 @@ function ProfilePage() {
               onCheckedChange={setSelectedFollowPartnerColor}
             />
 
-            {/* Default Calendar Layout Preference */}
-            <div className="grid gap-3">
+            {/* Default View Selection */}
+            <div className="grid gap-3 pt-4 border-t">
               <div className="flex flex-col gap-0.5">
                 <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                  Visualização Padrão
+                  Layout Padrão
                 </span>
                 <span className="text-xs text-muted-foreground">
                   Escolha o layout de visualização inicial especificamente para
@@ -931,7 +931,7 @@ function ProfilePage() {
             </div>
 
             {/* Show Instagram Sidebar by Default Toggle */}
-            <PreferenceSwitch
+            <UPreferenceSwitch
               checked={showInstagramSidebar}
               description="Decida se o painel do feed do Instagram inicia aberto nas páginas dos clientes."
               id="showInstagramSidebar"

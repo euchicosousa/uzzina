@@ -9,7 +9,7 @@ import { ActionContainer } from "../features/ActionContainer";
 import { PrismButton, PrismSkeletonGroup } from "~/components/prism";
 import { UAvatar } from "../uzzina/UAvatar";
 
-export function PartnersComponent({
+export function PartnersBoard({
   actions,
   isLoading,
   currentDay

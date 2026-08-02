@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { endOfDay, startOfDay } from "date-fns";
 import { useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { TodayHomeComponent } from "~/components/features/home/TodayHomeComponent";
+import { HomeTodayView } from "~/components/features/home/HomeTodayView";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchHomeActions } from "~/lib/supabase.queries";
 
@@ -45,7 +45,7 @@ function TodayPage() {
   }, [currentActions, partnerFilters]);
 
   return (
-    <TodayHomeComponent
+    <HomeTodayView
       actions={filteredActions}
       isLoading={isLoadingHomeActions}
     />
