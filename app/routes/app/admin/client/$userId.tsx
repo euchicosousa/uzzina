@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import {
   PrismButton,
+  PrismInput,
   PrismInputGroup,
   PrismInputGroupAddon,
   PrismInputGroupButton,
   PrismInputGroupInput,
+  PrismLabel,
 } from "~/components/prism";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
@@ -144,7 +146,7 @@ function AdminClientPage() {
         {/* Avatar / UploadIcon Widget */}
         <div className="flex items-center gap-6">
           <CloudinaryUpload
-            className="group relative -ml-1 size-24 shrink-0 overflow-hidden rounded-full transition hover:opacity-90"
+            className="group relative -ml-1 size-24 shrink-0 overflow-hidden rounded-full no-squircle transition hover:opacity-90"
             cloudName={appData.cloudName}
             folder="uzzina/clients"
             onUpload={(url: string) => setImageUrl(url)}
@@ -180,11 +182,9 @@ function AdminClientPage() {
           </div>
         </div>
 
-        <div className="grid gap-4">
-          <label className="font-medium" htmlFor="name">
-            Nome
-          </label>
-          <PrismInputGroupInput
+        <div className="grid gap-2">
+          <PrismLabel htmlFor="name">Nome</PrismLabel>
+          <PrismInput
             defaultValue={client?.name || ""}
             id="name"
             name="name"
@@ -194,11 +194,9 @@ function AdminClientPage() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="grid gap-4">
-            <label className="font-medium" htmlFor="email">
-              E-mail
-            </label>
-            <PrismInputGroupInput
+          <div className="grid gap-2">
+            <PrismLabel htmlFor="email">E-mail</PrismLabel>
+            <PrismInput
               defaultValue={client?.email || ""}
               id="email"
               name="email"
@@ -208,10 +206,8 @@ function AdminClientPage() {
             />
           </div>
 
-          <div className="grid gap-4">
-            <label className="font-medium" htmlFor="password">
-              Senha
-            </label>
+          <div className="grid gap-2">
+            <PrismLabel htmlFor="password">Senha</PrismLabel>
             <PrismInputGroup>
               <PrismInputGroupInput
                 defaultValue={client?.password || ""}
@@ -221,17 +217,19 @@ function AdminClientPage() {
                 required
                 type={showPassword ? "text" : "password"}
               />
-              <PrismInputGroupAddon align="inline-end">
+              <PrismInputGroupAddon align="inline-end" className="pr-2 pl-1">
                 <PrismInputGroupButton
-                  arial-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                  onClick={() => setShowPassword(!showPassword)}
-                  size="icon-xs"
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowPassword(!showPassword);
+                  }}
                   type="button"
                 >
                   {showPassword ? (
-                    <EyeOffIcon className="size-4" />
-                  ) : (
                     <EyeIcon className="size-4" />
+                  ) : (
+                    <EyeOffIcon className="size-4" />
                   )}
                 </PrismInputGroupButton>
               </PrismInputGroupAddon>
@@ -262,7 +260,6 @@ function AdminClientPage() {
           {!isNew && (
             <div className="flex gap-2">
               <PrismButton
-                className="squircle bg-destructive/10 text-destructive hover:bg-destructive/20 rounded-2xl"
                 isDisabled={isSubmitting}
                 onClick={() => {
                   if (confirm("Tem certeza que deseja ocultar este cliente?")) {
@@ -277,7 +274,7 @@ function AdminClientPage() {
             </div>
           )}
           <PrismButton
-            className="squircle ml-auto rounded-2xl"
+            className="ml-auto"
             isDisabled={isSubmitting}
             type="submit"
           >

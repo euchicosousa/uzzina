@@ -56,8 +56,10 @@ export function UAvatarSelector({
             key={option.id}
             aria-pressed={isSelected}
             className={cn(
-              "hover:bg-muted/50 relative flex flex-col items-center gap-2 overflow-hidden rounded-lg p-4 transition-all",
-              isSelected ? "text-foreground bg-muted" : "opacity-50",
+              "hover:bg-secondary relative flex flex-col items-center gap-2 overflow-hidden rounded-3xl p-4 transition-all ring-foreground/5 squircle border-t duration-500 border-transparent",
+              isSelected
+                ? "text-foreground bg-action hover:bg-action-hover hover:shadow-lg border-white shadow-xs ring"
+                : "",
             )}
             onClick={() => toggleOption(option.id)}
             type="button"

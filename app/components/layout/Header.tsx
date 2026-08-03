@@ -441,7 +441,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
         {person.admin && (
           <>
             <PrismMenuSeparator />
-            <PrismMenuGroup className="bg-secondary  px-2 -mt-2 pb-2">
+            <PrismMenuGroup className="bg-secondary/20 px-2 -mt-2 pb-2">
               <PrismMenuLabel>Admin</PrismMenuLabel>
               <PrismMenuItem href="/app/admin/partners" textValue="Parceiros">
                 Parceiros

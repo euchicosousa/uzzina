@@ -537,6 +537,10 @@ html {
   corner-shape: superellipse(1.5);
 }
 
+@utility no-squircle {
+  corner-shape: unset;
+}
+
 @utility animate-spin-gradient {
   animation: spin-gradient 3s linear infinite;
 }
