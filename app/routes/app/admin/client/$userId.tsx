@@ -146,13 +146,14 @@ function AdminClientPage() {
         {/* Avatar / UploadIcon Widget */}
         <div className="flex items-center gap-6">
           <CloudinaryUpload
-            className="group relative -ml-1 size-24 shrink-0 overflow-hidden rounded-full no-squircle transition hover:opacity-90"
+            className="group no-squircle relative -ml-1 size-24 shrink-0 overflow-hidden rounded-full transition hover:opacity-90"
             cloudName={appData.cloudName}
             folder="uzzina/clients"
             onUpload={(url: string) => setImageUrl(url)}
             outputWidth={400}
             square
             uploadPreset={appData.uploadPreset}
+            variant="unstyled"
           >
             <UAvatar
               key={imageUrl ?? "empty"}
