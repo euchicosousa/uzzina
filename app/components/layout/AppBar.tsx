@@ -274,10 +274,13 @@ function PartnerFilterPopover({
                       image={partner.image}
                       size="sm"
                     />
-                    <span>{partner.title}</span>
+                    <div className="truncate">{partner.title}</div>
                     {lateActionCount > 0 && (
                       <PrismBadge
-                        className="ml-auto group-data-[selected=true]/command-item:mr-2 group-data-[checked=true]/command-item:mr-2"
+                        className={cn(
+                          "absolute",
+                          isSelected ? "right-10" : "right-3",
+                        )}
                         variant={lateActionCount >= 3 ? "error" : "warning"}
                       >
                         {lateActionCount}
