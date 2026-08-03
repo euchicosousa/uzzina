@@ -97,7 +97,9 @@ export function ResponsiblesCombobox({
                 <PrismCommandItem
                   key={person.id}
                   className="flex items-center gap-2 cursor-pointer"
-                  isSelected={selected.includes(person.user_id)}
+                  data-selected={
+                    selected.includes(person.user_id) ? "true" : undefined
+                  }
                   onAction={() => handleSelect(person.user_id)}
                   textValue={person.name}
                 >

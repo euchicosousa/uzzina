@@ -99,7 +99,9 @@ export function PartnersCombobox({
                 <PrismCommandItem
                   key={partner.id}
                   className="flex items-center gap-2 cursor-pointer"
-                  isSelected={selectedPartners.includes(partner.slug)}
+                  data-selected={
+                    selectedPartners.includes(partner.slug) ? "true" : undefined
+                  }
                   onAction={() => handleSelect(partner.slug)}
                   textValue={partner.title}
                 >

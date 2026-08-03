@@ -170,7 +170,7 @@ export function CategoriesCombobox({
                   {items.map((category) => (
                     <PrismCommandItem
                       key={category.slug}
-                      isSelected={
+                      data-selected={
                         category.slug === "instagram"
                           ? selectedCategories.filter(
                               (s) =>

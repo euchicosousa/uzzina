@@ -179,19 +179,27 @@ function CommandItem<T extends object>({
   children,
   textValue,
   isSelected,
+  "data-selected": dataSelected,
+  "data-checked": dataChecked,
   ...props
 }: MenuItemProps<T> & {
   isSelected?: boolean;
+  "data-selected"?: boolean | string;
+  "data-checked"?: boolean | string;
 }) {
+  const selected =
+    isSelected ??
+    (dataSelected === true || dataSelected === "true") ??
+    (dataChecked === true || dataChecked === "true");
   return (
     <MenuItem
       {...props}
       className={cn(
-        "group/command-item relative squircle flex min-h-7 cursor-default items-center gap-2 rounded-2xl px-4 h-8 outline-hidden select-none in-data-[slot=dialog-content]:rounded-2xl data-focused:bg-secondary data-focused:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-secondary data-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-selected:*:[svg]:text-foreground",
+        "group/command-item relative squircle flex min-h-7 cursor-default items-center gap-2 rounded-2xl px-4 h-8 outline-hidden select-none in-data-[slot=dialog-content]:rounded-2xl data-focused:bg-secondary data-focused:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary data-[selected=true]:text-foreground data-[checked=true]:bg-secondary data-[checked=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-[selected=true]:*:[svg]:text-foreground data-[checked=true]:*:[svg]:text-foreground",
         className,
       )}
-      data-checked={isSelected || undefined}
-      data-selected={isSelected || undefined}
+      data-checked={selected ? "true" : undefined}
+      data-selected={selected ? "true" : undefined}
       data-slot="command-item"
       textValue={
         textValue || (typeof children === "string" ? children : undefined)
@@ -200,9 +208,7 @@ function CommandItem<T extends object>({
       {composeRenderProps(children, (children) => (
         <>
           {children}
-          <div className="ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100 bg-success rounded-full size-5 grid place-content-center">
-            <CheckIcon className="size-3 text-succes-background" />
-          </div>
+          <CheckCircle2Icon className="ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-50 group-data-[selected=true]/command-item:opacity-50" />
         </>
       ))}
     </MenuItem>

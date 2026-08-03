@@ -139,7 +139,9 @@ export function SprintCombobox({
                   <PrismCommandItem
                     key={person.id}
                     className="flex cursor-pointer items-center gap-2"
-                    isSelected={selectedSprints.includes(person.user_id)}
+                    data-selected={
+                      selectedSprints.includes(person.user_id) ? "true" : undefined
+                    }
                     onAction={() => handleSelect(person.user_id)}
                     textValue={`${person.name} ${person.surname}`}
                   >
@@ -168,7 +170,9 @@ export function SprintCombobox({
                   <PrismCommandItem
                     key={person.id}
                     className="flex cursor-pointer items-center gap-2"
-                    isSelected={selectedSprints.includes(person.user_id)}
+                    data-selected={
+                      selectedSprints.includes(person.user_id) ? "true" : undefined
+                    }
                     onAction={() => handleSelect(person.user_id)}
                     textValue={`${person.name} ${person.surname}`}
                   >

@@ -13,7 +13,7 @@ import {
   ActionItemResponsibles,
   ActionItemSprint,
 } from "../ActionItem";
-
+import { AlertCircleIcon } from "lucide-react";
 export function ActionLineVariant({
   action,
   currentPhase,
@@ -35,10 +35,12 @@ export function ActionLineVariant({
     <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
       <div className="flex w-full items-center gap-2 overflow-hidden">
         <div className="flex items-center gap-2">
-          {showStation && (
-            <StationIcon size="short" station={currentStation} />
+          {showStation && <StationIcon size="short" station={currentStation} />}
+          {isLateAction(action) ? (
+            <AlertCircleIcon className="size-4 text-late-foreground" />
+          ) : (
+            <PhaseIcon phase={currentPhase} size="dot" />
           )}
-          <PhaseIcon phase={currentPhase} size="dot" />
         </div>
         {isLateAction(action) && <ActionItemSprint action={action} />}
         <ActionItemTitleInput

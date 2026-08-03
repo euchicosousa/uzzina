@@ -263,7 +263,7 @@ export function ActionFormFooter({
                 : "Atualizar"
               : isPending
                 ? "Criando..."
-                : "Criar Ação"}
+                : "Criar"}
           </div>
           {isPending ? (
             <LoaderIcon className="animate-spin" />

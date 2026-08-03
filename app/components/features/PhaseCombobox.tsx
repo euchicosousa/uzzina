@@ -233,7 +233,7 @@ export function PhaseCombobox({
               {isMulti && (
                 <>
                   <PrismCommandItem
-                    isSelected={
+                    data-selected={
                       selectedPhases.includes("all") ||
                       selectedPhases.length === 0
                     }

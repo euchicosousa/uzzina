@@ -180,8 +180,7 @@ function PartnerFilterPopover({
   isAtHome,
   navigate,
 }: PartnerFilterPopoverProps) {
-  // const [partnerQuery, setPartnerQuery] = useState("");
-  const [isFilterMode, setIsFilterMode] = useState(false);
+  const [isFilterMode, setIsFilterMode] = useState(partnerFilters.length > 0);
   return (
     <PrismPopoverTrigger>
       <PrismButton
@@ -222,24 +221,17 @@ function PartnerFilterPopover({
             <PrismCommandInput placeholder="Parceiro..." />
             {isAtHome && (
               <PrismToggle
-                className={({ isSelected }) =>
-                  cn(
-                    buttonVariants({
-                      variant: isSelected ? "default" : "ghost",
-                      size: "icon-xs",
-                    }),
-                    "mr-2 cursor-pointer",
-                  )
-                }
+                className={"mr-2"}
                 isSelected={isFilterMode}
                 onChange={(selected) => {
+                  setIsFilterMode(selected);
                   if (!selected) {
                     setPartnerFilters([]);
                   }
-                  setIsFilterMode(selected);
                 }}
+                size={"sm"}
               >
-                <FilterIcon />
+                <FilterIcon className="size-4" />
               </PrismToggle>
             )}
           </div>
@@ -257,8 +249,7 @@ function PartnerFilterPopover({
                 return (
                   <PrismCommandItem
                     key={partner.slug}
-                    className={isSelected ? "bg-secondary" : ""}
-                    data-checked={isSelected}
+                    data-selected={isSelected ? "true" : undefined}
                     onPress={() => {
                       if (isFilterMode) {
                         if (isSelected) {
@@ -286,7 +277,7 @@ function PartnerFilterPopover({
                     <span>{partner.title}</span>
                     {lateActionCount > 0 && (
                       <PrismBadge
-                        className="absolute right-3"
+                        className="ml-auto group-data-[selected=true]/command-item:mr-2 group-data-[checked=true]/command-item:mr-2"
                         variant={lateActionCount >= 3 ? "error" : "warning"}
                       >
                         {lateActionCount}

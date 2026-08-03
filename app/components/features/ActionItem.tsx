@@ -1,4 +1,4 @@
-import { CalendarDaysIcon, SignalIcon } from "lucide-react";
+import { SignalIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useAppContext } from "~/contexts/AppContext";
 import type { Action, Partner, Person } from "~/types";
@@ -6,15 +6,12 @@ import type { Action, Partner, Person } from "~/types";
 // UI Components
 import { PrismCheckbox } from "~/components/prism";
 import { UAvatarGroup } from "../uzzina/UAvatar";
-import { ActionItemTitleInput } from "./ActionItemTitleInput";
 import { ActionBlockVariant } from "./ActionVariants/ActionBlockVariant";
 import { ActionContentVariant } from "./ActionVariants/ActionContentVariant";
 import { ActionLineVariant } from "./ActionVariants/ActionLineVariant";
 import type { ActionVariantRendererProps } from "./ActionVariants/types";
-import { Content } from "./Content";
-import { Draggable } from "./DnD";
+import { Draggable, SortableItem } from "./DnD";
 import { PhaseIcon } from "./PhaseIcon";
-import { StationIcon } from "./StationIcon";
 
 // Hooks
 import { useActionShortcutContext } from "~/hooks/useActionShortcut";
@@ -26,7 +23,6 @@ import { cn } from "cnfast";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import {
   CATEGORIES,
-  INTENT,
   PHASES,
   PRIORITIES,
   SIZE,
@@ -34,9 +30,7 @@ import {
   VARIANT,
   type DATE_TIME_DISPLAY,
   type CATEGORY,
-  type CATEGORY_TYPE,
   type PHASE,
-  type PHASE_TYPE,
   type PRIORITY,
   type STATION_TYPE,
 } from "~/lib/CONSTANTS";
@@ -50,7 +44,6 @@ import {
 } from "~/lib/helpers";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
-import { PhaseStationBadges } from "./PhaseStationBadges";
 export type ActionDisplayFlags = {
   /** Whether to highlight the action if it is late */
   showLate?: boolean;
@@ -81,6 +74,8 @@ type ActionItemProps = {
   isDragging?: boolean;
   /** Whether the item is draggable */
   isDraggable?: boolean;
+  /** Whether the item is sortable */
+  isSortable?: boolean;
   /** Configuration object for showing various details/badges */
   displayFlags?: ActionDisplayFlags;
   /** Format pattern for displaying dates and times */
@@ -107,6 +102,7 @@ export function ActionItem({
   className,
   isDragging,
   isDraggable,
+  isSortable,
   displayFlags = DEFAULT_DISPLAY_FLAGS,
   dateTimeDisplay,
   onClick,
@@ -214,7 +210,7 @@ export function ActionItem({
     if (showLate && isLateAction(action)) {
       baseStyles = cn(
         baseStyles,
-        "bg-late text-late-foreground hover:bg-late-hover border-t-white/50 ring ring-destructive/50",
+        "bg-late text-late-foreground hover:bg-late-hover border-t-white/50 ring ring-late-foreground",
       );
     }
     if (showSprint && person && isSprint(action, person)) {
@@ -300,7 +296,7 @@ export function ActionItem({
           <PrismCheckbox
             boxClassName="bg-background"
             className="pointer-events-none"
-            isSelected={isSelected}
+            data-selected={isSelected}
             size="sm"
           />
         </div>
@@ -340,6 +336,9 @@ export function ActionItem({
       />
     </div>
   );
+  if (isSortable) {
+    return <SortableItem id={action.id}>{content}</SortableItem>;
+  }
   return isDraggable ? (
     <Draggable id={action.id}>{content}</Draggable>
   ) : (

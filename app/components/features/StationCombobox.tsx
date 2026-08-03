@@ -164,9 +164,11 @@ export function StationCombobox({
               {isMulti && (
                 <>
                   <PrismCommandItem
-                    isSelected={
+                    data-selected={
                       selectedStations.includes("all") ||
                       selectedStations.length === 0
+                        ? "true"
+                        : undefined
                     }
                     onAction={() => handleSelect("all")}
                     textValue="Todas as estações"
@@ -185,7 +187,7 @@ export function StationCombobox({
                   <PrismCommandItem
                     key={station.slug}
                     className="flex items-center gap-2 cursor-pointer"
-                    isSelected={isChecked}
+                    data-selected={isChecked ? "true" : undefined}
                     onAction={() => handleSelect(station.slug)}
                     textValue={station.title}
                   >

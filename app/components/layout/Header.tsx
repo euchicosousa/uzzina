@@ -382,7 +382,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
         <PrismMenuSeparator />
 
         <PrismMenuGroup className="grid grid-cols-6 gap-1 px-4">
-          <PrismMenuLabel className="col-span-6">Cor de Acento</PrismMenuLabel>
+          <PrismMenuLabel className="col-span-6">Cores</PrismMenuLabel>
 
           {PALLETE.map((paletteConfig, i) => {
             const { light, dark } = paletteConfig;

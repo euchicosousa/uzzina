@@ -47,7 +47,7 @@
   --accent: oklch(from var(--background) calc(l + var(--accent-l-delta)) c h);
   --accent-foreground: var(--foreground);
 
-  --destructive: oklch(var(--luminosity) var(--chroma) var(--error-hue));
+  --destructive: oklch(0.7 var(--chroma) var(--error-hue));
 
   --border-l-delta: -0.05;
   --border: oklch(from var(--background) calc(l + var(--border-l-delta)) c h);
@@ -76,7 +76,9 @@
     from var(--background) calc(l + var(--sidebar-accent-l-delta)) c h
   );
   --sidebar-accent-foreground: var(--foreground);
-  --sidebar-border: oklch(from var(--background) calc(l + var(--border-l-delta)) c h);
+  --sidebar-border: oklch(
+    from var(--background) calc(l + var(--border-l-delta)) c h
+  );
   --sidebar-ring: var(--ring);
 
   --action-l-delta: 0.02;
@@ -84,17 +86,6 @@
   --action: oklch(from var(--background) calc(l + var(--action-l-delta)) c h);
   --action-hover: oklch(
     from var(--background) calc(l + var(--action-hover-l-delta)) c h
-  );
-
-  --late-l-delta: -0.04;
-  --late: oklch(
-    var(--luminosity-background) var(--chroma-background) var(--error-hue)
-  );
-  --late-hover: oklch(
-    from var(--late) calc(l + var(--late-l-delta)) c h
-  );
-  --late-foreground: oklch(
-    var(--luminosity) var(--chroma) var(--error-hue)
   );
 
   --error-hue: 16.339;
@@ -105,6 +96,13 @@
   --luminosity-background: 0.96;
   --chroma: 0.2;
   --chroma-background: 0.02;
+
+  --late-l-delta: 0.02;
+  --late: oklch(
+    var(--luminosity-background) var(--chroma-background) var(--error-hue)
+  );
+  --late-hover: oklch(from var(--late) calc(l + var(--late-l-delta)) c h);
+  --late-foreground: oklch(0.7 var(--chroma) var(--error-hue));
 
   --color-error: oklch(var(--luminosity) var(--chroma) var(--error-hue));
   --color-error-background: oklch(
@@ -172,7 +170,9 @@
   --secondary-foreground: var(--foreground);
 
   --dark-muted-l-delta: 0.03;
-  --muted: oklch(from var(--background) calc(l + var(--dark-muted-l-delta)) c h);
+  --muted: oklch(
+    from var(--background) calc(l + var(--dark-muted-l-delta)) c h
+  );
   --dark-muted-foreground-l-delta: -0.28;
   --muted-foreground: oklch(
     from var(--foreground) calc(l + var(--dark-muted-foreground-l-delta)) c h
@@ -205,7 +205,9 @@
   --chart-5: oklch(0.424 0.199 265.638);
 
   --dark-sidebar-l-delta: 0;
-  --sidebar: oklch(from var(--background) calc(l + var(--dark-sidebar-l-delta)) c h);
+  --sidebar: oklch(
+    from var(--background) calc(l + var(--dark-sidebar-l-delta)) c h
+  );
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: oklch(
     var(--dark-accent-l) var(--dark-accent-c) var(--dark-accent-h)
@@ -267,12 +269,8 @@
   --late: oklch(
     var(--luminosity-background) var(--chroma-background) var(--error-hue)
   );
-  --late-hover: oklch(
-    from var(--late) calc(l + var(--dark-late-l-delta)) c h
-  );
-  --late-foreground: oklch(
-    var(--luminosity) var(--chroma) var(--error-hue)
-  );
+  --late-hover: oklch(from var(--late) calc(l + var(--dark-late-l-delta)) c h);
+  --late-foreground: oklch(var(--luminosity) var(--chroma) var(--error-hue));
 }
 
 @theme inline {
