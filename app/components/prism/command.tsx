@@ -195,7 +195,7 @@ function CommandItem<T extends object>({
     <MenuItem
       {...props}
       className={cn(
-        "group/command-item relative squircle flex min-h-7 cursor-default items-center gap-2 rounded-2xl px-4 h-8 outline-hidden select-none in-data-[slot=dialog-content]:rounded-2xl data-focused:bg-secondary data-focused:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary data-[selected=true]:text-foreground data-[checked=true]:bg-secondary data-[checked=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-[selected=true]:*:[svg]:text-foreground data-[checked=true]:*:[svg]:text-foreground",
+        "group/command-item relative squircle flex min-h-7 cursor-default items-center gap-2 rounded-2xl px-4 h-8 outline-hidden select-none in-data-[slot=dialog-content]:rounded-2xl data-focused:bg-secondary/50 data-focused:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary/50 data-[selected=true]:text-foreground data-[checked=true]:bg-secondary/50 data-[checked=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-[selected=true]:*:[svg]:text-foreground data-[checked=true]:*:[svg]:text-foreground",
         className,
       )}
       data-checked={selected ? "true" : undefined}
