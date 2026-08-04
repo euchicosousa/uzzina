@@ -85,6 +85,8 @@ export function CloudinaryUpload({
     destroy: () => void;
   } | null>(null);
 
+  const widgetId = useRef(`cloudinary-widget-${Math.random().toString(36).substr(2, 9)}`);
+
   // Mantém sempre a referência mais recente do onUpload para evitar closures stale.
   // O widget é criado uma única vez — sem este ref o callback ficaria preso
   // à versão do onUpload capturada no render de criação.
@@ -112,17 +114,24 @@ export function CloudinaryUpload({
         } catch {
           // Ignores
         }
-        widgetRef.current.destroy();
+        try {
+            widgetRef.current.destroy();
+        } catch {
+            // Ignores
+        }
         widgetRef.current = null;
       }
-      // Remove resíduos de overlay que possam ter ficado no DOM
-      document
-        .querySelectorAll("[id^='cloudinary-'], [class*='cloudinary-']")
-        .forEach((el) => {
-          if (el.tagName === "IFRAME" || el.classList.contains("cloudinary-overlay")) {
-            el.remove();
-          }
-        });
+      
+      // Cleanup de fallback apenas para o iframe/overlay DESSA instância (evita quebrar widgets de outros componentes)
+      const iframe = document.getElementById(widgetId.current);
+      if (iframe) {
+        const wrapper = iframe.closest('.cloudinary-overlay');
+        if (wrapper) {
+            wrapper.remove();
+        } else {
+            iframe.remove();
+        }
+      }
     };
   }, []);
   function openWidget() {
@@ -145,6 +154,7 @@ export function CloudinaryUpload({
     }
     widgetRef.current = window.cloudinary.createUploadWidget(
       {
+        id: widgetId.current,
         cloudName,
         uploadPreset,
         folder,
