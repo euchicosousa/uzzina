@@ -63,6 +63,7 @@ export type Database = {
           archived: boolean | null
           category: string
           color: string
+          content_description: string | null
           content_files: string[] | null
           created_at: string
           date: string
@@ -86,6 +87,7 @@ export type Database = {
           archived?: boolean | null
           category: string
           color?: string
+          content_description?: string | null
           content_files?: string[] | null
           created_at: string
           date: string
@@ -109,6 +111,7 @@ export type Database = {
           archived?: boolean | null
           category?: string
           color?: string
+          content_description?: string | null
           content_files?: string[] | null
           created_at?: string
           date?: string
@@ -382,6 +385,7 @@ export type Database = {
               archived: boolean | null
               category: string
               color: string
+              content_description: string | null
               content_files: string[] | null
               created_at: string
               date: string
@@ -420,6 +424,7 @@ export type Database = {
               archived: boolean | null
               category: string
               color: string
+              content_description: string | null
               content_files: string[] | null
               created_at: string
               date: string
