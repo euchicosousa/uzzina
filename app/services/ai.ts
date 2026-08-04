@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-
 export interface AIPayload {
   intent: string;
   title?: string;
@@ -8,29 +7,39 @@ export interface AIPayload {
   hook?: string;
   racional?: string;
 }
-
 export interface AIResult {
   intent: string;
   output: unknown;
 }
-
+const model = "gpt-5.6-luna";
 export async function callAI(payload: AIPayload): Promise<AIResult> {
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
   if (!apiKey) {
     throw new Error("VITE_OPENAI_API_KEY não configurada no cliente.");
   }
-
-  const { intent, title = "", description = "", partner_context = "", hook = "", racional = "" } = payload;
-  const client = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
-
+  const {
+    intent,
+    title = "",
+    description = "",
+    partner_context = "",
+    hook = "",
+    racional = "",
+  } = payload;
+  const client = new OpenAI({
+    apiKey,
+    dangerouslyAllowBrowser: true,
+  });
   if (intent === "ai-hooks") {
     const response = await client.chat.completions.create({
-      model: "gpt-4o-mini",
-      response_format: { type: "json_object" },
+      model,
+      response_format: {
+        type: "json_object",
+      },
       messages: [
         {
           role: "system",
-          content: "Você é o Estrategista-Chefe da CNVT. Selecione os 5 melhores ângulos do arsenal CNVT e retorne em JSON.",
+          content:
+            "Você é o Estrategista-Chefe da CNVT. Selecione os 5 melhores ângulos do arsenal CNVT e retorne em JSON.",
         },
         {
           role: "user",
@@ -39,17 +48,22 @@ export async function callAI(payload: AIPayload): Promise<AIResult> {
       ],
     });
     const output = JSON.parse(response.choices[0].message.content ?? "{}");
-    return { output, intent };
+    return {
+      output,
+      intent,
+    };
   }
-
   if (intent === "ai-caption") {
     const response = await client.chat.completions.create({
-      model: "gpt-5.3-chat-latest",
-      response_format: { type: "json_object" },
+      model,
+      response_format: {
+        type: "json_object",
+      },
       messages: [
         {
           role: "system",
-          content: "Você é o Estrategista-Chefe da CNVT. Gere uma legenda profissional em JSON contendo somente a propriedade 'caption'.",
+          content:
+            "Você é o Estrategista-Chefe da CNVT. Gere uma legenda profissional em JSON contendo somente a propriedade 'caption'.",
         },
         {
           role: "user",
@@ -58,17 +72,22 @@ export async function callAI(payload: AIPayload): Promise<AIResult> {
       ],
     });
     const output = JSON.parse(response.choices[0].message.content ?? "{}");
-    return { output, intent };
+    return {
+      output,
+      intent,
+    };
   }
-
   if (intent === "ai-post") {
     const response = await client.chat.completions.create({
-      model: "gpt-5.3-chat-latest",
-      response_format: { type: "json_object" },
+      model,
+      response_format: {
+        type: "json_object",
+      },
       messages: [
         {
           role: "system",
-          content: "Você é o Estrategista-Chefe da CNVT. Gere conteúdo de Post Estático com 'content' e 'caption' em JSON.",
+          content:
+            "Você é o Estrategista-Chefe da CNVT. Gere conteúdo de Post Estático com 'content' e 'caption' em JSON.",
         },
         {
           role: "user",
@@ -77,17 +96,22 @@ export async function callAI(payload: AIPayload): Promise<AIResult> {
       ],
     });
     const output = JSON.parse(response.choices[0].message.content ?? "{}");
-    return { output, intent };
+    return {
+      output,
+      intent,
+    };
   }
-
   if (intent === "ai-carousel") {
     const response = await client.chat.completions.create({
-      model: "gpt-5.3-chat-latest",
-      response_format: { type: "json_object" },
+      model,
+      response_format: {
+        type: "json_object",
+      },
       messages: [
         {
           role: "system",
-          content: "Você é o Estrategista-Chefe da CNVT. Gere roteiro de Carrossel com 'content' e 'caption' em JSON.",
+          content:
+            "Você é o Estrategista-Chefe da CNVT. Gere roteiro de Carrossel com 'content' e 'caption' em JSON.",
         },
         {
           role: "user",
@@ -96,17 +120,22 @@ export async function callAI(payload: AIPayload): Promise<AIResult> {
       ],
     });
     const output = JSON.parse(response.choices[0].message.content ?? "{}");
-    return { output, intent };
+    return {
+      output,
+      intent,
+    };
   }
-
   if (intent === "ai-reels") {
     const response = await client.chat.completions.create({
-      model: "gpt-5.3-chat-latest",
-      response_format: { type: "json_object" },
+      model,
+      response_format: {
+        type: "json_object",
+      },
       messages: [
         {
           role: "system",
-          content: "Você é o Estrategista-Chefe da CNVT. Gere roteiro de Reels com 'content' e 'caption' em JSON.",
+          content:
+            "Você é o Estrategista-Chefe da CNVT. Gere roteiro de Reels com 'content' e 'caption' em JSON.",
         },
         {
           role: "user",
@@ -115,8 +144,10 @@ export async function callAI(payload: AIPayload): Promise<AIResult> {
       ],
     });
     const output = JSON.parse(response.choices[0].message.content ?? "{}");
-    return { output, intent };
+    return {
+      output,
+      intent,
+    };
   }
-
   throw new Error("Intent inválido ou não suportado.");
 }
