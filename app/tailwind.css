@@ -102,7 +102,7 @@
     var(--luminosity-background) var(--chroma-background) var(--error-hue)
   );
   --late-hover: oklch(from var(--late) calc(l + var(--late-l-delta)) c h);
-  --late-foreground: oklch(0.7 var(--chroma) var(--error-hue));
+  --late-foreground: oklch(0.6 0.3 var(--error-hue));
 
   --color-error: oklch(var(--luminosity) var(--chroma) var(--error-hue));
   --color-error-background: oklch(

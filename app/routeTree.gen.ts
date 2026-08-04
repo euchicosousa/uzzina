@@ -24,6 +24,7 @@ import { Route as AppProfileRouteImport } from './routes/app/profile'
 import { Route as AppNotificationsRouteImport } from './routes/app/notifications'
 import { Route as AppHelpRouteImport } from './routes/app/help'
 import { Route as AppFlowRouteImport } from './routes/app/flow'
+import { Route as DashReviewSlugRouteImport } from './routes/dash/review.$slug'
 import { Route as DashActionIdRouteImport } from './routes/dash/action/$id'
 import { Route as AppPartnerSlugRouteImport } from './routes/app/partner/$slug'
 import { Route as AppAdminUsersRouteImport } from './routes/app/admin/users'
@@ -109,6 +110,11 @@ const AppFlowRoute = AppFlowRouteImport.update({
   path: '/flow',
   getParentRoute: () => AppRoute,
 } as any)
+const DashReviewSlugRoute = DashReviewSlugRouteImport.update({
+  id: '/review/$slug',
+  path: '/review/$slug',
+  getParentRoute: () => DashRoute,
+} as any)
 const DashActionIdRoute = DashActionIdRouteImport.update({
   id: '/action/$id',
   path: '/action/$id',
@@ -177,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/app/admin/users': typeof AppAdminUsersRoute
   '/app/partner/$slug': typeof AppPartnerSlugRoute
   '/dash/action/$id': typeof DashActionIdRoute
+  '/dash/review/$slug': typeof DashReviewSlugRoute
   '/app/admin/client/$userId': typeof AppAdminClientUserIdRoute
   '/app/admin/partner/$slug': typeof AppAdminPartnerSlugRoute
   '/app/admin/user/$userId': typeof AppAdminUserUserIdRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByTo {
   '/app/admin/users': typeof AppAdminUsersRoute
   '/app/partner/$slug': typeof AppPartnerSlugRoute
   '/dash/action/$id': typeof DashActionIdRoute
+  '/dash/review/$slug': typeof DashReviewSlugRoute
   '/app/admin/client/$userId': typeof AppAdminClientUserIdRoute
   '/app/admin/partner/$slug': typeof AppAdminPartnerSlugRoute
   '/app/admin/user/$userId': typeof AppAdminUserUserIdRoute
@@ -228,6 +236,7 @@ export interface FileRoutesById {
   '/app/admin/users': typeof AppAdminUsersRoute
   '/app/partner/$slug': typeof AppPartnerSlugRoute
   '/dash/action/$id': typeof DashActionIdRoute
+  '/dash/review/$slug': typeof DashReviewSlugRoute
   '/app/admin/client/$userId': typeof AppAdminClientUserIdRoute
   '/app/admin/partner/$slug': typeof AppAdminPartnerSlugRoute
   '/app/admin/user/$userId': typeof AppAdminUserUserIdRoute
@@ -256,6 +265,7 @@ export interface FileRouteTypes {
     | '/app/admin/users'
     | '/app/partner/$slug'
     | '/dash/action/$id'
+    | '/dash/review/$slug'
     | '/app/admin/client/$userId'
     | '/app/admin/partner/$slug'
     | '/app/admin/user/$userId'
@@ -280,6 +290,7 @@ export interface FileRouteTypes {
     | '/app/admin/users'
     | '/app/partner/$slug'
     | '/dash/action/$id'
+    | '/dash/review/$slug'
     | '/app/admin/client/$userId'
     | '/app/admin/partner/$slug'
     | '/app/admin/user/$userId'
@@ -306,6 +317,7 @@ export interface FileRouteTypes {
     | '/app/admin/users'
     | '/app/partner/$slug'
     | '/dash/action/$id'
+    | '/dash/review/$slug'
     | '/app/admin/client/$userId'
     | '/app/admin/partner/$slug'
     | '/app/admin/user/$userId'
@@ -428,6 +440,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFlowRouteImport
       parentRoute: typeof AppRoute
     }
+    '/dash/review/$slug': {
+      id: '/dash/review/$slug'
+      path: '/review/$slug'
+      fullPath: '/dash/review/$slug'
+      preLoaderRoute: typeof DashReviewSlugRouteImport
+      parentRoute: typeof DashRoute
+    }
     '/dash/action/$id': {
       id: '/dash/action/$id'
       path: '/action/$id'
@@ -534,12 +553,14 @@ interface DashRouteChildren {
   DashLoginRoute: typeof DashLoginRoute
   DashIndexRoute: typeof DashIndexRoute
   DashActionIdRoute: typeof DashActionIdRoute
+  DashReviewSlugRoute: typeof DashReviewSlugRoute
 }
 
 const DashRouteChildren: DashRouteChildren = {
   DashLoginRoute: DashLoginRoute,
   DashIndexRoute: DashIndexRoute,
   DashActionIdRoute: DashActionIdRoute,
+  DashReviewSlugRoute: DashReviewSlugRoute,
 }
 
 const DashRouteWithChildren = DashRoute._addFileChildren(DashRouteChildren)

@@ -127,3 +127,33 @@ export async function fetchPeople() {
   if (error) throw error;
   return data as Person[];
 }
+
+/**
+ * Fetch actions for public review page by IDs (no auth required).
+ * Returns only fields needed for the approval document.
+ */
+export async function fetchReviewActions(ids: string[]): Promise<Action[]> {
+  if (ids.length === 0) return [];
+  const supabase = createSupabaseBrowserClient();
+  const { data, error } = await supabase
+    .from("actions")
+    .select("id, title, content_description, instagram_caption, category, date, partners")
+    .in("id", ids)
+    .order("date", { ascending: true });
+  if (error) throw error;
+  return data as Action[];
+}
+
+/**
+ * Fetch a partner by slug for the public review page.
+ */
+export async function fetchPartnerBySlug(slug: string): Promise<Partner | null> {
+  const supabase = createSupabaseBrowserClient();
+  const { data, error } = await supabase
+    .from("partners")
+    .select("id, title, slug, image, colors, short")
+    .eq("slug", slug)
+    .single();
+  if (error) return null;
+  return data as Partner;
+}

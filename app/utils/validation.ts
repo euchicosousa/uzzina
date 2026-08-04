@@ -78,6 +78,7 @@ export const ActionFormSchema = z.object({
   sprints: nullableCommaSeparatedStringToArray,
 
   instagram_caption: nullableString,
+  content_description: nullableString,
   color: z.string().optional(),
   phase: z.string().optional().nullable(),
   station: z.string().optional().nullable(),

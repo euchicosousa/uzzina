@@ -4,6 +4,7 @@ import {
   FlagIcon,
   KanbanIcon,
   PaletteIcon,
+  SendIcon,
   TagIcon,
   UserIcon,
   XIcon,
@@ -187,6 +188,19 @@ export function BulkActionMenu() {
       archived: true,
     });
     setArchiveOpen(false);
+  };
+
+  // ─── Handler: Enviar para Aprovação ─────────────────────────────────────
+  const handleSendForApproval = () => {
+    if (!currentPartner || selectedIds.length === 0) return;
+    const ids = selectedIds.join(",");
+    const url = `${window.location.origin}/dash/review/${currentPartner.slug}?ids=${ids}`;
+    navigator.clipboard.writeText(url).then(() => {
+      toast.success("Link de aprovação copiado!", {
+        description: url,
+        duration: 5000,
+      });
+    });
   };
 
   // ─── Render ──────────────────────────────────────────────────────────────────
@@ -394,6 +408,16 @@ export function BulkActionMenu() {
             textValue="Responsáveis"
           >
             <UserIcon /> Alterar Responsáveis
+          </PrismMenuItem>
+
+          <PrismMenuSeparator />
+
+          {/* Enviar para Aprovação */}
+          <PrismMenuItem
+            onAction={handleSendForApproval}
+            textValue="Enviar para Aprovação"
+          >
+            <SendIcon /> Enviar para Aprovação
           </PrismMenuItem>
 
           <PrismMenuSeparator />

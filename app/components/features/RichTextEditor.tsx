@@ -492,5 +492,4 @@ export function RichTextEditor({
     </EditorContext.Provider>
   );
 }
-
 export { RichTextEditor as Tiptap };

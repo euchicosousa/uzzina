@@ -71,6 +71,7 @@ export function ActionFormDrawer({
   // without triggering re-renders. handleSave reads from here so Cmd+Enter
   // always saves the latest typed content even without blur.
   const descriptionRef = useRef(BaseAction.description || "");
+  const contentDescriptionRef = useRef(BaseAction.content_description || "");
   const handleSave = useCallback(async () => {
     if (!RawAction.title) {
       toast.error("Erro / O título é obrigatório", {
@@ -91,6 +92,7 @@ export function ActionFormDrawer({
     const result = await handleAction({
       ...RawAction,
       description: descriptionRef.current,
+      content_description: contentDescriptionRef.current,
       // always latest typed content
       intent: RawAction.id ? INTENT.update_action : INTENT.create_action,
     });
@@ -119,6 +121,7 @@ export function ActionFormDrawer({
     if (BaseAction.id !== prevBaseIdRef.current) {
       prevBaseIdRef.current = BaseAction.id;
       descriptionRef.current = BaseAction.description || "";
+      contentDescriptionRef.current = BaseAction.content_description || "";
       setRawAction(BaseAction);
     }
   }, [BaseAction, handleAction]);
@@ -422,6 +425,10 @@ export function ActionFormDrawer({
                 updateAction={updateAction}
                 updateContentFiles={updateContentFiles}
                 uploadPreset={uploadPreset}
+                contentDescription={contentDescriptionRef.current}
+                onContentDescriptionChange={(html) => {
+                  contentDescriptionRef.current = html;
+                }}
               />
             </div>
           )}
