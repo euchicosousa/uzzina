@@ -1,4 +1,4 @@
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
@@ -11,6 +11,10 @@ function apiAiDevPlugin(): Plugin {
       server.middlewares.use(async (req: IncomingMessage, res: ServerResponse, next) => {
         if (req.url === "/api/ai" && req.method === "POST") {
           try {
+            // Carrega variáveis do arquivo .env no process.env para dev mode local
+            const env = loadEnv("development", process.cwd(), "");
+            Object.assign(process.env, env);
+
             let bodyStr = "";
             req.on("data", (chunk) => {
               bodyStr += chunk;
