@@ -22,6 +22,7 @@ import { Route as DashLoginRouteImport } from './routes/dash/login'
 import { Route as AppTodayRouteImport } from './routes/app/today'
 import { Route as AppProfileRouteImport } from './routes/app/profile'
 import { Route as AppNotificationsRouteImport } from './routes/app/notifications'
+import { Route as AppLeadsRouteImport } from './routes/app/leads'
 import { Route as AppHelpRouteImport } from './routes/app/help'
 import { Route as AppFlowRouteImport } from './routes/app/flow'
 import { Route as DashReviewSlugRouteImport } from './routes/dash/review.$slug'
@@ -100,6 +101,11 @@ const AppNotificationsRoute = AppNotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLeadsRoute = AppLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppHelpRoute = AppHelpRouteImport.update({
   id: '/help',
   path: '/help',
@@ -171,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/ui': typeof UiRoute
   '/app/flow': typeof AppFlowRoute
   '/app/help': typeof AppHelpRoute
+  '/app/leads': typeof AppLeadsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/today': typeof AppTodayRoute
@@ -196,6 +203,7 @@ export interface FileRoutesByTo {
   '/ui': typeof UiRoute
   '/app/flow': typeof AppFlowRoute
   '/app/help': typeof AppHelpRoute
+  '/app/leads': typeof AppLeadsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/today': typeof AppTodayRoute
@@ -224,6 +232,7 @@ export interface FileRoutesById {
   '/ui': typeof UiRoute
   '/app/flow': typeof AppFlowRoute
   '/app/help': typeof AppHelpRoute
+  '/app/leads': typeof AppLeadsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/today': typeof AppTodayRoute
@@ -253,6 +262,7 @@ export interface FileRouteTypes {
     | '/ui'
     | '/app/flow'
     | '/app/help'
+    | '/app/leads'
     | '/app/notifications'
     | '/app/profile'
     | '/app/today'
@@ -278,6 +288,7 @@ export interface FileRouteTypes {
     | '/ui'
     | '/app/flow'
     | '/app/help'
+    | '/app/leads'
     | '/app/notifications'
     | '/app/profile'
     | '/app/today'
@@ -305,6 +316,7 @@ export interface FileRouteTypes {
     | '/ui'
     | '/app/flow'
     | '/app/help'
+    | '/app/leads'
     | '/app/notifications'
     | '/app/profile'
     | '/app/today'
@@ -426,6 +438,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppNotificationsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/leads': {
+      id: '/app/leads'
+      path: '/leads'
+      fullPath: '/app/leads'
+      preLoaderRoute: typeof AppLeadsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/help': {
       id: '/app/help'
       path: '/help'
@@ -516,6 +535,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppFlowRoute: typeof AppFlowRoute
   AppHelpRoute: typeof AppHelpRoute
+  AppLeadsRoute: typeof AppLeadsRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppProfileRoute: typeof AppProfileRoute
   AppTodayRoute: typeof AppTodayRoute
@@ -533,6 +553,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppFlowRoute: AppFlowRoute,
   AppHelpRoute: AppHelpRoute,
+  AppLeadsRoute: AppLeadsRoute,
   AppNotificationsRoute: AppNotificationsRoute,
   AppProfileRoute: AppProfileRoute,
   AppTodayRoute: AppTodayRoute,

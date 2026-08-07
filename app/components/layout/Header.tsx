@@ -417,6 +417,10 @@ const HeaderMenu = ({ person }: { person: Person }) => {
         <PrismMenuSeparator />
 
         <PrismMenuGroup className="px-2">
+          <PrismMenuItem href="/app/leads" textValue="Leads">
+            Leads
+          </PrismMenuItem>
+
           <PrismMenuItem href="/app/profile" textValue="Minha Conta">
             Minha Conta
           </PrismMenuItem>

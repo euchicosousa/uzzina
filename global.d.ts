@@ -5,6 +5,11 @@ declare global {
   type Partner = Tables<"partners">;
   type Action = Tables<"actions">;
   type Celebration = Tables<"celebrations">;
+  type Lead = Tables<"leads">;
+  interface LeadAnswer {
+    question: string;
+    answer: string;
+  }
   type OutletContext = {
     BaseAction: Action | null;
     setBaseAction: (action: Action | null) => void;

@@ -214,6 +214,39 @@ export type Database = {
         }
         Relationships: []
       }
+      leads: {
+        Row: {
+          answers: Json | null
+          completed: boolean | null
+          created_at: string | null
+          id: string
+          main_need: string | null
+          name: string
+          updated_at: string | null
+          whatsapp: string
+        }
+        Insert: {
+          answers?: Json | null
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          main_need?: string | null
+          name: string
+          updated_at?: string | null
+          whatsapp: string
+        }
+        Update: {
+          answers?: Json | null
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          main_need?: string | null
+          name?: string
+          updated_at?: string | null
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           action_id: string

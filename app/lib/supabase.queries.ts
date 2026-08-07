@@ -114,6 +114,21 @@ export async function fetchCelebrations() {
   return data as Celebration[];
 }
 
+/**
+ * Fetch all leads client-side
+ */
+export async function fetchLeads() {
+  const supabase = createSupabaseBrowserClient();
+  const { data, error } = await supabase
+    .from("leads")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data as Lead[];
+}
+
+
 export type Person = Tables<"people">;
 
 export async function fetchPeople() {

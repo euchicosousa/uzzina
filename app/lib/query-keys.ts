@@ -14,4 +14,8 @@ export const QUERY_KEYS = {
   partners: () => ["partners"] as const,
   people: () => ["people"] as const,
   notifications: () => ["notifications"] as const,
+  leads: {
+    all: () => ["leads"] as const,
+    detail: (id: string) => ["leads", id] as const,
+  },
 } as const;
