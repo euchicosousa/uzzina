@@ -124,7 +124,7 @@ export function ActionColorDropdown({
                 <PrismToggleGroupItem
                   key={hex}
                   aria-label={`Cor ${hex}`}
-                  className="h-5 min-w-0 rounded-2xl squircle border border-black/10 p-0 shrink-0 transition-all data-selected:ring-2 data-selected:ring-primary data-selected:ring-offset-2 data-selected:ring-offset-background data-selected:scale-110"
+                  className="h-5 min-w-0 rounded-2xl squircle border border-black/10 p-0 shrink-0 transition-all data-selected:ring-2 data-selected:ring-primary data-selected:ring-offset-background data-selected:scale-110"
                   id={hex}
                   style={{
                     backgroundColor: hex,
@@ -157,8 +157,8 @@ export function ActionColorDropdown({
             aria-label="Código Hex da Cor"
             className="w-32"
             onChange={handleLocalColorChange}
-            value={colorValue}
             size="sm"
+            value={colorValue}
           />
         </div>
       </PrismPopover>
