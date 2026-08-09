@@ -1,7 +1,7 @@
 import type { Action } from "~/types";
 import { useMemo } from "react";
 import { useDroppable } from "@dnd-kit/core";
-import { format, isSameDay, isSameMonth, isSameWeek } from "date-fns";
+import { format, isSameDay, isSameMonth } from "date-fns";
 import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
 import type { ViewOptions } from "~/components/features/ViewOptions";
@@ -19,7 +19,6 @@ export function CalendarDayCell({
   celebrations,
   isCompact,
   showBorder,
-  highlightThisWeek,
 }: {
   currentDay?: Date;
   day: Date;
@@ -38,9 +37,10 @@ export function CalendarDayCell({
   const isLoading = useLoading(["actions"]);
   const skeletonCount = useMemo(() => Math.ceil(Math.random() * 3) + 1, []);
 
-  // Modifica a data no render utilizando um helper ou no browser, mas para o SSR não quebrar o layout,
-  // mantemos sem mutar horas baseadas no tempo real do servidor. Mover para uma constante estável ou no efeito.
-  // Removido day.setHours(new Date().getHours(), new Date().getMinutes()); pois altera a data em tempo real no render.
+  const isAutoHeight =
+    viewOptions.autoHeight || viewOptions.variant === VARIANT.content;
+
+  const isCompactMode = !isAutoHeight && Boolean(isCompact);
 
   return (
     <div
@@ -49,8 +49,7 @@ export function CalendarDayCell({
       className={cn(
         "group/column flex flex-col justify-between hover:bg-foreground/5 duration-500",
         showBorder && "border-b",
-        highlightThisWeek && isSameWeek(day, currentDay || today) && "",
-        viewOptions.variant === VARIANT.content
+        isAutoHeight
           ? ""
           : isCompact
             ? "h-72 overflow-hidden"
@@ -121,7 +120,7 @@ export function CalendarDayCell({
                     showLate: viewOptions.late,
                     showPriority: viewOptions.priority,
                   }}
-                  isCompact={isCompact}
+                  isCompact={isCompactMode}
                   isDraggable
                   orderBy={viewOptions.order}
                   variant={viewOptions.variant}
@@ -139,7 +138,7 @@ export function CalendarDayCell({
                     showLate: viewOptions.late,
                     showPriority: viewOptions.priority,
                   }}
-                  isCompact={isCompact}
+                  isCompact={isCompactMode}
                   isDraggable
                   orderBy={viewOptions.order}
                   variant={VARIANT.line}
@@ -158,7 +157,7 @@ export function CalendarDayCell({
                 showLate: viewOptions.late,
                 showPriority: viewOptions.priority,
               }}
-              isCompact={isCompact}
+              isCompact={isCompactMode}
               isDraggable
               orderBy={viewOptions.order}
               variant={viewOptions.variant}

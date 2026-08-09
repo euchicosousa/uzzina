@@ -1,6 +1,7 @@
 import {
   ArrowDownAZIcon,
   ArrowUpAZIcon,
+  ChevronsUpDownIcon,
   ClockIcon,
   Columns2Icon,
   Columns3Icon,
@@ -25,6 +26,7 @@ import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 export type ViewOptions = {
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
   columns?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  autoHeight?: boolean;
   responsibles?: boolean;
   priority?: boolean;
   category?: boolean;
@@ -40,6 +42,7 @@ export type ViewOptions = {
   showOptions: {
     variant?: boolean;
     columns?: boolean;
+    autoHeight?: boolean;
     responsibles?: boolean;
     priority?: boolean;
     category?: boolean;
@@ -60,6 +63,7 @@ import { PhaseCombobox } from "./PhaseCombobox";
 const DEFAULT_VIEW_OPTIONS = {
   variant: VARIANT.line,
   columns: 4,
+  autoHeight: false,
   ascending: true,
   order: ORDER_BY.date,
   category: true,
@@ -141,6 +145,24 @@ export function ViewOptionsComponent({
           </PrismToggleGroupItem>
         </PrismToggleGroup>
       )}
+
+      {/* Toggle de Altura Automática */}
+      {viewOptions.variant !== VARIANT.content &&
+        viewOptions.showOptions.autoHeight && (
+          <PrismToggle
+            aria-label="Altura Automática"
+            isSelected={!!viewOptions.autoHeight}
+            onChange={(pressed) =>
+              setViewOptions({
+                ...viewOptions,
+                autoHeight: pressed,
+              })
+            }
+            size="sm"
+          >
+            <ChevronsUpDownIcon />
+          </PrismToggle>
+        )}
 
       {/* 2. Seleção de Colunas */}
       {viewOptions.variant === VARIANT.content &&

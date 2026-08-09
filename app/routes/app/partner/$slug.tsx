@@ -144,6 +144,7 @@ function PartnerPage() {
     variant: preferences.defaultViewVariant,
     showOptions: {
       variant: true,
+      autoHeight: true,
       responsibles: true,
       priority: true,
       category: true,

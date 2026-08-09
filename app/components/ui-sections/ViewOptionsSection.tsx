@@ -29,6 +29,7 @@ export function ViewOptionsSection() {
     showOptions: {
       variant: true,
       columns: true,
+      autoHeight: true,
       responsibles: true,
       priority: true,
       category: true,
