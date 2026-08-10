@@ -156,10 +156,9 @@ export function GlobalSearchCommand({
                     size="sm"
                   />
                   <div className="truncate w-full">{action.title}</div>
-                  {
-                    action.archived &&
-                  <ArchiveIcon className="size-3 opacity-50" />
-                  }
+                  {action.archived && (
+                    <ArchiveIcon className="size-3 opacity-50" />
+                  )}
                   <div className="opacity-40 text-xs">
                     {getFormattedDateTime(
                       action.date,

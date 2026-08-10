@@ -78,7 +78,10 @@ function CommandDialog({
 }) {
   return (
     <PrismDialog
-      className={cn("top-1/3 translate-y-0 overflow-hidden", className)}
+      className={cn(
+        "top-1/3 translate-y-0 overflow-hidden sm:max-w-xl",
+        className,
+      )}
       isDismissable
       isOpen={open}
       onOpenChange={onOpenChange}

@@ -149,8 +149,47 @@ Depois adapte esse diagnóstico ao formato solicitado.
       let content = "";
       switch (category) {
         case "post":
-          content = ``;
-          // Digite seu prompt/lógica para post estático aqui
+          content = `Crie um post estático utilizando a Arquitetura Dor → Problema.
+
+Primeiro identifique:
+
+DOR → PROBLEMA → PROCESSO → SOLUÇÃO
+
+Porém, NÃO tente colocar toda a arquitetura na arte.
+
+O post estático deve funcionar como um ponto de impacto.
+
+Escolha a tensão mais forte entre a dor e o problema e transforme-a em uma afirmação curta, clara e memorável.
+
+A arte deve priorizar:
+
+- contraste;
+- tensão;
+- posicionamento;
+- reconhecimento;
+- uma ideia central.
+
+Prefira estruturas como:
+
+“Você acha que [DOR].
+Na verdade, [PROBLEMA].”
+
+“Seu problema não é [X].
+É [Y].”
+
+“[COMPORTAMENTO] não resolve [PROBLEMA].”
+
+A legenda pode desenvolver o raciocínio completo:
+
+DOR → PROBLEMA → PROCESSO → SOLUÇÃO.
+
+REGRAS:
+
+- Uma ideia principal por post.
+- Evitar explicar demais na arte.
+- Não utilizar frases motivacionais genéricas.
+- A frase deve possuir posicionamento.
+- O impacto deve vir da clareza da ideia, não de exagero.`;
           break;
         case "carousel":
           content = `Crie um carrossel utilizando a Arquitetura Dor → Problema.
@@ -191,24 +230,125 @@ REGRAS:
 - Reduza o texto ao necessário para comunicação visual.`;
           break;
         case "reels":
-          // Digite seu prompt/lógica para reels aqui
+          content = `Crie um roteiro de Reels utilizando a Arquitetura Dor → Problema.
+
+Primeiro construa:
+
+DOR → PROBLEMA → PROCESSO → SOLUÇÃO
+
+Depois transforme essa estrutura em uma narrativa oral.
+
+ESTRUTURA:
+
+1. GANCHO
+Comece pela dor, consequência, tensão ou contradição mais relevante.
+
+2. RECONHECIMENTO
+Mostre uma situação concreta que faça o público pensar:
+“Isso acontece comigo.”
+
+3. APROFUNDAMENTO
+Mostre o impacto daquela dor no cotidiano.
+
+4. VIRADA
+Apresente:
+“O problema não é [X]. O problema é [Y].”
+
+5. EXPLICAÇÃO
+Mostre por que o problema acontece e qual processo precisa ser percorrido.
+
+6. SOLUÇÃO
+Apresente a solução de maneira coerente com o diagnóstico.
+
+7. DIREÇÃO
+Finalize indicando o próximo passo adequado ao objetivo do conteúdo.
+
+REGRAS:
+
+- Escreva para ser falado, não para ser lido.
+- Frases curtas.
+- Uma ideia conduz à próxima.
+- Não entregar a conclusão no início.
+- Evitar introduções genéricas.
+- Não utilizar “você sabia que...?” como padrão.
+- A virada deve produzir mudança de perspectiva.`;
           break;
         case "stories":
-          // Digite seu prompt/lógica para stories aqui
-          break;
-        default:
+          content = `Crie uma sequência de Stories utilizando a Arquitetura Dor → Problema.
+
+Primeiro construa:
+
+DOR → PROBLEMA → PROCESSO → SOLUÇÃO
+
+Depois distribua o raciocínio em uma sequência de interações.
+
+ESTRUTURA:
+
+STORY 1 — ATENÇÃO
+Apresente uma situação ou dor reconhecível.
+
+STORY 2 — IDENTIFICAÇÃO
+Mostre uma experiência cotidiana relacionada àquela dor.
+
+STORY 3 — TENSÃO
+Aprofunde a consequência ou apresente uma pergunta que gere reflexão.
+
+STORY 4 — PROBLEMA
+Revele o que realmente está causando aquilo.
+
+STORY 5 — PROCESSO
+Explique o que precisa mudar ou ser feito.
+
+STORY 6 — SOLUÇÃO
+Apresente a solução.
+
+STORY 7 — INTERAÇÃO/DIREÇÃO
+Utilize pergunta, enquete, resposta, CTA ou próximo passo coerente com o objetivo.
+
+REGRAS:
+
+- Cada Story deve ter uma função.
+- Não transformar a sequência em um carrossel vertical.
+- Priorizar linguagem natural e conversacional.
+- Utilizar interação quando ela realmente contribuir para o raciocínio.
+- Criar progressão entre os Stories.
+- Não revelar a conclusão antes da hora.`;
           break;
       }
+      const userPrompt = `${content}
+
+DADOS DA AÇÃO E ESTRATÉGIA:
+TÍTULO: ${title}
+${headline ? `HEADLINE SELECIONADA: ${headline}` : ""}
+${racional ? `RACIONAL ESTRATÉGICO: ${racional}` : ""}
+${direcionamento ? `DIRECIONAMENTO PRÁTICO: ${direcionamento}` : ""}
+BRIEFING/INSTRUÇÕES: ${description}
+
+Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
+      const response = await client.chat.completions.create({
+        model: model,
+        messages: [
+          {
+            role: "system",
+            content: systemPrompt,
+          },
+          {
+            role: "user",
+            content: userPrompt,
+          },
+        ],
+      });
+      const generatedHtml = response.choices[0].message.content ?? "";
       return res.status(200).json({
         output: {
-          content,
+          content: generatedHtml,
         },
         intent,
       });
     }
     if (intent === "ai-hooks") {
       const response = await client.chat.completions.create({
-        model: model,
+        model,
         response_format: {
           type: "json_object",
         },
@@ -245,78 +385,6 @@ REGRAS:
           {
             role: "user",
             content: `CONTEXTO DA MARCA:\n${partner_context}\n\nTÍTULO:\n${title}\n\nDIREÇÃO:\n${description}\n\nGere a Legenda em JSON contendo a propriedade "caption".`,
-          },
-        ],
-      });
-      const output = JSON.parse(response.choices[0].message.content ?? "{}");
-      return res.status(200).json({
-        output,
-        intent,
-      });
-    }
-    if (intent === "ai-post") {
-      const response = await client.chat.completions.create({
-        model: model,
-        response_format: {
-          type: "json_object",
-        },
-        messages: [
-          {
-            role: "system",
-            content:
-              "Você é o Estrategista-Chefe da CNVT. Gere conteúdo de Post Estático com 'content' e 'caption' em JSON.",
-          },
-          {
-            role: "user",
-            content: `CATEGORIA: Post Estático\nESTRATÉGIA:\nRacional: ${racional}\nHook: ${hook}\n\nCONTEXTO:\n${partner_context}\n\nINSUMO:\n${description}`,
-          },
-        ],
-      });
-      const output = JSON.parse(response.choices[0].message.content ?? "{}");
-      return res.status(200).json({
-        output,
-        intent,
-      });
-    }
-    if (intent === "ai-carousel") {
-      const response = await client.chat.completions.create({
-        model: model,
-        response_format: {
-          type: "json_object",
-        },
-        messages: [
-          {
-            role: "system",
-            content:
-              "Você é o Estrategista-Chefe da CNVT. Gere roteiro de Carrossel com 'content' e 'caption' em JSON.",
-          },
-          {
-            role: "user",
-            content: `CATEGORIA: Carrossel\nTÍTULO:\n${title}\n\nINSUMO:\n${description}\n\nCONTEXTO:\n${partner_context}`,
-          },
-        ],
-      });
-      const output = JSON.parse(response.choices[0].message.content ?? "{}");
-      return res.status(200).json({
-        output,
-        intent,
-      });
-    }
-    if (intent === "ai-reels") {
-      const response = await client.chat.completions.create({
-        model: model,
-        response_format: {
-          type: "json_object",
-        },
-        messages: [
-          {
-            role: "system",
-            content:
-              "Você é o Estrategista-Chefe da CNVT. Gere roteiro de Reels com 'content' e 'caption' em JSON.",
-          },
-          {
-            role: "user",
-            content: `CATEGORIA: Reels\nTÍTULO:\n${title}\n\nINSUMO:\n${description}\n\nCONTEXTO:\n${partner_context}`,
           },
         ],
       });
