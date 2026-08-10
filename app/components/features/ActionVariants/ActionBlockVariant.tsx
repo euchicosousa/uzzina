@@ -4,7 +4,6 @@ import { ActionItemTitleInput } from "../ActionItemTitleInput";
 import { PhaseIcon } from "../PhaseIcon";
 import { INTENT, SIZE } from "~/lib/CONSTANTS";
 import { getFormattedDateTime, Icons } from "~/lib/helpers";
-import { cn } from "cnfast";
 import {
   ActionItemPartners,
   ActionItemResponsibles,

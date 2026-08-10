@@ -15,7 +15,7 @@ export function useKanbanDnd<T extends string | null>({
   parseTarget,
 }: {
   actions: Action[];
-  fieldKey: "phase" | "station";
+  fieldKey: "phase";
   onDrop: (action: Action, newValue: T) => void;
   parseTarget: (overId: string) => T;
 }) {

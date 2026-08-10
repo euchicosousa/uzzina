@@ -6,7 +6,6 @@ import {
   EyeOffIcon,
   SaveIcon,
   UploadIcon,
-  UserIcon,
 } from "lucide-react";
 import {
   PrismButton,

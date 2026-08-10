@@ -5,7 +5,6 @@ import { Icons, isLateAction } from "~/lib/helpers";
 import type { ActionVariantRendererProps } from "./types";
 import { ActionItemTitleInput } from "../ActionItemTitleInput";
 import { PhaseIcon } from "../PhaseIcon";
-import { StationIcon } from "../StationIcon";
 import {
   ActionItemDateTimeDisplay,
   ActionItemPartners,
@@ -17,7 +16,6 @@ import { AlertCircleIcon } from "lucide-react";
 export function ActionLineVariant({
   action,
   currentPhase,
-  currentStation,
   currentCategory,
   currentPartners,
   currentResponsibles,
@@ -25,7 +23,6 @@ export function ActionLineVariant({
   showResponsibles,
   showPartner,
   showPriority,
-  showStation,
   isEditing,
   handleSetIsEditing,
   dateTimeDisplay,
@@ -35,7 +32,6 @@ export function ActionLineVariant({
     <div className="flex w-full items-center justify-between gap-2 overflow-x-hidden py-1">
       <div className="flex w-full items-center gap-2 overflow-hidden">
         <div className="flex items-center gap-2">
-          {showStation && <StationIcon size="short" station={currentStation} />}
           {isLateAction(action) ? (
             <AlertCircleIcon className="size-4 text-late-foreground" />
           ) : (

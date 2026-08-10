@@ -88,27 +88,7 @@ const ICON_CATEGORIES = [
       },
     ],
   },
-  {
-    name: "Estações de Trabalho",
-    slugs: [
-      {
-        slug: "flow",
-        name: "Flow / Conceituação",
-      },
-      {
-        slug: "planning",
-        name: "Planejamento",
-      },
-      {
-        slug: "creation",
-        name: "Criação / Produção",
-      },
-      {
-        slug: "client",
-        name: "Aprovação Cliente",
-      },
-    ],
-  },
+
   {
     name: "Utilitários & Plataforma",
     slugs: [

@@ -1,8 +1,14 @@
 import type { Tables } from "types/database";
 
+export interface StrategyItem {
+  headline: string;
+  angulo: string;
+  racional: string;
+  direcionamento: string;
+}
+
 export type Action = Tables<"actions"> & {
-  /** Estação da agência em que a ação está atualmente (adicionada via migration) */
-  station?: string | null;
+  strategies?: StrategyItem[] | null;
 };
 export type Person = Tables<"people">;
 export type Client = Tables<"clients">;

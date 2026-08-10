@@ -2,6 +2,7 @@ import { parseU } from "~/utils/date";
 import {
   CalendarDaysIcon,
   FilePlus,
+  ListIcon,
   LoaderIcon,
   SparklesIcon,
 } from "lucide-react";
@@ -36,6 +37,7 @@ interface EssentialsTabProps {
   cloudName: string;
   uploadPreset: string;
   isAIProcessing: boolean;
+  onOpenStrategyModal?: () => void;
   onDescriptionChange?: (description: string) => void;
   descriptionVersion?: number;
   triggerAIAction: (
@@ -52,6 +54,7 @@ export function EssentialsTab({
   currentPartners,
   cloudName,
   isAIProcessing,
+  onOpenStrategyModal,
   triggerAIAction,
   uploadPreset,
   onDescriptionChange,
@@ -210,6 +213,17 @@ export function EssentialsTab({
 
           {isInstagramFeed(RawAction.category, true) && (
             <div className="flex gap-1">
+              {Array.isArray(RawAction.strategies) &&
+                RawAction.strategies.length > 0 && (
+                <PrismButton
+                  aria-label="Ver estratégias geradas"
+                  onClick={onOpenStrategyModal}
+                  size="xs"
+                  variant="secondary"
+                >
+                  <ListIcon className="size-3.5" />
+                </PrismButton>
+              )}
               <PrismButton
                 isDisabled={isAIProcessing}
                 onClick={handleTriggerAI}

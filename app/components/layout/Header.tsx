@@ -76,7 +76,7 @@ export function Header({
   const homeStartISO = startOfWeek(startOfMonth(now)).toISOString();
   const homeEndISO = endOfDay(endOfWeek(endOfMonth(now))).toISOString();
   const todayEndISO = endOfDay(now).toISOString();
-  const { data: homeActions = [] } = useQuery<Action[]>({
+  const { data: homeActions = [] as Action[] } = useQuery({
     queryKey: QUERY_KEYS.actions.home(person.user_id),
     queryFn: () =>
       fetchHomeActions(
@@ -88,7 +88,7 @@ export function Header({
       ),
     enabled: isHome,
   });
-  const { data: homeLateActions = [] } = useQuery<Action[]>({
+  const { data: homeLateActions = [] as Action[] } = useQuery({
     queryKey: QUERY_KEYS.lateActions.user(person.user_id),
     queryFn: () =>
       fetchAllLateActions(
@@ -114,7 +114,7 @@ export function Header({
   const pStartStr = format(pStart, "yyyy-MM-dd HH:mm:ss");
   const pEndStr = format(pEnd, "yyyy-MM-dd HH:mm:ss");
   const partnerDateRange = `${pStartStr}_${pEndStr}`;
-  const { data: partnerActions = [] } = useQuery<Action[]>({
+  const { data: partnerActions = [] as Action[] } = useQuery({
     queryKey: QUERY_KEYS.actions.partner(slug || "", partnerDateRange),
     queryFn: () =>
       fetchPartnerActions(
@@ -126,7 +126,7 @@ export function Header({
       ),
     enabled: isPartner && !!slug,
   });
-  const { data: partnerAllLateActions = [] } = useQuery<Action[]>({
+  const { data: partnerAllLateActions = [] as Action[] } = useQuery({
     queryKey: QUERY_KEYS.lateActions.user(person.user_id),
     queryFn: () =>
       fetchAllLateActions(

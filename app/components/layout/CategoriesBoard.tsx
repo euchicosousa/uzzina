@@ -18,7 +18,7 @@ import { PrismBadge, PrismButton } from "../prism";
 export function CategoriesBoard({
   actions,
   orderBy,
-  ascending,
+  ascending: _ascending,
 }: {
   actions: Action[];
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];

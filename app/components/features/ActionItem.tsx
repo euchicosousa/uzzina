@@ -26,13 +26,11 @@ import {
   PHASES,
   PRIORITIES,
   SIZE,
-  STATIONS,
   VARIANT,
   type DATE_TIME_DISPLAY,
   type CATEGORY,
   type PHASE,
   type PRIORITY,
-  type STATION_TYPE,
 } from "~/lib/CONSTANTS";
 import {
   getFormattedDateTime,
@@ -57,7 +55,6 @@ export type ActionDisplayFlags = {
   showResponsibles?: boolean;
   /** Whether to show the priority icon indicator */
   showPriority?: boolean;
-  showStation?: boolean;
 };
 
 /**
@@ -144,13 +141,6 @@ export function ActionItem({
   const currentPhase = useMemo(
     () => PHASES[(action.phase as PHASE) || "idea"],
     [action.phase],
-  );
-  const currentStation = useMemo(
-    () =>
-      (action.station
-        ? (STATIONS[action.station as keyof typeof STATIONS] ?? null)
-        : null) as STATION_TYPE | null,
-    [action.station],
   );
   const currentPartners = useMemo(
     () =>
@@ -322,7 +312,6 @@ export function ActionItem({
         currentPartners={currentPartners}
         currentPhase={currentPhase}
         currentResponsibles={currentResponsibles}
-        currentStation={currentStation}
         dateTimeDisplay={dateTimeDisplay}
         handleAction={handleAction}
         handleSetIsEditing={handleSetIsEditing}

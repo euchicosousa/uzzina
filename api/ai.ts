@@ -56,12 +56,11 @@ Sua missão é gerar exatamente 5 ESTRATÉGIAS / ÂNGULOS DE CONTEÚDO altamente
 REGRAS OBRIGATÓRIAS:
 1. SE O USUÁRIO FORNECEU INSTRUÇÕES, DIRECIONAMENTOS OU PEDIDOS ESPECÍFICOS no insumo/descrição, VOCÊ DEVE OBEDECER E PRIORIZAR ESTRITAMENTE essas solicitações ao adaptar os ângulos.
 2. Se o usuário não forneceu direcionamento específico, selecione autonomamente os 5 melhores ângulos do Banco de 200 Ângulos da Agência CNVT que mais se adequam ao tema e marca.
-3. CADA UMA DAS 5 ESTRATÉGIAS DEVE TER IMPRESCINDIVELMENTE OS 4 ELEMENTOS SEGUINTES (FORMATO RÍGIDO HTML):
-   - <h3> N. [HEADLINE/TÍTULO REDIGIDO DE ACORDO COM O ÂNGULO]</h3> (Uma headline forte e pronta para uso)
-   - <p><strong>Ângulo Utilizado:</strong> [Nº e Nome Exato do Ângulo no Banco]</p>
-   - <p><strong>Por que este ângulo (Racional):</strong> [Explicação estratégica de por que esse ângulo funciona para o tema e marca]</p>
-   - <p><strong>Direcionamento para ${formattedCategory}:</strong> [Como aplicar e estruturar a peça especificamente no formato ${formattedCategory}]</p>
-4. Separe cada uma das 10 estratégias com uma tag <hr /> para organização visual no editor.
+3. RETORNE A RESPOSTA EM JSON CONTENDO A PROPRIEDADE "strategies", QUE É UM ARRAY COM EXATAMENTE 5 OBJETOS. CADA OBJETO DEVE TER OS SEGUINTES CAMPOS:
+   - "headline": Título/headline forte e pronto para uso formulado de acordo com o ângulo.
+   - "angulo": Nº e Nome Exato do Ângulo no Banco (ex: "12. A grande renúncia de hábito").
+   - "racional": Explicação estratégica de por que esse ângulo funciona para o tema e marca.
+   - "direcionamento": Como aplicar e estruturar a peça especificamente no formato ${formattedCategory}.
 
 BANCO DE IDEIAS (200 ÂNGULOS UNIVERSAIS AGÊNCIA CNVT):
 1. TENDÊNCIAS E MERCADO: 1. O comportamento que vai dominar 2025 | 2. A morte do [Tópico] no seu nicho | 3. Por que a [Notícia] muda tudo | 4. O Efeito [Nome] | 5. A estatística que prova o erro | 6. [Seu Nicho] em 3 anos | 7. A ferramenta/app que está mudando o jogo | 8. O que o [Nicho Oposto] ensina | 9. A maior oportunidade e ameaça | 10. O mapa da mina inexplorado | 11. A micro-mudança na plataforma | 12. A grande renúncia de hábito | 13. O que o exterior faz | 14. Desempacotando relatório | 15. A uberização do serviço | 16. O cisne negro no mercado | 17. Analisando estratégia de Big Tech | 18. O custo de não adotar tecnologia | 19. O novo funil do nicho | 20. A habilidade chata valiosa.
@@ -77,12 +76,19 @@ BANCO DE IDEIAS (200 ÂNGULOS UNIVERSAIS AGÊNCIA CNVT):
 
 FORMATO DE RESPOSTA (JSON):
 {
-  "description": "<h3>1. [Headline/Título da Peça]</h3><p><strong>Ângulo Utilizado:</strong> ...</p><p><strong>Por que este ângulo (Racional):</strong> ...</p><p><strong>Direcionamento para ${formattedCategory}:</strong> ...</p><hr />..."
+  "strategies": [
+    {
+      "headline": "1. [Headline Redigida]",
+      "angulo": "[Nº e Nome do Ângulo no Banco]",
+      "racional": "[Motivo estratégico da escolha]",
+      "direcionamento": "[Aplicação prática no formato ${formattedCategory}]"
+    }
+  ]
 }`,
           },
           {
             role: "user",
-            content: `CONTEXTO DA MARCA E TOM DE VOZ:\n${partner_context}\n\nTÍTULO DA AÇÃO:\n${title}\n\nFORMATO DA AÇÃO:\n${formattedCategory}\n\nINSTRUÇÕES / INSUMO DO USUÁRIO (Siga se houver direcionamento específico):\n${description}\n\nGere a resposta em JSON com a propriedade "description".`,
+            content: `CONTEXTO DA MARCA E TOM DE VOZ:\n${partner_context}\n\nTÍTULO DA AÇÃO:\n${title}\n\nFORMATO DA AÇÃO:\n${formattedCategory}\n\nINSTRUÇÕES / INSUMO DO USUÁRIO (Siga se houver direcionamento específico):\n${description}\n\nGere a resposta em JSON com a propriedade "strategies".`,
           },
         ],
       });

@@ -27,9 +27,6 @@ export async function createActionClient(
   const insertData = {
     ...result.data,
   };
-  if (!insertData.station && insertData.phase !== PHASES.done.slug) {
-    insertData.station = "flow";
-  }
   const supabase = createSupabaseBrowserClient();
   const { data, error } = await supabase
     .from("actions")
@@ -61,10 +58,6 @@ export async function updateActionClient(
   };
   if (updateData.phase === PHASES.done.slug) {
     updateData.sprints = null;
-    updateData.station = null;
-  }
-  if (updateData.phase === PHASES.idea.slug) {
-    updateData.station = "flow";
   }
   if (updateData.archived === true) {
     updateData.sprints = null;

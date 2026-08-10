@@ -24,7 +24,6 @@ import { Route as AppProfileRouteImport } from './routes/app/profile'
 import { Route as AppNotificationsRouteImport } from './routes/app/notifications'
 import { Route as AppLeadsRouteImport } from './routes/app/leads'
 import { Route as AppHelpRouteImport } from './routes/app/help'
-import { Route as AppFlowRouteImport } from './routes/app/flow'
 import { Route as DashReviewSlugRouteImport } from './routes/dash/review.$slug'
 import { Route as DashActionIdRouteImport } from './routes/dash/action/$id'
 import { Route as AppPartnerSlugRouteImport } from './routes/app/partner/$slug'
@@ -111,11 +110,6 @@ const AppHelpRoute = AppHelpRouteImport.update({
   path: '/help',
   getParentRoute: () => AppRoute,
 } as any)
-const AppFlowRoute = AppFlowRouteImport.update({
-  id: '/flow',
-  path: '/flow',
-  getParentRoute: () => AppRoute,
-} as any)
 const DashReviewSlugRoute = DashReviewSlugRouteImport.update({
   id: '/review/$slug',
   path: '/review/$slug',
@@ -175,7 +169,6 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/ui': typeof UiRoute
-  '/app/flow': typeof AppFlowRoute
   '/app/help': typeof AppHelpRoute
   '/app/leads': typeof AppLeadsRoute
   '/app/notifications': typeof AppNotificationsRoute
@@ -201,7 +194,6 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/ui': typeof UiRoute
-  '/app/flow': typeof AppFlowRoute
   '/app/help': typeof AppHelpRoute
   '/app/leads': typeof AppLeadsRoute
   '/app/notifications': typeof AppNotificationsRoute
@@ -230,7 +222,6 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/ui': typeof UiRoute
-  '/app/flow': typeof AppFlowRoute
   '/app/help': typeof AppHelpRoute
   '/app/leads': typeof AppLeadsRoute
   '/app/notifications': typeof AppNotificationsRoute
@@ -260,7 +251,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/ui'
-    | '/app/flow'
     | '/app/help'
     | '/app/leads'
     | '/app/notifications'
@@ -286,7 +276,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/ui'
-    | '/app/flow'
     | '/app/help'
     | '/app/leads'
     | '/app/notifications'
@@ -314,7 +303,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/ui'
-    | '/app/flow'
     | '/app/help'
     | '/app/leads'
     | '/app/notifications'
@@ -452,13 +440,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHelpRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/flow': {
-      id: '/app/flow'
-      path: '/flow'
-      fullPath: '/app/flow'
-      preLoaderRoute: typeof AppFlowRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/dash/review/$slug': {
       id: '/dash/review/$slug'
       path: '/review/$slug'
@@ -533,7 +514,6 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
-  AppFlowRoute: typeof AppFlowRoute
   AppHelpRoute: typeof AppHelpRoute
   AppLeadsRoute: typeof AppLeadsRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
@@ -551,7 +531,6 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppFlowRoute: AppFlowRoute,
   AppHelpRoute: AppHelpRoute,
   AppLeadsRoute: AppLeadsRoute,
   AppNotificationsRoute: AppNotificationsRoute,

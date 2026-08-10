@@ -25,7 +25,7 @@ import {
   PrismDialogTitle,
 } from "~/components/prism";
 import { InputGroup, InputGroupAddon } from "~/components/prism/input-group";
-import { SearchIcon, CheckCircle2Icon, CheckIcon } from "lucide-react";
+import { SearchIcon, CheckCircle2Icon } from "lucide-react";
 function Command({
   className,
   dir,

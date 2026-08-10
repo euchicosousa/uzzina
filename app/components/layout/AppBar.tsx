@@ -1,9 +1,8 @@
 import {
-  BrainIcon,
-  CheckCheckIcon,
   CircleCheckBigIcon,
   FilterIcon,
   HandshakeIcon,
+  HomeIcon,
   PlusIcon,
   SearchIcon,
   XIcon,
@@ -85,10 +84,10 @@ export function AppBar({
             variant: "ghost",
             size: "icon",
           })}
-          title="Flow"
-          to="/app/flow"
+          title="Home"
+          to="/app"
         >
-          <BrainIcon className="size-5" />
+          <HomeIcon className="size-5" />
         </Link>
         <PartnerFilterPopover
           activePartners={activePartners}

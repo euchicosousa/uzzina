@@ -127,19 +127,6 @@ export function InstagramTab({
                   {getFormattedPartnersLinks(currentPartners)}
                 </div>
               </div>
-              <PrismButton
-                isDisabled={isAIProcessing}
-                onClick={() => triggerAIAction(INTENT.ai_content)}
-                size="xs"
-                variant={"secondary"}
-              >
-                Gerar conteúdo
-                {isAIProcessing && activeAIIntent === INTENT.ai_content ? (
-                  <LoaderIcon className="size-3.5 animate-spin" />
-                ) : (
-                  <SparklesIcon />
-                )}
-              </PrismButton>
             </div>
             <RichTextEditor
               className="flex-1 overflow-y-auto"

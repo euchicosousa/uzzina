@@ -1,4 +1,4 @@
-import type { Action, Partner } from "~/types";
+import type { Action, Partner, StrategyItem } from "~/types";
 import { format } from "date-fns";
 import { ArchiveIcon, HeartIcon, MessageSquareIcon, XIcon } from "lucide-react";
 import { Icons } from "~/components/uzzina/UIcons";
@@ -12,6 +12,13 @@ import { INTENT } from "~/lib/CONSTANTS";
 import { isInstagramFeed } from "~/lib/helpers";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { cn } from "cnfast";
+import {
+  PrismButton,
+  PrismSheet,
+  PrismSheetContent,
+  PrismSheetHeader,
+  PrismSheetTitle,
+} from "~/components/prism";
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
 }
@@ -127,6 +134,7 @@ export function ActionFormDrawer({
   }, [BaseAction, handleAction]);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
   const [activeAIIntent, setActiveAIIntent] = useState<string | null>(null);
+  const [isStrategyModalOpen, setIsStrategyModalOpen] = useState(false);
   const [descriptionVersion, setDescriptionVersion] = useState(0);
   const isPending = isMutationLoading || isAIProcessing;
   const triggerAIAction = async (
@@ -156,24 +164,21 @@ export function ActionFormDrawer({
         if (intent === INTENT.ai_strategy) {
           const out = data.output as
             | {
-                description?: string;
+                strategies?: StrategyItem[];
               }
-            | string;
-          const generatedDescription =
-            typeof out === "string" ? out : out.description || "";
-          const currentDescription =
-            descriptionRef.current || rawActionRef.current.description || "";
-          const newDescription = currentDescription
-            ? `${generatedDescription}<hr />${currentDescription}`
-            : generatedDescription;
+            | StrategyItem[];
+          const newStrategies = Array.isArray(out)
+            ? out
+            : Array.isArray(out.strategies)
+              ? out.strategies
+              : [];
           setRawAction((prev) => ({
             ...prev,
-            description: newDescription,
+            strategies: newStrategies,
           }));
-          descriptionRef.current = newDescription;
-          setDescriptionVersion((v) => v + 1);
+          setIsStrategyModalOpen(true);
           updateAction({
-            description: newDescription,
+            strategies: newStrategies,
           });
         }
         if (intent === INTENT.ai_content) {
@@ -446,6 +451,7 @@ export function ActionFormDrawer({
                 descriptionVersion={descriptionVersion}
                 isAIProcessing={isAIProcessing}
                 onDescriptionChange={handleDescriptionChange}
+                onOpenStrategyModal={() => setIsStrategyModalOpen(true)}
                 RawAction={RawAction}
                 setRawAction={setRawAction}
                 setWorkFiles={setWorkFiles}
@@ -498,6 +504,61 @@ export function ActionFormDrawer({
           updateAction={updateAction}
         />
       </div>
+
+      <PrismSheet
+        isOpen={isStrategyModalOpen}
+        onOpenChange={setIsStrategyModalOpen}
+      >
+        <PrismSheetContent
+          className="max-h-[85vh] overflow-y-auto"
+          side="bottom"
+        >
+          <PrismSheetHeader>
+            <PrismSheetTitle>5 Estratégias Sugeridas</PrismSheetTitle>
+          </PrismSheetHeader>
+          <div className="flex flex-col gap-4 p-4 pb-12 lg:p-8">
+            {(Array.isArray(RawAction.strategies)
+              ? (RawAction.strategies as StrategyItem[])
+              : []
+            ).map((strat, i) => (
+              <div
+                key={strat.headline || i}
+                className="flex flex-col gap-2 rounded-xl border bg-card p-4"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-base font-bold">{strat.headline}</h3>
+                    <span className="mt-1 inline-block text-xs font-semibold text-primary">
+                      {strat.angulo}
+                    </span>
+                  </div>
+                  <PrismButton
+                    onClick={() => {
+                      triggerAIAction(INTENT.ai_content, {
+                        headline: strat.headline,
+                        angulo: strat.angulo,
+                        racional: strat.racional,
+                        direcionamento: strat.direcionamento,
+                      });
+                      setIsStrategyModalOpen(false);
+                    }}
+                    size="xs"
+                    variant="default"
+                  >
+                    USAR
+                  </PrismButton>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  <strong>Racional:</strong> {strat.racional}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  <strong>Direcionamento:</strong> {strat.direcionamento}
+                </p>
+              </div>
+            ))}
+          </div>
+        </PrismSheetContent>
+      </PrismSheet>
     </div>
   );
 }

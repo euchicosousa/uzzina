@@ -16,13 +16,13 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
-import { StationCombobox } from "~/components/features/StationCombobox";
 import {
   PrismToggle,
   PrismToggleGroup,
   PrismToggleGroupItem,
 } from "~/components/prism";
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
+
 export type ViewOptions = {
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
   columns?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
@@ -37,7 +37,6 @@ export type ViewOptions = {
   sprint?: boolean;
   filter_category?: string[];
   filter_phase?: string[];
-  filter_station?: string[];
   filter_responsible?: string[];
   showOptions: {
     variant?: boolean;
@@ -52,7 +51,6 @@ export type ViewOptions = {
     sprint?: boolean;
     filter_category?: boolean;
     filter_phase?: boolean;
-    filter_station?: boolean;
     filter_responsible?: boolean;
   };
 };
@@ -310,7 +308,6 @@ export function ViewOptionsComponent({
 
       {(viewOptions.showOptions.filter_category ||
         viewOptions.showOptions.filter_phase ||
-        viewOptions.showOptions.filter_station ||
         viewOptions.showOptions.filter_responsible) && (
         <div className="flex gap-1">
           {viewOptions.showOptions.filter_category && (
@@ -337,18 +334,6 @@ export function ViewOptionsComponent({
                 });
               }}
               selectedPhases={viewOptions.filter_phase ?? ["all"]}
-            />
-          )}
-          {viewOptions.showOptions.filter_station && (
-            <StationCombobox
-              isMulti={true}
-              onSelect={({ stations }) => {
-                setViewOptions({
-                  ...viewOptions,
-                  filter_station: stations[0] === "all" ? undefined : stations,
-                });
-              }}
-              selectedStations={viewOptions.filter_station ?? ["all"]}
             />
           )}
         </div>

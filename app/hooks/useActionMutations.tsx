@@ -104,7 +104,6 @@ export function useActionMutations() {
             // Espelha as regras de negócio do servidor (supabase.mutations.ts)
             if (updated.phase === "done") {
               updated.sprints = null;
-              updated.station = null;
             }
             if (updated.archived) {
               updated.sprints = null;

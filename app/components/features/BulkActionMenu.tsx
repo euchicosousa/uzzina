@@ -25,7 +25,7 @@ import {
 import { useAppContext } from "~/contexts/AppContext";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
-import { CATEGORIES, PHASES, PRIORITIES, STATIONS } from "~/lib/CONSTANTS";
+import { CATEGORIES, PHASES, PRIORITIES } from "~/lib/CONSTANTS";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
 import type { Partner } from "~/types";
@@ -284,35 +284,6 @@ export function BulkActionMenu() {
                     {phase.title}
                   </PrismMenuItem>
                 ))}
-            </PrismMenuSubContent>
-          </PrismMenuSub>
-
-          {/* Estação */}
-          <PrismMenuSub>
-            <PrismMenuSubTrigger textValue="Estação">
-              <KanbanIcon /> Alterar Estação
-            </PrismMenuSubTrigger>
-            <PrismMenuSubContent>
-              {Object.values(STATIONS).map((station) => (
-                <PrismMenuItem
-                  key={station.slug}
-                  onAction={() =>
-                    performBulkAction({
-                      station: station.slug,
-                    })
-                  }
-                  textValue={station.title}
-                >
-                  <Icons
-                    slug={station.slug}
-                    style={{
-                      color: station.color,
-                    }}
-                  />
-
-                  {station.title}
-                </PrismMenuItem>
-              ))}
             </PrismMenuSubContent>
           </PrismMenuSub>
 

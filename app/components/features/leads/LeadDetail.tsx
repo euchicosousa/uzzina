@@ -3,9 +3,7 @@ import { ptBR } from "date-fns/locale";
 import {
   CheckCircle2Icon,
   ClockIcon,
-  HelpCircleIcon,
   PhoneIcon,
-  UserIcon,
 } from "lucide-react";
 import { useMemo } from "react";
 import { PrismBadge, PrismButton } from "~/components/prism";
