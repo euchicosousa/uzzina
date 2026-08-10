@@ -19,6 +19,7 @@ interface InstagramTabProps {
   cloudName: string;
   uploadPreset: string;
   isAIProcessing: boolean;
+  activeAIIntent?: string | null;
   triggerAIAction: (
     intent: string,
     customPayload?: Record<string, string | string[] | null>,
@@ -29,8 +30,14 @@ interface InstagramTabProps {
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
 }
-function AiProcessingMessage({ isAIProcessing }: { isAIProcessing: boolean }) {
-  if (!isAIProcessing) return null;
+function AiProcessingMessage({
+  isAIProcessing,
+  activeAIIntent,
+}: {
+  isAIProcessing: boolean;
+  activeAIIntent?: string | null;
+}) {
+  if (!isAIProcessing || activeAIIntent !== INTENT.ai_caption) return null;
   return (
     <div className="flex w-full items-center justify-center gap-2 border-b py-4 text-xs font-medium">
       <div className="relative flex items-center justify-center">
@@ -50,12 +57,13 @@ export function InstagramTab({
   cloudName,
   uploadPreset,
   isAIProcessing,
+  activeAIIntent,
   triggerAIAction,
   contentDescription,
   onContentDescriptionChange,
 }: InstagramTabProps) {
-  const [instagramSubTab, setInstagramSubTab] = useState<"caption" | "content">(
-    "caption",
+  const [instagramSubTab, setInstagramSubTab] = useState<"content" | "caption">(
+    "content",
   );
   return (
     <div className="flex h-full flex-col overflow-y-auto md:flex-row">
@@ -83,15 +91,6 @@ export function InstagramTab({
         {/* Sub-tab navigation */}
         <div className="flex shrink-0" role="tablist">
           <button
-            aria-selected={instagramSubTab === "caption"}
-            className={subTabClass(instagramSubTab === "caption")}
-            onClick={() => setInstagramSubTab("caption")}
-            role="tab"
-            type="button"
-          >
-            Legenda
-          </button>
-          <button
             aria-selected={instagramSubTab === "content"}
             className={subTabClass(instagramSubTab === "content")}
             onClick={() => setInstagramSubTab("content")}
@@ -100,7 +99,62 @@ export function InstagramTab({
           >
             Conteúdo
           </button>
+          <button
+            aria-selected={instagramSubTab === "caption"}
+            className={subTabClass(instagramSubTab === "caption")}
+            onClick={() => setInstagramSubTab("caption")}
+            role="tab"
+            type="button"
+          >
+            Legenda
+          </button>
         </div>
+
+        {/* Sub-aba CONTEÚDO */}
+        {instagramSubTab === "content" && (
+          <div className="flex h-full flex-col overflow-hidden">
+            <div className="flex items-center justify-between border-b px-4 py-4 md:pl-0">
+              <div className="flex items-center gap-2">
+                <UAvatarGroup
+                  avatars={currentPartners.map((partner) => ({
+                    fallback: partner.short,
+                    backgroundColor: partner.colors[0],
+                    color: partner.colors[1],
+                    image: partner.image,
+                  }))}
+                />
+                <div className="text-sm font-medium">
+                  {getFormattedPartnersLinks(currentPartners)}
+                </div>
+              </div>
+              <PrismButton
+                isDisabled={isAIProcessing}
+                onClick={() => triggerAIAction(INTENT.ai_content)}
+                size="xs"
+                variant={"secondary"}
+              >
+                Gerar conteúdo
+                {isAIProcessing && activeAIIntent === INTENT.ai_content ? (
+                  <LoaderIcon className="size-3.5 animate-spin" />
+                ) : (
+                  <SparklesIcon />
+                )}
+              </PrismButton>
+            </div>
+            <RichTextEditor
+              className="flex-1 overflow-y-auto"
+              content={contentDescription}
+              handleBlur={(html) => {
+                onContentDescriptionChange(html);
+                updateAction({
+                  content_description: html,
+                });
+              }}
+              handleChange={onContentDescriptionChange}
+              placeholder="Descreva o conteúdo do post: slides do carrossel, roteiro do reel..."
+            />
+          </div>
+        )}
 
         {/* Sub-aba LEGENDA */}
         {instagramSubTab === "caption" && (
@@ -126,11 +180,18 @@ export function InstagramTab({
                 variant={"secondary"}
               >
                 Gerar legenda
-                <SparklesIcon />
+                {isAIProcessing && activeAIIntent === INTENT.ai_caption ? (
+                  <LoaderIcon className="size-3.5 animate-spin" />
+                ) : (
+                  <SparklesIcon />
+                )}
               </PrismButton>
             </div>
             <div className="flex h-full flex-col">
-              <AiProcessingMessage isAIProcessing={isAIProcessing} />
+              <AiProcessingMessage
+                activeAIIntent={activeAIIntent}
+                isAIProcessing={isAIProcessing}
+              />
               <textarea
                 aria-label="Legenda do Instagram"
                 className="h-full w-full resize-none p-4 outline-none disabled:opacity-50 md:pl-0"
@@ -157,24 +218,6 @@ export function InstagramTab({
                 }
               />
             </div>
-          </div>
-        )}
-
-        {/* Sub-aba CONTEÚDO */}
-        {instagramSubTab === "content" && (
-          <div className="flex h-full flex-col overflow-hidden">
-            <RichTextEditor
-              className="flex-1 overflow-y-auto"
-              content={contentDescription}
-              handleBlur={(html) => {
-                onContentDescriptionChange(html);
-                updateAction({
-                  content_description: html,
-                });
-              }}
-              handleChange={onContentDescriptionChange}
-              placeholder="Descreva o conteúdo do post: slides do carrossel, roteiro do reel..."
-            />
           </div>
         )}
       </div>

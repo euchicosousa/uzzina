@@ -1,10 +1,8 @@
 import { parseU } from "~/utils/date";
 import {
-  ArrowRightIcon,
   CalendarDaysIcon,
   FilePlus,
-  FishingHookIcon,
-  PlusIcon,
+  LoaderIcon,
   SparklesIcon,
 } from "lucide-react";
 import { Suspense, lazy, useRef, useState } from "react";
@@ -14,17 +12,10 @@ const Tiptap = lazy(() =>
     default: module.Tiptap,
   })),
 );
-import {
-  PrismButton,
-  PrismSheet,
-  PrismSheetContent,
-  PrismSheetDescription,
-  PrismSheetHeader,
-  PrismSheetTitle,
-} from "~/components/prism";
+import { PrismButton } from "~/components/prism";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { INTENT } from "~/lib/CONSTANTS";
-import { getNewDateForAction, isLateAction } from "~/lib/helpers";
+import { getNewDateForAction, isInstagramFeed, isLateAction } from "~/lib/helpers";
 import { cn } from "cnfast";
 import type { Action, Partner, PartnerTopic } from "~/types";
 import { ActionDatePicker } from "./ActionDatePicker";
@@ -119,34 +110,8 @@ export function EssentialsTab({
     });
   };
   const [isIDVisible, setisIDVisible] = useState(false);
-  const [hooksOpen, setHooksOpen] = useState(false);
-  const [hooks, setHooks] = useState<
-    {
-      tipo: string;
-      texto: string;
-    }[]
-  >([]);
-  const [racional, setRacional] = useState("");
-  const [isCreatingPost, setIsCreatingPost] = useState(false);
   const handleTriggerAI = async () => {
-    const res = await triggerAIAction(INTENT.ai_hooks);
-    const data = res as
-      | {
-          intent: string;
-          output: {
-            racional?: string;
-            hooks?: {
-              tipo: string;
-              texto: string;
-            }[];
-          };
-        }
-      | undefined;
-    if (data?.output) {
-      setRacional(data.output.racional ?? "");
-      setHooks(data.output.hooks ?? []);
-      setHooksOpen(true);
-    }
+    await triggerAIAction(INTENT.ai_strategy);
   };
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -243,28 +208,23 @@ export function EssentialsTab({
             />
           </div>
 
-          <div className="flex gap-1">
-            {hooks.length > 0 && (
+          {isInstagramFeed(RawAction.category, true) && (
+            <div className="flex gap-1">
               <PrismButton
-                onClick={() => {
-                  setHooksOpen(true);
-                }}
-                size={"sm"}
+                isDisabled={isAIProcessing}
+                onClick={handleTriggerAI}
+                size="xs"
                 variant={"secondary"}
               >
-                <FishingHookIcon />
+                {isAIProcessing ? "CRIANDO ESTRATÉGIA..." : "CRIAR ESTRATÉGIA"}
+                {isAIProcessing ? (
+                  <LoaderIcon className="size-3.5 animate-spin" />
+                ) : (
+                  <SparklesIcon />
+                )}
               </PrismButton>
-            )}
-            <PrismButton
-              isDisabled={isAIProcessing}
-              onClick={handleTriggerAI}
-              size="xs"
-              variant={"secondary"}
-            >
-              CRIAR COM IA
-              <SparklesIcon />
-            </PrismButton>
-          </div>
+            </div>
+          )}
         </div>
 
         <div className="flex items-start gap-2 border-b px-4 py-1">
@@ -344,125 +304,6 @@ export function EssentialsTab({
             tabIndex={0}
           />
         </Suspense>
-        <PrismSheet isOpen={hooksOpen} onOpenChange={setHooksOpen}>
-          <PrismSheetContent
-            className="max-h-[85vh] overflow-y-auto"
-            side="bottom"
-          >
-            <PrismSheetHeader className="sr-only">
-              <PrismSheetTitle>Hooks gerados pela IA</PrismSheetTitle>
-              <PrismSheetDescription>{racional}</PrismSheetDescription>
-            </PrismSheetHeader>
-            {isCreatingPost ? (
-              <div className="flex flex-col items-center justify-center gap-4 py-20">
-                <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                <div className="text-center">
-                  <h3 className="text-xl font-bold">Criando conteúdo...</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Isso pode levar alguns segundos.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-4 p-4 pb-12 lg:p-8">
-                <div className="pt-8 text-3xl font-bold">Hooks</div>
-                <div className="pb-8 text-xl">{racional}</div>
-                {hooks.map((hook, i) => (
-                  <HookItem
-                    key={hook.tipo}
-                    category={RawAction.category}
-                    hook={hook}
-                    onChange={(texto) => {
-                      setHooks((prev) =>
-                        prev.map((h, j) =>
-                          j === i
-                            ? {
-                                ...h,
-                                texto,
-                              }
-                            : h,
-                        ),
-                      );
-                    }}
-                    onSubmit={async (data) => {
-                      const intent = data.intent as string;
-                      setIsCreatingPost(true);
-                      await triggerAIAction(intent, data);
-                      setIsCreatingPost(false);
-                      setHooksOpen(false);
-                    }}
-                    partner_context={currentPartners[0]?.context || ""}
-                    racional={racional}
-                    RawAction={RawAction}
-                  />
-                ))}
-              </div>
-            )}
-          </PrismSheetContent>
-        </PrismSheet>
-      </div>
-    </div>
-  );
-}
-function HookItem({
-  hook,
-  racional,
-  RawAction,
-  onChange,
-  category,
-  onSubmit,
-  partner_context,
-}: {
-  hook: {
-    tipo: string;
-    texto: string;
-  };
-  racional: string;
-  RawAction: Action;
-  onChange: (texto: string) => void;
-  category: string;
-  onSubmit: (formData: Record<string, string | string[] | null>) => void;
-  partner_context: string;
-}) {
-  return (
-    <div>
-      <div className="mb-2 text-xs font-bold tracking-widest uppercase opacity-40">
-        {hook.tipo}
-      </div>
-
-      <div className="flex items-center gap-4">
-        <textarea
-          aria-label="Texto de apoio da ação"
-          className="w-full resize-none rounded-lg border bg-transparent px-4 py-2 outline-none"
-          onChange={(e) => onChange(e.target.value)}
-          style={{
-            fieldSizing: "content",
-          }}
-          value={hook.texto}
-        />
-        <PrismButton
-          className="h-8 w-8 shrink-0 rounded-full"
-          onClick={() => {
-            const intent = {
-              post: INTENT.ai_post,
-              reels: INTENT.ai_reels,
-              carousel: INTENT.ai_carousel,
-              stories: INTENT.ai_stories,
-            }[category];
-            onSubmit({
-              intent: intent || INTENT.ai_post,
-              tipo: hook.tipo,
-              hook: hook.texto,
-              description: RawAction.description,
-              racional: racional,
-              partner_context: partner_context,
-            });
-          }}
-          size="icon"
-          variant="secondary"
-        >
-          <ArrowRightIcon className="size-4" />
-        </PrismButton>
       </div>
     </div>
   );

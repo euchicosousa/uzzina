@@ -1,5 +1,6 @@
 export interface AIPayload {
   intent: string;
+  category: string;
   title?: string;
   description?: string;
   partner_context?: string;

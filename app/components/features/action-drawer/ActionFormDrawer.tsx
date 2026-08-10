@@ -18,7 +18,7 @@ function getCaptionTail(instagram_caption_tail: string | null) {
 const DEFAULT_PARTNER_FILTERS: string[] = [];
 const DEFAULT_PARTNERS: Partner[] = [];
 import { useAppContext } from "~/contexts/AppContext";
-import { callAI, type AIPayload } from "~/services/ai";
+import { callAI, type AIPayload } from "~/services/ai-client";
 export function ActionFormDrawer({
   BaseAction,
   onClose,
@@ -126,6 +126,7 @@ export function ActionFormDrawer({
     }
   }, [BaseAction, handleAction]);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
+  const [activeAIIntent, setActiveAIIntent] = useState<string | null>(null);
   const [descriptionVersion, setDescriptionVersion] = useState(0);
   const isPending = isMutationLoading || isAIProcessing;
   const triggerAIAction = async (
@@ -133,12 +134,14 @@ export function ActionFormDrawer({
     customPayload?: Record<string, string | string[] | null>,
   ) => {
     setIsAIProcessing(true);
+    setActiveAIIntent(intent);
     try {
       const aiPayload: AIPayload = {
         intent,
         title: RawAction.title || "",
         description: descriptionRef.current || "",
         partner_context: `${currentPartners[0]?.context || ""} — ${RawAction.category || ""}`,
+        category: RawAction.category || "",
       };
       if (customPayload) {
         for (const [key, val] of Object.entries(customPayload)) {
@@ -150,6 +153,47 @@ export function ActionFormDrawer({
       const data = await callAI(aiPayload);
       if (data?.output) {
         const captionTail = captionTailRef.current;
+        if (intent === INTENT.ai_strategy) {
+          const out = data.output as
+            | {
+                description?: string;
+              }
+            | string;
+          const generatedDescription =
+            typeof out === "string" ? out : out.description || "";
+          const currentDescription =
+            descriptionRef.current || rawActionRef.current.description || "";
+          const newDescription = currentDescription
+            ? `${generatedDescription}<hr />${currentDescription}`
+            : generatedDescription;
+          setRawAction((prev) => ({
+            ...prev,
+            description: newDescription,
+          }));
+          descriptionRef.current = newDescription;
+          setDescriptionVersion((v) => v + 1);
+          updateAction({
+            description: newDescription,
+          });
+        }
+        if (intent === INTENT.ai_content) {
+          const out = data.output as
+            | {
+                content?: string;
+              }
+            | string;
+          const newContent = typeof out === "string" ? out : out.content || "";
+          if (newContent) {
+            contentDescriptionRef.current = newContent;
+            setRawAction((prev) => ({
+              ...prev,
+              content_description: newContent,
+            }));
+            updateAction({
+              content_description: newContent,
+            });
+          }
+        }
         if (intent === INTENT.ai_caption) {
           const captionText =
             typeof data.output === "string"
@@ -210,6 +254,7 @@ export function ActionFormDrawer({
       toast.error("Falha ao gerar conteúdo com IA.");
     } finally {
       setIsAIProcessing(false);
+      setActiveAIIntent(null);
     }
   };
   const currentPartners = useMemo(() => {
@@ -415,6 +460,7 @@ export function ActionFormDrawer({
           {view === "instagram" && (
             <div className={cn("w-full", "h-full")}>
               <InstagramTab
+                activeAIIntent={activeAIIntent}
                 cloudName={cloudName}
                 contentFiles={contentFiles}
                 currentPartners={currentPartners}
