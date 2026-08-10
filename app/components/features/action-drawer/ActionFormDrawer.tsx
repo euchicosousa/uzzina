@@ -19,6 +19,7 @@ import {
   PrismAccordionTrigger,
   PrismBadge,
   PrismButton,
+  PrismCheckbox,
   PrismDialog,
   PrismDialogDescription,
   PrismDialogHeader,
@@ -479,6 +480,7 @@ export function ActionFormDrawer({
                 onContentDescriptionChange={(html) => {
                   contentDescriptionRef.current = html;
                 }}
+                onOpenStrategyModal={() => setIsStrategyModalOpen(true)}
                 RawAction={RawAction}
                 setRawAction={setRawAction}
                 triggerAIAction={triggerAIAction}
@@ -531,9 +533,32 @@ export function ActionFormDrawer({
                 defaultExpanded={i === 0}
                 id={String(i)}
               >
-                <PrismAccordionTrigger>
-                  <div className="text-lg tracking-tight font-normal">
-                    {strat.headline}
+                <PrismAccordionTrigger className={"overflow-hidden"}>
+                  <div className="flex items-center gap-3 w-full pr-2">
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    >
+                      <PrismCheckbox
+                        aria-label="Selecionar estratégia"
+                        isSelected={!!strat.selected}
+                        onChange={(isSelected) => {
+                          const currentStrats = parseStrategies(RawAction.strategies);
+                          const updated = currentStrats.map((s, idx) => ({
+                            ...s,
+                            selected: idx === i ? isSelected : false,
+                          }));
+                          setRawAction((prev) => ({
+                            ...prev,
+                            strategies: updated,
+                          }));
+                          updateAction({ strategies: updated });
+                        }}
+                      />
+                    </div>
+                    <div className="text-lg tracking-tight font-normal truncate flex-1">
+                      {strat.headline}
+                    </div>
                   </div>
                 </PrismAccordionTrigger>
                 <PrismAccordionContent>
@@ -552,6 +577,16 @@ export function ActionFormDrawer({
                     <PrismButton
                       className="self-end"
                       onClick={() => {
+                        const currentStrats = parseStrategies(RawAction.strategies);
+                        const updated = currentStrats.map((s, idx) => ({
+                          ...s,
+                          selected: idx === i,
+                        }));
+                        setRawAction((prev) => ({
+                          ...prev,
+                          strategies: updated,
+                        }));
+                        updateAction({ strategies: updated });
                         triggerAIAction(INTENT.ai_content, {
                           headline: strat.headline,
                           angulo: strat.angulo,

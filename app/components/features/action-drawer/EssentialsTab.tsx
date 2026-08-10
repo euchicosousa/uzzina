@@ -13,7 +13,7 @@ const Tiptap = lazy(() =>
     default: module.Tiptap,
   })),
 );
-import { PrismButton } from "~/components/prism";
+import { PrismButton, PrismButtonGroup } from "~/components/prism";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { INTENT } from "~/lib/CONSTANTS";
 import {
@@ -217,7 +217,7 @@ export function EssentialsTab({
           </div>
 
           {isInstagramFeed(RawAction.category, true) && (
-            <div className="flex gap-1">
+            <PrismButtonGroup>
               {parseStrategies(RawAction.strategies).length > 0 && (
                 <PrismButton
                   aria-label="Ver estratégias geradas"
@@ -241,7 +241,7 @@ export function EssentialsTab({
                   <SparklesIcon />
                 )}
               </PrismButton>
-            </div>
+            </PrismButtonGroup>
           )}
         </div>
 

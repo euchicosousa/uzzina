@@ -58,7 +58,7 @@ export async function updateActionClient(
     ...rest,
     ...(strategies !== undefined ? { strategies } : {}),
   } as TablesUpdate<"actions">;
-  if (updateData.phase === PHASES.done.slug) {
+  if (updateData.phase === PHASES.finished.slug) {
     updateData.sprints = null;
   }
   if (updateData.archived === true) {

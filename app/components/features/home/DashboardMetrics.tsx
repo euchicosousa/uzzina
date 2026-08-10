@@ -53,7 +53,7 @@ export function DashboardMetrics({
     let weekCompleted = 0;
     let periodCompleted = 0;
     for (const action of actions) {
-      const isCompleted = action.phase === "done";
+      const isCompleted = action.phase === PHASES.finished.slug;
       const actionDate = parseU(action.date);
 
       // 1. Hoje
@@ -200,10 +200,13 @@ const ProgressBar = ({
   if (total === 0) {
     return <div className="h-1.5 w-14 shrink-0 rounded-full bg-secondary" />;
   }
-  const counts = {
+  const counts: Record<string, number> = {
     idea: 0,
-    active: 0,
+    do: 0,
+    doing: 0,
+    review: 0,
     done: 0,
+    finished: 0,
   };
   for (const action of actions) {
     const phase = action.phase as keyof typeof counts;

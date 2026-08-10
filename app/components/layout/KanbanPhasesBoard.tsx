@@ -1,8 +1,5 @@
 import type { Action } from "~/types";
-import {
-  DndContext,
-  DragOverlay,
-} from "@dnd-kit/core";
+import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { useMemo } from "react";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { useKanbanDnd } from "~/hooks/useKanbanDnd";
@@ -18,11 +15,9 @@ import { Draggable, Droppable } from "../features/DnD";
 import { DragStateContext } from "../features/DragStateContext";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { PrismBadge } from "../prism";
-
 export default function KanbanPhasesBoard({ actions }: { actions: Action[] }) {
   const isDesktop = useIsDesktop();
   const { handleAction } = useActionMutations();
-
   const {
     activeAction,
     actionsWithOverrides,
@@ -55,7 +50,7 @@ export default function KanbanPhasesBoard({ actions }: { actions: Action[] }) {
   return (
     <div className="w-full max-w-full overflow-hidden">
       <div className="overflow-x-auto pb-8">
-        <div className="grid  min-w-250 grid-cols-3 overflow-hidden">
+        <div className="grid min-w-300 grid-cols-6 overflow-hidden">
           <DragStateContext.Provider value={!!activeAction}>
             {isDesktop ? (
               <DndContext
@@ -135,8 +130,8 @@ const KanbanColumn = ({
               borderTopColor: phase.color,
             }}
           >
-            <div className="flex items-center gap-2 px-1 py-2 text-lg font-medium tracking-tight">
-              <h3>{phase.title}</h3>
+            <div className="flex items-center gap-2 px-1 py-4 font-medium tracking-tight">
+              <h4>{phase.title}</h4>
               <PrismBadge>{actions.length}</PrismBadge>
             </div>
 

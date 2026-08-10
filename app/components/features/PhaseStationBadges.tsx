@@ -8,7 +8,7 @@ export function PhaseStationBadges({
 }: {
   phase: PHASE_TYPE;
 }) {
-  return phase.slug === PHASES.done.slug ? (
+  return phase.slug === PHASES.finished.slug ? (
     <PhaseIcon phase={phase} size="sm" />
   ) : (
     <div

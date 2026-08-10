@@ -1,12 +1,12 @@
-import { LoaderIcon, SparklesIcon } from "lucide-react";
+import { ListIcon, LoaderIcon, SparklesIcon } from "lucide-react";
 import { useState } from "react";
 import { ContentFilesManager } from "~/components/features/media/InstagramContent";
 import { InstagramPreview } from "~/components/features/media/InstagramPreview";
 import { RichTextEditor } from "~/components/features/RichTextEditor";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
-import { PrismButton } from "~/components/prism";
+import { PrismButton, PrismButtonGroup } from "~/components/prism";
 import { INTENT } from "~/lib/CONSTANTS";
-import { getFormattedPartnersLinks } from "~/utils/format";
+import { getFormattedPartnersLinks, parseStrategies } from "~/utils/format";
 import type { Action, Partner } from "~/types";
 import { cn } from "cnfast";
 interface InstagramTabProps {
@@ -26,6 +26,7 @@ interface InstagramTabProps {
   ) => Promise<unknown>;
   contentDescription: string;
   onContentDescriptionChange: (html: string) => void;
+  onOpenStrategyModal?: () => void;
 }
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
@@ -61,6 +62,7 @@ export function InstagramTab({
   triggerAIAction,
   contentDescription,
   onContentDescriptionChange,
+  onOpenStrategyModal,
 }: InstagramTabProps) {
   const [instagramSubTab, setInstagramSubTab] = useState<"content" | "caption">(
     "content",
@@ -127,6 +129,52 @@ export function InstagramTab({
                   {getFormattedPartnersLinks(currentPartners)}
                 </div>
               </div>
+              {(() => {
+                const strategies = parseStrategies(RawAction.strategies);
+                const selectedStrat = strategies.find((s) => s.selected);
+                const stratTitle = selectedStrat
+                  ? selectedStrat.headline
+                  : "Selecione a estratégia";
+                return (
+                  <PrismButtonGroup className="max-w-70">
+                    {strategies.length > 0 && onOpenStrategyModal && (
+                      <PrismButton
+                        aria-label="Ver estratégias"
+                        onClick={onOpenStrategyModal}
+                        size="xs"
+                        variant="secondary"
+                      >
+                        <ListIcon className="size-3.5" />
+                      </PrismButton>
+                    )}
+                    <PrismButton
+                      isDisabled={isAIProcessing}
+                      onClick={() => {
+                        const stratToUse = selectedStrat || strategies[0];
+                        if (stratToUse) {
+                          triggerAIAction(INTENT.ai_content, {
+                            headline: stratToUse.headline,
+                            racional: stratToUse.racional,
+                            direcionamento: stratToUse.direcionamento,
+                          });
+                        } else {
+                          triggerAIAction(INTENT.ai_content);
+                        }
+                      }}
+                      size="xs"
+                      variant="secondary"
+                    >
+                      {isAIProcessing &&
+                      activeAIIntent === INTENT.ai_content ? (
+                        <LoaderIcon className="size-3.5 shrink-0 animate-spin" />
+                      ) : (
+                        <SparklesIcon className="size-3.5 shrink-0" />
+                      )}
+                      <span className="truncate">{stratTitle}</span>
+                    </PrismButton>
+                  </PrismButtonGroup>
+                );
+              })()}
             </div>
             <RichTextEditor
               className="flex-1 overflow-y-auto"

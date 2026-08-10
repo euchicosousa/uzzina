@@ -2,13 +2,9 @@ import type { Action, Person } from "~/types";
 import { isBefore } from "date-fns";
 import { z } from "zod";
 import { PHASES } from "~/lib/CONSTANTS";
-
 export const isLateAction = (action: Action) =>
-  action.phase !== PHASES.done.slug &&
+  action.phase !== PHASES.finished.slug &&
   isBefore(new Date(action.date), new Date());
-
-
-
 export function getInstagramFeedActions(
   actions: Action[],
   isFeed = true,
@@ -19,19 +15,15 @@ export function getInstagramFeedActions(
     []
   );
 }
-
 export function isInstagramFeed(category: string, stories = false) {
   return ["post", "reels", "carousel", stories ? "stories" : null].includes(
     category,
   );
 }
-
 export const isSprint = (action: Action, person?: Person) => {
   if (!person) return false;
   return !!action.sprints?.find((sprint) => sprint === person.user_id);
 };
-
-
 
 // Aceita string com vírgulas (FormData legado) ou array direto (JSON)
 const commaSeparatedStringToArray = z.union([
@@ -61,22 +53,17 @@ const nullableString = z
     if (!val || val === "null" || val === "") return undefined; // undefined removes it from the spread
     return val;
   });
-
 export const ActionFormSchema = z.object({
   title: z.string().min(2, "O Título deve ter pelo menos 2 caracteres"),
   date: z.string().min(1, "A data é obrigatória"),
   category: z.string().min(1, "A categoria é obrigatória"),
-
   priority: z.string().min(1, "A prioridade é obrigatória"),
   description: nullableString,
-
   responsibles: commaSeparatedStringToArray,
   partners: commaSeparatedStringToArray,
-
   content_files: nullableCommaSeparatedStringToArray,
   work_files: nullableCommaSeparatedStringToArray,
   sprints: nullableCommaSeparatedStringToArray,
-
   instagram_caption: nullableString,
   content_description: nullableString,
   color: z.string().optional(),
@@ -86,7 +73,5 @@ export const ActionFormSchema = z.object({
   updated_at: z.string().optional(),
   archived: z.boolean().nullable().optional(),
 });
-
 export type ActionFormInput = z.input<typeof ActionFormSchema>;
 export type ActionFormOutput = z.output<typeof ActionFormSchema>;
-

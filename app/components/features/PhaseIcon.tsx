@@ -33,7 +33,7 @@ export function PhaseIcon({
   }
 
   // Se concluído, mostra o círculo preenchido com check
-  const isFinished = phase.slug === PHASES.done.slug;
+  const isFinished = phase.slug === PHASES.finished.slug;
   if (size === "dot") {
     return (
       <div
@@ -90,7 +90,7 @@ export function PhaseIcon({
           fill="none"
           r="8"
           stroke="currentColor"
-          strokeDasharray={`${Math.floor(phase.order * 8.5)},51`}
+          strokeDasharray={`${Math.floor(phase.order * 8.37)},51`}
         />
       </svg>
     </div>

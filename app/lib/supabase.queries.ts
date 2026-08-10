@@ -64,7 +64,7 @@ export async function fetchFlowActions(
     .select("*")
     .or("archived.is.false,archived.is.null")
     .overlaps("partners", partnerSlugs)
-    .neq("phase", "done")
+    .neq("phase", "finished")
     .lte("date", endDateISO);
 
   if (startDateISO) {
@@ -92,7 +92,7 @@ export async function fetchAllLateActions(
     .or("archived.is.false,archived.is.null")
     .contains("responsibles", isAdmin ? [] : [userId])
     .overlaps("partners", partnerSlugs)
-    .neq("phase", "done")
+    .neq("phase", "finished")
     .lt("date", format(new Date(), "yyyy-MM-dd HH:mm:ss"))
     .order("date", { ascending: false });
 

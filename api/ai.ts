@@ -22,6 +22,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     category = "",
     hook = "",
     racional = "",
+    headline = "",
+    direcionamento = "",
   } = req.body;
   if (!intent || !category) {
     return res.status(400).json({
@@ -99,25 +101,107 @@ FORMATO DE RESPOSTA (JSON):
       });
     }
     if (intent === "ai-content") {
+      const systemPrompt = `Você é o Redator-Chefe e Especialista de Conteúdo da Agência CNVT.
+Sua missão é gerar a resposta exclusivamente em HTML limpo e básico.
+
+REGRAS DE FORMATAÇÃO:
+- Retorne APENAS o HTML (sem JSON, sem blocos de código markdown \`\`\`html, sem tags <html>, <head>, <body>).
+- Use apenas tags limpas como: <h4>, <h5>, <p>, <ul>, <ol>, <li>, <strong>, <em>, <br>.
+
+CONTEXTO DA MARCA E TOM DE VOZ:
+${partner_context}
+
+Você deve criar conteúdo utilizando a Arquitetura Dor → Problema.
+
+A arquitetura parte de uma distinção fundamental:
+
+DOR = aquilo que a pessoa sente.
+PROBLEMA = aquilo que causa essa dor.
+
+A pessoa frequentemente busca primeiro aliviar a dor, enquanto a resolução do problema exige um processo.
+
+A estrutura de raciocínio é:
+
+DOR → PROBLEMA → PROCESSO → SOLUÇÃO
+
+Antes de criar qualquer conteúdo:
+
+1. Identifique a DOR real do público.
+2. Descreva como essa dor aparece na experiência cotidiana.
+3. Identifique o PROBLEMA que causa essa dor.
+4. Explique o PROCESSO necessário para resolver o problema.
+5. Defina a SOLUÇÃO coerente com esse problema.
+6. Escolha qual camada possui maior potencial de atenção para iniciar o conteúdo.
+
+REGRAS:
+
+- Nunca confunda dor com problema.
+- Não transforme o problema em dor apenas trocando as palavras.
+- Não invente ou exagere dores para gerar atenção.
+- Não apresente a solução antes de estabelecer o problema.
+- A solução deve resolver o problema, não apenas aliviar a dor.
+- O conteúdo deve partir da realidade do público, não de frases genéricas.
+- A arquitetura é uma estrutura de raciocínio, não uma fórmula fixa de texto.
+
+Primeiro faça o diagnóstico da arquitetura.
+Depois adapte esse diagnóstico ao formato solicitado.
+`;
+      let content = "";
       switch (category) {
         case "post":
-          // Placeholder para geração de post estático
+          content = ``;
+          // Digite seu prompt/lógica para post estático aqui
           break;
         case "carousel":
-          // Placeholder para geração de carrossel
+          content = `Crie um carrossel utilizando a Arquitetura Dor → Problema.
+
+Primeiro aplique o diagnóstico central:
+
+DOR → PROBLEMA → PROCESSO → SOLUÇÃO
+
+Depois transforme esse raciocínio em uma sequência visual.
+
+ESTRUTURA:
+
+SLIDE 1 — ATENÇÃO
+Apresente a dor, tensão, consequência ou contradição de maior potencial.
+
+SLIDES 2–3 — EXPERIÊNCIA
+Mostre como essa dor aparece na vida real do público.
+Faça a pessoa se reconhecer.
+
+SLIDES 4–5 — PROBLEMA
+Revele o que realmente está causando aquela dor.
+Crie uma mudança de perspectiva.
+
+SLIDES 6–7 — PROCESSO
+Explique o que precisa acontecer para resolver o problema.
+Entregue conhecimento.
+
+SLIDE FINAL — SOLUÇÃO/DIREÇÃO
+Apresente a solução ou conduza a pessoa para o próximo passo.
+
+REGRAS:
+
+- Cada slide deve fazer a narrativa avançar.
+- Não repetir a mesma ideia em slides diferentes.
+- Não começar explicando o problema de forma abstrata.
+- Evitar frases genéricas de marketing.
+- O conteúdo deve construir uma descoberta progressiva.
+- Reduza o texto ao necessário para comunicação visual.`;
           break;
         case "reels":
-          // Placeholder para geração de reels
+          // Digite seu prompt/lógica para reels aqui
           break;
         case "stories":
-          // Placeholder para geração de stories
+          // Digite seu prompt/lógica para stories aqui
           break;
         default:
           break;
       }
       return res.status(200).json({
         output: {
-          content: "",
+          content,
         },
         intent,
       });

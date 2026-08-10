@@ -6,8 +6,9 @@ import {
   BrainIcon,
   CalendarIcon,
   CameraIcon,
-  CheckCircle2Icon,
+  CircleCheckIcon,
   CircleFadingPlusIcon,
+  CirclePlayIcon,
   ClipboardCheckIcon,
   CoinsIcon,
   FilterIcon,
@@ -19,11 +20,12 @@ import {
   MonitorIcon,
   MoonIcon,
   PaletteIcon,
-  PenIcon,
+  PenLineIcon,
   PenToolIcon,
   PlayIcon,
   PresentationIcon,
   PrinterIcon,
+  SearchCheckIcon,
   SunIcon,
   UserCheckIcon,
   Volume2Icon,
@@ -105,10 +107,16 @@ export function Icons({
     // Fases
     case "idea":
       return <LightbulbIcon className={cn(className)} style={style} />;
-    case "active":
-      return <PenIcon className={cn(className)} style={style} />;
+    case "do":
+      return <CirclePlayIcon className={cn(className)} style={style} />;
+    case "doing":
+      return <PenLineIcon className={cn(className)} style={style} />;
+    case "review":
+      return <SearchCheckIcon className={cn(className)} style={style} />;
     case "done":
-      return <CheckCircle2Icon className={cn(className)} style={style} />;
+      return <CircleCheckIcon className={cn(className)} style={style} />;
+    case "finished":
+      return <BadgeCheckIcon className={cn(className)} style={style} />;
 
     // Estações (Stations)
     case "flow":
