@@ -53,9 +53,11 @@ export async function updateActionClient(
       `Validação falhou: ${JSON.stringify(result.error.flatten().fieldErrors)}`,
     );
   }
+  const { strategies, ...rest } = result.data;
   const updateData = {
-    ...result.data,
-  };
+    ...rest,
+    ...(strategies !== undefined ? { strategies } : {}),
+  } as TablesUpdate<"actions">;
   if (updateData.phase === PHASES.done.slug) {
     updateData.sprints = null;
   }
@@ -65,7 +67,7 @@ export async function updateActionClient(
   const supabase = createSupabaseBrowserClient();
   const { data, error } = await supabase
     .from("actions")
-    .update(updateData as TablesUpdate<"actions">)
+    .update(updateData)
     .eq("id", id)
     .select()
     .single();

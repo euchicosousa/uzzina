@@ -4,6 +4,12 @@ export {
   PrismAlertDescription,
   PrismAlertTitle,
 } from "./alert";
+export {
+  PrismAccordion,
+  PrismAccordionItem,
+  PrismAccordionTrigger,
+  PrismAccordionContent,
+} from "./accordion";
 export { PrismBadge } from "./badge";
 export { Button as PrismButton } from "./button";
 export type { PrismButtonVariantProps } from "./button";

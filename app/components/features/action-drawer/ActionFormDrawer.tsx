@@ -13,6 +13,11 @@ import { isInstagramFeed, parseStrategies } from "~/lib/helpers";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { cn } from "cnfast";
 import {
+  PrismAccordion,
+  PrismAccordionContent,
+  PrismAccordionItem,
+  PrismAccordionTrigger,
+  PrismBadge,
   PrismButton,
   PrismDialog,
   PrismDialogDescription,
@@ -368,7 +373,7 @@ export function ActionFormDrawer({
         view === "instagram" ? "lg:w-4xl" : "lg:w-2xl",
       )}
     >
-      { RawAction.archived && (
+      {RawAction.archived && (
         <div className="flex shrink-0 items-center justify-center gap-2 bg-error-background p-2 text-sm font-medium text-error border-b">
           <ArchiveIcon className="size-4" />
           Esta ação está arquivada.
@@ -467,19 +472,19 @@ export function ActionFormDrawer({
               <InstagramTab
                 activeAIIntent={activeAIIntent}
                 cloudName={cloudName}
+                contentDescription={contentDescriptionRef.current}
                 contentFiles={contentFiles}
                 currentPartners={currentPartners}
                 isAIProcessing={isAIProcessing}
+                onContentDescriptionChange={(html) => {
+                  contentDescriptionRef.current = html;
+                }}
                 RawAction={RawAction}
                 setRawAction={setRawAction}
                 triggerAIAction={triggerAIAction}
                 updateAction={updateAction}
                 updateContentFiles={updateContentFiles}
                 uploadPreset={uploadPreset}
-                contentDescription={contentDescriptionRef.current}
-                onContentDescriptionChange={(html) => {
-                  contentDescriptionRef.current = html;
-                }}
               />
             </div>
           )}
@@ -509,53 +514,62 @@ export function ActionFormDrawer({
         isOpen={isStrategyModalOpen}
         onOpenChange={setIsStrategyModalOpen}
       >
-        <PrismDialogHeader>
-          <PrismDialogTitle>5 Estratégias Sugeridas</PrismDialogTitle>
+        <PrismDialogHeader className="px-10 pt-8">
+          <PrismDialogTitle className="text-2xl">
+            5 Estratégias Sugeridas
+          </PrismDialogTitle>
           <PrismDialogDescription>
-            Escolha uma das 5 estratégias criativas abaixo para gerar o conteúdo da ação.
+            Escolha uma das 5 estratégias criativas abaixo para gerar o conteúdo
+            da ação.
           </PrismDialogDescription>
         </PrismDialogHeader>
-        <div className="flex max-h-[65vh] flex-col gap-4 overflow-y-auto px-5 pb-6">
-          {parseStrategies(RawAction.strategies).map((strat, i) => (
-            <div
-              key={strat.headline || i}
-              className="flex flex-col gap-3 rounded-2xl border bg-surface p-4 squircle transition-all hover:border-primary/50"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-1">
-                  <h3 className="text-sm font-bold text-foreground">
+        <div className="max-h-[70vh] overflow-y-auto px-5 pb-6">
+          <PrismAccordion className={"border-none"}>
+            {parseStrategies(RawAction.strategies).map((strat, i) => (
+              <PrismAccordionItem
+                key={strat.headline || i}
+                defaultExpanded={i === 0}
+                id={String(i)}
+              >
+                <PrismAccordionTrigger>
+                  <div className="text-lg tracking-tight font-normal">
                     {strat.headline}
-                  </h3>
-                  <span className="inline-block rounded-md bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
-                    {strat.angulo}
-                  </span>
-                </div>
-                <PrismButton
-                  onClick={() => {
-                    triggerAIAction(INTENT.ai_content, {
-                      headline: strat.headline,
-                      angulo: strat.angulo,
-                      racional: strat.racional,
-                      direcionamento: strat.direcionamento,
-                    });
-                    setIsStrategyModalOpen(false);
-                  }}
-                  size="sm"
-                  variant="default"
-                >
-                  USAR
-                </PrismButton>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                <strong className="text-foreground">Racional:</strong>{" "}
-                {strat.racional}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                <strong className="text-foreground">Direcionamento:</strong>{" "}
-                {strat.direcionamento}
-              </p>
-            </div>
-          ))}
+                  </div>
+                </PrismAccordionTrigger>
+                <PrismAccordionContent>
+                  <div className="flex flex-col gap-3 text-base">
+                    <PrismBadge>{strat.angulo}</PrismBadge>
+                    <p>
+                      <strong className="text-foreground">Racional:</strong>{" "}
+                      {strat.racional}
+                    </p>
+                    <p>
+                      <strong className="text-foreground">
+                        Direcionamento:
+                      </strong>{" "}
+                      {strat.direcionamento}
+                    </p>
+                    <PrismButton
+                      className="self-end"
+                      onClick={() => {
+                        triggerAIAction(INTENT.ai_content, {
+                          headline: strat.headline,
+                          angulo: strat.angulo,
+                          racional: strat.racional,
+                          direcionamento: strat.direcionamento,
+                        });
+                        setIsStrategyModalOpen(false);
+                      }}
+                      size="sm"
+                      variant="secondary"
+                    >
+                      USAR ESTA ESTRATÉGIA
+                    </PrismButton>
+                  </div>
+                </PrismAccordionContent>
+              </PrismAccordionItem>
+            ))}
+          </PrismAccordion>
         </div>
       </PrismDialog>
     </div>

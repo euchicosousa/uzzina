@@ -81,7 +81,7 @@ export const ActionFormSchema = z.object({
   content_description: nullableString,
   color: z.string().optional(),
   phase: z.string().optional().nullable(),
-  station: z.string().optional().nullable(),
+  strategies: z.unknown().optional().nullable(),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
   archived: z.boolean().nullable().optional(),
