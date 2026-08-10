@@ -22,7 +22,7 @@ const radioVariants = cva(
   },
 );
 const radioDotVariants = cva(
-  "relative flex shrink-0 items-center justify-center rounded-full border border-input bg-surface transition-all outline-none group-data-[focus-visible]/radio:border-ring group-data-[focus-visible]/radio:ring-[3px] group-data-[focus-visible]/radio:ring-ring/50 group-data-[invalid]/radio:border-error group-data-[selected]/radio:border-primary group-data-[selected]/radio:bg-primary group-data-[selected]/radio:text-primary-foreground",
+  "relative flex shrink-0 items-center justify-center rounded-full border border-input bg-card transition-all outline-none group-data-[focus-visible]/radio:border-ring group-data-[focus-visible]/radio:ring-[3px] group-data-[focus-visible]/radio:ring-ring/50 group-data-[invalid]/radio:border-error group-data-[selected]/radio:border-primary group-data-[selected]/radio:bg-primary group-data-[selected]/radio:text-primary-foreground",
   {
     variants: {
       size: {

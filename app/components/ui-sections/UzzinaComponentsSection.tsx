@@ -181,7 +181,7 @@ export function UzzinaComponentsSection() {
                   {cat.slugs.map((item) => (
                     <div
                       key={item.slug}
-                      className="flex flex-col items-center justify-center gap-2 rounded-xl border border-border/40 bg-surface p-3 text-center transition-colors hover:border-border"
+                      className="flex flex-col items-center justify-center gap-2 rounded-xl border border-border/40 bg-card p-3 text-center transition-colors hover:border-border"
                     >
                       <Icons
                         className="size-5 text-foreground"
@@ -202,7 +202,7 @@ export function UzzinaComponentsSection() {
 
           {/* UAvatar - Todos os tamanhos */}
           <GalleryItem label="UAvatar (Todos os Tamanhos)">
-            <div className="flex flex-wrap items-end gap-6 rounded-xl border border-border/40 bg-surface p-6">
+            <div className="flex flex-wrap items-end gap-6 rounded-xl border border-border/40 bg-card p-6">
               {SIZES.map((s) => (
                 <div key={s.key} className="flex flex-col items-center gap-2">
                   <UAvatar
@@ -221,7 +221,7 @@ export function UzzinaComponentsSection() {
 
           {/* UAvatarGroup - Grupos em Diferentes Tamanhos */}
           <GalleryItem label="UAvatarGroup (Agrupamento e Clamping)">
-            <div className="flex flex-col gap-6 rounded-xl border border-border/40 bg-surface p-6">
+            <div className="flex flex-col gap-6 rounded-xl border border-border/40 bg-card p-6">
               <div className="flex flex-col gap-2">
                 <span className="text-xs font-semibold text-muted-foreground">
                   Grupo Médio (md) — Padrão

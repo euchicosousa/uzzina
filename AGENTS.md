@@ -88,7 +88,7 @@ O **Prism** é o design system proprietário do Uzzina. Todos os novos component
 | Token                                       | Uso                                   |
 | ------------------------------------------- | ------------------------------------- |
 | `bg-background`                             | Fundo da página                       |
-| `bg-surface`                                | Cards e painéis (substitui `bg-card`) |
+| `bg-card`                                   | Cards e painéis                       |
 | `bg-input`                                  | Fundo de campos de formulário         |
 | `text-foreground` / `text-muted-foreground` | Texto primário / secundário           |
 | `border-border` / `border-input`            | Bordas padrão / bordas de input       |
@@ -98,8 +98,6 @@ O **Prism** é o design system proprietário do Uzzina. Todos os novos component
 | `text-success` / `bg-success-background`    | Estado de sucesso                     |
 | `text-warning` / `bg-warning-background`    | Estado de aviso                       |
 | `text-info` / `bg-info-background`          | Estado informativo                    |
-
-> **Atenção**: Nunca usar `bg-card` nem `text-card-foreground` — o token correto é `bg-surface` e `text-surface-foreground`.
 
 ### Componentes Disponíveis
 

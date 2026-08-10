@@ -1,4 +1,4 @@
-import { ListIcon, LoaderIcon, SparklesIcon } from "lucide-react";
+import { ListIcon, LoaderIcon, SparkleIcon } from "lucide-react";
 import { useState } from "react";
 import { ContentFilesManager } from "~/components/features/media/InstagramContent";
 import { InstagramPreview } from "~/components/features/media/InstagramPreview";
@@ -144,7 +144,7 @@ export function InstagramTab({
                         size="xs"
                         variant="secondary"
                       >
-                        <ListIcon className="size-3.5" />
+                        <ListIcon />
                       </PrismButton>
                     )}
                     <PrismButton
@@ -164,13 +164,13 @@ export function InstagramTab({
                       size="xs"
                       variant="secondary"
                     >
+                      <span className="truncate">{stratTitle}</span>
                       {isAIProcessing &&
                       activeAIIntent === INTENT.ai_content ? (
-                        <LoaderIcon className="size-3.5 shrink-0 animate-spin" />
+                        <LoaderIcon className="animate-spin" />
                       ) : (
-                        <SparklesIcon className="size-3.5 shrink-0" />
+                        <SparkleIcon />
                       )}
-                      <span className="truncate">{stratTitle}</span>
                     </PrismButton>
                   </PrismButtonGroup>
                 );
@@ -216,9 +216,9 @@ export function InstagramTab({
               >
                 Gerar legenda
                 {isAIProcessing && activeAIIntent === INTENT.ai_caption ? (
-                  <LoaderIcon className="size-3.5 animate-spin" />
+                  <LoaderIcon className="animate-spin" />
                 ) : (
-                  <SparklesIcon />
+                  <SparkleIcon />
                 )}
               </PrismButton>
             </div>

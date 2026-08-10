@@ -59,7 +59,7 @@ export function ViewOptionsSection() {
         />
         <GallerySectionContent className="grid gap-6">
           <GalleryItem label="1. Modo Completo (Todas as Opções e Filtros Ativos)">
-            <div className="flex w-full flex-col gap-4 rounded-2xl border bg-surface/50 p-4 squircle">
+            <div className="flex w-full flex-col gap-4 rounded-2xl border bg-card/50 p-4 squircle">
               <ViewOptionsComponent
                 setViewOptions={setFullViewOptions}
                 viewOptions={fullViewOptions}
@@ -89,7 +89,7 @@ export function ViewOptionsSection() {
           </GalleryItem>
 
           <GalleryItem label="2. Modo Simplificado (Estilo SprintHomeComponent)">
-            <div className="flex w-full flex-col gap-4 rounded-2xl border bg-surface/50 p-4 squircle">
+            <div className="flex w-full flex-col gap-4 rounded-2xl border bg-card/50 p-4 squircle">
               <ViewOptionsComponent
                 setViewOptions={setSprintViewOptions}
                 viewOptions={sprintViewOptions}
@@ -139,7 +139,7 @@ export function ViewOptionsSection() {
               <CategoriesDemoSingle triggerVariant="form-link" />
             </GalleryItem>
             <GalleryItem label="6. Modo Form-Footer (variant='form-footer')">
-              <div className="max-w-md rounded-2xl border bg-surface/80 p-2 squircle">
+              <div className="max-w-md rounded-2xl border bg-card/80 p-2 squircle">
                 <CategoriesDemoSingle triggerVariant="form-footer" />
               </div>
             </GalleryItem>

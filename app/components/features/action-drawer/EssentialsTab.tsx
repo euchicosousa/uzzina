@@ -4,7 +4,7 @@ import {
   FilePlus,
   ListIcon,
   LoaderIcon,
-  SparklesIcon,
+  SparkleIcon,
 } from "lucide-react";
 import { Suspense, lazy, useRef, useState } from "react";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
@@ -225,7 +225,7 @@ export function EssentialsTab({
                   size="xs"
                   variant="secondary"
                 >
-                  <ListIcon className="size-3.5" />
+                  <ListIcon />
                 </PrismButton>
               )}
               <PrismButton
@@ -236,9 +236,9 @@ export function EssentialsTab({
               >
                 {isAIProcessing ? "CRIANDO ESTRATÉGIA..." : "CRIAR ESTRATÉGIA"}
                 {isAIProcessing ? (
-                  <LoaderIcon className="size-3.5 animate-spin" />
+                  <LoaderIcon className="animate-spin" />
                 ) : (
-                  <SparklesIcon />
+                  <SparkleIcon />
                 )}
               </PrismButton>
             </PrismButtonGroup>

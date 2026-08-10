@@ -23,7 +23,7 @@ const checkboxVariants = cva(
   },
 );
 const boxVariants = cva(
-  "flex shrink-0 items-center justify-center border border-input bg-surface transition-all outline-none group-data-[focus-visible]:border-ring group-data-[focus-visible]:ring-[3px] group-data-[focus-visible]:ring-ring/50 group-data-[invalid]:border-error group-data-[selected]:bg-primary group-data-[selected]:border-primary group-data-[selected]:text-primary-foreground group-data-[indeterminate]:bg-primary group-data-[indeterminate]:border-primary group-data-[indeterminate]:text-primary-foreground",
+  "flex shrink-0 items-center justify-center border border-input bg-card transition-all outline-none group-data-[focus-visible]:border-ring group-data-[focus-visible]:ring-[3px] group-data-[focus-visible]:ring-ring/50 group-data-[invalid]:border-error group-data-[selected]:bg-primary group-data-[selected]:border-primary group-data-[selected]:text-primary-foreground group-data-[indeterminate]:bg-primary group-data-[indeterminate]:border-primary group-data-[indeterminate]:text-primary-foreground",
   {
     variants: {
       size: {

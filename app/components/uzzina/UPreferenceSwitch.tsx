@@ -22,7 +22,7 @@ export function UPreferenceSwitch({
         "flex items-center justify-between rounded-2xl border p-4 transition-all duration-200",
         checked
           ? "border-primary bg-primary/5 text-foreground"
-          : "border-border bg-surface/25 text-muted-foreground",
+          : "border-border bg-card/25 text-muted-foreground",
         className,
       )}
     >

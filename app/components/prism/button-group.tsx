@@ -7,9 +7,9 @@ const buttonGroupVariants = cva(
     variants: {
       orientation: {
         horizontal:
-          "flex-row [&>*:not(:first-child)]:-ml-px [&>*:first-child]:rounded-r-none! [&>*:first-child]:rounded-l-xl! [&>*:first-child]:squircle! [&>*:not(:first-child):not(:last-child)]:rounded-none! [&>*:last-child]:rounded-l-none! [&>*:last-child]:rounded-r-xl! [&>*:last-child]:squircle!",
+          "flex-row [&>*:not(:first-child)]:-ml-px [&>*:first-child]:rounded-r-none! [&>*:first-child]:rounded-l-xl! [&>*:first-child]:squircle! [&>*:not(:first-child):not(:last-child)]:rounded-none! [&>*:last-child]:rounded-l-none! [&>*:last-child]:rounded-r-xl! [&>*:last-child]:squircle! [&>*:only-child]:rounded-xl! [&>*:only-child]:squircle!",
         vertical:
-          "flex-col [&>*:not(:first-child)]:-mt-px [&>*:first-child]:rounded-b-none! [&>*:first-child]:rounded-t-xl! [&>*:first-child]:squircle! [&>*:not(:first-child):not(:last-child)]:rounded-none! [&>*:last-child]:rounded-t-none! [&>*:last-child]:rounded-b-xl! [&>*:last-child]:squircle!",
+          "flex-col [&>*:not(:first-child)]:-mt-px [&>*:first-child]:rounded-b-none! [&>*:first-child]:rounded-t-xl! [&>*:first-child]:squircle! [&>*:not(:first-child):not(:last-child)]:rounded-none! [&>*:last-child]:rounded-t-none! [&>*:last-child]:rounded-b-xl! [&>*:last-child]:squircle! [&>*:only-child]:rounded-xl! [&>*:only-child]:squircle!",
       },
     },
     defaultVariants: {
