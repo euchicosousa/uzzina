@@ -1,4 +1,4 @@
-import type { Action, Partner, StrategyItem } from "~/types";
+import type { Action, Partner } from "~/types";
 import { format } from "date-fns";
 import { ArchiveIcon, HeartIcon, MessageSquareIcon, XIcon } from "lucide-react";
 import { Icons } from "~/components/uzzina/UIcons";
@@ -9,15 +9,15 @@ import { EssentialsTab } from "./EssentialsTab";
 import { InstagramTab } from "./InstagramTab";
 import { ObservationsTab } from "./ObservationsTab";
 import { INTENT } from "~/lib/CONSTANTS";
-import { isInstagramFeed } from "~/lib/helpers";
+import { isInstagramFeed, parseStrategies } from "~/lib/helpers";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { cn } from "cnfast";
 import {
   PrismButton,
-  PrismSheet,
-  PrismSheetContent,
-  PrismSheetHeader,
-  PrismSheetTitle,
+  PrismDialog,
+  PrismDialogDescription,
+  PrismDialogHeader,
+  PrismDialogTitle,
 } from "~/components/prism";
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
@@ -162,24 +162,23 @@ export function ActionFormDrawer({
       if (data?.output) {
         const captionTail = captionTailRef.current;
         if (intent === INTENT.ai_strategy) {
-          const out = data.output as
-            | {
-                strategies?: StrategyItem[];
-              }
-            | StrategyItem[];
-          const newStrategies = Array.isArray(out)
-            ? out
-            : Array.isArray(out.strategies)
-              ? out.strategies
-              : [];
+          const newStrategies = parseStrategies(data.output);
+          // Set strategies in local state FIRST
           setRawAction((prev) => ({
             ...prev,
             strategies: newStrategies,
           }));
           setIsStrategyModalOpen(true);
-          updateAction({
+          // Save to DB — updateAction internally calls setRawAction(result) which
+          // will overwrite strategies with the DB's Json type. We re-apply strategies after.
+          await updateAction({
             strategies: newStrategies,
           });
+          // Re-apply strategies after DB write since setRawAction(result) resets it
+          setRawAction((prev) => ({
+            ...prev,
+            strategies: newStrategies,
+          }));
         }
         if (intent === INTENT.ai_content) {
           const out = data.output as
@@ -505,60 +504,60 @@ export function ActionFormDrawer({
         />
       </div>
 
-      <PrismSheet
+      <PrismDialog
+        className="max-w-2xl sm:max-w-2xl"
         isOpen={isStrategyModalOpen}
         onOpenChange={setIsStrategyModalOpen}
       >
-        <PrismSheetContent
-          className="max-h-[85vh] overflow-y-auto"
-          side="bottom"
-        >
-          <PrismSheetHeader>
-            <PrismSheetTitle>5 Estratégias Sugeridas</PrismSheetTitle>
-          </PrismSheetHeader>
-          <div className="flex flex-col gap-4 p-4 pb-12 lg:p-8">
-            {(Array.isArray(RawAction.strategies)
-              ? (RawAction.strategies as StrategyItem[])
-              : []
-            ).map((strat, i) => (
-              <div
-                key={strat.headline || i}
-                className="flex flex-col gap-2 rounded-xl border bg-card p-4"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h3 className="text-base font-bold">{strat.headline}</h3>
-                    <span className="mt-1 inline-block text-xs font-semibold text-primary">
-                      {strat.angulo}
-                    </span>
-                  </div>
-                  <PrismButton
-                    onClick={() => {
-                      triggerAIAction(INTENT.ai_content, {
-                        headline: strat.headline,
-                        angulo: strat.angulo,
-                        racional: strat.racional,
-                        direcionamento: strat.direcionamento,
-                      });
-                      setIsStrategyModalOpen(false);
-                    }}
-                    size="xs"
-                    variant="default"
-                  >
-                    USAR
-                  </PrismButton>
+        <PrismDialogHeader>
+          <PrismDialogTitle>5 Estratégias Sugeridas</PrismDialogTitle>
+          <PrismDialogDescription>
+            Escolha uma das 5 estratégias criativas abaixo para gerar o conteúdo da ação.
+          </PrismDialogDescription>
+        </PrismDialogHeader>
+        <div className="flex max-h-[65vh] flex-col gap-4 overflow-y-auto px-5 pb-6">
+          {parseStrategies(RawAction.strategies).map((strat, i) => (
+            <div
+              key={strat.headline || i}
+              className="flex flex-col gap-3 rounded-2xl border bg-surface p-4 squircle transition-all hover:border-primary/50"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <h3 className="text-sm font-bold text-foreground">
+                    {strat.headline}
+                  </h3>
+                  <span className="inline-block rounded-md bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                    {strat.angulo}
+                  </span>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  <strong>Racional:</strong> {strat.racional}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  <strong>Direcionamento:</strong> {strat.direcionamento}
-                </p>
+                <PrismButton
+                  onClick={() => {
+                    triggerAIAction(INTENT.ai_content, {
+                      headline: strat.headline,
+                      angulo: strat.angulo,
+                      racional: strat.racional,
+                      direcionamento: strat.direcionamento,
+                    });
+                    setIsStrategyModalOpen(false);
+                  }}
+                  size="sm"
+                  variant="default"
+                >
+                  USAR
+                </PrismButton>
               </div>
-            ))}
-          </div>
-        </PrismSheetContent>
-      </PrismSheet>
+              <p className="text-xs text-muted-foreground">
+                <strong className="text-foreground">Racional:</strong>{" "}
+                {strat.racional}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                <strong className="text-foreground">Direcionamento:</strong>{" "}
+                {strat.direcionamento}
+              </p>
+            </div>
+          ))}
+        </div>
+      </PrismDialog>
     </div>
   );
 }

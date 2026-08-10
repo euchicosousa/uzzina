@@ -16,7 +16,12 @@ const Tiptap = lazy(() =>
 import { PrismButton } from "~/components/prism";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { INTENT } from "~/lib/CONSTANTS";
-import { getNewDateForAction, isInstagramFeed, isLateAction } from "~/lib/helpers";
+import {
+  getNewDateForAction,
+  isInstagramFeed,
+  isLateAction,
+  parseStrategies,
+} from "~/lib/helpers";
 import { cn } from "cnfast";
 import type { Action, Partner, PartnerTopic } from "~/types";
 import { ActionDatePicker } from "./ActionDatePicker";
@@ -213,8 +218,7 @@ export function EssentialsTab({
 
           {isInstagramFeed(RawAction.category, true) && (
             <div className="flex gap-1">
-              {Array.isArray(RawAction.strategies) &&
-                RawAction.strategies.length > 0 && (
+              {parseStrategies(RawAction.strategies).length > 0 && (
                 <PrismButton
                   aria-label="Ver estratégias geradas"
                   onClick={onOpenStrategyModal}
