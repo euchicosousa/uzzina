@@ -1,0 +1,620 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "12.0.2 (a4e00ff)"
+  }
+  public: {
+    Tables: {
+      action_comments: {
+        Row: {
+          action_id: string
+          author_id: string
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          is_internal: boolean | null
+          is_user: boolean
+          mentions: string[] | null
+        }
+        Insert: {
+          action_id: string
+          author_id: string
+          author_name: string
+          content: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean | null
+          is_user?: boolean
+          mentions?: string[] | null
+        }
+        Update: {
+          action_id?: string
+          author_id?: string
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean | null
+          is_user?: boolean
+          mentions?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "action_comments_action_id_fkey"
+            columns: ["action_id"]
+            isOneToOne: false
+            referencedRelation: "actions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      actions: {
+        Row: {
+          archived: boolean | null
+          category: string
+          color: string
+          content_description: string | null
+          content_files: string[] | null
+          created_at: string
+          date: string
+          description: string | null
+          id: string
+          instagram_caption: string | null
+          partners: string[]
+          phase: string
+          priority: string
+          responsibles: string[]
+          sprints: string[] | null
+          strategies: Json | null
+          time: number
+          title: string
+          topic_ids: string[]
+          updated_at: string
+          user_id: string
+          work_files: string[] | null
+        }
+        Insert: {
+          archived?: boolean | null
+          category: string
+          color?: string
+          content_description?: string | null
+          content_files?: string[] | null
+          created_at: string
+          date: string
+          description?: string | null
+          id?: string
+          instagram_caption?: string | null
+          partners: string[]
+          phase?: string
+          priority: string
+          responsibles: string[]
+          sprints?: string[] | null
+          strategies?: Json | null
+          time?: number
+          title: string
+          topic_ids?: string[]
+          updated_at: string
+          user_id?: string
+          work_files?: string[] | null
+        }
+        Update: {
+          archived?: boolean | null
+          category?: string
+          color?: string
+          content_description?: string | null
+          content_files?: string[] | null
+          created_at?: string
+          date?: string
+          description?: string | null
+          id?: string
+          instagram_caption?: string | null
+          partners?: string[]
+          phase?: string
+          priority?: string
+          responsibles?: string[]
+          sprints?: string[] | null
+          strategies?: Json | null
+          time?: number
+          title?: string
+          topic_ids?: string[]
+          updated_at?: string
+          user_id?: string
+          work_files?: string[] | null
+        }
+        Relationships: []
+      }
+      celebrations: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      clients: {
+        Row: {
+          active: boolean
+          created_at: string | null
+          email: string
+          id: string
+          image: string | null
+          name: string | null
+          partners: string[]
+          password: string
+          password_hash: string | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string | null
+          email: string
+          id?: string
+          image?: string | null
+          name?: string | null
+          partners: string[]
+          password: string
+          password_hash?: string | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string | null
+          email?: string
+          id?: string
+          image?: string | null
+          name?: string | null
+          partners?: string[]
+          password?: string
+          password_hash?: string | null
+        }
+        Relationships: []
+      }
+      config: {
+        Row: {
+          created_at: string
+          creative: string
+          id: number
+          theme: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          creative: string
+          id?: number
+          theme?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          creative?: string
+          id?: number
+          theme?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          answers: Json | null
+          completed: boolean | null
+          created_at: string | null
+          id: string
+          main_need: string | null
+          name: string
+          updated_at: string | null
+          whatsapp: string
+        }
+        Insert: {
+          answers?: Json | null
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          main_need?: string | null
+          name: string
+          updated_at?: string | null
+          whatsapp: string
+        }
+        Update: {
+          answers?: Json | null
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          main_need?: string | null
+          name?: string
+          updated_at?: string | null
+          whatsapp?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          action_id: string
+          action_title: string
+          author_name: string
+          comment_excerpt: string
+          comment_id: string | null
+          created_at: string
+          id: string
+          read_at: string | null
+          recipient_id: string
+          type: string
+        }
+        Insert: {
+          action_id: string
+          action_title?: string
+          author_name?: string
+          comment_excerpt?: string
+          comment_id?: string | null
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id: string
+          type?: string
+        }
+        Update: {
+          action_id?: string
+          action_title?: string
+          author_name?: string
+          comment_excerpt?: string
+          comment_id?: string | null
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_action_id_fkey"
+            columns: ["action_id"]
+            isOneToOne: false
+            referencedRelation: "actions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "action_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partners: {
+        Row: {
+          archived: boolean
+          colors: string[]
+          context: string | null
+          created_at: string
+          id: string
+          image: string | null
+          instagram_caption_tail: string | null
+          short: string
+          slug: string
+          sow: Database["public"]["Enums"]["sow"]
+          title: string
+          topics: Json
+          users_ids: string[]
+          voice: string | null
+        }
+        Insert: {
+          archived?: boolean
+          colors: string[]
+          context?: string | null
+          created_at?: string
+          id?: string
+          image?: string | null
+          instagram_caption_tail?: string | null
+          short: string
+          slug: string
+          sow?: Database["public"]["Enums"]["sow"]
+          title: string
+          topics?: Json
+          users_ids: string[]
+          voice?: string | null
+        }
+        Update: {
+          archived?: boolean
+          colors?: string[]
+          context?: string | null
+          created_at?: string
+          id?: string
+          image?: string | null
+          instagram_caption_tail?: string | null
+          short?: string
+          slug?: string
+          sow?: Database["public"]["Enums"]["sow"]
+          title?: string
+          topics?: Json
+          users_ids?: string[]
+          voice?: string | null
+        }
+        Relationships: []
+      }
+      people: {
+        Row: {
+          admin: boolean
+          areas: string[]
+          created_at: string
+          email: string | null
+          id: string
+          image: string | null
+          initials: string
+          name: string
+          preferences: Json | null
+          short: string
+          surname: string
+          user_id: string
+          visible: boolean
+        }
+        Insert: {
+          admin?: boolean
+          areas: string[]
+          created_at?: string
+          email?: string | null
+          id?: string
+          image?: string | null
+          initials: string
+          name: string
+          preferences?: Json | null
+          short: string
+          surname: string
+          user_id: string
+          visible?: boolean
+        }
+        Update: {
+          admin?: boolean
+          areas?: string[]
+          created_at?: string
+          email?: string | null
+          id?: string
+          image?: string | null
+          initials?: string
+          name?: string
+          preferences?: Json | null
+          short?: string
+          surname?: string
+          user_id?: string
+          visible?: boolean
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      get_app_bootstrap: { Args: { p_user_id: string }; Returns: Json }
+      get_home_actions:
+        | {
+            Args: {
+              p_end_date: string
+              p_start_date: string
+              p_today_end: string
+              p_user_id: string
+            }
+            Returns: {
+              archived: boolean | null
+              category: string
+              color: string
+              content_description: string | null
+              content_files: string[] | null
+              created_at: string
+              date: string
+              description: string | null
+              id: string
+              instagram_caption: string | null
+              partners: string[]
+              phase: string
+              priority: string
+              responsibles: string[]
+              sprints: string[] | null
+              strategies: Json | null
+              time: number
+              title: string
+              topic_ids: string[]
+              updated_at: string
+              user_id: string
+              work_files: string[] | null
+            }[]
+            SetofOptions: {
+              from: "*"
+              to: "actions"
+              isOneToOne: false
+              isSetofReturn: true
+            }
+          }
+        | {
+            Args: {
+              p_end_date: string
+              p_partner_slugs?: string[]
+              p_start_date: string
+              p_today_end: string
+              p_user_id: string
+            }
+            Returns: {
+              archived: boolean | null
+              category: string
+              color: string
+              content_description: string | null
+              content_files: string[] | null
+              created_at: string
+              date: string
+              description: string | null
+              id: string
+              instagram_caption: string | null
+              partners: string[]
+              phase: string
+              priority: string
+              responsibles: string[]
+              sprints: string[] | null
+              strategies: Json | null
+              time: number
+              title: string
+              topic_ids: string[]
+              updated_at: string
+              user_id: string
+              work_files: string[] | null
+            }[]
+            SetofOptions: {
+              from: "*"
+              to: "actions"
+              isOneToOne: false
+              isSetofReturn: true
+            }
+          }
+    }
+    Enums: {
+      sow: "marketing" | "socialmedia" | "demand"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      sow: ["marketing", "socialmedia", "demand"],
+    },
+  },
+} as const
