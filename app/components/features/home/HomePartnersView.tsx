@@ -40,12 +40,7 @@ export function HomePartnersView({ actions }: { actions: Action[] }) {
     <HomeViewWrapper title="Parceiros">
       <div
         className={cn(
-          "grid grid-cols-2 px-8 text-center text-3xl leading-none font-bold uppercase sm:grid-cols-3 md:grid-cols-4 xl:px-16",
-          Math.ceil(partnersWithActionsLength.length / 2) === 7
-            ? "xl:grid-cols-7"
-            : Math.ceil(partnersWithActionsLength.length / 2) === 8
-              ? "xl:grid-cols-8"
-              : "",
+          "grid  px-8 text-center text-3xl leading-none font-bold uppercase md:grid-cols-4 xl:px-16 lg:grid-cols-5 xl:grid-cols-6",
         )}
       >
         {partnersWithActionsLength.map((partner) => (
@@ -76,7 +71,6 @@ export function HomePartnersView({ actions }: { actions: Action[] }) {
                 </div>
               )}
             </div>
-            
           </Link>
         ))}
       </div>

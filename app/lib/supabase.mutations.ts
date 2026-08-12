@@ -40,7 +40,7 @@ export async function createActionClient(
 /**
  * Update an existing action directly via browser Supabase client.
  * Applies the same business rules as the server:
- *   - phase = done → sprints = null
+ *   - phase = finished → sprints = null
  *   - archived = true   → sprints = null
  */
 export async function updateActionClient(
@@ -57,6 +57,7 @@ export async function updateActionClient(
   const updateData = {
     ...rest,
     ...(strategies !== undefined ? { strategies } : {}),
+    updated_at: new Date().toISOString(),
   } as TablesUpdate<"actions">;
   if (updateData.phase === PHASES.finished.slug) {
     updateData.sprints = null;
@@ -120,7 +121,10 @@ export async function bulkUpdateActionsClient(
   const supabase = createSupabaseBrowserClient();
   const { data, error } = await supabase
     .from("actions")
-    .update(updates)
+    .update({
+      ...updates,
+      updated_at: new Date().toISOString(),
+    })
     .in("id", ids)
     .select();
   if (error) throw error;
@@ -153,6 +157,7 @@ export async function bulkUpdateDateOnlyClient(
         .from("actions")
         .update({
           date: `${newDate} ${existingTime}`,
+          updated_at: new Date().toISOString(),
         })
         .eq("id", id);
     }),
@@ -188,6 +193,7 @@ export async function bulkUpdateTimeOnlyClient(
         .from("actions")
         .update({
           date: `${existingDate} ${newTime}:00`,
+          updated_at: new Date().toISOString(),
         })
         .eq("id", id);
     }),

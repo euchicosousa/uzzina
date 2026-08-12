@@ -81,3 +81,22 @@ export function isInputFocused(event?: KeyboardEvent): boolean {
   return false;
 }
 
+/**
+ * Parses DB timestamp strings into a valid JavaScript Date object in UTC.
+ * Ensures consistent parsing regardless of space separator or missing 'Z' suffix.
+ */
+export function parseDbDate(ts: string | Date | null | undefined): Date {
+  if (!ts) return new Date();
+  if (ts instanceof Date) return ts;
+  let normalized = ts.trim();
+  if (normalized.includes(" ")) {
+    normalized = normalized.replace(" ", "T");
+  }
+  if (!normalized.endsWith("Z") && !normalized.includes("+") && !normalized.includes("-", 10)) {
+    normalized += "Z";
+  }
+  const date = new Date(normalized);
+  return Number.isNaN(date.getTime()) ? new Date(ts) : date;
+}
+
+

@@ -66,6 +66,7 @@ function DashActionDetail() {
         .from("actions")
         .update({
           work_files,
+          updated_at: new Date().toISOString(),
         })
         .eq("id", actionId || "");
       if (error) throw error;

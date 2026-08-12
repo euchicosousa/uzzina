@@ -2,7 +2,7 @@ import type { Action } from "~/types";
 import { useMutation, useQueryClient, type QueryKey } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { toast } from "sonner";
-import { INTENT } from "~/lib/CONSTANTS";
+import { INTENT, PHASES } from "~/lib/CONSTANTS";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { format } from "date-fns";
 import {
@@ -102,7 +102,7 @@ export function useActionMutations() {
             if (action.id !== id) return action;
             const updated = { ...action, ...values } as Action;
             // Espelha as regras de negócio do servidor (supabase.mutations.ts)
-            if (updated.phase === "done") {
+            if (updated.phase === PHASES.finished.slug) {
               updated.sprints = null;
             }
             if (updated.archived) {
