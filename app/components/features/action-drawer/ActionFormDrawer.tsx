@@ -328,21 +328,25 @@ export function ActionFormDrawer({
 
   // Guard: only update color if it actually changed to avoid
   // triggering another render cycle via the partners effect above.
+  const prevPrimaryPartnerRef = useRef(currentPartners[0]?.slug);
   useEffect(() => {
-    if (!BaseAction.id && currentPartners.length > 0) {
-      const newColor = currentPartners[0].colors[0];
-      const newResponsibles = currentPartners.flatMap((p) =>
-        p.users_ids.map((user) => user),
-      );
-      setRawAction((prev) =>
-        prev.color === newColor
-          ? prev
-          : {
-              ...prev,
-              color: newColor,
-              responsibles: newResponsibles,
-            },
-      );
+    const currentPrimarySlug = currentPartners[0]?.slug;
+    if (
+      !BaseAction.id &&
+      currentPrimarySlug &&
+      currentPrimarySlug !== prevPrimaryPartnerRef.current
+    ) {
+      prevPrimaryPartnerRef.current = currentPrimarySlug;
+      const primaryPartner = currentPartners[0];
+      if (primaryPartner) {
+        const newColor = primaryPartner.colors?.[0] || "#666666";
+        const newResponsibles = currentPartners.flatMap((p) => p.users_ids);
+        setRawAction((prev) => ({
+          ...prev,
+          color: prev.color || newColor,
+          responsibles: newResponsibles,
+        }));
+      }
     }
   }, [currentPartners, BaseAction.id]);
   const captionTailRef = useRef(currentPartners[0]?.instagram_caption_tail);

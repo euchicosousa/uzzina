@@ -66,10 +66,14 @@ export function ActionColorDropdown({
   const handleLocalColorChange = (newColor: Color | null) => {
     if (newColor) {
       setColorValue(newColor);
+      const hex = newColor.toString("hex");
+      if (hex !== normalizedActionColor) {
+        onSelect?.(hex);
+      }
     }
   };
   const handleOpenChange = (isOpen: boolean) => {
-    // Quando o popover fechar, faz o commit da cor selecionada chamando o onSelect uma única vez
+    // Quando o popover fechar, garante o commit final da cor se tiver alterado
     if (!isOpen && colorValue) {
       const hex = colorValue.toString("hex");
       if (hex !== normalizedActionColor) {
