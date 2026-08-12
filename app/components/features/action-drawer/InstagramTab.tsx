@@ -136,8 +136,9 @@ export function InstagramTab({
                   ? selectedStrat.headline
                   : "Selecione a estratégia";
                 return (
-                  <PrismButtonGroup className="max-w-70">
-                    {strategies.length > 0 && onOpenStrategyModal && (
+                  strategies.length > 0 &&
+                  onOpenStrategyModal && (
+                    <PrismButtonGroup className="max-w-70">
                       <PrismButton
                         aria-label="Ver estratégias"
                         onClick={onOpenStrategyModal}
@@ -146,33 +147,34 @@ export function InstagramTab({
                       >
                         <ListIcon />
                       </PrismButton>
-                    )}
-                    <PrismButton
-                      isDisabled={isAIProcessing}
-                      onClick={() => {
-                        const stratToUse = selectedStrat || strategies[0];
-                        if (stratToUse) {
-                          triggerAIAction(INTENT.ai_content, {
-                            headline: stratToUse.headline,
-                            racional: stratToUse.racional,
-                            direcionamento: stratToUse.direcionamento,
-                          });
-                        } else {
-                          triggerAIAction(INTENT.ai_content);
-                        }
-                      }}
-                      size="xs"
-                      variant="secondary"
-                    >
-                      <span className="truncate">{stratTitle}</span>
-                      {isAIProcessing &&
-                      activeAIIntent === INTENT.ai_content ? (
-                        <LoaderIcon className="animate-spin" />
-                      ) : (
-                        <SparkleIcon />
-                      )}
-                    </PrismButton>
-                  </PrismButtonGroup>
+
+                      <PrismButton
+                        isDisabled={isAIProcessing}
+                        onClick={() => {
+                          const stratToUse = selectedStrat || strategies[0];
+                          if (stratToUse) {
+                            triggerAIAction(INTENT.ai_content, {
+                              headline: stratToUse.headline,
+                              racional: stratToUse.racional,
+                              direcionamento: stratToUse.direcionamento,
+                            });
+                          } else {
+                            triggerAIAction(INTENT.ai_content);
+                          }
+                        }}
+                        size="xs"
+                        variant="secondary"
+                      >
+                        <span className="truncate">{stratTitle}</span>
+                        {isAIProcessing &&
+                        activeAIIntent === INTENT.ai_content ? (
+                          <LoaderIcon className="animate-spin" />
+                        ) : (
+                          <SparkleIcon />
+                        )}
+                      </PrismButton>
+                    </PrismButtonGroup>
+                  )
                 );
               })()}
             </div>

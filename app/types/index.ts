@@ -5,6 +5,7 @@ export interface StrategyItem {
   angulo: string;
   racional: string;
   direcionamento: string;
+  selected?: boolean;
   [key: string]: Json | undefined;
 }
 

@@ -53,5 +53,6 @@ export function parseStrategies(raw: unknown): StrategyItem[] {
     direcionamento: String(
       item.direcionamento || item.direction || item.Direcionamento || "",
     ),
+    selected: Boolean(item.selected),
   }));
 }

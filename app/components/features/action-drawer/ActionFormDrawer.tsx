@@ -533,34 +533,29 @@ export function ActionFormDrawer({
                 defaultExpanded={i === 0}
                 id={String(i)}
               >
-                <PrismAccordionTrigger className={"overflow-hidden"}>
-                  <div className="flex items-center gap-3 w-full pr-2">
-                    <div
-                      onClick={(e) => e.stopPropagation()}
-                      onKeyDown={(e) => e.stopPropagation()}
-                    >
-                      <PrismCheckbox
-                        aria-label="Selecionar estratégia"
-                        isSelected={!!strat.selected}
-                        onChange={(isSelected) => {
-                          const currentStrats = parseStrategies(RawAction.strategies);
-                          const updated = currentStrats.map((s, idx) => ({
-                            ...s,
-                            selected: idx === i ? isSelected : false,
-                          }));
-                          setRawAction((prev) => ({
-                            ...prev,
-                            strategies: updated,
-                          }));
-                          updateAction({ strategies: updated });
-                        }}
-                      />
-                    </div>
+                <div className="flex items-center gap-3 w-full px-2">
+                  <PrismCheckbox
+                    aria-label="Selecionar estratégia"
+                    isSelected={!!strat.selected}
+                    onChange={(isSelected) => {
+                      const currentStrats = parseStrategies(RawAction.strategies);
+                      const updated = currentStrats.map((s, idx) => ({
+                        ...s,
+                        selected: idx === i ? isSelected : false,
+                      }));
+                      setRawAction((prev) => ({
+                        ...prev,
+                        strategies: updated,
+                      }));
+                      updateAction({ strategies: updated });
+                    }}
+                  />
+                  <PrismAccordionTrigger className="overflow-hidden flex-1 px-2">
                     <div className="text-lg tracking-tight font-normal truncate flex-1">
                       {strat.headline}
                     </div>
-                  </div>
-                </PrismAccordionTrigger>
+                  </PrismAccordionTrigger>
+                </div>
                 <PrismAccordionContent>
                   <div className="flex flex-col gap-3 text-base">
                     <PrismBadge>{strat.angulo}</PrismBadge>
