@@ -404,9 +404,9 @@ export const PALLETE = [
         l: 1,
       },
       bg: {
-        h: 200,
-        c: 0.005,
-        l: 0.96,
+        h: 0,
+        c: 0,
+        l: 1,
       },
       fg: {
         h: 0,
@@ -418,7 +418,7 @@ export const PALLETE = [
       mutedLDelta: -0.02,
       borderLDelta: -0.05,
       inputLDelta: -0.05,
-      actionLDelta: 0.02,
+      actionLDelta: -0.02,
       actionHoverLDelta: 0.04,
       popoverLDelta: 0.1,
     },
