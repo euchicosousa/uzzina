@@ -72,9 +72,11 @@ export function isInputFocused(event?: KeyboardEvent): boolean {
   const tagName = target.tagName;
   if (tagName === "INPUT" || tagName === "TEXTAREA") return true;
   if (target.isContentEditable) return true;
+  if (!target.closest) return false;
+  if (target.closest('[contenteditable="true"]')) return true;
   if (
-    target.closest &&
-    (target.closest('[contenteditable="true"]') || target.closest('[role="combobox"]'))
+    target.closest('[role="combobox"]') &&
+    (tagName === "INPUT" || target.isContentEditable)
   ) {
     return true;
   }

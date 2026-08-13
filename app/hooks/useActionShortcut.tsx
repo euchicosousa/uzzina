@@ -125,26 +125,36 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
 
       if (event.shiftKey) {
         if (code === "KeyD") {
+          event.preventDefault();
           handleAction(
             { id: action.id, intent: INTENT.duplicate_action }
           );
         } else if (code === "KeyH") {
+          event.preventDefault();
           updateDate(addMinutes(new Date(), 30));
         } else if (code === "Digit1") {
+          event.preventDefault();
           updateDate(addMinutes(new Date(), 60));
         } else if (code === "Digit2") {
+          event.preventDefault();
           updateDate(addMinutes(new Date(), 120));
         } else if (code === "Digit3") {
+          event.preventDefault();
           updateDate(addMinutes(new Date(), 180));
         } else if (code === "KeyA") {
+          event.preventDefault();
           updateDate(addDays(new Date(), 1));
         } else if (code === "KeyS") {
+          event.preventDefault();
           updateDate(addDays(getFutureTarget(), 7));
         } else if (code === "KeyM") {
+          event.preventDefault();
           updateDate(addDays(getFutureTarget(), 30));
         } else if (code === "KeyU") {
+          event.preventDefault();
           if (person) toggleSprintAction(action, person.user_id);
         } else if (code === "KeyX") {
+          event.preventDefault();
           handleAction(
             { ...action, intent: INTENT.update_action, archived: true }
           );
@@ -160,6 +170,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
           });
         }
       } else if (targetPhase) {
+        event.preventDefault();
         handleAction(
           { ...action, intent: INTENT.update_action, phase: targetPhase }
         );
