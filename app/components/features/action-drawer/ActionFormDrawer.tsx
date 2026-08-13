@@ -52,18 +52,36 @@ export function ActionFormDrawer({
     const now = format(new Date(), "yyyy-MM-dd HH:mm:ss");
     let initialPartners = BaseAction.partners || [];
     let initialResponsibles = BaseAction.responsibles || [];
+    let initialColor = BaseAction.color;
+
     if (initialPartners.length === 0 && partnerFilters.length > 0) {
       initialPartners = partnerFilters;
-      // Busca o primeiro parceiro filtrado para pré-selecionar os responsáveis
-      const matchedPartner = partners.find((p) => p.slug === partnerFilters[0]);
-      if (matchedPartner && initialResponsibles.length === 0) {
+    }
+
+    const matchedPartner = partners.find((p) =>
+      initialPartners.includes(p.slug),
+    );
+
+    if (matchedPartner) {
+      if (initialResponsibles.length === 0) {
         initialResponsibles = matchedPartner.users_ids;
       }
+      if (
+        (!initialColor ||
+          initialColor === "#666666" ||
+          initialColor === "#666") &&
+        matchedPartner.colors &&
+        matchedPartner.colors.length > 0
+      ) {
+        initialColor = matchedPartner.colors[0];
+      }
     }
+
     return {
       ...BaseAction,
       partners: initialPartners,
       responsibles: initialResponsibles,
+      color: initialColor,
       created_at: now,
       updated_at: now,
     };

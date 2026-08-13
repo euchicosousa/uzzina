@@ -43,27 +43,41 @@ export function ActionFormFooter({
         <div className="overflow-hidden">
           <PartnersCombobox
             onSelect={async (selected) => {
-              // Limpa tópicos órfãos calculando o conjunto dos tópicos dos novos parceiros selecionados
+              const selectedPartnersData = currentPartners.filter((p) =>
+                selected.includes(p.slug),
+              );
               const availableTopicIds = new Set(
-                currentPartners
-                  .filter((p) => selected.includes(p.slug))
-                  .flatMap((p) =>
-                    ((p.topics as unknown as PartnerTopic[]) || []).map(
-                      (t) => t.id,
-                    ),
+                selectedPartnersData.flatMap((p) =>
+                  ((p.topics as unknown as PartnerTopic[]) || []).map(
+                    (t) => t.id,
                   ),
+                ),
               );
               const filteredTopicIds = (RawAction.topic_ids || []).filter(
                 (id) => availableTopicIds.has(id),
               );
+
+              let newColor = RawAction.color;
+              if (
+                !RawAction.id &&
+                selectedPartnersData.length > 0 &&
+                selectedPartnersData[0].colors &&
+                selectedPartnersData[0].colors.length > 0 &&
+                (!newColor || newColor === "#666666" || newColor === "#666")
+              ) {
+                newColor = selectedPartnersData[0].colors[0];
+              }
+
               setRawAction({
                 ...RawAction,
                 partners: selected,
                 topic_ids: filteredTopicIds,
+                color: newColor,
               });
               await updateAction({
                 partners: selected,
                 topic_ids: filteredTopicIds,
+                color: newColor,
               });
             }}
             selectedPartners={RawAction.partners}
