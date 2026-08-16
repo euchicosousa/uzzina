@@ -7,6 +7,7 @@
     "dev": "vite dev",
     "preview": "vite preview",
     "typecheck": "tsc",
+    "lint": "biome check .",
     "generate-routes": "tsr generate",
     "gentypes": "npx supabase gen types typescript --project-id dfepmjcozszswocwvdpq --schema public > types/database.ts"
   },

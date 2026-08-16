@@ -19,17 +19,18 @@ Este repositório contém o sistema **UZZINA**, um painel e fluxo de gestão de 
 
 ## 2. Estrutura do Diretório Principal (`app/`)
 
-- `app/routes/`: Telas e endpoints da aplicação (actions e APIs).
+- `app/routes/`: Telas e rotas da aplicação mapeadas por arquivo (`__root.tsx`, `app/`, `dash/`, etc.) gerando a árvore em `app/routeTree.gen.ts`.
 - `app/components/`:
   - `prism/`: **Design system proprietário** do Uzzina. Primitivos de UI construídos com React Aria Components + CVA. Ver seção 5.
-  - `ui/`: Primitivos base do Radix UI (estilo shadcn/ui) — em processo de substituição pelo Prism.
-  - `uzzina/`: Elementos reutilizáveis do design system (ex: `UAvatar`, `UBadge`).
-  - `features/`: Lógica de regras de negócio (Kanban, Calendário, etc.).
-  - `layout/`: Estruturas de layout (Header, Sidebar).
-- `app/models/`: Consultas Supabase organizadas por entidade (`*.server.ts`).
-- `app/services/`: Serviços de backend, inclusive autenticação (`*.server.ts`).
-- `app/hooks/`: Hooks React customizados (ex: `useAppTheme`, `useMultiSelection`).
-- `app/lib/`: Configurações de preferências, constantes de domínio e helpers do CRUD.
+  - `uzzina/`: Elementos reutilizáveis do design system (ex: `UAvatar`, `UBadge`, `CloudinaryUpload`).
+  - `features/`: Componentes e fluxos de regras de negócio (Kanban, Calendário, Gaveta de Ações, etc.).
+  - `layout/`: Estruturas de layout (`Header`, `AppBar`, etc.).
+  - `ui-sections/`: Seções demonstrativas do Design System para a rota `/ui`.
+- `app/models/`: Consultas e operações Supabase organizadas por entidade (executadas via RPC ou SDK no client/serverless).
+- `app/services/`: Serviços auxiliares (ex: `ai-client.ts`).
+- `app/hooks/`: Hooks React customizados (ex: `useAppTheme`, `useActionMutations`, `useMultiSelection`).
+- `app/lib/`: Configurações de preferências, constantes de domínio (`CONSTANTS.ts`), instância singleton do Supabase (`supabase.client.ts`) e cliente TanStack Query (`query-client.ts`).
+- `api/`: Serverless Functions da Vercel (ex: `/api/ai`, `/api/create-user`).
 
 ---
 
@@ -42,21 +43,21 @@ Este repositório contém o sistema **UZZINA**, um painel e fluxo de gestão de 
 
 ### Separação de Portais e Autenticação
 
-- **Membros da Equipe (`/app`)**: Protegido por Supabase Auth via JWT (`getUserId` em `services/auth.server.ts`).
-- **Clientes Externos (`/dash`)**: Protegido por sessão de cookies independente (`getClientSession` em `services/client-auth.server.ts`) mapeado contra a tabela `clients` e sem usar Supabase Auth.
+- **Membros da Equipe (`/app`)**: Autenticado via Supabase Auth. Na inicialização do layout `app/routes/app.tsx`, a sessão é validada via `supabase.auth.getSession()` e sincronizada com `onAuthStateChange`. O bootstrap carrega dados do usuário via RPC `get_app_bootstrap`.
+- **Clientes Externos (`/dash`)**: Autenticação customizada via e-mail e validação de hash em `clients`, operando de forma isolada do Supabase Auth principal.
 
 ### Temas e Preferências
 
 - O visual suporta modo Light/Dark e 12 paletas de cores harmônicas OKLCH (mapeadas em `app/lib/CONSTANTS.ts`).
-- **Header**: Salva alterações em tempo real via Fetcher para `/action/set-preferences` (salvando no banco e cookies).
-- **Perfil (`/app/profile`)**: Oferece pré-visualização instantânea (usando `previewColorIndex()` e `previewTheme()` do hook `useAppTheme`) sem salvar no banco de dados até que o formulário completo seja submetido pelo usuário.
-- **Flicker Prevention**: `app/root.tsx` tem um script inline síncrono no `<head>` que lê o `localStorage` e aplica as variáveis CSS antes da hidratação para evitar piscadas na tela.
+- **Persistência**: As preferências do usuário são sincronizadas via `localStorage` e salvas no banco de dados (`people.preferences`).
+- **Perfil (`/app/profile`)**: Oferece pré-visualização instantânea (usando `previewColorIndex()` e `previewTheme()` do hook `useAppTheme`) antes de persistir as alterações.
+- **Flicker Prevention**: `index.html` contém um script síncrono inline no `<head>` que lê o `localStorage` e injeta as variáveis CSS OKLCH e classes de tema antes do React ser montado.
 
 ### Qualidade de Código e Tipagem Estrita
 
 - **Sem `any`**: Nunca utilize `any`. O código TypeScript deve ser estritamente tipado. Use `unknown` com verificações de tipo (type guards) se os dados forem dinâmicos.
 - **Sem Assertions de Não-Nulo (`!`)**: Nunca use asserções não-nulas (`!`) ou truques de tipagem como `null!`. Prefira usar getters seguros, inicializações opcionais ou validações explícitas de presença.
-- **Conformidade com o Linter (Biome)**: Todas as alterações devem passar no comando `bun run lint` e no compilador `npx tsc`. Certifique-se de que não restem avisos ou erros.
+- **Conformidade com o Linter (Biome)**: Todas as alterações devem passar no comando `bun run lint` e no compilador `bun run typecheck`. Certifique-se de que não restem avisos ou erros.
 
 ---
 
@@ -66,14 +67,14 @@ Sempre que realizar alterações estruturais no projeto:
 
 1. **Banco de Dados/Models**: Se adicionar/modificar tabelas ou models, atualize a seção correspondente no `AGENTS.md` e o Knowledge Item em `~/.gemini/antigravity-ide/knowledge/uzzina-database/artifacts/database.md`.
 2. **Rotas/Arquitetura**: Se criar novas rotas ou portais, atualize `AGENTS.md` e o Knowledge Item em `~/.gemini/antigravity-ide/knowledge/uzzina-architecture/artifacts/architecture.md`.
-3. **Novos Componentes Prism**: Se adicionar primitivos ao `app/components/old-prism/`, atualize a seção 5 deste arquivo.
+3. **Novos Componentes Prism**: Se adicionar primitivos ao `app/components/prism/`, atualize a seção 5 deste arquivo.
 4. **Novos Fluxos**: Mantenha os KIs correspondentes atualizados para garantir que o contexto do projeto continue correto nas próximas sessões.
 
 ---
 
 ## 5. Design System: Prism
 
-O **Prism** é o design system proprietário do Uzzina. Todos os novos componentes de UI devem ser criados dentro de `app/components/old-prism/` e exportados pelo barrel `app/components/old-prism/index.ts`.
+O **Prism** é o design system proprietário do Uzzina. Todos os novos componentes de UI devem ser criados dentro de `app/components/prism/` e exportados pelo barrel `app/components/prism/index.ts`.
 
 ### Fundamentos
 
