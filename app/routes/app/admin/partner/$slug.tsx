@@ -66,6 +66,7 @@ function AdminPartnerEditPage() {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [brandColors, setBrandColors] = useState<string[]>([]);
   const [topics, setTopics] = useState<PartnerTopic[]>([]);
+  const [sowValue, setSowValue] = useState<"marketing" | "socialmedia" | "demand">("marketing");
   const [_justSaved, setJustSaved] = useState(false);
   const [savingFields, setSavingFields] = useState<Set<string>>(new Set());
 
@@ -105,12 +106,14 @@ function AdminPartnerEditPage() {
       setSelectedUsers(partner.users_ids || []);
       setBrandColors(partner.colors || []);
       setTopics((partner.topics as unknown as PartnerTopic[]) || []);
+      const initialSow = partner.sow || "marketing";
+      setSowValue(initialSow);
       stateRef.current = {
         title: partner.title || "",
         short: partner.short || "",
         slug: partner.slug || "",
         instagram_caption_tail: partner.instagram_caption_tail || "",
-        sow: partner.sow || "marketing",
+        sow: initialSow,
         archived: partner.archived || false,
       };
     }
@@ -239,8 +242,7 @@ function AdminPartnerEditPage() {
       image: imageUrl || null,
       instagram_caption_tail:
         (updates.instagram_caption_tail as string) || null,
-      sow:
-        (updates.sow as "marketing" | "socialmedia" | "demand") || "marketing",
+      sow: stateRef.current.sow,
       topics: topics as unknown as import("types/database").Json,
     };
     await saveMutation.mutateAsync(partnerData);
@@ -537,14 +539,17 @@ function AdminPartnerEditPage() {
                 {savingFields.has("sow") && <ULoader />}
               </div>
               <div className="flex items-center gap-4 w-full">
+                <input name="sow" type="hidden" value={sowValue} />
                 <PrismToggleGroup className={"grid grid-cols-3 w-full"}>
                   {sow_list.map((item) => (
                     <PrismToggleGroupItem
                       key={item.id}
                       className={"h-auto py-4"}
-                      isSelected={partner?.sow === item.id}
+                      isSelected={sowValue === item.id}
                       onChange={(isSelected) => {
                         if (isSelected) {
+                          setSowValue(item.id);
+                          stateRef.current.sow = item.id;
                           triggerAutoSave({
                             sow: item.id,
                           });
