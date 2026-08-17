@@ -1,5 +1,5 @@
 import { SignalIcon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useAppContext } from "~/contexts/AppContext";
 import type { Action, Partner, Person } from "~/types";
 
@@ -122,17 +122,9 @@ export function ActionItem({
   const { isSelectionMode, selectedIds, toggleSelection } = useMultiSelection();
   const isSelected = selectedIds.includes(action.id);
   const { handleAction } = useActionMutations();
-  const { registerAction, unregisterAction, setEditingId } =
-    useActionShortcutContext();
+  const { setEditingId } = useActionShortcutContext();
   const [isEditing, setIsEditing] = useState(false);
 
-  // Register the action in the global shortcut registry on mount/update
-  useEffect(() => {
-    registerAction(action.id, {
-      action,
-    });
-    return () => unregisterAction(action.id);
-  }, [action, registerAction, unregisterAction]);
   const handleSetIsEditing = (value: boolean) => {
     setEditingId(value ? action.id : null);
     setIsEditing(value);

@@ -15,61 +15,34 @@ import { INTENT, PHASES } from "~/lib/CONSTANTS";
 import { getNewDateForAction } from "~/lib/helpers";
 import { isInputFocused } from "~/lib/uzzina-utils";
 import { useActionMutations } from "~/hooks/useActionMutations";
-
-type ActiveAction = { action: Action } | null;
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { useAppContext } from "~/contexts/AppContext";
 
 const ActionShortcutContext = createContext<{
-  registerAction: (id: string, data: NonNullable<ActiveAction>) => void;
-  unregisterAction: (id: string) => void;
   setEditingId: (id: string | null) => void;
 }>({
-  registerAction: () => { },
-  unregisterAction: () => { },
   setEditingId: () => { },
 });
-
-/**
- * Provider que registra UM único listener de keydown no document (capture phase).
- *
- * Em vez de rastrear mouseenter/mouseleave (que pode ser interceptado pelo
- * onKeyDown do dnd-kit no componente Draggable), este provider:
- *  1. Mantém um Map de todas as ações montadas (registry)
- *  2. No keydown, lê document.querySelectorAll('[data-action-id]:hover') para
- *     descobrir qual ação está sob o cursor no exato momento da tecla
- *  3. Usa capture phase (terceiro arg true) para garantir que o evento chegue
- *     antes do onKeyDown do dnd-kit ter chance de bloqueá-lo
- */
-import { useAppContext } from "~/contexts/AppContext";
 
 export function ActionShortcutProvider({ children }: { children: ReactNode }) {
   const { handleAction, toggleSprintAction } = useActionMutations();
   const { person } = useAppContext();
+  const queryClient = useQueryClient();
 
-  // Registry: actionId → {action}
-  const actionsMapRef = useRef<Map<string, NonNullable<ActiveAction>> | null>(
-    null,
-  );
+  // Guarda as funções em refs para que o listener não precise ser recriado a cada render
+  const handleActionRef = useRef(handleAction);
+  const toggleSprintActionRef = useRef(toggleSprintAction);
+  const personRef = useRef(person);
 
-  const getActionsMap = useCallback(() => {
-    if (!actionsMapRef.current) {
-      actionsMapRef.current = new Map();
-    }
-    return actionsMapRef.current;
-  }, []);
+  useEffect(() => {
+    handleActionRef.current = handleAction;
+    toggleSprintActionRef.current = toggleSprintAction;
+    personRef.current = person;
+  });
 
   // ID da ação que está em modo de edição (sem atalhos)
   const editingIdRef = useRef<string | null>(null);
-
-  const registerAction = useCallback(
-    (id: string, data: NonNullable<ActiveAction>) => {
-      getActionsMap().set(id, data);
-    },
-    [getActionsMap],
-  );
-
-  const unregisterAction = useCallback((id: string) => {
-    getActionsMap().delete(id);
-  }, [getActionsMap]);
 
   const setEditingId = useCallback((id: string | null) => {
     editingIdRef.current = id;
@@ -77,6 +50,9 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     function keyDown(event: KeyboardEvent) {
+      // Ignora repetição de tecla segurada
+      if (event.repeat) return;
+
       if (isInputFocused(event)) return;
 
       // Descobre o elemento mais interno sob o cursor que tenha data-action-id
@@ -90,14 +66,32 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
       // Se o item está em modo de edição, ignora atalhos
       if (editingIdRef.current === actionId) return;
 
-      const active = getActionsMap().get(actionId);
-      if (!active) return;
+      // Busca a ação diretamente de todas as queries de actions cacheadas no TanStack Query
+      const actionQueries = queryClient.getQueriesData<Action[]>({
+        queryKey: QUERY_KEYS.actions.all(),
+      });
+      const lateActionQueries = queryClient.getQueriesData<Action[]>({
+        queryKey: QUERY_KEYS.lateActions.all(),
+      });
 
-      const { action } = active;
+      let targetAction: Action | undefined;
+      for (const [, actions] of [...actionQueries, ...lateActionQueries]) {
+        if (Array.isArray(actions)) {
+          const found = actions.find((a) => a.id === actionId);
+          if (found) {
+            targetAction = found;
+            break;
+          }
+        }
+      }
+
+      if (!targetAction) return;
+
+      const action = targetAction;
       const code = event.code;
 
       const updateDate = (newDate: Date) =>
-        handleAction(
+        handleActionRef.current(
           {
             ...action,
             intent: INTENT.update_action,
@@ -126,7 +120,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
       if (event.shiftKey) {
         if (code === "KeyD") {
           event.preventDefault();
-          handleAction(
+          handleActionRef.current(
             { id: action.id, intent: INTENT.duplicate_action }
           );
         } else if (code === "KeyH") {
@@ -152,17 +146,18 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
           updateDate(addDays(getFutureTarget(), 30));
         } else if (code === "KeyU") {
           event.preventDefault();
-          if (person) toggleSprintAction(action, person.user_id);
+          const currentPerson = personRef.current;
+          if (currentPerson) toggleSprintActionRef.current(action, currentPerson.user_id);
         } else if (code === "KeyX") {
           event.preventDefault();
-          handleAction(
+          handleActionRef.current(
             { ...action, intent: INTENT.update_action, archived: true }
           );
           toast("Ação arquivada", {
             action: {
               label: "Desfazer",
               onClick: () => {
-                handleAction(
+                handleActionRef.current(
                   { ...action, intent: INTENT.update_action, archived: false }
                 );
               },
@@ -171,7 +166,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
         }
       } else if (targetPhase) {
         event.preventDefault();
-        handleAction(
+        handleActionRef.current(
           { ...action, intent: INTENT.update_action, phase: targetPhase }
         );
       }
@@ -180,11 +175,11 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
     // capture: true → captura antes do onKeyDown do dnd-kit interceptar
     document.addEventListener("keydown", keyDown, true);
     return () => document.removeEventListener("keydown", keyDown, true);
-  }, [handleAction, toggleSprintAction, person, getActionsMap]);
+  }, [queryClient]);
 
   const contextValue = useMemo(
-    () => ({ registerAction, unregisterAction, setEditingId }),
-    [registerAction, unregisterAction, setEditingId],
+    () => ({ setEditingId }),
+    [setEditingId],
   );
 
   return (
