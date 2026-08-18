@@ -534,7 +534,7 @@ html {
 }
 
 @utility no-squircle {
-  corner-shape: initial !important;
+  corner-shape: initial;
 }
 
 @utility squircle {

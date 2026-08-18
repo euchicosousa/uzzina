@@ -20,7 +20,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     description = "",
     partner_context = "",
     category = "",
-    hook = "",
     racional = "",
     headline = "",
     direcionamento = "",

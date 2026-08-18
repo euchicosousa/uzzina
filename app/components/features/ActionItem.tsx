@@ -14,22 +14,18 @@ import { Draggable, SortableItem } from "./DnD";
 import { PhaseIcon } from "./PhaseIcon";
 
 // Hooks
+import { useActionData } from "~/hooks/useActionData";
 import { useActionShortcutContext } from "~/hooks/useActionShortcut";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
 
 // Constants & Helpers
-import { useQuery } from "@tanstack/react-query";
 import { cn } from "cnfast";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import {
-  CATEGORIES,
-  PHASES,
   PRIORITIES,
   SIZE,
   VARIANT,
   type DATE_TIME_DISPLAY,
-  type CATEGORY,
-  type PHASE,
   type PRIORITY,
 } from "~/lib/CONSTANTS";
 import {
@@ -40,8 +36,7 @@ import {
   isLateAction,
   isSprint,
 } from "~/lib/helpers";
-import { QUERY_KEYS } from "~/lib/query-keys";
-import { fetchPeople } from "~/lib/supabase.queries";
+
 export type ActionDisplayFlags = {
   /** Whether to highlight the action if it is late */
   showLate?: boolean;
@@ -91,8 +86,6 @@ type ActionItemProps = {
  * Integrates drag-and-drop capability, selection mode, inline title editing, and action shortcuts.
  */
 const DEFAULT_DISPLAY_FLAGS: ActionDisplayFlags = {};
-const _DEFAULT_PARTNERS: Partner[] = [];
-const DEFAULT_PEOPLE: Person[] = [];
 export function ActionItem({
   action,
   variant = VARIANT.line,
@@ -113,12 +106,14 @@ export function ActionItem({
     showResponsibles = false,
     showPriority = false,
   } = displayFlags;
-  const { partners, person } = useAppContext();
-  const { data: people = DEFAULT_PEOPLE } = useQuery({
-    queryKey: QUERY_KEYS.people(),
-    queryFn: fetchPeople,
-    staleTime: 30 * 60 * 1000,
-  });
+  const { person, setBaseAction } = useAppContext();
+  const {
+    currentPhase,
+    currentPartners,
+    currentResponsibles,
+    currentCategory,
+  } = useActionData(action);
+
   const { isSelectionMode, selectedIds, toggleSelection } = useMultiSelection();
   const isSelected = selectedIds.includes(action.id);
   const { handleAction } = useActionMutations();
@@ -129,29 +124,6 @@ export function ActionItem({
     setEditingId(value ? action.id : null);
     setIsEditing(value);
   };
-  const { setBaseAction } = useAppContext();
-  const currentPhase = useMemo(
-    () => PHASES[(action.phase as PHASE) || "idea"],
-    [action.phase],
-  );
-  const currentPartners = useMemo(
-    () =>
-      action.partners
-        .map((partner) => partners.find((p: Partner) => p.slug === partner))
-        .filter((p): p is Partner => p !== undefined),
-    [action.partners, partners],
-  );
-  const currentResponsibles = useMemo(
-    () =>
-      action.responsibles
-        .map((person) => people.find((p: Person) => p.user_id === person))
-        .filter((r) => r !== undefined) as Person[],
-    [action.responsibles, people],
-  );
-  const currentCategory = useMemo(
-    () => CATEGORIES[action.category as CATEGORY],
-    [action.category],
-  );
 
   // Fallback variant check
   variant =

@@ -41,9 +41,6 @@ function ResetPassword() {
     // Dá um tempo pequeno para o Supabase client ler o token do hash da URL ou query
     const checkSession = async () => {
       try {
-        console.log("URL completa:", window.location.href);
-        console.log("Search (query):", window.location.search);
-        console.log("Hash:", window.location.hash);
         const urlParams = new URLSearchParams(window.location.search);
         const hashParams = new URLSearchParams(
           window.location.hash.substring(1),
@@ -67,7 +64,6 @@ function ResetPassword() {
         const tokenHash =
           urlParams.get("token_hash") || hashParams.get("token_hash");
         if (tokenHash) {
-          console.log("Verificando token_hash...");
           const { error: verifyError } = await client.auth.verifyOtp({
             token_hash: tokenHash,
             type: "recovery",
@@ -76,24 +72,19 @@ function ResetPassword() {
             console.error("Erro ao verificar token_hash:", verifyError);
             throw verifyError;
           }
-          console.log("Token_hash verificado com sucesso!");
         } else {
           // Fluxo 2: Troca tradicional de código (PKCE)
           const code = urlParams.get("code");
-          console.log("Code obtido:", code);
           if (code) {
-            console.log("Trocando código por sessão...");
             const { error: exchangeError } =
               await client.auth.exchangeCodeForSession(code);
             if (exchangeError) {
               console.error("Erro na troca do código:", exchangeError);
               throw exchangeError;
             }
-            console.log("Troca de código concluída com sucesso!");
           }
         }
         const { data } = await client.auth.getSession();
-        console.log("Sessão obtida:", data.session);
         if (!data.session) {
           // Se após ler os hashes/code não houver uma sessão ativa, o link pode ser inválido
           setError(
