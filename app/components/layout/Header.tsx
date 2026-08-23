@@ -60,9 +60,7 @@ export function Header({
   const params = useParams({
     strict: false,
   });
-  const searchParams = new URLSearchParams(
-    typeof window !== "undefined" ? window.location.search : "",
-  );
+  const search = location.search as Record<string, unknown>;
   const cleanPath = location.pathname.replace(/\/$/, "");
   const isHome = cleanPath === "/app";
   const isPartner = cleanPath.startsWith("/app/partner");
@@ -101,7 +99,8 @@ export function Header({
 
   // 2. Queries for Partner page actions
   const slug = (params as Record<string, string | undefined>).slug;
-  let partnerDate = searchParams.get("date");
+  let partnerDate =
+    typeof search?.date === "string" ? search.date : undefined;
   if (!partnerDate) {
     partnerDate = format(new Date().setDate(15), "yyyy-MM-dd");
   } else {

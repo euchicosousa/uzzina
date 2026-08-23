@@ -239,7 +239,6 @@ function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
         disabled={!editor.can().undo()}
         onClick={() => editor.chain().focus().undo().run()}
         title="Desfazer"
-        type="button"
       >
         <Undo2 className="size-4" />
       </button>
