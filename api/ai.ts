@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import OpenAI from "openai";
 // const model = "gpt-5.3-chat-latest";
-const model = "gpt-5.6-luna";
+const model = "gpt-6-luna";
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const apiKey = process.env.OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY;
   if (req.method !== "POST") {
