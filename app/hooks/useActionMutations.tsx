@@ -14,11 +14,16 @@ import {
   bulkUpdateDateOnlyClient,
   bulkUpdateTimeOnlyClient,
 } from "~/lib/supabase.mutations";
-import type { ActionFormInput } from "~/utils/validation";
+import type {
+  ActionCreateInput,
+  ActionPatchInput,
+  ActionFormInput,
+} from "~/utils/validation";
 
-export type SingleActionInput = Partial<ActionFormInput> & {
+export type SingleActionInput = {
   intent: string;
   id?: string;
+  [key: string]: unknown;
 };
 
 interface MutationContext {
@@ -66,12 +71,12 @@ export function useActionMutations() {
     mutationFn: async (data: SingleActionInput) => {
       const { intent, id, ...values } = data;
       if (intent === INTENT.create_action) {
-        return await createActionClient(values as ActionFormInput);
+        return await createActionClient(values as ActionCreateInput);
       } else if (intent === INTENT.update_action) {
         if (id)
           return await updateActionClient(
             String(id),
-            values as ActionFormInput,
+            values as ActionPatchInput,
           );
       } else if (intent === INTENT.duplicate_action) {
         if (id) return await duplicateActionClient(String(id));

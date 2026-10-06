@@ -33,6 +33,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(401).json({ error: "Sessão inválida ou expirada." });
   }
 
+  // Validação: apenas membros da equipe ativos (visible = true) podem invocar a IA
+  const { data: person, error: personError } = await userClient
+    .from("people")
+    .select("user_id, visible")
+    .eq("user_id", user.id)
+    .single();
+
+  if (personError || !person || !person.visible) {
+    return res.status(403).json({
+      error: "Acesso negado. Usuário inativo ou não autorizado para recursos de IA.",
+    });
+  }
+
   if (!apiKey) {
     return res.status(500).json({
       error: "OPENAI_API_KEY não configurada no servidor.",
@@ -47,11 +60,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     racional = "",
     headline = "",
     direcionamento = "",
-  } = req.body;
+  } = req.body || {};
+
+  const ALLOWED_INTENTS = ["ai-strategy", "ai-content", "ai-hooks", "ai-caption"];
+
   if (!intent || !category) {
     return res.status(400).json({
       error: "Intent e category são obrigatórios.",
     });
+  }
+
+  if (!ALLOWED_INTENTS.includes(intent)) {
+    return res.status(400).json({
+      error: `Intent "${intent}" não é permitido ou reconhecido.`,
+    });
+  }
+
+  if (typeof category !== "string" || category.length > 100) {
+    return res.status(400).json({ error: "Categoria inválida ou excede 100 caracteres." });
+  }
+  if (typeof title === "string" && title.length > 500) {
+    return res.status(400).json({ error: "Título excede limite máximo de 500 caracteres." });
+  }
+  if (typeof description === "string" && description.length > 10000) {
+    return res.status(400).json({ error: "Descrição excede limite máximo de 10.000 caracteres." });
+  }
+  if (typeof partner_context === "string" && partner_context.length > 10000) {
+    return res.status(400).json({ error: "Contexto do parceiro excede limite de 10.000 caracteres." });
   }
   try {
     const client = new OpenAI({

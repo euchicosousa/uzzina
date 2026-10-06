@@ -18,7 +18,7 @@ import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { INTENT } from "~/lib/CONSTANTS";
 import {
   getNewDateForAction,
-  isInstagramFeed,
+  isSocialMediaContent,
   isLateAction,
   parseStrategies,
 } from "~/lib/helpers";
@@ -34,7 +34,7 @@ interface EssentialsTabProps {
   updateAction: (
     data?: Record<string, unknown>,
     forceCreate?: boolean,
-  ) => Promise<void>;
+  ) => Promise<unknown>;
   workFiles: string[];
   setWorkFiles: (files: string[]) => void;
   currentPartners: Partner[];
@@ -43,6 +43,7 @@ interface EssentialsTabProps {
   isAIProcessing: boolean;
   onOpenStrategyModal?: () => void;
   onDescriptionChange?: (description: string) => void;
+  onTitleBlur?: (title: string) => Promise<void>;
   descriptionVersion?: number;
   triggerAIAction: (
     intent: string,
@@ -62,6 +63,7 @@ export function EssentialsTab({
   triggerAIAction,
   uploadPreset,
   onDescriptionChange,
+  onTitleBlur,
   descriptionVersion,
 }: EssentialsTabProps) {
   const workFilesRef = useRef(workFiles);
@@ -122,19 +124,22 @@ export function EssentialsTab({
         autoFocus
         className="font-medium tracking-[-5%]"
         onBlur={async (title) => {
-          if (title === RawAction.title) return;
-          await updateAction(
-            {
-              title,
-            },
-            true,
-          );
+          if (onTitleBlur) {
+            await onTitleBlur(title);
+          } else {
+            await updateAction(
+              {
+                title,
+              },
+              true,
+            );
+          }
         }}
-        onChange={async (title) => {
-          setRawAction({
-            ...RawAction,
+        onChange={(title) => {
+          setRawAction((prev) => ({
+            ...prev,
             title,
-          });
+          }));
         }}
         tabIndex={0}
         title={RawAction.title}
@@ -197,33 +202,47 @@ export function EssentialsTab({
             />
           </div>
 
-          {isInstagramFeed(RawAction.category, true) && (
-            <PrismButtonGroup>
-              {parseStrategies(RawAction.strategies).length > 0 && (
+          {isSocialMediaContent(RawAction.category) && (() => {
+            const hasStrategies =
+              parseStrategies(RawAction.strategies).length > 0;
+            const buttonLabel = isAIProcessing
+              ? hasStrategies
+                ? "RECRIANDO ESTRATÉGIAS..."
+                : "CRIANDO ESTRATÉGIA..."
+              : hasStrategies
+                ? "RECRIAR ESTRATÉGIAS"
+                : "CRIAR ESTRATÉGIA";
+            return (
+              <PrismButtonGroup className="min-w-0 shrink">
+                {hasStrategies && onOpenStrategyModal && (
+                  <PrismButton
+                    aria-label="Ver estratégias geradas"
+                    onClick={onOpenStrategyModal}
+                    size="xs"
+                    variant="secondary"
+                  >
+                    <ListIcon />
+                  </PrismButton>
+                )}
                 <PrismButton
-                  aria-label="Ver estratégias geradas"
-                  onClick={onOpenStrategyModal}
+                  className="min-w-0 shrink"
+                  isDisabled={isAIProcessing}
+                  onClick={handleTriggerAI}
                   size="xs"
                   variant="secondary"
                 >
-                  <ListIcon />
+                  <span className="truncate min-w-0" title={buttonLabel}>
+                    {buttonLabel}
+                  </span>
+                  {isAIProcessing ? (
+                    <LoaderIcon className="animate-spin" />
+                  ) : (
+                    <SparkleIcon />
+                  )}
                 </PrismButton>
-              )}
-              <PrismButton
-                isDisabled={isAIProcessing}
-                onClick={handleTriggerAI}
-                size="xs"
-                variant={"secondary"}
-              >
-                {isAIProcessing ? "CRIANDO ESTRATÉGIA..." : "CRIAR ESTRATÉGIA"}
-                {isAIProcessing ? (
-                  <LoaderIcon className="animate-spin" />
-                ) : (
-                  <SparkleIcon />
-                )}
-              </PrismButton>
-            </PrismButtonGroup>
-          )}
+              </PrismButtonGroup>
+            );
+          })()}
         </div>
 
         <div className="flex items-start gap-2 border-b px-4 py-1 max-w-full overflow-hidden">

@@ -80,37 +80,45 @@ export function CalendarWithDnd({
       setActiveAction(found);
     }
   };
-  const handleDragEnd = async (event: DragEndEvent) => {
-    if (event.over && activeAction) {
-      const key = "date";
-      const value = format(
-        parseU(event.over.id as string),
-        "yyyy-MM-dd",
-      ).concat(format(activeAction[key], " HH:mm:ss"));
-      const newDates = getNewDateForAction(activeAction, parseU(value));
-      const actionId = activeAction.id;
-
-      setDateOverrides((prev) => ({
-        ...prev,
-        [actionId]: newDates,
-      }));
-
-      try {
-        await handleAction({
-          ...activeAction,
-          intent: INTENT.update_action,
-          ...newDates,
-        });
-      } finally {
-        setDateOverrides((prev) => {
-          if (!prev[actionId]) return prev;
-          const next = { ...prev };
-          delete next[actionId];
-          return next;
-        });
-      }
-    }
+  const handleDragCancel = () => {
     setActiveAction(undefined);
+  };
+  const handleDragEnd = async (event: DragEndEvent) => {
+    try {
+      if (event.over && activeAction) {
+        const key = "date";
+        const value = format(
+          parseU(event.over.id as string),
+          "yyyy-MM-dd",
+        ).concat(format(activeAction[key], " HH:mm:ss"));
+        const newDates = getNewDateForAction(activeAction, parseU(value));
+        const actionId = activeAction.id;
+
+        setDateOverrides((prev) => ({
+          ...prev,
+          [actionId]: newDates,
+        }));
+
+        try {
+          await handleAction({
+            ...activeAction,
+            intent: INTENT.update_action,
+            ...newDates,
+          });
+        } catch (err) {
+          console.error("Erro no drop do Calendário:", err);
+        } finally {
+          setDateOverrides((prev) => {
+            if (!prev[actionId]) return prev;
+            const next = { ...prev };
+            delete next[actionId];
+            return next;
+          });
+        }
+      }
+    } finally {
+      setActiveAction(undefined);
+    }
   };
   const actionsWithOverrides = actions.map((action) =>
     dateOverrides[action.id]
@@ -131,6 +139,7 @@ export function CalendarWithDnd({
     <DragStateContext.Provider value={!!activeAction}>
       <DndContext
         id="calendar"
+        onDragCancel={handleDragCancel}
         onDragEnd={handleDragEnd}
         onDragStart={handleDragStart}
         sensors={sensors}

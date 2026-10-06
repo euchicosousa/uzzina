@@ -126,9 +126,15 @@ export function CategoriesCombobox({
         </ComboboxTrigger>
       ) : (
         <ComboboxTrigger
+          aria-label={
+            !showText
+              ? `Categoria: ${currentCategories[0]?.title || "Selecione"}`
+              : undefined
+          }
           className={className}
           size={size}
           tabIndex={tabIndex}
+          title={currentCategories[0]?.title || "Categoria"}
           variant={effectiveVariant}
         >
           <Icons

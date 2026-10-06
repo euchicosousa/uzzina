@@ -12,9 +12,19 @@ import {
   deleteCelebration,
   getAllCelebrations,
 } from "~/models/celebrations";
+import { AdminGuard } from "~/components/features/AdminGuard";
+
 export const Route = createFileRoute("/app/admin/celebrations")({
-  component: AdminCelebrationsPage,
+  component: AdminCelebrationsPageWrapper,
 });
+
+function AdminCelebrationsPageWrapper() {
+  return (
+    <AdminGuard>
+      <AdminCelebrationsPage />
+    </AdminGuard>
+  );
+}
 function AdminCelebrationsPage() {
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();

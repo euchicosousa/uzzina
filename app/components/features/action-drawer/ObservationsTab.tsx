@@ -31,7 +31,7 @@ export function ObservationsTab({
 
   // Busca os comentários no client usando TanStack Query
   const { data: comments = [] } = useQuery({
-    queryKey: ["comments", actionId],
+    queryKey: QUERY_KEYS.comments.all(actionId),
     queryFn: () => getAllCommentsByAction(supabase, actionId),
     enabled: !!actionId,
   });
@@ -49,7 +49,15 @@ export function ObservationsTab({
 
   // Mutations
   const createCommentMutation = useMutation({
-    mutationFn: async ({ content, mentions }: { content: string; mentions: string[] }) => {
+    mutationFn: async ({
+      content,
+      mentions,
+      is_internal = true,
+    }: {
+      content: string;
+      mentions: string[];
+      is_internal?: boolean;
+    }) => {
       const [personRes, actionRes] = await Promise.all([
         supabase.from("people").select("name").eq("user_id", person.user_id).single(),
         supabase.from("actions").select("title").eq("id", actionId).single(),
@@ -63,7 +71,7 @@ export function ObservationsTab({
         author_id: person.user_id,
         author_name: authorName,
         content,
-        is_internal: false,
+        is_internal,
         is_user: true,
         mentions,
       });
@@ -83,8 +91,11 @@ export function ObservationsTab({
       }
       return insertedComment;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", actionId] });
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.all(actionId) });
+      if (!variables.is_internal) {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.public(actionId) });
+      }
     },
     onError: (error) => {
       console.error("Erro ao criar comentário:", error);
@@ -97,7 +108,8 @@ export function ObservationsTab({
       await updateComment(supabase, commentId, content, person.user_id, true);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", actionId] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.all(actionId) });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.public(actionId) });
     },
     onError: (error) => {
       console.error("Erro ao atualizar comentário:", error);
@@ -110,7 +122,8 @@ export function ObservationsTab({
       await deleteComment(supabase, commentId, person.user_id, true);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", actionId] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.all(actionId) });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.public(actionId) });
     },
     onError: (error) => {
       console.error("Erro ao excluir comentário:", error);
@@ -120,9 +133,17 @@ export function ObservationsTab({
 
   const [newComment, setNewComment] = useState("");
 
-  const handleCreate = async (content: string, mentions: string[]) => {
+  const handleCreate = async (
+    content: string,
+    mentions: string[],
+    isInternal?: boolean,
+  ) => {
     if (!content.trim()) return;
-    await createCommentMutation.mutateAsync({ content, mentions });
+    await createCommentMutation.mutateAsync({
+      content,
+      mentions,
+      is_internal: isInternal ?? true,
+    });
     setNewComment("");
   };
 
@@ -153,6 +174,8 @@ export function ObservationsTab({
 
       <div className="border-t">
         <CommentInput
+          allowAudienceToggle={true}
+          initialIsInternal={true}
           isSubmitting={isMutating}
           mentionablePeople={mentionablePeople}
           onChange={setNewComment}

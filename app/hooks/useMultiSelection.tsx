@@ -22,11 +22,30 @@ const MultiSelectionContext = createContext<
 
 export function MultiSelectionProvider({
   children,
+  locationKey,
 }: {
   children: React.ReactNode;
+  locationKey?: string;
 }) {
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  // Limpa seleção ao mudar de rota ou contexto
+  useEffect(() => {
+    if (locationKey !== undefined) {
+      setSelectedIds([]);
+      setIsSelectionMode(false);
+    }
+  }, [locationKey]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setSelectedIds([]);
+      setIsSelectionMode(false);
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   const toggleSelectionMode = useCallback((value?: boolean) => {
     setIsSelectionMode((prev) => {
@@ -58,7 +77,7 @@ export function MultiSelectionProvider({
   // Cmd+A shortcut to select all visible actions
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (isSelectionMode && (e.metaKey || e.ctrlKey) && e.key === "a") {
+      if (isSelectionMode && (e.metaKey || e.ctrlKey) && (e.key === "a" || e.key === "A")) {
         if (
           e.target instanceof HTMLInputElement ||
           e.target instanceof HTMLTextAreaElement ||
@@ -69,10 +88,40 @@ export function MultiSelectionProvider({
 
         e.preventDefault();
         const actionElements = document.querySelectorAll("[data-action-id]");
-        const ids = Array.from(actionElements).flatMap((el) => {
-          const id = el.getAttribute("data-action-id");
-          return id ? [id] : [];
-        });
+        const ids = Array.from(actionElements)
+          .filter((el) => {
+            if (!(el instanceof HTMLElement)) return false;
+            // Ignora elementos ocultos, colapsados ou dentro de gavetas/modais fechados
+            if (
+              el.closest('[aria-hidden="true"]') ||
+              el.closest(".hidden") ||
+              el.closest("[inert]")
+            ) {
+              return false;
+            }
+            if (el.offsetParent === null && el.style.position !== "fixed") {
+              return false;
+            }
+            const rect = el.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) {
+              return false;
+            }
+            if (typeof window !== "undefined") {
+              const style = window.getComputedStyle(el);
+              if (
+                style.display === "none" ||
+                style.visibility === "hidden" ||
+                style.opacity === "0"
+              ) {
+                return false;
+              }
+            }
+            return true;
+          })
+          .flatMap((el) => {
+            const id = el.getAttribute("data-action-id");
+            return id ? [id] : [];
+          });
 
         setSelectedIds([...new Set(ids)]);
       }

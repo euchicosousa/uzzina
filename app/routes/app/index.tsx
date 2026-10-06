@@ -23,6 +23,9 @@ import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchAllLateActions, fetchHomeActions } from "~/lib/supabase.queries";
 import { Footer } from "~/components/layout/Footer";
 
+import { AlertTriangleIcon } from "lucide-react";
+import { PrismAlert, PrismAlertDescription, PrismAlertTitle, PrismButton } from "~/components/prism";
+
 export const Route = createFileRoute("/app/")({
   component: AppHome,
 });
@@ -40,21 +43,29 @@ function AppHome() {
   const todayEndISO = endOfDay(now).toISOString();
 
   // Busca as ações no client usando TanStack Query
-  const { data: currentActions = [], isLoading: isLoadingHomeActions } =
-    useQuery({
-      queryKey: QUERY_KEYS.actions.home(person.user_id),
-      queryFn: () =>
-        fetchHomeActions(
-          person.user_id,
-          startDateISO,
-          endDateISO,
-          todayEndISO,
-          partners.map((p: Partner) => p.slug),
-        ),
-    });
+  const {
+    data: currentActions = [],
+    isLoading: isLoadingHomeActions,
+    isError: isHomeActionsError,
+    refetch: refetchHomeActions,
+  } = useQuery({
+    queryKey: QUERY_KEYS.actions.home(person.user_id),
+    queryFn: () =>
+      fetchHomeActions(
+        person.user_id,
+        startDateISO,
+        endDateISO,
+        todayEndISO,
+        partners.map((p: Partner) => p.slug),
+      ),
+  });
 
   // Busca as lateActions no client usando TanStack Query
-  const { data: currentLateActions = [] } = useQuery({
+  const {
+    data: currentLateActions = [],
+    isError: isLateActionsError,
+    refetch: refetchLateActions,
+  } = useQuery({
     queryKey: QUERY_KEYS.lateActions.user(person.user_id),
     queryFn: () =>
       fetchAllLateActions(
@@ -93,6 +104,31 @@ function AppHome() {
 
   return (
     <>
+      {(isHomeActionsError || isLateActionsError) && (
+        <div className="px-6 pt-4 pb-2">
+          <PrismAlert variant="error">
+            <AlertTriangleIcon />
+            <PrismAlertTitle>Erro ao carregar dados do painel</PrismAlertTitle>
+            <PrismAlertDescription className="flex items-center justify-between gap-4 mt-1">
+              <span>
+                Não foi possível carregar algumas ações da sua conta. Verifique sua conexão com a internet.
+              </span>
+              <PrismButton
+                size="default"
+                variant="ghost"
+                className="h-8 px-3 text-xs"
+                onClick={() => {
+                  if (isHomeActionsError) refetchHomeActions();
+                  if (isLateActionsError) refetchLateActions();
+                }}
+              >
+                Tentar novamente
+              </PrismButton>
+            </PrismAlertDescription>
+          </PrismAlert>
+        </div>
+      )}
+
       {sprintActions.length > 0 && (
         <>
           <HomeSprintView actions={sprintActions} />

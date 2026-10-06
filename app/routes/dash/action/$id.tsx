@@ -1,9 +1,10 @@
 import { format } from "date-fns";
 import { parseU } from "~/utils/date";
 import { ptBR } from "date-fns/locale";
-import { ArrowLeftIcon, PlusIcon } from "lucide-react";
+import { ArrowLeftIcon, PlusIcon, AlertCircleIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
+import { PrismButton, buttonVariants } from "~/components/prism";
 import { CommentInput } from "~/components/features/ActionComments/CommentInput";
 import { CommentList } from "~/components/features/ActionComments/CommentList";
 import { WorkFileThumbnail } from "~/components/features/media/WorkFileThumbnail";
@@ -22,6 +23,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDashContext } from "~/contexts/DashContext";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { toast } from "sonner";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { sanitizeHtml } from "~/utils/sanitize";
 export const Route = createFileRoute("/dash/action/$id")({
   component: DashActionDetail,
 });
@@ -38,7 +41,12 @@ function DashActionDetail() {
   const _navigate = useNavigate();
 
   // Query para a Ação
-  const { data: action, isLoading: isLoadingAction } = useQuery({
+  const {
+    data: action,
+    isLoading: isLoadingAction,
+    isError: isActionError,
+    refetch: refetchAction,
+  } = useQuery({
     queryKey: ["action", actionId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -52,9 +60,9 @@ function DashActionDetail() {
     enabled: !!actionId,
   });
 
-  // Query para os Comentários
+  // Query para os Comentários Públicos
   const { data: comments = [] } = useQuery({
-    queryKey: ["comments", actionId],
+    queryKey: QUERY_KEYS.comments.public(actionId || ""),
     queryFn: () => getCommentsByAction(supabase, actionId || ""),
     enabled: !!actionId,
   });
@@ -96,9 +104,14 @@ function DashActionDetail() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["comments", actionId],
-      });
+      if (actionId) {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.comments.public(actionId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.comments.all(actionId),
+        });
+      }
     },
     onError: (error) => {
       console.error("Erro ao criar comentário:", error);
@@ -116,9 +129,14 @@ function DashActionDetail() {
       await updateComment(supabase, commentId, content, clientId, false);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["comments", actionId],
-      });
+      if (actionId) {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.comments.public(actionId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.comments.all(actionId),
+        });
+      }
     },
     onError: (error) => {
       console.error("Erro ao editar comentário:", error);
@@ -130,9 +148,14 @@ function DashActionDetail() {
       await deleteComment(supabase, commentId, clientId, false);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["comments", actionId],
-      });
+      if (actionId) {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.comments.public(actionId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.comments.all(actionId),
+        });
+      }
     },
     onError: (error) => {
       console.error("Erro ao deletar comentário:", error);
@@ -197,13 +220,54 @@ function DashActionDetail() {
     if (!action) return CATEGORIES.design;
     return CATEGORIES[action.category as CATEGORY];
   }, [action?.category, action]);
-  if (isLoadingAction || !action) {
+  if (isLoadingAction) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center bg-background gap-4">
         <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
         <p className="text-muted-foreground text-sm font-medium animate-pulse">
           Carregando detalhes...
         </p>
+      </div>
+    );
+  }
+
+  if (isActionError) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center bg-background gap-4 p-8 text-center">
+        <div className="rounded-full bg-destructive/10 p-3 text-destructive">
+          <AlertCircleIcon className="size-8" />
+        </div>
+        <h2 className="text-lg font-semibold">Falha ao carregar ação</h2>
+        <p className="text-sm text-muted-foreground max-w-sm">
+          Ocorreu um erro ao buscar os dados desta ação no servidor.
+        </p>
+        <div className="flex items-center gap-3">
+          <Link
+            className={buttonVariants({ variant: "ghost", size: "sm" })}
+            to="/dash"
+          >
+            Voltar ao painel
+          </Link>
+          <PrismButton size="sm" onClick={() => refetchAction()}>
+            Tentar novamente
+          </PrismButton>
+        </div>
+      </div>
+    );
+  }
+
+  if (!action) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center bg-background gap-4 p-8 text-center">
+        <p className="text-muted-foreground text-sm">
+          Ação não encontrada ou você não possui permissão para acessá-la.
+        </p>
+        <Link
+          className={buttonVariants({ variant: "default", size: "sm" })}
+          to="/dash"
+        >
+          Voltar ao painel
+        </Link>
       </div>
     );
   }
@@ -276,9 +340,9 @@ function DashActionDetail() {
               </div>
               <div
                 className="rounded-xl border bg-card p-4"
-                // biome-ignore lint/security/noDangerouslySetInnerHtml: safe rich text description from admin editor
+                // biome-ignore lint/security/noDangerouslySetInnerHtml: safe rich text description sanitized
                 dangerouslySetInnerHTML={{
-                  __html: action.description,
+                  __html: sanitizeHtml(action.description),
                 }}
               />
             </div>

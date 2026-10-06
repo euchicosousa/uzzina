@@ -5,9 +5,18 @@ import { useQuery } from "@tanstack/react-query";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import type { Partner } from "~/types";
 import { buttonVariants } from "~/components/prism/button";
+import { AdminGuard } from "~/components/features/AdminGuard";
 export const Route = createFileRoute("/app/admin/partners")({
-  component: AdminPartnersPage,
+  component: AdminPartnersPageWrapper,
 });
+
+function AdminPartnersPageWrapper() {
+  return (
+    <AdminGuard>
+      <AdminPartnersPage />
+    </AdminGuard>
+  );
+}
 function AdminPartnersPage() {
   const supabase = createSupabaseBrowserClient();
   const { data: partners = [], isLoading } = useQuery({

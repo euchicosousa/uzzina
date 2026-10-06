@@ -1,6 +1,6 @@
 import type { Partner, Client } from "~/types";
-import { Outlet, useNavigate, createFileRoute } from "@tanstack/react-router";
-import { LogOutIcon } from "lucide-react";
+import { Outlet, useNavigate, useLocation, createFileRoute } from "@tanstack/react-router";
+import { LogOutIcon, AlertCircleIcon } from "lucide-react";
 import {
   PrismButton,
   PrismSelect,
@@ -14,7 +14,7 @@ import { useAppTheme } from "~/hooks/useAppTheme";
 import { useEffect, useState } from "react";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-import { getClientById } from "~/models/clients";
+import { getClientById, verifyDashSession } from "~/models/clients";
 import { DashContext } from "~/contexts/DashContext";
 import { z } from "zod";
 const dashSearchSchema = z.object({
@@ -34,17 +34,20 @@ function DashLayout() {
   const navigate = useNavigate({
     from: "/dash",
   });
+  const location = useLocation();
   const supabase = createSupabaseBrowserClient();
   const searchParams = Route.useSearch();
   const [clientId, setClientId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const [clientData, setClientData] = useState<Client | null>(null);
   const [partners, setPartners] = useState<Partner[]>([]);
   useEffect(() => {
     // Apenas executa no navegador
     const storedId = localStorage.getItem("uzzina_dash_client_id");
+    const storedToken = localStorage.getItem("uzzina_dash_token");
     const isLoginPath = window.location.pathname.startsWith("/dash/login");
-    if (!storedId) {
+    if (!storedId && !storedToken) {
       if (!isLoginPath) {
         navigate({
           to: "/dash/login",
@@ -56,8 +59,15 @@ function DashLayout() {
     setClientId(storedId);
     async function bootstrapClient() {
       try {
-        const data = await getClientById(supabase, storedId || "");
-        if (!data) {
+        let data: Client | null = null;
+        if (storedToken) {
+          data = await verifyDashSession(storedToken);
+        }
+        if (!data && storedId) {
+          data = await getClientById(supabase, storedId);
+        }
+        if (!data?.active) {
+          localStorage.removeItem("uzzina_dash_token");
           localStorage.removeItem("uzzina_dash_client_id");
           if (!isLoginPath) {
             navigate({
@@ -66,6 +76,7 @@ function DashLayout() {
           }
           return;
         }
+        setClientId(data.id);
         setClientData(data);
 
         // Busca parceiros do cliente
@@ -82,6 +93,7 @@ function DashLayout() {
         }
       } catch (err) {
         console.error("Erro ao carregar dados do cliente:", err);
+        setHasError(true);
       } finally {
         setLoading(false);
       }
@@ -101,6 +113,7 @@ function DashLayout() {
     }
   }, [currentPartner, applyPartnerColors]);
   const handleLogout = () => {
+    localStorage.removeItem("uzzina_dash_token");
     localStorage.removeItem("uzzina_dash_client_id");
     localStorage.removeItem("uzzina_dash_last_partner");
     navigate({
@@ -131,6 +144,27 @@ function DashLayout() {
   }
   if (isLoginPath) {
     return <Outlet />;
+  }
+  if (hasError && !clientData) {
+    return (
+      <div className="flex h-screen w-screen flex-col items-center justify-center bg-background gap-4 p-8 text-center">
+        <div className="rounded-full bg-destructive/10 p-3 text-destructive">
+          <AlertCircleIcon className="size-8" />
+        </div>
+        <h2 className="text-lg font-semibold">Falha ao carregar o portal</h2>
+        <p className="text-sm text-muted-foreground max-w-sm">
+          Não foi possível sincronizar suas credenciais ou dados do parceiro.
+        </p>
+        <div className="flex items-center gap-3">
+          <PrismButton size="sm" onClick={() => window.location.reload()}>
+            Tentar novamente
+          </PrismButton>
+          <PrismButton size="sm" variant="ghost" onClick={handleLogout}>
+            Sair e entrar novamente
+          </PrismButton>
+        </div>
+      </div>
+    );
   }
   if (!clientData) {
     return null;
@@ -203,7 +237,7 @@ function DashLayout() {
           </PrismButton>
         </header>
         <div className="flex min-h-0 flex-1">
-          <MultiSelectionProvider>
+          <MultiSelectionProvider locationKey={location.pathname}>
             <Outlet />
           </MultiSelectionProvider>
         </div>

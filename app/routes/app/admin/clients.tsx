@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import type { Client, Partner } from "~/types";
 import { buttonVariants } from "~/components/prism/button";
+import { AdminGuard } from "~/components/features/AdminGuard";
 export const Route = createFileRoute("/app/admin/clients")({
   component: AdminClientsPage,
 });
@@ -19,7 +20,8 @@ function AdminClientsPage() {
     queryFn: () => getAllClients(supabase),
   });
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-8">
+    <AdminGuard>
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-8">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="pb-0 text-2xl font-bold">Clientes</h1>
         <Link
@@ -71,5 +73,6 @@ function AdminClientsPage() {
         })}
       </div>
     </div>
+    </AdminGuard>
   );
 }

@@ -139,13 +139,44 @@ export function BulkActionMenu() {
   // Early return: nada a mostrar fora do modo de seleção
   if (!isSelectionMode) return null;
 
+  // ─── Helper de visibilidade contextual ───────────────────────────────────────
+  const getVisibleSelectedIds = () => {
+    if (typeof document === "undefined") return selectedIds;
+    const actionElements = document.querySelectorAll("[data-action-id]");
+    const visibleIdsSet = new Set(
+      Array.from(actionElements).flatMap((el) => {
+        if (!(el instanceof HTMLElement)) return [];
+        if (
+          el.closest('[aria-hidden="true"]') ||
+          el.closest(".hidden") ||
+          el.closest("[inert]")
+        ) {
+          return [];
+        }
+        if (el.offsetParent === null && el.style.position !== "fixed") {
+          return [];
+        }
+        const id = el.getAttribute("data-action-id");
+        return id ? [id] : [];
+      }),
+    );
+    if (visibleIdsSet.size > 0) {
+      return selectedIds.filter((id) => visibleIdsSet.has(id));
+    }
+    return selectedIds;
+  };
+
+  const effectiveSelectedIds = getVisibleSelectedIds();
+  const effectiveCount = effectiveSelectedIds.length;
+
   // ─── Helpers de ação em lote ─────────────────────────────────────────────────
   const performBulkAction = async (updates: Record<string, unknown>) => {
-    if (selectedIds.length === 0 || isProcessing) return;
-    const count = selectedIds.length;
+    const targetIds = getVisibleSelectedIds();
+    if (targetIds.length === 0 || isProcessing) return;
+    const count = targetIds.length;
     setIsProcessing(true);
     try {
-      await handleBulkAction(selectedIds, updates);
+      await handleBulkAction(targetIds, updates);
       clearSelection();
       toast.success(`${count} ação(ões) atualizada(s)!`);
     } catch (err) {
@@ -158,18 +189,19 @@ export function BulkActionMenu() {
 
   // ─── Handlers: Data/Hora ─────────────────────────────────────────────────────
   const applyDateTime = async (result: BulkDateTimeResult) => {
-    if (selectedIds.length === 0 || isProcessing) return;
-    const count = selectedIds.length;
+    const targetIds = getVisibleSelectedIds();
+    if (targetIds.length === 0 || isProcessing) return;
+    const count = targetIds.length;
     setIsProcessing(true);
     try {
       if (result.mode === "datetime") {
-        await handleBulkAction(selectedIds, {
+        await handleBulkAction(targetIds, {
           date: result.date,
         });
       } else if (result.mode === "date_only") {
-        await handleBulkDateOnly(selectedIds, result.dateOnly);
+        await handleBulkDateOnly(targetIds, result.dateOnly);
       } else {
-        await handleBulkTimeOnly(selectedIds, result.timeOnly);
+        await handleBulkTimeOnly(targetIds, result.timeOnly);
       }
       clearSelection();
       toast.success(`${count} ação(ões) atualizada(s)!`);
@@ -212,11 +244,12 @@ export function BulkActionMenu() {
 
   // ─── Handler: Enviar para Aprovação ─────────────────────────────────────
   const handleSendForApproval = () => {
-    if (!currentPartner || selectedIds.length === 0) return;
-    const ids = selectedIds.join(",");
+    const targetIds = getVisibleSelectedIds();
+    if (!currentPartner || targetIds.length === 0) return;
+    const ids = targetIds.join(",");
     const url = `${window.location.origin}/dash/review/${currentPartner.slug}?ids=${ids}`;
     navigator.clipboard.writeText(url).then(() => {
-      toast.success("Link de aprovação copiado!", {
+      toast.success("Link de revisão copiado!", {
         description: url,
         duration: 5000,
       });
@@ -238,7 +271,7 @@ export function BulkActionMenu() {
         onOpenChange={setResponsiblesOpen}
         open={responsiblesOpen}
         people={people}
-        selectedCount={selectedIds.length}
+        selectedCount={effectiveCount}
       />
 
       <BulkColorDialog
@@ -246,7 +279,7 @@ export function BulkActionMenu() {
         onOpenChange={setColorOpen}
         open={colorOpen}
         partnerColors={partnerColors}
-        selectedCount={selectedIds.length}
+        selectedCount={effectiveCount}
       />
 
       <BulkSprintDialog
@@ -254,29 +287,29 @@ export function BulkActionMenu() {
         onOpenChange={setSprintOpen}
         open={sprintOpen}
         people={people}
-        selectedCount={selectedIds.length}
+        selectedCount={effectiveCount}
       />
 
       <BulkArchiveDialog
         onConfirm={applyArchive}
         onOpenChange={setArchiveOpen}
         open={archiveOpen}
-        selectedCount={selectedIds.length}
+        selectedCount={effectiveCount}
       />
 
       {/* ── Dropdown principal de ações em lote ───────────────────────────── */}
       <PrismMenu>
         <PrismMenuTrigger>
           <PrismButton
-            isDisabled={selectedIds.length === 0 || isProcessing}
+            isDisabled={effectiveCount === 0 || isProcessing}
             variant="secondary"
           >
             {isProcessing ? (
               <span className="flex items-center gap-1.5">
                 <LoaderIcon className="size-4 animate-spin" /> Atualizando...
               </span>
-            ) : selectedIds.length > 0 ? (
-              `${selectedIds.length} Selecionada${selectedIds.length > 1 ? "s" : ""}`
+            ) : effectiveCount > 0 ? (
+              `${effectiveCount} Selecionada${effectiveCount > 1 ? "s" : ""}`
             ) : (
               "Selecione as ações"
             )}
@@ -409,12 +442,12 @@ export function BulkActionMenu() {
 
           <PrismMenuSeparator />
 
-          {/* Enviar para Aprovação */}
+          {/* Compartilhar para Revisão */}
           <PrismMenuItem
             onAction={handleSendForApproval}
-            textValue="Enviar para Aprovação"
+            textValue="Compartilhar para Revisão"
           >
-            <SendIcon /> Enviar para Aprovação
+            <SendIcon /> Compartilhar para Revisão
           </PrismMenuItem>
 
           <PrismMenuSeparator />

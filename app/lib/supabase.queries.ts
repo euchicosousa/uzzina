@@ -143,6 +143,17 @@ export async function fetchPeople() {
   return data as Person[];
 }
 
+export async function fetchAllPeople() {
+  const supabase = createSupabaseBrowserClient();
+  const { data, error } = await supabase
+    .from("people")
+    .select("*")
+    .order("name", { ascending: true });
+
+  if (error) throw error;
+  return data as Person[];
+}
+
 /**
  * Fetch actions for public review page by IDs (no auth required).
  * Returns only fields needed for the approval document.

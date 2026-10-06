@@ -14,9 +14,14 @@ export const QUERY_KEYS = {
   celebrations: () => ["celebrations"] as const,
   partners: () => ["partners"] as const,
   people: () => ["people"] as const,
+  peopleAdmin: () => ["people", "admin"] as const,
   notifications: () => ["notifications"] as const,
   leads: {
     all: () => ["leads"] as const,
     detail: (id: string) => ["leads", id] as const,
+  },
+  comments: {
+    all: (actionId: string) => ["comments", "internal", actionId] as const,
+    public: (actionId: string) => ["comments", "public", actionId] as const,
   },
 } as const;

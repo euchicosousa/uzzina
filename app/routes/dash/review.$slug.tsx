@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { z } from "zod";
@@ -8,6 +9,7 @@ import { CATEGORIES } from "~/lib/CONSTANTS";
 import type { CATEGORY } from "~/lib/CONSTANTS";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { cn } from "cnfast";
+import { sanitizeHtml } from "~/utils/sanitize";
 
 const reviewSearchSchema = z.object({
   ids: z.string().optional(),
@@ -38,6 +40,12 @@ function ReviewPage() {
     enabled: actionIds.length > 0,
   });
 
+  const validActions = useMemo(() => {
+    return actions.filter(
+      (act) => Array.isArray(act.partners) && act.partners.includes(slug),
+    );
+  }, [actions, slug]);
+
   const isLoading = isPartnerLoading || isActionsLoading;
 
   if (isLoading) {
@@ -59,10 +67,10 @@ function ReviewPage() {
     );
   }
 
-  if (actionIds.length === 0 || actions.length === 0) {
+  if (actionIds.length === 0 || validActions.length === 0) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <p className="text-muted-foreground">Nenhum conteúdo para revisar.</p>
+        <p className="text-muted-foreground">Nenhum conteúdo deste parceiro encontrado para revisão.</p>
       </div>
     );
   }
@@ -83,7 +91,7 @@ function ReviewPage() {
           />
           <div>
             <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-              Validação de Conteúdo
+              Revisão de Conteúdo
             </p>
             <h1 className="text-2xl font-semibold tracking-tight">
               {partner.title}
@@ -93,7 +101,7 @@ function ReviewPage() {
 
         <div className="border-b pb-6">
           <p className="text-sm text-muted-foreground">
-            {actions.length} {actions.length === 1 ? "conteúdo" : "conteúdos"} para aprovação
+            {validActions.length} {validActions.length === 1 ? "conteúdo compartilhado" : "conteúdos compartilhados"} para revisão
             {" · "}
             <span className="capitalize">{todayFormatted}</span>
           </p>
@@ -103,7 +111,7 @@ function ReviewPage() {
       {/* Actions list */}
       <main className="mx-auto max-w-3xl px-6 pb-24">
         <div className="divide-y">
-          {actions.map((action, index) => {
+          {validActions.map((action, index) => {
             const category = CATEGORIES[action.category as CATEGORY];
             const hasContentDescription =
               action.content_description && action.content_description.trim().length > 0;
@@ -184,8 +192,8 @@ function ReviewPage() {
                         "[&_mark]:bg-yellow-200/60 [&_mark]:dark:bg-yellow-700/40",
                         "[&_a]:text-primary [&_a]:underline",
                       )}
-                      // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML vem do editor Tiptap interno da plataforma
-                      dangerouslySetInnerHTML={{ __html: action.content_description ?? "" }}
+                      // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML sanitizado pelo utilitário central
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(action.content_description) }}
                     />
                   </section>
                 )}

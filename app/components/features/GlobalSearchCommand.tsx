@@ -45,6 +45,7 @@ export function GlobalSearchCommand({
 
   // Debounce the search query to avoid spamming the database on every keystroke
   useEffect(() => {
+    let isCurrent = true;
     const shouldSearch = query.length >= 3;
     const slugs = partners.map((p) => p.slug);
     if (shouldSearch) {
@@ -60,21 +61,25 @@ export function GlobalSearchCommand({
           if (activePartnerSlug) {
             baseQuery = baseQuery.contains("partners", [activePartnerSlug]);
           }
-          // if (!includeArchived) {
-          //   baseQuery = baseQuery.eq("archived", false);
-          // }
           const { data, error } = await baseQuery.limit(10);
+          if (!isCurrent) return;
           if (error) throw error;
           setSearchResults({
             actions: (data as unknown as Action[]) || [],
           });
         } catch (err) {
+          if (!isCurrent) return;
           console.error("Erro na busca global:", err);
         } finally {
-          setIsSearching(false);
+          if (isCurrent) {
+            setIsSearching(false);
+          }
         }
       }, 300);
-      return () => clearTimeout(delayDebounceFn);
+      return () => {
+        isCurrent = false;
+        clearTimeout(delayDebounceFn);
+      };
     } else {
       setSearchResults(null);
       setIsSearching(false);
@@ -134,9 +139,14 @@ export function GlobalSearchCommand({
           <PrismCommandGroup aria-label="Ações" heading="Ações">
             {searchedActions.map((action) => {
               const phase = PHASES[action.phase as PHASE];
-              const partner = partners.find((p) => {
-                return p.slug === action.partners[0];
-              }) as Partner;
+              const partner =
+                partners.find(
+                  (p) =>
+                    Array.isArray(action.partners) &&
+                    action.partners.includes(p.slug),
+                ) ||
+                partners.find((p) => p.slug === action.partners?.[0]) ||
+                null;
               return (
                 <PrismCommandItem
                   key={action.id}
@@ -149,10 +159,14 @@ export function GlobalSearchCommand({
                   textValue={action.title}
                 >
                   <UAvatar
-                    backgroundColor={partner.colors[0]}
-                    color={partner.colors[1]}
-                    fallback={partner.short}
-                    image={partner.image}
+                    backgroundColor={partner?.colors?.[0]}
+                    color={partner?.colors?.[1]}
+                    fallback={
+                      partner?.short ??
+                      action.partners?.[0]?.substring(0, 2).toUpperCase() ??
+                      "??"
+                    }
+                    image={partner?.image}
                     size="sm"
                   />
                   <div className="truncate w-full">{action.title}</div>

@@ -48,23 +48,32 @@ export function useKanbanDnd<T extends string | null>({
     if (found) setActiveAction(found);
   };
 
-  const handleDragEnd = async (event: DragEndEvent) => {
-    if (event.over && activeAction) {
-      const newValue = parseTarget(event.over.id as string);
-      const actionId = activeAction.id;
-      setOverrides((prev) => ({ ...prev, [actionId]: newValue }));
-      try {
-        await onDrop(activeAction, newValue);
-      } finally {
-        setOverrides((prev) => {
-          if (prev[actionId] === undefined) return prev;
-          const next = { ...prev };
-          delete next[actionId];
-          return next;
-        });
-      }
-    }
+  const handleDragCancel = () => {
     setActiveAction(undefined);
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    try {
+      if (event.over && activeAction) {
+        const newValue = parseTarget(event.over.id as string);
+        const actionId = activeAction.id;
+        setOverrides((prev) => ({ ...prev, [actionId]: newValue }));
+        try {
+          await onDrop(activeAction, newValue);
+        } catch (err) {
+          console.error("Erro no drop do Kanban:", err);
+        } finally {
+          setOverrides((prev) => {
+            if (prev[actionId] === undefined) return prev;
+            const next = { ...prev };
+            delete next[actionId];
+            return next;
+          });
+        }
+      }
+    } finally {
+      setActiveAction(undefined);
+    }
   };
 
   const actionsWithOverrides = useMemo(
@@ -83,5 +92,6 @@ export function useKanbanDnd<T extends string | null>({
     sensors,
     handleDragStart,
     handleDragEnd,
+    handleDragCancel,
   };
 }

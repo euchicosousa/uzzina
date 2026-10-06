@@ -55,6 +55,7 @@ export function PartnersCombobox({
       onOpenChange={(open) => !disabled && setIsOpen(open)}
     >
       <ComboboxTrigger
+        aria-label={getFormattedPartnersName(currentPartners) || "Parceiros"}
         className={cn("flex items-center gap-2 overflow-hidden")}
         disabled={disabled}
         hasSelection={hasSelection}

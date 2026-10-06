@@ -2,6 +2,8 @@
 
 **Data:** 05/10/2026. **Projeto:** `/Users/euchicosousa/vercel/uzzina`.
 
+**Atualização em 06/10/2026:** cláusula obrigatória de TDD adicionada conforme a skill de Matt Pocock. Esta atualização orienta as próximas alterações; não afirma que correções anteriores foram feitas em TDD.
+
 Este é o documento de execução para a próxima rodada de correções na aplicação existente. Atualiza as orientações da auditoria de 26/09, incorporando a revisão de 05/10. O documento antigo permanece como histórico; suas sugestões de produto não são ordens de implementação.
 
 ## 1. Objetivo e limites desta rodada
@@ -46,6 +48,78 @@ Evidências reproduzidas em 05/10:
 | Lint, TypeScript e build | Passaram | Não validam esses comportamentos nem políticas de produção |
 
 Para detalhes e evidências adicionais, consulte `docs/audits/2026-10-05-revisao-das-correcoes.md` quando trabalhar no achado correspondente. Nenhum estado do banco/Vercel foi confirmado nessa revisão.
+
+### 3.1. Cláusula obrigatória — execução por TDD
+
+Esta cláusula rege C01–C06, S01–S05 e os ajustes complementares com comportamento testável. “Ajustar o código” não encerra um item: a entrega exige um comportamento especificado, evidência do teste e indicação do alcance da validação.
+
+**Referência:** skill `tdd` de Matt Pocock, em `/Users/euchicosousa/.agents/skills/tdd/SKILL.md`, e seus guias `tests.md` e `mocking.md`. O método é **red → green**, em uma fatia de comportamento por vez. Refatoração pertence à revisão posterior, com testes verdes; não ampliar a arquitetura durante a correção mínima.
+
+#### A. Delimitar o comportamento e a interface pública
+
+Antes do primeiro teste, registre os limites públicos a testar e obtenha confirmação do proprietário para esse escopo. A skill exige: **“Test only at pre-agreed seams.”** Aqui, seam significa a interface pública onde se observa o resultado, sem inspecionar detalhes internos. Reaproveite confirmações existentes; confirme novamente apenas quando surgir um limite diferente ainda não acordado.
+
+Esta tabela é a proposta inicial de limites, não uma confirmação já concedida:
+
+| Área | Limite público proposto | Resultado que interessa |
+|---|---|---|
+| Gaveta e rascunho | Interações do componente real em DOM simulado ou operações públicas do fluxo de edição | Ação criada/editada, rascunho recuperável, estado de salvamento correto |
+| Contratos e persistência | API pública de criação/atualização e leitura do domínio | Campo omitido preservado, limpeza explícita aplicada, entrada inválida recusada |
+| Arraste e lote | Operações públicas e estado observável consumido pelas vistas | Movimento confirmado ou recuperado, resultado por item, gesto encerrado |
+| Cache e sessão | Consultas/ações públicas da integração e estado entregue aos consumidores | Recorte correto, contexto da nova sessão, ausência de dados de outra audiência |
+| Segurança e integrações | Handlers HTTP e interfaces públicas de autenticação/autorização | Acesso permitido/negado, resposta correta, nenhum segredo exposto |
+| Datas e regras | Funções públicas do domínio usadas pelas telas | Período correto, invariantes preservadas, término/atraso conforme o contrato |
+
+Se o desenho da interface estiver indefinido, esclareça-o antes do teste. Use `GLOSSARY.md` e ADRs existentes na área para nomes e contratos. Não crie uma API artificial apenas para expor estado privado ao teste.
+
+Para cada comportamento, escreva: **dado um estado inicial, quando ocorrer uma ação, então qual resultado observável deve existir**. O resultado esperado vem da regra de produto ou de um exemplo calculado independentemente, não da reprodução do algoritmo atual.
+
+#### B. Executar uma fatia vertical por vez
+
+1. **RED:** escreva um teste de um comportamento na interface acordada e execute-o antes da mudança. Confirme que falha pela regressão/invariante desejada. Erro de import, ferramenta ausente ou falha de montagem não comprova reprodução do defeito.
+2. **GREEN:** implemente apenas o necessário para esse teste passar, preservando contratos existentes. Execute o teste novamente e os testes relacionados à área alterada.
+3. **Próxima fatia:** só depois escolha o próximo comportamento e repita red → green. Não escrever toda a suíte primeiro e depois toda a implementação.
+4. **Revisão:** após as fatias verdes, revise clareza, duplicação e interfaces. Refatore somente quando houver benefício concreto, mantendo os testes de comportamento verdes e respeitando o escopo.
+
+Para correção já feita por outro agente, escreva/verifique o teste contra o estado atual. Se necessário, demonstre a regressão numa cópia isolada da versão defeituosa, preservando o trabalho atual. Registre **teste de regressão posterior** quando não houve red antes da implementação; não invente histórico de TDD nem desfaça alterações compartilhadas para produzir uma falha.
+
+#### C. Qualidade dos testes
+
+- Execute o código real do projeto através do limite público. Prefira testes de integração do comportamento quando cobrem melhor o contrato.
+- Use mocks nas fronteiras externas: Supabase/banco, OpenAI, upload/rede, relógio ou aleatoriedade quando necessários. Preserve os componentes, regras e colaboradores internos reais. Não substitua a função que deveria detectar o bug por uma implementação falsa.
+- Simule sucesso, falha e respostas fora de ordem nas fronteiras apropriadas. Um SDK falso prova comportamento local, não policies reais do banco.
+- Faça o nome do teste descrever o que a pessoa ou consumidor consegue fazer. Uma expectativa lógica por comportamento; múltiplas verificações são aceitáveis quando demonstram o mesmo resultado.
+- Verifique resultado público: ação recuperável pela leitura, título exibido, rascunho preservado, resposta HTTP, seleção/restante e estado de consulta. Contagem/ordem de chamadas a métodos internos, refs privadas, classes CSS e snapshots amplos não substituem esse resultado.
+- Não copie callbacks ou algoritmos de produção para dentro da fixture como se fossem o código testado. Os testes duráveis devem importar/exercitar a implementação real; uma reprodução diagnóstica anterior não substitui a regressão automatizada.
+- Evite assertivas tautológicas: o valor esperado deve poder discordar da implementação. Não medir qualidade por percentual arbitrário de cobertura, quantidade de testes ou número de mocks.
+
+#### D. Exemplos de critérios, sem prescrever a implementação
+
+| Item | Dado / quando | Então — comportamento público esperado |
+|---|---|---|
+| C01 | Rascunho válido; digitar título e sair do campo | A ação fica criada e pode ser recuperada; repetir salvar não cria duplicata |
+| C01 | Ação existente; consultar sem editar | O registro público permanece inalterado, inclusive sua versão de edição |
+| C02 | Ação com legenda; atualizar apenas a fase | A leitura continua retornando a legenda original |
+| C02 | Ação com legenda; solicitar limpeza explícita | A leitura retorna a legenda vazia conforme o contrato definido |
+| C03 | Editar dois campos; receber respostas fora de ordem | A leitura/estado confirmado preserva as duas alterações e o rascunho recente |
+| C04 | Responsável escolhido; trocar parceiro | O rascunho conserva o responsável escolhido |
+| C05 | Soltar ação; gravação rejeitada | A vista recupera posição/fase anterior, encerra o gesto e informa falha |
+| C05 | Lote com um item recusado | Resultado informa quais mudaram e conserva a possibilidade de repetir o item recusado |
+| C06 | Trocar identidade | Consumidores não recebem dados privados da identidade anterior |
+| S01/S02 | Identidade sem permissão; tentar operação protegida | Operação é recusada sem ler/gravar dados proibidos |
+| S04 | Criar nota interna; consultar pela audiência do cliente | A nota não está disponível por essa interface |
+
+Os testes de cada área devem usar as interfaces que realmente existirem no projeto ou forem acordadas durante a implementação. Esta tabela define resultados, não exige nomes novos de funções, estruturas novas ou uma reescrita.
+
+#### E. Impedimentos e conclusão
+
+Sem navegador, prossiga com testes de domínio, handlers, integração com fronteiras externas falsas e componentes reais em DOM simulado. Jornadas em navegador e celular continuam na seção 8. Sem banco de teste, prepare os casos de autorização e registre integração/RLS pendente; resultados de mocks não são substitutos.
+
+Se não for possível testar localmente um comportamento, identifique a dependência concreta, o teste preparado/planejado e seu resultado esperado. Conclua trabalhos independentes. Código implementado sem essa execução permanece **implementado, teste pendente**, nunca **testado**.
+
+Para cada fatia entregue, registre no relatório: interface acordada, comportamento, arquivo/nome do teste, comando, falha RED observada, resultado GREEN e limitações. Anexe saídas relevantes sem credenciais/dados sensíveis. Para testes posteriores a uma correção existente, registre essa condição em lugar de RED fictício.
+
+**Critério de aceite do item:** resultados observáveis definidos, testes disponíveis passando, verificações da área passando e pendências externas explicitadas. Lint/build isolados ou uma afirmação “ajustado” não atendem a esse critério.
 
 ## 4. Execução — primeiro, confiabilidade dos dados
 
@@ -231,7 +305,7 @@ Entregue código, testes e migrations/configuração necessários; preserve muda
 Acrescente `docs/audits/2026-10-05-retorno-da-implementacao.md` com:
 
 - Commit/base revisada e arquivos alterados.
-- Por C01–C06, S01–S05 e item complementar: comportamento anterior, mudança, teste executado e resultado.
+- Por C01–C06, S01–S05 e item complementar: comportamento anterior, mudança, interface de teste acordada, arquivo/nome/comando do teste, evidência RED → GREEN ou indicação de regressão posterior, resultado e alcance da validação.
 - Dependências de banco/hospedagem: migrations preparadas, aplicadas em qual ambiente e como foram verificadas.
 - Relação por número dos achados 01–52: corrigido no código, parcialmente corrigido, preservado por decisão, adiado ou não verificado. Totais calculados dessa relação, sem duplicar o achado 08 por tratar dois assuntos.
 - Verificações ainda pendentes aqui, com passos, dados de teste e resultado esperado.
@@ -245,5 +319,6 @@ Use os estados **implementado**, **testado localmente**, **validado no banco de 
 
 - Histórico: `docs/audits/2026-09-26-analise-uzzina.md` — consultar evidência original por número; alternativas de UX permanecem propostas.
 - Parecer atualizado: `docs/audits/2026-10-05-revisao-das-correcoes.md` — consultar detalhes técnicos e rastreabilidade quando abordar o item.
+- Método de execução: `/Users/euchicosousa/.agents/skills/tdd/SKILL.md`, `tests.md` e `mocking.md` — testes por interfaces públicas, fatias red → green e mocks somente nas fronteiras externas.
 - [OWASP — armazenamento de senhas](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).
 - [Supabase — Row Level Security](https://supabase.com/docs/guides/database/postgres/row-level-security).

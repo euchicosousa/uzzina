@@ -24,6 +24,7 @@ export default function KanbanPhasesBoard({ actions }: { actions: Action[] }) {
     sensors,
     handleDragStart,
     handleDragEnd,
+    handleDragCancel,
   } = useKanbanDnd<string>({
     actions,
     fieldKey: "phase",
@@ -55,6 +56,7 @@ export default function KanbanPhasesBoard({ actions }: { actions: Action[] }) {
             {isDesktop ? (
               <DndContext
                 id={"kanban"}
+                onDragCancel={handleDragCancel}
                 onDragEnd={handleDragEnd}
                 onDragStart={handleDragStart}
                 sensors={sensors}

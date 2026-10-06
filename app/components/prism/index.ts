@@ -11,7 +11,7 @@ export {
   PrismAccordionContent,
 } from "./accordion";
 export { PrismBadge } from "./badge";
-export { Button as PrismButton } from "./button";
+export { Button as PrismButton, buttonVariants } from "./button";
 export type { PrismButtonVariantProps } from "./button";
 export { PrismCalendar, PrismRangeCalendar } from "./calendar";
 export { PrismCheckbox, PrismCheckboxGroup } from "./checkbox";

@@ -96,6 +96,7 @@ function SinglePhaseTrigger({
 }) {
   return (
     <ComboboxTrigger
+      aria-label={!showText ? `Fase: ${currentPhase?.title ?? "Sem fase"}` : undefined}
       className={cn(disabled && "opacity-40 pointer-events-none", className)}
       disabled={disabled}
       size={size}

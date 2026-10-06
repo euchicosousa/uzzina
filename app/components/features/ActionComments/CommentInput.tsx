@@ -1,4 +1,4 @@
-import { CheckIcon, SendIcon } from "lucide-react";
+import { CheckIcon, SendIcon, LockIcon, GlobeIcon } from "lucide-react";
 import { useState } from "react";
 import {
   PrismButton,
@@ -21,10 +21,12 @@ interface CommentInputProps {
   value: string;
   onCancel?: () => void;
   onChange: (val: string) => void;
-  onSend: (content: string, mentions: string[]) => void;
+  onSend: (content: string, mentions: string[], isInternal?: boolean) => void;
   isSubmitting?: boolean;
   mentionablePeople?: Person[];
   submitLabel?: string;
+  allowAudienceToggle?: boolean;
+  initialIsInternal?: boolean;
 }
 const DEFAULT_MENTIONABLE_PEOPLE: Person[] = [];
 export function CommentInput({
@@ -35,12 +37,15 @@ export function CommentInput({
   mentionablePeople = DEFAULT_MENTIONABLE_PEOPLE,
   submitLabel,
   onCancel,
+  allowAudienceToggle = false,
+  initialIsInternal = true,
 }: CommentInputProps) {
   const [selectedMentions, setSelectedMentions] = useState<string[]>([]);
+  const [isInternal, setIsInternal] = useState(initialIsInternal);
   const [isOpen, setIsOpen] = useState(false);
   const handleSend = () => {
     if (!value.trim()) return;
-    onSend(value, selectedMentions);
+    onSend(value, selectedMentions, isInternal);
     setSelectedMentions([]);
   };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -70,8 +75,34 @@ export function CommentInput({
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        {/* Seletor de Notificação */}
-        <div className="flex items-center gap-2">
+        {/* Seletor de Audiência e Notificação */}
+        <div className="flex flex-wrap items-center gap-2">
+          {allowAudienceToggle && (
+            <PrismButton
+              size="xs"
+              variant={isInternal ? "ghost" : "outline"}
+              className={cn(
+                "h-7 gap-1.5 px-2 text-xs",
+                isInternal
+                  ? "text-muted-foreground hover:text-foreground"
+                  : "border-primary/40 bg-primary/10 text-primary font-medium",
+              )}
+              onClick={() => setIsInternal(!isInternal)}
+            >
+              {isInternal ? (
+                <>
+                  <LockIcon className="size-3 text-muted-foreground" />
+                  <span>Nota interna</span>
+                </>
+              ) : (
+                <>
+                  <GlobeIcon className="size-3 text-primary" />
+                  <span>Mensagem ao parceiro</span>
+                </>
+              )}
+            </PrismButton>
+          )}
+
           <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
             <PrismButton size="xs" variant="ghost">
               {selectedPeople.length === 0 ? <>

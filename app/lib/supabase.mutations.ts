@@ -1,7 +1,12 @@
 import type { Action } from "~/types";
 import { format } from "date-fns";
 import { createSupabaseBrowserClient } from "./supabase.client";
-import { ActionFormSchema, type ActionFormInput } from "~/utils/validation";
+import {
+  ActionCreateSchema,
+  ActionPatchSchema,
+  type ActionCreateInput,
+  type ActionPatchInput,
+} from "~/utils/validation";
 import { PHASES } from "./CONSTANTS";
 import type { Tables, TablesInsert, TablesUpdate } from "types/database";
 export type ActionComment = Tables<"action_comments">;
@@ -13,12 +18,12 @@ export type AugmentedComment = ActionComment & {
 
 /**
  * Create a new action directly via browser Supabase client.
- * Runs Zod validation (same schema as the server) before inserting.
+ * Runs Zod validation before inserting.
  */
 export async function createActionClient(
-  actionData: ActionFormInput,
+  actionData: ActionCreateInput,
 ): Promise<Action> {
-  const result = ActionFormSchema.safeParse(actionData);
+  const result = ActionCreateSchema.safeParse(actionData);
   if (!result.success) {
     throw new Error(
       `Validação falhou: ${JSON.stringify(result.error.flatten().fieldErrors)}`,
@@ -39,36 +44,40 @@ export async function createActionClient(
 
 /**
  * Update an existing action directly via browser Supabase client.
+ * Uses ActionPatchSchema so omitted fields remain untouched on the database.
  * Applies the same business rules as the server:
  *   - phase = finished → sprints = null
  *   - archived = true   → sprints = null
  */
 export async function updateActionClient(
   id: string,
-  actionData: ActionFormInput,
+  actionData: ActionPatchInput,
 ): Promise<Action> {
-  const result = ActionFormSchema.safeParse(actionData);
+  const result = ActionPatchSchema.safeParse(actionData);
   if (!result.success) {
     throw new Error(
       `Validação falhou: ${JSON.stringify(result.error.flatten().fieldErrors)}`,
     );
   }
-  const { strategies, ...rest } = result.data;
-  const updateData = {
-    ...rest,
-    ...(strategies !== undefined ? { strategies } : {}),
-    updated_at: new Date().toISOString(),
-  } as TablesUpdate<"actions">;
+  const updateData: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(result.data)) {
+    if (value !== undefined) {
+      updateData[key] = value;
+    }
+  }
+  updateData.updated_at = new Date().toISOString();
+
   if (updateData.phase === PHASES.finished.slug) {
     updateData.sprints = null;
   }
   if (updateData.archived === true) {
     updateData.sprints = null;
   }
+
   const supabase = createSupabaseBrowserClient();
   const { data, error } = await supabase
     .from("actions")
-    .update(updateData)
+    .update(updateData as TablesUpdate<"actions">)
     .eq("id", id)
     .select()
     .single();
@@ -93,6 +102,7 @@ export async function duplicateActionClient(id: string): Promise<Action> {
     .from("actions")
     .insert({
       ...rest,
+      title: `${rest.title} (Cópia)`,
       created_at: now,
       updated_at: now,
     })

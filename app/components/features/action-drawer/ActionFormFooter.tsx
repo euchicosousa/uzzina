@@ -14,12 +14,12 @@ import { PhaseCombobox } from "~/components/features/PhaseCombobox";
 import { SprintCombobox } from "~/components/features/SprintCombobox";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { INTENT } from "~/lib/CONSTANTS";
-import { isInstagramFeed } from "~/lib/helpers";
+import { isSocialMediaContent } from "~/lib/helpers";
 import { PrismButton } from "~/components/prism";
 interface ActionFormFooterProps {
   RawAction: Action;
   setRawAction: (action: Action) => void;
-  updateAction: (data?: Record<string, unknown>) => Promise<void>;
+  updateAction: (data?: Record<string, unknown>) => Promise<unknown>;
   currentPartners: Partner[];
   isPending: boolean;
   handleSave: () => Promise<boolean>;
@@ -116,7 +116,7 @@ export function ActionFormFooter({
             tabIndex={0}
           />
         </div>
-        {isInstagramFeed(RawAction.category) && (
+        {isSocialMediaContent(RawAction.category) && (
           <div>
             <ActionColorDropdown
               action={RawAction}

@@ -42,6 +42,7 @@ import {
   PrismMenuSeparator,
   PrismMenuTrigger,
   PrismPopover,
+  PrismPopoverTrigger,
 } from "../prism";
 import { UAvatar } from "../uzzina/UAvatar";
 const DEFAULT_PARTNER_FILTERS: string[] = [];
@@ -203,8 +204,13 @@ export function Header({
       </div>
 
       <div className="flex items-center gap-2">
-        <PrismPopover>
+        <PrismPopoverTrigger>
           <PrismButton
+            aria-label={
+              unreadCount > 0
+                ? `Notificações (${unreadCount} não lidas)`
+                : "Notificações"
+            }
             className="relative rounded-full"
             size="icon-sm"
             variant="ghost"
@@ -217,10 +223,10 @@ export function Header({
             placement="bottom end"
           >
             <div className="flex items-center justify-between border-b bg-muted/20 px-4 py-3">
-              <h5>Notificações</h5>
+              <h5 className="font-semibold text-sm">Notificações</h5>
               {unreadCount > 0 && (
                 <button
-                  className="text-sm text-primary transition-colors hover:underline"
+                  className="text-xs text-primary transition-colors hover:underline"
                   onClick={() => markAllAsRead()}
                   type="button"
                 >
@@ -230,34 +236,36 @@ export function Header({
             </div>
             <div className="max-h-75 divide-y divide-border overflow-y-auto">
               {notifications.length === 0 ? (
-                <div className="p-8 text-center text-sm">
-                  Você não tem nenhuma notificação.
+                <div className="p-8 text-center text-sm text-muted-foreground">
+                  Nenhuma notificação nova.
                 </div>
               ) : (
-                notifications.map((notif) => (
-                  <button
-                    key={notif.id}
-                    className={cn(
-                      "flex w-full flex-col gap-1 py-2 px-4 text-left transition hover:bg-card",
-                      !notif.read_at && "bg-card",
-                    )}
-                    onClick={() => handleNotificationClick(notif)}
-                    type="button"
-                  >
-                    <div className="flex w-full items-start justify-between gap-1">
-                      <span className="text-sm tracking-tight text-foreground/80">
-                        <span className="font-bold">{notif.author_name}</span>{" "}
-                        mencionou você na ação{" "}
-                        <span className="font-bold">{notif.action_title}</span>{" "}
-                        às{" "}
-                        <span className="font-bold">
-                          {format(notif.created_at, "hh'h'mm 'de' dd/MM/yyyy")}
-                        </span>
-                      </span>
-                      {!notif.read_at && (
-                        <span className="mt-1 size-2 shrink-0 rounded-full bg-primary" />
+                notifications.map((notif) => {
+                  const createdAtDate = new Date(notif.created_at);
+                  const formattedDate = isValid(createdAtDate)
+                    ? format(createdAtDate, "HH'h'mm 'de' dd/MM/yyyy")
+                    : "";
+                  return (
+                    <button
+                      key={notif.id}
+                      className={cn(
+                        "flex w-full flex-col gap-1 py-2 px-4 text-left transition hover:bg-card",
+                        !notif.read_at && "bg-card",
                       )}
-                    </div>
+                      onClick={() => handleNotificationClick(notif)}
+                      type="button"
+                    >
+                      <div className="flex w-full items-start justify-between gap-1">
+                        <span className="text-sm tracking-tight text-foreground/80">
+                          <span className="font-bold">{notif.author_name}</span>{" "}
+                          mencionou você na ação{" "}
+                          <span className="font-bold">{notif.action_title}</span>{" "}
+                          {formattedDate ? `às ${formattedDate}` : ""}
+                        </span>
+                        {!notif.read_at && (
+                          <span className="mt-1 size-2 shrink-0 rounded-full bg-primary" />
+                        )}
+                      </div>
 
                     <p className="mt-1 line-clamp-2 border-l pl-2 text-sm text-foreground/60">
                       {notif.comment_excerpt
@@ -265,8 +273,8 @@ export function Header({
                         : ""}
                     </p>
                   </button>
-                ))
-              )}
+                );
+              }))}
             </div>
             <div className="border-t bg-muted/10 p-2 text-center">
               <Link
@@ -277,7 +285,7 @@ export function Header({
               </Link>
             </div>
           </PrismPopover>
-        </PrismPopover>
+        </PrismPopoverTrigger>
 
         <HeaderMenu person={person} />
       </div>
@@ -293,25 +301,34 @@ const HeaderMenu = ({ person }: { person: Person }) => {
     followPartnerColor,
     setFollowPartnerColor,
   } = useAppThemeContext();
+  const latestPrefsRef = useRef<Record<string, unknown>>(
+    person.preferences &&
+    typeof person.preferences === "object" &&
+    !Array.isArray(person.preferences)
+      ? { ...(person.preferences as Record<string, unknown>) }
+      : {},
+  );
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const pendingPrefsRef = useRef<Record<string, unknown>>({});
   const queuePreference = (key: string, value: unknown) => {
+    latestPrefsRef.current[key] = value;
     pendingPrefsRef.current[key] = value;
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
     debounceTimerRef.current = setTimeout(async () => {
+      const keysToUpdate = Object.keys(pendingPrefsRef.current);
+      if (keysToUpdate.length === 0) return;
+
       const supabase = createSupabaseBrowserClient();
-      const currentPrefs =
-        person.preferences &&
-        typeof person.preferences === "object" &&
-        !Array.isArray(person.preferences)
-          ? (person.preferences as Record<string, unknown>)
-          : {};
       const updatedPrefs: Record<string, unknown> = {
-        ...currentPrefs,
-        ...pendingPrefsRef.current,
+        ...latestPrefsRef.current,
       };
+
+      for (const k of keysToUpdate) {
+        delete pendingPrefsRef.current[k];
+      }
+
       const { error } = await supabase
         .from("people")
         .update({
@@ -320,8 +337,16 @@ const HeaderMenu = ({ person }: { person: Person }) => {
         .eq("user_id", person.user_id);
       if (error) {
         console.error("Error updating preferences:", error);
+        for (const k of keysToUpdate) {
+          if (pendingPrefsRef.current[k] === undefined) {
+            pendingPrefsRef.current[k] = updatedPrefs[k];
+          }
+        }
+      } else {
+        if (typeof person === "object" && person !== null) {
+          (person as Record<string, unknown>).preferences = updatedPrefs;
+        }
       }
-      pendingPrefsRef.current = {};
     }, 300);
   };
   const changeTheme = (newTheme: Theme) => {

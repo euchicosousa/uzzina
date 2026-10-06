@@ -58,11 +58,13 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
 
       if (isInputFocused(event)) return;
 
-      // Descobre o elemento mais interno sob o cursor que tenha data-action-id
-      const hovered = [
-        ...document.querySelectorAll("[data-action-id]:hover"),
+      // Descobre o elemento sob o cursor (:hover) ou com foco de teclado (:focus-within)
+      const targetEls = [
+        ...document.querySelectorAll(
+          "[data-action-id]:hover, [data-action-id]:focus-within",
+        ),
       ] as HTMLElement[];
-      const el = hovered.at(-1);
+      const el = targetEls.at(-1);
       const actionId = el?.getAttribute("data-action-id");
 
       if (!actionId) return;

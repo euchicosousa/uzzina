@@ -8,9 +8,19 @@ import { toast } from "sonner";
 import type { Person } from "~/types";
 import { useAppContext } from "~/contexts/AppContext";
 
+import { AdminGuard } from "~/components/features/AdminGuard";
+
 export const Route = createFileRoute("/app/admin/user/$userId")({
-  component: AdminUserPage,
+  component: AdminUserPageWrapper,
 });
+
+function AdminUserPageWrapper() {
+  return (
+    <AdminGuard>
+      <AdminUserPage />
+    </AdminGuard>
+  );
+}
 
 interface UserFormData {
   name: string;

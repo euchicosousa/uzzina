@@ -9,7 +9,7 @@ import { EssentialsTab } from "./EssentialsTab";
 import { InstagramTab } from "./InstagramTab";
 import { ObservationsTab } from "./ObservationsTab";
 import { INTENT } from "~/lib/CONSTANTS";
-import { isInstagramFeed, parseStrategies } from "~/lib/helpers";
+import { isSocialMediaContent, parseStrategies } from "~/lib/helpers";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { cn } from "cnfast";
 import {
@@ -89,53 +89,176 @@ export function ActionFormDrawer({
     rawActionRef.current = RawAction;
   }, [RawAction]);
 
-  // Lock to prevent race condition: onBlur + button click both firing create_action
-  // simultaneously before the server responds with the new id.
-  // useRef is synchronous — both callbacks share the same lock in the same call stack.
-  const isCreatingRef = useRef(false);
+  // Saved title reference — initialized from BaseAction.title, updated only on confirmed save
+  const savedTitleRef = useRef(BaseAction.title || "");
+
+  // Active in-flight creation promise — shared across blur, button click, and shortcut
+  const activeCreatePromiseRef = useRef<Promise<Action | null> | null>(null);
 
   // Ref for the latest description typed in Tiptap — updated on every keystroke
   // without triggering re-renders. handleSave reads from here so Cmd+Enter
   // always saves the latest typed content even without blur.
   const descriptionRef = useRef(BaseAction.description || "");
   const contentDescriptionRef = useRef(BaseAction.content_description || "");
+  const updateAction = useCallback(
+    async (
+      data?: {
+        [key: string]: unknown;
+      },
+      forceCreate = false,
+    ): Promise<Action | null> => {
+      const current = rawActionRef.current;
+
+      // Se for rascunho e forceCreate solicitado
+      if (!current.id && forceCreate) {
+        if (!current.title || current.title.trim().length < 2) return null;
+        if (current.partners.length === 0) return null;
+
+        // Se já houver criação em andamento, aguardar a mesma promessa
+        if (activeCreatePromiseRef.current) {
+          const created = await activeCreatePromiseRef.current;
+          if (created && data && Object.keys(data).length > 0) {
+            return await updateAction(data);
+          }
+          return created;
+        }
+        const createPromise = (async () => {
+          try {
+            const payload = {
+              ...current,
+              ...data,
+              title: ((data?.title as string) || current.title).trim(),
+              description: descriptionRef.current,
+              content_description: contentDescriptionRef.current,
+              intent: INTENT.create_action,
+            };
+            const result = await handleAction(payload);
+            if (result) {
+              savedTitleRef.current = result.title || "";
+              setRawAction((prev) => ({
+                ...result,
+                ...prev,
+                id: result.id,
+                created_at: result.created_at,
+                updated_at: result.updated_at,
+              }));
+              return result;
+            }
+            return null;
+          } catch (err) {
+            console.error("Erro ao criar ação:", err);
+            return null;
+          } finally {
+            activeCreatePromiseRef.current = null;
+          }
+        })();
+        activeCreatePromiseRef.current = createPromise;
+        return await createPromise;
+      }
+
+      // Se for ação existente (atualização parcial / patch)
+      if (current.id) {
+        try {
+          const patchData = data || {};
+          const result = await handleAction({
+            id: current.id,
+            intent: INTENT.update_action,
+            ...patchData,
+          });
+          if (result) {
+            if (patchData.title) {
+              savedTitleRef.current = result.title || "";
+            }
+            setRawAction((prev) => ({
+              ...result,
+              ...prev,
+              id: result.id,
+              created_at: result.created_at,
+              updated_at: result.updated_at,
+            }));
+            return result;
+          }
+          return null;
+        } catch (err) {
+          console.error("Erro ao atualizar ação:", err);
+          return null;
+        }
+      }
+      return null;
+    },
+    [handleAction],
+  );
+  const handleTitleBlur = useCallback(
+    async (title: string) => {
+      const trimmed = title.trim();
+      const current = rawActionRef.current;
+
+      // Se o título não mudou em relação ao último salvo/confirmado, não grava
+      if (trimmed === savedTitleRef.current) {
+        return;
+      }
+
+      // Se for ação existente e título válido, atualiza
+      if (current.id) {
+        if (trimmed.length >= 2) {
+          await updateAction({
+            title: trimmed,
+          });
+        }
+        return;
+      }
+
+      // Se for rascunho novo com parceiro selecionado e título válido, cria no blur
+      if (!current.id && trimmed.length >= 2 && current.partners.length > 0) {
+        await updateAction(
+          {
+            title: trimmed,
+          },
+          true,
+        );
+      }
+    },
+    [updateAction],
+  );
   const handleSave = useCallback(async (): Promise<boolean> => {
-    if (!RawAction.title) {
-      toast.error("Erro / O título é obrigatório", {
+    const current = rawActionRef.current;
+    const titleTrimmed = (current.title || "").trim();
+    if (titleTrimmed.length < 2) {
+      toast.error("Erro / O título deve ter pelo menos 2 caracteres", {
         position: "top-center",
       });
       return false;
     }
-    if (RawAction.partners.length === 0) {
+    if (current.partners.length === 0) {
       toast.error("Erro / Pelo menos um parceiro deve ser selecionado", {
         position: "top-center",
       });
       return false;
     }
-
-    // Prevent double-create: if onBlur already fired a create, bail out
-    if (!RawAction.id && isCreatingRef.current) return false;
-    if (!RawAction.id) isCreatingRef.current = true;
-    try {
-      const result = await handleAction({
-        ...RawAction,
-        description: descriptionRef.current,
-        content_description: contentDescriptionRef.current,
-        // always latest typed content
-        intent: RawAction.id ? INTENT.update_action : INTENT.create_action,
-      });
-      if (result) {
-        setRawAction(result);
-        return true;
+    if (!current.id) {
+      if (activeCreatePromiseRef.current) {
+        const created = await activeCreatePromiseRef.current;
+        return !!created;
       }
-      return false;
-    } catch (err) {
-      console.error("Erro ao salvar ação:", err);
-      return false;
-    } finally {
-      isCreatingRef.current = false;
+      const result = await updateAction(
+        {
+          title: titleTrimmed,
+          description: descriptionRef.current,
+          content_description: contentDescriptionRef.current,
+        },
+        true,
+      );
+      return !!result;
     }
-  }, [RawAction, handleAction]);
+
+    // Ação existente: envia os campos pendentes
+    const result = await updateAction({
+      title: titleTrimmed,
+      description: descriptionRef.current,
+      content_description: contentDescriptionRef.current,
+    });
+    return !!result;
+  }, [updateAction]);
 
   // Ref always points to the latest handleSave to avoid stale closures in event listeners
   const handleSaveRef = useRef(handleSave);
@@ -145,21 +268,15 @@ export function ActionFormDrawer({
   const prevBaseIdRef = useRef(BaseAction.id);
   const prevBaseActionRef = useRef(BaseAction);
   useEffect(() => {
-    const current = rawActionRef.current;
-    if (current.id && !BaseAction.id) {
-      handleAction({
-        ...current,
-        intent: INTENT.update_action,
-      });
-    }
-
-    // Reset state if the action changed (different id OR new action reference)
-    if (
-      BaseAction.id !== prevBaseIdRef.current ||
-      (!BaseAction.id && BaseAction !== prevBaseActionRef.current)
-    ) {
+    // Reset state se mudou de ação (id diferente ou novo rascunho)
+    const isNewDraft = !BaseAction.id && !rawActionRef.current.id;
+    const isDifferentAction =
+      (BaseAction.id && BaseAction.id !== prevBaseIdRef.current) ||
+      (isNewDraft && BaseAction !== prevBaseActionRef.current);
+    if (isDifferentAction) {
       prevBaseIdRef.current = BaseAction.id;
       prevBaseActionRef.current = BaseAction;
+      savedTitleRef.current = BaseAction.title || "";
       descriptionRef.current = BaseAction.description || "";
       contentDescriptionRef.current = BaseAction.content_description || "";
       let initialPartners = BaseAction.partners || [];
@@ -201,7 +318,7 @@ export function ActionFormDrawer({
         color: initialColor,
       });
     }
-  }, [BaseAction, handleAction, partnerFilters, partners]);
+  }, [BaseAction, partnerFilters, partners]);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
   const [activeAIIntent, setActiveAIIntent] = useState<string | null>(null);
   const [isStrategyModalOpen, setIsStrategyModalOpen] = useState(false);
@@ -217,7 +334,7 @@ export function ActionFormDrawer({
       const aiPayload: AIPayload = {
         intent,
         title: RawAction.title || "",
-        description: descriptionRef.current || "",
+        description: `DESCRIÇÃO: ${descriptionRef.current} DESCRIÇÃO DO CONTEÚDO: ${contentDescriptionRef.current}`,
         partner_context: `${currentPartners[0]?.context || ""} — ${RawAction.category || ""}`,
         category: RawAction.category || "",
       };
@@ -345,42 +462,6 @@ export function ActionFormDrawer({
   const handleDescriptionChange = useCallback((desc: string) => {
     descriptionRef.current = desc;
   }, []);
-  const updateAction = useCallback(
-    async (
-      data?: {
-        [key: string]: unknown;
-      },
-      forceCreate = false,
-    ): Promise<void> => {
-      const current = rawActionRef.current;
-      if (
-        current.id ||
-        (forceCreate &&
-          !current.id &&
-          current.title &&
-          current.partners.length > 0)
-      ) {
-        // Prevent double-create: if a creation is already in flight, bail out
-        if (!current.id && isCreatingRef.current) return;
-        if (!current.id) isCreatingRef.current = true;
-        try {
-          const result = await handleAction({
-            ...current,
-            ...data,
-            intent: current.id ? INTENT.update_action : INTENT.create_action,
-          });
-          if (result) {
-            setRawAction(result);
-          }
-        } catch (err) {
-          console.error("Erro ao atualizar ação:", err);
-        } finally {
-          isCreatingRef.current = false;
-        }
-      }
-    },
-    [handleAction],
-  );
   const updateContentFiles = useCallback(
     (next: string[]) => {
       setContentFiles(next);
@@ -395,13 +476,22 @@ export function ActionFormDrawer({
     [updateAction],
   );
 
-  // Guard: only update color if it actually changed to avoid
-  // triggering another render cycle via the partners effect above.
+  // Safe close that coordinates with any in-flight creation
+  const handleSafeClose = useCallback(async () => {
+    if (activeCreatePromiseRef.current) {
+      await activeCreatePromiseRef.current;
+    }
+    onClose();
+  }, [onClose]);
+
+  // Guard: only update color and initial fallback responsibles on fresh draft
+  // Preserve any explicit responsibles already set by creator or user
   const prevPrimaryPartnerRef = useRef(currentPartners[0]?.slug);
   useEffect(() => {
     const currentPrimarySlug = currentPartners[0]?.slug;
+    const isNewDraft = !rawActionRef.current.id && !BaseAction.id;
     if (
-      !BaseAction.id &&
+      isNewDraft &&
       currentPrimarySlug &&
       currentPrimarySlug !== prevPrimaryPartnerRef.current
     ) {
@@ -409,11 +499,16 @@ export function ActionFormDrawer({
       const primaryPartner = currentPartners[0];
       if (primaryPartner) {
         const newColor = primaryPartner.colors?.[0] || "#666666";
-        const newResponsibles = currentPartners.flatMap((p) => p.users_ids);
         setRawAction((prev) => ({
           ...prev,
-          color: prev.color || newColor,
-          responsibles: newResponsibles,
+          color:
+            !prev.color || prev.color === "#666666" || prev.color === "#666"
+              ? newColor
+              : prev.color,
+          responsibles:
+            prev.responsibles && prev.responsibles.length > 0
+              ? prev.responsibles
+              : primaryPartner.users_ids || [],
         }));
       }
     }
@@ -427,19 +522,19 @@ export function ActionFormDrawer({
       if (event.key.toLocaleLowerCase() === "escape") {
         event.preventDefault();
         event.stopPropagation();
-        onClose();
+        handleSafeClose();
       } else if (event.key.toLocaleLowerCase() === "enter" && event.metaKey) {
         event.preventDefault();
         event.stopPropagation();
         const success = await handleSaveRef.current();
         if (success && !event.shiftKey) {
-          onClose();
+          handleSafeClose();
         }
       }
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+  }, [handleSafeClose]);
   return (
     <div
       className={cn(
@@ -472,7 +567,10 @@ export function ActionFormDrawer({
       )}
 
       {/* Tabs */}
-      <div className="flex w-full shrink-0 divide-x overflow-hidden" role="tablist">
+      <div
+        className="flex w-full shrink-0 divide-x overflow-hidden"
+        role="tablist"
+      >
         <button
           aria-selected={view === "essential"}
           className={tabClass(view === "essential")}
@@ -483,7 +581,7 @@ export function ActionFormDrawer({
           <span className="truncate">ESSENCIAL</span>
           <HeartIcon className="size-4 shrink-0" />
         </button>
-        {isInstagramFeed(RawAction.category) && (
+        {isSocialMediaContent(RawAction.category) && (
           <button
             aria-selected={view === "instagram"}
             className={tabClass(view === "instagram")}
@@ -509,7 +607,7 @@ export function ActionFormDrawer({
           <button
             aria-label="Fechar"
             className="flex cursor-pointer items-center justify-center border-b px-3 py-3 sm:p-5 text-sm font-medium"
-            onClick={onClose}
+            onClick={handleSafeClose}
             type="button"
           >
             <XIcon className="size-4" />
@@ -535,6 +633,7 @@ export function ActionFormDrawer({
                 isAIProcessing={isAIProcessing}
                 onDescriptionChange={handleDescriptionChange}
                 onOpenStrategyModal={() => setIsStrategyModalOpen(true)}
+                onTitleBlur={handleTitleBlur}
                 RawAction={RawAction}
                 setRawAction={setRawAction}
                 setWorkFiles={setWorkFiles}
@@ -580,7 +679,7 @@ export function ActionFormDrawer({
         {/* Criar e Atualizar */}
         <ActionFormFooter
           currentPartners={currentPartners}
-          handleClose={onClose}
+          handleClose={handleSafeClose}
           handleSave={handleSave}
           isPending={isPending}
           RawAction={RawAction}
@@ -632,8 +731,11 @@ export function ActionFormDrawer({
                       });
                     }}
                   />
-                  <PrismAccordionTrigger className="overflow-hidden flex-1 px-2">
-                    <div className="text-lg tracking-tight font-normal truncate flex-1">
+                  <PrismAccordionTrigger className="overflow-hidden flex-1 px-2 min-w-0">
+                    <div
+                      className="text-lg tracking-tight font-normal truncate flex-1 min-w-0"
+                      title={strat.headline}
+                    >
                       {strat.headline}
                     </div>
                   </PrismAccordionTrigger>

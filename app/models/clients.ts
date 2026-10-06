@@ -23,12 +23,13 @@ export async function getAllClients(supabase: SupabaseClient) {
   return data as Client[];
 }
 
-/** Retorna um cliente específico pelo ID. */
+/** Retorna um cliente específico pelo ID se estiver ativo. */
 export async function getClientById(supabase: SupabaseClient, id: string) {
   const { data, error } = await supabase
     .from("clients")
     .select("id, created_at, name, email, partners, image, active")
     .eq("id", id)
+    .eq("active", true)
     .single();
 
   if (error) throw error;
@@ -97,35 +98,56 @@ export async function archiveClient(supabase: SupabaseClient, id: string) {
   if (error) throw error;
 }
 
+export interface ClientAuthResult {
+  client: Client;
+  token: string;
+}
+
 /**
- * Autentica um cliente verificando e-mail contra o password_hash.
- * Se password_hash for nulo no banco (registro antigo), faz fallback temporário para a senha normal
- * e faz o update automático para salvar o hash para acessos futuros.
+ * Autentica um cliente pelo servidor (/api/dash-auth) sem expor password_hash ao navegador.
  */
 export async function authenticateClient(
-  supabase: SupabaseClient,
+  _supabase: SupabaseClient,
   email: string,
   password?: string,
-) {
+): Promise<ClientAuthResult | null> {
   if (!email || !password) return null;
 
-  const { data, error } = await supabase
-    .from("clients")
-    .select("id, created_at, name, email, partners, image, active, password_hash")
-    .eq("email", email)
-    .is("active", true)
-    .single();
+  try {
+    const res = await fetch("/api/dash-auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "login", email, password }),
+    });
 
-  if (error || !data) return null;
-
-  const client = data as Client & { password_hash?: string | null };
-
-  if (client.password_hash) {
-    const inputHash = await hashPassword(password);
-    const match = inputHash === client.password_hash;
-    if (!match) return null;
-    return client as Client;
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data.client || !data.token) return null;
+    return { client: data.client as Client, token: data.token as string };
+  } catch (err) {
+    console.error("Falha ao comunicar com api/dash-auth:", err);
+    return null;
   }
+}
 
-  return null;
+/**
+ * Valida o token de sessão do portal com o servidor e confirma status ativo.
+ */
+export async function verifyDashSession(token: string): Promise<Client | null> {
+  if (!token) return null;
+
+  try {
+    const res = await fetch("/api/dash-auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "verify", token }),
+    });
+
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data.client as Client) || null;
+  } catch (err) {
+    console.error("Falha ao validar sessão do portal:", err);
+    return null;
+  }
 }

@@ -21,7 +21,10 @@ import { getCleanAction } from "~/lib/helpers";
 import { getUserPreferences } from "~/lib/preferences";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { cn } from "cnfast";
-import type { Partner } from "~/types";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { getAllPartners, getPartnersByUserId } from "~/models/partners";
+import type { Action, Partner, Person } from "~/types";
 import { AppContext } from "~/contexts/AppContext";
 import { UZZINALogo } from "~/components/logo";
 export const Route = createFileRoute("/app")({
@@ -46,6 +49,26 @@ function Dashboard() {
   > | null>(null);
   const isHiddenByDefault =
     location.pathname !== "/app" && location.pathname !== "/app/";
+
+  const queryClient = useQueryClient();
+
+  // Query reativa para manter os parceiros sincronizados com o cache
+  const { data: reactivePartners = partners } = useQuery({
+    queryKey: QUERY_KEYS.partners(),
+    queryFn: async () => {
+      const supabase = createSupabaseBrowserClient();
+      if (person?.admin) {
+        return getAllPartners(supabase);
+      }
+      if (person?.user_id) {
+        return getPartnersByUserId(supabase, person.user_id);
+      }
+      return partners;
+    },
+    initialData: partners.length > 0 ? partners : undefined,
+    enabled: !!person,
+  });
+
   useEffect(() => {
     if (typeof window !== "undefined" && person) {
       const prefs = getUserPreferences(person);
@@ -96,6 +119,7 @@ function Dashboard() {
       invariant(partners, "Partners not found");
       setPerson(person);
       setPartners(partners);
+      queryClient.setQueryData(QUERY_KEYS.partners(), partners);
       setLoading(false);
     }
     initAuth();
@@ -103,6 +127,7 @@ function Dashboard() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (!session && event !== "INITIAL_SESSION") {
+        queryClient.clear();
         navigate({
           to: "/login",
           replace: true,
@@ -110,7 +135,7 @@ function Dashboard() {
       }
     });
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, queryClient]);
   useEffect(() => {
     if (!person) return;
     const userId = person.user_id;
@@ -155,7 +180,7 @@ function Dashboard() {
     <AppContext.Provider
       value={{
         person,
-        partners,
+        partners: reactivePartners,
         cloudName,
         uploadPreset,
         setBaseAction,
@@ -165,7 +190,7 @@ function Dashboard() {
     >
       <div className="flex h-screen flex-col" id="app">
         <ActionShortcutProvider>
-          <MultiSelectionProvider>
+          <MultiSelectionProvider locationKey={location.pathname}>
             {/* HEADER */}
 
             <Header
@@ -242,14 +267,19 @@ function Dashboard() {
             )}
 
             {isHiddenByDefault && !isAppBarVisible && (
-              <div
-                className="fixed bottom-0 left-1/2 -translate-x-1/2 z-40 w-32 h-10 flex justify-center items-end pb-2 cursor-pointer transition-all hover:pb-3 pointer-events-auto"
+              <button
+                aria-label="Revelar barra de navegação"
+                className="fixed bottom-0 left-1/2 -translate-x-1/2 z-40 w-32 h-10 flex justify-center items-end pb-2 cursor-pointer transition-all hover:pb-3 pointer-events-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-t-xl"
+                onClick={() => {
+                  setIsAppBarVisible(true);
+                }}
                 onMouseEnter={() => {
                   setIsAppBarVisible(true);
                 }}
+                type="button"
               >
                 <ChevronUpIcon className="size-5 text-muted-foreground opacity-60 hover:opacity-100 transition-opacity" />
-              </div>
+              </button>
             )}
 
             <GlobalSearchCommand

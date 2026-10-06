@@ -29,9 +29,18 @@ import { fetchPeople } from "~/lib/supabase.queries";
 import type { Partner } from "~/types";
 import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
 import { CloudIcon } from "lucide-react";
+import { AdminGuard } from "~/components/features/AdminGuard";
 export const Route = createFileRoute("/app/admin/partner/$slug")({
-  component: AdminPartnerEditPage,
+  component: AdminPartnerEditPageWrapper,
 });
+
+function AdminPartnerEditPageWrapper() {
+  return (
+    <AdminGuard>
+      <AdminPartnerEditPage />
+    </AdminGuard>
+  );
+}
 function AdminPartnerEditPage() {
   const { slug } = Route.useParams();
   const navigate = useNavigate();

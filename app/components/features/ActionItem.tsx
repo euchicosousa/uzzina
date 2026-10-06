@@ -32,7 +32,7 @@ import {
   getFormattedDateTime,
   getFormattedPartnersName,
   Icons,
-  isInstagramFeed,
+  isSocialMediaContent,
   isLateAction,
   isSprint,
 } from "~/lib/helpers";
@@ -125,9 +125,9 @@ export function ActionItem({
     setIsEditing(value);
   };
 
-  // Fallback variant check
+  // Fallback variant check: non-social content cannot use social content preview layout
   variant =
-    !isInstagramFeed(action.category) && variant === VARIANT.content
+    !isSocialMediaContent(action.category) && variant === VARIANT.content
       ? VARIANT.line
       : variant;
   const variantClasses = useMemo(() => {

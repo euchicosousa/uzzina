@@ -2,14 +2,23 @@ import { UserPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
-import { fetchPeople } from "~/lib/supabase.queries";
+import { fetchAllPeople } from "~/lib/supabase.queries";
+import { AdminGuard } from "~/components/features/AdminGuard";
 export const Route = createFileRoute("/app/admin/users")({
-  component: AdminUsersPage,
+  component: AdminUsersPageWrapper,
 });
+
+function AdminUsersPageWrapper() {
+  return (
+    <AdminGuard>
+      <AdminUsersPage />
+    </AdminGuard>
+  );
+}
 function AdminUsersPage() {
   const { data: people = [] } = useQuery({
-    queryKey: QUERY_KEYS.people(),
-    queryFn: fetchPeople,
+    queryKey: QUERY_KEYS.peopleAdmin(),
+    queryFn: fetchAllPeople,
   });
   const archivedPeople: Person[] = [];
   const activePeople: Person[] = [];

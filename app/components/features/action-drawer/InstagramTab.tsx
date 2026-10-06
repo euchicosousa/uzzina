@@ -12,7 +12,7 @@ import { cn } from "cnfast";
 interface InstagramTabProps {
   RawAction: Action;
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;
-  updateAction: (data?: { [key: string]: unknown }) => Promise<void>;
+  updateAction: (data?: { [key: string]: unknown }) => Promise<unknown>;
   contentFiles: string[];
   updateContentFiles: (files: string[]) => void;
   currentPartners: Partner[];
@@ -115,8 +115,8 @@ export function InstagramTab({
         {/* Sub-aba CONTEÚDO */}
         {instagramSubTab === "content" && (
           <div className="flex h-full flex-col overflow-hidden">
-            <div className="flex items-center justify-between border-b px-4 py-4 md:pl-0">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between gap-3 border-b px-4 py-4 md:pl-0 min-w-0">
+              <div className="flex items-center gap-2 min-w-0 shrink">
                 <UAvatarGroup
                   avatars={currentPartners.map((partner) => ({
                     fallback: partner.short,
@@ -125,7 +125,7 @@ export function InstagramTab({
                     image: partner.image,
                   }))}
                 />
-                <div className="text-sm font-medium">
+                <div className="text-sm font-medium truncate">
                   {getFormattedPartnersLinks(currentPartners)}
                 </div>
               </div>
@@ -138,7 +138,7 @@ export function InstagramTab({
                 return (
                   strategies.length > 0 &&
                   onOpenStrategyModal && (
-                    <PrismButtonGroup className="max-w-70">
+                    <PrismButtonGroup className="max-w-[280px] sm:max-w-xs md:max-w-sm min-w-0 shrink">
                       <PrismButton
                         aria-label="Ver estratégias"
                         onClick={onOpenStrategyModal}
@@ -149,6 +149,7 @@ export function InstagramTab({
                       </PrismButton>
 
                       <PrismButton
+                        className="min-w-0 flex-1 shrink truncate"
                         isDisabled={isAIProcessing}
                         onClick={() => {
                           const stratToUse = selectedStrat || strategies[0];
@@ -165,12 +166,17 @@ export function InstagramTab({
                         size="xs"
                         variant="secondary"
                       >
-                        <span className="truncate">{stratTitle}</span>
+                        <span
+                          className="truncate min-w-0 block"
+                          title={stratTitle}
+                        >
+                          {stratTitle}
+                        </span>
                         {isAIProcessing &&
                         activeAIIntent === INTENT.ai_content ? (
                           <LoaderIcon className="animate-spin" />
                         ) : (
-                          <SparkleIcon />
+                          <SparkleIcon className="shrink-0" />
                         )}
                       </PrismButton>
                     </PrismButtonGroup>

@@ -24,9 +24,18 @@ import { toast } from "sonner";
 import { useAppContext } from "~/contexts/AppContext";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import type { Client } from "~/types";
+import { AdminGuard } from "~/components/features/AdminGuard";
 export const Route = createFileRoute("/app/admin/client/$userId")({
-  component: AdminClientPage,
+  component: AdminClientPageWrapper,
 });
+
+function AdminClientPageWrapper() {
+  return (
+    <AdminGuard>
+      <AdminClientPage />
+    </AdminGuard>
+  );
+}
 function AdminClientPage() {
   const { userId } = Route.useParams();
   const navigate = useNavigate();

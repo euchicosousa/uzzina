@@ -20,59 +20,161 @@ export function isInstagramFeed(category: string, stories = false) {
     category,
   );
 }
+export function isSocialMediaContent(category: string) {
+  return ["post", "reels", "carousel", "stories"].includes(category);
+}
 export const isSprint = (action: Action, person?: Person) => {
   if (!person) return false;
   return !!action.sprints?.find((sprint) => sprint === person.user_id);
 };
 
 // Aceita string com vírgulas (FormData legado) ou array direto (JSON)
-const commaSeparatedStringToArray = z.union([
-  z.array(z.string()),
-  z.string().transform((val) => val.split(",").filter(Boolean)),
-]);
+const requiredPartnersArray = z
+  .union([
+    z.array(z.string()),
+    z.string().transform((val) =>
+      val
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+    ),
+  ])
+  .refine(
+    (arr) => Array.isArray(arr) && arr.length > 0,
+    "Pelo menos um parceiro é obrigatório",
+  );
 
-// Mesma coisa mas permite null/undefined
-const nullableCommaSeparatedStringToArray = z.union([
-  z.array(z.string()).nullable().optional(),
-  z
-    .string()
-    .nullable()
-    .optional()
-    .transform((val) => {
-      if (!val || val === "null" || val === "") return null;
-      return val.split(",").filter(Boolean);
+const optionalPartnersArray = z
+  .union([
+    z.array(z.string()),
+    z.string().transform((val) =>
+      val
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+    ),
+    z.undefined(),
+  ])
+  .refine(
+    (arr) => arr === undefined || (Array.isArray(arr) && arr.length > 0),
+    "Pelo menos um parceiro é obrigatório",
+  );
+
+const responsiblesArray = z
+  .union([
+    z.array(z.string()),
+    z.string().transform((val) => {
+      if (!val || val === "null" || val === "") return [];
+      return val
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
     }),
-]);
-
-// Helper for strings that might be "null" or empty
-const nullableString = z
-  .string()
-  .nullable()
-  .optional()
+    z.null().transform(() => []),
+    z.undefined(),
+  ])
   .transform((val) => {
-    if (!val || val === "null" || val === "") return null;
+    if (val === undefined) return undefined;
+    if (Array.isArray(val)) return val;
+    return [];
+  });
+
+// Validação estrita de formato de data (ISO ou YYYY-MM-DD HH:mm:ss)
+const validDateString = z
+  .string()
+  .min(1, "A data é obrigatória")
+  .refine((val) => {
+    if (!/^\d{4}-\d{2}-\d{2}/.test(val)) return false;
+    const parsed = new Date(val.replace(" ", "T"));
+    return !Number.isNaN(parsed.getTime());
+  }, "Data inválida");
+
+// Helper para arrays/listas que podem ser omitidos (undefined), limpos (null) ou atualizados
+const nullableArrayOrCommaString = z
+  .union([z.array(z.string()), z.string(), z.null(), z.undefined()])
+  .transform((val) => {
+    if (val === undefined) return undefined;
+    if (val === null || val === "null" || val === "") return null;
+    if (Array.isArray(val)) return val;
+    const split = val
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    return split.length > 0 ? split : null;
+  });
+
+// Distingue ausente (undefined) de explicitamente limpo (null / "")
+const nullableOptionalString = z
+  .union([z.string(), z.null(), z.undefined()])
+  .transform((val) => {
+    if (val === undefined) return undefined;
+    if (val === null || val === "null" || val === "") return null;
     return val;
   });
-export const ActionFormSchema = z.object({
-  title: z.string().min(2, "O Título deve ter pelo menos 2 caracteres"),
-  date: z.string().min(1, "A data é obrigatória"),
+
+/**
+ * Esquema estrito para criação de uma nova ação.
+ * Exige campos obrigatórios com defaults para os opcionais.
+ */
+export const ActionCreateSchema = z.object({
+  title: z.string().trim().min(2, "O Título deve ter pelo menos 2 caracteres"),
+  date: validDateString,
   category: z.string().min(1, "A categoria é obrigatória"),
   priority: z.string().min(1, "A prioridade é obrigatória"),
-  description: nullableString,
-  responsibles: commaSeparatedStringToArray,
-  partners: commaSeparatedStringToArray,
-  content_files: nullableCommaSeparatedStringToArray,
-  work_files: nullableCommaSeparatedStringToArray,
-  sprints: nullableCommaSeparatedStringToArray,
-  instagram_caption: nullableString,
-  content_description: nullableString,
-  color: z.string().optional(),
+  partners: requiredPartnersArray,
+  responsibles: responsiblesArray.default([]),
+  description: nullableOptionalString.default(null),
+  content_files: nullableArrayOrCommaString.default(null),
+  work_files: nullableArrayOrCommaString.default(null),
+  sprints: nullableArrayOrCommaString.default(null),
+  instagram_caption: nullableOptionalString.default(null),
+  content_description: nullableOptionalString.default(null),
+  color: z.string().nullable().optional().default("#666666"),
+  phase: z.string().optional().default("idea"),
+  strategies: z.unknown().optional().nullable(),
+  time: z.number().optional().nullable().default(10),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
+  archived: z.boolean().nullable().optional().default(false),
+});
+
+/**
+ * Esquema para patch parcial de atualização.
+ * Todos os campos são opcionais. Campos omitidos permanecem `undefined`
+ * e nunca sobrescrevem valores pré-existentes no banco.
+ */
+export const ActionPatchSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(2, "O Título deve ter pelo menos 2 caracteres")
+    .optional(),
+  date: validDateString.optional(),
+  category: z.string().min(1).optional(),
+  priority: z.string().min(1).optional(),
+  partners: optionalPartnersArray.optional(),
+  responsibles: responsiblesArray.optional(),
+  description: nullableOptionalString.optional(),
+  content_files: nullableArrayOrCommaString.optional(),
+  work_files: nullableArrayOrCommaString.optional(),
+  sprints: nullableArrayOrCommaString.optional(),
+  instagram_caption: nullableOptionalString.optional(),
+  content_description: nullableOptionalString.optional(),
+  color: z.string().optional().nullable(),
   phase: z.string().optional().nullable(),
   strategies: z.unknown().optional().nullable(),
   time: z.number().optional().nullable(),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
-  archived: z.boolean().nullable().optional(),
+  archived: z.boolean().optional().nullable(),
 });
-export type ActionFormInput = z.input<typeof ActionFormSchema>;
-export type ActionFormOutput = z.output<typeof ActionFormSchema>;
+
+// Compatibilidade retroativa
+export const ActionFormSchema = ActionCreateSchema;
+
+export type ActionCreateInput = z.input<typeof ActionCreateSchema>;
+export type ActionCreateOutput = z.output<typeof ActionCreateSchema>;
+export type ActionPatchInput = z.input<typeof ActionPatchSchema>;
+export type ActionPatchOutput = z.output<typeof ActionPatchSchema>;
+export type ActionFormInput = ActionCreateInput;
+export type ActionFormOutput = ActionCreateOutput;

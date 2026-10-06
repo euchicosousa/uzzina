@@ -92,6 +92,7 @@ export function SprintCombobox({
       onOpenChange={(open) => !disabled && setIsOpen(open)}
     >
       <ComboboxTrigger
+        aria-label="Sprints"
         className={cn(
           size === "lg" &&
             cn(

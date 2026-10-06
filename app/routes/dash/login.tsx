@@ -31,15 +31,16 @@ function DashLogin() {
     setIsSubmitting(true);
     setError(null);
     try {
-      const client = await authenticateClient(supabase, email, password);
-      if (!client) {
-        setError("E-mail ou senha incorretos.");
+      const authResult = await authenticateClient(supabase, email, password);
+      if (!authResult) {
+        setError("E-mail ou senha incorretos ou conta inativa.");
         setIsSubmitting(false);
         return;
       }
 
-      // Salva a sessão localmente
-      localStorage.setItem("uzzina_dash_client_id", client.id);
+      // Salva a sessão localmente com token e id
+      localStorage.setItem("uzzina_dash_token", authResult.token);
+      localStorage.setItem("uzzina_dash_client_id", authResult.client.id);
       navigate({
         to: "/dash",
       });

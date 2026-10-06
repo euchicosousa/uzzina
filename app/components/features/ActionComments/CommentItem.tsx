@@ -1,6 +1,6 @@
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Pencil, Trash } from "lucide-react";
+import { Pencil, Trash, LockIcon } from "lucide-react";
 import { useState } from "react";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import type { AugmentedComment } from "~/models/action_comments";
@@ -72,6 +72,12 @@ export function CommentItem({
           </div>
         ) : (
           <>
+            {comment.is_internal && (
+              <div className="mb-1 flex items-center gap-1 text-[10px] font-medium opacity-75">
+                <LockIcon className="size-2.5" />
+                <span>Nota interna</span>
+              </div>
+            )}
             <div className="comment-content text-sm whitespace-pre-line">
               {comment.content}
             </div>

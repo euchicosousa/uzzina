@@ -1,5 +1,13 @@
 import type { Action, Partner } from "~/types";
-import { addDays, format } from "date-fns";
+import {
+  addMonths,
+  addWeeks,
+  endOfMonth,
+  endOfWeek,
+  format,
+  startOfMonth,
+  startOfWeek,
+} from "date-fns";
 import { SidebarClose } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
@@ -42,11 +50,26 @@ function DashHome() {
         : partners[0]?.slug || "";
   const currentPartner =
     partners.find((p) => p.slug === currentPartnerSlug) || partners[0];
-  const today = new Date();
-  const start = format(addDays(today, -30), "yyyy-MM-dd HH:mm:ss");
-  const end = format(addDays(today, 90), "yyyy-MM-dd HH:mm:ss");
+
+  // Período visível cobrindo semanas completas (domingo a sábado)
+  const visibleStart = startOfWeek(
+    calendarView === "month" ? startOfMonth(currentDay) : currentDay,
+    { weekStartsOn: 0 },
+  );
+  const visibleEnd = endOfWeek(
+    calendarView === "month" ? endOfMonth(currentDay) : currentDay,
+    { weekStartsOn: 0 },
+  );
+
+  const start = format(visibleStart, "yyyy-MM-dd 00:00:00");
+  const end = format(visibleEnd, "yyyy-MM-dd 23:59:59");
+  const periodKey =
+    calendarView === "month"
+      ? format(currentDay, "yyyy-MM")
+      : format(visibleStart, "yyyy-MM-dd");
+
   const { data: actions = [], isLoading } = useQuery({
-    queryKey: ["dashActions", currentPartnerSlug],
+    queryKey: ["dashActions", currentPartnerSlug, calendarView, periodKey],
     queryFn: async () => {
       if (!currentPartnerSlug) return [];
       const { data, error } = await supabase
@@ -97,16 +120,17 @@ function DashHome() {
     });
   };
   const handlePrev = () => {
-    if (calendarView === "month") setCurrentDay((d) => addDays(d, -30));
-    else setCurrentDay((d) => addDays(d, -7));
+    if (calendarView === "month") setCurrentDay((d) => addMonths(d, -1));
+    else setCurrentDay((d) => addWeeks(d, -1));
   };
   const handleNext = () => {
-    if (calendarView === "month") setCurrentDay((d) => addDays(d, 30));
-    else setCurrentDay((d) => addDays(d, 7));
+    if (calendarView === "month") setCurrentDay((d) => addMonths(d, 1));
+    else setCurrentDay((d) => addWeeks(d, 1));
   };
 
-  // Ações de feed (Instagram) ordenadas por date
-  const instaActions = getInstagramFeedActions(actions, true, true);
+  // Ações do calendário (todas as postagens/stories programadas do parceiro no período)
+  const calendarActions = getInstagramFeedActions(actions, true, true);
+  // Ações da grade do feed (exclusivo para grade de fotos: post, reels, carrossel)
   const feedActions = getInstagramFeedActions(actions);
   return (
     <div className="flex min-h-0 w-full flex-1 overflow-hidden">
@@ -134,7 +158,7 @@ function DashHome() {
         <div className="min-h-0 flex-1 overflow-hidden">
           {mobileTab === "calendar" ? (
             <ClientCalendar
-              actions={instaActions}
+              actions={calendarActions}
               calendarView={calendarView}
               currentDay={currentDay}
               onActionClick={handleActionClick}
@@ -160,7 +184,7 @@ function DashHome() {
         {/* Calendário — ocupa o resto */}
         <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <ClientCalendar
-            actions={feedActions}
+            actions={calendarActions}
             calendarView={calendarView}
             currentDay={currentDay}
             onActionClick={handleActionClick}
