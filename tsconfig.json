@@ -4,9 +4,7 @@
     "**/.server/**/*",
     "**/.client/**/*"
   ],
-  "exclude": [
-    "api/**/*"
-  ],
+  "exclude": [],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "types": ["vite/client", "bun"],

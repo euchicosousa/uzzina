@@ -1,24 +1,120 @@
-/**
- * Sanitizador de HTML seguro e leve para conteúdo do Tiptap e entradas externas.
- * Remove scripts, iframes, manipuladores inline de eventos (onerror, onclick, etc.)
- * e esquemas perigosos de URL (javascript:, vbscript:), preservando formatação rica.
- */
+import DOMPurify from "dompurify";
 
-const DANGEROUS_TAGS_REGEX = /<\s*(script|style|iframe|object|embed|form|input|button|svg|math|link|meta|base)\b[^>]*>[\s\S]*?<\s*\/\s*\1\s*>|<\s*(script|style|iframe|object|embed|form|input|button|svg|math|link|meta|base)\b[^>]*>/gi;
-const INLINE_EVENT_HANDLERS_REGEX = /\s+on[a-z]+(\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+))?/gi;
-const JAVASCRIPT_URL_REGEX = /(href|src)\s*=\s*['"]\s*(?:javascript|vbscript|data(?!\s*:\s*image)):[^'"]*['"]/gi;
+const ALLOWED_TAGS = [
+  "p",
+  "br",
+  "strong",
+  "em",
+  "s",
+  "u",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "ul",
+  "ol",
+  "li",
+  "blockquote",
+  "pre",
+  "code",
+  "a",
+  "table",
+  "thead",
+  "tbody",
+  "tfoot",
+  "tr",
+  "th",
+  "td",
+  "hr",
+  "img",
+  "span",
+  "div",
+];
+
+const ALLOWED_ATTR = [
+  "href",
+  "src",
+  "alt",
+  "title",
+  "target",
+  "rel",
+  "colspan",
+  "rowspan",
+  "class",
+  "width",
+  "height",
+];
+
+const FORBID_TAGS = [
+  "style",
+  "form",
+  "input",
+  "button",
+  "select",
+  "textarea",
+  "iframe",
+  "frame",
+  "object",
+  "embed",
+  "svg",
+  "math",
+  "script",
+];
+
+const FORBID_ATTR = ["style"];
+
+let purifyInstance: ReturnType<typeof DOMPurify> | null = null;
+
+function getPurifier(): ReturnType<typeof DOMPurify> | null {
+  if (purifyInstance) return purifyInstance;
+
+  const win =
+    typeof window !== "undefined"
+      ? window
+      : (globalThis as unknown as { window?: unknown }).window;
+  if (!win) return null;
+
+  const purifier = DOMPurify(win as Parameters<typeof DOMPurify>[0]);
+
+  // Hook para proibir estritamente data: e blob: em src e href (Requisito 3 do Ticket 01)
+  purifier.addHook("uponSanitizeAttribute", (node, data) => {
+    if (
+      (data.attrName === "src" || data.attrName === "href") &&
+      /^\s*(?:data|blob):/i.test(data.attrValue)
+    ) {
+      node.removeAttribute(data.attrName);
+    }
+  });
+
+  purifyInstance = purifier;
+  return purifier;
+}
 
 export function sanitizeHtml(html: string | null | undefined): string {
   if (!html) return "";
 
-  // 1. Remove tags ativamente maliciosas / executáveis e seu conteúdo
-  let sanitized = html.replace(DANGEROUS_TAGS_REGEX, "");
+  const purifier = getPurifier();
+  if (!purifier) {
+    // Fallback defensivo se executado sem nenhum DOM disponível
+    return html.replace(/<[^>]*>/g, "").trim();
+  }
 
-  // 2. Remove manipuladores de evento (onerror, onload, onclick, onmouseover, etc.)
-  sanitized = sanitized.replace(INLINE_EVENT_HANDLERS_REGEX, "");
-
-  // 3. Remove URLs com esquemas perigosos (javascript:, vbscript:, data: não-imagem)
-  sanitized = sanitized.replace(JAVASCRIPT_URL_REGEX, '$1="#"');
-
-  return sanitized.trim();
+  return purifier
+    .sanitize(html, {
+      ALLOWED_TAGS,
+      ALLOWED_ATTR,
+      FORBID_TAGS,
+      FORBID_ATTR,
+      ALLOWED_URI_REGEXP:
+        /^(?:(?:(?:f|ht)tps?|mailto|tel):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i,
+      USE_PROFILES: {
+        html: true,
+        svg: false,
+        svgFilters: false,
+        mathMl: false,
+      },
+    })
+    .trim();
 }

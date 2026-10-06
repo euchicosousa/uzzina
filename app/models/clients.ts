@@ -100,11 +100,12 @@ export async function archiveClient(supabase: SupabaseClient, id: string) {
 
 export interface ClientAuthResult {
   client: Client;
-  token: string;
+  token?: string;
 }
 
 /**
- * Autentica um cliente pelo servidor (/api/dash-auth) sem expor password_hash ao navegador.
+ * Autentica um cliente pelo servidor (/api/dash-auth) emitindo cookie HttpOnly no mesmo domínio.
+ * Não expõe senha nem token bruto ao código cliente.
  */
 export async function authenticateClient(
   _supabase: SupabaseClient,
@@ -117,13 +118,14 @@ export async function authenticateClient(
     const res = await fetch("/api/dash-auth", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
       body: JSON.stringify({ action: "login", email, password }),
     });
 
     if (!res.ok) return null;
     const data = await res.json();
-    if (!data.client || !data.token) return null;
-    return { client: data.client as Client, token: data.token as string };
+    if (!data.client) return null;
+    return { client: data.client as Client };
   } catch (err) {
     console.error("Falha ao comunicar com api/dash-auth:", err);
     return null;
@@ -131,16 +133,16 @@ export async function authenticateClient(
 }
 
 /**
- * Valida o token de sessão do portal com o servidor e confirma status ativo.
+ * Valida a sessão ativa do portal com o servidor via Cookie HttpOnly same-origin.
+ * Retorna o perfil seguro do cliente caso a sessão continue válida e o cliente ativo.
  */
-export async function verifyDashSession(token: string): Promise<Client | null> {
-  if (!token) return null;
-
+export async function verifyDashSession(_legacyToken?: string): Promise<Client | null> {
   try {
     const res = await fetch("/api/dash-auth", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "verify", token }),
+      credentials: "same-origin",
+      body: JSON.stringify({ action: "verify" }),
     });
 
     if (!res.ok) return null;
@@ -149,5 +151,23 @@ export async function verifyDashSession(token: string): Promise<Client | null> {
   } catch (err) {
     console.error("Falha ao validar sessão do portal:", err);
     return null;
+  }
+}
+
+/**
+ * Encerra a sessão do cliente no servidor (/api/dash-auth) revogando o registro e limpando o cookie.
+ */
+export async function logoutDashSession(): Promise<boolean> {
+  try {
+    const res = await fetch("/api/dash-auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ action: "logout" }),
+    });
+    return res.ok;
+  } catch (err) {
+    console.error("Falha ao revogar sessão do portal:", err);
+    return false;
   }
 }

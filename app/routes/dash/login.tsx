@@ -38,9 +38,8 @@ function DashLogin() {
         return;
       }
 
-      // Salva a sessão localmente com token e id
-      localStorage.setItem("uzzina_dash_token", authResult.token);
-      localStorage.setItem("uzzina_dash_client_id", authResult.client.id);
+      // A sessão segura é gerenciada exclusivamente pelo cookie HttpOnly do servidor
+      localStorage.removeItem("uzzina_dash_token");
       navigate({
         to: "/dash",
       });

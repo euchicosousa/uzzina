@@ -138,7 +138,7 @@ export function InstagramTab({
                 return (
                   strategies.length > 0 &&
                   onOpenStrategyModal && (
-                    <PrismButtonGroup className="max-w-[280px] sm:max-w-xs md:max-w-sm min-w-0 shrink">
+                    <PrismButtonGroup className="max-w-70 sm:max-w-xs md:max-w-sm min-w-0 shrink">
                       <PrismButton
                         aria-label="Ver estratégias"
                         onClick={onOpenStrategyModal}

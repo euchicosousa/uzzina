@@ -14,7 +14,7 @@ import { useAppTheme } from "~/hooks/useAppTheme";
 import { useEffect, useState } from "react";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-import { getClientById, verifyDashSession } from "~/models/clients";
+import { verifyDashSession, logoutDashSession } from "~/models/clients";
 import { DashContext } from "~/contexts/DashContext";
 import { z } from "zod";
 const dashSearchSchema = z.object({
@@ -43,29 +43,13 @@ function DashLayout() {
   const [clientData, setClientData] = useState<Client | null>(null);
   const [partners, setPartners] = useState<Partner[]>([]);
   useEffect(() => {
-    // Apenas executa no navegador
-    const storedId = localStorage.getItem("uzzina_dash_client_id");
-    const storedToken = localStorage.getItem("uzzina_dash_token");
     const isLoginPath = window.location.pathname.startsWith("/dash/login");
-    if (!storedId && !storedToken) {
-      if (!isLoginPath) {
-        navigate({
-          to: "/dash/login",
-        });
-      }
-      setLoading(false);
-      return;
-    }
-    setClientId(storedId);
+
     async function bootstrapClient() {
       try {
-        let data: Client | null = null;
-        if (storedToken) {
-          data = await verifyDashSession(storedToken);
-        }
-        if (!data && storedId) {
-          data = await getClientById(supabase, storedId);
-        }
+        // Validação exclusiva de sessão via servidor (sem fallback por ID)
+        const data = await verifyDashSession();
+
         if (!data?.active) {
           localStorage.removeItem("uzzina_dash_token");
           localStorage.removeItem("uzzina_dash_client_id");
@@ -76,6 +60,7 @@ function DashLayout() {
           }
           return;
         }
+
         setClientId(data.id);
         setClientData(data);
 
@@ -98,6 +83,7 @@ function DashLayout() {
         setLoading(false);
       }
     }
+
     bootstrapClient();
   }, [navigate, supabase]);
   const currentPartnerSlug =
@@ -112,7 +98,8 @@ function DashLayout() {
       applyPartnerColors(currentPartner.colors[0], currentPartner.colors[1]);
     }
   }, [currentPartner, applyPartnerColors]);
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logoutDashSession();
     localStorage.removeItem("uzzina_dash_token");
     localStorage.removeItem("uzzina_dash_client_id");
     localStorage.removeItem("uzzina_dash_last_partner");

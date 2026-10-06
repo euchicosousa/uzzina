@@ -1,132 +1,117 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
-import crypto from "node:crypto";
 import type { Database } from "../types/database";
-
-const SALT = "uzzina_v1_salt_";
-const TOKEN_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 dias
-
-function hashPassword(password: string): string {
-  const hash = crypto.createHash("sha256");
-  hash.update(SALT + password);
-  return hash.digest("hex");
-}
-
-function getSecret(): string {
-  return (
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.SUPABASE_ANON_KEY ||
-    "uzzina_dash_jwt_fallback_secret_key"
-  );
-}
-
-function signToken(payload: { id: string; email: string; exp: number }): string {
-  const payloadStr = Buffer.from(JSON.stringify(payload)).toString("base64url");
-  const signature = crypto
-    .createHmac("sha256", getSecret())
-    .update(payloadStr)
-    .digest("base64url");
-  return `${payloadStr}.${signature}`;
-}
-
-function verifyToken(token: string): { id: string; email: string; exp: number } | null {
-  try {
-    const parts = token.split(".");
-    if (parts.length !== 2) return null;
-    const [payloadStr, signature] = parts;
-    const expectedSig = crypto
-      .createHmac("sha256", getSecret())
-      .update(payloadStr)
-      .digest("base64url");
-
-    if (
-      !crypto.timingSafeEqual(
-        Buffer.from(signature, "utf-8"),
-        Buffer.from(expectedSig, "utf-8"),
-      )
-    ) {
-      return null;
-    }
-
-    const payload = JSON.parse(
-      Buffer.from(payloadStr, "base64url").toString("utf-8"),
-    );
-
-    if (typeof payload.exp !== "number" || Date.now() / 1000 > payload.exp) {
-      return null; // Token expirado
-    }
-
-    return payload;
-  } catch {
-    return null;
-  }
-}
+import {
+  SESSION_COOKIE_NAME,
+  SESSION_TTL_SECONDS,
+  extractCookie,
+  generateSessionToken,
+  hashLegacyPassword,
+  hashSessionToken,
+  serializeClearSessionCookie,
+  serializeSessionCookie,
+  validateRequestOrigin,
+} from "../server/dash-session";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Configura cabeçalho para evitar qualquer cache de respostas de autenticação
+  res.setHeader("Cache-Control", "no-store");
+
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
     return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "";
-  const supabaseServiceRoleKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.SUPABASE_PUBLISHABLE_KEY ||
-    "";
+  const isProduction = process.env.NODE_ENV === "production";
+  const appOrigin = process.env.APP_ORIGIN;
+  const originHeader = req.headers.origin as string | undefined;
+
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  // Falha controlada caso o servidor não tenha as variáveis obrigatórias configuradas
+  if (!supabaseUrl || !supabaseServiceRoleKey) {
+    return res
+      .status(500)
+      .json({ error: "Configuração do servidor de autenticação incompleta." });
+  }
+
+  const { action = "login", email, password } = req.body || {};
+
+  // Validação de Origin para ações que alteram estado (login, logout)
+  if (action === "login" || action === "logout") {
+    if (!validateRequestOrigin(originHeader, appOrigin, isProduction)) {
+      return res.status(403).json({ error: "Origem da requisição não autorizada." });
+    }
+  }
 
   const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseServiceRoleKey);
 
-  const { action = "login", email, password, token } = req.body || {};
-
-  // 1. Verificação / retomada de sessão
+  // 1. Verificação / Retomada de sessão via Cookie HttpOnly
   if (action === "verify") {
-    const authHeader = req.headers.authorization;
-    const bearerToken = authHeader?.startsWith("Bearer ")
-      ? authHeader.slice(7)
-      : null;
-    const checkToken = token || bearerToken;
+    const rawCookie = req.headers.cookie;
+    const sessionToken = extractCookie(rawCookie, SESSION_COOKIE_NAME);
 
-    if (!checkToken) {
-      return res.status(401).json({ error: "Token de sessão não fornecido." });
+    if (!sessionToken) {
+      return res.status(401).json({ error: "Sessão não fornecida." });
     }
 
-    const verified = verifyToken(checkToken);
-    if (!verified) {
+    const tokenHash = hashSessionToken(sessionToken);
+    const nowIso = new Date().toISOString();
+
+    // Busca a sessão válida (não revogada e não expirada)
+    const { data: session, error: sessionError } = await supabaseAdmin
+      .from("dash_sessions")
+      .select("id, client_id, expires_at, revoked_at")
+      .eq("token_hash", tokenHash)
+      .is("revoked_at", null)
+      .gt("expires_at", nowIso)
+      .single();
+
+    if (sessionError || !session) {
       return res.status(401).json({ error: "Sessão inválida ou expirada." });
     }
 
-    // Valida que o cliente continua ativo no banco de dados
-    const { data: client, error } = await supabaseAdmin
+    // Busca o cliente correspondente e assegura status ativo
+    const { data: client, error: clientError } = await supabaseAdmin
       .from("clients")
       .select("id, created_at, name, email, partners, image, active")
-      .eq("id", verified.id)
+      .eq("id", session.client_id)
       .eq("active", true)
       .single();
 
-    if (error || !client) {
-      return res
-        .status(401)
-        .json({ error: "Cliente inativo ou não encontrado." });
+    if (clientError || !client) {
+      return res.status(401).json({ error: "Cliente inativo ou não encontrado." });
     }
 
-    return res.status(200).json({ client });
+    // Garante que nenhum hash ou dado sensível do cliente é retornado no verify
+    const safeClient = {
+      id: client.id,
+      created_at: client.created_at,
+      name: client.name,
+      email: client.email,
+      partners: client.partners,
+      image: client.image,
+      active: client.active,
+    };
+
+    return res.status(200).json({ client: safeClient });
   }
 
-  // 2. Login com e-mail e senha
+  // 2. Login de cliente com e-mail e senha
   if (action === "login") {
     if (!email || !password) {
       return res.status(400).json({ error: "E-mail e senha são obrigatórios." });
     }
 
-    // Busca o cliente pelo e-mail e assegura que está ativo
-    const { data: client, error } = await supabaseAdmin
+    const { data: client, error: clientError } = await supabaseAdmin
       .from("clients")
       .select("id, created_at, name, email, partners, image, active, password_hash")
       .eq("email", email)
       .eq("active", true)
       .single();
 
-    if (error || !client) {
+    if (clientError || !client) {
       return res
         .status(401)
         .json({ error: "E-mail ou senha incorretos ou conta desativada." });
@@ -138,28 +123,69 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .json({ error: "Credenciais de acesso não configuradas para este cliente." });
     }
 
-    const inputHash = hashPassword(password);
+    const inputHash = hashLegacyPassword(password);
     if (inputHash !== client.password_hash) {
       return res
         .status(401)
         .json({ error: "E-mail ou senha incorretos ou conta desativada." });
     }
 
-    // Gera token de sessão seguro com HMAC
-    const exp = Math.floor(Date.now() / 1000) + TOKEN_TTL_SECONDS;
-    const sessionToken = signToken({
-      id: client.id,
-      email: client.email,
-      exp,
-    });
+    // Cria sessão opaca persistida no banco
+    const sessionToken = generateSessionToken();
+    const tokenHash = hashSessionToken(sessionToken);
+    const expiresAt = new Date(
+      Date.now() + SESSION_TTL_SECONDS * 1000,
+    ).toISOString();
 
-    // Retorna os dados seguros do cliente SEM password_hash
-    const { password_hash, ...safeClient } = client;
+    const { error: insertSessionError } = await supabaseAdmin
+      .from("dash_sessions")
+      .insert([
+        {
+          client_id: client.id,
+          token_hash: tokenHash,
+          expires_at: expiresAt,
+        },
+      ]);
 
-    return res.status(200).json({
-      client: safeClient,
-      token: sessionToken,
-    });
+    if (insertSessionError) {
+      return res
+        .status(500)
+        .json({ error: "Falha ao registrar sessão do cliente." });
+    }
+
+    // Injeta cookie HttpOnly com parâmetros estritos
+    res.setHeader(
+      "Set-Cookie",
+      serializeSessionCookie(sessionToken, { isProduction }),
+    );
+
+    // Retorna perfil seguro SEM password_hash e SEM o token bruto no JSON
+    const { password_hash: _discard, ...safeClient } = client;
+
+    return res.status(200).json({ client: safeClient });
+  }
+
+  // 3. Logout com revogação da sessão no banco e expiração do cookie
+  if (action === "logout") {
+    const rawCookie = req.headers.cookie;
+    const sessionToken = extractCookie(rawCookie, SESSION_COOKIE_NAME);
+
+    if (sessionToken) {
+      const tokenHash = hashSessionToken(sessionToken);
+      const nowIso = new Date().toISOString();
+
+      await supabaseAdmin
+        .from("dash_sessions")
+        .update({ revoked_at: nowIso })
+        .eq("token_hash", tokenHash);
+    }
+
+    res.setHeader(
+      "Set-Cookie",
+      serializeClearSessionCookie({ isProduction }),
+    );
+
+    return res.status(200).json({ success: true });
   }
 
   return res.status(400).json({ error: "Ação não suportada." });
