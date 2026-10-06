@@ -68,7 +68,7 @@ export function InstagramTab({
     "content",
   );
   return (
-    <div className="flex h-full flex-col overflow-y-auto md:flex-row">
+    <div className="flex h-full flex-col overflow-y-auto md:flex-row w-full max-w-full overflow-x-hidden">
       <div
         className={cn(
           "mx-auto flex shrink-0 flex-col p-6 md:w-2/5",

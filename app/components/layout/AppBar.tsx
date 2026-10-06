@@ -105,17 +105,27 @@ export function AppBar({
             <BulkActionMenu />
           ) : (
             <PrismButton
-              onClick={() =>
+              onClick={() => {
+                const currentPartnerSlug =
+                  params.slug ||
+                  (location.pathname.startsWith("/app/partner/")
+                    ? location.pathname.replace(/^\/app\/partner\//, "").split("/")[0]?.split("?")[0]
+                    : undefined);
+                const initialPartners = currentPartnerSlug
+                  ? [currentPartnerSlug]
+                  : partnerFilters.length === 1
+                    ? [partnerFilters[0]]
+                    : [];
+
                 setBaseAction({
                   ...getCleanAction({
                     user_id: person.user_id,
                     date: undefined,
-                    partners:
-                      partnerFilters.length === 1 ? [partnerFilters[0]] : [],
+                    partners: initialPartners,
                   }),
                   responsibles: [person.user_id],
-                } as unknown as Action)
-              }
+                } as unknown as Action);
+              }}
             >
               <span className="max-sm:hidden">Nova Ação</span>
               <span className="sm:hidden">Ação</span>

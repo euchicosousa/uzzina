@@ -53,15 +53,12 @@ export function ActionFormDrawer({
     let initialPartners = BaseAction.partners || [];
     let initialResponsibles = BaseAction.responsibles || [];
     let initialColor = BaseAction.color;
-
     if (initialPartners.length === 0 && partnerFilters.length > 0) {
       initialPartners = partnerFilters;
     }
-
     const matchedPartner = partners.find((p) =>
       initialPartners.includes(p.slug),
     );
-
     if (matchedPartner) {
       if (initialResponsibles.length === 0) {
         initialResponsibles = matchedPartner.users_ids;
@@ -76,7 +73,6 @@ export function ActionFormDrawer({
         initialColor = matchedPartner.colors[0];
       }
     }
-
     return {
       ...BaseAction,
       partners: initialPartners,
@@ -147,6 +143,7 @@ export function ActionFormDrawer({
     handleSaveRef.current = handleSave;
   }, [handleSave]);
   const prevBaseIdRef = useRef(BaseAction.id);
+  const prevBaseActionRef = useRef(BaseAction);
   useEffect(() => {
     const current = rawActionRef.current;
     if (current.id && !BaseAction.id) {
@@ -156,14 +153,55 @@ export function ActionFormDrawer({
       });
     }
 
-    // Only reset state if the action we are viewing actually changed
-    if (BaseAction.id !== prevBaseIdRef.current) {
+    // Reset state if the action changed (different id OR new action reference)
+    if (
+      BaseAction.id !== prevBaseIdRef.current ||
+      (!BaseAction.id && BaseAction !== prevBaseActionRef.current)
+    ) {
       prevBaseIdRef.current = BaseAction.id;
+      prevBaseActionRef.current = BaseAction;
       descriptionRef.current = BaseAction.description || "";
       contentDescriptionRef.current = BaseAction.content_description || "";
-      setRawAction(BaseAction);
+      let initialPartners = BaseAction.partners || [];
+      if (initialPartners.length === 0) {
+        if (
+          typeof window !== "undefined" &&
+          window.location.pathname.startsWith("/app/partner/")
+        ) {
+          const slug = window.location.pathname
+            .replace(/^\/app\/partner\//, "")
+            .split("/")[0]
+            ?.split("?")[0];
+          if (slug) initialPartners = [slug];
+        } else if (partnerFilters.length > 0) {
+          initialPartners = partnerFilters;
+        }
+      }
+      const matchedPartner = partners.find((p) =>
+        initialPartners.includes(p.slug),
+      );
+      const initialResponsibles =
+        BaseAction.responsibles && BaseAction.responsibles.length > 0
+          ? BaseAction.responsibles
+          : matchedPartner?.users_ids || [];
+      let initialColor = BaseAction.color;
+      if (
+        (!initialColor ||
+          initialColor === "#666666" ||
+          initialColor === "#666") &&
+        matchedPartner?.colors &&
+        matchedPartner.colors.length > 0
+      ) {
+        initialColor = matchedPartner.colors[0];
+      }
+      setRawAction({
+        ...BaseAction,
+        partners: initialPartners,
+        responsibles: initialResponsibles,
+        color: initialColor,
+      });
     }
-  }, [BaseAction, handleAction]);
+  }, [BaseAction, handleAction, partnerFilters, partners]);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
   const [activeAIIntent, setActiveAIIntent] = useState<string | null>(null);
   const [isStrategyModalOpen, setIsStrategyModalOpen] = useState(false);
@@ -405,8 +443,10 @@ export function ActionFormDrawer({
   return (
     <div
       className={cn(
-        "fixed top-16 right-0 bottom-0 z-10 flex shrink-0 flex-col overflow-hidden border-l bg-background",
-        view === "instagram" ? "lg:w-4xl" : "lg:w-2xl",
+        "fixed top-16 right-0 bottom-0 z-10 flex flex-col overflow-hidden border-l bg-background w-full max-w-full sm:max-w-2xl",
+        view === "instagram"
+          ? "lg:w-4xl lg:max-w-4xl"
+          : "lg:w-2xl lg:max-w-2xl",
       )}
     >
       {RawAction.archived && (
@@ -432,7 +472,7 @@ export function ActionFormDrawer({
       )}
 
       {/* Tabs */}
-      <div className="flex shrink-0 divide-x" role="tablist">
+      <div className="flex w-full shrink-0 divide-x overflow-hidden" role="tablist">
         <button
           aria-selected={view === "essential"}
           className={tabClass(view === "essential")}
@@ -440,7 +480,8 @@ export function ActionFormDrawer({
           role="tab"
           type="button"
         >
-          ESSENCIAL <HeartIcon className="size-4" />
+          <span className="truncate">ESSENCIAL</span>
+          <HeartIcon className="size-4 shrink-0" />
         </button>
         {isInstagramFeed(RawAction.category) && (
           <button
@@ -450,7 +491,8 @@ export function ActionFormDrawer({
             role="tab"
             type="button"
           >
-            INSTAGRAM <Icons className="size-4" slug="instagram" />
+            <span className="truncate">INSTAGRAM</span>
+            <Icons className="size-4 shrink-0" slug="instagram" />
           </button>
         )}
         <button
@@ -460,12 +502,13 @@ export function ActionFormDrawer({
           role="tab"
           type="button"
         >
-          OBSERVAÇÕES <MessageSquareIcon className="size-4" />
+          <span className="truncate">OBSERVAÇÕES</span>
+          <MessageSquareIcon className="size-4 shrink-0" />
         </button>
-        <div>
+        <div className="shrink-0">
           <button
             aria-label="Fechar"
-            className="flex w-full cursor-pointer items-center justify-center gap-2 border-b p-5 text-sm font-medium"
+            className="flex cursor-pointer items-center justify-center border-b px-3 py-3 sm:p-5 text-sm font-medium"
             onClick={onClose}
             type="button"
           >
@@ -474,15 +517,15 @@ export function ActionFormDrawer({
         </div>
       </div>
 
-      <div className="relative flex h-full grow flex-col overflow-hidden">
+      <div className="relative flex h-full grow flex-col overflow-hidden w-full max-w-full">
         {/* Essencial */}
         <div className="flex h-full w-full divide-x overflow-hidden bg-popover">
           {view === "essential" && (
             <div
               className={cn(
                 view !== "essential" && "hidden",
-                "w-full",
-                "h-full",
+                "w-full max-w-full",
+                "h-full overflow-hidden",
               )}
             >
               <EssentialsTab
@@ -573,7 +616,9 @@ export function ActionFormDrawer({
                     aria-label="Selecionar estratégia"
                     isSelected={!!strat.selected}
                     onChange={(isSelected) => {
-                      const currentStrats = parseStrategies(RawAction.strategies);
+                      const currentStrats = parseStrategies(
+                        RawAction.strategies,
+                      );
                       const updated = currentStrats.map((s, idx) => ({
                         ...s,
                         selected: idx === i ? isSelected : false,
@@ -582,7 +627,9 @@ export function ActionFormDrawer({
                         ...prev,
                         strategies: updated,
                       }));
-                      updateAction({ strategies: updated });
+                      updateAction({
+                        strategies: updated,
+                      });
                     }}
                   />
                   <PrismAccordionTrigger className="overflow-hidden flex-1 px-2">
@@ -607,7 +654,9 @@ export function ActionFormDrawer({
                     <PrismButton
                       className="self-end"
                       onClick={() => {
-                        const currentStrats = parseStrategies(RawAction.strategies);
+                        const currentStrats = parseStrategies(
+                          RawAction.strategies,
+                        );
                         const updated = currentStrats.map((s, idx) => ({
                           ...s,
                           selected: idx === i,
@@ -616,7 +665,9 @@ export function ActionFormDrawer({
                           ...prev,
                           strategies: updated,
                         }));
-                        updateAction({ strategies: updated });
+                        updateAction({
+                          strategies: updated,
+                        });
                         triggerAIAction(INTENT.ai_content, {
                           headline: strat.headline,
                           angulo: strat.angulo,
@@ -642,6 +693,6 @@ export function ActionFormDrawer({
 }
 const tabClass = (active: boolean) =>
   cn(
-    "flex w-full cursor-pointer items-center justify-center gap-2 border-b p-4 text-sm font-medium",
+    "flex flex-1 min-w-0 cursor-pointer items-center justify-center gap-1.5 border-b px-2 py-3 sm:p-4 text-xs sm:text-sm font-medium",
     active ? "bg-popover border-b-transparent" : "bg-muted border-border",
   );

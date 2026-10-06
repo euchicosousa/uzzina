@@ -120,16 +120,26 @@ function Dashboard() {
         setOpenCmdK((prev) => !prev);
       } else if (event.code === "KeyA" && event.altKey && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
+        const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
+        const currentPartnerSlug = currentPath.startsWith("/app/partner/")
+          ? currentPath.replace(/^\/app\/partner\//, "").split("/")[0]?.split("?")[0]
+          : null;
+        const initialPartners = currentPartnerSlug
+          ? [currentPartnerSlug]
+          : partnerFilters.length === 1
+            ? [partnerFilters[0]]
+            : [];
         setBaseAction({
           ...(getCleanAction({
             user_id: userId,
+            partners: initialPartners,
           }) as unknown as Action),
         });
       }
     }
     document.addEventListener("keydown", keyDownGlobal, true);
     return () => document.removeEventListener("keydown", keyDownGlobal, true);
-  }, [person]);
+  }, [person, partnerFilters]);
   if (loading || !person) {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center bg-background gap-4">

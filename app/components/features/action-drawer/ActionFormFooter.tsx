@@ -36,9 +36,9 @@ export function ActionFormFooter({
 }: ActionFormFooterProps) {
   const { handleAction } = useActionMutations();
   return (
-    <div className="w-fulld flex shrink-0 justify-between overflow-hidden border-t">
+    <div className="w-full flex shrink-0 justify-between items-center overflow-hidden border-t">
       {/* Coisas */}
-      <div className="flex items-center divide-x overflow-hidden">
+      <div className="flex items-center divide-x overflow-x-auto no-scrollbar shrink min-w-0">
         {/* Parceiros Partners Combobox */}
         <div className="overflow-hidden">
           <PartnersCombobox

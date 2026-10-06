@@ -116,7 +116,7 @@ export function EssentialsTab({
     await triggerAIAction(INTENT.ai_strategy);
   };
   return (
-    <div className="flex h-full flex-col overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden w-full max-w-full">
       {/* Título */}
       <ActionTitleInput
         autoFocus
@@ -140,8 +140,8 @@ export function EssentialsTab({
         title={RawAction.title}
       />
 
-      <div className="text-sm">
-        <div className="flex flex-wrap items-center gap-4 border-b px-4 py-2">
+      <div className="text-sm max-w-full">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4 border-b px-4 py-2 max-w-full">
           <div className="opacity-50">
             <ActionTimeDisplay action={RawAction} />
           </div>
@@ -172,7 +172,7 @@ export function EssentialsTab({
           </PrismButton>
         </div>
 
-        <div className="flex justify-between gap-8 border-b px-4 py-1">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-1.5 max-w-full">
           <div className="flex items-center gap-1">
             <CalendarDaysIcon
               className={cn(
@@ -226,8 +226,8 @@ export function EssentialsTab({
           )}
         </div>
 
-        <div className="flex items-start gap-2 border-b px-4 py-1">
-          <div className="flex flex-wrap items-center gap-1">
+        <div className="flex items-start gap-2 border-b px-4 py-1 max-w-full overflow-hidden">
+          <div className="flex flex-wrap items-center gap-1 max-w-full">
             {workFiles.map((url, i) => (
               <WorkFileThumbnail
                 key={url}
@@ -267,7 +267,7 @@ export function EssentialsTab({
         </div>
       </div>
       {/* Descrição */}
-      <div className="h-full overflow-hidden">
+      <div className="h-full overflow-hidden w-full max-w-full">
         <Suspense
           fallback={
             <div className="h-full w-full min-h-50 animate-pulse bg-muted rounded-2xl" />
