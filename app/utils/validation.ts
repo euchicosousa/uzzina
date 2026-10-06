@@ -50,7 +50,7 @@ const nullableString = z
   .nullable()
   .optional()
   .transform((val) => {
-    if (!val || val === "null" || val === "") return undefined; // undefined removes it from the spread
+    if (!val || val === "null" || val === "") return null;
     return val;
   });
 export const ActionFormSchema = z.object({
@@ -69,6 +69,7 @@ export const ActionFormSchema = z.object({
   color: z.string().optional(),
   phase: z.string().optional().nullable(),
   strategies: z.unknown().optional().nullable(),
+  time: z.number().optional().nullable(),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
   archived: z.boolean().nullable().optional(),

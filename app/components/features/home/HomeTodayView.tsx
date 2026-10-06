@@ -22,15 +22,21 @@ import { HomeViewWrapper } from "./HomeViewWrapper";
 export function HomeTodayView({
   actions,
   isLoading,
+  currentDay: controlledDay,
+  onCurrentDayChange,
 }: {
   actions: Action[];
   isLoading?: boolean;
+  currentDay?: Date;
+  onCurrentDayChange?: (date: Date) => void;
 }) {
   const [view, setView] = useState<
     "kanban" | "feed" | "categories" | "partners"
   >("partners");
 
-  const [currentDay, setCurrentDay] = useState(new Date());
+  const [uncontrolledDay, setUncontrolledDay] = useState(new Date());
+  const currentDay = controlledDay ?? uncontrolledDay;
+  const setCurrentDay = onCurrentDayChange ?? setUncontrolledDay;
 
   const filteredActions = useMemo(() => {
     return view === "feed"

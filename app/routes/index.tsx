@@ -5,8 +5,8 @@ export const Route = createFileRoute("/")({
 function Home() {
   return (
     <div className="flex overflow-hidden">
-      <div className="w-[10vw] shrink-0 border-r lg:w-[4vw]"></div>
-      <div className="mx-auto flex h-dvh w-[80vw] shrink-0 flex-col justify-between lg:w-[92vw]">
+      <div className="w-[5vw] shrink-0 border-r lg:w-[4vw]"></div>
+      <div className="mx-auto flex h-dvh w-[90vw] shrink-0 flex-col justify-between lg:w-[92vw]">
         <div className="border_after p-8 text-xl font-medium tracking-tighter">
           Escolha qual app quer acessar
         </div>
@@ -65,7 +65,7 @@ function Home() {
           CNVT®
         </div>
       </div>
-      <div className="w-[10vw] shrink border-l lg:w-[4vw]"></div>
+      <div className="w-[5vw] shrink border-l lg:w-[4vw]"></div>
     </div>
   );
 }

@@ -119,12 +119,22 @@ export async function bulkUpdateActionsClient(
   updates: Partial<Action>,
 ): Promise<Action[]> {
   const supabase = createSupabaseBrowserClient();
+  const finalUpdates: Partial<Action> = {
+    ...updates,
+    updated_at: new Date().toISOString(),
+  };
+
+  // Regra de domínio consistente: ao concluir ou arquivar, limpa sprints
+  if (
+    finalUpdates.phase === PHASES.finished.slug ||
+    finalUpdates.archived === true
+  ) {
+    finalUpdates.sprints = null;
+  }
+
   const { data, error } = await supabase
     .from("actions")
-    .update({
-      ...updates,
-      updated_at: new Date().toISOString(),
-    })
+    .update(finalUpdates)
     .in("id", ids)
     .select();
   if (error) throw error;
@@ -145,7 +155,7 @@ export async function bulkUpdateDateOnlyClient(
     .select("id, date")
     .in("id", ids);
   if (error) throw error;
-  await Promise.all(
+  const results = await Promise.all(
     (
       data as {
         id: string;
@@ -162,6 +172,8 @@ export async function bulkUpdateDateOnlyClient(
         .eq("id", id);
     }),
   );
+  const failure = results.find((r) => r.error);
+  if (failure?.error) throw failure.error;
 }
 
 /**
@@ -178,7 +190,7 @@ export async function bulkUpdateTimeOnlyClient(
     .select("id, date")
     .in("id", ids);
   if (error) throw error;
-  await Promise.all(
+  const results = await Promise.all(
     (
       data as {
         id: string;
@@ -198,4 +210,6 @@ export async function bulkUpdateTimeOnlyClient(
         .eq("id", id);
     }),
   );
+  const failure = results.find((r) => r.error);
+  if (failure?.error) throw failure.error;
 }

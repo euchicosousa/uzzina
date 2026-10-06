@@ -3,6 +3,7 @@ import {
   CalendarIcon,
   FlagIcon,
   KanbanIcon,
+  LoaderIcon,
   PaletteIcon,
   SendIcon,
   TagIcon,
@@ -133,31 +134,50 @@ export function BulkActionMenu() {
   const [colorOpen, setColorOpen] = useState(false);
   const [sprintOpen, setSprintOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Early return: nada a mostrar fora do modo de seleção
   if (!isSelectionMode) return null;
 
   // ─── Helpers de ação em lote ─────────────────────────────────────────────────
-  const performBulkAction = (updates: Record<string, unknown>) => {
-    handleBulkAction(selectedIds, updates);
-    clearSelection();
-    toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
+  const performBulkAction = async (updates: Record<string, unknown>) => {
+    if (selectedIds.length === 0 || isProcessing) return;
+    const count = selectedIds.length;
+    setIsProcessing(true);
+    try {
+      await handleBulkAction(selectedIds, updates);
+      clearSelection();
+      toast.success(`${count} ação(ões) atualizada(s)!`);
+    } catch (err) {
+      console.error("Erro na ação em lote:", err);
+      toast.error("Falha ao atualizar ações em lote.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   // ─── Handlers: Data/Hora ─────────────────────────────────────────────────────
-  const applyDateTime = (result: BulkDateTimeResult) => {
-    if (result.mode === "datetime") {
-      performBulkAction({
-        date: result.date,
-      });
-    } else if (result.mode === "date_only") {
-      handleBulkDateOnly(selectedIds, result.dateOnly);
+  const applyDateTime = async (result: BulkDateTimeResult) => {
+    if (selectedIds.length === 0 || isProcessing) return;
+    const count = selectedIds.length;
+    setIsProcessing(true);
+    try {
+      if (result.mode === "datetime") {
+        await handleBulkAction(selectedIds, {
+          date: result.date,
+        });
+      } else if (result.mode === "date_only") {
+        await handleBulkDateOnly(selectedIds, result.dateOnly);
+      } else {
+        await handleBulkTimeOnly(selectedIds, result.timeOnly);
+      }
       clearSelection();
-      toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
-    } else {
-      handleBulkTimeOnly(selectedIds, result.timeOnly);
-      clearSelection();
-      toast.success(`${selectedIds.length} ação(ões) atualizada(s)!`);
+      toast.success(`${count} ação(ões) atualizada(s)!`);
+    } catch (err) {
+      console.error("Erro ao atualizar data/hora em lote:", err);
+      toast.error("Falha ao atualizar data/hora das ações.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -183,11 +203,11 @@ export function BulkActionMenu() {
   };
 
   // ─── Handlers: Arquivar ──────────────────────────────────────────────────────
-  const applyArchive = () => {
-    performBulkAction({
+  const applyArchive = async () => {
+    setArchiveOpen(false);
+    await performBulkAction({
       archived: true,
     });
-    setArchiveOpen(false);
   };
 
   // ─── Handler: Enviar para Aprovação ─────────────────────────────────────
@@ -248,12 +268,18 @@ export function BulkActionMenu() {
       <PrismMenu>
         <PrismMenuTrigger>
           <PrismButton
-            isDisabled={selectedIds.length === 0}
+            isDisabled={selectedIds.length === 0 || isProcessing}
             variant="secondary"
           >
-            {selectedIds.length > 0
-              ? `${selectedIds.length} Selecionada${selectedIds.length > 1 ? "s" : ""}`
-              : "Selecione as ações"}
+            {isProcessing ? (
+              <span className="flex items-center gap-1.5">
+                <LoaderIcon className="size-4 animate-spin" /> Atualizando...
+              </span>
+            ) : selectedIds.length > 0 ? (
+              `${selectedIds.length} Selecionada${selectedIds.length > 1 ? "s" : ""}`
+            ) : (
+              "Selecione as ações"
+            )}
           </PrismButton>
         </PrismMenuTrigger>
         <PrismMenuContent className="w-56" placement="top end">

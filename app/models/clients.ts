@@ -15,7 +15,7 @@ async function hashPassword(password: string): Promise<string> {
 export async function getAllClients(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from("clients")
-    .select("*")
+    .select("id, created_at, name, email, partners, image, active")
     .is("active", true)
     .order("name", { ascending: true });
 
@@ -27,7 +27,7 @@ export async function getAllClients(supabase: SupabaseClient) {
 export async function getClientById(supabase: SupabaseClient, id: string) {
   const { data, error } = await supabase
     .from("clients")
-    .select("*")
+    .select("id, created_at, name, email, partners, image, active")
     .eq("id", id)
     .single();
 
@@ -35,17 +35,27 @@ export async function getClientById(supabase: SupabaseClient, id: string) {
   return data as Client;
 }
 
+export type CreateClientInput = Omit<Client, "id" | "created_at" | "active" | "password_hash"> & {
+  password?: string | null;
+};
+
+export type UpdateClientInput = Partial<Omit<Client, "id" | "created_at" | "active" | "password_hash">> & {
+  password?: string | null;
+  password_hash?: string | null;
+};
+
 /** Cria um novo cliente com e-mail e senha com hash. */
 export async function createClient(
   supabase: SupabaseClient,
-  clientData: Omit<Client, "id" | "created_at" | "active" | "password_hash">,
+  clientData: CreateClientInput,
 ) {
-  const passwordHash = await hashPassword(clientData.password);
+  const { password, ...safeData } = clientData;
+  const passwordHash = password ? await hashPassword(password) : null;
   
   const { data, error } = await supabase
     .from("clients")
-    .insert([{ ...clientData, password_hash: passwordHash, active: true }])
-    .select()
+    .insert([{ ...safeData, password_hash: passwordHash, active: true }])
+    .select("id, created_at, name, email, partners, image, active")
     .single();
 
   if (error) throw error;
@@ -56,19 +66,19 @@ export async function createClient(
 export async function updateClient(
   supabase: SupabaseClient,
   id: string,
-  clientData: Partial<Omit<Client, "id" | "created_at" | "active" | "password_hash">> & { password_hash?: string | null },
+  clientData: UpdateClientInput,
 ) {
-  const updates: Partial<Omit<Client, "id" | "created_at" | "active" | "password_hash">> & { password_hash?: string | null } = { ...clientData };
+  const { password, ...updates } = clientData;
   
-  if (clientData.password) {
-    updates.password_hash = await hashPassword(clientData.password);
+  if (password) {
+    updates.password_hash = await hashPassword(password);
   }
 
   const { data, error } = await supabase
     .from("clients")
     .update(updates)
     .eq("id", id)
-    .select()
+    .select("id, created_at, name, email, partners, image, active")
     .single();
 
   if (error) throw error;
@@ -101,7 +111,7 @@ export async function authenticateClient(
 
   const { data, error } = await supabase
     .from("clients")
-    .select("*")
+    .select("id, created_at, name, email, partners, image, active, password_hash")
     .eq("email", email)
     .is("active", true)
     .single();
@@ -110,23 +120,10 @@ export async function authenticateClient(
 
   const client = data as Client & { password_hash?: string | null };
 
-  // 1. Caso haja password_hash no banco
   if (client.password_hash) {
     const inputHash = await hashPassword(password);
     const match = inputHash === client.password_hash;
     if (!match) return null;
-    return client as Client;
-  }
-
-  // 2. Fallback e auto-upgrade para clients antigos sem password_hash
-  if (client.password === password) {
-    const passwordHash = await hashPassword(password);
-    await supabase
-      .from("clients")
-      .update({ password_hash: passwordHash })
-      .eq("id", client.id);
-    
-    client.password_hash = passwordHash;
     return client as Client;
   }
 

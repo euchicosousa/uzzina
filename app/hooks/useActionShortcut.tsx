@@ -53,6 +53,9 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
       // Ignora repetição de tecla segurada
       if (event.repeat) return;
 
+      // Não intercepta comandos do sistema ou do navegador (Cmd+C, Ctrl+C, Alt, etc.)
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+
       if (isInputFocused(event)) return;
 
       // Descobre o elemento mais interno sob o cursor que tenha data-action-id

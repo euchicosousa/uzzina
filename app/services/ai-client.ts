@@ -13,11 +13,22 @@ export interface AIResult {
   output: unknown;
 }
 
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+
 export async function callAI(payload: AIPayload): Promise<AIResult> {
+  const supabase = createSupabaseBrowserClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+
+  if (!token) {
+    throw new Error("Usuário não autenticado para chamar a IA.");
+  }
+
   const response = await fetch("/api/ai", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
     },
     body: JSON.stringify(payload),
   });

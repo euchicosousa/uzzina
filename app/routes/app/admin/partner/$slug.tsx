@@ -11,8 +11,7 @@ import {
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ColorListEditor } from "~/components/features/ColorListEditor";
-import { PartnerTopicsEditor } from "~/components/features/PartnerTopicsEditor";
-import type { PartnerTopic } from "~/types";
+
 const Tiptap = lazy(() =>
   import("~/components/features/RichTextEditor").then((module) => ({
     default: module.Tiptap,
@@ -65,7 +64,7 @@ function AdminPartnerEditPage() {
   const [voiceValue, setVoiceValue] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [brandColors, setBrandColors] = useState<string[]>([]);
-  const [topics, setTopics] = useState<PartnerTopic[]>([]);
+
   const [sowValue, setSowValue] = useState<"marketing" | "socialmedia" | "demand">("marketing");
   const [_justSaved, setJustSaved] = useState(false);
   const [savingFields, setSavingFields] = useState<Set<string>>(new Set());
@@ -105,7 +104,7 @@ function AdminPartnerEditPage() {
       setVoiceValue(partner.voice || "");
       setSelectedUsers(partner.users_ids || []);
       setBrandColors(partner.colors || []);
-      setTopics((partner.topics as unknown as PartnerTopic[]) || []);
+
       const initialSow = partner.sow || "marketing";
       setSowValue(initialSow);
       stateRef.current = {
@@ -185,7 +184,7 @@ function AdminPartnerEditPage() {
       image: imageUrl || null,
       instagram_caption_tail: stateRef.current.instagram_caption_tail || null,
       sow: stateRef.current.sow,
-      topics: topics as unknown as import("types/database").Json,
+
       ...patch,
     };
 
@@ -243,7 +242,7 @@ function AdminPartnerEditPage() {
       instagram_caption_tail:
         (updates.instagram_caption_tail as string) || null,
       sow: stateRef.current.sow,
-      topics: topics as unknown as import("types/database").Json,
+
     };
     await saveMutation.mutateAsync(partnerData);
   };
@@ -519,18 +518,6 @@ function AdminPartnerEditPage() {
             />
           </div>
 
-          <PartnerTopicsEditor
-            brandColors={brandColors}
-            isSaving={savingFields.has("topics")}
-            onChange={(updatedTopics) => {
-              setTopics(updatedTopics);
-              triggerAutoSave({
-                topics:
-                  updatedTopics as unknown as import("types/database").Json,
-              });
-            }}
-            topics={topics}
-          />
 
           <div className="flex items-end justify-between gap-4">
             <div className="grid gap-4 w-full">

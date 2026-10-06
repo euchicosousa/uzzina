@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   PointerSensor,
   useSensor,
@@ -16,11 +16,28 @@ export function useKanbanDnd<T extends string | null>({
 }: {
   actions: Action[];
   fieldKey: "phase";
-  onDrop: (action: Action, newValue: T) => void;
+  onDrop: (action: Action, newValue: T) => unknown;
   parseTarget: (overId: string) => T;
 }) {
   const [activeAction, setActiveAction] = useState<Action | undefined>();
   const [overrides, setOverrides] = useState<Record<string, T>>({});
+
+  // Limpa overrides automaticamente quando as ações canônicas do servidor atualizarem
+  useEffect(() => {
+    setOverrides((prev) => {
+      let changed = false;
+      const next = { ...prev };
+      for (const action of actions) {
+        if (next[action.id] !== undefined) {
+          if (action[fieldKey] === next[action.id]) {
+            delete next[action.id];
+            changed = true;
+          }
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [actions, fieldKey]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -31,11 +48,21 @@ export function useKanbanDnd<T extends string | null>({
     if (found) setActiveAction(found);
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     if (event.over && activeAction) {
       const newValue = parseTarget(event.over.id as string);
-      setOverrides((prev) => ({ ...prev, [activeAction.id]: newValue }));
-      onDrop(activeAction, newValue);
+      const actionId = activeAction.id;
+      setOverrides((prev) => ({ ...prev, [actionId]: newValue }));
+      try {
+        await onDrop(activeAction, newValue);
+      } finally {
+        setOverrides((prev) => {
+          if (prev[actionId] === undefined) return prev;
+          const next = { ...prev };
+          delete next[actionId];
+          return next;
+        });
+      }
     }
     setActiveAction(undefined);
   };

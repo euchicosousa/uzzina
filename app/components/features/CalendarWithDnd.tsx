@@ -10,7 +10,7 @@ import {
 } from "@dnd-kit/core";
 import { format, isSameDay } from "date-fns";
 import { parseU } from "~/utils/date";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActionItem } from "~/components/features/ActionItem";
 import {
   CalendarActions,
@@ -49,6 +49,24 @@ export function CalendarWithDnd({
   const [dateOverrides, setDateOverrides] = useState<
     Record<string, Partial<Action>>
   >({});
+
+  // Limpa overrides automaticamente quando as ações do servidor atualizarem
+  useEffect(() => {
+    setDateOverrides((prev) => {
+      let changed = false;
+      const next = { ...prev };
+      for (const action of actions) {
+        if (next[action.id]) {
+          if (action.date === next[action.id]?.date) {
+            delete next[action.id];
+            changed = true;
+          }
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [actions]);
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -62,7 +80,7 @@ export function CalendarWithDnd({
       setActiveAction(found);
     }
   };
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     if (event.over && activeAction) {
       const key = "date";
       const value = format(
@@ -70,15 +88,27 @@ export function CalendarWithDnd({
         "yyyy-MM-dd",
       ).concat(format(activeAction[key], " HH:mm:ss"));
       const newDates = getNewDateForAction(activeAction, parseU(value));
+      const actionId = activeAction.id;
+
       setDateOverrides((prev) => ({
         ...prev,
-        [activeAction.id]: newDates,
+        [actionId]: newDates,
       }));
-      handleAction({
-        ...activeAction,
-        intent: INTENT.update_action,
-        ...newDates,
-      });
+
+      try {
+        await handleAction({
+          ...activeAction,
+          intent: INTENT.update_action,
+          ...newDates,
+        });
+      } finally {
+        setDateOverrides((prev) => {
+          if (!prev[actionId]) return prev;
+          const next = { ...prev };
+          delete next[actionId];
+          return next;
+        });
+      }
     }
     setActiveAction(undefined);
   };

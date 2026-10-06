@@ -103,33 +103,41 @@ export function ActionFormDrawer({
   // always saves the latest typed content even without blur.
   const descriptionRef = useRef(BaseAction.description || "");
   const contentDescriptionRef = useRef(BaseAction.content_description || "");
-  const handleSave = useCallback(async () => {
+  const handleSave = useCallback(async (): Promise<boolean> => {
     if (!RawAction.title) {
       toast.error("Erro / O título é obrigatório", {
         position: "top-center",
       });
-      return;
+      return false;
     }
     if (RawAction.partners.length === 0) {
       toast.error("Erro / Pelo menos um parceiro deve ser selecionado", {
         position: "top-center",
       });
-      return;
+      return false;
     }
 
     // Prevent double-create: if onBlur already fired a create, bail out
-    if (!RawAction.id && isCreatingRef.current) return;
+    if (!RawAction.id && isCreatingRef.current) return false;
     if (!RawAction.id) isCreatingRef.current = true;
-    const result = await handleAction({
-      ...RawAction,
-      description: descriptionRef.current,
-      content_description: contentDescriptionRef.current,
-      // always latest typed content
-      intent: RawAction.id ? INTENT.update_action : INTENT.create_action,
-    });
-    if (result) {
+    try {
+      const result = await handleAction({
+        ...RawAction,
+        description: descriptionRef.current,
+        content_description: contentDescriptionRef.current,
+        // always latest typed content
+        intent: RawAction.id ? INTENT.update_action : INTENT.create_action,
+      });
+      if (result) {
+        setRawAction(result);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error("Erro ao salvar ação:", err);
+      return false;
+    } finally {
       isCreatingRef.current = false;
-      setRawAction(result);
     }
   }, [RawAction, handleAction]);
 
@@ -305,7 +313,7 @@ export function ActionFormDrawer({
         [key: string]: unknown;
       },
       forceCreate = false,
-    ) => {
+    ): Promise<void> => {
       const current = rawActionRef.current;
       if (
         current.id ||
@@ -317,14 +325,19 @@ export function ActionFormDrawer({
         // Prevent double-create: if a creation is already in flight, bail out
         if (!current.id && isCreatingRef.current) return;
         if (!current.id) isCreatingRef.current = true;
-        const result = await handleAction({
-          ...current,
-          ...data,
-          intent: current.id ? INTENT.update_action : INTENT.create_action,
-        });
-        if (result) {
+        try {
+          const result = await handleAction({
+            ...current,
+            ...data,
+            intent: current.id ? INTENT.update_action : INTENT.create_action,
+          });
+          if (result) {
+            setRawAction(result);
+          }
+        } catch (err) {
+          console.error("Erro ao atualizar ação:", err);
+        } finally {
           isCreatingRef.current = false;
-          setRawAction(result);
         }
       }
     },
@@ -372,7 +385,7 @@ export function ActionFormDrawer({
     captionTailRef.current = currentPartners[0]?.instagram_caption_tail;
   }, [currentPartners]);
   useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
+    async function handleKeyDown(event: KeyboardEvent) {
       if (event.key.toLocaleLowerCase() === "escape") {
         event.preventDefault();
         event.stopPropagation();
@@ -380,8 +393,8 @@ export function ActionFormDrawer({
       } else if (event.key.toLocaleLowerCase() === "enter" && event.metaKey) {
         event.preventDefault();
         event.stopPropagation();
-        handleSaveRef.current();
-        if (!event.shiftKey) {
+        const success = await handleSaveRef.current();
+        if (success && !event.shiftKey) {
           onClose();
         }
       }

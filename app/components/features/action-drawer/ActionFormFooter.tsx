@@ -1,4 +1,4 @@
-import type { Action, Partner, PartnerTopic } from "~/types";
+import type { Action, Partner } from "~/types";
 import {
   ArchiveIcon,
   ArchiveRestoreIcon,
@@ -22,7 +22,7 @@ interface ActionFormFooterProps {
   updateAction: (data?: Record<string, unknown>) => Promise<void>;
   currentPartners: Partner[];
   isPending: boolean;
-  handleSave: () => void;
+  handleSave: () => Promise<boolean>;
   handleClose: () => void;
 }
 export function ActionFormFooter({
@@ -46,16 +46,6 @@ export function ActionFormFooter({
               const selectedPartnersData = currentPartners.filter((p) =>
                 selected.includes(p.slug),
               );
-              const availableTopicIds = new Set(
-                selectedPartnersData.flatMap((p) =>
-                  ((p.topics as unknown as PartnerTopic[]) || []).map(
-                    (t) => t.id,
-                  ),
-                ),
-              );
-              const filteredTopicIds = (RawAction.topic_ids || []).filter(
-                (id) => availableTopicIds.has(id),
-              );
 
               let newColor = RawAction.color;
               if (
@@ -71,12 +61,10 @@ export function ActionFormFooter({
               setRawAction({
                 ...RawAction,
                 partners: selected,
-                topic_ids: filteredTopicIds,
                 color: newColor,
               });
               await updateAction({
                 partners: selected,
-                topic_ids: filteredTopicIds,
                 color: newColor,
               });
             }}
@@ -234,11 +222,11 @@ export function ActionFormFooter({
         <PrismButton
           className="squircle w-32 overflow-hidden rounded-2xl"
           isDisabled={isPending}
-          onClick={(event) => {
+          onClick={async (event) => {
             event.preventDefault();
             event.stopPropagation();
-            handleSave();
-            if (event.shiftKey) {
+            const success = await handleSave();
+            if (success && event.shiftKey) {
               handleClose();
             }
           }}

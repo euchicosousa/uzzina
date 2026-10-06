@@ -29,7 +29,7 @@ export default function KanbanPhasesBoard({ actions }: { actions: Action[] }) {
     fieldKey: "phase",
     parseTarget: (overId) => overId,
     onDrop: (action, newPhase) => {
-      handleAction({
+      return handleAction({
         ...action,
         intent: INTENT.update_action,
         phase: newPhase,
