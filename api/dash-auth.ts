@@ -13,7 +13,7 @@ import {
   validateRequestOrigin,
 } from "../server/dash-session";
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handleRequest(req: VercelRequest, res: VercelResponse) {
   // Configura cabeçalho para evitar qualquer cache de respostas de autenticação
   res.setHeader("Cache-Control", "no-store");
 
@@ -32,10 +32,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Falha controlada caso o servidor não tenha as variáveis obrigatórias configuradas
   if (!supabaseUrl || !supabaseServiceRoleKey) {
     return res
-      .status(500)
+      .status(503)
       .json({ error: "Configuração do servidor de autenticação incompleta." });
   }
 
+  if (req.body && (typeof req.body !== "object" || Array.isArray(req.body))) {
+    return res.status(400).json({ error: "Pedido inválido." });
+  }
   const { action = "login", email, password } = req.body || {};
 
   // Validação de Origin para ações que alteram estado (login, logout)
@@ -68,6 +71,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .gt("expires_at", nowIso)
       .single();
 
+    if (sessionError && sessionError.code !== "PGRST116") {
+      return res.status(503).json({ error: "Não foi possível consultar a sessão. Tente novamente." });
+    }
+
     if (sessionError || !session) {
       return res.status(401).json({ error: "Sessão inválida ou expirada." });
     }
@@ -79,6 +86,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .eq("id", session.client_id)
       .eq("active", true)
       .single();
+
+    if (clientError && clientError.code !== "PGRST116") {
+      return res.status(503).json({ error: "Não foi possível consultar a sessão. Tente novamente." });
+    }
 
     if (clientError || !client) {
       return res.status(401).json({ error: "Cliente inativo ou não encontrado." });
@@ -100,7 +111,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // 2. Login de cliente com e-mail e senha
   if (action === "login") {
-    if (!email || !password) {
+    if (typeof email !== "string" || typeof password !== "string" || !email || !password || email.length > 254 || password.length > 4096) {
       return res.status(400).json({ error: "E-mail e senha são obrigatórios." });
     }
 
@@ -111,6 +122,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .eq("active", true)
       .single();
 
+    if (clientError && clientError.code !== "PGRST116") {
+      return res.status(503).json({ error: "Não foi possível consultar a conta. Tente novamente." });
+    }
     if (clientError || !client) {
       return res
         .status(401)
@@ -149,7 +163,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (insertSessionError) {
       return res
-        .status(500)
+        .status(503)
         .json({ error: "Falha ao registrar sessão do cliente." });
     }
 
@@ -174,10 +188,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const tokenHash = hashSessionToken(sessionToken);
       const nowIso = new Date().toISOString();
 
-      await supabaseAdmin
+      const { error: revokeError } = await supabaseAdmin
         .from("dash_sessions")
         .update({ revoked_at: nowIso })
         .eq("token_hash", tokenHash);
+      if (revokeError) {
+        return res.status(503).json({ error: "Não foi possível revogar a sessão. Tente novamente." });
+      }
     }
 
     res.setHeader(
@@ -189,4 +206,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   return res.status(400).json({ error: "Ação não suportada." });
+}
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  try {
+    return await handleRequest(req, res);
+  } catch {
+    res.setHeader("Cache-Control", "no-store");
+    return res.status(503).json({ error: "O portal está temporariamente indisponível. Tente novamente." });
+  }
 }

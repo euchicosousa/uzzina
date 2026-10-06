@@ -5,7 +5,7 @@ import {
   useNavigate,
 } from "@tanstack/react-router";
 import { ChevronUpIcon } from "lucide-react";
-import { Suspense, lazy, useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import invariant from "tiny-invariant";
 const ActionFormDrawer = lazy(() =>
   import("~/components/features/action-drawer/ActionFormDrawer").then((module) => ({
@@ -23,7 +23,7 @@ import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { cn } from "cnfast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
-import { getAllPartners, getPartnersByUserId } from "~/models/partners";
+import { getOperationalPartners } from "~/models/partners";
 import type { Action, Partner, Person } from "~/types";
 import { AppContext } from "~/contexts/AppContext";
 import { UZZINALogo } from "~/components/logo";
@@ -54,20 +54,17 @@ function Dashboard() {
 
   // Query reativa para manter os parceiros sincronizados com o cache
   const { data: reactivePartners = partners } = useQuery({
-    queryKey: QUERY_KEYS.partners(),
+    queryKey: QUERY_KEYS.operationalPartners(person?.user_id || "",!!person?.admin),
     queryFn: async () => {
       const supabase = createSupabaseBrowserClient();
-      if (person?.admin) {
-        return getAllPartners(supabase);
-      }
-      if (person?.user_id) {
-        return getPartnersByUserId(supabase, person.user_id);
-      }
+      if (person?.user_id) return getOperationalPartners(supabase,person.user_id,person.admin);
       return partners;
     },
     initialData: partners.length > 0 ? partners : undefined,
     enabled: !!person,
   });
+
+  const visiblePartners = useMemo(() => reactivePartners.filter(partner => !partner.archived),[reactivePartners]);
 
   useEffect(() => {
     if (typeof window !== "undefined" && person) {
@@ -119,7 +116,7 @@ function Dashboard() {
       invariant(partners, "Partners not found");
       setPerson(person);
       setPartners(partners);
-      queryClient.setQueryData(QUERY_KEYS.partners(), partners);
+      queryClient.setQueryData(QUERY_KEYS.operationalPartners(person.user_id,person.admin), partners.filter(partner => !partner.archived));
       setLoading(false);
     }
     initAuth();
@@ -180,7 +177,7 @@ function Dashboard() {
     <AppContext.Provider
       value={{
         person,
-        partners: reactivePartners,
+        partners: visiblePartners,
         cloudName,
         uploadPreset,
         setBaseAction,
@@ -256,7 +253,7 @@ function Dashboard() {
                 <div className="pointer-events-auto">
                   <AppBar
                     partnerFilters={partnerFilters}
-                    partners={partners}
+                    partners={visiblePartners}
                     person={person}
                     setBaseAction={setBaseAction}
                     setOpenCmdK={setOpenCmdK}
@@ -285,7 +282,7 @@ function Dashboard() {
             <GlobalSearchCommand
               onOpenChange={setOpenCmdK}
               open={openCmdK}
-              partners={partners}
+              partners={visiblePartners}
               setBaseAction={setBaseAction}
             />
           </MultiSelectionProvider>

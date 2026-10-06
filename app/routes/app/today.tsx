@@ -1,3 +1,4 @@
+import { filterOperationalActions } from "~/utils/partner-visibility";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { endOfDay, format, isSameDay, startOfDay } from "date-fns";
 import { useMemo, useState } from "react";
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/app/today")({
 
 function TodayPage() {
   const { person, partners } = useAppContext();
+  const partnerSlugs = partners.map(p => p.slug).sort();
   const queryClient = useQueryClient();
   const [currentDay, setCurrentDay] = useState(new Date());
 
@@ -26,7 +28,7 @@ function TodayPage() {
 
   const { data: currentActions = [], isLoading: isLoadingHomeActions } =
     useQuery({
-      queryKey: QUERY_KEYS.actions.today(person.user_id, dateKey),
+      queryKey: [...QUERY_KEYS.actions.today(person.user_id, dateKey),{partners:partnerSlugs}],
       queryFn: () =>
         fetchHomeActions(
           person.user_id,
@@ -38,7 +40,7 @@ function TodayPage() {
       initialData: () => {
         // Aproveita o cache mensal da Home se já estiver carregado
         const cachedHomeActions = queryClient.getQueryData<Action[]>(
-          QUERY_KEYS.actions.home(person.user_id),
+          [...QUERY_KEYS.actions.home(person.user_id),{partners:partnerSlugs}],
         );
         if (cachedHomeActions) {
           return cachedHomeActions.filter((action) =>
@@ -52,11 +54,12 @@ function TodayPage() {
   const { partnerFilters } = useAppContext();
 
   const filteredActions = useMemo(() => {
-    if (partnerFilters.length === 0) return currentActions;
-    return currentActions.filter((action) =>
+    const operational = filterOperationalActions(currentActions,partners);
+    if (partnerFilters.length === 0) return operational;
+    return operational.filter((action) =>
       action.partners?.some((p) => partnerFilters.includes(p)),
     );
-  }, [currentActions, partnerFilters]);
+  }, [currentActions, partnerFilters, partners]);
 
   return (
     <HomeTodayView

@@ -46,9 +46,9 @@ interface MockState {
 
 interface MockChain {
   select: () => MockChain;
-  insert: (records: Record<string, unknown>[]) => Promise<{ error: null }>;
+  insert: (records: Record<string, unknown>[]) => Promise<{ error: { message: string } | null }>;
   update: (updates: Record<string, unknown>) => {
-    eq: (col: string, val: unknown) => Promise<{ error: null }>;
+    eq: (col: string, val: unknown) => Promise<{ error: { message: string } | null }>;
   };
   eq: (col: string, val: unknown) => MockChain;
   is: (col: string, val: unknown) => MockChain;
@@ -62,6 +62,8 @@ interface MockChain {
 const mockDb = {
   clients: [] as MockClient[],
   sessions: [] as MockSession[],
+  revokeError: false,
+  readError: false,
 };
 
 mock.module("@supabase/supabase-js", () => ({
@@ -87,6 +89,7 @@ mock.module("@supabase/supabase-js", () => ({
         },
         update: (updates: Record<string, unknown>) => ({
           eq: async (col: string, val: unknown) => {
+            if (mockDb.revokeError) return { error: { message: "Database unavailable" } };
             for (const s of mockDb.sessions) {
               const sessionRecord = s as unknown as Record<string, unknown>;
               if (sessionRecord[col] === val) {
@@ -109,6 +112,7 @@ mock.module("@supabase/supabase-js", () => ({
           return chain;
         },
         single: async () => {
+          if (mockDb.readError) return { data: null, error: { message: "Database unavailable" } };
           let rows: Record<string, unknown>[] =
             table === "clients"
               ? (mockDb.clients as unknown as Record<string, unknown>[])
@@ -123,7 +127,7 @@ mock.module("@supabase/supabase-js", () => ({
             });
           }
           if (rows.length === 0) {
-            return { data: null, error: { message: "Row not found" } };
+            return { data: null, error: { message: "Row not found", code: "PGRST116" } };
           }
           return { data: rows[0], error: null };
         },
@@ -189,6 +193,14 @@ function createMockRes(): VercelResponse & MockResHelper {
 }
 
 describe("Entrega 2 - S04: Sanitização HTML e Audiência de Comentários", () => {
+  it("aplica a allowlist explícita e recusa FTP sem perder links HTTPS", () => {
+    const clean = sanitizeHtml('<video src="https://example.com/a.mp4">texto</video><a href="ftp://example.com">ftp</a><a href="https://example.com">seguro</a>');
+    const root = document.createElement("div");
+    root.innerHTML = clean;
+    expect(root.querySelector("video")).toBeNull();
+    expect(root.querySelectorAll("a")[0]?.hasAttribute("href")).toBe(false);
+    expect(root.querySelectorAll("a")[1]?.getAttribute("href")).toBe("https://example.com");
+  });
   it("remove scripts, iframes e tags perigosas", () => {
     const dirty = "<p>Texto normal</p><script>alert('xss')</script><iframe src='https://evil.com'></iframe>";
     const clean = sanitizeHtml(dirty);
@@ -408,6 +420,29 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
       },
     ];
     mockDb.sessions = [];
+    mockDb.revokeError = false;
+    mockDb.readError = false;
+  });
+
+  it("logout com falha na revogação não anuncia sucesso", async () => {
+    mockDb.revokeError = true;
+    const res = createMockRes();
+    await dashAuthHandler(createMockReq({ headers: { origin: "https://app.uzzina.com", cookie: "uzzina_dash_session=test-token" }, body: { action: "logout" } }), res);
+    expect(res._status()).toBe(503);
+    expect(res._body()?.success).not.toBe(true);
+    expect(res.getHeader("Set-Cookie")).toBeUndefined();
+  });
+  it("banco indisponível no login não é senha incorreta", async () => {
+    mockDb.readError = true;
+    const res = createMockRes();
+    await dashAuthHandler(createMockReq({ headers: {origin:"https://app.uzzina.com"}, body: {action:"login",email:"ativo@empresa.com",password:"senha123"} }),res);
+    expect(res._status()).toBe(503);
+  });
+  it("banco indisponível na retomada não é sessão inválida", async () => {
+    mockDb.readError = true;
+    const res = createMockRes();
+    await dashAuthHandler(createMockReq({ headers: { cookie: "uzzina_dash_session=test-token" }, body: { action: "verify" } }), res);
+    expect(res._status()).toBe(503);
   });
 
   describe("Camada de Sessão Opaca e Cookies (server/dash-session.ts)", () => {
@@ -475,7 +510,7 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
       });
 
       await dashAuthHandler(req, res);
-      expect(res._status()).toBe(500);
+      expect(res._status()).toBe(503);
       expect(String(res._body()?.error)).toContain("incompleta");
     });
 

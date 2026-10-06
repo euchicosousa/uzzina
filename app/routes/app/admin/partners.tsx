@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import type { Partner } from "~/types";
 import { buttonVariants } from "~/components/prism/button";
+import { QUERY_KEYS } from "~/lib/query-keys";
 import { AdminGuard } from "~/components/features/AdminGuard";
 export const Route = createFileRoute("/app/admin/partners")({
   component: AdminPartnersPageWrapper,
@@ -20,7 +21,7 @@ function AdminPartnersPageWrapper() {
 function AdminPartnersPage() {
   const supabase = createSupabaseBrowserClient();
   const { data: partners = [], isLoading } = useQuery({
-    queryKey: ["partners"],
+    queryKey: QUERY_KEYS.adminPartners(),
     queryFn: async () => {
       const { data, error } = await supabase
         .from("partners")

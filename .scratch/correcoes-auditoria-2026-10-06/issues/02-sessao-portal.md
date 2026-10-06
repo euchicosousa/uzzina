@@ -4,7 +4,7 @@
 
 **Blocked by:** Nenhum
 
-**Status:** ready-for-agent (respeitar bloqueadores; pacote local)
+**Status:** implementado e validado localmente; integração/produção pendentes conforme abaixo
 
 ## Execução prescrita
 Arquivos: api/dash-auth.ts; app/models/clients.ts; app/routes/dash/login.tsx; app/routes/dash.tsx. Criar server/dash-session.ts (helper fora de api/, não endpoint público), supabase/migrations/<timestamp>_dash_sessions.sql.
@@ -27,21 +27,10 @@ NAVEGADOR PENDENTE: N02 do 17, cookie/login/logout real.
 - [x] Sem service-role/configuração obrigatória, endpoint falha controladamente.
 - [x] Integração no banco é registrada separadamente.
 
-## Resultado do executor
-Código: implementado.
-Teste de código: executado e passou (`bun test tests/entrega2.test.ts`, 35 testes no arquivo e 78 testes no suite global com zero falhas).
-Banco: migration preparada em `supabase/migrations/20261006000000_dash_sessions.sql` (tabela `dash_sessions` com RLS e privilégios anon/authenticated revogados); aplicação pendente da etapa 07.
-Navegador: pendente conforme N02 do 17 (fluxo de cookie/login/logout em navegador real).
-Produção: não implantado (aguardando conclusão de 02–07 e aplicação coordenada de migrations).
-
-Arquivos criados/alterados:
-- `supabase/migrations/20261006000000_dash_sessions.sql`: migration da tabela `dash_sessions` com RLS ativado e sem grants públicos.
-- `server/dash-session.ts`: helper isolado no servidor para tokens opacos (randomBytes de 32 bytes em base64url), hash SHA-256 de busca, extração e serialização de cookies HttpOnly, e validação estrita de Origin CSRF.
-- `types/database.ts`: tipagem declarativa de `dash_sessions` adicionada ao schema de banco do Supabase, eliminando necessidade de `any`.
-- `api/dash-auth.ts`: refatorado para gerenciar sessões opacas em `dash_sessions`, emitir cookies `HttpOnly`, `SameSite=Lax`, `Path=/api`, `Max-Age=604800` (e `Secure` em produção), revogar sessões no logout, validar Origin contra requisições forjadas e omitir estritamente qualquer dado sensível do corpo JSON (`password_hash`, tokens ou hashes internos).
-- `app/models/clients.ts`: atualizado para realizar chamadas com `credentials: "same-origin"` para `/api/dash-auth` (`login`, `verify`, `logout`) e sem persistir tokens em localStorage.
-- `app/routes/dash.tsx`: remoção definitiva do fallback vulnerável `getClientById(supabase, storedId)`; bootstrap valida exclusivamente a sessão com o servidor e limpa credenciais/redireciona para login em caso de 401. Logout revoga a sessão no servidor antes de navegar.
-- `app/routes/dash/login.tsx`: removido o armazenamento de `uzzina_dash_token` no localStorage.
-- `tsconfig.json`: remoção de `api/**/*` do exclude, garantindo verificação estrita de TypeScript para o backend.
-- `tests/entrega2.test.ts`: suíte completa de testes reais para `dash-session` e `dash-auth` (tokens, cookies, validação de Origin, erros de configuração, rejeição de ID avulso, expiração, revogação, cliente inativo e logout).
-
+## Resultado do fechamento — Codex, 06/10/2026
+Código: implementado. Revogação falha retorna503 sem confirmar logout; banco/configuração indisponíveis não se tornam401. Frontend diferencia erros, reinicializa bootstrap após login e protege resposta antiga. APIs locais atendidas pelo adaptador Vite.
+Teste local: suíte global com **116 aprovados, zero falhas** em seis arquivos; tipagem, lint e build passaram. Há testes legados de outros tickets nesta contagem; 116 não significa cobertura de todo o app.
+Navegador: app real em Chromium headless com HTTP controlado, 390×844 e 1440×844; login sem recarga, política HTML, falha/sucesso de logout, recuperação de bootstrap/calendário. Smoke HTTP dos handlers locais reais: JSON, método rejeitado e JSON inválido. Nenhum dado privado consultado.
+Banco: migration de dash_sessions preparada; aplicação e matriz de autorização reais continuam pendentes. Banco não é N/A.
+Produção: não implantado. Ticket não autoriza deploy isolado do portal; manter implantação coordenada de02–07.
+Evidência e comandos: docs/audits/2026-10-06-fechamento-tickets-01-03.md. Script de navegador: scripts/check-portal-browser.cjs (requer Playwright/Chromium disponíveis).

@@ -57,6 +57,7 @@ import type { Partner } from "~/types";
 function PartnerPage() {
   const { slug } = Route.useParams();
   const { person, partners } = useAppContext();
+  const partnerSlugs = partners.map(p => p.slug).sort();
   const partner = partners.find((p: Partner) => p.slug === slug);
   const partnerSlug = partner?.slug || "";
   const partnerColors = partner?.colors || [];
@@ -90,7 +91,7 @@ function PartnerPage() {
     initialData: () => {
       // Tenta recuperar do cache da Home e filtrar pelo parceiro
       const cachedHomeActions = queryClient.getQueryData<Action[]>(
-        QUERY_KEYS.actions.home(person.user_id),
+        [...QUERY_KEYS.actions.home(person.user_id),{partners:partnerSlugs}],
       );
       if (cachedHomeActions && partnerSlug) {
         return cachedHomeActions.filter((action) =>
@@ -103,7 +104,7 @@ function PartnerPage() {
 
   // LateActions do parceiro — client-side via React Query (reutilizando cache global do Header)
   const { data: currentLateActions = [] } = useQuery({
-    queryKey: QUERY_KEYS.lateActions.user(person.user_id),
+    queryKey: [...QUERY_KEYS.lateActions.user(person.user_id),{partners:partnerSlugs}],
     queryFn: () =>
       fetchAllLateActions(
         person.user_id,

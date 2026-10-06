@@ -1,4 +1,5 @@
 import type { Action } from "~/types";
+import type { DashActionDto } from "~/services/dash-client";
 import {
   addDays,
   eachDayOfInterval,
@@ -20,17 +21,17 @@ import { cn } from "cnfast";
 import { getFormattedDateTime } from "~/utils/date";
 import { Content } from "../features/Content";
 import { PhaseIcon } from "../features/PhaseIcon";
-type ClientCalendarProps = {
-  actions: Action[];
+type ClientCalendarProps<T extends Action | DashActionDto = Action | DashActionDto> = {
+  actions: T[];
   currentDay: Date;
   onPrev: () => void;
   onNext: () => void;
-  onActionClick: (action: Action) => void;
+  onActionClick: (action: T) => void;
   view?: "week" | "month";
   calendarView?: "week" | "month";
   setCalendarView?: (view: "week" | "month") => void;
 };
-export function ClientCalendar({
+export function ClientCalendar<T extends Action | DashActionDto = Action | DashActionDto>({
   actions,
   currentDay,
   onPrev,
@@ -39,7 +40,7 @@ export function ClientCalendar({
   view = "week",
   calendarView,
   setCalendarView,
-}: ClientCalendarProps) {
+}: ClientCalendarProps<T>) {
   const weekStart = startOfWeek(currentDay, {
     weekStartsOn: 0,
   });

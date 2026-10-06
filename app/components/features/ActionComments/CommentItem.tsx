@@ -10,7 +10,7 @@ import { CommentInput } from "./CommentInput";
 interface CommentItemProps {
   comment: AugmentedComment;
   isOwn: boolean;
-  onUpdate: (content: string) => void;
+  onUpdate: ((content: string) => void) | ((content: string) => Promise<unknown>);
   onDelete: () => void;
   mentionablePeople?: Person[];
 }const DEFAULT_MENTIONABLE_PEOPLE: Person[] = [];
@@ -30,17 +30,29 @@ export function CommentItem({
   mentionablePeople = DEFAULT_MENTIONABLE_PEOPLE,
 }: CommentItemProps) {
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
   const [overrideContent, setOverrideContent] = useState<string | null>(null);
   const editContent = overrideContent !== null ? overrideContent : comment.content;
 
-  const handleSave = (content: string) => {
-    if (!content.trim()) return;
-    onUpdate(content);
-    setEditing(false);
-    setOverrideContent(null);
+  const handleSave = async (content: string) => {
+    if (!content.trim() || saving) return;
+    setSaving(true);
+    setSaveFailed(false);
+    try {
+      await onUpdate(content);
+      setEditing(false);
+      setOverrideContent(null);
+    } catch {
+      setSaveFailed(true);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancel = () => {
+    if (saving) return;
+    setSaveFailed(false);
     setOverrideContent(null);
     setEditing(false);
   };
@@ -60,15 +72,17 @@ export function CommentItem({
         }`}
       >
         {editing ? (
-          <div className="mt-2 w-full min-w-70 text-foreground">
+          <div className="mt-2 w-full min-w-0 text-foreground">
             <CommentInput
               value={editContent}
               onChange={setOverrideContent}
               onSend={handleSave}
+              isSubmitting={saving}
               onCancel={handleCancel}
               submitLabel="Salvar"
               mentionablePeople={mentionablePeople}
             />
+            {saveFailed && <p role="alert" className="mt-2 text-sm">Não foi possível salvar. Seu texto foi mantido.</p>}
           </div>
         ) : (
           <>
@@ -83,21 +97,23 @@ export function CommentItem({
             </div>
 
             {isOwn && (
-              <div className="absolute right-0 bottom-0 flex min-w-24 items-center justify-end gap-1 rounded-br-lg bg-linear-to-l from-primary to-primary/0 p-1 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="relative flex min-w-24 items-center justify-end gap-1 p-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100">
                 <button
                   type="button"
+                  aria-label="Editar observação"
                   onClick={() => {
                     setOverrideContent(htmlToPlainText(comment.content));
                     setEditing(true);
                   }}
-                  className="rounded p-1 transition-colors hover:bg-black/10 dark:hover:bg-white/10"
+                  className="rounded p-2 transition-colors hover:bg-black/10 dark:hover:bg-white/10"
                 >
                   <Pencil className="size-3" />
                 </button>
                 <button
                   type="button"
+                  aria-label="Excluir observação"
                   onClick={onDelete}
-                  className="rounded p-1 transition-colors hover:bg-black/10 dark:hover:bg-white/10"
+                  className="rounded p-2 transition-colors hover:bg-black/10 dark:hover:bg-white/10"
                 >
                   <Trash className="size-3" />
                 </button>

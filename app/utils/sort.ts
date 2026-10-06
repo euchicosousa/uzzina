@@ -1,4 +1,3 @@
-import type { Action } from "~/types";
 import { parseU } from "~/utils/date";
 import {
   ORDER_BY,
@@ -8,8 +7,15 @@ import {
   type PRIORITY,
 } from "~/lib/CONSTANTS";
 
-export function sortActions(
-  actions: Action[],
+export function sortActions<
+  T extends {
+    title?: string | null;
+    priority?: string | null;
+    phase?: string | null;
+    date?: string | null;
+  },
+>(
+  actions: T[],
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY],
   ascending = true,
 ) {
@@ -21,7 +27,7 @@ export function sortActions(
   const phases_order = Object.values(PHASES).map((phase) => phase.slug);
 
   /** Tiebreaker fixo: ordem alfabética por título quando o critério primário empata */
-  const byTitle = (a: Action, b: Action) =>
+  const byTitle = (a: T, b: T) =>
     (a.title ?? "").localeCompare(b.title ?? "", "pt-BR", {
       sensitivity: "base",
     });
@@ -48,7 +54,8 @@ export function sortActions(
     case ORDER_BY.date:
       sorted.sort((a, b) => {
         const primary =
-          (parseU(a.date).getTime() - parseU(b.date).getTime()) *
+          ((a.date ? parseU(a.date).getTime() : 0) -
+            (b.date ? parseU(b.date).getTime() : 0)) *
           (ascending ? 1 : -1);
         return primary !== 0 ? primary : byTitle(a, b);
       });

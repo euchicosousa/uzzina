@@ -6,7 +6,7 @@ interface CommentListProps {
   comments: AugmentedComment[];
   currentUserId: string;
   isUser: boolean; // if true, comparing against is_user true, else is_user false
-  onUpdate: (id: string, content: string) => void;
+  onUpdate: ((id: string, content: string) => void) | ((id: string, content: string) => Promise<unknown>);
   onDelete: (id: string) => void;
   emptyMessage?: string;
   mentionablePeople?: Person[];

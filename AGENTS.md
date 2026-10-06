@@ -44,7 +44,13 @@ Este repositório contém o sistema **UZZINA**, um painel e fluxo de gestão de 
 ### Separação de Portais e Autenticação
 
 - **Membros da Equipe (`/app`)**: Autenticado via Supabase Auth. Na inicialização do layout `app/routes/app.tsx`, a sessão é validada via `supabase.auth.getSession()` e sincronizada com `onAuthStateChange`. O bootstrap carrega dados do usuário via RPC `get_app_bootstrap`.
-- **Clientes Externos (`/dash`)**: Autenticação customizada via e-mail e validação de hash em `clients`, operando de forma isolada do Supabase Auth principal.
+- **Clientes Externos (`/dash`)**: Login/retomada/logout por `/api/dash-auth`, sessão opaca de servidor em `dash_sessions` e cookie HttpOnly; isolado do Supabase Auth da equipe. `/api/dash-data` autoriza parceiros/ações; `/api/dash-action` autoriza comentários públicos e vínculo de anexos. A tela `/dash/action/$id` usa `app/services/dash-client.ts`, sem acesso direto ao SDK do banco. Autor e audiência de comentários são definidos pelo servidor, com Origin obrigatório em mutações. O adaptador local em `server/dev-api.ts` executa os mesmos handlers. Banco/RLS e produção ainda exigem as validações do pacote de auditoria (02–07); não tratar o portal inteiro como protegido antes disso.
+
+### Parceiros arquivados e cache
+
+- O contexto operacional usa `getOperationalPartners`, filtra `partners.archived` e mantém cache `QUERY_KEYS.operationalPartners(userId,isAdmin)`. Nunca usar `getAllPartners` nessa lista, mesmo para administrador.
+- A administração usa `QUERY_KEYS.adminPartners()` e mantém arquivados disponíveis. Invalidar o prefixo `["partners"]` alcança ambos os caches.
+- Home/Hoje/cabeçalho usam escopo de parceiros nas consultas e descartam ações exclusivamente de parceiros ocultos. Endpoints do portal usam somente parceiros ativos vinculados à conta. Não apagar ações de parceiros arquivados.
 
 ### Temas e Preferências
 

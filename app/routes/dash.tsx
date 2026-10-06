@@ -1,5 +1,5 @@
-import type { Partner, Client } from "~/types";
-import { Outlet, useNavigate, useLocation, createFileRoute } from "@tanstack/react-router";
+import type { Client } from "~/types";
+import { Outlet, useNavigate, useLocation, useRouterState, createFileRoute } from "@tanstack/react-router";
 import { LogOutIcon, AlertCircleIcon } from "lucide-react";
 import {
   PrismButton,
@@ -12,9 +12,11 @@ import {
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
 import { useAppTheme } from "~/hooks/useAppTheme";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { PortalHttpError } from "~/services/portal-http";
 import { UAvatar } from "~/components/uzzina/UAvatar";
-import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { verifyDashSession, logoutDashSession } from "~/models/clients";
+import { fetchDashPartners, type DashPartnerDto } from "~/services/dash-client";
 import { DashContext } from "~/contexts/DashContext";
 import { z } from "zod";
 const dashSearchSchema = z.object({
@@ -35,61 +37,64 @@ function DashLayout() {
     from: "/dash",
   });
   const location = useLocation();
-  const supabase = createSupabaseBrowserClient();
   const searchParams = Route.useSearch();
+  const queryClient = useQueryClient();
+  // Use committed matches: the URL can change before the previous child unmounts.
+  const isLoginPath = useRouterState({ select: (state) => state.matches.some((match) => match.routeId === "/dash/login") });
+  const [bootstrapAttempt, setBootstrapAttempt] = useState(0);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
   const [clientId, setClientId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [clientData, setClientData] = useState<Client | null>(null);
-  const [partners, setPartners] = useState<Partner[]>([]);
+  const [partners, setPartners] = useState<DashPartnerDto[]>([]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Retry generation deliberately restarts the bootstrap.
   useEffect(() => {
-    const isLoginPath = window.location.pathname.startsWith("/dash/login");
-
+    let cancelled = false;
+    setClientId(null);
+    setClientData(null);
+    setPartners([]);
+    setHasError(false);
+    setLogoutError(null);
+    if (isLoginPath) {
+      queryClient.removeQueries({ predicate: (query) => String(query.queryKey[0]).startsWith("dash") });
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     async function bootstrapClient() {
       try {
-        // Validação exclusiva de sessão via servidor (sem fallback por ID)
         const data = await verifyDashSession();
-
+        if (cancelled) return;
         if (!data?.active) {
           localStorage.removeItem("uzzina_dash_token");
           localStorage.removeItem("uzzina_dash_client_id");
-          if (!isLoginPath) {
-            navigate({
-              to: "/dash/login",
-            });
-          }
+          await navigate({ to: "/dash/login", replace: true });
           return;
         }
-
+        const authorizedPartners = await fetchDashPartners();
+        if (cancelled) return;
         setClientId(data.id);
         setClientData(data);
-
-        // Busca parceiros do cliente
-        if (data.partners && data.partners.length > 0) {
-          const { data: partnersData, error } = await supabase
-            .from("partners")
-            .select("*")
-            .in("slug", data.partners)
-            .order("title", {
-              ascending: true,
-            });
-          if (error) throw error;
-          setPartners(partnersData as Partner[]);
+        setPartners(authorizedPartners);
+      } catch (error) {
+        if (cancelled) return;
+        if (error instanceof PortalHttpError && error.status === 401) {
+          await navigate({ to: "/dash/login", replace: true });
+        } else {
+          setHasError(true);
         }
-      } catch (err) {
-        console.error("Erro ao carregar dados do cliente:", err);
-        setHasError(true);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
-
-    bootstrapClient();
-  }, [navigate, supabase]);
-  const currentPartnerSlug =
-    searchParams.partner ||
-    localStorage.getItem("uzzina_dash_last_partner") ||
-    partners[0]?.slug;
+    void bootstrapClient();
+    return () => { cancelled = true; };
+  }, [navigate, isLoginPath, queryClient, bootstrapAttempt]);
+  const preferredPartner = searchParams.partner || localStorage.getItem("uzzina_dash_last_partner");
+  const currentPartnerSlug = partners.some((p) => p.slug === preferredPartner)
+    ? preferredPartner
+    : partners[0]?.slug;
   const currentPartner =
     partners.find((p) => p.slug === currentPartnerSlug) || partners[0];
   const { applyPartnerColors } = useAppTheme();
@@ -99,13 +104,18 @@ function DashLayout() {
     }
   }, [currentPartner, applyPartnerColors]);
   const handleLogout = async () => {
-    await logoutDashSession();
-    localStorage.removeItem("uzzina_dash_token");
-    localStorage.removeItem("uzzina_dash_client_id");
-    localStorage.removeItem("uzzina_dash_last_partner");
-    navigate({
-      to: "/dash/login",
-    });
+    try {
+      await logoutDashSession();
+      setClientData(null);
+      setPartners([]);
+      queryClient.removeQueries({ predicate: (query) => String(query.queryKey[0]).startsWith("dash") });
+      localStorage.removeItem("uzzina_dash_token");
+      localStorage.removeItem("uzzina_dash_client_id");
+      localStorage.removeItem("uzzina_dash_last_partner");
+      await navigate({ to: "/dash/login", replace: true });
+    } catch {
+      setLogoutError("Não foi possível encerrar a sessão. Tente novamente.");
+    }
   };
   const handlePartnerChange = (val: string) => {
     localStorage.setItem("uzzina_dash_last_partner", val);
@@ -116,9 +126,6 @@ function DashLayout() {
       }),
     });
   };
-  const isLoginPath =
-    typeof window !== "undefined" &&
-    window.location.pathname.startsWith("/dash/login");
   if (loading && !isLoginPath) {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center bg-background gap-4">
@@ -142,8 +149,9 @@ function DashLayout() {
         <p className="text-sm text-muted-foreground max-w-sm">
           Não foi possível sincronizar suas credenciais ou dados do parceiro.
         </p>
+        {logoutError && <p role="alert">{logoutError}</p>}
         <div className="flex items-center gap-3">
-          <PrismButton size="sm" onClick={() => window.location.reload()}>
+          <PrismButton size="sm" onClick={() => setBootstrapAttempt((attempt) => attempt + 1)}>
             Tentar novamente
           </PrismButton>
           <PrismButton size="sm" variant="ghost" onClick={handleLogout}>
@@ -223,6 +231,7 @@ function DashLayout() {
             <LogOutIcon className="size-4" /> Sair
           </PrismButton>
         </header>
+        {logoutError && <p role="alert" className="px-6 text-error">{logoutError}</p>}
         <div className="flex min-h-0 flex-1">
           <MultiSelectionProvider locationKey={location.pathname}>
             <Outlet />

@@ -11,7 +11,7 @@ export function WorkFileThumbnail({
   onRemove,
 }: {
   url: string;
-  onRemove: () => void;
+  onRemove?: () => void;
 }) {
   // Extrai a extensão do final da URL (antes de ? ou #)
   const ext =
@@ -49,17 +49,18 @@ export function WorkFileThumbnail({
           </div>
         )}
       </a>
-      <button
+      {onRemove && <button
         className="bg-destructive absolute -top-1.5 -right-1.5 hidden size-4 items-center justify-center rounded-full text-white group-hover:flex"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           onRemove();
         }}
+        aria-label="Remover anexo"
         type="button"
       >
         <XIcon className="size-2.5" />
-      </button>
+      </button>}
     </div>
   );
 }

@@ -1,6 +1,9 @@
 # Correções da auditoria — pacote de execução
 Data: 06/10/2026. Base examinada: commit 2680711. Aplicativo: /uzzina.
 
+## Execução restante pelo Gemini
+Para executar os tickets05–17 nesta rodada, leia `docs/audits/2026-10-06-execucao-gemini-pendencias.md`. Ele define sequência, testes e relatório final, permitindo continuidade com checkpoints. A matriz dos52 achados distingue correções técnicas de decisões de produto; não implementar automaticamente as alternativas da auditoria original.
+
 ## Como usar
 Leia este arquivo e a classificação de testes. Execute um ticket por vez, na ordem abaixo, verificando seus bloqueadores. Cada ticket é uma entrega funcional com teste próprio; testes acompanham a correção, não formam uma etapa final separada.
 
@@ -10,8 +13,13 @@ A pedido do usuário, os tickets incluem arquivos e decisões de implementação
 
 Este pacote especifica a próxima execução; não comprova que qualquer correção nova já foi implementada. Complementa a auditoria independente e concretiza suas instruções. Em divergência técnica entre instrução genérica anterior e contrato específico deste pacote, aplicar o contrato aqui descrito; preservar as regras de produto da auditoria original.
 
+## Situação atual — atualização de 06/10/2026
+Tickets 01–04 implementados e verificados localmente pelo Codex. Consulte docs/audits/2026-10-06-fechamento-tickets-01-03.md e docs/audits/2026-10-06-fechamento-ticket-04.md. Navegador validado com respostas HTTP controladas; banco real, N04 completo e produção continuam pendentes. Próximo trabalho de código: ticket05; não reexecutar01–04 como implementação do zero.
+
+Regressão adicional corrigida: parceiros arquivados fora da operação, cache administrativo separado e ações/contagens filtradas pelo escopo ativo. Leia docs/audits/2026-10-06-correcao-parceiros-arquivados.md antes dos próximos tickets; não reintroduzir getAllPartners no contexto operacional.
+
 ## Mensagem para entregar ao agente
-Leia .scratch/correcoes-auditoria-2026-10-06/README.md e classificacao-dos-testes.md. Comece pelo ticket 01 em issues/01-html-seguro.md. Execute somente esse ticket neste contexto: teste a implementação real, corrija e registre os resultados no arquivo. Não implemente os 17 tickets de uma vez. Ao terminar, informe o próximo ticket elegível. Se faltar banco ou navegador, marque a camada pendente e conclua o trabalho de código possível; não substitua a implementação por funções simuladas nos testes.
+Leia este README, os relatórios de fechamento01–04 e issues/05-links-revisao.md. Preserve o código já validado. Execute somente o ticket05 neste contexto e registre resultados reais, distinguindo código/banco/navegador/produção. Falta de banco ou navegador não permite criar funções simuladas para substituir regras da produção.
 
 ## Ordem e bloqueadores
 | Ticket | Entrega | Bloqueado por |

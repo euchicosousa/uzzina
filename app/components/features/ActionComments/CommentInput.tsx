@@ -44,7 +44,7 @@ export function CommentInput({
   const [isInternal, setIsInternal] = useState(initialIsInternal);
   const [isOpen, setIsOpen] = useState(false);
   const handleSend = () => {
-    if (!value.trim()) return;
+    if (!value.trim() || isSubmitting) return;
     onSend(value, selectedMentions, isInternal);
     setSelectedMentions([]);
   };
@@ -70,6 +70,7 @@ export function CommentInput({
         className="min-h-20 w-full p-0 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus:ring-0 focus:border-0 focus:outline-none rounded-none border-0"
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
+        disabled={isSubmitting}
         placeholder="Escreva uma observação..."
         value={value}
       />
@@ -179,6 +180,7 @@ export function CommentInput({
           {onCancel && (
             <PrismButton
               className="h-8 rounded-lg px-3 text-xs"
+              isDisabled={isSubmitting}
               onClick={onCancel}
               variant="ghost"
             >

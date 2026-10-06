@@ -1,4 +1,5 @@
 import type { Action } from "~/types";
+import type { DashActionDto } from "~/services/dash-client";
 import Color from "color";
 import { type CATEGORIES, DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
 import { getFormattedDateTime, Icons, isSprint } from "~/lib/helpers";
@@ -19,7 +20,7 @@ export function Content({
   showResponsibles,
   dateTimeDisplay = DATE_TIME_DISPLAY.TimeOnly,
 }: {
-  action: Action;
+  action: Action | DashActionDto;
   category?: (typeof CATEGORIES)[keyof typeof CATEGORIES];
   className?: string;
   isSquared?: boolean;
@@ -75,14 +76,14 @@ export function Content({
       <div className="absolute inset-0 flex flex-col justify-between p-2">
         <div className="flex items-center justify-between gap-2">
           <div>
-            {person && isSprint(action, person) && (
+            {person && "sprints" in action && isSprint(action as Action, person) && (
               <Icons className="size-4" color={foregroundColor} slug="sprint" />
             )}
           </div>
 
-          {showResponsibles && (
+          {showResponsibles && "responsibles" in action && (
             <UAvatarGroup
-              avatars={getPeople(action.responsibles, people).map(
+              avatars={getPeople((action as Action).responsibles, people).map(
                 (responsible: Person) => ({
                   id: responsible.user_id,
                   fallback: responsible.name,

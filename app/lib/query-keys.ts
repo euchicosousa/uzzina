@@ -13,6 +13,8 @@ export const QUERY_KEYS = {
   },
   celebrations: () => ["celebrations"] as const,
   partners: () => ["partners"] as const,
+  operationalPartners: (userId:string,isAdmin:boolean) => ["partners","operational",userId,isAdmin] as const,
+  adminPartners: () => ["partners","admin"] as const,
   people: () => ["people"] as const,
   peopleAdmin: () => ["people", "admin"] as const,
   notifications: () => ["notifications"] as const,

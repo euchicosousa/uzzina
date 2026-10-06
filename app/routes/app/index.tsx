@@ -1,3 +1,4 @@
+import { filterOperationalActions } from "~/utils/partner-visibility";
 import {
   endOfDay,
   endOfMonth,
@@ -36,6 +37,7 @@ import type { Partner } from "~/types";
 function AppHome() {
   const { person, partners } = useAppContext();
 
+  const partnerSlugs = partners.map(p => p.slug).sort();
   const now = new Date();
 
   const startDateISO = startOfWeek(startOfMonth(now)).toISOString();
@@ -49,7 +51,7 @@ function AppHome() {
     isError: isHomeActionsError,
     refetch: refetchHomeActions,
   } = useQuery({
-    queryKey: QUERY_KEYS.actions.home(person.user_id),
+    queryKey: [...QUERY_KEYS.actions.home(person.user_id),{partners:partnerSlugs}],
     queryFn: () =>
       fetchHomeActions(
         person.user_id,
@@ -66,7 +68,7 @@ function AppHome() {
     isError: isLateActionsError,
     refetch: refetchLateActions,
   } = useQuery({
-    queryKey: QUERY_KEYS.lateActions.user(person.user_id),
+    queryKey: [...QUERY_KEYS.lateActions.user(person.user_id),{partners:partnerSlugs}],
     queryFn: () =>
       fetchAllLateActions(
         person.user_id,
@@ -78,18 +80,20 @@ function AppHome() {
   const { setBaseAction, partnerFilters } = useAppContext();
 
   const filteredActions = useMemo(() => {
-    if (partnerFilters.length === 0) return currentActions;
-    return currentActions.filter((action) =>
+    const operational = filterOperationalActions(currentActions,partners);
+    if (partnerFilters.length === 0) return operational;
+    return operational.filter((action) =>
       action.partners?.some((p) => partnerFilters.includes(p)),
     );
-  }, [currentActions, partnerFilters]);
+  }, [currentActions, partnerFilters, partners]);
 
   const filteredLateActions = useMemo(() => {
-    if (partnerFilters.length === 0) return currentLateActions;
-    return currentLateActions.filter((action) =>
+    const operational = filterOperationalActions(currentLateActions,partners);
+    if (partnerFilters.length === 0) return operational;
+    return operational.filter((action) =>
       action.partners?.some((p) => partnerFilters.includes(p)),
     );
-  }, [currentLateActions, partnerFilters]);
+  }, [currentLateActions, partnerFilters, partners]);
 
   const sprintActions = useMemo(
     () =>

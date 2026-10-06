@@ -42,3 +42,9 @@ BANCO/POLICIES não são marcados aprovados por estes passos sem a matriz07.
 ## Resultado do executor
 Código: pendente. Teste local: pendente. Banco: verificar alcance acima. Navegador: pendente conforme17. Produção: não implantado.
 
+
+
+## Evidência parcial de N04 — 06/10/2026
+O ticket04 já exercitou a tela real em Chromium, 390×844 e 1440×844, com HTTP controlado: recuperação da leitura, criação/edição com rascunho preservado em falha, exclusão confirmada e remoção de anexo confirmada. Script: scripts/check-portal-actions-browser.cjs. Relatório: docs/audits/2026-10-06-fechamento-ticket-04.md.
+
+N04 permanece aberto para integração com banco/cookie reais, upload Cloudinary real, persistência após recarga, acesso cruzado e ausência de notas internas no tráfego real. Não registrar a resposta controlada como comprovação de persistência física. O handler real tem testes separados de autorização com SDK de banco controlado.

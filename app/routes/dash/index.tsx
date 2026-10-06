@@ -1,4 +1,4 @@
-import type { Action, Partner } from "~/types";
+import { retryPortalQuery, usePortalSessionError } from "~/hooks/usePortalSessionError";
 import {
   addMonths,
   addWeeks,
@@ -16,7 +16,7 @@ import { InstagramFeedSection } from "~/components/features/InstagramFeedSection
 import { PrismButton } from "~/components/prism";
 import { useQuery } from "@tanstack/react-query";
 import { useDashContext } from "~/contexts/DashContext";
-import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import { fetchDashActions, type DashActionDto } from "~/services/dash-client";
 import { getInstagramFeedActions } from "~/lib/helpers";
 import { z } from "zod";
 const dashSearchSchema = z.object({
@@ -28,8 +28,7 @@ export const Route = createFileRoute("/dash/")({
   component: DashHome,
 });
 function DashHome() {
-  const { partners } = useDashContext();
-  const supabase = createSupabaseBrowserClient();
+  const { partners, clientId } = useDashContext();
   const navigate = useNavigate({
     from: "/dash/",
   });
@@ -68,27 +67,20 @@ function DashHome() {
       ? format(currentDay, "yyyy-MM")
       : format(visibleStart, "yyyy-MM-dd");
 
-  const { data: actions = [], isLoading } = useQuery({
-    queryKey: ["dashActions", currentPartnerSlug, calendarView, periodKey],
+  const { data: actions = [], isLoading, error, refetch } = useQuery<DashActionDto[]>({
+    queryKey: ["dashActions", clientId, currentPartnerSlug, calendarView, periodKey],
     queryFn: async () => {
       if (!currentPartnerSlug) return [];
-      const { data, error } = await supabase
-        .from("actions")
-        .select("*")
-        .is("archived", false)
-        .contains("partners", [currentPartnerSlug])
-        .neq("phase", "idea")
-        .gte("date", start)
-        .lte("date", end)
-        .order("date", {
-          ascending: true,
-        })
-        .limit(2000);
-      if (error) throw error;
-      return data as Action[];
+      return fetchDashActions({
+        partner: currentPartnerSlug,
+        from: start,
+        to: end,
+      });
     },
     enabled: !!currentPartnerSlug,
+    retry: retryPortalQuery,
   });
+  usePortalSessionError(error);
   const isSidebarVisible = searchParams.sidebar !== "false";
   const toggleSidebar = () => {
     navigate({
@@ -98,7 +90,17 @@ function DashHome() {
       }),
     });
   };
-  if (isLoading || !currentPartner) {
+  if (error) {
+    return <div role="alert" className="flex h-full flex-col items-center justify-center gap-4 p-8">
+      <h2>Falha ao carregar calendário</h2>
+      <p>Não foi possível consultar as ações. Tente novamente.</p>
+      <PrismButton onClick={() => refetch()}>Tentar novamente</PrismButton>
+    </div>;
+  }
+  if (!currentPartner) {
+    return <p className="p-8">Nenhum parceiro vinculado à sua conta.</p>;
+  }
+  if (isLoading) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center bg-background gap-4">
         <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -108,7 +110,7 @@ function DashHome() {
       </div>
     );
   }
-  const handleActionClick = (action: Action) => {
+  const handleActionClick = (action: DashActionDto) => {
     navigate({
       to: "/dash/action/$id",
       params: {
@@ -171,7 +173,7 @@ function DashHome() {
             <div className="h-full w-full overflow-y-auto">
               <InstagramFeedSection
                 actions={feedActions}
-                currentPartner={currentPartner as Partner}
+                currentPartner={currentPartner}
                 onActionClick={handleActionClick}
               />
             </div>
@@ -201,7 +203,7 @@ function DashHome() {
         >
           <InstagramFeedSection
             actions={feedActions}
-            currentPartner={currentPartner as Partner}
+            currentPartner={currentPartner}
             onActionClick={handleActionClick}
           />
         </div>

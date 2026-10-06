@@ -2,6 +2,8 @@
 
 Data: 06/10/2026. Código revisado: commit `2680711` (`feat: implement admin route protection, AI access validation, and test suites`). Escopo: aplicativo existente `/uzzina`; sem incorporar a reconstrução de `/uzzina-2026`.
 
+**Atualização posterior:** tickets01–04 corrigidos e validados localmente. Ver [fechamento01–03](2026-10-06-fechamento-tickets-01-03.md) e [fechamento04](2026-10-06-fechamento-ticket-04.md). Banco real e produção permanecem pendentes. Os achados abaixo descrevem o código na base original da revisão; demais tickets continuam abertos.
+
 ## Parecer
 
 **A entrega contém correções reais, mas não atende ao encerramento declarado no relatório.** A afirmação de quatro entregas “100% implementadas, testadas e validadas” deve ser retirada. Permanecem falhas no código, lacunas de autorização e testes que não executam as implementações entregues. Não é necessário reescrever o aplicativo para resolver estes pontos.

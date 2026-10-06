@@ -78,14 +78,14 @@ function getPurifier(): ReturnType<typeof DOMPurify> | null {
 
   const purifier = DOMPurify(win as Parameters<typeof DOMPurify>[0]);
 
-  // Hook para proibir estritamente data: e blob: em src e href (Requisito 3 do Ticket 01)
-  purifier.addHook("uponSanitizeAttribute", (node, data) => {
-    if (
-      (data.attrName === "src" || data.attrName === "href") &&
-      /^\s*(?:data|blob):/i.test(data.attrValue)
-    ) {
-      node.removeAttribute(data.attrName);
-    }
+  purifier.addHook("uponSanitizeAttribute", (_node, data) => {
+    if (data.attrName !== "src" && data.attrName !== "href") return;
+    const value = Array.from(data.attrValue.trim()).filter((character) => character.charCodeAt(0) > 32 && character.charCodeAt(0) !== 127).join("");
+    const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(value)?.[1]?.toLowerCase();
+    const allowed = data.attrName === "src"
+      ? ["http", "https"]
+      : ["http", "https", "mailto", "tel"];
+    if (scheme && !allowed.includes(scheme)) data.keepAttr = false;
   });
 
   purifyInstance = purifier;
@@ -98,7 +98,7 @@ export function sanitizeHtml(html: string | null | undefined): string {
   const purifier = getPurifier();
   if (!purifier) {
     // Fallback defensivo se executado sem nenhum DOM disponível
-    return html.replace(/<[^>]*>/g, "").trim();
+    return "";
   }
 
   return purifier
@@ -108,13 +108,7 @@ export function sanitizeHtml(html: string | null | undefined): string {
       FORBID_TAGS,
       FORBID_ATTR,
       ALLOWED_URI_REGEXP:
-        /^(?:(?:(?:f|ht)tps?|mailto|tel):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i,
-      USE_PROFILES: {
-        html: true,
-        svg: false,
-        svgFilters: false,
-        mathMl: false,
-      },
+        /^(?:(?:https?|mailto|tel):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i,
     })
     .trim();
 }

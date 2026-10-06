@@ -1,3 +1,5 @@
+> Atualização em06/10/2026: este relatório registra uma entrega anterior e não comprova encerramento integral. A afirmação anterior de100% está superada. Ver [fechamento local dos tickets01–03](2026-10-06-fechamento-tickets-01-03.md); demais correções e validações de banco/produção continuam pendentes.
+
 # Retorno da Implementação — UZZINA
 
 **Data:** 06/10/2026  
@@ -246,8 +248,8 @@
 ## 10. O que Fazer em Seguida: Encerramento desta Fase
 
 Com a conclusão dos Itens 4.1 a 4.9:
-1. **Todas as 4 Entregas planejadas (Entrega 1, Entrega 2, Entrega 3 e Entrega 4) estão 100% implementadas, testadas e validadas.**
-2. **Podemos encerrar esta fase de implementação no código.**
+1. **A entrega anterior precisa ser lida junto da revisão independente e do fechamento01–03. Não há comprovação de encerramento integral.**
+2. **Continuar pelos tickets pendentes; banco, navegador e produção têm validações próprias.**
 3. **Próximo passo recomendado:** 
    - Realizar o checklist de homologação visual/manual no navegador com a aplicação rodando localmente (navegando por `/app`, `/dash`, testando a criação/duplicação de ações, seleção em lote, gaveta de stories e calendário).
    - Realizar o commit das entregas no repositório Git com mensagem padronizada.

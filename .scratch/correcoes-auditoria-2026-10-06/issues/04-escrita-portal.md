@@ -4,7 +4,7 @@
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent (respeitar bloqueadores; pacote local)
+**Status:** implementado e validado localmente; banco e produção pendentes. N04 parcialmente validado com HTTP controlado.
 
 ## Execução prescrita
 Arquivos: app/routes/dash/action/$id.tsx; app/models/action_comments.ts (preservar uso do time); app/services/dash-client.ts. Criar api/dash-action.ts.
@@ -19,10 +19,16 @@ Interface: handler real e detalhe real. A tenta escrever em ação B →404 e ze
 BANCO: 07. NAVEGADOR: N04 do 17.
 
 ## Acceptance criteria
-- [ ] Portal não grava diretamente actions/action_comments.
-- [ ] Autor e audiência vêm do servidor; notas internas não saem.
-- [ ] UI confirma apenas operação efetivamente gravada.
+- [x] Portal não grava diretamente actions/action_comments.
+- [x] Autor e audiência vêm do servidor; notas internas não saem.
+- [x] UI confirma apenas operação efetivamente gravada.
 
 ## Resultado do executor
-Código: pendente. Teste local: pendente. Banco: verificar alcance acima. Navegador: pendente conforme17. Produção: não implantado.
+Código: implementado. Teste de código: 146 testes passaram na suíte completa, incluindo 27 casos novos do handler e 3 das funções HTTP. Tipagem, lint e build passaram.
+
+Navegador: detalhe real exercitado em Chromium a 390×844 e 1440×844, com HTTP controlado e tráfego externo bloqueado. Confirmados recuperação da leitura, criação, edição sem perda de rascunho, exclusão e remoção de anexo somente após confirmação. Também corrigido bloqueio real dos controles pelo horário da mensagem. Upload Cloudinary e persistência com banco/cookie reais permanecem pendentes para N04 completo.
+
+Banco: autorização no handler verificada com SDK controlado; integração física/RLS pendente no07. Produção: não implantado, sem migration ou alteração de dados reais. Não liberar o conjunto de segurança antes de02–07 compatíveis e validados.
+
+Relatório e reprodução: docs/audits/2026-10-06-fechamento-ticket-04.md. Próximo:05. O endpoint não resolve disputa de anexos entre usuários/telas; seguir08.
 

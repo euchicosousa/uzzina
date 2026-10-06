@@ -1,16 +1,25 @@
+import type { Action } from "~/types";
+import type { DashActionDto } from "~/services/dash-client";
 import { sortActions } from "~/utils/sort";
 import { UAvatar } from "../uzzina/UAvatar";
 import { Content } from "./Content";
 import { CATEGORIES, type CATEGORY } from "~/lib/CONSTANTS";
 
-export function InstagramFeedSection({
+export function InstagramFeedSection<
+  T extends Action | DashActionDto = Action | DashActionDto,
+>({
   actions,
   onActionClick,
   currentPartner,
 }: {
-  actions: Action[];
-  onActionClick: (action: Action) => void;
-  currentPartner: Partner;
+  actions: T[];
+  onActionClick: (action: T) => void;
+  currentPartner: {
+    title?: string | null;
+    short?: string | null;
+    image?: string | null;
+    colors: string[];
+  };
 }) {
   actions = sortActions(actions, "date", false);
 
@@ -18,7 +27,7 @@ export function InstagramFeedSection({
     <div className="p-4">
       <div className="mb-4 flex items-center gap-2">
         <UAvatar
-          fallback={currentPartner.short}
+          fallback={currentPartner.short || ""}
           image={currentPartner.image}
           color={currentPartner.colors[1]}
           backgroundColor={currentPartner.colors[0]}

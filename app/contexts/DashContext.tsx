@@ -1,10 +1,10 @@
 import { createContext, useContext } from "react";
-import type { Partner } from "~/types";
+import type { DashPartnerDto } from "~/services/dash-client";
 
 export interface DashContextType {
   name: string;
   image: string | null;
-  partners: Partner[];
+  partners: DashPartnerDto[];
   clientId: string;
   cloudName: string;
   uploadPreset: string;

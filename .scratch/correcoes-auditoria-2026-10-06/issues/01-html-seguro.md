@@ -4,7 +4,7 @@
 
 **Blocked by:** Nenhum
 
-**Status:** ready-for-agent (respeitar bloqueadores; pacote local)
+**Status:** implementado e validado localmente; integração/produção pendentes conforme abaixo
 
 ## Execução prescrita
 Arquivos: app/utils/sanitize.ts; renderizações dangerouslySetInnerHTML no portal e demais resultados encontrados por busca; tests/entrega2.test.ts.
@@ -23,13 +23,10 @@ NAVEGADOR PENDENTE: N01 do 17, execução dos payloads no parser real.
 - [x] Tabela/lista/link legítimos são preservados pelo código real.
 - [x] Suíte e build passam sem incluir jsdom no bundle.
 
-## Resultado do executor
-Código: implementado. Teste local: executado e passou (`bun test tests/entrega2.test.ts`, 16 testes de sanitização e audiência passando). Banco: não se aplica. Navegador: pendente conforme N01 do 17. Produção: não implantado.
-Arquivos alterados:
-- `app/utils/sanitize.ts`: substituído por DOMPurify com allowlist explícita de tags, atributos e bloqueio de data/blob em imagens via hook.
-- `tests/dom-setup.ts`: infraestrutura de DOM JSDOM para testes de código.
-- `bunfig.toml`: preload de `tests/dom-setup.ts` para runner do Bun.
-- `tests/entrega2.test.ts`: testes com os exploits reais (`href=javascript:...` sem aspas, entidades HTML, tags SVG/MathML/forms/style/iframe, imagens data/blob e preservação de tabelas/listas).
-- `package.json`: adição de `dompurify` (prod) e `jsdom`, `@types/jsdom`, `@types/dompurify` (dev).
-Build verificado: `bun run build` gerou bundle em 1.03s com `sanitize` em 29 KB, comprovando que `jsdom` não foi incluído no bundle de produção.
-
+## Resultado do fechamento — Codex, 06/10/2026
+Código: implementado. DOMPurify com allowlist efetiva, protocolos limitados por atributo e retorno vazio sem DOM. Payloads conhecidos neutralizados no navegador; tabelas/links permitidos preservados nos testes.
+Teste local: suíte global com **116 aprovados, zero falhas** em seis arquivos; tipagem, lint e build passaram. Há testes legados de outros tickets nesta contagem; 116 não significa cobertura de todo o app.
+Navegador: app real em Chromium headless com HTTP controlado, 390×844 e 1440×844; login sem recarga, política HTML, falha/sucesso de logout, recuperação de bootstrap/calendário. Smoke HTTP dos handlers locais reais: JSON, método rejeitado e JSON inválido. Nenhum dado privado consultado.
+Banco: não se aplica à sanitização.
+Produção: não implantado. Ticket não autoriza deploy isolado do portal; manter implantação coordenada de02–07.
+Evidência e comandos: docs/audits/2026-10-06-fechamento-tickets-01-03.md. Script de navegador: scripts/check-portal-browser.cjs (requer Playwright/Chromium disponíveis).

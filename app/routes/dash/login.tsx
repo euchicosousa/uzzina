@@ -10,13 +10,12 @@ import {
   PrismInputGroupInput,
 } from "~/components/prism";
 import { authenticateClient } from "~/models/clients";
-import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import { PortalHttpError } from "~/services/portal-http";
 export const Route = createFileRoute("/dash/login")({
   component: DashLogin,
 });
 function DashLogin() {
   const navigate = useNavigate();
-  const supabase = createSupabaseBrowserClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -31,7 +30,7 @@ function DashLogin() {
     setIsSubmitting(true);
     setError(null);
     try {
-      const authResult = await authenticateClient(supabase, email, password);
+      const authResult = await authenticateClient(email, password);
       if (!authResult) {
         setError("E-mail ou senha incorretos ou conta inativa.");
         setIsSubmitting(false);
@@ -45,7 +44,9 @@ function DashLogin() {
       });
     } catch (err) {
       console.error("Erro na autenticação do cliente:", err);
-      setError("Ocorreu um erro no servidor. Tente novamente.");
+      setError(err instanceof PortalHttpError && err.status === 503
+        ? "O portal está temporariamente indisponível. Tente novamente."
+        : "Não foi possível entrar no portal. Tente novamente.");
       setIsSubmitting(false);
     }
   };

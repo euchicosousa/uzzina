@@ -5,8 +5,8 @@ import { PHASES } from "~/lib/CONSTANTS";
 export const isLateAction = (action: Action) =>
   action.phase !== PHASES.finished.slug &&
   isBefore(new Date(action.date), new Date());
-export function getInstagramFeedActions(
-  actions: Action[],
+export function getInstagramFeedActions<T extends { category: string }>(
+  actions: T[],
   isFeed = true,
   stories = false,
 ) {

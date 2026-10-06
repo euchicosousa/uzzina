@@ -1,3 +1,4 @@
+import { filterOperationalActions } from "~/utils/partner-visibility";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation, useParams } from "@tanstack/react-router";
 import {
@@ -69,6 +70,7 @@ export function Header({
 
   // Get partners list from AppContext
   const { partners } = useAppContext();
+  const partnerSlugs = partners.map(p => p.slug).sort();
 
   // 1. Queries for Home page actions
   const now = new Date();
@@ -76,7 +78,7 @@ export function Header({
   const homeEndISO = endOfDay(endOfWeek(endOfMonth(now))).toISOString();
   const todayEndISO = endOfDay(now).toISOString();
   const { data: homeActions = [] as Action[] } = useQuery({
-    queryKey: QUERY_KEYS.actions.home(person.user_id),
+    queryKey: [...QUERY_KEYS.actions.home(person.user_id),{partners:partnerSlugs}],
     queryFn: () =>
       fetchHomeActions(
         person.user_id,
@@ -88,7 +90,7 @@ export function Header({
     enabled: isHome,
   });
   const { data: homeLateActions = [] as Action[] } = useQuery({
-    queryKey: QUERY_KEYS.lateActions.user(person.user_id),
+    queryKey: [...QUERY_KEYS.lateActions.user(person.user_id),{partners:partnerSlugs}],
     queryFn: () =>
       fetchAllLateActions(
         person.user_id,
@@ -127,7 +129,7 @@ export function Header({
     enabled: isPartner && !!slug,
   });
   const { data: partnerAllLateActions = [] as Action[] } = useQuery({
-    queryKey: QUERY_KEYS.lateActions.user(person.user_id),
+    queryKey: [...QUERY_KEYS.lateActions.user(person.user_id),{partners:partnerSlugs}],
     queryFn: () =>
       fetchAllLateActions(
         person.user_id,
@@ -145,22 +147,24 @@ export function Header({
   const referenceDate = isPartner && partnerDate ? parseU(partnerDate) : now;
   const filteredActions = useMemo(() => {
     const active = isHome ? homeActions : isPartner ? partnerActions : [];
-    if (partnerFilters.length === 0) return active;
-    return active.filter((action: Action) =>
+    const operational = filterOperationalActions(active,partners);
+    if (partnerFilters.length === 0) return operational;
+    return operational.filter((action: Action) =>
       action.partners?.some((p: string) => partnerFilters.includes(p)),
     );
-  }, [isHome, homeActions, isPartner, partnerActions, partnerFilters]);
+  }, [isHome, homeActions, isPartner, partnerActions, partnerFilters, partners]);
   const filteredLateActions = useMemo(() => {
     const active = isHome
       ? homeLateActions
       : isPartner
         ? partnerLateActions
         : [];
-    if (partnerFilters.length === 0) return active;
-    return active.filter((action: Action) =>
+    const operational = filterOperationalActions(active,partners);
+    if (partnerFilters.length === 0) return operational;
+    return operational.filter((action: Action) =>
       action.partners?.some((p: string) => partnerFilters.includes(p)),
     );
-  }, [isHome, homeLateActions, isPartner, partnerLateActions, partnerFilters]);
+  }, [isHome, homeLateActions, isPartner, partnerLateActions, partnerFilters, partners]);
   const handleNotificationClick = async (notif: Notification) => {
     const supabase = createSupabaseBrowserClient();
     if (!notif.read_at) {
