@@ -4,7 +4,7 @@
 
 **Blocked by:** 08
 
-**Status:** ready-for-agent (respeitar bloqueadores; pacote local)
+**Status revisado em06/10/2026:** não aprovado — regressões na gaveta e cobertura incompleta.
 
 ## Execução prescrita
 Arquivos: app/components/features/action-drawer/ActionFormDrawer.tsx; EssentialsTab.tsx; InstagramTab.tsx; ObservationsTab.tsx; ActionFormFooter.tsx.
@@ -29,3 +29,7 @@ NAVEGADOR: N07/N08 do17, foco real e clique externo.
 ## Resultado do executor
 Código: pendente. Teste local: pendente. Banco: verificar alcance acima. Navegador: pendente conforme17. Produção: não implantado.
 
+
+## Revisão independente após execução
+
+Leia `docs/audits/2026-10-06-revisao-tickets-05-09.md` a partir da raiz do repositório. A entrega do executor não encerrou todos os critérios deste ticket. Suíte195 passou; typecheck falhouTS7053; banco real/produção não foram homologados. Corrigir os Rxx relacionados ao ticket e registrar teste real por comportamento, distinguindo módulo isolado de integração da gaveta. Esta revisão prevalece sobre alegações gerais de conclusão do retorno.

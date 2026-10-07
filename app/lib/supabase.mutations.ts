@@ -42,9 +42,18 @@ export async function createActionClient(
   return data as Action;
 }
 
+export class ActionConflictError extends Error {
+  readonly code = "ACTION_CONFLICT";
+  constructor(message = "Esta ação mudou. Recarregue antes de salvar") {
+    super(message);
+    this.name = "ActionConflictError";
+  }
+}
+
 /**
- * Update an existing action directly via browser Supabase client.
+ * Update an existing action directly via browser Supabase client with optimistic concurrency.
  * Uses ActionPatchSchema so omitted fields remain untouched on the database.
+ * Requires expectedUpdatedAt canonical version string.
  * Applies the same business rules as the server:
  *   - phase = finished → sprints = null
  *   - archived = true   → sprints = null
@@ -52,7 +61,15 @@ export async function createActionClient(
 export async function updateActionClient(
   id: string,
   actionData: ActionPatchInput,
+  expectedUpdatedAt: string,
 ): Promise<Action> {
+  if (!id || typeof id !== "string") {
+    throw new Error("ID da ação é obrigatório para atualização.");
+  }
+  if (!expectedUpdatedAt || typeof expectedUpdatedAt !== "string") {
+    throw new Error("expectedUpdatedAt é obrigatório para atualização de ação.");
+  }
+
   const result = ActionPatchSchema.safeParse(actionData);
   if (!result.success) {
     throw new Error(
@@ -65,7 +82,6 @@ export async function updateActionClient(
       updateData[key] = value;
     }
   }
-  updateData.updated_at = new Date().toISOString();
 
   if (updateData.phase === PHASES.finished.slug) {
     updateData.sprints = null;
@@ -79,9 +95,19 @@ export async function updateActionClient(
     .from("actions")
     .update(updateData as TablesUpdate<"actions">)
     .eq("id", id)
+    .eq("updated_at", expectedUpdatedAt)
     .select()
     .single();
-  if (error) throw error;
+
+  if (error) {
+    if (error.code === "PGRST116") {
+      throw new ActionConflictError();
+    }
+    throw error;
+  }
+  if (!data) {
+    throw new ActionConflictError();
+  }
   return data as Action;
 }
 

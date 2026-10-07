@@ -46,6 +46,8 @@ export function ActionLineVariant({
             handleAction({
               ...action,
               intent: INTENT.update_action,
+              id: action.id,
+              expectedUpdatedAt: action.updated_at,
               title,
             });
           }}

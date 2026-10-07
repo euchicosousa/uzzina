@@ -4,7 +4,7 @@
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent (respeitar bloqueadores; pacote local)
+**Status revisado em06/10/2026:** parcial — handlers cobertos; integração/banco pendentes.
 
 ## Execução prescrita
 Arquivos: app/components/features/BulkActionMenu.tsx; app/routes/dash/review.$slug.tsx; app/lib/supabase.queries.ts. Criar api/review-links.ts, api/review.ts e migration review_links.
@@ -26,3 +26,7 @@ Interface: ambos handlers reais e rota real. Alterar slug/ids não amplia respos
 ## Resultado do executor
 Código: pendente. Teste local: pendente. Banco: verificar alcance acima. Navegador: pendente conforme17. Produção: não implantado.
 
+
+## Revisão independente após execução
+
+Leia `docs/audits/2026-10-06-revisao-tickets-05-09.md` a partir da raiz do repositório. A entrega do executor não encerrou todos os critérios deste ticket. Suíte195 passou; typecheck falhouTS7053; banco real/produção não foram homologados. Corrigir os Rxx relacionados ao ticket e registrar teste real por comportamento, distinguindo módulo isolado de integração da gaveta. Esta revisão prevalece sobre alegações gerais de conclusão do retorno.

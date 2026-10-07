@@ -1,6 +1,12 @@
 import type { Action, Partner } from "~/types";
 import { format } from "date-fns";
-import { ArchiveIcon, HeartIcon, MessageSquareIcon, XIcon } from "lucide-react";
+import {
+  ArchiveIcon,
+  AlertTriangleIcon,
+  HeartIcon,
+  MessageSquareIcon,
+  XIcon,
+} from "lucide-react";
 import { Icons } from "~/components/uzzina/UIcons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -8,9 +14,13 @@ import { ActionFormFooter } from "./ActionFormFooter";
 import { EssentialsTab } from "./EssentialsTab";
 import { InstagramTab } from "./InstagramTab";
 import { ObservationsTab } from "./ObservationsTab";
+import { ActionSaveCoordinator, type CoordinatorState } from "./action-save-coordinator";
 import { INTENT } from "~/lib/CONSTANTS";
 import { isSocialMediaContent, parseStrategies } from "~/lib/helpers";
-import { useActionMutations } from "~/hooks/useActionMutations";
+import {
+  useActionMutations,
+  type SingleActionInput,
+} from "~/hooks/useActionMutations";
 import { cn } from "cnfast";
 import {
   PrismAccordion,
@@ -92,14 +102,57 @@ export function ActionFormDrawer({
   // Saved title reference — initialized from BaseAction.title, updated only on confirmed save
   const savedTitleRef = useRef(BaseAction.title || "");
 
-  // Active in-flight creation promise — shared across blur, button click, and shortcut
-  const activeCreatePromiseRef = useRef<Promise<Action | null> | null>(null);
+  const draftKeyRef = useRef(`draft-${Date.now()}`);
+  const coordinatorKey = BaseAction.id || draftKeyRef.current;
+  const coordinatorRef = useRef<ActionSaveCoordinator | null>(null);
+  if (!coordinatorRef.current) {
+    coordinatorRef.current = new ActionSaveCoordinator({
+      key: coordinatorKey,
+      initialAction: BaseAction,
+      writeFn: async (payload: Record<string, unknown>) =>
+        (await handleAction(
+          payload as unknown as SingleActionInput,
+        )) as Action | null | undefined,
+    });
+  }
+
+  const [coordinatorState, setCoordinatorState] = useState<CoordinatorState>(
+    () => coordinatorRef.current?.getState() ?? {
+      key: coordinatorKey,
+      status: BaseAction.id ? "saved" : "draft",
+      errorMessage: null,
+      savedTitle: BaseAction.title || "",
+      confirmedAction: BaseAction,
+      pendingPatch: {},
+      isDirty: false,
+    },
+  );
+
+  useEffect(() => {
+    if (coordinatorRef.current) {
+      return coordinatorRef.current.subscribe(setCoordinatorState);
+    }
+  }, []);
+
+  // Quando o coordenador confirma uma ação persistida ou nova versão, sincroniza o RawAction
+  useEffect(() => {
+    if (coordinatorState.confirmedAction) {
+      setRawAction((prev) => ({
+        ...prev,
+        ...coordinatorState.confirmedAction,
+        id: coordinatorState.confirmedAction?.id ?? prev.id,
+        created_at: coordinatorState.confirmedAction?.created_at ?? prev.created_at,
+        updated_at: coordinatorState.confirmedAction?.updated_at ?? prev.updated_at,
+      }));
+    }
+  }, [coordinatorState.confirmedAction]);
 
   // Ref for the latest description typed in Tiptap — updated on every keystroke
   // without triggering re-renders. handleSave reads from here so Cmd+Enter
   // always saves the latest typed content even without blur.
   const descriptionRef = useRef(BaseAction.description || "");
   const contentDescriptionRef = useRef(BaseAction.content_description || "");
+
   const updateAction = useCallback(
     async (
       data?: {
@@ -107,6 +160,8 @@ export function ActionFormDrawer({
       },
       forceCreate = false,
     ): Promise<Action | null> => {
+      const coordinator = coordinatorRef.current;
+      if (!coordinator) return null;
       const current = rawActionRef.current;
 
       // Se for rascunho e forceCreate solicitado
@@ -114,94 +169,43 @@ export function ActionFormDrawer({
         if (!current.title || current.title.trim().length < 2) return null;
         if (current.partners.length === 0) return null;
 
-        // Se já houver criação em andamento, aguardar a mesma promessa
-        if (activeCreatePromiseRef.current) {
-          const created = await activeCreatePromiseRef.current;
-          if (created && data && Object.keys(data).length > 0) {
-            return await updateAction(data);
-          }
-          return created;
-        }
-        const createPromise = (async () => {
-          try {
-            const payload = {
-              ...current,
-              ...data,
-              title: ((data?.title as string) || current.title).trim(),
-              description: descriptionRef.current,
-              content_description: contentDescriptionRef.current,
-              intent: INTENT.create_action,
-            };
-            const result = await handleAction(payload);
-            if (result) {
-              savedTitleRef.current = result.title || "";
-              setRawAction((prev) => ({
-                ...result,
-                ...prev,
-                id: result.id,
-                created_at: result.created_at,
-                updated_at: result.updated_at,
-              }));
-              return result;
-            }
-            return null;
-          } catch (err) {
-            console.error("Erro ao criar ação:", err);
-            return null;
-          } finally {
-            activeCreatePromiseRef.current = null;
-          }
-        })();
-        activeCreatePromiseRef.current = createPromise;
-        return await createPromise;
+        const payload = {
+          ...current,
+          ...data,
+          title: ((data?.title as string) || current.title).trim(),
+          description: descriptionRef.current,
+          content_description: contentDescriptionRef.current,
+          intent: INTENT.create_action,
+        };
+        return await coordinator.createAction(payload);
       }
 
       // Se for ação existente (atualização parcial / patch)
       if (current.id) {
-        try {
-          const patchData = data || {};
-          const result = await handleAction({
-            id: current.id,
-            intent: INTENT.update_action,
-            ...patchData,
-          });
-          if (result) {
-            if (patchData.title) {
-              savedTitleRef.current = result.title || "";
-            }
-            setRawAction((prev) => ({
-              ...result,
-              ...prev,
-              id: result.id,
-              created_at: result.created_at,
-              updated_at: result.updated_at,
-            }));
-            return result;
-          }
-          return null;
-        } catch (err) {
-          console.error("Erro ao atualizar ação:", err);
-          return null;
-        }
+        const patchData = data || {};
+        return await coordinator.scheduleUpdate(patchData);
       }
       return null;
     },
-    [handleAction],
+    [],
   );
+
   const handleTitleBlur = useCallback(
     async (title: string) => {
       const trimmed = title.trim();
       const current = rawActionRef.current;
+      const coordinator = coordinatorRef.current;
+      if (!coordinator) return;
 
-      // Se o título não mudou em relação ao último salvo/confirmado, não grava
-      if (trimmed === savedTitleRef.current) {
+      // Se o título não mudou em relação ao último salvo/confirmado pelo coordenador, não grava
+      if (trimmed === coordinator.getState().savedTitle) {
         return;
       }
 
       // Se for ação existente e título válido, atualiza
       if (current.id) {
         if (trimmed.length >= 2) {
-          await updateAction({
+          await coordinator.scheduleUpdate({
             title: trimmed,
           });
         }
@@ -220,8 +224,12 @@ export function ActionFormDrawer({
     },
     [updateAction],
   );
+
   const handleSave = useCallback(async (): Promise<boolean> => {
     const current = rawActionRef.current;
+    const coordinator = coordinatorRef.current;
+    if (!coordinator) return false;
+
     const titleTrimmed = (current.title || "").trim();
     if (titleTrimmed.length < 2) {
       toast.error("Erro / O título deve ter pelo menos 2 caracteres", {
@@ -235,30 +243,13 @@ export function ActionFormDrawer({
       });
       return false;
     }
-    if (!current.id) {
-      if (activeCreatePromiseRef.current) {
-        const created = await activeCreatePromiseRef.current;
-        return !!created;
-      }
-      const result = await updateAction(
-        {
-          title: titleTrimmed,
-          description: descriptionRef.current,
-          content_description: contentDescriptionRef.current,
-        },
-        true,
-      );
-      return !!result;
-    }
 
-    // Ação existente: envia os campos pendentes
-    const result = await updateAction({
+    return await coordinator.saveNow({
       title: titleTrimmed,
       description: descriptionRef.current,
       content_description: contentDescriptionRef.current,
     });
-    return !!result;
-  }, [updateAction]);
+  }, []);
 
   // Ref always points to the latest handleSave to avoid stale closures in event listeners
   const handleSaveRef = useRef(handleSave);
@@ -279,6 +270,7 @@ export function ActionFormDrawer({
       savedTitleRef.current = BaseAction.title || "";
       descriptionRef.current = BaseAction.description || "";
       contentDescriptionRef.current = BaseAction.content_description || "";
+      coordinatorRef.current?.reset(BaseAction);
       let initialPartners = BaseAction.partners || [];
       if (initialPartners.length === 0) {
         if (
@@ -323,7 +315,11 @@ export function ActionFormDrawer({
   const [activeAIIntent, setActiveAIIntent] = useState<string | null>(null);
   const [isStrategyModalOpen, setIsStrategyModalOpen] = useState(false);
   const [descriptionVersion, setDescriptionVersion] = useState(0);
-  const isPending = isMutationLoading || isAIProcessing;
+  const isPending =
+    isMutationLoading ||
+    isAIProcessing ||
+    coordinatorState.status === "creating" ||
+    coordinatorState.status === "saving";
   const triggerAIAction = async (
     intent: string,
     customPayload?: Record<string, string | string[] | null>,
@@ -476,12 +472,21 @@ export function ActionFormDrawer({
     [updateAction],
   );
 
-  // Safe close that coordinates with any in-flight creation
+  // Safe close that coordinates with any in-flight creation and unsaved edits
   const handleSafeClose = useCallback(async () => {
-    if (activeCreatePromiseRef.current) {
-      await activeCreatePromiseRef.current;
+    const coordinator = coordinatorRef.current;
+    if (coordinator) {
+      const canClose = await coordinator.safeClose({
+        title: rawActionRef.current.title,
+        description: descriptionRef.current,
+        content_description: contentDescriptionRef.current,
+      });
+      if (canClose) {
+        onClose();
+      }
+    } else {
+      onClose();
     }
-    onClose();
   }, [onClose]);
 
   // Guard: only update color and initial fallback responsibles on fresh draft
@@ -562,6 +567,57 @@ export function ActionFormDrawer({
             type="button"
           >
             Desarquivar
+          </button>
+        </div>
+      )}
+
+      {coordinatorState.status === "conflict" && (
+        <div
+          data-testid="drawer-conflict-banner"
+          className="flex shrink-0 items-center justify-between gap-3 bg-warning-background p-3 text-sm font-medium text-warning border-b"
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <AlertTriangleIcon className="size-4 shrink-0" />
+            <span className="truncate">
+              {coordinatorState.errorMessage ||
+                "Esta ação foi modificada em outra sessão. Suas edições foram retidas localmente."}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              className="text-xs underline hover:no-underline font-semibold"
+              onClick={async () => {
+                const coordinator = coordinatorRef.current;
+                if (!coordinator) return;
+                await coordinator.forceSave();
+              }}
+              type="button"
+            >
+              Sobrescrever
+            </button>
+          </div>
+        </div>
+      )}
+
+      {coordinatorState.status === "error" && (
+        <div
+          data-testid="drawer-error-banner"
+          className="flex shrink-0 items-center justify-between gap-3 bg-error-background p-3 text-sm font-medium text-error border-b"
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <AlertTriangleIcon className="size-4 shrink-0" />
+            <span className="truncate">
+              {coordinatorState.errorMessage || "Erro ao salvar alterações."}
+            </span>
+          </div>
+          <button
+            className="text-xs underline hover:no-underline font-semibold shrink-0"
+            onClick={() => {
+              handleSave();
+            }}
+            type="button"
+          >
+            Tentar novamente
           </button>
         </div>
       )}

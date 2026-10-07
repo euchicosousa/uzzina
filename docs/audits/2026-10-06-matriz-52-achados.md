@@ -1,5 +1,8 @@
 # Matriz dos 52 achados — baseline para execução Gemini
 
+> **Revisão posterior:** esta baseline foi preservada. Para estado observado após o executor chegar09, leia [revisão05–09](2026-10-06-revisao-tickets-05-09.md), incluindo retificação das aprovações incorretas do retorno.
+
+
 Data: 06/10/2026. Fonte: `2026-09-26-analise-uzzina.md`. Leia em conjunto com `2026-10-06-execucao-gemini-pendencias.md`.
 
 Esta é uma reconciliação documental da auditoria com as entregas/revisões registradas. Não é uma nova inspeção integral do código nem inventário do banco de produção. “Parcial / revalidar” significa que há correção relatada ou cobertura incompleta: confira a produção atual antes de alterar. “Validado localmente” não significa implantado ou aprovado em todas as camadas.

@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import bcrypt from "bcryptjs";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "../types/database";
 import {
@@ -137,11 +138,48 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
         .json({ error: "Credenciais de acesso não configuradas para este cliente." });
     }
 
-    const inputHash = hashLegacyPassword(password);
-    if (inputHash !== client.password_hash) {
+    let isPasswordValid = false;
+    let shouldMigrateLegacy = false;
+
+    if (
+      client.password_hash.startsWith("$2a$") ||
+      client.password_hash.startsWith("$2b$") ||
+      client.password_hash.startsWith("$2y$")
+    ) {
+      isPasswordValid = await bcrypt.compare(password, client.password_hash);
+    } else {
+      const inputHash = hashLegacyPassword(password);
+      if (inputHash === client.password_hash) {
+        isPasswordValid = true;
+        shouldMigrateLegacy = true;
+      }
+    }
+
+    if (!isPasswordValid) {
       return res
         .status(401)
         .json({ error: "E-mail ou senha incorretos ou conta desativada." });
+    }
+
+    // Se o login foi bem-sucedido com hash legado, migra condicionalmente para bcrypt
+    if (shouldMigrateLegacy) {
+      try {
+        const newBcryptHash = await bcrypt.hash(password, 12);
+        const { error: rpcErr } = await supabaseAdmin.rpc("client_migrate_legacy_password", {
+          p_client_id: client.id,
+          p_legacy_hash: client.password_hash,
+          p_new_hash: newBcryptHash,
+        });
+        if (rpcErr) {
+          await supabaseAdmin
+            .from("clients")
+            .update({ password_hash: newBcryptHash })
+            .eq("id", client.id)
+            .eq("password_hash", client.password_hash);
+        }
+      } catch (migrateErr) {
+        console.error("Erro ao migrar senha legada:", migrateErr);
+      }
     }
 
     // Cria sessão opaca persistida no banco

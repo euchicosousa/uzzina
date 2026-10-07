@@ -109,11 +109,22 @@ export async function deleteDashComment(actionId:string,commentId:string): Promi
   if (data.deletedId !== commentId) throw new PortalHttpError(503,"O servidor não confirmou a exclusão.");
 }
 
-export async function updateDashWorkFiles(actionId:string,work_files:string[]): Promise<string[]> {
-  const data = await portalRequest<{actionId:string;work_files:string[];count:number}>("/api/dash-action?op=work-files",{
-    method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({actionId,work_files}),
-  },"Falha ao salvar anexos");
+export async function updateDashWorkFiles(
+  actionId: string,
+  work_files: string[],
+  expectedUpdatedAt: string,
+): Promise<{ work_files: string[]; updated_at: string }> {
+  const data = await portalRequest<{
+    actionId: string;
+    work_files: string[];
+    count: number;
+    updated_at: string;
+  }>("/api/dash-action?op=work-files", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ actionId, work_files, expectedUpdatedAt }),
+  }, "Falha ao salvar anexos");
   if (data.actionId !== actionId || !Array.isArray(data.work_files) || data.count !== data.work_files.length)
-    throw new PortalHttpError(503,"O servidor não confirmou os anexos.");
-  return data.work_files;
+    throw new PortalHttpError(503, "O servidor não confirmou os anexos.");
+  return { work_files: data.work_files, updated_at: data.updated_at };
 }

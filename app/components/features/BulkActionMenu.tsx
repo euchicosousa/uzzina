@@ -135,6 +135,7 @@ export function BulkActionMenu() {
   const [sprintOpen, setSprintOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
 
   // Early return: nada a mostrar fora do modo de seleção
   if (!isSelectionMode) return null;
@@ -243,17 +244,52 @@ export function BulkActionMenu() {
   };
 
   // ─── Handler: Enviar para Aprovação ─────────────────────────────────────
-  const handleSendForApproval = () => {
+  const handleSendForApproval = async () => {
     const targetIds = getVisibleSelectedIds();
-    if (!currentPartner || targetIds.length === 0) return;
-    const ids = targetIds.join(",");
-    const url = `${window.location.origin}/dash/review/${currentPartner.slug}?ids=${ids}`;
-    navigator.clipboard.writeText(url).then(() => {
-      toast.success("Link de revisão copiado!", {
-        description: url,
+    if (!currentPartner || targetIds.length === 0 || isGeneratingLink) return;
+    setIsGeneratingLink(true);
+    try {
+      const { createSupabaseBrowserClient } = await import("~/lib/supabase.client");
+      const supabase = createSupabaseBrowserClient();
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+
+      if (!token) {
+        toast.error("Sessão não encontrada para gerar link.");
+        return;
+      }
+
+      const res = await fetch("/api/review-links", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          partner_slug: currentPartner.slug,
+          action_ids: targetIds,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorJson = (await res.json().catch(() => ({}))) as { error?: string };
+        toast.error(errorJson.error || "Falha ao gerar link de revisão.");
+        return;
+      }
+
+      const data = (await res.json()) as { link: { url: string } };
+      const fullUrl = `${window.location.origin}${data.link.url}`;
+      await navigator.clipboard.writeText(fullUrl);
+      toast.success("Link seguro de revisão copiado!", {
+        description: fullUrl,
         duration: 5000,
       });
-    });
+    } catch (err) {
+      console.error("Erro ao gerar link de revisão:", err);
+      toast.error("Erro ao gerar link de revisão.");
+    } finally {
+      setIsGeneratingLink(false);
+    }
   };
 
   // ─── Render ──────────────────────────────────────────────────────────────────

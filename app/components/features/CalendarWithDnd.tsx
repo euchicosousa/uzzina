@@ -103,6 +103,8 @@ export function CalendarWithDnd({
           await handleAction({
             ...activeAction,
             intent: INTENT.update_action,
+            id: activeAction.id,
+            expectedUpdatedAt: activeAction.updated_at,
             ...newDates,
           });
         } catch (err) {

@@ -7,6 +7,9 @@ const HANDLERS: Record<string, string> = {
   "/api/dash-auth": "./api/dash-auth.ts",
   "/api/dash-data": "./api/dash-data.ts",
   "/api/dash-action": "./api/dash-action.ts",
+  "/api/review-links": "./api/review-links.ts",
+  "/api/review": "./api/review.ts",
+  "/api/client-accounts": "./api/client-accounts.ts",
 };
 
 /** Local adapter for the same serverless handlers deployed to Vercel. */

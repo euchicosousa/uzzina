@@ -1,17 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { z } from "zod";
-import { fetchReviewActions, fetchPartnerBySlug } from "~/lib/supabase.queries";
 import { CATEGORIES } from "~/lib/CONSTANTS";
 import type { CATEGORY } from "~/lib/CONSTANTS";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { cn } from "cnfast";
 import { sanitizeHtml } from "~/utils/sanitize";
+import type { PublicReviewActionDto, PublicReviewPartnerDto } from "~/../api/review";
 
 const reviewSearchSchema = z.object({
+  r: z.string().optional(),
   ids: z.string().optional(),
 });
 
@@ -20,54 +20,90 @@ export const Route = createFileRoute("/dash/review/$slug")({
   component: ReviewPage,
 });
 
+async function fetchPublicReview(slug: string, token: string) {
+  const res = await fetch(`/api/review?slug=${encodeURIComponent(slug)}&r=${encodeURIComponent(token)}`);
+  if (res.status === 404) {
+    throw new Error("NOT_FOUND");
+  }
+  if (!res.ok) {
+    throw new Error("SERVER_ERROR");
+  }
+  return res.json() as Promise<{
+    partner: PublicReviewPartnerDto;
+    actions: PublicReviewActionDto[];
+  }>;
+}
+
 function ReviewPage() {
   const { slug } = Route.useParams();
-  const { ids } = Route.useSearch();
+  const { r: token, ids } = Route.useSearch();
 
-  const actionIds = ids
-    ? ids.split(",").filter((id) => id.trim().length > 0)
-    : [];
+  const isLegacyLink = !token && !!ids;
 
-  const { data: partner, isLoading: isPartnerLoading } = useQuery({
-    queryKey: ["reviewPartner", slug],
-    queryFn: () => fetchPartnerBySlug(slug),
-    enabled: !!slug,
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["publicReview", slug, token],
+    queryFn: () => (token ? fetchPublicReview(slug, token) : Promise.reject(new Error("MISSING_TOKEN"))),
+    enabled: !!slug && !!token,
+    retry: false,
   });
 
-  const { data: actions = [], isLoading: isActionsLoading } = useQuery({
-    queryKey: ["reviewActions", ids],
-    queryFn: () => fetchReviewActions(actionIds),
-    enabled: actionIds.length > 0,
-  });
-
-  const validActions = useMemo(() => {
-    return actions.filter(
-      (act) => Array.isArray(act.partners) && act.partners.includes(slug),
+  if (isLegacyLink) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="max-w-md text-center">
+          <h2 className="mb-2 text-lg font-semibold text-foreground">Link Descontinuado</h2>
+          <p className="text-sm text-muted-foreground">
+            Este link de revisão utiliza um formato antigo que foi descontinuado por motivos de segurança.
+            Por favor, solicite à equipe um novo link seguro de revisão.
+          </p>
+        </div>
+      </div>
     );
-  }, [actions, slug]);
+  }
 
-  const isLoading = isPartnerLoading || isActionsLoading;
+  if (!token) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="max-w-md text-center">
+          <h2 className="mb-2 text-lg font-semibold text-foreground">Link Inválido</h2>
+          <p className="text-sm text-muted-foreground">
+            Nenhuma chave de autorização foi fornecida para acessar esta revisão.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <div className="size-10 animate-spin rounded-full border-4 border-foreground/20 border-t-foreground" />
-          <p className="text-sm text-muted-foreground">Carregando...</p>
+          <p className="text-sm text-muted-foreground">Carregando revisão...</p>
         </div>
       </div>
     );
   }
 
-  if (!partner) {
+  if (error || !data) {
+    const isNotFound = error instanceof Error && error.message === "NOT_FOUND";
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <p className="text-muted-foreground">Parceiro não encontrado.</p>
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="max-w-md text-center">
+          <h2 className="mb-2 text-lg font-semibold text-foreground">Acesso Não Disponível</h2>
+          <p className="text-sm text-muted-foreground">
+            {isNotFound
+              ? "Este link de revisão expirou, foi revogado ou é inválido."
+              : "Falha ao carregar a revisão. Tente novamente mais tarde."}
+          </p>
+        </div>
       </div>
     );
   }
 
-  if (actionIds.length === 0 || validActions.length === 0) {
+  const { partner, actions: validActions } = data;
+
+  if (validActions.length === 0) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <p className="text-muted-foreground">Nenhum conteúdo deste parceiro encontrado para revisão.</p>

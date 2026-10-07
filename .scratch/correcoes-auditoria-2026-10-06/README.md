@@ -1,4 +1,7 @@
 # Correções da auditoria — pacote de execução
+
+> **Checkpoint atual — 06/10/2026:** o executor chegou09, mas o fechamento05–09 foi rejeitado na revisão independente. Leia `docs/audits/2026-10-06-revisao-tickets-05-09.md` a partir da raiz: contém estados atuais, falhasR01–R13, critérios de testes e próxima execução. Prioridade é estabilizar08–09 e preparar06–07 corretamente antes de continuar10. Os estados/ordens anteriores abaixo são históricos.
+
 Data: 06/10/2026. Base examinada: commit 2680711. Aplicativo: /uzzina.
 
 ## Execução restante pelo Gemini

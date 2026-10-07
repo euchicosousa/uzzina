@@ -59,7 +59,7 @@ beforeEach(() => {
   db.clients=[{id:"a",name:"Alice",image:null,partners:["smartmed"],active:true},{id:"b",name:"Bob",partners:["toro"],active:true}];
   db.people=[];
   db.partners=[{slug:"smartmed",archived:false},{slug:"toro",archived:false}];
-  db.actions=[{id:"action-a",partners:["smartmed"],work_files:[]},{id:"action-b",partners:["toro"],work_files:[]}];
+  db.actions=[{id:"action-a",partners:["smartmed"],work_files:[],updated_at:"2026-10-06T12:00:00Z"},{id:"action-b",partners:["toro"],work_files:[],updated_at:"2026-10-06T12:00:00Z"}];
   db.action_comments=[
     {id:"own",action_id:"action-a",author_id:"a",author_name:"Alice",content:"Público",is_user:false,is_internal:false,mentions:[],created_at:"2026-10-06T12:00:00Z"},
     {id:"other",action_id:"action-a",author_id:"b",author_name:"Bob",content:"Outro",is_user:false,is_internal:false,mentions:[]},
@@ -113,21 +113,30 @@ it("não confirma escrita que afetou zero linhas",async()=>{
   expect((await request("PATCH","comment",{actionId:"action-a",commentId:"own",content:"Mudou"})).status).toBe(404);
 });
 it("confirma apenas os anexos gravados, sem permitir outros campos da ação",async()=>{
-  const response=await request("PATCH","work-files",{actionId:"action-a",work_files:["https://cdn.example/material.pdf"]});
+  const response=await request("PATCH","work-files",{actionId:"action-a",work_files:["https://cdn.example/material.pdf"],expectedUpdatedAt:"2026-10-06T12:00:00Z"});
   expect(response.status).toBe(200);
-  expect(response.body).toEqual({actionId:"action-a",work_files:["https://cdn.example/material.pdf"],count:1});
-  expect((await request("PATCH","work-files",{actionId:"action-a",work_files:[],phase:"done"})).status).toBe(400);
+  expect(response.body.actionId).toBe("action-a");
+  expect(response.body.work_files).toEqual(["https://cdn.example/material.pdf"]);
+  expect(response.body.count).toBe(1);
+  expect(typeof response.body.updated_at).toBe("string");
+  expect((await request("PATCH","work-files",{actionId:"action-a",work_files:[],expectedUpdatedAt:"2026-10-06T12:00:00Z",phase:"done"})).status).toBe(400);
+  expect((await request("PATCH","work-files",{actionId:"action-a",work_files:[]})).status).toBe(400);
+});
+it("rejeita com 409 se expectedUpdatedAt for conflitante",async()=>{
+  const response=await request("PATCH","work-files",{actionId:"action-a",work_files:[],expectedUpdatedAt:"2025-01-01T00:00:00Z"});
+  expect(response.status).toBe(409);
+  expect(response.body.error).toBe("Esta ação mudou. Recarregue antes de salvar.");
 });
 for (const files of [["javascript:alert(1)"],["ftp://example.com/a"],Array(101).fill("https://example.com/a"),[`https://example.com/${"a".repeat(2048)}`],"invalid"]) {
   it("recusa anexos fora do contrato",async()=>{
-    expect((await request("PATCH","work-files",{actionId:"action-a",work_files:files})).status).toBe(400);expect(writes).toBe(0);
+    expect((await request("PATCH","work-files",{actionId:"action-a",work_files:files,expectedUpdatedAt:"2026-10-06T12:00:00Z"})).status).toBe(400);expect(writes).toBe(0);
   });
 }
 it("anexo não confirma zero linhas nem falha do banco",async()=>{
   loseWrite=true;
-  expect((await request("PATCH","work-files",{actionId:"action-a",work_files:[]})).status).toBe(404);
+  expect((await request("PATCH","work-files",{actionId:"action-a",work_files:[],expectedUpdatedAt:"2026-10-06T12:00:00Z"})).status).toBe(409);
   loseWrite=false;failWrite=true;
-  expect((await request("PATCH","work-files",{actionId:"action-a",work_files:[]})).status).toBe(503);
+  expect((await request("PATCH","work-files",{actionId:"action-a",work_files:[],expectedUpdatedAt:"2026-10-06T12:00:00Z"})).status).toBe(503);
 });
 it("mutações rejeitam origem ausente ou externa",async()=>{
   for (const origin of ["","https://attacker.example"]) {

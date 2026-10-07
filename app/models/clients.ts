@@ -2,39 +2,46 @@ import { PortalHttpError, portalRequest } from "~/services/portal-http";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Client } from "~/types";
 
-/** Helper nativo de browser para gerar hash seguro sem usar bibliotecas Node (que quebram o Vite) */
-async function hashPassword(password: string): Promise<string> {
-  const salt = "uzzina_v1_salt_";
-  const encoder = new TextEncoder();
-  const data = encoder.encode(salt + password);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+async function getAuthHeader(supabase?: SupabaseClient): Promise<string | null> {
+  if (!supabase) return null;
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token ? `Bearer ${data.session.access_token}` : null;
 }
 
-/** Retorna todos os clientes ativos para o painel admin. */
-export async function getAllClients(supabase: SupabaseClient) {
-  const { data, error } = await supabase
-    .from("clients")
-    .select("id, created_at, name, email, partners, image, active")
-    .is("active", true)
-    .order("name", { ascending: true });
+/** Retorna todos os clientes ativos para o painel admin via API autenticada. */
+export async function getAllClients(supabase: SupabaseClient): Promise<Client[]> {
+  const authHeader = await getAuthHeader(supabase);
+  const res = await fetch("/api/client-accounts", {
+    headers: {
+      ...(authHeader ? { Authorization: authHeader } : {}),
+    },
+  });
 
-  if (error) throw error;
-  return data as Client[];
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Falha ao listar clientes.");
+  }
+
+  const data = await res.json();
+  return data.clients as Client[];
 }
 
-/** Retorna um cliente específico pelo ID se estiver ativo. */
-export async function getClientById(supabase: SupabaseClient, id: string) {
-  const { data, error } = await supabase
-    .from("clients")
-    .select("id, created_at, name, email, partners, image, active")
-    .eq("id", id)
-    .eq("active", true)
-    .single();
+/** Retorna um cliente específico pelo ID via API autenticada. */
+export async function getClientById(supabase: SupabaseClient, id: string): Promise<Client> {
+  const authHeader = await getAuthHeader(supabase);
+  const res = await fetch(`/api/client-accounts?id=${encodeURIComponent(id)}`, {
+    headers: {
+      ...(authHeader ? { Authorization: authHeader } : {}),
+    },
+  });
 
-  if (error) throw error;
-  return data as Client;
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Falha ao carregar cliente.");
+  }
+
+  const data = await res.json();
+  return data.client as Client;
 }
 
 export type CreateClientInput = Omit<Client, "id" | "created_at" | "active" | "password_hash"> & {
@@ -43,60 +50,73 @@ export type CreateClientInput = Omit<Client, "id" | "created_at" | "active" | "p
 
 export type UpdateClientInput = Partial<Omit<Client, "id" | "created_at" | "active" | "password_hash">> & {
   password?: string | null;
-  password_hash?: string | null;
 };
 
-/** Cria um novo cliente com e-mail e senha com hash. */
+/** Cria um novo cliente via servidor com hash bcrypt no backend. */
 export async function createClient(
   supabase: SupabaseClient,
   clientData: CreateClientInput,
-) {
-  const { password, ...safeData } = clientData;
-  const passwordHash = password ? await hashPassword(password) : null;
-  
-  const { data, error } = await supabase
-    .from("clients")
-    .insert([{ ...safeData, password_hash: passwordHash, active: true }])
-    .select("id, created_at, name, email, partners, image, active")
-    .single();
+): Promise<Client> {
+  const authHeader = await getAuthHeader(supabase);
+  const res = await fetch("/api/client-accounts", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(authHeader ? { Authorization: authHeader } : {}),
+    },
+    body: JSON.stringify(clientData),
+  });
 
-  if (error) throw error;
-  return data as Client;
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Falha ao cadastrar cliente.");
+  }
+
+  const data = await res.json();
+  return data.client as Client;
 }
 
-/** Atualiza os dados de um cliente existente incluindo re-hashing da senha caso alterada. */
+/** Atualiza dados do cliente via servidor. Senha vazia preserva a existente. */
 export async function updateClient(
   supabase: SupabaseClient,
   id: string,
   clientData: UpdateClientInput,
-) {
-  const { password, ...updates } = clientData;
-  
-  if (password) {
-    updates.password_hash = await hashPassword(password);
+): Promise<Client> {
+  const authHeader = await getAuthHeader(supabase);
+  const res = await fetch("/api/client-accounts", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      ...(authHeader ? { Authorization: authHeader } : {}),
+    },
+    body: JSON.stringify({ id, ...clientData }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Falha ao atualizar cliente.");
   }
 
-  const { data, error } = await supabase
-    .from("clients")
-    .update(updates)
-    .eq("id", id)
-    .select("id, created_at, name, email, partners, image, active")
-    .single();
-
-  if (error) throw error;
-  return data as Client;
+  const data = await res.json();
+  return data.client as Client;
 }
 
-/**
- * Arquiva (oculta) logicamente o cliente.
- */
-export async function archiveClient(supabase: SupabaseClient, id: string) {
-  const { error } = await supabase
-    .from("clients")
-    .update({ active: false })
-    .eq("id", id);
+/** Desativa e revoga sessões ativas do cliente via RPC transacional no servidor. */
+export async function archiveClient(supabase: SupabaseClient, id: string): Promise<void> {
+  const authHeader = await getAuthHeader(supabase);
+  const res = await fetch("/api/client-accounts", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      ...(authHeader ? { Authorization: authHeader } : {}),
+    },
+    body: JSON.stringify({ id }),
+  });
 
-  if (error) throw error;
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Falha ao arquivar cliente.");
+  }
 }
 
 export interface ClientAuthResult {

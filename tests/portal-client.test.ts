@@ -43,7 +43,7 @@ describe("Portal: confirmação de comentários e anexos", () => {
     const {deleteDashComment,updateDashWorkFiles} = await import("~/services/dash-client");
     reply(200);
     await expect(deleteDashComment("action-1","comment-1")).rejects.toMatchObject({status:503});
-    await expect(updateDashWorkFiles("action-1",[])).rejects.toMatchObject({status:503});
+    await expect(updateDashWorkFiles("action-1",[],"2026-10-06T12:00:00Z")).rejects.toMatchObject({status:503});
   });
   it("preserva 401 e 404 das mutações em vez de sucesso",async()=>{
     const {createDashComment,updateDashComment} = await import("~/services/dash-client");

@@ -1,5 +1,8 @@
 # UZZINA — execução das pendências pelo Gemini
 
+> **Checkpoint após execução05–09 — 06/10/2026:** antes de continuar10, leia [revisão independente](2026-10-06-revisao-tickets-05-09.md) e trate R01–R13 com testes reais. 06–09 não estão aprovados; segurançaSQL e data/salvamento precisam correção/diagnóstico. As instruções originais abaixo permanecem válidas onde a revisão não as complementa.
+
+
 Data: 06/10/2026. Destinatário: Gemini Flash usado pelo proprietário. Repositório: `/Users/euchicosousa/vercel/uzzina`. Este documento autoriza a execução das correções técnicas restantes do pacote existente. Não autoriza reconstrução, troca de stack ou implantação.
 
 ## 1. Comece aqui

@@ -222,6 +222,47 @@ export type Database = {
           }
         ]
       }
+      review_links: {
+        Row: {
+          action_ids: string[]
+          created_at: string
+          created_by: string
+          expires_at: string
+          id: string
+          partner_slug: string
+          revoked_at: string | null
+          token_hash: string
+        }
+        Insert: {
+          action_ids: string[]
+          created_at?: string
+          created_by: string
+          expires_at: string
+          id?: string
+          partner_slug: string
+          revoked_at?: string | null
+          token_hash: string
+        }
+        Update: {
+          action_ids?: string[]
+          created_at?: string
+          created_by?: string
+          expires_at?: string
+          id?: string
+          partner_slug?: string
+          revoked_at?: string | null
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       leads: {
         Row: {
           answers: Json | null
@@ -410,6 +451,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_update_client_password: {
+        Args: {
+          p_client_id: string
+          p_password_hash: string
+        }
+        Returns: undefined
+      }
+      admin_deactivate_client: {
+        Args: {
+          p_client_id: string
+        }
+        Returns: undefined
+      }
+      client_migrate_legacy_password: {
+        Args: {
+          p_client_id: string
+          p_legacy_hash: string
+          p_new_hash: string
+        }
+        Returns: number
+      }
       get_app_bootstrap: { Args: { p_user_id: string }; Returns: Json }
       get_home_actions: {
         Args: {

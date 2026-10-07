@@ -41,7 +41,7 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
   const actionId = req.method === "GET" ? req.query.actionId : input.actionId;
   if (typeof actionId !== "string" || !actionId || actionId.length > 128)
     return res.status(400).json({error:"Ação inválida."});
-  const {data:action,error:actionError} = await db.from("actions").select("id, partners")
+  const {data:action,error:actionError} = await db.from("actions").select("id, partners, updated_at")
     .eq("id",actionId).single();
   if (actionError && actionError.code !== "PGRST116") throw actionError;
   if (!action?.partners.some(partner => visiblePartnerSlugs.includes(partner)))
@@ -126,18 +126,23 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
   }
   if (req.method === "PATCH" && op === "work-files") {
     const files = input.work_files;
+    const expectedUpdatedAt = input.expectedUpdatedAt;
     const validUrl = (value:unknown): value is string => {
       if (typeof value !== "string" || value.length > 2048 || value !== value.trim()) return false;
       try {const parsed = new URL(value);return parsed.protocol === "http:" || parsed.protocol === "https:";}
       catch {return false;}
     };
-    if (!strictKeys(["actionId","work_files"]) || !Array.isArray(files) || files.length > 100 || !files.every(validUrl))
-      return res.status(400).json({error:"Anexos inválidos. Use até 100 URLs HTTP ou HTTPS."});
+    if (!strictKeys(["actionId","work_files","expectedUpdatedAt"]) || !Array.isArray(files) || files.length > 100 || !files.every(validUrl) || typeof expectedUpdatedAt !== "string" || !expectedUpdatedAt)
+      return res.status(400).json({error:"Anexos inválidos ou expectedUpdatedAt ausente."});
+    if (action.updated_at !== expectedUpdatedAt) {
+      return res.status(409).json({error:"Esta ação mudou. Recarregue antes de salvar."});
+    }
     const {data,error} = await db.from("actions").update({work_files:files,updated_at:new Date().toISOString()})
-      .eq("id",actionId).overlaps("partners",visiblePartnerSlugs).select("id, work_files").single();
-    if (error && error.code !== "PGRST116") throw error;
-    if (!data) return res.status(404).json({error:"Ação não encontrada."});
-    return res.status(200).json({actionId:data.id,work_files:data.work_files || [],count:data.work_files?.length || 0});
+      .eq("id",actionId).eq("updated_at",expectedUpdatedAt).overlaps("partners",visiblePartnerSlugs).select("id, work_files, updated_at").single();
+    if (error && error.code === "PGRST116") return res.status(409).json({error:"Esta ação mudou. Recarregue antes de salvar."});
+    if (error) throw error;
+    if (!data) return res.status(409).json({error:"Esta ação mudou. Recarregue antes de salvar."});
+    return res.status(200).json({actionId:data.id,work_files:data.work_files || [],count:data.work_files?.length || 0,updated_at:data.updated_at});
   }
   return res.status(400).json({error:"Operação não suportada."});
 }

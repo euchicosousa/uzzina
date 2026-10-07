@@ -33,6 +33,8 @@ export default function KanbanPhasesBoard({ actions }: { actions: Action[] }) {
       return handleAction({
         ...action,
         intent: INTENT.update_action,
+        id: action.id,
+        expectedUpdatedAt: action.updated_at,
         phase: newPhase,
       });
     },

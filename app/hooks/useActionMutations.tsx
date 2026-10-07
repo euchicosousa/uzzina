@@ -13,6 +13,7 @@ import {
   bulkUpdateActionsClient,
   bulkUpdateDateOnlyClient,
   bulkUpdateTimeOnlyClient,
+  ActionConflictError,
 } from "~/lib/supabase.mutations";
 import type {
   ActionCreateInput,
@@ -23,6 +24,7 @@ import type {
 export type SingleActionInput = {
   intent: string;
   id?: string;
+  expectedUpdatedAt?: string;
   [key: string]: unknown;
 };
 
@@ -33,6 +35,10 @@ interface MutationContext {
 
 const handleError = (error: unknown) => {
   console.error("Mutation failed:", error);
+  if (error instanceof ActionConflictError) {
+    toast.error(error.message);
+    return;
+  }
   const message =
     error instanceof Error ? error.message : "Erro desconhecido";
   toast.error(`Falha na operação: ${message}`);
@@ -69,15 +75,21 @@ export function useActionMutations() {
   const singleActionMutation = useMutation({
     mutationKey: ["actionMutation"],
     mutationFn: async (data: SingleActionInput) => {
-      const { intent, id, ...values } = data;
+      const { intent, id, expectedUpdatedAt, ...values } = data;
       if (intent === INTENT.create_action) {
         return await createActionClient(values as ActionCreateInput);
       } else if (intent === INTENT.update_action) {
-        if (id)
-          return await updateActionClient(
-            String(id),
-            values as ActionPatchInput,
+        if (!id) throw new Error("ID da ação é obrigatório para atualização.");
+        if (!expectedUpdatedAt || typeof expectedUpdatedAt !== "string") {
+          throw new Error(
+            "expectedUpdatedAt é obrigatório para atualização de ação.",
           );
+        }
+        return await updateActionClient(
+          String(id),
+          values as ActionPatchInput,
+          expectedUpdatedAt,
+        );
       } else if (intent === INTENT.duplicate_action) {
         if (id) return await duplicateActionClient(String(id));
       } else if (intent === INTENT.delete_action) {
@@ -155,6 +167,30 @@ export function useActionMutations() {
       );
 
       return { previousActions, previousLateActions };
+    },
+    onSuccess: (result, variables) => {
+      if (
+        variables.intent === INTENT.update_action &&
+        result &&
+        typeof result === "object" &&
+        "id" in result
+      ) {
+        const actionResult = result as Action;
+        queryClient.setQueriesData<Action[]>(
+          { queryKey: QUERY_KEYS.actions.all() },
+          (old) =>
+            old
+              ? old.map((a) => (a.id === actionResult.id ? actionResult : a))
+              : [],
+        );
+        queryClient.setQueriesData<Action[]>(
+          { queryKey: QUERY_KEYS.lateActions.all() },
+          (old) =>
+            old
+              ? old.map((a) => (a.id === actionResult.id ? actionResult : a))
+              : [],
+        );
+      }
     },
     onError: onErrorRollback,
     onSettled: () => {
@@ -389,6 +425,8 @@ export function useActionMutations() {
       const actionInput: SingleActionInput = {
         ...(action as unknown as ActionFormInput),
         intent: INTENT.update_action,
+        id: action.id,
+        expectedUpdatedAt: action.updated_at,
         sprints,
       };
 
@@ -402,6 +440,8 @@ export function useActionMutations() {
       const actionInput: SingleActionInput = {
         ...(action as unknown as ActionFormInput),
         intent: INTENT.update_action,
+        id: action.id,
+        expectedUpdatedAt: action.updated_at,
         archived: true,
       };
       return handleAction(actionInput);

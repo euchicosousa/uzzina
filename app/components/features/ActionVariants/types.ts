@@ -26,6 +26,7 @@ export interface ActionVariantRendererProps {
   handleAction: (
     action: Action & {
       intent: string;
+      expectedUpdatedAt?: string;
     },
   ) => void;
 }

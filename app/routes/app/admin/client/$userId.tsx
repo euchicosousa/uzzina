@@ -119,18 +119,25 @@ function AdminClientPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const name = formData.get("name") as string;
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    const name = (formData.get("name") as string)?.trim();
+    const email = (formData.get("email") as string)?.trim();
+    const rawPassword = (formData.get("password") as string)?.trim();
     const partnerSlugs = formData.getAll("partner_slugs") as string[];
-    if (!name || !email || !password) {
+
+    if (!name || !email || (isNew && !rawPassword)) {
       toast.error("Preencha todos os campos obrigatórios.");
       return;
     }
+
+    if (rawPassword && rawPassword.length < 8) {
+      toast.error("A senha deve conter no mínimo 8 caracteres.");
+      return;
+    }
+
     await saveMutation.mutateAsync({
       name,
       email,
-      password,
+      password: rawPassword ? rawPassword : null,
       image: imageUrl,
       partners: partnerSlugs,
     });
@@ -220,11 +227,14 @@ function AdminClientPage() {
             <PrismLabel htmlFor="password">Senha</PrismLabel>
             <PrismInputGroup>
               <PrismInputGroupInput
-                defaultValue={client?.password || ""}
                 id="password"
                 name="password"
-                placeholder="Senha de acesso"
-                required
+                placeholder={
+                  isNew
+                    ? "Senha de acesso (mínimo 8 caracteres)"
+                    : "Deixe em branco para manter a senha atual"
+                }
+                required={isNew}
                 type={showPassword ? "text" : "password"}
               />
               <PrismInputGroupAddon align="inline-end" className="pr-2 pl-1">

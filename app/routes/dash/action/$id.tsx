@@ -19,6 +19,7 @@ import { useDashContext } from "~/contexts/DashContext";
 import { toast } from "sonner";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { sanitizeHtml } from "~/utils/sanitize";
+import { PortalHttpError } from "~/services/portal-http";
 import { fetchDashAction, fetchDashComments, createDashComment, updateDashComment, deleteDashComment, updateDashWorkFiles, type DashActionDto } from "~/services/dash-client";
 export const Route = createFileRoute("/dash/action/$id")({
   component: DashActionDetail,
@@ -65,19 +66,24 @@ function DashActionDetail() {
   const updateWorkFilesMutation = useMutation({
     scope: {id:`dash-work-files:${clientId}:${actionId}`},
     onMutate: () => queryClient.cancelQueries({queryKey:["dashAction",clientId,actionId]}),
-    mutationFn: (files: string[]) => updateDashWorkFiles(actionId,files),
-    onSuccess: (files,requested) => {
+    mutationFn: (files: string[]) =>
+      updateDashWorkFiles(actionId, files, action?.updated_at || ""),
+    onSuccess: ({ work_files: files, updated_at }, requested) => {
       confirmedWorkFilesRef.current = files;
       setWorkFiles(files);
       if (workFilesRef.current === requested) workFilesRef.current = files;
-      queryClient.setQueryData<DashActionDto>(["dashAction",clientId,actionId],current =>
-        current ? {...current,work_files:files} : current,
+      queryClient.setQueryData<DashActionDto>(["dashAction", clientId, actionId], (current) =>
+        current ? { ...current, work_files: files, updated_at } : current,
       );
       toast.success("Arquivos atualizados com sucesso!");
     },
-    onError: (error,requested) => {
+    onError: (error, requested) => {
       if (workFilesRef.current === requested) workFilesRef.current = confirmedWorkFilesRef.current;
       console.error("Erro ao salvar arquivos:", error);
+      if (error instanceof PortalHttpError && error.status === 409) {
+        toast.error("Esta ação mudou. Recarregue antes de salvar.");
+        return;
+      }
       toast.error("Não foi possível salvar os arquivos.");
     },
   });

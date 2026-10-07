@@ -4,7 +4,7 @@
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent (respeitar bloqueadores; pacote local)
+**Status revisado em06/10/2026:** parcial — validação/efeitos persistentes e SQL incorretos.
 
 ## Execução prescrita
 Arquivos: app/models/clients.ts; app/routes/app/admin/clients.tsx; app/routes/app/admin/client/$userId.tsx; api/dash-auth.ts; api/create-user.ts. Criar api/client-accounts.ts.
@@ -28,3 +28,7 @@ NAVEGADOR: N02/N06 do17.
 ## Resultado do executor
 Código: pendente. Teste local: pendente. Banco: verificar alcance acima. Navegador: pendente conforme17. Produção: não implantado.
 
+
+## Revisão independente após execução
+
+Leia `docs/audits/2026-10-06-revisao-tickets-05-09.md` a partir da raiz do repositório. A entrega do executor não encerrou todos os critérios deste ticket. Suíte195 passou; typecheck falhouTS7053; banco real/produção não foram homologados. Corrigir os Rxx relacionados ao ticket e registrar teste real por comportamento, distinguindo módulo isolado de integração da gaveta. Esta revisão prevalece sobre alegações gerais de conclusão do retorno.

@@ -4,7 +4,7 @@
 
 **Blocked by:** 03, 04, 05, 06
 
-**Status:** ready-for-agent (respeitar bloqueadores; pacote local)
+**Status revisado em06/10/2026:** não aprovado — policies/matriz/inventário pendentes ou defeituosos.
 
 ## Execução prescrita
 Arquivos: supabase/rpc_functions.sql; supabase_update_get_home_actions.sql; types/database.ts; APIs02–06. Criar scripts de inspeção read-only, migrations e script de teste em banco descartável.
@@ -28,3 +28,7 @@ NAVEGADOR: N06; PRODUÇÃO separada.
 ## Resultado do executor
 Código: pendente. Teste local: pendente. Banco: verificar alcance acima. Navegador: pendente conforme17. Produção: não implantado.
 
+
+## Revisão independente após execução
+
+Leia `docs/audits/2026-10-06-revisao-tickets-05-09.md` a partir da raiz do repositório. A entrega do executor não encerrou todos os critérios deste ticket. Suíte195 passou; typecheck falhouTS7053; banco real/produção não foram homologados. Corrigir os Rxx relacionados ao ticket e registrar teste real por comportamento, distinguindo módulo isolado de integração da gaveta. Esta revisão prevalece sobre alegações gerais de conclusão do retorno.

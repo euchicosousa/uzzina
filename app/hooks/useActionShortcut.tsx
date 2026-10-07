@@ -100,6 +100,8 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
           {
             ...action,
             intent: INTENT.update_action,
+            id: action.id,
+            expectedUpdatedAt: action.updated_at,
             ...getNewDateForAction(action, newDate),
           }
         );
@@ -156,14 +158,26 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
         } else if (code === "KeyX") {
           event.preventDefault();
           handleActionRef.current(
-            { ...action, intent: INTENT.update_action, archived: true }
+            {
+              ...action,
+              intent: INTENT.update_action,
+              id: action.id,
+              expectedUpdatedAt: action.updated_at,
+              archived: true,
+            }
           );
           toast("Ação arquivada", {
             action: {
               label: "Desfazer",
               onClick: () => {
                 handleActionRef.current(
-                  { ...action, intent: INTENT.update_action, archived: false }
+                  {
+                    ...action,
+                    intent: INTENT.update_action,
+                    id: action.id,
+                    expectedUpdatedAt: action.updated_at,
+                    archived: false,
+                  }
                 );
               },
             },
@@ -172,7 +186,13 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
       } else if (targetPhase) {
         event.preventDefault();
         handleActionRef.current(
-          { ...action, intent: INTENT.update_action, phase: targetPhase }
+          {
+            ...action,
+            intent: INTENT.update_action,
+            id: action.id,
+            expectedUpdatedAt: action.updated_at,
+            phase: targetPhase,
+          }
         );
       }
     }
