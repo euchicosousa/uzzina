@@ -28,17 +28,20 @@ import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { UPreferenceSwitch } from "~/components/uzzina/UPreferenceSwitch";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { useAppContext } from "~/contexts/AppContext";
-import { PALLETE } from "~/lib/CONSTANTS";
+import { PALLETE } from "~/lib/palettes";
 import { getUserPreferences } from "~/lib/preferences";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import { updateOwnProfile } from "~/models/people";
 import { cn } from "cnfast";
-import {
-  deriveAccentFg,
-  deriveDarkAccent,
-  deriveDarkBg,
-  deriveDarkFg,
-} from "~/utils/color";
 import { CloudIcon } from "lucide-react";
+import { CustomThemePanel } from "~/components/features/profile/CustomThemePanel";
+import {
+  applyCustomThemeChange,
+  createCustomThemeDraft,
+  isCompleteCustomTheme,
+  type ThemeColorKey,
+  type ThemeMode,
+} from "~/lib/custom-theme";
 export const Route = createFileRoute("/app/profile")({
   component: ProfilePage,
 });
@@ -67,30 +70,8 @@ function ProfilePage() {
     preferences.showInstagramSidebar,
   );
 
-  // Estados locais para o tema personalizado
-  const [lightPrimary, setLightPrimary] = useState(
-    preferences.customTheme?.light.primaryHex || "#2640A0",
-  );
-  const [lightPrimaryFg, setLightPrimaryFg] = useState(
-    preferences.customTheme?.light.primaryFgHex || "#FFFFFF",
-  );
-  const [lightBg, setLightBg] = useState(
-    preferences.customTheme?.light.bgHex || "#FFFFFF",
-  );
-  const [lightFg, setLightFg] = useState(
-    preferences.customTheme?.light.fgHex || "#000000",
-  );
-  const [darkPrimary, setDarkPrimary] = useState(
-    preferences.customTheme?.dark.primaryHex || "#3558DE",
-  );
-  const [darkPrimaryFg, setDarkPrimaryFg] = useState(
-    preferences.customTheme?.dark.primaryFgHex || "#FFFFFF",
-  );
-  const [darkBg, setDarkBg] = useState(
-    preferences.customTheme?.dark.bgHex || "#141414",
-  );
-  const [darkFg, setDarkFg] = useState(
-    preferences.customTheme?.dark.fgHex || "#FFFFFF",
+  const [customThemeDraft, setCustomThemeDraft] = useState(() =>
+    createCustomThemeDraft(preferences.customTheme),
   );
 
   // Aplica preview do tema na UI quando o usuário apenas seleciona
@@ -107,172 +88,21 @@ function ProfilePage() {
   const handleColorChange = (idx: number) => {
     setSelectedThemeColor(idx);
     if (idx === -1) {
-      previewCustomTheme({
-        light: {
-          primaryHex: lightPrimary,
-          primaryFgHex: lightPrimaryFg,
-          bgHex: lightBg,
-          fgHex: lightFg,
-        },
-        dark: {
-          primaryHex: darkPrimary,
-          primaryFgHex: darkPrimaryFg,
-          bgHex: darkBg,
-          fgHex: darkFg,
-        },
-      });
+      previewCustomTheme(customThemeDraft);
     } else {
       previewColorIndex(idx);
     }
   };
-  const handleLightPrimaryChange = (val: string) => {
-    setLightPrimary(val);
-    const derivedAccent = deriveDarkAccent(val);
-    setDarkPrimary(derivedAccent);
-    const derivedLightFg = deriveAccentFg(val);
-    setLightPrimaryFg(derivedLightFg);
-    const derivedDarkFg = deriveAccentFg(derivedAccent);
-    setDarkPrimaryFg(derivedDarkFg);
-    previewCustomTheme({
-      light: {
-        primaryHex: val,
-        primaryFgHex: derivedLightFg,
-        bgHex: lightBg,
-        fgHex: lightFg,
-      },
-      dark: {
-        primaryHex: derivedAccent,
-        primaryFgHex: derivedDarkFg,
-        bgHex: darkBg,
-        fgHex: darkFg,
-      },
-    });
+  const handleCustomThemeChange = (
+    mode: ThemeMode,
+    key: ThemeColorKey,
+    value: string,
+  ) => {
+    const next = applyCustomThemeChange(customThemeDraft, mode, key, value);
+    setCustomThemeDraft(next);
+    previewCustomTheme(next);
   };
-  const handleLightPrimaryFgChange = (val: string) => {
-    setLightPrimaryFg(val);
-    previewCustomTheme({
-      light: {
-        primaryHex: lightPrimary,
-        primaryFgHex: val,
-        bgHex: lightBg,
-        fgHex: lightFg,
-      },
-      dark: {
-        primaryHex: darkPrimary,
-        primaryFgHex: darkPrimaryFg,
-        bgHex: darkBg,
-        fgHex: darkFg,
-      },
-    });
-  };
-  const handleLightBgChange = (val: string) => {
-    setLightBg(val);
-    const derived = deriveDarkBg(val);
-    setDarkBg(derived);
-    previewCustomTheme({
-      light: {
-        primaryHex: lightPrimary,
-        primaryFgHex: lightPrimaryFg,
-        bgHex: val,
-        fgHex: lightFg,
-      },
-      dark: {
-        primaryHex: darkPrimary,
-        primaryFgHex: darkPrimaryFg,
-        bgHex: derived,
-        fgHex: darkFg,
-      },
-    });
-  };
-  const handleLightFgChange = (val: string) => {
-    setLightFg(val);
-    const derived = deriveDarkFg(val);
-    setDarkFg(derived);
-    previewCustomTheme({
-      light: {
-        primaryHex: lightPrimary,
-        primaryFgHex: lightPrimaryFg,
-        bgHex: lightBg,
-        fgHex: val,
-      },
-      dark: {
-        primaryHex: darkPrimary,
-        primaryFgHex: darkPrimaryFg,
-        bgHex: darkBg,
-        fgHex: derived,
-      },
-    });
-  };
-  const handleDarkPrimaryChange = (val: string) => {
-    setDarkPrimary(val);
-    const derivedDarkFg = deriveAccentFg(val);
-    setDarkPrimaryFg(derivedDarkFg);
-    previewCustomTheme({
-      light: {
-        primaryHex: lightPrimary,
-        primaryFgHex: lightPrimaryFg,
-        bgHex: lightBg,
-        fgHex: lightFg,
-      },
-      dark: {
-        primaryHex: val,
-        primaryFgHex: derivedDarkFg,
-        bgHex: darkBg,
-        fgHex: darkFg,
-      },
-    });
-  };
-  const handleDarkPrimaryFgChange = (val: string) => {
-    setDarkPrimaryFg(val);
-    previewCustomTheme({
-      light: {
-        primaryHex: lightPrimary,
-        primaryFgHex: lightPrimaryFg,
-        bgHex: lightBg,
-        fgHex: lightFg,
-      },
-      dark: {
-        primaryHex: darkPrimary,
-        primaryFgHex: val,
-        bgHex: darkBg,
-        fgHex: darkFg,
-      },
-    });
-  };
-  const handleDarkBgChange = (val: string) => {
-    setDarkBg(val);
-    previewCustomTheme({
-      light: {
-        primaryHex: lightPrimary,
-        primaryFgHex: lightPrimaryFg,
-        bgHex: lightBg,
-        fgHex: lightFg,
-      },
-      dark: {
-        primaryHex: darkPrimary,
-        primaryFgHex: darkPrimaryFg,
-        bgHex: val,
-        fgHex: darkFg,
-      },
-    });
-  };
-  const handleDarkFgChange = (val: string) => {
-    setDarkFg(val);
-    previewCustomTheme({
-      light: {
-        primaryHex: lightPrimary,
-        primaryFgHex: lightPrimaryFg,
-        bgHex: lightBg,
-        fgHex: lightFg,
-      },
-      dark: {
-        primaryHex: darkPrimary,
-        primaryFgHex: darkPrimaryFg,
-        bgHex: darkBg,
-        fgHex: val,
-      },
-    });
-  };
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -286,54 +116,26 @@ function ProfilePage() {
       const short = formData.get("short") as string;
       const image = (formData.get("image") as string) || null;
       const themeColorIndexVal = Number(formData.get("themeColorIndex"));
-      let customTheme = null;
-      if (themeColorIndexVal === -1) {
-        if (
-          lightPrimary &&
-          lightPrimaryFg &&
-          lightBg &&
-          lightFg &&
-          darkPrimary &&
-          darkPrimaryFg &&
-          darkBg &&
-          darkFg
-        ) {
-          customTheme = {
-            light: {
-              primaryHex: lightPrimary,
-              primaryFgHex: lightPrimaryFg,
-              bgHex: lightBg,
-              fgHex: lightFg,
-            },
-            dark: {
-              primaryHex: darkPrimary,
-              primaryFgHex: darkPrimaryFg,
-              bgHex: darkBg,
-              fgHex: darkFg,
-            },
-          };
-        }
-      }
+      const customThemeToSave =
+        themeColorIndexVal === -1 && isCompleteCustomTheme(customThemeDraft)
+          ? customThemeDraft
+          : null;
       const newPreferences = {
         theme: selectedTheme,
         themeColorIndex: themeColorIndexVal,
         followPartnerColor: selectedFollowPartnerColor,
         defaultViewVariant: selectedVariant,
         showInstagramSidebar,
-        customTheme,
+        customTheme: customThemeToSave,
       };
       const supabase = createSupabaseBrowserClient();
-      const { error } = await supabase
-        .from("people")
-        .update({
-          name,
-          surname,
-          initials,
-          short: short || name,
-          image,
-        })
-        .eq("user_id", person.user_id);
-      if (error) throw error;
+      await updateOwnProfile(supabase, person.user_id, {
+        name,
+        surname,
+        initials,
+        short: short || name,
+        image,
+      });
 
       if (!isCurrentSession()) return;
       const preferenceResult = await supabase.rpc("update_my_preferences", {p_patch: newPreferences});
@@ -354,20 +156,7 @@ function ProfilePage() {
         String(selectedFollowPartnerColor),
       );
       if (themeColorIndexVal === -1) {
-        setCustomTheme({
-          light: {
-            primaryHex: lightPrimary,
-            primaryFgHex: lightPrimaryFg,
-            bgHex: lightBg,
-            fgHex: lightFg,
-          },
-          dark: {
-            primaryHex: darkPrimary,
-            primaryFgHex: darkPrimaryFg,
-            bgHex: darkBg,
-            fgHex: darkFg,
-          },
-        });
+        setCustomTheme(customThemeDraft);
       }
       window.dispatchEvent(new Event("uzzina-storage-update"));
       toast.success("Perfil e preferências salvos com sucesso!");
@@ -445,34 +234,6 @@ function ProfilePage() {
           value={String(showInstagramSidebar)}
         />
 
-        {selectedThemeColor === -1 && (
-          <>
-            <input
-              name="custom_light_primary"
-              type="hidden"
-              value={lightPrimary}
-            />
-            <input
-              name="custom_light_primary_fg"
-              type="hidden"
-              value={lightPrimaryFg}
-            />
-            <input name="custom_light_bg" type="hidden" value={lightBg} />
-            <input name="custom_light_fg" type="hidden" value={lightFg} />
-            <input
-              name="custom_dark_primary"
-              type="hidden"
-              value={darkPrimary}
-            />
-            <input
-              name="custom_dark_primary_fg"
-              type="hidden"
-              value={darkPrimaryFg}
-            />
-            <input name="custom_dark_bg" type="hidden" value={darkBg} />
-            <input name="custom_dark_fg" type="hidden" value={darkFg} />
-          </>
-        )}
 
         <div className="grid gap-8 lg:grid-cols-[1.2fr_1.8fr]">
           {/* Left Column: Personal Info */}
@@ -638,268 +399,11 @@ function ProfilePage() {
               </PrismToggleGroup>
             </div>
 
-            {/* Painel Customizado */}
             {selectedThemeColor === -1 && (
-              <div className="grid gap-4 rounded-xl border bg-zinc-50/50 p-4 dark:bg-zinc-950/20">
-                <div className="flex items-center gap-2 border-b pb-2">
-                  <PipetteIcon className="size-4 text-primary" />
-                  <span className="text-sm font-semibold">
-                    Editar Tema Personalizado
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-6">
-                  {/* Coluna Light */}
-                  <div className="flex flex-col gap-4">
-                    <span className="text-xs font-semibold text-muted-foreground">
-                      Modo Claro
-                    </span>
-                    <div className="grid gap-3">
-                      {/* Destaque (Accent) */}
-                      <div className="flex flex-col gap-1.5">
-                        <PrismLabel className="text-xs text-muted-foreground">
-                          Destaque (Accent)
-                        </PrismLabel>
-                        <label className="group flex cursor-pointer items-center gap-2">
-                          <div
-                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{
-                              backgroundColor: lightPrimary,
-                            }}
-                          />
-                          <input
-                            className="sr-only"
-                            onChange={(e) =>
-                              handleLightPrimaryChange(e.target.value)
-                            }
-                            type="color"
-                            value={lightPrimary}
-                          />
-                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
-                            {lightPrimary}
-                          </span>
-                        </label>
-                      </div>
-
-                      {/* Texto no Destaque (Accent Fg) */}
-                      <div className="flex flex-col gap-1.5">
-                        <PrismLabel className="text-xs text-muted-foreground">
-                          Texto no Destaque (Accent Fg)
-                        </PrismLabel>
-                        <label className="group flex cursor-pointer items-center gap-2">
-                          <div
-                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{
-                              backgroundColor: lightPrimaryFg,
-                            }}
-                          />
-                          <input
-                            className="sr-only"
-                            onChange={(e) =>
-                              handleLightPrimaryFgChange(e.target.value)
-                            }
-                            type="color"
-                            value={lightPrimaryFg}
-                          />
-                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
-                            {lightPrimaryFg}
-                          </span>
-                        </label>
-                      </div>
-
-                      {/* Fundo (Background) */}
-                      <div className="flex flex-col gap-1.5">
-                        <PrismLabel className="text-xs text-muted-foreground">
-                          Fundo (Background)
-                        </PrismLabel>
-                        <label className="group flex cursor-pointer items-center gap-2">
-                          <div
-                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{
-                              backgroundColor: lightBg,
-                            }}
-                          />
-                          <input
-                            className="sr-only"
-                            onChange={(e) =>
-                              handleLightBgChange(e.target.value)
-                            }
-                            type="color"
-                            value={lightBg}
-                          />
-                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
-                            {lightBg}
-                          </span>
-                        </label>
-                      </div>
-
-                      {/* Texto (Foreground) */}
-                      <div className="flex flex-col gap-1.5">
-                        <PrismLabel className="text-xs text-muted-foreground">
-                          Texto (Foreground)
-                        </PrismLabel>
-                        <label className="group flex cursor-pointer items-center gap-2">
-                          <div
-                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{
-                              backgroundColor: lightFg,
-                            }}
-                          />
-                          <input
-                            className="sr-only"
-                            onChange={(e) =>
-                              handleLightFgChange(e.target.value)
-                            }
-                            type="color"
-                            value={lightFg}
-                          />
-                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
-                            {lightFg}
-                          </span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Coluna Dark */}
-                  <div className="flex flex-col gap-4">
-                    <span className="text-xs font-semibold text-muted-foreground">
-                      Modo Escuro
-                    </span>
-                    <div className="grid gap-3">
-                      {/* Destaque (Accent) */}
-                      <div className="flex flex-col gap-1.5">
-                        <PrismLabel className="text-xs text-muted-foreground">
-                          Destaque (Accent)
-                        </PrismLabel>
-                        <label className="group flex cursor-pointer items-center gap-2">
-                          <div
-                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{
-                              backgroundColor: darkPrimary,
-                            }}
-                          />
-                          <input
-                            className="sr-only"
-                            onChange={(e) =>
-                              handleDarkPrimaryChange(e.target.value)
-                            }
-                            type="color"
-                            value={darkPrimary}
-                          />
-                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
-                            {darkPrimary}
-                          </span>
-                        </label>
-                      </div>
-
-                      {/* Texto no Destaque (Accent Fg) */}
-                      <div className="flex flex-col gap-1.5">
-                        <PrismLabel className="text-xs text-muted-foreground">
-                          Texto no Destaque (Accent Fg)
-                        </PrismLabel>
-                        <label className="group flex cursor-pointer items-center gap-2">
-                          <div
-                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{
-                              backgroundColor: darkPrimaryFg,
-                            }}
-                          />
-                          <input
-                            className="sr-only"
-                            onChange={(e) =>
-                              handleDarkPrimaryFgChange(e.target.value)
-                            }
-                            type="color"
-                            value={darkPrimaryFg}
-                          />
-                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
-                            {darkPrimaryFg}
-                          </span>
-                        </label>
-                      </div>
-
-                      {/* Fundo (Background) */}
-                      <div className="flex flex-col gap-1.5">
-                        <PrismLabel className="text-xs text-muted-foreground">
-                          Fundo (Background)
-                        </PrismLabel>
-                        <label className="group flex cursor-pointer items-center gap-2">
-                          <div
-                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{
-                              backgroundColor: darkBg,
-                            }}
-                          />
-                          <input
-                            className="sr-only"
-                            onChange={(e) => handleDarkBgChange(e.target.value)}
-                            type="color"
-                            value={darkBg}
-                          />
-                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
-                            {darkBg}
-                          </span>
-                        </label>
-                      </div>
-
-                      {/* Texto (Foreground) */}
-                      <div className="flex flex-col gap-1.5">
-                        <PrismLabel className="text-xs text-muted-foreground">
-                          Texto (Foreground)
-                        </PrismLabel>
-                        <label className="group flex cursor-pointer items-center gap-2">
-                          <div
-                            className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
-                            style={{
-                              backgroundColor: darkFg,
-                            }}
-                          />
-                          <input
-                            className="sr-only"
-                            onChange={(e) => handleDarkFgChange(e.target.value)}
-                            type="color"
-                            value={darkFg}
-                          />
-                          <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
-                            {darkFg}
-                          </span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Grid de Previsão Visual dos Elementos Derivados */}
-                <div className="mt-2 border-t pt-3">
-                  <span className="mb-2 block text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
-                    Pré-visualização de Elementos Derivados
-                  </span>
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="flex flex-col justify-between rounded-lg border bg-primary p-3 text-primary-foreground">
-                      <span className="text-xs font-semibold">
-                        Botão Destaque
-                      </span>
-                      <span className="text-[9px] opacity-80">
-                        Usa o Accent Fg
-                      </span>
-                    </div>
-                    <div className="rounded-lg border bg-card p-3 text-card-foreground">
-                      <span className="block text-xs font-semibold">
-                        Card & Popover
-                      </span>
-                      <span className="text-[9px] text-muted-foreground">
-                        Fundo & texto derivados.
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between rounded-lg border bg-muted p-3 text-muted-foreground">
-                      <span className="text-xs font-semibold">Muted</span>
-                      <span className="rounded border border-border bg-background px-1.5 py-0.5 text-[9px] text-foreground">
-                        Borda
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <CustomThemePanel
+                onChange={handleCustomThemeChange}
+                theme={customThemeDraft}
+              />
             )}
 
             {/* Follow Partner Color Toggle */}

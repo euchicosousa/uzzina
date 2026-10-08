@@ -16,7 +16,7 @@ import {
   useViewOptions,
 } from "~/components/features/ViewOptions";
 import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
-import { getCleanAction } from "~/lib/helpers";
+import { createActionDraft } from "~/utils";
 import { cn } from "cnfast";
 import { HomeViewWrapper } from "./HomeViewWrapper";
 import { useQuery } from "@tanstack/react-query";
@@ -106,12 +106,9 @@ export function HomeCalendarView({
             showBorder: period === "month",
           }}
           onCreateAction={(day) => {
-            setBaseAction({
-              ...(getCleanAction({
-                user_id: person.user_id,
-                date: day,
-              }) as unknown as Action),
-            });
+            setBaseAction(
+              createActionDraft({ userId: person.user_id, date: day }),
+            );
           }}
           viewOptions={viewOptions}
         />

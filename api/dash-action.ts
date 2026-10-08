@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createClient } from "@supabase/supabase-js";
+import { createServiceClient, getServiceConfig } from "../server/supabase-admin.js";
 import type { Database } from "../types/database";
 import { extractCookie, hashSessionToken, SESSION_COOKIE_NAME, validateRequestOrigin } from "../server/dash-session.js";
 
@@ -14,10 +14,9 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
     process.env.APP_ORIGIN, process.env.NODE_ENV === "production",
   )) return res.status(403).json({error:"Origem não autorizada."});
 
-  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return res.status(503).json({error:"Portal temporariamente indisponível."});
-  const db = createClient<Database>(url,key);
+  const serviceConfig = getServiceConfig();
+  if (!serviceConfig) return res.status(503).json({error:"Portal temporariamente indisponível."});
+  const db = createServiceClient(serviceConfig);
   const token = extractCookie(req.headers.cookie,SESSION_COOKIE_NAME);
   if (!token) return res.status(401).json({error:"Sessão inválida ou expirada."});
   const {data:session,error:sessionError} = await db.from("dash_sessions")

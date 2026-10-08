@@ -28,6 +28,10 @@ Atualizado em 08/10/2026. Contratos: [AGENTS](../../AGENTS.md). Execução/ambie
 
 ## Documentação
 
+Diagnóstico geral de 08/10 (código, prevenção de erros e visual) em [docs/plans/2026-10-08-diagnostico-geral.md](../plans/2026-10-08-diagnostico-geral.md). Após o commit `2cc7c45`, as APIs publicadas de IA e do portal responderam às guardas (405/401/403) sem FUNCTION_INVOCATION_FAILED, e o proprietário confirmou o uso da IA. A aplicação da migration de leitura de ações em produção não foi verificada. O plano não autoriza implementação.
+
+Fase 3 do diagnóstico executada em 08/10 (sem commit/deploy): constantes/paletas separadas, rascunho de ação único, `.from()` fora dos componentes, helpers de servidor, gaveta/perfil/tema divididos. 290 testes, lint, tipagem, build e pacote serverless (7 handlers) passaram. Divergências e pendências em [fase3-resultado](../plans/2026-10-08-fase3-resultado.md) (3.9 não aplicado; 3.5/3.7 parciais).
+
 Tickets e relatórios intermediários removidos após preservar pendências, contratos operacionais e sugestões de UX relevantes no TODO. Histórico versionado segue no Git. Testes/scripts, migrations, rollouts com manifest, envs privados e backups preservados. Não foi criado documento de direção da nova versão.
 
 Atualize este arquivo com o resultado real de cada tarefa, sem anexar diários de estados superados. Ideias do TODO não autorizam implementação.

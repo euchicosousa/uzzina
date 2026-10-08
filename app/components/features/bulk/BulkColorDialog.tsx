@@ -15,7 +15,7 @@ import {
   PrismToggleGroupItem,
 } from "~/components/prism";
 import { cn } from "cnfast";
-import { getGridCols } from "~/lib/uzzina-utils";
+import { getGridCols } from "~/utils/uzzina-utils";
 interface BulkColorDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;

@@ -1,7 +1,6 @@
 import { parseISO } from "date-fns";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "../types/database";
+import { createServiceClient, getServiceConfig } from "../server/supabase-admin.js";
 import {
   SESSION_COOKIE_NAME,
   extractCookie,
@@ -65,16 +64,15 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceConfig = getServiceConfig();
 
-  if (!supabaseUrl || !supabaseServiceRoleKey) {
+  if (!serviceConfig) {
     return res
       .status(503)
       .json({ error: "Configuração do servidor incompleta." });
   }
 
-  const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseServiceRoleKey);
+  const supabaseAdmin = createServiceClient(serviceConfig);
 
   // 1. Validação estrita de sessão via cookie HttpOnly
   const rawCookie = req.headers.cookie;

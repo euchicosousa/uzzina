@@ -6,8 +6,8 @@ import { AdminUserForm } from "~/components/features/AdminUserForm";
 import { AREAS } from "~/lib/CONSTANTS";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import { getPersonByUserId, insertPerson } from "~/models/people";
 import { toast } from "sonner";
-import type { Person } from "~/types";
 import { useAppContext } from "~/contexts/AppContext";
 
 import { AdminGuard } from "~/components/features/AdminGuard";
@@ -55,13 +55,7 @@ function AdminUserPage() {
     queryKey: ["person", "team", appData.person.user_id, userId],
     queryFn: async () => {
       if (isNew) return null;
-      const { data, error } = await supabase
-        .from("people")
-        .select("*")
-        .eq("user_id", userId || "")
-        .single();
-      if (error) throw error;
-      return data as Person;
+      return getPersonByUserId(supabase, userId || "");
     },
     enabled: !!userId,
   });
@@ -97,7 +91,7 @@ function AdminUserPage() {
         const newAuthId = resData.user.id;
 
         // 3. Inserir na tabela "people"
-        const { error: dbError } = await supabase.from("people").insert({
+        await insertPerson(supabase, {
           user_id: newAuthId,
           name: userData.name,
           surname: userData.surname,
@@ -109,8 +103,6 @@ function AdminUserPage() {
           visible: userData.visible,
           areas: userData.areas,
         });
-
-        if (dbError) throw dbError;
       } else {
         const { error } = await supabase.rpc("admin_update_person", {p_user_id: userId || "", p_changes: {
           name: userData.name, surname: userData.surname, email: userData.email,

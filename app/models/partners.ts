@@ -13,7 +13,10 @@ export async function getPartnerBySlug(supabase: SupabaseClient, slug: string) {
 }
 
 export async function getAllPartners(supabase: SupabaseClient) {
-  const { data, error } = await supabase.from("partners").select("*");
+  const { data, error } = await supabase
+    .from("partners")
+    .select("*")
+    .order("title", { ascending: true });
   if (error) throw error;
   return data as Partner[];
 }
@@ -39,4 +42,33 @@ export async function getOperationalPartners(supabase: SupabaseClient, userId: s
     .eq("archived",false).order("title",{ascending:true});
   if (error) throw error;
   return data as Partner[];
+}
+
+export async function partnerSlugExists(supabase: SupabaseClient, slug: string) {
+  const { data } = await supabase
+    .from("partners")
+    .select("id")
+    .eq("slug", slug)
+    .single();
+  return Boolean(data);
+}
+
+export async function createPartner(
+  supabase: SupabaseClient,
+  partner: Omit<Partner, "id" | "created_at">,
+) {
+  const { error } = await supabase.from("partners").insert(partner);
+  if (error) throw error;
+}
+
+export async function updatePartnerBySlug(
+  supabase: SupabaseClient,
+  slug: string,
+  partner: Omit<Partner, "id" | "created_at">,
+) {
+  const { error } = await supabase
+    .from("partners")
+    .update(partner)
+    .eq("slug", slug);
+  if (error) throw error;
 }

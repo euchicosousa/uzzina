@@ -1,7 +1,6 @@
 import crypto from "node:crypto";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "../types/database";
+import { createServiceClient, getServiceConfig } from "../server/supabase-admin.js";
 
 export interface PublicReviewPartnerDto {
   id: string;
@@ -39,16 +38,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(404).json({ error: "Link de revisão inválido ou não encontrado." });
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceConfig = getServiceConfig();
 
-  if (!supabaseUrl || !supabaseServiceRoleKey) {
+  if (!serviceConfig) {
     return res
       .status(503)
       .json({ error: "Configuração do servidor de autenticação incompleta." });
   }
 
-  const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseServiceRoleKey);
+  const supabaseAdmin = createServiceClient(serviceConfig);
 
   // Calcula hash SHA256 do token fornecido
   const tokenHash = crypto.createHash("sha256").update(token).digest("hex");

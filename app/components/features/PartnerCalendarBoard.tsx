@@ -12,7 +12,7 @@ import { fetchCelebrations } from "~/lib/supabase.queries";
 import { useParams } from "@tanstack/react-router";
 import invariant from "tiny-invariant";
 import { CalendarWithDnd } from "~/components/features/CalendarWithDnd";
-import { getCleanAction } from "~/lib/helpers";
+import { createActionDraft } from "~/utils";
 import type { ViewOptions } from "./ViewOptions";
 
 import { useAppContext } from "~/contexts/AppContext";
@@ -58,14 +58,14 @@ export function PartnerCalendarBoard({
         hideBorderOnLastRow: true,
       }}
       onCreateAction={(day) => {
-        setBaseAction({
-          ...(getCleanAction({
-            user_id: person.user_id,
+        setBaseAction(
+          createActionDraft({
+            userId: person.user_id,
             date: day,
             partners: [partnerSlug],
-          }) as unknown as Action),
-          responsibles,
-        });
+            responsibles,
+          }),
+        );
       }}
     />
   );

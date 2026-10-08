@@ -17,7 +17,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useId, useState } from "react";
 import { cn } from "cnfast";
-import { normalizeHexColor } from "~/lib/uzzina-utils";
+import { normalizeHexColor } from "~/utils/uzzina-utils";
 import { PrismButton, PrismInput } from "../prism";
 import { GripVerticalIcon, PlusIcon, Trash2Icon } from "lucide-react";
 interface ColorItem {

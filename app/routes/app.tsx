@@ -18,7 +18,7 @@ import { AppBar } from "~/components/layout/AppBar";
 import { Header } from "~/components/layout/Header";
 import { ActionShortcutProvider } from "~/hooks/useActionShortcut";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
-import { getCleanAction } from "~/lib/helpers";
+import { createActionDraft, resolveDraftPartners } from "~/utils";
 import { getUserPreferences } from "~/lib/preferences";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { cn } from "cnfast";
@@ -170,21 +170,16 @@ function Dashboard() {
         setOpenCmdK((prev) => !prev);
       } else if (event.code === "KeyA" && event.altKey && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
-        const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
-        const currentPartnerSlug = currentPath.startsWith("/app/partner/")
-          ? currentPath.replace(/^\/app\/partner\//, "").split("/")[0]?.split("?")[0]
-          : null;
-        const initialPartners = currentPartnerSlug
-          ? [currentPartnerSlug]
-          : partnerFilters.length === 1
-            ? [partnerFilters[0]]
-            : [];
-        setBaseAction({
-          ...(getCleanAction({
-            user_id: userId,
-            partners: initialPartners,
-          }) as unknown as Action),
-        });
+        setBaseAction(
+          createActionDraft({
+            userId,
+            partners: resolveDraftPartners({
+              pathname:
+                typeof window !== "undefined" ? window.location.pathname : "",
+              partnerFilters,
+            }),
+          }),
+        );
       }
     }
     document.addEventListener("keydown", keyDownGlobal, true);

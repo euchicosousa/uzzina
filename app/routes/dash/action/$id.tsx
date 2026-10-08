@@ -14,7 +14,7 @@ import { PhaseIcon } from "~/components/features/PhaseIcon";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { InstagramPreview } from "~/components/features/media/InstagramPreview";
 import { CATEGORIES, PHASES, type CATEGORY, type PHASE } from "~/lib/CONSTANTS";
-import { Icons } from "~/lib/helpers";
+import { Icons } from "~/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDashContext } from "~/contexts/DashContext";
 import { toast } from "sonner";

@@ -27,6 +27,12 @@ import { UToggleInput } from "~/components/uzzina/UToggle";
 import { useAppContext } from "~/contexts/AppContext";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { fetchPeople } from "~/lib/supabase.queries";
+import {
+  createPartner,
+  getPartnerBySlug,
+  partnerSlugExists,
+  updatePartnerBySlug,
+} from "~/models/partners";
 import type { Partner } from "~/types";
 import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
 import { CloudIcon } from "lucide-react";
@@ -62,13 +68,7 @@ function AdminPartnerEditPage() {
     queryKey: ["partner", "team", appData.person.user_id, slug],
     queryFn: async () => {
       if (isNew) return null;
-      const { data, error } = await supabase
-        .from("partners")
-        .select("*")
-        .eq("slug", slug)
-        .single();
-      if (error) throw error;
-      return data as Partner;
+      return getPartnerBySlug(supabase, slug || "");
     },
     enabled: !isNew,
   });
@@ -138,23 +138,14 @@ function AdminPartnerEditPage() {
         throw new Error("Selecione pelo menos um responsável para o parceiro.");
       }
       if (isNew) {
-        const { data: existing } = await supabase
-          .from("partners")
-          .select("id")
-          .eq("slug", partnerData.slug)
-          .single();
+        const slugTaken = await partnerSlugExists(supabase, partnerData.slug);
         if (!isCurrentSession()) throw new Error("A sessão mudou. Entre novamente.");
-        if (existing) {
+        if (slugTaken) {
           throw new Error("Este slug já está em uso.");
         }
-        const { error } = await supabase.from("partners").insert(partnerData);
-        if (error) throw error;
+        await createPartner(supabase, partnerData);
       } else {
-        const { error } = await supabase
-          .from("partners")
-          .update(partnerData)
-          .eq("slug", slug || "");
-        if (error) throw error;
+        await updatePartnerBySlug(supabase, slug || "", partnerData);
       }
     },
     onSuccess: () => {

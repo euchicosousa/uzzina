@@ -61,6 +61,11 @@ export function safeColor(raw: string | null | undefined): string {
   }
 }
 
+/** True when the color is unset or normalizes to the default action color. */
+export function isDefaultActionColor(raw: string | null | undefined): boolean {
+  return !raw || safeColor(raw) === DEFAULT_ACTION_COLOR;
+}
+
 /**
  * Verifica se um evento de teclado (ou o foco ativo atual) se origina dentro
  * de um campo de entrada de texto (input, textarea, contenteditable ou combobox).

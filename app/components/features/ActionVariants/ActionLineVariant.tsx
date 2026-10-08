@@ -1,7 +1,7 @@
 import type { PRIORITY } from "~/lib/CONSTANTS";
 import { INTENT } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
-import { Icons, isLateAction } from "~/lib/helpers";
+import { Icons, isLateAction } from "~/utils";
 import type { ActionVariantRendererProps } from "./types";
 import { ActionItemTitleInput } from "../ActionItemTitleInput";
 import { PhaseIcon } from "../PhaseIcon";

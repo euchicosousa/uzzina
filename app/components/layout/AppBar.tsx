@@ -32,7 +32,7 @@ import {
 import { buttonVariants } from "~/components/prism/button";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { SIZE } from "~/lib/CONSTANTS";
-import { getCleanAction } from "~/lib/helpers";
+import { createActionDraft, resolveDraftPartners } from "~/utils";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchAllLateActions } from "~/lib/supabase.queries";
 import { cn } from "cnfast";
@@ -106,25 +106,16 @@ export function AppBar({
           ) : (
             <PrismButton
               onClick={() => {
-                const currentPartnerSlug =
-                  params.slug ||
-                  (location.pathname.startsWith("/app/partner/")
-                    ? location.pathname.replace(/^\/app\/partner\//, "").split("/")[0]?.split("?")[0]
-                    : undefined);
-                const initialPartners = currentPartnerSlug
-                  ? [currentPartnerSlug]
-                  : partnerFilters.length === 1
-                    ? [partnerFilters[0]]
-                    : [];
-
-                setBaseAction({
-                  ...getCleanAction({
-                    user_id: person.user_id,
-                    date: undefined,
-                    partners: initialPartners,
+                setBaseAction(
+                  createActionDraft({
+                    userId: person.user_id,
+                    partners: resolveDraftPartners({
+                      routeSlug: params.slug,
+                      pathname: location.pathname,
+                      partnerFilters,
+                    }),
                   }),
-                  responsibles: [person.user_id],
-                } as unknown as Action);
+                );
               }}
             >
               <span className="max-sm:hidden">Nova Ação</span>

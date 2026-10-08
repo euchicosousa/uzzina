@@ -1,7 +1,7 @@
 import type { Action } from "~/types";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
-import { parseDbDate } from "~/lib/uzzina-utils";
+import { parseDbDate } from "~/utils/uzzina-utils";
 
 export function ActionTimeDisplay({ action }: { action: Action }) {
   const createdAt = parseDbDate(action.created_at);

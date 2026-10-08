@@ -36,13 +36,19 @@ mock.module("~/lib/supabase.client", () => ({createSupabaseBrowserClient: () => 
 beforeEach(() => {writes=[];fail=false;delay=false;resolveWrite=null;conflict=false;});
 afterEach(cleanup);
 function draft(overrides: Partial<Action>): Action {return {...action,...overrides};}
-function mount(base: Action = action, onClose = () => {}) {
+function mount(base: Action = action, onClose = () => {}, partnerFilters: string[] = []) {
   const client = new QueryClient({defaultOptions:{queries:{retry:false}, mutations:{retry:false}}});
   client.setQueryData(QUERY_KEYS.people("test-user"), []);
-  const view = (selected: Action, version: number) => <QueryClientProvider client={client}><AppContext.Provider value={{person, partners:[partner], cloudName:"test", uploadPreset:"test", setBaseAction:()=>{}, partnerFilters:[],setPartnerFilters:()=>{}}}><ActionFormDrawer key={`${selected.id || "draft"}:${version}`} BaseAction={selected} onClose={onClose}/></AppContext.Provider></QueryClientProvider>;
+  const view = (selected: Action, version: number) => <QueryClientProvider client={client}><AppContext.Provider value={{person, partners:[partner], cloudName:"test", uploadPreset:"test", setBaseAction:()=>{}, partnerFilters,setPartnerFilters:()=>{}}}><ActionFormDrawer partnerFilters={partnerFilters} key={`${selected.id || "draft"}:${version}`} BaseAction={selected} onClose={onClose}/></AppContext.Provider></QueryClientProvider>;
   const mounted = render(view(base, 0));
   return {...mounted, select: (selected: Action, version: number) => mounted.rerender(view(selected, version))};
 }
+it("a draft is recognised by the missing id, not by created_at", async () => {
+  mount(draft({id:undefined,title:"Stale stamp",partners:[],created_at:"2026-01-01T00:00:00Z",updated_at:undefined}), () => {}, ["agency"]);
+  fireEvent.click(screen.getByRole("button",{name:"Criar"}));
+  await waitFor(()=>expect(writes.length).toBe(1));
+  expect(writes[0]?.partners).toEqual(["agency"]);
+});
 it("real drawer closes unchanged without writing", async () => {
   let closed=0; mount(action,()=>closed++);
   fireEvent.click(screen.getByRole("button",{name:"Fechar"}));

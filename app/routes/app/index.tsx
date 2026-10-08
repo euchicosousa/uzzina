@@ -12,7 +12,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { useQuery } from "@tanstack/react-query";
 import { ORDER_BY } from "~/lib/CONSTANTS";
-import { sortActions } from "~/lib/helpers";
+import { sortActions } from "~/utils";
 
 import { HomeCalendarView } from "~/components/features/home/HomeCalendarView";
 import { HomeLateView } from "~/components/features/home/HomeLateView";

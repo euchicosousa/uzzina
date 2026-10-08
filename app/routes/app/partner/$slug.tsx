@@ -35,7 +35,7 @@ import {
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { useAppTheme } from "~/hooks/useAppTheme";
 import { PHASES, SIZE } from "~/lib/CONSTANTS";
-import { filterActions, getInstagramFeedActions } from "~/lib/helpers";
+import { filterActions, getInstagramFeedActions } from "~/utils";
 import { getUserPreferences } from "~/lib/preferences";
 import { cn } from "cnfast";
 import { useQuery } from "@tanstack/react-query";

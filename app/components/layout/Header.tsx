@@ -19,8 +19,9 @@ import { usePreferencePersistence } from "~/hooks/usePreferencePersistence";
 import { useAppContext } from "~/contexts/AppContext";
 import { Theme, useAppThemeContext } from "~/hooks/useAppTheme";
 import { useNotifications } from "~/hooks/useNotifications";
-import { PALLETE, SIZE } from "~/lib/CONSTANTS";
-import { getThemeIcon } from "~/lib/helpers";
+import { PALLETE } from "~/lib/palettes";
+import { SIZE } from "~/lib/CONSTANTS";
+import { getThemeIcon } from "~/utils";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
@@ -32,6 +33,7 @@ import { cn } from "cnfast";
 import type { Notification } from "~/types";
 import { DashboardMetrics } from "../features/home/DashboardMetrics";
 import { UZZINALogo } from "../logo";
+import { getActionById } from "~/models/actions";
 import {
   PrismBadge,
   PrismButton,
@@ -170,14 +172,9 @@ export function Header({
       markAsRead([notif.id]);
     }
     try {
-      const { data: actionData, error } = await supabase
-        .from("actions")
-        .select("*")
-        .eq("id", notif.action_id)
-        .single();
-      if (error) throw error;
+      const actionData = await getActionById(supabase, notif.action_id);
       if (actionData) {
-        setBaseAction(actionData as unknown as Action);
+        setBaseAction(actionData);
       }
     } catch (err) {
       console.error("Erro ao carregar ação mencionada:", err);

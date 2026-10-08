@@ -1,7 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import bcrypt from "bcryptjs";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "../types/database";
+import { createServiceClient, getServiceConfig } from "../server/supabase-admin.js";
 import {
   SESSION_COOKIE_NAME,
   SESSION_TTL_SECONDS,
@@ -27,11 +26,10 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
   const appOrigin = process.env.APP_ORIGIN;
   const originHeader = req.headers.origin as string | undefined;
 
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceConfig = getServiceConfig();
 
   // Falha controlada caso o servidor não tenha as variáveis obrigatórias configuradas
-  if (!supabaseUrl || !supabaseServiceRoleKey) {
+  if (!serviceConfig) {
     return res
       .status(503)
       .json({ error: "Configuração do servidor de autenticação incompleta." });
@@ -49,7 +47,7 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
     }
   }
 
-  const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseServiceRoleKey);
+  const supabaseAdmin = createServiceClient(serviceConfig);
 
   // 1. Verificação / Retomada de sessão via Cookie HttpOnly
   if (action === "verify") {

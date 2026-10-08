@@ -12,6 +12,7 @@ import {
 } from "~/components/prism";
 import { DATE_TIME_DISPLAY, PHASES, type PHASE } from "~/lib/CONSTANTS";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import { searchActionsByTitle } from "~/models/actions";
 import { getFormattedDateTime } from "~/utils/date";
 import { UAvatar } from "../uzzina/UAvatar";
 import { PhaseIcon } from "./PhaseIcon";
@@ -57,20 +58,13 @@ export function GlobalSearchCommand({
         setIsSearching(true);
         try {
           const supabase = createSupabaseBrowserClient();
-          let baseQuery = supabase
-            .from("actions")
-            .select("*")
-            .ilike("title", `%${query}%`)
-            .overlaps("partners", slugs);
-          if (activePartnerSlug) {
-            baseQuery = baseQuery.contains("partners", [activePartnerSlug]);
-          }
-          const { data, error } = await baseQuery.limit(10);
-          if (!isCurrent) return;
-          if (error) throw error;
-          setSearchResults({
-            actions: (data as unknown as Action[]) || [],
+          const actions = await searchActionsByTitle(supabase, {
+            query,
+            partnerSlugs: slugs,
+            activePartnerSlug,
           });
+          if (!isCurrent) return;
+          setSearchResults({ actions });
         } catch (err) {
           if (!isCurrent) return;
           console.error("Erro na busca global:", err);

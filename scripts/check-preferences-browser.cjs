@@ -73,7 +73,7 @@ const assert=require('node:assert/strict');
   await choose('Tema escuro');
   await page.waitForFunction(()=>document.documentElement.classList.contains('dark'));
   while(writes.length===0)await new Promise(resolve=>setTimeout(resolve,20));
-  const palette=await page.evaluate(async()=>{const {PALLETE}=await import('/app/lib/CONSTANTS.ts');return PALLETE[1].label;});
+  const palette=await page.evaluate(async()=>{const {PALLETE}=await import('/app/lib/palettes.ts');return PALLETE[1].label;});
   await choose(palette);
   await page.waitForTimeout(400);
   assert.equal(writes.length,1,'Only one preference write may be in flight');

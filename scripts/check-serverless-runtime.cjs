@@ -30,7 +30,9 @@ const {FileFsRef} = require('@vercel/build-utils');
   const scratch = await mkdtemp(join(tmpdir(), 'uzzina-serverless-'));
   try {
     const sources = ['api/ai.ts', 'api/dash-auth.ts', 'api/dash-data.ts',
-      'api/dash-action.ts', 'app/lib/ai-contract.ts', 'server/dash-session.ts', 'types/database.ts'];
+      'api/dash-action.ts', 'api/review.ts', 'api/review-links.ts', 'api/client-accounts.ts',
+      'app/lib/ai-contract.ts', 'server/dash-session.ts', 'server/auth.ts',
+      'server/supabase-admin.ts', 'types/database.ts'];
     const files = {};
     for (const path of sources) {
       const target = join(scratch, path);

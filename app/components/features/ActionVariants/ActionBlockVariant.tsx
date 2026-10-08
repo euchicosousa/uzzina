@@ -3,7 +3,7 @@ import type { ActionVariantRendererProps } from "./types";
 import { ActionItemTitleInput } from "../ActionItemTitleInput";
 import { PhaseIcon } from "../PhaseIcon";
 import { INTENT, SIZE } from "~/lib/CONSTANTS";
-import { getFormattedDateTime, Icons } from "~/lib/helpers";
+import { getFormattedDateTime, Icons } from "~/utils";
 import {
   ActionItemPartners,
   ActionItemResponsibles,

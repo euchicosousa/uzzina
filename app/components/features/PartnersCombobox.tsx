@@ -10,7 +10,7 @@ import {
   PrismPopoverTrigger,
 } from "~/components/prism";
 import { useAppContext } from "~/contexts/AppContext";
-import { getFormattedPartnersName } from "~/lib/helpers";
+import { getFormattedPartnersName } from "~/utils";
 import { cn } from "cnfast";
 import type { Partner } from "~/types";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";

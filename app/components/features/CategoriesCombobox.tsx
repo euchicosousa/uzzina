@@ -10,7 +10,7 @@ import {
   PrismPopoverTrigger,
 } from "~/components/prism";
 import { AREAS, CATEGORIES } from "~/lib/CONSTANTS";
-import { Icons } from "~/lib/helpers";
+import { Icons } from "~/utils";
 import { ComboboxTrigger } from "./ComboboxTrigger";
 const AREA_ORDER = ["all", "instagram", "creative", "account", "adm"];
 export function CategoriesCombobox({

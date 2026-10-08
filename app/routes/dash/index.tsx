@@ -17,7 +17,7 @@ import { PrismButton } from "~/components/prism";
 import { useQuery } from "@tanstack/react-query";
 import { useDashContext } from "~/contexts/DashContext";
 import { fetchDashActions, type DashActionDto } from "~/services/dash-client";
-import { getInstagramFeedActions } from "~/lib/helpers";
+import { getInstagramFeedActions } from "~/utils";
 import { z } from "zod";
 const dashSearchSchema = z.object({
   partner: z.string().optional(),

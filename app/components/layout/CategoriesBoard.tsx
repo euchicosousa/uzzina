@@ -7,7 +7,7 @@ import {
   type CATEGORY_TYPE,
   type ORDER_BY
 } from "~/lib/CONSTANTS";
-import { getCleanAction, Icons } from "~/lib/helpers";
+import { createActionDraft, Icons } from "~/utils";
 import { ActionContainer } from "../features/ActionContainer";
 import { PrismBadge, PrismButton } from "../prism";
 
@@ -84,12 +84,12 @@ function CategoryColumn({
           
           className="opacity-0 group-hover/column:opacity-100"
           onClick={() =>
-            setBaseAction({
-              ...(getCleanAction({
-                user_id: person.user_id,
-              }) as unknown as Action),
-              category: category.slug,
-            })
+            setBaseAction(
+              createActionDraft({
+                userId: person.user_id,
+                category: category.slug,
+              }),
+            )
           }
           size="icon-xs"
           variant="secondary"

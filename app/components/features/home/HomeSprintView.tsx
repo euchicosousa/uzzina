@@ -32,7 +32,7 @@ import { useAppContext } from "~/contexts/AppContext";
 import { useLoading } from "~/hooks/useLoading";
 import { useSprintOrder } from "~/hooks/useSprintOrder";
 import { VARIANT } from "~/lib/CONSTANTS";
-import { getGridClasses } from "~/lib/uzzina-utils";
+import { getGridClasses } from "~/utils/uzzina-utils";
 import { HomeViewWrapper } from "./HomeViewWrapper";
 export function HomeSprintView({ actions }: { actions: Action[] }) {
   const isLoading = useLoading(["actions"]);

@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "../types/database";
+import { createServiceClient, getServiceConfig } from "../server/supabase-admin.js";
+import { extractBearerToken } from "../server/auth.js";
 
 const BCRYPT_COST = 12;
 const MIN_PASSWORD_BYTES = 8;
@@ -18,17 +18,6 @@ const accountFields = z.object({
 });
 const createAccountSchema = accountFields.omit({active: true}).extend({password: z.string().min(1)}).strict();
 const updateAccountSchema = accountFields.partial().extend({id: z.string().min(1).max(100)}).strict();
-
-function extractAuthToken(req: VercelRequest): string | null {
-  const authHeader = req.headers.authorization;
-  if (authHeader && typeof authHeader === "string") {
-    const parts = authHeader.split(" ");
-    if (parts.length === 2 && parts[0]?.toLowerCase() === "bearer") {
-      return parts[1] ?? null;
-    }
-  }
-  return null;
-}
 
 export interface SafeClientDto {
   id: string;
@@ -61,21 +50,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceConfig = getServiceConfig();
 
-  if (!supabaseUrl || !supabaseServiceRoleKey) {
+  if (!serviceConfig) {
     return res
       .status(503)
       .json({ error: "Configuração do servidor de autenticação incompleta." });
   }
 
-  const token = extractAuthToken(req);
+  const token = extractBearerToken(req);
   if (!token) {
     return res.status(401).json({ error: "Token de autenticação ausente." });
   }
 
-  const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseServiceRoleKey);
+  const supabaseAdmin = createServiceClient(serviceConfig);
 
   // 1. Validação de identidade e privilégios administrativos
   const { data: userData, error: userError } = await supabaseAdmin.auth.getUser(token);

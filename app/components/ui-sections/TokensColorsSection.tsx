@@ -1,6 +1,6 @@
 import { SunIcon, MoonIcon, CheckIcon } from "lucide-react";
 import { useAppThemeContext, Theme } from "~/hooks/useAppTheme";
-import { PALLETE } from "~/lib/CONSTANTS";
+import { PALLETE } from "~/lib/palettes";
 import {
   PrismButton,
   PrismInput,

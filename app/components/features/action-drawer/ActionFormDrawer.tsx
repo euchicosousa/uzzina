@@ -11,13 +11,15 @@ import { Icons } from "~/components/uzzina/UIcons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ActionFormFooter } from "./ActionFormFooter";
+import { useActionAI } from "./useActionAI";
 import { EssentialsTab } from "./EssentialsTab";
 import { InstagramTab } from "./InstagramTab";
 import { ObservationsTab } from "./ObservationsTab";
 import { ConflictComparison } from "./conflict-comparison";
 import { ActionSaveCoordinator, type CoordinatorState } from "./action-save-coordinator";
 import { INTENT } from "~/lib/CONSTANTS";
-import { isSocialMediaContent, parseStrategies } from "~/lib/helpers";
+import { isSocialMediaContent, parseStrategies } from "~/utils";
+import { isDefaultActionColor } from "~/utils/uzzina-utils";
 import {
   useActionMutations,
   type SingleActionInput,
@@ -37,13 +39,9 @@ import {
   PrismDialogFooter,
   PrismDialogTitle,
 } from "~/components/prism";
-function getCaptionTail(instagram_caption_tail: string | null) {
-  return "".concat("\n\n").concat(instagram_caption_tail || "");
-}
 const DEFAULT_PARTNER_FILTERS: string[] = [];
 const DEFAULT_PARTNERS: Partner[] = [];
 import { useAppContext } from "~/contexts/AppContext";
-import { callAI, type AIPayload } from "~/services/ai-client";
 export function ActionFormDrawer({
   BaseAction,
   onClose,
@@ -65,7 +63,7 @@ export function ActionFormDrawer({
   const partners = routePartners ?? DEFAULT_PARTNERS;
   const { handleAction, isLoading: isMutationLoading } = useActionMutations();
   const [RawAction, commitRawAction] = useState<Action>(() => {
-    if (BaseAction.created_at) return BaseAction;
+    if (BaseAction.id) return BaseAction;
     const now = format(new Date(), "yyyy-MM-dd HH:mm:ss");
     let initialPartners = BaseAction.partners || [];
     let initialResponsibles = BaseAction.responsibles || [];
@@ -81,9 +79,7 @@ export function ActionFormDrawer({
         initialResponsibles = matchedPartner.users_ids;
       }
       if (
-        (!initialColor ||
-          initialColor === "#666666" ||
-          initialColor === "#666") &&
+        isDefaultActionColor(initialColor) &&
         matchedPartner.colors &&
         matchedPartner.colors.length > 0
       ) {
@@ -284,148 +280,30 @@ export function ActionFormDrawer({
   useEffect(() => {
     handleSaveRef.current = handleSave;
   }, [handleSave]);
-  const [isAIProcessing, setIsAIProcessing] = useState(false);
-  const aiProcessingRef = useRef(false);
-  const [activeAIIntent, setActiveAIIntent] = useState<string | null>(null);
   const [isStrategyModalOpen, setIsStrategyModalOpen] = useState(false);
   const [descriptionVersion, setDescriptionVersion] = useState(0);
-  const isPending =
-    isMutationLoading ||
-    isAIProcessing ||
-    coordinatorState.status === "creating" ||
-    coordinatorState.status === "saving";
-  const triggerAIAction = async (
-    intent: string,
-    customPayload?: Record<string, string | string[] | null>,
-  ) => {
-    if (aiProcessingRef.current) return;
-    aiProcessingRef.current = true;
-    setIsAIProcessing(true);
-    setActiveAIIntent(intent);
-    try {
-      const aiPayload: AIPayload = {
-        intent,
-        title: RawAction.title || "",
-        description: `DESCRIÇÃO: ${descriptionRef.current} DESCRIÇÃO DO CONTEÚDO: ${contentDescriptionRef.current}`,
-        partner_context: `${currentPartners[0]?.context || ""} — ${RawAction.category || ""}`,
-        category: RawAction.category || "",
-      };
-      if (customPayload) {
-        for (const [key, val] of Object.entries(customPayload)) {
-          if (val !== null && val !== undefined) {
-            (aiPayload as unknown as Record<string, string>)[key] = String(val);
-          }
-        }
-      }
-      const data = await callAI(aiPayload);
-      if (data?.output) {
-        const captionTail = captionTailRef.current;
-        if (intent === INTENT.ai_strategy) {
-          const newStrategies = parseStrategies(data.output);
-          // Set strategies in local state FIRST
-          setRawAction((prev) => ({
-            ...prev,
-            strategies: newStrategies,
-          }));
-          setIsStrategyModalOpen(true);
-          // Save to DB — updateAction internally calls setRawAction(result) which
-          // will overwrite strategies with the DB's Json type. We re-apply strategies after.
-          await updateAction({
-            strategies: newStrategies,
-          });
-          // Re-apply strategies after DB write since setRawAction(result) resets it
-          setRawAction((prev) => ({
-            ...prev,
-            strategies: newStrategies,
-          }));
-        }
-        if (intent === INTENT.ai_content) {
-          const out = data.output as
-            | {
-                content?: string;
-              }
-            | string;
-          const newContent = typeof out === "string" ? out : out.content || "";
-          if (newContent) {
-            contentDescriptionRef.current = newContent;
-            setRawAction((prev) => ({
-              ...prev,
-              content_description: newContent,
-            }));
-            updateAction({
-              content_description: newContent,
-            });
-          }
-        }
-        if (intent === INTENT.ai_caption) {
-          const captionText =
-            typeof data.output === "string"
-              ? data.output
-              : (
-                  data.output as {
-                    caption?: string;
-                  }
-                ).caption;
-          const newCaption = (captionText || "").concat(
-            getCaptionTail(captionTail),
-          );
-          setRawAction((prev) => ({
-            ...prev,
-            instagram_caption: newCaption,
-          }));
-          updateAction({
-            instagram_caption: newCaption,
-          });
-        }
-        if (
-          [
-            INTENT.ai_post,
-            INTENT.ai_carousel,
-            INTENT.ai_stories,
-            INTENT.ai_reels,
-          ].includes(
-            intent as "ai-post" | "ai-carousel" | "ai-stories" | "ai-reels",
-          )
-        ) {
-          const out = data.output as {
-            content?: string;
-            caption?: string;
-          };
-          const content = out.content || "";
-          const caption = out.caption || "";
-          const newCaption = (caption || "").concat(
-            getCaptionTail(captionTail),
-          );
-          const currentDescription = rawActionRef.current.description || "";
-          const newDescription = `${content}<hr />${currentDescription}`;
-          setRawAction((prev) => ({
-            ...prev,
-            description: newDescription,
-            instagram_caption: newCaption,
-          }));
-          descriptionRef.current = newDescription;
-          setDescriptionVersion((v) => v + 1);
-          updateAction({
-            description: newDescription,
-            instagram_caption: newCaption,
-          });
-        }
-      }
-      return data;
-    } catch (err) {
-      console.error("Erro no processamento de IA:", err);
-      toast.error(err instanceof Error ? err.message : "Falha ao gerar conteúdo com IA. Seu texto foi mantido.");
-    } finally {
-      aiProcessingRef.current = false;
-      setIsAIProcessing(false);
-      setActiveAIIntent(null);
-    }
-  };
   const currentPartners = useMemo(() => {
     return RawAction.partners
       .map((slug) => partners.find((partner) => partner.slug === slug))
       .filter((partner): partner is Partner => partner !== undefined);
   }, [RawAction.partners, partners]);
+  const { isAIProcessing, aiProcessingRef, activeAIIntent, triggerAIAction } =
+    useActionAI({
+      action: RawAction,
+      rawActionRef,
+      descriptionRef,
+      contentDescriptionRef,
+      currentPartners,
+      setRawAction,
+      updateAction,
+      setIsStrategyModalOpen,
+      setDescriptionVersion,
+    });
+  const isPending =
+    isMutationLoading ||
+    isAIProcessing ||
+    coordinatorState.status === "creating" ||
+    coordinatorState.status === "saving";
   const [workFiles, setWorkFiles] = useState<string[]>(
     RawAction.work_files ?? [],
   );
@@ -468,7 +346,7 @@ export function ActionFormDrawer({
       description: descriptionRef.current,
       content_description: contentDescriptionRef.current,
     });
-  }, []);
+  }, [aiProcessingRef]);
   useEffect(() => {
     registerLeaveGuard?.(prepareLeave);
     return () => registerLeaveGuard?.(null);
@@ -506,10 +384,6 @@ export function ActionFormDrawer({
       }
     }
   }, [currentPartners, BaseAction.id, setRawAction]);
-  const captionTailRef = useRef(currentPartners[0]?.instagram_caption_tail);
-  useEffect(() => {
-    captionTailRef.current = currentPartners[0]?.instagram_caption_tail;
-  }, [currentPartners]);
   useEffect(() => {
     async function handleKeyDown(event: KeyboardEvent) {
       if (conflictVersion) return;

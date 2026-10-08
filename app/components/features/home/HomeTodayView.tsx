@@ -16,7 +16,7 @@ import { PartnersBoard } from "~/components/layout/PartnersBoard";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import { VARIANT } from "~/lib/CONSTANTS";
 import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
-import { isInstagramFeed } from "~/lib/helpers";
+import { isInstagramFeed } from "~/utils";
 import type { Action } from "~/types";
 import { HomeViewWrapper } from "./HomeViewWrapper";
 

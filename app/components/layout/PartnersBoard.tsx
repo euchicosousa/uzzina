@@ -3,7 +3,7 @@ import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
-import { getCleanAction } from "~/lib/helpers";
+import { createActionDraft } from "~/utils";
 import { useAppContext } from "~/contexts/AppContext";
 import { ActionContainer } from "../features/ActionContainer";
 import { PrismButton, PrismSkeletonGroup } from "~/components/prism";
@@ -90,14 +90,14 @@ function PartnerColumn({
         <PrismButton
           className="opacity-0 group-hover/column:opacity-100"
           onClick={() =>
-            setBaseAction({
-              ...(getCleanAction({
-                user_id: person.user_id,
+            setBaseAction(
+              createActionDraft({
+                userId: person.user_id,
                 partners: [partner.slug],
-                date: currentDay
-              }) as unknown as Action),
-              responsibles: partner.users_ids,
-            })
+                date: currentDay,
+                responsibles: partner.users_ids,
+              }),
+            )
           }
           size="icon-xs"
           variant={"secondary"}

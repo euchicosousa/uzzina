@@ -14,7 +14,7 @@ import { PhaseCombobox } from "~/components/features/PhaseCombobox";
 import { SprintCombobox } from "~/components/features/SprintCombobox";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { INTENT } from "~/lib/CONSTANTS";
-import { isSocialMediaContent } from "~/lib/helpers";
+import { isSocialMediaContent } from "~/utils";
 import { PrismButton } from "~/components/prism";
 interface ActionFormFooterProps {
   RawAction: Action;

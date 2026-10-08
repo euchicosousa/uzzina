@@ -13,7 +13,7 @@ import {
   PrismPopoverTrigger,
 } from "~/components/prism";
 import { SIZE } from "~/lib/CONSTANTS";
-import { getFormattedPeopleName } from "~/lib/helpers";
+import { getFormattedPeopleName } from "~/utils";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
 import { cn } from "cnfast";

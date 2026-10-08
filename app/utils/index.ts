@@ -10,6 +10,6 @@ export * from "~/utils/sort";
 export * from "~/utils/filter";
 export * from "~/components/uzzina/UIcons";
 
-export { createSupabaseClient } from "./supabase";
+export { createSupabaseClient } from "~/lib/supabase";
 
 

@@ -13,7 +13,7 @@ import {
 import { ComboboxTrigger } from "~/components/features/ComboboxTrigger";
 import { toHex } from "./PartnerColorPicker";
 import { cn } from "cnfast";
-import { getGridCols, safeColor } from "~/lib/uzzina-utils";
+import { getGridCols, safeColor } from "~/utils/uzzina-utils";
 interface ActionColorDropdownProps {
   action: Action;
   partners: Partner[];

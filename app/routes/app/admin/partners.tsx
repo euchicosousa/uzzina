@@ -4,6 +4,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { UAdminItemCard } from "~/components/uzzina/UAdminItemCard";
 import { useQuery } from "@tanstack/react-query";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import { getAllPartners } from "~/models/partners";
 import type { Partner } from "~/types";
 import { buttonVariants } from "~/components/prism/button";
 import { QUERY_KEYS } from "~/lib/query-keys";
@@ -24,16 +25,7 @@ function AdminPartnersPage() {
   const supabase = createSupabaseBrowserClient();
   const { data: partners = [], isLoading } = useQuery({
     queryKey: QUERY_KEYS.adminPartners(person.user_id),
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("partners")
-        .select("*")
-        .order("title", {
-          ascending: true,
-        });
-      if (error) throw error;
-      return data as Partner[];
-    },
+    queryFn: () => getAllPartners(supabase),
   });
   if (isLoading) {
     return (

@@ -15,6 +15,8 @@ import {
   deleteComment,
 } from "~/models/action_comments";
 import { createNotificationsForMentions } from "~/models/notifications";
+import { getActionTitle } from "~/models/actions";
+import { getPersonName } from "~/models/people";
 import { toast } from "sonner";
 
 const DEFAULT_PARTNER_USERS_IDS: string[] = [];
@@ -62,14 +64,14 @@ export function ObservationsTab({
       mentions: string[];
       is_internal?: boolean;
     }) => {
-      const [personRes, actionRes] = await Promise.all([
-        supabase.from("people").select("name").eq("user_id", person.user_id).single(),
-        supabase.from("actions").select("title").eq("id", actionId).single(),
+      const [personName, title] = await Promise.all([
+        getPersonName(supabase, person.user_id),
+        getActionTitle(supabase, actionId),
       ]);
 
       if (!isCurrentSession()) throw new Error("A sessão mudou. Entre novamente.");
-      const authorName = personRes.data?.name || "Agência";
-      const actionTitle = actionRes.data?.title || "Ação";
+      const authorName = personName || "Agência";
+      const actionTitle = title || "Ação";
 
       const insertedComment = await createComment(supabase, {
         action_id: actionId,

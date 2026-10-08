@@ -17,9 +17,11 @@ UZZINA é a aplicação existente de gestão de ações da agência CNVT: React,
 | `app/components/uzzina/` | Componentes reutilizáveis de alto nível |
 | `app/components/features/` | Fluxos de negócio, incluindo gaveta e upload |
 | `app/components/layout/`, `ui-sections/` | Layout e galeria `/ui` |
-| `app/hooks/`, `app/lib/` | Estado, cache, preferências e contratos compartilhados |
+| `app/hooks/`, `app/lib/` | Estado, cache, preferências e contratos compartilhados; paletas em `lib/palettes.ts`, variáveis CSS em `lib/palette-vars.ts`, rascunho de tema personalizado em `lib/custom-theme.ts` |
+| `app/utils/` | Utilitários puros (barrel `~/utils`, `uzzina-utils`, `factory`); `cn` permanece em `~/lib/utils` |
+| `app/data/` | Dados preservados sem uso pelo app (`hooks-library.ts`) |
 | `app/models/`, `app/services/` | Consultas por entidade e clientes de API |
-| `api/`, `server/` | Handlers Vercel, sessão e adaptador local |
+| `api/`, `server/` | Handlers Vercel, sessão e adaptador local; `server/supabase-admin.ts` (config/cliente service-role) e `server/auth.ts` (token Bearer) são compartilhados pelos handlers de portal/revisão/contas |
 | `supabase/`, `tests/`, `scripts/` | Contratos do banco e verificações |
 
 ## 2. Convenções e verificação
@@ -48,6 +50,7 @@ UZZINA é a aplicação existente de gestão de ações da agência CNVT: React,
 - A policy SELECT de ações deve autorizar pelos campos da própria linha; não consultar a ação por ID em uma função STABLE durante INSERT RETURNING. Criação/duplicação precisam devolver a versão canônica sem ampliar escopo de membros.
 - Contexto operacional: `getOperationalPartners` e `QUERY_KEYS.operationalPartners(userId,isAdmin)` excluem arquivados. Administração: `getAllPartners`/`QUERY_KEYS.adminPartners()` preservam arquivados. Invalidar `["partners"]` alcança ambos; não apagar suas ações.
 - Home/Hoje/cabeçalho consultam parceiros do escopo e descartam ações exclusivamente de parceiros ocultos. Endpoints do portal aceitam parceiros ativos vinculados à conta.
+- Rascunho de "Nova ação": todos os pontos usam `createActionDraft` e `resolveDraftPartners` (`app/utils/factory.ts`); a gaveta identifica rascunho pela ausência de `id`. Componentes e rotas não chamam `.from()` diretamente: use `app/models/` (`actions`, `partners`, `people`).
 - Listas usam `QUERY_KEYS.actions.list` com identidade, papel, parceiros e período/regra de atraso. Criação/duplicação/edição entram após confirmação; rascunhos ficam na gaveta. Preview de arraste pertence à operação. Não restaurar snapshots completos após uma falha antiga.
 - Atualização de lista exige escopo conhecido e versão canônica; escopo desconhecido é invalidado. Comparação de conflitos preserva o controle de versão no coordenador; data/rótulos/nomes são formatados, HTML sanitizado e legenda literal.
 - Chaves privadas incluem identidade/audiência. Prefixos gerais servem para invalidação. `resetQuerySession` limpa queries/mutations e avança a geração; callbacks antigos ignoram resultados. Providers remontam por identidade; bootstrap verifica geração e ID retornado.
