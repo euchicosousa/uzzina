@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { Person } from "~/types";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import { updateMyPreferences } from "~/models/people";
 import { getQuerySessionGeneration } from "~/lib/query-client";
 import {
   createPreferencePersistence,
@@ -29,14 +30,9 @@ export function usePreferencePersistence(person: Person) {
         initialPerson.current.user_id === userId &&
         getQuerySessionGeneration(queryClient) === generation,
       save: async (patch) => {
-        const { data, error } = await createSupabaseBrowserClient().rpc(
-          "update_my_preferences",
-          { p_patch: patch },
+        return preferenceRecord(
+          await updateMyPreferences(createSupabaseBrowserClient(), patch),
         );
-        if (error) throw error;
-        if (!data || typeof data !== "object" || Array.isArray(data))
-          throw new Error("Invalid preferences confirmation");
-        return preferenceRecord(data);
       },
       onChange: (preferences) => {
         owner.preferences = preferences;

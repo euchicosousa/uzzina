@@ -28,7 +28,7 @@ import { useAppContext } from "~/contexts/AppContext";
 import { PALLETE } from "~/lib/palettes";
 import { getUserPreferences } from "~/lib/preferences";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-import { updateOwnProfile } from "~/models/people";
+import { updateMyPreferences, updateOwnProfile } from "~/models/people";
 import { cn } from "cnfast";
 import { CloudIcon } from "lucide-react";
 import { CustomThemePanel } from "~/components/features/profile/CustomThemePanel";
@@ -141,19 +141,12 @@ function ProfilePage() {
       });
 
       if (!isCurrentSession()) return;
-      const preferenceResult = await supabase.rpc("update_my_preferences", {
-        p_patch: newPreferences,
-      });
+      const savedPreferences = await updateMyPreferences(
+        supabase,
+        newPreferences,
+      );
       if (!isCurrentSession()) return;
-      if (preferenceResult.error) throw preferenceResult.error;
-      if (
-        !preferenceResult.data ||
-        typeof preferenceResult.data !== "object" ||
-        Array.isArray(preferenceResult.data)
-      ) {
-        throw new Error("Invalid preferences confirmation");
-      }
-      person.preferences = preferenceResult.data;
+      person.preferences = savedPreferences;
 
       // Sync local preferences to storage / context
       localStorage.setItem(
@@ -243,7 +236,7 @@ function ProfilePage() {
           value={String(showInstagramSidebar)}
         />
 
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_1.8fr]">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1.8fr)]">
           {/* Left Column: Personal Info */}
           <div className="flex flex-col gap-6 py-6">
             <h2 className="text-lg font-bold">Informações Pessoais</h2>
@@ -394,6 +387,7 @@ function ProfilePage() {
               </div>
               <PrismToggleGroup
                 aria-label="Cor de Destaque"
+                className="flex-wrap"
                 selectedKeys={[String(selectedThemeColor)]}
                 onSelectionChange={(keys) => {
                   const val = Array.from(keys)[0];

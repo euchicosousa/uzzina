@@ -1,6 +1,7 @@
 import {
   ArrowDownAZIcon,
   ArrowUpAZIcon,
+  ChevronDownIcon,
   ChevronsUpDownIcon,
   ClockIcon,
   Columns2Icon,
@@ -9,6 +10,9 @@ import {
   HeartHandshakeIcon,
   ImageIcon,
   Rows2Icon,
+  EyeIcon,
+  LayoutListIcon,
+  ListOrderedIcon,
   Rows3Icon,
   SignalIcon,
   SquareCheckIcon,
@@ -17,9 +21,14 @@ import {
 } from "lucide-react";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import {
-  PrismToggle,
-  PrismToggleGroup,
-  PrismToggleGroupItem,
+  PrismButton,
+  PrismMenu,
+  PrismMenuContent,
+  PrismMenuGroup,
+  PrismMenuItem,
+  PrismMenuLabel,
+  PrismMenuSeparator,
+  PrismMenuTrigger,
 } from "~/components/prism";
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 
@@ -91,186 +100,205 @@ export function useViewOptions(
     ...overrides,
   });
 }
-export function ViewOptionsComponent({
-  viewOptions,
-  setViewOptions,
-  startComponents,
-  endComponents,
-}: {
+type ViewMenuProps = {
   viewOptions: ViewOptions;
   setViewOptions: (viewOptions: ViewOptions) => void;
-  startComponents?: React.ReactNode;
-  endComponents?: React.ReactNode;
+};
+
+function ViewMenuTrigger({
+  icon,
+  label,
+}: {
+  icon: React.ReactNode;
+  label: string;
 }) {
-  viewOptions.variant ||= VARIANT.line;
   return (
-    <div className="flex w-full shrink flex-wrap justify-between gap-x-2 gap-y-2">
-      {/* Componentes no começo */}
-      {startComponents}
+    <PrismButton className="max-sm:px-2" size="xs" variant="secondary">
+      {icon}
+      {label}
+      <ChevronDownIcon className="max-sm:hidden" />
+    </PrismButton>
+  );
+}
 
-      {/* 1. Seleção de Modo de Exibição (Linha / Bloco / Conteúdo) */}
-      {viewOptions.showOptions.variant && (
-        <PrismToggleGroup
-          aria-label="Modo de Exibição"
-          className={"gap-1"}
-          onSelectionChange={(keys) => {
-            const selected = Array.from(keys)[0] as
-              (typeof VARIANT)[keyof typeof VARIANT] | undefined;
-            if (selected) {
-              setViewOptions({
-                ...viewOptions,
-                variant: selected,
-              });
-            }
-          }}
-          selectedKeys={
-            viewOptions.variant ? new Set([viewOptions.variant]) : new Set()
-          }
-          selectionMode="single"
-          size="sm"
-        >
-          <PrismToggleGroupItem
-            aria-label="Exibição em Linha"
-            id={VARIANT.line}
-          >
-            <Rows3Icon />
-          </PrismToggleGroupItem>
-          <PrismToggleGroupItem
-            aria-label="Exibição em Bloco"
-            id={VARIANT.block}
-          >
-            <Rows2Icon />
-          </PrismToggleGroupItem>
-          <PrismToggleGroupItem
-            aria-label="Exibição em Conteúdo"
-            id={VARIANT.content}
-          >
-            <ImageIcon />
-          </PrismToggleGroupItem>
-        </PrismToggleGroup>
-      )}
+/**
+ * Which "Visualizar" groups the screen allows right now. The menu button is
+ * rendered only when at least one group is visible, so it never opens empty.
+ */
+export function getVisualizeGroups(viewOptions: ViewOptions) {
+  const { showOptions } = viewOptions;
+  const isContent = viewOptions.variant === VARIANT.content;
+  return {
+    variant: !!showOptions.variant,
+    autoHeight: !!showOptions.autoHeight && !isContent,
+    columns: !!showOptions.columns && isContent,
+  };
+}
 
-      {/* Toggle de Altura Automática */}
-      {viewOptions.variant !== VARIANT.content &&
-        viewOptions.showOptions.autoHeight && (
-          <PrismToggle
-            aria-label="Altura Automática"
-            isSelected={!!viewOptions.autoHeight}
-            onChange={(pressed) =>
-              setViewOptions({
-                ...viewOptions,
-                autoHeight: pressed,
-              })
-            }
-            size="sm"
+/** "Visualizar": layout variant, auto height and number of columns. */
+function VisualizeMenu({ viewOptions, setViewOptions }: ViewMenuProps) {
+  const groups = getVisualizeGroups(viewOptions);
+  return (
+    <PrismMenu>
+      <PrismMenuTrigger>
+        <ViewMenuTrigger icon={<LayoutListIcon />} label="Visualizar" />
+      </PrismMenuTrigger>
+      <PrismMenuContent className="w-56">
+        {groups.variant && (
+          <PrismMenuGroup
+            aria-label="Modo de Exibição"
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0] as
+                (typeof VARIANT)[keyof typeof VARIANT] | undefined;
+              if (selected)
+                setViewOptions({ ...viewOptions, variant: selected });
+            }}
+            selectedKeys={new Set([viewOptions.variant ?? VARIANT.line])}
+            selectionMode="single"
           >
-            <ChevronsUpDownIcon />
-          </PrismToggle>
+            <PrismMenuLabel>Modo de exibição</PrismMenuLabel>
+            <PrismMenuItem id={VARIANT.line} textValue="Linha">
+              <Rows3Icon /> Linha
+            </PrismMenuItem>
+            <PrismMenuItem id={VARIANT.block} textValue="Bloco">
+              <Rows2Icon /> Bloco
+            </PrismMenuItem>
+            <PrismMenuItem id={VARIANT.content} textValue="Conteúdo">
+              <ImageIcon /> Conteúdo
+            </PrismMenuItem>
+          </PrismMenuGroup>
         )}
+        {groups.autoHeight && (
+          <>
+            {groups.variant && <PrismMenuSeparator />}
+            <PrismMenuGroup
+              aria-label="Altura"
+              onSelectionChange={(keys) =>
+                setViewOptions({
+                  ...viewOptions,
+                  autoHeight: new Set(keys).has("autoHeight"),
+                })
+              }
+              selectedKeys={
+                new Set(viewOptions.autoHeight ? ["autoHeight"] : [])
+              }
+              selectionMode="multiple"
+            >
+              <PrismMenuItem id="autoHeight" textValue="Altura automática">
+                <ChevronsUpDownIcon /> Altura automática
+              </PrismMenuItem>
+            </PrismMenuGroup>
+          </>
+        )}
+        {groups.columns && (
+          <>
+            {groups.variant && <PrismMenuSeparator />}
+            <PrismMenuGroup
+              aria-label="Número de Colunas"
+              onSelectionChange={(keys) => {
+                const selected = Array.from(keys)[0] as string | undefined;
+                if (selected) {
+                  setViewOptions({
+                    ...viewOptions,
+                    columns: Number(selected) as 4 | 6 | 7,
+                  });
+                }
+              }}
+              selectedKeys={new Set([String(viewOptions.columns ?? 4)])}
+              selectionMode="single"
+            >
+              <PrismMenuLabel>Colunas</PrismMenuLabel>
+              <PrismMenuItem id="4" textValue="4 colunas">
+                <Columns2Icon /> 4 colunas
+              </PrismMenuItem>
+              <PrismMenuItem id="6" textValue="6 colunas">
+                <Columns3Icon /> 6 colunas
+              </PrismMenuItem>
+              <PrismMenuItem id="7" textValue="7 colunas">
+                <Columns4Icon /> 7 colunas
+              </PrismMenuItem>
+            </PrismMenuGroup>
+          </>
+        )}
+      </PrismMenuContent>
+    </PrismMenu>
+  );
+}
 
-      {/* 2. Seleção de Colunas */}
-      {viewOptions.variant === VARIANT.content &&
-        viewOptions.showOptions.columns && (
-          <PrismToggleGroup
-            aria-label="Número de Colunas"
-            className={"gap-1"}
+/** "Ordenar": criterion (date or phase) and direction. */
+function SortMenu({ viewOptions, setViewOptions }: ViewMenuProps) {
+  const { showOptions } = viewOptions;
+  return (
+    <PrismMenu>
+      <PrismMenuTrigger>
+        <ViewMenuTrigger icon={<ListOrderedIcon />} label="Ordenar" />
+      </PrismMenuTrigger>
+      <PrismMenuContent className="w-56">
+        {showOptions.order && (
+          <PrismMenuGroup
+            aria-label="Critério de Ordenação"
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0] as
+                (typeof ORDER_BY)[keyof typeof ORDER_BY] | undefined;
+              if (selected) setViewOptions({ ...viewOptions, order: selected });
+            }}
+            selectedKeys={
+              viewOptions.order ? new Set([viewOptions.order]) : new Set()
+            }
+            selectionMode="single"
+          >
+            <PrismMenuLabel>Ordenar por</PrismMenuLabel>
+            <PrismMenuItem id={ORDER_BY.date} textValue="Data">
+              <ClockIcon /> Data
+            </PrismMenuItem>
+            <PrismMenuItem id={ORDER_BY.phase} textValue="Fase">
+              <SquareCheckIcon /> Fase
+            </PrismMenuItem>
+          </PrismMenuGroup>
+        )}
+        {showOptions.order && showOptions.ascending && <PrismMenuSeparator />}
+        {showOptions.ascending && (
+          <PrismMenuGroup
+            aria-label="Direção"
             onSelectionChange={(keys) => {
               const selected = Array.from(keys)[0] as string | undefined;
               if (selected) {
                 setViewOptions({
                   ...viewOptions,
-                  columns: Number(selected) as 4 | 6 | 7,
+                  ascending: selected === "ascending",
                 });
               }
             }}
             selectedKeys={
-              viewOptions.columns
-                ? new Set([String(viewOptions.columns)])
-                : new Set(["4"])
+              new Set([viewOptions.ascending ? "ascending" : "descending"])
             }
             selectionMode="single"
-            size="sm"
           >
-            <PrismToggleGroupItem aria-label="4 Colunas" id="4">
-              <Columns2Icon />
-            </PrismToggleGroupItem>
-            <PrismToggleGroupItem aria-label="6 Colunas" id="6">
-              <Columns3Icon />
-            </PrismToggleGroupItem>
-            <PrismToggleGroupItem aria-label="7 Colunas" id="7">
-              <Columns4Icon />
-            </PrismToggleGroupItem>
-          </PrismToggleGroup>
+            <PrismMenuLabel>Direção</PrismMenuLabel>
+            <PrismMenuItem id="ascending" textValue="Crescente">
+              <ArrowUpAZIcon /> Crescente
+            </PrismMenuItem>
+            <PrismMenuItem id="descending" textValue="Decrescente">
+              <ArrowDownAZIcon /> Decrescente
+            </PrismMenuItem>
+          </PrismMenuGroup>
         )}
+      </PrismMenuContent>
+    </PrismMenu>
+  );
+}
 
-      {/* 3 & 4. Ordenação (Direção + Critério) */}
-      {(viewOptions.showOptions.order || viewOptions.showOptions.ascending) && (
-        <div className="flex gap-1">
-          {/* 3. Ordem Crescente ou Descendente */}
-          {viewOptions.showOptions.ascending && (
-            <PrismToggle
-              aria-label={
-                viewOptions.ascending ? "Ordem Crescente" : "Ordem Descendente"
-              }
-              isSelected={!!viewOptions.ascending}
-              onChange={(pressed) =>
-                setViewOptions({
-                  ...viewOptions,
-                  ascending: pressed,
-                })
-              }
-              size="sm"
-            >
-              {viewOptions.ascending ? <ArrowUpAZIcon /> : <ArrowDownAZIcon />}
-            </PrismToggle>
-          )}
-
-          {/* 4. Critério de Ordenação (Data ou Fase) */}
-          {viewOptions.showOptions.order && (
-            <PrismToggleGroup
-              aria-label="Critério de Ordenação"
-              className={"gap-1"}
-              onSelectionChange={(keys) => {
-                const selected = Array.from(keys)[0] as
-                  (typeof ORDER_BY)[keyof typeof ORDER_BY] | undefined;
-                if (selected) {
-                  setViewOptions({
-                    ...viewOptions,
-                    order: selected,
-                  });
-                }
-              }}
-              selectedKeys={
-                viewOptions.order ? new Set([viewOptions.order]) : new Set()
-              }
-              selectionMode="single"
-              size="sm"
-            >
-              <PrismToggleGroupItem
-                aria-label="Ordem por Data"
-                id={ORDER_BY.date}
-              >
-                <ClockIcon />
-              </PrismToggleGroupItem>
-              <PrismToggleGroupItem
-                aria-label="Ordem por Fase"
-                id={ORDER_BY.phase}
-              >
-                <SquareCheckIcon />
-              </PrismToggleGroupItem>
-            </PrismToggleGroup>
-          )}
-        </div>
-      )}
-
-      {/* 5. Toggles de Exibição de Campos */}
-      {(viewOptions.showOptions.responsibles ||
-        viewOptions.showOptions.priority ||
-        viewOptions.showOptions.partner ||
-        viewOptions.showOptions.category) && (
-        <PrismToggleGroup
+/** "Exibir": which metadata fields each action shows. */
+function DisplayMenu({ viewOptions, setViewOptions }: ViewMenuProps) {
+  const { showOptions } = viewOptions;
+  return (
+    <PrismMenu>
+      <PrismMenuTrigger>
+        <ViewMenuTrigger icon={<EyeIcon />} label="Exibir" />
+      </PrismMenuTrigger>
+      <PrismMenuContent className="w-56">
+        <PrismMenuGroup
           aria-label="Exibição de Campos"
-          className={"gap-1"}
           onSelectionChange={(keys) => {
             const selectedSet = new Set(Array.from(keys) as string[]);
             setViewOptions({
@@ -292,36 +320,75 @@ export function ViewOptionsComponent({
             )
           }
           selectionMode="multiple"
-          size="sm"
         >
-          {viewOptions.showOptions.responsibles && (
-            <PrismToggleGroupItem aria-label="Responsáveis" id="responsibles">
-              <UsersIcon />
-            </PrismToggleGroupItem>
+          <PrismMenuLabel>Mostrar em cada ação</PrismMenuLabel>
+          {showOptions.responsibles && (
+            <PrismMenuItem id="responsibles" textValue="Responsáveis">
+              <UsersIcon /> Responsáveis
+            </PrismMenuItem>
           )}
-          {viewOptions.showOptions.priority && (
-            <PrismToggleGroupItem aria-label="Prioridade" id="priority">
-              <SignalIcon />
-            </PrismToggleGroupItem>
+          {showOptions.priority && (
+            <PrismMenuItem id="priority" textValue="Prioridade">
+              <SignalIcon /> Prioridade
+            </PrismMenuItem>
           )}
-          {viewOptions.showOptions.category && (
-            <PrismToggleGroupItem aria-label="Categoria" id="category">
-              <TagIcon />
-            </PrismToggleGroupItem>
+          {showOptions.category && (
+            <PrismMenuItem id="category" textValue="Categoria">
+              <TagIcon /> Categoria
+            </PrismMenuItem>
           )}
-          {viewOptions.showOptions.partner && (
-            <PrismToggleGroupItem aria-label="Parceiro" id="partner">
-              <HeartHandshakeIcon />
-            </PrismToggleGroupItem>
+          {showOptions.partner && (
+            <PrismMenuItem id="partner" textValue="Parceiro">
+              <HeartHandshakeIcon /> Parceiro
+            </PrismMenuItem>
           )}
-        </PrismToggleGroup>
+        </PrismMenuGroup>
+      </PrismMenuContent>
+    </PrismMenu>
+  );
+}
+
+export function ViewOptionsComponent({
+  viewOptions,
+  setViewOptions,
+  startComponents,
+  endComponents,
+}: {
+  viewOptions: ViewOptions;
+  setViewOptions: (viewOptions: ViewOptions) => void;
+  startComponents?: React.ReactNode;
+  endComponents?: React.ReactNode;
+}) {
+  viewOptions.variant ||= VARIANT.line;
+  const { showOptions } = viewOptions;
+  const menuProps = { viewOptions, setViewOptions };
+  const showVisualize = Object.values(getVisualizeGroups(viewOptions)).some(
+    Boolean,
+  );
+  const showSort = showOptions.order || showOptions.ascending;
+  const showDisplay =
+    showOptions.responsibles ||
+    showOptions.priority ||
+    showOptions.partner ||
+    showOptions.category;
+  return (
+    <div className="flex w-full shrink flex-wrap items-center justify-between gap-x-2 gap-y-2">
+      {/* Componentes no começo */}
+      {startComponents}
+
+      {(showVisualize || showSort || showDisplay) && (
+        <div className="flex flex-wrap gap-1">
+          {showVisualize && <VisualizeMenu {...menuProps} />}
+          {showSort && <SortMenu {...menuProps} />}
+          {showDisplay && <DisplayMenu {...menuProps} />}
+        </div>
       )}
 
-      {(viewOptions.showOptions.filter_category ||
-        viewOptions.showOptions.filter_phase ||
-        viewOptions.showOptions.filter_responsible) && (
+      {(showOptions.filter_category ||
+        showOptions.filter_phase ||
+        showOptions.filter_responsible) && (
         <div className="flex gap-1">
-          {viewOptions.showOptions.filter_category && (
+          {showOptions.filter_category && (
             <CategoriesCombobox
               isMulti
               onSelect={({ categories }) => {
@@ -335,7 +402,7 @@ export function ViewOptionsComponent({
               showInstagramGroup
             />
           )}
-          {viewOptions.showOptions.filter_phase && (
+          {showOptions.filter_phase && (
             <PhaseCombobox
               isMulti={true}
               onSelect={({ phases }) => {

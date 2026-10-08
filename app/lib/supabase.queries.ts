@@ -1,4 +1,5 @@
 import type { Action } from "~/types";
+import { getAllPeople, getVisiblePeople } from "~/models/people";
 import { createSupabaseBrowserClient } from "./supabase.client";
 import { format } from "date-fns";
 import type { Tables } from "types/database";
@@ -131,26 +132,11 @@ export async function fetchLeads() {
 export type Person = Tables<"people">;
 
 export async function fetchPeople() {
-  const supabase = createSupabaseBrowserClient();
-  const { data, error } = await supabase
-    .from("people")
-    .select("*")
-    .eq("visible", true)
-    .order("name", { ascending: true });
-
-  if (error) throw error;
-  return data as Person[];
+  return getVisiblePeople(createSupabaseBrowserClient());
 }
 
 export async function fetchAllPeople() {
-  const supabase = createSupabaseBrowserClient();
-  const { data, error } = await supabase
-    .from("people")
-    .select("*")
-    .order("name", { ascending: true });
-
-  if (error) throw error;
-  return data as Person[];
+  return getAllPeople(createSupabaseBrowserClient());
 }
 
 /**
@@ -169,20 +155,4 @@ export async function fetchReviewActions(ids: string[]): Promise<Action[]> {
     .order("date", { ascending: true });
   if (error) throw error;
   return data as Action[];
-}
-
-/**
- * Fetch a partner by slug for the public review page.
- */
-export async function fetchPartnerBySlug(
-  slug: string,
-): Promise<Partner | null> {
-  const supabase = createSupabaseBrowserClient();
-  const { data, error } = await supabase
-    .from("partners")
-    .select("id, title, slug, image, colors, short")
-    .eq("slug", slug)
-    .single();
-  if (error) return null;
-  return data as Partner;
 }

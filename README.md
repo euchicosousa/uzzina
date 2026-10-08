@@ -27,23 +27,18 @@ bun run dev
 
 Vite inicia normalmente em localhost:5173. O adaptador local executa as APIs da pasta api; um preview do build estático não substitui esse servidor de desenvolvimento nem as funções da Vercel.
 
-O `.env` habitual aponta para o banco de produção: operações reais podem alterar dados reais. Use staging para validações com fixtures. Para carregar o arquivo de staging sem a pré-carga de env do Bun:
-
-```sh
-node node_modules/vite/bin/vite.js --mode staging --host 127.0.0.1 --port 5180 --strictPort
-```
+`bun run dev` usa **somente o banco de staging** (`vite --mode staging`, projeto Supabase `zacrrtilppvekiyoybzn`); não há modo local apontando para produção. Entre no app com uma conta fictícia de `.env.staging-users.local`. A IA local passa pela reserva persistente `consume_ai_usage` do staging (limite diário e OpenAI reais). Não crie um `.env` com valores de produção nesta pasta: o Bun o pré-carrega e sobrepõe o modo staging.
 
 ## Arquivos de ambiente
 
 | Arquivo privado | Finalidade |
 |---|---|
-| .env | Desenvolvimento habitual; compatibilidade local de IA |
-| .env.staging.local | Projeto Supabase separado de testes, carregado com --mode staging |
-| .env.vercel-production.local | Valores para importar na Vercel UZZINA/Production; não é carregado pelo dev habitual |
-| .env.staging-users.local | Contas fictícias de teste; não importar na Vercel |
+| .env.staging.local | Tudo o que o `bun run dev` precisa (staging; inclui Cloudinary e as chaves de servidor de teste) |
+| .env.staging-users.local | Contas fictícias de teste para entrar no app local e nos scripts; não importar na Vercel |
+| .env.vercel-production.local | Cópia das variáveis de produção para importar na Vercel UZZINA/Production; não é carregado pelo dev |
 | .env.backup.local | Conexão privada para backup/operações PostgreSQL; não importar na Vercel |
 
-Todos ficam fora do Git. O arquivo de produção da pasta lead pertence a outro projeto Vercel.
+O build local (`bun run build`) não precisa de nenhum arquivo de produção; a Vercel tem as próprias variáveis. Todos ficam fora do Git. O arquivo de produção da pasta lead pertence a outro projeto Vercel.
 
 As dez variáveis do arquivo de publicação são:
 
@@ -57,7 +52,7 @@ As dez variáveis do arquivo de publicação são:
 | APP_ORIGIN | Origem exata autorizada do portal; em produção https://uzzina.cnvt.com.br |
 | AI_DAILY_LIMIT | Limite técnico opcional, padrão100 tentativas por usuário/dia UTC |
 
-O `.env` habitual não contém necessariamente todas as configurações de servidor da publicação. APIs administrativas/portal requerem suas variáveis também no ambiente local quando forem testadas. O staging tem configuração própria; Cloudinary é herdado do .env base e não representa storage de testes separado.
+O arquivo de produção não contém necessariamente todas as configurações de servidor da publicação. APIs administrativas/portal requerem suas variáveis no ambiente local (staging) quando forem testadas. O staging tem configuração própria; o Cloudinary usa as mesmas variáveis públicas da produção e não representa storage de testes separado.
 
 Variáveis VITE_ são públicas quando usadas no build. VITE_SESSION_SECRET, VITE_CLOUDINARY_API_KEY e VITE_CLOUDINARY_API_SECRET não são usadas pelo código atual e foram retiradas dos arquivos locais. Preserve cloud name/upload preset.
 
@@ -96,7 +91,7 @@ Leads vive em /Users/euchicosousa/vercel/lead e https://lead.cnvt.com.br. Suas q
 
 Scripts check-*-browser usam Playwright/Chromium externos ao lockfile do app: PLAYWRIGHT_MODULE pode indicar instalação existente e PLAYWRIGHT_EXECUTABLE o navegador instalado. PORTAL_TEST_URL indica o Vite local. Confira variáveis adicionais no script escolhido. Eles controlam HTTP e bloqueiam requisições externas não previstas; não usar a aprovação deles como comprovação de produção.
 
-`bun run test:serverless` empacota as APIs de IA/portal com o builder `@vercel/node` instalado e importa os arquivos emitidos no Node nativo, em diretório descartável. Não carrega segredos nem faz chamadas externas. `node scripts/check-serverless-runtime.cjs --staging-caption` acrescenta uma geração fictícia com Auth real, cota persistente de staging e OpenAI; usa os envs de staging e consome uma tentativa de teste nesse ambiente. Os pacotes externos vêm do node_modules instalado; isso não equivale a um deploy Vercel.
+`bun run test:serverless` empacota as APIs de IA/portal com o builder `@vercel/node` instalado e importa os arquivos emitidos no Node nativo, em diretório descartável. Não carrega segredos nem faz chamadas externas. `node scripts/check-serverless-runtime.cjs --staging-caption` acrescenta uma geração fictícia com Auth real, cota persistente de staging e OpenAI; usa os envs de staging e consome uma tentativa de teste nesse ambiente. Os pacotes externos vêm do node_modules instalado; isso não equivale a um deploy Vercel. Sem CI, ele é obrigatório antes de qualquer push que toque APIs, `server/`, arquivos importados por elas ou dependências.
 
 `bun scripts/check-action-create-staging.ts` verifica as funções reais de criação/duplicação por Supabase Auth/PostgREST no projeto de staging, incluindo negativas de escopo/responsabilidade/parceiro arquivado. Usa somente contas fictícias dos envs de staging e remove os IDs de ações retornados pelo próprio teste. A matriz SQL em `scripts/test-database-matrix.sql` também cobre INSERT RETURNING com administrador/membro e recusa de membro inativo no PostgreSQL descartável.
 

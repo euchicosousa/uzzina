@@ -30,7 +30,7 @@ UZZINA é a aplicação existente de gestão de ações da agência CNVT: React,
 - TypeScript estrito: use `unknown` com validação para dados dinâmicos; não introduza `any` nem assertions de não-nulo.
 - Use a estrutura existente para corrigir o comportamento; arquitetura adicional exige uma necessidade concreta.
 - Correções funcionais precisam de teste que falhe pelo defeito no código real. Controle a fronteira externa necessária; funções copiadas para o teste não comprovam a implementação.
-- Execute testes pertinentes, `bun run format`, `bun run lint` e `bun run typecheck`; build quando a mudança afetar execução/publicação. Formatação/ordem de classes Tailwind: Prettier com apenas `prettier-plugin-tailwindcss` (único plugin de parser; outro plugin anula a ordenação). Biome só faz lint (formatter desligado). Para documentação isolada, confira referências e diff, sem criar testes que apenas repetem texto.
+- Execute testes pertinentes, `bun run format`, `bun run lint` e `bun run typecheck`; build quando a mudança afetar execução/publicação. Formatação/ordem de classes Tailwind: Prettier com apenas `prettier-plugin-tailwindcss` (único plugin de parser; outro plugin anula a ordenação). Biome só faz lint (formatter desligado). Não há CI: antes de qualquer push que toque `api/`, `server/`, `app/lib/ai-contract.ts`, arquivos importados pelas APIs ou `package.json`/`bun.lock`, rode `bun run test:serverless` (esperado: 7 PASS). Para documentação isolada, confira referências e diff, sem criar testes que apenas repetem texto.
 - HTTP controlado no navegador verifica a interface, mas não certifica o banco/provedor. Inspeção textual de SQL não comprova autorização real. Registre esses limites.
 
 ## 3. Contratos de funcionamento
@@ -66,6 +66,7 @@ UZZINA é a aplicação existente de gestão de ações da agência CNVT: React,
 
 - `app/lib/ai-contract.ts` valida os contratos. Segredos OpenAI/Supabase ficam no servidor.
 - Imports relativos de valores nas APIs usam o caminho `.js` emitido pelo build de funções ESM. Confira o pacote com `bun run test:serverless`: Bun/Vite e testes com mocks não certificam a resolução pelo Node publicado.
+- `bun run dev` roda `vite --mode staging` e usa apenas o banco de staging (`.env.staging.local`); não existe modo local para produção e não deve haver `.env` com produção na pasta (o Bun o pré-carregaria sobre o modo).
 - Compatibilidade local só ocorre com NODE_ENV development, `UZZINA_LOCAL_AI_COMPAT=true` e sem VERCEL. O adaptador ativa a flag apenas no modo development; usa chave pública/Bearer e membro ativo, sem `consume_ai_usage`.
 - Staging/Vercel/produção usam reserva persistente via `consume_ai_usage` antes da geração. Falha da RPC retorna503/AI_QUOTA_UNAVAILABLE; limite esgotado retorna429. Sem contador em memória ou fallback por erro.
 - `ai_usage` registra usuário/dia UTC/tentativas; AI_DAILY_LIMIT padrão100, intervalo1–10000. Isso é limite técnico, distinto da proposta futura de medição por agência/modelo/token.

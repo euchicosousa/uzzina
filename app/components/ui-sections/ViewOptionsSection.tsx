@@ -54,7 +54,7 @@ export function ViewOptionsSection() {
     <div id="uzzina-view-options">
       <GallerySection>
         <GallerySectionHeader
-          description="Barra de ferramentas de opções de visualização do Uzzina para alternar layouts (linha/bloco/conteúdo), colunas, ordenações e visibilidade de metadados."
+          description="Barra de opções de visualização em três menus: Visualizar (modo, altura automática, colunas), Ordenar (critério e direção) e Exibir (metadados de cada ação). Cada grupo e cada menu só aparecem quando a tela permite; um menu sem opções não é exibido."
           title="ViewOptionsComponent"
         />
         <GallerySectionContent className="grid gap-6">
