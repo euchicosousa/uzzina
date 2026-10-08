@@ -59,7 +59,7 @@ UZZINA é a aplicação existente de gestão de ações da agência CNVT: React,
 ### Preferências e visual
 
 - HeaderMenu usa `usePreferencePersistence`/`createPreferencePersistence`: debounce250ms, uma escrita em voo, último patch por campo, falha preservada e retry explícito. Perfil também usa `update_my_preferences(p_patch)`; preserve o merge autorizado por auth.uid() e campos desconhecidos existentes.
-- Temas usam localStorage e `people.preferences`; perfil oferece preview antes de salvar. O script síncrono de `index.html` aplica tema antes do React.
+- Temas usam localStorage e `people.preferences`; perfil oferece preview antes de salvar. Preferência `light`/`dark`/`system` (`themePreference` em `useAppTheme`); `system` acompanha `prefers-color-scheme` em tempo real e `theme` é sempre o tema resolvido (claro/escuro). Perfil e menu do cabeçalho oferecem as três opções. O script síncrono de `index.html` aplica tema antes do React.
 - Cloudinary usa cloud name/upload preset no widget. Mantenha o widget montado durante uploads múltiplos; close pode preceder os últimos eventos success. API secret não pertence a variáveis VITE_.
 
 ### IA e ambientes

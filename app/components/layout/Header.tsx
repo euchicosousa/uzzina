@@ -12,16 +12,25 @@ import {
   startOfWeek,
 } from "date-fns";
 import { parseU } from "~/utils/date";
-import { BellIcon, CheckIcon } from "lucide-react";
+import {
+  BellIcon,
+  CheckIcon,
+  LaptopIcon,
+  MoonIcon,
+  SunIcon,
+} from "lucide-react";
 import { useMemo } from "react";
 import { toast } from "sonner";
 import { usePreferencePersistence } from "~/hooks/usePreferencePersistence";
 import { useAppContext } from "~/contexts/AppContext";
-import { Theme, useAppThemeContext } from "~/hooks/useAppTheme";
+import {
+  Theme,
+  type ThemePreference,
+  useAppThemeContext,
+} from "~/hooks/useAppTheme";
 import { useNotifications } from "~/hooks/useNotifications";
 import { PALLETE } from "~/lib/palettes";
 import { SIZE } from "~/lib/CONSTANTS";
-import { getThemeIcon } from "~/utils";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
@@ -332,9 +341,20 @@ export function Header({
     </div>
   );
 }
+const THEME_OPTIONS: {
+  id: ThemePreference;
+  label: string;
+  Icon: typeof SunIcon;
+}[] = [
+  { id: Theme.LIGHT, label: "Claro", Icon: SunIcon },
+  { id: Theme.DARK, label: "Escuro", Icon: MoonIcon },
+  { id: "system", label: "do sistema", Icon: LaptopIcon },
+];
+
 export const HeaderMenu = ({ person }: { person: Person }) => {
   const {
     theme,
+    themePreference,
     setTheme,
     setPrimaryColorIndex,
     primaryColorIndex,
@@ -342,7 +362,7 @@ export const HeaderMenu = ({ person }: { person: Person }) => {
     setFollowPartnerColor,
   } = useAppThemeContext();
   const { queuePreference, retry, hasError } = usePreferencePersistence(person);
-  const changeTheme = (newTheme: Theme) => {
+  const changeTheme = (newTheme: ThemePreference) => {
     setTheme(newTheme);
     queuePreference({ theme: newTheme });
   };
@@ -380,18 +400,19 @@ export const HeaderMenu = ({ person }: { person: Person }) => {
               Tentar salvar preferências
             </PrismMenuItem>
           )}
-          <PrismMenuItem
-            onAction={() =>
-              changeTheme(theme === Theme.DARK ? Theme.LIGHT : Theme.DARK)
-            }
-            textValue={theme === Theme.DARK ? "Tema claro" : "Tema escuro"}
-          >
-            <span>{theme === Theme.DARK ? "Tema claro" : "Tema escuro"}</span>
-            {getThemeIcon(
-              theme === Theme.DARK ? Theme.LIGHT : Theme.DARK,
-              "size-4 ml-auto",
-            )}
-          </PrismMenuItem>
+          {THEME_OPTIONS.map(({ id, label, Icon }) => (
+            <PrismMenuItem
+              key={id}
+              onAction={() => changeTheme(id)}
+              textValue={`Tema ${label.toLowerCase()}`}
+            >
+              <Icon className="size-4" />
+              <span>{`Tema ${label.toLowerCase()}`}</span>
+              {themePreference === id ? (
+                <CheckIcon className="ml-auto size-4 text-primary" />
+              ) : null}
+            </PrismMenuItem>
+          ))}
 
           <PrismMenuItem
             onAction={() => changeFollowPartner(!followPartnerColor)}

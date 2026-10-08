@@ -80,11 +80,7 @@ function ProfilePage() {
   // Aplica preview do tema na UI quando o usuário apenas seleciona
   const handleThemeChange = (val: "light" | "dark" | "system") => {
     setSelectedTheme(val);
-    if (val === "system") {
-      setTheme(Theme.LIGHT); // ou deixa remix-themes lidar com o do sistema
-    } else {
-      setTheme(val as Theme);
-    }
+    setTheme(val);
   };
 
   // Aplica preview da cor na UI quando o usuário apenas seleciona

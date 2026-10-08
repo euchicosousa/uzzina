@@ -81,23 +81,41 @@ export enum Theme {
   DARK = "dark",
 }
 
-const THEME_KEY = "uzzina-theme";
+/** What the user chose; "system" follows the operating system. */
+export type ThemePreference = `${Theme}` | "system";
 
-function getStoredTheme(): Theme {
-  if (typeof window === "undefined") return Theme.LIGHT;
-  const saved = localStorage.getItem(THEME_KEY);
-  if (saved === "light") return Theme.LIGHT;
-  if (saved === "dark") return Theme.DARK;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? Theme.DARK
-    : Theme.LIGHT;
+const THEME_KEY = "uzzina-theme";
+const SYSTEM_DARK_QUERY = "(prefers-color-scheme: dark)";
+
+function parseThemePreference(value: string | null): ThemePreference {
+  if (value === Theme.LIGHT || value === Theme.DARK) return value;
+  return "system";
+}
+
+function getStoredThemePreference(): ThemePreference {
+  if (typeof window === "undefined") return "system";
+  return parseThemePreference(localStorage.getItem(THEME_KEY));
+}
+
+function getSystemPrefersDark(): boolean {
+  if (typeof window === "undefined" || !window.matchMedia) return false;
+  return window.matchMedia(SYSTEM_DARK_QUERY).matches;
 }
 
 /**
  * Hook para gerenciar as cores da marca e o modo de tema (Light/Dark) do aplicativo.
  */
 export function useAppTheme() {
-  const [theme, setThemeState] = useState<Theme>(Theme.LIGHT);
+  const [themePreference, setThemePreferenceState] = useState<ThemePreference>(
+    getStoredThemePreference,
+  );
+  const [systemPrefersDark, setSystemPrefersDark] =
+    useState<boolean>(getSystemPrefersDark);
+  const isDark =
+    themePreference === "system"
+      ? systemPrefersDark
+      : themePreference === Theme.DARK;
+  const theme: Theme = isDark ? Theme.DARK : Theme.LIGHT;
   const [primaryColorIndex, setPrimaryColorIndexState] = useState<number>(0);
   const [followPartnerColor, setFollowPartnerColorState] =
     useState<boolean>(false);
@@ -107,11 +125,22 @@ export function useAppTheme() {
 
   // Lê o localStorage só no cliente, após a hidratação
   useEffect(() => {
-    setThemeState(getStoredTheme());
+    setThemePreferenceState(getStoredThemePreference());
     setPrimaryColorIndexState(getStoredIndex());
     setFollowPartnerColorState(getStoredFollowPartner());
     setBackgroundColorState(getStoredBackground());
     setCustomThemeState(getStoredCustomTheme());
+  }, []);
+
+  // Acompanha o modo claro/escuro do sistema operacional em tempo real
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const media = window.matchMedia(SYSTEM_DARK_QUERY);
+    const handleChange = (event: { matches: boolean }) =>
+      setSystemPrefersDark(event.matches);
+    setSystemPrefersDark(media.matches);
+    media.addEventListener("change", handleChange);
+    return () => media.removeEventListener("change", handleChange);
   }, []);
 
   // Aplica classe no documentElement quando o tema muda
@@ -127,8 +156,7 @@ export function useAppTheme() {
     const handleStorage = (event: StorageEvent) => {
       const { key, newValue } = event;
       if (key === THEME_KEY) {
-        if (newValue === "light") setThemeState(Theme.LIGHT);
-        else if (newValue === "dark") setThemeState(Theme.DARK);
+        setThemePreferenceState(parseThemePreference(newValue));
       } else if (key === STORAGE_KEY) {
         setPrimaryColorIndexState(
           newValue === null || newValue === "" ? 0 : Number(newValue),
@@ -152,7 +180,7 @@ export function useAppTheme() {
     };
 
     const handleLocalUpdate = () => {
-      setThemeState(getStoredTheme());
+      setThemePreferenceState(getStoredThemePreference());
       setPrimaryColorIndexState(getStoredIndex());
       setFollowPartnerColorState(getStoredFollowPartner());
       setBackgroundColorState(getStoredBackground());
@@ -167,9 +195,9 @@ export function useAppTheme() {
     };
   }, []);
 
-  const setTheme = (newTheme: Theme) => {
+  const setTheme = (newTheme: ThemePreference) => {
     localStorage.setItem(THEME_KEY, newTheme);
-    setThemeState(newTheme);
+    setThemePreferenceState(newTheme);
     window.dispatchEvent(new Event("uzzina-storage-update"));
   };
 
@@ -331,7 +359,10 @@ export function useAppTheme() {
   };
 
   return {
+    /** Resolved theme currently applied (light or dark). */
     theme,
+    /** The user's choice, including "system". */
+    themePreference,
     setTheme,
     previewTheme,
     primaryColorIndex,
