@@ -82,11 +82,11 @@ Decisões do proprietário já tomadas: manter `app/data/hooks-library.ts` (uso 
    - `bun install --frozen-lockfile`;
    - `bun run format:check`, `bun run lint`, `bun run typecheck`, `bun run typecheck:api` (T1), `bun test`, `bun run build`, `bun run test:serverless`.
 2. Se algum teste ou o build exigir variáveis `VITE_*`, use **valores fictícios** no `env:` do job (ex.: `VITE_SUPABASE_URL: http://127.0.0.1:54321`, `VITE_SUPABASE_ANON_KEY: ci-placeholder`). Nunca segredos reais, nunca GitHub Secrets nesta tarefa.
-3. Abrir um PR de teste (ou rodar com `act`) e confirmar que o workflow fica verde.
+3. Não fazer push para testar. Rode localmente, na mesma ordem e **sem `.env`** (renomeie temporariamente, se a T4 ainda não estiver feita), cada comando do workflow. O primeiro push autorizado pelo proprietário serve de prova do CI no GitHub.
 
 **Não fazer:** deploy pelo CI; usar credenciais; ligar a proteção de branch (decisão do proprietário: informe como fazer no resumo).
 
-**Aceite:** workflow verde no GitHub. Um commit com import sem `.js` ou com classes fora de ordem deixa o CI vermelho.
+**Aceite:** todos os comandos do workflow passam localmente sem `.env`; após o próximo push autorizado, o workflow fica verde no GitHub. Um commit com import sem `.js` ou com classes fora de ordem deixa o CI vermelho.
 
 ---
 
@@ -121,12 +121,12 @@ Reprova se o status divergir **ou** se houver o header `x-vercel-error`. A saíd
 **Decisão do proprietário (08/10):** o desenvolvimento local passa a usar **apenas o banco de staging** (Supabase `zacrrtilppvekiyoybzn`), separado da produção (`dfepmjcozszswocwvdpq`). Não haverá um modo local apontando para produção. Antes não havia banco de testes, por isso o dev usava produção.
 
 **Contexto técnico (ler antes de mexer):**
-- Arquivos: `.env` = produção (VITE_SUPABASE_URL/ANON_KEY, OPENAI_API_KEY e Cloudinary); `.env.staging.local` = staging completo (VITE_*, chaves de servidor, OPENAI_API_KEY, AI_DAILY_LIMIT, APP_ORIGIN; **sem Cloudinary**); `.env.staging-users.local` = e-mails/senhas das **contas fictícias de teste** (admin e dois colaboradores) para entrar no app local. Todos ignorados pelo Git.
+- Arquivos: `.env` = produção (VITE_SUPABASE_URL/ANON_KEY, OPENAI_API_KEY e Cloudinary); `.env.staging.local` = staging completo (VITE_*, chaves de servidor, OPENAI_API_KEY, AI_DAILY_LIMIT, APP_ORIGIN; **sem Cloudinary**); `.env.staging-users.local` = e-mails/senhas das **contas fictícias de teste** (admin e dois colaboradores) para entrar no app local. Também existem, **com valores de produção**: `.env.backup.local` (conexão direta ao banco para backup) e `.env.vercel-production.local` (cópia das variáveis da Vercel). O Vite não carrega nenhum dos dois; não renomear, não editar e não usar nesta tarefa. Todos ignorados pelo Git.
 - **Armadilha:** o Bun carrega o `.env` automaticamente em todo `bun run` e `bun test`, e as variáveis que já estão no processo **vencem** os arquivos que o Vite lê. Por isso, enquanto existir um `.env` com produção, `--mode staging` sozinho não garante staging quando iniciado pelo Bun (o README já avisa). A solução precisa remover essa pré-carga, não só trocar o modo.
 - No modo `staging`, o `vite.config.ts` desliga `UZZINA_LOCAL_AI_COMPAT`, e a IA local passa a usar a reserva persistente `consume_ai_usage` do staging (caminho igual ao publicado, já validado com a chave de servidor do staging). Isso é desejado.
 
 **Passos:**
-1. Renomear `.env` para `.env.production.local`. Ele deixa de ser carregado automaticamente pelo Bun e pelo `vite dev`, e o Vite só o lê em `--mode production` (build local). A Vercel não usa esse arquivo; ela tem as próprias variáveis.
+1. Renomear `.env` para `.env.production.local`. Ele deixa de ser carregado automaticamente pelo Bun e pelo `vite dev`, e o Vite só o lê em `--mode production` (build local). A Vercel não usa esse arquivo; ela tem as próprias variáveis. **Ponto de atenção:** o Bun também carrega `.env.production.local` quando `NODE_ENV=production`. Hoje nenhum script faz isso (o `test:serverless` usa ambiente controlado); não crie scripts que definam `NODE_ENV=production` sob o Bun.
 2. Acrescentar ao `.env.staging.local` as duas variáveis públicas do widget `VITE_CLOUDINARY_CLOUD_NAME` e `VITE_CLOUDINARY_UPLOAD_PRESET`, copiando os nomes e valores do arquivo de produção **sem imprimi-los** (use um script que lê de um arquivo e grava no outro). Não copie nenhuma outra chave de produção para o staging.
 3. `package.json`: `"dev": "vite --mode staging"`. Confirme que `bun run dev` serve o staging: no navegador, `import.meta.env.VITE_SUPABASE_URL` precisa conter `zacrrtilppvekiyoybzn`.
 4. Faixa fina no topo do layout `/app`, **somente** com `import.meta.env.DEV`: "Desenvolvimento local · staging". Se a URL do Supabase contiver `dfepmjcozszswocwvdpq`, mostre em vermelho (`bg-error-background`/`text-error`) "ATENÇÃO: desenvolvimento local conectado à PRODUÇÃO", como proteção contra regressão. Nunca aparece no build publicado.
@@ -143,7 +143,7 @@ Reprova se o status divergir **ou** se houver o header `x-vercel-error`. A saíd
 
 **Objetivo:** manter o contraste suíço (títulos grandes) e acabar com o texto minúsculo e com os títulos cortados.
 
-**Contexto medido:** 85% dos tamanhos são `text-xs`/`text-sm`; há 28 usos de 8–11px; mais de 13 tamanhos avulsos `text-[Npx]`. Títulos de ação usam `whitespace-nowrap` + `text-ellipsis` (`app/components/features/ActionItem.tsx:265`) e ficam com 4–6 letras no calendário.
+**Contexto medido:** 85% dos tamanhos são `text-xs`/`text-sm`; há 28 usos de 8–11px; mais de 13 tamanhos avulsos `text-[Npx]`. Títulos de ação ficam com 4–6 letras no calendário porque o `ActionItem` usa `lines = 1` por padrão (`app/components/features/ActionItem.tsx:99`) e nenhum chamador muda isso. O `ActionItemTitleInput` já suporta `lines={2}`, que aplica `line-clamp-2` (`ActionItemTitleInput.tsx:70-72`). Atenção: `ActionItem.tsx:265` é o **nome do parceiro**, não o título; não mexer.
 
 **Passos:**
 1. Em `app/tailwind.css` (`@theme`), criar tokens de texto (nomes fixos; valores iniciais):
@@ -155,15 +155,16 @@ Reprova se o status divergir **ou** se houver o header `x-vercel-error`. A saíd
    | `text-heading` | 1.25rem / leading 1.2 / medium | Subtítulos |
    | `text-body` | 0.875rem / leading 1.4 / medium | Texto padrão |
    | `text-meta` | 0.75rem / leading 1.3 / medium | Datas, contadores, rótulos de card |
-   | `text-label` | 0.75rem / uppercase / tracking-wide / medium | Rótulos em caixa alta (único tracking permitido) |
+   | `text-label` | 0.75rem / tracking-wide / medium + caixa alta | Rótulos em caixa alta (único tracking permitido) |
 
+   Implementação no Tailwind 4.3.2: tamanho, `--line-height`, `--letter-spacing` e `--font-weight` entram nas variáveis `--text-*` do `@theme`. **`uppercase` não cabe em token de tema**: crie `@utility text-label { ... text-transform: uppercase; }` no `tailwind.css` (ou use `text-label uppercase` nos pontos de uso; escolha uma das formas e use só ela).
 2. Substituir todos os `text-[8px]`, `text-[9px]`, `text-[10px]` e `text-[11px]` por `text-meta` (ou `text-label` se estiver em caixa alta). Para os outros `text-[Npx]`, usar o token mais próximo; se não houver um equivalente razoável, **listar no resumo em vez de criar um token novo**.
-3. Títulos de ação: trocar `whitespace-nowrap`/`text-ellipsis` por `line-clamp-2` em `ActionItem.tsx:265` e no título editável (`ActionItemTitleInput.tsx`), mantendo a edição funcionando.
+3. Títulos de ação: **não trocar classes**. O caminho é o prop `lines`: `ActionItem` (prop `lines`, padrão 1) → `ActionBlockVariant` (já repassa ao `ActionItemTitleInput`) e `ActionLineVariant` (**não** recebe nem repassa `lines`: acrescentar). Depois, passar `lines={2}` nos usos do Sprint (`HomeSprintView`), do Hoje (`HomeTodayView`) e do calendário (`CalendarDayCell`/`ActionContainer`, conforme quem renderiza o `ActionItem`). Mantenha a edição do título funcionando nos dois modos.
 4. Atualizar a galeria `/ui` (`app/components/ui-sections/`) com uma seção de tipografia mostrando os 6 tokens.
 
 **Não fazer:** trocar a fonte (PP Object Sans), as paletas OKLCH ou os temas; alterar `text-xs`/`text-sm` em massa nesta tarefa (fica para depois, quando os tokens estiverem aprovados); mudar espaçamento ou layout.
 
-**Aceite:** nenhum `text-[` abaixo de 12px no `app/` (`grep -rn "text-\[\(8\|9\|10\|11\)px\]" app` vazio); títulos de ação aparecem em até 2 linhas no Sprint, Hoje e calendário; `/ui` mostra a escala. Prints antes/depois em 1440px e 375px no resumo.
+**Aceite:** nenhum `text-[` abaixo de 12px no `app/` (`grep -rn "text-\[\(8\|9\|10\|11\)px\]" app` vazio); títulos de ação aparecem em até 2 linhas no Sprint, Hoje e calendário, e o nome do parceiro (`ActionItem.tsx:265`) continua em 1 linha; `/ui` mostra a escala. Prints antes/depois em 1440px e 375px no resumo.
 
 ---
 
