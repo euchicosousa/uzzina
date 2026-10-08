@@ -1,0 +1,34 @@
+{
+  "project_ref": "dfepmjcozszswocwvdpq",
+  "state": "phase1 applied in production; phase2 NOT applied, waits for new deployment",
+  "phase1": "prepare-uzzina-release.sql",
+  "phase2": "finish-uzzina-release.sql",
+  "source_sha256": {
+    "20261006000000_dash_sessions.sql": "310bd37ff66195727c6b24d20f6fb334b78403db17775c763d20d8d1686da8fd",
+    "20261006005000_auth_trigger_compatibility.sql": "9a321c438d20fcba9e766bad79c46dd9078262622c7df941538bd9e240b224d0",
+    "20261006010000_review_links.sql": "4aa94ae994b7bb47da0262b22bbb0e1e65d8a8c9617ede9ed6787b526245b67e",
+    "20261006020000_client_accounts.sql": "3ed340aa40136b47344f775d494a0d7de6f2e74cd30e8d8f54b4968b127672f4",
+    "20261006030000_database_authorization.sql": "763a2dd07895d30c063676a60828489c7888da6cfdbe6008310153f075237019",
+    "20261006040000_action_concurrency.sql": "9a7557f3e0a15f93911b2c2434cd54361f649a9ff4e8f4e2ec1aea1f481e91cd",
+    "20261007010000_ai_usage.sql": "12981323692fc683b276f279ee4f6234fb3729a8205926935e234385e345449c",
+    "20261007020000_preferences_merge.sql": "aaa686a11871928c8345cca5b08528b9e8a16d38c9cca15b441936d9c782a17e",
+    "20261007030000_ancillary_authorization.sql": "8b6b68a31d67c96ed286ccc112a4cf74b6fa98a99f869cab62be618adcb1553b",
+    "20261007232335_external_leads_authorization.sql": "23b310fef7c05d727f5037f2caa54977af1467b1d4753829ce9005f5213eed3a"
+  },
+  "bundle_sha256": {
+    "prepare-uzzina-release.sql": "7bef7ac280b482ef22419c4206be56f14e7679a3d3a844456e6c06e93e1e1863",
+    "finish-uzzina-release.sql": "1657232b8f80a87188644dc20c9568afd2a3cb23c88a066b566186d528188c20"
+  },
+  "phase1_applied_at_utc": "2026-10-08T03:39:29.164791+00:00",
+  "backup_directory": "/Users/euchicosousa/Documents/UZZINA-backups/2026-10-08_00-29-18",
+  "validation": {
+    "code_tests": 267,
+    "typecheck": "pass",
+    "lint": "pass",
+    "build": "pass",
+    "local_public_data_rehearsal": "pass",
+    "two_phase_bundle_rehearsal": "pass",
+    "production_phase1_auth_preferences_ai": "pass",
+    "phase2": "not applied"
+  }
+}
