@@ -1,6 +1,6 @@
 {
   "project_ref": "dfepmjcozszswocwvdpq",
-  "state": "phase1 applied in production; phase2 NOT applied, waits for new deployment",
+  "state": "phase1 applied; phase2 applied by owner and verified by read-only catalog; published UI checks deferred by owner",
   "phase1": "prepare-uzzina-release.sql",
   "phase2": "finish-uzzina-release.sql",
   "source_sha256": {
@@ -29,6 +29,21 @@
     "local_public_data_rehearsal": "pass",
     "two_phase_bundle_rehearsal": "pass",
     "production_phase1_auth_preferences_ai": "pass",
-    "phase2": "not applied"
-  }
+    "phase2": "read-only catalog pass; authenticated published UI pending"
+  },
+  "phase2_verification": {
+    "project_ref": "dfepmjcozszswocwvdpq",
+    "verified_at_utc": "2026-10-08T04:19:39.956065+00:00",
+    "scope": "read-only catalog; not authenticated browser validation",
+    "expected_policy_count": 20,
+    "checks": "pass",
+    "counts": {
+      "people": 4,
+      "actions": 7131,
+      "partners": 30,
+      "clients": 3,
+      "leads": 2
+    }
+  },
+  "deployment": "owner reports deployment working; no fresh browser certification"
 }

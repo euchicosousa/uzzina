@@ -86,4 +86,14 @@ As dez migrations em supabase/migrations atualizam uma estrutura existente; não
 
 Produção foi preparada em etapas, sem histórico Supabase de migrations. Consulte [CURRENT](docs/audits/CURRENT.md) e o manifest de rollout antes de aplicar SQL. Não executar db push/repair/reset indiscriminadamente. Backup lógico não inclui arquivos físicos Cloudinary/Storage ou configuração de Vercel.
 
-Para trabalhar no código, consulte [AGENTS.md](AGENTS.md). Pendências de publicação ficam em CURRENT; os relatórios antigos são referências históricas, não instruções atuais.
+Para trabalhar no código, consulte [AGENTS.md](AGENTS.md). Verificações pendentes ficam em CURRENT e ideias no TODO. Relatórios intermediários foram removidos; seu histórico versionado permanece no Git.
+
+## Operação dos ambientes e integrações
+
+Produção: projeto Supabase dfepmjcozszswocwvdpq; app em https://uzzina.cnvt.com.br. Staging: zacrrtilppvekiyoybzn, com Auth oficial e usuários fictícios em .env.staging-users.local. As chaves de servidor dos dois projetos são distintas; não copiar credenciais de produção para staging. O bootstrap específico foi aplicado no staging vazio; versões remotas estão em supabase/staging/applied-manifest.json. Não usar esse bootstrap para reconstruir produção.
+
+Leads vive em /Users/euchicosousa/vercel/lead e https://lead.cnvt.com.br. Suas quatro variáveis de servidor são SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, LEADS_ORIGIN e LEAD_SESSION_SECRET. Origin deve ser a URL exata; segredo de sessão aleatório independente da chave do banco. API POST/PATCH usa cookie HttpOnly/HMAC de24h para autorizar edição do lead correspondente, valida schema/limites e preserva respostas em falha. Chave moderna sb_secret é usada no header apikey; não enviá-la como Bearer do visitante. Origin/cookie não são proteção completa contra bots. UZZINA lê Leads apenas para membro ativo; servidor realiza gravações.
+
+Scripts check-*-browser usam Playwright/Chromium externos ao lockfile do app: PLAYWRIGHT_MODULE pode indicar instalação existente e PLAYWRIGHT_EXECUTABLE o navegador instalado. PORTAL_TEST_URL indica o Vite local. Confira variáveis adicionais no script escolhido. Eles controlam HTTP e bloqueiam requisições externas não previstas; não usar a aprovação deles como comprovação de produção.
+
+Após uma publicação, o proprietário pode conferir login/home, ações/data, preferências, IA, administração, portal/revisão, upload e Leads. Em edição simultânea, alterar a mesma ação em duas sessões e verificar conflito/preservação do rascunho; atualizar para confirmar persistência. Fazer essas verificações com registros próprios de teste e relatar passos/erro/navegador, sem segredos. O resultado vigente fica em CURRENT.
