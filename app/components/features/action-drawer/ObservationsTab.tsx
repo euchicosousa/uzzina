@@ -33,7 +33,8 @@ export function ObservationsTab({
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
   const generation = useRef(getQuerySessionGeneration(queryClient)).current;
-  const isCurrentSession = () => generation === getQuerySessionGeneration(queryClient);
+  const isCurrentSession = () =>
+    generation === getQuerySessionGeneration(queryClient);
 
   // Busca os comentários no client usando TanStack Query
   const { data: comments = [] } = useQuery({
@@ -69,7 +70,8 @@ export function ObservationsTab({
         getActionTitle(supabase, actionId),
       ]);
 
-      if (!isCurrentSession()) throw new Error("A sessão mudou. Entre novamente.");
+      if (!isCurrentSession())
+        throw new Error("A sessão mudou. Entre novamente.");
       const authorName = personName || "Agência";
       const actionTitle = title || "Ação";
 
@@ -85,7 +87,10 @@ export function ObservationsTab({
 
       if (mentions.length > 0 && isCurrentSession()) {
         const plainText = content.replace(/<[^>]*>/g, "");
-        const commentExcerpt = plainText.length > 100 ? `${plainText.substring(0, 100)}...` : plainText;
+        const commentExcerpt =
+          plainText.length > 100
+            ? `${plainText.substring(0, 100)}...`
+            : plainText;
         await createNotificationsForMentions(supabase, {
           commentId: insertedComment.id,
           actionId,
@@ -100,9 +105,13 @@ export function ObservationsTab({
     },
     onSuccess: (_, variables) => {
       if (!isCurrentSession()) return;
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.all(actionId, person.user_id) });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.comments.all(actionId, person.user_id),
+      });
       if (!variables.is_internal) {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.public(actionId, person.user_id) });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.comments.public(actionId, person.user_id),
+        });
       }
     },
     onError: (error) => {
@@ -113,13 +122,23 @@ export function ObservationsTab({
   });
 
   const updateCommentMutation = useMutation({
-    mutationFn: async ({ commentId, content }: { commentId: string; content: string }) => {
+    mutationFn: async ({
+      commentId,
+      content,
+    }: {
+      commentId: string;
+      content: string;
+    }) => {
       await updateComment(supabase, commentId, content, person.user_id, true);
     },
     onSuccess: () => {
       if (!isCurrentSession()) return;
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.all(actionId, person.user_id) });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.public(actionId, person.user_id) });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.comments.all(actionId, person.user_id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.comments.public(actionId, person.user_id),
+      });
     },
     onError: (error) => {
       if (!isCurrentSession()) return;
@@ -134,8 +153,12 @@ export function ObservationsTab({
     },
     onSuccess: () => {
       if (!isCurrentSession()) return;
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.all(actionId, person.user_id) });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.public(actionId, person.user_id) });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.comments.all(actionId, person.user_id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.comments.public(actionId, person.user_id),
+      });
     },
     onError: (error) => {
       if (!isCurrentSession()) return;
@@ -166,7 +189,7 @@ export function ObservationsTab({
     deleteCommentMutation.isPending;
 
   return (
-    <div className="flex h-full flex-col overflow-hidden bg-muted/30 w-full max-w-full">
+    <div className="flex h-full w-full max-w-full flex-col overflow-hidden bg-muted/30">
       <div className="flex-1 overflow-y-auto p-6">
         <CommentList
           comments={comments}

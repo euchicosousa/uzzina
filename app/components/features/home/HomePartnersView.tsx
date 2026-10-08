@@ -40,7 +40,7 @@ export function HomePartnersView({ actions }: { actions: Action[] }) {
     <HomeViewWrapper title="Parceiros">
       <div
         className={cn(
-          "grid  px-8 text-center text-3xl leading-none font-bold uppercase md:grid-cols-4 xl:px-16 lg:grid-cols-5 xl:grid-cols-6",
+          "grid px-8 text-center text-3xl leading-none font-bold uppercase md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 xl:px-16",
         )}
       >
         {partnersWithActionsLength.map((partner) => (

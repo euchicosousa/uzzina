@@ -23,7 +23,8 @@ export function useNotifications() {
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
   const generation = useRef(getQuerySessionGeneration(queryClient)).current;
-  const isCurrentSession = () => generation === getQuerySessionGeneration(queryClient);
+  const isCurrentSession = () =>
+    generation === getQuerySessionGeneration(queryClient);
 
   // Query das notificações com cache e polling
   const { data, isLoading, error } = useQuery<NotificationsResponse>({
@@ -47,7 +48,9 @@ export function useNotifications() {
     onSuccess: () => {
       if (!isCurrentSession()) return;
       // Invalida a query de notificações para recarregar da API
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.notifications(person.user_id) });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.notifications(person.user_id),
+      });
     },
     onError: (err: unknown) => {
       if (!isCurrentSession()) return;
@@ -63,7 +66,9 @@ export function useNotifications() {
     },
     onSuccess: () => {
       if (!isCurrentSession()) return;
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.notifications(person.user_id) });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.notifications(person.user_id),
+      });
       toast.success("Todas as notificações foram marcadas como lidas");
     },
     onError: (err: unknown) => {
@@ -78,7 +83,8 @@ export function useNotifications() {
     unreadCount: data?.unreadCount ?? 0,
     isLoading,
     error,
-    markAsRead: (notificationIds: string[]) => markReadMutation.mutate(notificationIds),
+    markAsRead: (notificationIds: string[]) =>
+      markReadMutation.mutate(notificationIds),
     isMarkingRead: markReadMutation.isPending,
     markAllAsRead: () => markAllReadMutation.mutate(),
     isMarkingAllRead: markAllReadMutation.isPending,

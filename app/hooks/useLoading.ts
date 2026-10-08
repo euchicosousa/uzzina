@@ -13,7 +13,7 @@ export function useLoading(queryKey: readonly unknown[]): boolean {
 
   const queries = queryClient.getQueryCache().findAll({ queryKey });
   const hasSuccessfulData = queries.some(
-    (query) => query.state.status === "success"
+    (query) => query.state.status === "success",
   );
 
   return fetchingCount > 0 && !hasSuccessfulData;

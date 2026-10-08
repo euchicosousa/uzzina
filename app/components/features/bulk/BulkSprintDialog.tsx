@@ -58,10 +58,10 @@ export function BulkSprintDialog({
         </PrismDialogDescription>
       </PrismDialogHeader>
 
-      <div className="p-6 max-h-80 overflow-y-auto">
+      <div className="max-h-80 overflow-y-auto p-6">
         <PrismToggleGroup
           aria-label="Seleção de Sprints"
-          className="grid grid-cols-3 gap-3 sm:grid-cols-4 w-full"
+          className="grid w-full grid-cols-3 gap-3 sm:grid-cols-4"
           onSelectionChange={(keys) => setSelectedKeys(keys as Set<Key>)}
           selectedKeys={selectedKeys}
           selectionMode="multiple"
@@ -69,7 +69,7 @@ export function BulkSprintDialog({
           {people.map((person: Person) => (
             <PrismToggleGroupItem
               key={person.user_id}
-              className="flex flex-col items-center justify-center gap-2 rounded-xl squircle p-3 h-auto min-w-0"
+              className="flex h-auto min-w-0 flex-col items-center justify-center gap-2 rounded-xl p-3 squircle"
               id={person.user_id}
             >
               <UAvatar

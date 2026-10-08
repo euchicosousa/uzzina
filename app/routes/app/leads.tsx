@@ -60,20 +60,20 @@ function AppLeads() {
   return (
     <div className="page-height flex h-full w-full overflow-hidden">
       {/* Coluna Esquerda: Lista de Leads */}
-      <div className="flex w-80 xl:w-96 shrink-0 flex-col border-r bg-popover">
-        <div className="flex flex-col gap-3 p-8 border-b">
+      <div className="flex w-80 shrink-0 flex-col border-r bg-popover xl:w-96">
+        <div className="flex flex-col gap-3 border-b p-8">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-medium tracking-tight text-foreground">
               Leads
             </h1>
-            <span className="text-xs font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+            <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground">
               {filteredLeads.length}
             </span>
           </div>
 
           <PrismInputGroup size="sm">
             <PrismInputGroupAddon align="inline-start">
-              <SearchIcon className="size-4 text-muted-foreground ml-1" />
+              <SearchIcon className="ml-1 size-4 text-muted-foreground" />
             </PrismInputGroupAddon>
             <PrismInputGroupInput
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -85,7 +85,7 @@ function AppLeads() {
           </PrismInputGroup>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
+        <div className="flex flex-1 flex-col gap-2 overflow-y-auto p-4">
           {isLoading ? (
             <div className="p-8 text-center text-sm text-muted-foreground">
               Carregando leads...
@@ -112,7 +112,7 @@ function AppLeads() {
         {selectedLead ? (
           <LeadDetail lead={selectedLead} />
         ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-2 text-muted-foreground p-8">
+          <div className="flex h-full flex-col items-center justify-center gap-2 p-8 text-muted-foreground">
             <UsersIcon className="size-12 opacity-30" />
             <p className="text-sm">
               Selecione um lead para ver o questionário completo.

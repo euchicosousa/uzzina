@@ -101,11 +101,19 @@ export function GlobalSearchCommand({
         onInputChange={(value) => setQuery(value)}
       >
         <PrismCommandInput placeholder="Faça sua busca..." />
-        {searchError && <div className="px-4 py-3 text-sm text-error" role="alert">Não foi possível buscar ações. Tente novamente.</div>}
+        {searchError && (
+          <div className="px-4 py-3 text-sm text-error" role="alert">
+            Não foi possível buscar ações. Tente novamente.
+          </div>
+        )}
         <PrismCommandList
           renderEmptyState={() => (
             <PrismCommandEmpty>
-              {isSearching ? "Buscando..." : searchError ? "Altere a busca para tentar novamente." : "Nenhum item foi encontrado."}
+              {isSearching
+                ? "Buscando..."
+                : searchError
+                  ? "Altere a busca para tentar novamente."
+                  : "Nenhum item foi encontrado."}
             </PrismCommandEmpty>
           )}
         >
@@ -130,7 +138,7 @@ export function GlobalSearchCommand({
                   size="sm"
                 />
                 <span>{partner.title}</span>
-                <span className="opacity-40 text-xs tracking-wide absolute right-4">
+                <span className="absolute right-4 text-xs tracking-wide opacity-40">
                   @{partner.slug}
                 </span>
               </PrismCommandItem>
@@ -151,7 +159,7 @@ export function GlobalSearchCommand({
               return (
                 <PrismCommandItem
                   key={action.id}
-                  className={"flex justify-between w-full h-10"}
+                  className={"flex h-10 w-full justify-between"}
                   onPress={() => {
                     setBaseAction(action);
                     onOpenChange(false);
@@ -170,11 +178,11 @@ export function GlobalSearchCommand({
                     image={partner?.image}
                     size="sm"
                   />
-                  <div className="truncate w-full">{action.title}</div>
+                  <div className="w-full truncate">{action.title}</div>
                   {action.archived && (
                     <ArchiveIcon className="size-3 opacity-50" />
                   )}
-                  <div className="opacity-40 text-xs">
+                  <div className="text-xs opacity-40">
                     {getFormattedDateTime(
                       action.date,
                       DATE_TIME_DISPLAY.DateOnly,

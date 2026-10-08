@@ -1,14 +1,31 @@
 import crypto from "node:crypto";
 import { z } from "zod";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createServiceClient, getServiceConfig } from "../server/supabase-admin.js";
+import {
+  createServiceClient,
+  getServiceConfig,
+} from "../server/supabase-admin.js";
 import { extractBearerToken } from "../server/auth.js";
 
 const MAX_ACTIONS_LIMIT = 100;
 const REVIEW_LINK_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 dias
 
-const createLinkSchema = z.object({partner_slug: z.string().trim().min(1).max(200), action_ids: z.array(z.string().min(1).max(100)).min(1).max(MAX_ACTIONS_LIMIT)}).strict();
-const revokeLinkSchema = z.object({id: z.string().min(1).max(100).optional(), token: z.string().min(1).max(256).optional()}).strict().refine(body => !!(body.id || body.token));
+const createLinkSchema = z
+  .object({
+    partner_slug: z.string().trim().min(1).max(200),
+    action_ids: z
+      .array(z.string().min(1).max(100))
+      .min(1)
+      .max(MAX_ACTIONS_LIMIT),
+  })
+  .strict();
+const revokeLinkSchema = z
+  .object({
+    id: z.string().min(1).max(100).optional(),
+    token: z.string().min(1).max(256).optional(),
+  })
+  .strict()
+  .refine((body) => !!(body.id || body.token));
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Cache-Control", "no-store");
@@ -34,7 +51,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const supabaseAdmin = createServiceClient(serviceConfig);
 
   // Validação da identidade da equipe via Supabase Auth
-  const { data: userData, error: userError } = await supabaseAdmin.auth.getUser(token);
+  const { data: userData, error: userError } =
+    await supabaseAdmin.auth.getUser(token);
   if (userError || !userData?.user) {
     return res.status(401).json({ error: "Sessão inválida ou expirada." });
   }
@@ -58,13 +76,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   };
 
   if (!person.visible) {
-    return res.status(403).json({ error: "Usuário inativo ou não autorizado." });
+    return res
+      .status(403)
+      .json({ error: "Usuário inativo ou não autorizado." });
   }
 
   // ─── POST: Criação de Link de Revisão ──────────────────────────────────────
   if (req.method === "POST") {
     const parsed = createLinkSchema.safeParse(req.body);
-    if (!parsed.success) return res.status(400).json({error: "Dados do compartilhamento inválidos."});
+    if (!parsed.success)
+      return res
+        .status(400)
+        .json({ error: "Dados do compartilhamento inválidos." });
     const body = parsed.data;
     const partnerSlug = body.partner_slug?.trim();
     const actionIds = Array.isArray(body.action_ids) ? body.action_ids : [];
@@ -78,9 +101,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (actionIds.length > MAX_ACTIONS_LIMIT) {
-      return res
-        .status(400)
-        .json({ error: `Máximo de ${MAX_ACTIONS_LIMIT} ações permitidas por link.` });
+      return res.status(400).json({
+        error: `Máximo de ${MAX_ACTIONS_LIMIT} ações permitidas por link.`,
+      });
     }
 
     // Busca o parceiro
@@ -106,8 +129,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Colaborador deve pertencer ao parceiro
-    if (!person.admin && (!Array.isArray(partner.users_ids) || !partner.users_ids.includes(person.user_id))) {
-      return res.status(403).json({ error: "Acesso não autorizado ao parceiro." });
+    if (
+      !person.admin &&
+      (!Array.isArray(partner.users_ids) ||
+        !partner.users_ids.includes(person.user_id))
+    ) {
+      return res
+        .status(403)
+        .json({ error: "Acesso não autorizado ao parceiro." });
     }
 
     // Busca as ações no banco
@@ -129,30 +158,36 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Todas as ações solicitadas devem existir
     if (fetchedActions.length !== actionIds.length) {
-      return res.status(400).json({ error: "Uma ou mais ações não foram encontradas." });
+      return res
+        .status(400)
+        .json({ error: "Uma ou mais ações não foram encontradas." });
     }
 
     // Validações por ação
     for (const act of fetchedActions) {
       if (act.archived) {
-        return res.status(400).json({ error: "Ações arquivadas não podem ser compartilhadas." });
+        return res
+          .status(400)
+          .json({ error: "Ações arquivadas não podem ser compartilhadas." });
       }
 
       if (!Array.isArray(act.partners) || !act.partners.includes(partnerSlug)) {
-        return res
-          .status(400)
-          .json({ error: "Todas as ações devem pertencer ao parceiro selecionado." });
+        return res.status(400).json({
+          error: "Todas as ações devem pertencer ao parceiro selecionado.",
+        });
       }
 
       // Colaborador só pode compartilhar se for responsável
       if (!person.admin) {
         const isResponsible =
           Array.isArray(act.responsibles) &&
-          (act.responsibles.includes(person.user_id) || act.responsibles.includes(person.id));
+          (act.responsibles.includes(person.user_id) ||
+            act.responsibles.includes(person.id));
 
         if (!isResponsible) {
           return res.status(403).json({
-            error: "Colaborador só pode compartilhar ações em que é responsável.",
+            error:
+              "Colaborador só pode compartilhar ações em que é responsável.",
           });
         }
       }
@@ -160,7 +195,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Gera token criptográfico de 32 bytes
     const rawToken = crypto.randomBytes(32).toString("hex");
-    const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(rawToken)
+      .digest("hex");
     const expiresAt = new Date(Date.now() + REVIEW_LINK_TTL_MS).toISOString();
 
     const { data: newLink, error: insertError } = await supabaseAdmin
@@ -173,11 +211,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         expires_at: expiresAt,
         revoked_at: null,
       })
-      .select("id, partner_slug, action_ids, created_by, expires_at, created_at")
+      .select(
+        "id, partner_slug, action_ids, created_by, expires_at, created_at",
+      )
       .single();
 
     if (insertError || !newLink) {
-      return res.status(503).json({ error: "Falha ao persistir link de revisão." });
+      return res
+        .status(503)
+        .json({ error: "Falha ao persistir link de revisão." });
     }
 
     const createdRecord = newLink as {
@@ -203,22 +245,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // ─── DELETE: Revogação de Link de Revisão ──────────────────────────────────
   if (req.method === "DELETE") {
-    const parsed = revokeLinkSchema.safeParse({...req.body, ...(typeof req.query.id === "string" ? {id: req.query.id} : {}), ...(typeof req.query.token === "string" ? {token: req.query.token} : {})});
-    if (!parsed.success) return res.status(400).json({error: "Dados da revogação inválidos."});
+    const parsed = revokeLinkSchema.safeParse({
+      ...req.body,
+      ...(typeof req.query.id === "string" ? { id: req.query.id } : {}),
+      ...(typeof req.query.token === "string"
+        ? { token: req.query.token }
+        : {}),
+    });
+    if (!parsed.success)
+      return res.status(400).json({ error: "Dados da revogação inválidos." });
     const body = parsed.data;
     const query = req.query ?? {};
-    const linkId = body.id || (typeof query.id === "string" ? query.id : undefined);
-    const tokenToRevoke = body.token || (typeof query.token === "string" ? query.token : undefined);
+    const linkId =
+      body.id || (typeof query.id === "string" ? query.id : undefined);
+    const tokenToRevoke =
+      body.token || (typeof query.token === "string" ? query.token : undefined);
 
     if (!linkId && !tokenToRevoke) {
-      return res.status(400).json({ error: "Identificador ou token do link é obrigatório." });
+      return res
+        .status(400)
+        .json({ error: "Identificador ou token do link é obrigatório." });
     }
 
-    let linkQuery = supabaseAdmin.from("review_links").select("id, created_by, revoked_at");
+    let linkQuery = supabaseAdmin
+      .from("review_links")
+      .select("id, created_by, revoked_at");
     if (linkId) {
       linkQuery = linkQuery.eq("id", linkId);
     } else if (tokenToRevoke) {
-      const hash = crypto.createHash("sha256").update(tokenToRevoke).digest("hex");
+      const hash = crypto
+        .createHash("sha256")
+        .update(tokenToRevoke)
+        .digest("hex");
       linkQuery = linkQuery.eq("token_hash", hash);
     }
 
@@ -235,7 +293,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Apenas admin ou o criador podem revogar
     if (!person.admin && targetLink.created_by !== person.id) {
-      return res.status(403).json({ error: "Sem permissão para revogar este link." });
+      return res
+        .status(403)
+        .json({ error: "Sem permissão para revogar este link." });
     }
 
     const nowIso = new Date().toISOString();
@@ -250,7 +310,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(404).json({ error: "Link de revisão não encontrado." });
     }
     if (updateError) {
-      return res.status(503).json({ error: "Falha ao revogar link de revisão." });
+      return res
+        .status(503)
+        .json({ error: "Falha ao revogar link de revisão." });
     }
 
     return res.status(200).json({ revoked: true, id: targetLink.id });

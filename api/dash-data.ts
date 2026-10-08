@@ -1,6 +1,9 @@
 import { parseISO } from "date-fns";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createServiceClient, getServiceConfig } from "../server/supabase-admin.js";
+import {
+  createServiceClient,
+  getServiceConfig,
+} from "../server/supabase-admin.js";
 import {
   SESSION_COOKIE_NAME,
   extractCookie,
@@ -94,7 +97,9 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
     .single();
 
   if (sessionError && sessionError.code !== "PGRST116") {
-    return res.status(503).json({ error: "Não foi possível consultar a sessão. Tente novamente." });
+    return res
+      .status(503)
+      .json({ error: "Não foi possível consultar a sessão. Tente novamente." });
   }
 
   if (sessionError || !session) {
@@ -109,31 +114,47 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
     .single();
 
   if (clientError && clientError.code !== "PGRST116") {
-    return res.status(503).json({ error: "Não foi possível consultar a sessão. Tente novamente." });
+    return res
+      .status(503)
+      .json({ error: "Não foi possível consultar a sessão. Tente novamente." });
   }
 
   if (clientError || !client) {
-    return res.status(401).json({ error: "Cliente inativo ou não encontrado." });
+    return res
+      .status(401)
+      .json({ error: "Cliente inativo ou não encontrado." });
   }
 
-  const assignedPartners = Array.isArray(client.partners) ? client.partners : [];
-  const partnerResult = assignedPartners.length ? await supabaseAdmin.from("partners")
-    .select("slug, title, short, image, colors").in("slug",assignedPartners)
-    .eq("archived",false).order("title",{ascending:true}) : {data:[],error:null};
+  const assignedPartners = Array.isArray(client.partners)
+    ? client.partners
+    : [];
+  const partnerResult = assignedPartners.length
+    ? await supabaseAdmin
+        .from("partners")
+        .select("slug, title, short, image, colors")
+        .in("slug", assignedPartners)
+        .eq("archived", false)
+        .order("title", { ascending: true })
+    : { data: [], error: null };
   if (partnerResult.error) {
-    return res.status(503).json({error:"Falha ao obter parceiros do cliente."});
+    return res
+      .status(503)
+      .json({ error: "Falha ao obter parceiros do cliente." });
   }
   const visiblePartners = partnerResult.data || [];
-  const clientPartners = visiblePartners.map(partner => partner.slug);
+  const clientPartners = visiblePartners.map((partner) => partner.slug);
   const op = typeof req.query.op === "string" ? req.query.op : undefined;
 
   // Operational scope excludes archived partners even when still assigned to the account.
-  if (op === "partners") return res.status(200).json({partners:visiblePartners});
+  if (op === "partners")
+    return res.status(200).json({ partners: visiblePartners });
 
   // 3. Operação: Ações de um parceiro autorizado com paginação completa
   if (op === "actions") {
-    const partner = typeof req.query.partner === "string" ? req.query.partner : undefined;
-    const from = typeof req.query.from === "string" ? req.query.from : undefined;
+    const partner =
+      typeof req.query.partner === "string" ? req.query.partner : undefined;
+    const from =
+      typeof req.query.from === "string" ? req.query.from : undefined;
     const to = typeof req.query.to === "string" ? req.query.to : undefined;
 
     if (!partner || !from || !to) {
@@ -147,8 +168,11 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
       return res.status(404).json({ error: "Parceiro não encontrado." });
     }
 
-    const dateFormat = /^\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})?)?$/;
-    const fromDate = dateFormat.test(from) ? parseISO(from) : new Date(Number.NaN);
+    const dateFormat =
+      /^\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})?)?$/;
+    const fromDate = dateFormat.test(from)
+      ? parseISO(from)
+      : new Date(Number.NaN);
     const toDate = dateFormat.test(to) ? parseISO(to) : new Date(Number.NaN);
 
     if (Number.isNaN(fromDate.getTime()) || Number.isNaN(toDate.getTime())) {
@@ -208,13 +232,11 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
       }
     }
 
-    return res
-      .status(200)
-      .json({
-        actions: allActions.map((a) =>
-          toPublicActionDto(a as Record<string, unknown>),
-        ),
-      });
+    return res.status(200).json({
+      actions: allActions.map((a) =>
+        toPublicActionDto(a as Record<string, unknown>),
+      ),
+    });
   }
 
   // 4. Operação: Detalhe de ação com autorização por interseção de parceiro
@@ -234,7 +256,9 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
       .single();
 
     if (error && error.code !== "PGRST116") {
-      return res.status(503).json({ error: "Não foi possível consultar a ação. Tente novamente." });
+      return res
+        .status(503)
+        .json({ error: "Não foi possível consultar a ação. Tente novamente." });
     }
     if (error || !action) {
       return res.status(404).json({ error: "Ação não encontrada." });
@@ -264,6 +288,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return await handleRequest(req, res);
   } catch {
     res.setHeader("Cache-Control", "no-store");
-    return res.status(503).json({ error: "O portal está temporariamente indisponível. Tente novamente." });
+    return res.status(503).json({
+      error: "O portal está temporariamente indisponível. Tente novamente.",
+    });
   }
 }

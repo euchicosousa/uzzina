@@ -14,8 +14,14 @@ const HANDLERS: Record<string, string> = {
 };
 
 /** Local adapter for the same serverless handlers deployed to Vercel. */
-export function createDevApiMiddleware(loadHandler: (path: string) => Promise<Handler>) {
-  return async (req: IncomingMessage, res: ServerResponse, next: (error?: unknown) => void) => {
+export function createDevApiMiddleware(
+  loadHandler: (path: string) => Promise<Handler>,
+) {
+  return async (
+    req: IncomingMessage,
+    res: ServerResponse,
+    next: (error?: unknown) => void,
+  ) => {
     const url = new URL(req.url || "/", "http://localhost");
     const path = HANDLERS[url.pathname];
     if (!path) return next();
@@ -45,16 +51,37 @@ export function createDevApiMiddleware(loadHandler: (path: string) => Promise<Ha
     const query: Record<string, string | string[]> = {};
     url.searchParams.forEach((value, key) => {
       const previous = query[key];
-      query[key] = previous === undefined ? value : [...(Array.isArray(previous) ? previous : [previous]), value];
+      query[key] =
+        previous === undefined
+          ? value
+          : [...(Array.isArray(previous) ? previous : [previous]), value];
     });
     const response = {
-      setHeader: (key: string, value: string | string[] | number) => { res.setHeader(key, value); return response; },
-      status: (code: number) => { res.statusCode = code; return response; },
-      json: (data: unknown) => { res.setHeader("Content-Type", "application/json"); res.end(JSON.stringify(data)); return response; },
+      setHeader: (key: string, value: string | string[] | number) => {
+        res.setHeader(key, value);
+        return response;
+      },
+      status: (code: number) => {
+        res.statusCode = code;
+        return response;
+      },
+      json: (data: unknown) => {
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify(data));
+        return response;
+      },
     };
     try {
       const handler = await loadHandler(path);
-      await handler({ method: req.method, body, headers: req.headers, query } as VercelRequest, response as unknown as VercelResponse);
+      await handler(
+        {
+          method: req.method,
+          body,
+          headers: req.headers,
+          query,
+        } as VercelRequest,
+        response as unknown as VercelResponse,
+      );
     } catch {
       if (!res.writableEnded) {
         res.statusCode = 503;

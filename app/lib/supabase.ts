@@ -14,7 +14,9 @@ export const createSupabaseClient = (request: Request) => {
   const headers = new Headers();
   const cookies = request.headers.get("Cookie") || "";
   const tokenMatch = cookies.match(/sb-[a-z]+-auth-token=([^;]+)/);
-  const accessToken = tokenMatch ? JSON.parse(decodeURIComponent(tokenMatch[1]))?.access_token : undefined;
+  const accessToken = tokenMatch
+    ? JSON.parse(decodeURIComponent(tokenMatch[1]))?.access_token
+    : undefined;
 
   const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
     auth: {
@@ -22,7 +24,9 @@ export const createSupabaseClient = (request: Request) => {
       autoRefreshToken: false,
     },
     global: {
-      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+      headers: accessToken
+        ? { Authorization: `Bearer ${accessToken}` }
+        : undefined,
     },
   });
 

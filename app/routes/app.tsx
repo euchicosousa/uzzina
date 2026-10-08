@@ -5,13 +5,23 @@ import {
   useNavigate,
 } from "@tanstack/react-router";
 import { ChevronUpIcon } from "lucide-react";
-import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { Session } from "@supabase/supabase-js";
 import { resetQuerySession } from "~/lib/query-client";
 const ActionFormDrawer = lazy(() =>
-  import("~/components/features/action-drawer/ActionFormDrawer").then((module) => ({
-    default: module.ActionFormDrawer,
-  })),
+  import("~/components/features/action-drawer/ActionFormDrawer").then(
+    (module) => ({
+      default: module.ActionFormDrawer,
+    }),
+  ),
 );
 import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
 import { AppBar } from "~/components/layout/AppBar";
@@ -45,19 +55,28 @@ function Dashboard() {
   const identityGeneration = useRef(0);
   const leaveGuardRef = useRef<(() => Promise<boolean>) | null>(null);
   const changingActionRef = useRef(false);
-  const registerLeaveGuard = useCallback((guard: (() => Promise<boolean>) | null) => {
-    leaveGuardRef.current = guard;
-  }, []);
+  const registerLeaveGuard = useCallback(
+    (guard: (() => Promise<boolean>) | null) => {
+      leaveGuardRef.current = guard;
+    },
+    [],
+  );
   const setBaseAction = useCallback(async (next: Action | null) => {
     if (changingActionRef.current) return;
     changingActionRef.current = true;
     const generation = identityGeneration.current;
     try {
-      if ((!leaveGuardRef.current || await leaveGuardRef.current()) && generation === identityGeneration.current) {
+      if (
+        (!leaveGuardRef.current || (await leaveGuardRef.current())) &&
+        generation === identityGeneration.current
+      ) {
         commitBaseAction(next);
-        setDrawerVersion(version => version + 1);
+        setDrawerVersion((version) => version + 1);
       }
-    } finally { if (generation === identityGeneration.current) changingActionRef.current = false; }
+    } finally {
+      if (generation === identityGeneration.current)
+        changingActionRef.current = false;
+    }
   }, []);
   const [openCmdK, setOpenCmdK] = useState(false);
   const [partnerFilters, setPartnerFilters] = useState<string[]>([]);
@@ -73,16 +92,23 @@ function Dashboard() {
 
   // Query reativa para manter os parceiros sincronizados com o cache
   const { data: reactivePartners = partners } = useQuery({
-    queryKey: QUERY_KEYS.operationalPartners(person?.user_id || "",!!person?.admin),
+    queryKey: QUERY_KEYS.operationalPartners(
+      person?.user_id || "",
+      !!person?.admin,
+    ),
     queryFn: async () => {
       const supabase = createSupabaseBrowserClient();
-      if (person?.user_id) return getOperationalPartners(supabase,person.user_id,person.admin);
+      if (person?.user_id)
+        return getOperationalPartners(supabase, person.user_id, person.admin);
       return partners;
     },
     enabled: !!person,
   });
 
-  const visiblePartners = useMemo(() => reactivePartners.filter(partner => !partner.archived),[reactivePartners]);
+  const visiblePartners = useMemo(
+    () => reactivePartners.filter((partner) => !partner.archived),
+    [reactivePartners],
+  );
 
   useEffect(() => {
     if (typeof window !== "undefined" && person) {
@@ -128,15 +154,33 @@ function Dashboard() {
       void Promise.resolve().then(async () => {
         if (disposed || generation !== identityGeneration.current) return;
         try {
-          const { data: bootstrap, error } = await supabase.rpc("get_app_bootstrap", { p_user_id: nextIdentity });
-          if (disposed || generation !== identityGeneration.current || identity !== nextIdentity) return;
-          if (error || !bootstrap) throw error || new Error("Bootstrap unavailable");
+          const { data: bootstrap, error } = await supabase.rpc(
+            "get_app_bootstrap",
+            { p_user_id: nextIdentity },
+          );
+          if (
+            disposed ||
+            generation !== identityGeneration.current ||
+            identity !== nextIdentity
+          )
+            return;
+          if (error || !bootstrap)
+            throw error || new Error("Bootstrap unavailable");
           const data = bootstrap as { person: Person; partners: Partner[] };
-          if (!data.person || data.person.user_id !== nextIdentity || !Array.isArray(data.partners)) {
+          if (
+            !data.person ||
+            data.person.user_id !== nextIdentity ||
+            !Array.isArray(data.partners)
+          ) {
             throw new Error("Bootstrap identity mismatch");
           }
-          const activePartners = data.partners.filter(partner => !partner.archived);
-          queryClient.setQueryData(QUERY_KEYS.operationalPartners(nextIdentity, data.person.admin), activePartners);
+          const activePartners = data.partners.filter(
+            (partner) => !partner.archived,
+          );
+          queryClient.setQueryData(
+            QUERY_KEYS.operationalPartners(nextIdentity, data.person.admin),
+            activePartners,
+          );
           setPerson(data.person);
           setPartners(activePartners);
           setLoading(false);
@@ -147,7 +191,9 @@ function Dashboard() {
         }
       });
     }
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       authEvents++;
       acceptSession(session);
     });
@@ -165,10 +211,17 @@ function Dashboard() {
     if (!person) return;
     const userId = person.user_id;
     function keyDownGlobal(event: KeyboardEvent) {
-      if ((event.key === "k" || event.key === "K") && (event.metaKey || event.ctrlKey)) {
+      if (
+        (event.key === "k" || event.key === "K") &&
+        (event.metaKey || event.ctrlKey)
+      ) {
         event.preventDefault();
         setOpenCmdK((prev) => !prev);
-      } else if (event.code === "KeyA" && event.altKey && (event.metaKey || event.ctrlKey)) {
+      } else if (
+        event.code === "KeyA" &&
+        event.altKey &&
+        (event.metaKey || event.ctrlKey)
+      ) {
         event.preventDefault();
         setBaseAction(
           createActionDraft({
@@ -187,7 +240,7 @@ function Dashboard() {
   }, [person, partnerFilters, setBaseAction]);
   if (loading || !person) {
     return (
-      <div className="flex h-screen w-screen flex-col items-center justify-center bg-background gap-4">
+      <div className="flex h-screen w-screen flex-col items-center justify-center gap-4 bg-background">
         <UZZINALogo className="h-24 scale-down opacity-20" model="logo" />
         {/* <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
          <p className="text-muted-foreground text-xl animate-pulse">
@@ -211,7 +264,9 @@ function Dashboard() {
     >
       <div className="flex h-screen flex-col" id="app">
         <ActionShortcutProvider>
-          <MultiSelectionProvider locationKey={JSON.stringify([location.href, partnerFilters])}>
+          <MultiSelectionProvider
+            locationKey={JSON.stringify([location.href, partnerFilters])}
+          >
             {/* HEADER */}
 
             <Header
@@ -232,7 +287,7 @@ function Dashboard() {
                 <Suspense fallback={null}>
                   <button
                     aria-label="Fechar painel de edição"
-                    className="fixed inset-0 top-16 z-10 flex w-full shrink-0 flex-col bg-black/20 dark:bg-black/80 cursor-default"
+                    className="fixed inset-0 top-16 z-10 flex w-full shrink-0 cursor-default flex-col bg-black/20 dark:bg-black/80"
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
@@ -242,12 +297,12 @@ function Dashboard() {
                     type="button"
                   />
                   <ActionFormDrawer
-                  key={`${BaseAction.id || "draft"}:${drawerVersion}`}
-                  BaseAction={BaseAction}
-                  onClose={() => commitBaseAction(null)}
-                  registerLeaveGuard={registerLeaveGuard}
-                  partnerFilters={partnerFilters}
-                />
+                    key={`${BaseAction.id || "draft"}:${drawerVersion}`}
+                    BaseAction={BaseAction}
+                    onClose={() => commitBaseAction(null)}
+                    registerLeaveGuard={registerLeaveGuard}
+                    partnerFilters={partnerFilters}
+                  />
                 </Suspense>
               ) : null}
             </div>
@@ -255,7 +310,7 @@ function Dashboard() {
             {!BaseAction && (
               <div
                 className={cn(
-                  "fixed bottom-0 left-0 right-0 z-30 flex justify-center pb-4 transition-all duration-1000 ease-in-out  pointer-events-none",
+                  "pointer-events-none fixed right-0 bottom-0 left-0 z-30 flex justify-center pb-4 transition-all duration-1000 ease-in-out",
                   isHiddenByDefault && !isAppBarVisible
                     ? "translate-y-28 opacity-0"
                     : "translate-y-0 opacity-100",
@@ -292,7 +347,7 @@ function Dashboard() {
             {isHiddenByDefault && !isAppBarVisible && (
               <button
                 aria-label="Revelar barra de navegação"
-                className="fixed bottom-0 left-1/2 -translate-x-1/2 z-40 w-32 h-10 flex justify-center items-end pb-2 cursor-pointer transition-all hover:pb-3 pointer-events-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-t-xl"
+                className="pointer-events-auto fixed bottom-0 left-1/2 z-40 flex h-10 w-32 -translate-x-1/2 cursor-pointer items-end justify-center rounded-t-xl pb-2 transition-all hover:pb-3 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 onClick={() => {
                   setIsAppBarVisible(true);
                 }}
@@ -301,7 +356,7 @@ function Dashboard() {
                 }}
                 type="button"
               >
-                <ChevronUpIcon className="size-5 text-muted-foreground opacity-60 hover:opacity-100 transition-opacity" />
+                <ChevronUpIcon className="size-5 text-muted-foreground opacity-60 transition-opacity hover:opacity-100" />
               </button>
             )}
 

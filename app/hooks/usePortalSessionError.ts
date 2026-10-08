@@ -16,5 +16,8 @@ export function usePortalSessionError(error: unknown) {
 }
 
 export function retryPortalQuery(failureCount: number, error: unknown) {
-  return !(error instanceof PortalHttpError && error.status < 500) && failureCount < 1;
+  return (
+    !(error instanceof PortalHttpError && error.status < 500) &&
+    failureCount < 1
+  );
 }

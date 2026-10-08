@@ -65,9 +65,9 @@ export function CommentInput({
     selectedMentions.includes(p.user_id),
   );
   return (
-    <div className="relative flex flex-col gap-2 bg-input dark:bg-input/30 px-5 py-4">
+    <div className="relative flex flex-col gap-2 bg-input px-5 py-4 dark:bg-input/30">
       <PrismTextarea
-        className="min-h-20 w-full p-0 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus:ring-0 focus:border-0 focus:outline-none rounded-none border-0"
+        className="min-h-20 w-full rounded-none border-0 p-0 text-sm shadow-none focus:border-0 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         disabled={isSubmitting}
@@ -86,7 +86,7 @@ export function CommentInput({
                 "h-7 gap-1.5 px-2 text-xs",
                 isInternal
                   ? "text-muted-foreground hover:text-foreground"
-                  : "border-primary/40 bg-primary/10 text-primary font-medium",
+                  : "border-primary/40 bg-primary/10 font-medium text-primary",
               )}
               onClick={() => setIsInternal(!isInternal)}
             >
@@ -106,26 +106,35 @@ export function CommentInput({
 
           <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
             <PrismButton size="xs" variant="ghost">
-              {selectedPeople.length === 0 ? <>
-                <div className="size-4 grid place-content-center rounded-full bg-background"><UserIcon className="size-3" /></div>
-                <span>Notificar responsáveis</span></> :
+              {selectedPeople.length === 0 ? (
+                <>
+                  <div className="grid size-4 place-content-center rounded-full bg-background">
+                    <UserIcon className="size-3" />
+                  </div>
+                  <span>Notificar responsáveis</span>
+                </>
+              ) : (
                 <UAvatarGroup
-                  avatars={selectedPeople.length > 0 ? selectedPeople.map((p) => ({
-                    image: p.image,
-                    id: p.user_id,
-                    fallback: p.name.substring(0, 2).toUpperCase(),
-                  })) : [{
-                    id: "responsaveis", fallback: "R"
-                  
-                  }]}
+                  avatars={
+                    selectedPeople.length > 0
+                      ? selectedPeople.map((p) => ({
+                          image: p.image,
+                          id: p.user_id,
+                          fallback: p.name.substring(0, 2).toUpperCase(),
+                        }))
+                      : [
+                          {
+                            id: "responsaveis",
+                            fallback: "R",
+                          },
+                        ]
+                  }
                   size={SIZE.xs}
                 />
-              }
-              {
-              selectedPeople.length > 0 &&
-              <span>
-                    {getFormattedPeopleName( selectedPeople ) }</span>
-              }
+              )}
+              {selectedPeople.length > 0 && (
+                <span>{getFormattedPeopleName(selectedPeople)}</span>
+              )}
             </PrismButton>
             <PrismPopover className="w-60 p-0" placement="bottom start">
               <PrismCommand>

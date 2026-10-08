@@ -1,5 +1,8 @@
 import { getQuerySessionGeneration } from "~/lib/query-client";
-import { retryPortalQuery, usePortalSessionError } from "~/hooks/usePortalSessionError";
+import {
+  retryPortalQuery,
+  usePortalSessionError,
+} from "~/hooks/usePortalSessionError";
 import { format } from "date-fns";
 import { parseU } from "~/utils/date";
 import { ptBR } from "date-fns/locale";
@@ -20,20 +23,25 @@ import { useDashContext } from "~/contexts/DashContext";
 import { toast } from "sonner";
 import { sanitizeHtml } from "~/utils/sanitize";
 import { PortalHttpError } from "~/services/portal-http";
-import { fetchDashAction, fetchDashComments, createDashComment, updateDashComment, deleteDashComment, updateDashWorkFiles, type DashActionDto } from "~/services/dash-client";
+import {
+  fetchDashAction,
+  fetchDashComments,
+  createDashComment,
+  updateDashComment,
+  deleteDashComment,
+  updateDashWorkFiles,
+  type DashActionDto,
+} from "~/services/dash-client";
 export const Route = createFileRoute("/dash/action/$id")({
   component: DashActionDetail,
 });
 function DashActionDetail() {
   const { id: actionId } = Route.useParams();
-  const {
-    clientId,
-    cloudName,
-    uploadPreset,
-  } = useDashContext();
+  const { clientId, cloudName, uploadPreset } = useDashContext();
   const queryClient = useQueryClient();
   const generation = useRef(getQuerySessionGeneration(queryClient)).current;
-  const isCurrentSession = () => generation === getQuerySessionGeneration(queryClient);
+  const isCurrentSession = () =>
+    generation === getQuerySessionGeneration(queryClient);
 
   // Query para a Ação via endpoint autorizado do servidor
   const {
@@ -57,7 +65,12 @@ function DashActionDetail() {
   usePortalSessionError(actionError);
 
   // Query para os Comentários Públicos (bloqueada até a ação ser autorizada e carregada)
-  const { data: comments = [], error: commentsError, isLoading: isLoadingComments, refetch: refetchComments } = useQuery({
+  const {
+    data: comments = [],
+    error: commentsError,
+    isLoading: isLoadingComments,
+    refetch: refetchComments,
+  } = useQuery({
     queryKey: ["dashComments", clientId, actionId || ""],
     queryFn: () => fetchDashComments(actionId),
     retry: retryPortalQuery,
@@ -66,10 +79,14 @@ function DashActionDetail() {
 
   // Mutação para Atualizar arquivos anexos (work_files)
   const updateWorkFilesMutation = useMutation({
-    scope: {id:`dash-work-files:${clientId}:${actionId}`},
-    onMutate: () => queryClient.cancelQueries({queryKey:["dashAction",clientId,actionId]}),
+    scope: { id: `dash-work-files:${clientId}:${actionId}` },
+    onMutate: () =>
+      queryClient.cancelQueries({
+        queryKey: ["dashAction", clientId, actionId],
+      }),
     mutationFn: (files: string[]) => {
-      if (!isCurrentSession()) throw new Error("A sessão mudou. Entre novamente.");
+      if (!isCurrentSession())
+        throw new Error("A sessão mudou. Entre novamente.");
       return updateDashWorkFiles(actionId, files, action?.updated_at || "");
     },
     onSuccess: ({ work_files: files, updated_at }, requested) => {
@@ -77,14 +94,17 @@ function DashActionDetail() {
       confirmedWorkFilesRef.current = files;
       setWorkFiles(files);
       if (workFilesRef.current === requested) workFilesRef.current = files;
-      queryClient.setQueryData<DashActionDto>(["dashAction", clientId, actionId], (current) =>
-        current ? { ...current, work_files: files, updated_at } : current,
+      queryClient.setQueryData<DashActionDto>(
+        ["dashAction", clientId, actionId],
+        (current) =>
+          current ? { ...current, work_files: files, updated_at } : current,
       );
       toast.success("Arquivos atualizados com sucesso!");
     },
     onError: (error, requested) => {
       if (!isCurrentSession()) return;
-      if (workFilesRef.current === requested) workFilesRef.current = confirmedWorkFilesRef.current;
+      if (workFilesRef.current === requested)
+        workFilesRef.current = confirmedWorkFilesRef.current;
       console.error("Erro ao salvar arquivos:", error);
       if (error instanceof PortalHttpError && error.status === 409) {
         toast.error("Esta ação mudou. Recarregue antes de salvar.");
@@ -96,9 +116,9 @@ function DashActionDetail() {
 
   // Mutações de Comentários
   const createCommentMutation = useMutation({
-    mutationFn: (content: string) => createDashComment(actionId,content),
-    onSuccess: (_comment,submitted) => {
-      setNewComment(current => current === submitted ? "" : current);
+    mutationFn: (content: string) => createDashComment(actionId, content),
+    onSuccess: (_comment, submitted) => {
+      setNewComment((current) => (current === submitted ? "" : current));
       if (actionId) {
         queryClient.invalidateQueries({
           queryKey: ["dashComments", clientId, actionId],
@@ -228,9 +248,9 @@ function DashActionDetail() {
   }, [action?.category, action]);
   if (isLoadingAction) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center bg-background gap-4">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-background">
         <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        <p className="text-muted-foreground text-sm font-medium animate-pulse">
+        <p className="animate-pulse text-sm font-medium text-muted-foreground">
           Carregando detalhes...
         </p>
       </div>
@@ -239,12 +259,12 @@ function DashActionDetail() {
 
   if (isActionError) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center bg-background gap-4 p-8 text-center">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-background p-8 text-center">
         <div className="rounded-full bg-destructive/10 p-3 text-destructive">
           <AlertCircleIcon className="size-8" />
         </div>
         <h2 className="text-lg font-semibold">Falha ao carregar ação</h2>
-        <p className="text-sm text-muted-foreground max-w-sm">
+        <p className="max-w-sm text-sm text-muted-foreground">
           Ocorreu um erro ao buscar os dados desta ação no servidor.
         </p>
         <div className="flex items-center gap-3">
@@ -264,8 +284,8 @@ function DashActionDetail() {
 
   if (!action) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center bg-background gap-4 p-8 text-center">
-        <p className="text-muted-foreground text-sm">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-background p-8 text-center">
+        <p className="text-sm text-muted-foreground">
           Ação não encontrada ou você não possui permissão para acessá-la.
         </p>
         <Link
@@ -373,16 +393,20 @@ function DashActionDetail() {
               {workFiles.map((url, i) => (
                 <WorkFileThumbnail
                   key={url}
-                  onRemove={updateWorkFilesMutation.isPending ? undefined : () => {
-                    const next = workFiles.filter((_, idx) => idx !== i);
-                    workFilesRef.current = next;
-                    updateWorkFilesMutation.mutate(next);
-                  }}
+                  onRemove={
+                    updateWorkFilesMutation.isPending
+                      ? undefined
+                      : () => {
+                          const next = workFiles.filter((_, idx) => idx !== i);
+                          workFilesRef.current = next;
+                          updateWorkFilesMutation.mutate(next);
+                        }
+                  }
                   url={url}
                 />
               ))}
               <CloudinaryUpload
-                className={`text-foreground/50 ${workFiles.length === 0 ? "text-md flex items-center gap-1.5 py-1.5 underline-offset-2 hover:underline" : "squircle flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary transition hover:bg-secondary/50"}`}
+                className={`text-foreground/50 ${workFiles.length === 0 ? "text-md flex items-center gap-1.5 py-1.5 underline-offset-2 hover:underline" : "flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary transition squircle hover:bg-secondary/50"}`}
                 cloudName={cloudName}
                 folder="uzzina/work"
                 multiple
@@ -397,8 +421,15 @@ function DashActionDetail() {
             </div>
           </div>
 
-          {updateWorkFilesMutation.isPending && <p role="status">Salvando anexos...</p>}
-          {updateWorkFilesMutation.isError && <p role="alert">Não foi possível salvar os anexos. A lista mostra os arquivos confirmados.</p>}
+          {updateWorkFilesMutation.isPending && (
+            <p role="status">Salvando anexos...</p>
+          )}
+          {updateWorkFilesMutation.isError && (
+            <p role="alert">
+              Não foi possível salvar os anexos. A lista mostra os arquivos
+              confirmados.
+            </p>
+          )}
           {/* Comentários */}
 
           <div className="flex flex-col gap-4">
@@ -407,40 +438,57 @@ function DashActionDetail() {
             </div>
 
             <div className="mb-4 flex min-h-0 flex-1 flex-col overflow-y-auto">
-              {isLoadingComments ? <p>Carregando observações...</p> : commentsError ? <div role="alert">
-                <p>Não foi possível carregar as observações.</p>
-                <PrismButton onClick={() => refetchComments()}>Tentar novamente</PrismButton>
-              </div> : <CommentList
-                comments={comments}
-                currentUserId={clientId}
-                emptyMessage="Nenhuma observação ainda."
-                isUser={false}
-                onDelete={(commentId) => {
-                  if (
-                    confirm("Tem certeza que deseja excluir esta observação?")
-                  ) {
-                    deleteCommentMutation.mutate(commentId);
-                  }
-                }}
-                onUpdate={(commentId, content) => {
-                  return updateCommentMutation.mutateAsync({
-                    commentId,
-                    content,
-                  });
-                }}
-              />}
+              {isLoadingComments ? (
+                <p>Carregando observações...</p>
+              ) : commentsError ? (
+                <div role="alert">
+                  <p>Não foi possível carregar as observações.</p>
+                  <PrismButton onClick={() => refetchComments()}>
+                    Tentar novamente
+                  </PrismButton>
+                </div>
+              ) : (
+                <CommentList
+                  comments={comments}
+                  currentUserId={clientId}
+                  emptyMessage="Nenhuma observação ainda."
+                  isUser={false}
+                  onDelete={(commentId) => {
+                    if (
+                      confirm("Tem certeza que deseja excluir esta observação?")
+                    ) {
+                      deleteCommentMutation.mutate(commentId);
+                    }
+                  }}
+                  onUpdate={(commentId, content) => {
+                    return updateCommentMutation.mutateAsync({
+                      commentId,
+                      content,
+                    });
+                  }}
+                />
+              )}
             </div>
 
-            {createCommentMutation.isError && <p role="alert">Não foi possível salvar a observação. Seu texto foi mantido.</p>}
-            {updateCommentMutation.isError && <p role="alert">Não foi possível salvar a alteração.</p>}
-            {deleteCommentMutation.isError && <p role="alert">Não foi possível excluir a observação.</p>}
+            {createCommentMutation.isError && (
+              <p role="alert">
+                Não foi possível salvar a observação. Seu texto foi mantido.
+              </p>
+            )}
+            {updateCommentMutation.isError && (
+              <p role="alert">Não foi possível salvar a alteração.</p>
+            )}
+            {deleteCommentMutation.isError && (
+              <p role="alert">Não foi possível excluir a observação.</p>
+            )}
             {/* Formulário de novo comentário */}
             <div className="border-t pt-4">
               <CommentInput
                 isSubmitting={createCommentMutation.isPending}
                 onChange={setNewComment}
                 onSend={(content) => {
-                  if (!content.trim() || createCommentMutation.isPending) return;
+                  if (!content.trim() || createCommentMutation.isPending)
+                    return;
                   createCommentMutation.mutate(content);
                 }}
                 value={newComment}

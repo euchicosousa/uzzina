@@ -40,10 +40,7 @@ export function RadioGroupSection() {
 
           <GalleryItem label="PrismRadioGroup Controlado">
             <div className="flex flex-col gap-3">
-              <PrismRadioGroup
-                value={selectedVal}
-                onChange={setSelectedVal}
-              >
+              <PrismRadioGroup value={selectedVal} onChange={setSelectedVal}>
                 <PrismRadio value="sprint">Visão por Sprint</PrismRadio>
                 <PrismRadio value="categories">Visão por Categorias</PrismRadio>
                 <PrismRadio value="feed">Visão por Feed</PrismRadio>

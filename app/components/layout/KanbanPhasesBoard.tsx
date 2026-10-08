@@ -29,7 +29,10 @@ export default function KanbanPhasesBoard({ actions }: { actions: Action[] }) {
   } = useKanbanDnd<string>({
     actions,
     fieldKey: "phase",
-    parseTarget: (overId) => Object.values(PHASES).some(phase => phase.slug === overId) ? overId : undefined,
+    parseTarget: (overId) =>
+      Object.values(PHASES).some((phase) => phase.slug === overId)
+        ? overId
+        : undefined,
     onDrop: async (action, newPhase) => {
       const confirmed = await handleAction({
         intent: INTENT.update_action,
@@ -123,7 +126,7 @@ const KanbanColumn = ({
   useSelectionActions(actions);
   return (
     <Droppable
-      className="flex h-[30vh] w-full  flex-col overflow-hidden"
+      className="flex h-[30vh] w-full flex-col overflow-hidden"
       id={id}
     >
       {(isOver) => {

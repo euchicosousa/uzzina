@@ -1,8 +1,5 @@
 import type { Action } from "~/types";
-import {
-  DndContext,
-  DragOverlay,
-} from "@dnd-kit/core";
+import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { format, isSameDay } from "date-fns";
 import { parseU } from "~/utils/date";
 import { useKanbanDnd } from "~/hooks/useKanbanDnd";
@@ -35,11 +32,19 @@ export function CalendarWithDnd({
   layoutOptions?: CalendarLayoutOptions;
 }) {
   const { handleAction } = useActionMutations();
-  const {activeAction, actionsWithOverrides, sensors, handleDragStart, handleDragEnd, handleDragCancel} = useKanbanDnd<string>({
+  const {
+    activeAction,
+    actionsWithOverrides,
+    sensors,
+    handleDragStart,
+    handleDragEnd,
+    handleDragCancel,
+  } = useKanbanDnd<string>({
     actions,
     fieldKey: "date",
     parseTarget: (overId, action) => {
-      if (!calendarDays.some(day => format(day, "yyyy-MM-dd") === overId)) return undefined;
+      if (!calendarDays.some((day) => format(day, "yyyy-MM-dd") === overId))
+        return undefined;
       return `${overId} ${format(parseU(action.date), "HH:mm:ss")}`;
     },
     onDrop: async (action, date) => {

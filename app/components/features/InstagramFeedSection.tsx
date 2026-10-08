@@ -36,7 +36,7 @@ export function InstagramFeedSection<
       </div>
 
       {actions.length === 0 ? (
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Nenhuma publicação programada.
         </p>
       ) : (
@@ -46,7 +46,7 @@ export function InstagramFeedSection<
               key={action.id}
               type="button"
               onClick={() => onActionClick(action)}
-              className="relative text-left w-full transition-opacity hover:opacity-60"
+              className="relative w-full text-left transition-opacity hover:opacity-60"
             >
               <Content
                 action={action}

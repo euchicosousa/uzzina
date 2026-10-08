@@ -4,7 +4,9 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {
-  console.error("Erro: SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY não estão configurados no ambiente.");
+  console.error(
+    "Erro: SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY não estão configurados no ambiente.",
+  );
   process.exit(1);
 }
 
@@ -47,7 +49,9 @@ async function run() {
     process.exit(1);
   }
 
-  console.log("Migração de fase concluída com sucesso! Todas as ações 'fazer' agora são 'estrategia'.");
+  console.log(
+    "Migração de fase concluída com sucesso! Todas as ações 'fazer' agora são 'estrategia'.",
+  );
   process.exit(0);
 }
 

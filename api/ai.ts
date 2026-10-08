@@ -1,8 +1,8 @@
-import {aiInputSchema, aiResultSchema} from "../app/lib/ai-contract.js";
+import { aiInputSchema, aiResultSchema } from "../app/lib/ai-contract.js";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
-import type {Database} from "../types/database";
+import type { Database } from "../types/database";
 // const model = "gpt-5.3-chat-latest";
 const model = "gpt-6-luna";
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -10,11 +10,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     if (req.method !== "POST") {
       res.setHeader("Allow", "POST");
-      return res.status(405).json({error: "Método não permitido."});
+      return res.status(405).json({ error: "Método não permitido." });
     }
     const header = req.headers.authorization;
-    const token = typeof header === "string" ? /^Bearer ([^\s]+)$/i.exec(header)?.[1] : undefined;
-    if (!token) return res.status(401).json({error: "Sessão inválida ou expirada. Entre novamente."});
+    const token =
+      typeof header === "string"
+        ? /^Bearer ([^\s]+)$/i.exec(header)?.[1]
+        : undefined;
+    if (!token)
+      return res
+        .status(401)
+        .json({ error: "Sessão inválida ou expirada. Entre novamente." });
 
     const localCompatibility =
       process.env.NODE_ENV === "development" &&
@@ -22,42 +28,80 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       !process.env.VERCEL;
 
     const apiKey = process.env.OPENAI_API_KEY;
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-    const publicKey = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+    const supabaseUrl =
+      process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const publicKey =
+      process.env.SUPABASE_PUBLISHABLE_KEY ||
+      process.env.VITE_SUPABASE_ANON_KEY;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const configuredLimit = process.env.AI_DAILY_LIMIT ?? "100";
     const limit = Number(configuredLimit);
 
     if (!apiKey || !supabaseUrl) {
-      return res.status(503).json({code: "AI_CONFIGURATION_MISSING", error: "A IA não está configurada neste ambiente."});
+      return res.status(503).json({
+        code: "AI_CONFIGURATION_MISSING",
+        error: "A IA não está configurada neste ambiente.",
+      });
     }
 
     if (localCompatibility) {
       if (!publicKey) {
-        return res.status(503).json({code: "AI_CONFIGURATION_MISSING", error: "A IA não está configurada neste ambiente."});
+        return res.status(503).json({
+          code: "AI_CONFIGURATION_MISSING",
+          error: "A IA não está configurada neste ambiente.",
+        });
       }
     } else {
-      if (!serviceKey || !/^\d+$/.test(configuredLimit) || !Number.isInteger(limit) || limit < 1 || limit > 10000) {
-        return res.status(503).json({code: "AI_CONFIGURATION_MISSING", error: "A IA não está configurada neste ambiente."});
+      if (
+        !serviceKey ||
+        !/^\d+$/.test(configuredLimit) ||
+        !Number.isInteger(limit) ||
+        limit < 1 ||
+        limit > 10000
+      ) {
+        return res.status(503).json({
+          code: "AI_CONFIGURATION_MISSING",
+          error: "A IA não está configurada neste ambiente.",
+        });
       }
     }
 
     let body: unknown;
     try {
-      const serialized = typeof req.body === "string" ? req.body : JSON.stringify(req.body ?? {});
+      const serialized =
+        typeof req.body === "string"
+          ? req.body
+          : JSON.stringify(req.body ?? {});
       const contentLength = Number(req.headers["content-length"] || 0);
-      if (contentLength > 65536 || Buffer.byteLength(serialized, "utf8") > 65536) {
-        return res.status(413).json({error: "A solicitação excede 64 KB."});
+      if (
+        contentLength > 65536 ||
+        Buffer.byteLength(serialized, "utf8") > 65536
+      ) {
+        return res.status(413).json({ error: "A solicitação excede 64 KB." });
       }
       body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
     } catch {
-      return res.status(400).json({error: "JSON inválido."});
+      return res.status(400).json({ error: "JSON inválido." });
     }
     const parsed = aiInputSchema.safeParse(body);
-    if (!parsed.success) return res.status(400).json({error: "Dados de IA inválidos. Confira os campos e seus limites."});
-    const {intent, title, description, partner_context, category, racional, headline, direcionamento} = parsed.data;
+    if (!parsed.success)
+      return res.status(400).json({
+        error: "Dados de IA inválidos. Confira os campos e seus limites.",
+      });
+    const {
+      intent,
+      title,
+      description,
+      partner_context,
+      category,
+      racional,
+      headline,
+      direcionamento,
+    } = parsed.data;
 
-    const clientKey = localCompatibility ? (publicKey as string) : (serviceKey as string);
+    const clientKey = localCompatibility
+      ? (publicKey as string)
+      : (serviceKey as string);
     const clientOptions: {
       auth: { persistSession: boolean; autoRefreshToken: boolean };
       global?: { headers: { Authorization: string } };
@@ -70,21 +114,58 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       };
     }
 
-    const supabase = createClient<Database>(supabaseUrl, clientKey, clientOptions);
-    const {data:{user}, error:userError} = await supabase.auth.getUser(token);
-    if (userError || !user) return res.status(401).json({error: "Sessão inválida ou expirada. Entre novamente."});
-    const {data:person, error:personError} = await supabase.from("people").select("user_id, visible").eq("user_id", user.id).single();
-    if (personError && personError.code !== "PGRST116") return res.status(503).json({error:"Não foi possível verificar seu acesso à IA. Tente novamente."});
-    if (person?.visible !== true) return res.status(403).json({error:"Seu acesso à IA está desativado. Fale com o administrador."});
+    const supabase = createClient<Database>(
+      supabaseUrl,
+      clientKey,
+      clientOptions,
+    );
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser(token);
+    if (userError || !user)
+      return res
+        .status(401)
+        .json({ error: "Sessão inválida ou expirada. Entre novamente." });
+    const { data: person, error: personError } = await supabase
+      .from("people")
+      .select("user_id, visible")
+      .eq("user_id", user.id)
+      .single();
+    if (personError && personError.code !== "PGRST116")
+      return res.status(503).json({
+        error: "Não foi possível verificar seu acesso à IA. Tente novamente.",
+      });
+    if (person?.visible !== true)
+      return res.status(403).json({
+        error: "Seu acesso à IA está desativado. Fale com o administrador.",
+      });
 
     if (!localCompatibility) {
-      const {data:allowed, error:usageError} = await supabase.rpc("consume_ai_usage", {p_user_id:user.id,p_limit:limit});
-      if (usageError || typeof allowed !== "boolean") return res.status(503).json({code:"AI_QUOTA_UNAVAILABLE", error:"Não foi possível verificar o limite de IA."});
+      const { data: allowed, error: usageError } = await supabase.rpc(
+        "consume_ai_usage",
+        { p_user_id: user.id, p_limit: limit },
+      );
+      if (usageError || typeof allowed !== "boolean")
+        return res.status(503).json({
+          code: "AI_QUOTA_UNAVAILABLE",
+          error: "Não foi possível verificar o limite de IA.",
+        });
       if (!allowed) {
         const now = new Date();
-        const reset = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1);
-        res.setHeader("Retry-After", String(Math.max(1, Math.ceil((reset - now.getTime()) / 1000))));
-        return res.status(429).json({error:"Seu limite diário de IA foi atingido. Tente novamente após a renovação às 00h UTC."});
+        const reset = Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate() + 1,
+        );
+        res.setHeader(
+          "Retry-After",
+          String(Math.max(1, Math.ceil((reset - now.getTime()) / 1000))),
+        );
+        return res.status(429).json({
+          error:
+            "Seu limite diário de IA foi atingido. Tente novamente após a renovação às 00h UTC.",
+        });
       }
     }
     failureStatus = 502;
@@ -151,8 +232,10 @@ FORMATO DE RESPOSTA (JSON):
           },
         ],
       });
-      const output: unknown = JSON.parse(response.choices[0]?.message.content ?? "{}");
-      return res.status(200).json(aiResultSchema.parse({output, intent}));
+      const output: unknown = JSON.parse(
+        response.choices[0]?.message.content ?? "{}",
+      );
+      return res.status(200).json(aiResultSchema.parse({ output, intent }));
     }
     if (intent === "ai-content") {
       const systemPrompt = `Você é o Redator-Chefe e Especialista de Conteúdo da Agência CNVT.
@@ -393,7 +476,11 @@ Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
         ],
       });
       const generatedHtml = response.choices[0]?.message.content ?? "";
-      return res.status(200).json(aiResultSchema.parse({output: {content: generatedHtml}, intent}));
+      return res
+        .status(200)
+        .json(
+          aiResultSchema.parse({ output: { content: generatedHtml }, intent }),
+        );
     }
     if (intent === "ai-hooks") {
       const response = await client.chat.completions.create({
@@ -413,8 +500,10 @@ Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
           },
         ],
       });
-      const output: unknown = JSON.parse(response.choices[0]?.message.content ?? "{}");
-      return res.status(200).json(aiResultSchema.parse({output, intent}));
+      const output: unknown = JSON.parse(
+        response.choices[0]?.message.content ?? "{}",
+      );
+      return res.status(200).json(aiResultSchema.parse({ output, intent }));
     }
     if (intent === "ai-caption") {
       const response = await client.chat.completions.create({
@@ -434,16 +523,24 @@ Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
           },
         ],
       });
-      const output: unknown = JSON.parse(response.choices[0]?.message.content ?? "{}");
-      return res.status(200).json(aiResultSchema.parse({output, intent}));
+      const output: unknown = JSON.parse(
+        response.choices[0]?.message.content ?? "{}",
+      );
+      return res.status(200).json(aiResultSchema.parse({ output, intent }));
     }
     return res.status(400).json({
       error: "Intent inválido ou não suportado.",
     });
   } catch (error: unknown) {
-    console.error("AI request failed", error instanceof Error ? error.name : "UnknownError");
-    return res.status(failureStatus).json({error: failureStatus === 502
-      ? "A IA não retornou uma resposta válida. Tente novamente."
-      : "O serviço de IA está temporariamente indisponível. Tente novamente mais tarde."});
+    console.error(
+      "AI request failed",
+      error instanceof Error ? error.name : "UnknownError",
+    );
+    return res.status(failureStatus).json({
+      error:
+        failureStatus === 502
+          ? "A IA não retornou uma resposta válida. Tente novamente."
+          : "O serviço de IA está temporariamente indisponível. Tente novamente mais tarde.",
+    });
   }
 }

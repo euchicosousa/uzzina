@@ -59,7 +59,11 @@ export async function createActionClient(
 }
 
 export async function readActionClient(id: string): Promise<Action> {
-  const {data, error} = await createSupabaseBrowserClient().from("actions").select("*").eq("id", id).single();
+  const { data, error } = await createSupabaseBrowserClient()
+    .from("actions")
+    .select("*")
+    .eq("id", id)
+    .single();
   if (error) throw error;
   if (!data) throw new Error("A ação não está disponível.");
   return data as Action;
@@ -90,7 +94,9 @@ export async function updateActionClient(
     throw new Error("ID da ação é obrigatório para atualização.");
   }
   if (!expectedUpdatedAt || typeof expectedUpdatedAt !== "string") {
-    throw new Error("expectedUpdatedAt é obrigatório para atualização de ação.");
+    throw new Error(
+      "expectedUpdatedAt é obrigatório para atualização de ação.",
+    );
   }
 
   const result = ActionPatchSchema.safeParse(actionData);
@@ -137,7 +143,10 @@ export async function updateActionClient(
 /**
  * Duplicate an action: fetch original, strip id/timestamps, insert as new.
  */
-export async function duplicateActionClient(id: string, beforeWrite?: () => void): Promise<Action> {
+export async function duplicateActionClient(
+  id: string,
+  beforeWrite?: () => void,
+): Promise<Action> {
   const supabase = createSupabaseBrowserClient();
   const { data: original, error: fetchError } = await supabase
     .from("actions")
@@ -173,8 +182,8 @@ export async function deleteActionClient(id: string): Promise<void> {
 
 export type BulkActionResult = {
   succeededIds: string[];
-  failed: {id: string; reason: string}[];
-  conflicts: {id: string}[];
+  failed: { id: string; reason: string }[];
+  conflicts: { id: string }[];
 };
 
 // Every item uses the same validated, version-checked update as individual editing.
@@ -184,31 +193,81 @@ async function updateBulkActions(
   onConfirmed?: (action: Action) => void,
   beforeWrite?: () => void,
 ): Promise<BulkActionResult> {
-  const result: BulkActionResult = {succeededIds: [], failed: [], conflicts: []};
-  const unique = [...new Map(actions.map(action => [action.id, action])).values()];
+  const result: BulkActionResult = {
+    succeededIds: [],
+    failed: [],
+    conflicts: [],
+  };
+  const unique = [
+    ...new Map(actions.map((action) => [action.id, action])).values(),
+  ];
   for (const action of unique) {
     try {
       beforeWrite?.();
-      const confirmed = await updateActionClient(action.id, patch(action), action.updated_at);
+      const confirmed = await updateActionClient(
+        action.id,
+        patch(action),
+        action.updated_at,
+      );
       result.succeededIds.push(confirmed.id);
       onConfirmed?.(confirmed);
     } catch (error) {
-      if (error instanceof ActionConflictError) result.conflicts.push({id: action.id});
-      else result.failed.push({id: action.id, reason: error instanceof Error ? error.message :
-        typeof error === "object" && error !== null && "message" in error ? String(error.message) : "Não foi possível salvar esta ação."});
+      if (error instanceof ActionConflictError)
+        result.conflicts.push({ id: action.id });
+      else
+        result.failed.push({
+          id: action.id,
+          reason:
+            error instanceof Error
+              ? error.message
+              : typeof error === "object" &&
+                  error !== null &&
+                  "message" in error
+                ? String(error.message)
+                : "Não foi possível salvar esta ação.",
+        });
     }
   }
   return result;
 }
 
-export function bulkUpdateActionsClient(actions: Action[], updates: ActionPatchInput, onConfirmed?: (action: Action) => void, beforeWrite?: () => void) {
+export function bulkUpdateActionsClient(
+  actions: Action[],
+  updates: ActionPatchInput,
+  onConfirmed?: (action: Action) => void,
+  beforeWrite?: () => void,
+) {
   return updateBulkActions(actions, () => updates, onConfirmed, beforeWrite);
 }
 
-export function bulkUpdateDateOnlyClient(actions: Action[], newDate: string, onConfirmed?: (action: Action) => void, beforeWrite?: () => void) {
-  return updateBulkActions(actions, action => ({date: `${newDate} ${format(new Date(action.date.replace(" ", "T")), "HH:mm:ss")}`}), onConfirmed, beforeWrite);
+export function bulkUpdateDateOnlyClient(
+  actions: Action[],
+  newDate: string,
+  onConfirmed?: (action: Action) => void,
+  beforeWrite?: () => void,
+) {
+  return updateBulkActions(
+    actions,
+    (action) => ({
+      date: `${newDate} ${format(new Date(action.date.replace(" ", "T")), "HH:mm:ss")}`,
+    }),
+    onConfirmed,
+    beforeWrite,
+  );
 }
 
-export function bulkUpdateTimeOnlyClient(actions: Action[], newTime: string, onConfirmed?: (action: Action) => void, beforeWrite?: () => void) {
-  return updateBulkActions(actions, action => ({date: `${format(new Date(action.date.replace(" ", "T")), "yyyy-MM-dd")} ${newTime}:00`}), onConfirmed, beforeWrite);
+export function bulkUpdateTimeOnlyClient(
+  actions: Action[],
+  newTime: string,
+  onConfirmed?: (action: Action) => void,
+  beforeWrite?: () => void,
+) {
+  return updateBulkActions(
+    actions,
+    (action) => ({
+      date: `${format(new Date(action.date.replace(" ", "T")), "yyyy-MM-dd")} ${newTime}:00`,
+    }),
+    onConfirmed,
+    beforeWrite,
+  );
 }

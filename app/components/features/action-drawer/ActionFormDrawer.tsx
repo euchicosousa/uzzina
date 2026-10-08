@@ -15,7 +15,10 @@ import { EssentialsTab } from "./EssentialsTab";
 import { InstagramTab } from "./InstagramTab";
 import { ObservationsTab } from "./ObservationsTab";
 import { ConflictComparison } from "./conflict-comparison";
-import { ActionSaveCoordinator, type CoordinatorState } from "./action-save-coordinator";
+import {
+  ActionSaveCoordinator,
+  type CoordinatorState,
+} from "./action-save-coordinator";
 import { INTENT } from "~/lib/CONSTANTS";
 import { isSocialMediaContent, parseStrategies } from "~/utils";
 import { isDefaultActionColor, toDbTimestamp } from "~/utils/uzzina-utils";
@@ -103,7 +106,6 @@ export function ActionFormDrawer({
 
   // Saved title reference — initialized from BaseAction.title, updated only on confirmed save
 
-
   const draftKeyRef = useRef(`draft-${Date.now()}`);
   const coordinatorKey = BaseAction.id || draftKeyRef.current;
   const coordinatorRef = useRef<ActionSaveCoordinator | null>(null);
@@ -112,34 +114,43 @@ export function ActionFormDrawer({
       key: coordinatorKey,
       initialAction: RawAction,
       writeFn: async (payload: Record<string, unknown>) =>
-        (await handleAction(
-          payload as unknown as SingleActionInput,
-        )) as Action | null | undefined,
+        (await handleAction(payload as unknown as SingleActionInput)) as
+          Action | null | undefined,
     });
   }
 
-  const setRawAction = useCallback((value: Action | ((prev: Action) => Action)) => {
-    const previous = rawActionRef.current;
-    const next = typeof value === "function" ? value(previous) : value;
-    const patch: Record<string, unknown> = {};
-    for (const [field, entry] of Object.entries(next)) {
-      if (JSON.stringify(entry) !== JSON.stringify((previous as unknown as Record<string, unknown>)[field])) patch[field] = entry;
-    }
-    rawActionRef.current = next;
-    coordinatorRef.current?.recordLocalChanges(patch);
-    commitRawAction(next);
-  }, []);
+  const setRawAction = useCallback(
+    (value: Action | ((prev: Action) => Action)) => {
+      const previous = rawActionRef.current;
+      const next = typeof value === "function" ? value(previous) : value;
+      const patch: Record<string, unknown> = {};
+      for (const [field, entry] of Object.entries(next)) {
+        if (
+          JSON.stringify(entry) !==
+          JSON.stringify(
+            (previous as unknown as Record<string, unknown>)[field],
+          )
+        )
+          patch[field] = entry;
+      }
+      rawActionRef.current = next;
+      coordinatorRef.current?.recordLocalChanges(patch);
+      commitRawAction(next);
+    },
+    [],
+  );
 
   const [coordinatorState, setCoordinatorState] = useState<CoordinatorState>(
-    () => coordinatorRef.current?.getState() ?? {
-      key: coordinatorKey,
-      status: BaseAction.id ? "saved" : "draft",
-      errorMessage: null,
-      savedTitle: BaseAction.title || "",
-      confirmedAction: BaseAction,
-      pendingPatch: {},
-      isDirty: false,
-    },
+    () =>
+      coordinatorRef.current?.getState() ?? {
+        key: coordinatorKey,
+        status: BaseAction.id ? "saved" : "draft",
+        errorMessage: null,
+        savedTitle: BaseAction.title || "",
+        confirmedAction: BaseAction,
+        pendingPatch: {},
+        isDirty: false,
+      },
   );
 
   useEffect(() => {
@@ -152,11 +163,17 @@ export function ActionFormDrawer({
   useEffect(() => {
     const confirmed = coordinatorState.confirmedAction;
     if (confirmed) {
-      const next = {...rawActionRef.current, ...confirmed, ...coordinatorState.pendingPatch} as Action;
+      const next = {
+        ...rawActionRef.current,
+        ...confirmed,
+        ...coordinatorState.pendingPatch,
+      } as Action;
       rawActionRef.current = next;
       commitRawAction(next);
-      if (!Object.hasOwn(coordinatorState.pendingPatch, "description")) descriptionRef.current = confirmed.description || "";
-      if (!Object.hasOwn(coordinatorState.pendingPatch, "content_description")) contentDescriptionRef.current = confirmed.content_description || "";
+      if (!Object.hasOwn(coordinatorState.pendingPatch, "description"))
+        descriptionRef.current = confirmed.description || "";
+      if (!Object.hasOwn(coordinatorState.pendingPatch, "content_description"))
+        contentDescriptionRef.current = confirmed.content_description || "";
     }
   }, [coordinatorState.confirmedAction, coordinatorState.pendingPatch]);
 
@@ -180,14 +197,20 @@ export function ActionFormDrawer({
       if (data) coordinator.recordLocalChanges(data);
       // A draft retains edits even while its INSERT is in flight.
       if (!current.id && !forceCreate) {
-        if (coordinator.getStatus() === "creating") return coordinator.scheduleUpdate();
+        if (coordinator.getStatus() === "creating")
+          return coordinator.scheduleUpdate();
         return null;
       }
       // Se for rascunho e forceCreate solicitado
       if (!current.id && forceCreate) {
-        const finalTitle = ((data?.title as string) || current.title || "").trim();
+        const finalTitle = (
+          (data?.title as string) ||
+          current.title ||
+          ""
+        ).trim();
         if (finalTitle.length < 2) return null;
-        const partnersList = (data?.partners as string[]) || current.partners || [];
+        const partnersList =
+          (data?.partners as string[]) || current.partners || [];
         if (partnersList.length === 0) return null;
 
         const payload = {
@@ -311,7 +334,7 @@ export function ActionFormDrawer({
   );
   const handleDescriptionChange = useCallback((desc: string) => {
     descriptionRef.current = desc;
-    coordinatorRef.current?.recordLocalChanges({description: desc});
+    coordinatorRef.current?.recordLocalChanges({ description: desc });
   }, []);
   const updateContentFiles = useCallback(
     (next: string[]) => {
@@ -329,14 +352,20 @@ export function ActionFormDrawer({
 
   const prepareLeave = useCallback(async (): Promise<boolean> => {
     if (aiProcessingRef.current) {
-      toast.info("Aguarde a geração terminar antes de trocar ou fechar a ação.");
+      toast.info(
+        "Aguarde a geração terminar antes de trocar ou fechar a ação.",
+      );
       return false;
     }
     const coordinator = coordinatorRef.current;
     if (!coordinator) return true;
     const current = rawActionRef.current;
     if (!current.id && (current.title || "").trim().length < 2) {
-      const hasText = Boolean(current.title?.trim() || descriptionRef.current || contentDescriptionRef.current);
+      const hasText = Boolean(
+        current.title?.trim() ||
+        descriptionRef.current ||
+        contentDescriptionRef.current,
+      );
       return !hasText || window.confirm("Descartar este rascunho incompleto?");
     }
     return coordinator.safeClose({
@@ -405,14 +434,14 @@ export function ActionFormDrawer({
   return (
     <div
       className={cn(
-        "fixed top-16 right-0 bottom-0 z-10 flex flex-col overflow-hidden border-l bg-background w-full max-w-full sm:max-w-2xl",
+        "fixed top-16 right-0 bottom-0 z-10 flex w-full max-w-full flex-col overflow-hidden border-l bg-background sm:max-w-2xl",
         view === "instagram"
           ? "lg:w-4xl lg:max-w-4xl"
           : "lg:w-2xl lg:max-w-2xl",
       )}
     >
       {RawAction.archived && (
-        <div className="flex shrink-0 items-center justify-center gap-2 bg-error-background p-2 text-sm font-medium text-error border-b">
+        <div className="flex shrink-0 items-center justify-center gap-2 border-b bg-error-background p-2 text-sm font-medium text-error">
           <ArchiveIcon className="size-4" />
           Esta ação está arquivada.
           <button
@@ -436,28 +465,32 @@ export function ActionFormDrawer({
       {coordinatorState.status === "conflict" && (
         <div
           data-testid="drawer-conflict-banner"
-          className="flex shrink-0 items-center justify-between gap-3 bg-warning-background p-3 text-sm font-medium text-warning border-b"
+          className="flex shrink-0 items-center justify-between gap-3 border-b bg-warning-background p-3 text-sm font-medium text-warning"
         >
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex min-w-0 items-center gap-2">
             <AlertTriangleIcon className="size-4 shrink-0" />
             <span className="truncate">
               {coordinatorState.errorMessage ||
                 "Esta ação foi modificada em outra sessão. Suas edições foram retidas localmente."}
             </span>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex shrink-0 items-center gap-2">
             <button
-              className="text-xs underline hover:no-underline font-semibold"
+              className="text-xs font-semibold underline hover:no-underline"
               disabled={isComparing}
               onClick={async () => {
-                const id = coordinatorRef.current?.getState().confirmedAction?.id;
+                const id =
+                  coordinatorRef.current?.getState().confirmedAction?.id;
                 if (!id || isComparing) return;
                 setIsComparing(true);
                 try {
-                  const { readActionClient } = await import("~/lib/supabase.mutations");
+                  const { readActionClient } =
+                    await import("~/lib/supabase.mutations");
                   setConflictVersion(await readActionClient(id));
                 } catch {
-                  toast.error("Não foi possível carregar a versão atual. Suas alterações continuam aqui.");
+                  toast.error(
+                    "Não foi possível carregar a versão atual. Suas alterações continuam aqui.",
+                  );
                 } finally {
                   setIsComparing(false);
                 }
@@ -473,16 +506,16 @@ export function ActionFormDrawer({
       {coordinatorState.status === "error" && (
         <div
           data-testid="drawer-error-banner"
-          className="flex shrink-0 items-center justify-between gap-3 bg-error-background p-3 text-sm font-medium text-error border-b"
+          className="flex shrink-0 items-center justify-between gap-3 border-b bg-error-background p-3 text-sm font-medium text-error"
         >
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex min-w-0 items-center gap-2">
             <AlertTriangleIcon className="size-4 shrink-0" />
             <span className="truncate">
               {coordinatorState.errorMessage || "Erro ao salvar alterações."}
             </span>
           </div>
           <button
-            className="text-xs underline hover:no-underline font-semibold shrink-0"
+            className="shrink-0 text-xs font-semibold underline hover:no-underline"
             onClick={() => {
               handleSave();
             }}
@@ -533,7 +566,7 @@ export function ActionFormDrawer({
         <div className="shrink-0">
           <button
             aria-label="Fechar"
-            className="flex cursor-pointer items-center justify-center border-b px-3 py-3 sm:p-5 text-sm font-medium"
+            className="flex cursor-pointer items-center justify-center border-b px-3 py-3 text-sm font-medium sm:p-5"
             onClick={handleSafeClose}
             type="button"
           >
@@ -542,7 +575,7 @@ export function ActionFormDrawer({
         </div>
       </div>
 
-      <div className="relative flex h-full grow flex-col overflow-hidden w-full max-w-full">
+      <div className="relative flex h-full w-full max-w-full grow flex-col overflow-hidden">
         {/* Essencial */}
         <div className="flex h-full w-full divide-x overflow-hidden bg-popover">
           {view === "essential" && (
@@ -583,7 +616,9 @@ export function ActionFormDrawer({
                 isAIProcessing={isAIProcessing}
                 onContentDescriptionChange={(html) => {
                   contentDescriptionRef.current = html;
-                  coordinatorRef.current?.recordLocalChanges({content_description: html});
+                  coordinatorRef.current?.recordLocalChanges({
+                    content_description: html,
+                  });
                 }}
                 onOpenStrategyModal={() => setIsStrategyModalOpen(true)}
                 RawAction={RawAction}
@@ -617,7 +652,7 @@ export function ActionFormDrawer({
       </div>
 
       <PrismDialog
-        className="sm:max-w-3xl lg:max-w-5xl max-h-[calc(100dvh-2rem)] overflow-y-auto"
+        className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-3xl lg:max-w-5xl"
         isOpen={conflictVersion !== null}
         isDismissable={!isResolvingConflict}
         showCloseButton={false}
@@ -628,27 +663,42 @@ export function ActionFormDrawer({
         <PrismDialogHeader>
           <PrismDialogTitle>Comparar alterações</PrismDialogTitle>
           <PrismDialogDescription>
-            Outra pessoa ou sessão modificou esta ação. Confira os campos abaixo.
-            Ao confirmar, somente suas alterações pendentes serão salvas sobre a versão carregada.
+            Outra pessoa ou sessão modificou esta ação. Confira os campos
+            abaixo. Ao confirmar, somente suas alterações pendentes serão salvas
+            sobre a versão carregada.
           </PrismDialogDescription>
         </PrismDialogHeader>
-        {conflictVersion && <ConflictComparison latest={conflictVersion} pending={coordinatorState.pendingPatch} />}
+        {conflictVersion && (
+          <ConflictComparison
+            latest={conflictVersion}
+            pending={coordinatorState.pendingPatch}
+          />
+        )}
         <PrismDialogFooter>
-          <PrismButton autoFocus isDisabled={isResolvingConflict} variant="outline" onPress={() => setConflictVersion(null)}>
+          <PrismButton
+            autoFocus
+            isDisabled={isResolvingConflict}
+            variant="outline"
+            onPress={() => setConflictVersion(null)}
+          >
             Cancelar
           </PrismButton>
-          <PrismButton isDisabled={isResolvingConflict} onPress={async () => {
-            const coordinator = coordinatorRef.current;
-            if (!coordinator || !conflictVersion || isResolvingConflict) return;
-            setIsResolvingConflict(true);
-            try {
-              coordinator.rebase(conflictVersion);
-              await coordinator.saveNow();
-              setConflictVersion(null);
-            } finally {
-              setIsResolvingConflict(false);
-            }
-          }}>
+          <PrismButton
+            isDisabled={isResolvingConflict}
+            onPress={async () => {
+              const coordinator = coordinatorRef.current;
+              if (!coordinator || !conflictVersion || isResolvingConflict)
+                return;
+              setIsResolvingConflict(true);
+              try {
+                coordinator.rebase(conflictVersion);
+                await coordinator.saveNow();
+                setConflictVersion(null);
+              } finally {
+                setIsResolvingConflict(false);
+              }
+            }}
+          >
             {isResolvingConflict ? "Salvando…" : "Salvar minhas alterações"}
           </PrismButton>
         </PrismDialogFooter>
@@ -676,7 +726,7 @@ export function ActionFormDrawer({
                 defaultExpanded={i === 0}
                 id={String(i)}
               >
-                <div className="flex items-center gap-3 w-full px-2">
+                <div className="flex w-full items-center gap-3 px-2">
                   <PrismCheckbox
                     aria-label="Selecionar estratégia"
                     isSelected={!!strat.selected}
@@ -697,9 +747,9 @@ export function ActionFormDrawer({
                       });
                     }}
                   />
-                  <PrismAccordionTrigger className="overflow-hidden flex-1 px-2 min-w-0">
+                  <PrismAccordionTrigger className="min-w-0 flex-1 overflow-hidden px-2">
                     <div
-                      className="text-lg tracking-tight font-normal truncate flex-1 min-w-0"
+                      className="min-w-0 flex-1 truncate text-lg font-normal tracking-tight"
                       title={strat.headline}
                     >
                       {strat.headline}

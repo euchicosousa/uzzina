@@ -80,7 +80,7 @@ function Sheet({
         data-slot="sheet-content"
       >
         <SheetPrimitive
-          className="[display:inherit] h-full max-h-[inherit] [flex-direction:inherit] gap-inherit outline-none"
+          className="gap-inherit [display:inherit] h-full max-h-[inherit] [flex-direction:inherit] outline-none"
           data-slot="sheet"
         >
           {children}

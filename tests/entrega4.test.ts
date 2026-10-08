@@ -2,7 +2,10 @@ import { describe, expect, it } from "bun:test";
 
 describe("Entrega 4 - Item 4.9: Instagram: Stories vs Feed [24]", () => {
   it("diferencia conteúdo de rede social de inclusão na grade do feed", () => {
-    const { isInstagramFeed, isSocialMediaContent } = require("~/utils/validation");
+    const {
+      isInstagramFeed,
+      isSocialMediaContent,
+    } = require("~/utils/validation");
 
     // "stories" é conteúdo de rede social, portanto tem aba de edição no Instagram
     expect(isSocialMediaContent("stories")).toBe(true);
@@ -20,5 +23,4 @@ describe("Entrega 4 - Item 4.9: Instagram: Stories vs Feed [24]", () => {
     // Quando solicitado explicitamente (ex: filtro unificado), inclui stories
     expect(isInstagramFeed("stories", true)).toBe(true);
   });
-
 });

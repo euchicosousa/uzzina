@@ -29,7 +29,9 @@ export interface DashActionDto {
  */
 export async function fetchDashPartners(): Promise<DashPartnerDto[]> {
   const data = await portalRequest<{ partners: DashPartnerDto[] }>(
-    "/api/dash-data?op=partners", { method: "GET" }, "Falha ao buscar parceiros",
+    "/api/dash-data?op=partners",
+    { method: "GET" },
+    "Falha ao buscar parceiros",
   );
   return data.partners || [];
 }
@@ -51,7 +53,9 @@ export async function fetchDashActions(params: {
   });
 
   const data = await portalRequest<{ actions: DashActionDto[] }>(
-    `/api/dash-data?${query.toString()}`, { method: "GET" }, "Falha ao consultar ações",
+    `/api/dash-data?${query.toString()}`,
+    { method: "GET" },
+    "Falha ao consultar ações",
   );
   return data.actions || [];
 }
@@ -60,7 +64,9 @@ export async function fetchDashActions(params: {
  * Busca os detalhes de uma ação pelo ID com validação de escopo de parceiro no servidor.
  * Retorna null se não encontrada ou não pertencente ao cliente da sessão.
  */
-export async function fetchDashAction(id: string): Promise<DashActionDto | null> {
+export async function fetchDashAction(
+  id: string,
+): Promise<DashActionDto | null> {
   const query = new URLSearchParams({
     op: "action",
     id,
@@ -68,7 +74,9 @@ export async function fetchDashAction(id: string): Promise<DashActionDto | null>
 
   try {
     const data = await portalRequest<{ action: DashActionDto }>(
-      `/api/dash-data?${query.toString()}`, { method: "GET" }, "Falha ao obter detalhe da ação",
+      `/api/dash-data?${query.toString()}`,
+      { method: "GET" },
+      "Falha ao obter detalhe da ação",
     );
     return data.action || null;
   } catch (error) {
@@ -77,36 +85,75 @@ export async function fetchDashAction(id: string): Promise<DashActionDto | null>
   }
 }
 
-export type DashCommentDto = import("~/models/action_comments").AugmentedComment;
+export type DashCommentDto =
+  import("~/models/action_comments").AugmentedComment;
 
-export async function fetchDashComments(actionId: string): Promise<DashCommentDto[]> {
-  const query = new URLSearchParams({op:"comments",actionId});
-  const data = await portalRequest<{comments:DashCommentDto[]}>(`/api/dash-action?${query}`,{method:"GET"},"Falha ao obter observações");
-  if (!Array.isArray(data.comments)) throw new PortalHttpError(503,"O servidor não confirmou as observações.");
+export async function fetchDashComments(
+  actionId: string,
+): Promise<DashCommentDto[]> {
+  const query = new URLSearchParams({ op: "comments", actionId });
+  const data = await portalRequest<{ comments: DashCommentDto[] }>(
+    `/api/dash-action?${query}`,
+    { method: "GET" },
+    "Falha ao obter observações",
+  );
+  if (!Array.isArray(data.comments))
+    throw new PortalHttpError(503, "O servidor não confirmou as observações.");
   return data.comments;
 }
 
-export async function createDashComment(actionId:string,content:string): Promise<DashCommentDto> {
-  const data = await portalRequest<{comment:DashCommentDto}>("/api/dash-action?op=comment",{
-    method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({actionId,content}),
-  },"Falha ao salvar observação");
-  if (!data.comment?.id) throw new PortalHttpError(503,"O servidor não confirmou a observação.");
+export async function createDashComment(
+  actionId: string,
+  content: string,
+): Promise<DashCommentDto> {
+  const data = await portalRequest<{ comment: DashCommentDto }>(
+    "/api/dash-action?op=comment",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ actionId, content }),
+    },
+    "Falha ao salvar observação",
+  );
+  if (!data.comment?.id)
+    throw new PortalHttpError(503, "O servidor não confirmou a observação.");
   return data.comment;
 }
 
-export async function updateDashComment(actionId:string,commentId:string,content:string): Promise<DashCommentDto> {
-  const data = await portalRequest<{comment:DashCommentDto}>("/api/dash-action?op=comment",{
-    method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({actionId,commentId,content}),
-  },"Falha ao atualizar observação");
-  if (data.comment?.id !== commentId) throw new PortalHttpError(503,"O servidor não confirmou a alteração.");
+export async function updateDashComment(
+  actionId: string,
+  commentId: string,
+  content: string,
+): Promise<DashCommentDto> {
+  const data = await portalRequest<{ comment: DashCommentDto }>(
+    "/api/dash-action?op=comment",
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ actionId, commentId, content }),
+    },
+    "Falha ao atualizar observação",
+  );
+  if (data.comment?.id !== commentId)
+    throw new PortalHttpError(503, "O servidor não confirmou a alteração.");
   return data.comment;
 }
 
-export async function deleteDashComment(actionId:string,commentId:string): Promise<void> {
-  const data = await portalRequest<{deletedId:string}>("/api/dash-action?op=comment",{
-    method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({actionId,commentId}),
-  },"Falha ao excluir observação");
-  if (data.deletedId !== commentId) throw new PortalHttpError(503,"O servidor não confirmou a exclusão.");
+export async function deleteDashComment(
+  actionId: string,
+  commentId: string,
+): Promise<void> {
+  const data = await portalRequest<{ deletedId: string }>(
+    "/api/dash-action?op=comment",
+    {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ actionId, commentId }),
+    },
+    "Falha ao excluir observação",
+  );
+  if (data.deletedId !== commentId)
+    throw new PortalHttpError(503, "O servidor não confirmou a exclusão.");
 }
 
 export async function updateDashWorkFiles(
@@ -119,12 +166,20 @@ export async function updateDashWorkFiles(
     work_files: string[];
     count: number;
     updated_at: string;
-  }>("/api/dash-action?op=work-files", {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ actionId, work_files, expectedUpdatedAt }),
-  }, "Falha ao salvar anexos");
-  if (data.actionId !== actionId || !Array.isArray(data.work_files) || data.count !== data.work_files.length)
+  }>(
+    "/api/dash-action?op=work-files",
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ actionId, work_files, expectedUpdatedAt }),
+    },
+    "Falha ao salvar anexos",
+  );
+  if (
+    data.actionId !== actionId ||
+    !Array.isArray(data.work_files) ||
+    data.count !== data.work_files.length
+  )
     throw new PortalHttpError(503, "O servidor não confirmou os anexos.");
   return { work_files: data.work_files, updated_at: data.updated_at };
 }

@@ -37,25 +37,40 @@ export function MultiSelectionProvider({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const [views, setViews] = useState<Record<string, Action[]>>({});
-  const registerActions = useCallback((key: string, actions: Action[] | null) => {
-    setViews(previous => {
-      const next = {...previous};
-      if (actions) next[key] = actions;
-      else delete next[key];
-      return next;
-    });
-  }, []);
-  const eligibleActions = useMemo(() => [...new Map(Object.values(views).flat().map(action => [action.id, action])).values()], [views]);
-  const eligibleIds = useMemo(() => new Set(eligibleActions.map(action => action.id)), [eligibleActions]);
-  const effectiveIds = selectedIds.filter(id => eligibleIds.has(id));
+  const registerActions = useCallback(
+    (key: string, actions: Action[] | null) => {
+      setViews((previous) => {
+        const next = { ...previous };
+        if (actions) next[key] = actions;
+        else delete next[key];
+        return next;
+      });
+    },
+    [],
+  );
+  const eligibleActions = useMemo(
+    () => [
+      ...new Map(
+        Object.values(views)
+          .flat()
+          .map((action) => [action.id, action]),
+      ).values(),
+    ],
+    [views],
+  );
+  const eligibleIds = useMemo(
+    () => new Set(eligibleActions.map((action) => action.id)),
+    [eligibleActions],
+  );
+  const effectiveIds = selectedIds.filter((id) => eligibleIds.has(id));
   useEffect(() => {
-    setSelectedIds(previous => {
-      const next = previous.filter(id => eligibleIds.has(id));
+    setSelectedIds((previous) => {
+      const next = previous.filter((id) => eligibleIds.has(id));
       return next.length === previous.length ? previous : next;
     });
   }, [eligibleIds]);
   const removeSelected = useCallback((ids: string[]) => {
-    setSelectedIds(previous => previous.filter(id => !ids.includes(id)));
+    setSelectedIds((previous) => previous.filter((id) => !ids.includes(id)));
   }, []);
 
   // Limpa seleção ao mudar de rota ou contexto
@@ -83,21 +98,28 @@ export function MultiSelectionProvider({
     });
   }, []);
 
-  const toggleSelection = useCallback((id: string, override?: boolean) => {
-    if (!eligibleIds.has(id)) return;
-    setSelectedIds((prev) => {
-      if (override !== undefined) {
-        if (override && !prev.includes(id)) return [...prev, id];
-        if (!override && prev.includes(id)) return prev.filter((i) => i !== id);
-        return prev;
-      }
-      return prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id];
-    });
-  }, [eligibleIds]);
+  const toggleSelection = useCallback(
+    (id: string, override?: boolean) => {
+      if (!eligibleIds.has(id)) return;
+      setSelectedIds((prev) => {
+        if (override !== undefined) {
+          if (override && !prev.includes(id)) return [...prev, id];
+          if (!override && prev.includes(id))
+            return prev.filter((i) => i !== id);
+          return prev;
+        }
+        return prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id];
+      });
+    },
+    [eligibleIds],
+  );
 
-  const selectAll = useCallback((ids: string[]) => {
-    setSelectedIds([...new Set(ids)].filter(id => eligibleIds.has(id)));
-  }, [eligibleIds]);
+  const selectAll = useCallback(
+    (ids: string[]) => {
+      setSelectedIds([...new Set(ids)].filter((id) => eligibleIds.has(id)));
+    },
+    [eligibleIds],
+  );
 
   const clearSelection = useCallback(() => {
     setSelectedIds([]);
@@ -106,9 +128,19 @@ export function MultiSelectionProvider({
   // Cmd+A shortcut to select all visible actions
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (isSelectionMode && (e.metaKey || e.ctrlKey) && (e.key === "a" || e.key === "A")) {
+      if (
+        isSelectionMode &&
+        (e.metaKey || e.ctrlKey) &&
+        (e.key === "a" || e.key === "A")
+      ) {
         const target = e.target;
-        if (target instanceof Element && target.closest('input, textarea, [contenteditable]:not([contenteditable="false"])')) return;
+        if (
+          target instanceof Element &&
+          target.closest(
+            'input, textarea, [contenteditable]:not([contenteditable="false"])',
+          )
+        )
+          return;
         e.preventDefault();
         setSelectedIds([...eligibleIds]);
       }
@@ -167,17 +199,22 @@ export function useSelectionActions(actions: Action[]) {
   const register = context?.registerActions;
   const latestActions = useRef(actions);
   latestActions.current = actions;
-  const signature = JSON.stringify(actions.map(action => [action.id, action.updated_at, action.date]));
+  const signature = JSON.stringify(
+    actions.map((action) => [action.id, action.updated_at, action.date]),
+  );
   const previousSignature = useRef<string | null>(null);
   useEffect(() => {
     if (previousSignature.current === signature) return;
     previousSignature.current = signature;
     register?.(key, latestActions.current);
   }, [register, key, signature]);
-  useEffect(() => () => {
-    previousSignature.current = null;
-    register?.(key, null);
-  }, [register, key]);
+  useEffect(
+    () => () => {
+      previousSignature.current = null;
+      register?.(key, null);
+    },
+    [register, key],
+  );
 }
 
 export function useSelectionContext(key: string) {

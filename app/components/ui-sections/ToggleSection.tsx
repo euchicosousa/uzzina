@@ -40,22 +40,22 @@ export function ToggleSection() {
                 onChange={setIsStarred}
               >
                 {isStarred ? (
-                  <StarIcon className="size-5 text-amber-500 fill-amber-500" />
+                  <StarIcon className="size-5 fill-amber-500 text-amber-500" />
                 ) : (
                   <StarIcon className="size-5" />
                 )}
                 <span>{isStarred ? "Favoritado" : "Favoritar"}</span>
               </PrismToggle>
 
-              <PrismToggle variant="outline">
-                Modo Rascunho
-              </PrismToggle>
+              <PrismToggle variant="outline">Modo Rascunho</PrismToggle>
             </div>
           </GalleryItem>
 
           <GalleryItem label="ToggleGroup (Seleção Múltipla / Formatação de Texto)">
             <PrismToggleGroup
-              onSelectionChange={(keys) => setTextFormatting(Array.from(keys as Set<string>))}
+              onSelectionChange={(keys) =>
+                setTextFormatting(Array.from(keys as Set<string>))
+              }
               selectedKeys={textFormatting}
               selectionMode="multiple"
             >

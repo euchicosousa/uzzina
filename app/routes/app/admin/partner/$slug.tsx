@@ -55,7 +55,8 @@ function AdminPartnerEditPage() {
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
   const generation = useRef(getQuerySessionGeneration(queryClient)).current;
-  const isCurrentSession = () => generation === getQuerySessionGeneration(queryClient);
+  const isCurrentSession = () =>
+    generation === getQuerySessionGeneration(queryClient);
 
   const isNew = slug === "new" || !slug;
 
@@ -78,7 +79,9 @@ function AdminPartnerEditPage() {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [brandColors, setBrandColors] = useState<string[]>([]);
 
-  const [sowValue, setSowValue] = useState<"marketing" | "socialmedia" | "demand">("marketing");
+  const [sowValue, setSowValue] = useState<
+    "marketing" | "socialmedia" | "demand"
+  >("marketing");
   const [_justSaved, setJustSaved] = useState(false);
   const [savingFields, setSavingFields] = useState<Set<string>>(new Set());
 
@@ -139,7 +142,8 @@ function AdminPartnerEditPage() {
       }
       if (isNew) {
         const slugTaken = await partnerSlugExists(supabase, partnerData.slug);
-        if (!isCurrentSession()) throw new Error("A sessão mudou. Entre novamente.");
+        if (!isCurrentSession())
+          throw new Error("A sessão mudou. Entre novamente.");
         if (slugTaken) {
           throw new Error("Este slug já está em uso.");
         }
@@ -249,15 +253,14 @@ function AdminPartnerEditPage() {
       instagram_caption_tail:
         (updates.instagram_caption_tail as string) || null,
       sow: stateRef.current.sow,
-
     };
     await saveMutation.mutateAsync(partnerData);
   };
   if (isLoadingPartner) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-background gap-4">
+      <div className="flex h-full w-full items-center justify-center gap-4 bg-background">
         <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        <p className="text-muted-foreground text-sm font-medium animate-pulse">
+        <p className="animate-pulse text-sm font-medium text-muted-foreground">
           Carregando parceiro...
         </p>
       </div>
@@ -323,7 +326,7 @@ function AdminPartnerEditPage() {
             </div>
           </CloudinaryUpload>
 
-          <div className="flex-1 flex flex-col gap-1">
+          <div className="flex flex-1 flex-col gap-1">
             <div className="flex items-center justify-between gap-2 font-medium">
               <span>Logotipo da Marca</span>
               {savingFields.has("image") && <ULoader />}
@@ -413,7 +416,7 @@ function AdminPartnerEditPage() {
               type="hidden"
               value={contextValue}
             />
-            <div className="min-h-25 bg-input/50 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm rounded-2xl overflow-hidden">
+            <div className="min-h-25 overflow-hidden rounded-2xl bg-input/50 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
               <Suspense
                 fallback={
                   <div className="h-full w-full animate-pulse bg-muted" />
@@ -442,9 +445,7 @@ function AdminPartnerEditPage() {
               {savingFields.has("voice") && <ULoader />}
             </div>
             <input id="voice" name="voice" type="hidden" value={voiceValue} />
-            <div className="min-h-25 bg-input/50 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm rounded-2xl overflow-hidden">
-              
-              
+            <div className="min-h-25 overflow-hidden rounded-2xl bg-input/50 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
               <Suspense
                 fallback={
                   <div className="h-full w-full animate-pulse bg-muted" />
@@ -525,16 +526,15 @@ function AdminPartnerEditPage() {
             />
           </div>
 
-
           <div className="flex items-end justify-between gap-4">
-            <div className="grid gap-4 w-full">
+            <div className="grid w-full gap-4">
               <div className="flex items-center justify-between gap-2 font-medium">
                 <span>Escopo de Trabalho (SOW)</span>
                 {savingFields.has("sow") && <ULoader />}
               </div>
-              <div className="flex items-center gap-4 w-full">
+              <div className="flex w-full items-center gap-4">
                 <input name="sow" type="hidden" value={sowValue} />
-                <PrismToggleGroup className={"grid grid-cols-3 w-full"}>
+                <PrismToggleGroup className={"grid w-full grid-cols-3"}>
                   {sow_list.map((item) => (
                     <PrismToggleGroupItem
                       key={item.id}
@@ -550,7 +550,7 @@ function AdminPartnerEditPage() {
                         }
                       }}
                     >
-                      <div className="flex flex-col gap-2 items-center justify-center">
+                      <div className="flex flex-col items-center justify-center gap-2">
                         {item.icon}
                         <div className="text-lg">{item.title}</div>
                       </div>

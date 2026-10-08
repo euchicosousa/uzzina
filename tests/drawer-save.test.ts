@@ -228,7 +228,12 @@ describe("Ticket 09: ActionSaveCoordinator e Gaveta Recuperável", () => {
     );
 
     // Usuário clica em 'Sobrescrever' (forceSave)
-    coordinator.rebase(makeFakeAction({id: "act-conflict-1", updated_at: "2026-10-06T10:09:00Z"}));
+    coordinator.rebase(
+      makeFakeAction({
+        id: "act-conflict-1",
+        updated_at: "2026-10-06T10:09:00Z",
+      }),
+    );
     const forced = await coordinator.saveNow();
     expect(forced).toBe(true);
     expect(attempt).toBe(2);
@@ -312,20 +317,39 @@ describe("Ticket 09: ActionSaveCoordinator e Gaveta Recuperável", () => {
   });
 });
 
-
 describe("Drawer save regressions", () => {
   it("opening and closing an unchanged action sends no write", async () => {
     let writes = 0;
     const action = makeFakeAction();
-    const coordinator = new ActionSaveCoordinator({key: action.id, initialAction: action, writeFn: async () => {writes++; return action;}});
-    expect(await coordinator.safeClose({title: action.title, description: action.description || "", content_description: action.content_description || ""})).toBe(true);
+    const coordinator = new ActionSaveCoordinator({
+      key: action.id,
+      initialAction: action,
+      writeFn: async () => {
+        writes++;
+        return action;
+      },
+    });
+    expect(
+      await coordinator.safeClose({
+        title: action.title,
+        description: action.description || "",
+        content_description: action.content_description || "",
+      }),
+    ).toBe(true);
     expect(writes).toBe(0);
   });
   it("manual create includes the complete initial draft", async () => {
     let sent: Record<string, unknown> = {};
-    const draft = makeFakeAction({id: undefined});
-    const coordinator = new ActionSaveCoordinator({key: "draft", initialAction: draft, writeFn: async payload => {sent = payload; return makeFakeAction();}});
-    expect(await coordinator.saveNow({title: "Manual title"})).toBe(true);
+    const draft = makeFakeAction({ id: undefined });
+    const coordinator = new ActionSaveCoordinator({
+      key: "draft",
+      initialAction: draft,
+      writeFn: async (payload) => {
+        sent = payload;
+        return makeFakeAction();
+      },
+    });
+    expect(await coordinator.saveNow({ title: "Manual title" })).toBe(true);
     expect(sent.date).toBe("2026-10-06 10:00:00");
     expect(sent.partners).toEqual(["cnvt"]);
     expect(sent.category).toBe("post");
@@ -335,16 +359,23 @@ describe("Drawer save regressions", () => {
 it("A to B to A ignores an earlier generation without clearing the current save", async () => {
   const responses: ((action: Action) => void)[] = [];
   const initial = makeFakeAction();
-  const coordinator = new ActionSaveCoordinator({key: initial.id, initialAction: initial, writeFn: async () => new Promise<Action>(resolve => responses.push(resolve))});
-  const oldSave = coordinator.scheduleUpdate({title: "Old A"});
-  coordinator.reset(makeFakeAction({id: "B"}));
+  const coordinator = new ActionSaveCoordinator({
+    key: initial.id,
+    initialAction: initial,
+    writeFn: async () =>
+      new Promise<Action>((resolve) => responses.push(resolve)),
+  });
+  const oldSave = coordinator.scheduleUpdate({ title: "Old A" });
+  coordinator.reset(makeFakeAction({ id: "B" }));
   coordinator.reset(initial);
-  const currentSave = coordinator.scheduleUpdate({title: "Current A"});
-  responses[0]?.(makeFakeAction({title: "Old A"}));
+  const currentSave = coordinator.scheduleUpdate({ title: "Current A" });
+  responses[0]?.(makeFakeAction({ title: "Old A" }));
   await oldSave;
   expect(coordinator.getStatus()).toBe("saving");
   expect(coordinator.getState().pendingPatch.title).toBe("Current A");
-  responses[1]?.(makeFakeAction({title: "Current A", updated_at: "2026-10-06T10:12:00Z"}));
+  responses[1]?.(
+    makeFakeAction({ title: "Current A", updated_at: "2026-10-06T10:12:00Z" }),
+  );
   await currentSave;
   expect(coordinator.getState().savedTitle).toBe("Current A");
 });

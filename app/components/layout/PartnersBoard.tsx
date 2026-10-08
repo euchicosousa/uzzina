@@ -12,11 +12,11 @@ import { UAvatar } from "../uzzina/UAvatar";
 export function PartnersBoard({
   actions,
   isLoading,
-  currentDay
+  currentDay,
 }: {
   actions: Action[];
-    isLoading?: boolean;
-  currentDay: Date
+  isLoading?: boolean;
+  currentDay: Date;
 }) {
   const { partners } = useAppContext();
 
@@ -56,11 +56,11 @@ export function PartnersBoard({
 function PartnerColumn({
   partner,
   actions,
-  currentDay
+  currentDay,
 }: {
   partner: Partner;
   actions: Action[];
-  currentDay:Date
+  currentDay: Date;
 }) {
   const { person, setBaseAction } = useAppContext();
   return (

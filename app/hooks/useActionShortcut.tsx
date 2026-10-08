@@ -22,7 +22,7 @@ import { useAppContext } from "~/contexts/AppContext";
 const ActionShortcutContext = createContext<{
   setEditingId: (id: string | null) => void;
 }>({
-  setEditingId: () => { },
+  setEditingId: () => {},
 });
 
 export function ActionShortcutProvider({ children }: { children: ReactNode }) {
@@ -92,14 +92,12 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
       const code = event.code;
 
       const updateDate = (newDate: Date) =>
-        handleActionRef.current(
-          {
-            intent: INTENT.update_action,
-            id: action.id,
-            expectedUpdatedAt: action.updated_at,
-            ...getNewDateForAction(action, newDate),
-          }
-        );
+        handleActionRef.current({
+          intent: INTENT.update_action,
+          id: action.id,
+          expectedUpdatedAt: action.updated_at,
+          ...getNewDateForAction(action, newDate),
+        });
 
       const getFutureTarget = () => {
         const str = action.date;
@@ -114,7 +112,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
           }
           return acc;
         },
-        {}
+        {},
       );
 
       const targetPhase = phases[code];
@@ -122,9 +120,10 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
       if (event.shiftKey) {
         if (code === "KeyD") {
           event.preventDefault();
-          handleActionRef.current(
-            { id: action.id, intent: INTENT.duplicate_action }
-          );
+          handleActionRef.current({
+            id: action.id,
+            intent: INTENT.duplicate_action,
+          });
         } else if (code === "KeyH") {
           event.preventDefault();
           updateDate(addMinutes(new Date(), 30));
@@ -149,27 +148,45 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
         } else if (code === "KeyU") {
           event.preventDefault();
           const currentPerson = personRef.current;
-          if (currentPerson) toggleSprintActionRef.current(action, currentPerson.user_id);
+          if (currentPerson)
+            toggleSprintActionRef.current(action, currentPerson.user_id);
         } else if (code === "KeyX") {
           event.preventDefault();
           try {
-            const archived = await handleActionRef.current({intent: INTENT.update_action, id: action.id, expectedUpdatedAt: action.updated_at, archived: true});
+            const archived = await handleActionRef.current({
+              intent: INTENT.update_action,
+              id: action.id,
+              expectedUpdatedAt: action.updated_at,
+              archived: true,
+            });
             if (!archived) return;
-            toast("Ação arquivada", {action: {label: "Desfazer", onClick: () => {
-              void handleActionRef.current({intent: INTENT.update_action, id: archived.id, expectedUpdatedAt: archived.updated_at, archived: false}).catch(() => {});
-            }}});
-          } catch { /* The mutation displays the error. */ }
+            toast("Ação arquivada", {
+              action: {
+                label: "Desfazer",
+                onClick: () => {
+                  void handleActionRef
+                    .current({
+                      intent: INTENT.update_action,
+                      id: archived.id,
+                      expectedUpdatedAt: archived.updated_at,
+                      archived: false,
+                    })
+                    .catch(() => {});
+                },
+              },
+            });
+          } catch {
+            /* The mutation displays the error. */
+          }
         }
       } else if (targetPhase) {
         event.preventDefault();
-        handleActionRef.current(
-          {
-            intent: INTENT.update_action,
-            id: action.id,
-            expectedUpdatedAt: action.updated_at,
-            phase: targetPhase,
-          }
-        );
+        handleActionRef.current({
+          intent: INTENT.update_action,
+          id: action.id,
+          expectedUpdatedAt: action.updated_at,
+          phase: targetPhase,
+        });
       }
     }
 
@@ -178,10 +195,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
     return () => document.removeEventListener("keydown", keyDown, true);
   }, [queryClient]);
 
-  const contextValue = useMemo(
-    () => ({ setEditingId }),
-    [setEditingId],
-  );
+  const contextValue = useMemo(() => ({ setEditingId }), [setEditingId]);
 
   return (
     <ActionShortcutContext.Provider value={contextValue}>
@@ -194,5 +208,3 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
 export function useActionShortcutContext() {
   return use(ActionShortcutContext);
 }
-
-

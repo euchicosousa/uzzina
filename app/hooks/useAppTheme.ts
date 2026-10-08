@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, createContext, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  createContext,
+  useContext,
+} from "react";
 import { PALLETE } from "~/lib/palettes";
 import { applyPaletteVars } from "~/lib/palette-vars";
 import { hexToOklch } from "~/utils/color";
@@ -95,7 +101,8 @@ export function useAppTheme() {
   const [primaryColorIndex, setPrimaryColorIndexState] = useState<number>(0);
   const [followPartnerColor, setFollowPartnerColorState] =
     useState<boolean>(false);
-  const [backgroundColor, setBackgroundColorState] = useState<string>("#FFFFFF");
+  const [backgroundColor, setBackgroundColorState] =
+    useState<string>("#FFFFFF");
   const [customTheme, setCustomThemeState] = useState<CustomTheme | null>(null);
 
   // Lê o localStorage só no cliente, após a hidratação
@@ -203,7 +210,6 @@ export function useAppTheme() {
     return PALLETE[primaryColorIndex] || PALLETE[0];
   }, [primaryColorIndex, customTheme]);
 
-
   // Aplica as variáveis CSS
   useEffect(() => {
     const root = document.documentElement;
@@ -271,14 +277,38 @@ export function useAppTheme() {
     const dbg = hexToOklch(theme.dark.bgHex);
     const dfg = hexToOklch(theme.dark.fgHex);
 
-    localStorage.setItem("uzzina-custom-light-primary-oklch", `${lp.h} ${lp.c} ${lp.l}`);
-    localStorage.setItem("uzzina-custom-light-primary-fg-oklch", `${lpfg.h} ${lpfg.c} ${lpfg.l}`);
-    localStorage.setItem("uzzina-custom-light-bg-oklch", `${lbg.h} ${lbg.c} ${lbg.l}`);
-    localStorage.setItem("uzzina-custom-light-fg-oklch", `${lfg.h} ${lfg.c} ${lfg.l}`);
-    localStorage.setItem("uzzina-custom-dark-primary-oklch", `${dp.h} ${dp.c} ${dp.l}`);
-    localStorage.setItem("uzzina-custom-dark-primary-fg-oklch", `${dpfg.h} ${dpfg.c} ${dpfg.l}`);
-    localStorage.setItem("uzzina-custom-dark-bg-oklch", `${dbg.h} ${dbg.c} ${dbg.l}`);
-    localStorage.setItem("uzzina-custom-dark-fg-oklch", `${dfg.h} ${dfg.c} ${dfg.l}`);
+    localStorage.setItem(
+      "uzzina-custom-light-primary-oklch",
+      `${lp.h} ${lp.c} ${lp.l}`,
+    );
+    localStorage.setItem(
+      "uzzina-custom-light-primary-fg-oklch",
+      `${lpfg.h} ${lpfg.c} ${lpfg.l}`,
+    );
+    localStorage.setItem(
+      "uzzina-custom-light-bg-oklch",
+      `${lbg.h} ${lbg.c} ${lbg.l}`,
+    );
+    localStorage.setItem(
+      "uzzina-custom-light-fg-oklch",
+      `${lfg.h} ${lfg.c} ${lfg.l}`,
+    );
+    localStorage.setItem(
+      "uzzina-custom-dark-primary-oklch",
+      `${dp.h} ${dp.c} ${dp.l}`,
+    );
+    localStorage.setItem(
+      "uzzina-custom-dark-primary-fg-oklch",
+      `${dpfg.h} ${dpfg.c} ${dpfg.l}`,
+    );
+    localStorage.setItem(
+      "uzzina-custom-dark-bg-oklch",
+      `${dbg.h} ${dbg.c} ${dbg.l}`,
+    );
+    localStorage.setItem(
+      "uzzina-custom-dark-fg-oklch",
+      `${dfg.h} ${dfg.c} ${dfg.l}`,
+    );
 
     setCustomThemeState(theme);
     window.dispatchEvent(new Event("uzzina-storage-update"));
@@ -319,23 +349,31 @@ export function useAppTheme() {
     setCustomTheme,
     previewCustomTheme,
     // Aliases para manter compatibilidade
-    colorIndex: primaryColorIndex, 
+    colorIndex: primaryColorIndex,
     setColorIndex: setPrimaryColorIndex,
-    restoreAccentColors: restoreThemeColors
+    restoreAccentColors: restoreThemeColors,
   };
 }
 
-const AppThemeContext = createContext<ReturnType<typeof useAppTheme> | undefined>(undefined);
+const AppThemeContext = createContext<
+  ReturnType<typeof useAppTheme> | undefined
+>(undefined);
 
 export function AppThemeProvider({ children }: { children: React.ReactNode }) {
   const appTheme = useAppTheme();
-  return React.createElement(AppThemeContext.Provider, { value: appTheme }, children);
+  return React.createElement(
+    AppThemeContext.Provider,
+    { value: appTheme },
+    children,
+  );
 }
 
 export function useAppThemeContext() {
   const context = useContext(AppThemeContext);
   if (!context) {
-    throw new Error("useAppThemeContext must be used within an AppThemeProvider");
+    throw new Error(
+      "useAppThemeContext must be used within an AppThemeProvider",
+    );
   }
   return context;
 }

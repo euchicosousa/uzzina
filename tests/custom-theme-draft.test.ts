@@ -29,7 +29,10 @@ describe("createCustomThemeDraft", () => {
     });
   });
   test("keeps saved values", () => {
-    const saved = { light: { ...base.light, bgHex: "#EEEEEE" }, dark: base.dark };
+    const saved = {
+      light: { ...base.light, bgHex: "#EEEEEE" },
+      dark: base.dark,
+    };
     expect(createCustomThemeDraft(saved).light.bgHex).toBe("#EEEEEE");
   });
 });
@@ -45,12 +48,12 @@ describe("applyCustomThemeChange", () => {
     expect(next.light.bgHex).toBe(base.light.bgHex);
   });
   test("light background and text derive their dark counterparts", () => {
-    expect(applyCustomThemeChange(base, "light", "bgHex", "#F0F0F0").dark.bgHex).toBe(
-      deriveDarkBg("#F0F0F0"),
-    );
-    expect(applyCustomThemeChange(base, "light", "fgHex", "#101010").dark.fgHex).toBe(
-      deriveDarkFg("#101010"),
-    );
+    expect(
+      applyCustomThemeChange(base, "light", "bgHex", "#F0F0F0").dark.bgHex,
+    ).toBe(deriveDarkBg("#F0F0F0"));
+    expect(
+      applyCustomThemeChange(base, "light", "fgHex", "#101010").dark.fgHex,
+    ).toBe(deriveDarkFg("#101010"));
   });
   test("dark accent only derives the dark accent foreground", () => {
     const next = applyCustomThemeChange(base, "dark", "primaryHex", "#445566");
@@ -58,7 +61,9 @@ describe("applyCustomThemeChange", () => {
     expect(next.light).toEqual(base.light);
   });
   test("remaining fields change only themselves", () => {
-    expect(applyCustomThemeChange(base, "light", "primaryFgHex", "#010101")).toEqual({
+    expect(
+      applyCustomThemeChange(base, "light", "primaryFgHex", "#010101"),
+    ).toEqual({
       light: { ...base.light, primaryFgHex: "#010101" },
       dark: base.dark,
     });

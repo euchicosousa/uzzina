@@ -11,5 +11,3 @@ export * from "~/utils/filter";
 export * from "~/components/uzzina/UIcons";
 
 export { createSupabaseClient } from "~/lib/supabase";
-
-

@@ -25,7 +25,10 @@ export function hexToOklch(hex: string): OklchColor {
   // Limpa o hex
   let cleanHex = hex.replace("#", "");
   if (cleanHex.length === 3) {
-    cleanHex = cleanHex.split("").map(char => char + char).join("");
+    cleanHex = cleanHex
+      .split("")
+      .map((char) => char + char)
+      .join("");
   }
   if (cleanHex.length !== 6) {
     return { h: 0, c: 0, l: 0 }; // fallback
@@ -152,4 +155,3 @@ export function deriveAccentFg(accentHex: string): string {
   const oklch = hexToOklch(accentHex);
   return oklch.l > 0.62 ? "#000000" : "#FFFFFF";
 }
-

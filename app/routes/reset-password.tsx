@@ -177,18 +177,18 @@ function ResetPassword() {
                 onChange={setPassword}
                 value={password}
               >
-                <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+                <Label className="mb-1.5 block cursor-pointer font-medium text-foreground">
                   Nova Senha
                 </Label>
                 <PrismInputGroup>
                   <PrismInputGroupAddon
                     align="inline-start"
-                    className="[&_svg]:text-foreground/40 pl-4 pr-1"
+                    className="pr-1 pl-4 [&_svg]:text-foreground/40"
                   >
                     <LockIcon className="size-5" />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput
-                    className="px-3 h-full"
+                    className="h-full px-3"
                     placeholder="Mínimo 6 caracteres"
                     type={showPassword ? "text" : "password"}
                   />
@@ -218,18 +218,18 @@ function ResetPassword() {
                 onChange={setConfirmPassword}
                 value={confirmPassword}
               >
-                <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+                <Label className="mb-1.5 block cursor-pointer font-medium text-foreground">
                   Confirmar Nova Senha
                 </Label>
                 <PrismInputGroup>
                   <PrismInputGroupAddon
                     align="inline-start"
-                    className="[&_svg]:text-foreground/40 pl-4 pr-1"
+                    className="pr-1 pl-4 [&_svg]:text-foreground/40"
                   >
                     <LockIcon className="size-5" />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput
-                    className="px-3 h-full"
+                    className="h-full px-3"
                     placeholder="Repita a nova senha"
                     type="password"
                   />

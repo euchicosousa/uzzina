@@ -22,7 +22,7 @@ export type PaletteVars = { light: PaletteModeVars; dark: PaletteModeVars };
 export function applyPaletteVars(palette: PaletteVars) {
   const root = document.documentElement;
   const { light, dark } = palette;
-  
+
   // 1. Cor Primária e seu Foreground
   root.style.setProperty("--accent-h", String(light.primary.h));
   root.style.setProperty("--accent-c", String(light.primary.c));
@@ -81,7 +81,10 @@ export function applyPaletteVars(palette: PaletteVars) {
     root.style.removeProperty("--action-l-delta");
   }
   if (light.actionHoverLDelta !== undefined) {
-    root.style.setProperty("--action-hover-l-delta", String(light.actionHoverLDelta));
+    root.style.setProperty(
+      "--action-hover-l-delta",
+      String(light.actionHoverLDelta),
+    );
   } else {
     root.style.removeProperty("--action-hover-l-delta");
   }
@@ -91,7 +94,10 @@ export function applyPaletteVars(palette: PaletteVars) {
     root.style.removeProperty("--popover-l-delta");
   }
   if (light.secondaryLDelta !== undefined) {
-    root.style.setProperty("--secondary-l-delta", String(light.secondaryLDelta));
+    root.style.setProperty(
+      "--secondary-l-delta",
+      String(light.secondaryLDelta),
+    );
   } else {
     root.style.removeProperty("--secondary-l-delta");
   }
@@ -106,7 +112,10 @@ export function applyPaletteVars(palette: PaletteVars) {
     root.style.removeProperty("--card-l-delta");
   }
   if (light.mutedForegroundLDelta !== undefined) {
-    root.style.setProperty("--muted-foreground-l-delta", String(light.mutedForegroundLDelta));
+    root.style.setProperty(
+      "--muted-foreground-l-delta",
+      String(light.mutedForegroundLDelta),
+    );
   } else {
     root.style.removeProperty("--muted-foreground-l-delta");
   }
@@ -127,17 +136,26 @@ export function applyPaletteVars(palette: PaletteVars) {
     root.style.removeProperty("--dark-action-l-delta");
   }
   if (dark.actionHoverLDelta !== undefined) {
-    root.style.setProperty("--dark-action-hover-l-delta", String(dark.actionHoverLDelta));
+    root.style.setProperty(
+      "--dark-action-hover-l-delta",
+      String(dark.actionHoverLDelta),
+    );
   } else {
     root.style.removeProperty("--dark-action-hover-l-delta");
   }
   if (dark.popoverLDelta !== undefined) {
-    root.style.setProperty("--dark-popover-l-delta", String(dark.popoverLDelta));
+    root.style.setProperty(
+      "--dark-popover-l-delta",
+      String(dark.popoverLDelta),
+    );
   } else {
     root.style.removeProperty("--dark-popover-l-delta");
   }
   if (dark.secondaryLDelta !== undefined) {
-    root.style.setProperty("--dark-secondary-l-delta", String(dark.secondaryLDelta));
+    root.style.setProperty(
+      "--dark-secondary-l-delta",
+      String(dark.secondaryLDelta),
+    );
   } else {
     root.style.removeProperty("--dark-secondary-l-delta");
   }
@@ -152,7 +170,10 @@ export function applyPaletteVars(palette: PaletteVars) {
     root.style.removeProperty("--dark-card-l-delta");
   }
   if (dark.mutedForegroundLDelta !== undefined) {
-    root.style.setProperty("--dark-muted-foreground-l-delta", String(dark.mutedForegroundLDelta));
+    root.style.setProperty(
+      "--dark-muted-foreground-l-delta",
+      String(dark.mutedForegroundLDelta),
+    );
   } else {
     root.style.removeProperty("--dark-muted-foreground-l-delta");
   }

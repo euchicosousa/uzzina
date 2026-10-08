@@ -6,7 +6,7 @@ export interface GallerySectionProps {
 
 export function GallerySection({ children }: GallerySectionProps) {
   return (
-    <section className="space-y-6 px-8 py-12 border-b">{children}</section>
+    <section className="space-y-6 border-b px-8 py-12">{children}</section>
   );
 }
 
@@ -45,7 +45,11 @@ export interface GalleryItemProps {
   className?: string;
 }
 
-export function GalleryItem({ children, label, className = "" }: GalleryItemProps) {
+export function GalleryItem({
+  children,
+  label,
+  className = "",
+}: GalleryItemProps) {
   return (
     <div className={`flex flex-col gap-4 ${className}`}>
       <span className="text-xs font-semibold text-muted-foreground uppercase">
@@ -69,7 +73,7 @@ export function SidebarAnchorLink({
 }: SidebarAnchorLinkProps) {
   return (
     <a
-      className={`text-muted-foreground hover:text-foreground py-2 pl-4 transition-colors border-l ${active ? "border-foreground" : ""}`}
+      className={`border-l py-2 pl-4 text-muted-foreground transition-colors hover:text-foreground ${active ? "border-foreground" : ""}`}
       href={`#${targetId}`}
       onClick={(e) => {
         e.preventDefault();
@@ -100,7 +104,7 @@ export function SidebarTabButton({
 }: SidebarTabButtonProps) {
   return (
     <button
-      className={`flex items-center gap-3 px-4 py-3 text-sm font-semibold tracking-tight transition-all rounded-xl cursor-pointer shrink-0 hover:bg-card ${isActive ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+      className={`flex shrink-0 cursor-pointer items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold tracking-tight transition-all hover:bg-card ${isActive ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground"}`}
       onClick={onClick}
       type="button"
     >

@@ -18,15 +18,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
   // 1. Inicializa o cliente do Supabase com o token do usuário para checar a identidade
-  const userClient = createClient<Database>(supabaseUrl, process.env.SUPABASE_PUBLISHABLE_KEY || "", {
-    global: {
-      headers: {
-        Authorization: `Bearer ${token}`,
+  const userClient = createClient<Database>(
+    supabaseUrl,
+    process.env.SUPABASE_PUBLISHABLE_KEY || "",
+    {
+      global: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
     },
-  });
+  );
 
-  const { data: { user }, error: userError } = await userClient.auth.getUser();
+  const {
+    data: { user },
+    error: userError,
+  } = await userClient.auth.getUser();
   if (userError || !user) {
     return res.status(401).json({ error: "Sessão inválida ou expirada." });
   }
@@ -39,23 +46,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     .single();
 
   if (callerError || !caller?.admin) {
-    return res.status(403).json({ error: "Acesso negado. Apenas administradores podem criar usuários." });
+    return res.status(403).json({
+      error: "Acesso negado. Apenas administradores podem criar usuários.",
+    });
   }
 
   // 3. Cria o usuário com o cliente admin
   const { email, password, name } = req.body;
   if (!email || !password || !name) {
-    return res.status(400).json({ error: "Nome, e-mail e senha são obrigatórios." });
+    return res
+      .status(400)
+      .json({ error: "Nome, e-mail e senha são obrigatórios." });
   }
 
-  const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseServiceRoleKey);
+  const supabaseAdmin = createClient<Database>(
+    supabaseUrl,
+    supabaseServiceRoleKey,
+  );
 
-  const { data: authUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
-    user_metadata: { name },
-  });
+  const { data: authUser, error: createError } =
+    await supabaseAdmin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { name },
+    });
 
   if (createError) {
     return res.status(400).json({ error: createError.message });

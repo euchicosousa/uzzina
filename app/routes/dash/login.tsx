@@ -44,9 +44,11 @@ function DashLogin() {
       });
     } catch (err) {
       console.error("Erro na autenticação do cliente:", err);
-      setError(err instanceof PortalHttpError && err.status === 503
-        ? "O portal está temporariamente indisponível. Tente novamente."
-        : "Não foi possível entrar no portal. Tente novamente.");
+      setError(
+        err instanceof PortalHttpError && err.status === 503
+          ? "O portal está temporariamente indisponível. Tente novamente."
+          : "Não foi possível entrar no portal. Tente novamente.",
+      );
       setIsSubmitting(false);
     }
   };
@@ -63,14 +65,14 @@ function DashLogin() {
           <h1 className="p-0 text-2xl font-bold tracking-tight">
             Portal do Parceiro
           </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
+          <p className="mt-1 text-sm text-muted-foreground">
             Informe seu e-mail e senha para acessar.
           </p>
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           {error && (
-            <div className="border-destructive/20 bg-destructive/5 text-destructive rounded-lg border px-4 py-3 text-sm">
+            <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
               {error}
             </div>
           )}
@@ -126,7 +128,7 @@ function DashLogin() {
           </div>
 
           <PrismButton
-            className="squircle w-full rounded-2xl"
+            className="w-full rounded-2xl squircle"
             isDisabled={isSubmitting}
             type="submit"
           >

@@ -6,7 +6,9 @@ interface CommentListProps {
   comments: AugmentedComment[];
   currentUserId: string;
   isUser: boolean; // if true, comparing against is_user true, else is_user false
-  onUpdate: ((id: string, content: string) => void) | ((id: string, content: string) => Promise<unknown>);
+  onUpdate:
+    | ((id: string, content: string) => void)
+    | ((id: string, content: string) => Promise<unknown>);
   onDelete: (id: string) => void;
   emptyMessage?: string;
   mentionablePeople?: Person[];
@@ -26,7 +28,7 @@ export function CommentList({
   return (
     <div className="flex flex-col space-y-4">
       {comments.length === 0 ? (
-        <p className="text-muted-foreground py-10 text-center text-sm">
+        <p className="py-10 text-center text-sm text-muted-foreground">
           {emptyMessage}
         </p>
       ) : (
@@ -34,7 +36,9 @@ export function CommentList({
           <CommentItem
             key={comment.id}
             comment={comment}
-            isOwn={comment.author_id === currentUserId && comment.is_user === isUser}
+            isOwn={
+              comment.author_id === currentUserId && comment.is_user === isUser
+            }
             onUpdate={(content) => onUpdate(comment.id, content)}
             onDelete={() => onDelete(comment.id)}
             mentionablePeople={mentionablePeople}

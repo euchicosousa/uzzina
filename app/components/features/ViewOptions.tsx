@@ -129,10 +129,16 @@ export function ViewOptionsComponent({
           selectionMode="single"
           size="sm"
         >
-          <PrismToggleGroupItem aria-label="Exibição em Linha" id={VARIANT.line}>
+          <PrismToggleGroupItem
+            aria-label="Exibição em Linha"
+            id={VARIANT.line}
+          >
             <Rows3Icon />
           </PrismToggleGroupItem>
-          <PrismToggleGroupItem aria-label="Exibição em Bloco" id={VARIANT.block}>
+          <PrismToggleGroupItem
+            aria-label="Exibição em Bloco"
+            id={VARIANT.block}
+          >
             <Rows2Icon />
           </PrismToggleGroupItem>
           <PrismToggleGroupItem
@@ -226,8 +232,7 @@ export function ViewOptionsComponent({
               className={"gap-1"}
               onSelectionChange={(keys) => {
                 const selected = Array.from(keys)[0] as
-                  | (typeof ORDER_BY)[keyof typeof ORDER_BY]
-                  | undefined;
+                  (typeof ORDER_BY)[keyof typeof ORDER_BY] | undefined;
                 if (selected) {
                   setViewOptions({
                     ...viewOptions,
@@ -241,10 +246,16 @@ export function ViewOptionsComponent({
               selectionMode="single"
               size="sm"
             >
-              <PrismToggleGroupItem aria-label="Ordem por Data" id={ORDER_BY.date}>
+              <PrismToggleGroupItem
+                aria-label="Ordem por Data"
+                id={ORDER_BY.date}
+              >
                 <ClockIcon />
               </PrismToggleGroupItem>
-              <PrismToggleGroupItem aria-label="Ordem por Fase" id={ORDER_BY.phase}>
+              <PrismToggleGroupItem
+                aria-label="Ordem por Fase"
+                id={ORDER_BY.phase}
+              >
                 <SquareCheckIcon />
               </PrismToggleGroupItem>
             </PrismToggleGroup>

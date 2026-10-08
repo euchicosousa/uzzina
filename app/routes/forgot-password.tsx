@@ -63,7 +63,7 @@ function ForgotPassword() {
         <div className="flex items-center justify-between">
           <UZZINALogo className="h-12" />
           <Link
-            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
+            className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground hover:underline"
             to="/login"
           >
             <ArrowLeftIcon className="size-3" />
@@ -80,14 +80,14 @@ function ForgotPassword() {
         )}
 
         {success ? (
-          <div className="flex flex-col items-center justify-center py-6 text-center animate-pop">
-            <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-success-background border border-success/20 text-success">
+          <div className="flex animate-pop flex-col items-center justify-center py-6 text-center">
+            <div className="mb-4 flex size-12 items-center justify-center rounded-full border border-success/20 bg-success-background text-success">
               <MailOpenIcon className="size-6" />
             </div>
             <h3 className="mb-2 text-lg font-semibold text-foreground">
               E-mail enviado!
             </h3>
-            <p className="text-sm text-muted-foreground max-w-sm">
+            <p className="max-w-sm text-sm text-muted-foreground">
               Enviamos um link de redefinição de senha para o e-mail informado.
               Por favor, verifique sua caixa de entrada e spam.
             </p>
@@ -109,18 +109,18 @@ function ForgotPassword() {
                 onChange={setEmail}
                 value={email}
               >
-                <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+                <Label className="mb-1.5 block cursor-pointer font-medium text-foreground">
                   E-mail
                 </Label>
                 <PrismInputGroup>
                   <PrismInputGroupAddon
                     align="inline-start"
-                    className="[&_svg]:text-foreground/40 pl-4 pr-1"
+                    className="pr-1 pl-4 [&_svg]:text-foreground/40"
                   >
                     <AtSignIcon className="size-5" />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput
-                    className="px-3 h-full"
+                    className="h-full px-3"
                     placeholder="seu-email@dominio.com"
                     type="email"
                   />

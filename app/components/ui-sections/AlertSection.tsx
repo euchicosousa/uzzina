@@ -1,8 +1,4 @@
-import {
-  AlertTriangleIcon,
-  CheckCircle2Icon,
-  InfoIcon,
-} from "lucide-react";
+import { AlertTriangleIcon, CheckCircle2Icon, InfoIcon } from "lucide-react";
 import {
   PrismAlert,
   PrismAlertTitle,

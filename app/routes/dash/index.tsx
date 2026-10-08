@@ -1,4 +1,7 @@
-import { retryPortalQuery, usePortalSessionError } from "~/hooks/usePortalSessionError";
+import {
+  retryPortalQuery,
+  usePortalSessionError,
+} from "~/hooks/usePortalSessionError";
 import {
   addMonths,
   addWeeks,
@@ -67,8 +70,19 @@ function DashHome() {
       ? format(currentDay, "yyyy-MM")
       : format(visibleStart, "yyyy-MM-dd");
 
-  const { data: actions = [], isLoading, error, refetch } = useQuery<DashActionDto[]>({
-    queryKey: ["dashActions", clientId, currentPartnerSlug, calendarView, periodKey],
+  const {
+    data: actions = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuery<DashActionDto[]>({
+    queryKey: [
+      "dashActions",
+      clientId,
+      currentPartnerSlug,
+      calendarView,
+      periodKey,
+    ],
     queryFn: async () => {
       if (!currentPartnerSlug) return [];
       return fetchDashActions({
@@ -91,20 +105,25 @@ function DashHome() {
     });
   };
   if (error) {
-    return <div role="alert" className="flex h-full flex-col items-center justify-center gap-4 p-8">
-      <h2>Falha ao carregar calendário</h2>
-      <p>Não foi possível consultar as ações. Tente novamente.</p>
-      <PrismButton onClick={() => refetch()}>Tentar novamente</PrismButton>
-    </div>;
+    return (
+      <div
+        role="alert"
+        className="flex h-full flex-col items-center justify-center gap-4 p-8"
+      >
+        <h2>Falha ao carregar calendário</h2>
+        <p>Não foi possível consultar as ações. Tente novamente.</p>
+        <PrismButton onClick={() => refetch()}>Tentar novamente</PrismButton>
+      </div>
+    );
   }
   if (!currentPartner) {
     return <p className="p-8">Nenhum parceiro vinculado à sua conta.</p>;
   }
   if (isLoading) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center bg-background gap-4">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-background">
         <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        <p className="text-muted-foreground text-sm font-medium animate-pulse">
+        <p className="animate-pulse text-sm font-medium text-muted-foreground">
           Carregando calendário...
         </p>
       </div>

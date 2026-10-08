@@ -25,7 +25,12 @@ import { fetchAllLateActions, fetchHomeActions } from "~/lib/supabase.queries";
 import { Footer } from "~/components/layout/Footer";
 
 import { AlertTriangleIcon } from "lucide-react";
-import { PrismAlert, PrismAlertDescription, PrismAlertTitle, PrismButton } from "~/components/prism";
+import {
+  PrismAlert,
+  PrismAlertDescription,
+  PrismAlertTitle,
+  PrismButton,
+} from "~/components/prism";
 
 export const Route = createFileRoute("/app/")({
   component: AppHome,
@@ -37,7 +42,7 @@ import type { Partner } from "~/types";
 function AppHome() {
   const { person, partners } = useAppContext();
 
-  const partnerSlugs = partners.map(p => p.slug).sort();
+  const partnerSlugs = partners.map((p) => p.slug).sort();
   const now = new Date();
 
   const startDateISO = startOfWeek(startOfMonth(now)).toISOString();
@@ -51,7 +56,14 @@ function AppHome() {
     isError: isHomeActionsError,
     refetch: refetchHomeActions,
   } = useQuery({
-    queryKey: QUERY_KEYS.actions.list("home",person.user_id,person.admin,partnerSlugs,startDateISO,endDateISO),
+    queryKey: QUERY_KEYS.actions.list(
+      "home",
+      person.user_id,
+      person.admin,
+      partnerSlugs,
+      startDateISO,
+      endDateISO,
+    ),
     queryFn: () =>
       fetchHomeActions(
         person.user_id,
@@ -68,7 +80,12 @@ function AppHome() {
     isError: isLateActionsError,
     refetch: refetchLateActions,
   } = useQuery({
-    queryKey: QUERY_KEYS.actions.list("late",person.user_id,person.admin,partnerSlugs),
+    queryKey: QUERY_KEYS.actions.list(
+      "late",
+      person.user_id,
+      person.admin,
+      partnerSlugs,
+    ),
     queryFn: () =>
       fetchAllLateActions(
         person.user_id,
@@ -80,7 +97,7 @@ function AppHome() {
   const { setBaseAction, partnerFilters } = useAppContext();
 
   const filteredActions = useMemo(() => {
-    const operational = filterOperationalActions(currentActions,partners);
+    const operational = filterOperationalActions(currentActions, partners);
     if (partnerFilters.length === 0) return operational;
     return operational.filter((action) =>
       action.partners?.some((p) => partnerFilters.includes(p)),
@@ -88,7 +105,7 @@ function AppHome() {
   }, [currentActions, partnerFilters, partners]);
 
   const filteredLateActions = useMemo(() => {
-    const operational = filterOperationalActions(currentLateActions,partners);
+    const operational = filterOperationalActions(currentLateActions, partners);
     if (partnerFilters.length === 0) return operational;
     return operational.filter((action) =>
       action.partners?.some((p) => partnerFilters.includes(p)),
@@ -113,9 +130,10 @@ function AppHome() {
           <PrismAlert variant="error">
             <AlertTriangleIcon />
             <PrismAlertTitle>Erro ao carregar dados do painel</PrismAlertTitle>
-            <PrismAlertDescription className="flex items-center justify-between gap-4 mt-1">
+            <PrismAlertDescription className="mt-1 flex items-center justify-between gap-4">
               <span>
-                Não foi possível carregar algumas ações da sua conta. Verifique sua conexão com a internet.
+                Não foi possível carregar algumas ações da sua conta. Verifique
+                sua conexão com a internet.
               </span>
               <PrismButton
                 size="default"

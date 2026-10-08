@@ -24,7 +24,8 @@ const timeFieldVariants = cva(
 );
 
 export interface PrismTimeFieldProps<T extends TimeValue = TimeValue>
-  extends Omit<TimeFieldPrimitiveProps<T>, "className">,
+  extends
+    Omit<TimeFieldPrimitiveProps<T>, "className">,
     VariantProps<typeof timeFieldVariants> {
   className?: string;
 }
@@ -52,7 +53,7 @@ function PrismTimeField<T extends TimeValue = TimeValue>({
         {(segment) => (
           <DateSegmentPrimitive
             className={cn(
-              "rounded-xl squircle p-1 px-2 text-foreground outline-none focus:bg-primary focus:text-primary-foreground data-[type=literal]:px-0.5 data-[type=literal]:text-muted-foreground data-placeholder:text-muted-foreground",
+              "rounded-xl p-1 px-2 text-foreground outline-none squircle focus:bg-primary focus:text-primary-foreground data-placeholder:text-muted-foreground data-[type=literal]:px-0.5 data-[type=literal]:text-muted-foreground",
             )}
             segment={segment}
           />
@@ -62,4 +63,3 @@ function PrismTimeField<T extends TimeValue = TimeValue>({
   );
 }
 export { PrismTimeField, timeFieldVariants };
-

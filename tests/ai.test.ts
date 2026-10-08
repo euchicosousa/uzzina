@@ -1,5 +1,5 @@
-import {beforeEach, afterEach, expect, it, mock} from "bun:test";
-import type {VercelRequest,VercelResponse} from "@vercel/node";
+import { beforeEach, afterEach, expect, it, mock } from "bun:test";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 import handler from "../api/ai";
 
 let calls = 0;
@@ -7,7 +7,12 @@ let rpcCalls = 0;
 let eventOrder: string[] = [];
 let lastClientKey: string | undefined;
 let lastClientUrl: string | undefined;
-let lastClientOptions: { auth?: { persistSession?: boolean; autoRefreshToken?: boolean }; global?: { headers?: { Authorization?: string } } } | undefined;
+let lastClientOptions:
+  | {
+      auth?: { persistSession?: boolean; autoRefreshToken?: boolean };
+      global?: { headers?: { Authorization?: string } };
+    }
+  | undefined;
 let output = '{"caption":"Legenda válida"}';
 let failUpstream = false;
 let storeError = false;
@@ -30,7 +35,14 @@ const envKeysToRestore = [
 ];
 
 mock.module("@supabase/supabase-js", () => ({
-  createClient: (url: string, key: string, options?: { auth?: { persistSession?: boolean; autoRefreshToken?: boolean }; global?: { headers?: { Authorization?: string } } }) => {
+  createClient: (
+    url: string,
+    key: string,
+    options?: {
+      auth?: { persistSession?: boolean; autoRefreshToken?: boolean };
+      global?: { headers?: { Authorization?: string } };
+    },
+  ) => {
     lastClientUrl = url;
     lastClientKey = key;
     lastClientOptions = options;
@@ -38,11 +50,17 @@ mock.module("@supabase/supabase-js", () => ({
       auth: {
         getUser: async (token?: string) => {
           if (authThrows) throw new Error("secret auth failure");
-          const authBearer = options?.global?.headers?.Authorization?.replace("Bearer ", "");
+          const authBearer = options?.global?.headers?.Authorization?.replace(
+            "Bearer ",
+            "",
+          );
           const effectiveToken = token || authBearer;
           return {
-            data: { user: effectiveToken === "valid" ? { id: "member" } : null },
-            error: effectiveToken === "valid" ? null : { message: "Invalid token" },
+            data: {
+              user: effectiveToken === "valid" ? { id: "member" } : null,
+            },
+            error:
+              effectiveToken === "valid" ? null : { message: "Invalid token" },
           };
         },
       },
@@ -59,7 +77,10 @@ mock.module("@supabase/supabase-js", () => ({
       rpc: async (_fn: string, _args: unknown) => {
         rpcCalls++;
         eventOrder.push("rpc");
-        return { data: quota, error: storeError ? { message: "private SQL failure" } : null };
+        return {
+          data: quota,
+          error: storeError ? { message: "private SQL failure" } : null,
+        };
       },
     };
   },
@@ -118,7 +139,11 @@ afterEach(() => {
 
 const payload = { intent: "ai-caption", category: "post", title: "Tema" };
 
-async function request(body: unknown = payload, token = "valid", method = "POST") {
+async function request(
+  body: unknown = payload,
+  token = "valid",
+  method = "POST",
+) {
   let status = 0;
   let result: unknown;
   const headers: Record<string, string | number | string[]> = {};
@@ -136,12 +161,21 @@ async function request(body: unknown = payload, token = "valid", method = "POST"
       return res;
     },
   };
-  await handler({ method, body, headers: token ? { authorization: `Bearer ${token}` } : {} } as VercelRequest, res as unknown as VercelResponse);
+  await handler(
+    {
+      method,
+      body,
+      headers: token ? { authorization: `Bearer ${token}` } : {},
+    } as VercelRequest,
+    res as unknown as VercelResponse,
+  );
   return { status, result, headers };
 }
 
 it("rejects a title object before spending an OpenAI call", async () => {
-  expect((await request({ ...payload, title: { text: "bad" } })).status).toBe(400);
+  expect((await request({ ...payload, title: { text: "bad" } })).status).toBe(
+    400,
+  );
   expect(calls).toBe(0);
 });
 
@@ -153,13 +187,28 @@ it("returns 503 without leaking errors when Auth infrastructure throws", async (
   expect(calls).toBe(0);
 });
 
-it.each(["ai-strategy", "ai-hooks", "ai-content", "ai-caption"])("accepts the existing %s output contract", async (intent) => {
-  const strategy = { headline: "Título", angulo: "12. Ângulo", racional: "Motivo", direcionamento: "Aplicação" };
-  output = intent === "ai-content" ? "<p>Conteúdo</p>" : intent === "ai-caption" ? '{"caption":"Legenda válida"}' : JSON.stringify({ strategies: Array.from({ length: 5 }, () => strategy) });
-  const response = await request({ ...payload, intent });
-  expect(response.status).toBe(200);
-  expect(calls).toBe(1);
-});
+it.each(["ai-strategy", "ai-hooks", "ai-content", "ai-caption"])(
+  "accepts the existing %s output contract",
+  async (intent) => {
+    const strategy = {
+      headline: "Título",
+      angulo: "12. Ângulo",
+      racional: "Motivo",
+      direcionamento: "Aplicação",
+    };
+    output =
+      intent === "ai-content"
+        ? "<p>Conteúdo</p>"
+        : intent === "ai-caption"
+          ? '{"caption":"Legenda válida"}'
+          : JSON.stringify({
+              strategies: Array.from({ length: 5 }, () => strategy),
+            });
+    const response = await request({ ...payload, intent });
+    expect(response.status).toBe(200);
+    expect(calls).toBe(1);
+  },
+);
 
 for (const [index, body] of [
   null,
@@ -181,15 +230,28 @@ for (const [index, body] of [
 }
 
 it("measures the body in UTF-8 bytes and rejects malformed JSON", async () => {
-  expect((await request({ ...payload, description: "界".repeat(10000), partner_context: "界".repeat(10000), title: "界".repeat(500), racional: "界".repeat(2000) })).status).toBe(413);
+  expect(
+    (
+      await request({
+        ...payload,
+        description: "界".repeat(10000),
+        partner_context: "界".repeat(10000),
+        title: "界".repeat(500),
+        racional: "界".repeat(2000),
+      })
+    ).status,
+  ).toBe(413);
   expect((await request("{")).status).toBe(400);
   expect(calls).toBe(0);
 });
 
-it.each(["", "invalid"])("rejects a missing/invalid token (%s)", async (token) => {
-  expect((await request(payload, token)).status).toBe(401);
-  expect(calls).toBe(0);
-});
+it.each(["", "invalid"])(
+  "rejects a missing/invalid token (%s)",
+  async (token) => {
+    expect((await request(payload, token)).status).toBe(401);
+    expect(calls).toBe(0);
+  },
+);
 
 it("rejects inactive people and non-POST methods", async () => {
   active = false;
@@ -217,25 +279,34 @@ it("fails closed when the persistent quota store fails", async () => {
   expect(calls).toBe(0);
 });
 
-it.each(["0", "10001", "1.5", "abc", ""])("rejects invalid configured limits: %s", async (value) => {
-  process.env.AI_DAILY_LIMIT = value;
-  expect((await request()).status).toBe(503);
-  expect(calls).toBe(0);
-});
+it.each(["0", "10001", "1.5", "abc", ""])(
+  "rejects invalid configured limits: %s",
+  async (value) => {
+    process.env.AI_DAILY_LIMIT = value;
+    expect((await request()).status).toBe(503);
+    expect(calls).toBe(0);
+  },
+);
 
-it.each(["OPENAI_API_KEY", "SUPABASE_SERVICE_ROLE_KEY"])("handles missing configuration: %s", async (key) => {
-  delete process.env[key];
-  const response = await request();
-  expect(response.status).toBe(503);
-  expect(response.result).toMatchObject({ code: "AI_CONFIGURATION_MISSING" });
-  expect(calls).toBe(0);
-});
+it.each(["OPENAI_API_KEY", "SUPABASE_SERVICE_ROLE_KEY"])(
+  "handles missing configuration: %s",
+  async (key) => {
+    delete process.env[key];
+    const response = await request();
+    expect(response.status).toBe(503);
+    expect(response.result).toMatchObject({ code: "AI_CONFIGURATION_MISSING" });
+    expect(calls).toBe(0);
+  },
+);
 
-it.each(["not-json", "{}", '{"caption":42}', '{"caption":" "}'])("rejects malformed provider output: %s", async (value) => {
-  output = value;
-  expect((await request()).status).toBe(502);
-  expect(calls).toBe(1);
-});
+it.each(["not-json", "{}", '{"caption":42}', '{"caption":" "}'])(
+  "rejects malformed provider output: %s",
+  async (value) => {
+    output = value;
+    expect((await request()).status).toBe(502);
+    expect(calls).toBe(1);
+  },
+);
 
 it("does not expose upstream errors", async () => {
   failUpstream = true;
@@ -260,7 +331,9 @@ it("case 1: local development compat mode returns 200 using public key and Beare
   expect(response.status).toBe(200);
   expect(lastClientUrl).toBe("https://fake.test");
   expect(lastClientKey).toBe("fake-anon");
-  expect(lastClientOptions?.global?.headers?.Authorization).toBe("Bearer valid");
+  expect(lastClientOptions?.global?.headers?.Authorization).toBe(
+    "Bearer valid",
+  );
   expect(lastClientOptions?.auth?.persistSession).toBe(false);
   expect(lastClientOptions?.auth?.autoRefreshToken).toBe(false);
   expect(rpcCalls).toBe(0);
@@ -415,4 +488,3 @@ it("case 10: strict mode with exhausted quota returns 429 and Retry-After withou
   expect(rpcCalls).toBe(1);
   expect(calls).toBe(0);
 });
-

@@ -78,18 +78,18 @@ function Login() {
             onChange={setEmail}
             value={email}
           >
-            <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+            <Label className="mb-1.5 block cursor-pointer font-medium text-foreground">
               E-mail
             </Label>
             <PrismInputGroup>
               <PrismInputGroupAddon
                 align="inline-start"
-                className="[&_svg]:text-foreground/40 pl-4 pr-1"
+                className="pr-1 pl-4 [&_svg]:text-foreground/40"
               >
                 <AtSignIcon className="size-5" />
               </PrismInputGroupAddon>
               <PrismInputGroupInput
-                className="px-3 h-full"
+                className="h-full px-3"
                 placeholder="name@example.com"
                 type="email"
               />
@@ -103,8 +103,8 @@ function Login() {
             onChange={setPassword}
             value={password}
           >
-            <div className="flex items-center justify-between w-full mb-1.5">
-              <Label className="block font-medium text-foreground cursor-pointer">
+            <div className="mb-1.5 flex w-full items-center justify-between">
+              <Label className="block cursor-pointer font-medium text-foreground">
                 Senha
               </Label>
               <Link
@@ -117,12 +117,12 @@ function Login() {
             <PrismInputGroup className="squircle">
               <PrismInputGroupAddon
                 align="inline-start"
-                className="[&_svg]:text-foreground/40 pl-4 pr-1"
+                className="pr-1 pl-4 [&_svg]:text-foreground/40"
               >
                 <LockIcon className="size-5" />
               </PrismInputGroupAddon>
               <PrismInputGroupInput
-                className="px-3 h-full"
+                className="h-full px-3"
                 placeholder="••••••••"
                 type={showPassword ? "text" : "password"}
               />
@@ -143,7 +143,7 @@ function Login() {
             </PrismInputGroup>
           </TextField>
 
-          <div className="flex justify-end mt-6">
+          <div className="mt-6 flex justify-end">
             <PrismButton
               isDisabled={isSubmitting}
               type="submit"

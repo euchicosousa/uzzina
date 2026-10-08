@@ -98,7 +98,7 @@ export function SprintCombobox({
         className={cn(
           size === "lg" &&
             cn(
-              "hover:opacity-100 focus:opacity-100 rounded-2xl squircle p-2",
+              "rounded-2xl p-2 squircle hover:opacity-100 focus:opacity-100",
               selectedSprints.length > 0 ? "opacity-80" : "opacity-50",
             ),
           className,
@@ -125,7 +125,7 @@ export function SprintCombobox({
       </ComboboxTrigger>
 
       <PrismPopover
-        className="w-75 p-0 border rounded-3xl squircle shadow-xl bg-popover overflow-hidden"
+        className="w-75 overflow-hidden rounded-3xl border bg-popover p-0 shadow-xl squircle"
         placement="bottom end"
       >
         <PrismCommand className="p-0">
@@ -143,7 +143,9 @@ export function SprintCombobox({
                     key={person.id}
                     className="flex cursor-pointer items-center gap-2"
                     data-selected={
-                      selectedSprints.includes(person.user_id) ? "true" : undefined
+                      selectedSprints.includes(person.user_id)
+                        ? "true"
+                        : undefined
                     }
                     onAction={() => handleSelect(person.user_id)}
                     textValue={`${person.name} ${person.surname}`}
@@ -174,7 +176,9 @@ export function SprintCombobox({
                     key={person.id}
                     className="flex cursor-pointer items-center gap-2"
                     data-selected={
-                      selectedSprints.includes(person.user_id) ? "true" : undefined
+                      selectedSprints.includes(person.user_id)
+                        ? "true"
+                        : undefined
                     }
                     onAction={() => handleSelect(person.user_id)}
                     textValue={`${person.name} ${person.surname}`}

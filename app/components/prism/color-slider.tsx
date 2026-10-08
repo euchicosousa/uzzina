@@ -27,7 +27,7 @@ function PrismColorSlider({
   return (
     <ColorSliderPrimitive
       channel={channel}
-      className={cn("w-full flex items-center", className)}
+      className={cn("flex w-full items-center", className)}
       colorSpace={colorSpace}
       data-slot="color-slider"
       defaultValue={props.value ? undefined : defaultValue}
@@ -35,7 +35,7 @@ function PrismColorSlider({
     >
       <SliderTrackPrimitive
         className={cn(
-          "relative h-2 w-full rounded-full cursor-pointer",
+          "relative h-2 w-full cursor-pointer rounded-full",
           trackClassName,
         )}
         style={({ defaultStyle, isDisabled }) => ({
@@ -47,7 +47,7 @@ function PrismColorSlider({
       >
         <ColorThumbPrimitive
           className={cn(
-            "top-[50%] size-4 rounded-full border-2 border-white shadow-md shadow-black/40 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 data-dragging:scale-125 transition-transform box-border",
+            "top-[50%] box-border size-4 rounded-full border-2 border-white shadow-md shadow-black/40 transition-transform outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 data-dragging:scale-125",
             thumbClassName,
           )}
         />

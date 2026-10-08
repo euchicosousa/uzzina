@@ -395,11 +395,11 @@ export function ActionItemResponsibles({
 export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
   switch (priority) {
     case PRIORITIES.low.slug:
-      return <SignalIcon className="text-info size-4" />;
+      return <SignalIcon className="size-4 text-info" />;
     case PRIORITIES.high.slug:
-      return <SignalIcon className="text-error size-4" />;
+      return <SignalIcon className="size-4 text-error" />;
     default:
-      return <SignalIcon className="text-success size-4" />;
+      return <SignalIcon className="size-4 text-success" />;
   }
 }
 

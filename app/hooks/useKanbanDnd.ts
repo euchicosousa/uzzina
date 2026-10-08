@@ -23,7 +23,9 @@ export function useKanbanDnd<T extends string | null>({
 }) {
   const dragSession = useRef(0);
   const [activeAction, setActiveAction] = useState<Action | undefined>();
-  const [overrides, setOverrides] = useState<Record<string, {operationId: number; value: T}>>({});
+  const [overrides, setOverrides] = useState<
+    Record<string, { operationId: number; value: T }>
+  >({});
 
   const operationCounter = useRef(0);
   const writes = useRef(new Map<string, Promise<Action>>());
@@ -52,7 +54,10 @@ export function useKanbanDnd<T extends string | null>({
         if (newValue === undefined) return;
         const actionId = activeAction.id;
         const operationId = ++operationCounter.current;
-        setOverrides((prev) => ({ ...prev, [actionId]: {operationId, value: newValue} }));
+        setOverrides((prev) => ({
+          ...prev,
+          [actionId]: { operationId, value: newValue },
+        }));
         try {
           const previous = writes.current.get(actionId);
           const save = async () => {
@@ -60,17 +65,24 @@ export function useKanbanDnd<T extends string | null>({
             if (previous) {
               try {
                 const confirmed = await previous;
-                if (getActionRevision(confirmed.updated_at) > getActionRevision(baseline.updated_at)) baseline = confirmed;
+                if (
+                  getActionRevision(confirmed.updated_at) >
+                  getActionRevision(baseline.updated_at)
+                )
+                  baseline = confirmed;
+              } catch (error) {
+                if (error instanceof ActionConflictError) throw error;
               }
-              catch (error) { if (error instanceof ActionConflictError) throw error; }
             }
             return onDrop(baseline, newValue);
           };
           const saving = save();
           writes.current.set(actionId, saving);
-          try { await saving; }
-          catch (error) {
-            if (writes.current.get(actionId) === saving) writes.current.delete(actionId);
+          try {
+            await saving;
+          } catch (error) {
+            if (writes.current.get(actionId) === saving)
+              writes.current.delete(actionId);
             throw error;
           }
         } catch (err) {

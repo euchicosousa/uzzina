@@ -52,10 +52,10 @@ export function BulkResponsiblesDialog({
         </PrismDialogDescription>
       </PrismDialogHeader>
 
-      <div className="py-4 px-5 max-h-80 overflow-y-auto">
+      <div className="max-h-80 overflow-y-auto px-5 py-4">
         <PrismToggleGroup
           aria-label="Seleção de Responsáveis"
-          className="grid grid-cols-2 gap-1 sm:grid-cols-4 w-full"
+          className="grid w-full grid-cols-2 gap-1 sm:grid-cols-4"
           onSelectionChange={(keys) => setSelectedKeys(keys as Set<Key>)}
           selectedKeys={selectedKeys}
           selectionMode="multiple"
@@ -63,7 +63,7 @@ export function BulkResponsiblesDialog({
           {people.map((person: Person) => (
             <PrismToggleGroupItem
               key={person.user_id}
-              className="flex flex-col items-center justify-center gap-2 rounded-xl squircle p-3 h-auto min-w-0"
+              className="flex h-auto min-w-0 flex-col items-center justify-center gap-2 rounded-xl p-3 squircle"
               id={person.user_id}
             >
               <UAvatar

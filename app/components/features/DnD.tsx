@@ -48,7 +48,7 @@ export function Draggable({
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      style={isDragging ? {touchAction: "none"} : style}
+      style={isDragging ? { touchAction: "none" } : style}
       // className={cn(isDragging && "opacity-20")}
     >
       {React.cloneElement(child, {
@@ -100,7 +100,7 @@ export function SortableItem({
       style={style}
       {...attributes}
       {...listeners}
-      className={cn(className, isDragging && "opacity-20 pointer-events-none")}
+      className={cn(className, isDragging && "pointer-events-none opacity-20")}
     >
       {React.cloneElement(child, {
         [isDOMElement ? "data-dragging" : "isDragging"]: isDragging,

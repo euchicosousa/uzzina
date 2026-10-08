@@ -4,7 +4,9 @@ import type { Json } from "types/database";
 export type PreferencePatch = Partial<UserPreferences>;
 export type PreferenceRecord = Record<string, Json | undefined>;
 export function preferenceRecord(value: Json | undefined): PreferenceRecord {
-  return value && typeof value === "object" && !Array.isArray(value) ? {...value} : {};
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? { ...value }
+    : {};
 }
 
 // One owner, one request at a time; pending fields always override older confirmations.
@@ -23,9 +25,10 @@ export function createPreferencePersistence(options: {
   let stopped = false;
   let failed = false;
   const active = () => !stopped && options.isCurrent();
-  const notify = () => options.onChange({...confirmed, ...pending});
+  const notify = () => options.onChange({ ...confirmed, ...pending });
   const flush = async () => {
-    if (!active() || busy || failed || Object.keys(pending).length === 0) return;
+    if (!active() || busy || failed || Object.keys(pending).length === 0)
+      return;
     const patch = pending;
     pending = {};
     busy = true;
@@ -37,7 +40,7 @@ export function createPreferencePersistence(options: {
       options.onSaved();
     } catch {
       if (!active()) return;
-      pending = {...patch, ...pending};
+      pending = { ...patch, ...pending };
       failed = true;
       notify();
       options.onError();
@@ -49,10 +52,12 @@ export function createPreferencePersistence(options: {
   return {
     queue(patch: PreferencePatch) {
       if (!active()) return;
-      pending = {...pending, ...patch};
+      pending = { ...pending, ...patch };
       notify();
       clearTimeout(timer);
-      timer = setTimeout(() => {void flush();}, 250);
+      timer = setTimeout(() => {
+        void flush();
+      }, 250);
     },
     retry() {
       if (!active()) return;

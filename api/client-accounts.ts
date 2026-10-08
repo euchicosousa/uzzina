@@ -1,7 +1,10 @@
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createServiceClient, getServiceConfig } from "../server/supabase-admin.js";
+import {
+  createServiceClient,
+  getServiceConfig,
+} from "../server/supabase-admin.js";
 import { extractBearerToken } from "../server/auth.js";
 
 const BCRYPT_COST = 12;
@@ -11,13 +14,32 @@ const MAX_PASSWORD_BYTES = 72;
 const accountFields = z.object({
   name: z.string().trim().min(2).max(200),
   email: z.email().trim().toLowerCase().max(320),
-  password: z.string().nullable().optional().refine(value => !value || (Buffer.byteLength(value, "utf8") >= MIN_PASSWORD_BYTES && Buffer.byteLength(value, "utf8") <= MAX_PASSWORD_BYTES)),
+  password: z
+    .string()
+    .nullable()
+    .optional()
+    .refine(
+      (value) =>
+        !value ||
+        (Buffer.byteLength(value, "utf8") >= MIN_PASSWORD_BYTES &&
+          Buffer.byteLength(value, "utf8") <= MAX_PASSWORD_BYTES),
+    ),
   partners: z.array(z.string().min(1).max(200)).max(100),
-  image: z.union([z.url(), z.literal("")]).nullable().optional().transform(value => value === "" ? null : value),
+  image: z
+    .union([z.url(), z.literal("")])
+    .nullable()
+    .optional()
+    .transform((value) => (value === "" ? null : value)),
   active: z.boolean().optional(),
 });
-const createAccountSchema = accountFields.omit({active: true}).extend({password: z.string().min(1)}).strict();
-const updateAccountSchema = accountFields.partial().extend({id: z.string().min(1).max(100)}).strict();
+const createAccountSchema = accountFields
+  .omit({ active: true })
+  .extend({ password: z.string().min(1) })
+  .strict();
+const updateAccountSchema = accountFields
+  .partial()
+  .extend({ id: z.string().min(1).max(100) })
+  .strict();
 
 export interface SafeClientDto {
   id: string;
@@ -66,7 +88,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const supabaseAdmin = createServiceClient(serviceConfig);
 
   // 1. Validação de identidade e privilégios administrativos
-  const { data: userData, error: userError } = await supabaseAdmin.auth.getUser(token);
+  const { data: userData, error: userError } =
+    await supabaseAdmin.auth.getUser(token);
   if (userError || !userData?.user) {
     return res.status(401).json({ error: "Sessão inválida ou expirada." });
   }
@@ -89,9 +112,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   };
 
   if (!person.visible || !person.admin) {
-    return res
-      .status(403)
-      .json({ error: "Acesso negado. Apenas administradores ativos podem gerenciar contas de clientes." });
+    return res.status(403).json({
+      error:
+        "Acesso negado. Apenas administradores ativos podem gerenciar contas de clientes.",
+    });
   }
 
   // ─── GET: Consulta de Clientes ──────────────────────────────────────────────
@@ -109,7 +133,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(404).json({ error: "Cliente não encontrado." });
       }
 
-      return res.status(200).json({ client: toSafeClientDto(client as Record<string, unknown>) });
+      return res
+        .status(200)
+        .json({ client: toSafeClientDto(client as Record<string, unknown>) });
     }
 
     const { data: clients, error: clientsErr } = await supabaseAdmin
@@ -122,14 +148,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(503).json({ error: "Falha ao listar clientes." });
     }
 
-    const safeList = (clients as Record<string, unknown>[]).map(toSafeClientDto);
+    const safeList = (clients as Record<string, unknown>[]).map(
+      toSafeClientDto,
+    );
     return res.status(200).json({ clients: safeList });
   }
 
   // ─── POST: Criação de Cliente ───────────────────────────────────────────────
   if (req.method === "POST") {
     const parsed = createAccountSchema.safeParse(req.body);
-    if (!parsed.success) return res.status(400).json({error: "Dados da conta inválidos."});
+    if (!parsed.success)
+      return res.status(400).json({ error: "Dados da conta inválidos." });
     const body = parsed.data;
 
     const name = body.name?.trim();
@@ -139,7 +168,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const image = body.image ? String(body.image).trim() : null;
 
     if (!name || name.length < 2) {
-      return res.status(400).json({ error: "Nome deve ter pelo menos 2 caracteres." });
+      return res
+        .status(400)
+        .json({ error: "Nome deve ter pelo menos 2 caracteres." });
     }
 
     if (!email?.includes("@")) {
@@ -151,7 +182,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const passwordBytes = Buffer.byteLength(password, "utf8");
-    if (passwordBytes < MIN_PASSWORD_BYTES || passwordBytes > MAX_PASSWORD_BYTES) {
+    if (
+      passwordBytes < MIN_PASSWORD_BYTES ||
+      passwordBytes > MAX_PASSWORD_BYTES
+    ) {
       return res.status(400).json({
         error: `A senha deve ter entre ${MIN_PASSWORD_BYTES} e ${MAX_PASSWORD_BYTES} bytes UTF-8.`,
       });
@@ -168,7 +202,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(503).json({ error: "Falha ao validar parceiros." });
       }
 
-      const validPartners = partnersData as Array<{ slug: string; archived: boolean }>;
+      const validPartners = partnersData as Array<{
+        slug: string;
+        archived: boolean;
+      }>;
       for (const slug of partnerSlugs) {
         const found = validPartners.find((p) => p.slug === slug);
         if (!found || found.archived) {
@@ -198,7 +235,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .single();
 
     if (insertErr || !newClient) {
-      return res.status(503).json({ error: "Falha ao cadastrar cliente no banco." });
+      return res
+        .status(503)
+        .json({ error: "Falha ao cadastrar cliente no banco." });
     }
 
     return res.status(201).json({
@@ -208,42 +247,77 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // ─── PATCH: Atualização de Cliente ──────────────────────────────────────────
   if (req.method === "PATCH") {
-    const parsed = updateAccountSchema.safeParse({...req.body, id: req.body?.id || req.query.id});
-    if (!parsed.success) return res.status(400).json({error: "Dados da conta inválidos."});
-    const {id, password, ...updates} = parsed.data;
+    const parsed = updateAccountSchema.safeParse({
+      ...req.body,
+      id: req.body?.id || req.query.id,
+    });
+    if (!parsed.success)
+      return res.status(400).json({ error: "Dados da conta inválidos." });
+    const { id, password, ...updates } = parsed.data;
     if (updates.partners?.length) {
-      const {data: partners, error} = await supabaseAdmin.from("partners").select("slug, archived").in("slug", updates.partners);
-      if (error) return res.status(503).json({error: "Falha ao validar parceiros."});
-      if (updates.partners.some(slug => !partners?.some(partner => partner.slug === slug && !partner.archived))) {
-        return res.status(400).json({error: "Um parceiro não existe ou está arquivado."});
+      const { data: partners, error } = await supabaseAdmin
+        .from("partners")
+        .select("slug, archived")
+        .in("slug", updates.partners);
+      if (error)
+        return res.status(503).json({ error: "Falha ao validar parceiros." });
+      if (
+        updates.partners.some(
+          (slug) =>
+            !partners?.some(
+              (partner) => partner.slug === slug && !partner.archived,
+            ),
+        )
+      ) {
+        return res
+          .status(400)
+          .json({ error: "Um parceiro não existe ou está arquivado." });
       }
     }
-    const passwordHash = password ? await bcrypt.hash(password, BCRYPT_COST) : null;
-    const {data, error} = await supabaseAdmin.rpc("admin_update_client_account", {
-      p_client_id: id, p_changes: updates, p_password_hash: passwordHash,
-    });
-    if (error?.code === "P0002") return res.status(404).json({error: "Conta não encontrada."});
+    const passwordHash = password
+      ? await bcrypt.hash(password, BCRYPT_COST)
+      : null;
+    const { data, error } = await supabaseAdmin.rpc(
+      "admin_update_client_account",
+      {
+        p_client_id: id,
+        p_changes: updates,
+        p_password_hash: passwordHash,
+      },
+    );
+    if (error?.code === "P0002")
+      return res.status(404).json({ error: "Conta não encontrada." });
     if (error || !data || typeof data !== "object" || Array.isArray(data)) {
-      return res.status(503).json({error: "Não foi possível atualizar a conta. Nenhuma alteração foi confirmada."});
+      return res.status(503).json({
+        error:
+          "Não foi possível atualizar a conta. Nenhuma alteração foi confirmada.",
+      });
     }
-    return res.status(200).json({client: toSafeClientDto(data as Record<string, unknown>)});
+    return res
+      .status(200)
+      .json({ client: toSafeClientDto(data as Record<string, unknown>) });
   }
 
   // ─── DELETE: Arquivar / Desativar Cliente ────────────────────────────────────
   if (req.method === "DELETE") {
     const body = (req.body ?? {}) as { id?: string };
-    const id = body.id || (typeof req.query.id === "string" ? req.query.id : undefined);
+    const id =
+      body.id || (typeof req.query.id === "string" ? req.query.id : undefined);
 
     if (!id) {
       return res.status(400).json({ error: "ID do cliente é obrigatório." });
     }
 
     // Executa RPC transacional que desativa a conta e revoga todas as sessões ativas
-    const { error: rpcErr } = await supabaseAdmin.rpc("admin_deactivate_client", {
-      p_client_id: id,
-    });
+    const { error: rpcErr } = await supabaseAdmin.rpc(
+      "admin_deactivate_client",
+      {
+        p_client_id: id,
+      },
+    );
 
-    if (rpcErr?.code === "P0002") return res.status(404).json({error: "Conta não encontrada."});
+    if (rpcErr?.code === "P0002")
+      return res.status(404).json({ error: "Conta não encontrada." });
     if (rpcErr) {
       return res.status(503).json({
         error: "Falha transacional ao desativar cliente e revogar sessões.",

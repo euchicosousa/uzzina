@@ -75,7 +75,7 @@ function AccordionContent({
   return (
     <AccordionContentPrimitive
       data-slot="accordion-content"
-      className="h-(--disclosure-panel-height) overflow-clip px-4 text-sm transition-[height] data-open:animate-accordion-down data-closed:animate-accordion-up"
+      className="data-open:animate-accordion-down data-closed:animate-accordion-up h-(--disclosure-panel-height) overflow-clip px-4 text-sm transition-[height]"
       {...props}
     >
       <div
@@ -100,4 +100,3 @@ export {
   AccordionTrigger as PrismAccordionTrigger,
   AccordionContent as PrismAccordionContent,
 };
-

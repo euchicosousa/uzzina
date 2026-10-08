@@ -32,7 +32,10 @@ export function hashLegacyPassword(password: string): string {
 /**
  * Extrai o valor de um cookie específico a partir do cabeçalho "Cookie".
  */
-export function extractCookie(cookieHeader: string | undefined | null, name: string): string | null {
+export function extractCookie(
+  cookieHeader: string | undefined | null,
+  name: string,
+): string | null {
   if (!cookieHeader) return null;
   const match = cookieHeader
     .split(";")
@@ -54,7 +57,8 @@ export function serializeSessionCookie(
   token: string,
   options?: CookieSerializeOptions,
 ): string {
-  const isProduction = options?.isProduction ?? process.env.NODE_ENV === "production";
+  const isProduction =
+    options?.isProduction ?? process.env.NODE_ENV === "production";
   const secureFlag = isProduction ? "; Secure" : "";
   return `${SESSION_COOKIE_NAME}=${token}; HttpOnly; SameSite=Lax; Path=/api; Max-Age=${SESSION_TTL_SECONDS}${secureFlag}`;
 }
@@ -62,8 +66,11 @@ export function serializeSessionCookie(
 /**
  * Serializa a remoção do cookie de sessão definindo Max-Age=0.
  */
-export function serializeClearSessionCookie(options?: CookieSerializeOptions): string {
-  const isProduction = options?.isProduction ?? process.env.NODE_ENV === "production";
+export function serializeClearSessionCookie(
+  options?: CookieSerializeOptions,
+): string {
+  const isProduction =
+    options?.isProduction ?? process.env.NODE_ENV === "production";
   const secureFlag = isProduction ? "; Secure" : "";
   return `${SESSION_COOKIE_NAME}=; HttpOnly; SameSite=Lax; Path=/api; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT${secureFlag}`;
 }
@@ -85,7 +92,9 @@ export function validateRequestOrigin(
 
   // Se APP_ORIGIN estiver explicitamente configurado, exige correspondência exata
   if (configuredOrigin) {
-    return origin.trim().toLowerCase() === configuredOrigin.trim().toLowerCase();
+    return (
+      origin.trim().toLowerCase() === configuredOrigin.trim().toLowerCase()
+    );
   }
 
   // Se for produção e não houver APP_ORIGIN configurado, rejeita por segurança

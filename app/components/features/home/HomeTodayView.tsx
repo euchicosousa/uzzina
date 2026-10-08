@@ -66,7 +66,10 @@ export function HomeTodayView({
       title={title}
       OptionsComponent={
         <div className="flex items-center gap-2">
-          <CalendarToolbar currentDay={currentDay} setCurrentDay={setCurrentDay} />
+          <CalendarToolbar
+            currentDay={currentDay}
+            setCurrentDay={setCurrentDay}
+          />
           <PrismToggleGroup
             aria-label="Opções de Visualização da Home"
             selectedKeys={[view]}
@@ -79,13 +82,19 @@ export function HomeTodayView({
             <PrismToggleGroupItem aria-label="Visão por Kanban" id="kanban">
               <KanbanIcon />
             </PrismToggleGroupItem>
-            <PrismToggleGroupItem aria-label="Visão por Categorias" id="categories">
+            <PrismToggleGroupItem
+              aria-label="Visão por Categorias"
+              id="categories"
+            >
               <Grid3x3Icon />
             </PrismToggleGroupItem>
             <PrismToggleGroupItem aria-label="Visão por Feed" id="feed">
               <BlocksIcon />
             </PrismToggleGroupItem>
-            <PrismToggleGroupItem aria-label="Visão por Parceiros" id="partners">
+            <PrismToggleGroupItem
+              aria-label="Visão por Parceiros"
+              id="partners"
+            >
               <HeartHandshakeIcon />
             </PrismToggleGroupItem>
           </PrismToggleGroup>
@@ -107,11 +116,13 @@ export function HomeTodayView({
             </div>
           </div>
         )}
-        {view === "categories" && (
-          <CategoriesBoard actions={filteredActions} />
-        )}
+        {view === "categories" && <CategoriesBoard actions={filteredActions} />}
         {view === "partners" && (
-          <PartnersBoard actions={filteredActions} isLoading={isLoading} currentDay={currentDay} />
+          <PartnersBoard
+            actions={filteredActions}
+            isLoading={isLoading}
+            currentDay={currentDay}
+          />
         )}
       </div>
     </HomeViewWrapper>

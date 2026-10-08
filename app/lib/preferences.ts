@@ -50,19 +50,23 @@ export type SerializedPreferences = {
   } | null;
 };
 
-export function getUserPreferences(person?: { preferences?: unknown }): UserPreferences {
+export function getUserPreferences(person?: {
+  preferences?: unknown;
+}): UserPreferences {
   const prefs = person?.preferences as SerializedPreferences | null | undefined;
   if (!prefs || typeof prefs !== "object") {
     return DEFAULT_PREFERENCES;
   }
-  
+
   let customTheme: CustomTheme | null = null;
   if (prefs.customTheme && typeof prefs.customTheme === "object") {
     const light = prefs.customTheme.light;
     const dark = prefs.customTheme.dark;
     if (
-      light && typeof light === "object" &&
-      dark && typeof dark === "object" &&
+      light &&
+      typeof light === "object" &&
+      dark &&
+      typeof dark === "object" &&
       typeof light.primaryHex === "string" &&
       typeof light.primaryFgHex === "string" &&
       typeof light.bgHex === "string" &&
@@ -91,7 +95,9 @@ export function getUserPreferences(person?: { preferences?: unknown }): UserPref
 
   return {
     theme:
-      prefs.theme === "light" || prefs.theme === "dark" || prefs.theme === "system"
+      prefs.theme === "light" ||
+      prefs.theme === "dark" ||
+      prefs.theme === "system"
         ? prefs.theme
         : DEFAULT_PREFERENCES.theme,
     themeColorIndex:
@@ -115,4 +121,3 @@ export function getUserPreferences(person?: { preferences?: unknown }): UserPref
     customTheme,
   };
 }
-

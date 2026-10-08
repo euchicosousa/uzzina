@@ -128,7 +128,6 @@ export async function fetchLeads() {
   return data as Lead[];
 }
 
-
 export type Person = Tables<"people">;
 
 export async function fetchPeople() {
@@ -163,7 +162,9 @@ export async function fetchReviewActions(ids: string[]): Promise<Action[]> {
   const supabase = createSupabaseBrowserClient();
   const { data, error } = await supabase
     .from("actions")
-    .select("id, title, content_description, instagram_caption, category, date, partners")
+    .select(
+      "id, title, content_description, instagram_caption, category, date, partners",
+    )
     .in("id", ids)
     .order("date", { ascending: true });
   if (error) throw error;
@@ -173,7 +174,9 @@ export async function fetchReviewActions(ids: string[]): Promise<Action[]> {
 /**
  * Fetch a partner by slug for the public review page.
  */
-export async function fetchPartnerBySlug(slug: string): Promise<Partner | null> {
+export async function fetchPartnerBySlug(
+  slug: string,
+): Promise<Partner | null> {
   const supabase = createSupabaseBrowserClient();
   const { data, error } = await supabase
     .from("partners")

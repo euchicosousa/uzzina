@@ -15,4 +15,3 @@ export function ActionTimeDisplay({ action }: { action: Action }) {
     </div>
   );
 }
-

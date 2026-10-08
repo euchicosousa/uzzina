@@ -27,7 +27,8 @@ mock.module("@supabase/supabase-js", () => ({
     auth: {
       getUser: async (token: string) => {
         const u = authUsers[token];
-        if (!u) return { data: { user: null }, error: { message: "Invalid token" } };
+        if (!u)
+          return { data: { user: null }, error: { message: "Invalid token" } };
         return { data: { user: u }, error: null };
       },
     },
@@ -36,14 +37,18 @@ mock.module("@supabase/supabase-js", () => ({
         return { data: null, error: { message: "RPC failure" } };
       }
       if (fn === "admin_update_client_account") {
-        const client = db.clients.find(c => c.id === params.p_client_id);
-        if (!client) return {data: null, error: {message: "Not found", code: "P0002"}};
+        const client = db.clients.find((c) => c.id === params.p_client_id);
+        if (!client)
+          return { data: null, error: { message: "Not found", code: "P0002" } };
         Object.assign(client, params.p_changes);
-        if (params.p_password_hash) client.password_hash = params.p_password_hash;
+        if (params.p_password_hash)
+          client.password_hash = params.p_password_hash;
         if (params.p_password_hash || client.active === false) {
-          for (const session of db.dash_sessions) if (session.client_id === client.id) session.revoked_at = "2026-10-06T12:00:00Z";
+          for (const session of db.dash_sessions)
+            if (session.client_id === client.id)
+              session.revoked_at = "2026-10-06T12:00:00Z";
         }
-        return {data: {...client}, error: null};
+        return { data: { ...client }, error: null };
       }
       if (fn === "admin_update_client_password") {
         const clientId = params.p_client_id as string;
@@ -62,7 +67,8 @@ mock.module("@supabase/supabase-js", () => ({
       if (fn === "admin_deactivate_client") {
         const clientId = params.p_client_id as string;
         const client = db.clients.find((c) => c.id === clientId);
-        if (!client) return {data: null, error: {message: "Not found", code: "P0002"}};
+        if (!client)
+          return { data: null, error: { message: "Not found", code: "P0002" } };
         if (client) {
           client.active = false;
         }
@@ -143,7 +149,9 @@ mock.module("@supabase/supabase-js", () => ({
         },
         insert: (rowsToInsert: Row | Row[]) => {
           operation = "insert";
-          const first = Array.isArray(rowsToInsert) ? rowsToInsert[0] : rowsToInsert;
+          const first = Array.isArray(rowsToInsert)
+            ? rowsToInsert[0]
+            : rowsToInsert;
           change = first;
           return chain;
         },
@@ -160,7 +168,10 @@ mock.module("@supabase/supabase-js", () => ({
           const res = execute();
           if (res.error) return res;
           if (res.data?.length === 1) return { data: res.data[0], error: null };
-          return { data: null, error: { message: "Row not found", code: "PGRST116" } };
+          return {
+            data: null,
+            error: { message: "Row not found", code: "PGRST116" },
+          };
         },
         // biome-ignore lint/suspicious/noThenProperty: PostgREST thenable
         then: (resolve: (res: ReturnType<typeof execute>) => void) =>
@@ -302,27 +313,54 @@ describe("Ticket 06: Administração de Contas de Clientes no Servidor", () => {
   // 1. Autorização de Acesso ao Endpoint Privilegiado
   it("recusa requisição sem token ou de usuário comum / inativo", async () => {
     // Sem token
-    const { req: r1, res: res1, getStatus: s1 } = createMockReqRes({
+    const {
+      req: r1,
+      res: res1,
+      getStatus: s1,
+    } = createMockReqRes({
       method: "POST",
-      body: { name: "Novo", email: "novo@test.com", password: "Password123", partners: ["smartmed"] },
+      body: {
+        name: "Novo",
+        email: "novo@test.com",
+        password: "Password123",
+        partners: ["smartmed"],
+      },
     });
     await clientAccountsHandler(r1, res1);
     expect(s1()).toBe(401);
 
     // Colaborador comum (admin = false)
-    const { req: r2, res: res2, getStatus: s2 } = createMockReqRes({
+    const {
+      req: r2,
+      res: res2,
+      getStatus: s2,
+    } = createMockReqRes({
       method: "POST",
       headers: { authorization: "Bearer collab-token" },
-      body: { name: "Novo", email: "novo@test.com", password: "Password123", partners: ["smartmed"] },
+      body: {
+        name: "Novo",
+        email: "novo@test.com",
+        password: "Password123",
+        partners: ["smartmed"],
+      },
     });
     await clientAccountsHandler(r2, res2);
     expect(s2()).toBe(403);
 
     // Inativo (visible = false)
-    const { req: r3, res: res3, getStatus: s3 } = createMockReqRes({
+    const {
+      req: r3,
+      res: res3,
+      getStatus: s3,
+    } = createMockReqRes({
       method: "POST",
       headers: { authorization: "Bearer inactive-token" },
-      body: { name: "Novo", email: "novo@test.com", password: "Password123", partners: ["smartmed"] },
+      body: {
+        name: "Novo",
+        email: "novo@test.com",
+        password: "Password123",
+        partners: ["smartmed"],
+      },
     });
     await clientAccountsHandler(r3, res3);
     expect(s3()).toBe(403);
@@ -331,20 +369,38 @@ describe("Ticket 06: Administração de Contas de Clientes no Servidor", () => {
   // 2. Criação de Contas (POST /api/client-accounts)
   it("valida comprimento de senha (mínimo 8, máximo 72 bytes UTF-8)", async () => {
     // Senha muito curta (< 8 bytes)
-    const { req: rShort, res: resShort, getStatus: sShort } = createMockReqRes({
+    const {
+      req: rShort,
+      res: resShort,
+      getStatus: sShort,
+    } = createMockReqRes({
       method: "POST",
       headers: { authorization: "Bearer admin-token" },
-      body: { name: "Novo", email: "short@test.com", password: "1234567", partners: ["smartmed"] },
+      body: {
+        name: "Novo",
+        email: "short@test.com",
+        password: "1234567",
+        partners: ["smartmed"],
+      },
     });
     await clientAccountsHandler(rShort, resShort);
     expect(sShort()).toBe(400);
 
     // Senha muito longa (> 72 bytes)
     const longPassword = "A".repeat(73);
-    const { req: rLong, res: resLong, getStatus: sLong } = createMockReqRes({
+    const {
+      req: rLong,
+      res: resLong,
+      getStatus: sLong,
+    } = createMockReqRes({
       method: "POST",
       headers: { authorization: "Bearer admin-token" },
-      body: { name: "Novo", email: "long@test.com", password: longPassword, partners: ["smartmed"] },
+      body: {
+        name: "Novo",
+        email: "long@test.com",
+        password: longPassword,
+        partners: ["smartmed"],
+      },
     });
     await clientAccountsHandler(rLong, resLong);
     expect(sLong()).toBe(400);
@@ -354,7 +410,12 @@ describe("Ticket 06: Administração de Contas de Clientes no Servidor", () => {
     const { req, res, getStatus } = createMockReqRes({
       method: "POST",
       headers: { authorization: "Bearer admin-token" },
-      body: { name: "Novo", email: "novo@test.com", password: "SenhaValida123", partners: ["archived-partner"] },
+      body: {
+        name: "Novo",
+        email: "novo@test.com",
+        password: "SenhaValida123",
+        partners: ["archived-partner"],
+      },
     });
     await clientAccountsHandler(req, res);
     expect(getStatus()).toBe(400);
@@ -382,7 +443,9 @@ describe("Ticket 06: Administração de Contas de Clientes no Servidor", () => {
     expect(clientResponse.email).toBe("novo_seguro@smartmed.com");
 
     // Verifica no banco simulado se foi gravado hash bcrypt válido
-    const savedInDb = db.clients.find((c) => c.email === "novo_seguro@smartmed.com");
+    const savedInDb = db.clients.find(
+      (c) => c.email === "novo_seguro@smartmed.com",
+    );
     expect(savedInDb).toBeDefined();
     const hash = savedInDb?.password_hash as string;
     expect(hash.startsWith("$2a$") || hash.startsWith("$2b$")).toBe(true);
@@ -409,7 +472,9 @@ describe("Ticket 06: Administração de Contas de Clientes no Servidor", () => {
     expect(clientInDb?.name).toBe("Nome Atualizado");
 
     const body = getBody();
-    expect((body.client as Record<string, unknown>).password_hash).toBeUndefined();
+    expect(
+      (body.client as Record<string, unknown>).password_hash,
+    ).toBeUndefined();
   });
 
   it("troca de senha revoga atômica e imediatamente todas as sessões ativas do cliente", async () => {
@@ -428,7 +493,12 @@ describe("Ticket 06: Administração de Contas de Clientes no Servidor", () => {
 
     // Confirma que a nova senha é bcrypt
     const clientInDb = db.clients.find((c) => c.id === "client-1");
-    expect(bcrypt.compareSync("NovaSenhaUltraSegura456", clientInDb?.password_hash as string)).toBe(true);
+    expect(
+      bcrypt.compareSync(
+        "NovaSenhaUltraSegura456",
+        clientInDb?.password_hash as string,
+      ),
+    ).toBe(true);
 
     // Confirma que a sessão foi revogada
     const sessionInDb = db.dash_sessions.find((s) => s.id === "sess-1");
@@ -468,7 +538,9 @@ describe("Ticket 06: Administração de Contas de Clientes no Servidor", () => {
   it("login com hash legado migra condicionalmente para bcrypt após sucesso", async () => {
     // Hash legado conhecido para 'SenhaLegada123'
     const legacyClient = db.clients.find((c) => c.id === "client-legacy");
-    expect((legacyClient?.password_hash as string).startsWith("$2")).toBe(false);
+    expect((legacyClient?.password_hash as string).startsWith("$2")).toBe(
+      false,
+    );
 
     const { req, res, getStatus, getBody } = createMockReqRes({
       method: "POST",
@@ -483,7 +555,9 @@ describe("Ticket 06: Administração de Contas de Clientes no Servidor", () => {
     expect(getStatus()).toBe(200);
 
     const body = getBody();
-    expect((body.client as Record<string, unknown>).password_hash).toBeUndefined();
+    expect(
+      (body.client as Record<string, unknown>).password_hash,
+    ).toBeUndefined();
 
     // No banco, o hash deve ter sido migrado para bcrypt
     const updatedClient = db.clients.find((c) => c.id === "client-legacy");
@@ -510,17 +584,32 @@ describe("Ticket 06: Administração de Contas de Clientes no Servidor", () => {
   });
   it("rejects invalid partner before changing password or revoking sessions", async () => {
     const before = db.clients[0]?.password_hash;
-    const request = createMockReqRes({method: "PATCH", headers: {authorization: "Bearer admin-token"}, body: {id: "client-1", password: "NewPassword123", partners: ["missing"]}});
+    const request = createMockReqRes({
+      method: "PATCH",
+      headers: { authorization: "Bearer admin-token" },
+      body: {
+        id: "client-1",
+        password: "NewPassword123",
+        partners: ["missing"],
+      },
+    });
     await clientAccountsHandler(request.req, request.res);
     expect(request.getStatus()).toBe(400);
     expect(db.clients[0]?.password_hash).toBe(before);
-    expect(db.dash_sessions.filter(s => s.client_id === "client-1").every(s => !s.revoked_at)).toBe(true);
+    expect(
+      db.dash_sessions
+        .filter((s) => s.client_id === "client-1")
+        .every((s) => !s.revoked_at),
+    ).toBe(true);
   });
-
 });
 
 it("DELETE rejects a nonexistent client instead of reporting archival", async () => {
-  const request = createMockReqRes({method: "DELETE", headers: {authorization: "Bearer admin-token"}, body: {id: "missing-client"}});
+  const request = createMockReqRes({
+    method: "DELETE",
+    headers: { authorization: "Bearer admin-token" },
+    body: { id: "missing-client" },
+  });
   await clientAccountsHandler(request.req, request.res);
   expect(request.getStatus()).toBe(404);
 });

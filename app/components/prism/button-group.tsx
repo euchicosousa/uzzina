@@ -58,7 +58,7 @@ function ButtonGroupText({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-xl squircle border bg-muted px-3 text-sm font-medium text-muted-foreground [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5",
+        "flex items-center gap-2 rounded-xl border bg-muted px-3 text-sm font-medium text-muted-foreground squircle [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5",
         className,
       )}
       data-slot="button-group-text"

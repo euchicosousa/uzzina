@@ -40,27 +40,29 @@ export function WorkFileThumbnail({
         {isImage ? (
           <img
             alt=""
-            className="size-full rounded-2xl squircle object-cover"
+            className="size-full rounded-2xl object-cover squircle"
             src={url}
           />
         ) : (
-          <div className="bg-muted flex size-full items-center justify-center rounded-lg border text-[8px] font-bold tracking-wide uppercase opacity-70">
+          <div className="flex size-full items-center justify-center rounded-lg border bg-muted text-[8px] font-bold tracking-wide uppercase opacity-70">
             {ext.slice(0, 4)}
           </div>
         )}
       </a>
-      {onRemove && <button
-        className="bg-destructive absolute -top-1.5 -right-1.5 hidden size-4 items-center justify-center rounded-full text-white group-hover:flex"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onRemove();
-        }}
-        aria-label="Remover anexo"
-        type="button"
-      >
-        <XIcon className="size-2.5" />
-      </button>}
+      {onRemove && (
+        <button
+          className="absolute -top-1.5 -right-1.5 hidden size-4 items-center justify-center rounded-full bg-destructive text-white group-hover:flex"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onRemove();
+          }}
+          aria-label="Remover anexo"
+          type="button"
+        >
+          <XIcon className="size-2.5" />
+        </button>
+      )}
     </div>
   );
 }

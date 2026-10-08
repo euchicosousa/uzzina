@@ -82,7 +82,7 @@ export function BulkColorDialog({
           <PrismToggleGroup
             aria-label="Seleção de Cor dos Parceiros"
             className={cn(
-              "grid gap-3 w-full justify-start",
+              "grid w-full justify-start gap-3",
               getGridCols(normalizedColors.length, 8),
             )}
             onSelectionChange={(keys) => {
@@ -106,7 +106,7 @@ export function BulkColorDialog({
               <PrismToggleGroupItem
                 key={hex}
                 aria-label={`Cor ${hex}`}
-                className="h-5 min-w-0 rounded-2xl squircle border border-black/10 p-0 shrink-0 transition-all data-selected:ring-2 data-selected:ring-primary data-selected:ring-offset-2 data-selected:ring-offset-background data-selected:scale-110"
+                className="h-5 min-w-0 shrink-0 rounded-2xl border border-black/10 p-0 transition-all squircle data-selected:scale-110 data-selected:ring-2 data-selected:ring-primary data-selected:ring-offset-2 data-selected:ring-offset-background"
                 id={hex}
                 style={{
                   backgroundColor: hex,
@@ -115,13 +115,13 @@ export function BulkColorDialog({
             ))}
           </PrismToggleGroup>
         ) : (
-          <p className="text-sm text-muted-foreground text-center">
+          <p className="text-center text-sm text-muted-foreground">
             Nenhuma cor encontrada para os parceiros das ações selecionadas.
           </p>
         )}
       </div>
 
-      <div className="border-t px-5 py-4 flex flex-col gap-3">
+      <div className="flex flex-col gap-3 border-t px-5 py-4">
         <PrismColorArea onChange={handleColorChange} value={colorValue} />
         <PrismColorSlider onChange={handleColorChange} value={colorValue} />
       </div>

@@ -101,10 +101,10 @@ function CommandInput({ className, ...props }: InputProps) {
     <SearchField
       aria-label={props.placeholder || "Search"}
       autoFocus
-      className="p-2 w-full"
+      className="w-full p-2"
       data-slot="command-input-wrapper"
     >
-      <InputGroup className="h-10 bg-input rounded-2xl squircle">
+      <InputGroup className="h-10 rounded-2xl bg-input squircle">
         <Input
           {...props}
           className={cn(
@@ -125,7 +125,7 @@ function CommandList<T extends object>({ className, ...props }: MenuProps<T>) {
     <Menu
       {...props}
       className={cn(
-        "no-scrollbar max-h-72 scroll-py-1 overflow-x-hidden overflow-y-auto outline-none border-t",
+        "no-scrollbar max-h-72 scroll-py-1 overflow-x-hidden overflow-y-auto border-t outline-none",
         className,
       )}
       data-slot="command-list"
@@ -153,14 +153,14 @@ function CommandGroup<T extends object>({
   return (
     <MenuSection
       className={cn(
-        "overflow-hidden space-y-1 p-2 text-foreground **:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium **:[[cmdk-group-heading]]:text-muted-foreground",
+        "space-y-1 overflow-hidden p-2 text-foreground **:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium **:[[cmdk-group-heading]]:text-muted-foreground",
         className,
       )}
       data-slot="command-group"
       {...props}
     >
       {heading && (
-        <Header className="uppercase tracking-wide" cmdk-group-heading="">
+        <Header className="tracking-wide uppercase" cmdk-group-heading="">
           {heading}
         </Header>
       )}
@@ -198,7 +198,7 @@ function CommandItem<T extends object>({
     <MenuItem
       {...props}
       className={cn(
-        "group/command-item relative squircle flex min-h-7 cursor-default items-center gap-2 rounded-2xl px-4 h-8 outline-hidden select-none in-data-[slot=dialog-content]:rounded-2xl data-focused:bg-secondary/50 data-focused:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary/50 data-[selected=true]:text-foreground data-[checked=true]:bg-secondary/50 data-[checked=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-[selected=true]:*:[svg]:text-foreground data-[checked=true]:*:[svg]:text-foreground",
+        "group/command-item relative flex h-8 min-h-7 cursor-default items-center gap-2 rounded-2xl px-4 outline-hidden select-none squircle in-data-[slot=dialog-content]:rounded-2xl data-focused:bg-secondary/50 data-focused:text-foreground data-[checked=true]:bg-secondary/50 data-[checked=true]:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary/50 data-[selected=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-[checked=true]:*:[svg]:text-foreground data-[selected=true]:*:[svg]:text-foreground",
         className,
       )}
       data-checked={selected ? "true" : undefined}

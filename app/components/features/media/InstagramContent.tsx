@@ -78,9 +78,7 @@ export function ContentFilesManager({
         <div className="flex items-center gap-2">
           {/* UploadIcon rápido (primeiro arquivo) */}
           <CloudinaryUpload
-            className={cn(
-              files.length > 0 && "hidden",
-            )}
+            className={cn(files.length > 0 && "hidden")}
             cloudName={cloudName}
             folder="uzzina/content"
             multiple
@@ -93,7 +91,7 @@ export function ContentFilesManager({
           </CloudinaryUpload>
 
           {files.length > 0 && (
-            <span className="bg-muted rounded-full px-2 py-0.5 text-[10px] font-medium capitalize">
+            <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium capitalize">
               {type === "image"
                 ? "Imagem"
                 : type === "video"
@@ -110,7 +108,7 @@ export function ContentFilesManager({
           onClick={() => setDialogOpen(true)}
           type="button"
         >
-          <SlidersHorizontalIcon/>
+          <SlidersHorizontalIcon />
           {files.length === 0
             ? "Gerenciar"
             : `${files.length} arquivo${files.length !== 1 ? "s" : ""}`}

@@ -14,9 +14,17 @@ export async function createNotificationsForMentions(
     commentExcerpt: string;
     authorId: string; // user_id do autor
     mentionedIds: string[]; // array de IDs dos mencionados
-  }
+  },
 ) {
-  const { commentId, actionId, actionTitle, authorName, commentExcerpt, authorId, mentionedIds } = params;
+  const {
+    commentId,
+    actionId,
+    actionTitle,
+    authorName,
+    commentExcerpt,
+    authorId,
+    mentionedIds,
+  } = params;
 
   // Filtrar para não notificar a si próprio
   const recipients = mentionedIds.filter((id) => id !== authorId);
@@ -34,7 +42,9 @@ export async function createNotificationsForMentions(
     comment_excerpt: commentExcerpt,
   }));
 
-  const { error } = await supabase.from("notifications").insert(notificationsToInsert);
+  const { error } = await supabase
+    .from("notifications")
+    .insert(notificationsToInsert);
   if (error) throw error;
 }
 
@@ -43,7 +53,7 @@ export async function createNotificationsForMentions(
  */
 export async function getUnreadCount(
   supabase: SupabaseClient,
-  userId: string
+  userId: string,
 ): Promise<number> {
   const { count, error } = await supabase
     .from("notifications")
@@ -61,7 +71,7 @@ export async function getUnreadCount(
 export async function listNotifications(
   supabase: SupabaseClient,
   userId: string,
-  limit = 40
+  limit = 40,
 ): Promise<Notification[]> {
   const { data, error } = await supabase
     .from("notifications")
@@ -80,7 +90,7 @@ export async function listNotifications(
 export async function markAsRead(
   supabase: SupabaseClient,
   notificationIds: string[],
-  userId: string
+  userId: string,
 ) {
   if (notificationIds.length === 0) return;
 
@@ -96,10 +106,7 @@ export async function markAsRead(
 /**
  * Marca todas as notificações do usuário como lidas.
  */
-export async function markAllAsRead(
-  supabase: SupabaseClient,
-  userId: string
-) {
+export async function markAllAsRead(supabase: SupabaseClient, userId: string) {
   const { error } = await supabase
     .from("notifications")
     .update({ read_at: new Date().toISOString() })

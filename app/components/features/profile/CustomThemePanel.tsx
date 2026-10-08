@@ -1,9 +1,6 @@
 import { PipetteIcon } from "lucide-react";
 import { PrismLabel } from "~/components/prism";
-import type {
-  ThemeColorKey,
-  ThemeMode,
-} from "~/lib/custom-theme";
+import type { ThemeColorKey, ThemeMode } from "~/lib/custom-theme";
 import type { CustomTheme } from "~/lib/preferences";
 
 const MODES: { mode: ThemeMode; title: string }[] = [

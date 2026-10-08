@@ -47,7 +47,7 @@ export function CalendarDayCell({
       key={format(day, "yyyy-MM-dd")}
       ref={setNodeRef}
       className={cn(
-        "group/column flex flex-col justify-between hover:bg-foreground/5 duration-500",
+        "group/column flex flex-col justify-between duration-500 hover:bg-foreground/5",
         showBorder && "border-b",
         isAutoHeight
           ? ""
@@ -59,7 +59,7 @@ export function CalendarDayCell({
     >
       <div className="flex h-full shrink flex-col gap-2 overflow-hidden p-1">
         <div className="flex items-center justify-between">
-          <div className="gap-2 flex items-center">
+          <div className="flex items-center gap-2">
             <div
               className={cn(
                 !isSameMonth(day, currentDay || today) ? "opacity-25" : "",
@@ -83,7 +83,7 @@ export function CalendarDayCell({
             )}
           </div>
           {onCreateAction && (
-            <div className="isolate transition duration-300 opacity-0 group-hover/column:opacity-100">
+            <div className="isolate opacity-0 transition duration-300 group-hover/column:opacity-100">
               <button
                 className="grid size-6 cursor-pointer place-content-center rounded-full bg-primary text-primary-foreground"
                 onClick={() => {

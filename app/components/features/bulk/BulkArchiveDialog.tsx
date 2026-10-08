@@ -25,7 +25,7 @@ export function BulkArchiveDialog({
       : `${selectedCount} ações selecionadas`;
   return (
     <PrismDialog
-      className="max-w-md p-0 overflow-hidden"
+      className="max-w-md overflow-hidden p-0"
       isDismissable
       isOpen={open}
       onOpenChange={onOpenChange}
@@ -33,7 +33,7 @@ export function BulkArchiveDialog({
       <PrismDialogHeader>
         <PrismDialogTitle>Confirmar arquivamento</PrismDialogTitle>
       </PrismDialogHeader>
-      <div className="px-5 text-base py-4 opacity-50">
+      <div className="px-5 py-4 text-base opacity-50">
         Você está prestes a arquivar {selectedText}.
       </div>
       <PrismDialogFooter>

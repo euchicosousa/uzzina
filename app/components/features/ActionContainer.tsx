@@ -38,12 +38,16 @@ export function ActionContainer({
 }: ActionContainerProps) {
   // Quando isSortable está ativo, o array chega pré-ordenado pelo hook useSprintOrder.
   // Chamar sortActions aqui sobrescreveria a ordem customizada do usuário.
-  const sortedActions = isSortable ? actions : sortActions(actions, orderBy, ascending);
+  const sortedActions = isSortable
+    ? actions
+    : sortActions(actions, orderBy, ascending);
   const [showMoreOverride, setShowMoreOverride] = useState<boolean | null>(
     null,
   );
   const showMore = showMoreOverride !== null ? showMoreOverride : isCompact;
-  const renderedActions = showMore ? sortedActions.slice(0, MAX_ACTIONS) : sortedActions;
+  const renderedActions = showMore
+    ? sortedActions.slice(0, MAX_ACTIONS)
+    : sortedActions;
   useSelectionActions(renderedActions);
   const containerRef = useRef<HTMLDivElement>(null);
   const [showTopMask, setShowTopMask] = useState(false);
@@ -137,23 +141,21 @@ export function ActionContainer({
       style={maskStyle}
     >
       <div className={cn(gapClasses, gridClasses, "relative")}>
-        {renderedActions.map(
-          (action) => (
-            <ActionItem
-              key={action.id}
-              action={action}
-              dateTimeDisplay={dateTimeDisplay}
-              displayFlags={displayFlags}
-              isDraggable={isDraggable}
-              isSortable={isSortable}
-              onClick={onClick}
-              variant={variant}
-            />
-          ),
-        )}
+        {renderedActions.map((action) => (
+          <ActionItem
+            key={action.id}
+            action={action}
+            dateTimeDisplay={dateTimeDisplay}
+            displayFlags={displayFlags}
+            isDraggable={isDraggable}
+            isSortable={isSortable}
+            onClick={onClick}
+            variant={variant}
+          />
+        ))}
         {isCompact && sortedActions.length > MAX_ACTIONS && (
           <button
-            className="absolute -bottom-3 left-1/2 grid size-6 -translate-x-1/2 cursor-pointer place-content-center rounded-full border bg-muted z-20 shadow-xs hover:shadow-lg hover:bg-card transition-all"
+            className="absolute -bottom-3 left-1/2 z-20 grid size-6 -translate-x-1/2 cursor-pointer place-content-center rounded-full border bg-muted shadow-xs transition-all hover:bg-card hover:shadow-lg"
             onClick={() => {
               setShowMoreOverride(!showMore);
             }}

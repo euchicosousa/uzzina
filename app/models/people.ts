@@ -1,7 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Person } from "~/types";
 
-
 export async function getPersonByUserId(
   supabase: SupabaseClient,
   userId: string,
@@ -15,8 +14,6 @@ export async function getPersonByUserId(
   if (error) throw error;
   return data as Person;
 }
-
-
 
 export async function getPersonName(supabase: SupabaseClient, userId: string) {
   const { data } = await supabase

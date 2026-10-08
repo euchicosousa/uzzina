@@ -1,6 +1,9 @@
 import crypto from "node:crypto";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createServiceClient, getServiceConfig } from "../server/supabase-admin.js";
+import {
+  createServiceClient,
+  getServiceConfig,
+} from "../server/supabase-admin.js";
 
 export interface PublicReviewPartnerDto {
   id: string;
@@ -29,13 +32,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
 
-  const slug = typeof req.query.slug === "string" ? req.query.slug.trim() : null;
+  const slug =
+    typeof req.query.slug === "string" ? req.query.slug.trim() : null;
   const token = typeof req.query.r === "string" ? req.query.r.trim() : null;
 
   // Rejeita acesso se slug ou token 'r' estiverem ausentes
   // Note: O formato legado ?ids=... é recusado aqui por falta do token 'r'
   if (!slug || !token) {
-    return res.status(404).json({ error: "Link de revisão inválido ou não encontrado." });
+    return res
+      .status(404)
+      .json({ error: "Link de revisão inválido ou não encontrado." });
   }
 
   const serviceConfig = getServiceConfig();
@@ -59,7 +65,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     .single();
 
   if (linkError || !linkData) {
-    return res.status(404).json({ error: "Link de revisão inválido ou não encontrado." });
+    return res
+      .status(404)
+      .json({ error: "Link de revisão inválido ou não encontrado." });
   }
 
   const link = linkData as {
@@ -83,7 +91,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Verifica se o slug bate exatamente com o parceiro gravado no registro
   if (link.partner_slug !== slug) {
-    return res.status(404).json({ error: "Link de revisão não corresponde ao parceiro." });
+    return res
+      .status(404)
+      .json({ error: "Link de revisão não corresponde ao parceiro." });
   }
 
   // Busca dados públicos do parceiro
@@ -127,12 +137,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const { data: actionsData, error: actionsError } = await supabaseAdmin
     .from("actions")
-    .select("id, title, content_description, instagram_caption, category, date, partners, archived")
+    .select(
+      "id, title, content_description, instagram_caption, category, date, partners, archived",
+    )
     .in("id", link.action_ids)
     .order("date", { ascending: true });
 
   if (actionsError || !actionsData) {
-    return res.status(503).json({ error: "Falha ao carregar ações para revisão." });
+    return res
+      .status(503)
+      .json({ error: "Falha ao carregar ações para revisão." });
   }
 
   const rawActions = actionsData as Array<{
@@ -148,12 +162,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Filtra por garantia para que somente ações não arquivadas e pertencentes ao parceiro sejam retornadas
   const authorizedActions: PublicReviewActionDto[] = rawActions
-    .filter((a) => !a.archived && Array.isArray(a.partners) && a.partners.includes(slug))
+    .filter(
+      (a) =>
+        !a.archived && Array.isArray(a.partners) && a.partners.includes(slug),
+    )
     .map((a) => ({
       id: String(a.id),
       title: String(a.title),
-      content_description: a.content_description != null ? String(a.content_description) : null,
-      instagram_caption: a.instagram_caption != null ? String(a.instagram_caption) : null,
+      content_description:
+        a.content_description != null ? String(a.content_description) : null,
+      instagram_caption:
+        a.instagram_caption != null ? String(a.instagram_caption) : null,
       category: String(a.category),
       date: String(a.date),
       partners: a.partners,

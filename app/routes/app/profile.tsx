@@ -13,10 +13,7 @@ import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQuerySessionGeneration } from "~/lib/query-client";
 import { toast } from "sonner";
-import {
-  Theme,
-  useAppThemeContext,
-} from "~/hooks/useAppTheme";
+import { Theme, useAppThemeContext } from "~/hooks/useAppTheme";
 import {
   PrismButton,
   PrismInput,
@@ -50,10 +47,16 @@ function ProfilePage() {
   const { person, cloudName, uploadPreset } = useAppContext();
   const queryClient = useQueryClient();
   const generation = useRef(getQuerySessionGeneration(queryClient)).current;
-  const isCurrentSession = () => getQuerySessionGeneration(queryClient) === generation;
+  const isCurrentSession = () =>
+    getQuerySessionGeneration(queryClient) === generation;
   const preferences = getUserPreferences(person);
-  const { theme, setTheme, previewColorIndex, previewCustomTheme, setCustomTheme } =
-    useAppThemeContext();
+  const {
+    theme,
+    setTheme,
+    previewColorIndex,
+    previewCustomTheme,
+    setCustomTheme,
+  } = useAppThemeContext();
   const [imageUrl, setImageUrl] = useState<string | null>(person.image || null);
   const [selectedTheme, setSelectedTheme] = useState<
     "light" | "dark" | "system"
@@ -138,10 +141,16 @@ function ProfilePage() {
       });
 
       if (!isCurrentSession()) return;
-      const preferenceResult = await supabase.rpc("update_my_preferences", {p_patch: newPreferences});
+      const preferenceResult = await supabase.rpc("update_my_preferences", {
+        p_patch: newPreferences,
+      });
       if (!isCurrentSession()) return;
       if (preferenceResult.error) throw preferenceResult.error;
-      if (!preferenceResult.data || typeof preferenceResult.data !== "object" || Array.isArray(preferenceResult.data)) {
+      if (
+        !preferenceResult.data ||
+        typeof preferenceResult.data !== "object" ||
+        Array.isArray(preferenceResult.data)
+      ) {
         throw new Error("Invalid preferences confirmation");
       }
       person.preferences = preferenceResult.data;
@@ -233,7 +242,6 @@ function ProfilePage() {
           type="hidden"
           value={String(showInstagramSidebar)}
         />
-
 
         <div className="grid gap-8 lg:grid-cols-[1.2fr_1.8fr]">
           {/* Left Column: Personal Info */}
@@ -353,7 +361,8 @@ function ProfilePage() {
                 aria-label="Tema do App"
                 selectedKeys={[selectedTheme]}
                 onSelectionChange={(keys) => {
-                  const val = Array.from(keys)[0] as "light" | "dark" | "system";
+                  const val = Array.from(keys)[0] as
+                    "light" | "dark" | "system";
                   if (val) handleThemeChange(val);
                 }}
               >
@@ -416,7 +425,7 @@ function ProfilePage() {
             />
 
             {/* Default View Selection */}
-            <div className="grid gap-3 pt-4 border-t">
+            <div className="grid gap-3 border-t pt-4">
               <div className="flex flex-col gap-0.5">
                 <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                   Layout Padrão
@@ -430,7 +439,8 @@ function ProfilePage() {
                 aria-label="Layout padrão"
                 selectedKeys={[selectedVariant]}
                 onSelectionChange={(keys) => {
-                  const val = Array.from(keys)[0] as "line" | "block" | "content";
+                  const val = Array.from(keys)[0] as
+                    "line" | "block" | "content";
                   if (val) setSelectedVariant(val);
                 }}
               >

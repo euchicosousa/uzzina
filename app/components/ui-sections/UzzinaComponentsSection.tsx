@@ -172,7 +172,7 @@ export function UzzinaComponentsSection() {
         <GallerySectionContent className="flex flex-col gap-10">
           {/* UIIcons por Categoria */}
           <div className="space-y-6">
-            <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+            <h4 className="text-sm font-bold tracking-wider text-muted-foreground uppercase">
               Ícones da Plataforma (UIIcons por Categoria)
             </h4>
             {ICON_CATEGORIES.map((cat) => (

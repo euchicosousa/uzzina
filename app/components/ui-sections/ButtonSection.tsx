@@ -36,7 +36,7 @@ export function ButtonSection() {
           </GalleryItem>
 
           <GalleryItem label="Sizes (xs, sm, default, lg)">
-            <div className="flex items-center flex-wrap gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <PrismButton size="xs">Extra Small (xs)</PrismButton>
               <PrismButton size="sm">Small (sm)</PrismButton>
               <PrismButton size="default">Default</PrismButton>

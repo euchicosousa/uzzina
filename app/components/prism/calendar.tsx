@@ -174,7 +174,7 @@ function CalendarInner({
                 </>
               ) : (
                 <CalendarHeading
-                  className="text-base tra font-medium select-none"
+                  className="tra text-base font-medium select-none"
                   format={headerFormat}
                   offset={{
                     months: i,

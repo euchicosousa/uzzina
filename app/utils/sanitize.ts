@@ -80,11 +80,17 @@ function getPurifier(): ReturnType<typeof DOMPurify> | null {
 
   purifier.addHook("uponSanitizeAttribute", (_node, data) => {
     if (data.attrName !== "src" && data.attrName !== "href") return;
-    const value = Array.from(data.attrValue.trim()).filter((character) => character.charCodeAt(0) > 32 && character.charCodeAt(0) !== 127).join("");
+    const value = Array.from(data.attrValue.trim())
+      .filter(
+        (character) =>
+          character.charCodeAt(0) > 32 && character.charCodeAt(0) !== 127,
+      )
+      .join("");
     const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(value)?.[1]?.toLowerCase();
-    const allowed = data.attrName === "src"
-      ? ["http", "https"]
-      : ["http", "https", "mailto", "tel"];
+    const allowed =
+      data.attrName === "src"
+        ? ["http", "https"]
+        : ["http", "https", "mailto", "tel"];
     if (scheme && !allowed.includes(scheme)) data.keepAttr = false;
   });
 

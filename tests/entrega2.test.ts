@@ -46,9 +46,14 @@ interface MockState {
 
 interface MockChain {
   select: () => MockChain;
-  insert: (records: Record<string, unknown>[]) => Promise<{ error: { message: string } | null }>;
+  insert: (
+    records: Record<string, unknown>[],
+  ) => Promise<{ error: { message: string } | null }>;
   update: (updates: Record<string, unknown>) => {
-    eq: (col: string, val: unknown) => Promise<{ error: { message: string } | null }>;
+    eq: (
+      col: string,
+      val: unknown,
+    ) => Promise<{ error: { message: string } | null }>;
   };
   eq: (col: string, val: unknown) => MockChain;
   is: (col: string, val: unknown) => MockChain;
@@ -89,7 +94,8 @@ mock.module("@supabase/supabase-js", () => ({
         },
         update: (updates: Record<string, unknown>) => ({
           eq: async (col: string, val: unknown) => {
-            if (mockDb.revokeError) return { error: { message: "Database unavailable" } };
+            if (mockDb.revokeError)
+              return { error: { message: "Database unavailable" } };
             for (const s of mockDb.sessions) {
               const sessionRecord = s as unknown as Record<string, unknown>;
               if (sessionRecord[col] === val) {
@@ -112,7 +118,8 @@ mock.module("@supabase/supabase-js", () => ({
           return chain;
         },
         single: async () => {
-          if (mockDb.readError) return { data: null, error: { message: "Database unavailable" } };
+          if (mockDb.readError)
+            return { data: null, error: { message: "Database unavailable" } };
           let rows: Record<string, unknown>[] =
             table === "clients"
               ? (mockDb.clients as unknown as Record<string, unknown>[])
@@ -127,7 +134,10 @@ mock.module("@supabase/supabase-js", () => ({
             });
           }
           if (rows.length === 0) {
-            return { data: null, error: { message: "Row not found", code: "PGRST116" } };
+            return {
+              data: null,
+              error: { message: "Row not found", code: "PGRST116" },
+            };
           }
           return { data: rows[0], error: null };
         },
@@ -194,15 +204,20 @@ function createMockRes(): VercelResponse & MockResHelper {
 
 describe("Entrega 2 - S04: Sanitização HTML e Audiência de Comentários", () => {
   it("aplica a allowlist explícita e recusa FTP sem perder links HTTPS", () => {
-    const clean = sanitizeHtml('<video src="https://example.com/a.mp4">texto</video><a href="ftp://example.com">ftp</a><a href="https://example.com">seguro</a>');
+    const clean = sanitizeHtml(
+      '<video src="https://example.com/a.mp4">texto</video><a href="ftp://example.com">ftp</a><a href="https://example.com">seguro</a>',
+    );
     const root = document.createElement("div");
     root.innerHTML = clean;
     expect(root.querySelector("video")).toBeNull();
     expect(root.querySelectorAll("a")[0]?.hasAttribute("href")).toBe(false);
-    expect(root.querySelectorAll("a")[1]?.getAttribute("href")).toBe("https://example.com");
+    expect(root.querySelectorAll("a")[1]?.getAttribute("href")).toBe(
+      "https://example.com",
+    );
   });
   it("remove scripts, iframes e tags perigosas", () => {
-    const dirty = "<p>Texto normal</p><script>alert('xss')</script><iframe src='https://evil.com'></iframe>";
+    const dirty =
+      "<p>Texto normal</p><script>alert('xss')</script><iframe src='https://evil.com'></iframe>";
     const clean = sanitizeHtml(dirty);
     expect(clean).not.toContain("<script");
     expect(clean).not.toContain("alert");
@@ -211,7 +226,8 @@ describe("Entrega 2 - S04: Sanitização HTML e Audiência de Comentários", () 
   });
 
   it("remove manipuladores de eventos inline (onerror, onload, onclick)", () => {
-    const dirty = '<img src="invalido.png" onerror="alert(1)" /><button onclick="hack()">Clique</button>';
+    const dirty =
+      '<img src="invalido.png" onerror="alert(1)" /><button onclick="hack()">Clique</button>';
     const clean = sanitizeHtml(dirty);
     expect(clean).not.toContain("onerror");
     expect(clean).not.toContain("onclick");
@@ -220,7 +236,8 @@ describe("Entrega 2 - S04: Sanitização HTML e Audiência de Comentários", () 
   });
 
   it("remove links javascript: e data: perigosos", () => {
-    const dirty = '<a href="javascript:alert(1)">Link Malicioso</a><a href="https://uzzina.com">Link Seguro</a>';
+    const dirty =
+      '<a href="javascript:alert(1)">Link Malicioso</a><a href="https://uzzina.com">Link Seguro</a>';
     const clean = sanitizeHtml(dirty);
     expect(clean).not.toContain("javascript:");
     expect(clean).toContain('href="https://uzzina.com"');
@@ -303,8 +320,8 @@ describe("Entrega 2 - S04: Sanitização HTML e Audiência de Comentários", () 
 
   it("separa chaves de cache entre comentários públicos e internos", () => {
     const actionId = "action-123";
-    const internalKey = QUERY_KEYS.comments.all(actionId,"user");
-    const publicKey = QUERY_KEYS.comments.public(actionId,"user");
+    const internalKey = QUERY_KEYS.comments.all(actionId, "user");
+    const publicKey = QUERY_KEYS.comments.public(actionId, "user");
 
     // Chaves devem ser distintas para impedir contaminação do cache
     expect(internalKey).not.toEqual(publicKey);
@@ -317,14 +334,18 @@ describe("Entrega 2 - S05: Escopo do Link de Revisão", () => {
   it("filtra ações para garantir que pertencem exclusivamente ao parceiro do link", () => {
     const targetSlug = "parceiro-alfa";
     const actions = [
-      { id: "act-1", title: "Ação Alfa 1", partners: ["parceiro-alfa", "outro"] },
+      {
+        id: "act-1",
+        title: "Ação Alfa 1",
+        partners: ["parceiro-alfa", "outro"],
+      },
       { id: "act-2", title: "Ação Beta (Outro)", partners: ["parceiro-beta"] },
       { id: "act-3", title: "Ação Alfa 2", partners: ["parceiro-alfa"] },
       { id: "act-4", title: "Ação Sem Parceiro", partners: [] },
     ];
 
     const scopedActions = actions.filter(
-      (a) => Array.isArray(a.partners) && a.partners.includes(targetSlug)
+      (a) => Array.isArray(a.partners) && a.partners.includes(targetSlug),
     );
 
     expect(scopedActions.map((a) => a.id)).toEqual(["act-1", "act-3"]);
@@ -332,7 +353,12 @@ describe("Entrega 2 - S05: Escopo do Link de Revisão", () => {
 });
 
 describe("Entrega 2 - S03: Validação de Payload da API de IA", () => {
-  const ALLOWED_INTENTS = ["ai-strategy", "ai-content", "ai-hooks", "ai-caption"];
+  const ALLOWED_INTENTS = [
+    "ai-strategy",
+    "ai-content",
+    "ai-hooks",
+    "ai-caption",
+  ];
 
   function validateAIPayload(payload: {
     intent?: string;
@@ -344,23 +370,39 @@ describe("Entrega 2 - S03: Validação de Payload da API de IA", () => {
     if (!payload.intent || !ALLOWED_INTENTS.includes(payload.intent)) {
       return { valid: false, error: "Intent inválido ou não autorizado." };
     }
-    if (!payload.category || typeof payload.category !== "string" || payload.category.length > 100) {
+    if (
+      !payload.category ||
+      typeof payload.category !== "string" ||
+      payload.category.length > 100
+    ) {
       return { valid: false, error: "Categoria inválida." };
     }
     if (payload.title && payload.title.length > 500) {
-      return { valid: false, error: "Título excede tamanho máximo permitido (500 caracteres)." };
+      return {
+        valid: false,
+        error: "Título excede tamanho máximo permitido (500 caracteres).",
+      };
     }
     if (payload.description && payload.description.length > 10000) {
-      return { valid: false, error: "Descrição excede tamanho máximo permitido (10.000 caracteres)." };
+      return {
+        valid: false,
+        error: "Descrição excede tamanho máximo permitido (10.000 caracteres).",
+      };
     }
     if (payload.partner_context && payload.partner_context.length > 10000) {
-      return { valid: false, error: "Contexto do parceiro excede tamanho máximo permitido." };
+      return {
+        valid: false,
+        error: "Contexto do parceiro excede tamanho máximo permitido.",
+      };
     }
     return { valid: true };
   }
 
   it("recusa intents não autorizados", () => {
-    const result = validateAIPayload({ intent: "ai-arbitrary-command", category: "post" });
+    const result = validateAIPayload({
+      intent: "ai-arbitrary-command",
+      category: "post",
+    });
     expect(result.valid).toBe(false);
     expect(result.error).toContain("Intent inválido");
   });
@@ -427,7 +469,16 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
   it("logout com falha na revogação não anuncia sucesso", async () => {
     mockDb.revokeError = true;
     const res = createMockRes();
-    await dashAuthHandler(createMockReq({ headers: { origin: "https://app.uzzina.com", cookie: "uzzina_dash_session=test-token" }, body: { action: "logout" } }), res);
+    await dashAuthHandler(
+      createMockReq({
+        headers: {
+          origin: "https://app.uzzina.com",
+          cookie: "uzzina_dash_session=test-token",
+        },
+        body: { action: "logout" },
+      }),
+      res,
+    );
     expect(res._status()).toBe(503);
     expect(res._body()?.success).not.toBe(true);
     expect(res.getHeader("Set-Cookie")).toBeUndefined();
@@ -435,13 +486,29 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
   it("banco indisponível no login não é senha incorreta", async () => {
     mockDb.readError = true;
     const res = createMockRes();
-    await dashAuthHandler(createMockReq({ headers: {origin:"https://app.uzzina.com"}, body: {action:"login",email:"ativo@empresa.com",password:"senha123"} }),res);
+    await dashAuthHandler(
+      createMockReq({
+        headers: { origin: "https://app.uzzina.com" },
+        body: {
+          action: "login",
+          email: "ativo@empresa.com",
+          password: "senha123",
+        },
+      }),
+      res,
+    );
     expect(res._status()).toBe(503);
   });
   it("banco indisponível na retomada não é sessão inválida", async () => {
     mockDb.readError = true;
     const res = createMockRes();
-    await dashAuthHandler(createMockReq({ headers: { cookie: "uzzina_dash_session=test-token" }, body: { action: "verify" } }), res);
+    await dashAuthHandler(
+      createMockReq({
+        headers: { cookie: "uzzina_dash_session=test-token" },
+        body: { action: "verify" },
+      }),
+      res,
+    );
     expect(res._status()).toBe(503);
   });
 
@@ -464,14 +531,19 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
     });
 
     it("extrai cookie por nome a partir do cabeçalho", () => {
-      const cookieHeader = "theme=dark; uzzina_dash_session=segredo-123; other=val";
-      expect(extractCookie(cookieHeader, SESSION_COOKIE_NAME)).toBe("segredo-123");
+      const cookieHeader =
+        "theme=dark; uzzina_dash_session=segredo-123; other=val";
+      expect(extractCookie(cookieHeader, SESSION_COOKIE_NAME)).toBe(
+        "segredo-123",
+      );
       expect(extractCookie(cookieHeader, "inexistente")).toBeNull();
       expect(extractCookie(undefined, SESSION_COOKIE_NAME)).toBeNull();
     });
 
     it("serializa cookie de sessão com HttpOnly, SameSite=Lax, Path=/api e Max-Age=604800", () => {
-      const serialized = serializeSessionCookie("token-teste", { isProduction: false });
+      const serialized = serializeSessionCookie("token-teste", {
+        isProduction: false,
+      });
       expect(serialized).toContain("uzzina_dash_session=token-teste");
       expect(serialized).toContain("HttpOnly");
       expect(serialized).toContain("SameSite=Lax");
@@ -479,7 +551,9 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
       expect(serialized).toContain("Max-Age=604800");
       expect(serialized).not.toContain("Secure");
 
-      const prodSerialized = serializeSessionCookie("token-teste", { isProduction: true });
+      const prodSerialized = serializeSessionCookie("token-teste", {
+        isProduction: true,
+      });
       expect(prodSerialized).toContain("; Secure");
     });
 
@@ -491,11 +565,29 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
     });
 
     it("valida Origin contra APP_ORIGIN e rejeita origens não autorizadas", () => {
-      expect(validateRequestOrigin("https://app.uzzina.com", "https://app.uzzina.com", true)).toBe(true);
-      expect(validateRequestOrigin("https://evil.com", "https://app.uzzina.com", true)).toBe(false);
-      expect(validateRequestOrigin(null, "https://app.uzzina.com", true)).toBe(false);
-      expect(validateRequestOrigin(undefined, "https://app.uzzina.com", false)).toBe(false);
-      expect(validateRequestOrigin("http://localhost:5173", null, false)).toBe(true);
+      expect(
+        validateRequestOrigin(
+          "https://app.uzzina.com",
+          "https://app.uzzina.com",
+          true,
+        ),
+      ).toBe(true);
+      expect(
+        validateRequestOrigin(
+          "https://evil.com",
+          "https://app.uzzina.com",
+          true,
+        ),
+      ).toBe(false);
+      expect(validateRequestOrigin(null, "https://app.uzzina.com", true)).toBe(
+        false,
+      );
+      expect(
+        validateRequestOrigin(undefined, "https://app.uzzina.com", false),
+      ).toBe(false);
+      expect(validateRequestOrigin("http://localhost:5173", null, false)).toBe(
+        true,
+      );
     });
   });
 
@@ -528,12 +620,18 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
       const req = createMockReq({
         method: "POST",
         headers: { origin: "https://atacante.com" },
-        body: { action: "login", email: "ativo@empresa.com", password: "senha123" },
+        body: {
+          action: "login",
+          email: "ativo@empresa.com",
+          password: "senha123",
+        },
       });
 
       await dashAuthHandler(req, res);
       expect(res._status()).toBe(403);
-      expect(String(res._body()?.error)).toContain("Origem da requisição não autorizada");
+      expect(String(res._body()?.error)).toContain(
+        "Origem da requisição não autorizada",
+      );
     });
 
     it("rejeita login com campos faltantes com 400", async () => {
@@ -553,7 +651,11 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
       const req = createMockReq({
         method: "POST",
         headers: { origin: "https://app.uzzina.com" },
-        body: { action: "login", email: "ativo@empresa.com", password: "senha-errada" },
+        body: {
+          action: "login",
+          email: "ativo@empresa.com",
+          password: "senha-errada",
+        },
       });
 
       await dashAuthHandler(req, res);
@@ -565,7 +667,11 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
       const req = createMockReq({
         method: "POST",
         headers: { origin: "https://app.uzzina.com" },
-        body: { action: "login", email: "inativo@empresa.com", password: "senha123" },
+        body: {
+          action: "login",
+          email: "inativo@empresa.com",
+          password: "senha123",
+        },
       });
 
       await dashAuthHandler(req, res);
@@ -577,7 +683,11 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
       const req = createMockReq({
         method: "POST",
         headers: { origin: "https://app.uzzina.com" },
-        body: { action: "login", email: "sem-senha@empresa.com", password: "qualquer-senha" },
+        body: {
+          action: "login",
+          email: "sem-senha@empresa.com",
+          password: "qualquer-senha",
+        },
       });
 
       await dashAuthHandler(req, res);
@@ -589,7 +699,11 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
       const req = createMockReq({
         method: "POST",
         headers: { origin: "https://app.uzzina.com" },
-        body: { action: "login", email: "ativo@empresa.com", password: "senha123" },
+        body: {
+          action: "login",
+          email: "ativo@empresa.com",
+          password: "senha123",
+        },
       });
 
       await dashAuthHandler(req, res);

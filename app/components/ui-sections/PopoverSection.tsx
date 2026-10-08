@@ -23,10 +23,8 @@ export function PopoverSection() {
             <PrismPopoverTrigger>
               <PrismButton variant="default">Abrir Popover</PrismButton>
               <PrismPopover>
-                <div className="flex flex-col gap-2 w-48">
-                  <span className="font-semibold text-sm">
-                    Opções Rápidas
-                  </span>
+                <div className="flex w-48 flex-col gap-2">
+                  <span className="text-sm font-semibold">Opções Rápidas</span>
                   <p className="text-xs text-muted-foreground">
                     Este é o conteúdo do popover de exemplo.
                   </p>
@@ -39,8 +37,8 @@ export function PopoverSection() {
             <PrismPopoverTrigger>
               <PrismButton variant="ghost">Ver Notificação</PrismButton>
               <PrismPopover placement="top">
-                <div className="flex flex-col gap-1 w-64">
-                  <span className="font-semibold text-xs text-primary">
+                <div className="flex w-64 flex-col gap-1">
+                  <span className="text-xs font-semibold text-primary">
                     NOVO AVISO
                   </span>
                   <p className="text-xs">

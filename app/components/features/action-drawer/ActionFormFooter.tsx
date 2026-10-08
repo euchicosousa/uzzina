@@ -36,9 +36,9 @@ export function ActionFormFooter({
 }: ActionFormFooterProps) {
   const { handleAction } = useActionMutations();
   return (
-    <div className="w-full flex shrink-0 justify-between items-center overflow-hidden border-t">
+    <div className="flex w-full shrink-0 items-center justify-between overflow-hidden border-t">
       {/* Coisas */}
-      <div className="flex items-center divide-x overflow-x-auto no-scrollbar shrink min-w-0">
+      <div className="no-scrollbar flex min-w-0 shrink items-center divide-x overflow-x-auto">
         {/* Parceiros Partners Combobox */}
         <div className="shrink-0">
           <PartnersCombobox
@@ -220,7 +220,7 @@ export function ActionFormFooter({
           </>
         )}
         <PrismButton
-          className="squircle w-32 overflow-hidden rounded-2xl"
+          className="w-32 overflow-hidden rounded-2xl squircle"
           isDisabled={isPending}
           onClick={async (event) => {
             event.preventDefault();

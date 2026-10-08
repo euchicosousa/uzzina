@@ -45,7 +45,8 @@ function AdminClientPage() {
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
   const generation = useRef(getQuerySessionGeneration(queryClient)).current;
-  const isCurrentSession = () => generation === getQuerySessionGeneration(queryClient);
+  const isCurrentSession = () =>
+    generation === getQuerySessionGeneration(queryClient);
 
   const { partners } = appData;
   const isNew = userId === "new" || !userId;
@@ -171,7 +172,7 @@ function AdminClientPage() {
         {/* Avatar / UploadIcon Widget */}
         <div className="flex items-center gap-6">
           <CloudinaryUpload
-            className="group no-squircle relative -ml-1 size-24 shrink-0 overflow-hidden rounded-full transition hover:opacity-90"
+            className="group relative -ml-1 size-24 shrink-0 overflow-hidden rounded-full transition no-squircle hover:opacity-90"
             cloudName={appData.cloudName}
             folder="uzzina/clients"
             onUpload={(url: string) => setImageUrl(url)}
@@ -193,12 +194,12 @@ function AdminClientPage() {
 
           <div className="grid gap-1">
             <p className="font-medium">Foto de Perfil</p>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Clique para fazer upload e recortar
             </p>
             {imageUrl && (
               <button
-                className="text-muted-foreground hover:text-foreground mt-1 text-left text-xs underline"
+                className="mt-1 text-left text-xs text-muted-foreground underline hover:text-foreground"
                 onClick={() => setImageUrl(null)}
                 type="button"
               >

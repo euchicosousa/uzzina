@@ -22,7 +22,8 @@ const colorFieldVariants = cva(
 );
 
 export interface PrismColorFieldProps
-  extends Omit<ColorFieldPrimitiveProps, "className">,
+  extends
+    Omit<ColorFieldPrimitiveProps, "className">,
     VariantProps<typeof colorFieldVariants> {
   className?: string;
   inputClassName?: string;
@@ -37,7 +38,7 @@ function PrismColorField({
   return (
     <ColorFieldPrimitive
       aria-label={props["aria-label"] ?? "Cor"}
-      className={cn("flex flex-col gap-1.5 w-full", className)}
+      className={cn("flex w-full flex-col gap-1.5", className)}
       data-slot="color-field"
       {...props}
     >
@@ -54,4 +55,3 @@ function PrismColorField({
   );
 }
 export { PrismColorField, colorFieldVariants };
-

@@ -16,7 +16,7 @@ export const Route = createFileRoute("/app/today")({
 
 function TodayPage() {
   const { person, partners } = useAppContext();
-  const partnerSlugs = partners.map(p => p.slug).sort();
+  const partnerSlugs = partners.map((p) => p.slug).sort();
   const [currentDay, setCurrentDay] = useState(new Date());
 
   const startDateISO = startOfDay(currentDay).toISOString();
@@ -25,7 +25,14 @@ function TodayPage() {
 
   const { data: currentActions = [], isLoading: isLoadingHomeActions } =
     useQuery({
-      queryKey: QUERY_KEYS.actions.list("today",person.user_id,person.admin,partnerSlugs,startDateISO,endDateISO),
+      queryKey: QUERY_KEYS.actions.list(
+        "today",
+        person.user_id,
+        person.admin,
+        partnerSlugs,
+        startDateISO,
+        endDateISO,
+      ),
       queryFn: () =>
         fetchHomeActions(
           person.user_id,
@@ -39,7 +46,7 @@ function TodayPage() {
   const { partnerFilters } = useAppContext();
 
   const filteredActions = useMemo(() => {
-    const operational = filterOperationalActions(currentActions,partners);
+    const operational = filterOperationalActions(currentActions, partners);
     if (partnerFilters.length === 0) return operational;
     return operational.filter((action) =>
       action.partners?.some((p) => partnerFilters.includes(p)),

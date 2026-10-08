@@ -1,6 +1,9 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import bcrypt from "bcryptjs";
-import { createServiceClient, getServiceConfig } from "../server/supabase-admin.js";
+import {
+  createServiceClient,
+  getServiceConfig,
+} from "../server/supabase-admin.js";
 import {
   SESSION_COOKIE_NAME,
   SESSION_TTL_SECONDS,
@@ -43,7 +46,9 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
   // Validação de Origin para ações que alteram estado (login, logout)
   if (action === "login" || action === "logout") {
     if (!validateRequestOrigin(originHeader, appOrigin, isProduction)) {
-      return res.status(403).json({ error: "Origem da requisição não autorizada." });
+      return res
+        .status(403)
+        .json({ error: "Origem da requisição não autorizada." });
     }
   }
 
@@ -71,7 +76,9 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
       .single();
 
     if (sessionError && sessionError.code !== "PGRST116") {
-      return res.status(503).json({ error: "Não foi possível consultar a sessão. Tente novamente." });
+      return res.status(503).json({
+        error: "Não foi possível consultar a sessão. Tente novamente.",
+      });
     }
 
     if (sessionError || !session) {
@@ -87,11 +94,15 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
       .single();
 
     if (clientError && clientError.code !== "PGRST116") {
-      return res.status(503).json({ error: "Não foi possível consultar a sessão. Tente novamente." });
+      return res.status(503).json({
+        error: "Não foi possível consultar a sessão. Tente novamente.",
+      });
     }
 
     if (clientError || !client) {
-      return res.status(401).json({ error: "Cliente inativo ou não encontrado." });
+      return res
+        .status(401)
+        .json({ error: "Cliente inativo ou não encontrado." });
     }
 
     // Garante que nenhum hash ou dado sensível do cliente é retornado no verify
@@ -110,19 +121,32 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
 
   // 2. Login de cliente com e-mail e senha
   if (action === "login") {
-    if (typeof email !== "string" || typeof password !== "string" || !email || !password || email.length > 254 || password.length > 4096) {
-      return res.status(400).json({ error: "E-mail e senha são obrigatórios." });
+    if (
+      typeof email !== "string" ||
+      typeof password !== "string" ||
+      !email ||
+      !password ||
+      email.length > 254 ||
+      password.length > 4096
+    ) {
+      return res
+        .status(400)
+        .json({ error: "E-mail e senha são obrigatórios." });
     }
 
     const { data: client, error: clientError } = await supabaseAdmin
       .from("clients")
-      .select("id, created_at, name, email, partners, image, active, password_hash")
+      .select(
+        "id, created_at, name, email, partners, image, active, password_hash",
+      )
       .eq("email", email)
       .eq("active", true)
       .single();
 
     if (clientError && clientError.code !== "PGRST116") {
-      return res.status(503).json({ error: "Não foi possível consultar a conta. Tente novamente." });
+      return res.status(503).json({
+        error: "Não foi possível consultar a conta. Tente novamente.",
+      });
     }
     if (clientError || !client) {
       return res
@@ -131,9 +155,9 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
     }
 
     if (!client.password_hash) {
-      return res
-        .status(401)
-        .json({ error: "Credenciais de acesso não configuradas para este cliente." });
+      return res.status(401).json({
+        error: "Credenciais de acesso não configuradas para este cliente.",
+      });
     }
 
     let isPasswordValid = false;
@@ -163,11 +187,14 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
     if (shouldMigrateLegacy) {
       try {
         const newBcryptHash = await bcrypt.hash(password, 12);
-        const { error: rpcErr } = await supabaseAdmin.rpc("client_migrate_legacy_password", {
-          p_client_id: client.id,
-          p_legacy_hash: client.password_hash,
-          p_new_hash: newBcryptHash,
-        });
+        const { error: rpcErr } = await supabaseAdmin.rpc(
+          "client_migrate_legacy_password",
+          {
+            p_client_id: client.id,
+            p_legacy_hash: client.password_hash,
+            p_new_hash: newBcryptHash,
+          },
+        );
         if (rpcErr) {
           await supabaseAdmin
             .from("clients")
@@ -229,14 +256,13 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
         .update({ revoked_at: nowIso })
         .eq("token_hash", tokenHash);
       if (revokeError) {
-        return res.status(503).json({ error: "Não foi possível revogar a sessão. Tente novamente." });
+        return res.status(503).json({
+          error: "Não foi possível revogar a sessão. Tente novamente.",
+        });
       }
     }
 
-    res.setHeader(
-      "Set-Cookie",
-      serializeClearSessionCookie({ isProduction }),
-    );
+    res.setHeader("Set-Cookie", serializeClearSessionCookie({ isProduction }));
 
     return res.status(200).json({ success: true });
   }
@@ -249,6 +275,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return await handleRequest(req, res);
   } catch {
     res.setHeader("Cache-Control", "no-store");
-    return res.status(503).json({ error: "O portal está temporariamente indisponível. Tente novamente." });
+    return res.status(503).json({
+      error: "O portal está temporariamente indisponível. Tente novamente.",
+    });
   }
 }

@@ -43,7 +43,7 @@ function DropdownMenu({
   return (
     <PopoverPrimitive
       className={cn(
-        "z-50 w-(--trigger-width) min-w-48 origin-(--trigger-anchor-point) overflow-x-hidden overflow-y-auto rounded-3xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/5 outline-none data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:overflow-hidden data-exiting:fade-out-0 data-exiting:zoom-out-95 data-[placement=bottom]:slide-in-from-top-2 data-[placement=left]:slide-in-from-right-2 data-[placement=right]:slide-in-from-left-2 data-[placement=top]:slide-in-from-bottom-2 dark:ring-foreground/10 squircle",
+        "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 data-[placement=bottom]:slide-in-from-top-2 data-[placement=left]:slide-in-from-right-2 data-[placement=right]:slide-in-from-left-2 data-[placement=top]:slide-in-from-bottom-2 z-50 w-(--trigger-width) min-w-48 origin-(--trigger-anchor-point) overflow-x-hidden overflow-y-auto rounded-3xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/5 outline-none squircle data-exiting:overflow-hidden dark:ring-foreground/10",
         className,
       )}
       crossOffset={crossOffset}
@@ -77,7 +77,7 @@ function DropdownMenuLabel({
   return (
     <HeaderPrimitive
       className={cn(
-        "px-2 py-2 text-xs uppercase truncate tracking-wide font-medium text-muted-foreground data-inset:pl-7",
+        "truncate px-2 py-2 text-xs font-medium tracking-wide text-muted-foreground uppercase data-inset:pl-7",
         className,
       )}
       data-inset={inset}
@@ -132,7 +132,7 @@ function DropdownMenuItem({
             {children}
             {selectionMode !== "none" ? (
               <span
-                className="pointer-events-none absolute right-3 flex items-center justify-center size-4 shrink-0"
+                className="pointer-events-none absolute right-3 flex size-4 shrink-0 items-center justify-center"
                 data-selected={isSelected}
                 data-slot="menu-item-indicator"
               >
@@ -160,7 +160,7 @@ function DropdownMenuSubTrigger({
   return (
     <MenuItemPrimitive
       className={cn(
-        "flex min-h-7 cursor-default items-center gap-2 rounded-lg px-3 py-1.5 text-sm outline-hidden select-none focus:bg-secondary/50 focus:text-secondary-foreground not-data-[variant=destructive]:focus:**:text-secondary-foreground data-inset:pl-7 data-open:bg-secondary/50 data-open:text-secondary-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg]:opacity-50",
+        "flex min-h-7 cursor-default items-center gap-2 rounded-lg px-3 py-1.5 text-sm outline-hidden select-none focus:bg-secondary/50 focus:text-secondary-foreground not-data-[variant=destructive]:focus:**:text-secondary-foreground data-inset:pl-7 data-open:bg-secondary/50 data-open:text-secondary-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:opacity-50 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       data-inset={inset}
@@ -186,7 +186,7 @@ function DropdownMenuSubContent({
   return (
     <DropdownMenu
       className={cn(
-        "w-auto min-w-24 rounded-3xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/5 duration-100 dark:ring-foreground/10 squircle",
+        "w-auto min-w-24 rounded-3xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/5 duration-100 squircle dark:ring-foreground/10",
         className,
       )}
       crossOffset={crossOffset}

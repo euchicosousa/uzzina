@@ -56,9 +56,9 @@ export function UAvatarSelector({
             key={option.id}
             aria-pressed={isSelected}
             className={cn(
-              "hover:bg-secondary relative flex flex-col items-center gap-2 overflow-hidden rounded-3xl p-4 transition-all ring-foreground/5 squircle border-t duration-500 border-transparent",
+              "relative flex flex-col items-center gap-2 overflow-hidden rounded-3xl border-t border-transparent p-4 ring-foreground/5 transition-all duration-500 squircle hover:bg-secondary",
               isSelected
-                ? "text-foreground bg-action hover:bg-action-hover hover:shadow-lg border-white shadow-xs ring"
+                ? "border-white bg-action text-foreground shadow-xs ring hover:bg-action-hover hover:shadow-lg"
                 : "",
             )}
             onClick={() => toggleOption(option.id)}
@@ -77,7 +77,7 @@ export function UAvatarSelector({
                 {option.title}
               </div>
               {option.subtitle && (
-                <div className="text-muted-foreground truncate text-xs leading-tight">
+                <div className="truncate text-xs leading-tight text-muted-foreground">
                   {option.subtitle}
                 </div>
               )}

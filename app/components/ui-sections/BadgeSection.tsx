@@ -16,7 +16,7 @@ export function BadgeSection() {
         />
         <GallerySectionContent className="grid gap-6">
           <GalleryItem label="Variants Básicas (default, secondary, outline, ghost, destructive)">
-            <div className="flex flex-wrap gap-3 items-center">
+            <div className="flex flex-wrap items-center gap-3">
               <PrismBadge variant="default">Default</PrismBadge>
               <PrismBadge variant="secondary">Secondary</PrismBadge>
               <PrismBadge variant="outline">Outline</PrismBadge>
@@ -26,7 +26,7 @@ export function BadgeSection() {
           </GalleryItem>
 
           <GalleryItem label="Variants Semânticas OKLCH (success, error, warning, info)">
-            <div className="flex flex-wrap gap-3 items-center">
+            <div className="flex flex-wrap items-center gap-3">
               <PrismBadge variant="success">
                 <CheckIcon />
                 Aprovado

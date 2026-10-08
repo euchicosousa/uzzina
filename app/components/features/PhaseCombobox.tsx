@@ -96,8 +96,10 @@ function SinglePhaseTrigger({
 }) {
   return (
     <ComboboxTrigger
-      aria-label={!showText ? `Fase: ${currentPhase?.title ?? "Sem fase"}` : undefined}
-      className={cn(disabled && "opacity-40 pointer-events-none", className)}
+      aria-label={
+        !showText ? `Fase: ${currentPhase?.title ?? "Sem fase"}` : undefined
+      }
+      className={cn(disabled && "pointer-events-none opacity-40", className)}
       disabled={disabled}
       size={size}
       tabIndex={tabIndex}
@@ -251,7 +253,7 @@ export function PhaseCombobox({
               {phasesList.map((phase) => (
                 <PrismCommandItem
                   key={phase.slug}
-                  className="flex items-center gap-2 cursor-pointer"
+                  className="flex cursor-pointer items-center gap-2"
                   isSelected={
                     isMulti
                       ? selectedPhases.includes(phase.slug)

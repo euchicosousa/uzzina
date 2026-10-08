@@ -110,7 +110,7 @@ function AdminCelebrationsPage() {
                 value={title}
               />
               <PrismButton
-                className="squircle shrink-0 rounded-2xl"
+                className="shrink-0 rounded-2xl squircle"
                 isDisabled={!selectedDate || isSubmitting}
                 size="icon"
                 type="submit"
@@ -144,7 +144,7 @@ function AdminCelebrationsPage() {
          </div> */}
 
         {celebrations.length === 0 ? (
-          <div className="text-muted-foreground rounded-2xl border border-dashed p-8 text-center">
+          <div className="rounded-2xl border border-dashed p-8 text-center text-muted-foreground">
             Nenhuma data comemorativa cadastrada ainda.
           </div>
         ) : (
@@ -177,9 +177,9 @@ function AdminCelebrationsPage() {
                   {monthCelebrations.map((celebration) => (
                     <div
                       key={celebration.id}
-                      className="group flex relative items-center justify-between rounded-xl py-2 px-3 transition-colors hover:bg-card"
+                      className="group relative flex items-center justify-between rounded-xl px-3 py-2 transition-colors hover:bg-card"
                     >
-                      <div className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 absolute h-full top-1 left-1 z-10">
+                      <div className="absolute top-1 left-1 z-10 h-full shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
                         <PrismButton
                           isDisabled={isSubmitting}
                           onClick={() => deleteMutation.mutate(celebration.id)}
@@ -190,7 +190,7 @@ function AdminCelebrationsPage() {
                         </PrismButton>
                       </div>
                       <div className="flex items-center gap-4 overflow-hidden">
-                        <span className="text-muted-foreground w-6 text-center text-sm font-medium group-hover:opacity-0 transition-opacity">
+                        <span className="w-6 text-center text-sm font-medium text-muted-foreground transition-opacity group-hover:opacity-0">
                           {format(
                             new Date(`${celebration.date}T00:00:00`),
                             "dd",

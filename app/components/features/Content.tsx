@@ -48,7 +48,7 @@ export function Content({
       <div
         className={cn(
           "aspect-4/5 overflow-hidden bg-secondary ring ring-foreground/5 transition-opacity duration-500 group-hover/action:opacity-80",
-          !isSquared && "squircle rounded-2xl",
+          !isSquared && "rounded-2xl squircle",
         )}
       >
         {action.content_files?.length ? (
@@ -73,13 +73,22 @@ export function Content({
       <div className="absolute inset-0 flex flex-col justify-between p-2">
         <div className="flex items-center justify-between gap-2">
           <div>
-            {person && "sprints" in action && isSprint(action as Action, person) && (
-              <Icons className="size-4" color={foregroundColor} slug="sprint" />
-            )}
+            {person &&
+              "sprints" in action &&
+              isSprint(action as Action, person) && (
+                <Icons
+                  className="size-4"
+                  color={foregroundColor}
+                  slug="sprint"
+                />
+              )}
           </div>
 
           {person && showResponsibles && "responsibles" in action && (
-            <ContentResponsibles userId={person.user_id} responsibles={action.responsibles} />
+            <ContentResponsibles
+              userId={person.user_id}
+              responsibles={action.responsibles}
+            />
           )}
         </div>
         <div className="flex items-center justify-between gap-2">
@@ -106,16 +115,26 @@ export function Content({
   );
 }
 
-function ContentResponsibles({userId, responsibles}: {userId: string; responsibles: string[]}) {
-  const {data: people = []} = useQuery({
+function ContentResponsibles({
+  userId,
+  responsibles,
+}: {
+  userId: string;
+  responsibles: string[];
+}) {
+  const { data: people = [] } = useQuery({
     queryKey: QUERY_KEYS.people(userId),
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });
-  return <UAvatarGroup
-    avatars={getPeople(responsibles, people).map((responsible: Person) => ({
-      id: responsible.user_id, fallback: responsible.name, image: responsible.image,
-    }))}
-    size={SIZE.sm}
-  />;
+  return (
+    <UAvatarGroup
+      avatars={getPeople(responsibles, people).map((responsible: Person) => ({
+        id: responsible.user_id,
+        fallback: responsible.name,
+        image: responsible.image,
+      }))}
+      size={SIZE.sm}
+    />
+  );
 }

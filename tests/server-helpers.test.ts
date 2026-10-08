@@ -28,7 +28,10 @@ describe("getServiceConfig", () => {
     process.env.SUPABASE_SERVICE_ROLE_KEY = "key";
     process.env.SUPABASE_URL = "https://a.test";
     process.env.VITE_SUPABASE_URL = "https://b.test";
-    expect(getServiceConfig()).toEqual({ url: "https://a.test", serviceRoleKey: "key" });
+    expect(getServiceConfig()).toEqual({
+      url: "https://a.test",
+      serviceRoleKey: "key",
+    });
     delete process.env.SUPABASE_URL;
     expect(getServiceConfig()?.url).toBe("https://b.test");
   });

@@ -31,7 +31,10 @@ mock.module("~/lib/supabase.client", () => ({
         if (operation === "update") {
           capturedUpdatePayload = change ? { ...change } : null;
           if (rows.length === 0) {
-            return { data: null, error: { code: "PGRST116", message: "Row not found" } };
+            return {
+              data: null,
+              error: { code: "PGRST116", message: "Row not found" },
+            };
           }
           for (const row of rows) {
             Object.assign(row, change);
@@ -90,11 +93,15 @@ describe("Ticket 08: Atualizar ação com conflito explícito", () => {
   });
 
   it("recusa atualização se expectedUpdatedAt não for fornecido ou for inválido", async () => {
-    // @ts-expect-error teste de contrato de runtime
-    await expect(updateActionClient("act-1", { title: "Novo" })).rejects.toThrow(
+    await expect(
+      // @ts-expect-error teste de contrato de runtime
+      updateActionClient("act-1", { title: "Novo" }),
+    ).rejects.toThrow(
       "expectedUpdatedAt é obrigatório para atualização de ação.",
     );
-    await expect(updateActionClient("act-1", { title: "Novo" }, "")).rejects.toThrow(
+    await expect(
+      updateActionClient("act-1", { title: "Novo" }, ""),
+    ).rejects.toThrow(
       "expectedUpdatedAt é obrigatório para atualização de ação.",
     );
   });
@@ -124,8 +131,12 @@ describe("Ticket 08: Atualizar ação com conflito explícito", () => {
     const row = db.actions[0];
     if (!row) throw new Error("Missing fixture");
     row.description = "Preserved description";
-    const updated = await updateActionClient("act-1", {phase:"doing",description:undefined}, "2026-10-06T12:00:00.000Z");
-    expect(capturedUpdatePayload).toEqual({phase:"doing"});
+    const updated = await updateActionClient(
+      "act-1",
+      { phase: "doing", description: undefined },
+      "2026-10-06T12:00:00.000Z",
+    );
+    expect(capturedUpdatePayload).toEqual({ phase: "doing" });
     expect(updated.description).toBe("Preserved description");
   });
 
@@ -193,8 +204,11 @@ describe("Ticket 08: Atualizar ação com conflito explícito", () => {
     expect(db.actions[0].title).toBe("Salvo pela Aba A");
   });
   it("business patch never sends caller-supplied timestamps", async () => {
-    await updateActionClient("act-1", {date: "2026-11-21 10:00:00", updated_at: "fake", created_at: "fake"}, "2026-10-06T12:00:00.000Z");
-    expect(capturedUpdatePayload).toEqual({date: "2026-11-21 10:00:00"});
+    await updateActionClient(
+      "act-1",
+      { date: "2026-11-21 10:00:00", updated_at: "fake", created_at: "fake" },
+      "2026-10-06T12:00:00.000Z",
+    );
+    expect(capturedUpdatePayload).toEqual({ date: "2026-11-21 10:00:00" });
   });
-
 });

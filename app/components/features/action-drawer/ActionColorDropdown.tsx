@@ -98,17 +98,17 @@ export function ActionColorDropdown({
       </ComboboxTrigger>
 
       {/* Conteúdo do Popover */}
-      <PrismPopover className="w-64 p-3 flex flex-col gap-3">
+      <PrismPopover className="flex w-64 flex-col gap-3 p-3">
         {/* 1. Swatches do Parceiro */}
         {partnerColors.length > 0 && (
-          <div className="flex flex-col gap-1.5 pb-2 border-b">
-            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+          <div className="flex flex-col gap-1.5 border-b pb-2">
+            <span className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
               Cores do Parceiro
             </span>
             <PrismToggleGroup
               aria-label="Cores do Parceiro"
               className={cn(
-                "grid gap-2 w-full justify-start",
+                "grid w-full justify-start gap-2",
                 getGridCols(partnerColors.length, 6),
               )}
               onSelectionChange={(keys) => {
@@ -128,7 +128,7 @@ export function ActionColorDropdown({
                 <PrismToggleGroupItem
                   key={hex}
                   aria-label={`Cor ${hex}`}
-                  className="h-5 min-w-0 rounded-2xl squircle border border-black/10 p-0 shrink-0 transition-all data-selected:ring-2 data-selected:ring-primary data-selected:ring-offset-background data-selected:scale-110"
+                  className="h-5 min-w-0 shrink-0 rounded-2xl border border-black/10 p-0 transition-all squircle data-selected:scale-110 data-selected:ring-2 data-selected:ring-primary data-selected:ring-offset-background"
                   id={hex}
                   style={{
                     backgroundColor: hex,
@@ -153,7 +153,7 @@ export function ActionColorDropdown({
         </div>
 
         {/* 3. Input Hexadecimal */}
-        <div className="pt-2 border-t flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 border-t pt-2">
           <span className="shrink-0 text-xs font-semibold text-muted-foreground uppercase">
             Hex
           </span>

@@ -59,7 +59,7 @@ function PartnerPage() {
   const { slug } = Route.useParams();
   const showsSideBySide = useIsDesktop(768);
   const { person, partners } = useAppContext();
-  const partnerSlugs = partners.map(p => p.slug).sort();
+  const partnerSlugs = partners.map((p) => p.slug).sort();
   const partner = partners.find((p: Partner) => p.slug === slug);
   const partnerSlug = partner?.slug || "";
   const partnerColors = partner?.colors || [];
@@ -78,7 +78,14 @@ function PartnerPage() {
   const startDateFormatted = format(start, "yyyy-MM-dd HH:mm:ss");
   const endDateFormatted = format(end, "yyyy-MM-dd HH:mm:ss");
   const { data: currentActions = [] } = useQuery({
-    queryKey: QUERY_KEYS.actions.list("partner",person.user_id,person.admin,partnerSlug ? [partnerSlug] : [],startDateFormatted,endDateFormatted),
+    queryKey: QUERY_KEYS.actions.list(
+      "partner",
+      person.user_id,
+      person.admin,
+      partnerSlug ? [partnerSlug] : [],
+      startDateFormatted,
+      endDateFormatted,
+    ),
     queryFn: () =>
       fetchPartnerActions(
         partnerSlug,
@@ -92,7 +99,12 @@ function PartnerPage() {
 
   // LateActions do parceiro — client-side via React Query (reutilizando cache global do Header)
   const { data: currentLateActions = [] } = useQuery({
-    queryKey: QUERY_KEYS.actions.list("late",person.user_id,person.admin,partnerSlugs),
+    queryKey: QUERY_KEYS.actions.list(
+      "late",
+      person.user_id,
+      person.admin,
+      partnerSlugs,
+    ),
     queryFn: () =>
       fetchAllLateActions(
         person.user_id,
@@ -188,7 +200,7 @@ function PartnerPage() {
                   <PrismBadge>{lateCount}</PrismBadge>
                 </PrismButton>
                 <PrismPopover
-                  className="max-h-100 w-95 overflow-y-auto space-y-4"
+                  className="max-h-100 w-95 space-y-4 overflow-y-auto"
                   placement="bottom start"
                 >
                   <h5>Ações Atrasadas ({lateCount})</h5>
@@ -268,11 +280,13 @@ function PartnerPage() {
             view === "calendar" ? "" : "hidden md:flex",
           )}
         >
-          {(view === "calendar" || showsSideBySide) && <PartnerCalendarBoard
-            actions={filteredActions}
-            currentDay={currentDay}
-            viewOptions={viewOptions}
-          />}
+          {(view === "calendar" || showsSideBySide) && (
+            <PartnerCalendarBoard
+              actions={filteredActions}
+              currentDay={currentDay}
+              viewOptions={viewOptions}
+            />
+          )}
         </div>
         <div
           className={cn(

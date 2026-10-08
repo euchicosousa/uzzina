@@ -32,12 +32,14 @@ export function DialogSection() {
                 <PrismDialogHeader>
                   <PrismDialogTitle>Título do Modal</PrismDialogTitle>
                   <PrismDialogDescription>
-                    Este é um modal simples construído com o design system Prism do Uzzina.
+                    Este é um modal simples construído com o design system Prism
+                    do Uzzina.
                   </PrismDialogDescription>
                 </PrismDialogHeader>
                 <div className="flex flex-col gap-2 py-4">
                   <p className="text-sm text-foreground">
-                    Conteúdo dinâmico do modal. Suporta inputs, tabelas e botões adicionais de ação.
+                    Conteúdo dinâmico do modal. Suporta inputs, tabelas e botões
+                    adicionais de ação.
                   </p>
                 </div>
                 <PrismDialogFooter>

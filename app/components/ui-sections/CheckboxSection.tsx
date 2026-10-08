@@ -35,18 +35,11 @@ export function CheckboxSection() {
 
           <GalleryItem label="Estados (Controlado, Indeterminado & Desativado)">
             <div className="flex items-center gap-6">
-              <PrismCheckbox
-                isSelected={checked}
-                onChange={setChecked}
-              >
+              <PrismCheckbox isSelected={checked} onChange={setChecked}>
                 {checked ? "Selecionado" : "Desmarcado"}
               </PrismCheckbox>
-              <PrismCheckbox isIndeterminate>
-                Indeterminado
-              </PrismCheckbox>
-              <PrismCheckbox isDisabled>
-                Desativado
-              </PrismCheckbox>
+              <PrismCheckbox isIndeterminate>Indeterminado</PrismCheckbox>
+              <PrismCheckbox isDisabled>Desativado</PrismCheckbox>
               <PrismCheckbox defaultSelected isDisabled>
                 Marcado & Desativado
               </PrismCheckbox>
@@ -55,13 +48,12 @@ export function CheckboxSection() {
 
           <GalleryItem label="PrismCheckboxGroup">
             <div className="flex flex-col gap-2">
-              <PrismCheckboxGroup
-                value={groupValues}
-                onChange={setGroupValues}
-              >
+              <PrismCheckboxGroup value={groupValues} onChange={setGroupValues}>
                 <PrismCheckbox value="option1">Opção 1 (Sprints)</PrismCheckbox>
                 <PrismCheckbox value="option2">Opção 2 (Ações)</PrismCheckbox>
-                <PrismCheckbox value="option3">Opção 3 (Parceiros)</PrismCheckbox>
+                <PrismCheckbox value="option3">
+                  Opção 3 (Parceiros)
+                </PrismCheckbox>
               </PrismCheckboxGroup>
               <span className="font-mono text-xs text-muted-foreground">
                 Selecionados no Grupo: {groupValues.join(", ")}

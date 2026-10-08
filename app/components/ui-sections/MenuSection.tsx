@@ -44,25 +44,22 @@ export function MenuSection() {
         />
         <GallerySectionContent>
           <GalleryItem label="Menu de Ações Completo">
-            <div className="flex gap-4 items-center">
+            <div className="flex items-center gap-4">
               <PrismMenu>
-                <PrismButton variant="default">
-                  Abrir Menu Avançado
-                </PrismButton>
-                <PrismMenuContent
-                  className="w-64"
-                  placement="bottom start"
-                >
+                <PrismButton variant="default">Abrir Menu Avançado</PrismButton>
+                <PrismMenuContent className="w-64" placement="bottom start">
                   <PrismMenuLabel>Minha Conta</PrismMenuLabel>
-                  <PrismMenuItem onAction={() => toast.info("Navegar para Perfil")}>
-                    <UserIcon className="size-4 mr-2 text-muted-foreground" />
+                  <PrismMenuItem
+                    onAction={() => toast.info("Navegar para Perfil")}
+                  >
+                    <UserIcon className="mr-2 size-4 text-muted-foreground" />
                     <span>Meu Perfil</span>
                     <PrismMenuShortcut>⌘P</PrismMenuShortcut>
                   </PrismMenuItem>
                   <PrismMenuItem
                     onAction={() => toast.info("Navegar para Configurações")}
                   >
-                    <SettingsIcon className="size-4 mr-2 text-muted-foreground" />
+                    <SettingsIcon className="mr-2 size-4 text-muted-foreground" />
                     <span>Configurações</span>
                     <PrismMenuShortcut>⌘S</PrismMenuShortcut>
                   </PrismMenuItem>
@@ -71,7 +68,7 @@ export function MenuSection() {
 
                   <PrismMenuSub>
                     <PrismMenuSubTrigger>
-                      <KeyboardIcon className="size-4 mr-2 text-muted-foreground" />
+                      <KeyboardIcon className="mr-2 size-4 text-muted-foreground" />
                       <span>Preferências</span>
                     </PrismMenuSubTrigger>
                     <PrismMenuSubContent className="w-48">
@@ -95,7 +92,7 @@ export function MenuSection() {
                     onAction={() => toast.warning("Saindo da conta...")}
                     variant="destructive"
                   >
-                    <LogOutIcon className="size-4 mr-2" />
+                    <LogOutIcon className="mr-2 size-4" />
                     <span>Sair da Conta</span>
                     <PrismMenuShortcut>⇧⌘Q</PrismMenuShortcut>
                   </PrismMenuItem>
@@ -105,7 +102,7 @@ export function MenuSection() {
           </GalleryItem>
 
           <GalleryItem label="Menu com Checkbox (Seleção Múltipla)">
-            <div className="flex gap-4 items-center">
+            <div className="flex items-center gap-4">
               <PrismMenu>
                 <PrismButton variant="secondary">
                   Opções de Notificação
@@ -121,16 +118,14 @@ export function MenuSection() {
                   <PrismMenuItem id="notifications">
                     Ativar Notificações
                   </PrismMenuItem>
-                  <PrismMenuItem id="sounds">
-                    Efeitos Sonoros
-                  </PrismMenuItem>
+                  <PrismMenuItem id="sounds">Efeitos Sonoros</PrismMenuItem>
                 </PrismMenuContent>
               </PrismMenu>
             </div>
           </GalleryItem>
 
           <GalleryItem label="Menu com Radio (Seleção Única)">
-            <div className="flex gap-4 items-center">
+            <div className="flex items-center gap-4">
               <PrismMenu>
                 <PrismButton
                   aria-label="Seletor de Tema"
@@ -138,17 +133,15 @@ export function MenuSection() {
                   size="icon"
                   variant="ghost"
                 >
-                  {themeKeys !== "all" &&
-                    themeKeys.has("light") && (
-                      <SunIcon className="size-5" />
-                    )}
+                  {themeKeys !== "all" && themeKeys.has("light") && (
+                    <SunIcon className="size-5" />
+                  )}
                   {themeKeys !== "all" && themeKeys.has("dark") && (
                     <MoonIcon className="size-5" />
                   )}
-                  {themeKeys !== "all" &&
-                    themeKeys.has("system") && (
-                      <MonitorIcon className="size-5" />
-                    )}
+                  {themeKeys !== "all" && themeKeys.has("system") && (
+                    <MonitorIcon className="size-5" />
+                  )}
                 </PrismButton>
                 <PrismMenuContent
                   onSelectionChange={setThemeKeys}
@@ -158,18 +151,16 @@ export function MenuSection() {
                 >
                   <PrismMenuLabel>Tema do Sistema</PrismMenuLabel>
                   <PrismMenuItem id="light">
-                    <SunIcon className="size-4 mr-2 text-muted-foreground shrink-0" />
+                    <SunIcon className="mr-2 size-4 shrink-0 text-muted-foreground" />
                     <span className="truncate">Claro</span>
                   </PrismMenuItem>
                   <PrismMenuItem id="dark">
-                    <MoonIcon className="size-4 mr-2 text-muted-foreground shrink-0" />
+                    <MoonIcon className="mr-2 size-4 shrink-0 text-muted-foreground" />
                     <span className="truncate">Escuro</span>
                   </PrismMenuItem>
                   <PrismMenuItem id="system">
-                    <MonitorIcon className="size-4 mr-2 text-muted-foreground shrink-0" />
-                    <span className="truncate">
-                      Padrão do Sistema
-                    </span>
+                    <MonitorIcon className="mr-2 size-4 shrink-0 text-muted-foreground" />
+                    <span className="truncate">Padrão do Sistema</span>
                   </PrismMenuItem>
                 </PrismMenuContent>
               </PrismMenu>

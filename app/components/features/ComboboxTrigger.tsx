@@ -27,7 +27,7 @@ export function ComboboxTrigger({
     <ButtonPrimitive
       className={cn(
         // Base transition and outline
-        "outline-none transition-colors text-sm flex gap-2 items-center cursor-pointer",
+        "flex cursor-pointer items-center gap-2 text-sm transition-colors outline-none",
         // Variant Styles
         variant === "filter" &&
           cn(
@@ -40,13 +40,13 @@ export function ComboboxTrigger({
           cn(
             "flex items-center gap-1.5",
             size === "sm"
-              ? "h-8 text-xs hover:bg-secondary justify-start px-3 rounded-md"
+              ? "h-8 justify-start rounded-md px-3 text-xs hover:bg-secondary"
               : "p-6 hover:bg-secondary focus:bg-secondary/50",
           ),
         variant === "form-link" &&
           "cursor-pointer underline-offset-4 hover:underline",
         variant === "form-footer" &&
-          "hover:bg-secondary focus:bg-secondary/50 flex w-full items-center gap-2 overflow-hidden px-6 py-5.5 text-sm",
+          "flex w-full items-center gap-2 overflow-hidden px-6 py-5.5 text-sm hover:bg-secondary focus:bg-secondary/50",
         className,
       )}
       type={type}

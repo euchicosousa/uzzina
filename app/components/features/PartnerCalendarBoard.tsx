@@ -32,7 +32,10 @@ export function PartnerCalendarBoard({
   });
 
   const { person, partners, setBaseAction } = useAppContext();
-  const params = useParams({ strict: false }) as Record<string, string | undefined>;
+  const params = useParams({ strict: false }) as Record<
+    string,
+    string | undefined
+  >;
   const partnerSlug = params.slug;
   invariant(partnerSlug);
 
@@ -42,8 +45,8 @@ export function PartnerCalendarBoard({
     staleTime: 30 * 60 * 1000,
   });
 
-  const responsibles = partners.filter((p) => p.slug === partnerSlug)[0]
-    ?.users_ids ?? [];
+  const responsibles =
+    partners.filter((p) => p.slug === partnerSlug)[0]?.users_ids ?? [];
 
   return (
     <CalendarWithDnd

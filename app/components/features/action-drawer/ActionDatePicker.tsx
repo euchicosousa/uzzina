@@ -36,7 +36,11 @@ export function ActionDatePicker({
   const handleOpenChange = (isOpen: boolean) => {
     if (isOpen) {
       setSelectedDate(date);
-    } else if (onSelect && selectedDate && selectedDate.getTime() !== date?.getTime()) {
+    } else if (
+      onSelect &&
+      selectedDate &&
+      selectedDate.getTime() !== date?.getTime()
+    ) {
       onSelect(selectedDate);
     }
   };
@@ -45,13 +49,13 @@ export function ActionDatePicker({
       <Pressable>
         <div
           className={cn(
-            "underline-offset-2 hover:underline cursor-pointer",
+            "cursor-pointer underline-offset-2 hover:underline",
             className,
           )}
           role="button"
         >
           {size === "sm" && (
-            <CalendarDaysIcon className="size-3.5 text-muted-foreground shrink-0" />
+            <CalendarDaysIcon className="size-3.5 shrink-0 text-muted-foreground" />
           )}
           {date
             ? getFormattedDateTime(date, dateTimeDisplay)
@@ -73,10 +77,10 @@ export function ActionDatePicker({
           }
         />
         <hr className="-mx-4" />
-        <div className="flex justify-between items-center gap-2">
+        <div className="flex items-center justify-between gap-2">
           <PrismLabel>Defina a hora</PrismLabel>
           <PrismTimeField
-          size={"sm"}
+            size={"sm"}
             aria-label="Defina a hora"
             onChange={(time) => {
               if (selectedDate && time) {

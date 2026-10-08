@@ -28,14 +28,18 @@ const DEFAULT_CUSTOM_THEME: CustomTheme = {
 export function createCustomThemeDraft(saved: CustomTheme | null): CustomTheme {
   return {
     light: {
-      primaryHex: saved?.light.primaryHex || DEFAULT_CUSTOM_THEME.light.primaryHex,
-      primaryFgHex: saved?.light.primaryFgHex || DEFAULT_CUSTOM_THEME.light.primaryFgHex,
+      primaryHex:
+        saved?.light.primaryHex || DEFAULT_CUSTOM_THEME.light.primaryHex,
+      primaryFgHex:
+        saved?.light.primaryFgHex || DEFAULT_CUSTOM_THEME.light.primaryFgHex,
       bgHex: saved?.light.bgHex || DEFAULT_CUSTOM_THEME.light.bgHex,
       fgHex: saved?.light.fgHex || DEFAULT_CUSTOM_THEME.light.fgHex,
     },
     dark: {
-      primaryHex: saved?.dark.primaryHex || DEFAULT_CUSTOM_THEME.dark.primaryHex,
-      primaryFgHex: saved?.dark.primaryFgHex || DEFAULT_CUSTOM_THEME.dark.primaryFgHex,
+      primaryHex:
+        saved?.dark.primaryHex || DEFAULT_CUSTOM_THEME.dark.primaryHex,
+      primaryFgHex:
+        saved?.dark.primaryFgHex || DEFAULT_CUSTOM_THEME.dark.primaryFgHex,
       bgHex: saved?.dark.bgHex || DEFAULT_CUSTOM_THEME.dark.bgHex,
       fgHex: saved?.dark.fgHex || DEFAULT_CUSTOM_THEME.dark.fgHex,
     },

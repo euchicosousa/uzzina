@@ -29,9 +29,9 @@ function AdminPartnersPage() {
   });
   if (isLoading) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-background gap-4 p-8 min-h-75">
+      <div className="flex h-full min-h-75 w-full items-center justify-center gap-4 bg-background p-8">
         <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        <p className="text-muted-foreground text-sm font-medium animate-pulse">
+        <p className="animate-pulse text-sm font-medium text-muted-foreground">
           Carregando parceiros...
         </p>
       </div>
@@ -72,7 +72,11 @@ function AdminPartnersPage() {
             avatarColor={partner.colors[1]}
             fallback={partner.short}
             image={partner.image}
-            subtitle={partner.users_ids?.length > 0 ? `${partner.users_ids.length} membro(s)` : undefined}
+            subtitle={
+              partner.users_ids?.length > 0
+                ? `${partner.users_ids.length} membro(s)`
+                : undefined
+            }
             title={partner.title}
             to={`/app/admin/partner/${partner.slug}`}
           />

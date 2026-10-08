@@ -101,7 +101,9 @@ interface MockChain {
     data: Record<string, unknown> | null;
     error: { message: string } | null;
   }>;
-  then: (resolve: (val: { data: Record<string, unknown>[]; error: null }) => void) => Promise<void>;
+  then: (
+    resolve: (val: { data: Record<string, unknown>[]; error: null }) => void,
+  ) => Promise<void>;
 }
 
 mock.module("@supabase/supabase-js", () => ({
@@ -202,7 +204,10 @@ mock.module("@supabase/supabase-js", () => ({
         single: async () => {
           const rows = getFilteredRows();
           if (rows.length === 0) {
-            return { data: null, error: { message: "Row not found", code: "PGRST116" } };
+            return {
+              data: null,
+              error: { message: "Row not found", code: "PGRST116" },
+            };
           }
           return { data: rows[0], error: null };
         },
@@ -525,12 +530,18 @@ describe("Ticket 03 - API /api/dash-data & Isolamento de Dados do Portal", () =>
   describe("2. Operação: partners", () => {
     it("parceiro arquivado não volta na lista nem permite carregar suas ações", async () => {
       mockDb.partners[0].archived = true;
-      const headers={cookie:`${SESSION_COOKIE_NAME}=${tokenA}`};
-      const partnersRes=createMockRes();
-      await dashDataHandler(createMockReq({headers,query:{op:"partners"}}),partnersRes);
+      const headers = { cookie: `${SESSION_COOKIE_NAME}=${tokenA}` };
+      const partnersRes = createMockRes();
+      await dashDataHandler(
+        createMockReq({ headers, query: { op: "partners" } }),
+        partnersRes,
+      );
       expect(partnersRes._body()?.partners).toEqual([]);
-      const actionRes=createMockRes();
-      await dashDataHandler(createMockReq({headers,query:{op:"action",id:"act-sm-1"}}),actionRes);
+      const actionRes = createMockRes();
+      await dashDataHandler(
+        createMockReq({ headers, query: { op: "action", id: "act-sm-1" } }),
+        actionRes,
+      );
       expect(actionRes._status()).toBe(404);
     });
 
@@ -573,7 +584,18 @@ describe("Ticket 03 - API /api/dash-data & Isolamento de Dados do Portal", () =>
   describe("3. Operação: actions e Validação de Limites", () => {
     it("rejeita dia inexistente sem normalizar para o mês seguinte", async () => {
       const res = createMockRes();
-      await dashDataHandler(createMockReq({ headers: {cookie: `${SESSION_COOKIE_NAME}=${tokenA}`}, query: {op:"actions",partner:"smartmed",from:"2026-02-31",to:"2026-03-10"} }),res);
+      await dashDataHandler(
+        createMockReq({
+          headers: { cookie: `${SESSION_COOKIE_NAME}=${tokenA}` },
+          query: {
+            op: "actions",
+            partner: "smartmed",
+            from: "2026-02-31",
+            to: "2026-03-10",
+          },
+        }),
+        res,
+      );
       expect(res._status()).toBe(400);
     });
 
@@ -813,7 +835,10 @@ describe("Ticket 03 - fetchers reais com HTTP controlado", () => {
     let capturedOptions: RequestInit | undefined;
 
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    globalThis.fetch = (async (
+      input: RequestInfo | URL,
+      init?: RequestInit,
+    ) => {
       capturedUrl = String(input);
       capturedOptions = init;
       return new Response(

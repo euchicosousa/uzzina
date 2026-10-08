@@ -3,21 +3,17 @@ import { PHASES, type PHASE_TYPE } from "~/lib/CONSTANTS";
 import { PhaseIcon } from "./PhaseIcon";
 import Color from "color";
 
-export function PhaseStationBadges({
-  phase,
-}: {
-  phase: PHASE_TYPE;
-}) {
+export function PhaseStationBadges({ phase }: { phase: PHASE_TYPE }) {
   return phase.slug === PHASES.finished.slug ? (
     <PhaseIcon phase={phase} size="sm" />
   ) : (
     <div
       className={cn(
-        "relative text-white flex rounded-3xl squircle overflow-hidden font-bold tracking-wide",
+        "relative flex overflow-hidden rounded-3xl font-bold tracking-wide text-white squircle",
       )}
     >
       <div
-        className="text-[8px] uppercase truncate py-0.5 px-2"
+        className="truncate px-2 py-0.5 text-[8px] uppercase"
         style={{
           color: phase.color,
           backgroundColor: Color(phase.color).alpha(0.1).string(),

@@ -91,7 +91,7 @@ export function BulkDateTimeDialog({
         {/* ── Seção: Mudar Data ────────────────────────────────────────── */}
 
         <label
-          className="flex cursor-pointer items-center gap-2.5 font-medium text-sm text-foreground select-none px-5 py-4"
+          className="flex cursor-pointer items-center gap-2.5 px-5 py-4 text-sm font-medium text-foreground select-none"
           htmlFor="bulk-change-date"
         >
           <PrismCheckbox
@@ -106,12 +106,12 @@ export function BulkDateTimeDialog({
           className={cn(
             "overflow-hidden transition-all duration-200",
             changeDate
-              ? "max-h-96 py-4 opacity-100 border-b"
+              ? "max-h-96 border-b py-4 opacity-100"
               : "pointer-events-none max-h-0 opacity-0",
           )}
         >
           <PrismCalendar
-            className="w-full p-0 flex justify-center"
+            className="flex w-full justify-center p-0"
             onChange={(day) => {
               if (day) {
                 setPickedDate(new Date(day.year, day.month - 1, day.day));
@@ -132,7 +132,7 @@ export function BulkDateTimeDialog({
         {/* ── Seção: Mudar Hora ─────────────────────────────────────────── */}
 
         <label
-          className="flex cursor-pointer items-center gap-2.5 font-medium text-sm text-foreground select-none px-5 py-4"
+          className="flex cursor-pointer items-center gap-2.5 px-5 py-4 text-sm font-medium text-foreground select-none"
           htmlFor="bulk-change-time"
         >
           <PrismCheckbox
@@ -147,7 +147,7 @@ export function BulkDateTimeDialog({
           className={cn(
             "overflow-hidden transition-all duration-200",
             changeTime
-              ? "max-h-24 opacity-100 p-4 border-t"
+              ? "max-h-24 border-t p-4 opacity-100"
               : "pointer-events-none max-h-0 opacity-0",
           )}
         >

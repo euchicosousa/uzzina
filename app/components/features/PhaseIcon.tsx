@@ -49,7 +49,7 @@ export function PhaseIcon({
     return (
       <div
         className={cn(
-          "grid aspect-square place-content-center rounded-full shrink-0",
+          "grid aspect-square shrink-0 place-content-center rounded-full",
           sizeClasses,
           "animate-pop",
         )}
@@ -67,7 +67,7 @@ export function PhaseIcon({
     <div className={cn("relative shrink-0", sizeClasses)}>
       {/* Background circle (shadow) */}
       <svg
-        className="absolute inset-0 stroke-2 opacity-10 size-full"
+        className="absolute inset-0 size-full stroke-2 opacity-10"
         stroke="currentColor"
         viewBox="0 0 20 20"
       >
@@ -76,7 +76,7 @@ export function PhaseIcon({
       </svg>
       {/* Progress circle */}
       <svg
-        className="-rotate-90 stroke-2 transition-all duration-500 size-full"
+        className="size-full -rotate-90 stroke-2 transition-all duration-500"
         style={{
           color: phase.color,
         }}

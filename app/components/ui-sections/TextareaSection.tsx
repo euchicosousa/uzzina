@@ -21,7 +21,7 @@ export function TextareaSection() {
         <GallerySectionContent>
           <GalleryItem className="w-full max-w-md" label="Default Textarea">
             <TextField onChange={setValue} value={value}>
-              <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+              <Label className="mb-1.5 block cursor-pointer font-medium text-foreground">
                 Descrição da Ação
               </Label>
               <PrismTextarea placeholder="Digite a descrição detalhada..." />
@@ -30,7 +30,7 @@ export function TextareaSection() {
 
           <GalleryItem className="w-full max-w-md" label="Disabled Textarea">
             <TextField isDisabled value="Este conteúdo não pode ser editado.">
-              <Label className="block font-medium text-foreground cursor-pointer mb-1.5">
+              <Label className="mb-1.5 block cursor-pointer font-medium text-foreground">
                 Observações (Desabilitado)
               </Label>
               <PrismTextarea />

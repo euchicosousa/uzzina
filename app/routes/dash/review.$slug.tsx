@@ -8,7 +8,10 @@ import type { CATEGORY } from "~/lib/CONSTANTS";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { cn } from "cnfast";
 import { sanitizeHtml } from "~/utils/sanitize";
-import type { PublicReviewActionDto, PublicReviewPartnerDto } from "~/../api/review";
+import type {
+  PublicReviewActionDto,
+  PublicReviewPartnerDto,
+} from "~/../api/review";
 
 const reviewSearchSchema = z.object({
   r: z.string().optional(),
@@ -21,7 +24,9 @@ export const Route = createFileRoute("/dash/review/$slug")({
 });
 
 async function fetchPublicReview(slug: string, token: string) {
-  const res = await fetch(`/api/review?slug=${encodeURIComponent(slug)}&r=${encodeURIComponent(token)}`);
+  const res = await fetch(
+    `/api/review?slug=${encodeURIComponent(slug)}&r=${encodeURIComponent(token)}`,
+  );
   if (res.status === 404) {
     throw new Error("NOT_FOUND");
   }
@@ -42,7 +47,10 @@ function ReviewPage() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["review", token, slug],
-    queryFn: () => (token ? fetchPublicReview(slug, token) : Promise.reject(new Error("MISSING_TOKEN"))),
+    queryFn: () =>
+      token
+        ? fetchPublicReview(slug, token)
+        : Promise.reject(new Error("MISSING_TOKEN")),
     enabled: !!slug && !!token,
     retry: false,
   });
@@ -51,10 +59,13 @@ function ReviewPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <div className="max-w-md text-center">
-          <h2 className="mb-2 text-lg font-semibold text-foreground">Link Descontinuado</h2>
+          <h2 className="mb-2 text-lg font-semibold text-foreground">
+            Link Descontinuado
+          </h2>
           <p className="text-sm text-muted-foreground">
-            Este link de revisão utiliza um formato antigo que foi descontinuado por motivos de segurança.
-            Por favor, solicite à equipe um novo link seguro de revisão.
+            Este link de revisão utiliza um formato antigo que foi descontinuado
+            por motivos de segurança. Por favor, solicite à equipe um novo link
+            seguro de revisão.
           </p>
         </div>
       </div>
@@ -65,9 +76,12 @@ function ReviewPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <div className="max-w-md text-center">
-          <h2 className="mb-2 text-lg font-semibold text-foreground">Link Inválido</h2>
+          <h2 className="mb-2 text-lg font-semibold text-foreground">
+            Link Inválido
+          </h2>
           <p className="text-sm text-muted-foreground">
-            Nenhuma chave de autorização foi fornecida para acessar esta revisão.
+            Nenhuma chave de autorização foi fornecida para acessar esta
+            revisão.
           </p>
         </div>
       </div>
@@ -90,7 +104,9 @@ function ReviewPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <div className="max-w-md text-center">
-          <h2 className="mb-2 text-lg font-semibold text-foreground">Acesso Não Disponível</h2>
+          <h2 className="mb-2 text-lg font-semibold text-foreground">
+            Acesso Não Disponível
+          </h2>
           <p className="text-sm text-muted-foreground">
             {isNotFound
               ? "Este link de revisão expirou, foi revogado ou é inválido."
@@ -106,17 +122,21 @@ function ReviewPage() {
   if (validActions.length === 0) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <p className="text-muted-foreground">Nenhum conteúdo deste parceiro encontrado para revisão.</p>
+        <p className="text-muted-foreground">
+          Nenhum conteúdo deste parceiro encontrado para revisão.
+        </p>
       </div>
     );
   }
 
-  const todayFormatted = format(new Date(), "d 'de' MMMM 'de' yyyy", { locale: ptBR });
+  const todayFormatted = format(new Date(), "d 'de' MMMM 'de' yyyy", {
+    locale: ptBR,
+  });
 
   return (
     <div className="min-h-screen bg-background">
       {/* Document header */}
-      <header className="mx-auto max-w-3xl px-6 pb-8 pt-16">
+      <header className="mx-auto max-w-3xl px-6 pt-16 pb-8">
         <div className="mb-8 flex items-center gap-4">
           <UAvatar
             backgroundColor={partner.colors?.[0]}
@@ -126,7 +146,7 @@ function ReviewPage() {
             size="md"
           />
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
               Revisão de Conteúdo
             </p>
             <h1 className="text-2xl font-semibold tracking-tight">
@@ -137,7 +157,11 @@ function ReviewPage() {
 
         <div className="border-b pb-6">
           <p className="text-sm text-muted-foreground">
-            {validActions.length} {validActions.length === 1 ? "conteúdo compartilhado" : "conteúdos compartilhados"} para revisão
+            {validActions.length}{" "}
+            {validActions.length === 1
+              ? "conteúdo compartilhado"
+              : "conteúdos compartilhados"}{" "}
+            para revisão
             {" · "}
             <span className="capitalize">{todayFormatted}</span>
           </p>
@@ -150,24 +174,27 @@ function ReviewPage() {
           {validActions.map((action, index) => {
             const category = CATEGORIES[action.category as CATEGORY];
             const hasContentDescription =
-              action.content_description && action.content_description.trim().length > 0;
+              action.content_description &&
+              action.content_description.trim().length > 0;
             const hasCaption =
-              action.instagram_caption && action.instagram_caption.trim().length > 0;
+              action.instagram_caption &&
+              action.instagram_caption.trim().length > 0;
 
             let publishDate: string | null = null;
             try {
               publishDate = action.date
-                ? format(parseISO(action.date.replace(" ", "T")), "d MMM yyyy", { locale: ptBR })
+                ? format(
+                    parseISO(action.date.replace(" ", "T")),
+                    "d MMM yyyy",
+                    { locale: ptBR },
+                  )
                 : null;
             } catch {
               publishDate = null;
             }
 
             return (
-              <article
-                key={action.id}
-                className="py-10"
-              >
+              <article key={action.id} className="py-10">
                 {/* Action header */}
                 <div className="mb-5 flex flex-wrap items-start gap-3">
                   {/* Index */}
@@ -180,7 +207,7 @@ function ReviewPage() {
                     <div className="mb-2 flex flex-wrap items-center gap-2">
                       {category && (
                         <span
-                          className="rounded-md px-2 py-0.5 text-xs font-semibold uppercase tracking-wide"
+                          className="rounded-md px-2 py-0.5 text-xs font-semibold tracking-wide uppercase"
                           style={{
                             backgroundColor: `${category.color}20`,
                             color: category.color,
@@ -197,7 +224,7 @@ function ReviewPage() {
                     </div>
 
                     {/* Title */}
-                    <h2 className="text-xl font-semibold leading-snug">
+                    <h2 className="text-xl leading-snug font-semibold">
                       {action.title}
                     </h2>
                   </div>
@@ -206,7 +233,7 @@ function ReviewPage() {
                 {/* Content description (Tiptap HTML) */}
                 {hasContentDescription && (
                   <section className="mb-6">
-                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                    <h3 className="mb-2 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
                       Conteúdo
                     </h3>
                     <div
@@ -215,21 +242,23 @@ function ReviewPage() {
                         "text-foreground",
                         // Tiptap HTML prose overrides
                         "[&_h1]:text-xl [&_h1]:font-bold [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:text-base [&_h3]:font-semibold",
-                        "[&_p]:leading-relaxed [&_p]:mb-2",
-                        "[&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5",
+                        "[&_p]:mb-2 [&_p]:leading-relaxed",
+                        "[&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5",
                         "[&_li]:mb-1",
                         "[&_blockquote]:border-l-4 [&_blockquote]:border-border [&_blockquote]:pl-4 [&_blockquote]:text-muted-foreground",
                         "[&_hr]:border-border",
                         "[&_strong]:font-semibold",
                         "[&_em]:italic",
                         "[&_table]:w-full [&_table]:border-collapse",
-                        "[&_th]:border [&_th]:border-border [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:bg-muted",
+                        "[&_th]:border [&_th]:border-border [&_th]:bg-muted [&_th]:px-3 [&_th]:py-2 [&_th]:text-left",
                         "[&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:py-2",
                         "[&_mark]:bg-yellow-200/60 [&_mark]:dark:bg-yellow-700/40",
                         "[&_a]:text-primary [&_a]:underline",
                       )}
                       // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML sanitizado pelo utilitário central
-                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(action.content_description) }}
+                      dangerouslySetInnerHTML={{
+                        __html: sanitizeHtml(action.content_description),
+                      }}
                     />
                   </section>
                 )}
@@ -237,10 +266,10 @@ function ReviewPage() {
                 {/* Instagram caption */}
                 {hasCaption && (
                   <section>
-                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                    <h3 className="mb-2 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
                       Legenda
                     </h3>
-                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground/80">
                       {action.instagram_caption}
                     </p>
                   </section>
@@ -248,7 +277,7 @@ function ReviewPage() {
 
                 {/* Empty state */}
                 {!hasContentDescription && !hasCaption && (
-                  <p className="text-sm italic text-muted-foreground">
+                  <p className="text-sm text-muted-foreground italic">
                     Nenhum conteúdo preenchido para este item.
                   </p>
                 )}

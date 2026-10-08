@@ -68,7 +68,7 @@ export function InstagramTab({
     "content",
   );
   return (
-    <div className="flex h-full flex-col overflow-y-auto md:flex-row w-full max-w-full overflow-x-hidden">
+    <div className="flex h-full w-full max-w-full flex-col overflow-x-hidden overflow-y-auto md:flex-row">
       <div
         className={cn(
           "mx-auto flex shrink-0 flex-col p-6 md:w-2/5",
@@ -115,8 +115,8 @@ export function InstagramTab({
         {/* Sub-aba CONTEÚDO */}
         {instagramSubTab === "content" && (
           <div className="flex h-full flex-col overflow-hidden">
-            <div className="flex items-center justify-between gap-3 border-b px-4 py-4 md:pl-0 min-w-0">
-              <div className="flex items-center gap-2 min-w-0 shrink">
+            <div className="flex min-w-0 items-center justify-between gap-3 border-b px-4 py-4 md:pl-0">
+              <div className="flex min-w-0 shrink items-center gap-2">
                 <UAvatarGroup
                   avatars={currentPartners.map((partner) => ({
                     fallback: partner.short,
@@ -125,7 +125,7 @@ export function InstagramTab({
                     image: partner.image,
                   }))}
                 />
-                <div className="text-sm font-medium truncate">
+                <div className="truncate text-sm font-medium">
                   {getFormattedPartnersLinks(currentPartners)}
                 </div>
               </div>
@@ -138,7 +138,7 @@ export function InstagramTab({
                 return (
                   strategies.length > 0 &&
                   onOpenStrategyModal && (
-                    <PrismButtonGroup className="max-w-70 sm:max-w-xs md:max-w-sm min-w-0 shrink">
+                    <PrismButtonGroup className="max-w-70 min-w-0 shrink sm:max-w-xs md:max-w-sm">
                       <PrismButton
                         aria-label="Ver estratégias"
                         onClick={onOpenStrategyModal}
@@ -167,7 +167,7 @@ export function InstagramTab({
                         variant="secondary"
                       >
                         <span
-                          className="truncate min-w-0 block"
+                          className="block min-w-0 truncate"
                           title={stratTitle}
                         >
                           {stratTitle}

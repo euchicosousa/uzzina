@@ -4,10 +4,7 @@ import { ActionItemTitleInput } from "../ActionItemTitleInput";
 import { PhaseIcon } from "../PhaseIcon";
 import { INTENT, SIZE } from "~/lib/CONSTANTS";
 import { getFormattedDateTime, Icons } from "~/utils";
-import {
-  ActionItemPartners,
-  ActionItemResponsibles,
-} from "../ActionItem";
+import { ActionItemPartners, ActionItemResponsibles } from "../ActionItem";
 
 export function ActionBlockVariant({
   action,
@@ -27,7 +24,7 @@ export function ActionBlockVariant({
   return (
     <div className="flex flex-col gap-2 pb-2">
       <ActionItemTitleInput
-        className="text-2xl leading-tight font-medium pb-2"
+        className="pb-2 text-2xl leading-tight font-medium"
         isEditing={isEditing}
         lines={lines}
         onBlur={(title) => {
@@ -42,7 +39,7 @@ export function ActionBlockVariant({
         title={action.title}
       />
 
-      <div className="flex items-center justify-between overflow-hidden gap-4">
+      <div className="flex items-center justify-between gap-4 overflow-hidden">
         <div className="flex items-center gap-2 overflow-hidden">
           {showPartner && (
             <ActionItemPartners
@@ -71,7 +68,7 @@ export function ActionBlockVariant({
           )}
         </div>
 
-        <div className="flex items-center shrink-0 gap-2 text-xs opacity-50">
+        <div className="flex shrink-0 items-center gap-2 text-xs opacity-50">
           <CalendarDaysIcon className="size-3 opacity-50" />
           <div className="font-medium">
             {getFormattedDateTime(action.date, dateTimeDisplay)}

@@ -18,7 +18,7 @@ export function PrismSkeleton({
   return (
     <div
       className={cn(
-        "animate-pulse rounded-2xl squircle bg-foreground/5",
+        "animate-pulse rounded-2xl bg-foreground/5 squircle",
         className,
       )}
       style={inlineStyles}

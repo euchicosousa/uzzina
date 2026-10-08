@@ -61,7 +61,12 @@ export function AppBar({
   const { isSelectionMode, toggleSelectionMode } = useMultiSelection();
   const isAtHome = location.pathname === "/app";
   const { data: lateActions = [] } = useQuery({
-    queryKey: QUERY_KEYS.actions.list("late",person.user_id,person.admin,partners.map(p=>p.slug)),
+    queryKey: QUERY_KEYS.actions.list(
+      "late",
+      person.user_id,
+      person.admin,
+      partners.map((p) => p.slug),
+    ),
     queryFn: () =>
       fetchAllLateActions(
         person.user_id,
@@ -215,7 +220,7 @@ function PartnerFilterPopover({
           <HandshakeIcon />
         )}
       </PrismButton>
-      <PrismPopover className="p-0 rounded-4xl">
+      <PrismPopover className="rounded-4xl p-0">
         <PrismCommand className="p-0">
           <div className="flex items-center border-b">
             <PrismCommandInput placeholder="Parceiro..." />

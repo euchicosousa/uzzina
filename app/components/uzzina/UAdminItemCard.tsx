@@ -26,9 +26,9 @@ export function UAdminItemCard({
   return (
     <Link
       className={cn(
-        "bg-action squircle flex items-center gap-4 rounded-3xl border p-4 shadow-xs hover:shadow-black/20",
-        "transition duration-500 ring ring-black/5 border-t border-white z-0 hover:z-10 hover:shadow-lg hover:bg-action-hover",
-        "dark:border-white/20 dark:shadow-black/80 min-w-0 flex-1",
+        "flex items-center gap-4 rounded-3xl border bg-action p-4 shadow-xs squircle hover:shadow-black/20",
+        "z-0 border-t border-white ring ring-black/5 transition duration-500 hover:z-10 hover:bg-action-hover hover:shadow-lg",
+        "min-w-0 flex-1 dark:border-white/20 dark:shadow-black/80",
         className,
       )}
       to={to}
@@ -47,7 +47,7 @@ export function UAdminItemCard({
           {badge}
         </div>
         {subtitle && (
-          <div className="opacity-50 truncate text-xs">{subtitle}</div>
+          <div className="truncate text-xs opacity-50">{subtitle}</div>
         )}
       </div>
     </Link>

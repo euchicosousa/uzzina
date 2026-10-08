@@ -1,6 +1,12 @@
 import { resetQuerySession } from "~/lib/query-client";
 import type { Client } from "~/types";
-import { Outlet, useNavigate, useLocation, useRouterState, createFileRoute } from "@tanstack/react-router";
+import {
+  Outlet,
+  useNavigate,
+  useLocation,
+  useRouterState,
+  createFileRoute,
+} from "@tanstack/react-router";
 import { LogOutIcon, AlertCircleIcon } from "lucide-react";
 import {
   PrismButton,
@@ -41,8 +47,14 @@ function DashLayout() {
   const searchParams = Route.useSearch();
   const queryClient = useQueryClient();
   // Use committed matches: the URL can change before the previous child unmounts.
-  const isLoginPath = useRouterState({ select: (state) => state.matches.some((match) => match.routeId === "/dash/login") });
-  const isReviewPath = useRouterState({ select: (state) => state.matches.some((match) => match.routeId === "/dash/review/$slug") });
+  const isLoginPath = useRouterState({
+    select: (state) =>
+      state.matches.some((match) => match.routeId === "/dash/login"),
+  });
+  const isReviewPath = useRouterState({
+    select: (state) =>
+      state.matches.some((match) => match.routeId === "/dash/review/$slug"),
+  });
   const bootstrapGeneration = useRef(0);
   const [bootstrapAttempt, setBootstrapAttempt] = useState(0);
   const [logoutError, setLogoutError] = useState<string | null>(null);
@@ -91,13 +103,17 @@ function DashLayout() {
           setHasError(true);
         }
       } finally {
-        if (!cancelled && generation === bootstrapGeneration.current) setLoading(false);
+        if (!cancelled && generation === bootstrapGeneration.current)
+          setLoading(false);
       }
     }
     void bootstrapClient();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [navigate, isLoginPath, isReviewPath, queryClient, bootstrapAttempt]);
-  const preferredPartner = searchParams.partner || localStorage.getItem("uzzina_dash_last_partner");
+  const preferredPartner =
+    searchParams.partner || localStorage.getItem("uzzina_dash_last_partner");
   const currentPartnerSlug = partners.some((p) => p.slug === preferredPartner)
     ? preferredPartner
     : partners[0]?.slug;
@@ -139,9 +155,9 @@ function DashLayout() {
   }
   if ((loading || (isReviewPath && !reviewReady)) && !isLoginPath) {
     return (
-      <div className="flex h-screen w-screen flex-col items-center justify-center bg-background gap-4">
+      <div className="flex h-screen w-screen flex-col items-center justify-center gap-4 bg-background">
         <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        <p className="text-muted-foreground text-sm font-medium animate-pulse">
+        <p className="animate-pulse text-sm font-medium text-muted-foreground">
           Carregando portal...
         </p>
       </div>
@@ -152,17 +168,20 @@ function DashLayout() {
   }
   if (hasError && !clientData) {
     return (
-      <div className="flex h-screen w-screen flex-col items-center justify-center bg-background gap-4 p-8 text-center">
+      <div className="flex h-screen w-screen flex-col items-center justify-center gap-4 bg-background p-8 text-center">
         <div className="rounded-full bg-destructive/10 p-3 text-destructive">
           <AlertCircleIcon className="size-8" />
         </div>
         <h2 className="text-lg font-semibold">Falha ao carregar o portal</h2>
-        <p className="text-sm text-muted-foreground max-w-sm">
+        <p className="max-w-sm text-sm text-muted-foreground">
           Não foi possível sincronizar suas credenciais ou dados do parceiro.
         </p>
         {logoutError && <p role="alert">{logoutError}</p>}
         <div className="flex items-center gap-3">
-          <PrismButton size="sm" onClick={() => setBootstrapAttempt((attempt) => attempt + 1)}>
+          <PrismButton
+            size="sm"
+            onClick={() => setBootstrapAttempt((attempt) => attempt + 1)}
+          >
             Tentar novamente
           </PrismButton>
           <PrismButton size="sm" variant="ghost" onClick={handleLogout}>
@@ -187,16 +206,16 @@ function DashLayout() {
         uploadPreset,
       }}
     >
-      <div className="bg-background flex h-screen w-full flex-col">
+      <div className="flex h-screen w-full flex-col bg-background">
         <header className="border_after flex items-center justify-between px-6 py-3">
           <div className="flex items-center gap-3">
             <UAvatar
               fallback={clientData.name ?? "Cliente"}
               image={clientData.image ?? undefined}
             />
-            <span className="text-muted-foreground truncate text-sm">
+            <span className="truncate text-sm text-muted-foreground">
               Olá,{" "}
-              <span className="text-foreground font-medium">
+              <span className="font-medium text-foreground">
                 {clientData.name ?? "Cliente"}
               </span>
             </span>
@@ -243,7 +262,11 @@ function DashLayout() {
             <LogOutIcon className="size-4" /> Sair
           </PrismButton>
         </header>
-        {logoutError && <p role="alert" className="px-6 text-error">{logoutError}</p>}
+        {logoutError && (
+          <p role="alert" className="px-6 text-error">
+            {logoutError}
+          </p>
+        )}
         <div className="flex min-h-0 flex-1">
           <MultiSelectionProvider locationKey={location.pathname}>
             <Outlet />

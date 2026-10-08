@@ -2,11 +2,7 @@ import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
 import type { Action } from "~/types";
 import { useAppContext } from "~/contexts/AppContext";
-import {
-  CATEGORIES,
-  type CATEGORY_TYPE,
-  type ORDER_BY
-} from "~/lib/CONSTANTS";
+import { CATEGORIES, type CATEGORY_TYPE, type ORDER_BY } from "~/lib/CONSTANTS";
 import { createActionDraft, Icons } from "~/utils";
 import { ActionContainer } from "../features/ActionContainer";
 import { PrismBadge, PrismButton } from "../prism";
@@ -81,7 +77,6 @@ function CategoryColumn({
         </div>
 
         <PrismButton
-          
           className="opacity-0 group-hover/column:opacity-100"
           onClick={() =>
             setBaseAction(

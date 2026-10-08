@@ -45,7 +45,8 @@ function AdminUserPage() {
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
   const generation = useRef(getQuerySessionGeneration(queryClient)).current;
-  const isCurrentSession = () => generation === getQuerySessionGeneration(queryClient);
+  const isCurrentSession = () =>
+    generation === getQuerySessionGeneration(queryClient);
   const areas = Object.values(AREAS);
 
   const isNew = userId === "new" || !userId;
@@ -65,7 +66,9 @@ function AdminUserPage() {
     mutationFn: async (userData: UserFormData) => {
       if (isNew) {
         // 1. Obter token de acesso do admin logado
-        const { data: { session } } = await supabase.auth.getSession();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
         if (!session) throw new Error("Você não está autenticado.");
 
         // 2. Chamar a API Serverless para criar o usuário Auth com segurança
@@ -84,10 +87,13 @@ function AdminUserPage() {
 
         const resData = await res.json();
         if (!res.ok) {
-          throw new Error(resData.error || "Falha ao criar credenciais do usuário.");
+          throw new Error(
+            resData.error || "Falha ao criar credenciais do usuário.",
+          );
         }
 
-        if (!isCurrentSession()) throw new Error("A sessão mudou. Entre novamente.");
+        if (!isCurrentSession())
+          throw new Error("A sessão mudou. Entre novamente.");
         const newAuthId = resData.user.id;
 
         // 3. Inserir na tabela "people"
@@ -104,18 +110,29 @@ function AdminUserPage() {
           areas: userData.areas,
         });
       } else {
-        const { error } = await supabase.rpc("admin_update_person", {p_user_id: userId || "", p_changes: {
-          name: userData.name, surname: userData.surname, email: userData.email,
-          initials: userData.initials, short: userData.short, image: userData.image,
-          admin: userData.admin, visible: userData.visible, areas: userData.areas,
-        }});
+        const { error } = await supabase.rpc("admin_update_person", {
+          p_user_id: userId || "",
+          p_changes: {
+            name: userData.name,
+            surname: userData.surname,
+            email: userData.email,
+            initials: userData.initials,
+            short: userData.short,
+            image: userData.image,
+            admin: userData.admin,
+            visible: userData.visible,
+            areas: userData.areas,
+          },
+        });
 
         if (error) throw error;
       }
     },
     onSuccess: () => {
       if (!isCurrentSession()) return;
-      queryClient.invalidateQueries({ queryKey: ["person", "team", appData.person.user_id, userId] });
+      queryClient.invalidateQueries({
+        queryKey: ["person", "team", appData.person.user_id, userId],
+      });
       queryClient.invalidateQueries({ queryKey: ["people"] });
       toast.success("Membro salvo com sucesso!");
       navigate({ to: "/app/admin/users" });
@@ -161,9 +178,9 @@ function AdminUserPage() {
 
   if (isLoadingPerson) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-background gap-4">
+      <div className="flex h-full w-full items-center justify-center gap-4 bg-background">
         <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        <p className="text-muted-foreground text-sm font-medium animate-pulse">
+        <p className="animate-pulse text-sm font-medium text-muted-foreground">
           Carregando membro...
         </p>
       </div>

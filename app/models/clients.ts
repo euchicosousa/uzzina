@@ -2,14 +2,20 @@ import { PortalHttpError, portalRequest } from "~/services/portal-http";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Client } from "~/types";
 
-async function getAuthHeader(supabase?: SupabaseClient): Promise<string | null> {
+async function getAuthHeader(
+  supabase?: SupabaseClient,
+): Promise<string | null> {
   if (!supabase) return null;
   const { data } = await supabase.auth.getSession();
-  return data.session?.access_token ? `Bearer ${data.session.access_token}` : null;
+  return data.session?.access_token
+    ? `Bearer ${data.session.access_token}`
+    : null;
 }
 
 /** Retorna todos os clientes ativos para o painel admin via API autenticada. */
-export async function getAllClients(supabase: SupabaseClient): Promise<Client[]> {
+export async function getAllClients(
+  supabase: SupabaseClient,
+): Promise<Client[]> {
   const authHeader = await getAuthHeader(supabase);
   const res = await fetch("/api/client-accounts", {
     headers: {
@@ -27,7 +33,10 @@ export async function getAllClients(supabase: SupabaseClient): Promise<Client[]>
 }
 
 /** Retorna um cliente específico pelo ID via API autenticada. */
-export async function getClientById(supabase: SupabaseClient, id: string): Promise<Client> {
+export async function getClientById(
+  supabase: SupabaseClient,
+  id: string,
+): Promise<Client> {
   const authHeader = await getAuthHeader(supabase);
   const res = await fetch(`/api/client-accounts?id=${encodeURIComponent(id)}`, {
     headers: {
@@ -44,11 +53,16 @@ export async function getClientById(supabase: SupabaseClient, id: string): Promi
   return data.client as Client;
 }
 
-export type CreateClientInput = Omit<Client, "id" | "created_at" | "active" | "password_hash"> & {
+export type CreateClientInput = Omit<
+  Client,
+  "id" | "created_at" | "active" | "password_hash"
+> & {
   password?: string | null;
 };
 
-export type UpdateClientInput = Partial<Omit<Client, "id" | "created_at" | "active" | "password_hash">> & {
+export type UpdateClientInput = Partial<
+  Omit<Client, "id" | "created_at" | "active" | "password_hash">
+> & {
   password?: string | null;
 };
 
@@ -102,7 +116,10 @@ export async function updateClient(
 }
 
 /** Desativa e revoga sessões ativas do cliente via RPC transacional no servidor. */
-export async function archiveClient(supabase: SupabaseClient, id: string): Promise<void> {
+export async function archiveClient(
+  supabase: SupabaseClient,
+  id: string,
+): Promise<void> {
   const authHeader = await getAuthHeader(supabase);
   const res = await fetch("/api/client-accounts", {
     method: "DELETE",
@@ -134,11 +151,17 @@ export async function authenticateClient(
   if (!email || !password) return null;
 
   try {
-    const data = await portalRequest<{ client: Client }>("/api/dash-auth", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "login", email, password }),
-    }, "Falha ao autenticar cliente");
-    if (!data.client) throw new PortalHttpError(503, "Resposta de login inválida.");
+    const data = await portalRequest<{ client: Client }>(
+      "/api/dash-auth",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "login", email, password }),
+      },
+      "Falha ao autenticar cliente",
+    );
+    if (!data.client)
+      throw new PortalHttpError(503, "Resposta de login inválida.");
     return { client: data.client };
   } catch (error) {
     if (error instanceof PortalHttpError && error.status === 401) return null;
@@ -152,11 +175,17 @@ export async function authenticateClient(
  */
 export async function verifyDashSession(): Promise<Client | null> {
   try {
-    const data = await portalRequest<{ client: Client }>("/api/dash-auth", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "verify" }),
-    }, "Falha ao validar sessão");
-    if (!data.client) throw new PortalHttpError(503, "Resposta de sessão inválida.");
+    const data = await portalRequest<{ client: Client }>(
+      "/api/dash-auth",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "verify" }),
+      },
+      "Falha ao validar sessão",
+    );
+    if (!data.client)
+      throw new PortalHttpError(503, "Resposta de sessão inválida.");
     return data.client;
   } catch (error) {
     if (error instanceof PortalHttpError && error.status === 401) return null;
@@ -166,10 +195,16 @@ export async function verifyDashSession(): Promise<Client | null> {
 
 /** Revoga a sessão; falha de infraestrutura não confirma saída. */
 export async function logoutDashSession(): Promise<boolean> {
-  const data = await portalRequest<{ success: boolean }>("/api/dash-auth", {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "logout" }),
-  }, "Falha ao encerrar sessão");
-  if (!data.success) throw new PortalHttpError(503, "Não foi possível revogar a sessão.");
+  const data = await portalRequest<{ success: boolean }>(
+    "/api/dash-auth",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "logout" }),
+    },
+    "Falha ao encerrar sessão",
+  );
+  if (!data.success)
+    throw new PortalHttpError(503, "Não foi possível revogar a sessão.");
   return true;
 }

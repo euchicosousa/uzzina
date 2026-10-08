@@ -67,8 +67,8 @@ function ToolbarButton({
       className={cn(
         "flex size-8 items-center justify-center rounded-lg transition-all outline-none",
         isActive
-          ? "bg-primary/10 text-primary border border-primary/20"
-          : "text-muted-foreground hover:bg-secondary hover:text-foreground border border-transparent",
+          ? "border border-primary/20 bg-primary/10 text-primary"
+          : "border border-transparent text-muted-foreground hover:bg-secondary hover:text-foreground",
       )}
       onClick={action}
       title={label}
@@ -224,7 +224,7 @@ function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center gap-1 border-b bg-popover p-1.5 shrink-0 max-w-full overflow-hidden",
+        "flex max-w-full shrink-0 flex-wrap items-center gap-1 overflow-hidden border-b bg-popover p-1.5",
         isRounded && "rounded-t-2xl squircle",
       )}
     >
@@ -232,10 +232,10 @@ function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
         <ToolbarButton key={btn.label} {...btn} editor={editor} />
       ))}
 
-      <div className="mx-1 h-4 w-px bg-border shrink-0" />
+      <div className="mx-1 h-4 w-px shrink-0 bg-border" />
 
       <button
-        className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent transition-all outline-none"
+        className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-all outline-none hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent"
         disabled={!editor.can().undo()}
         onClick={() => editor.chain().focus().undo().run()}
         title="Desfazer"
@@ -244,7 +244,7 @@ function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
       </button>
 
       <button
-        className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent transition-all outline-none"
+        className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-all outline-none hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent"
         disabled={!editor.can().redo()}
         onClick={() => editor.chain().focus().redo().run()}
         title="Refazer"
@@ -455,21 +455,21 @@ export function RichTextEditor({
     <EditorContext.Provider value={providedValue}>
       <div
         className={cn(
-          "flex flex-col h-full w-full transition-all duration-200",
+          "flex h-full w-full flex-col transition-all duration-200",
           className,
         )}
       >
         <TiptapToolbar editor={editor} isRounded={isRounded} />
         {editor && (
           <BubbleMenuComponent
-            className="flex items-center gap-0.5 rounded-2xl squircle border bg-background/95 p-1 shadow-lg backdrop-blur-md"
+            className="flex items-center gap-0.5 rounded-2xl border bg-background/95 p-1 shadow-lg backdrop-blur-md squircle"
             editor={editor}
           >
             {isSelectionInTable
               ? tableButtons.map((btn) => (
                   <button
                     key={`table-control-${btn.label}`}
-                    className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground border border-transparent transition-all outline-none"
+                    className="flex size-8 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all outline-none hover:bg-secondary hover:text-foreground"
                     onClick={btn.action}
                     title={btn.label}
                     type="button"
@@ -486,7 +486,7 @@ export function RichTextEditor({
                 ))}
           </BubbleMenuComponent>
         )}
-        <EditorContent className="flex-1 min-h-30" editor={editor} />
+        <EditorContent className="min-h-30 flex-1" editor={editor} />
       </div>
     </EditorContext.Provider>
   );

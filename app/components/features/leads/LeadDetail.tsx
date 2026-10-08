@@ -1,10 +1,6 @@
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import {
-  CheckCircle2Icon,
-  ClockIcon,
-  PhoneIcon,
-} from "lucide-react";
+import { CheckCircle2Icon, ClockIcon, PhoneIcon } from "lucide-react";
 import { useMemo } from "react";
 import { PrismBadge, PrismButton } from "~/components/prism";
 interface LeadDetailProps {
@@ -40,18 +36,18 @@ export function LeadDetail({ lead }: LeadDetailProps) {
       })
     : null;
   return (
-    <div className="flex h-full flex-col overflow-y-auto p-6 xl:p-8 gap-6">
+    <div className="flex h-full flex-col gap-6 overflow-y-auto p-6 xl:p-8">
       {/* Header do Lead */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4  pb-6">
+      <div className="flex flex-col justify-between gap-4 pb-6 sm:flex-row sm:items-center">
         <div className="flex flex-col gap-2">
-          <div className="flex flex-col ">
+          <div className="flex flex-col">
             <h2 className="text-5xl font-medium tracking-tight">{lead.name}</h2>
             {formattedDate && (
               <p className="text-sm opacity-50">{formattedDate}</p>
             )}
           </div>
 
-          <div className="flex items-center gap-2 mt-1">
+          <div className="mt-1 flex items-center gap-2">
             {lead.main_need && (
               <PrismBadge className="capitalize" variant="secondary">
                 Necessidade: {lead.main_need}
@@ -60,14 +56,14 @@ export function LeadDetail({ lead }: LeadDetailProps) {
 
             {lead.completed ? (
               <PrismBadge
-                className="bg-success/15 text-success border-success/20 gap-1"
+                className="gap-1 border-success/20 bg-success/15 text-success"
                 variant="default"
               >
                 <CheckCircle2Icon className="size-3.5" /> Concluído
               </PrismBadge>
             ) : (
               <PrismBadge
-                className="bg-warning/15 text-warning border-warning/20 gap-1"
+                className="gap-1 border-warning/20 bg-warning/15 text-warning"
                 variant="default"
               >
                 <ClockIcon className="size-3.5" /> Em andamento
@@ -83,7 +79,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
           rel="noopener noreferrer"
           target="_blank"
         >
-          <PrismButton className="bg-[#25D366] hover:bg-[#20bd5a] text-white border-0 font-medium gap-2">
+          <PrismButton className="gap-2 border-0 bg-[#25D366] font-medium text-white hover:bg-[#20bd5a]">
             <PhoneIcon className="size-4" />
             {lead.whatsapp}
           </PrismButton>
@@ -112,7 +108,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
                 </div>
                 <div className="pl-7 font-semibold text-foreground">
                   {item.answer || (
-                    <span className="italic text-muted-foreground font-normal">
+                    <span className="font-normal text-muted-foreground italic">
                       Sem resposta
                     </span>
                   )}

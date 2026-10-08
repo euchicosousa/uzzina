@@ -30,7 +30,7 @@ export function SeparatorSection() {
           </GalleryItem>
 
           <GalleryItem label="Vertical Separator">
-            <div className="flex items-center gap-4 h-6 text-sm">
+            <div className="flex h-6 items-center gap-4 text-sm">
               <span className="font-medium">Sprints</span>
               <PrismSeparator orientation="vertical" />
               <span className="font-medium">Ações</span>

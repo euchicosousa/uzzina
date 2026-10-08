@@ -59,8 +59,8 @@ function CommandPopoverDemo() {
           <HandshakeIcon />
         )}
       </PrismButton>
-      <PrismPopover className="p-0 rounded-4xl">
-        <PrismCommand className="p-0 w-72">
+      <PrismPopover className="rounded-4xl p-0">
+        <PrismCommand className="w-72 p-0">
           <div className="flex items-center border-b px-1">
             <PrismCommandInput placeholder="Parceiro..." />
             <PrismToggle
@@ -166,11 +166,11 @@ function CommandDialogDemo() {
         onClick={() => setOpen(true)}
         variant="ghost"
       >
-        <span className="flex items-center gap-2 text-muted-foreground text-sm">
+        <span className="flex items-center gap-2 text-sm text-muted-foreground">
           <SearchIcon className="size-4" />
           Faça sua busca...
         </span>
-        <kbd className="px-2 py-0.5 text-xs bg-muted rounded border text-muted-foreground">
+        <kbd className="rounded border bg-muted px-2 py-0.5 text-xs text-muted-foreground">
           ⌘K
         </kbd>
       </PrismButton>

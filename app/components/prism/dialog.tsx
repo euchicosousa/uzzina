@@ -42,7 +42,7 @@ function DialogOverlay({
   return (
     <ModalOverlayPrimitive
       className={cn(
-        "fixed inset-0 isolate z-50 bg-black/30 duration-100 data-entering:animate-in data-entering:fade-in-0 data-exiting:animate-out data-exiting:fade-out-0 supports-backdrop-filter:backdrop-blur-sm",
+        "data-entering:animate-in data-entering:fade-in-0 data-exiting:animate-out data-exiting:fade-out-0 fixed inset-0 isolate z-50 bg-black/30 duration-100 supports-backdrop-filter:backdrop-blur-sm",
         className,
       )}
       data-slot="dialog-overlay"
@@ -68,7 +68,7 @@ function Dialog({
     <DialogOverlay isDismissable={isDismissable} {...props}>
       <ModalPrimitive
         className={cn(
-          "fixed squircle top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-[min(var(--radius-4xl),24px)] bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 sm:w-full dark:ring-foreground/10",
+          "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-[min(var(--radius-4xl),24px)] bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none squircle sm:w-full dark:ring-foreground/10",
           className,
         )}
         data-slot="dialog-content"
@@ -113,7 +113,7 @@ function DialogFooter({
   return (
     <div
       className={cn(
-        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end px-5 py-4",
+        "flex flex-col-reverse gap-2 px-5 py-4 sm:flex-row sm:justify-end",
         className,
       )}
       data-slot="dialog-footer"

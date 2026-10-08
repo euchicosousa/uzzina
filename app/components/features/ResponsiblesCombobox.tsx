@@ -84,7 +84,7 @@ export function ResponsiblesCombobox({
         />
       </ComboboxTrigger>
 
-      <PrismPopover className="w-[320px] p-0 border rounded-3xl squircle shadow-xl bg-popover overflow-hidden">
+      <PrismPopover className="w-[320px] overflow-hidden rounded-3xl border bg-popover p-0 shadow-xl squircle">
         <PrismCommand className="p-0">
           <PrismCommandInput placeholder="Procurar responsável..." />
           <PrismCommandList
@@ -98,7 +98,7 @@ export function ResponsiblesCombobox({
               {peopleFiltered.map((person) => (
                 <PrismCommandItem
                   key={person.id}
-                  className="flex items-center gap-2 cursor-pointer"
+                  className="flex cursor-pointer items-center gap-2"
                   data-selected={
                     selected.includes(person.user_id) ? "true" : undefined
                   }
@@ -139,7 +139,7 @@ function ActionResponsiblesDisplay({
     .map((r) => people.find((p) => p.user_id === r))
     .filter((p) => p !== undefined);
   return (
-    <div className="flex items-center overflow-hidden gap-2 text-xs text-muted-foreground">
+    <div className="flex items-center gap-2 overflow-hidden text-xs text-muted-foreground">
       {responsibles.length === 0 ? (
         variant === "filter" && (
           <>

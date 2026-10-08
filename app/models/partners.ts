@@ -36,15 +36,25 @@ export async function getPartnersByUserId(
   return data as Partner[];
 }
 
-export async function getOperationalPartners(supabase: SupabaseClient, userId: string, isAdmin: boolean) {
-  if (!isAdmin) return getPartnersByUserId(supabase,userId);
-  const {data,error} = await supabase.from("partners").select("*")
-    .eq("archived",false).order("title",{ascending:true});
+export async function getOperationalPartners(
+  supabase: SupabaseClient,
+  userId: string,
+  isAdmin: boolean,
+) {
+  if (!isAdmin) return getPartnersByUserId(supabase, userId);
+  const { data, error } = await supabase
+    .from("partners")
+    .select("*")
+    .eq("archived", false)
+    .order("title", { ascending: true });
   if (error) throw error;
   return data as Partner[];
 }
 
-export async function partnerSlugExists(supabase: SupabaseClient, slug: string) {
+export async function partnerSlugExists(
+  supabase: SupabaseClient,
+  slug: string,
+) {
   const { data } = await supabase
     .from("partners")
     .select("id")

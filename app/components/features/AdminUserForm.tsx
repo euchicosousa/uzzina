@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
-import {
-  EyeIcon,
-  EyeOffIcon,
-  SaveIcon,
-  UploadIcon,
-} from "lucide-react";
+import { EyeIcon, EyeOffIcon, SaveIcon, UploadIcon } from "lucide-react";
 import {
   PrismButton,
   PrismCheckbox,
@@ -205,7 +200,12 @@ export function AdminUserForm({
             </PrismToggleGroup>
             {/* Input oculto para submissão nativa do form com nome 'areas' */}
             {(person?.areas || []).map((areaSlug) => (
-              <input key={areaSlug} name="areas" type="hidden" value={areaSlug} />
+              <input
+                key={areaSlug}
+                name="areas"
+                type="hidden"
+                value={areaSlug}
+              />
             ))}
           </div>
         )}
@@ -232,7 +232,7 @@ export function AdminUserForm({
 
       <div className="flex justify-end gap-4 pb-8">
         <PrismButton
-          className="squircle rounded-2xl"
+          className="rounded-2xl squircle"
           isDisabled={isSubmitting}
           type="submit"
         >

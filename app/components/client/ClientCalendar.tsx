@@ -15,13 +15,19 @@ import { parseU } from "~/utils/date";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useMemo } from "react";
-import { PrismButton, PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
+import {
+  PrismButton,
+  PrismToggleGroup,
+  PrismToggleGroupItem,
+} from "~/components/prism";
 import { DATE_TIME_DISPLAY, PHASES, type PHASE } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
 import { getFormattedDateTime } from "~/utils/date";
 import { Content } from "../features/Content";
 import { PhaseIcon } from "../features/PhaseIcon";
-type ClientCalendarProps<T extends Action | DashActionDto = Action | DashActionDto> = {
+type ClientCalendarProps<
+  T extends Action | DashActionDto = Action | DashActionDto,
+> = {
   actions: T[];
   currentDay: Date;
   onPrev: () => void;
@@ -31,7 +37,9 @@ type ClientCalendarProps<T extends Action | DashActionDto = Action | DashActionD
   calendarView?: "week" | "month";
   setCalendarView?: (view: "week" | "month") => void;
 };
-export function ClientCalendar<T extends Action | DashActionDto = Action | DashActionDto>({
+export function ClientCalendar<
+  T extends Action | DashActionDto = Action | DashActionDto,
+>({
   actions,
   currentDay,
   onPrev,

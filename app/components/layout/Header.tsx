@@ -72,7 +72,7 @@ export function Header({
 
   // Get partners list from AppContext
   const { partners } = useAppContext();
-  const partnerSlugs = partners.map(p => p.slug).sort();
+  const partnerSlugs = partners.map((p) => p.slug).sort();
 
   // 1. Queries for Home page actions
   const now = new Date();
@@ -80,7 +80,14 @@ export function Header({
   const homeEndISO = endOfDay(endOfWeek(endOfMonth(now))).toISOString();
   const todayEndISO = endOfDay(now).toISOString();
   const { data: homeActions = [] as Action[] } = useQuery({
-    queryKey: QUERY_KEYS.actions.list("home",person.user_id,person.admin,partnerSlugs,homeStartISO,homeEndISO),
+    queryKey: QUERY_KEYS.actions.list(
+      "home",
+      person.user_id,
+      person.admin,
+      partnerSlugs,
+      homeStartISO,
+      homeEndISO,
+    ),
     queryFn: () =>
       fetchHomeActions(
         person.user_id,
@@ -92,7 +99,12 @@ export function Header({
     enabled: isHome,
   });
   const { data: homeLateActions = [] as Action[] } = useQuery({
-    queryKey: QUERY_KEYS.actions.list("late",person.user_id,person.admin,partnerSlugs),
+    queryKey: QUERY_KEYS.actions.list(
+      "late",
+      person.user_id,
+      person.admin,
+      partnerSlugs,
+    ),
     queryFn: () =>
       fetchAllLateActions(
         person.user_id,
@@ -104,8 +116,7 @@ export function Header({
 
   // 2. Queries for Partner page actions
   const slug = (params as Record<string, string | undefined>).slug;
-  let partnerDate =
-    typeof search?.date === "string" ? search.date : undefined;
+  let partnerDate = typeof search?.date === "string" ? search.date : undefined;
   if (!partnerDate) {
     partnerDate = format(new Date().setDate(15), "yyyy-MM-dd");
   } else {
@@ -118,7 +129,14 @@ export function Header({
   const pStartStr = format(pStart, "yyyy-MM-dd HH:mm:ss");
   const pEndStr = format(pEnd, "yyyy-MM-dd HH:mm:ss");
   const { data: partnerActions = [] as Action[] } = useQuery({
-    queryKey: QUERY_KEYS.actions.list("partner",person.user_id,person.admin,slug ? [slug] : [],pStartStr,pEndStr),
+    queryKey: QUERY_KEYS.actions.list(
+      "partner",
+      person.user_id,
+      person.admin,
+      slug ? [slug] : [],
+      pStartStr,
+      pEndStr,
+    ),
     queryFn: () =>
       fetchPartnerActions(
         slug || "",
@@ -130,7 +148,12 @@ export function Header({
     enabled: isPartner && !!slug,
   });
   const { data: partnerAllLateActions = [] as Action[] } = useQuery({
-    queryKey: QUERY_KEYS.actions.list("late",person.user_id,person.admin,partnerSlugs),
+    queryKey: QUERY_KEYS.actions.list(
+      "late",
+      person.user_id,
+      person.admin,
+      partnerSlugs,
+    ),
     queryFn: () =>
       fetchAllLateActions(
         person.user_id,
@@ -148,24 +171,38 @@ export function Header({
   const referenceDate = isPartner && partnerDate ? parseU(partnerDate) : now;
   const filteredActions = useMemo(() => {
     const active = isHome ? homeActions : isPartner ? partnerActions : [];
-    const operational = filterOperationalActions(active,partners);
+    const operational = filterOperationalActions(active, partners);
     if (partnerFilters.length === 0) return operational;
     return operational.filter((action: Action) =>
       action.partners?.some((p: string) => partnerFilters.includes(p)),
     );
-  }, [isHome, homeActions, isPartner, partnerActions, partnerFilters, partners]);
+  }, [
+    isHome,
+    homeActions,
+    isPartner,
+    partnerActions,
+    partnerFilters,
+    partners,
+  ]);
   const filteredLateActions = useMemo(() => {
     const active = isHome
       ? homeLateActions
       : isPartner
         ? partnerLateActions
         : [];
-    const operational = filterOperationalActions(active,partners);
+    const operational = filterOperationalActions(active, partners);
     if (partnerFilters.length === 0) return operational;
     return operational.filter((action: Action) =>
       action.partners?.some((p: string) => partnerFilters.includes(p)),
     );
-  }, [isHome, homeLateActions, isPartner, partnerLateActions, partnerFilters, partners]);
+  }, [
+    isHome,
+    homeLateActions,
+    isPartner,
+    partnerLateActions,
+    partnerFilters,
+    partners,
+  ]);
   const handleNotificationClick = async (notif: Notification) => {
     const supabase = createSupabaseBrowserClient();
     if (!notif.read_at) {
@@ -223,7 +260,7 @@ export function Header({
             placement="bottom end"
           >
             <div className="flex items-center justify-between border-b bg-muted/20 px-4 py-3">
-              <h5 className="font-semibold text-sm">Notificações</h5>
+              <h5 className="text-sm font-semibold">Notificações</h5>
               {unreadCount > 0 && (
                 <button
                   className="text-xs text-primary transition-colors hover:underline"
@@ -249,7 +286,7 @@ export function Header({
                     <button
                       key={notif.id}
                       className={cn(
-                        "flex w-full flex-col gap-1 py-2 px-4 text-left transition hover:bg-card",
+                        "flex w-full flex-col gap-1 px-4 py-2 text-left transition hover:bg-card",
                         !notif.read_at && "bg-card",
                       )}
                       onClick={() => handleNotificationClick(notif)}
@@ -259,7 +296,9 @@ export function Header({
                         <span className="text-sm tracking-tight text-foreground/80">
                           <span className="font-bold">{notif.author_name}</span>{" "}
                           mencionou você na ação{" "}
-                          <span className="font-bold">{notif.action_title}</span>{" "}
+                          <span className="font-bold">
+                            {notif.action_title}
+                          </span>{" "}
                           {formattedDate ? `às ${formattedDate}` : ""}
                         </span>
                         {!notif.read_at && (
@@ -267,14 +306,15 @@ export function Header({
                         )}
                       </div>
 
-                    <p className="mt-1 line-clamp-2 border-l pl-2 text-sm text-foreground/60">
-                      {notif.comment_excerpt
-                        ? notif.comment_excerpt.replace(/<[^>]*>/g, "")
-                        : ""}
-                    </p>
-                  </button>
-                );
-              }))}
+                      <p className="mt-1 line-clamp-2 border-l pl-2 text-sm text-foreground/60">
+                        {notif.comment_excerpt
+                          ? notif.comment_excerpt.replace(/<[^>]*>/g, "")
+                          : ""}
+                      </p>
+                    </button>
+                  );
+                })
+              )}
             </div>
             <div className="border-t bg-muted/10 p-2 text-center">
               <Link
@@ -301,25 +341,25 @@ export const HeaderMenu = ({ person }: { person: Person }) => {
     followPartnerColor,
     setFollowPartnerColor,
   } = useAppThemeContext();
-  const {queuePreference, retry, hasError} = usePreferencePersistence(person);
+  const { queuePreference, retry, hasError } = usePreferencePersistence(person);
   const changeTheme = (newTheme: Theme) => {
     setTheme(newTheme);
-    queuePreference({theme: newTheme});
+    queuePreference({ theme: newTheme });
   };
   const changeColorIndex = (index: number) => {
     setPrimaryColorIndex(index);
-    queuePreference({themeColorIndex: index});
+    queuePreference({ themeColorIndex: index });
   };
   const changeFollowPartner = (value: boolean) => {
     setFollowPartnerColor(value);
-    queuePreference({followPartnerColor: value});
+    queuePreference({ followPartnerColor: value });
   };
   return (
     <PrismMenu>
       <PrismMenuTrigger>
         <PrismButton
           aria-label="Menu do perfil do usuário"
-          className="relative rounded-full cursor-pointer"
+          className="relative cursor-pointer rounded-full"
           size="unstyled"
           variant="unstyled"
         >
@@ -332,7 +372,14 @@ export const HeaderMenu = ({ person }: { person: Person }) => {
       </PrismMenuTrigger>
       <PrismMenuContent className="w-64 p-0" placement="bottom end">
         <PrismMenuGroup className="p-2">
-          {hasError && <PrismMenuItem onAction={retry} textValue="Tentar salvar preferências">Tentar salvar preferências</PrismMenuItem>}
+          {hasError && (
+            <PrismMenuItem
+              onAction={retry}
+              textValue="Tentar salvar preferências"
+            >
+              Tentar salvar preferências
+            </PrismMenuItem>
+          )}
           <PrismMenuItem
             onAction={() =>
               changeTheme(theme === Theme.DARK ? Theme.LIGHT : Theme.DARK)
@@ -352,7 +399,7 @@ export const HeaderMenu = ({ person }: { person: Person }) => {
           >
             <span>Cores do parceiro</span>
             {followPartnerColor ? (
-              <CheckIcon className="size-4 ml-auto text-primary" />
+              <CheckIcon className="ml-auto size-4 text-primary" />
             ) : null}
           </PrismMenuItem>
         </PrismMenuGroup>
@@ -370,7 +417,7 @@ export const HeaderMenu = ({ person }: { person: Person }) => {
               <PrismMenuItem
                 key={paletteConfig.id}
                 aria-label={paletteConfig.label}
-                className="size-7 min-w-0 p-1 rounded-2xl squircle"
+                className="size-7 min-w-0 rounded-2xl p-1 squircle"
                 onAction={() => changeColorIndex(i)}
                 style={{
                   backgroundColor: isSelected
@@ -423,7 +470,7 @@ export const HeaderMenu = ({ person }: { person: Person }) => {
         {person.admin && (
           <>
             <PrismMenuSeparator />
-            <PrismMenuGroup className="bg-secondary/20 px-2 -mt-2 pb-2">
+            <PrismMenuGroup className="-mt-2 bg-secondary/20 px-2 pb-2">
               <PrismMenuLabel>Admin</PrismMenuLabel>
               <PrismMenuItem href="/app/admin/partners" textValue="Parceiros">
                 Parceiros

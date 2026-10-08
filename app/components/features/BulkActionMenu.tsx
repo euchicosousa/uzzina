@@ -47,7 +47,13 @@ import { Icons } from "../uzzina/UIcons";
 
 export function BulkActionMenu() {
   // ─── Multi-seleção ───────────────────────────────────────────────────────────
-  const { isSelectionMode, selectedIds, clearSelection, removeSelected, eligibleActions } = useMultiSelection();
+  const {
+    isSelectionMode,
+    selectedIds,
+    clearSelection,
+    removeSelected,
+    eligibleActions,
+  } = useMultiSelection();
   const _queryClient = useQueryClient();
   const { handleBulkAction, handleBulkDateOnly, handleBulkTimeOnly } =
     useActionMutations();
@@ -72,7 +78,11 @@ export function BulkActionMenu() {
   const partnerColors = useMemo(() => {
     if (selectedIds.length === 0) return [];
 
-    const selectedPartnerSlugs = new Set(eligibleActions.filter(action => selectedIds.includes(action.id)).flatMap(action => action.partners));
+    const selectedPartnerSlugs = new Set(
+      eligibleActions
+        .filter((action) => selectedIds.includes(action.id))
+        .flatMap((action) => action.partners),
+    );
 
     const colorsSet = new Set<string>();
     if (selectedPartnerSlugs.size > 0) {
@@ -119,51 +129,92 @@ export function BulkActionMenu() {
   // Early return: nada a mostrar fora do modo de seleção
   if (!isSelectionMode) return null;
 
-  const targets = eligibleActions.filter(action => selectedIds.includes(action.id));
+  const targets = eligibleActions.filter((action) =>
+    selectedIds.includes(action.id),
+  );
   const effectiveCount = targets.length;
   const reloadConflicts = () => {
-    void _queryClient.invalidateQueries({queryKey: QUERY_KEYS.actions.all()}, {throwOnError: true})
+    void _queryClient
+      .invalidateQueries(
+        { queryKey: QUERY_KEYS.actions.all() },
+        { throwOnError: true },
+      )
       .then(() => setConflictedIds([]))
-      .catch(() => toast.error("Não foi possível recarregar. Tente novamente antes de salvar.", {position: "top-center"}));
+      .catch(() =>
+        toast.error(
+          "Não foi possível recarregar. Tente novamente antes de salvar.",
+          { position: "top-center" },
+        ),
+      );
   };
   const finishBulk = (result: BulkActionResult) => {
     removeSelected(result.succeededIds);
-    if (result.succeededIds.length > 0) toast.success(`${result.succeededIds.length} ação(ões) atualizada(s)!`, {position: "top-center"});
-    setConflictedIds(previous => [...new Set([...previous, ...result.conflicts.map(item => item.id)])]);
-    const title = (id: string) => targets.find(action => action.id === id)?.title || id;
+    if (result.succeededIds.length > 0)
+      toast.success(`${result.succeededIds.length} ação(ões) atualizada(s)!`, {
+        position: "top-center",
+      });
+    setConflictedIds((previous) => [
+      ...new Set([...previous, ...result.conflicts.map((item) => item.id)]),
+    ]);
+    const title = (id: string) =>
+      targets.find((action) => action.id === id)?.title || id;
     const errors = [
-      ...result.failed.map(item => `${title(item.id)}: ${item.reason}`),
-      ...result.conflicts.map(item => `${title(item.id)}: mudou desde a seleção. Recarregue e confira antes de tentar novamente.`),
+      ...result.failed.map((item) => `${title(item.id)}: ${item.reason}`),
+      ...result.conflicts.map(
+        (item) =>
+          `${title(item.id)}: mudou desde a seleção. Recarregue e confira antes de tentar novamente.`,
+      ),
     ];
-    if (errors.length > 0) toast.error(`${errors.length} ação(ões) não atualizada(s).`, {
-      position: "top-center",
-      description: errors.join("\n"),
-      duration: 10000,
-      ...(result.conflicts.length > 0 ? {action: {
-        label: "Recarregar ações",
-        onClick: reloadConflicts,
-      }} : {}),
-    });
+    if (errors.length > 0)
+      toast.error(`${errors.length} ação(ões) não atualizada(s).`, {
+        position: "top-center",
+        description: errors.join("\n"),
+        duration: 10000,
+        ...(result.conflicts.length > 0
+          ? {
+              action: {
+                label: "Recarregar ações",
+                onClick: reloadConflicts,
+              },
+            }
+          : {}),
+      });
   };
   const runBulk = async (operation: () => Promise<BulkActionResult>) => {
     if (targets.length === 0 || isProcessing) return;
-    if (targets.some(action => conflictedIds.includes(action.id))) {
-      toast.error("Recarregue e confira as ações em conflito antes de tentar novamente.", {
-        position: "top-center", action: {label: "Recarregar ações", onClick: reloadConflicts},
-      });
+    if (targets.some((action) => conflictedIds.includes(action.id))) {
+      toast.error(
+        "Recarregue e confira as ações em conflito antes de tentar novamente.",
+        {
+          position: "top-center",
+          action: { label: "Recarregar ações", onClick: reloadConflicts },
+        },
+      );
       return;
     }
     setIsProcessing(true);
-    try { finishBulk(await operation()); }
-    catch (error) { toast.error(error instanceof Error ? error.message : "Falha ao atualizar ações em lote."); }
-    finally { setIsProcessing(false); }
+    try {
+      finishBulk(await operation());
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Falha ao atualizar ações em lote.",
+      );
+    } finally {
+      setIsProcessing(false);
+    }
   };
-  const performBulkAction = (updates: ActionPatchInput) => runBulk(() => handleBulkAction(targets, updates));
-  const applyDateTime = (result: BulkDateTimeResult) => runBulk(() => {
-    if (result.mode === "datetime") return handleBulkAction(targets, {date: result.date});
-    if (result.mode === "date_only") return handleBulkDateOnly(targets, result.dateOnly);
-    return handleBulkTimeOnly(targets, result.timeOnly);
-  });
+  const performBulkAction = (updates: ActionPatchInput) =>
+    runBulk(() => handleBulkAction(targets, updates));
+  const applyDateTime = (result: BulkDateTimeResult) =>
+    runBulk(() => {
+      if (result.mode === "datetime")
+        return handleBulkAction(targets, { date: result.date });
+      if (result.mode === "date_only")
+        return handleBulkDateOnly(targets, result.dateOnly);
+      return handleBulkTimeOnly(targets, result.timeOnly);
+    });
 
   // ─── Handlers: Responsáveis ──────────────────────────────────────────────────
   const applyResponsibles = (responsibles: string[]) => {
@@ -196,11 +247,12 @@ export function BulkActionMenu() {
 
   // ─── Handler: Enviar para Aprovação ─────────────────────────────────────
   const handleSendForApproval = async () => {
-    const targetIds = targets.map(action => action.id);
+    const targetIds = targets.map((action) => action.id);
     if (!currentPartner || targetIds.length === 0 || isGeneratingLink) return;
     setIsGeneratingLink(true);
     try {
-      const { createSupabaseBrowserClient } = await import("~/lib/supabase.client");
+      const { createSupabaseBrowserClient } =
+        await import("~/lib/supabase.client");
       const supabase = createSupabaseBrowserClient();
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData.session?.access_token;
@@ -223,7 +275,9 @@ export function BulkActionMenu() {
       });
 
       if (!res.ok) {
-        const errorJson = (await res.json().catch(() => ({}))) as { error?: string };
+        const errorJson = (await res.json().catch(() => ({}))) as {
+          error?: string;
+        };
         toast.error(errorJson.error || "Falha ao gerar link de revisão.");
         return;
       }
@@ -412,10 +466,7 @@ export function BulkActionMenu() {
           </PrismMenuItem>
 
           {/* Cor — abre o dialog com as cores do parceiro atual */}
-          <PrismMenuItem
-            onAction={() => setColorOpen(true)}
-            textValue="Cor"
-          >
+          <PrismMenuItem onAction={() => setColorOpen(true)} textValue="Cor">
             <PaletteIcon /> Alterar Cor
           </PrismMenuItem>
 

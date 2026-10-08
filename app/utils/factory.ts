@@ -58,7 +58,6 @@ export const getCleanAction = ({
   };
 };
 
-
 /**
  * Resolves which partners a new action draft starts with: the partner of the
  * current route wins, then a single active partner filter, otherwise none.
@@ -73,7 +72,10 @@ export function resolveDraftPartners({
   partnerFilters: string[];
 }): string[] {
   const pathSlug = pathname?.startsWith("/app/partner/")
-    ? pathname.replace(/^\/app\/partner\//, "").split("/")[0]?.split("?")[0]
+    ? pathname
+        .replace(/^\/app\/partner\//, "")
+        .split("/")[0]
+        ?.split("?")[0]
     : undefined;
   const slug = routeSlug || pathSlug;
   if (slug) return [slug];

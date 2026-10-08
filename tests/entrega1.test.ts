@@ -1,8 +1,5 @@
 import { describe, it, expect } from "bun:test";
-import {
-  ActionCreateSchema,
-  ActionPatchSchema,
-} from "~/utils/validation";
+import { ActionCreateSchema, ActionPatchSchema } from "~/utils/validation";
 
 describe("Entrega 1: Contratos de Validação (C02)", () => {
   it("ActionPatchSchema: campos de texto omitidos permanecem undefined (não viram null)", () => {
@@ -78,10 +75,14 @@ describe("Entrega 1: Contratos de Validação (C02)", () => {
     const result = ActionPatchSchema.safeParse(invalidPatch);
     expect(result.success).toBe(false);
 
-    const validIso = ActionPatchSchema.safeParse({ date: "2026-10-05T15:30:00.000Z" });
+    const validIso = ActionPatchSchema.safeParse({
+      date: "2026-10-05T15:30:00.000Z",
+    });
     expect(validIso.success).toBe(true);
 
-    const validSql = ActionPatchSchema.safeParse({ date: "2026-10-05 15:30:00" });
+    const validSql = ActionPatchSchema.safeParse({
+      date: "2026-10-05 15:30:00",
+    });
     expect(validSql.success).toBe(true);
   });
 

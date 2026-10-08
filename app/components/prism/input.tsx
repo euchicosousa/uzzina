@@ -49,4 +49,3 @@ function PrismInput({
   );
 }
 export { PrismInput, inputVariants };
-

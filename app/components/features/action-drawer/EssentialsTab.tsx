@@ -118,7 +118,7 @@ export function EssentialsTab({
     await triggerAIAction(INTENT.ai_strategy);
   };
   return (
-    <div className="flex h-full flex-col overflow-hidden w-full max-w-full">
+    <div className="flex h-full w-full max-w-full flex-col overflow-hidden">
       {/* Título */}
       <ActionTitleInput
         autoFocus
@@ -145,8 +145,8 @@ export function EssentialsTab({
         title={RawAction.title}
       />
 
-      <div className="text-sm max-w-full">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-4 border-b px-4 py-2 max-w-full">
+      <div className="max-w-full text-sm">
+        <div className="flex max-w-full flex-wrap items-center gap-2 border-b px-4 py-2 sm:gap-4">
           <div className="opacity-50">
             <ActionTimeDisplay action={RawAction} />
           </div>
@@ -177,7 +177,7 @@ export function EssentialsTab({
           </PrismButton>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-1.5 max-w-full">
+        <div className="flex max-w-full flex-wrap items-center justify-between gap-2 border-b px-4 py-1.5">
           <div className="flex items-center gap-1">
             <CalendarDaysIcon
               className={cn(
@@ -202,51 +202,52 @@ export function EssentialsTab({
             />
           </div>
 
-          {isSocialMediaContent(RawAction.category) && (() => {
-            const hasStrategies =
-              parseStrategies(RawAction.strategies).length > 0;
-            const buttonLabel = isAIProcessing
-              ? hasStrategies
-                ? "RECRIANDO ESTRATÉGIAS..."
-                : "CRIANDO ESTRATÉGIA..."
-              : hasStrategies
-                ? "RECRIAR ESTRATÉGIAS"
-                : "CRIAR ESTRATÉGIA";
-            return (
-              <PrismButtonGroup className="min-w-0 shrink">
-                {hasStrategies && onOpenStrategyModal && (
+          {isSocialMediaContent(RawAction.category) &&
+            (() => {
+              const hasStrategies =
+                parseStrategies(RawAction.strategies).length > 0;
+              const buttonLabel = isAIProcessing
+                ? hasStrategies
+                  ? "RECRIANDO ESTRATÉGIAS..."
+                  : "CRIANDO ESTRATÉGIA..."
+                : hasStrategies
+                  ? "RECRIAR ESTRATÉGIAS"
+                  : "CRIAR ESTRATÉGIA";
+              return (
+                <PrismButtonGroup className="min-w-0 shrink">
+                  {hasStrategies && onOpenStrategyModal && (
+                    <PrismButton
+                      aria-label="Ver estratégias geradas"
+                      onClick={onOpenStrategyModal}
+                      size="xs"
+                      variant="secondary"
+                    >
+                      <ListIcon />
+                    </PrismButton>
+                  )}
                   <PrismButton
-                    aria-label="Ver estratégias geradas"
-                    onClick={onOpenStrategyModal}
+                    className="min-w-0 shrink"
+                    isDisabled={isAIProcessing}
+                    onClick={handleTriggerAI}
                     size="xs"
                     variant="secondary"
                   >
-                    <ListIcon />
+                    <span className="min-w-0 truncate" title={buttonLabel}>
+                      {buttonLabel}
+                    </span>
+                    {isAIProcessing ? (
+                      <LoaderIcon className="animate-spin" />
+                    ) : (
+                      <SparkleIcon />
+                    )}
                   </PrismButton>
-                )}
-                <PrismButton
-                  className="min-w-0 shrink"
-                  isDisabled={isAIProcessing}
-                  onClick={handleTriggerAI}
-                  size="xs"
-                  variant="secondary"
-                >
-                  <span className="truncate min-w-0" title={buttonLabel}>
-                    {buttonLabel}
-                  </span>
-                  {isAIProcessing ? (
-                    <LoaderIcon className="animate-spin" />
-                  ) : (
-                    <SparkleIcon />
-                  )}
-                </PrismButton>
-              </PrismButtonGroup>
-            );
-          })()}
+                </PrismButtonGroup>
+              );
+            })()}
         </div>
 
-        <div className="flex items-start gap-2 border-b px-4 py-1 max-w-full overflow-hidden">
-          <div className="flex flex-wrap items-center gap-1 max-w-full">
+        <div className="flex max-w-full items-start gap-2 overflow-hidden border-b px-4 py-1">
+          <div className="flex max-w-full flex-wrap items-center gap-1">
             {workFiles.map((url, i) => (
               <WorkFileThumbnail
                 key={url}
@@ -267,7 +268,7 @@ export function EssentialsTab({
             <CloudinaryUpload
               className={cn(
                 workFiles.length === 0 &&
-                  "h-8 p-0 text-muted-foreground gap-1 font-normal hover:underline",
+                  "h-8 gap-1 p-0 font-normal text-muted-foreground hover:underline",
               )}
               cloudName={cloudName}
               folder="uzzina/work"
@@ -286,16 +287,16 @@ export function EssentialsTab({
         </div>
       </div>
       {/* Descrição */}
-      <div className="h-full overflow-hidden w-full max-w-full">
+      <div className="h-full w-full max-w-full overflow-hidden">
         <Suspense
           fallback={
-            <div className="h-full w-full min-h-50 animate-pulse bg-muted rounded-2xl" />
+            <div className="h-full min-h-50 w-full animate-pulse rounded-2xl bg-muted" />
           }
         >
           <Tiptap
             key={descriptionVersion}
             className={cn(
-              "h-full w-full min-h-50 bg-popover",
+              "h-full min-h-50 w-full bg-popover",
               isAIProcessing && "opacity-40",
             )}
             content={RawAction.description || ""}

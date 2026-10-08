@@ -44,7 +44,7 @@ export function ActionLineVariant({
           isEditing={isEditing}
           onBlur={(title) => {
             handleAction({
-                intent: INTENT.update_action,
+              intent: INTENT.update_action,
               id: action.id,
               expectedUpdatedAt: action.updated_at,
               title,
@@ -85,7 +85,7 @@ export function ActionLineVariant({
         )}
       </div>
       {dateTimeDisplay && !isEditing && (
-        <div className="absolute right-0 flex justify-end opacity-0 overflow-hidden transition duration-500 group-hover/action:opacity-100 group-hover/action:-translate-x-3 @md:w-22">
+        <div className="absolute right-0 flex justify-end overflow-hidden opacity-0 transition duration-500 group-hover/action:-translate-x-3 group-hover/action:opacity-100 @md:w-22">
           <ActionItemDateTimeDisplay
             action={action}
             dateTimeDisplay={dateTimeDisplay}

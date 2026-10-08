@@ -122,7 +122,7 @@ export function TokensColorsSection() {
     <div id="colors">
       <GallerySection>
         {/* Cabeçalho Limpo + Seletor Elegante de Tema e Cores em Swatches Círculos */}
-        <div className="flex flex-col gap-6 pb-6 border-b">
+        <div className="flex flex-col gap-6 border-b pb-6">
           <GallerySectionHeader
             description="Organização das camadas de superfície, marca e feedbacks com alternância dinâmica de modo e paletas."
             title="Cores Semânticas OKLCH"
@@ -157,7 +157,7 @@ export function TokensColorsSection() {
               <span className="text-xs font-semibold text-muted-foreground uppercase">
                 Paleta:
               </span>
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex flex-wrap items-center gap-2">
                 {PALLETE.map((item, idx) => {
                   const isSelected = primaryColorIndex === idx;
                   const isDark = theme === Theme.DARK;
@@ -168,9 +168,9 @@ export function TokensColorsSection() {
                     <button
                       key={item.id}
                       className={cn(
-                        "relative size-7 rounded-full transition-transform hover:scale-110 focus:outline-none flex items-center justify-center border border-black/10 dark:border-white/20",
+                        "relative flex size-7 items-center justify-center rounded-full border border-black/10 transition-transform hover:scale-110 focus:outline-none dark:border-white/20",
                         isSelected &&
-                          "ring-2 ring-primary ring-offset-2 ring-offset-background scale-105",
+                          "scale-105 ring-2 ring-primary ring-offset-2 ring-offset-background",
                       )}
                       onClick={() => setPrimaryColorIndex(idx)}
                       style={{
@@ -196,20 +196,20 @@ export function TokensColorsSection() {
         </div>
 
         {/* 1. Grid Limpo de Amostras de Cores Semânticas */}
-        <GallerySectionContent className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 pt-6">
+        <GallerySectionContent className="grid grid-cols-2 gap-3 pt-6 sm:grid-cols-3 md:grid-cols-5">
           {COLOR_SWATCHES.map((swatch) => (
             <div
               key={swatch.name}
               className="flex items-center gap-3 rounded-xl border border-border/40 bg-card p-3 shadow-xs"
             >
               <div
-                className={`size-7 rounded-lg border border-border/40 shrink-0 ${swatch.bg}`}
+                className={`size-7 shrink-0 rounded-lg border border-border/40 ${swatch.bg}`}
               />
-              <div className="flex flex-col min-w-0">
-                <span className="text-xs font-semibold truncate">
+              <div className="flex min-w-0 flex-col">
+                <span className="truncate text-xs font-semibold">
                   {swatch.name}
                 </span>
-                <code className="text-[10px] text-muted-foreground truncate font-mono">
+                <code className="truncate font-mono text-[10px] text-muted-foreground">
                   {swatch.bg}
                 </code>
               </div>
@@ -218,16 +218,16 @@ export function TokensColorsSection() {
         </GallerySectionContent>
 
         {/* 2. Demonstração dos Componentes Vivos sobre bg-background (Canvas Real) */}
-        <div className="pt-10 space-y-6">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+        <div className="space-y-6 pt-10">
+          <h4 className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
             Aplicação no Mundo Real (Montados sobre o Canvas bg-background)
           </h4>
 
           {/* Container simulando a superfície da página (bg-background) */}
-          <div className="rounded-3xl border border-border/60 bg-background p-8 space-y-8 shadow-inner">
+          <div className="space-y-8 rounded-3xl border border-border/60 bg-background p-8 shadow-inner">
             <div className="grid gap-6 md:grid-cols-3">
               {/* Bloco 1: Estruturas de Superfície (bg-card sobre bg-background) */}
-              <div className="rounded-2xl border border-border bg-card p-6 space-y-4 shadow-sm">
+              <div className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-muted-foreground uppercase">
                     Card (bg-card) & Forms
@@ -252,39 +252,39 @@ export function TokensColorsSection() {
               </div>
 
               {/* Bloco 2: Elementos Flutuantes, Accent & Workflow */}
-              <div className="rounded-2xl border border-border bg-card p-6 space-y-4 shadow-sm">
+              <div className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm">
                 <span className="text-xs font-bold text-muted-foreground uppercase">
                   Popover (bg-popover) & Actions
                 </span>
-                <div className="rounded-2xl border border-border bg-popover p-4 text-popover-foreground shadow-md space-y-2">
+                <div className="space-y-2 rounded-2xl border border-border bg-popover p-4 text-popover-foreground shadow-md">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-xs">
+                    <span className="text-xs font-semibold">
                       Painel Popover
                     </span>
-                    <span className="text-[10px] rounded-full bg-accent px-2 py-0.5 text-accent-foreground font-semibold">
+                    <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-accent-foreground">
                       bg-accent
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs leading-relaxed text-muted-foreground">
                     Elemento flutuante de camada{" "}
-                    <code className="text-foreground font-mono">
+                    <code className="font-mono text-foreground">
                       bg-popover
                     </code>
                     .
                   </p>
                 </div>
-                <div className="rounded-xl bg-action p-3 text-xs flex items-center justify-between border border-border/40">
+                <div className="flex items-center justify-between rounded-xl border border-border/40 bg-action p-3 text-xs">
                   <span>
                     Ação (<code className="font-mono">bg-action</code>)
                   </span>
-                  <span className="rounded-md bg-late px-2 py-0.5 text-[10px] text-late-foreground font-bold">
+                  <span className="rounded-md bg-late px-2 py-0.5 text-[10px] font-bold text-late-foreground">
                     Late (Atrasado)
                   </span>
                 </div>
               </div>
 
               {/* Bloco 3: Feedback Semântico */}
-              <div className="rounded-2xl border border-border bg-card p-6 space-y-3 shadow-sm">
+              <div className="space-y-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
                 <span className="text-xs font-bold text-muted-foreground uppercase">
                   Feedbacks Semânticos
                 </span>

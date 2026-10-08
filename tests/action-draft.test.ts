@@ -18,7 +18,9 @@ describe("resolveDraftPartners", () => {
   test("uses a single filter only", () => {
     expect(resolveDraftPartners({ partnerFilters: ["b"] })).toEqual(["b"]);
     expect(resolveDraftPartners({ partnerFilters: ["b", "c"] })).toEqual([]);
-    expect(resolveDraftPartners({ pathname: "/app", partnerFilters: [] })).toEqual([]);
+    expect(
+      resolveDraftPartners({ pathname: "/app", partnerFilters: [] }),
+    ).toEqual([]);
   });
 });
 

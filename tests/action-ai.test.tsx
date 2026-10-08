@@ -12,7 +12,8 @@ mock.module("~/services/ai-client", () => ({
     return { intent: "x", output: nextOutput };
   },
 }));
-const { useActionAI } = await import("../app/components/features/action-drawer/useActionAI");
+const { useActionAI } =
+  await import("../app/components/features/action-drawer/useActionAI");
 
 const action = {
   id: "a1",

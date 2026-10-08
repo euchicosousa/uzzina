@@ -28,7 +28,7 @@ import {
   PrismDialog,
   PrismDialogDescription,
   PrismDialogHeader,
-  PrismDialogTitle
+  PrismDialogTitle,
 } from "~/components/prism";
 import { CloudinaryUpload } from "./CloudinaryUpload";
 import { detectPostType, isImageUrl } from "./InstagramHelpers";
@@ -44,13 +44,8 @@ function SortableThumbnail({
   index: number;
   onRemove: () => void;
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -66,7 +61,7 @@ function SortableThumbnail({
     <div
       ref={setNodeRef}
       style={style}
-      className="group bg-muted relative aspect-square overflow-hidden rounded-lg border"
+      className="group relative aspect-square overflow-hidden rounded-lg border bg-muted"
     >
       {/* Handle de drag */}
       <div
@@ -86,7 +81,7 @@ function SortableThumbnail({
       <button
         type="button"
         onClick={onRemove}
-        className="bg-destructive absolute top-1 right-1 z-10 hidden size-4 items-center justify-center rounded-full text-white group-hover:flex"
+        className="absolute top-1 right-1 z-10 hidden size-4 items-center justify-center rounded-full bg-destructive text-white group-hover:flex"
       >
         <XIcon className="size-2.5" />
       </button>
@@ -206,106 +201,106 @@ export function ContentReorderDialog({
 
   return (
     <PrismDialog isOpen={open} onOpenChange={onOpenChange}>
-        <PrismDialogHeader className="border-b">
-          <PrismDialogTitle className="flex items-center gap-2">
-            <SlidersHorizontalIcon />
-            Gerenciar conteúdo
-          </PrismDialogTitle>
-          <PrismDialogDescription className="sr-only">
-            Selecione, reordene ou remova os arquivos de mídia desta ação.
-          </PrismDialogDescription>
-        </PrismDialogHeader>
+      <PrismDialogHeader className="border-b">
+        <PrismDialogTitle className="flex items-center gap-2">
+          <SlidersHorizontalIcon />
+          Gerenciar conteúdo
+        </PrismDialogTitle>
+        <PrismDialogDescription className="sr-only">
+          Selecione, reordene ou remova os arquivos de mídia desta ação.
+        </PrismDialogDescription>
+      </PrismDialogHeader>
 
-        {/* InfoIcon do tipo detectado */}
-        <div className="text-muted-foreground flex items-center justify-between text-xs px-5 pt-3">
-          <span>
-            Tipo detectado:{" "}
-            <strong className="text-foreground capitalize">
-              {postType === "empty"
-                ? "vazio"
-                : postType === "image"
-                  ? "imagem"
-                  : postType === "video"
-                    ? "vídeo"
-                    : "carrossel"}
-            </strong>
-          </span>
-          <span>
-            {items.length}/{MAX_FILES} arquivo{items.length !== 1 ? "s" : ""}
-          </span>
+      {/* InfoIcon do tipo detectado */}
+      <div className="flex items-center justify-between px-5 pt-3 text-xs text-muted-foreground">
+        <span>
+          Tipo detectado:{" "}
+          <strong className="text-foreground capitalize">
+            {postType === "empty"
+              ? "vazio"
+              : postType === "image"
+                ? "imagem"
+                : postType === "video"
+                  ? "vídeo"
+                  : "carrossel"}
+          </strong>
+        </span>
+        <span>
+          {items.length}/{MAX_FILES} arquivo{items.length !== 1 ? "s" : ""}
+        </span>
+      </div>
+
+      {postType === "video" && (
+        <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
+          <strong>Vídeo:</strong> 1º arquivo = vídeo principal. 2º arquivo
+          (opcional) = capa/thumbnail que aparece antes do play.
+        </p>
+      )}
+
+      {/* Grid DnD */}
+      {items.length === 0 ? (
+        <div className="m-5 flex h-32 items-center justify-center rounded-xl border border-dashed bg-muted text-sm text-muted-foreground">
+          Nenhum arquivo adicionado ainda
         </div>
-
-        {postType === "video" && (
-          <p className="bg-muted text-muted-foreground rounded-lg px-3 py-2 text-xs">
-            <strong>Vídeo:</strong> 1º arquivo = vídeo principal. 2º arquivo
-            (opcional) = capa/thumbnail que aparece antes do play.
-          </p>
-        )}
-
-        {/* Grid DnD */}
-        {items.length === 0 ? (
-          <div className="text-muted-foreground flex h-32 items-center justify-center rounded-xl border border-dashed text-sm m-5 bg-muted">
-            Nenhum arquivo adicionado ainda
-          </div>
-        ) : (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
+      ) : (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={items.map((i) => i.id)}
+            strategy={rectSortingStrategy}
           >
-            <SortableContext
-              items={items.map((i) => i.id)}
-              strategy={rectSortingStrategy}
-            >
-              <div className="grid grid-cols-4 gap-2 px-5 py-3">
-                {items.map((item, index) => (
-                  <SortableThumbnail
-                    key={item.id}
-                    id={item.id}
-                    url={item.url}
-                    index={index}
-                    onRemove={() => handleRemove(item.id)}
-                  />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
-        )}
+            <div className="grid grid-cols-4 gap-2 px-5 py-3">
+              {items.map((item, index) => (
+                <SortableThumbnail
+                  key={item.id}
+                  id={item.id}
+                  url={item.url}
+                  index={index}
+                  onRemove={() => handleRemove(item.id)}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      )}
 
-        {/* Toolbar inferior */}
-        <div className="flex items-center justify-between border-t py-3 px-5">
-          <div className="flex gap-2 items-center">
-            <CloudinaryUpload
-              cloudName={cloudName}
-              uploadPreset={uploadPreset}
-              folder="uzzina/content"
-              resourceType="auto"
-              multiple
-              onUpload={handleAdd}
-            >
-              <PlusIcon />
-              Adicionar
-            </CloudinaryUpload>
+      {/* Toolbar inferior */}
+      <div className="flex items-center justify-between border-t px-5 py-3">
+        <div className="flex items-center gap-2">
+          <CloudinaryUpload
+            cloudName={cloudName}
+            uploadPreset={uploadPreset}
+            folder="uzzina/content"
+            resourceType="auto"
+            multiple
+            onUpload={handleAdd}
+          >
+            <PlusIcon />
+            Adicionar
+          </CloudinaryUpload>
 
-            {items.length > 0 && (
-              <PrismButton
-                variant="destructive"
-                size="xs"
-                onClick={() => {
-                  setItems([]);
-                  onChange([]);
-                }}
+          {items.length > 0 && (
+            <PrismButton
+              variant="destructive"
+              size="xs"
+              onClick={() => {
+                setItems([]);
+                onChange([]);
+              }}
               aria-label="Limpar"
-              >
-                <Trash2Icon className="size-4" />
-              </PrismButton>
-            )}
-          </div>
-
-          <PrismButton size="xs" onClick={() => onOpenChange(false)}>
-            Concluir
-          </PrismButton>
+            >
+              <Trash2Icon className="size-4" />
+            </PrismButton>
+          )}
         </div>
+
+        <PrismButton size="xs" onClick={() => onOpenChange(false)}>
+          Concluir
+        </PrismButton>
+      </div>
     </PrismDialog>
   );
 }

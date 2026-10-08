@@ -85,11 +85,11 @@ function UIPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [activeSection]);
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
       {/* Top Header Fixado */}
-      <header className="sticky top-0 z-40 flex items-center justify-between px-8 py-4 bg-background/80 backdrop-blur-md border-b">
+      <header className="sticky top-0 z-40 flex items-center justify-between border-b bg-background/80 px-8 py-4 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          <div className="size-8 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-black text-lg">
+          <div className="flex size-8 items-center justify-center rounded-xl bg-primary text-lg font-black text-primary-foreground">
             P
           </div>
           <div>
@@ -126,11 +126,11 @@ function UIPage() {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] flex-1 lg:h-[calc(100vh-65px)]">
+      <div className="grid flex-1 grid-cols-1 lg:h-[calc(100vh-65px)] lg:grid-cols-[280px_1fr]">
         {/* Sidebar Sticky */}
-        <aside className="p-6 border-b lg:border-b-0 lg:border-r bg-background lg:sticky lg:top-19 lg:h-[calc(100vh-78px)] lg:overflow-y-auto">
+        <aside className="border-b bg-background p-6 lg:sticky lg:top-19 lg:h-[calc(100vh-78px)] lg:overflow-y-auto lg:border-r lg:border-b-0">
           <nav className="flex flex-col gap-6">
-            <span className="text-xs font-bold tracking-wider text-muted-foreground uppercase px-4">
+            <span className="px-4 text-xs font-bold tracking-wider text-muted-foreground uppercase">
               {activeSection === "tokens"
                 ? "Tokens de Design"
                 : activeSection === "uzzina"
@@ -139,7 +139,7 @@ function UIPage() {
             </span>
 
             {activeSection === "tokens" && (
-              <div className="flex flex-col text-sm ml-4">
+              <div className="ml-4 flex flex-col text-sm">
                 <SidebarAnchorLink
                   active={activeAnchor === "colors"}
                   label="Cores Semânticas"
@@ -154,7 +154,7 @@ function UIPage() {
             )}
 
             {activeSection === "uzzina" && (
-              <div className="flex flex-col text-sm ml-4">
+              <div className="ml-4 flex flex-col text-sm">
                 <SidebarAnchorLink
                   active={activeAnchor === "uzzina-view-options"}
                   label="ViewOptionsComponent"
@@ -169,7 +169,7 @@ function UIPage() {
             )}
 
             {activeSection === "components" && (
-              <div className="flex flex-col text-sm ml-4">
+              <div className="ml-4 flex flex-col text-sm">
                 <SidebarAnchorLink
                   active={activeAnchor === "prism-button"}
                   label="PrismButton"

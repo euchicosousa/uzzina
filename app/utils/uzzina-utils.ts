@@ -72,7 +72,9 @@ export function isDefaultActionColor(raw: string | null | undefined): boolean {
  */
 export function isInputFocused(event?: KeyboardEvent): boolean {
   const target = (event?.target ||
-    (typeof document !== "undefined" ? document.activeElement : null)) as HTMLElement | null;
+    (typeof document !== "undefined"
+      ? document.activeElement
+      : null)) as HTMLElement | null;
   if (!target) return false;
   const tagName = target.tagName;
   if (tagName === "INPUT" || tagName === "TEXTAREA") return true;
@@ -108,11 +110,13 @@ export function parseDbDate(ts: string | Date | null | undefined): Date {
   if (normalized.includes(" ")) {
     normalized = normalized.replace(" ", "T");
   }
-  if (!normalized.endsWith("Z") && !normalized.includes("+") && !normalized.includes("-", 10)) {
+  if (
+    !normalized.endsWith("Z") &&
+    !normalized.includes("+") &&
+    !normalized.includes("-", 10)
+  ) {
     normalized += "Z";
   }
   const date = new Date(normalized);
   return Number.isNaN(date.getTime()) ? new Date(ts) : date;
 }
-
-

@@ -1,9 +1,5 @@
 import type { Action } from "~/types";
-import {
-  format,
-  formatDistanceToNow,
-  parseISO,
-} from "date-fns";
+import { format, formatDistanceToNow, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 
@@ -80,16 +76,15 @@ export function getFormattedDateTime(
   return format(date, formatString, { locale: ptBR });
 }
 
-export const getNewDateForAction = (
-  _action: Action,
-  newDateInput: Date,
-) => {
+export const getNewDateForAction = (_action: Action, newDateInput: Date) => {
   return {
     date: format(newDateInput, "yyyy-MM-dd HH:mm:ss"),
   };
 };
 
 // Preserve PostgreSQL microseconds when ordering confirmed action versions.
-export const getActionRevision = (value: string | undefined) => value
-  ? Date.parse(value) * 1000 + Number(value.match(/\.\d{3}(\d{1,3})/)?.[1]?.padEnd(3, "0") || 0)
-  : 0;
+export const getActionRevision = (value: string | undefined) =>
+  value
+    ? Date.parse(value) * 1000 +
+      Number(value.match(/\.\d{3}(\d{1,3})/)?.[1]?.padEnd(3, "0") || 0)
+    : 0;

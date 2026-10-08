@@ -29,7 +29,7 @@ function FruitsMultiSelect() {
       item.label.toLowerCase().includes(query.toLowerCase()),
   );
   return (
-    <div className="flex flex-col gap-2 w-80">
+    <div className="flex w-80 flex-col gap-2">
       <PrismCombobox
         inputValue={query}
         onInputChange={setQuery}
@@ -53,13 +53,13 @@ function FruitsMultiSelect() {
       </PrismCombobox>
 
       {selectedFruits.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 p-1 bg-muted/20 border rounded-xl squircle">
+        <div className="flex flex-wrap gap-1.5 rounded-xl border bg-muted/20 p-1 squircle">
           {selectedFruits.map((fruitId) => {
             const fruit = fruitItems.find((f) => f.id === fruitId);
             return (
               <button
                 key={fruitId}
-                className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-secondary hover:bg-secondary/80 text-foreground rounded-lg transition-colors border"
+                className="flex items-center gap-1 rounded-lg border bg-secondary px-2.5 py-1 text-xs font-semibold text-foreground transition-colors hover:bg-secondary/80"
                 onClick={() =>
                   setSelectedFruits(
                     selectedFruits.filter((id) => id !== fruitId),

@@ -168,7 +168,11 @@ export function useActionAI({
       return data;
     } catch (err) {
       console.error("Erro no processamento de IA:", err);
-      toast.error(err instanceof Error ? err.message : "Falha ao gerar conteúdo com IA. Seu texto foi mantido.");
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : "Falha ao gerar conteúdo com IA. Seu texto foi mantido.",
+      );
     } finally {
       aiProcessingRef.current = false;
       setIsAIProcessing(false);
