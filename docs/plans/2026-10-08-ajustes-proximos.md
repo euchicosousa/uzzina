@@ -28,7 +28,7 @@ Decisões do proprietário já tomadas: manter `app/data/hooks-library.ts` (uso 
 | T1 | Tipagem das APIs com resolução do Node (`typecheck:api`) | Sonnet | Prevenção |
 | T2 | CI no GitHub | Sonnet | Prevenção |
 | T3 | Smoke test do site publicado | Haiku/Sonnet | Prevenção |
-| T4 | Ambiente local seguro (staging explícito + aviso de produção) | Sonnet | Prevenção |
+| T4 | Desenvolvimento local somente no staging (decidido) | Sonnet | Prevenção |
 | T5 | Escala tipográfica em tokens + títulos em 2 linhas | Sonnet | Visual |
 | T6 | Dia do calendário sem conteúdo escondido | Sonnet | Visual |
 | T7 | Calendário em lista no celular | Sonnet (revisão Opus) | Visual |
@@ -116,20 +116,26 @@ Reprova se o status divergir **ou** se houver o header `x-vercel-error`. A saíd
 
 ---
 
-## T4 — Ambiente local seguro
+## T4 — Desenvolvimento local somente no staging (decidido)
 
-**Contexto:** o `.env` aponta para o Supabase de **produção**. O staging já funciona com `node node_modules/vite/bin/vite.js --mode staging` (README).
+**Decisão do proprietário (08/10):** o desenvolvimento local passa a usar **apenas o banco de staging** (Supabase `zacrrtilppvekiyoybzn`), separado da produção (`dfepmjcozszswocwvdpq`). Não haverá um modo local apontando para produção. Antes não havia banco de testes, por isso o dev usava produção.
 
-**Decisão do proprietário antes de começar:** o `bun run dev` padrão deve ser staging ou produção? Staging tem poucos dados (4 ações); produção tem dados reais. Recomendação: o padrão continua produção (uso diário), mas com aviso visível; staging ganha um atalho.
+**Contexto técnico (ler antes de mexer):**
+- Arquivos: `.env` = produção (VITE_SUPABASE_URL/ANON_KEY, OPENAI_API_KEY e Cloudinary); `.env.staging.local` = staging completo (VITE_*, chaves de servidor, OPENAI_API_KEY, AI_DAILY_LIMIT, APP_ORIGIN; **sem Cloudinary**); `.env.staging-users.local` = e-mails/senhas das **contas fictícias de teste** (admin e dois colaboradores) para entrar no app local. Todos ignorados pelo Git.
+- **Armadilha:** o Bun carrega o `.env` automaticamente em todo `bun run` e `bun test`, e as variáveis que já estão no processo **vencem** os arquivos que o Vite lê. Por isso, enquanto existir um `.env` com produção, `--mode staging` sozinho não garante staging quando iniciado pelo Bun (o README já avisa). A solução precisa remover essa pré-carga, não só trocar o modo.
+- No modo `staging`, o `vite.config.ts` desliga `UZZINA_LOCAL_AI_COMPAT`, e a IA local passa a usar a reserva persistente `consume_ai_usage` do staging (caminho igual ao publicado, já validado com a chave de servidor do staging). Isso é desejado.
 
 **Passos:**
-1. Scripts: `"dev:staging": "node node_modules/vite/bin/vite.js --mode staging --port 5180 --strictPort"` (Node, não Bun, para evitar a pré-carga do `.env`, como o README já explica).
-2. Aviso visual somente em desenvolvimento (`import.meta.env.DEV`): uma faixa fina no topo do layout `/app` dizendo "Dev local · PRODUÇÃO" quando `VITE_SUPABASE_URL` contém `dfepmjcozszswocwvdpq`, e "Dev local · staging" caso contrário. Use tokens existentes (`bg-warning-background`/`text-warning`). Nunca aparece no build publicado.
-3. README: uma linha explicando os dois modos.
+1. Renomear `.env` para `.env.production.local`. Ele deixa de ser carregado automaticamente pelo Bun e pelo `vite dev`, e o Vite só o lê em `--mode production` (build local). A Vercel não usa esse arquivo; ela tem as próprias variáveis.
+2. Acrescentar ao `.env.staging.local` as duas variáveis públicas do widget `VITE_CLOUDINARY_CLOUD_NAME` e `VITE_CLOUDINARY_UPLOAD_PRESET`, copiando os nomes e valores do arquivo de produção **sem imprimi-los** (use um script que lê de um arquivo e grava no outro). Não copie nenhuma outra chave de produção para o staging.
+3. `package.json`: `"dev": "vite --mode staging"`. Confirme que `bun run dev` serve o staging: no navegador, `import.meta.env.VITE_SUPABASE_URL` precisa conter `zacrrtilppvekiyoybzn`.
+4. Faixa fina no topo do layout `/app`, **somente** com `import.meta.env.DEV`: "Desenvolvimento local · staging". Se a URL do Supabase contiver `dfepmjcozszswocwvdpq`, mostre em vermelho (`bg-error-background`/`text-error`) "ATENÇÃO: desenvolvimento local conectado à PRODUÇÃO", como proteção contra regressão. Nunca aparece no build publicado.
+5. Rodar `bun test` **sem** `.env` presente. Se algum teste depender de variável que vinha do `.env`, defina o valor fictício dentro do próprio teste; nunca aponte o teste para um banco real.
+6. README: atualizar a seção de ambientes (o dev usa staging; entrar com as contas de `.env.staging-users.local`; o `.env.production.local` só serve para o build local) e remover a instrução antiga de que o `.env` habitual aponta para produção. AGENTS §IA e ambientes: uma linha com o mesmo contrato.
 
-**Não fazer:** renomear ou editar arquivos `.env*`; imprimir valores de env; mudar a lógica de IA local (`UZZINA_LOCAL_AI_COMPAT`); mostrar a faixa em produção.
+**Não fazer:** imprimir, logar ou commitar valores de env; copiar chaves de servidor ou OpenAI de produção para staging; alterar envs da Vercel; criar ou alterar usuários no staging; mudar a lógica de IA (`api/ai.ts`, `UZZINA_LOCAL_AI_COMPAT`); criar o script `dev:prod`.
 
-**Aceite:** a faixa aparece no `bun run dev` e no `dev:staging` com o texto certo; `bun run build` + `preview` não mostra a faixa.
+**Aceite:** `bun run dev` abre o app ligado ao staging, a faixa mostra "staging" e o login funciona com uma conta de `.env.staging-users.local`; criar uma ação de teste no staging funciona (apague-a depois); `bun test`, `bun run build` e `bun run test:serverless` passam sem `.env`; o build publicado não mostra a faixa.
 
 ---
 
