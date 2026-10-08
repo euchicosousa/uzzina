@@ -1,91 +1,89 @@
-# UZZINA ⚡️
+# UZZINA
 
-O **UZZINA** é o sistema de gestão de projetos, sprints, calendário operacional e ações criativas da agência **CNVT®**. Ele oferece um painel interativo (Kanban e Calendário com suporte a Drag and Drop) projetado para otimizar os fluxos de trabalho da equipe de criação e oferecer relatórios de acompanhamento em tempo real para clientes externos.
+Aplicação da agência CNVT para ações, parceiros, calendário, Kanban e foco pessoal. A equipe usa `/app`; contas externas usam `/dash`; links de revisão permitem acesso público limitado por token.
 
----
+## Tecnologias e organização
 
-## 🚀 Stack de Tecnologias
+React com TanStack Router em SPA e TanStack Query; Supabase para banco/Auth; Tailwind CSS v4 e Prism sobre React Aria; Tiptap para edição; Cloudinary para upload; OpenAI nas APIs de servidor. Publicação na Vercel.
 
-- **Framework**: [TanStack Router](https://tanstack.com/router/latest) (executando em modo Single Page Application - SPA com rotas tipadas).
-- **Banco de Dados & Autenticação**: [Supabase](https://supabase.com/) (PostgreSQL) + Supabase Auth.
-- **Gerenciamento de Estado & Cache**: [TanStack React Query v5](https://tanstack.com/query/latest) (otimizando buscas de dados e provendo sincronização de estado com atualizações otimistas instantâneas).
-- **Estilização**: [Tailwind CSS v4](https://tailwindcss.com/) (incluindo classes customizadas do design system como `squircle` e `border_after`).
-- **Storage**: Cloudinary (hospedagem de imagens de referência e entregáveis via upload widget resiliente).
-- **Editor Rich Text**: Tiptap v3 (com extensões para links automáticos, highlights de texto, tabelas integradas e bubble menus contextuais para melhoria da experiência de briefings).
-- **Deploy**: Vercel.
+| Pasta | Conteúdo |
+|---|---|
+| app/routes | Rotas; árvore gerada em app/routeTree.gen.ts |
+| app/components/prism, uzzina, features, layout | Design system e fluxos de interface |
+| app/components/ui-sections | Galeria de componentes em `/ui` |
+| app/hooks, lib, models, services | Estado, cache, contratos e acesso a dados/API |
+| api, server | Funções Vercel e adaptação local dos mesmos handlers |
+| supabase | Migrations incrementais e arquivos específicos de implantação/staging |
+| tests, scripts | Testes automatizados, percursos de navegador e verificações do banco |
 
----
+## Desenvolvimento
 
-## 📂 Estrutura de Diretórios (`app/`)
+Instale as dependências com Bun, usando o lockfile versionado:
 
-```bash
-app/
-├── components/
-│   ├── client/       # Componentes exclusivos do portal do cliente
-│   ├── features/     # Componentes de negócio (Kanban, Calendário, Formulários, etc.)
-│   ├── layout/       # Componentes estruturais (Header, Sidebar)
-│   ├── ui/           # Primitivos base de interface (estilo shadcn/ui)
-│   └── uzzina/       # Elementos reutilizáveis do Design System (UAvatar, UBadge, etc.)
-├── hooks/            # Hooks customizados (useOptimisticQuery, useActionMutations, etc.)
-├── lib/              # Configurações do Supabase, constantes de domínio e helpers utilitários
-├── models/           # Queries e regras de banco Supabase estruturadas por entidade (*.server.ts)
-├── routes/           # Rotas, views e endpoints da aplicação
-└── services/         # Regras de backend (como autenticação de membros e clientes externos)
-```
-
----
-
-## ⚙️ Conceitos e Diretrizes de Desenvolvimento
-
-### 1. Idioma de Desenvolvimento
-
-- **Código-fonte**: Nomes de variáveis, tabelas, colunas, funções, comentários técnicos e nomes de arquivos devem ser escritos sempre em **Inglês (EN)**.
-- **Interface (UI)**: Textos e termos renderizados na tela (labels, botões, modais, alertas) devem ser escritos em **Português do Brasil (PT-BR)**.
-
-### 2. Separação de Portais
-
-- **Portal Interno (`/app`)**: Área destinada aos membros da agência. Protegida por Supabase Auth via JWT (`getUserId` em `services/auth.server.ts`).
-- **Portal do Cliente (`/dash`)**: Área destinada a clientes externos para acompanhamento das ações aprovadas. Protegida por sessão de cookies independente (`getClientSession` em `services/client-auth.server.ts`), validada diretamente contra a tabela `clients` e sem criar usuários no Supabase Auth.
-
-### 3. Gerenciamento de Estado Otimista (React Query)
-
-Para garantir uma experiência de uso extremamente rápida e fluida (sem telas travadas ou "flickers" visuais):
-
-- **Mutações**: Centralizadas no hook customizado `useActionMutations()`. Ele encapsula as chamadas de banco e registra as mutações ativas no cache global.
-- **Queries**: Em vez de `useQuery` puro para obter as ações, usamos o wrapper **`useOptimisticQuery()`**. Ele escuta as mutações pendentes em tempo real e mescla instantaneamente na UI qualquer criação, deleção, edição ou duplicação antes mesmo de o servidor responder.
-- **Prevenção de Flicker**: Os dados otimistas só deixam de ser aplicados quando a query de revalidação correspondente termina de ser baixada do banco de dados (comparando timestamps `submittedAt > dataUpdatedAt`), evitando que o card atualizado volte momentaneamente ao estado anterior durante o refetch.
-
-### 4. Estilização e Temas
-
-- O sistema suporta modo Claro/Escuro (Light/Dark) e 12 paletas de cores harmônicas OKLCH (definidas em `app/lib/CONSTANTS.ts`).
-- **Evitando Piscadas**: No `app/root.tsx`, existe um script inline síncrono injetado no `<head>` que lê a preferência no `localStorage` e injeta as variáveis CSS necessárias antes da hidratação do React para evitar que a tela pisque no primeiro carregamento.
-
----
-
-## 🛠️ Como rodar o projeto localmente
-
-### Pré-requisitos
-
-Certifique-se de possuir o [Bun](https://bun.sh/) ou o Node.js instalados na sua máquina.
-
-### Instalação
-
-Instale as dependências do projeto:
-
-```bash
-bun install
-# ou
-npm install
-```
-
-### Desenvolvimento
-
-Inicie o servidor de desenvolvimento:
-
-```bash
+```sh
+bun install --frozen-lockfile
 bun run dev
-# ou
-npm run dev
 ```
 
-O projeto estará disponível por padrão em `http://localhost:5173`.
+Vite inicia normalmente em localhost:5173. O adaptador local executa as APIs da pasta api; um preview do build estático não substitui esse servidor de desenvolvimento nem as funções da Vercel.
+
+O `.env` habitual aponta para o banco de produção: operações reais podem alterar dados reais. Use staging para validações com fixtures. Para carregar o arquivo de staging sem a pré-carga de env do Bun:
+
+```sh
+node node_modules/vite/bin/vite.js --mode staging --host 127.0.0.1 --port 5180 --strictPort
+```
+
+## Arquivos de ambiente
+
+| Arquivo privado | Finalidade |
+|---|---|
+| .env | Desenvolvimento habitual; compatibilidade local de IA |
+| .env.staging.local | Projeto Supabase separado de testes, carregado com --mode staging |
+| .env.vercel-production.local | Valores para importar na Vercel UZZINA/Production; não é carregado pelo dev habitual |
+| .env.staging-users.local | Contas fictícias de teste; não importar na Vercel |
+| .env.backup.local | Conexão privada para backup/operações PostgreSQL; não importar na Vercel |
+
+Todos ficam fora do Git. O arquivo de produção da pasta lead pertence a outro projeto Vercel.
+
+As dez variáveis do arquivo de publicação são:
+
+| Variável | Uso |
+|---|---|
+| VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY | Cliente público do navegador |
+| VITE_CLOUDINARY_CLOUD_NAME, VITE_CLOUDINARY_UPLOAD_PRESET | Widget de upload |
+| SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY | APIs; mesmos valores das correspondentes públicas, exigidos diretamente por create-user |
+| SUPABASE_SERVICE_ROLE_KEY | Acesso privilegiado somente no servidor; aceita a secret key moderna configurada |
+| OPENAI_API_KEY | Geração de IA somente no servidor |
+| APP_ORIGIN | Origem exata autorizada do portal; em produção https://uzzina.cnvt.com.br |
+| AI_DAILY_LIMIT | Limite técnico opcional, padrão100 tentativas por usuário/dia UTC |
+
+O `.env` habitual não contém necessariamente todas as configurações de servidor da publicação. APIs administrativas/portal requerem suas variáveis também no ambiente local quando forem testadas. O staging tem configuração própria; Cloudinary é herdado do .env base e não representa storage de testes separado.
+
+Variáveis VITE_ são públicas quando usadas no build. VITE_SESSION_SECRET, VITE_CLOUDINARY_API_KEY e VITE_CLOUDINARY_API_SECRET não são usadas pelo código atual e foram retiradas dos arquivos locais. Preserve cloud name/upload preset.
+
+## Contratos de funcionamento
+
+O cliente Supabase do navegador é singleton. Equipe autentica por Supabase Auth; clientes externos usam cookie HttpOnly e sessão verificada pelas APIs. Revisão pública usa token com escopo/expiração/revogação. O formulário externo de Leads grava pela API do seu próprio projeto, com cookie de edição, sem acesso anônimo direto à tabela.
+
+Listas de ações recebem criações e alterações após confirmação do servidor, com cache separado por identidade/escopo. Preview de arraste e rascunho da gaveta têm tratamento próprio. Edição usa controle de versão e comparação de conflito para evitar sobrescrever outra alteração. Parceiros arquivados permanecem na administração, fora da operação.
+
+Preferências são salvas por patches e merge transacional; o perfil oferece preview. Tema inicial é aplicado por script em index.html antes do React. O design system vivo está em `/ui`.
+
+IA no Vite development habitual tem compatibilidade local explícita; staging/Vercel/produção exigem reserva persistente via consume_ai_usage. O contador técnico não mede tokens/custos por agência; essa evolução é apenas [plano futuro](docs/plans/2026-10-07-consumo-ia-por-agencia.md).
+
+## Verificação e banco
+
+```sh
+bun run test
+bun run typecheck
+bun run lint
+bun run build
+```
+
+Testes de código e percursos de navegador com HTTP controlado têm escopo distinto de validação do banco/provedor/site publicados. Os scripts em scripts documentam seus requisitos de execução; fixtures de banco usam ambiente descartável e transações com rollback.
+
+As dez migrations em supabase/migrations atualizam uma estrutura existente; não são um schema inicial completo. supabase/config.toml usa PostgreSQL15 para o ambiente local. O projeto cloud de staging usa17; seu bootstrap e manifest em supabase/staging não são arquivos de instalação de produção.
+
+Produção foi preparada em etapas, sem histórico Supabase de migrations. Consulte [CURRENT](docs/audits/CURRENT.md) e o manifest de rollout antes de aplicar SQL. Não executar db push/repair/reset indiscriminadamente. Backup lógico não inclui arquivos físicos Cloudinary/Storage ou configuração de Vercel.
+
+Para trabalhar no código, consulte [AGENTS.md](AGENTS.md). Pendências de publicação ficam em CURRENT; os relatórios antigos são referências históricas, não instruções atuais.
