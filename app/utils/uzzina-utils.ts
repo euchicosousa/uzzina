@@ -92,6 +92,15 @@ export function isInputFocused(event?: KeyboardEvent): boolean {
  * Parses DB timestamp strings into a valid JavaScript Date object in UTC.
  * Ensures consistent parsing regardless of space separator or missing 'Z' suffix.
  */
+/**
+ * Formats a moment as the UTC wall-clock string stored in `actions.created_at`
+ * and `updated_at` (`timestamp` without time zone, UTC), so `parseDbDate`
+ * reads it back as the same instant.
+ */
+export function toDbTimestamp(date: Date = new Date()): string {
+  return date.toISOString().slice(0, 19).replace("T", " ");
+}
+
 export function parseDbDate(ts: string | Date | null | undefined): Date {
   if (!ts) return new Date();
   if (ts instanceof Date) return ts;

@@ -49,6 +49,16 @@ it("a draft is recognised by the missing id, not by created_at", async () => {
   await waitFor(()=>expect(writes.length).toBe(1));
   expect(writes[0]?.partners).toEqual(["agency"]);
 });
+it("a new draft is shown as just created, not hours ago, outside UTC", () => {
+  const previousTZ = process.env.TZ;
+  process.env.TZ = "America/Sao_Paulo";
+  try {
+    mount(draft({id:undefined,title:"Fresh draft",created_at:undefined,updated_at:undefined}));
+    expect(screen.getByText(/Criada há menos de um minuto/)).toBeTruthy();
+  } finally {
+    process.env.TZ = previousTZ;
+  }
+});
 it("real drawer closes unchanged without writing", async () => {
   let closed=0; mount(action,()=>closed++);
   fireEvent.click(screen.getByRole("button",{name:"Fechar"}));

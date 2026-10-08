@@ -1,5 +1,4 @@
 import type { Action, Partner } from "~/types";
-import { format } from "date-fns";
 import {
   ArchiveIcon,
   AlertTriangleIcon,
@@ -19,7 +18,7 @@ import { ConflictComparison } from "./conflict-comparison";
 import { ActionSaveCoordinator, type CoordinatorState } from "./action-save-coordinator";
 import { INTENT } from "~/lib/CONSTANTS";
 import { isSocialMediaContent, parseStrategies } from "~/utils";
-import { isDefaultActionColor } from "~/utils/uzzina-utils";
+import { isDefaultActionColor, toDbTimestamp } from "~/utils/uzzina-utils";
 import {
   useActionMutations,
   type SingleActionInput,
@@ -64,7 +63,7 @@ export function ActionFormDrawer({
   const { handleAction, isLoading: isMutationLoading } = useActionMutations();
   const [RawAction, commitRawAction] = useState<Action>(() => {
     if (BaseAction.id) return BaseAction;
-    const now = format(new Date(), "yyyy-MM-dd HH:mm:ss");
+    const now = toDbTimestamp();
     let initialPartners = BaseAction.partners || [];
     let initialResponsibles = BaseAction.responsibles || [];
     let initialColor = BaseAction.color;
