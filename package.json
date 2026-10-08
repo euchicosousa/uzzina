@@ -9,6 +9,7 @@
     "typecheck": "tsc",
     "lint": "biome check .",
     "test": "bun test",
+    "test:serverless": "node scripts/check-serverless-runtime.cjs",
     "generate-routes": "tsr generate",
     "gentypes": "npx supabase gen types typescript --project-id dfepmjcozszswocwvdpq --schema public > types/database.ts"
   },

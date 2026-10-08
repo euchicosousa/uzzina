@@ -129,6 +129,35 @@ DO $$ DECLARE changed INTEGER; BEGIN
 END $$;
 
 -- 4. TESTE: Membro A não consegue se auto-promover a Admin na tabela people
+-- Real browser creation/duplication requests require INSERT RETURNING under RLS.
+DO $$ DECLARE created public.actions; duplicated public.actions; BEGIN
+  INSERT INTO public.actions(title, category, phase, priority, date, partners, responsibles, user_id, created_at, updated_at)
+    VALUES('Member returning test','post','do','medium','2026-10-08 13:00:00',ARRAY['partner-test-a'],
+      ARRAY['22222222-2222-4222-a222-222222222222']::uuid[],'22222222-2222-4222-a222-222222222222',NOW(),NOW())
+    RETURNING * INTO created;
+  IF created.id IS NULL OR created.updated_at IS NULL THEN RAISE EXCEPTION 'Creation did not return canonical row'; END IF;
+  INSERT INTO public.actions(title, category, phase, priority, date, partners, responsibles, user_id, created_at, updated_at)
+    SELECT title || ' (Copy)', category, phase, priority, date, partners, responsibles, user_id, NOW(), NOW()
+    FROM public.actions WHERE id=created.id RETURNING * INTO duplicated;
+  IF duplicated.id IS NULL OR duplicated.id=created.id OR duplicated.date<>created.date THEN
+    RAISE EXCEPTION 'Duplication did not preserve the execution date and return a new row';
+  END IF;
+  -- Both invalid partner scope and missing responsibility must remain denied.
+  BEGIN
+    INSERT INTO public.actions(title, category, phase, priority, date, partners, responsibles, created_at, updated_at)
+      VALUES('Forbidden partner','post','do','medium',NOW(),ARRAY['partner-test-b'],
+        ARRAY['22222222-2222-4222-a222-222222222222']::uuid[],NOW(),NOW()) RETURNING * INTO created;
+    RAISE EXCEPTION 'Creation outside partner scope was allowed';
+  EXCEPTION WHEN insufficient_privilege THEN NULL; END;
+  BEGIN
+    INSERT INTO public.actions(title, category, phase, priority, date, partners, responsibles, created_at, updated_at)
+      VALUES('Missing responsibility','post','do','medium',NOW(),ARRAY['partner-test-a'],
+        ARRAY['33333333-3333-4333-a333-333333333333']::uuid[],NOW(),NOW()) RETURNING * INTO created;
+    RAISE EXCEPTION 'Creation without responsibility was allowed';
+  EXCEPTION WHEN insufficient_privilege THEN NULL; END;
+  RAISE NOTICE 'PASS: member creation and duplication with RETURNING, scope negatives';
+END $$;
+
 DO $$
 BEGIN
     UPDATE public.people
@@ -158,6 +187,14 @@ BEGIN
     END IF;
     RAISE NOTICE 'SUCESSO: Usuário inativo recusado pelas políticas.';
 END $$;
+DO $$ DECLARE created public.actions; BEGIN
+  BEGIN
+    INSERT INTO public.actions(title, category, phase, priority, date, partners, responsibles, created_at, updated_at)
+      VALUES('Inactive creation','post','do','medium',NOW(),ARRAY['partner-test-a'],
+        ARRAY['44444444-4444-4444-a444-444444444444']::uuid[],NOW(),NOW()) RETURNING * INTO created;
+    RAISE EXCEPTION 'Inactive member created an action';
+  EXCEPTION WHEN insufficient_privilege THEN NULL; END;
+END $$;
 
 -- 6. TESTE: Administrador enxerga ações de todos os parceiros
 SET LOCAL "request.jwt.claim.sub" = '11111111-1111-4111-a111-111111111111';
@@ -173,6 +210,14 @@ BEGIN
 END $$;
 
 -- Ticket 14: single-connection quota checks; migration must be installed first.
+DO $$ DECLARE created public.actions; BEGIN
+  INSERT INTO public.actions(title, category, phase, priority, date, partners, responsibles, created_at, updated_at)
+    VALUES('Admin returning test','post','do','medium',NOW(),ARRAY['partner-test-b'],
+      ARRAY['33333333-3333-4333-a333-333333333333']::uuid[],NOW(),NOW()) RETURNING * INTO created;
+  IF created.id IS NULL OR created.updated_at IS NULL THEN RAISE EXCEPTION 'Admin creation did not return canonical row'; END IF;
+  RAISE NOTICE 'PASS: admin creation with RETURNING for another responsible';
+END $$;
+
 RESET ROLE;
 DO $$
 DECLARE

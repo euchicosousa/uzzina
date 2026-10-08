@@ -1,0 +1,35 @@
+{
+  "migration": "supabase/migrations/20261008164615_action_row_read_authorization.sql",
+  "sha256": "f26ec52bcff3ce719990fca5587e0a84458d748cd2bda89ac493c14363e5ac4d",
+  "scope": "Replace only actions_select_policy USING with row-based authorization; no grants, table data or shared helper changes",
+  "local": {
+    "postgres_version": "15.1",
+    "before": "Authenticated INSERT RETURNING regression failed with 42501",
+    "after": "Full migration package, authorization matrix and two-connection concurrency checks passed; fixtures rolled back"
+  },
+  "staging": {
+    "project_ref": "zacrrtilppvekiyoybzn",
+    "remote_version": "20261008165014",
+    "state": "applied and verified",
+    "validation": "Real Auth and app mutation functions: member creation/duplication and admin creation passed; outside partner scope, archived partner and missing responsibility denied",
+    "action_count_before": 4,
+    "action_count_after": 4,
+    "test_actions_remaining": 0,
+    "fixture_cleanup": "Created action IDs removed; final counts confirmed by catalog query",
+    "ai_attempts_today_after_test": 1
+  },
+  "production": {
+    "project_ref": "dfepmjcozszswocwvdpq",
+    "state": "not applied by this correction task"
+  },
+  "frontend_and_functions": {
+    "state": "prepared locally; not deployed by this correction task",
+    "validation": "267 unit tests, lint, typecheck, frontend build and native Node loading of Vercel-emitted AI/portal functions passed",
+    "staging_ai": "Vercel-built AI handler returned 200 with valid caption using real staging Auth, persistent quota and OpenAI"
+  },
+  "vercel_target": {
+    "project_id_from_logs": "prj_8PN3IDaxZAHtFwkwViE7GplFBQWE",
+    "local_link_project_id": "prj_sFbkpGYbgTWb1uHFoGMIFpmZ90Pz",
+    "state": "Mismatch remains; confirm target and valid authentication before deployment"
+  }
+}

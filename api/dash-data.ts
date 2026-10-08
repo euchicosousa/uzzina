@@ -6,7 +6,7 @@ import {
   SESSION_COOKIE_NAME,
   extractCookie,
   hashSessionToken,
-} from "../server/dash-session";
+} from "../server/dash-session.js";
 
 const MAX_PERIOD_DAYS = 62;
 const BATCH_SIZE = 500;

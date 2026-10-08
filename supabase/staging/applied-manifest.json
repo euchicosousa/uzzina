@@ -57,6 +57,11 @@
       "file": "supabase/migrations/20261007232335_external_leads_authorization.sql",
       "remote_version": "20261007232622",
       "sha256": "23b310fef7c05d727f5037f2caa54977af1467b1d4753829ce9005f5213eed3a"
+    },
+    {
+      "file": "supabase/migrations/20261008164615_action_row_read_authorization.sql",
+      "remote_version": "20261008165014",
+      "sha256": "f26ec52bcff3ce719990fca5587e0a84458d748cd2bda89ac493c14363e5ac4d"
     }
   ]
 }

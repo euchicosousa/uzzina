@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "../types/database";
-import { extractCookie, hashSessionToken, SESSION_COOKIE_NAME, validateRequestOrigin } from "../server/dash-session";
+import { extractCookie, hashSessionToken, SESSION_COOKIE_NAME, validateRequestOrigin } from "../server/dash-session.js";
 
 async function handleRequest(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Cache-Control", "no-store");

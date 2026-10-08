@@ -45,6 +45,7 @@ UZZINA é a aplicação existente de gestão de ações da agência CNVT: React,
 ### Ações, identidade e cache
 
 - Ações pertencem a parceiros. Preserve a data de execução, responsáveis múltiplos e os estados distintos Feito (`done`) e Concluído (`finished`). Conclusão pertence à ação inteira. Sprint e agrupamentos atuais não são removidos por uma limpeza técnica.
+- A policy SELECT de ações deve autorizar pelos campos da própria linha; não consultar a ação por ID em uma função STABLE durante INSERT RETURNING. Criação/duplicação precisam devolver a versão canônica sem ampliar escopo de membros.
 - Contexto operacional: `getOperationalPartners` e `QUERY_KEYS.operationalPartners(userId,isAdmin)` excluem arquivados. Administração: `getAllPartners`/`QUERY_KEYS.adminPartners()` preservam arquivados. Invalidar `["partners"]` alcança ambos; não apagar suas ações.
 - Home/Hoje/cabeçalho consultam parceiros do escopo e descartam ações exclusivamente de parceiros ocultos. Endpoints do portal aceitam parceiros ativos vinculados à conta.
 - Listas usam `QUERY_KEYS.actions.list` com identidade, papel, parceiros e período/regra de atraso. Criação/duplicação/edição entram após confirmação; rascunhos ficam na gaveta. Preview de arraste pertence à operação. Não restaurar snapshots completos após uma falha antiga.
@@ -61,6 +62,7 @@ UZZINA é a aplicação existente de gestão de ações da agência CNVT: React,
 ### IA e ambientes
 
 - `app/lib/ai-contract.ts` valida os contratos. Segredos OpenAI/Supabase ficam no servidor.
+- Imports relativos de valores nas APIs usam o caminho `.js` emitido pelo build de funções ESM. Confira o pacote com `bun run test:serverless`: Bun/Vite e testes com mocks não certificam a resolução pelo Node publicado.
 - Compatibilidade local só ocorre com NODE_ENV development, `UZZINA_LOCAL_AI_COMPAT=true` e sem VERCEL. O adaptador ativa a flag apenas no modo development; usa chave pública/Bearer e membro ativo, sem `consume_ai_usage`.
 - Staging/Vercel/produção usam reserva persistente via `consume_ai_usage` antes da geração. Falha da RPC retorna503/AI_QUOTA_UNAVAILABLE; limite esgotado retorna429. Sem contador em memória ou fallback por erro.
 - `ai_usage` registra usuário/dia UTC/tentativas; AI_DAILY_LIMIT padrão100, intervalo1–10000. Isso é limite técnico, distinto da proposta futura de medição por agência/modelo/token.

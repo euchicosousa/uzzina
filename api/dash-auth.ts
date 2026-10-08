@@ -12,7 +12,7 @@ import {
   serializeClearSessionCookie,
   serializeSessionCookie,
   validateRequestOrigin,
-} from "../server/dash-session";
+} from "../server/dash-session.js";
 
 async function handleRequest(req: VercelRequest, res: VercelResponse) {
   // Configura cabeçalho para evitar qualquer cache de respostas de autenticação

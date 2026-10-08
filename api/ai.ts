@@ -1,4 +1,4 @@
-import {aiInputSchema, aiResultSchema} from "../app/lib/ai-contract";
+import {aiInputSchema, aiResultSchema} from "../app/lib/ai-contract.js";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
