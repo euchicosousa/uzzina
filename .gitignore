@@ -11,6 +11,7 @@ force-reset.tsx
 /dist/
 /.react-router/
 .cache/
+/.tanstack/
 *.tsbuildinfo
 
 # Local envs / logs
