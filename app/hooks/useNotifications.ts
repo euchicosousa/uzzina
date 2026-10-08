@@ -1,3 +1,5 @@
+import { getQuerySessionGeneration } from "~/lib/query-client";
+import { useRef } from "react";
 import type { Notification } from "~/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -20,10 +22,12 @@ export function useNotifications() {
   const { person } = useAppContext();
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
+  const generation = useRef(getQuerySessionGeneration(queryClient)).current;
+  const isCurrentSession = () => generation === getQuerySessionGeneration(queryClient);
 
   // Query das notificações com cache e polling
   const { data, isLoading, error } = useQuery<NotificationsResponse>({
-    queryKey: QUERY_KEYS.notifications(),
+    queryKey: QUERY_KEYS.notifications(person.user_id),
     queryFn: async (): Promise<NotificationsResponse> => {
       const [notifications, unreadCount] = await Promise.all([
         listNotifications(supabase, person.user_id),
@@ -41,10 +45,12 @@ export function useNotifications() {
       await markAsRead(supabase, notificationIds, person.user_id);
     },
     onSuccess: () => {
+      if (!isCurrentSession()) return;
       // Invalida a query de notificações para recarregar da API
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.notifications() });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.notifications(person.user_id) });
     },
     onError: (err: unknown) => {
+      if (!isCurrentSession()) return;
       const msg = err instanceof Error ? err.message : "Erro desconhecido";
       toast.error(`Não foi possível marcar como lida: ${msg}`);
     },
@@ -56,10 +62,12 @@ export function useNotifications() {
       await markAllAsRead(supabase, person.user_id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.notifications() });
+      if (!isCurrentSession()) return;
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.notifications(person.user_id) });
       toast.success("Todas as notificações foram marcadas como lidas");
     },
     onError: (err: unknown) => {
+      if (!isCurrentSession()) return;
       const msg = err instanceof Error ? err.message : "Erro desconhecido";
       toast.error(`Não foi possível marcar todas como lidas: ${msg}`);
     },

@@ -10,3 +10,13 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+// A cache reset also invalidates callbacks of writes that cannot be cancelled.
+const sessionGenerations = new WeakMap<QueryClient, number>();
+export function getQuerySessionGeneration(client: QueryClient): number {
+  return sessionGenerations.get(client) ?? 0;
+}
+export function resetQuerySession(client: QueryClient): void {
+  sessionGenerations.set(client, getQuerySessionGeneration(client) + 1);
+  client.clear();
+}

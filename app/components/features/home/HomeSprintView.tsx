@@ -1,3 +1,4 @@
+import { useSelectionActions } from "~/hooks/useMultiSelection";
 import {
   closestCenter,
   DndContext,
@@ -69,6 +70,7 @@ export function HomeSprintView({ actions }: { actions: Action[] }) {
     }
     setActiveAction(undefined);
   }
+  useSelectionActions(orderedActions);
   const actionIds = orderedActions.map((a) => a.id);
   const gridClasses = getGridClasses(viewOptions.columns ?? 1);
   const displayFlags = {

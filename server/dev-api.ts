@@ -10,6 +10,7 @@ const HANDLERS: Record<string, string> = {
   "/api/review-links": "./api/review-links.ts",
   "/api/review": "./api/review.ts",
   "/api/client-accounts": "./api/client-accounts.ts",
+  "/api/create-user": "./api/create-user.ts",
 };
 
 /** Local adapter for the same serverless handlers deployed to Vercel. */

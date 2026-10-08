@@ -14,6 +14,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_usage: {
+        Row: {user_id: string; usage_day: string; attempts: number}
+        Insert: {user_id: string; usage_day: string; attempts: number}
+        Update: {user_id?: string; usage_day?: string; attempts?: number}
+        Relationships: []
+      }
       action_comments: {
         Row: {
           action_id: string
@@ -451,6 +457,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_notify_mention: {Args: {p_comment_id: string; p_action_id: string; p_recipient_id: string}; Returns: boolean}
+      update_my_preferences: {Args: {p_patch: Json}; Returns: Json}
+      consume_ai_usage: {Args: {p_user_id: string; p_limit: number}; Returns: boolean}
+      admin_update_person: {Args: {p_user_id: string; p_changes: Json}; Returns: undefined}
+      admin_update_client_account: {
+        Args: {p_client_id: string; p_changes: Json; p_password_hash: string | null}
+        Returns: Json
+      }
       admin_update_client_password: {
         Args: {
           p_client_id: string

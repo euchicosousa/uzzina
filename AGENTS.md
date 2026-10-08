@@ -1,5 +1,11 @@
 # UZZINA - Guia para Agentes de IA
 
+## Continuidade da auditoria
+
+Comece por [docs/audits/CURRENT.md](docs/audits/CURRENT.md), depois leia somente o ticket autorizado e seus arquivos/dependências. Relatórios antigos são histórico; consulte-os para resolver divergências específicas. Atualize CURRENT e o resultado do ticket ao terminar.
+
+Contratos novos preparados: PATCH de contas usa `admin_update_client_account`; edição administrativa de pessoas usa `admin_update_person`; ambos exigem migrations compatíveis. SQL local não significa banco de produção atualizado.
+
 Este repositório contém o sistema **UZZINA**, um painel e fluxo de gestão de projetos (sprints, ações criativas e calendário) para a agência criativa (CNVT®).
 
 ---
@@ -46,11 +52,53 @@ Este repositório contém o sistema **UZZINA**, um painel e fluxo de gestão de 
 - **Membros da Equipe (`/app`)**: Autenticado via Supabase Auth. Na inicialização do layout `app/routes/app.tsx`, a sessão é validada via `supabase.auth.getSession()` e sincronizada com `onAuthStateChange`. O bootstrap carrega dados do usuário via RPC `get_app_bootstrap`.
 - **Clientes Externos (`/dash`)**: Login/retomada/logout por `/api/dash-auth`, sessão opaca de servidor em `dash_sessions` e cookie HttpOnly; isolado do Supabase Auth da equipe. `/api/dash-data` autoriza parceiros/ações; `/api/dash-action` autoriza comentários públicos e vínculo de anexos. A tela `/dash/action/$id` usa `app/services/dash-client.ts`, sem acesso direto ao SDK do banco. Autor e audiência de comentários são definidos pelo servidor, com Origin obrigatório em mutações. O adaptador local em `server/dev-api.ts` executa os mesmos handlers. Banco/RLS e produção ainda exigem as validações do pacote de auditoria (02–07); não tratar o portal inteiro como protegido antes disso.
 
+### Revisão pública por link
+
+`/dash/review/$slug?r=token` não exige sessão de cliente. O layout reconhece a rota confirmada e só monta a revisão após limpar a sessão/cache anterior, evitando cancelar a consulta inicial. Isso não libera `/dash/action/$id` ou o portal: esses continuam exigindo cookie verificado. A leitura pública ocorre exclusivamente via `/api/review`, que valida token, parceiro, expiração e revogação; `ids` não autoriza acesso.
+
 ### Parceiros arquivados e cache
+
+- Listas da equipe usam `QUERY_KEYS.actions.list` com usuário/admin, parceiros e período/regra de atraso. Criação/duplicação/edição entram na lista após confirmação; rascunho permanece na gaveta. Não reintroduzir cards temporários ou rollback de snapshots. Atualização de lista exige escopo conhecido e versão canônica; desconhecido é invalidado.
 
 - O contexto operacional usa `getOperationalPartners`, filtra `partners.archived` e mantém cache `QUERY_KEYS.operationalPartners(userId,isAdmin)`. Nunca usar `getAllPartners` nessa lista, mesmo para administrador.
 - A administração usa `QUERY_KEYS.adminPartners()` e mantém arquivados disponíveis. Invalidar o prefixo `["partners"]` alcança ambos os caches.
 - Home/Hoje/cabeçalho usam escopo de parceiros nas consultas e descartam ações exclusivamente de parceiros ocultos. Endpoints do portal usam somente parceiros ativos vinculados à conta. Não apagar ações de parceiros arquivados.
+
+### AI quota and deployment
+
+- AI requests use the shared strict `app/lib/ai-contract.ts`. Quota and service-role credentials stay on the server.
+- **Exceção de compatibilidade local**: No modo de desenvolvimento local do Vite (`NODE_ENV === "development"`, flag interna `UZZINA_LOCAL_AI_COMPAT === "true"` e sem `VERCEL`), o adaptador ativa compatibilidade explícita local utilizando chave pública (`SUPABASE_PUBLISHABLE_KEY || VITE_SUPABASE_ANON_KEY`) e Bearer token para verificação de usuário ativo, sem chamar a RPC `consume_ai_usage`. Essa exceção existe exclusivamente para restaurar a execução no Vite local habitual com o `.env` original.
+- **Modo estrito obrigatório (Staging, Vercel e Produção)**: Em qualquer outro ambiente (`--mode staging`, Vercel, produção, ou sem a flag de compatibilidade), `consume_ai_usage` no servidor reserva obrigatoriamente uma tentativa antes da geração pela OpenAI; não há contador em memória nem fallback por erro (ausência ou falha de RPC falha fechada com 503/AI_QUOTA_UNAVAILABLE; quota esgotada retorna 429).
+- Tabela preparada `ai_usage` armazena `(user_id, usage_day UTC, attempts)`; migration `20261007010000_ai_usage.sql` foi aplicada no staging e banco de teste, mas NÃO em produção. Deploy da API requer migration compatível.
+- `AI_DAILY_LIMIT` tem padrão 100 (inteiro 1–10000), renovando às 00:00 UTC.
+- Testes de código da compatibilidade local e do modo estrito verificados (10 casos); validação com navegador/usuário real em ambiente local e no staging permanecem pendentes.
+
+### Identity and private cache
+
+- Private query keys include audience/current authenticated identity. General entity prefixes are invalidation filters, not data queries.
+- `resetQuerySession` clears queries/mutations and advances the cache generation; pending callbacks must ignore results from an ended generation. Providers remount by identity. Bootstrap validates both generation and returned user ID.
+- Bulk/duplicate writes check session continuity before the next write; already dispatched writes cannot be undone by clearing browser cache.
+- Portal identity comes from server session verification; review/token keys remain separate. Operational partners are seeded only after a validated bootstrap, then observed through their reactive query.
+
+### Banco de teste — compatibilidade com o inventário de07/10/2026
+
+O inventário exportado é PostgreSQL15.1. O pacote foi executado localmente em PostgreSQL15.1 descartável, com catálogo reconstruído sem dados e adaptador mínimo de `auth.uid()`; isso não certifica GoTrue/PostgREST/Vercel/produção. `supabase/config.toml` acompanha major15.
+
+`get_app_bootstrap(UUID)` mantém retorno JSONB. A migration `20261006005000_auth_trigger_compatibility.sql` retira somente o trigger legado conhecido que escrevia em profiles ausente; o formulário administrativo continua criando credenciais antes de inserir os campos completos em people. Concorrência reconcilia moddatetime legado e usa um único trigger/versão UTC em updated_at timestamp sem timezone, sem converter a data de execução.
+
+`20261007030000_ancillary_authorization.sql`: datas comemorativas com escrita administrativa; notificações lidas somente pelo destinatário ativo autorizado à ação, alteração só de read_at e inserção por menção/autoria/escopo verificados em `can_notify_mention`. Revoga TRUNCATE/REFERENCES/TRIGGER das roles do navegador e ajusta defaults do owner postgres. Defaults de supabase_admin seguem pendentes de revisão na plataforma.
+
+Leads têm integração externa em `/Users/euchicosousa/vercel/lead` usando INSERT/SELECT(id)/UPDATE por ID. Suas policies/DML não foram fechadas nesta rodada para não quebrar captação. Exposição anônima de leads **continua pendente** e exige mudança coordenada no formulário; nunca declarar o banco inteiro seguro por estes testes.
+
+Reprodução e limites: `docs/audits/2026-10-07-passo-2-banco-de-teste.md`; runner `scripts/check-db-package.py`. Produção não alterada.
+
+### Supabase de staging — atualização de07/10
+
+Projeto `zacrrtilppvekiyoybzn` preparado via MCP em PostgreSQL17.11, com11 tabelas e9 migrations existentes após bootstrap de aplicação. Auth oficial preservado. `supabase/staging/bootstrap.sql` e applied-manifest.json são exclusivos desse projeto vazio; não são migrations de produção. Versões remotas atribuídas pelo MCP diferem dos nomes locais: não rodar db push/repair cegamente.
+
+Matriz SQL com ROLLBACK e chamadas anônimas reais de PostgREST passaram. Testes autenticados GoTrue/JWT/app/API e concorrência cloud continuam pendentes. Leads estão fechados nesse staging, sem certificar ou alterar o formulário externo/banco atual. Defaults de supabase_admin preservados; Advisor mantém8 avisos de SECURITY DEFINER autenticado intencional, a revisar conforme relatório cloud.
+
+`.env.staging.local` ignorado separa URL/chave publicável; service/OpenAI vazias. Inicializar com `node node_modules/vite/bin/vite.js --mode staging --host 127.0.0.1 --port 5180 --strictPort`: Bun1.2.19 pode pré-carregar .env atual e sobrepor o modo. Não apontar o app atual/formulário externo para staging nem pedir segredos no chat. Detalhes e pendências: docs/audits/2026-10-07-staging-supabase.md. Declarações de migrations não aplicadas em produção continuam válidas; agora aplicadas no staging separado.
 
 ### Temas e Preferências
 
@@ -66,6 +114,9 @@ Este repositório contém o sistema **UZZINA**, um painel e fluxo de gestão de 
 - **Conformidade com o Linter (Biome)**: Todas as alterações devem passar no comando `bun run lint` e no compilador `bun run typecheck`. Certifique-se de que não restem avisos ou erros.
 
 ---
+
+### Preferências — contrato preparado no ticket15
+HeaderMenu usa `usePreferencePersistence`/`createPreferencePersistence`: debounce250ms, um write em voo, último patch por campo, falha preservada e retry explícito. Perfil também envia preferências via `update_my_preferences(p_patch)`; não substituir JSON diretamente. RPC deriva dono de `auth.uid()`, valida chaves/tipos, preserva campos desconhecidos existentes e faz merge transacional. `20261007020000_preferences_merge.sql` revoga UPDATE direto da coluna preferences; exige migration07 compatível. Migration local NÃO aplicada/homologada; sem RPC, salvar preferências falha e mantém tentativa recuperável. Não publicar frontend separadamente do banco necessário.
 
 ## 4. Manutenção de Documentação (IMPORTANTE)
 
@@ -211,3 +262,26 @@ A rota `/ui` é a documentação viva do Prism design system. É organizada modu
 - **Componentes Uzzina**: Componentes de alto nível do Uzzina (ex: `ViewOptionsComponent`, `CategoriesCombobox`, `PhaseCombobox`, `StationCombobox`).
 
 **Regra**: Sempre que adicionar um novo componente Prism ou componente Uzzina de alto nível, adicionar uma seção correspondente em `app/components/ui-sections/` e integrá-lo na rota `/ui`.
+
+
+### Staging provisionado — continuidade de07/10
+Chave privada preenchida pelo proprietário e validada sem imprimir. Três contas Auth oficiais/dados fictícios prontos; login/JWT/PostgREST, bootstrap/home, isolamento, preferências e data/CAS verificados. .env.staging-users.local ignorado guarda credenciais; não pedir chave novamente. App iniciado em5180 com Node. UI/API do app e demais limites no relatório de staging; produção intacta. Menções anteriores a chave vazia são históricas.
+
+### Comparação de conflitos e IA — complemento07/10
+Gaveta usa ConflictComparison local: duas versões com campos na mesma ordem e scroll próprio; data via parseU, nomes/rótulos de domínio, conteúdo/descrição sanitizados e legenda literal. Persistência e CAS permanecem no coordenador existente. IA retorna códigos públicos de configuração ausente/quota indisponível, traduzidos por allowlist no cliente. Chave OpenAI existente configurada no staging; geração real da API passou200, UI exige nova sessão de teste. Não inferir configuração/migrations de produção a partir disso.
+
+
+### Homologação real — passo 1,07/10
+Matriz de staging em `docs/audits/2026-10-07-passo-1-homologacao-staging.md`: IA/quota/interface, portal/revisão, contas/pessoas/Auth, lote e CAS reais passaram. Adaptador local mapeia `/api/create-user` para o handler existente. `Content` é compartilhado com portal/revisão e deve renderizar sem contexto/query provider privados; consulta de responsáveis é montada apenas quando há pessoa da equipe e o campo precisa ser mostrado. Não criar contexto fictício nem chave privada genérica. Revisão em lote exige parceiro da rota; opção fica desabilitada fora desse contexto.267 testes passam, dados descartáveis removidos. Produção não alterada; próxima etapa é leads coordenada, seguida das pendências móveis/implantação.
+
+
+### Leads externos — passo 2,07/10
+Integração em `/Users/euchicosousa/vercel/lead` agora preparada com `/api/lead` POST/PATCH e cookie HttpOnly/HMAC por lead (24h, Origin exato, schema/limites). Nenhum acesso direto ao banco no fluxo novo; formulário aguarda confirmação e preserva resposta em falha. Migration `20261007232335_external_leads_authorization.sql` aplicada somente ao staging: anon sem grants/policies, membros ativos com SELECT, DML no servidor. Sem nova tabela/model/RPC. Produção/formulário publicados continuam antigos até rollout coordenado; helper da migration03 obrigatório. Resultado e limites: docs/audits/2026-10-07-passo-2-leads-externos.md. Não declarar captação pública resistente a bots apenas por Origin nem certificar produção por staging.
+
+
+### Leads — fechamento isolado preparado em07/10
+Formulário HTTPS publicado validado com chave moderna, cookie e registros fictícios removidos. `supabase/rollouts/close-production-leads.sql` prepara somente permissões de leads, com verificação de membro via people existente; não exige is_active_member nem rollout completo. Matriz SQL staging passou com ROLLBACK; arquivo NÃO aplicado em produção. Anônimo continua preenchendo pela API pública, sem acesso direto à tabela. Aprovação/execução no banco atual e negativas/leitura da equipe após aplicação ainda pendentes. Detalhes em docs/audits/2026-10-07-passo-2-leads-externos.md.
+
+
+### Leads — estado de produção em08/10
+Rollout isolado close-production-leads.sql executado pelo proprietário e confirmado no catálogo atual. Anon sem grants/policies de leitura/escrita direta; membros ativos leem via people existente, DML pelo servidor. PostgREST anônimo recusou GET/POST/PATCH/DELETE com42501; captação HTTPS POST/PATCH e persistência reais passaram após fechamento; fixtures removidas/desfeitas. RLS de leads fechado em produção, sem aplicar outras migrations. Interface da listagem/detalhe na UZZINA publicada com sessão real ainda exige confirmação do proprietário. Registros de produção pendente anteriores são históricos apenas para leads; demais pendências continuam válidas.

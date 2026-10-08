@@ -29,6 +29,8 @@ import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { CATEGORIES, PHASES, PRIORITIES } from "~/lib/CONSTANTS";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
+import type { BulkActionResult } from "~/lib/supabase.mutations";
+import type { ActionPatchInput } from "~/utils/validation";
 import type { Partner } from "~/types";
 import {
   PrismButton,
@@ -45,15 +47,15 @@ import { Icons } from "../uzzina/UIcons";
 
 export function BulkActionMenu() {
   // ─── Multi-seleção ───────────────────────────────────────────────────────────
-  const { isSelectionMode, selectedIds, clearSelection } = useMultiSelection();
+  const { isSelectionMode, selectedIds, clearSelection, removeSelected, eligibleActions } = useMultiSelection();
   const _queryClient = useQueryClient();
   const { handleBulkAction, handleBulkDateOnly, handleBulkTimeOnly } =
     useActionMutations();
 
   // ─── Dados globais do app loader ─────────────────────────────────────────────
-  const { partners } = useAppContext();
+  const { partners, person } = useAppContext();
   const { data: people = [] } = useQuery({
-    queryKey: QUERY_KEYS.people(),
+    queryKey: QUERY_KEYS.people(person.user_id),
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });
@@ -70,32 +72,7 @@ export function BulkActionMenu() {
   const partnerColors = useMemo(() => {
     if (selectedIds.length === 0) return [];
 
-    const cachedQueries = _queryClient.getQueriesData<unknown>({
-      queryKey: QUERY_KEYS.actions.all(),
-    });
-
-    const selectedPartnerSlugs = new Set<string>();
-
-    for (const [_, data] of cachedQueries) {
-      if (Array.isArray(data)) {
-        for (const act of data) {
-          if (
-            act &&
-            typeof act === "object" &&
-            "id" in act &&
-            selectedIds.includes(String(act.id))
-          ) {
-            if ("partners" in act && Array.isArray(act.partners)) {
-              for (const slug of act.partners) {
-                if (slug) selectedPartnerSlugs.add(String(slug));
-              }
-            } else if ("partner_slug" in act && act.partner_slug) {
-              selectedPartnerSlugs.add(String(act.partner_slug));
-            }
-          }
-        }
-      }
-    }
+    const selectedPartnerSlugs = new Set(eligibleActions.filter(action => selectedIds.includes(action.id)).flatMap(action => action.partners));
 
     const colorsSet = new Set<string>();
     if (selectedPartnerSlugs.size > 0) {
@@ -126,7 +103,7 @@ export function BulkActionMenu() {
     }
 
     return Array.from(colorsSet);
-  }, [selectedIds, partners, currentPartner, _queryClient]);
+  }, [selectedIds, partners, currentPartner, eligibleActions]);
 
   // ─── Estados dos dialogs ─────────────────────────────────────────────────────
   const [dateTimeOpen, setDateTimeOpen] = useState(false);
@@ -137,82 +114,56 @@ export function BulkActionMenu() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
 
+  const [conflictedIds, setConflictedIds] = useState<string[]>([]);
+
   // Early return: nada a mostrar fora do modo de seleção
   if (!isSelectionMode) return null;
 
-  // ─── Helper de visibilidade contextual ───────────────────────────────────────
-  const getVisibleSelectedIds = () => {
-    if (typeof document === "undefined") return selectedIds;
-    const actionElements = document.querySelectorAll("[data-action-id]");
-    const visibleIdsSet = new Set(
-      Array.from(actionElements).flatMap((el) => {
-        if (!(el instanceof HTMLElement)) return [];
-        if (
-          el.closest('[aria-hidden="true"]') ||
-          el.closest(".hidden") ||
-          el.closest("[inert]")
-        ) {
-          return [];
-        }
-        if (el.offsetParent === null && el.style.position !== "fixed") {
-          return [];
-        }
-        const id = el.getAttribute("data-action-id");
-        return id ? [id] : [];
-      }),
-    );
-    if (visibleIdsSet.size > 0) {
-      return selectedIds.filter((id) => visibleIdsSet.has(id));
-    }
-    return selectedIds;
+  const targets = eligibleActions.filter(action => selectedIds.includes(action.id));
+  const effectiveCount = targets.length;
+  const reloadConflicts = () => {
+    void _queryClient.invalidateQueries({queryKey: QUERY_KEYS.actions.all()}, {throwOnError: true})
+      .then(() => setConflictedIds([]))
+      .catch(() => toast.error("Não foi possível recarregar. Tente novamente antes de salvar.", {position: "top-center"}));
   };
-
-  const effectiveSelectedIds = getVisibleSelectedIds();
-  const effectiveCount = effectiveSelectedIds.length;
-
-  // ─── Helpers de ação em lote ─────────────────────────────────────────────────
-  const performBulkAction = async (updates: Record<string, unknown>) => {
-    const targetIds = getVisibleSelectedIds();
-    if (targetIds.length === 0 || isProcessing) return;
-    const count = targetIds.length;
+  const finishBulk = (result: BulkActionResult) => {
+    removeSelected(result.succeededIds);
+    if (result.succeededIds.length > 0) toast.success(`${result.succeededIds.length} ação(ões) atualizada(s)!`, {position: "top-center"});
+    setConflictedIds(previous => [...new Set([...previous, ...result.conflicts.map(item => item.id)])]);
+    const title = (id: string) => targets.find(action => action.id === id)?.title || id;
+    const errors = [
+      ...result.failed.map(item => `${title(item.id)}: ${item.reason}`),
+      ...result.conflicts.map(item => `${title(item.id)}: mudou desde a seleção. Recarregue e confira antes de tentar novamente.`),
+    ];
+    if (errors.length > 0) toast.error(`${errors.length} ação(ões) não atualizada(s).`, {
+      position: "top-center",
+      description: errors.join("\n"),
+      duration: 10000,
+      ...(result.conflicts.length > 0 ? {action: {
+        label: "Recarregar ações",
+        onClick: reloadConflicts,
+      }} : {}),
+    });
+  };
+  const runBulk = async (operation: () => Promise<BulkActionResult>) => {
+    if (targets.length === 0 || isProcessing) return;
+    if (targets.some(action => conflictedIds.includes(action.id))) {
+      toast.error("Recarregue e confira as ações em conflito antes de tentar novamente.", {
+        position: "top-center", action: {label: "Recarregar ações", onClick: reloadConflicts},
+      });
+      return;
+    }
     setIsProcessing(true);
-    try {
-      await handleBulkAction(targetIds, updates);
-      clearSelection();
-      toast.success(`${count} ação(ões) atualizada(s)!`);
-    } catch (err) {
-      console.error("Erro na ação em lote:", err);
-      toast.error("Falha ao atualizar ações em lote.");
-    } finally {
-      setIsProcessing(false);
-    }
+    try { finishBulk(await operation()); }
+    catch (error) { toast.error(error instanceof Error ? error.message : "Falha ao atualizar ações em lote."); }
+    finally { setIsProcessing(false); }
   };
-
-  // ─── Handlers: Data/Hora ─────────────────────────────────────────────────────
-  const applyDateTime = async (result: BulkDateTimeResult) => {
-    const targetIds = getVisibleSelectedIds();
-    if (targetIds.length === 0 || isProcessing) return;
-    const count = targetIds.length;
-    setIsProcessing(true);
-    try {
-      if (result.mode === "datetime") {
-        await handleBulkAction(targetIds, {
-          date: result.date,
-        });
-      } else if (result.mode === "date_only") {
-        await handleBulkDateOnly(targetIds, result.dateOnly);
-      } else {
-        await handleBulkTimeOnly(targetIds, result.timeOnly);
-      }
-      clearSelection();
-      toast.success(`${count} ação(ões) atualizada(s)!`);
-    } catch (err) {
-      console.error("Erro ao atualizar data/hora em lote:", err);
-      toast.error("Falha ao atualizar data/hora das ações.");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+  const performBulkAction = (updates: ActionPatchInput) => runBulk(() => handleBulkAction(targets, updates));
+  const applyDateTime = (result: BulkDateTimeResult) => runBulk(() => {
+    if (result.mode === "datetime") return handleBulkAction(targets, {date: result.date});
+    if (result.mode === "date_only") return handleBulkDateOnly(targets, result.dateOnly);
+    return handleBulkTimeOnly(targets, result.timeOnly);
+  });
 
   // ─── Handlers: Responsáveis ──────────────────────────────────────────────────
   const applyResponsibles = (responsibles: string[]) => {
@@ -245,7 +196,7 @@ export function BulkActionMenu() {
 
   // ─── Handler: Enviar para Aprovação ─────────────────────────────────────
   const handleSendForApproval = async () => {
-    const targetIds = getVisibleSelectedIds();
+    const targetIds = targets.map(action => action.id);
     if (!currentPartner || targetIds.length === 0 || isGeneratingLink) return;
     setIsGeneratingLink(true);
     try {
@@ -480,6 +431,7 @@ export function BulkActionMenu() {
 
           {/* Compartilhar para Revisão */}
           <PrismMenuItem
+            isDisabled={!currentPartner || isGeneratingLink}
             onAction={handleSendForApproval}
             textValue="Compartilhar para Revisão"
           >

@@ -1,3 +1,4 @@
+import { getQuerySessionGeneration } from "~/lib/query-client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
@@ -42,20 +43,23 @@ function AdminPartnerEditPageWrapper() {
   );
 }
 function AdminPartnerEditPage() {
+  const appData = useAppContext();
   const { slug } = Route.useParams();
   const navigate = useNavigate();
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
-  const appData = useAppContext();
+  const generation = useRef(getQuerySessionGeneration(queryClient)).current;
+  const isCurrentSession = () => generation === getQuerySessionGeneration(queryClient);
+
   const isNew = slug === "new" || !slug;
 
   // Queries client-side
   const { data: people = [] } = useQuery({
-    queryKey: ["people", "visible"],
+    queryKey: ["people", "team", appData.person.user_id, "visible"],
     queryFn: fetchPeople,
   });
   const { data: partner, isLoading: isLoadingPartner } = useQuery({
-    queryKey: ["partner", slug],
+    queryKey: ["partner", "team", appData.person.user_id, slug],
     queryFn: async () => {
       if (isNew) return null;
       const { data, error } = await supabase
@@ -139,6 +143,7 @@ function AdminPartnerEditPage() {
           .select("id")
           .eq("slug", partnerData.slug)
           .single();
+        if (!isCurrentSession()) throw new Error("A sessão mudou. Entre novamente.");
         if (existing) {
           throw new Error("Este slug já está em uso.");
         }
@@ -153,8 +158,9 @@ function AdminPartnerEditPage() {
       }
     },
     onSuccess: () => {
+      if (!isCurrentSession()) return;
       queryClient.invalidateQueries({
-        queryKey: ["partner", slug],
+        queryKey: ["partner", "team", appData.person.user_id, slug],
       });
       queryClient.invalidateQueries({
         queryKey: ["partners"],
@@ -169,6 +175,7 @@ function AdminPartnerEditPage() {
       }
     },
     onError: (err: unknown) => {
+      if (!isCurrentSession()) return;
       const message = err instanceof Error ? err.message : "Erro desconhecido";
       toast.error(`Erro ao salvar: ${message}`);
     },

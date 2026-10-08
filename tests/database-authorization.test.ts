@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-describe("Ticket 07: Autorizações Reproduzíveis no Banco", () => {
+describe("Ticket 07: prepared SQL structure only (not database authorization)", () => {
   const rootDir = resolve(import.meta.dir, "..");
   const migrationPath = resolve(rootDir, "supabase/migrations/20261006030000_database_authorization.sql");
   const inspectSqlPath = resolve(rootDir, "scripts/inspect-db-security.sql");
@@ -34,8 +34,8 @@ describe("Ticket 07: Autorizações Reproduzíveis no Banco", () => {
     expect(migrationSql).toContain("REVOKE ALL ON TABLE public.clients FROM anon;");
     expect(migrationSql).toContain("REVOKE ALL ON TABLE public.people FROM anon;");
     expect(migrationSql).toContain("REVOKE ALL ON TABLE public.action_comments FROM anon;");
-    expect(migrationSql).toContain("REVOKE ALL ON TABLE public.dash_sessions FROM anon, authenticated;");
-    expect(migrationSql).toContain("REVOKE ALL ON TABLE public.review_links FROM anon, authenticated;");
+    expect(migrationSql).toContain("REVOKE ALL ON TABLE public.clients, public.dash_sessions, public.review_links FROM authenticated;");
+    expect(migrationSql).toContain("REVOKE ALL ON TABLE public.review_links FROM anon;");
   });
 
   it("garante que funções auxiliares de segurança usam search_path fixo e SECURITY DEFINER", () => {

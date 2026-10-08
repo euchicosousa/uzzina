@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { z } from "zod";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "../types/database";
@@ -6,6 +7,17 @@ import type { Database } from "../types/database";
 const BCRYPT_COST = 12;
 const MIN_PASSWORD_BYTES = 8;
 const MAX_PASSWORD_BYTES = 72;
+
+const accountFields = z.object({
+  name: z.string().trim().min(2).max(200),
+  email: z.email().trim().toLowerCase().max(320),
+  password: z.string().nullable().optional().refine(value => !value || (Buffer.byteLength(value, "utf8") >= MIN_PASSWORD_BYTES && Buffer.byteLength(value, "utf8") <= MAX_PASSWORD_BYTES)),
+  partners: z.array(z.string().min(1).max(200)).max(100),
+  image: z.union([z.url(), z.literal("")]).nullable().optional().transform(value => value === "" ? null : value),
+  active: z.boolean().optional(),
+});
+const createAccountSchema = accountFields.omit({active: true}).extend({password: z.string().min(1)}).strict();
+const updateAccountSchema = accountFields.partial().extend({id: z.string().min(1).max(100)}).strict();
 
 function extractAuthToken(req: VercelRequest): string | null {
   const authHeader = req.headers.authorization;
@@ -128,13 +140,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // ─── POST: Criação de Cliente ───────────────────────────────────────────────
   if (req.method === "POST") {
-    const body = (req.body ?? {}) as {
-      name?: string;
-      email?: string;
-      password?: string;
-      partners?: string[];
-      image?: string | null;
-    };
+    const parsed = createAccountSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({error: "Dados da conta inválidos."});
+    const body = parsed.data;
 
     const name = body.name?.trim();
     const email = body.email?.trim().toLowerCase();
@@ -212,125 +220,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // ─── PATCH: Atualização de Cliente ──────────────────────────────────────────
   if (req.method === "PATCH") {
-    const body = (req.body ?? {}) as {
-      id?: string;
-      name?: string;
-      email?: string;
-      password?: string | null;
-      partners?: string[];
-      image?: string | null;
-      active?: boolean;
-    };
-
-    const id = body.id || (typeof req.query.id === "string" ? req.query.id : undefined);
-    if (!id) {
-      return res.status(400).json({ error: "ID do cliente é obrigatório." });
-    }
-
-    const { data: existingClient, error: getErr } = await supabaseAdmin
-      .from("clients")
-      .select("id, created_at, name, email, partners, image, active, password_hash")
-      .eq("id", id)
-      .single();
-
-    if (getErr || !existingClient) {
-      return res.status(404).json({ error: "Cliente não encontrado." });
-    }
-
-    // 1. Atualização de senha, se fornecida não vazia
-    if (typeof body.password === "string" && body.password.length > 0) {
-      const passwordBytes = Buffer.byteLength(body.password, "utf8");
-      if (passwordBytes < MIN_PASSWORD_BYTES || passwordBytes > MAX_PASSWORD_BYTES) {
-        return res.status(400).json({
-          error: `A senha deve ter entre ${MIN_PASSWORD_BYTES} e ${MAX_PASSWORD_BYTES} bytes UTF-8.`,
-        });
-      }
-
-      const newHash = await bcrypt.hash(body.password, BCRYPT_COST);
-
-      // Executa RPC transacional para atualizar senha e revogar sessões
-      const { error: rpcErr } = await supabaseAdmin.rpc("admin_update_client_password", {
-        p_client_id: id,
-        p_password_hash: newHash,
-      });
-
-      if (rpcErr) {
-        return res.status(503).json({
-          error: "Falha transacional ao atualizar senha e revogar sessões.",
-        });
+    const parsed = updateAccountSchema.safeParse({...req.body, id: req.body?.id || req.query.id});
+    if (!parsed.success) return res.status(400).json({error: "Dados da conta inválidos."});
+    const {id, password, ...updates} = parsed.data;
+    if (updates.partners?.length) {
+      const {data: partners, error} = await supabaseAdmin.from("partners").select("slug, archived").in("slug", updates.partners);
+      if (error) return res.status(503).json({error: "Falha ao validar parceiros."});
+      if (updates.partners.some(slug => !partners?.some(partner => partner.slug === slug && !partner.archived))) {
+        return res.status(400).json({error: "Um parceiro não existe ou está arquivado."});
       }
     }
-
-    // 2. Desativação, se solicitada
-    if (body.active === false) {
-      const { error: rpcErr } = await supabaseAdmin.rpc("admin_deactivate_client", {
-        p_client_id: id,
-      });
-
-      if (rpcErr) {
-        return res.status(503).json({
-          error: "Falha transacional ao desativar cliente e revogar sessões.",
-        });
-      }
-    }
-
-    // 3. Atualização de campos gerais
-    const updates: Database["public"]["Tables"]["clients"]["Update"] = {};
-    if (body.name !== undefined) updates.name = body.name.trim();
-    if (body.email !== undefined) updates.email = body.email.trim().toLowerCase();
-    if (body.image !== undefined) updates.image = body.image ? String(body.image).trim() : null;
-    if (body.active === true) updates.active = true;
-
-    if (body.partners !== undefined) {
-      const partnerSlugs = Array.isArray(body.partners) ? body.partners : [];
-      if (partnerSlugs.length > 0) {
-        const { data: partnersData, error: partnersErr } = await supabaseAdmin
-          .from("partners")
-          .select("slug, archived")
-          .in("slug", partnerSlugs);
-
-        if (partnersErr || !partnersData) {
-          return res.status(503).json({ error: "Falha ao validar parceiros." });
-        }
-
-        const validPartners = partnersData as Array<{ slug: string; archived: boolean }>;
-        for (const slug of partnerSlugs) {
-          const found = validPartners.find((p) => p.slug === slug);
-          if (!found || found.archived) {
-            return res.status(400).json({
-              error: `O parceiro '${slug}' não existe ou está arquivado.`,
-            });
-          }
-        }
-      }
-      updates.partners = partnerSlugs;
-    }
-
-    if (Object.keys(updates).length > 0) {
-      const { error: updateErr } = await supabaseAdmin
-        .from("clients")
-        .update(updates)
-        .eq("id", id);
-
-      if (updateErr) {
-        return res.status(503).json({ error: "Falha ao atualizar dados do cliente." });
-      }
-    }
-
-    // Busca dados finais do cliente
-    const { data: updatedClient, error: fetchErr } = await supabaseAdmin
-      .from("clients")
-      .select("id, created_at, name, email, partners, image, active")
-      .eq("id", id)
-      .single();
-
-    if (fetchErr || !updatedClient) {
-      return res.status(503).json({ error: "Falha ao carregar cliente atualizado." });
-    }
-
-    return res.status(200).json({
-      client: toSafeClientDto(updatedClient as Record<string, unknown>),
+    const passwordHash = password ? await bcrypt.hash(password, BCRYPT_COST) : null;
+    const {data, error} = await supabaseAdmin.rpc("admin_update_client_account", {
+      p_client_id: id, p_changes: updates, p_password_hash: passwordHash,
     });
+    if (error?.code === "P0002") return res.status(404).json({error: "Conta não encontrada."});
+    if (error || !data || typeof data !== "object" || Array.isArray(data)) {
+      return res.status(503).json({error: "Não foi possível atualizar a conta. Nenhuma alteração foi confirmada."});
+    }
+    return res.status(200).json({client: toSafeClientDto(data as Record<string, unknown>)});
   }
 
   // ─── DELETE: Arquivar / Desativar Cliente ────────────────────────────────────
@@ -347,6 +255,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       p_client_id: id,
     });
 
+    if (rpcErr?.code === "P0002") return res.status(404).json({error: "Conta não encontrada."});
     if (rpcErr) {
       return res.status(503).json({
         error: "Falha transacional ao desativar cliente e revogar sessões.",

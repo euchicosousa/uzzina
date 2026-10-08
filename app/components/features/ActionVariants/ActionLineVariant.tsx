@@ -44,8 +44,7 @@ export function ActionLineVariant({
           isEditing={isEditing}
           onBlur={(title) => {
             handleAction({
-              ...action,
-              intent: INTENT.update_action,
+                intent: INTENT.update_action,
               id: action.id,
               expectedUpdatedAt: action.updated_at,
               title,

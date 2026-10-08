@@ -1,3 +1,4 @@
+import { useAppContext } from "~/contexts/AppContext";
 import { FolderPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { UAdminItemCard } from "~/components/uzzina/UAdminItemCard";
@@ -19,9 +20,10 @@ function AdminPartnersPageWrapper() {
   );
 }
 function AdminPartnersPage() {
+  const { person } = useAppContext();
   const supabase = createSupabaseBrowserClient();
   const { data: partners = [], isLoading } = useQuery({
-    queryKey: QUERY_KEYS.adminPartners(),
+    queryKey: QUERY_KEYS.adminPartners(person.user_id),
     queryFn: async () => {
       const { data, error } = await supabase
         .from("partners")

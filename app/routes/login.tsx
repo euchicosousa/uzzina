@@ -154,9 +154,9 @@ function Login() {
             </PrismButton>
           </div>
         </form>
-
-        <div className="border-l"></div>
       </div>
+
+      <div className="border-l"></div>
     </div>
   );
 }

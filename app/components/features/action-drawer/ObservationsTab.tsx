@@ -1,3 +1,5 @@
+import { getQuerySessionGeneration } from "~/lib/query-client";
+import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { QUERY_KEYS } from "~/lib/query-keys";
@@ -28,16 +30,18 @@ export function ObservationsTab({
   const { person } = useAppContext();
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
+  const generation = useRef(getQuerySessionGeneration(queryClient)).current;
+  const isCurrentSession = () => generation === getQuerySessionGeneration(queryClient);
 
   // Busca os comentários no client usando TanStack Query
   const { data: comments = [] } = useQuery({
-    queryKey: QUERY_KEYS.comments.all(actionId),
+    queryKey: QUERY_KEYS.comments.all(actionId, person.user_id),
     queryFn: () => getAllCommentsByAction(supabase, actionId),
     enabled: !!actionId,
   });
 
   const { data: allPeople = [] } = useQuery({
-    queryKey: QUERY_KEYS.people(),
+    queryKey: QUERY_KEYS.people(person.user_id),
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });
@@ -63,6 +67,7 @@ export function ObservationsTab({
         supabase.from("actions").select("title").eq("id", actionId).single(),
       ]);
 
+      if (!isCurrentSession()) throw new Error("A sessão mudou. Entre novamente.");
       const authorName = personRes.data?.name || "Agência";
       const actionTitle = actionRes.data?.title || "Ação";
 
@@ -76,7 +81,7 @@ export function ObservationsTab({
         mentions,
       });
 
-      if (mentions.length > 0) {
+      if (mentions.length > 0 && isCurrentSession()) {
         const plainText = content.replace(/<[^>]*>/g, "");
         const commentExcerpt = plainText.length > 100 ? `${plainText.substring(0, 100)}...` : plainText;
         await createNotificationsForMentions(supabase, {
@@ -92,12 +97,14 @@ export function ObservationsTab({
       return insertedComment;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.all(actionId) });
+      if (!isCurrentSession()) return;
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.all(actionId, person.user_id) });
       if (!variables.is_internal) {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.public(actionId) });
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.public(actionId, person.user_id) });
       }
     },
     onError: (error) => {
+      if (!isCurrentSession()) return;
       console.error("Erro ao criar comentário:", error);
       toast.error("Não foi possível salvar o comentário.");
     },
@@ -108,10 +115,12 @@ export function ObservationsTab({
       await updateComment(supabase, commentId, content, person.user_id, true);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.all(actionId) });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.public(actionId) });
+      if (!isCurrentSession()) return;
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.all(actionId, person.user_id) });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.public(actionId, person.user_id) });
     },
     onError: (error) => {
+      if (!isCurrentSession()) return;
       console.error("Erro ao atualizar comentário:", error);
       toast.error("Não foi possível atualizar o comentário.");
     },
@@ -122,10 +131,12 @@ export function ObservationsTab({
       await deleteComment(supabase, commentId, person.user_id, true);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.all(actionId) });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.public(actionId) });
+      if (!isCurrentSession()) return;
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.all(actionId, person.user_id) });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.comments.public(actionId, person.user_id) });
     },
     onError: (error) => {
+      if (!isCurrentSession()) return;
       console.error("Erro ao excluir comentário:", error);
       toast.error("Não foi possível excluir o comentário.");
     },

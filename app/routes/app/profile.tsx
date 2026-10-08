@@ -9,7 +9,9 @@ import {
   SunIcon,
   UploadIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { getQuerySessionGeneration } from "~/lib/query-client";
 import { toast } from "sonner";
 import {
   Theme,
@@ -43,6 +45,9 @@ export const Route = createFileRoute("/app/profile")({
 export const runtime = "edge";
 function ProfilePage() {
   const { person, cloudName, uploadPreset } = useAppContext();
+  const queryClient = useQueryClient();
+  const generation = useRef(getQuerySessionGeneration(queryClient)).current;
+  const isCurrentSession = () => getQuerySessionGeneration(queryClient) === generation;
   const preferences = getUserPreferences(person);
   const { theme, setTheme, previewColorIndex, previewCustomTheme, setCustomTheme } =
     useAppThemeContext();
@@ -271,6 +276,7 @@ function ProfilePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!isCurrentSession()) return;
     setIsSubmitting(true);
     try {
       const formData = new FormData(event.currentTarget);
@@ -325,10 +331,18 @@ function ProfilePage() {
           initials,
           short: short || name,
           image,
-          preferences: newPreferences,
         })
         .eq("user_id", person.user_id);
       if (error) throw error;
+
+      if (!isCurrentSession()) return;
+      const preferenceResult = await supabase.rpc("update_my_preferences", {p_patch: newPreferences});
+      if (!isCurrentSession()) return;
+      if (preferenceResult.error) throw preferenceResult.error;
+      if (!preferenceResult.data || typeof preferenceResult.data !== "object" || Array.isArray(preferenceResult.data)) {
+        throw new Error("Invalid preferences confirmation");
+      }
+      person.preferences = preferenceResult.data;
 
       // Sync local preferences to storage / context
       localStorage.setItem(
@@ -358,10 +372,11 @@ function ProfilePage() {
       window.dispatchEvent(new Event("uzzina-storage-update"));
       toast.success("Perfil e preferências salvos com sucesso!");
     } catch (err) {
+      if (!isCurrentSession()) return;
       console.error(err);
       toast.error("Erro ao salvar configurações.");
     } finally {
-      setIsSubmitting(false);
+      if (isCurrentSession()) setIsSubmitting(false);
     }
   };
 

@@ -1,5 +1,7 @@
 # Revisão independente dos tickets 05–09 — UZZINA
 
+> **Histórico:** este documento registra a rodada anterior. Estado vigente e próxima leitura: [CURRENT.md](CURRENT.md); correções05–09: [fechamento](2026-10-06-fechamento-tickets-05-09.md).
+
 Data: 06/10/2026. Checkout examinado: HEAD `fd66021`, mais alterações locais e arquivos novos do executor. Escopo: código, contratos, testes e preparação SQL de 05–09. Não é nova auditoria integral dos 52 achados nem inspeção do banco de produção.
 
 ## Parecer

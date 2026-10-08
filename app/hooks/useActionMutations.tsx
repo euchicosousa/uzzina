@@ -1,10 +1,11 @@
+import { getQuerySessionGeneration } from "~/lib/query-client";
 import type { Action } from "~/types";
-import { useMutation, useQueryClient, type QueryKey } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useMutation, useQueryClient, type QueryClient } from "@tanstack/react-query";
+import { useCallback, useRef } from "react";
+import { parseU, getActionRevision as revision } from "~/utils/date";
 import { toast } from "sonner";
-import { INTENT, PHASES } from "~/lib/CONSTANTS";
-import { QUERY_KEYS } from "~/lib/query-keys";
-import { format } from "date-fns";
+import { INTENT } from "~/lib/CONSTANTS";
+import { getActionListScope, QUERY_KEYS } from "~/lib/query-keys";
 import {
   createActionClient,
   updateActionClient,
@@ -18,7 +19,6 @@ import {
 import type {
   ActionCreateInput,
   ActionPatchInput,
-  ActionFormInput,
 } from "~/utils/validation";
 
 export type SingleActionInput = {
@@ -27,11 +27,6 @@ export type SingleActionInput = {
   expectedUpdatedAt?: string;
   [key: string]: unknown;
 };
-
-interface MutationContext {
-  previousActions?: [QueryKey, Action[] | undefined][];
-  previousLateActions?: [QueryKey, Action[] | undefined][];
-}
 
 const handleError = (error: unknown) => {
   console.error("Mutation failed:", error);
@@ -44,37 +39,58 @@ const handleError = (error: unknown) => {
   toast.error(`Falha na operação: ${message}`);
 };
 
+// Shared by hook instances using the same cache, including confirmations of removed cards.
+const confirmedVersions = new WeakMap<QueryClient, {generation: number; versions: Map<string, number>}>();
+
 export function useActionMutations() {
   const queryClient = useQueryClient();
+  const generation = useRef(getQuerySessionGeneration(queryClient)).current;
+  const isCurrentSession = () => generation === getQuerySessionGeneration(queryClient);
+  const requireCurrentSession = () => {
+    if (!isCurrentSession()) throw new Error("A sessão mudou. Reabra a ação na conta atual.");
+  };
 
   const invalidateActions = () => {
-    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.actions.all() });
-    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.lateActions.all() });
+    if (!isCurrentSession()) return;
+    // All action lists share this prefix, including overdue lists. Visit them only once.
+    void queryClient.invalidateQueries({queryKey: QUERY_KEYS.actions.all(),
+      refetchType: queryClient.isMutating({mutationKey:["action-write"]}) > 1 ? "none" : "active"});
   };
 
-  // Helper function to rollback cache on error
-  const onErrorRollback = (
-    err: unknown,
-    _vars: unknown,
-    context: MutationContext | undefined,
-  ) => {
-    handleError(err);
-    if (context?.previousActions) {
-      context.previousActions.forEach(([queryKey, data]) => {
-        queryClient.setQueryData(queryKey, data);
-      });
-    }
-    if (context?.previousLateActions) {
-      context.previousLateActions.forEach(([queryKey, data]) => {
-        queryClient.setQueryData(queryKey, data);
-      });
-    }
-  };
+  const applyConfirmedAction = (action: Action) => {
+      if (!isCurrentSession()) return;
+      const lists = queryClient.getQueriesData<Action[]>({queryKey: QUERY_KEYS.actions.all()});
+      const previous = confirmedVersions.get(queryClient);
+      const versions = previous?.generation === generation ? previous.versions : new Map<string, number>();
+      confirmedVersions.set(queryClient, {generation, versions});
+      const knownVersion = Math.max(versions.get(action.id || "") || 0,
+        ...lists.map(([, rows]) => Array.isArray(rows) ? revision(rows.find(row => row.id === action.id)?.updated_at) : 0));
+      const serverVersion = revision(action.updated_at);
+      if (!Number.isFinite(serverVersion) || serverVersion < knownVersion) return;
+      versions.set(action.id || "", serverVersion);
+      for (const [key, rows] of lists) {
+        const scope = getActionListScope(key);
+        if (!scope || !Array.isArray(rows)) continue; // Unknown lists are refreshed, never guessed.
+        const existing = rows.find(row => row.id === action.id);
+        const date = parseU(action.date).getTime();
+        const from = scope.from ? parseU(scope.from).getTime() : -Infinity;
+        const to = scope.to === "now" ? Date.now() : parseU(scope.to).getTime();
+        const belongs = !action.archived && (!scope.strictArchived || action.archived === false) &&
+          action.partners.some(partner => scope.partners.includes(partner)) &&
+          (scope.isAdmin || action.responsibles.includes(scope.userId)) &&
+          date >= from && (scope.kind === "late" ? date < to && action.phase !== "finished" : date <= to);
+        queryClient.setQueryData<Action[]>(key, belongs
+          ? existing ? rows.map(row => row.id === action.id ? action : row) : [...rows, action]
+          : rows.filter(row => row.id !== action.id));
+      }
+    };
 
   // 1. Single Action Mutation
   const singleActionMutation = useMutation({
-    mutationKey: ["actionMutation"],
+    mutationKey: ["action-write", "single"],
+    onMutate: () => queryClient.cancelQueries({queryKey: QUERY_KEYS.actions.all()}),
     mutationFn: async (data: SingleActionInput) => {
+      requireCurrentSession();
       const { intent, id, expectedUpdatedAt, ...values } = data;
       if (intent === INTENT.create_action) {
         return await createActionClient(values as ActionCreateInput);
@@ -91,108 +107,13 @@ export function useActionMutations() {
           expectedUpdatedAt,
         );
       } else if (intent === INTENT.duplicate_action) {
-        if (id) return await duplicateActionClient(String(id));
+        if (id) return await duplicateActionClient(String(id), requireCurrentSession);
       } else if (intent === INTENT.delete_action) {
         if (id) return await deleteActionClient(String(id));
       }
     },
-    onMutate: async (data: SingleActionInput) => {
-      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.actions.all() });
-      await queryClient.cancelQueries({
-        queryKey: QUERY_KEYS.lateActions.all(),
-      });
-
-      const previousActions = queryClient.getQueriesData<Action[]>({
-        queryKey: QUERY_KEYS.actions.all(),
-      });
-      const previousLateActions = queryClient.getQueriesData<Action[]>({
-        queryKey: QUERY_KEYS.lateActions.all(),
-      });
-
-      const updateData = (oldData: Action[] | undefined) => {
-        if (!oldData) return [];
-        const { intent, id, ...values } = data;
-        let nextData = [...oldData];
-
-        if (intent === INTENT.update_action && id) {
-          nextData = nextData.map((action) => {
-            if (action.id !== id) return action;
-            const updated = { ...action, ...values } as Action;
-            // Espelha as regras de negócio do servidor (supabase.mutations.ts)
-            if (updated.phase === PHASES.finished.slug) {
-              updated.sprints = null;
-            }
-            if (updated.archived) {
-              updated.sprints = null;
-            }
-            return updated;
-          });
-        } else if (intent === INTENT.create_action) {
-          const tempId = id || `temp-${Date.now()}`;
-          if (!nextData.some((action) => action.id === tempId)) {
-            nextData.push({
-              id: tempId,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-              archived: false,
-              ...values,
-            } as Action);
-          }
-        } else if (intent === INTENT.delete_action && id) {
-          nextData = nextData.filter((action) => action.id !== id);
-        } else if (intent === INTENT.duplicate_action && id) {
-          const original = nextData.find((action) => action.id === id);
-          if (original) {
-            nextData.push({
-              ...original,
-              id: `temp-dup-${Date.now()}`,
-              title: `${original.title} (Cópia)`,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            });
-          }
-        }
-
-        // Remove as ações que foram arquivadas otimisticamente
-        return nextData.filter((action) => !action.archived);
-      };
-
-      queryClient.setQueriesData(
-        { queryKey: QUERY_KEYS.actions.all() },
-        updateData,
-      );
-      queryClient.setQueriesData(
-        { queryKey: QUERY_KEYS.lateActions.all() },
-        updateData,
-      );
-
-      return { previousActions, previousLateActions };
-    },
-    onSuccess: (result, variables) => {
-      if (
-        variables.intent === INTENT.update_action &&
-        result &&
-        typeof result === "object" &&
-        "id" in result
-      ) {
-        const actionResult = result as Action;
-        queryClient.setQueriesData<Action[]>(
-          { queryKey: QUERY_KEYS.actions.all() },
-          (old) =>
-            old
-              ? old.map((a) => (a.id === actionResult.id ? actionResult : a))
-              : [],
-        );
-        queryClient.setQueriesData<Action[]>(
-          { queryKey: QUERY_KEYS.lateActions.all() },
-          (old) =>
-            old
-              ? old.map((a) => (a.id === actionResult.id ? actionResult : a))
-              : [],
-        );
-      }
-    },
-    onError: onErrorRollback,
+    onSuccess: (result) => { if (result) applyConfirmedAction(result); },
+    onError: (error) => { if (isCurrentSession()) handleError(error); },
     onSettled: () => {
       invalidateActions();
     },
@@ -200,52 +121,19 @@ export function useActionMutations() {
 
   // 2. Bulk Actions Mutation
   const bulkActionMutation = useMutation({
-    mutationKey: ["bulkActionMutation"],
+    mutationKey: ["action-write", "bulk"],
+    onMutate: () => queryClient.cancelQueries({queryKey: QUERY_KEYS.actions.all()}),
     mutationFn: async ({
-      ids,
+      actions,
       updates,
     }: {
-      ids: string[];
-      updates: Partial<Action>;
+      actions: Action[];
+      updates: ActionPatchInput;
     }) => {
-      if (ids.length === 0) return;
-      return await bulkUpdateActionsClient(ids, updates);
+      requireCurrentSession();
+      return await bulkUpdateActionsClient(actions, updates, applyConfirmedAction, requireCurrentSession);
     },
-    onMutate: async ({ ids, updates }) => {
-      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.actions.all() });
-      await queryClient.cancelQueries({
-        queryKey: QUERY_KEYS.lateActions.all(),
-      });
-
-      const previousActions = queryClient.getQueriesData<Action[]>({
-        queryKey: QUERY_KEYS.actions.all(),
-      });
-      const previousLateActions = queryClient.getQueriesData<Action[]>({
-        queryKey: QUERY_KEYS.lateActions.all(),
-      });
-
-      const updateData = (oldData: Action[] | undefined) => {
-        if (!oldData) return [];
-        const nextData = oldData.map((action) =>
-          ids.includes(action.id)
-            ? ({ ...action, ...updates } as Action)
-            : action,
-        );
-        return nextData.filter((action) => !action.archived);
-      };
-
-      queryClient.setQueriesData(
-        { queryKey: QUERY_KEYS.actions.all() },
-        updateData,
-      );
-      queryClient.setQueriesData(
-        { queryKey: QUERY_KEYS.lateActions.all() },
-        updateData,
-      );
-
-      return { previousActions, previousLateActions };
-    },
-    onError: onErrorRollback,
+    onError: (error) => { if (isCurrentSession()) handleError(error); },
     onSettled: () => {
       invalidateActions();
     },
@@ -253,63 +141,19 @@ export function useActionMutations() {
 
   // 3. Bulk Date Only Mutation
   const bulkDateOnlyMutation = useMutation({
-    mutationKey: ["bulkDateOnlyMutation"],
+    mutationKey: ["action-write", "date"],
+    onMutate: () => queryClient.cancelQueries({queryKey: QUERY_KEYS.actions.all()}),
     mutationFn: async ({
-      ids,
+      actions,
       newDate,
     }: {
-      ids: string[];
+      actions: Action[];
       newDate: string;
     }) => {
-      if (ids.length === 0) return;
-      return await bulkUpdateDateOnlyClient(ids, newDate);
+      requireCurrentSession();
+      return await bulkUpdateDateOnlyClient(actions, newDate, applyConfirmedAction, requireCurrentSession);
     },
-    onMutate: async ({ ids, newDate }) => {
-      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.actions.all() });
-      await queryClient.cancelQueries({
-        queryKey: QUERY_KEYS.lateActions.all(),
-      });
-
-      const previousActions = queryClient.getQueriesData<Action[]>({
-        queryKey: QUERY_KEYS.actions.all(),
-      });
-      const previousLateActions = queryClient.getQueriesData<Action[]>({
-        queryKey: QUERY_KEYS.lateActions.all(),
-      });
-
-      const updateData = (oldData: Action[] | undefined) => {
-        if (!oldData) return [];
-        return oldData.map((action) => {
-          if (ids.includes(action.id)) {
-            try {
-              const existingTime = format(
-                new Date(action.date.replace(" ", "T")),
-                "HH:mm:ss",
-              );
-              return {
-                ...action,
-                date: `${newDate} ${existingTime}`,
-              } as Action;
-            } catch {
-              return { ...action, date: `${newDate} 00:00:00` } as Action;
-            }
-          }
-          return action;
-        });
-      };
-
-      queryClient.setQueriesData(
-        { queryKey: QUERY_KEYS.actions.all() },
-        updateData,
-      );
-      queryClient.setQueriesData(
-        { queryKey: QUERY_KEYS.lateActions.all() },
-        updateData,
-      );
-
-      return { previousActions, previousLateActions };
-    },
-    onError: onErrorRollback,
+    onError: (error) => { if (isCurrentSession()) handleError(error); },
     onSettled: () => {
       invalidateActions();
     },
@@ -317,63 +161,19 @@ export function useActionMutations() {
 
   // 4. Bulk Time Only Mutation
   const bulkTimeOnlyMutation = useMutation({
-    mutationKey: ["bulkTimeOnlyMutation"],
+    mutationKey: ["action-write", "time"],
+    onMutate: () => queryClient.cancelQueries({queryKey: QUERY_KEYS.actions.all()}),
     mutationFn: async ({
-      ids,
+      actions,
       newTime,
     }: {
-      ids: string[];
+      actions: Action[];
       newTime: string;
     }) => {
-      if (ids.length === 0) return;
-      return await bulkUpdateTimeOnlyClient(ids, newTime);
+      requireCurrentSession();
+      return await bulkUpdateTimeOnlyClient(actions, newTime, applyConfirmedAction, requireCurrentSession);
     },
-    onMutate: async ({ ids, newTime }) => {
-      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.actions.all() });
-      await queryClient.cancelQueries({
-        queryKey: QUERY_KEYS.lateActions.all(),
-      });
-
-      const previousActions = queryClient.getQueriesData<Action[]>({
-        queryKey: QUERY_KEYS.actions.all(),
-      });
-      const previousLateActions = queryClient.getQueriesData<Action[]>({
-        queryKey: QUERY_KEYS.lateActions.all(),
-      });
-
-      const updateData = (oldData: Action[] | undefined) => {
-        if (!oldData) return [];
-        return oldData.map((action) => {
-          if (ids.includes(action.id)) {
-            try {
-              const existingDate = format(
-                new Date(action.date.replace(" ", "T")),
-                "yyyy-MM-dd",
-              );
-              return {
-                ...action,
-                date: `${existingDate} ${newTime}:00`,
-              } as Action;
-            } catch {
-              return action;
-            }
-          }
-          return action;
-        });
-      };
-
-      queryClient.setQueriesData(
-        { queryKey: QUERY_KEYS.actions.all() },
-        updateData,
-      );
-      queryClient.setQueriesData(
-        { queryKey: QUERY_KEYS.lateActions.all() },
-        updateData,
-      );
-
-      return { previousActions, previousLateActions };
-    },
-    onError: onErrorRollback,
+    onError: (error) => { if (isCurrentSession()) handleError(error); },
     onSettled: () => {
       invalidateActions();
     },
@@ -388,22 +188,22 @@ export function useActionMutations() {
   );
 
   const handleBulkAction = useCallback(
-    async (ids: string[], updates: Partial<Action>) => {
-      return bulkActionMutation.mutateAsync({ ids, updates });
+    async (actions: Action[], updates: ActionPatchInput) => {
+      return bulkActionMutation.mutateAsync({ actions, updates });
     },
     [bulkActionMutation.mutateAsync],
   );
 
   const handleBulkDateOnly = useCallback(
-    async (ids: string[], newDate: string) => {
-      return bulkDateOnlyMutation.mutateAsync({ ids, newDate });
+    async (actions: Action[], newDate: string) => {
+      return bulkDateOnlyMutation.mutateAsync({ actions, newDate });
     },
     [bulkDateOnlyMutation.mutateAsync],
   );
 
   const handleBulkTimeOnly = useCallback(
-    async (ids: string[], newTime: string) => {
-      return bulkTimeOnlyMutation.mutateAsync({ ids, newTime });
+    async (actions: Action[], newTime: string) => {
+      return bulkTimeOnlyMutation.mutateAsync({ actions, newTime });
     },
     [bulkTimeOnlyMutation.mutateAsync],
   );
@@ -423,7 +223,6 @@ export function useActionMutations() {
       sprints = sprints.length > 0 ? sprints : null;
 
       const actionInput: SingleActionInput = {
-        ...(action as unknown as ActionFormInput),
         intent: INTENT.update_action,
         id: action.id,
         expectedUpdatedAt: action.updated_at,
@@ -438,7 +237,6 @@ export function useActionMutations() {
   const submitDeleteAction = useCallback(
     async (action: Action) => {
       const actionInput: SingleActionInput = {
-        ...(action as unknown as ActionFormInput),
         intent: INTENT.update_action,
         id: action.id,
         expectedUpdatedAt: action.updated_at,

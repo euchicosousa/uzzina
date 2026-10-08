@@ -1,3 +1,5 @@
+import { getQuerySessionGeneration } from "~/lib/query-client";
+import { useRef } from "react";
 import { UploadIcon, EyeIcon, EyeOffIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
@@ -37,17 +39,20 @@ function AdminClientPageWrapper() {
   );
 }
 function AdminClientPage() {
+  const appData = useAppContext();
   const { userId } = Route.useParams();
   const navigate = useNavigate();
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
-  const appData = useAppContext();
+  const generation = useRef(getQuerySessionGeneration(queryClient)).current;
+  const isCurrentSession = () => generation === getQuerySessionGeneration(queryClient);
+
   const { partners } = appData;
   const isNew = userId === "new" || !userId;
 
   // Query do Cliente
   const { data: client } = useQuery({
-    queryKey: ["client", userId],
+    queryKey: ["client", "team", appData.person.user_id, userId],
     queryFn: async () => {
       if (isNew) return null;
       return getClientById(supabase, userId || "");
@@ -70,8 +75,9 @@ function AdminClientPage() {
       }
     },
     onSuccess: () => {
+      if (!isCurrentSession()) return;
       queryClient.invalidateQueries({
-        queryKey: ["client", userId],
+        queryKey: ["client", "team", appData.person.user_id, userId],
       });
       queryClient.invalidateQueries({
         queryKey: ["clients"],
@@ -82,6 +88,7 @@ function AdminClientPage() {
       });
     },
     onError: (err: unknown) => {
+      if (!isCurrentSession()) return;
       const message = err instanceof Error ? err.message : "Erro desconhecido";
       toast.error(`Erro ao salvar: ${message}`);
     },
@@ -93,6 +100,7 @@ function AdminClientPage() {
       await archiveClient(supabase, userId || "");
     },
     onSuccess: () => {
+      if (!isCurrentSession()) return;
       queryClient.invalidateQueries({
         queryKey: ["clients"],
       });
@@ -102,6 +110,7 @@ function AdminClientPage() {
       });
     },
     onError: (err: unknown) => {
+      if (!isCurrentSession()) return;
       const message = err instanceof Error ? err.message : "Erro desconhecido";
       toast.error(`Erro ao arquivar: ${message}`);
     },

@@ -1,3 +1,4 @@
+import { useSelectionContext } from "~/hooks/useMultiSelection";
 import type { Action } from "~/types";
 import {
   eachDayOfInterval,
@@ -31,7 +32,7 @@ export function HomeCalendarView({
 }) {
   const { person } = useAppContext();
   const { data: celebrations = [] } = useQuery({
-    queryKey: QUERY_KEYS.celebrations(),
+    queryKey: QUERY_KEYS.celebrations(person.user_id),
     queryFn: fetchCelebrations,
     staleTime: 30 * 60 * 1000, // 30 minutos (celebrations são semi-estáticos)
   });
@@ -54,6 +55,7 @@ export function HomeCalendarView({
       order: true,
     },
   });
+  useSelectionContext(JSON.stringify([period, currentDate, viewOptions]));
   return (
     <HomeViewWrapper
       OptionsComponent={

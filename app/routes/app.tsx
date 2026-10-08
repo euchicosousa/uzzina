@@ -5,8 +5,9 @@ import {
   useNavigate,
 } from "@tanstack/react-router";
 import { ChevronUpIcon } from "lucide-react";
-import { Suspense, lazy, useEffect, useMemo, useState } from "react";
-import invariant from "tiny-invariant";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
+import { resetQuerySession } from "~/lib/query-client";
 const ActionFormDrawer = lazy(() =>
   import("~/components/features/action-drawer/ActionFormDrawer").then((module) => ({
     default: module.ActionFormDrawer,
@@ -39,7 +40,25 @@ function Dashboard() {
   const [person, setPerson] = useState<Person | null>(null);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
-  const [BaseAction, setBaseAction] = useState<Action | null>(null);
+  const [BaseAction, commitBaseAction] = useState<Action | null>(null);
+  const [drawerVersion, setDrawerVersion] = useState(0);
+  const identityGeneration = useRef(0);
+  const leaveGuardRef = useRef<(() => Promise<boolean>) | null>(null);
+  const changingActionRef = useRef(false);
+  const registerLeaveGuard = useCallback((guard: (() => Promise<boolean>) | null) => {
+    leaveGuardRef.current = guard;
+  }, []);
+  const setBaseAction = useCallback(async (next: Action | null) => {
+    if (changingActionRef.current) return;
+    changingActionRef.current = true;
+    const generation = identityGeneration.current;
+    try {
+      if ((!leaveGuardRef.current || await leaveGuardRef.current()) && generation === identityGeneration.current) {
+        commitBaseAction(next);
+        setDrawerVersion(version => version + 1);
+      }
+    } finally { if (generation === identityGeneration.current) changingActionRef.current = false; }
+  }, []);
   const [openCmdK, setOpenCmdK] = useState(false);
   const [partnerFilters, setPartnerFilters] = useState<string[]>([]);
   const location = useLocation();
@@ -60,7 +79,6 @@ function Dashboard() {
       if (person?.user_id) return getOperationalPartners(supabase,person.user_id,person.admin);
       return partners;
     },
-    initialData: partners.length > 0 ? partners : undefined,
     enabled: !!person,
   });
 
@@ -69,6 +87,7 @@ function Dashboard() {
   useEffect(() => {
     if (typeof window !== "undefined" && person) {
       const prefs = getUserPreferences(person);
+      localStorage.setItem("uzzina-theme", prefs.theme);
       localStorage.setItem(
         "uzzina-accent-color-index",
         String(prefs.themeColorIndex),
@@ -83,55 +102,64 @@ function Dashboard() {
   const navigate = useNavigate();
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
-    async function initAuth() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) {
-        navigate({
-          to: "/login",
-          replace: true,
-        });
+    let disposed = false;
+    let identity: string | null | undefined;
+    let authEvents = 0;
+    function acceptSession(session: Session | null) {
+      if (disposed) return;
+      const nextIdentity = session?.user.id ?? null;
+      if (identity === nextIdentity) return;
+      identity = nextIdentity;
+      const generation = ++identityGeneration.current;
+      resetQuerySession(queryClient);
+      setLoading(true);
+      setPerson(null);
+      setPartners([]);
+      commitBaseAction(null);
+      setPartnerFilters([]);
+      setOpenCmdK(false);
+      leaveGuardRef.current = null;
+      changingActionRef.current = false;
+      if (!nextIdentity) {
+        void navigate({ to: "/login", replace: true });
         return;
       }
-      const { data: bootstrap, error } = await supabase.rpc(
-        "get_app_bootstrap",
-        {
-          p_user_id: session.user.id,
-        },
-      );
-      if (error || !bootstrap) {
-        console.error("Falha no bootstrap da aplicação:", error);
-        navigate({
-          to: "/login",
-          replace: true,
-        });
-        return;
-      }
-      const { person, partners } = bootstrap as {
-        person: Person;
-        partners: Partner[];
-      };
-      invariant(person, "Person not found");
-      invariant(partners, "Partners not found");
-      setPerson(person);
-      setPartners(partners);
-      queryClient.setQueryData(QUERY_KEYS.operationalPartners(person.user_id,person.admin), partners.filter(partner => !partner.archived));
-      setLoading(false);
+      // Leave the Auth callback before making another Supabase request.
+      void Promise.resolve().then(async () => {
+        if (disposed || generation !== identityGeneration.current) return;
+        try {
+          const { data: bootstrap, error } = await supabase.rpc("get_app_bootstrap", { p_user_id: nextIdentity });
+          if (disposed || generation !== identityGeneration.current || identity !== nextIdentity) return;
+          if (error || !bootstrap) throw error || new Error("Bootstrap unavailable");
+          const data = bootstrap as { person: Person; partners: Partner[] };
+          if (!data.person || data.person.user_id !== nextIdentity || !Array.isArray(data.partners)) {
+            throw new Error("Bootstrap identity mismatch");
+          }
+          const activePartners = data.partners.filter(partner => !partner.archived);
+          queryClient.setQueryData(QUERY_KEYS.operationalPartners(nextIdentity, data.person.admin), activePartners);
+          setPerson(data.person);
+          setPartners(activePartners);
+          setLoading(false);
+        } catch (error) {
+          if (disposed || generation !== identityGeneration.current) return;
+          console.error("Falha no bootstrap da aplicação:", error);
+          void navigate({ to: "/login", replace: true });
+        }
+      });
     }
-    initAuth();
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session && event !== "INITIAL_SESSION") {
-        queryClient.clear();
-        navigate({
-          to: "/login",
-          replace: true,
-        });
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      authEvents++;
+      acceptSession(session);
     });
-    return () => subscription.unsubscribe();
+    const initialEvents = authEvents;
+    void supabase.auth.getSession().then(({ data: { session } }) => {
+      if (authEvents === initialEvents) acceptSession(session);
+    });
+    return () => {
+      disposed = true;
+      identityGeneration.current++;
+      subscription.unsubscribe();
+    };
   }, [navigate, queryClient]);
   useEffect(() => {
     if (!person) return;
@@ -161,7 +189,7 @@ function Dashboard() {
     }
     document.addEventListener("keydown", keyDownGlobal, true);
     return () => document.removeEventListener("keydown", keyDownGlobal, true);
-  }, [person, partnerFilters]);
+  }, [person, partnerFilters, setBaseAction]);
   if (loading || !person) {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center bg-background gap-4">
@@ -175,6 +203,7 @@ function Dashboard() {
   }
   return (
     <AppContext.Provider
+      key={person.user_id}
       value={{
         person,
         partners: visiblePartners,
@@ -187,7 +216,7 @@ function Dashboard() {
     >
       <div className="flex h-screen flex-col" id="app">
         <ActionShortcutProvider>
-          <MultiSelectionProvider locationKey={location.pathname}>
+          <MultiSelectionProvider locationKey={JSON.stringify([location.href, partnerFilters])}>
             {/* HEADER */}
 
             <Header
@@ -218,8 +247,10 @@ function Dashboard() {
                     type="button"
                   />
                   <ActionFormDrawer
+                  key={`${BaseAction.id || "draft"}:${drawerVersion}`}
                   BaseAction={BaseAction}
-                  onClose={() => setBaseAction(null)}
+                  onClose={() => commitBaseAction(null)}
+                  registerLeaveGuard={registerLeaveGuard}
                   partnerFilters={partnerFilters}
                 />
                 </Suspense>

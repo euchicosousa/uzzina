@@ -13,9 +13,9 @@ const DEFAULT_PEOPLE: Person[] = [];
  * (parceiros completos, responsáveis completos, fase atual e categoria).
  */
 export function useActionData(action: Action) {
-  const { partners } = useAppContext();
+  const { partners, person } = useAppContext();
   const { data: people = DEFAULT_PEOPLE } = useQuery({
-    queryKey: QUERY_KEYS.people(),
+    queryKey: QUERY_KEYS.people(person.user_id),
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });

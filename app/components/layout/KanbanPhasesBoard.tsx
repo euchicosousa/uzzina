@@ -1,3 +1,4 @@
+import { useSelectionActions } from "~/hooks/useMultiSelection";
 import type { Action } from "~/types";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { useMemo } from "react";
@@ -28,15 +29,16 @@ export default function KanbanPhasesBoard({ actions }: { actions: Action[] }) {
   } = useKanbanDnd<string>({
     actions,
     fieldKey: "phase",
-    parseTarget: (overId) => overId,
-    onDrop: (action, newPhase) => {
-      return handleAction({
-        ...action,
+    parseTarget: (overId) => Object.values(PHASES).some(phase => phase.slug === overId) ? overId : undefined,
+    onDrop: async (action, newPhase) => {
+      const confirmed = await handleAction({
         intent: INTENT.update_action,
         id: action.id,
         expectedUpdatedAt: action.updated_at,
         phase: newPhase,
       });
+      if (!confirmed) throw new Error("O movimento não foi confirmado.");
+      return confirmed;
     },
   });
 
@@ -118,6 +120,7 @@ const KanbanColumn = ({
   id: string;
   phase: PHASE_TYPE;
 }) => {
+  useSelectionActions(actions);
   return (
     <Droppable
       className="flex h-[30vh] w-full  flex-col overflow-hidden"

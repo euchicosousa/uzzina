@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { z } from "zod";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "../types/database";
@@ -6,15 +7,8 @@ import type { Database } from "../types/database";
 const MAX_ACTIONS_LIMIT = 100;
 const REVIEW_LINK_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 dias
 
-interface CreateLinkBody {
-  partner_slug?: string;
-  action_ids?: string[];
-}
-
-interface RevokeLinkBody {
-  id?: string;
-  token?: string;
-}
+const createLinkSchema = z.object({partner_slug: z.string().trim().min(1).max(200), action_ids: z.array(z.string().min(1).max(100)).min(1).max(MAX_ACTIONS_LIMIT)}).strict();
+const revokeLinkSchema = z.object({id: z.string().min(1).max(100).optional(), token: z.string().min(1).max(256).optional()}).strict().refine(body => !!(body.id || body.token));
 
 function extractAuthToken(req: VercelRequest): string | null {
   const authHeader = req.headers.authorization;
@@ -81,7 +75,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // ─── POST: Criação de Link de Revisão ──────────────────────────────────────
   if (req.method === "POST") {
-    const body = (req.body ?? {}) as CreateLinkBody;
+    const parsed = createLinkSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({error: "Dados do compartilhamento inválidos."});
+    const body = parsed.data;
     const partnerSlug = body.partner_slug?.trim();
     const actionIds = Array.isArray(body.action_ids) ? body.action_ids : [];
 
@@ -219,7 +215,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // ─── DELETE: Revogação de Link de Revisão ──────────────────────────────────
   if (req.method === "DELETE") {
-    const body = (req.body ?? {}) as RevokeLinkBody;
+    const parsed = revokeLinkSchema.safeParse({...req.body, ...(typeof req.query.id === "string" ? {id: req.query.id} : {}), ...(typeof req.query.token === "string" ? {token: req.query.token} : {})});
+    if (!parsed.success) return res.status(400).json({error: "Dados da revogação inválidos."});
+    const body = parsed.data;
     const query = req.query ?? {};
     const linkId = body.id || (typeof query.id === "string" ? query.id : undefined);
     const tokenToRevoke = body.token || (typeof query.token === "string" ? query.token : undefined);
@@ -253,11 +251,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const nowIso = new Date().toISOString();
-    const { error: updateError } = await supabaseAdmin
+    const { data: revokedLink, error: updateError } = await supabaseAdmin
       .from("review_links")
       .update({ revoked_at: nowIso })
-      .eq("id", targetLink.id);
+      .eq("id", targetLink.id)
+      .select("id")
+      .single();
 
+    if (updateError?.code === "PGRST116" || (!updateError && !revokedLink)) {
+      return res.status(404).json({ error: "Link de revisão não encontrado." });
+    }
     if (updateError) {
       return res.status(503).json({ error: "Falha ao revogar link de revisão." });
     }

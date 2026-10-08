@@ -32,7 +32,6 @@ export function ActionBlockVariant({
         lines={lines}
         onBlur={(title) => {
           handleAction({
-            ...action,
             intent: INTENT.update_action,
             id: action.id,
             expectedUpdatedAt: action.updated_at,

@@ -1,5 +1,7 @@
 # 08: Atualizar ação com conflito explícito
 
+> Atualização06/10: correções de código verificadas nesta rodada. Consulte `docs/audits/CURRENT.md` e o fechamento05–09 para evidências e limites; SQL/banco/produção continuam pendentes quando aplicáveis.
+
 **What to build:** Uma gravação baseada em versão antiga não sobrescreve silenciosamente outra edição.
 
 **Blocked by:** Nenhum

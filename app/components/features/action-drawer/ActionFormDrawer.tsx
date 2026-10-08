@@ -14,6 +14,7 @@ import { ActionFormFooter } from "./ActionFormFooter";
 import { EssentialsTab } from "./EssentialsTab";
 import { InstagramTab } from "./InstagramTab";
 import { ObservationsTab } from "./ObservationsTab";
+import { ConflictComparison } from "./conflict-comparison";
 import { ActionSaveCoordinator, type CoordinatorState } from "./action-save-coordinator";
 import { INTENT } from "~/lib/CONSTANTS";
 import { isSocialMediaContent, parseStrategies } from "~/lib/helpers";
@@ -33,6 +34,7 @@ import {
   PrismDialog,
   PrismDialogDescription,
   PrismDialogHeader,
+  PrismDialogFooter,
   PrismDialogTitle,
 } from "~/components/prism";
 function getCaptionTail(instagram_caption_tail: string | null) {
@@ -46,18 +48,23 @@ export function ActionFormDrawer({
   BaseAction,
   onClose,
   partnerFilters = DEFAULT_PARTNER_FILTERS,
+  registerLeaveGuard,
 }: {
   BaseAction: Action;
   onClose: () => void;
   partnerFilters?: string[];
+  registerLeaveGuard?: (guard: (() => Promise<boolean>) | null) => void;
 }) {
+  const [conflictVersion, setConflictVersion] = useState<Action | null>(null);
+  const [isComparing, setIsComparing] = useState(false);
+  const [isResolvingConflict, setIsResolvingConflict] = useState(false);
   const [view, setView] = useState<"essential" | "instagram" | "observations">(
     "essential",
   );
   const { partners: routePartners, cloudName, uploadPreset } = useAppContext();
   const partners = routePartners ?? DEFAULT_PARTNERS;
   const { handleAction, isLoading: isMutationLoading } = useActionMutations();
-  const [RawAction, setRawAction] = useState<Action>(() => {
+  const [RawAction, commitRawAction] = useState<Action>(() => {
     if (BaseAction.created_at) return BaseAction;
     const now = format(new Date(), "yyyy-MM-dd HH:mm:ss");
     let initialPartners = BaseAction.partners || [];
@@ -100,7 +107,7 @@ export function ActionFormDrawer({
   }, [RawAction]);
 
   // Saved title reference — initialized from BaseAction.title, updated only on confirmed save
-  const savedTitleRef = useRef(BaseAction.title || "");
+
 
   const draftKeyRef = useRef(`draft-${Date.now()}`);
   const coordinatorKey = BaseAction.id || draftKeyRef.current;
@@ -108,13 +115,25 @@ export function ActionFormDrawer({
   if (!coordinatorRef.current) {
     coordinatorRef.current = new ActionSaveCoordinator({
       key: coordinatorKey,
-      initialAction: BaseAction,
+      initialAction: RawAction,
       writeFn: async (payload: Record<string, unknown>) =>
         (await handleAction(
           payload as unknown as SingleActionInput,
         )) as Action | null | undefined,
     });
   }
+
+  const setRawAction = useCallback((value: Action | ((prev: Action) => Action)) => {
+    const previous = rawActionRef.current;
+    const next = typeof value === "function" ? value(previous) : value;
+    const patch: Record<string, unknown> = {};
+    for (const [field, entry] of Object.entries(next)) {
+      if (JSON.stringify(entry) !== JSON.stringify((previous as unknown as Record<string, unknown>)[field])) patch[field] = entry;
+    }
+    rawActionRef.current = next;
+    coordinatorRef.current?.recordLocalChanges(patch);
+    commitRawAction(next);
+  }, []);
 
   const [coordinatorState, setCoordinatorState] = useState<CoordinatorState>(
     () => coordinatorRef.current?.getState() ?? {
@@ -134,18 +153,17 @@ export function ActionFormDrawer({
     }
   }, []);
 
-  // Quando o coordenador confirma uma ação persistida ou nova versão, sincroniza o RawAction
+  // Server metadata is canonical; queued local fields keep their latest values.
   useEffect(() => {
-    if (coordinatorState.confirmedAction) {
-      setRawAction((prev) => ({
-        ...prev,
-        ...coordinatorState.confirmedAction,
-        id: coordinatorState.confirmedAction?.id ?? prev.id,
-        created_at: coordinatorState.confirmedAction?.created_at ?? prev.created_at,
-        updated_at: coordinatorState.confirmedAction?.updated_at ?? prev.updated_at,
-      }));
+    const confirmed = coordinatorState.confirmedAction;
+    if (confirmed) {
+      const next = {...rawActionRef.current, ...confirmed, ...coordinatorState.pendingPatch} as Action;
+      rawActionRef.current = next;
+      commitRawAction(next);
+      if (!Object.hasOwn(coordinatorState.pendingPatch, "description")) descriptionRef.current = confirmed.description || "";
+      if (!Object.hasOwn(coordinatorState.pendingPatch, "content_description")) contentDescriptionRef.current = confirmed.content_description || "";
     }
-  }, [coordinatorState.confirmedAction]);
+  }, [coordinatorState.confirmedAction, coordinatorState.pendingPatch]);
 
   // Ref for the latest description typed in Tiptap — updated on every keystroke
   // without triggering re-renders. handleSave reads from here so Cmd+Enter
@@ -164,15 +182,24 @@ export function ActionFormDrawer({
       if (!coordinator) return null;
       const current = rawActionRef.current;
 
+      if (data) coordinator.recordLocalChanges(data);
+      // A draft retains edits even while its INSERT is in flight.
+      if (!current.id && !forceCreate) {
+        if (coordinator.getStatus() === "creating") return coordinator.scheduleUpdate();
+        return null;
+      }
       // Se for rascunho e forceCreate solicitado
       if (!current.id && forceCreate) {
-        if (!current.title || current.title.trim().length < 2) return null;
-        if (current.partners.length === 0) return null;
+        const finalTitle = ((data?.title as string) || current.title || "").trim();
+        if (finalTitle.length < 2) return null;
+        const partnersList = (data?.partners as string[]) || current.partners || [];
+        if (partnersList.length === 0) return null;
 
         const payload = {
           ...current,
           ...data,
-          title: ((data?.title as string) || current.title).trim(),
+          title: finalTitle,
+          partners: partnersList,
           description: descriptionRef.current,
           content_description: contentDescriptionRef.current,
           intent: INTENT.create_action,
@@ -245,6 +272,7 @@ export function ActionFormDrawer({
     }
 
     return await coordinator.saveNow({
+      ...(!current.id ? current : {}),
       title: titleTrimmed,
       description: descriptionRef.current,
       content_description: contentDescriptionRef.current,
@@ -256,62 +284,8 @@ export function ActionFormDrawer({
   useEffect(() => {
     handleSaveRef.current = handleSave;
   }, [handleSave]);
-  const prevBaseIdRef = useRef(BaseAction.id);
-  const prevBaseActionRef = useRef(BaseAction);
-  useEffect(() => {
-    // Reset state se mudou de ação (id diferente ou novo rascunho)
-    const isNewDraft = !BaseAction.id && !rawActionRef.current.id;
-    const isDifferentAction =
-      (BaseAction.id && BaseAction.id !== prevBaseIdRef.current) ||
-      (isNewDraft && BaseAction !== prevBaseActionRef.current);
-    if (isDifferentAction) {
-      prevBaseIdRef.current = BaseAction.id;
-      prevBaseActionRef.current = BaseAction;
-      savedTitleRef.current = BaseAction.title || "";
-      descriptionRef.current = BaseAction.description || "";
-      contentDescriptionRef.current = BaseAction.content_description || "";
-      coordinatorRef.current?.reset(BaseAction);
-      let initialPartners = BaseAction.partners || [];
-      if (initialPartners.length === 0) {
-        if (
-          typeof window !== "undefined" &&
-          window.location.pathname.startsWith("/app/partner/")
-        ) {
-          const slug = window.location.pathname
-            .replace(/^\/app\/partner\//, "")
-            .split("/")[0]
-            ?.split("?")[0];
-          if (slug) initialPartners = [slug];
-        } else if (partnerFilters.length > 0) {
-          initialPartners = partnerFilters;
-        }
-      }
-      const matchedPartner = partners.find((p) =>
-        initialPartners.includes(p.slug),
-      );
-      const initialResponsibles =
-        BaseAction.responsibles && BaseAction.responsibles.length > 0
-          ? BaseAction.responsibles
-          : matchedPartner?.users_ids || [];
-      let initialColor = BaseAction.color;
-      if (
-        (!initialColor ||
-          initialColor === "#666666" ||
-          initialColor === "#666") &&
-        matchedPartner?.colors &&
-        matchedPartner.colors.length > 0
-      ) {
-        initialColor = matchedPartner.colors[0];
-      }
-      setRawAction({
-        ...BaseAction,
-        partners: initialPartners,
-        responsibles: initialResponsibles,
-        color: initialColor,
-      });
-    }
-  }, [BaseAction, partnerFilters, partners]);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
+  const aiProcessingRef = useRef(false);
   const [activeAIIntent, setActiveAIIntent] = useState<string | null>(null);
   const [isStrategyModalOpen, setIsStrategyModalOpen] = useState(false);
   const [descriptionVersion, setDescriptionVersion] = useState(0);
@@ -324,6 +298,8 @@ export function ActionFormDrawer({
     intent: string,
     customPayload?: Record<string, string | string[] | null>,
   ) => {
+    if (aiProcessingRef.current) return;
+    aiProcessingRef.current = true;
     setIsAIProcessing(true);
     setActiveAIIntent(intent);
     try {
@@ -438,8 +414,9 @@ export function ActionFormDrawer({
       return data;
     } catch (err) {
       console.error("Erro no processamento de IA:", err);
-      toast.error("Falha ao gerar conteúdo com IA.");
+      toast.error(err instanceof Error ? err.message : "Falha ao gerar conteúdo com IA. Seu texto foi mantido.");
     } finally {
+      aiProcessingRef.current = false;
       setIsAIProcessing(false);
       setActiveAIIntent(null);
     }
@@ -457,6 +434,7 @@ export function ActionFormDrawer({
   );
   const handleDescriptionChange = useCallback((desc: string) => {
     descriptionRef.current = desc;
+    coordinatorRef.current?.recordLocalChanges({description: desc});
   }, []);
   const updateContentFiles = useCallback(
     (next: string[]) => {
@@ -469,25 +447,35 @@ export function ActionFormDrawer({
         content_files: next,
       });
     },
-    [updateAction],
+    [updateAction, setRawAction],
   );
 
-  // Safe close that coordinates with any in-flight creation and unsaved edits
-  const handleSafeClose = useCallback(async () => {
-    const coordinator = coordinatorRef.current;
-    if (coordinator) {
-      const canClose = await coordinator.safeClose({
-        title: rawActionRef.current.title,
-        description: descriptionRef.current,
-        content_description: contentDescriptionRef.current,
-      });
-      if (canClose) {
-        onClose();
-      }
-    } else {
-      onClose();
+  const prepareLeave = useCallback(async (): Promise<boolean> => {
+    if (aiProcessingRef.current) {
+      toast.info("Aguarde a geração terminar antes de trocar ou fechar a ação.");
+      return false;
     }
-  }, [onClose]);
+    const coordinator = coordinatorRef.current;
+    if (!coordinator) return true;
+    const current = rawActionRef.current;
+    if (!current.id && (current.title || "").trim().length < 2) {
+      const hasText = Boolean(current.title?.trim() || descriptionRef.current || contentDescriptionRef.current);
+      return !hasText || window.confirm("Descartar este rascunho incompleto?");
+    }
+    return coordinator.safeClose({
+      snapshot: !current.id ? current : undefined,
+      title: current.title,
+      description: descriptionRef.current,
+      content_description: contentDescriptionRef.current,
+    });
+  }, []);
+  useEffect(() => {
+    registerLeaveGuard?.(prepareLeave);
+    return () => registerLeaveGuard?.(null);
+  }, [registerLeaveGuard, prepareLeave]);
+  const handleSafeClose = useCallback(async () => {
+    if (await prepareLeave()) onClose();
+  }, [onClose, prepareLeave]);
 
   // Guard: only update color and initial fallback responsibles on fresh draft
   // Preserve any explicit responsibles already set by creator or user
@@ -517,13 +505,14 @@ export function ActionFormDrawer({
         }));
       }
     }
-  }, [currentPartners, BaseAction.id]);
+  }, [currentPartners, BaseAction.id, setRawAction]);
   const captionTailRef = useRef(currentPartners[0]?.instagram_caption_tail);
   useEffect(() => {
     captionTailRef.current = currentPartners[0]?.instagram_caption_tail;
   }, [currentPartners]);
   useEffect(() => {
     async function handleKeyDown(event: KeyboardEvent) {
+      if (conflictVersion) return;
       if (event.key.toLocaleLowerCase() === "escape") {
         event.preventDefault();
         event.stopPropagation();
@@ -539,7 +528,7 @@ export function ActionFormDrawer({
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [handleSafeClose]);
+  }, [handleSafeClose, conflictVersion]);
   return (
     <div
       className={cn(
@@ -586,14 +575,23 @@ export function ActionFormDrawer({
           <div className="flex items-center gap-2 shrink-0">
             <button
               className="text-xs underline hover:no-underline font-semibold"
+              disabled={isComparing}
               onClick={async () => {
-                const coordinator = coordinatorRef.current;
-                if (!coordinator) return;
-                await coordinator.forceSave();
+                const id = coordinatorRef.current?.getState().confirmedAction?.id;
+                if (!id || isComparing) return;
+                setIsComparing(true);
+                try {
+                  const { readActionClient } = await import("~/lib/supabase.mutations");
+                  setConflictVersion(await readActionClient(id));
+                } catch {
+                  toast.error("Não foi possível carregar a versão atual. Suas alterações continuam aqui.");
+                } finally {
+                  setIsComparing(false);
+                }
               }}
               type="button"
             >
-              Sobrescrever
+              Comparar e salvar
             </button>
           </div>
         </div>
@@ -712,6 +710,7 @@ export function ActionFormDrawer({
                 isAIProcessing={isAIProcessing}
                 onContentDescriptionChange={(html) => {
                   contentDescriptionRef.current = html;
+                  coordinatorRef.current?.recordLocalChanges({content_description: html});
                 }}
                 onOpenStrategyModal={() => setIsStrategyModalOpen(true)}
                 RawAction={RawAction}
@@ -743,6 +742,44 @@ export function ActionFormDrawer({
           updateAction={updateAction}
         />
       </div>
+
+      <PrismDialog
+        className="sm:max-w-3xl lg:max-w-5xl max-h-[calc(100dvh-2rem)] overflow-y-auto"
+        isOpen={conflictVersion !== null}
+        isDismissable={!isResolvingConflict}
+        showCloseButton={false}
+        onOpenChange={(open) => {
+          if (!open && !isResolvingConflict) setConflictVersion(null);
+        }}
+      >
+        <PrismDialogHeader>
+          <PrismDialogTitle>Comparar alterações</PrismDialogTitle>
+          <PrismDialogDescription>
+            Outra pessoa ou sessão modificou esta ação. Confira os campos abaixo.
+            Ao confirmar, somente suas alterações pendentes serão salvas sobre a versão carregada.
+          </PrismDialogDescription>
+        </PrismDialogHeader>
+        {conflictVersion && <ConflictComparison latest={conflictVersion} pending={coordinatorState.pendingPatch} />}
+        <PrismDialogFooter>
+          <PrismButton autoFocus isDisabled={isResolvingConflict} variant="outline" onPress={() => setConflictVersion(null)}>
+            Cancelar
+          </PrismButton>
+          <PrismButton isDisabled={isResolvingConflict} onPress={async () => {
+            const coordinator = coordinatorRef.current;
+            if (!coordinator || !conflictVersion || isResolvingConflict) return;
+            setIsResolvingConflict(true);
+            try {
+              coordinator.rebase(conflictVersion);
+              await coordinator.saveNow();
+              setConflictVersion(null);
+            } finally {
+              setIsResolvingConflict(false);
+            }
+          }}>
+            {isResolvingConflict ? "Salvando…" : "Salvar minhas alterações"}
+          </PrismButton>
+        </PrismDialogFooter>
+      </PrismDialog>
 
       <PrismDialog
         className="max-w-2xl sm:max-w-2xl"
@@ -828,7 +865,6 @@ export function ActionFormDrawer({
                         });
                         triggerAIAction(INTENT.ai_content, {
                           headline: strat.headline,
-                          angulo: strat.angulo,
                           racional: strat.racional,
                           direcionamento: strat.direcionamento,
                         });

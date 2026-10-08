@@ -1,0 +1,62 @@
+{
+  "project_ref": "zacrrtilppvekiyoybzn",
+  "postgres_version": "17.11",
+  "applied_at": "2026-10-07",
+  "files": [
+    {
+      "file": "supabase/staging/bootstrap.sql",
+      "remote_version": "20261007173241",
+      "sha256": "875195f9d8adfc0ac5fa89be67e6544eac7bf2eb8eebc4e92f73e5f7fe8dddc3"
+    },
+    {
+      "file": "supabase/migrations/20261006000000_dash_sessions.sql",
+      "remote_version": "20261007173250",
+      "sha256": "310bd37ff66195727c6b24d20f6fb334b78403db17775c763d20d8d1686da8fd"
+    },
+    {
+      "file": "supabase/migrations/20261006005000_auth_trigger_compatibility.sql",
+      "remote_version": "20261007173420",
+      "sha256": "9a321c438d20fcba9e766bad79c46dd9078262622c7df941538bd9e240b224d0"
+    },
+    {
+      "file": "supabase/migrations/20261006010000_review_links.sql",
+      "remote_version": "20261007173426",
+      "sha256": "4aa94ae994b7bb47da0262b22bbb0e1e65d8a8c9617ede9ed6787b526245b67e"
+    },
+    {
+      "file": "supabase/migrations/20261006020000_client_accounts.sql",
+      "remote_version": "20261007173431",
+      "sha256": "3ed340aa40136b47344f775d494a0d7de6f2e74cd30e8d8f54b4968b127672f4"
+    },
+    {
+      "file": "supabase/migrations/20261006030000_database_authorization.sql",
+      "remote_version": "20261007173758",
+      "sha256": "763a2dd07895d30c063676a60828489c7888da6cfdbe6008310153f075237019"
+    },
+    {
+      "file": "supabase/migrations/20261006040000_action_concurrency.sql",
+      "remote_version": "20261007174020",
+      "sha256": "9a7557f3e0a15f93911b2c2434cd54361f649a9ff4e8f4e2ec1aea1f481e91cd"
+    },
+    {
+      "file": "supabase/migrations/20261007010000_ai_usage.sql",
+      "remote_version": "20261007174026",
+      "sha256": "12981323692fc683b276f279ee4f6234fb3729a8205926935e234385e345449c"
+    },
+    {
+      "file": "supabase/migrations/20261007020000_preferences_merge.sql",
+      "remote_version": "20261007174030",
+      "sha256": "aaa686a11871928c8345cca5b08528b9e8a16d38c9cca15b441936d9c782a17e"
+    },
+    {
+      "file": "supabase/migrations/20261007030000_ancillary_authorization.sql",
+      "remote_version": "20261007174226",
+      "sha256": "8b6b68a31d67c96ed286ccc112a4cf74b6fa98a99f869cab62be618adcb1553b"
+    },
+    {
+      "file": "supabase/migrations/20261007232335_external_leads_authorization.sql",
+      "remote_version": "20261007232622",
+      "sha256": "23b310fef7c05d727f5037f2caa54977af1467b1d4753829ce9005f5213eed3a"
+    }
+  ]
+}

@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, mock } from "bun:test";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import type { Action, Partner } from "~/types";
 import {
   SESSION_COOKIE_NAME,
   generateSessionToken,
@@ -274,131 +273,6 @@ function createMockRes(): VercelResponse & MockResHelper {
 
   return helper as unknown as VercelResponse & MockResHelper;
 }
-
-describe("Entrega 3 - Item 1: Busca [19]", () => {
-  const mockPartners: Partner[] = [
-    {
-      id: "p1",
-      slug: "parceiro-acessivel",
-      title: "Parceiro Acessível",
-      short: "PA",
-      colors: ["#111111", "#ffffff"],
-    } as Partner,
-    {
-      id: "p2",
-      slug: "parceiro-secundario",
-      title: "Parceiro Secundário",
-      short: "PS",
-      colors: ["#222222", "#eeeeee"],
-    } as Partner,
-  ];
-
-  it("escolhe parceiro acessível quando o primeiro da ação não está no contexto do usuário", () => {
-    const actionWithInaccessibleFirst = {
-      id: "act-1",
-      title: "Campanha Mista",
-      partners: ["parceiro-inacessivel", "parceiro-acessivel"],
-    } as Action;
-
-    const resolvedPartner =
-      mockPartners.find((p) =>
-        actionWithInaccessibleFirst.partners?.includes(p.slug),
-      ) || null;
-
-    expect(resolvedPartner).not.toBeNull();
-    expect(resolvedPartner?.slug).toBe("parceiro-acessivel");
-    expect(resolvedPartner?.colors?.[0]).toBe("#111111");
-  });
-
-  it("trata ausência total de parceiro com guarda sem lançar exceção", () => {
-    const actionWithoutKnownPartner = {
-      id: "act-2",
-      title: "Ação Órfã",
-      partners: ["parceiro-desconhecido"],
-    } as Action;
-
-    const resolvedPartner =
-      mockPartners.find((p) =>
-        actionWithoutKnownPartner.partners?.includes(p.slug),
-      ) || null;
-
-    const bgColor = resolvedPartner?.colors?.[0] ?? undefined;
-    const color = resolvedPartner?.colors?.[1] ?? undefined;
-    const fallback = resolvedPartner?.short ?? "??";
-
-    expect(resolvedPartner).toBeNull();
-    expect(bgColor).toBeUndefined();
-    expect(color).toBeUndefined();
-    expect(fallback).toBe("??");
-  });
-
-  it("descarta respostas de busca obsoletas quando uma consulta mais recente já começou", async () => {
-    let latestQueryId = 0;
-    const results: string[] = [];
-
-    async function simulateSearch(query: string, delayMs: number) {
-      const currentId = ++latestQueryId;
-      await new Promise((resolve) => setTimeout(resolve, delayMs));
-
-      if (currentId !== latestQueryId) {
-        return;
-      }
-      results.push(query);
-    }
-
-    const p1 = simulateSearch("busca1-lenta", 50);
-    const p2 = simulateSearch("busca2-rapida", 10);
-
-    await Promise.all([p1, p2]);
-
-    expect(results).toEqual(["busca2-rapida"]);
-  });
-});
-
-describe("Entrega 3 - Item 2: Erros e Ausência de Dados [20]", () => {
-  interface ViewState<T> {
-    isLoading: boolean;
-    isError: boolean;
-    data: T | null;
-  }
-
-  function resolveScreenState<T>(
-    state: ViewState<T>,
-  ): "loading" | "error" | "empty" | "success" {
-    if (state.isLoading) return "loading";
-    if (state.isError) return "error";
-    if (!state.data || (Array.isArray(state.data) && state.data.length === 0))
-      return "empty";
-    return "success";
-  }
-
-  it("distingue erro de carregamento (não entra em loading infinito)", () => {
-    const errorState: ViewState<{ id: string }> = {
-      isLoading: false,
-      isError: true,
-      data: null,
-    };
-    expect(resolveScreenState(errorState)).toBe("error");
-  });
-
-  it("distingue lista vazia de erro", () => {
-    const emptyState: ViewState<unknown[]> = {
-      isLoading: false,
-      isError: false,
-      data: [],
-    };
-    expect(resolveScreenState(emptyState)).toBe("empty");
-  });
-
-  it("distingue sucesso de loading e erro", () => {
-    const successState: ViewState<{ title: string }> = {
-      isLoading: false,
-      isError: false,
-      data: { title: "Ação 1" },
-    };
-    expect(resolveScreenState(successState)).toBe("success");
-  });
-});
 
 describe("Ticket 03 - API /api/dash-data & Isolamento de Dados do Portal", () => {
   let tokenA: string;

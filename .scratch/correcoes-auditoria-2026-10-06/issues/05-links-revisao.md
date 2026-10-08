@@ -1,5 +1,7 @@
 # 05: Compartilhar revisão só por link limitado
 
+> Atualização06/10: correções de código verificadas nesta rodada. Consulte `docs/audits/CURRENT.md` e o fechamento05–09 para evidências e limites; SQL/banco/produção continuam pendentes quando aplicáveis.
+
 **What to build:** A equipe compartilha um link que dá acesso somente às ações selecionadas de um parceiro, até expirar ou ser revogado.
 
 **Blocked by:** 02

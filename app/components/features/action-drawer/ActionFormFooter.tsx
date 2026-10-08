@@ -40,7 +40,7 @@ export function ActionFormFooter({
       {/* Coisas */}
       <div className="flex items-center divide-x overflow-x-auto no-scrollbar shrink min-w-0">
         {/* Parceiros Partners Combobox */}
-        <div className="overflow-hidden">
+        <div className="shrink-0">
           <PartnersCombobox
             onSelect={async (selected) => {
               const selectedPartnersData = currentPartners.filter((p) =>
@@ -74,7 +74,7 @@ export function ActionFormFooter({
           />
         </div>
         {/* Fases Phase Combobox */}
-        <div>
+        <div className="shrink-0">
           <PhaseCombobox
             iconVariant="progress"
             onSelect={async (selected) => {
@@ -100,7 +100,7 @@ export function ActionFormFooter({
           />
         </div>
         {/* Categorias Categories Combobox */}
-        <div>
+        <div className="shrink-0">
           <CategoriesCombobox
             onSelect={async ({ category }) => {
               setRawAction({
@@ -117,7 +117,7 @@ export function ActionFormFooter({
           />
         </div>
         {isSocialMediaContent(RawAction.category) && (
-          <div>
+          <div className="shrink-0">
             <ActionColorDropdown
               action={RawAction}
               onSelect={async (color) => {

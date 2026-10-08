@@ -1,3 +1,7 @@
+> **Complemento17 —07/10/2026:** revisão pública corrigida e validada em Chromium1440/390/360 com HTTP controlado; teclado/foco de busca/menu/sininho1440/390. Matriz52 recebeu reconciliação atual. Banco/produção/WebKit/aparelho e percurso integral de foco seguem pendentes; consultar CURRENT e ticket17.
+
+> **Estado vigente — 07/10/2026:** este documento é histórico, suas contagens e estados não são aprovação atual. Consulte [CURRENT](CURRENT.md), [matriz dos52 achados](2026-10-06-matriz-52-achados.md) e resultados15–17 no pacote de tickets. 15 verificado no código/navegador controlado;16 verificado no código/navegador controlado e17 parcial. Banco/produção seguem sem homologação. Não interpretar percentuais históricos como cobertura integral.
+
 > Atualização em06/10/2026: este relatório registra uma entrega anterior e não comprova encerramento integral. A afirmação anterior de100% está superada. Ver [fechamento local dos tickets01–03](2026-10-06-fechamento-tickets-01-03.md); demais correções e validações de banco/produção continuam pendentes.
 
 # Retorno da Implementação — UZZINA

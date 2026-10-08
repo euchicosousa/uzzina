@@ -41,7 +41,7 @@ it("ações de parceiro oculto não entram na lista ou contagem de atrasados, me
 it("listar parceiros na administração não contamina o contexto operacional",()=>{
   const client=new QueryClient();
   client.setQueryData(QUERY_KEYS.operationalPartners("member",true),[rows[0]]);
-  client.setQueryData(QUERY_KEYS.adminPartners(),rows);
+  client.setQueryData(QUERY_KEYS.adminPartners("user"),rows);
   expect(client.getQueryData<typeof rows>(QUERY_KEYS.operationalPartners("member",true))).toEqual([rows[0]]);
   expect(client.getQueryData(QUERY_KEYS.operationalPartners("other",false))).toBeUndefined();
   client.clear();

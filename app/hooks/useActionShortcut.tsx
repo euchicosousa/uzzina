@@ -49,7 +49,7 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    function keyDown(event: KeyboardEvent) {
+    async function keyDown(event: KeyboardEvent) {
       // Ignora repetição de tecla segurada
       if (event.repeat) return;
 
@@ -75,12 +75,8 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
       const actionQueries = queryClient.getQueriesData<Action[]>({
         queryKey: QUERY_KEYS.actions.all(),
       });
-      const lateActionQueries = queryClient.getQueriesData<Action[]>({
-        queryKey: QUERY_KEYS.lateActions.all(),
-      });
-
       let targetAction: Action | undefined;
-      for (const [, actions] of [...actionQueries, ...lateActionQueries]) {
+      for (const [, actions] of actionQueries) {
         if (Array.isArray(actions)) {
           const found = actions.find((a) => a.id === actionId);
           if (found) {
@@ -98,7 +94,6 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
       const updateDate = (newDate: Date) =>
         handleActionRef.current(
           {
-            ...action,
             intent: INTENT.update_action,
             id: action.id,
             expectedUpdatedAt: action.updated_at,
@@ -157,37 +152,18 @@ export function ActionShortcutProvider({ children }: { children: ReactNode }) {
           if (currentPerson) toggleSprintActionRef.current(action, currentPerson.user_id);
         } else if (code === "KeyX") {
           event.preventDefault();
-          handleActionRef.current(
-            {
-              ...action,
-              intent: INTENT.update_action,
-              id: action.id,
-              expectedUpdatedAt: action.updated_at,
-              archived: true,
-            }
-          );
-          toast("Ação arquivada", {
-            action: {
-              label: "Desfazer",
-              onClick: () => {
-                handleActionRef.current(
-                  {
-                    ...action,
-                    intent: INTENT.update_action,
-                    id: action.id,
-                    expectedUpdatedAt: action.updated_at,
-                    archived: false,
-                  }
-                );
-              },
-            },
-          });
+          try {
+            const archived = await handleActionRef.current({intent: INTENT.update_action, id: action.id, expectedUpdatedAt: action.updated_at, archived: true});
+            if (!archived) return;
+            toast("Ação arquivada", {action: {label: "Desfazer", onClick: () => {
+              void handleActionRef.current({intent: INTENT.update_action, id: archived.id, expectedUpdatedAt: archived.updated_at, archived: false}).catch(() => {});
+            }}});
+          } catch { /* The mutation displays the error. */ }
         }
       } else if (targetPhase) {
         event.preventDefault();
         handleActionRef.current(
           {
-            ...action,
             intent: INTENT.update_action,
             id: action.id,
             expectedUpdatedAt: action.updated_at,

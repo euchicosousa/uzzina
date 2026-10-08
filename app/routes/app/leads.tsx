@@ -1,3 +1,4 @@
+import { useAppContext } from "~/contexts/AppContext";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { UsersIcon, SearchIcon } from "lucide-react";
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/app/leads")({
   component: AppLeads,
 });
 function AppLeads() {
+  const { person } = useAppContext();
   const searchParams = Route.useSearch();
   const navigate = useNavigate({
     from: "/app/leads",
@@ -27,7 +29,7 @@ function AppLeads() {
   const selectedLeadId = searchParams.id;
   const [searchTerm, setSearchTerm] = useState("");
   const { data: leads = [], isLoading } = useQuery({
-    queryKey: QUERY_KEYS.leads.all(),
+    queryKey: QUERY_KEYS.leads.all(person.user_id),
     queryFn: fetchLeads,
   });
   const filteredLeads = useMemo(() => {

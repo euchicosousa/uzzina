@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { ActionConflictError } from "~/lib/supabase.mutations";
+import { getActionRevision } from "~/utils/date";
+import { useMemo, useState, useRef } from "react";
 import {
   PointerSensor,
   useSensor,
@@ -15,56 +17,67 @@ export function useKanbanDnd<T extends string | null>({
   parseTarget,
 }: {
   actions: Action[];
-  fieldKey: "phase";
-  onDrop: (action: Action, newValue: T) => unknown;
-  parseTarget: (overId: string) => T;
+  fieldKey: "phase" | "date";
+  onDrop: (action: Action, newValue: T) => Promise<Action>;
+  parseTarget: (overId: string, action: Action) => T | undefined;
 }) {
+  const dragSession = useRef(0);
   const [activeAction, setActiveAction] = useState<Action | undefined>();
-  const [overrides, setOverrides] = useState<Record<string, T>>({});
+  const [overrides, setOverrides] = useState<Record<string, {operationId: number; value: T}>>({});
 
-  // Limpa overrides automaticamente quando as ações canônicas do servidor atualizarem
-  useEffect(() => {
-    setOverrides((prev) => {
-      let changed = false;
-      const next = { ...prev };
-      for (const action of actions) {
-        if (next[action.id] !== undefined) {
-          if (action[fieldKey] === next[action.id]) {
-            delete next[action.id];
-            changed = true;
-          }
-        }
-      }
-      return changed ? next : prev;
-    });
-  }, [actions, fieldKey]);
+  const operationCounter = useRef(0);
+  const writes = useRef(new Map<string, Promise<Action>>());
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
   );
 
   const handleDragStart = (event: DragStartEvent) => {
+    dragSession.current += 1;
     const found = actions.find((a) => a.id === event.active.id);
-    if (found) setActiveAction(found);
+    setActiveAction(found);
   };
 
   const handleDragCancel = () => {
+    dragSession.current += 1;
     setActiveAction(undefined);
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
+    if (!activeAction || event.active.id !== activeAction.id) return;
+    const session = dragSession.current;
     try {
-      if (event.over && activeAction) {
-        const newValue = parseTarget(event.over.id as string);
+      if (event.over && activeAction && event.active.id === activeAction.id) {
+        const newValue = parseTarget(String(event.over.id), activeAction);
+        if (newValue === undefined) return;
         const actionId = activeAction.id;
-        setOverrides((prev) => ({ ...prev, [actionId]: newValue }));
+        const operationId = ++operationCounter.current;
+        setOverrides((prev) => ({ ...prev, [actionId]: {operationId, value: newValue} }));
         try {
-          await onDrop(activeAction, newValue);
+          const previous = writes.current.get(actionId);
+          const save = async () => {
+            let baseline = activeAction;
+            if (previous) {
+              try {
+                const confirmed = await previous;
+                if (getActionRevision(confirmed.updated_at) > getActionRevision(baseline.updated_at)) baseline = confirmed;
+              }
+              catch (error) { if (error instanceof ActionConflictError) throw error; }
+            }
+            return onDrop(baseline, newValue);
+          };
+          const saving = save();
+          writes.current.set(actionId, saving);
+          try { await saving; }
+          catch (error) {
+            if (writes.current.get(actionId) === saving) writes.current.delete(actionId);
+            throw error;
+          }
         } catch (err) {
-          console.error("Erro no drop do Kanban:", err);
+          console.error("Drag save failed:", err);
         } finally {
           setOverrides((prev) => {
-            if (prev[actionId] === undefined) return prev;
+            if (prev[actionId]?.operationId !== operationId) return prev;
             const next = { ...prev };
             delete next[actionId];
             return next;
@@ -72,7 +85,7 @@ export function useKanbanDnd<T extends string | null>({
         }
       }
     } finally {
-      setActiveAction(undefined);
+      if (dragSession.current === session) setActiveAction(undefined);
     }
   };
 
@@ -80,7 +93,7 @@ export function useKanbanDnd<T extends string | null>({
     () =>
       actions.map((action) =>
         overrides[action.id] !== undefined
-          ? { ...action, [fieldKey]: overrides[action.id] }
+          ? { ...action, [fieldKey]: overrides[action.id]?.value }
           : action,
       ),
     [actions, overrides, fieldKey],

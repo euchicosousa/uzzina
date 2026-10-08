@@ -24,7 +24,7 @@ export interface ActionVariantRendererProps {
     | (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY]
     | undefined;
   handleAction: (
-    action: Action & {
+    action: Partial<Action> & {
       intent: string;
       expectedUpdatedAt?: string;
     },

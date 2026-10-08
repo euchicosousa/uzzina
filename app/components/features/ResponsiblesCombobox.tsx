@@ -1,3 +1,4 @@
+import { useAppContext } from "~/contexts/AppContext";
 import { useQuery } from "@tanstack/react-query";
 import { User2Icon } from "lucide-react";
 import { useState } from "react";
@@ -35,8 +36,9 @@ export function ResponsiblesCombobox({
   disabled?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const { person } = useAppContext();
   const { data: allPeople = [] } = useQuery({
-    queryKey: QUERY_KEYS.people(),
+    queryKey: QUERY_KEYS.people(person.user_id),
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });
@@ -127,8 +129,9 @@ function ActionResponsiblesDisplay({
   size?: (typeof SIZE)[keyof typeof SIZE];
   variant?: "default" | "filter";
 }) {
+  const { person } = useAppContext();
   const { data: people = [] } = useQuery({
-    queryKey: QUERY_KEYS.people(),
+    queryKey: QUERY_KEYS.people(person.user_id),
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });

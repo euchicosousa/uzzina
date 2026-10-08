@@ -1,3 +1,4 @@
+import { resetQuerySession } from "~/lib/query-client";
 import type { Client } from "~/types";
 import { Outlet, useNavigate, useLocation, useRouterState, createFileRoute } from "@tanstack/react-router";
 import { LogOutIcon, AlertCircleIcon } from "lucide-react";
@@ -11,7 +12,7 @@ import {
 } from "~/components/prism";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
 import { useAppTheme } from "~/hooks/useAppTheme";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { PortalHttpError } from "~/services/portal-http";
 import { UAvatar } from "~/components/uzzina/UAvatar";
@@ -41,23 +42,28 @@ function DashLayout() {
   const queryClient = useQueryClient();
   // Use committed matches: the URL can change before the previous child unmounts.
   const isLoginPath = useRouterState({ select: (state) => state.matches.some((match) => match.routeId === "/dash/login") });
+  const isReviewPath = useRouterState({ select: (state) => state.matches.some((match) => match.routeId === "/dash/review/$slug") });
+  const bootstrapGeneration = useRef(0);
   const [bootstrapAttempt, setBootstrapAttempt] = useState(0);
   const [logoutError, setLogoutError] = useState<string | null>(null);
   const [clientId, setClientId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reviewReady, setReviewReady] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [clientData, setClientData] = useState<Client | null>(null);
   const [partners, setPartners] = useState<DashPartnerDto[]>([]);
   // biome-ignore lint/correctness/useExhaustiveDependencies: Retry generation deliberately restarts the bootstrap.
   useEffect(() => {
     let cancelled = false;
+    const generation = ++bootstrapGeneration.current;
+    resetQuerySession(queryClient);
+    setReviewReady(isReviewPath);
     setClientId(null);
     setClientData(null);
     setPartners([]);
     setHasError(false);
     setLogoutError(null);
-    if (isLoginPath) {
-      queryClient.removeQueries({ predicate: (query) => String(query.queryKey[0]).startsWith("dash") });
+    if (isLoginPath || isReviewPath) {
       setLoading(false);
       return;
     }
@@ -65,7 +71,7 @@ function DashLayout() {
     async function bootstrapClient() {
       try {
         const data = await verifyDashSession();
-        if (cancelled) return;
+        if (cancelled || generation !== bootstrapGeneration.current) return;
         if (!data?.active) {
           localStorage.removeItem("uzzina_dash_token");
           localStorage.removeItem("uzzina_dash_client_id");
@@ -73,24 +79,24 @@ function DashLayout() {
           return;
         }
         const authorizedPartners = await fetchDashPartners();
-        if (cancelled) return;
+        if (cancelled || generation !== bootstrapGeneration.current) return;
         setClientId(data.id);
         setClientData(data);
         setPartners(authorizedPartners);
       } catch (error) {
-        if (cancelled) return;
+        if (cancelled || generation !== bootstrapGeneration.current) return;
         if (error instanceof PortalHttpError && error.status === 401) {
           await navigate({ to: "/dash/login", replace: true });
         } else {
           setHasError(true);
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled && generation === bootstrapGeneration.current) setLoading(false);
       }
     }
     void bootstrapClient();
     return () => { cancelled = true; };
-  }, [navigate, isLoginPath, queryClient, bootstrapAttempt]);
+  }, [navigate, isLoginPath, isReviewPath, queryClient, bootstrapAttempt]);
   const preferredPartner = searchParams.partner || localStorage.getItem("uzzina_dash_last_partner");
   const currentPartnerSlug = partners.some((p) => p.slug === preferredPartner)
     ? preferredPartner
@@ -106,9 +112,11 @@ function DashLayout() {
   const handleLogout = async () => {
     try {
       await logoutDashSession();
+      bootstrapGeneration.current++;
+      resetQuerySession(queryClient);
+      setClientId(null);
       setClientData(null);
       setPartners([]);
-      queryClient.removeQueries({ predicate: (query) => String(query.queryKey[0]).startsWith("dash") });
       localStorage.removeItem("uzzina_dash_token");
       localStorage.removeItem("uzzina_dash_client_id");
       localStorage.removeItem("uzzina_dash_last_partner");
@@ -126,7 +134,10 @@ function DashLayout() {
       }),
     });
   };
-  if (loading && !isLoginPath) {
+  if (isReviewPath && reviewReady) {
+    return <Outlet />;
+  }
+  if ((loading || (isReviewPath && !reviewReady)) && !isLoginPath) {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center bg-background gap-4">
         <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -166,6 +177,7 @@ function DashLayout() {
   }
   return (
     <DashContext.Provider
+      key={clientId}
       value={{
         name: clientData.name ?? "",
         image: clientData.image || null,

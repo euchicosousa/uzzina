@@ -55,5 +55,5 @@ Um mesmo comportamento pode exigir mais de uma camada. Resultado em uma camada n
 ## Regra de retirada
 Não apagar toda a suíte por não haver navegador. Preservar casos úteis e substituir os simulados dentro do ticket correspondente, mantendo uma relação antigo → substituto. Casos puramente de geometria/gesto passam para o checklist 17 e saem da contagem de validação local. Se não existir teste válido naquela camada, escrever “pendente de navegador”, sem checkbox marcado nem função simulada para fabricar resultado.
 
-O trabalho desta rodada cria documentos; nenhum teste existente foi apagado.
+A classificação original era documental. Na execução até16, foram retiradas cópias já substituídas por código/componentes reais; mapa antigo→novo no resultado16. Atalhos, comboboxes, stories/rótulos e responsáveis foram substituídos por check-action-controls-browser no fechamento16. Serialização copiada foi substituída por updateActionClient real em action-conflict. Geometria/toque são evidências do navegador, fora da contagem bun test; aparelho/WebKit ficam no17. A contagem vigente está em CURRENT; casos removidos não são apresentados como aprovados.
 

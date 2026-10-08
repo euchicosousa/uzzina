@@ -1,273 +1,99 @@
--- ==============================================================================
--- Migration: Autorizações Canônicas e Políticas RLS Estritas no Banco de Dados
--- Data: 2026-10-06
--- Ticket 07: Autorizações reproduzíveis no banco
--- ==============================================================================
-
--- 1. Habilitar RLS em todas as tabelas públicas
+-- Prepared for a disposable Supabase database; inspect production before deployment.
+-- Replace policies for these tables as a set: permissive legacy policies would otherwise widen access.
+DO $$ DECLARE policy RECORD; BEGIN
+  FOR policy IN SELECT schemaname, tablename, policyname FROM pg_policies
+    WHERE schemaname = 'public' AND tablename = ANY(ARRAY['actions','partners','clients','people','action_comments','dash_sessions','review_links'])
+  LOOP EXECUTE format('DROP POLICY %I ON %I.%I', policy.policyname, policy.schemaname, policy.tablename); END LOOP;
+END $$;
 ALTER TABLE public.actions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.partners ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.people ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.action_comments ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.dash_sessions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.review_links ENABLE ROW LEVEL SECURITY;
-
--- 2. Revogar acesso direto da role 'anon' a dados privados e tabelas internas
 REVOKE ALL ON TABLE public.actions FROM anon;
+ALTER TABLE public.partners ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE public.partners FROM anon;
+ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE public.clients FROM anon;
+ALTER TABLE public.people ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE public.people FROM anon;
+ALTER TABLE public.action_comments ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE public.action_comments FROM anon;
-REVOKE ALL ON TABLE public.dash_sessions FROM anon, authenticated;
-REVOKE ALL ON TABLE public.review_links FROM anon, authenticated;
+ALTER TABLE public.dash_sessions ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.dash_sessions FROM anon;
+ALTER TABLE public.review_links ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.review_links FROM anon;
+REVOKE ALL ON TABLE public.clients, public.dash_sessions, public.review_links FROM authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.actions, public.partners, public.action_comments TO authenticated;
+REVOKE UPDATE ON public.people FROM PUBLIC, authenticated;
+GRANT SELECT, INSERT, DELETE ON public.people TO authenticated;
+DO $$ DECLARE columns TEXT; BEGIN
+ SELECT string_agg(format('%I', column_name), ',') INTO columns FROM information_schema.columns WHERE table_schema='public' AND table_name='people';
+ EXECUTE format('REVOKE UPDATE (%s) ON public.people FROM PUBLIC, anon, authenticated', columns);
+END $$;
+GRANT UPDATE (name, surname, initials, short, image, preferences) ON public.people TO authenticated;
 
--- 3. Funções auxiliares de checagem de privilégio (SECURITY DEFINER com search_path fixo)
-CREATE OR REPLACE FUNCTION public.is_active_member()
-RETURNS BOOLEAN
-LANGUAGE sql
-STABLE
-SECURITY DEFINER
-SET search_path = public
-AS $$
-    SELECT EXISTS (
-        SELECT 1
-        FROM public.people
-        WHERE (user_id = auth.uid()::text OR user_id = auth.uid()::uuid::text)
-          AND visible = true
-    );
+CREATE OR REPLACE FUNCTION public.is_active_member() RETURNS BOOLEAN
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+  SELECT EXISTS(SELECT 1 FROM public.people WHERE user_id::text = auth.uid()::text AND visible = true);
 $$;
-
-CREATE OR REPLACE FUNCTION public.is_active_admin()
-RETURNS BOOLEAN
-LANGUAGE sql
-STABLE
-SECURITY DEFINER
-SET search_path = public
-AS $$
-    SELECT EXISTS (
-        SELECT 1
-        FROM public.people
-        WHERE (user_id = auth.uid()::text OR user_id = auth.uid()::uuid::text)
-          AND visible = true
-          AND admin = true
-    );
+CREATE OR REPLACE FUNCTION public.is_active_admin() RETURNS BOOLEAN
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+  SELECT EXISTS(SELECT 1 FROM public.people WHERE user_id::text = auth.uid()::text AND visible = true AND admin = true);
 $$;
+CREATE OR REPLACE FUNCTION public.can_access_action(p_action_id UUID) RETURNS BOOLEAN
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+  SELECT EXISTS(SELECT 1 FROM public.actions a WHERE a.id = p_action_id AND (
+    public.is_active_admin() OR (public.is_active_member() AND a.responsibles::text[] @> ARRAY[auth.uid()::text]
+      AND EXISTS(SELECT 1 FROM public.partners p WHERE p.archived = false AND p.slug = ANY(a.partners) AND p.users_ids::text[] @> ARRAY[auth.uid()::text]))
+  ));
+$$;
+REVOKE ALL ON FUNCTION public.is_active_member(), public.is_active_admin(), public.can_access_action(UUID) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.is_active_member(), public.is_active_admin(), public.can_access_action(UUID) TO authenticated, service_role;
 
--- Restringe execução das funções auxiliares
-REVOKE ALL ON FUNCTION public.is_active_member() FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.is_active_member() TO authenticated, service_role;
+CREATE POLICY people_select_active_members ON public.people FOR SELECT TO authenticated USING(public.is_active_member());
+CREATE POLICY people_insert_admin_only ON public.people FOR INSERT TO authenticated WITH CHECK(public.is_active_admin());
+CREATE POLICY people_update_self_or_admin ON public.people FOR UPDATE TO authenticated
+  USING(public.is_active_admin() OR (public.is_active_member() AND user_id::text = auth.uid()::text))
+  WITH CHECK(public.is_active_admin() OR (public.is_active_member() AND user_id::text = auth.uid()::text AND admin = false));
+CREATE POLICY people_delete_admin_only ON public.people FOR DELETE TO authenticated USING(public.is_active_admin());
+CREATE POLICY partners_select_policy ON public.partners FOR SELECT TO authenticated
+  USING(public.is_active_admin() OR (public.is_active_member() AND archived = false AND users_ids::text[] @> ARRAY[auth.uid()::text]));
+CREATE POLICY partners_write_admin_only ON public.partners FOR ALL TO authenticated USING(public.is_active_admin()) WITH CHECK(public.is_active_admin());
+CREATE POLICY actions_select_policy ON public.actions FOR SELECT TO authenticated USING(public.can_access_action(id));
+CREATE POLICY actions_insert_policy ON public.actions FOR INSERT TO authenticated WITH CHECK(
+  public.is_active_admin() OR (public.is_active_member() AND responsibles::text[] @> ARRAY[auth.uid()::text]
+    AND EXISTS(SELECT 1 FROM public.partners p WHERE p.archived = false AND p.slug = ANY(actions.partners) AND p.users_ids::text[] @> ARRAY[auth.uid()::text])));
+CREATE POLICY actions_update_policy ON public.actions FOR UPDATE TO authenticated USING(public.can_access_action(id)) WITH CHECK(
+  public.is_active_admin() OR (public.is_active_member() AND responsibles::text[] @> ARRAY[auth.uid()::text]
+    AND EXISTS(SELECT 1 FROM public.partners p WHERE p.archived = false AND p.slug = ANY(actions.partners) AND p.users_ids::text[] @> ARRAY[auth.uid()::text])));
+CREATE POLICY actions_delete_policy ON public.actions FOR DELETE TO authenticated USING(public.can_access_action(id));
+CREATE POLICY comments_select_policy ON public.action_comments FOR SELECT TO authenticated USING(public.can_access_action(action_id));
+CREATE POLICY comments_insert_policy ON public.action_comments FOR INSERT TO authenticated WITH CHECK(public.can_access_action(action_id) AND author_id::text = auth.uid()::text);
+CREATE POLICY comments_update_policy ON public.action_comments FOR UPDATE TO authenticated
+  USING(public.can_access_action(action_id) AND (public.is_active_admin() OR author_id::text = auth.uid()::text))
+  WITH CHECK(public.can_access_action(action_id) AND (public.is_active_admin() OR author_id::text = auth.uid()::text));
+CREATE POLICY comments_delete_policy ON public.action_comments FOR DELETE TO authenticated USING(public.can_access_action(action_id) AND (public.is_active_admin() OR author_id::text = auth.uid()::text));
 
-REVOKE ALL ON FUNCTION public.is_active_admin() FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.is_active_admin() TO authenticated, service_role;
+-- Admin changes to protected fields go through an authenticated RPC, not broad UPDATE grants.
+CREATE OR REPLACE FUNCTION public.admin_update_person(p_user_id UUID, p_changes JSONB) RETURNS VOID
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  IF NOT public.is_active_admin() THEN RAISE EXCEPTION 'Administrator required'; END IF;
+  UPDATE public.people SET
+    name = p_changes->>'name', surname = p_changes->>'surname', email = p_changes->>'email',
+    initials = p_changes->>'initials', short = p_changes->>'short', image = p_changes->>'image',
+    admin = (p_changes->>'admin')::BOOLEAN, visible = (p_changes->>'visible')::BOOLEAN,
+    areas = ARRAY(SELECT jsonb_array_elements_text(p_changes->'areas'))
+  WHERE user_id::text = p_user_id::text;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Person not found'; END IF;
+END;
+$$;
+REVOKE ALL ON FUNCTION public.admin_update_person(UUID, JSONB) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.admin_update_person(UUID, JSONB) TO authenticated;
 
--- 4. Políticas para a tabela PEOPLE
-DROP POLICY IF EXISTS "people_select_active_members" ON public.people;
-CREATE POLICY "people_select_active_members"
-ON public.people
-FOR SELECT
-TO authenticated
-USING (public.is_active_member());
-
-DROP POLICY IF EXISTS "people_insert_admin_only" ON public.people;
-CREATE POLICY "people_insert_admin_only"
-ON public.people
-FOR INSERT
-TO authenticated
-WITH CHECK (public.is_active_admin());
-
-DROP POLICY IF EXISTS "people_update_self_or_admin" ON public.people;
-CREATE POLICY "people_update_self_or_admin"
-ON public.people
-FOR UPDATE
-TO authenticated
-USING (
-    public.is_active_admin()
-    OR (
-        public.is_active_member()
-        AND (user_id = auth.uid()::text OR user_id = auth.uid()::uuid::text)
-    )
-)
-WITH CHECK (
-    -- Admin pode atualizar livremente
-    public.is_active_admin()
-    -- Colaborador só atualiza a si mesmo e NÃO pode se auto-promover para admin nem trocar user_id
-    OR (
-        public.is_active_member()
-        AND (user_id = auth.uid()::text OR user_id = auth.uid()::uuid::text)
-        AND admin = false
-    )
-);
-
-DROP POLICY IF EXISTS "people_delete_admin_only" ON public.people;
-CREATE POLICY "people_delete_admin_only"
-ON public.people
-FOR DELETE
-TO authenticated
-USING (public.is_active_admin());
-
--- 5. Políticas para a tabela PARTNERS
-DROP POLICY IF EXISTS "partners_select_policy" ON public.partners;
-CREATE POLICY "partners_select_policy"
-ON public.partners
-FOR SELECT
-TO authenticated
-USING (
-    public.is_active_admin()
-    OR (
-        public.is_active_member()
-        AND (
-            users_ids @> ARRAY[auth.uid()::text]
-            OR users_ids @> ARRAY[auth.uid()::uuid::text]
-        )
-    )
-);
-
-DROP POLICY IF EXISTS "partners_write_admin_only" ON public.partners;
-CREATE POLICY "partners_write_admin_only"
-ON public.partners
-FOR ALL
-TO authenticated
-USING (public.is_active_admin())
-WITH CHECK (public.is_active_admin());
-
--- 6. Políticas para a tabela CLIENTS (Acesso via SDK reservado a administradores)
-DROP POLICY IF EXISTS "clients_admin_all" ON public.clients;
-CREATE POLICY "clients_admin_all"
-ON public.clients
-FOR ALL
-TO authenticated
-USING (public.is_active_admin())
-WITH CHECK (public.is_active_admin());
-
--- 7. Políticas para a tabela ACTIONS
-DROP POLICY IF EXISTS "actions_select_policy" ON public.actions;
-CREATE POLICY "actions_select_policy"
-ON public.actions
-FOR SELECT
-TO authenticated
-USING (
-    public.is_active_admin()
-    OR (
-        public.is_active_member()
-        AND (
-            responsibles @> ARRAY[auth.uid()::text]
-            OR responsibles @> ARRAY[auth.uid()::uuid::text]
-            OR sprints @> ARRAY[auth.uid()::text]
-            OR sprints @> ARRAY[auth.uid()::uuid::text]
-        )
-    )
-);
-
-DROP POLICY IF EXISTS "actions_insert_policy" ON public.actions;
-CREATE POLICY "actions_insert_policy"
-ON public.actions
-FOR INSERT
-TO authenticated
-WITH CHECK (
-    public.is_active_admin()
-    OR (
-        public.is_active_member()
-        AND (
-            responsibles @> ARRAY[auth.uid()::text]
-            OR responsibles @> ARRAY[auth.uid()::uuid::text]
-        )
-    )
-);
-
-DROP POLICY IF EXISTS "actions_update_policy" ON public.actions;
-CREATE POLICY "actions_update_policy"
-ON public.actions
-FOR UPDATE
-TO authenticated
-USING (
-    public.is_active_admin()
-    OR (
-        public.is_active_member()
-        AND (
-            responsibles @> ARRAY[auth.uid()::text]
-            OR responsibles @> ARRAY[auth.uid()::uuid::text]
-        )
-    )
-)
-WITH CHECK (
-    public.is_active_admin()
-    OR (
-        public.is_active_member()
-        AND (
-            responsibles @> ARRAY[auth.uid()::text]
-            OR responsibles @> ARRAY[auth.uid()::uuid::text]
-        )
-    )
-);
-
-DROP POLICY IF EXISTS "actions_delete_policy" ON public.actions;
-CREATE POLICY "actions_delete_policy"
-ON public.actions
-FOR DELETE
-TO authenticated
-USING (
-    public.is_active_admin()
-    OR (
-        public.is_active_member()
-        AND (
-            responsibles @> ARRAY[auth.uid()::text]
-            OR responsibles @> ARRAY[auth.uid()::uuid::text]
-        )
-    )
-);
-
--- 8. Políticas para a tabela ACTION_COMMENTS
-DROP POLICY IF EXISTS "comments_select_policy" ON public.action_comments;
-CREATE POLICY "comments_select_policy"
-ON public.action_comments
-FOR SELECT
-TO authenticated
-USING (public.is_active_member());
-
-DROP POLICY IF EXISTS "comments_insert_policy" ON public.action_comments;
-CREATE POLICY "comments_insert_policy"
-ON public.action_comments
-FOR INSERT
-TO authenticated
-WITH CHECK (
-    public.is_active_member()
-    AND (author_id = auth.uid()::text OR author_id = auth.uid()::uuid::text)
-);
-
-DROP POLICY IF EXISTS "comments_update_policy" ON public.action_comments;
-CREATE POLICY "comments_update_policy"
-ON public.action_comments
-FOR UPDATE
-TO authenticated
-USING (
-    public.is_active_admin()
-    OR (
-        public.is_active_member()
-        AND (author_id = auth.uid()::text OR author_id = auth.uid()::uuid::text)
-    )
-)
-WITH CHECK (
-    public.is_active_admin()
-    OR (
-        public.is_active_member()
-        AND (author_id = auth.uid()::text OR author_id = auth.uid()::uuid::text)
-    )
-);
-
-DROP POLICY IF EXISTS "comments_delete_policy" ON public.action_comments;
-CREATE POLICY "comments_delete_policy"
-ON public.action_comments
-FOR DELETE
-TO authenticated
-USING (
-    public.is_active_admin()
-    OR (
-        public.is_active_member()
-        AND (author_id = auth.uid()::text OR author_id = auth.uid()::uuid::text)
-    )
-);
-
+-- Retire private legacy overload permissions; grant only the canonical signatures below.
+DO $$ DECLARE fn RECORD; BEGIN
+ FOR fn IN SELECT p.oid::regprocedure AS signature FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+   WHERE n.nspname='public' AND p.proname IN ('get_home_actions','get_app_bootstrap')
+ LOOP EXECUTE format('REVOKE ALL ON FUNCTION %s FROM PUBLIC, anon, authenticated', fn.signature); END LOOP;
+END $$;
 -- 9. RPC Canônica: get_home_actions com derivação segura de identidade e search_path fixo
 CREATE OR REPLACE FUNCTION public.get_home_actions(
     p_user_id UUID,
@@ -295,7 +121,7 @@ BEGIN
     -- apenas administradores têm permissão para inspecionar trabalho de terceiros.
     SELECT admin INTO v_is_admin
     FROM public.people
-    WHERE (user_id = v_auth_uid::text OR user_id = v_auth_uid::uuid::text)
+    WHERE (user_id::text = v_auth_uid::text OR user_id::text = v_auth_uid::uuid::text)
       AND visible = true
     LIMIT 1;
 
@@ -303,7 +129,7 @@ BEGIN
         RAISE EXCEPTION 'Acesso negado: usuário inativo ou não autorizado.';
     END IF;
 
-    IF p_user_id IS NOT NULL AND p_user_id != v_auth_uid AND v_is_admin = false THEN
+    IF p_user_id IS NOT NULL AND p_user_id != v_auth_uid THEN
         RAISE EXCEPTION 'Acesso negado: identidade solicitada não corresponde à sessão autenticada.';
     END IF;
 
@@ -317,8 +143,8 @@ BEGIN
         FROM public.partners
         WHERE archived = false
           AND (
-              users_ids @> ARRAY[v_auth_uid::text]
-              OR users_ids @> ARRAY[v_auth_uid::uuid::text]
+              users_ids::text[] @> ARRAY[v_auth_uid::text]
+              OR users_ids::text[] @> ARRAY[v_auth_uid::uuid::text]
           );
     END IF;
 
@@ -343,16 +169,11 @@ BEGIN
     WHERE (a.archived = false OR a.archived IS NULL)
       AND (
           v_is_admin = true
-          OR a.responsibles @> ARRAY[v_auth_uid::text]
-          OR a.responsibles @> ARRAY[v_auth_uid::uuid::text]
-          OR a.sprints @> ARRAY[v_auth_uid::text]
-          OR a.sprints @> ARRAY[v_auth_uid::uuid::text]
+          OR a.responsibles::text[] @> ARRAY[v_auth_uid::text]
+          OR a.responsibles::text[] @> ARRAY[v_auth_uid::uuid::text]
       )
       AND a.partners && v_allowed_partner_slugs
-      AND (
-          (a.date >= p_start_date AND a.date <= p_end_date)
-          OR (a.phase != 'done' AND a.date <= p_today_end)
-      )
+      AND a.date >= p_start_date AND a.date <= p_end_date
     ORDER BY a.date ASC;
 END;
 $$;
@@ -365,7 +186,7 @@ GRANT EXECUTE ON FUNCTION public.get_home_actions(UUID, TIMESTAMPTZ, TIMESTAMPTZ
 CREATE OR REPLACE FUNCTION public.get_app_bootstrap(
     p_user_id UUID
 )
-RETURNS JSON
+RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
@@ -373,7 +194,7 @@ AS $$
 DECLARE
     v_auth_uid UUID;
     v_person RECORD;
-    v_partners JSON;
+    v_partners JSONB;
     v_is_admin BOOLEAN;
 BEGIN
     v_auth_uid := auth.uid();
@@ -383,7 +204,7 @@ BEGIN
 
     SELECT * INTO v_person
     FROM public.people
-    WHERE (user_id = v_auth_uid::text OR user_id = v_auth_uid::uuid::text)
+    WHERE (user_id::text = v_auth_uid::text OR user_id::text = v_auth_uid::uuid::text)
       AND visible = true
     LIMIT 1;
 
@@ -393,32 +214,32 @@ BEGIN
 
     v_is_admin := (v_person.admin = true);
 
-    IF p_user_id IS NOT NULL AND p_user_id != v_auth_uid AND v_is_admin = false THEN
+    IF p_user_id IS NOT NULL AND p_user_id != v_auth_uid THEN
         RAISE EXCEPTION 'Acesso negado: identidade solicitada não corresponde à sessão autenticada.';
     END IF;
 
     -- Carrega parceiros autorizados
     IF v_is_admin = true THEN
-        SELECT json_agg(row_to_json(p)) INTO v_partners
+        SELECT jsonb_agg(to_jsonb(p)) INTO v_partners
         FROM (
             SELECT *
             FROM public.partners
+            WHERE archived = false
             ORDER BY title ASC
         ) p;
     ELSE
-        SELECT json_agg(row_to_json(p)) INTO v_partners
+        SELECT jsonb_agg(to_jsonb(p)) INTO v_partners
         FROM (
             SELECT *
             FROM public.partners
-            WHERE users_ids @> ARRAY[v_auth_uid::text]
-               OR users_ids @> ARRAY[v_auth_uid::uuid::text]
+            WHERE archived = false AND users_ids::text[] @> ARRAY[v_auth_uid::text]
             ORDER BY title ASC
         ) p;
     END IF;
 
-    RETURN json_build_object(
-        'person', row_to_json(v_person),
-        'partners', COALESCE(v_partners, '[]'::json)
+    RETURN jsonb_build_object(
+        'person', to_jsonb(v_person),
+        'partners', COALESCE(v_partners, '[]'::jsonb)
     );
 END;
 $$;

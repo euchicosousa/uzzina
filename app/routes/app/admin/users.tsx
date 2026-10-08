@@ -1,3 +1,4 @@
+import { useAppContext } from "~/contexts/AppContext";
 import { UserPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -16,8 +17,9 @@ function AdminUsersPageWrapper() {
   );
 }
 function AdminUsersPage() {
+  const { person } = useAppContext();
   const { data: people = [] } = useQuery({
-    queryKey: QUERY_KEYS.peopleAdmin(),
+    queryKey: QUERY_KEYS.peopleAdmin(person.user_id),
     queryFn: fetchAllPeople,
   });
   const archivedPeople: Person[] = [];

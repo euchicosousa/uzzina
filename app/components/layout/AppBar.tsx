@@ -61,7 +61,7 @@ export function AppBar({
   const { isSelectionMode, toggleSelectionMode } = useMultiSelection();
   const isAtHome = location.pathname === "/app";
   const { data: lateActions = [] } = useQuery({
-    queryKey: QUERY_KEYS.lateActions.user(person.user_id),
+    queryKey: QUERY_KEYS.actions.list("late",person.user_id,person.admin,partners.map(p=>p.slug)),
     queryFn: () =>
       fetchAllLateActions(
         person.user_id,

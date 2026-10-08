@@ -1,3 +1,4 @@
+import { useSelectionActions } from "~/hooks/useMultiSelection";
 import type { Action } from "~/types";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
@@ -42,6 +43,8 @@ export function ActionContainer({
     null,
   );
   const showMore = showMoreOverride !== null ? showMoreOverride : isCompact;
+  const renderedActions = showMore ? sortedActions.slice(0, MAX_ACTIONS) : sortedActions;
+  useSelectionActions(renderedActions);
   const containerRef = useRef<HTMLDivElement>(null);
   const [showTopMask, setShowTopMask] = useState(false);
   const [showBottomMask, setShowBottomMask] = useState(false);
@@ -134,7 +137,7 @@ export function ActionContainer({
       style={maskStyle}
     >
       <div className={cn(gapClasses, gridClasses, "relative")}>
-        {(showMore ? sortedActions.slice(0, MAX_ACTIONS) : sortedActions).map(
+        {renderedActions.map(
           (action) => (
             <ActionItem
               key={action.id}

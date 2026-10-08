@@ -1,7 +1,12 @@
 # Matriz dos 52 achados — baseline para execução Gemini
 
-> **Revisão posterior:** esta baseline foi preservada. Para estado observado após o executor chegar09, leia [revisão05–09](2026-10-06-revisao-tickets-05-09.md), incluindo retificação das aprovações incorretas do retorno.
+> **Baseline histórica:** estado vigente em [CURRENT.md](CURRENT.md) e correções05–09 no [fechamento](2026-10-06-fechamento-tickets-05-09.md). Ler a matriz quando necessário ao achado específico, sem reexecutar a auditoria inteira.
 
+**Atualização11 — 07/10/2026:** achados12,13 e38 corrigidos localmente; achado14 com regra de concluir/arquivar aplicada também ao lote. Evidências e limites no [ticket11](../../.scratch/correcoes-auditoria-2026-10-06/issues/11-lote-confiavel.md). Tabela abaixo permanece como baseline histórica; isso não certifica banco/produção nem encerra outros atalhos/arrastes.
+
+**Atualização12 — 07/10/2026:** correção local de concorrência dos arrastes, ligada aos achados de preview/concorrência. Evidências e limites no [ticket12](../../.scratch/correcoes-auditoria-2026-10-06/issues/12-arrastes-concorrentes.md); tabela histórica preservada. Não equivale a banco/produção homologados.
+
+**Atualização13 — 07/10/2026:** troca de identidade/cache corrigida localmente, com testes de gravações antigas e navegador real controlado (equipe/portal). [Resultado13](../../.scratch/correcoes-auditoria-2026-10-06/issues/13-identidade-cache.md). Tabela histórica preservada; isolamento de banco e produção continuam pendentes.
 
 Data: 06/10/2026. Fonte: `2026-09-26-analise-uzzina.md`. Leia em conjunto com `2026-10-06-execucao-gemini-pendencias.md`.
 
@@ -65,3 +70,62 @@ Ao final, inclua no arquivo de retorno uma linha por achado, com estado/evidênc
 | 50 | Desempenho e recuperação tendem a piorar com volume. | Medição/decisão posterior | Registrar limites observados | Paginação do portal e aviso de bundle registrados; não prometer performance nem otimizar sem medição. |
 | 51 | Apenas consultar uma ação pode mudar sua última atualização. | Parcial / revalidar | 09, 16 | Abrir/fechar sem edição não envia update nem muda updated_at. |
 | 52 | A lista de usuários arquivados não pode ser preenchida pela consulta usada. | Parcial / revalidar | 16 | Conferir fetchAllPeople/admin reais; seletor mantém apenas pessoas elegíveis. |
+
+## Reconciliação atual — fechamento local do17 em 07/10/2026
+
+A tabela histórica acima não é a fila atual. Esta reconciliação usa os resultados dos tickets01–16 e a jornada adicional do17; não representa nova varredura integral de cada superfície. “Local” inclui a camada explicitada e não certifica PostgreSQL ou produção. As escolhas de produto continuam fora da fila de correções automáticas.
+
+| Achado | Estado atual e evidência | O que ainda falta |
+|---|---|---|
+| 01 | Implementação local02–04 e13; cookie/identidade nos handlers e navegador controlado | Sessão/cookie/revogação reais e produção |
+| 02 | Servidor de contas06; hash e revogação cobertos nos handlers | RPC transacional no PostgreSQL e implantação |
+| 03 | Código14 e jornada de IA completa com HTTP controlado | Migration quota, banco e provedor reais |
+| 04 | SQL07 preparado; inspeção/matriz disponíveis | Inventariar RPCs reais e executar autorização em PostgreSQL |
+| 05 | Guard/API06–07; administração no navegador16/17 | RLS/grants e execução administrativa reais |
+| 06 | Sanitizador01; parser do navegador e documento público17 | Demais superfícies/arquivos não certificadas; WebKit |
+| 07 | Serializer08–09/16; omissão e limpeza explícita no código real | Persistência física de limpeza |
+| 08 | Contrato de temas da ação08–09; testes de escrita | Persistência física; não confundir com preferências15 |
+| 09 | Coordinator09 e gaveta real; recuperação de criação | Banco/recarga real |
+| 10 | Fechamento aguarda save09; navegador | Conflito em duas sessões reais |
+| 11 | Fila/versionamento08–10; testes e gaveta | Trigger e concorrência física |
+| 12 | Lote11 conta só confirmadas; navegador | Backend real |
+| 13 | Lote11 conserva falhas e conflitos por item | Backend real |
+| 14 | Regras de concluir/arquivar10–11 verificadas localmente | Persistência real nos callers |
+| 15 | Preview por sessão/operação12; gesto real no navegador | Touch físico |
+| 16 | Keys/contextos10/13; cache no navegador | Backend real |
+| 17 | Identidade/generation/cache13; troca A→B controlada | RLS e confidencialidade física |
+| 18 | Parceiros reativos13; arquivados excluídos da operação | Invalidação com edição real |
+| 19 | Busca16/17: resultado antigo, falha/vazio e multiparceiro no navegador | Serviço real |
+| 20 | Estados de erro nas superfícies tocadas09/14/16/17 | Outras rotas não foram auditadas integralmente |
+| 21 | Regra preservada: documento de revisão | Aprovação formal é decisão futura, sem implementação automática |
+| 22 | Handler05 e jornada17 gerar/copiar/abrir; corrigido bloqueio por login | Token/expiração/revogação com banco real |
+| 23 | DTO/autoria/audiência04; portal controlado | Escolha de audiência da equipe e tráfego real precisam validação específica |
+| 24 | Stories16: abas, estratégias e controles no navegador | Aparelho físico |
+| 25 | Períodos03 e calendar-period-browser | Troca de parceiro/recarga em backend real |
+| 26 | Regra mantida: semanas completas | Revisão editorial do rótulo/intervalo não certificada integralmente |
+| 27 | Regra mantida: data de execução | Não adicionar publicação nesta rodada |
+| 28 | Regra mantida: done/finished distintos;10–11/16 | Não fundir estados |
+| 29 | Sprint preservado; ordenação registrada16 | Não remover ou renomear sem decisão |
+| 30 | Decisão de produto | Reorganização da home depende de escolha posterior |
+| 31 | Decisão de produto | Agrupamento/repetição multiparceiro depende de escolha posterior |
+| 32 | Botão de navegação; toque e percurso de busca17 | Percurso completo da navegação por teclado não certificado |
+| 33 | Contrato atual preservado | Navegar/filtrar é decisão de produto |
+| 34 | Decisão de produto | Redução de controles não autorizada automaticamente |
+| 35 | Estilo/densidade preservados | Redesign é discussão posterior |
+| 36 | Compactos com nomes/estado16; menus17 | Não é cobertura de todos os ícones do app |
+| 37 | Atalhos por foco e proteção de input/editor16; lote11 | Percurso completo por teclado/aparelho |
+| 38 | Seleção restrita ao recorte11; navegador | Backend real |
+| 39 | Sininho vazio/data inválida16/17; foco/viewport17 | Ajuda completa não certificada |
+| 40 | Regra mantida: múltiplos responsáveis, conclusão inteira | Não adicionar responsável principal |
+| 41 | Modelo de ações preservado | Projeto/campanha é decisão futura |
+| 42 | Decisão de produto | Capacidade/risco não implementados nesta rodada |
+| 43 | Busca:12 Tabs presos no diálogo, Escape/retorno; menus/sininho17 | Gaveta e overlays restantes: ciclo Tab/foco completo; não é auditoria WCAG |
+| 44 | Chromium móvel emulado nos fluxos registrados;390/360 no17 | Safari/WebKit, teclado virtual, telefone e upload físicos |
+| 45 | Fila/patch/retry15; perfil e Header no navegador | Migration e merge transacional PostgreSQL |
+| 46 | Duplicação10 preserva contrato e confirmação; navegador | Persistência real |
+| 47 | Contratos de escrita/DTOs corrigidos06/08–13 | Não reescrever camada inteira; banco real pendente |
+| 48 | Migrations e inspeção/matriz07 disponíveis | Inventário/schema real não reproduzido nem homologado |
+| 49 | 249 testes de código; scripts de UI real; simuladores copiados retirados16 | Banco e aparelho continuam camadas distintas |
+| 50 | Limites de volume/bundle registrados | Sem medição representativa; otimização fica posterior |
+| 51 | Abertura sem edição não salva09; coordinator/gaveta | updated_at no banco real |
+| 52 | fetchAllPeople/admin16/17; lista arquivada e guard no navegador | RLS/lista com dados reais |

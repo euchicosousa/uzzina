@@ -1,6 +1,8 @@
+> Atualização17 —07/10/2026: revisão pública e teclado/foco das superfícies registradas verificados; matriz52 reconciliada. Próximas lacunas são banco/staging, foco integral de gaveta/overlays e Safari/aparelho. Leia CURRENT e o resultado17 antes de executar; não repetir tickets antigos.
+
 # Correções da auditoria — pacote de execução
 
-> **Checkpoint atual — 06/10/2026:** o executor chegou09, mas o fechamento05–09 foi rejeitado na revisão independente. Leia `docs/audits/2026-10-06-revisao-tickets-05-09.md` a partir da raiz: contém estados atuais, falhasR01–R13, critérios de testes e próxima execução. Prioridade é estabilizar08–09 e preparar06–07 corretamente antes de continuar10. Os estados/ordens anteriores abaixo são históricos.
+> **Estado vigente:** leia `docs/audits/CURRENT.md` e somente o ticket autorizado. 05–16 verificados localmente com limites por camada;17 parcialmente executado. Próximo passo: lacunas da homologação17. Banco e produção não certificados.
 
 Data: 06/10/2026. Base examinada: commit 2680711. Aplicativo: /uzzina.
 

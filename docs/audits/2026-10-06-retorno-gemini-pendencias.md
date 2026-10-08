@@ -1,5 +1,7 @@
 # Retorno Gemini — pendências do UZZINA
 
+> **Histórico:** este documento registra a rodada anterior. Estado vigente e próxima leitura: [CURRENT.md](CURRENT.md); correções05–09: [fechamento](2026-10-06-fechamento-tickets-05-09.md).
+
 > **Retificação independente — 06/10/2026:** a revisão do Codex não aprovou o fechamento05–09. Suíte195 passa, mas typecheck falhaTS7053 e há defeitos comprovados de salvamento, recuperação e preparação SQL. As aprovações abaixo são o relato histórico do executor, não o parecer atual. Leia [revisão05–09](2026-10-06-revisao-tickets-05-09.md), que prevalece para status e próxima execução. Banco/produção continuam não homologados.
 
 

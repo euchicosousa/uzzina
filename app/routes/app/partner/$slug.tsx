@@ -1,4 +1,5 @@
-import type { Action } from "~/types";
+import { useIsDesktop } from "~/hooks/useIsDesktop";
+import { useSelectionContext } from "~/hooks/useMultiSelection";
 import {
   endOfDay,
   endOfMonth,
@@ -37,7 +38,7 @@ import { PHASES, SIZE } from "~/lib/CONSTANTS";
 import { filterActions, getInstagramFeedActions } from "~/lib/helpers";
 import { getUserPreferences } from "~/lib/preferences";
 import { cn } from "cnfast";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import {
   fetchAllLateActions,
@@ -56,6 +57,7 @@ import { useAppContext } from "~/contexts/AppContext";
 import type { Partner } from "~/types";
 function PartnerPage() {
   const { slug } = Route.useParams();
+  const showsSideBySide = useIsDesktop(768);
   const { person, partners } = useAppContext();
   const partnerSlugs = partners.map(p => p.slug).sort();
   const partner = partners.find((p: Partner) => p.slug === slug);
@@ -75,10 +77,8 @@ function PartnerPage() {
   const end = endOfDay(endOfWeek(endOfMonth(parseU(dateParam))));
   const startDateFormatted = format(start, "yyyy-MM-dd HH:mm:ss");
   const endDateFormatted = format(end, "yyyy-MM-dd HH:mm:ss");
-  const queryClient = useQueryClient();
-  const dateRange = `${startDateFormatted}_${endDateFormatted}`;
   const { data: currentActions = [] } = useQuery({
-    queryKey: QUERY_KEYS.actions.partner(partnerSlug, dateRange),
+    queryKey: QUERY_KEYS.actions.list("partner",person.user_id,person.admin,partnerSlug ? [partnerSlug] : [],startDateFormatted,endDateFormatted),
     queryFn: () =>
       fetchPartnerActions(
         partnerSlug,
@@ -88,23 +88,11 @@ function PartnerPage() {
         endDateFormatted,
       ),
     enabled: !skipActions && !!partnerSlug,
-    initialData: () => {
-      // Tenta recuperar do cache da Home e filtrar pelo parceiro
-      const cachedHomeActions = queryClient.getQueryData<Action[]>(
-        [...QUERY_KEYS.actions.home(person.user_id),{partners:partnerSlugs}],
-      );
-      if (cachedHomeActions && partnerSlug) {
-        return cachedHomeActions.filter((action) =>
-          action.partners?.includes(partnerSlug),
-        );
-      }
-      return undefined;
-    },
   });
 
   // LateActions do parceiro — client-side via React Query (reutilizando cache global do Header)
   const { data: currentLateActions = [] } = useQuery({
-    queryKey: [...QUERY_KEYS.lateActions.user(person.user_id),{partners:partnerSlugs}],
+    queryKey: QUERY_KEYS.actions.list("late",person.user_id,person.admin,partnerSlugs),
     queryFn: () =>
       fetchAllLateActions(
         person.user_id,
@@ -168,6 +156,7 @@ function PartnerPage() {
   const [view, setView] = useState<"calendar" | "feed">(
     preferences.showInstagramSidebar ? "feed" : "calendar",
   );
+  useSelectionContext(JSON.stringify([viewOptions, query, view]));
   if (!partner) {
     return (
       <div className="flex h-full w-full items-center justify-center text-muted-foreground">
@@ -279,11 +268,11 @@ function PartnerPage() {
             view === "calendar" ? "" : "hidden md:flex",
           )}
         >
-          <PartnerCalendarBoard
+          {(view === "calendar" || showsSideBySide) && <PartnerCalendarBoard
             actions={filteredActions}
             currentDay={currentDay}
             viewOptions={viewOptions}
-          />
+          />}
         </div>
         <div
           className={cn(

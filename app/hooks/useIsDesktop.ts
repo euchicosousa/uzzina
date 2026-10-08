@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 
-export function useIsDesktop() {
+export function useIsDesktop(minWidth = 1024) {
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
-    // Definimos lg (1024px) como o breakpoint para considerar "desktop" no Tailwind
-    const mq = window.matchMedia("(min-width: 1024px)");
+    // Match the breakpoint of the view using this hook.
+    const mq = window.matchMedia(`(min-width: ${minWidth}px)`);
     
     // Set inicial
     setIsDesktop(mq.matches);
@@ -15,7 +15,7 @@ export function useIsDesktop() {
     mq.addEventListener("change", handler);
     
     return () => mq.removeEventListener("change", handler);
-  }, []);
+  }, [minWidth]);
 
   return isDesktop;
 }

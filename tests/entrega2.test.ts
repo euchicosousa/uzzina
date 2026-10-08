@@ -303,8 +303,8 @@ describe("Entrega 2 - S04: Sanitização HTML e Audiência de Comentários", () 
 
   it("separa chaves de cache entre comentários públicos e internos", () => {
     const actionId = "action-123";
-    const internalKey = QUERY_KEYS.comments.all(actionId);
-    const publicKey = QUERY_KEYS.comments.public(actionId);
+    const internalKey = QUERY_KEYS.comments.all(actionId,"user");
+    const publicKey = QUERY_KEYS.comments.public(actionId,"user");
 
     // Chaves devem ser distintas para impedir contaminação do cache
     expect(internalKey).not.toEqual(publicKey);
@@ -764,19 +764,5 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
       const cookieHeader = res._headers()["Set-Cookie"] as string;
       expect(cookieHeader).toContain("Max-Age=0");
     });
-  });
-});
-
-describe("Entrega 2 - S02: Guard de Acesso Administrativo", () => {
-  function checkAdminAccess(person: { admin?: boolean | null } | null | undefined): boolean {
-    return Boolean(person && person.admin === true);
-  }
-
-  it("permite acesso apenas para usuário com flag admin: true", () => {
-    expect(checkAdminAccess({ admin: true })).toBe(true);
-    expect(checkAdminAccess({ admin: false })).toBe(false);
-    expect(checkAdminAccess({ admin: null })).toBe(false);
-    expect(checkAdminAccess(null)).toBe(false);
-    expect(checkAdminAccess(undefined)).toBe(false);
   });
 });

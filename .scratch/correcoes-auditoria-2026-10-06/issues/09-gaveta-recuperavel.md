@@ -1,5 +1,7 @@
 # 09: Criar e editar sem perder o rascunho
 
+> Atualização06/10: correções de código verificadas nesta rodada. Consulte `docs/audits/CURRENT.md` e o fechamento05–09 para evidências e limites; SQL/banco/produção continuam pendentes quando aplicáveis.
+
 **What to build:** Criar pelo blur continua rápido; botão, atalhos e saída compartilham salvamento e preservam trabalho em falha.
 
 **Blocked by:** 08
@@ -33,3 +35,11 @@ Código: pendente. Teste local: pendente. Banco: verificar alcance acima. Navega
 ## Revisão independente após execução
 
 Leia `docs/audits/2026-10-06-revisao-tickets-05-09.md` a partir da raiz do repositório. A entrega do executor não encerrou todos os critérios deste ticket. Suíte195 passou; typecheck falhouTS7053; banco real/produção não foram homologados. Corrigir os Rxx relacionados ao ticket e registrar teste real por comportamento, distinguindo módulo isolado de integração da gaveta. Esta revisão prevalece sobre alegações gerais de conclusão do retorno.
+
+## Complemento de07/10 — ajustes visuais e staging
+
+Menu com padding inferior; confirmação de conflito em PrismDialog. Teste da gaveta real cobre cancelamento, novo conflito e recuperação. Duas abas no navegador com Supabase staging passaram em cancelar/reabrir/confirmar; fixture restaurada. Proprietário confirmou conflitos, arrastes/reload e celular. Evidências e limites em docs/audits/2026-10-07-staging-supabase.md, seção Ajustes visuais e validação pelo proprietário. Não equivale à homologação integral móvel/produção.
+
+## Complemento — comparação/IA no staging em07/10
+
+Comparação agrupada por versão, valores formatados, textos longos e scroll independente verificados em1440/390. IA503 reproduzido e configuração privada corrigida no staging; API real gerou legenda com200. UI de geração pendente após renovar sessão, produção/Vercel não certificadas.256 testes passam; tipagem/lint/build passam. Detalhes, arquivos e limites em docs/audits/2026-10-07-staging-supabase.md, seção Comparação por versão e diagnóstico da IA.

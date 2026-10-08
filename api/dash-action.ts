@@ -137,7 +137,7 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
     if (action.updated_at !== expectedUpdatedAt) {
       return res.status(409).json({error:"Esta ação mudou. Recarregue antes de salvar."});
     }
-    const {data,error} = await db.from("actions").update({work_files:files,updated_at:new Date().toISOString()})
+    const {data,error} = await db.from("actions").update({work_files:files})
       .eq("id",actionId).eq("updated_at",expectedUpdatedAt).overlaps("partners",visiblePartnerSlugs).select("id, work_files, updated_at").single();
     if (error && error.code === "PGRST116") return res.status(409).json({error:"Esta ação mudou. Recarregue antes de salvar."});
     if (error) throw error;

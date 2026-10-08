@@ -1,3 +1,4 @@
+import { getQuerySessionGeneration } from "~/lib/query-client";
 import { retryPortalQuery, usePortalSessionError } from "~/hooks/usePortalSessionError";
 import { format } from "date-fns";
 import { parseU } from "~/utils/date";
@@ -17,7 +18,6 @@ import { Icons } from "~/lib/helpers";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDashContext } from "~/contexts/DashContext";
 import { toast } from "sonner";
-import { QUERY_KEYS } from "~/lib/query-keys";
 import { sanitizeHtml } from "~/utils/sanitize";
 import { PortalHttpError } from "~/services/portal-http";
 import { fetchDashAction, fetchDashComments, createDashComment, updateDashComment, deleteDashComment, updateDashWorkFiles, type DashActionDto } from "~/services/dash-client";
@@ -32,6 +32,8 @@ function DashActionDetail() {
     uploadPreset,
   } = useDashContext();
   const queryClient = useQueryClient();
+  const generation = useRef(getQuerySessionGeneration(queryClient)).current;
+  const isCurrentSession = () => generation === getQuerySessionGeneration(queryClient);
 
   // Query para a Ação via endpoint autorizado do servidor
   const {
@@ -66,9 +68,12 @@ function DashActionDetail() {
   const updateWorkFilesMutation = useMutation({
     scope: {id:`dash-work-files:${clientId}:${actionId}`},
     onMutate: () => queryClient.cancelQueries({queryKey:["dashAction",clientId,actionId]}),
-    mutationFn: (files: string[]) =>
-      updateDashWorkFiles(actionId, files, action?.updated_at || ""),
+    mutationFn: (files: string[]) => {
+      if (!isCurrentSession()) throw new Error("A sessão mudou. Entre novamente.");
+      return updateDashWorkFiles(actionId, files, action?.updated_at || "");
+    },
     onSuccess: ({ work_files: files, updated_at }, requested) => {
+      if (!isCurrentSession()) return;
       confirmedWorkFilesRef.current = files;
       setWorkFiles(files);
       if (workFilesRef.current === requested) workFilesRef.current = files;
@@ -78,6 +83,7 @@ function DashActionDetail() {
       toast.success("Arquivos atualizados com sucesso!");
     },
     onError: (error, requested) => {
+      if (!isCurrentSession()) return;
       if (workFilesRef.current === requested) workFilesRef.current = confirmedWorkFilesRef.current;
       console.error("Erro ao salvar arquivos:", error);
       if (error instanceof PortalHttpError && error.status === 409) {
@@ -98,11 +104,12 @@ function DashActionDetail() {
           queryKey: ["dashComments", clientId, actionId],
         });
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.comments.all(actionId),
+          queryKey: ["comments"],
         });
       }
     },
     onError: (error) => {
+      if (!isCurrentSession()) return;
       console.error("Erro ao criar comentário:", error);
       toast.error("Não foi possível salvar o comentário.");
     },
@@ -118,16 +125,18 @@ function DashActionDetail() {
       return updateDashComment(actionId, commentId, content);
     },
     onSuccess: () => {
+      if (!isCurrentSession()) return;
       if (actionId) {
         queryClient.invalidateQueries({
           queryKey: ["dashComments", clientId, actionId],
         });
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.comments.all(actionId),
+          queryKey: ["comments"],
         });
       }
     },
     onError: (error) => {
+      if (!isCurrentSession()) return;
       console.error("Erro ao editar comentário:", error);
       toast.error("Não foi possível salvar a alteração.");
     },
@@ -137,16 +146,18 @@ function DashActionDetail() {
       await deleteDashComment(actionId, commentId);
     },
     onSuccess: () => {
+      if (!isCurrentSession()) return;
       if (actionId) {
         queryClient.invalidateQueries({
           queryKey: ["dashComments", clientId, actionId],
         });
         queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.comments.all(actionId),
+          queryKey: ["comments"],
         });
       }
     },
     onError: (error) => {
+      if (!isCurrentSession()) return;
       console.error("Erro ao deletar comentário:", error);
       toast.error("Não foi possível excluir o comentário.");
     },

@@ -112,7 +112,10 @@ export class ActionSaveCoordinator {
     } catch (error) {
       if (generation !== this.generation) return null;
       this.status = error instanceof ActionConflictError ? "conflict" : "error";
-      this.errorMessage = error instanceof Error ? error.message : "Não foi possível salvar a ação.";
+      this.errorMessage =
+        error instanceof Error
+          ? error.message
+          : (error as { message?: string })?.message || "Não foi possível salvar a ação.";
       this.emit();
       return null;
     }

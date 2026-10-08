@@ -51,7 +51,7 @@ function AppHome() {
     isError: isHomeActionsError,
     refetch: refetchHomeActions,
   } = useQuery({
-    queryKey: [...QUERY_KEYS.actions.home(person.user_id),{partners:partnerSlugs}],
+    queryKey: QUERY_KEYS.actions.list("home",person.user_id,person.admin,partnerSlugs,startDateISO,endDateISO),
     queryFn: () =>
       fetchHomeActions(
         person.user_id,
@@ -68,7 +68,7 @@ function AppHome() {
     isError: isLateActionsError,
     refetch: refetchLateActions,
   } = useQuery({
-    queryKey: [...QUERY_KEYS.lateActions.user(person.user_id),{partners:partnerSlugs}],
+    queryKey: QUERY_KEYS.actions.list("late",person.user_id,person.admin,partnerSlugs),
     queryFn: () =>
       fetchAllLateActions(
         person.user_id,

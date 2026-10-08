@@ -1,5 +1,7 @@
 # 07: Autorizações reproduzíveis no banco
 
+> Atualização06/10: correções de código verificadas nesta rodada. Consulte `docs/audits/CURRENT.md` e o fechamento05–09 para evidências e limites; SQL/banco/produção continuam pendentes quando aplicáveis.
+
 **What to build:** Operações diretas proibidas são recusadas pelo banco, inclusive fora da interface, com migrations verificáveis.
 
 **Blocked by:** 03, 04, 05, 06
@@ -32,3 +34,17 @@ Código: pendente. Teste local: pendente. Banco: verificar alcance acima. Navega
 ## Revisão independente após execução
 
 Leia `docs/audits/2026-10-06-revisao-tickets-05-09.md` a partir da raiz do repositório. A entrega do executor não encerrou todos os critérios deste ticket. Suíte195 passou; typecheck falhouTS7053; banco real/produção não foram homologados. Corrigir os Rxx relacionados ao ticket e registrar teste real por comportamento, distinguindo módulo isolado de integração da gaveta. Esta revisão prevalece sobre alegações gerais de conclusão do retorno.
+
+## Passo2 PostgreSQL local —07/10/2026
+
+Baseline de catálogo exportado reconstruído em PostgreSQL15.1, sem dados reais. Migrations corrigidas e matriz executadas com ROLLBACK; isolamento/auto-promoção/inativo e defaults de postgres verificados. Ver docs/audits/2026-10-07-passo-2-banco-de-teste.md. Não equivale a Supabase/produção: auth.uid tem adaptador de claim local, GoTrue/PostgREST ausentes. Leads externos ainda preservam permissões legadas; supabase_admin defaults pendentes. Não encerrar07 integralmente nem aplicar baseline mínimo no Supabase real.
+# Atualização de evidência — staging Supabase07/10
+
+Projeto separado `zacrrtilppvekiyoybzn` preparado via MCP com Auth oficial e PostgreSQL17.11. Bootstrap de aplicação +9 migrations aplicados; matriz SQL passou com ROLLBACK, sem resíduos. Quatro chamadas anônimas reais PostgREST (actions/clients/leads/quota) recusadas401/42501. GoTrue/JWT autenticado e APIs de aplicativo continuam pendentes. Leads fechados somente no staging; integração externa/banco atual não alterados. Defaults de supabase_admin preservados,8 avisos Advisor de definer autenticado registrados. Detalhes: docs/audits/2026-10-07-staging-supabase.md. Produção não alterada.
+
+
+Integração autenticada07/10: três contas via Auth oficial; login/JWT/PostgREST, bootstrap/home sem arquivados, responsabilidade, identidade forjada, auto-promoção, preferências e data/CAS passaram no staging. Dados fictícios permanecem para UI em5180; produção intacta. Detalhes em docs/audits/2026-10-07-staging-supabase.md. UI/API do app e concorrência cloud pendentes.
+
+
+## Leads — complemento de07/10
+Formulário externo/API e fechamento da tabela implementados e verificados SOMENTE no staging. Matriz API/banco e navegador→UZZINA passou; dados de teste removidos. Registro em docs/audits/2026-10-07-passo-2-leads-externos.md. Produção continua pendente: publicar novo formulário/API antes de revogar acesso anônimo, com helper de autorização compatível e verificação real da captação.

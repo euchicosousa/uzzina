@@ -2,15 +2,10 @@ import type { Action } from "~/types";
 import {
   DndContext,
   DragOverlay,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-  type DragStartEvent,
 } from "@dnd-kit/core";
 import { format, isSameDay } from "date-fns";
 import { parseU } from "~/utils/date";
-import { useEffect, useState } from "react";
+import { useKanbanDnd } from "~/hooks/useKanbanDnd";
 import { ActionItem } from "~/components/features/ActionItem";
 import {
   CalendarActions,
@@ -18,7 +13,6 @@ import {
 } from "~/components/features/Calendar";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
-import { getNewDateForAction } from "~/lib/helpers";
 import { DragStateContext } from "./DragStateContext";
 import type { ViewOptions } from "./ViewOptions";
 const DEFAULT_CELEBRATIONS: Celebration[] = [];
@@ -41,95 +35,24 @@ export function CalendarWithDnd({
   layoutOptions?: CalendarLayoutOptions;
 }) {
   const { handleAction } = useActionMutations();
-  const [activeAction, setActiveAction] = useState<Action>();
-  // Local override: maps action.id → updated date fields.
-  // Applied immediately on drop so the DOM is correct before the drop
-  // animation runs. Cleared once the server data is revalidated.
-
-  const [dateOverrides, setDateOverrides] = useState<
-    Record<string, Partial<Action>>
-  >({});
-
-  // Limpa overrides automaticamente quando as ações do servidor atualizarem
-  useEffect(() => {
-    setDateOverrides((prev) => {
-      let changed = false;
-      const next = { ...prev };
-      for (const action of actions) {
-        if (next[action.id]) {
-          if (action.date === next[action.id]?.date) {
-            delete next[action.id];
-            changed = true;
-          }
-        }
-      }
-      return changed ? next : prev;
-    });
-  }, [actions]);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-  );
-  const handleDragStart = (event: DragStartEvent) => {
-    const found = actions.find((a) => a.id === event.active.id);
-    if (found) {
-      setActiveAction(found);
-    }
-  };
-  const handleDragCancel = () => {
-    setActiveAction(undefined);
-  };
-  const handleDragEnd = async (event: DragEndEvent) => {
-    try {
-      if (event.over && activeAction) {
-        const key = "date";
-        const value = format(
-          parseU(event.over.id as string),
-          "yyyy-MM-dd",
-        ).concat(format(activeAction[key], " HH:mm:ss"));
-        const newDates = getNewDateForAction(activeAction, parseU(value));
-        const actionId = activeAction.id;
-
-        setDateOverrides((prev) => ({
-          ...prev,
-          [actionId]: newDates,
-        }));
-
-        try {
-          await handleAction({
-            ...activeAction,
-            intent: INTENT.update_action,
-            id: activeAction.id,
-            expectedUpdatedAt: activeAction.updated_at,
-            ...newDates,
-          });
-        } catch (err) {
-          console.error("Erro no drop do Calendário:", err);
-        } finally {
-          setDateOverrides((prev) => {
-            if (!prev[actionId]) return prev;
-            const next = { ...prev };
-            delete next[actionId];
-            return next;
-          });
-        }
-      }
-    } finally {
-      setActiveAction(undefined);
-    }
-  };
-  const actionsWithOverrides = actions.map((action) =>
-    dateOverrides[action.id]
-      ? {
-          ...action,
-          ...dateOverrides[action.id],
-        }
-      : action,
-  );
+  const {activeAction, actionsWithOverrides, sensors, handleDragStart, handleDragEnd, handleDragCancel} = useKanbanDnd<string>({
+    actions,
+    fieldKey: "date",
+    parseTarget: (overId, action) => {
+      if (!calendarDays.some(day => format(day, "yyyy-MM-dd") === overId)) return undefined;
+      return `${overId} ${format(parseU(action.date), "HH:mm:ss")}`;
+    },
+    onDrop: async (action, date) => {
+      const confirmed = await handleAction({
+        intent: INTENT.update_action,
+        id: action.id,
+        expectedUpdatedAt: action.updated_at,
+        date,
+      });
+      if (!confirmed) throw new Error("O movimento não foi confirmado.");
+      return confirmed;
+    },
+  });
   const calendar = calendarDays.map((date) => ({
     date,
     actions: actionsWithOverrides.filter((action) =>

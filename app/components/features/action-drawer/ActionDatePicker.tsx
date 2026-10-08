@@ -36,7 +36,7 @@ export function ActionDatePicker({
   const handleOpenChange = (isOpen: boolean) => {
     if (isOpen) {
       setSelectedDate(date);
-    } else if (onSelect && selectedDate) {
+    } else if (onSelect && selectedDate && selectedDate.getTime() !== date?.getTime()) {
       onSelect(selectedDate);
     }
   };

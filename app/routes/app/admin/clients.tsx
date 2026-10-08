@@ -13,10 +13,10 @@ export const Route = createFileRoute("/app/admin/clients")({
   component: AdminClientsPage,
 });
 function AdminClientsPage() {
-  const { partners } = useAppContext();
+  const { partners, person: viewer } = useAppContext();
   const supabase = createSupabaseBrowserClient();
   const { data: clients = [] } = useQuery({
-    queryKey: ["clients"],
+    queryKey: ["clients", "team", viewer.user_id],
     queryFn: () => getAllClients(supabase),
   });
   return (

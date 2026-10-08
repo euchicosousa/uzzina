@@ -29,16 +29,39 @@ export async function createActionClient(
       `Validação falhou: ${JSON.stringify(result.error.flatten().fieldErrors)}`,
     );
   }
-  const insertData = {
-    ...result.data,
-  };
   const supabase = createSupabaseBrowserClient();
+  let userId = result.data.user_id;
+  if (!userId) {
+    const { data: authData } = await supabase.auth.getUser();
+    userId = authData.user?.id;
+  }
+  // The current schema requires initial timestamps; updates use the database version.
+  const now = new Date().toISOString();
+  const insertData: TablesInsert<"actions"> = {
+    ...result.data,
+    color: result.data.color ?? undefined,
+    time: result.data.time ?? undefined,
+    strategies: result.data.strategies as TablesInsert<"actions">["strategies"],
+    created_at: now,
+    updated_at: now,
+    ...(userId ? { user_id: userId } : {}),
+  };
   const { data, error } = await supabase
     .from("actions")
-    .insert(insertData as TablesInsert<"actions">)
+    .insert(insertData)
     .select()
     .single();
+  if (error) {
+    console.error("Erro ao criar ação no Supabase:", error);
+    throw new Error(error.message || "Erro ao criar ação no banco de dados.");
+  }
+  return data as Action;
+}
+
+export async function readActionClient(id: string): Promise<Action> {
+  const {data, error} = await createSupabaseBrowserClient().from("actions").select("*").eq("id", id).single();
   if (error) throw error;
+  if (!data) throw new Error("A ação não está disponível.");
   return data as Action;
 }
 
@@ -78,7 +101,7 @@ export async function updateActionClient(
   }
   const updateData: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(result.data)) {
-    if (value !== undefined) {
+    if (value !== undefined && key !== "updated_at" && key !== "created_at") {
       updateData[key] = value;
     }
   }
@@ -114,7 +137,7 @@ export async function updateActionClient(
 /**
  * Duplicate an action: fetch original, strip id/timestamps, insert as new.
  */
-export async function duplicateActionClient(id: string): Promise<Action> {
+export async function duplicateActionClient(id: string, beforeWrite?: () => void): Promise<Action> {
   const supabase = createSupabaseBrowserClient();
   const { data: original, error: fetchError } = await supabase
     .from("actions")
@@ -122,6 +145,7 @@ export async function duplicateActionClient(id: string): Promise<Action> {
     .eq("id", id)
     .single();
   if (fetchError) throw fetchError;
+  beforeWrite?.();
   const { id: _id, created_at, updated_at, ...rest } = original as Action;
   const now = new Date().toISOString();
   const { data, error } = await supabase
@@ -147,105 +171,44 @@ export async function deleteActionClient(id: string): Promise<void> {
   if (error) throw error;
 }
 
-/**
- * Bulk update multiple actions with arbitrary fields.
- */
-export async function bulkUpdateActionsClient(
-  ids: string[],
-  updates: Partial<Action>,
-): Promise<Action[]> {
-  const supabase = createSupabaseBrowserClient();
-  const finalUpdates: Partial<Action> = {
-    ...updates,
-    updated_at: new Date().toISOString(),
-  };
+export type BulkActionResult = {
+  succeededIds: string[];
+  failed: {id: string; reason: string}[];
+  conflicts: {id: string}[];
+};
 
-  // Regra de domínio consistente: ao concluir ou arquivar, limpa sprints
-  if (
-    finalUpdates.phase === PHASES.finished.slug ||
-    finalUpdates.archived === true
-  ) {
-    finalUpdates.sprints = null;
+// Every item uses the same validated, version-checked update as individual editing.
+async function updateBulkActions(
+  actions: Action[],
+  patch: (action: Action) => ActionPatchInput,
+  onConfirmed?: (action: Action) => void,
+  beforeWrite?: () => void,
+): Promise<BulkActionResult> {
+  const result: BulkActionResult = {succeededIds: [], failed: [], conflicts: []};
+  const unique = [...new Map(actions.map(action => [action.id, action])).values()];
+  for (const action of unique) {
+    try {
+      beforeWrite?.();
+      const confirmed = await updateActionClient(action.id, patch(action), action.updated_at);
+      result.succeededIds.push(confirmed.id);
+      onConfirmed?.(confirmed);
+    } catch (error) {
+      if (error instanceof ActionConflictError) result.conflicts.push({id: action.id});
+      else result.failed.push({id: action.id, reason: error instanceof Error ? error.message :
+        typeof error === "object" && error !== null && "message" in error ? String(error.message) : "Não foi possível salvar esta ação."});
+    }
   }
-
-  const { data, error } = await supabase
-    .from("actions")
-    .update(finalUpdates)
-    .in("id", ids)
-    .select();
-  if (error) throw error;
-  return data as Action[];
+  return result;
 }
 
-/**
- * Change only the DATE part of N actions, preserving each action's original time.
- * @param newDate - "yyyy-MM-dd"
- */
-export async function bulkUpdateDateOnlyClient(
-  ids: string[],
-  newDate: string,
-): Promise<void> {
-  const supabase = createSupabaseBrowserClient();
-  const { data, error } = await supabase
-    .from("actions")
-    .select("id, date")
-    .in("id", ids);
-  if (error) throw error;
-  const results = await Promise.all(
-    (
-      data as {
-        id: string;
-        date: string;
-      }[]
-    ).map(({ id, date }) => {
-      const existingTime = format(new Date(date.replace(" ", "T")), "HH:mm:ss");
-      return supabase
-        .from("actions")
-        .update({
-          date: `${newDate} ${existingTime}`,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", id);
-    }),
-  );
-  const failure = results.find((r) => r.error);
-  if (failure?.error) throw failure.error;
+export function bulkUpdateActionsClient(actions: Action[], updates: ActionPatchInput, onConfirmed?: (action: Action) => void, beforeWrite?: () => void) {
+  return updateBulkActions(actions, () => updates, onConfirmed, beforeWrite);
 }
 
-/**
- * Change only the TIME part of N actions, preserving each action's original date.
- * @param newTime - "HH:mm"
- */
-export async function bulkUpdateTimeOnlyClient(
-  ids: string[],
-  newTime: string,
-): Promise<void> {
-  const supabase = createSupabaseBrowserClient();
-  const { data, error } = await supabase
-    .from("actions")
-    .select("id, date")
-    .in("id", ids);
-  if (error) throw error;
-  const results = await Promise.all(
-    (
-      data as {
-        id: string;
-        date: string;
-      }[]
-    ).map(({ id, date }) => {
-      const existingDate = format(
-        new Date(date.replace(" ", "T")),
-        "yyyy-MM-dd",
-      );
-      return supabase
-        .from("actions")
-        .update({
-          date: `${existingDate} ${newTime}:00`,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", id);
-    }),
-  );
-  const failure = results.find((r) => r.error);
-  if (failure?.error) throw failure.error;
+export function bulkUpdateDateOnlyClient(actions: Action[], newDate: string, onConfirmed?: (action: Action) => void, beforeWrite?: () => void) {
+  return updateBulkActions(actions, action => ({date: `${newDate} ${format(new Date(action.date.replace(" ", "T")), "HH:mm:ss")}`}), onConfirmed, beforeWrite);
+}
+
+export function bulkUpdateTimeOnlyClient(actions: Action[], newTime: string, onConfirmed?: (action: Action) => void, beforeWrite?: () => void) {
+  return updateBulkActions(actions, action => ({date: `${format(new Date(action.date.replace(" ", "T")), "yyyy-MM-dd")} ${newTime}:00`}), onConfirmed, beforeWrite);
 }

@@ -1,5 +1,7 @@
 # 06: Administrador cria contas e revoga sessões
 
+> Atualização06/10: correções de código verificadas nesta rodada. Consulte `docs/audits/CURRENT.md` e o fechamento05–09 para evidências e limites; SQL/banco/produção continuam pendentes quando aplicáveis.
+
 **What to build:** Administrador gerencia contas do portal; troca de senha e desativação encerram acesso anterior.
 
 **Blocked by:** 02

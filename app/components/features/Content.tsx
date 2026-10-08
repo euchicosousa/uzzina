@@ -10,7 +10,9 @@ import { safeColor } from "~/lib/uzzina-utils";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
-import { useAppContext } from "~/contexts/AppContext";
+import { AppContext } from "~/contexts/AppContext";
+import { useContext } from "react";
+import type { Person } from "~/types";
 export function Content({
   action,
   category,
@@ -28,12 +30,7 @@ export function Content({
   showResponsibles?: boolean;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
 }) {
-  const { person } = useAppContext();
-  const { data: people = [] } = useQuery({
-    queryKey: QUERY_KEYS.people(),
-    queryFn: fetchPeople,
-    staleTime: 30 * 60 * 1000,
-  });
+  const person = useContext(AppContext)?.person;
 
   // Normaliza e valida a cor — nunca quebra mesmo se action.color vier inválido do banco
   const actionColor = safeColor(action.color);
@@ -81,18 +78,8 @@ export function Content({
             )}
           </div>
 
-          {showResponsibles && "responsibles" in action && (
-            <UAvatarGroup
-              avatars={getPeople((action as Action).responsibles, people).map(
-                (responsible: Person) => ({
-                  id: responsible.user_id,
-                  fallback: responsible.name,
-                  image: responsible.image,
-                }),
-              )}
-              // ringColor={backgroundColor.hex()}
-              size={SIZE.sm}
-            />
+          {person && showResponsibles && "responsibles" in action && (
+            <ContentResponsibles userId={person.user_id} responsibles={action.responsibles} />
           )}
         </div>
         <div className="flex items-center justify-between gap-2">
@@ -117,4 +104,18 @@ export function Content({
       </div>
     </div>
   );
+}
+
+function ContentResponsibles({userId, responsibles}: {userId: string; responsibles: string[]}) {
+  const {data: people = []} = useQuery({
+    queryKey: QUERY_KEYS.people(userId),
+    queryFn: fetchPeople,
+    staleTime: 30 * 60 * 1000,
+  });
+  return <UAvatarGroup
+    avatars={getPeople(responsibles, people).map((responsible: Person) => ({
+      id: responsible.user_id, fallback: responsible.name, image: responsible.image,
+    }))}
+    size={SIZE.sm}
+  />;
 }

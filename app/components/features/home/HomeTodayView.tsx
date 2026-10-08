@@ -1,3 +1,4 @@
+import { useSelectionContext } from "~/hooks/useMultiSelection";
 import { format, isSameDay, isToday } from "date-fns";
 import { parseU } from "~/utils/date";
 import { ptBR } from "date-fns/locale/pt-BR";
@@ -51,6 +52,7 @@ export function HomeTodayView({
         });
   }, [actions, view, currentDay]);
 
+  useSelectionContext(JSON.stringify([currentDay, view]));
   const title = useMemo(() => {
     if (isToday(currentDay)) return "Hoje";
     const formatted = format(currentDay, "eeee, dd 'de' MMMM", {

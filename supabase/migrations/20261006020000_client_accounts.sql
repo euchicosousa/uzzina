@@ -10,12 +10,16 @@ CREATE OR REPLACE FUNCTION public.admin_update_client_password(
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
     -- Atualiza o hash da senha do cliente
     UPDATE public.clients
     SET password_hash = p_password_hash
     WHERE id = p_client_id;
+    IF NOT FOUND THEN
+      RAISE EXCEPTION USING ERRCODE = 'P0002', MESSAGE = 'Client not found';
+    END IF;
 
     -- Revoga todas as sessões ativas daquele cliente de forma atômica
     UPDATE public.dash_sessions
@@ -32,6 +36,7 @@ CREATE OR REPLACE FUNCTION public.admin_deactivate_client(
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
     -- Desativa o cliente
@@ -57,6 +62,7 @@ CREATE OR REPLACE FUNCTION public.client_migrate_legacy_password(
 RETURNS INTEGER
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
     v_updated INTEGER;
@@ -80,3 +86,34 @@ GRANT EXECUTE ON FUNCTION public.admin_deactivate_client(UUID) TO service_role;
 
 REVOKE ALL ON FUNCTION public.client_migrate_legacy_password(UUID, TEXT, TEXT) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.client_migrate_legacy_password(UUID, TEXT, TEXT) TO service_role;
+
+-- A single transaction updates the account and revokes sessions together.
+CREATE OR REPLACE FUNCTION public.admin_update_client_account(
+  p_client_id UUID, p_changes JSONB, p_password_hash TEXT DEFAULT NULL
+) RETURNS JSONB
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public
+AS $$
+DECLARE v_client public.clients%ROWTYPE;
+BEGIN
+  SELECT * INTO v_client FROM public.clients WHERE id = p_client_id FOR UPDATE;
+  IF NOT FOUND THEN RAISE EXCEPTION USING ERRCODE = 'P0002', MESSAGE = 'Client not found'; END IF;
+  IF p_changes ? 'partners' AND EXISTS (
+    SELECT 1 FROM jsonb_array_elements_text(p_changes->'partners') selected(slug)
+    WHERE NOT EXISTS (SELECT 1 FROM public.partners p WHERE p.slug = selected.slug AND p.archived = false)
+  ) THEN RAISE EXCEPTION 'Invalid partner'; END IF;
+  UPDATE public.clients SET
+    name = CASE WHEN p_changes ? 'name' THEN p_changes->>'name' ELSE name END,
+    email = CASE WHEN p_changes ? 'email' THEN p_changes->>'email' ELSE email END,
+    image = CASE WHEN p_changes ? 'image' THEN p_changes->>'image' ELSE image END,
+    active = CASE WHEN p_changes ? 'active' THEN (p_changes->>'active')::BOOLEAN ELSE active END,
+    partners = CASE WHEN p_changes ? 'partners' THEN ARRAY(SELECT jsonb_array_elements_text(p_changes->'partners')) ELSE partners END,
+    password_hash = COALESCE(p_password_hash, password_hash)
+  WHERE id = p_client_id RETURNING * INTO v_client;
+  IF p_password_hash IS NOT NULL OR p_changes->>'active' = 'false' THEN
+    UPDATE public.dash_sessions SET revoked_at = now() WHERE client_id = p_client_id AND revoked_at IS NULL;
+  END IF;
+  RETURN to_jsonb(v_client) - 'password_hash';
+END;
+$$;
+REVOKE ALL ON FUNCTION public.admin_update_client_account(UUID, JSONB, TEXT) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.admin_update_client_account(UUID, JSONB, TEXT) TO service_role;

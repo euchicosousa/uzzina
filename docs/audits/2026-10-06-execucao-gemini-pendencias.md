@@ -1,5 +1,7 @@
 # UZZINA — execução das pendências pelo Gemini
 
+> **Histórico:** este documento registra a rodada anterior. Estado vigente e próxima leitura: [CURRENT.md](CURRENT.md); correções05–09: [fechamento](2026-10-06-fechamento-tickets-05-09.md).
+
 > **Checkpoint após execução05–09 — 06/10/2026:** antes de continuar10, leia [revisão independente](2026-10-06-revisao-tickets-05-09.md) e trate R01–R13 com testes reais. 06–09 não estão aprovados; segurançaSQL e data/salvamento precisam correção/diagnóstico. As instruções originais abaixo permanecem válidas onde a revisão não as complementa.
 
 
@@ -7,13 +9,7 @@ Data: 06/10/2026. Destinatário: Gemini Flash usado pelo proprietário. Reposit�
 
 ## 1. Comece aqui
 
-1. Leia `AGENTS.md`, este documento e `2026-10-06-matriz-52-achados.md`, ambos em `docs/audits/`.
-2. Registre o commit inicial e o estado dos arquivos modificados/não rastreados. O checkout contém trabalho de outros agentes ainda sem commit: preserve-o. A diferença contra HEAD, sozinha, não identifica suas mudanças.
-3. Leia os fechamentos `2026-10-06-fechamento-tickets-01-03.md`, `2026-10-06-fechamento-ticket-04.md` e `2026-10-06-correcao-parceiros-arquivados.md`. Preserve essas correções; altere um trecho já corrigido apenas para satisfazer um contrato posterior explicitamente dependente dele ou corrigir defeito reproduzido.
-4. Use os arquivos em `.scratch/correcoes-auditoria-2026-10-06/issues/` como especificações por ticket. Leia cada arquivo quando chegar à tarefa, não todos repetidamente. A auditoria de setembro é referência histórica, não autorização para implementar todas as alternativas propostas.
-5. Crie `docs/audits/2026-10-06-retorno-gemini-pendencias.md` a partir do modelo indicado ao final. Atualize-o depois de cada ticket. Esse é o arquivo que o proprietário entregará ao Codex para revisão.
-
-A baseline registrada pela última execução é 153 testes, 425 assertions, tipagem/lint/build aprovados. Execute os comandos disponíveis na sua sessão e registre seu resultado real: esse número é referência histórica, não meta nem prova de que os testes antigos são adequados.
+Leia AGENTS.md, CURRENT.md e o ticket autorizado. A sequência completa abaixo é referência; o próximo ticket e resultado vigente estão em CURRENT. A matriz52 e fechamentos anteriores só precisam ser lidos se a tarefa envolver uma divergência com aquele histórico.
 
 ## 2. Limites e regras que precisam sobreviver
 
@@ -116,7 +112,7 @@ A mudança de sessão/permissões exige conjunto compatível02–07. Concorrênc
 
 ## 7. Arquivo final e formato de retorno
 
-Arquivo obrigatório: `docs/audits/2026-10-06-retorno-gemini-pendencias.md`. Modelo: `docs/audits/2026-10-06-modelo-retorno-gemini.md`. Copie o modelo e preencha, sem editar a matriz de baseline como se fosse evidência nova.
+Arquivo obrigatório: `docs/audits/2026-10-06-retorno-gemini-pendencias.md`. Preencha seguindo os requisitos abaixo, sem editar a matriz de baseline como se fosse evidência nova.
 
 O retorno deve conter:
 

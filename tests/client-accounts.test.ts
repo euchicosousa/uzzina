@@ -35,6 +35,16 @@ mock.module("@supabase/supabase-js", () => ({
       if (rpcShouldFail) {
         return { data: null, error: { message: "RPC failure" } };
       }
+      if (fn === "admin_update_client_account") {
+        const client = db.clients.find(c => c.id === params.p_client_id);
+        if (!client) return {data: null, error: {message: "Not found", code: "P0002"}};
+        Object.assign(client, params.p_changes);
+        if (params.p_password_hash) client.password_hash = params.p_password_hash;
+        if (params.p_password_hash || client.active === false) {
+          for (const session of db.dash_sessions) if (session.client_id === client.id) session.revoked_at = "2026-10-06T12:00:00Z";
+        }
+        return {data: {...client}, error: null};
+      }
       if (fn === "admin_update_client_password") {
         const clientId = params.p_client_id as string;
         const newHash = params.p_password_hash as string;
@@ -52,6 +62,7 @@ mock.module("@supabase/supabase-js", () => ({
       if (fn === "admin_deactivate_client") {
         const clientId = params.p_client_id as string;
         const client = db.clients.find((c) => c.id === clientId);
+        if (!client) return {data: null, error: {message: "Not found", code: "P0002"}};
         if (client) {
           client.active = false;
         }
@@ -497,4 +508,19 @@ describe("Ticket 06: Administração de Contas de Clientes no Servidor", () => {
     await dashAuthHandler(req, res);
     expect(getStatus()).toBe(401);
   });
+  it("rejects invalid partner before changing password or revoking sessions", async () => {
+    const before = db.clients[0]?.password_hash;
+    const request = createMockReqRes({method: "PATCH", headers: {authorization: "Bearer admin-token"}, body: {id: "client-1", password: "NewPassword123", partners: ["missing"]}});
+    await clientAccountsHandler(request.req, request.res);
+    expect(request.getStatus()).toBe(400);
+    expect(db.clients[0]?.password_hash).toBe(before);
+    expect(db.dash_sessions.filter(s => s.client_id === "client-1").every(s => !s.revoked_at)).toBe(true);
+  });
+
+});
+
+it("DELETE rejects a nonexistent client instead of reporting archival", async () => {
+  const request = createMockReqRes({method: "DELETE", headers: {authorization: "Bearer admin-token"}, body: {id: "missing-client"}});
+  await clientAccountsHandler(request.req, request.res);
+  expect(request.getStatus()).toBe(404);
 });

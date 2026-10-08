@@ -88,3 +88,8 @@ export const getNewDateForAction = (
     date: format(newDateInput, "yyyy-MM-dd HH:mm:ss"),
   };
 };
+
+// Preserve PostgreSQL microseconds when ordering confirmed action versions.
+export const getActionRevision = (value: string | undefined) => value
+  ? Date.parse(value) * 1000 + Number(value.match(/\.\d{3}(\d{1,3})/)?.[1]?.padEnd(3, "0") || 0)
+  : 0;

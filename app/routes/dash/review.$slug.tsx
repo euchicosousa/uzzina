@@ -41,7 +41,7 @@ function ReviewPage() {
   const isLegacyLink = !token && !!ids;
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["publicReview", slug, token],
+    queryKey: ["review", token, slug],
     queryFn: () => (token ? fetchPublicReview(slug, token) : Promise.reject(new Error("MISSING_TOKEN"))),
     enabled: !!slug && !!token,
     retry: false,

@@ -37,7 +37,7 @@ export function PartnerCalendarBoard({
   invariant(partnerSlug);
 
   const { data: celebrations = [] } = useQuery({
-    queryKey: QUERY_KEYS.celebrations(),
+    queryKey: QUERY_KEYS.celebrations(person.user_id),
     queryFn: fetchCelebrations,
     staleTime: 30 * 60 * 1000,
   });

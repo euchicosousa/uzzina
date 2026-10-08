@@ -1,3 +1,4 @@
+import { useAppContext } from "~/contexts/AppContext";
 import { ZapIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "cnfast";
@@ -39,8 +40,9 @@ export function SprintCombobox({
   disabled = false,
 }: SprintComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { person } = useAppContext();
   const { data: people = [] } = useQuery({
-    queryKey: QUERY_KEYS.people(),
+    queryKey: QUERY_KEYS.people(person.user_id),
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });

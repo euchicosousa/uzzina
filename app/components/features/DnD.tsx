@@ -39,6 +39,7 @@ export function Draggable({
     });
   const style = {
     transform: CSS.Transform.toString(transform),
+    touchAction: "none",
   };
   const child = React.Children.only(children);
   const isDOMElement = typeof child.type === "string";
@@ -47,7 +48,7 @@ export function Draggable({
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      style={isDragging ? undefined : style}
+      style={isDragging ? {touchAction: "none"} : style}
       // className={cn(isDragging && "opacity-20")}
     >
       {React.cloneElement(child, {

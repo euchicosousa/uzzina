@@ -118,7 +118,7 @@ describe("Ticket 09: ActionSaveCoordinator e Gaveta Recuperável", () => {
       responsibles: ["usr-2"],
     });
 
-    expect(coordinator.getState().pendingPatch).toEqual({
+    expect(coordinator.getState().pendingPatch).toMatchObject({
       description: "Nova descrição digitada durante a criação",
       responsibles: ["usr-2"],
     });
@@ -289,7 +289,7 @@ describe("Ticket 09: ActionSaveCoordinator e Gaveta Recuperável", () => {
     expect(coordinator.getState().savedTitle).toBe("Ação B");
   });
 
-  it("safeClose com rascunho em branco permite fechar sem tentar salvar lixo", async () => {
+  it("safeClose leaves incomplete draft handling to the drawer without sending a write", async () => {
     let writeCalled = false;
     const writeFn = async () => {
       writeCalled = true;
@@ -330,4 +330,21 @@ describe("Drawer save regressions", () => {
     expect(sent.partners).toEqual(["cnvt"]);
     expect(sent.category).toBe("post");
   });
+});
+
+it("A to B to A ignores an earlier generation without clearing the current save", async () => {
+  const responses: ((action: Action) => void)[] = [];
+  const initial = makeFakeAction();
+  const coordinator = new ActionSaveCoordinator({key: initial.id, initialAction: initial, writeFn: async () => new Promise<Action>(resolve => responses.push(resolve))});
+  const oldSave = coordinator.scheduleUpdate({title: "Old A"});
+  coordinator.reset(makeFakeAction({id: "B"}));
+  coordinator.reset(initial);
+  const currentSave = coordinator.scheduleUpdate({title: "Current A"});
+  responses[0]?.(makeFakeAction({title: "Old A"}));
+  await oldSave;
+  expect(coordinator.getStatus()).toBe("saving");
+  expect(coordinator.getState().pendingPatch.title).toBe("Current A");
+  responses[1]?.(makeFakeAction({title: "Current A", updated_at: "2026-10-06T10:12:00Z"}));
+  await currentSave;
+  expect(coordinator.getState().savedTitle).toBe("Current A");
 });

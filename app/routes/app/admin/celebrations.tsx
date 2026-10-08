@@ -1,3 +1,4 @@
+import { useAppContext } from "~/contexts/AppContext";
 import { CalendarDate } from "@internationalized/date";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -26,10 +27,11 @@ function AdminCelebrationsPageWrapper() {
   );
 }
 function AdminCelebrationsPage() {
+  const { person } = useAppContext();
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
   const { data: celebrations = [] } = useQuery({
-    queryKey: ["celebrations"],
+    queryKey: ["celebrations", "team", person.user_id],
     queryFn: () => getAllCelebrations(supabase),
   });
   const createMutation = useMutation({

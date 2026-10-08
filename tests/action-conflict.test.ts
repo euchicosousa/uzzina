@@ -120,6 +120,15 @@ describe("Ticket 08: Atualizar ação com conflito explícito", () => {
     expect(updated.updated_at).not.toBe(v0);
   });
 
+  it("real update serializer omits undefined text without clearing existing fields", async () => {
+    const row = db.actions[0];
+    if (!row) throw new Error("Missing fixture");
+    row.description = "Preserved description";
+    const updated = await updateActionClient("act-1", {phase:"doing",description:undefined}, "2026-10-06T12:00:00.000Z");
+    expect(capturedUpdatePayload).toEqual({phase:"doing"});
+    expect(updated.description).toBe("Preserved description");
+  });
+
   it("lança ActionConflictError tipado quando zero linhas são afetadas por versão conflitante", async () => {
     const versaoObsoleta = "2026-09-01T00:00:00.000Z";
 
@@ -183,4 +192,9 @@ describe("Ticket 08: Atualizar ação com conflito explícito", () => {
     // O título salvo pela Aba A foi preservado
     expect(db.actions[0].title).toBe("Salvo pela Aba A");
   });
+  it("business patch never sends caller-supplied timestamps", async () => {
+    await updateActionClient("act-1", {date: "2026-11-21 10:00:00", updated_at: "fake", created_at: "fake"}, "2026-10-06T12:00:00.000Z");
+    expect(capturedUpdatePayload).toEqual({date: "2026-11-21 10:00:00"});
+  });
+
 });

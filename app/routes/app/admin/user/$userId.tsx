@@ -1,3 +1,5 @@
+import { getQuerySessionGeneration } from "~/lib/query-client";
+import { useRef } from "react";
 
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import { AdminUserForm } from "~/components/features/AdminUserForm";
@@ -36,18 +38,21 @@ interface UserFormData {
 }
 
 function AdminUserPage() {
+  const appData = useAppContext();
   const { userId: routeUserId } = Route.useParams();
   const userId = routeUserId || "new";
   const navigate = useNavigate();
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
+  const generation = useRef(getQuerySessionGeneration(queryClient)).current;
+  const isCurrentSession = () => generation === getQuerySessionGeneration(queryClient);
   const areas = Object.values(AREAS);
 
   const isNew = userId === "new" || !userId;
 
   // Query do Membro
   const { data: person, isLoading: isLoadingPerson } = useQuery({
-    queryKey: ["person", userId],
+    queryKey: ["person", "team", appData.person.user_id, userId],
     queryFn: async () => {
       if (isNew) return null;
       const { data, error } = await supabase
@@ -88,6 +93,7 @@ function AdminUserPage() {
           throw new Error(resData.error || "Falha ao criar credenciais do usuário.");
         }
 
+        if (!isCurrentSession()) throw new Error("A sessão mudou. Entre novamente.");
         const newAuthId = resData.user.id;
 
         // 3. Inserir na tabela "people"
@@ -106,38 +112,31 @@ function AdminUserPage() {
 
         if (dbError) throw dbError;
       } else {
-        const { error } = await supabase
-          .from("people")
-          .update({
-            name: userData.name,
-            surname: userData.surname,
-            email: userData.email,
-            initials: userData.initials,
-            short: userData.short,
-            image: userData.image,
-            admin: userData.admin,
-            visible: userData.visible,
-            areas: userData.areas,
-          })
-          .eq("user_id", userId || "");
+        const { error } = await supabase.rpc("admin_update_person", {p_user_id: userId || "", p_changes: {
+          name: userData.name, surname: userData.surname, email: userData.email,
+          initials: userData.initials, short: userData.short, image: userData.image,
+          admin: userData.admin, visible: userData.visible, areas: userData.areas,
+        }});
 
         if (error) throw error;
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["person", userId] });
+      if (!isCurrentSession()) return;
+      queryClient.invalidateQueries({ queryKey: ["person", "team", appData.person.user_id, userId] });
       queryClient.invalidateQueries({ queryKey: ["people"] });
       toast.success("Membro salvo com sucesso!");
       navigate({ to: "/app/admin/users" });
     },
     onError: (err: unknown) => {
+      if (!isCurrentSession()) return;
       const message = err instanceof Error ? err.message : "Erro desconhecido";
       toast.error(`Erro ao salvar: ${message}`);
     },
   });
 
   const isSubmitting = saveMutation.isPending;
-  const appData = useAppContext();
+
   const { cloudName, uploadPreset } = appData;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

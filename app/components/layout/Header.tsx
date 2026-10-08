@@ -13,9 +13,9 @@ import {
 } from "date-fns";
 import { parseU } from "~/utils/date";
 import { BellIcon, CheckIcon } from "lucide-react";
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { toast } from "sonner";
-import type { Json } from "types/database";
+import { usePreferencePersistence } from "~/hooks/usePreferencePersistence";
 import { useAppContext } from "~/contexts/AppContext";
 import { Theme, useAppThemeContext } from "~/hooks/useAppTheme";
 import { useNotifications } from "~/hooks/useNotifications";
@@ -78,7 +78,7 @@ export function Header({
   const homeEndISO = endOfDay(endOfWeek(endOfMonth(now))).toISOString();
   const todayEndISO = endOfDay(now).toISOString();
   const { data: homeActions = [] as Action[] } = useQuery({
-    queryKey: [...QUERY_KEYS.actions.home(person.user_id),{partners:partnerSlugs}],
+    queryKey: QUERY_KEYS.actions.list("home",person.user_id,person.admin,partnerSlugs,homeStartISO,homeEndISO),
     queryFn: () =>
       fetchHomeActions(
         person.user_id,
@@ -90,7 +90,7 @@ export function Header({
     enabled: isHome,
   });
   const { data: homeLateActions = [] as Action[] } = useQuery({
-    queryKey: [...QUERY_KEYS.lateActions.user(person.user_id),{partners:partnerSlugs}],
+    queryKey: QUERY_KEYS.actions.list("late",person.user_id,person.admin,partnerSlugs),
     queryFn: () =>
       fetchAllLateActions(
         person.user_id,
@@ -115,9 +115,8 @@ export function Header({
   const pEnd = endOfDay(endOfWeek(endOfMonth(parseU(partnerDate))));
   const pStartStr = format(pStart, "yyyy-MM-dd HH:mm:ss");
   const pEndStr = format(pEnd, "yyyy-MM-dd HH:mm:ss");
-  const partnerDateRange = `${pStartStr}_${pEndStr}`;
   const { data: partnerActions = [] as Action[] } = useQuery({
-    queryKey: QUERY_KEYS.actions.partner(slug || "", partnerDateRange),
+    queryKey: QUERY_KEYS.actions.list("partner",person.user_id,person.admin,slug ? [slug] : [],pStartStr,pEndStr),
     queryFn: () =>
       fetchPartnerActions(
         slug || "",
@@ -129,7 +128,7 @@ export function Header({
     enabled: isPartner && !!slug,
   });
   const { data: partnerAllLateActions = [] as Action[] } = useQuery({
-    queryKey: [...QUERY_KEYS.lateActions.user(person.user_id),{partners:partnerSlugs}],
+    queryKey: QUERY_KEYS.actions.list("late",person.user_id,person.admin,partnerSlugs),
     queryFn: () =>
       fetchAllLateActions(
         person.user_id,
@@ -296,7 +295,7 @@ export function Header({
     </div>
   );
 }
-const HeaderMenu = ({ person }: { person: Person }) => {
+export const HeaderMenu = ({ person }: { person: Person }) => {
   const {
     theme,
     setTheme,
@@ -305,65 +304,18 @@ const HeaderMenu = ({ person }: { person: Person }) => {
     followPartnerColor,
     setFollowPartnerColor,
   } = useAppThemeContext();
-  const latestPrefsRef = useRef<Record<string, unknown>>(
-    person.preferences &&
-    typeof person.preferences === "object" &&
-    !Array.isArray(person.preferences)
-      ? { ...(person.preferences as Record<string, unknown>) }
-      : {},
-  );
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const pendingPrefsRef = useRef<Record<string, unknown>>({});
-  const queuePreference = (key: string, value: unknown) => {
-    latestPrefsRef.current[key] = value;
-    pendingPrefsRef.current[key] = value;
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-    debounceTimerRef.current = setTimeout(async () => {
-      const keysToUpdate = Object.keys(pendingPrefsRef.current);
-      if (keysToUpdate.length === 0) return;
-
-      const supabase = createSupabaseBrowserClient();
-      const updatedPrefs: Record<string, unknown> = {
-        ...latestPrefsRef.current,
-      };
-
-      for (const k of keysToUpdate) {
-        delete pendingPrefsRef.current[k];
-      }
-
-      const { error } = await supabase
-        .from("people")
-        .update({
-          preferences: updatedPrefs as unknown as Json,
-        })
-        .eq("user_id", person.user_id);
-      if (error) {
-        console.error("Error updating preferences:", error);
-        for (const k of keysToUpdate) {
-          if (pendingPrefsRef.current[k] === undefined) {
-            pendingPrefsRef.current[k] = updatedPrefs[k];
-          }
-        }
-      } else {
-        if (typeof person === "object" && person !== null) {
-          (person as Record<string, unknown>).preferences = updatedPrefs;
-        }
-      }
-    }, 300);
-  };
+  const {queuePreference, retry, hasError} = usePreferencePersistence(person);
   const changeTheme = (newTheme: Theme) => {
     setTheme(newTheme);
-    queuePreference("theme", newTheme);
+    queuePreference({theme: newTheme});
   };
   const changeColorIndex = (index: number) => {
     setPrimaryColorIndex(index);
-    queuePreference("themeColorIndex", index);
+    queuePreference({themeColorIndex: index});
   };
   const changeFollowPartner = (value: boolean) => {
     setFollowPartnerColor(value);
-    queuePreference("followPartnerColor", value);
+    queuePreference({followPartnerColor: value});
   };
   return (
     <PrismMenu>
@@ -383,6 +335,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
       </PrismMenuTrigger>
       <PrismMenuContent className="w-64 p-0" placement="bottom end">
         <PrismMenuGroup className="p-2">
+          {hasError && <PrismMenuItem onAction={retry} textValue="Tentar salvar preferências">Tentar salvar preferências</PrismMenuItem>}
           <PrismMenuItem
             onAction={() =>
               changeTheme(theme === Theme.DARK ? Theme.LIGHT : Theme.DARK)
@@ -444,7 +397,7 @@ const HeaderMenu = ({ person }: { person: Person }) => {
 
         <PrismMenuSeparator />
 
-        <PrismMenuGroup className="px-2">
+        <PrismMenuGroup className="px-2 pb-2">
           <PrismMenuItem href="/app/leads" textValue="Leads">
             Leads
           </PrismMenuItem>

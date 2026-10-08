@@ -1,3 +1,4 @@
+import type { Action } from "~/types";
 import {
   createContext,
   use,
@@ -5,6 +6,8 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useId,
+  useRef,
 } from "react";
 
 type MultiSelectionContextType = {
@@ -14,6 +17,9 @@ type MultiSelectionContextType = {
   toggleSelection: (id: string, override?: boolean) => void;
   selectAll: (ids: string[]) => void;
   clearSelection: () => void;
+  removeSelected: (ids: string[]) => void;
+  eligibleActions: Action[];
+  registerActions: (key: string, actions: Action[] | null) => void;
 };
 
 const MultiSelectionContext = createContext<
@@ -29,6 +35,28 @@ export function MultiSelectionProvider({
 }) {
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const [views, setViews] = useState<Record<string, Action[]>>({});
+  const registerActions = useCallback((key: string, actions: Action[] | null) => {
+    setViews(previous => {
+      const next = {...previous};
+      if (actions) next[key] = actions;
+      else delete next[key];
+      return next;
+    });
+  }, []);
+  const eligibleActions = useMemo(() => [...new Map(Object.values(views).flat().map(action => [action.id, action])).values()], [views]);
+  const eligibleIds = useMemo(() => new Set(eligibleActions.map(action => action.id)), [eligibleActions]);
+  const effectiveIds = selectedIds.filter(id => eligibleIds.has(id));
+  useEffect(() => {
+    setSelectedIds(previous => {
+      const next = previous.filter(id => eligibleIds.has(id));
+      return next.length === previous.length ? previous : next;
+    });
+  }, [eligibleIds]);
+  const removeSelected = useCallback((ids: string[]) => {
+    setSelectedIds(previous => previous.filter(id => !ids.includes(id)));
+  }, []);
 
   // Limpa seleção ao mudar de rota ou contexto
   useEffect(() => {
@@ -56,6 +84,7 @@ export function MultiSelectionProvider({
   }, []);
 
   const toggleSelection = useCallback((id: string, override?: boolean) => {
+    if (!eligibleIds.has(id)) return;
     setSelectedIds((prev) => {
       if (override !== undefined) {
         if (override && !prev.includes(id)) return [...prev, id];
@@ -64,11 +93,11 @@ export function MultiSelectionProvider({
       }
       return prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id];
     });
-  }, []);
+  }, [eligibleIds]);
 
   const selectAll = useCallback((ids: string[]) => {
-    setSelectedIds([...new Set(ids)]);
-  }, []);
+    setSelectedIds([...new Set(ids)].filter(id => eligibleIds.has(id)));
+  }, [eligibleIds]);
 
   const clearSelection = useCallback(() => {
     setSelectedIds([]);
@@ -78,75 +107,39 @@ export function MultiSelectionProvider({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isSelectionMode && (e.metaKey || e.ctrlKey) && (e.key === "a" || e.key === "A")) {
-        if (
-          e.target instanceof HTMLInputElement ||
-          e.target instanceof HTMLTextAreaElement ||
-          (e.target as HTMLElement).isContentEditable
-        ) {
-          return;
-        }
-
+        const target = e.target;
+        if (target instanceof Element && target.closest('input, textarea, [contenteditable]:not([contenteditable="false"])')) return;
         e.preventDefault();
-        const actionElements = document.querySelectorAll("[data-action-id]");
-        const ids = Array.from(actionElements)
-          .filter((el) => {
-            if (!(el instanceof HTMLElement)) return false;
-            // Ignora elementos ocultos, colapsados ou dentro de gavetas/modais fechados
-            if (
-              el.closest('[aria-hidden="true"]') ||
-              el.closest(".hidden") ||
-              el.closest("[inert]")
-            ) {
-              return false;
-            }
-            if (el.offsetParent === null && el.style.position !== "fixed") {
-              return false;
-            }
-            const rect = el.getBoundingClientRect();
-            if (rect.width === 0 || rect.height === 0) {
-              return false;
-            }
-            if (typeof window !== "undefined") {
-              const style = window.getComputedStyle(el);
-              if (
-                style.display === "none" ||
-                style.visibility === "hidden" ||
-                style.opacity === "0"
-              ) {
-                return false;
-              }
-            }
-            return true;
-          })
-          .flatMap((el) => {
-            const id = el.getAttribute("data-action-id");
-            return id ? [id] : [];
-          });
-
-        setSelectedIds([...new Set(ids)]);
+        setSelectedIds([...eligibleIds]);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isSelectionMode]);
+  }, [isSelectionMode, eligibleIds]);
 
   const contextValue = useMemo(
     () => ({
       isSelectionMode,
-      selectedIds,
+      selectedIds: effectiveIds,
       toggleSelectionMode,
       toggleSelection,
       selectAll,
       clearSelection,
+      removeSelected,
+      eligibleActions,
+      registerActions,
     }),
     [
       isSelectionMode,
-      selectedIds,
+      effectiveIds,
       toggleSelectionMode,
       toggleSelection,
       selectAll,
       clearSelection,
+      removeSelected,
+      eligibleActions,
+      registerActions,
     ],
   );
 
@@ -165,4 +158,34 @@ export function useMultiSelection() {
     );
   }
   return context;
+}
+
+// Containers publish their rendered data, never DOM geometry or unrelated cached lists.
+export function useSelectionActions(actions: Action[]) {
+  const context = use(MultiSelectionContext);
+  const key = useId();
+  const register = context?.registerActions;
+  const latestActions = useRef(actions);
+  latestActions.current = actions;
+  const signature = JSON.stringify(actions.map(action => [action.id, action.updated_at, action.date]));
+  const previousSignature = useRef<string | null>(null);
+  useEffect(() => {
+    if (previousSignature.current === signature) return;
+    previousSignature.current = signature;
+    register?.(key, latestActions.current);
+  }, [register, key, signature]);
+  useEffect(() => () => {
+    previousSignature.current = null;
+    register?.(key, null);
+  }, [register, key]);
+}
+
+export function useSelectionContext(key: string) {
+  const context = use(MultiSelectionContext);
+  const clear = context?.clearSelection;
+  const previousKey = useRef(key);
+  useEffect(() => {
+    if (previousKey.current !== key) clear?.();
+    previousKey.current = key;
+  }, [clear, key]);
 }

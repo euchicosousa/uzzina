@@ -33,6 +33,7 @@ export function GlobalSearchCommand({
     actions: Action[];
   } | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState(false);
   const [query, setQuery] = useState("");
   // const [includeArchived, setIncludeArchived] = useState(false);
   const location = useLocation();
@@ -48,7 +49,10 @@ export function GlobalSearchCommand({
     let isCurrent = true;
     const shouldSearch = query.length >= 3;
     const slugs = partners.map((p) => p.slug);
+    setSearchError(false);
     if (shouldSearch) {
+      setSearchResults(null);
+      setIsSearching(true);
       const delayDebounceFn = setTimeout(async () => {
         setIsSearching(true);
         try {
@@ -70,6 +74,8 @@ export function GlobalSearchCommand({
         } catch (err) {
           if (!isCurrent) return;
           console.error("Erro na busca global:", err);
+          setSearchResults(null);
+          setSearchError(true);
         } finally {
           if (isCurrent) {
             setIsSearching(false);
@@ -101,10 +107,11 @@ export function GlobalSearchCommand({
         onInputChange={(value) => setQuery(value)}
       >
         <PrismCommandInput placeholder="Faça sua busca..." />
+        {searchError && <div className="px-4 py-3 text-sm text-error" role="alert">Não foi possível buscar ações. Tente novamente.</div>}
         <PrismCommandList
           renderEmptyState={() => (
             <PrismCommandEmpty>
-              {isSearching ? "Buscando..." : "Nenhum item foi encontrado."}
+              {isSearching ? "Buscando..." : searchError ? "Altere a busca para tentar novamente." : "Nenhum item foi encontrado."}
             </PrismCommandEmpty>
           )}
         >
