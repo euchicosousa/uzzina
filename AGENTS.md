@@ -30,7 +30,7 @@ UZZINA é a aplicação existente de gestão de ações da agência CNVT: React,
 - TypeScript estrito: use `unknown` com validação para dados dinâmicos; não introduza `any` nem assertions de não-nulo.
 - Use a estrutura existente para corrigir o comportamento; arquitetura adicional exige uma necessidade concreta.
 - Correções funcionais precisam de teste que falhe pelo defeito no código real. Controle a fronteira externa necessária; funções copiadas para o teste não comprovam a implementação.
-- Execute testes pertinentes, `bun run lint` e `bun run typecheck`; build quando a mudança afetar execução/publicação. Para documentação isolada, confira referências e diff, sem criar testes que apenas repetem texto.
+- Execute testes pertinentes, `bun run format`, `bun run lint` e `bun run typecheck`; build quando a mudança afetar execução/publicação. Formatação/ordem de classes Tailwind: Prettier com apenas `prettier-plugin-tailwindcss` (único plugin de parser; outro plugin anula a ordenação). Biome só faz lint (formatter desligado). Para documentação isolada, confira referências e diff, sem criar testes que apenas repetem texto.
 - HTTP controlado no navegador verifica a interface, mas não certifica o banco/provedor. Inspeção textual de SQL não comprova autorização real. Registre esses limites.
 
 ## 3. Contratos de funcionamento
