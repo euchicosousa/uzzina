@@ -14,9 +14,11 @@ import {
 import { parseU } from "~/utils/date";
 import {
   BellIcon,
+  BriefcaseIcon,
   CheckIcon,
   LaptopIcon,
   MoonIcon,
+  PaletteIcon,
   SunIcon,
 } from "lucide-react";
 import { useMemo } from "react";
@@ -366,9 +368,15 @@ export const HeaderMenu = ({ person }: { person: Person }) => {
     setTheme(newTheme);
     queuePreference({ theme: newTheme });
   };
+  // Picking a swatch while partner colors are active also switches to the chosen color.
   const changeColorIndex = (index: number) => {
     setPrimaryColorIndex(index);
-    queuePreference({ themeColorIndex: index });
+    if (followPartnerColor) {
+      setFollowPartnerColor(false);
+      queuePreference({ themeColorIndex: index, followPartnerColor: false });
+    } else {
+      queuePreference({ themeColorIndex: index });
+    }
   };
   const changeFollowPartner = (value: boolean) => {
     setFollowPartnerColor(value);
@@ -413,23 +421,43 @@ export const HeaderMenu = ({ person }: { person: Person }) => {
               ) : null}
             </PrismMenuItem>
           ))}
-
-          <PrismMenuItem
-            onAction={() => changeFollowPartner(!followPartnerColor)}
-            textValue="Cores do parceiro"
-          >
-            <span>Cores do parceiro</span>
-            {followPartnerColor ? (
-              <CheckIcon className="ml-auto size-4 text-primary" />
-            ) : null}
-          </PrismMenuItem>
         </PrismMenuGroup>
 
         <PrismMenuSeparator />
 
-        <PrismMenuGroup className="grid grid-cols-6 gap-1 px-4">
-          <PrismMenuLabel className="col-span-6">Cores</PrismMenuLabel>
+        <PrismMenuGroup
+          aria-label="Origem das cores"
+          className="px-2"
+          disallowEmptySelection
+          onSelectionChange={(keys) => {
+            const selected = Array.from(keys)[0];
+            if (selected === "partner" || selected === "palette")
+              changeFollowPartner(selected === "partner");
+          }}
+          selectedKeys={new Set([followPartnerColor ? "partner" : "palette"])}
+          selectionMode="single"
+        >
+          <PrismMenuLabel>Cores</PrismMenuLabel>
+          <PrismMenuItem
+            id="partner"
+            shouldCloseOnSelect={false}
+            textValue="Do parceiro"
+          >
+            <BriefcaseIcon /> Do parceiro
+          </PrismMenuItem>
+          <PrismMenuItem
+            id="palette"
+            shouldCloseOnSelect={false}
+            textValue="Escolher cor"
+          >
+            <PaletteIcon /> Escolher cor
+          </PrismMenuItem>
+        </PrismMenuGroup>
 
+        <PrismMenuGroup
+          aria-label="Paleta de cores"
+          className="grid grid-cols-6 gap-1 px-2 pt-1 pb-2"
+        >
           {PALLETE.map((paletteConfig, i) => {
             const { light, dark } = paletteConfig;
             const currentColors = theme === Theme.DARK ? dark : light;
@@ -438,8 +466,12 @@ export const HeaderMenu = ({ person }: { person: Person }) => {
               <PrismMenuItem
                 key={paletteConfig.id}
                 aria-label={paletteConfig.label}
-                className="size-7 min-w-0 rounded-2xl p-1 squircle"
+                className={cn(
+                  "mx-auto size-7 min-w-0 rounded-2xl p-1 transition-opacity squircle",
+                  followPartnerColor && "opacity-30 focus:opacity-100",
+                )}
                 onAction={() => changeColorIndex(i)}
+                shouldCloseOnSelect={false}
                 style={{
                   backgroundColor: isSelected
                     ? `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`

@@ -1,0 +1,42 @@
+{
+  "project_ref": "dfepmjcozszswocwvdpq",
+  "migration_sha256": "f26ec52bcff3ce719990fca5587e0a84458d748cd2bda89ac493c14363e5ac4d",
+  "transaction_committed": true,
+  "records": [
+    {
+      "stage": "before",
+      "verified_at_utc": "2026-10-09T09:53:44.44105+00:00",
+      "policy": {
+        "schemaname": "public",
+        "tablename": "actions",
+        "policyname": "actions_select_policy",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "authenticated"
+        ],
+        "cmd": "SELECT",
+        "qual": "can_access_action(id)",
+        "with_check": null
+      }
+    },
+    {
+      "stage": "after",
+      "verified_at_utc": "2026-10-09T09:53:44.967508+00:00",
+      "policy": {
+        "schemaname": "public",
+        "tablename": "actions",
+        "policyname": "actions_select_policy",
+        "permissive": "PERMISSIVE",
+        "roles": [
+          "authenticated"
+        ],
+        "cmd": "SELECT",
+        "qual": "(is_active_admin() OR (is_active_member() AND ((responsibles)::text[] @> ARRAY[(auth.uid())::text]) AND (EXISTS ( SELECT 1\n   FROM partners p\n  WHERE ((p.archived = false) AND (p.slug = ANY (actions.partners)) AND ((p.users_ids)::text[] @> ARRAY[(auth.uid())::text]))))))",
+        "with_check": null
+      },
+      "migration_history_table": null
+    }
+  ],
+  "persisted_verification_at_utc": "2026-10-09T09:53:54.463828+00:00",
+  "persisted_verification": "Separate read-only connection confirmed row-based SELECT predicate equals the existing INSERT WITH CHECK predicate; DELETE/UPDATE USING remain can_access_action(id)."
+}

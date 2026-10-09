@@ -10,6 +10,27 @@
 
 BEGIN;
 
+-- Trigger functions are internal implementation details, not browser RPCs.
+DO $$ DECLARE signature TEXT; target OID; BEGIN
+  FOREACH signature IN ARRAY ARRAY[
+    'public.handle_actions_updated_at()',
+    'public.handle_new_user()',
+    'public.update_updated_at()'
+  ] LOOP
+    target := to_regprocedure(signature);
+    IF target IS NULL THEN RAISE EXCEPTION 'Missing trigger function: %', signature; END IF;
+    IF has_function_privilege('anon', target, 'EXECUTE')
+      OR has_function_privilege('authenticated', target, 'EXECUTE') THEN
+      RAISE EXCEPTION 'Browser can execute internal trigger function: %', signature;
+    END IF;
+    IF NOT EXISTS(SELECT 1 FROM pg_proc p, unnest(p.proconfig) setting
+      WHERE p.oid = target AND setting = 'search_path=""') THEN
+      RAISE EXCEPTION 'Trigger search_path is not empty: %', signature;
+    END IF;
+  END LOOP;
+  RAISE NOTICE 'PASS: internal trigger execution denied and search paths fixed';
+END $$;
+
 -- 1. Criação de identidades de teste temporárias
 DO $$
 DECLARE
@@ -141,6 +162,10 @@ DO $$ DECLARE created public.actions; duplicated public.actions; BEGIN
     FROM public.actions WHERE id=created.id RETURNING * INTO duplicated;
   IF duplicated.id IS NULL OR duplicated.id=created.id OR duplicated.date<>created.date THEN
     RAISE EXCEPTION 'Duplication did not preserve the execution date and return a new row';
+  END IF;
+  UPDATE public.actions SET phase='doing' WHERE id=created.id RETURNING * INTO duplicated;
+  IF duplicated.id IS NULL OR duplicated.updated_at <= created.updated_at OR duplicated.date<>created.date THEN
+    RAISE EXCEPTION 'Member update did not run the timestamp trigger without direct EXECUTE';
   END IF;
   -- Both invalid partner scope and missing responsibility must remain denied.
   BEGIN
@@ -274,6 +299,17 @@ END $$;
 RESET ROLE;
 
 -- Catalog regressions: grants, calendar administration, and mention confidentiality.
+RESET ROLE;
+SET LOCAL ROLE service_role;
+DO $$ DECLARE lead_id UUID; changed_at TIMESTAMPTZ; BEGIN
+ INSERT INTO public.leads(name,whatsapp,updated_at)
+ VALUES('Trigger test','00000000000','2000-01-01') RETURNING id INTO lead_id;
+ UPDATE public.leads SET completed=true WHERE id=lead_id RETURNING updated_at INTO changed_at;
+ IF changed_at IS NULL OR changed_at <= '2000-01-01'::TIMESTAMPTZ THEN
+  RAISE EXCEPTION 'Lead timestamp trigger did not run after search_path hardening';
+ END IF;
+ RAISE NOTICE 'PASS: lead timestamp trigger remains operational';
+END $$;
 RESET ROLE;
 DO $$ DECLARE target TEXT; BEGIN
  FOREACH target IN ARRAY ARRAY['actions','people','partners','clients','action_comments','notifications','celebrations','leads'] LOOP

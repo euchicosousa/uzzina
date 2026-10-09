@@ -76,6 +76,7 @@ UZZINA é a aplicação existente de gestão de ações da agência CNVT: React,
 
 - `get_app_bootstrap(UUID)` retorna JSONB. A migration de compatibilidade remove somente o trigger legado conhecido que escrevia em profiles ausente; administração cria Auth antes de preencher people.
 - Controle de concorrência usa um único trigger/versão UTC em updated_at timestamp sem timezone; preserve a data de execução e a compatibilidade com moddatetime legado.
+- Funções de trigger `handle_actions_updated_at`, `handle_new_user` e `update_updated_at` têm `search_path` vazio e não permitem EXECUTE direto por PUBLIC/anon/authenticated. Preserve os triggers existentes; não reabra essas funções como RPCs. Defaults de aplicação pertencem a `postgres`; defaults de `supabase_admin` são gerenciados pela plataforma e não devem ser alterados por contorno de permissões.
 - Contratos de autorização: datas comemorativas com escrita administrativa; notificações pelo destinatário ativo autorizado à ação, UPDATE apenas de read_at e menção/autoria/escopo verificados pelo servidor/banco.
 - As migrations incrementam o catálogo existente; não constituem sozinhas um schema inicial completo. SQL versionado não confirma aplicação. Consulte CURRENT e o manifest do rollout antes de publicar ou alterar permissões.
 - Produção usa PostgreSQL15; staging cloud usa17. `supabase/config.toml` major15 configura o ambiente local, não os serviços cloud. Bootstrap/manifest em supabase/staging são exclusivos do staging; versões remotas diferem dos nomes locais.

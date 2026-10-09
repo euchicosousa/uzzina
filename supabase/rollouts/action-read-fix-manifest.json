@@ -20,7 +20,12 @@
   },
   "production": {
     "project_ref": "dfepmjcozszswocwvdpq",
-    "state": "not applied by this correction task"
+    "state": "applied on 2026-10-09; persisted policy verified through a separate read-only connection",
+    "remote_version": null,
+    "remote_version_note": "Production has no supabase_migrations.schema_migrations table; existing SQL applied as a guarded transaction without migration-history repair.",
+    "verified_at_utc": "2026-10-09T09:53:54.463828+00:00",
+    "evidence": "supabase/rollouts/action-read-fix-production-verification.json",
+    "validation": "Local PostgreSQL 15.1 regression failed before and full authorization/concurrency checks passed after; production catalog verified after commit. No business rows written; published authenticated UI not retested."
   },
   "frontend_and_functions": {
     "state": "prepared locally; not deployed by this correction task",
@@ -29,7 +34,8 @@
   },
   "vercel_target": {
     "project_id_from_logs": "prj_8PN3IDaxZAHtFwkwViE7GplFBQWE",
-    "local_link_project_id": "prj_sFbkpGYbgTWb1uHFoGMIFpmZ90Pz",
-    "state": "Mismatch remains; confirm target and valid authentication before deployment"
+    "local_link_project_id": "prj_8PN3IDaxZAHtFwkwViE7GplFBQWE",
+    "state": "Resolved on 2026-10-09: owner screenshots confirmed the production domain and project ID; authenticated Vercel CLI inspection confirmed agenciacnvt/uzzina; vercel link updated the local target. No deployment or remote project changes performed.",
+    "previous_local_link_project_id": "prj_sFbkpGYbgTWb1uHFoGMIFpmZ90Pz"
   }
 }

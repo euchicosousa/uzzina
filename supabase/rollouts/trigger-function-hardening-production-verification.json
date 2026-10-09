@@ -1,0 +1,1153 @@
+{
+  "project_ref": "dfepmjcozszswocwvdpq",
+  "migration_sha256": "53f5e9f049553f7cf589148a383600a2430ba5f494cb491c0b35fbf7b6f22b4f",
+  "transaction_committed": true,
+  "records": [
+    {
+      "stage": "before",
+      "verified_at_utc": "2026-10-09T09:58:07.17632+00:00",
+      "signature": "handle_new_user()",
+      "search_path": null,
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "stage": "before",
+      "verified_at_utc": "2026-10-09T09:58:07.177538+00:00",
+      "signature": "update_updated_at()",
+      "search_path": null,
+      "anon_execute": true,
+      "authenticated_execute": true
+    },
+    {
+      "stage": "before",
+      "verified_at_utc": "2026-10-09T09:58:07.17755+00:00",
+      "signature": "handle_actions_updated_at()",
+      "search_path": [
+        "search_path=public"
+      ],
+      "anon_execute": true,
+      "authenticated_execute": true
+    },
+    {
+      "stage": "after",
+      "verified_at_utc": "2026-10-09T09:58:07.700883+00:00",
+      "signature": "handle_new_user()",
+      "search_path": [
+        "search_path=\"\""
+      ],
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "stage": "after",
+      "verified_at_utc": "2026-10-09T09:58:07.700914+00:00",
+      "signature": "update_updated_at()",
+      "search_path": [
+        "search_path=\"\""
+      ],
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "stage": "after",
+      "verified_at_utc": "2026-10-09T09:58:07.700927+00:00",
+      "signature": "handle_actions_updated_at()",
+      "search_path": [
+        "search_path=\"\""
+      ],
+      "anon_execute": false,
+      "authenticated_execute": false
+    }
+  ],
+  "verification": [
+    {
+      "verified_at_utc": "2026-10-09T09:58:44.059961+00:00",
+      "result": "PASS: six real direct calls denied with insufficient_privilege",
+      "read_only": "on"
+    },
+    {
+      "signature": "handle_new_user()",
+      "search_path": [
+        "search_path=\"\""
+      ],
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "signature": "update_updated_at()",
+      "search_path": [
+        "search_path=\"\""
+      ],
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "signature": "handle_actions_updated_at()",
+      "search_path": [
+        "search_path=\"\""
+      ],
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "table": "leads",
+      "trigger": "leads_updated_at",
+      "definition": "CREATE TRIGGER leads_updated_at BEFORE UPDATE ON public.leads FOR EACH ROW EXECUTE FUNCTION update_updated_at()"
+    },
+    {
+      "table": "actions",
+      "trigger": "trg_actions_updated_at",
+      "definition": "CREATE TRIGGER trg_actions_updated_at BEFORE UPDATE ON public.actions FOR EACH ROW EXECUTE FUNCTION handle_actions_updated_at()"
+    }
+  ],
+  "advisors_before": [
+    {
+      "name": "function_search_path_mutable",
+      "title": "Function Search Path Mutable",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects functions where the search_path parameter is not set.",
+      "detail": "Function \\`public.handle_new_user\\` has a role mutable search_path",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0011_function_search_path_mutable",
+      "metadata": {
+        "name": "handle_new_user",
+        "schema": "public",
+        "type": "function"
+      },
+      "cache_key": "function_search_path_mutable_public_handle_new_user_99610505cbc29333e5244857b0a7323f"
+    },
+    {
+      "name": "function_search_path_mutable",
+      "title": "Function Search Path Mutable",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects functions where the search_path parameter is not set.",
+      "detail": "Function \\`public.update_updated_at\\` has a role mutable search_path",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0011_function_search_path_mutable",
+      "metadata": {
+        "name": "update_updated_at",
+        "schema": "public",
+        "type": "function"
+      },
+      "cache_key": "function_search_path_mutable_public_update_updated_at_9b1889f56258bf9d6554213c05019c76"
+    },
+    {
+      "name": "anon_security_definer_function_executable",
+      "title": "Public Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable without signing in. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if it is not meant to be public.",
+      "detail": "Function `public.handle_actions_updated_at()` can be executed by the `anon` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/handle_actions_updated_at`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable",
+      "metadata": {
+        "name": "handle_actions_updated_at",
+        "schema": "public"
+      },
+      "cache_key": "anon_security_definer_function_executable_public_handle_actions_updated_at_"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.admin_update_person(p_user_id uuid, p_changes jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/admin_update_person`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "admin_update_person",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_admin_update_person_p_user_id uuid, p_changes jsonb"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.can_access_action(p_action_id uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/can_access_action`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "can_access_action",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_can_access_action_p_action_id uuid"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.can_notify_mention(p_comment_id uuid, p_action_id uuid, p_recipient_id uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/can_notify_mention`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "can_notify_mention",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_can_notify_mention_p_comment_id uuid, p_action_id uuid, p_recipient_id uuid"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.get_app_bootstrap(p_user_id uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/get_app_bootstrap`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "get_app_bootstrap",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_get_app_bootstrap_p_user_id uuid"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.get_home_actions(p_user_id uuid, p_start_date timestamp with time zone, p_end_date timestamp with time zone, p_today_end timestamp with time zone, p_partner_slugs text[])` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/get_home_actions`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "get_home_actions",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_get_home_actions_p_user_id uuid, p_start_date timestamp with time zone, p_end_date timestamp with time zone, p_today_end timestamp with time zone, p_partner_slugs text[]"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.handle_actions_updated_at()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/handle_actions_updated_at`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "handle_actions_updated_at",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_handle_actions_updated_at_"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.is_active_admin()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/is_active_admin`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "is_active_admin",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_is_active_admin_"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.is_active_member()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/is_active_member`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "is_active_member",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_is_active_member_"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.update_my_preferences(p_patch jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/update_my_preferences`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "update_my_preferences",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_update_my_preferences_p_patch jsonb"
+    },
+    {
+      "name": "auth_leaked_password_protection",
+      "title": "Leaked Password Protection Disabled",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Leaked password protection is currently disabled.",
+      "detail": "Supabase Auth prevents the use of compromised passwords by checking against HaveIBeenPwned.org. Enable this feature to enhance security.",
+      "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection",
+      "metadata": {
+        "entity": "Auth",
+        "type": "auth"
+      },
+      "cache_key": "auth_leaked_password_protection"
+    },
+    {
+      "name": "vulnerable_postgres_version",
+      "title": "Current Postgres version has security patches available",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Upgrade your postgres database to apply important security patches",
+      "detail": "We have detected that the current version of postgres, supabase-postgres-15.1.1.44, has outstanding security patches available. Upgrade your database to receive the latest security patches.",
+      "remediation": "https://supabase.com/docs/guides/platform/upgrading",
+      "metadata": {
+        "entity": "Config",
+        "type": "compliance"
+      },
+      "cache_key": "vulnerable_postgres_version"
+    }
+  ],
+  "advisors_after": [
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.admin_update_person(p_user_id uuid, p_changes jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/admin_update_person`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "admin_update_person",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_admin_update_person_p_user_id uuid, p_changes jsonb"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.can_access_action(p_action_id uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/can_access_action`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "can_access_action",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_can_access_action_p_action_id uuid"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.can_notify_mention(p_comment_id uuid, p_action_id uuid, p_recipient_id uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/can_notify_mention`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "can_notify_mention",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_can_notify_mention_p_comment_id uuid, p_action_id uuid, p_recipient_id uuid"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.get_app_bootstrap(p_user_id uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/get_app_bootstrap`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "get_app_bootstrap",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_get_app_bootstrap_p_user_id uuid"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.get_home_actions(p_user_id uuid, p_start_date timestamp with time zone, p_end_date timestamp with time zone, p_today_end timestamp with time zone, p_partner_slugs text[])` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/get_home_actions`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "get_home_actions",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_get_home_actions_p_user_id uuid, p_start_date timestamp with time zone, p_end_date timestamp with time zone, p_today_end timestamp with time zone, p_partner_slugs text[]"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.is_active_admin()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/is_active_admin`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "is_active_admin",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_is_active_admin_"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.is_active_member()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/is_active_member`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "is_active_member",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_is_active_member_"
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+      "detail": "Function `public.update_my_preferences(p_patch jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/update_my_preferences`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+      "metadata": {
+        "name": "update_my_preferences",
+        "schema": "public"
+      },
+      "cache_key": "authenticated_security_definer_function_executable_public_update_my_preferences_p_patch jsonb"
+    },
+    {
+      "name": "auth_leaked_password_protection",
+      "title": "Leaked Password Protection Disabled",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Leaked password protection is currently disabled.",
+      "detail": "Supabase Auth prevents the use of compromised passwords by checking against HaveIBeenPwned.org. Enable this feature to enhance security.",
+      "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection",
+      "metadata": {
+        "entity": "Auth",
+        "type": "auth"
+      },
+      "cache_key": "auth_leaked_password_protection"
+    },
+    {
+      "name": "vulnerable_postgres_version",
+      "title": "Current Postgres version has security patches available",
+      "level": "WARN",
+      "facing": "EXTERNAL",
+      "categories": [
+        "SECURITY"
+      ],
+      "description": "Upgrade your postgres database to apply important security patches",
+      "detail": "We have detected that the current version of postgres, supabase-postgres-15.1.1.44, has outstanding security patches available. Upgrade your database to receive the latest security patches.",
+      "remediation": "https://supabase.com/docs/guides/platform/upgrading",
+      "metadata": {
+        "entity": "Config",
+        "type": "compliance"
+      },
+      "cache_key": "vulnerable_postgres_version"
+    }
+  ],
+  "default_privileges_review": {
+    "platform_role_membership": false,
+    "application_relation_owners": [
+      "postgres"
+    ],
+    "public_schema_defaults": [
+      {
+        "owner": "postgres",
+        "schema": "*",
+        "object_type": "f",
+        "grantee": "postgres",
+        "privilege_type": "EXECUTE",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "postgres",
+        "privilege_type": "SELECT",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "postgres",
+        "privilege_type": "UPDATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "postgres",
+        "privilege_type": "USAGE",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "service_role",
+        "privilege_type": "SELECT",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "service_role",
+        "privilege_type": "UPDATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "service_role",
+        "privilege_type": "USAGE",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "f",
+        "grantee": "postgres",
+        "privilege_type": "EXECUTE",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "f",
+        "grantee": "service_role",
+        "privilege_type": "EXECUTE",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "postgres",
+        "privilege_type": "DELETE",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "postgres",
+        "privilege_type": "INSERT",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "postgres",
+        "privilege_type": "REFERENCES",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "postgres",
+        "privilege_type": "SELECT",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "postgres",
+        "privilege_type": "TRIGGER",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "postgres",
+        "privilege_type": "TRUNCATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "postgres",
+        "privilege_type": "UPDATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "service_role",
+        "privilege_type": "DELETE",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "service_role",
+        "privilege_type": "INSERT",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "service_role",
+        "privilege_type": "REFERENCES",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "service_role",
+        "privilege_type": "SELECT",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "service_role",
+        "privilege_type": "TRIGGER",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "service_role",
+        "privilege_type": "TRUNCATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "postgres",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "service_role",
+        "privilege_type": "UPDATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "anon",
+        "privilege_type": "SELECT",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "anon",
+        "privilege_type": "UPDATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "anon",
+        "privilege_type": "USAGE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "authenticated",
+        "privilege_type": "SELECT",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "authenticated",
+        "privilege_type": "UPDATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "authenticated",
+        "privilege_type": "USAGE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "postgres",
+        "privilege_type": "SELECT",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "postgres",
+        "privilege_type": "UPDATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "postgres",
+        "privilege_type": "USAGE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "service_role",
+        "privilege_type": "SELECT",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "service_role",
+        "privilege_type": "UPDATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "S",
+        "grantee": "service_role",
+        "privilege_type": "USAGE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "f",
+        "grantee": "anon",
+        "privilege_type": "EXECUTE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "f",
+        "grantee": "authenticated",
+        "privilege_type": "EXECUTE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "f",
+        "grantee": "postgres",
+        "privilege_type": "EXECUTE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "f",
+        "grantee": "service_role",
+        "privilege_type": "EXECUTE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "anon",
+        "privilege_type": "DELETE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "anon",
+        "privilege_type": "INSERT",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "anon",
+        "privilege_type": "REFERENCES",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "anon",
+        "privilege_type": "SELECT",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "anon",
+        "privilege_type": "TRIGGER",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "anon",
+        "privilege_type": "TRUNCATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "anon",
+        "privilege_type": "UPDATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "authenticated",
+        "privilege_type": "DELETE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "authenticated",
+        "privilege_type": "INSERT",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "authenticated",
+        "privilege_type": "REFERENCES",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "authenticated",
+        "privilege_type": "SELECT",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "authenticated",
+        "privilege_type": "TRIGGER",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "authenticated",
+        "privilege_type": "TRUNCATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "authenticated",
+        "privilege_type": "UPDATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "postgres",
+        "privilege_type": "DELETE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "postgres",
+        "privilege_type": "INSERT",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "postgres",
+        "privilege_type": "REFERENCES",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "postgres",
+        "privilege_type": "SELECT",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "postgres",
+        "privilege_type": "TRIGGER",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "postgres",
+        "privilege_type": "TRUNCATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "postgres",
+        "privilege_type": "UPDATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "service_role",
+        "privilege_type": "DELETE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "service_role",
+        "privilege_type": "INSERT",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "service_role",
+        "privilege_type": "REFERENCES",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "service_role",
+        "privilege_type": "SELECT",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "service_role",
+        "privilege_type": "TRIGGER",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "service_role",
+        "privilege_type": "TRUNCATE",
+        "is_grantable": false
+      },
+      {
+        "owner": "supabase_admin",
+        "schema": "public",
+        "object_type": "r",
+        "grantee": "service_role",
+        "privilege_type": "UPDATE",
+        "is_grantable": false
+      }
+    ],
+    "decision": "Application objects are owned by postgres, whose defaults exclude browser grants. Platform-owned supabase_admin defaults remain broad; no role escalation or platform modification attempted."
+  },
+  "intentional_authenticated_definers": [
+    "admin_update_person",
+    "can_access_action",
+    "can_notify_mention",
+    "get_app_bootstrap",
+    "get_home_actions",
+    "is_active_admin",
+    "is_active_member",
+    "update_my_preferences"
+  ],
+  "validation": {
+    "local_postgres": "15.1; old policy and trigger grants failed regression before; authorization matrix and concurrency passed after",
+    "unit_tests": 309,
+    "assertions": 927,
+    "format": "pass",
+    "lint": "pass",
+    "typecheck": "pass",
+    "build": "pass; existing chunk size warning",
+    "production": "six direct calls refused; catalogs and official advisors rechecked",
+    "staging": "Not applied: CLI authenticated access to project zacrrtilppvekiyoybzn returned 403. Local test covers absent retired Auth function.",
+    "published_ui": "not retested"
+  },
+  "initial_migration_sha256": "32d41cd6ff3e39082b335fb5fa0dec9b7fc5460a2a559a4474e62e849d897b54",
+  "final_source_application": {
+    "project_ref": "dfepmjcozszswocwvdpq",
+    "migration_sha256": "53f5e9f049553f7cf589148a383600a2430ba5f494cb491c0b35fbf7b6f22b4f",
+    "transaction_committed": true,
+    "records": [
+      {
+        "stage": "before",
+        "verified_at_utc": "2026-10-09T10:02:44.457087+00:00",
+        "signature": "handle_new_user()",
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "anon_execute": false,
+        "authenticated_execute": false
+      },
+      {
+        "stage": "before",
+        "verified_at_utc": "2026-10-09T10:02:44.458722+00:00",
+        "signature": "update_updated_at()",
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "anon_execute": false,
+        "authenticated_execute": false
+      },
+      {
+        "stage": "before",
+        "verified_at_utc": "2026-10-09T10:02:44.458739+00:00",
+        "signature": "handle_actions_updated_at()",
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "anon_execute": false,
+        "authenticated_execute": false
+      },
+      {
+        "stage": "after",
+        "verified_at_utc": "2026-10-09T10:02:44.867806+00:00",
+        "signature": "handle_new_user()",
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "anon_execute": false,
+        "authenticated_execute": false
+      },
+      {
+        "stage": "after",
+        "verified_at_utc": "2026-10-09T10:02:44.867837+00:00",
+        "signature": "update_updated_at()",
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "anon_execute": false,
+        "authenticated_execute": false
+      },
+      {
+        "stage": "after",
+        "verified_at_utc": "2026-10-09T10:02:44.86785+00:00",
+        "signature": "handle_actions_updated_at()",
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "anon_execute": false,
+        "authenticated_execute": false
+      }
+    ]
+  }
+}

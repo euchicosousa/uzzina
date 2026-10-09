@@ -38,7 +38,7 @@ Data: 08/10/2026, revisado após a rodada T4/T8/T10. Origem: [diagnóstico geral
 | T6 | Altura padrão do dia na visão de semana | — | Aguarda decisão do proprietário |
 | T7 | Calendário em lista no celular | Sonnet (revisão Opus) | Aguarda avaliação do proprietário |
 | T9 | Estudo de unificação de raios (com exemplos) | Sonnet | Aguarda autorização; só estudo |
-| — | Vercel com projeto único; divergência de schema | Proprietário + Opus | Operação (não delegar) |
+| — | Divergência de schema staging × produção | Proprietário + Opus | Operação (não delegar); vínculo Vercel corrigido em 09/10 |
 
 Nenhuma tarefa pronta para execução no momento: as restantes aguardam decisão do proprietário.
 
@@ -106,6 +106,6 @@ Nenhuma tarefa pronta para execução no momento: as restantes aguardam decisão
 
 ## Operação (não delegar a um agente implementador)
 
-- **Projeto Vercel único:** confirmar qual projeto serve `uzzina.cnvt.com.br` (os logs indicam `prj_8PN3…`; o vínculo local é `prj_sFbk…`), revincular `.vercel/project.json` e arquivar o outro. É uma ação do proprietário no painel da Vercel.
+- **Vínculo Vercel resolvido em 09/10:** o proprietário confirmou por capturas o domínio `uzzina.cnvt.com.br` e o projeto `prj_8PN3IDaxZAHtFwkwViE7GplFBQWE`; a CLI autenticada confirmou `agenciacnvt/uzzina` e corrigiu o vínculo local com `vercel link`. Nenhum deploy ou projeto remoto foi alterado. A existência/finalidade do destino antigo não foi investigada; arquivamento não é uma etapa necessária desta correção nem está autorizado.
 - **Divergência de schema staging × produção:** um script **somente leitura** que compara `pg_policies`, o hash de `pg_get_functiondef` e os grants nos dois bancos. Precisa de credenciais de leitura e de autorização explícita; planejar com o Opus antes.
 - **Arquivos com credenciais de produção na pasta** (`.env.backup.local`, `.env.vercel-production.local`): a sugestão de movê-los para fora do projeto fica a critério do proprietário.
