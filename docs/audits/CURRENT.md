@@ -4,7 +4,7 @@ Atualizado em10/10/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [READ
 
 ## Pendências reais
 
-- Publicação da correção de zoom autorizada pelo proprietário; verificações locais concluídas, envio e confirmação de deploy Ready em andamento.
+Nenhuma pendência operacional desta rodada. Ideias futuras permanecem no TODO/docs/plans e dependem de uma nova decisão de escopo.
 
 ## Encerrados e decisões
 
@@ -16,6 +16,8 @@ Atualizado em10/10/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [READ
 - Limpeza: página técnica de teste, seus arquivos HTML/TSX e script removidos a pedido do proprietário. Relatório mobile condensado na revisão existente; correção e evidências de banco preservadas. Nenhum arquivo de ambiente, backup ou migration removido.
 
 ## Verificação e limites
+
+Correção publicada pelo commit `808912b`: Vercel confirmou Ready no deploy `dpl_FwJdZxd3a8sTSnu79UMAkWagpheB`, vinculado a `uzzina.cnvt.com.br`. No site publicado, o campo pequeno da galeria /ui foi conferido com16px no viewport390px e14px em1280px; isso verifica o CSS publicado em Chromium, enquanto o reteste físico anterior foi local.
 
 311 testes/945 assertions, format/lint/typecheck/build e7 verificações serverless passaram após limpeza. Teste de tipografia reproduziu14px antes e16px depois no celular; desktop preservado. Aviso conhecido de chunks permanece.
 
