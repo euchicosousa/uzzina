@@ -1,0 +1,39 @@
+{
+  "verified_at_utc": "2026-10-10T14:30:45.718941+00:00",
+  "postgres_version": "17.11",
+  "direct_calls": "four denied with insufficient_privilege",
+  "functions": [
+    {
+      "signature": "handle_actions_updated_at()",
+      "proconfig": [
+        "search_path=\"\""
+      ],
+      "anon_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "signature": "update_updated_at()",
+      "proconfig": [
+        "search_path=\"\""
+      ],
+      "anon_execute": false,
+      "authenticated_execute": false
+    }
+  ],
+  "triggers": [
+    {
+      "tgname": "update_leads_updated_at",
+      "definition": "CREATE TRIGGER update_leads_updated_at BEFORE UPDATE ON public.leads FOR EACH ROW EXECUTE FUNCTION update_updated_at()"
+    },
+    {
+      "tgname": "trg_actions_updated_at",
+      "definition": "CREATE TRIGGER trg_actions_updated_at BEFORE UPDATE ON public.actions FOR EACH ROW EXECUTE FUNCTION handle_actions_updated_at()"
+    }
+  ],
+  "project_ref": "zacrrtilppvekiyoybzn",
+  "remote_version": "20261010143013",
+  "migration": "supabase/migrations/20261009095619_restrict_trigger_function_access.sql",
+  "sha256": "53f5e9f049553f7cf589148a383600a2430ba5f494cb491c0b35fbf7b6f22b4f",
+  "business_rows_written": false,
+  "retired_auth_function": "absent; not recreated"
+}

@@ -48,7 +48,7 @@ Keep creating application objects under `postgres`, with explicit grants and RLS
 
 1. **PostgreSQL update:** advisor reports outstanding security patches for `supabase-postgres-15.1.1.44`; SQL reports PostgreSQL 15.1. Plan a fresh backup, target-version compatibility check and maintenance window. Upgrading takes the project offline. `pgjwt` is installed and requires review if moving to PostgreSQL 17. No upgrade, extension removal or restart was performed. [Upgrade procedure](https://supabase.com/docs/guides/platform/upgrading).
 2. **Leaked password protection:** disabled according to the official advisor. Supabase documents availability on Pro and higher plans. The subscription/eligibility was not verified and no paid-plan change or Auth configuration change was performed. [Password protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
-3. **Staging parity:** the trigger-hardening migration was tested in disposable PostgreSQL 15.1 and applied to production only. Its staging application is blocked by CLI access returning 403 for that project; the action SELECT fix was already recorded as applied to staging in the previous rollout.
+3. **Staging parity:** resolved on 10/10 via the authorized Supabase connector; see the follow-up below. The CLI had returned 403 on 09/10.
 
 ## Verification and limits
 
@@ -58,3 +58,20 @@ Keep creating application objects under `postgres`, with explicit grants and RLS
 - 309 unit tests / 927 assertions, format, lint, typecheck and build passed. Existing bundle-size warning remains.
 - Production: guarded DDL transactions, persisted catalog verification, six real permission-denial calls and official security advisors before/after. No business rows were written by this task.
 - No authenticated production browser workflow, deployment or push was performed. No serverless code or dependency changed, so its packaging check was not repeated.
+
+## Follow-up — 2026-10-10
+
+Applied the unchanged trigger-hardening SQL (SHA256 `53f5e9f049553f7cf589148a383600a2430ba5f494cb491c0b35fbf7b6f22b4f`) to staging `zacrrtilppvekiyoybzn`, remote version `20261010143013`. A subsequent read-only transaction verified empty search_path and denied anon/authenticated execution for both existing functions; four real direct calls were denied. The action/lead trigger bindings remain intact. The retired Auth function is absent and was not recreated. No business rows were written; live timestamp updates were not repeated in this follow-up. [Catalog evidence](../../supabase/staging/trigger-function-hardening-verification.json), [manifest](../../supabase/staging/applied-manifest.json).
+
+Staging reports PostgreSQL17.11; advisors no longer flag mutable trigger search_path. The eight intentional authenticated definers, four server-private RLS tables with no policies, and disabled leaked-password protection remain. Production was queried separately at `2026-10-10T14:30:16.316086+00:00` and still reports PostgreSQL15.1. No upgrade was performed. The external database knowledge document was updated, preserving its historical entries.
+
+
+## Closure and mobile delivery — 2026-10-10
+
+The owner completed the production PostgreSQL upgrade. Independent read-only verification at15:30UTC confirms17.11, zero public tables without RLS, zero anonymous table grants, all three trigger functions with empty search_path and no anon/authenticated EXECUTE, the row-authorized actions_select_policy, and action/lead timestamp trigger bindings. Catalog evidence is appended to the existing production verification JSON. No business records were written by this check; it does not certify every application workflow after upgrade.
+
+Leaked-password protection is removed from active work by the owner because the project uses the free plan. It remains disabled; no paid subscription was purchased. Platform defaults are accepted as an optional future consideration, with no current application exposure identified.
+
+Mobile typography now uses16px below768px for small input/time/color fields, multi-selection search and inline title editing, preserving desktop sizing and manual pinch zoom. A browser check on real components failed before (14 versus16px), then passed for seven editable controls at390px and the desktop1280px case. The owner confirmed the local application patch on a physical iPhone through the Mac LAN address. No drawer redesign remains requested. The temporary HTML/TSX test fixture and browser script were deleted at the owner's request after verification; their results are retained here, with no obsolete test-page links.
+
+Final checks after cleanup:311 tests/945 assertions, format, lint, typecheck, build and7 serverless packaging checks passed; the known bundle-size warning remains. Publication of the mobile fix is authorized and tracked in CURRENT; this report does not itself certify a Ready deployment.

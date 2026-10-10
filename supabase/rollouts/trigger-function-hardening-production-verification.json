@@ -1149,5 +1149,47 @@
         "authenticated_execute": false
       }
     ]
+  },
+  "post_upgrade_verification": {
+    "verified_at_utc": "2026-10-10T15:30:37.136099+00:00",
+    "postgres_version": "17.11",
+    "public_tables_without_rls": 0,
+    "anonymous_table_grants": 0,
+    "trigger_functions": [
+      {
+        "signature": "handle_actions_updated_at()",
+        "settings": [
+          "search_path=\"\""
+        ],
+        "anon_execute": false,
+        "authenticated_execute": false
+      },
+      {
+        "signature": "handle_new_user()",
+        "settings": [
+          "search_path=\"\""
+        ],
+        "anon_execute": false,
+        "authenticated_execute": false
+      },
+      {
+        "signature": "update_updated_at()",
+        "settings": [
+          "search_path=\"\""
+        ],
+        "anon_execute": false,
+        "authenticated_execute": false
+      }
+    ],
+    "action_select_policies": [
+      {
+        "name": "actions_select_policy",
+        "qual": "(is_active_admin() OR (is_active_member() AND ((responsibles)::text[] @> ARRAY[(auth.uid())::text]) AND (EXISTS ( SELECT 1\n   FROM partners p\n  WHERE ((p.archived = false) AND (p.slug = ANY (actions.partners)) AND ((p.users_ids)::text[] @> ARRAY[(auth.uid())::text]))))))"
+      }
+    ],
+    "updated_at_triggers": [
+      "CREATE TRIGGER leads_updated_at BEFORE UPDATE ON public.leads FOR EACH ROW EXECUTE FUNCTION update_updated_at()",
+      "CREATE TRIGGER trg_actions_updated_at BEFORE UPDATE ON public.actions FOR EACH ROW EXECUTE FUNCTION handle_actions_updated_at()"
+    ]
   }
 }

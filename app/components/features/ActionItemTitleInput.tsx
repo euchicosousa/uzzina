@@ -39,7 +39,10 @@ export function ActionItemTitleInput({
         <input
           ref={inputRef}
           aria-label="Editar título da ação"
-          className={cn("w-full outline-none", InputButtonClassName)}
+          className={cn(
+            "w-full text-base outline-none md:text-[length:inherit]",
+            InputButtonClassName,
+          )}
           onBlur={() => {
             if (onBlur) {
               onBlur(localTitle);

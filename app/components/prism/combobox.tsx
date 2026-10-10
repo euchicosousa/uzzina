@@ -308,7 +308,10 @@ function ComboboxChipsInput({ className, ...props }: InputProps) {
   const state = React.useContext(ComboBoxStateContext);
   return (
     <InputPrimitive
-      className={cn("min-w-16 flex-1 outline-none", className)}
+      className={cn(
+        "min-w-16 flex-1 text-base outline-none md:text-sm",
+        className,
+      )}
       data-slot="combobox-chip-input"
       onKeyDown={(e) => {
         if (

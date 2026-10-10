@@ -14,7 +14,7 @@ const timeFieldVariants = cva(
     variants: {
       size: {
         default: "h-12 px-2 py-1 text-base md:text-sm",
-        sm: "h-10 px-1 py-0 text-sm",
+        sm: "h-10 px-1 py-0 text-base md:text-sm",
       },
     },
     defaultVariants: {
