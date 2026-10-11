@@ -53,8 +53,7 @@ export function ResponsiblesCombobox({
       .map((partner) => partner.users_ids.includes(person.user_id))
       .includes(true),
   );
-  const handleSelect = (userId: string) => {
-    const isShiftPressed = (window.event as MouseEvent | undefined)?.shiftKey;
+  const handleSelect = (userId: string, isShiftPressed: boolean) => {
     let newResponsibles: string[];
     if (isShiftPressed) {
       newResponsibles = [userId];
@@ -102,7 +101,9 @@ export function ResponsiblesCombobox({
                   data-selected={
                     selected.includes(person.user_id) ? "true" : undefined
                   }
-                  onAction={() => handleSelect(person.user_id)}
+                  onAction={({ shiftKey }) =>
+                    handleSelect(person.user_id, shiftKey)
+                  }
                   textValue={person.name}
                 >
                   <UAvatar

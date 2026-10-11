@@ -186,7 +186,7 @@ export function CategoriesCombobox({
                             ).length === 3
                           : selectedCategories.includes(category.slug)
                       }
-                      onAction={() => {
+                      onAction={({ shiftKey }) => {
                         if (isMulti) {
                           let newCategories = selectedCategories;
                           if (category.slug === "all") {
@@ -194,10 +194,7 @@ export function CategoriesCombobox({
                           } else if (category.slug === "instagram") {
                             newCategories = ["post", "reels", "carousel"];
                           } else {
-                            const isShiftPressed = (
-                              window.event as MouseEvent | undefined
-                            )?.shiftKey;
-                            if (isShiftPressed) {
+                            if (shiftKey) {
                               newCategories = [category.slug];
                             } else {
                               newCategories = selectedCategories.filter(

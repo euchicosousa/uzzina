@@ -1,3 +1,4 @@
+import { createContext, useContext, useRef } from "react";
 import {
   Autocomplete,
   Collection,
@@ -26,6 +27,11 @@ import {
 } from "~/components/prism";
 import { InputGroup, InputGroupAddon } from "~/components/prism/input-group";
 import { SearchIcon, CheckCircle2Icon } from "lucide-react";
+type CommandActionModifiers = { shiftKey: boolean };
+const CommandActivationContext = createContext<{
+  current: { shiftKey: boolean; keyboard: boolean };
+} | null>(null);
+
 function Command({
   className,
   dir,
@@ -36,6 +42,7 @@ function Command({
   dir?: React.HTMLAttributes<HTMLDivElement>["dir"];
   style?: React.CSSProperties;
 }) {
+  const activation = useRef({ shiftKey: false, keyboard: false });
   const { contains } = useFilter({
     sensitivity: "base",
   });
@@ -47,11 +54,33 @@ function Command({
       )}
       data-slot="command"
       dir={dir}
+      onClickCapture={(event) => {
+        // React Aria activates menu items with .click() on Enter, losing modifiers.
+        if (!activation.current.keyboard) {
+          activation.current.shiftKey = event.shiftKey;
+        }
+      }}
+      onKeyDownCapture={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          activation.current = { shiftKey: event.shiftKey, keyboard: true };
+        }
+      }}
+      onKeyUpCapture={() => {
+        activation.current = { shiftKey: false, keyboard: false };
+      }}
+      onPointerDownCapture={() => {
+        activation.current = { shiftKey: false, keyboard: false };
+      }}
+      onBlurCapture={() => {
+        activation.current = { shiftKey: false, keyboard: false };
+      }}
       style={style}
     >
-      <Autocomplete {...props} filter={props.filter || contains}>
-        {props.children}
-      </Autocomplete>
+      <CommandActivationContext.Provider value={activation}>
+        <Autocomplete {...props} filter={props.filter || contains}>
+          {props.children}
+        </Autocomplete>
+      </CommandActivationContext.Provider>
     </div>
   );
 }
@@ -182,14 +211,17 @@ function CommandItem<T extends object>({
   children,
   textValue,
   isSelected,
+  onAction,
   "data-selected": dataSelected,
   "data-checked": dataChecked,
   ...props
-}: MenuItemProps<T> & {
+}: Omit<MenuItemProps<T>, "onAction"> & {
+  onAction?: (modifiers: CommandActionModifiers) => void;
   isSelected?: boolean;
   "data-selected"?: boolean | string;
   "data-checked"?: boolean | string;
 }) {
+  const activation = useContext(CommandActivationContext);
   const selected =
     isSelected ??
     (dataSelected === true || dataSelected === "true") ??
@@ -197,6 +229,13 @@ function CommandItem<T extends object>({
   return (
     <MenuItem
       {...props}
+      onAction={() => {
+        const shiftKey = activation?.current.shiftKey ?? false;
+        if (activation) {
+          activation.current = { shiftKey: false, keyboard: false };
+        }
+        onAction?.({ shiftKey });
+      }}
       className={cn(
         "group/command-item relative flex h-8 min-h-7 cursor-default items-center gap-2 rounded-2xl px-4 outline-hidden select-none squircle in-data-[slot=dialog-content]:rounded-2xl data-focused:bg-secondary/50 data-focused:text-foreground data-[checked=true]:bg-secondary/50 data-[checked=true]:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary/50 data-[selected=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-[checked=true]:*:[svg]:text-foreground data-[selected=true]:*:[svg]:text-foreground",
         className,

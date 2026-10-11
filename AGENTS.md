@@ -107,3 +107,5 @@ Preserve o estilo próprio, temas e paletas OKLCH da UZZINA. Novos primitivos fi
 Use estados React Aria data-[hovered], data-[pressed], data-[focused] e data-[disabled]. Ícones Lucide novos seguem sufixo Icon; botões definem tamanho padrão e focus ring. PrismInput aplica foco/erro ao Group que inclui prefixo/sufixo. PrismAlert reúne ícone, título e descrição por variante. Componente composto precisa de verificação própria de foco/teclado, além das garantias dos primitivos.
 
 `/ui` reúne tokens, componentes Prism e componentes Uzzina; novas seções ficam em app/components/ui-sections e são integradas à rota.
+
+`PrismCommandItem` fornece `{ shiftKey }` ao `onAction`, capturado pelo `PrismCommand` antes da ativação React Aria. Parceiros, responsáveis, sprint e filtros múltiplos de fase/categoria usam esse modificador para seleção exclusiva com Shift+clique/Shift+Enter; não usar `window.event` para essa decisão.

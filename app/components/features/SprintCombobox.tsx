@@ -64,8 +64,7 @@ export function SprintCombobox({
   const selectedPeople = selectedSprints
     .map((id) => people.find((p: Person) => p.user_id === id))
     .filter((p): p is Person => !!p);
-  const handleSelect = (userId: string) => {
-    const isShiftPressed = (window.event as MouseEvent | undefined)?.shiftKey;
+  const handleSelect = (userId: string, isShiftPressed: boolean) => {
     if (isShiftPressed) {
       const newSprints = [userId];
       const newResponsibles = responsibles.includes(userId)
@@ -147,7 +146,9 @@ export function SprintCombobox({
                         ? "true"
                         : undefined
                     }
-                    onAction={() => handleSelect(person.user_id)}
+                    onAction={({ shiftKey }) =>
+                      handleSelect(person.user_id, shiftKey)
+                    }
                     textValue={`${person.name} ${person.surname}`}
                   >
                     <UAvatar
@@ -180,7 +181,9 @@ export function SprintCombobox({
                         ? "true"
                         : undefined
                     }
-                    onAction={() => handleSelect(person.user_id)}
+                    onAction={({ shiftKey }) =>
+                      handleSelect(person.user_id, shiftKey)
+                    }
                     textValue={`${person.name} ${person.surname}`}
                   >
                     <UAvatar

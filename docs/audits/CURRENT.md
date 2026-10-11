@@ -1,13 +1,14 @@
 # UZZINA — estado atual
 
-Atualizado em10/10/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
+Atualizado em11/10/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
 ## Pendências reais
 
-Nenhuma pendência operacional desta rodada. Ideias futuras permanecem no TODO/docs/plans e dependem de uma nova decisão de escopo.
+Seleção exclusiva por Shift corrigida localmente em parceiros, responsáveis, sprint, fases e categorias; publicação não realizada nesta rodada. Nenhuma outra pendência operacional desta rodada. Ideias futuras permanecem no TODO/docs/plans e dependem de uma nova decisão de escopo.
 
 ## Encerrados e decisões
 
+- [Seleção exclusiva por Shift](2026-10-11-shift-selection.md): PrismCommand captura o modificador antes do clique simulado pelo React Aria; PrismCommandItem fornece `{ shiftKey }` ao onAction. Cinco seletores deixaram de consultar `window.event`. Shift+Enter/Shift+clique, opções selecionadas/não selecionadas, alternância comum, sprint e escolhas especiais verificados nos componentes reais em jsdom.
 - Uso do site, telefone, cores do cabeçalho e zoom/gaveta aprovados pelo proprietário. Teste físico do zoom realizado no aplicativo local pelo endereço de rede do Mac, com o ajuste de16px. Não há reorganização da gaveta solicitada.
 - PostgreSQL de produção atualizado pelo proprietário e confirmado por consulta independente em10/10 às15:30UTC:17.11, mesma versão do staging. RLS, ausência de grants anônimos de tabela, policy de ações e proteções/triggers de timestamp preservados. Conferência de catálogo não equivale a testar todos os fluxos após upgrade.
 - Proteção contra senhas vazadas retirada das pendências por decisão do proprietário: plano gratuito, recurso exige Pro ou superior. Configuração permanece desativada; nenhuma contratação feita.
@@ -16,6 +17,8 @@ Nenhuma pendência operacional desta rodada. Ideias futuras permanecem no TODO/d
 - Limpeza: página técnica de teste, seus arquivos HTML/TSX e script removidos a pedido do proprietário. Relatório mobile condensado na revisão existente; correção e evidências de banco preservadas. Nenhum arquivo de ambiente, backup ou migration removido.
 
 ## Verificação e limites
+
+Rodada de11/10:350 testes/989 assertions, format/lint/typecheck/build e diff check passaram;39 testes novos cobrem a seleção por Shift. Código preparado no checkout, sem push/deploy ou reteste em navegador físico. Aviso conhecido de chunks permanece. A publicação descrita abaixo antecede este ajuste.
 
 Correção publicada pelo commit `808912b`: Vercel confirmou Ready no deploy `dpl_FwJdZxd3a8sTSnu79UMAkWagpheB`, vinculado a `uzzina.cnvt.com.br`. No site publicado, o campo pequeno da galeria /ui foi conferido com16px no viewport390px e14px em1280px; isso verifica o CSS publicado em Chromium, enquanto o reteste físico anterior foi local.
 

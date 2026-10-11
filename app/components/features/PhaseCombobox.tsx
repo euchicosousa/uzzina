@@ -167,15 +167,13 @@ export function PhaseCombobox({
   if (currentPhases.length === 0 && !isMulti) {
     currentPhases = [PHASES_LIST[0]];
   }
-  const handleSelect = (slug: string) => {
+  const handleSelect = (slug: string, isShiftPressed: boolean) => {
     if (isMulti) {
       if (slug === "all") {
         onSelect?.({
           phases: ["all"],
         });
       } else {
-        const isShiftPressed = (window.event as MouseEvent | undefined)
-          ?.shiftKey;
         if (isShiftPressed) {
           onSelect?.({
             phases: [slug],
@@ -240,7 +238,7 @@ export function PhaseCombobox({
                       selectedPhases.includes("all") ||
                       selectedPhases.length === 0
                     }
-                    onAction={() => handleSelect("all")}
+                    onAction={({ shiftKey }) => handleSelect("all", shiftKey)}
                     textValue="Todas as fases"
                   >
                     <div className="size-4 rounded-full border bg-secondary" />
@@ -259,7 +257,9 @@ export function PhaseCombobox({
                       ? selectedPhases.includes(phase.slug)
                       : selectedPhase === phase.slug
                   }
-                  onAction={() => handleSelect(phase.slug)}
+                  onAction={({ shiftKey }) =>
+                    handleSelect(phase.slug, shiftKey)
+                  }
                   textValue={phase.title}
                 >
                   <PhaseIcon phase={phase as PHASE_TYPE} variant="icon" />

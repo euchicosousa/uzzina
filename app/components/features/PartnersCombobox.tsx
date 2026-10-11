@@ -36,8 +36,7 @@ export function PartnersCombobox({
     .map((slug) => partners.find((partner) => partner.slug === slug))
     .filter((partner): partner is Partner => partner !== undefined);
   const hasSelection = currentPartners.length > 0;
-  const handleSelect = (slug: string) => {
-    const isShiftPressed = (window.event as MouseEvent | undefined)?.shiftKey;
+  const handleSelect = (slug: string, isShiftPressed: boolean) => {
     let newPartners: string[];
     if (isShiftPressed) {
       newPartners = [slug];
@@ -103,7 +102,9 @@ export function PartnersCombobox({
                   data-selected={
                     selectedPartners.includes(partner.slug) ? "true" : undefined
                   }
-                  onAction={() => handleSelect(partner.slug)}
+                  onAction={({ shiftKey }) =>
+                    handleSelect(partner.slug, shiftKey)
+                  }
                   textValue={partner.title}
                 >
                   <UAvatar
