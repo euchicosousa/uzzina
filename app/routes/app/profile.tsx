@@ -240,7 +240,7 @@ function ProfilePage() {
             {/* Profile Avatar Upload */}
             <div className="flex items-center gap-4">
               <CloudinaryUpload
-                className="group relative size-20 shrink-0 cursor-pointer overflow-hidden rounded-full transition hover:opacity-90"
+                className="group relative size-20 shrink-0 cursor-pointer overflow-hidden rounded-full p-0 transition no-squircle! hover:opacity-90"
                 cloudName={cloudName}
                 folder="uzzina/people"
                 onUpload={(url) => setImageUrl(url)}
@@ -250,6 +250,7 @@ function ProfilePage() {
               >
                 <UAvatar
                   key={imageUrl ?? "empty"}
+                  className="size-full"
                   fallback={person.initials || "?"}
                   image={imageUrl}
                   size="xl"

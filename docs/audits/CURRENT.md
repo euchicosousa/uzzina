@@ -1,12 +1,14 @@
 # UZZINA — estado atual
 
-Atualizado em11/10/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
+Atualizado em13/10/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
 ## Pendências reais
 
-Seleção exclusiva por Shift corrigida localmente em parceiros, responsáveis, sprint, fases e categorias; publicação não realizada nesta rodada. Nenhuma outra pendência operacional desta rodada. Ideias futuras permanecem no TODO/docs/plans e dependem de uma nova decisão de escopo.
+Foto de Minha Conta corrigida localmente para formato circular, sem publicação nesta rodada. Seleção exclusiva por Shift corrigida localmente em parceiros, responsáveis, sprint, fases e categorias; publicação não realizada nesta rodada. Nenhuma outra pendência operacional desta rodada. Ideias futuras permanecem no TODO/docs/plans e dependem de uma nova decisão de escopo.
 
 ## Encerrados e decisões
+
+- [Foto circular de Minha Conta](2026-10-13-profile-avatar.md): prioridade explícita para curva circular sobre o squircle do botão, padding removido e avatar preenchendo a área.
 
 - [Seleção exclusiva por Shift](2026-10-11-shift-selection.md): PrismCommand captura o modificador antes do clique simulado pelo React Aria; PrismCommandItem fornece `{ shiftKey }` ao onAction. Cinco seletores deixaram de consultar `window.event`. Shift+Enter/Shift+clique, opções selecionadas/não selecionadas, alternância comum, sprint e escolhas especiais verificados nos componentes reais em jsdom.
 - Uso do site, telefone, cores do cabeçalho e zoom/gaveta aprovados pelo proprietário. Teste físico do zoom realizado no aplicativo local pelo endereço de rede do Mac, com o ajuste de16px. Não há reorganização da gaveta solicitada.
@@ -17,6 +19,8 @@ Seleção exclusiva por Shift corrigida localmente em parceiros, responsáveis, 
 - Limpeza: página técnica de teste, seus arquivos HTML/TSX e script removidos a pedido do proprietário. Relatório mobile condensado na revisão existente; correção e evidências de banco preservadas. Nenhum arquivo de ambiente, backup ou migration removido.
 
 ## Verificação e limites
+
+Rodada de13/10: format/lint/typecheck/build e diff check passaram. Bloco real de upload de Minha Conta, com componentes e CSS reais, conferido isoladamente no navegador: botão80×80px, curva circular e padding zero após o ajuste; antes tinha superellipse(1.5) e padding lateral12px. Sem teste de upload, banco ou fluxo autenticado completo; sem push/deploy. Aviso conhecido de chunks permanece.
 
 Rodada de11/10:350 testes/989 assertions, format/lint/typecheck/build e diff check passaram;39 testes novos cobrem a seleção por Shift. Código preparado no checkout, sem push/deploy ou reteste em navegador físico. Aviso conhecido de chunks permanece. A publicação descrita abaixo antecede este ajuste.
 

@@ -533,12 +533,12 @@ html {
   content: attr(data-placeholder);
 }
 
-@utility no-squircle {
-  corner-shape: initial;
-}
-
 @utility squircle {
   corner-shape: superellipse(1.5);
+}
+
+@utility no-squircle {
+  corner-shape: initial;
 }
 
 @utility animate-spin-gradient {
