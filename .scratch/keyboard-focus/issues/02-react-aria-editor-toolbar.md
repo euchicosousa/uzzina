@@ -4,7 +4,7 @@
 
 **Blocked by:** None — ticket01 completed and owner authorized ticket02.
 
-**Status:** implemented — local checks passed; production publication pending.
+**Status:** completed — verified locally and published to production with READY confirmed.
 
 - [x] Substituir a gestão própria dos botões pela Toolbar do React Aria já disponível na biblioteca instalada, preservando editor, conteúdo, ícones, estados e comandos.
 - [x] Um atalho sem conflito permite ir da descrição à formatação; seu uso é descobrível na interface. Setas navegam pelos comandos sem alterar o texto.
@@ -29,3 +29,7 @@ Main and contextual toolbars use React Aria Toolbar/Button while retaining Tipta
 The all-controls notice is hidden and takes no layout space. Contextual toolbar buttons are excluded from the ordinary drawer Tab sequence and remain reachable by shortcut.
 
 374 tests /1120 assertions passed, including11 new cases across the real drawer and editor. Format/lint/typecheck/build passed. Isolated browser checks covered keyboard arrows, main/context shortcuts, Tab return, a390px viewport with two toolbar rows, no space from the hidden notice, and a3px ring in the real default dark palette. These checks do not certify the complete authenticated Instagram/admin routes, every palette/browser or backend/provider behavior. No database changes.
+
+## Production publication — 14/10/2026
+
+Code commit `d02890dddcabd35266b241f88bd8f238306661e7` was pushed to main. Vercel deployment `dpl_Z7EqUShipFARDZpwWA5WbpcwPSFG` reached READY in production and is aliased to `uzzina.cnvt.com.br`. The public /app responded HTTP200. Further owner verification with real data remains useful; no database changes were made. Other missing focus indicators remain ticket03.

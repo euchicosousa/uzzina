@@ -2,7 +2,7 @@
 
 **What to build:** usar a experiência validada da gaveta e da toolbar para produzir um mapa dos comportamentos de teclado das telas e uma fila priorizada de correções. O resultado deve permitir escolher os próximos fluxos com critérios verificáveis, sem iniciar uma migração geral.
 
-**Blocked by:** 01 — Navegar pelos campos principais da gaveta de ação; 02 — Usar Toolbar do React Aria na formatação do editor. A consolidação depende das decisões verificadas nesses fluxos.
+**Blocked by:** None — tickets01 and02 completed. This future review still requires owner authorization to execute.
 
 **Status:** planned — future review; not authorized for implementation.
 

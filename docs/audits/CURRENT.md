@@ -4,7 +4,7 @@ Atualizado em14/10/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [READ
 
 ## Pendências reais
 
-Ticket01 de foco da gaveta aceito pelo proprietário após teste nos dados reais no Mac. Ticket02 de toolbar e ocultação do aviso inferior preparados e verificados localmente; publicação em andamento. Sinalização dos demais controles e estabilização futura permanecem no ticket03, ainda não executado. Foto circular e seleção exclusiva por Shift já estavam incluídas na versão de produção anterior. Ideias futuras permanecem no TODO/docs/plans e dependem de uma nova decisão de escopo.
+Ticket01 de foco da gaveta aceito pelo proprietário após teste nos dados reais no Mac. Ticket02 de toolbar e ocultação do aviso inferior publicados e confirmados Ready. Sinalização dos demais controles e estabilização futura permanecem no ticket03, ainda não executado. Foto circular e seleção exclusiva por Shift já estavam incluídas na versão de produção anterior. Ideias futuras permanecem no TODO/docs/plans e dependem de uma nova decisão de escopo.
 
 ## Encerrados e decisões
 
@@ -24,7 +24,7 @@ Ticket01 de foco da gaveta aceito pelo proprietário após teste nos dados reais
 
 ## Verificação e limites
 
-Ticket02 em14/10: toolbar principal/contextual migrada para React Aria, foco dos comandos visível, setas/Enter/Espaço e retorno ao texto preservados. Aviso Alt+F10 oculto sem ocupar espaço; atalho mantido.374 testes/1120 assertions, format/lint/typecheck/build passaram. Editor real conferido isoladamente no navegador em claro/escuro, incluindo paleta padrão real, atalhos, menu contextual e390px com quebra em duas linhas. Sem validação autenticada completa, banco/provedor ou migração de outros campos. Publicação Ready será registrada após confirmação.
+Ticket02 em14/10: toolbar principal/contextual migrada para React Aria, foco dos comandos visível, setas/Enter/Espaço e retorno ao texto preservados. Aviso Alt+F10 oculto sem ocupar espaço; atalho mantido.374 testes/1120 assertions, format/lint/typecheck/build passaram. Editor real conferido isoladamente no navegador em claro/escuro, incluindo paleta padrão real, atalhos, menu contextual e390px com quebra em duas linhas. Sem validação autenticada completa, banco/provedor ou migração de outros campos. Commit de código `d02890dddcabd35266b241f88bd8f238306661e7` publicado; deploy `dpl_Z7EqUShipFARDZpwWA5WbpcwPSFG` confirmado READY em production, associado a `uzzina.cnvt.com.br`; /app respondeu HTTP200. Isso não substitui o teste autenticado do proprietário.
 
 Publicação do ticket01 autorizada pelo proprietário em14/10, com teste visual posterior nos dados reais por ele. Commit de código `ac170df7bfcc983317dd639c42367d380cf37621` enviado para main; deploy de produção `dpl_AefHT1xWqjpNhCM9QDU26J6TKwBC` confirmado READY e associado a `uzzina.cnvt.com.br`. O domínio público respondeu HTTP200 em /app. Isso verifica publicação e resposta HTTP, não o uso autenticado/visual. Proprietário confirmou em seguida que o foco funciona normalmente; nenhuma alteração de banco.
 
