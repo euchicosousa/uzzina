@@ -165,3 +165,7 @@ Owner reported the save exit still traversed page controls. A new test focuses a
 ### Owner acceptance and publication authorization
 
 Owner confirmed the revised drawer worked normally in localhost and authorized publication on14/10/2026. Final changes cover discreet focus backgrounds, responsible underline, Sprint/Prism consistency, navigation tab border, attachment access and the opener-dependent Tab regression. General keyboard inventory of other screens remains future scope.
+
+### Publication confirmation
+
+Code commit `39017e6` pushed to main. Vercel deployment `dpl_CkrCKrupx94Xx9DaXSvzqChR66Vd` (`https://uzzina-jxtm90pbp-agenciacnvt.vercel.app`) confirmed Ready in production and aliased to `uzzina.cnvt.com.br` on14/10/2026 at17:59 local time. Final full suite:376 passing tests/1133 assertions. Public /app returned HTTP200. Owner acceptance was on localhost; this publication check does not certify an authenticated production session. No database changes.
