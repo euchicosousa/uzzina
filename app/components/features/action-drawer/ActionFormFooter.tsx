@@ -40,7 +40,7 @@ export function ActionFormFooter({
       {/* Coisas */}
       <div className="no-scrollbar flex min-w-0 shrink items-center divide-x overflow-x-auto">
         {/* Parceiros Partners Combobox */}
-        <div className="shrink-0">
+        <div className="shrink-0" data-drawer-focus="control">
           <PartnersCombobox
             onSelect={async (selected) => {
               const selectedPartnersData = currentPartners.filter((p) =>
@@ -74,7 +74,7 @@ export function ActionFormFooter({
           />
         </div>
         {/* Fases Phase Combobox */}
-        <div className="shrink-0">
+        <div className="shrink-0" data-drawer-focus="control">
           <PhaseCombobox
             iconVariant="progress"
             onSelect={async (selected) => {
@@ -100,7 +100,7 @@ export function ActionFormFooter({
           />
         </div>
         {/* Categorias Categories Combobox */}
-        <div className="shrink-0">
+        <div className="shrink-0" data-drawer-focus="control">
           <CategoriesCombobox
             onSelect={async ({ category }) => {
               setRawAction({
@@ -117,7 +117,7 @@ export function ActionFormFooter({
           />
         </div>
         {isSocialMediaContent(RawAction.category) && (
-          <div className="shrink-0">
+          <div className="shrink-0" data-drawer-focus="control">
             <ActionColorDropdown
               action={RawAction}
               onSelect={async (color) => {
@@ -219,35 +219,37 @@ export function ActionFormFooter({
             )}
           </>
         )}
-        <PrismButton
-          className="w-32 overflow-hidden rounded-2xl squircle"
-          isDisabled={isPending}
-          onClick={async (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            const success = await handleSave();
-            if (success && event.shiftKey) {
-              handleClose();
-            }
-          }}
-        >
-          <div className="truncate">
-            {RawAction.id
-              ? isPending
-                ? "Atualizando..."
-                : "Atualizar"
-              : isPending
-                ? "Criando..."
-                : "Criar"}
-          </div>
-          {isPending ? (
-            <LoaderIcon className="animate-spin" />
-          ) : RawAction.id ? (
-            <CloudUploadIcon />
-          ) : (
-            <PlusIcon />
-          )}
-        </PrismButton>
+        <div data-drawer-focus="control">
+          <PrismButton
+            className="w-32 overflow-hidden rounded-2xl squircle"
+            isDisabled={isPending}
+            onClick={async (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              const success = await handleSave();
+              if (success && event.shiftKey) {
+                handleClose();
+              }
+            }}
+          >
+            <div className="truncate">
+              {RawAction.id
+                ? isPending
+                  ? "Atualizando..."
+                  : "Atualizar"
+                : isPending
+                  ? "Criando..."
+                  : "Criar"}
+            </div>
+            {isPending ? (
+              <LoaderIcon className="animate-spin" />
+            ) : RawAction.id ? (
+              <CloudUploadIcon />
+            ) : (
+              <PlusIcon />
+            )}
+          </PrismButton>
+        </div>
       </div>
     </div>
   );

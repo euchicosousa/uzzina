@@ -10,6 +10,7 @@ import { Icons } from "~/components/uzzina/UIcons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ActionFormFooter } from "./ActionFormFooter";
+import { ActionDrawerFocusScope } from "./ActionDrawerFocusScope";
 import { useActionAI } from "./useActionAI";
 import { EssentialsTab } from "./EssentialsTab";
 import { InstagramTab } from "./InstagramTab";
@@ -432,7 +433,8 @@ export function ActionFormDrawer({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleSafeClose, conflictVersion]);
   return (
-    <div
+    <ActionDrawerFocusScope
+      enabled={view === "essential"}
       className={cn(
         "fixed top-16 right-0 bottom-0 z-10 flex w-full max-w-full flex-col overflow-hidden border-l bg-background sm:max-w-2xl",
         view === "instagram"
@@ -805,7 +807,7 @@ export function ActionFormDrawer({
           </PrismAccordion>
         </div>
       </PrismDialog>
-    </div>
+    </ActionDrawerFocusScope>
   );
 }
 const tabClass = (active: boolean) =>

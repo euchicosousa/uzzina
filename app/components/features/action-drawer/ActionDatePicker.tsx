@@ -49,7 +49,7 @@ export function ActionDatePicker({
       <Pressable>
         <div
           className={cn(
-            "cursor-pointer underline-offset-2 hover:underline",
+            "cursor-pointer underline-offset-2 outline-none hover:underline focus-visible:underline",
             className,
           )}
           role="button"

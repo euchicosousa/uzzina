@@ -13,6 +13,13 @@ import { AppContext } from "../app/contexts/AppContext";
 import { ActionFormDrawer } from "../app/components/features/action-drawer/ActionFormDrawer";
 import type { Action, Person, Partner } from "../app/types";
 import { QUERY_KEYS } from "../app/lib/query-keys";
+import userEvent from "@testing-library/user-event";
+
+Object.assign(globalThis, { KeyboardEvent: window.KeyboardEvent });
+Object.assign(window.Range.prototype, {
+  getClientRects: () => [],
+  getBoundingClientRect: () => new window.DOMRect(),
+});
 
 type Row = Record<string, unknown>;
 let writes: Row[] = [];
@@ -165,6 +172,240 @@ function mount(
       mounted.rerender(view(selected, version)),
   };
 }
+async function descriptionEditor() {
+  await waitFor(() => {
+    expect(
+      document.querySelector(".tiptap[contenteditable=true]"),
+    ).not.toBeNull();
+  });
+  const editor = document.querySelector<HTMLElement>(
+    ".tiptap[contenteditable=true]",
+  );
+  if (!editor) throw new Error("Description editor did not mount");
+  return editor;
+}
+
+it("Tab from the title goes directly to the real description editor", async () => {
+  mount(draft({ description: "<p></p>" }));
+  const editor = await descriptionEditor();
+  const title = screen.getByRole("textbox", { name: "Título da ação" });
+  expect(document.activeElement).toBe(title);
+  const user = userEvent.setup();
+  await user.tab();
+  expect(document.activeElement).toBe(editor);
+  await user.tab({ shift: true });
+  expect(document.activeElement).toBe(title);
+  expect(writes).toEqual([]);
+});
+
+it("the main drawer sequence skips auxiliary controls in both directions", async () => {
+  mount(draft({ description: "<p></p>" }));
+  const editor = await descriptionEditor();
+  const user = userEvent.setup();
+  const sequence = [
+    screen.getByRole("textbox", { name: "Título da ação" }),
+    editor,
+    screen.getByRole("button", { name: "Agency" }),
+    screen.getByRole("button", { name: /^Fase:/ }),
+    screen.getByRole("button", { name: /^Categoria:/ }),
+    screen.getByRole("button", { name: "Atualizar" }),
+  ];
+  for (const target of sequence.slice(1)) {
+    await user.tab();
+    expect(document.activeElement).toBe(target);
+  }
+  for (const target of sequence.slice(0, -1).reverse()) {
+    await user.tab({ shift: true });
+    expect(document.activeElement).toBe(target);
+  }
+  expect(writes).toEqual([]);
+});
+
+it("social actions include color before save and skip sprint and destructive commands", async () => {
+  mount(draft({ category: "reels", description: "<p></p>" }));
+  await descriptionEditor();
+  const user = userEvent.setup();
+  for (let step = 0; step < 5; step++) await user.tab();
+  expect(
+    document.activeElement ===
+      screen.getByRole("button", { name: "Abrir seletor de cores" }),
+  ).toBe(true);
+  await user.tab();
+  expect(
+    document.activeElement ===
+      screen.getByRole("button", { name: "Atualizar" }),
+  ).toBe(true);
+  await user.tab({ shift: true });
+  expect(
+    document.activeElement ===
+      screen.getByRole("button", { name: "Abrir seletor de cores" }),
+  ).toBe(true);
+});
+
+for (const [name, content] of [
+  ["list", "<ul><li><p>First</p></li><li><p>Second</p></li></ul>"],
+  ["table", "<table><tbody><tr><td><p>Cell</p></td></tr></tbody></table>"],
+]) {
+  it(`Tab leaves a real ${name} without editing its structure`, async () => {
+    mount(draft({ description: content }));
+    const editor = await descriptionEditor();
+    const user = userEvent.setup();
+    await user.tab();
+    const paragraph = editor.querySelector("p");
+    if (!paragraph?.firstChild) throw new Error("Missing editor text");
+    const selection = window.getSelection();
+    selection?.collapse(paragraph.firstChild, 0);
+    const structure = () => ({
+      text: editor.textContent,
+      lists: editor.querySelectorAll("ul, ol").length,
+      items: editor.querySelectorAll("li").length,
+      rows: editor.querySelectorAll("tr").length,
+      cells: editor.querySelectorAll("td, th").length,
+    });
+    const before = structure();
+    await user.tab();
+    expect(
+      document.activeElement === screen.getByRole("button", { name: "Agency" }),
+    ).toBe(true);
+    await user.tab({ shift: true });
+    expect(document.activeElement === editor).toBe(true);
+    await user.tab({ shift: true });
+    expect(
+      document.activeElement ===
+        screen.getByRole("textbox", { name: "Título da ação" }),
+    ).toBe(true);
+    expect(structure()).toEqual(before);
+  });
+}
+
+it("Alt+F10 keeps every auxiliary control reachable with ordinary Tab", async () => {
+  mount(draft({ description: "<p></p>" }));
+  const editor = await descriptionEditor();
+  const user = userEvent.setup();
+  await user.keyboard("{Alt>}{F10}{/Alt}");
+  expect(screen.getByText(/Tab: todos os controles/)).toBeTruthy();
+  await user.tab();
+  expect(document.activeElement === editor).toBe(false);
+  await user.tab();
+  expect(
+    document.activeElement ===
+      screen.getByRole("button", { name: "Alternar exibição do ID da ação" }),
+  ).toBe(true);
+  await user.keyboard("{Alt>}{F10}{/Alt}");
+  await user.tab();
+  expect(document.activeElement === editor).toBe(true);
+});
+
+it("a draft keeps title autofocus and reaches Create without a color field", async () => {
+  mount(draft({ id: undefined, title: "", description: "<p></p>" }));
+  await descriptionEditor();
+  const user = userEvent.setup();
+  expect(
+    document.activeElement ===
+      screen.getByRole("textbox", { name: "Título da ação" }),
+  ).toBe(true);
+  for (let step = 0; step < 5; step++) await user.tab();
+  expect(
+    document.activeElement === screen.getByRole("button", { name: "Criar" }),
+  ).toBe(true);
+  expect(writes).toEqual([]);
+});
+
+it("the partner popover owns its Tab navigation and restores the trigger on Escape", async () => {
+  let closed = 0;
+  mount(draft({ description: "<p></p>" }), () => closed++);
+  await descriptionEditor();
+  const user = userEvent.setup();
+  const trigger = screen.getByRole("button", { name: "Agency" });
+  await user.tab();
+  await user.tab();
+  await user.keyboard("{Enter}");
+  const search = await screen.findByRole("searchbox");
+  expect(document.activeElement === search).toBe(true);
+  await user.tab();
+  expect(
+    document.activeElement?.closest('[data-slot="popover-content"]'),
+  ).not.toBeNull();
+  await user.keyboard("{Escape}");
+  await waitFor(() => expect(document.activeElement === trigger).toBe(true));
+  expect(closed).toBe(0);
+});
+
+it("the date calendar and time segments keep their own Tab navigation", async () => {
+  let closed = 0;
+  mount(draft({ description: "<p></p>" }), () => closed++);
+  await descriptionEditor();
+  const trigger = screen.getByRole("button", { name: /outubro às 10h/ });
+  const user = userEvent.setup();
+  await user.click(trigger);
+  const popup = await waitFor(() => {
+    const element = document.querySelector<HTMLElement>(
+      '[data-slot="popover-content"]',
+    );
+    if (!element) throw new Error("Date popover did not open");
+    return element;
+  });
+  await user.tab();
+  expect(popup.contains(document.activeElement)).toBe(true);
+  const segments = within(popup).getAllByRole("spinbutton");
+  act(() => segments[0].focus());
+  await user.tab();
+  expect(popup.contains(document.activeElement)).toBe(true);
+  await user.keyboard("{Escape}");
+  await waitFor(() => expect(document.activeElement === trigger).toBe(true));
+  expect(closed).toBe(0);
+  expect(writes).toEqual([]);
+});
+
+it("closing the focus scope restores the opener", async () => {
+  const opener = document.createElement("button");
+  opener.textContent = "Open action";
+  document.body.append(opener);
+  opener.focus();
+  const mounted = mount(draft({ description: "<p></p>" }));
+  await descriptionEditor();
+  mounted.unmount();
+  await waitFor(() => expect(document.activeElement === opener).toBe(true));
+  opener.remove();
+});
+
+it("rerendering the same action does not move focus back to the title", async () => {
+  const base = draft({ description: "<p></p>" });
+  const mounted = mount(base);
+  const editor = await descriptionEditor();
+  await userEvent.setup().tab();
+  mounted.select({ ...base, updated_at: "2026-10-06T10:03:00Z" }, 0);
+  expect(document.activeElement === editor).toBe(true);
+});
+
+it("the main sequence keeps ordinary boundaries instead of wrapping", async () => {
+  mount(draft({ description: "<p></p>" }));
+  await descriptionEditor();
+  const afterDrawer = document.createElement("button");
+  afterDrawer.textContent = "After drawer";
+  document.body.append(afterDrawer);
+  const user = userEvent.setup();
+  await user.tab({ shift: true });
+  expect(
+    document.activeElement === screen.getByRole("button", { name: "Fechar" }),
+  ).toBe(true);
+  act(() => screen.getByRole("button", { name: "Atualizar" }).focus());
+  await user.tab();
+  expect(document.activeElement === afterDrawer).toBe(true);
+  afterDrawer.remove();
+});
+
+it("other tabs use their normal keyboard sequence", async () => {
+  mount(draft({ category: "reels", partners: [], description: "<p></p>" }));
+  await descriptionEditor();
+  const tab = screen.getByRole("tab", { name: "INSTAGRAM" });
+  const user = userEvent.setup();
+  await user.click(tab);
+  await user.tab();
+  expect(
+    document.activeElement === screen.getByRole("tab", { name: "OBSERVAÇÕES" }),
+  ).toBe(true);
+});
 it("a draft is recognised by the missing id, not by created_at", async () => {
   mount(
     draft({

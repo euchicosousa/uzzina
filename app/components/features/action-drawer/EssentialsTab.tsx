@@ -120,30 +120,32 @@ export function EssentialsTab({
   return (
     <div className="flex h-full w-full max-w-full flex-col overflow-hidden">
       {/* Título */}
-      <ActionTitleInput
-        autoFocus
-        className="font-medium tracking-[-5%]"
-        onBlur={async (title) => {
-          if (onTitleBlur) {
-            await onTitleBlur(title);
-          } else {
-            await updateAction(
-              {
-                title,
-              },
-              true,
-            );
-          }
-        }}
-        onChange={(title) => {
-          setRawAction((prev) => ({
-            ...prev,
-            title,
-          }));
-        }}
-        tabIndex={0}
-        title={RawAction.title}
-      />
+      <div data-drawer-focus="title">
+        <ActionTitleInput
+          autoFocus
+          className="font-medium tracking-[-5%]"
+          onBlur={async (title) => {
+            if (onTitleBlur) {
+              await onTitleBlur(title);
+            } else {
+              await updateAction(
+                {
+                  title,
+                },
+                true,
+              );
+            }
+          }}
+          onChange={(title) => {
+            setRawAction((prev) => ({
+              ...prev,
+              title,
+            }));
+          }}
+          tabIndex={0}
+          title={RawAction.title}
+        />
+      </div>
 
       <div className="max-w-full text-sm">
         <div className="flex max-w-full flex-wrap items-center gap-2 border-b px-4 py-2 sm:gap-4">
@@ -287,7 +289,10 @@ export function EssentialsTab({
         </div>
       </div>
       {/* Descrição */}
-      <div className="h-full w-full max-w-full overflow-hidden">
+      <div
+        className="h-full w-full max-w-full overflow-hidden"
+        data-drawer-focus="description"
+      >
         <Suspense
           fallback={
             <div className="h-full min-h-50 w-full animate-pulse rounded-2xl bg-muted" />
