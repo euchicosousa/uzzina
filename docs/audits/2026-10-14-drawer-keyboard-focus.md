@@ -129,3 +129,9 @@ Autorização do proprietário: iniciar o ticket01. Divisão de tickets publicad
 Verificação:363 testes/1060 assertions, format/lint/typecheck/build e7 PASS serverless. Os13 novos casos usam a gaveta e o editor reais; a fronteira externa de banco é controlada. Casos adicionais verificam que Escape do calendário e do popover não fecha a gaveta. Regressão de Tab foi observada antes de implementar o filtro.
 
 Conferência visual local bloqueada pela revisão automática do navegador: falha por limite de uso, não por avaliação de insegurança. Servidor/arquivos temporários removidos. Temas claro/escuro, mobile/desktop e overflow ainda precisam de conferência visual; não substituir essa evidência por jsdom. Nenhum push/deploy, SQL ou dado remoto alterado. Ticket01 permanece em andamento por essa pendência.
+
+## Publicação autorizada
+
+O proprietário autorizou publicar após as verificações e realizará o teste visual nos dados reais. Commit de código `ac170df7bfcc983317dd639c42367d380cf37621` enviado para main. A listagem da Vercel vinculou esse SHA ao deploy `uzzina-ksgeq4d1k-agenciacnvt.vercel.app`; inspect confirmou `dpl_AefHT1xWqjpNhCM9QDU26J6TKwBC`, ambiente production e readyState READY. Alias `uzzina.cnvt.com.br` confirmado; /app respondeu HTTP200. Não houve SQL ou escrita de dados reais neste processo.
+
+363 testes/1060 assertions, format/lint/typecheck/build e7 verificações serverless passaram antes da publicação. O teste visual/autenticado permanece com o proprietário; resposta HTTP e estado Ready não substituem essa verificação. Ticket02 não foi implementado.

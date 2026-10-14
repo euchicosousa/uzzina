@@ -4,7 +4,7 @@
 
 **Blocked by:** None.
 
-**Status:** in-progress — implementation prepared locally; browser verification pending.
+**Status:** in-progress — deployed to production; awaiting owner visual verification.
 
 - [x] Abertura de rascunho e de ação existente inicia no título. Atualizações, consultas e salvamentos não roubam o foco do usuário.
 - [x] Tab e Shift+Tab percorrem os destinos principais na ordem definida, sem índices positivos e ignorando destinos ausentes/desabilitados.
@@ -30,3 +30,7 @@ Primary navigation is implemented locally using React Aria FocusScope/useFocusMa
 363 tests / 1060 assertions passed, including13 new drawer keyboard cases. Browser verification is pending because automatic browser approval review failed due to a usage limit. This does not certify theme, viewport, visual overflow, or browser-specific rendering. No push/deploy or database changes.
 
 Format, lint, typecheck, build, diff checks and7 serverless checks passed. The remaining acceptance item is the browser verification of themes, viewports and overflow.
+
+## Production publication — 14/10/2026
+
+The owner authorized publication and will test visually with real data. Code commit `ac170df7bfcc983317dd639c42367d380cf37621` was pushed to main. Vercel deployment `dpl_AefHT1xWqjpNhCM9QDU26J6TKwBC` reached READY in production and is aliased to `uzzina.cnvt.com.br`; /app returned HTTP200. No database changes. Visual verification remains open.
