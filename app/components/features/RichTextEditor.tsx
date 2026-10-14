@@ -38,7 +38,36 @@ import {
   Undo2,
   type LucideIcon,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  Button as AriaButton,
+  Toolbar as AriaToolbar,
+} from "react-aria-components";
+
+const toolbarButtonClass =
+  "flex size-8 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all outline-none hover:bg-secondary hover:text-foreground data-[focus-visible]:border-ring data-[focus-visible]:ring-3 data-[focus-visible]:ring-ring/30 disabled:opacity-30 disabled:hover:bg-transparent";
+
+function EditorToolbar({
+  children,
+  className,
+  label,
+  shortcut = "Alt+Shift+F10",
+}: {
+  children: ReactNode;
+  className?: string;
+  label: string;
+  shortcut?: string;
+}) {
+  return (
+    <AriaToolbar
+      aria-label={label}
+      aria-keyshortcuts={shortcut}
+      className={className}
+    >
+      {children}
+    </AriaToolbar>
+  );
+}
 interface TiptapToolbarProps {
   editor: Editor | null;
   isRounded?: boolean;
@@ -48,6 +77,7 @@ interface ToolbarButtonDef {
   label: string;
   action: () => void;
   selector: (editor: Editor) => boolean;
+  isToggle?: boolean;
 }
 function ToolbarButton({
   icon: Icon,
@@ -55,30 +85,51 @@ function ToolbarButton({
   action,
   editor,
   selector,
+  isToggle = true,
 }: ToolbarButtonDef & {
   editor: Editor;
 }) {
-  const isActive = useEditorState({
+  const state = useEditorState({
     editor,
-    selector: ({ editor: e }) => selector(e),
+    selector: ({ editor: e }) => ({
+      active: selector(e),
+      editable: e.isEditable,
+    }),
   });
   return (
-    <button
+    <AriaButton
+      aria-label={label}
+      aria-pressed={isToggle ? state.active : undefined}
       className={cn(
-        "flex size-8 items-center justify-center rounded-lg transition-all outline-none",
-        isActive
+        toolbarButtonClass,
+        state.active
           ? "border border-primary/20 bg-primary/10 text-primary"
           : "border border-transparent text-muted-foreground hover:bg-secondary hover:text-foreground",
       )}
-      onClick={action}
-      title={label}
+      isDisabled={!state.editable}
+      onPress={action}
       type="button"
     >
-      <Icon className="size-4" />
-    </button>
+      <span
+        className="flex size-full items-center justify-center"
+        title={label}
+      >
+        <Icon className="size-4" />
+      </span>
+    </AriaButton>
   );
 }
 function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
+  const history = useEditorState({
+    editor,
+    selector: ({ editor: e }) =>
+      e
+        ? {
+            undo: e.isEditable && e.can().undo(),
+            redo: e.isEditable && e.can().redo(),
+          }
+        : null,
+  });
   if (!editor) return null;
   const buttons: ToolbarButtonDef[] = [
     {
@@ -188,12 +239,14 @@ function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
     },
     {
       icon: Minus,
+      isToggle: false,
       label: "Linha Divisória",
       action: () => editor.chain().focus().setHorizontalRule().run(),
       selector: () => false,
     },
     {
       icon: TableIcon,
+      isToggle: false,
       label: "Tabela",
       action: () => {
         const colsStr = window.prompt("Quantas Colunas deseja na tabela?", "3");
@@ -216,13 +269,15 @@ function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
     },
     {
       icon: RemoveFormatting,
+      isToggle: false,
       label: "Remover Formatação",
       action: () => editor.chain().focus().clearNodes().unsetAllMarks().run(),
       selector: () => false,
     },
   ];
   return (
-    <div
+    <EditorToolbar
+      label="Formatação do texto"
       className={cn(
         "flex max-w-full shrink-0 flex-wrap items-center gap-1 overflow-hidden border-b bg-popover p-1.5",
         isRounded && "rounded-t-2xl squircle",
@@ -234,25 +289,36 @@ function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
 
       <div className="mx-1 h-4 w-px shrink-0 bg-border" />
 
-      <button
-        className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-all outline-none hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent"
-        disabled={!editor.can().undo()}
-        onClick={() => editor.chain().focus().undo().run()}
-        title="Desfazer"
-      >
-        <Undo2 className="size-4" />
-      </button>
-
-      <button
-        className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-all outline-none hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent"
-        disabled={!editor.can().redo()}
-        onClick={() => editor.chain().focus().redo().run()}
-        title="Refazer"
+      <AriaButton
+        aria-label="Desfazer"
+        className={toolbarButtonClass}
+        isDisabled={!history?.undo}
+        onPress={() => editor.chain().focus().undo().run()}
         type="button"
       >
-        <Redo2 className="size-4" />
-      </button>
-    </div>
+        <span
+          className="flex size-full items-center justify-center"
+          title="Desfazer"
+        >
+          <Undo2 className="size-4" />
+        </span>
+      </AriaButton>
+
+      <AriaButton
+        aria-label="Refazer"
+        className={toolbarButtonClass}
+        isDisabled={!history?.redo}
+        onPress={() => editor.chain().focus().redo().run()}
+        type="button"
+      >
+        <span
+          className="flex size-full items-center justify-center"
+          title="Refazer"
+        >
+          <Redo2 className="size-4" />
+        </span>
+      </AriaButton>
+    </EditorToolbar>
   );
 }
 export function RichTextEditor({
@@ -274,6 +340,7 @@ export function RichTextEditor({
   placeholder?: string;
   isRounded?: boolean;
 }) {
+  const editorRoot = useRef<HTMLDivElement>(null);
   const [extensions] = useState(() => {
     const kit = StarterKit.configure({
       heading: {
@@ -411,6 +478,7 @@ export function RichTextEditor({
       },
       {
         icon: RemoveFormatting,
+        isToggle: false,
         label: "Remover Formatação",
         action: () => editor.chain().focus().clearNodes().unsetAllMarks().run(),
         selector: () => false,
@@ -458,32 +526,105 @@ export function RichTextEditor({
           "flex h-full w-full flex-col transition-all duration-200",
           className,
         )}
+        onKeyDownCapture={(event) => {
+          const root = editorRoot.current;
+          const target = event.target;
+          if (
+            !editor ||
+            !root ||
+            !(target instanceof Element) ||
+            !root.contains(target)
+          )
+            return;
+          if (
+            target.closest('[role="toolbar"]') &&
+            event.key === "Tab" &&
+            !event.shiftKey &&
+            !event.altKey &&
+            !event.ctrlKey &&
+            !event.metaKey
+          ) {
+            event.preventDefault();
+            event.stopPropagation();
+            editor.view.dom.focus();
+            return;
+          }
+          if (
+            (event.key !== "F10" && event.key !== "F9") ||
+            !event.altKey ||
+            !event.shiftKey ||
+            event.ctrlKey ||
+            event.metaKey
+          )
+            return;
+          const toolbar = root.querySelector<HTMLElement>(
+            event.key === "F9"
+              ? '[data-editor-context-toolbar] [role="toolbar"]'
+              : '[role="toolbar"]',
+          );
+          if (!toolbar) return;
+          const style = getComputedStyle(toolbar);
+          if (
+            style.display === "none" ||
+            style.visibility === "hidden" ||
+            toolbar.closest('[aria-hidden="true"]')
+          )
+            return;
+          const button = toolbar.querySelector<HTMLButtonElement>(
+            "button:not(:disabled)",
+          );
+          if (button) {
+            event.preventDefault();
+            event.stopPropagation();
+            button.focus();
+          }
+        }}
+        ref={editorRoot}
+        title="Alt+Shift+F10: formatação · Alt+Shift+F9: seleção ou tabela"
       >
         <TiptapToolbar editor={editor} isRounded={isRounded} />
         {editor && (
           <BubbleMenuComponent
             className="flex items-center gap-0.5 rounded-2xl border bg-background/95 p-1 shadow-lg backdrop-blur-md squircle"
+            data-editor-context-toolbar
             editor={editor}
+            tabIndex={-1}
           >
-            {isSelectionInTable
-              ? tableButtons.map((btn) => (
-                  <button
-                    key={`table-control-${btn.label}`}
-                    className="flex size-8 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all outline-none hover:bg-secondary hover:text-foreground"
-                    onClick={btn.action}
-                    title={btn.label}
-                    type="button"
-                  >
-                    <btn.icon className="size-4" />
-                  </button>
-                ))
-              : bubbleButtons.map((btn) => (
-                  <ToolbarButton
-                    key={`bubble-${btn.label}`}
-                    {...btn}
-                    editor={editor}
-                  />
-                ))}
+            <EditorToolbar
+              label={
+                isSelectionInTable
+                  ? "Formatação da tabela"
+                  : "Formatação da seleção"
+              }
+              className="flex items-center gap-0.5"
+              shortcut="Alt+Shift+F9"
+            >
+              {isSelectionInTable
+                ? tableButtons.map((btn) => (
+                    <AriaButton
+                      key={`table-control-${btn.label}`}
+                      aria-label={btn.label}
+                      className={toolbarButtonClass}
+                      isDisabled={!editor.isEditable}
+                      onPress={btn.action}
+                      type="button"
+                    >
+                      <span
+                        className="flex size-full items-center justify-center"
+                        title={btn.label}
+                      >
+                        <btn.icon className="size-4" />
+                      </span>
+                    </AriaButton>
+                  ))
+                : bubbleButtons.map((btn) => (
+                    <ToolbarButton
+                      key={`bubble-${btn.label}`}
+                      {...btn}
+                      editor={editor}
+                    />
+                  ))}
+            </EditorToolbar>
           </BubbleMenuComponent>
         )}
         <EditorContent className="min-h-30 flex-1" editor={editor} />

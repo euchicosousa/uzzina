@@ -58,6 +58,8 @@ function DrawerFocusContent({
           setAllControls((previous) => !previous);
           return;
         }
+        // Toolbars manage their own arrow keys and single Tab exit, in either mode.
+        if (target.closest('[role="toolbar"]')) return;
         if (
           event.key !== "Tab" ||
           event.altKey ||
@@ -72,6 +74,7 @@ function DrawerFocusContent({
           tabbable: true,
           accept: (node: Element) =>
             root.contains(node) &&
+            !node.closest("[data-editor-context-toolbar]") &&
             (allControls || node.matches(PRIMARY_TARGETS)),
         };
         const next = event.shiftKey
@@ -87,11 +90,7 @@ function DrawerFocusContent({
     >
       {children}
       {enabled && (
-        <p
-          aria-live="polite"
-          className="shrink-0 border-t px-4 py-1 text-xs text-muted-foreground"
-          id={hintId}
-        >
+        <p aria-live="polite" hidden id={hintId}>
           {allControls ? "Tab: todos os controles" : "Tab: campos principais"}
           {" · Alt+F10 para alternar"}
         </p>

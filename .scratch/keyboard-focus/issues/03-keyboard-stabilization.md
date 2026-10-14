@@ -18,3 +18,7 @@
 **Scope boundary:** trabalho futuro de diagnóstico e padronização, separado das duas entregas da gaveta. A publicação deste ticket não autoriza sua execução nem migração para Base UI.
 
 **Basis:** solicitação do proprietário de um ticket futuro para estabilizar gestão de foco, teclado e telas, na conversa de14/10/2026.
+
+## Owner follow-up — 14/10/2026
+
+The owner confirmed the primary action focus flow and reported that some controls still lack visible focus in all-controls mode. Prioritize the existing focus inventory for the next review: title, responsibles, text editors, selectors, searches, attachments and tab controls. Toolbar focus indicators are addressed in ticket02; other appearances remain separate and must be agreed before implementation. The bottom shortcut notice stays hidden until the owner chooses a placement.

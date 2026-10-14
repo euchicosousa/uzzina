@@ -4,7 +4,7 @@
 
 **Blocked by:** None.
 
-**Status:** in-progress — deployed to production; awaiting owner visual verification.
+**Status:** completed — owner confirmed normal focus navigation in production on Mac.
 
 - [x] Abertura de rascunho e de ação existente inicia no título. Atualizações, consultas e salvamentos não roubam o foco do usuário.
 - [x] Tab e Shift+Tab percorrem os destinos principais na ordem definida, sem índices positivos e ignorando destinos ausentes/desabilitados.
@@ -34,3 +34,7 @@ Format, lint, typecheck, build, diff checks and7 serverless checks passed. The r
 ## Production publication — 14/10/2026
 
 The owner authorized publication and will test visually with real data. Code commit `ac170df7bfcc983317dd639c42367d380cf37621` was pushed to main. Vercel deployment `dpl_AefHT1xWqjpNhCM9QDU26J6TKwBC` reached READY in production and is aliased to `uzzina.cnvt.com.br`; /app returned HTTP200. No database changes. Visual verification remains open.
+
+## Owner verification — 14/10/2026
+
+The owner confirmed that the focus flow works normally with real data and authorized starting ticket02. On Mac the all-controls shortcut uses Option+Fn+F10 according to the current keyboard configuration. The owner requested hiding the bottom shortcut notice; it is now hidden without layout space and the shortcut remains active. Missing focus indicators on some auxiliary controls are tracked separately in ticket03.

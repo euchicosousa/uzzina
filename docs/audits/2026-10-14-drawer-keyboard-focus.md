@@ -135,3 +135,13 @@ Conferência visual local bloqueada pela revisão automática do navegador: falh
 O proprietário autorizou publicar após as verificações e realizará o teste visual nos dados reais. Commit de código `ac170df7bfcc983317dd639c42367d380cf37621` enviado para main. A listagem da Vercel vinculou esse SHA ao deploy `uzzina-ksgeq4d1k-agenciacnvt.vercel.app`; inspect confirmou `dpl_AefHT1xWqjpNhCM9QDU26J6TKwBC`, ambiente production e readyState READY. Alias `uzzina.cnvt.com.br` confirmado; /app respondeu HTTP200. Não houve SQL ou escrita de dados reais neste processo.
 
 363 testes/1060 assertions, format/lint/typecheck/build e7 verificações serverless passaram antes da publicação. O teste visual/autenticado permanece com o proprietário; resposta HTTP e estado Ready não substituem essa verificação. Ticket02 não foi implementado.
+
+## Ticket02 e retorno do proprietário
+
+O proprietário confirmou foco normal em produção no Mac, pediu ocultar o aviso Alt+F10 sem retirar o atalho e autorizou o ticket02. A falta de indicador em outros controles no modo completo permanece separada no ticket03.
+
+Toolbar/Button do React Aria agora atendem barra principal e contextual. Atalhos: Alt+Shift+F10 para principal; Alt+Shift+F9 para seleção/tabela quando visível. Setas navegam; Enter/Espaço aplicam; Tab volta ao editor. Estados ativos e foco têm indicações distintas; history acompanha transações. Menus contextuais não criam paradas no percurso comum, incluindo o modo de todos os controles. O aviso inferior usa hidden e mede0px de altura.
+
+Reprodução anterior: ArrowRight não movia o foco entre os botões reais.374 testes/1120 assertions passaram após a mudança, com11 casos novos; format/lint/typecheck/build passaram. Navegador local com componentes reais e conteúdo fictício verificou atalhos, setas, saída da toolbar, menu contextual, viewport390px com duas linhas e indicadores de foco. CSS base e paleta padrão real foram conferidos; em escuro, o ring da paleta padrão é branco com sombra de3px a30%. O primeiro ensaio só carregava CSS base, portanto não representa o tema padrão completo.
+
+Ensaios locais removidos. Nenhum SQL ou escrita remota foi feito. A verificação isolada não comprova todos os browsers/paletas ou os fluxos completos autenticados de Instagram/admin. A publicação está em andamento.

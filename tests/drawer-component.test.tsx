@@ -198,6 +198,37 @@ it("Tab from the title goes directly to the real description editor", async () =
   expect(writes).toEqual([]);
 });
 
+it("the real editor toolbar supports arrow navigation", async () => {
+  mount(draft({ description: "<p></p>" }));
+  await descriptionEditor();
+  const first = screen.getByRole("button", { name: "Título 1" });
+  const user = userEvent.setup();
+  act(() => first.focus());
+  await user.keyboard("{ArrowRight}");
+  expect(
+    document.activeElement === screen.getByRole("button", { name: "Título 2" }),
+  ).toBe(true);
+});
+
+it("formatting shortcut and Tab integrate with the main drawer sequence", async () => {
+  mount(draft({ description: "<p>Hello</p>" }));
+  const editor = await descriptionEditor();
+  const user = userEvent.setup();
+  await user.tab();
+  await user.keyboard("{Alt>}{Shift>}{F10}{/Shift}{/Alt}");
+  expect(
+    screen
+      .getByRole("toolbar", { name: "Formatação do texto" })
+      .contains(document.activeElement),
+  ).toBe(true);
+  await user.tab();
+  expect(document.activeElement === editor).toBe(true);
+  await user.tab();
+  expect(
+    document.activeElement === screen.getByRole("button", { name: "Agency" }),
+  ).toBe(true);
+});
+
 it("the main drawer sequence skips auxiliary controls in both directions", async () => {
   mount(draft({ description: "<p></p>" }));
   const editor = await descriptionEditor();

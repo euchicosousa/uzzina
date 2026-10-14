@@ -98,3 +98,9 @@ Scripts check-*-browser usam Playwright/Chromium externos ao lockfile do app: PL
 A correção incremental de leitura de ações é `supabase/migrations/20261008164615_action_row_read_authorization.sql`; ela altera somente a expressão da policy SELECT existente. Aplicação e verificações por ambiente estão em `supabase/rollouts/action-read-fix-manifest.json`. Não reaplicar os bundles anteriores para instalar essa correção.
 
 Após uma publicação, o proprietário pode conferir login/home, ações/data, preferências, IA, administração, portal/revisão, upload e Leads. Em edição simultânea, alterar a mesma ação em duas sessões e verificar conflito/preservação do rascunho; atualizar para confirmar persistência. Fazer essas verificações com registros próprios de teste e relatar passos/erro/navegador, sem segredos. O resultado vigente fica em CURRENT.
+
+## Teclado na edição de ações
+
+Na aba Essencial, Tab percorre Título → Descrição → Parceiros → Fase → Categoria → Cor, quando disponível → Criar/Atualizar. Shift+Tab faz o caminho inverso. Alt+F10 alterna para navegar por todos os controles; o aviso inferior desse atalho está oculto.
+
+No editor, Alt+Shift+F10 acessa a formatação principal. Quando a barra de seleção/tabela estiver visível, Alt+Shift+F9 acessa seus comandos. Use setas para navegar, Enter/Espaço para aplicar e Tab para voltar ao texto. Calendário, seletores e diálogos mantêm seus próprios comandos. No Mac, Alt corresponde a Option; Fn pode ser necessário para enviar F9/F10 conforme a configuração das teclas de função.
