@@ -123,7 +123,7 @@ export function EssentialsTab({
       <div data-drawer-focus="title">
         <ActionTitleInput
           autoFocus
-          className="font-medium tracking-[-5%]"
+          className="font-medium tracking-[-5%] transition-colors focus-within:bg-foreground/5"
           onBlur={async (title) => {
             if (onTitleBlur) {
               await onTitleBlur(title);
@@ -270,7 +270,7 @@ export function EssentialsTab({
             <CloudinaryUpload
               className={cn(
                 workFiles.length === 0 &&
-                  "h-8 gap-1 p-0 font-normal text-muted-foreground hover:underline",
+                  "h-8 gap-1 p-0 font-normal text-muted-foreground hover:underline data-[focus-visible]:underline",
               )}
               cloudName={cloudName}
               folder="uzzina/work"
@@ -301,7 +301,7 @@ export function EssentialsTab({
           <Tiptap
             key={descriptionVersion}
             className={cn(
-              "h-full min-h-50 w-full bg-popover",
+              "h-full min-h-50 w-full bg-popover [&_.tiptap]:transition-colors [&_.tiptap:focus]:bg-foreground/5",
               isAIProcessing && "opacity-40",
             )}
             content={RawAction.description || ""}

@@ -32,7 +32,8 @@ export function WorkFileThumbnail({
   return (
     <div className="group relative size-8 shrink-0">
       <a
-        className="block size-full"
+        aria-label="Abrir anexo"
+        className="block size-full rounded-2xl outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
         href={url}
         rel="noopener noreferrer"
         target="_blank"
@@ -51,7 +52,7 @@ export function WorkFileThumbnail({
       </a>
       {onRemove && (
         <button
-          className="absolute -top-1.5 -right-1.5 hidden size-4 items-center justify-center rounded-full bg-destructive text-white group-hover:flex"
+          className="absolute -top-1.5 -right-1.5 hidden size-4 items-center justify-center rounded-full bg-destructive text-white outline-none group-focus-within:flex group-hover:flex focus-visible:ring-2 focus-visible:ring-ring"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();

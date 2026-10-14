@@ -531,6 +531,7 @@ export function ActionFormDrawer({
       {/* Tabs */}
       <div
         className="flex w-full shrink-0 divide-x overflow-hidden"
+        data-drawer-navigation
         role="tablist"
       >
         <button
@@ -568,7 +569,7 @@ export function ActionFormDrawer({
         <div className="shrink-0">
           <button
             aria-label="Fechar"
-            className="flex cursor-pointer items-center justify-center border-b px-3 py-3 text-sm font-medium sm:p-5"
+            className="flex cursor-pointer items-center justify-center border-b px-3 py-3 text-sm font-medium outline-none focus-visible:bg-input focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset sm:p-5"
             onClick={handleSafeClose}
             type="button"
           >
@@ -812,6 +813,6 @@ export function ActionFormDrawer({
 }
 const tabClass = (active: boolean) =>
   cn(
-    "flex flex-1 min-w-0 cursor-pointer items-center justify-center gap-1.5 border-b px-2 py-3 sm:p-4 text-xs sm:text-sm font-medium",
-    active ? "bg-popover border-b-transparent" : "bg-muted border-border",
+    "flex flex-1 min-w-0 cursor-pointer items-center justify-center gap-1.5 border-t-2 border-t-transparent border-b px-2 py-3 sm:p-4 text-xs sm:text-sm font-medium outline-none focus-visible:border-t-primary",
+    active ? "bg-popover border-b-transparent" : "bg-muted border-b-border",
   );

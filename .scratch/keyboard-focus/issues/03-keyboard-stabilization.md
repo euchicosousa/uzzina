@@ -22,3 +22,7 @@
 ## Owner follow-up — 14/10/2026
 
 The owner confirmed the primary action focus flow and reported that some controls still lack visible focus in all-controls mode. Prioritize the existing focus inventory for the next review: title, responsibles, text editors, selectors, searches, attachments and tab controls. Toolbar focus indicators are addressed in ticket02; other appearances remain separate and must be agreed before implementation. The bottom shortcut notice stays hidden until the owner chooses a placement.
+
+## Drawer indicators — authorized follow-up, 14/10/2026
+
+The owner approved title/description focus backgrounds in localhost and authorized the next drawer indicator fixes. Prepared React Aria focus-visible backgrounds/inset rings for combobox triggers, accessible responsible labels (including empty selection), attachment focus and removal visibility, upload underline, and drawer tab/close outlines. Existing Prism command focus and date underline are preserved.71 relevant tests and format/lint/typecheck/build passed. New appearances await owner review in localhost; no publication. This limited implementation does not complete or authorize a general migration of other screens.

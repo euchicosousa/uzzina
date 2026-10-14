@@ -316,7 +316,10 @@ it("Alt+F10 keeps every auxiliary control reachable with ordinary Tab", async ()
   await user.keyboard("{Alt>}{F10}{/Alt}");
   expect(screen.getByText(/Tab: todos os controles/)).toBeTruthy();
   await user.tab();
-  expect(document.activeElement === editor).toBe(false);
+  const responsibles = screen.getByRole("button", { name: "Responsáveis" });
+  expect(document.activeElement === responsibles).toBe(true);
+  expect(responsibles.textContent).toContain("Responsáveis");
+  expect(responsibles.hasAttribute("data-focus-visible")).toBe(true);
   await user.tab();
   expect(
     document.activeElement ===
@@ -409,12 +412,9 @@ it("rerendering the same action does not move focus back to the title", async ()
   expect(document.activeElement === editor).toBe(true);
 });
 
-it("the main sequence keeps ordinary boundaries instead of wrapping", async () => {
+it("save continues through drawer navigation and Shift+Tab reverses it", async () => {
   mount(draft({ description: "<p></p>" }));
   await descriptionEditor();
-  const afterDrawer = document.createElement("button");
-  afterDrawer.textContent = "After drawer";
-  document.body.append(afterDrawer);
   const user = userEvent.setup();
   await user.tab({ shift: true });
   expect(
@@ -422,8 +422,28 @@ it("the main sequence keeps ordinary boundaries instead of wrapping", async () =
   ).toBe(true);
   act(() => screen.getByRole("button", { name: "Atualizar" }).focus());
   await user.tab();
-  expect(document.activeElement === afterDrawer).toBe(true);
-  afterDrawer.remove();
+  expect(
+    document.activeElement === screen.getByRole("tab", { name: "ESSENCIAL" }),
+  ).toBe(true);
+  await user.tab({ shift: true });
+  expect(
+    document.activeElement ===
+      screen.getByRole("button", { name: "Atualizar" }),
+  ).toBe(true);
+  await user.tab();
+  await user.tab();
+  expect(
+    document.activeElement === screen.getByRole("tab", { name: "OBSERVAÇÕES" }),
+  ).toBe(true);
+  await user.tab();
+  expect(
+    document.activeElement === screen.getByRole("button", { name: "Fechar" }),
+  ).toBe(true);
+  await user.tab();
+  expect(
+    document.activeElement ===
+      screen.getByRole("textbox", { name: "Título da ação" }),
+  ).toBe(true);
 });
 
 it("other tabs use their normal keyboard sequence", async () => {
@@ -436,6 +456,37 @@ it("other tabs use their normal keyboard sequence", async () => {
   expect(
     document.activeElement === screen.getByRole("tab", { name: "OBSERVAÇÕES" }),
   ).toBe(true);
+});
+it("Create reaches all three navigation tabs on a social draft", async () => {
+  mount(draft({ id: undefined, category: "reels", description: "<p></p>" }));
+  await descriptionEditor();
+  act(() => screen.getByRole("button", { name: "Criar" }).focus());
+  const user = userEvent.setup();
+  for (const name of ["ESSENCIAL", "INSTAGRAM", "OBSERVAÇÕES"]) {
+    await user.tab();
+    expect(document.activeElement === screen.getByRole("tab", { name })).toBe(
+      true,
+    );
+  }
+});
+it("save reaches navigation when the drawer was opened from the page", async () => {
+  const opener = document.createElement("button");
+  const pageControl = document.createElement("button");
+  opener.textContent = "Open action";
+  pageControl.textContent = "Page control";
+  document.body.append(opener, pageControl);
+  opener.focus();
+  const mounted = mount(draft({ description: "<p></p>" }));
+  await descriptionEditor();
+  act(() => screen.getByRole("button", { name: "Atualizar" }).focus());
+  await userEvent.setup().tab();
+  expect(
+    document.activeElement === screen.getByRole("tab", { name: "ESSENCIAL" }),
+  ).toBe(true);
+  mounted.unmount();
+  await waitFor(() => expect(document.activeElement === opener).toBe(true));
+  opener.remove();
+  pageControl.remove();
 });
 it("a draft is recognised by the missing id, not by created_at", async () => {
   mount(

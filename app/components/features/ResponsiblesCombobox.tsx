@@ -71,6 +71,7 @@ export function ResponsiblesCombobox({
       onOpenChange={(open) => !disabled && setIsOpen(open)}
     >
       <ComboboxTrigger
+        aria-label="Responsáveis"
         className={cn(className, "overflow-hidden")}
         disabled={disabled}
         title={getFormattedPeopleName(currentResponsibles)}
@@ -79,7 +80,6 @@ export function ResponsiblesCombobox({
         <ActionResponsiblesDisplay
           responsibles={selectedResponsibles}
           size={SIZE.sm}
-          variant={variant}
         />
       </ComboboxTrigger>
 
@@ -124,11 +124,9 @@ export function ResponsiblesCombobox({
 function ActionResponsiblesDisplay({
   responsibles: responsibles_,
   size = SIZE.md,
-  variant = "default",
 }: {
   responsibles: string[];
   size?: (typeof SIZE)[keyof typeof SIZE];
-  variant?: "default" | "filter";
 }) {
   const { person } = useAppContext();
   const { data: people = [] } = useQuery({
@@ -142,12 +140,10 @@ function ActionResponsiblesDisplay({
   return (
     <div className="flex items-center gap-2 overflow-hidden text-xs text-muted-foreground">
       {responsibles.length === 0 ? (
-        variant === "filter" && (
-          <>
-            <User2Icon className="size-4" />
-            <span className="truncate">Responsáveis</span>
-          </>
-        )
+        <>
+          <User2Icon className="size-4" />
+          <span className="truncate">Responsáveis</span>
+        </>
       ) : (
         <>
           <UAvatarGroup

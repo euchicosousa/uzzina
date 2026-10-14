@@ -45,7 +45,7 @@ import {
 } from "react-aria-components";
 
 const toolbarButtonClass =
-  "flex size-8 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all outline-none hover:bg-secondary hover:text-foreground data-[focus-visible]:border-ring data-[focus-visible]:ring-3 data-[focus-visible]:ring-ring/30 disabled:opacity-30 disabled:hover:bg-transparent";
+  "flex size-8 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all outline-none hover:bg-secondary hover:text-foreground data-[focus-visible]:bg-input data-[focus-visible]:text-foreground disabled:opacity-30 disabled:hover:bg-transparent";
 
 function EditorToolbar({
   children,

@@ -27,7 +27,7 @@ export function ActionTitleInput({
         aria-label="Título da ação"
         autoFocus={autoFocus}
         className={cn(
-          "wrap-break-words w-full shrink-0 resize-none overflow-hidden pt-2 pb-1 leading-none outline-none",
+          "wrap-break-words w-full shrink-0 resize-none overflow-hidden bg-transparent pt-2 pb-1 leading-none outline-none",
           textareaClassName ||
             (localTitle.length > 70
               ? "text-2xl text-error sm:text-4xl"

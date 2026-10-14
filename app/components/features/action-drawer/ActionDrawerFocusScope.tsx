@@ -1,4 +1,10 @@
-import { useId, useState, type ReactNode } from "react";
+import {
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { FocusScope, useFocusManager } from "react-aria/FocusScope";
 
 const PRIMARY_TARGETS = [
@@ -15,7 +21,7 @@ interface ActionDrawerFocusScopeProps {
 
 export function ActionDrawerFocusScope(props: ActionDrawerFocusScopeProps) {
   return (
-    <FocusScope restoreFocus>
+    <FocusScope>
       <DrawerFocusContent {...props} />
     </FocusScope>
   );
@@ -27,6 +33,25 @@ function DrawerFocusContent({
   enabled,
 }: ActionDrawerFocusScopeProps) {
   const focusManager = useFocusManager();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [opener] = useState(() =>
+    document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null,
+  );
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    return () => {
+      // Restore only on close; FocusScope restoreFocus also redirects the last Tab.
+      const active = document.activeElement;
+      if (!root?.contains(active) && active !== document.body) return;
+      queueMicrotask(() => {
+        if (opener?.isConnected && document.activeElement === document.body) {
+          opener.focus({ preventScroll: true });
+        }
+      });
+    };
+  }, [opener]);
   const [allControls, setAllControls] = useState(false);
   const hintId = useId();
   return (
@@ -35,6 +60,7 @@ function DrawerFocusContent({
       aria-label="Edição da ação"
       className={className}
       data-drawer-focus-scope
+      ref={rootRef}
       onKeyDownCapture={(event) => {
         const target = event.target;
         // React portals bubble through this component even outside its DOM scope.
@@ -70,16 +96,33 @@ function DrawerFocusContent({
           return;
         }
         const root = event.currentTarget;
+        const inNavigation = !!target.closest("[data-drawer-navigation]");
+        const isNavigation = (node: Element) =>
+          root.contains(node) && !!node.closest("[data-drawer-navigation]");
         const options = {
           tabbable: true,
           accept: (node: Element) =>
             root.contains(node) &&
             !node.closest("[data-editor-context-toolbar]") &&
-            (allControls || node.matches(PRIMARY_TARGETS)),
+            (allControls ||
+              node.matches(PRIMARY_TARGETS) ||
+              (inNavigation && isNavigation(node))),
         };
-        const next = event.shiftKey
+        let next = event.shiftKey
           ? focusManager?.focusPrevious(options)
           : focusManager?.focusNext(options);
+        if (!next && !event.shiftKey && target.matches(PRIMARY_TARGETS)) {
+          next = focusManager?.focusFirst({
+            tabbable: true,
+            accept: isNavigation,
+          });
+        } else if (!next && event.shiftKey && inNavigation) {
+          next = focusManager?.focusLast({
+            tabbable: true,
+            accept: (node) =>
+              root.contains(node) && node.matches(PRIMARY_TARGETS),
+          });
+        }
         if (next) {
           // Run before the editor can indent a list or move/create table cells.
           event.preventDefault();

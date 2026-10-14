@@ -28,6 +28,7 @@ export function ComboboxTrigger({
       className={cn(
         // Base transition and outline
         "flex cursor-pointer items-center gap-2 text-sm transition-colors outline-none",
+        variant !== "form-link" && "data-[focus-visible]:bg-input",
         // Variant Styles
         variant === "filter" &&
           cn(
@@ -44,7 +45,7 @@ export function ComboboxTrigger({
               : "p-6 hover:bg-secondary focus:bg-secondary/50",
           ),
         variant === "form-link" &&
-          "cursor-pointer underline-offset-4 hover:underline",
+          "cursor-pointer rounded-md underline-offset-4 hover:underline data-[focus-visible]:underline",
         variant === "form-footer" &&
           "flex w-full items-center gap-2 overflow-hidden px-6 py-5.5 text-sm hover:bg-secondary focus:bg-secondary/50",
         className,

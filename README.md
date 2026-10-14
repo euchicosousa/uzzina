@@ -101,6 +101,6 @@ Após uma publicação, o proprietário pode conferir login/home, ações/data, 
 
 ## Teclado na edição de ações
 
-Na aba Essencial, Tab percorre Título → Descrição → Parceiros → Fase → Categoria → Cor, quando disponível → Criar/Atualizar. Shift+Tab faz o caminho inverso. Alt+F10 alterna para navegar por todos os controles; o aviso inferior desse atalho está oculto.
+Na aba Essencial, Tab percorre Título → Descrição → Parceiros → Fase → Categoria → Cor, quando disponível → Criar/Atualizar. Após Criar/Atualizar, segue para Essencial → Instagram, quando disponível → Observações → Fechar → Título. As abas mostram uma borda superior na cor principal ao receber foco. Shift+Tab faz o caminho inverso. Alt+F10 alterna para navegar por todos os controles; o aviso inferior desse atalho está oculto.
 
 No editor, Alt+Shift+F10 acessa a formatação principal. Quando a barra de seleção/tabela estiver visível, Alt+Shift+F9 acessa seus comandos. Use setas para navegar, Enter/Espaço para aplicar e Tab para voltar ao texto. Calendário, seletores e diálogos mantêm seus próprios comandos. No Mac, Alt corresponde a Option; Fn pode ser necessário para enviar F9/F10 conforme a configuração das teclas de função.

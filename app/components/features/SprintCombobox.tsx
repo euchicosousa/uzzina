@@ -19,6 +19,7 @@ import { fetchPeople } from "~/lib/supabase.queries";
 import type { Partner, Person } from "~/types";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { ComboboxTrigger } from "./ComboboxTrigger";
+import { buttonVariants } from "../prism/button";
 interface SprintComboboxProps {
   selectedSprints: string[];
   responsibles: string[];
@@ -97,8 +98,8 @@ export function SprintCombobox({
         className={cn(
           size === "lg" &&
             cn(
-              "rounded-2xl p-2 squircle hover:opacity-100 focus:opacity-100",
-              selectedSprints.length > 0 ? "opacity-80" : "opacity-50",
+              buttonVariants({ variant: "ghost", size: "icon" }),
+              "p-0 data-[focus-visible]:bg-transparent",
             ),
           className,
         )}
