@@ -85,3 +85,12 @@ Proprietário aprovou a divisão e autorizou o início. Tickets publicados no ra
 - Regressão existente de períodos do portal passou (viradas de mês/ano e semana domingo–sábado em America/Fortaleza).
 
 Testes no navegador usam dados fictícios e HTTP controlado; não certificam banco, provedor nem uso autenticado nos dados reais do proprietário. Não houve SQL, push ou deploy. Proprietário aprovou o resultado local em16/10; publicação ainda não realizada. Os scripts temporários de diagnóstico são descartáveis; a regressão de geometria permanece no script permanente de calendários.
+
+
+## Publicação autorizada — 16/10/2026
+
+Proprietário aprovou o resultado e autorizou publicação explicitamente. Revisão final:379 testes/1140 assertions, format:check, lint, typecheck, build e diff check aprovados. Branch local conferida contra origin/main antes do envio; mudanças ficaram restritas ao escopo aprovado.
+
+Commit de implementação `2d4add5281fa9a18088ff0bb161a9068f4f5fdde` enviado para main. Vercel confirmou `dpl_6M2QW5dxu34RoFyHUUCU1pTKERdk` Ready em production, URL `uzzina-lyxsaavin-agenciacnvt.vercel.app`, associado a `uzzina.cnvt.com.br`. Conferência independente do domínio retornou a mesma implantação; `/app` respondeu HTTP200. Registro posterior é somente documental, sem novo comportamento.
+
+Sem alteração de SQL/banco. A publicação foi verificada por estado, vínculo do domínio e HTTP; não houve reteste autenticado com dados reais em produção.

@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately). A implementação do portal é independente do calendário da equipe.
 
-**Status:** complete — implementado, verificado localmente e aprovado pelo proprietário em16/10; sem publicação.
+**Status:** complete — implementado, aprovado pelo proprietário e publicado em16/10; deploy de código Ready.
 
 - [x] Comparar semana/mês com poucos e muitos itens, feed visível/oculto no desktop e abas calendário/feed no celular, incluindo janela baixa, imagens carregadas e títulos longos.
 - [x] Registrar qual elemento efetivamente rola, suas dimensões e o acesso à última ação e à última semana. Diferenciar defeito reproduzido de hipótese de inspeção textual.
@@ -16,4 +16,4 @@
 
 ## Resultado
 
-Verificação e limites registrados em `docs/audits/2026-10-16-calendar-height-study.md`: suíte geral com379 testes, verificações de código/build aprovadas e navegador com componentes reais/HTTP controlado. Sem SQL, push ou deploy.
+Verificação e limites registrados em `docs/audits/2026-10-16-calendar-height-study.md`: suíte geral com379 testes, verificações de código/build aprovadas e navegador com componentes reais/HTTP controlado. Sem SQL. Código publicado pelo commit `2d4add5`, deploy `dpl_6M2QW5dxu34RoFyHUUCU1pTKERdk` Ready; domínio /app respondeu HTTP200.
