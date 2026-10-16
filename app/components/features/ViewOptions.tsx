@@ -35,7 +35,7 @@ import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 export type ViewOptions = {
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
   columns?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
-  autoHeight?: boolean;
+  limitHeight?: boolean;
   responsibles?: boolean;
   priority?: boolean;
   category?: boolean;
@@ -50,7 +50,7 @@ export type ViewOptions = {
   showOptions: {
     variant?: boolean;
     columns?: boolean;
-    autoHeight?: boolean;
+    limitHeight?: boolean;
     responsibles?: boolean;
     priority?: boolean;
     category?: boolean;
@@ -70,7 +70,7 @@ import { PhaseCombobox } from "./PhaseCombobox";
 const DEFAULT_VIEW_OPTIONS = {
   variant: VARIANT.line,
   columns: 4,
-  autoHeight: false,
+  limitHeight: false,
   ascending: true,
   order: ORDER_BY.date,
   category: true,
@@ -130,12 +130,12 @@ export function getVisualizeGroups(viewOptions: ViewOptions) {
   const isContent = viewOptions.variant === VARIANT.content;
   return {
     variant: !!showOptions.variant,
-    autoHeight: !!showOptions.autoHeight && !isContent,
+    limitHeight: !!showOptions.limitHeight,
     columns: !!showOptions.columns && isContent,
   };
 }
 
-/** "Visualizar": layout variant, auto height and number of columns. */
+/** "Visualizar": layout variant, height limit and number of columns. */
 function VisualizeMenu({ viewOptions, setViewOptions }: ViewMenuProps) {
   const groups = getVisualizeGroups(viewOptions);
   return (
@@ -168,7 +168,7 @@ function VisualizeMenu({ viewOptions, setViewOptions }: ViewMenuProps) {
             </PrismMenuItem>
           </PrismMenuGroup>
         )}
-        {groups.autoHeight && (
+        {groups.limitHeight && (
           <>
             {groups.variant && <PrismMenuSeparator />}
             <PrismMenuGroup
@@ -176,16 +176,19 @@ function VisualizeMenu({ viewOptions, setViewOptions }: ViewMenuProps) {
               onSelectionChange={(keys) =>
                 setViewOptions({
                   ...viewOptions,
-                  autoHeight: new Set(keys).has("autoHeight"),
+                  limitHeight: new Set(keys).has("limitHeight"),
                 })
               }
               selectedKeys={
-                new Set(viewOptions.autoHeight ? ["autoHeight"] : [])
+                new Set(viewOptions.limitHeight ? ["limitHeight"] : [])
               }
               selectionMode="multiple"
             >
-              <PrismMenuItem id="autoHeight" textValue="Altura automática">
-                <ChevronsUpDownIcon /> Altura automática
+              <PrismMenuItem
+                id="limitHeight"
+                textValue="Limitar altura dos dias"
+              >
+                <ChevronsUpDownIcon /> Limitar altura dos dias
               </PrismMenuItem>
             </PrismMenuGroup>
           </>

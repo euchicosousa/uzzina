@@ -17,7 +17,6 @@ import {
 } from "~/components/features/ViewOptions";
 import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
 import { createActionDraft } from "~/utils";
-import { cn } from "cnfast";
 import { HomeViewWrapper } from "./HomeViewWrapper";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
@@ -37,6 +36,10 @@ export function HomeCalendarView({
     staleTime: 30 * 60 * 1000, // 30 minutos (celebrations são semi-estáticos)
   });
   const [period, setPeriod] = useState<"week" | "month">("week");
+  const [heightLimits, setHeightLimits] = useState({
+    week: true,
+    month: false,
+  });
   const [currentDate] = useState(new Date());
   const calendarDays = eachDayOfInterval({
     start:
@@ -51,6 +54,7 @@ export function HomeCalendarView({
   const [viewOptions, setViewOptions] = useViewOptions({
     partner: true,
     showOptions: {
+      limitHeight: true,
       ascending: true,
       order: true,
     },
@@ -74,8 +78,14 @@ export function HomeCalendarView({
             <PrismToggleGroupItem id="month">Mês</PrismToggleGroupItem>
           </PrismToggleGroup>
           <ViewOptionsComponent
-            setViewOptions={setViewOptions}
-            viewOptions={viewOptions}
+            setViewOptions={(next) => {
+              setHeightLimits((previous) => ({
+                ...previous,
+                [period]: !!next.limitHeight,
+              }));
+              setViewOptions(next);
+            }}
+            viewOptions={{ ...viewOptions, limitHeight: heightLimits[period] }}
           />
         </div>
       }
@@ -91,18 +101,12 @@ export function HomeCalendarView({
         )
       }
     >
-      <div
-        className={cn(
-          "flex flex-col overflow-hidden px-8 xl:px-16",
-          period === "week" ? "max-h-[50vh]" : "",
-        )}
-      >
+      <div className="flex flex-col px-8 xl:px-16">
         <CalendarWithDnd
           actions={actions}
           calendarDays={calendarDays}
           celebrations={celebrations}
           layoutOptions={{
-            isCompact: period === "month",
             showBorder: period === "month",
           }}
           onCreateAction={(day) => {
@@ -110,7 +114,7 @@ export function HomeCalendarView({
               createActionDraft({ userId: person.user_id, date: day }),
             );
           }}
-          viewOptions={viewOptions}
+          viewOptions={{ ...viewOptions, limitHeight: heightLimits[period] }}
         />
       </div>
     </HomeViewWrapper>

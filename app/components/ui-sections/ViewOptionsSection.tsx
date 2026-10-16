@@ -28,7 +28,7 @@ export function ViewOptionsSection() {
     showOptions: {
       variant: true,
       columns: true,
-      autoHeight: true,
+      limitHeight: true,
       responsibles: true,
       priority: true,
       category: true,
@@ -54,7 +54,7 @@ export function ViewOptionsSection() {
     <div id="uzzina-view-options">
       <GallerySection>
         <GallerySectionHeader
-          description="Barra de opções de visualização em três menus: Visualizar (modo, altura automática, colunas), Ordenar (critério e direção) e Exibir (metadados de cada ação). Cada grupo e cada menu só aparecem quando a tela permite; um menu sem opções não é exibido."
+          description="Barra de opções de visualização em três menus: Visualizar (modo, limite de altura, colunas), Ordenar (critério e direção) e Exibir (metadados de cada ação). Cada grupo e cada menu só aparecem quando a tela permite; um menu sem opções não é exibido."
           title="ViewOptionsComponent"
         />
         <GallerySectionContent className="grid gap-6">
@@ -72,6 +72,7 @@ export function ViewOptionsSection() {
                   {
                     variant: fullViewOptions.variant,
                     columns: fullViewOptions.columns,
+                    limitHeight: fullViewOptions.limitHeight ?? false,
                     order: fullViewOptions.order,
                     ascending: fullViewOptions.ascending,
                     responsibles: fullViewOptions.responsibles,

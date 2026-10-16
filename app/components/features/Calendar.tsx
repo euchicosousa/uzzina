@@ -7,7 +7,6 @@ import { CalendarDayCell } from "./CalendarDayCell";
 export { CalendarToolbar } from "./CalendarToolbar";
 export { CalendarToolbar as CalendarButtons } from "./CalendarToolbar";
 export type CalendarLayoutOptions = {
-  isCompact?: boolean;
   showBorder?: boolean;
   highlightThisWeek?: boolean;
   hideBorderOnLastRow?: boolean;
@@ -31,13 +30,12 @@ export function CalendarActions({
   onCreateAction?: (day: Date) => void;
   layoutOptions?: CalendarLayoutOptions;
 }) {
-  const { isCompact, showBorder, highlightThisWeek, hideBorderOnLastRow } =
-    layoutOptions;
+  const { showBorder, highlightThisWeek, hideBorderOnLastRow } = layoutOptions;
   return (
-    <div className="w-full overflow-x-auto overflow-y-hidden">
-      <div className="flex h-full w-full min-w-375 flex-col overflow-hidden lg:min-w-225">
+    <div className="w-full shrink-0 overflow-x-auto">
+      <div className="flex w-full min-w-375 flex-col lg:min-w-225">
         <WeekHeader />
-        <div className="grid h-full shrink grid-cols-7 overflow-y-auto">
+        <div className="grid grid-cols-7 items-stretch">
           {calendar.map((day, i) => {
             const isLastRow = i >= Math.floor((calendar.length - 1) / 7) * 7;
             return (
@@ -48,7 +46,6 @@ export function CalendarActions({
                 currentDay={currentDay}
                 day={day.date}
                 highlightThisWeek={highlightThisWeek}
-                isCompact={isCompact}
                 onCreateAction={onCreateAction}
                 showBorder={
                   hideBorderOnLastRow && isLastRow ? false : showBorder

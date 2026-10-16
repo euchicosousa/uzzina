@@ -17,7 +17,6 @@ export function CalendarDayCell({
   viewOptions,
   actions,
   celebrations,
-  isCompact,
   showBorder,
 }: {
   currentDay?: Date;
@@ -26,7 +25,6 @@ export function CalendarDayCell({
   viewOptions: ViewOptions;
   actions: Action[];
   celebrations?: Celebration[];
-  isCompact?: boolean;
   showBorder?: boolean;
   highlightThisWeek?: boolean;
 }) {
@@ -37,28 +35,19 @@ export function CalendarDayCell({
   const isLoading = useLoading(["actions"]);
   const skeletonCount = useMemo(() => Math.ceil(Math.random() * 3) + 1, []);
 
-  const isAutoHeight =
-    viewOptions.autoHeight || viewOptions.variant === VARIANT.content;
-
-  const isCompactMode = !isAutoHeight && Boolean(isCompact);
-
   return (
     <div
       key={format(day, "yyyy-MM-dd")}
       ref={setNodeRef}
       className={cn(
-        "group/column flex flex-col justify-between duration-500 hover:bg-foreground/5",
+        "group/column flex min-h-0 flex-col hover:bg-foreground/5",
         showBorder && "border-b",
-        isAutoHeight
-          ? ""
-          : isCompact
-            ? "h-72 overflow-hidden"
-            : "h-96 overflow-hidden",
+        viewOptions.limitHeight && "max-h-[min(24rem,60dvh)]",
       )}
       id={`day_${format(day, "yyyy-MM-dd")}`}
     >
-      <div className="flex h-full shrink flex-col gap-2 overflow-hidden p-1">
-        <div className="flex items-center justify-between">
+      <div className="flex min-h-0 flex-col gap-2 p-1">
+        <div className="flex shrink-0 items-center justify-between">
           <div className="flex items-center gap-2">
             <div
               className={cn(
@@ -83,8 +72,9 @@ export function CalendarDayCell({
             )}
           </div>
           {onCreateAction && (
-            <div className="isolate opacity-0 transition duration-300 group-hover/column:opacity-100">
+            <div className="isolate opacity-0 transition duration-300 group-hover/column:opacity-100 focus-within:opacity-100">
               <button
+                aria-label={`Criar ação em ${format(day, "dd/MM/yyyy")}`}
                 className="grid size-6 cursor-pointer place-content-center rounded-full bg-primary text-primary-foreground"
                 onClick={() => {
                   onCreateAction(day);
@@ -96,7 +86,14 @@ export function CalendarDayCell({
             </div>
           )}
         </div>
-        <div className={cn("h-full overflow-hidden")}>
+        <div
+          aria-label={`Ações de ${format(day, "dd/MM/yyyy")}`}
+          className={cn(
+            "min-h-0 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset",
+            viewOptions.limitHeight && "overflow-y-auto",
+          )}
+          tabIndex={viewOptions.limitHeight ? 0 : undefined}
+        >
           {isLoading && actions.length === 0 && (
             <PrismSkeletonGroup
               className="gap-1"
@@ -120,7 +117,7 @@ export function CalendarDayCell({
                     showLate: viewOptions.late,
                     showPriority: viewOptions.priority,
                   }}
-                  isCompact={isCompactMode}
+                  scrollable={false}
                   isDraggable
                   orderBy={viewOptions.order}
                   variant={viewOptions.variant}
@@ -138,7 +135,7 @@ export function CalendarDayCell({
                     showLate: viewOptions.late,
                     showPriority: viewOptions.priority,
                   }}
-                  isCompact={isCompactMode}
+                  scrollable={false}
                   isDraggable
                   orderBy={viewOptions.order}
                   variant={VARIANT.line}
@@ -157,17 +154,17 @@ export function CalendarDayCell({
                 showLate: viewOptions.late,
                 showPriority: viewOptions.priority,
               }}
-              isCompact={isCompactMode}
+              scrollable={false}
               isDraggable
               orderBy={viewOptions.order}
               variant={viewOptions.variant}
             />
           )}
+          {celebrations && celebrations.length > 0 && (
+            <CelebrationContainer celebrations={celebrations} />
+          )}
         </div>
       </div>
-      {celebrations && celebrations.length > 0 && (
-        <CelebrationContainer celebrations={celebrations} />
-      )}
     </div>
   );
 }

@@ -26,7 +26,7 @@ const base: ViewOptions = {
   showOptions: {
     variant: true,
     columns: true,
-    autoHeight: true,
+    limitHeight: true,
     order: true,
     ascending: true,
     responsibles: true,
@@ -99,37 +99,39 @@ describe("ViewOptionsComponent", () => {
   });
 
   it("hides the layout choice when the screen does not allow it", async () => {
-    mount({ showOptions: { autoHeight: true } });
+    mount({ showOptions: { limitHeight: true } });
     await openMenu("Visualizar");
     expect(
       await screen.findByRole("menuitemcheckbox", {
-        name: "Altura automática",
+        name: "Limitar altura dos dias",
       }),
     ).toBeTruthy();
     expect(screen.queryByRole("menuitemradio", { name: "Linha" })).toBeNull();
   });
 
   it("never renders Visualizar without options inside", () => {
-    mount({ variant: "content", showOptions: { autoHeight: true } });
+    mount({ variant: "content", showOptions: {} });
     expect(screen.queryByRole("button", { name: "Visualizar" })).toBeNull();
     cleanup();
     mount({ variant: "line", showOptions: { columns: true } });
     expect(screen.queryByRole("button", { name: "Visualizar" })).toBeNull();
   });
 
-  it("shows only the layout choice for the partner setup in content mode", async () => {
+  it("offers the height limit in content mode too", async () => {
     mount({
       variant: "content",
-      showOptions: { variant: true, autoHeight: true },
+      showOptions: { variant: true, limitHeight: true },
     });
     await openMenu("Visualizar");
     expect(
       await screen.findByRole("menuitemradio", { name: "Conteúdo" }),
     ).toBeTruthy();
     expect(
-      screen.queryByRole("menuitemcheckbox", { name: "Altura automática" }),
-    ).toBeNull();
-    expect(screen.queryAllByRole("separator")).toHaveLength(0);
+      screen.queryByRole("menuitemcheckbox", {
+        name: "Limitar altura dos dias",
+      }),
+    ).toBeTruthy();
+    expect(screen.queryAllByRole("separator")).toHaveLength(1);
   });
 
   it("offers columns only in the content variant", async () => {
@@ -153,10 +155,10 @@ describe("Visualizar groups for each screen that uses it", () => {
       responsibles: true,
       variant: true,
     },
-    calendar: { ascending: true, order: true },
+    calendar: { ascending: true, order: true, limitHeight: true },
     partner: {
       variant: true,
-      autoHeight: true,
+      limitHeight: true,
       responsibles: true,
       priority: true,
       category: true,
@@ -171,47 +173,47 @@ describe("Visualizar groups for each screen that uses it", () => {
   const groups = (name: string, variant: ViewOptions["variant"]) =>
     getVisualizeGroups({ variant, showOptions: screens[name] ?? {} });
 
-  it("keeps what each screen showed before", () => {
+  it("matches the options each screen allows", () => {
     expect(groups("sprint", "block")).toEqual({
       variant: true,
-      autoHeight: false,
+      limitHeight: false,
       columns: false,
     });
     expect(groups("sprint", "content")).toEqual({
       variant: true,
-      autoHeight: false,
+      limitHeight: false,
       columns: true,
     });
     expect(groups("late", "block")).toEqual({
       variant: true,
-      autoHeight: false,
+      limitHeight: false,
       columns: false,
     });
     expect(groups("calendar", "line")).toEqual({
       variant: false,
-      autoHeight: false,
+      limitHeight: true,
       columns: false,
     });
     expect(groups("partner", "line")).toEqual({
       variant: true,
-      autoHeight: true,
+      limitHeight: true,
       columns: false,
     });
     expect(groups("partner", "content")).toEqual({
       variant: true,
-      autoHeight: false,
+      limitHeight: true,
       columns: false,
     });
   });
 
-  it("does not render Visualizar on the home calendar", () => {
+  it("offers Visualizar on the home calendar for its height limit", () => {
     render(
       <ViewOptionsComponent
         setViewOptions={() => {}}
         viewOptions={{ ...base, showOptions: screens.calendar ?? {} }}
       />,
     );
-    expect(screen.queryByRole("button", { name: "Visualizar" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Visualizar" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Ordenar" })).toBeTruthy();
   });
 });

@@ -59,6 +59,8 @@ UZZINA é a aplicação existente de gestão de ações da agência CNVT: React,
 
 ### Preferências e visual
 
+- Calendários da equipe usam altura natural por semana; `ViewOptions.limitHeight` ativa teto de `min(24rem,60dvh)` por dia com uma área de rolagem que inclui ações e comemorações, mantendo cabeçalho fora dela. Linha/Bloco/Conteúdo não decidem altura nem truncam em cinco itens. Parceiro e Home mensal iniciam automáticos; Home semanal inicia limitada e preserva a escolha por período durante a montagem. `ActionContainer.scrollable=false` delega a rolagem à célula; demais consumidores preservam seu comportamento. Painel do parceiro rola entre semanas e feed rola separadamente. Portal mantém painel limitado à janela e dias naturais na grade rolável, sem menu de altura por dia. Essas escolhas de altura não são persistidas.
+
 - HeaderMenu usa `usePreferencePersistence`/`createPreferencePersistence`: debounce250ms, uma escrita em voo, último patch por campo, falha preservada e retry explícito. Perfil também usa `update_my_preferences(p_patch)`; preserve o merge autorizado por auth.uid() e campos desconhecidos existentes.
 - Temas usam localStorage e `people.preferences`; perfil oferece preview antes de salvar. Preferência `light`/`dark`/`system` (`themePreference` em `useAppTheme`); `system` acompanha `prefers-color-scheme` em tempo real e `theme` é sempre o tema resolvido (claro/escuro). Perfil e menu do cabeçalho oferecem as três opções. O script síncrono de `index.html` aplica tema antes do React.
 - Cloudinary usa cloud name/upload preset no widget. Mantenha o widget montado durante uploads múltiplos; close pode preceder os últimos eventos success. API secret não pertence a variáveis VITE_.

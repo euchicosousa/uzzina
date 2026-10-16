@@ -145,7 +145,7 @@ function PartnerPage() {
     variant: preferences.defaultViewVariant,
     showOptions: {
       variant: true,
-      autoHeight: true,
+      limitHeight: true,
       responsibles: true,
       priority: true,
       category: true,
@@ -177,9 +177,9 @@ function PartnerPage() {
     );
   }
   return (
-    <div className="page-height flex flex-col overflow-hidden">
+    <div className="page-height flex min-h-0 flex-col overflow-hidden">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between border-b 2xl:flex-nowrap 2xl:gap-4">
+      <div className="flex shrink-0 flex-wrap items-center justify-between border-b 2xl:flex-nowrap 2xl:gap-4">
         {/* Mobile Top */}
         <div className="order-1 flex w-full shrink-0 items-center justify-between gap-4 overflow-hidden border-b p-2 2xl:w-auto 2xl:border-b-0">
           <div className="flex shrink-0 items-center justify-between gap-2 overflow-hidden">
@@ -273,10 +273,10 @@ function PartnerPage() {
         </div>
       </div>
 
-      <div className="flex overflow-hidden">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         <div
           className={cn(
-            "flex w-full shrink overflow-hidden",
+            "flex min-h-0 w-full min-w-0 flex-col overflow-y-auto",
             view === "calendar" ? "" : "hidden md:flex",
           )}
         >
@@ -290,7 +290,7 @@ function PartnerPage() {
         </div>
         <div
           className={cn(
-            "overflow-hidden overflow-y-auto border-l",
+            "min-h-0 overflow-y-auto border-l",
             view === "feed"
               ? "flex min-w-full md:w-135 md:min-w-auto md:shrink-0"
               : "hidden",

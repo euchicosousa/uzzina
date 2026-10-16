@@ -131,7 +131,7 @@ export function ClientCalendar<
             </div>
           )}
 
-          <div className="grid flex-1 grid-cols-7 divide-x divide-y overflow-y-auto">
+          <div className="grid min-h-0 flex-1 auto-rows-max grid-cols-7 content-start divide-x divide-y overflow-y-auto">
             {days.map((day) => {
               const dayActions = actions.filter((a) =>
                 isSameDay(parseU(a.date), day),
@@ -168,7 +168,7 @@ export function ClientCalendar<
                   </div>
 
                   {/* Ações do dia */}
-                  <div className="flex h-full min-h-30 flex-col gap-px p-1">
+                  <div className="flex flex-col gap-px p-1">
                     {dayActions.map((action) => {
                       const phase = PHASES[(action.phase as PHASE) || "idea"];
                       const actionTime = parseU(action.date);

@@ -1,6 +1,5 @@
 import { useSelectionActions } from "~/hooks/useMultiSelection";
 import type { Action } from "~/types";
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import type { DATE_TIME_DISPLAY, ORDER_BY } from "~/lib/CONSTANTS";
 import { VARIANT } from "~/lib/CONSTANTS";
@@ -16,13 +15,12 @@ type ActionContainerProps = {
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending?: boolean;
-  isCompact?: boolean;
+  scrollable?: boolean;
   isDraggable?: boolean;
   isSortable?: boolean;
   onClick?: (action: Action) => void;
 };
 const DEFAULT_DISPLAY_FLAGS: ActionDisplayFlags = {};
-const MAX_ACTIONS = 5;
 export function ActionContainer({
   actions,
   variant = VARIANT.line,
@@ -31,7 +29,7 @@ export function ActionContainer({
   dateTimeDisplay,
   orderBy,
   ascending,
-  isCompact,
+  scrollable = true,
   isDraggable,
   isSortable,
   onClick,
@@ -41,13 +39,7 @@ export function ActionContainer({
   const sortedActions = isSortable
     ? actions
     : sortActions(actions, orderBy, ascending);
-  const [showMoreOverride, setShowMoreOverride] = useState<boolean | null>(
-    null,
-  );
-  const showMore = showMoreOverride !== null ? showMoreOverride : isCompact;
-  const renderedActions = showMore
-    ? sortedActions.slice(0, MAX_ACTIONS)
-    : sortedActions;
+  const renderedActions = sortedActions;
   useSelectionActions(renderedActions);
   const containerRef = useRef<HTMLDivElement>(null);
   const [showTopMask, setShowTopMask] = useState(false);
@@ -67,7 +59,7 @@ export function ActionContainer({
 
   // Sync scroll mask state on element size change
   useEffect(() => {
-    if (isCompact) {
+    if (!scrollable) {
       setShowTopMask(false);
       setShowBottomMask(false);
       return;
@@ -86,7 +78,7 @@ export function ActionContainer({
     return () => {
       observer.disconnect();
     };
-  }, [isCompact, checkScroll]);
+  }, [scrollable, checkScroll]);
 
   // Lógica de Gaps (Variantes)
   const gapClasses = useMemo(() => {
@@ -102,7 +94,7 @@ export function ActionContainer({
     return getGridClasses(columns);
   }, [columns]);
   const maskStyle = useMemo((): React.CSSProperties => {
-    if (isCompact) return {};
+    if (!scrollable) return {};
     if (showTopMask && showBottomMask) {
       return {
         WebkitMaskImage:
@@ -128,13 +120,13 @@ export function ActionContainer({
       };
     }
     return {};
-  }, [isCompact, showTopMask, showBottomMask]);
+  }, [scrollable, showTopMask, showBottomMask]);
   return (
     <div
       ref={containerRef}
       className={cn(
         "relative transition-all duration-300",
-        !isCompact ? "h-full overflow-y-auto" : "",
+        scrollable ? "h-full overflow-y-auto" : "",
         "p-1 pb-6",
       )}
       onScroll={handleScroll}
@@ -153,21 +145,6 @@ export function ActionContainer({
             variant={variant}
           />
         ))}
-        {isCompact && sortedActions.length > MAX_ACTIONS && (
-          <button
-            className="absolute -bottom-3 left-1/2 z-20 grid size-6 -translate-x-1/2 cursor-pointer place-content-center rounded-full border bg-muted shadow-xs transition-all hover:bg-card hover:shadow-lg"
-            onClick={() => {
-              setShowMoreOverride(!showMore);
-            }}
-            type="button"
-          >
-            {showMore ? (
-              <ChevronDownIcon className="size-4" />
-            ) : (
-              <ChevronUpIcon className="size-4" />
-            )}
-          </button>
-        )}
       </div>
     </div>
   );
