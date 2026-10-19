@@ -1,8 +1,10 @@
 # UZZINA — estado atual
 
-Atualizado em17/10/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
+Atualizado em18/10/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
 ## Pendências reais
+
+Datas comemorativas: ajuste local autorizado em18/10 para abrir a lista no mês/ano atuais após carregar os dados, uma vez por abertura. Cadastro/exclusão ou nova consulta não reposicionam a leitura; sem datas no mês atual, preserva o início da lista. Identificador dos grupos passou a usar a data ISO, removendo formatação de um rótulo localizado como se fosse uma data. Dois testes/7 assertions no componente real passaram, incluindo carregamento posterior, ano correto, reabertura e preservação da rolagem; o caso principal falhou sem o efeito de rolagem. Format/lint/typecheck/build passaram; aviso conhecido de chunks permanece. Geometria controlada em jsdom: conferência visual em navegador e teste autenticado ainda pendentes. Publicação autorizada pelo proprietário em18/10; revisão final:383 testes/1164 assertions e format:check passaram, lint/typecheck/build já aprovados no mesmo código. Sem SQL; envio e confirmação Ready pendentes.
 
 IA: proprietário autorizou em16/10 somente alterações dos textos dos prompts, preservando o funcionamento. Ajustes locais em estratégia, hooks, conteúdo por formato e legenda incorporam critérios das skills CNVT nos campos existentes. Cinco opções, contratos, interface, modelo, chamadas e persistência preservados; nenhum fluxo novo de hooks.56 testes/151 assertions, format/lint/typecheck/build e7 verificações serverless passaram; comparação estrutural e diff conferidos. Sem geração real para avaliar qualidade editorial, SQL, push ou deploy. Escopo e limites no [estudo](../plans/ai-cnvt-skills-study.md#execução-autorizada-somente-prompts); evolução de interface/contrato continua futura.
 

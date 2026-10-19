@@ -5,7 +5,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { PlusIcon, TrashIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { Celebration } from "~/types";
 import { PrismButton, PrismCalendar, PrismInput } from "~/components/prism";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
@@ -126,89 +127,108 @@ function AdminCelebrationsPage() {
         </div>
       </div>
 
-      {/* Coluna da Direita: Lista */}
-      <div className="flex h-full w-full flex-col gap-4 overflow-y-auto p-8 md:w-full">
-        {/* <div className="flex justify-between border-b md:grid-cols-6">
-          {eachMonthOfInterval({
-            start: startOfYear(new Date()),
-            end: endOfYear(new Date()),
-          }).map((month) => (
-            <a
-              key={month.toISOString()}
-              href={`#${format(month, "MMM", { locale: ptBR })}`}
-              className="p-2 text-sm font-semibold tracking-wide uppercase"
-            >
-              {format(month, "MMM", { locale: ptBR })}
-            </a>
-          ))}
-         </div> */}
+      <CelebrationsList
+        celebrations={celebrations}
+        isSubmitting={isSubmitting}
+        onDelete={(id) => deleteMutation.mutate(id)}
+      />
+    </div>
+  );
+}
 
-        {celebrations.length === 0 ? (
-          <div className="rounded-2xl border border-dashed p-8 text-center text-muted-foreground">
-            Nenhuma data comemorativa cadastrada ainda.
-          </div>
-        ) : (
-          <div className="flex flex-col gap-6">
-            {Object.entries(
-              celebrations.reduce(
-                (acc, celebration) => {
-                  const date = new Date(`${celebration.date}T00:00:00`);
-                  const month = format(date, "MMMM 'de' yyyy", {
-                    locale: ptBR,
-                  });
-                  if (!acc[month]) acc[month] = [];
-                  acc[month].push(celebration);
-                  return acc;
-                },
-                {} as Record<string, typeof celebrations>,
-              ),
-            ).map(([month, monthCelebrations]) => (
-              <div
-                key={month}
-                className="flex flex-col"
-                id={`#${format(month, "MMM", {
+export function CelebrationsList({
+  celebrations,
+  isSubmitting,
+  onDelete,
+}: {
+  celebrations: Celebration[];
+  isSubmitting: boolean;
+  onDelete: (id: string) => void;
+}) {
+  const listRef = useRef<HTMLDivElement>(null);
+  const hasScrolled = useRef(false);
+
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list || hasScrolled.current || celebrations.length === 0) return;
+    const currentMonth = format(new Date(), "yyyy-MM");
+    const month = list.querySelector<HTMLElement>(
+      `[data-month="${currentMonth}"]`,
+    );
+    hasScrolled.current = true;
+    if (!month) return;
+    const padding = Number.parseFloat(getComputedStyle(list).paddingTop) || 0;
+    list.scrollTop +=
+      month.getBoundingClientRect().top -
+      list.getBoundingClientRect().top -
+      padding;
+  }, [celebrations]);
+
+  return (
+    <div
+      ref={listRef}
+      className="flex h-full w-full flex-col gap-4 overflow-y-auto p-8 md:w-full"
+    >
+      {celebrations.length === 0 ? (
+        <div className="rounded-2xl border border-dashed p-8 text-center text-muted-foreground">
+          Nenhuma data comemorativa cadastrada ainda.
+        </div>
+      ) : (
+        <div className="flex flex-col gap-6">
+          {Object.entries(
+            celebrations.reduce(
+              (acc, celebration) => {
+                const date = new Date(`${celebration.date}T00:00:00`);
+                const month = format(date, "MMMM 'de' yyyy", {
                   locale: ptBR,
-                })}`}
-              >
-                <h3 className="mb-3 pb-2 text-2xl first-letter:capitalize">
-                  {month}
-                </h3>
-                <div className="flex flex-col gap-1">
-                  {monthCelebrations.map((celebration) => (
-                    <div
-                      key={celebration.id}
-                      className="group relative flex items-center justify-between rounded-xl px-3 py-2 transition-colors hover:bg-card"
-                    >
-                      <div className="absolute top-1 left-1 z-10 h-full shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
-                        <PrismButton
-                          isDisabled={isSubmitting}
-                          onClick={() => deleteMutation.mutate(celebration.id)}
-                          size="icon-xs"
-                          variant="destructive"
-                        >
-                          <TrashIcon />
-                        </PrismButton>
-                      </div>
-                      <div className="flex items-center gap-4 overflow-hidden">
-                        <span className="w-6 text-center text-sm font-medium text-muted-foreground transition-opacity group-hover:opacity-0">
-                          {format(
-                            new Date(`${celebration.date}T00:00:00`),
-                            "dd",
-                          )}
-                        </span>
-
-                        <span className="truncate font-medium tracking-tight">
-                          {celebration.title}
-                        </span>
-                      </div>
+                });
+                if (!acc[month]) acc[month] = [];
+                acc[month].push(celebration);
+                return acc;
+              },
+              {} as Record<string, typeof celebrations>,
+            ),
+          ).map(([month, monthCelebrations]) => (
+            <div
+              key={month}
+              className="flex flex-col"
+              data-month={monthCelebrations[0]?.date.slice(0, 7)}
+            >
+              <h3 className="mb-3 pb-2 text-2xl first-letter:capitalize">
+                {month}
+              </h3>
+              <div className="flex flex-col gap-1">
+                {monthCelebrations.map((celebration) => (
+                  <div
+                    key={celebration.id}
+                    className="group relative flex items-center justify-between rounded-xl px-3 py-2 transition-colors hover:bg-card"
+                  >
+                    <div className="absolute top-1 left-1 z-10 h-full shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+                      <PrismButton
+                        isDisabled={isSubmitting}
+                        onClick={() => onDelete(celebration.id)}
+                        size="icon-xs"
+                        variant="destructive"
+                      >
+                        <TrashIcon />
+                      </PrismButton>
                     </div>
-                  ))}
-                </div>
+                    <div className="flex items-center gap-4 overflow-hidden">
+                      <span className="w-6 text-center text-sm font-medium text-muted-foreground transition-opacity group-hover:opacity-0">
+                        {format(new Date(`${celebration.date}T00:00:00`), "dd")}
+                      </span>
+
+                      <span className="truncate font-medium tracking-tight">
+                        {celebration.title}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
