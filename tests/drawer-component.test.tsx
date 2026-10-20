@@ -683,3 +683,47 @@ it("drawer compares a conflict in an app dialog; cancel preserves edits and conf
     expect(screen.queryByTestId("drawer-conflict-banner")).toBeNull(),
   );
 });
+
+it("selecting a strategy adopts its headline as the action title", async () => {
+  const strategy = (headline: string) => ({
+    headline,
+    angulo: "Ângulo",
+    racional: "Racional",
+    direcionamento: "Direcionamento",
+  });
+  mount(
+    draft({
+      category: "post",
+      strategies: [
+        strategy("Primeira headline"),
+        strategy(
+          "Se toda segunda você recomeça, o problema não é força de vontade",
+        ),
+      ],
+    }),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Ver estratégias geradas" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  const boxes = within(dialog).getAllByRole("checkbox", {
+    name: "Selecionar estratégia",
+  });
+  fireEvent.click(boxes[1] as HTMLElement);
+  const expected =
+    "Se toda segunda você recomeça, o problema não é força de vontade";
+  await waitFor(() =>
+    expect(writes.some((write) => write.title === expected)).toBe(true),
+  );
+  expect(
+    (
+      screen.getByRole("textbox", {
+        name: "Título da ação",
+        hidden: true,
+      }) as HTMLTextAreaElement
+    ).value,
+  ).toBe(expected);
+  fireEvent.click(boxes[1] as HTMLElement);
+  await waitFor(() => expect(writes.length).toBeGreaterThan(1));
+  expect(writes.at(-1)?.title).toBeUndefined();
+});

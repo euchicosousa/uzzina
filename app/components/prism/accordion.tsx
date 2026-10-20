@@ -43,7 +43,7 @@ function AccordionTrigger({
   ...props
 }: Omit<ButtonProps, "children"> & { children: React.ReactNode }) {
   return (
-    <AccordionHeaderPrimitive className="flex" level={6}>
+    <AccordionHeaderPrimitive className="flex min-w-0 flex-1" level={6}>
       <AccordionTriggerPrimitive
         slot="trigger"
         data-slot="accordion-trigger"

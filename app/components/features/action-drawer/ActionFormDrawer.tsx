@@ -304,6 +304,25 @@ export function ActionFormDrawer({
     handleSaveRef.current = handleSave;
   }, [handleSave]);
   const [isStrategyModalOpen, setIsStrategyModalOpen] = useState(false);
+  // Selecting a strategy also adopts its headline as the action title.
+  const selectStrategy = (index: number, isSelected: boolean) => {
+    const strategies = parseStrategies(rawActionRef.current.strategies);
+    const updated = strategies.map((s, idx) => ({
+      ...s,
+      selected: idx === index ? isSelected : false,
+    }));
+    const headline = strategies[index]?.headline.trim() ?? "";
+    const title = isSelected && headline.length >= 2 ? headline : null;
+    setRawAction((prev) => ({
+      ...prev,
+      strategies: updated,
+      ...(title ? { title } : {}),
+    }));
+    updateAction({
+      strategies: updated,
+      ...(title ? { title } : {}),
+    });
+  };
   const [descriptionVersion, setDescriptionVersion] = useState(0);
   const currentPartners = useMemo(() => {
     return RawAction.partners
@@ -729,30 +748,16 @@ export function ActionFormDrawer({
                 defaultExpanded={i === 0}
                 id={String(i)}
               >
-                <div className="flex w-full items-center gap-3 px-2">
+                <div className="flex w-full items-start gap-3 px-2">
                   <PrismCheckbox
                     aria-label="Selecionar estratégia"
+                    className="mt-5 shrink-0"
                     isSelected={!!strat.selected}
-                    onChange={(isSelected) => {
-                      const currentStrats = parseStrategies(
-                        RawAction.strategies,
-                      );
-                      const updated = currentStrats.map((s, idx) => ({
-                        ...s,
-                        selected: idx === i ? isSelected : false,
-                      }));
-                      setRawAction((prev) => ({
-                        ...prev,
-                        strategies: updated,
-                      }));
-                      updateAction({
-                        strategies: updated,
-                      });
-                    }}
+                    onChange={(isSelected) => selectStrategy(i, isSelected)}
                   />
-                  <PrismAccordionTrigger className="min-w-0 flex-1 overflow-hidden px-2">
+                  <PrismAccordionTrigger className="min-w-0 flex-1 px-2">
                     <div
-                      className="min-w-0 flex-1 truncate text-lg font-normal tracking-tight"
+                      className="min-w-0 flex-1 truncate text-lg font-normal tracking-tight group-aria-expanded/accordion-trigger:whitespace-normal"
                       title={strat.headline}
                     >
                       {strat.headline}
@@ -775,20 +780,7 @@ export function ActionFormDrawer({
                     <PrismButton
                       className="self-end"
                       onClick={() => {
-                        const currentStrats = parseStrategies(
-                          RawAction.strategies,
-                        );
-                        const updated = currentStrats.map((s, idx) => ({
-                          ...s,
-                          selected: idx === i,
-                        }));
-                        setRawAction((prev) => ({
-                          ...prev,
-                          strategies: updated,
-                        }));
-                        updateAction({
-                          strategies: updated,
-                        });
+                        selectStrategy(i, true);
                         triggerAIAction(INTENT.ai_content, {
                           headline: strat.headline,
                           racional: strat.racional,
