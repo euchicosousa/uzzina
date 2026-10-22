@@ -159,6 +159,7 @@ function AppHome() {
       )}
 
       <HomeTodayView
+        linkTitle
         actions={filteredActions}
         isLoading={isLoadingHomeActions}
       />

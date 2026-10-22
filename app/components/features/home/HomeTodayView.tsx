@@ -9,6 +9,7 @@ import {
   KanbanIcon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { CalendarToolbar } from "~/components/features/CalendarToolbar";
 import { CategoriesBoard } from "~/components/layout/CategoriesBoard";
 import KanbanPhasesBoard from "~/components/layout/KanbanPhasesBoard";
@@ -25,11 +26,13 @@ export function HomeTodayView({
   isLoading,
   currentDay: controlledDay,
   onCurrentDayChange,
+  linkTitle = false,
 }: {
   actions: Action[];
   isLoading?: boolean;
   currentDay?: Date;
   onCurrentDayChange?: (date: Date) => void;
+  linkTitle?: boolean;
 }) {
   const [view, setView] = useState<
     "kanban" | "feed" | "categories" | "partners"
@@ -63,7 +66,18 @@ export function HomeTodayView({
 
   return (
     <HomeViewWrapper
-      title={title}
+      title={
+        linkTitle ? (
+          <Link
+            to="/app/today"
+            className="rounded-sm underline-offset-8 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+          >
+            {title}
+          </Link>
+        ) : (
+          title
+        )
+      }
       OptionsComponent={
         <div className="flex items-center gap-2">
           <CalendarToolbar
