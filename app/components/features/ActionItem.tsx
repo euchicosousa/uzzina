@@ -21,6 +21,7 @@ import { useMultiSelection } from "~/hooks/useMultiSelection";
 // Constants & Helpers
 import { cn } from "cnfast";
 import { useActionMutations } from "~/hooks/useActionMutations";
+import { useIsLateAction } from "~/hooks/useIsLateAction";
 import {
   PRIORITIES,
   SIZE,
@@ -33,7 +34,6 @@ import {
   getFormattedPartnersName,
   Icons,
   isSocialMediaContent,
-  isLateAction,
   isSprint,
 } from "~/utils";
 
@@ -117,6 +117,8 @@ export function ActionItem({
   const { isSelectionMode, selectedIds, toggleSelection } = useMultiSelection();
   const isSelected = selectedIds.includes(action.id);
   const { handleAction } = useActionMutations();
+  // Line variant shows the late icon regardless of showLate, so always watch
+  const isLate = useIsLateAction(action);
   const { setEditingId } = useActionShortcutContext();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -161,7 +163,7 @@ export function ActionItem({
     `;
 
     // 1. Determine base background/text colors based on priority states
-    if (showLate && isLateAction(action)) {
+    if (showLate && isLate) {
       baseStyles = cn(
         baseStyles,
         "bg-late text-late-foreground hover:bg-late-hover border-t-white/50 ring ring-late-foreground",
@@ -176,7 +178,7 @@ export function ActionItem({
       baseStyles = cn(baseStyles, "ring-primary focus-within:ring-2 z-100");
     }
     return baseStyles;
-  }, [isEditing, showLate, action, person, showSprint]);
+  }, [isEditing, showLate, isLate, action, person, showSprint]);
   const content = (
     <div
       className={cn(
@@ -242,7 +244,7 @@ export function ActionItem({
               ? "top-1/2 left-2.5 -translate-y-1/2"
               : isSelected
                 ? "top-3 left-3"
-                : showLate && isLateAction(action)
+                : showLate && isLate
                   ? "top-2 left-2"
                   : "top-3 left-3",
           )}
