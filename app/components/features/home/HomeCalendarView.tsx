@@ -10,6 +10,7 @@ import {
 } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { CalendarWithDnd } from "~/components/features/CalendarWithDnd";
 import {
   ViewOptionsComponent,
@@ -106,6 +107,16 @@ export function HomeCalendarView({
           actions={actions}
           calendarDays={calendarDays}
           celebrations={celebrations}
+          renderDayLabel={(day, label) => (
+            <Link
+              to="/app/today"
+              search={{ date: format(day, "yyyy-MM-dd") }}
+              aria-label={`Ver ações de ${format(day, "dd/MM/yyyy")}`}
+              className="block rounded-sm underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            >
+              {label}
+            </Link>
+          )}
           layoutOptions={{
             showBorder: period === "month",
           }}

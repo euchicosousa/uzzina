@@ -1,4 +1,5 @@
 import type { Action } from "~/types";
+import type { ReactNode } from "react";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { format, isSameDay } from "date-fns";
 import { parseU } from "~/utils/date";
@@ -21,6 +22,7 @@ export function CalendarWithDnd({
   viewOptions,
   currentDay,
   onCreateAction,
+  renderDayLabel,
   layoutOptions = DEFAULT_LAYOUT_OPTIONS,
 }: {
   actions: Action[];
@@ -29,6 +31,7 @@ export function CalendarWithDnd({
   viewOptions: ViewOptions;
   currentDay?: Date;
   onCreateAction?: (day: Date) => void;
+  renderDayLabel?: (day: Date, label: ReactNode) => ReactNode;
   layoutOptions?: CalendarLayoutOptions;
 }) {
   const { handleAction } = useActionMutations();
@@ -79,6 +82,7 @@ export function CalendarWithDnd({
           currentDay={currentDay}
           layoutOptions={layoutOptions}
           onCreateAction={onCreateAction}
+          renderDayLabel={renderDayLabel}
           viewOptions={viewOptions}
         />
         <DragOverlay

@@ -1,5 +1,5 @@
 import type { Action } from "~/types";
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { format, isSameDay, isSameMonth } from "date-fns";
 import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
@@ -18,6 +18,7 @@ export function CalendarDayCell({
   actions,
   celebrations,
   showBorder,
+  renderDayLabel,
 }: {
   currentDay?: Date;
   day: Date;
@@ -27,6 +28,7 @@ export function CalendarDayCell({
   celebrations?: Celebration[];
   showBorder?: boolean;
   highlightThisWeek?: boolean;
+  renderDayLabel?: (day: Date, label: ReactNode) => ReactNode;
 }) {
   const today = new Date();
   const { setNodeRef } = useDroppable({
@@ -34,6 +36,19 @@ export function CalendarDayCell({
   });
   const isLoading = useLoading(["actions"]);
   const skeletonCount = useMemo(() => Math.ceil(Math.random() * 3) + 1, []);
+  const dayLabel = (
+    <span
+      className={cn(
+        "grid h-8 place-content-center text-lg font-medium",
+        isSameDay(day, today)
+          ? "w-8 rounded-full bg-foreground text-background"
+          : "",
+      )}
+      suppressHydrationWarning
+    >
+      {format(day, "d")}
+    </span>
+  );
 
   return (
     <div
@@ -55,17 +70,7 @@ export function CalendarDayCell({
               )}
               suppressHydrationWarning
             >
-              <div
-                className={cn(
-                  "grid h-8 place-content-center text-lg font-medium",
-                  isSameDay(day, today)
-                    ? "w-8 rounded-full bg-foreground text-background"
-                    : "",
-                )}
-                suppressHydrationWarning
-              >
-                {format(day, "d")}
-              </div>
+              {renderDayLabel ? renderDayLabel(day, dayLabel) : dayLabel}
             </div>
             {actions.length > 0 && (
               <div className="text-xs opacity-30">({actions.length})</div>

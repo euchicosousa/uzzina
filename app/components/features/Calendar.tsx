@@ -1,4 +1,5 @@
 import type { Action } from "~/types";
+import type { ReactNode } from "react";
 import { eachDayOfInterval, endOfWeek, format, startOfWeek } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import type { ViewOptions } from "~/components/features/ViewOptions";
@@ -22,12 +23,14 @@ export function CalendarActions({
   calendar,
   viewOptions,
   onCreateAction,
+  renderDayLabel,
   layoutOptions = DEFAULT_LAYOUT_OPTIONS,
 }: {
   currentDay?: Date;
   calendar: CalendarActionsType[];
   viewOptions: ViewOptions;
   onCreateAction?: (day: Date) => void;
+  renderDayLabel?: (day: Date, label: ReactNode) => ReactNode;
   layoutOptions?: CalendarLayoutOptions;
 }) {
   const { showBorder, highlightThisWeek, hideBorderOnLastRow } = layoutOptions;
@@ -47,6 +50,7 @@ export function CalendarActions({
                 day={day.date}
                 highlightThisWeek={highlightThisWeek}
                 onCreateAction={onCreateAction}
+                renderDayLabel={renderDayLabel}
                 showBorder={
                   hideBorderOnLastRow && isLastRow ? false : showBorder
                 }

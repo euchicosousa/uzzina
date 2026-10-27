@@ -49,10 +49,18 @@ export function calendarAction(
     ...overrides,
   };
 }
-export function CalendarTestProviders({ children }: { children: ReactNode }) {
-  const client = new QueryClient({
-    defaultOptions: { queries: { retry: false, staleTime: Infinity } },
-  });
+export function CalendarTestProviders({
+  children,
+  queryClient,
+}: {
+  children: ReactNode;
+  queryClient?: QueryClient;
+}) {
+  const client =
+    queryClient ??
+    new QueryClient({
+      defaultOptions: { queries: { retry: false, staleTime: Infinity } },
+    });
   client.setQueryData(QUERY_KEYS.people(calendarPerson.user_id), []);
   client.setQueryData(QUERY_KEYS.celebrations(calendarPerson.user_id), []);
   return (

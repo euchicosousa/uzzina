@@ -1,5 +1,11 @@
 import { createRoot } from "react-dom/client";
 import { useState } from "react";
+import {
+  createMemoryHistory,
+  createRootRoute,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/react-router";
 import { addDays, format, startOfMonth, startOfWeek } from "date-fns";
 import { CalendarActions } from "~/components/features/Calendar";
 import { ClientCalendar } from "~/components/client/ClientCalendar";
@@ -107,9 +113,15 @@ function Fixture() {
   );
 }
 const root = document.getElementById("root");
-if (root)
-  createRoot(root).render(
+const rootRoute = createRootRoute({
+  component: () => (
     <CalendarTestProviders>
       <Fixture />
-    </CalendarTestProviders>,
-  );
+    </CalendarTestProviders>
+  ),
+});
+const router = createRouter({
+  routeTree: rootRoute,
+  history: createMemoryHistory({ initialEntries: ["/"] }),
+});
+if (root) createRoot(root).render(<RouterProvider router={router} />);

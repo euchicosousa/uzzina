@@ -1,7 +1,9 @@
 import { filterOperationalActions } from "~/utils/partner-visibility";
 import { useQuery } from "@tanstack/react-query";
-import { endOfDay, startOfDay } from "date-fns";
-import { useMemo, useState } from "react";
+import { endOfDay, format, startOfDay } from "date-fns";
+import { useMemo } from "react";
+import { z } from "zod";
+import { parseU } from "~/utils/date";
 import { createFileRoute } from "@tanstack/react-router";
 import { HomeTodayView } from "~/components/features/home/HomeTodayView";
 import { QUERY_KEYS } from "~/lib/query-keys";
@@ -11,13 +13,18 @@ import { useAppContext } from "~/contexts/AppContext";
 import type { Partner } from "~/types";
 
 export const Route = createFileRoute("/app/today")({
+  validateSearch: z.object({
+    date: z.iso.date().optional().catch(undefined),
+  }),
   component: TodayPage,
 });
 
 function TodayPage() {
   const { person, partners } = useAppContext();
   const partnerSlugs = partners.map((p) => p.slug).sort();
-  const [currentDay, setCurrentDay] = useState(new Date());
+  const { date } = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const currentDay = useMemo(() => (date ? parseU(date) : new Date()), [date]);
 
   const startDateISO = startOfDay(currentDay).toISOString();
   const endDateISO = endOfDay(currentDay).toISOString();
@@ -58,7 +65,9 @@ function TodayPage() {
       actions={filteredActions}
       currentDay={currentDay}
       isLoading={isLoadingHomeActions}
-      onCurrentDayChange={setCurrentDay}
+      onCurrentDayChange={(day) => {
+        void navigate({ search: { date: format(day, "yyyy-MM-dd") } });
+      }}
     />
   );
 }
