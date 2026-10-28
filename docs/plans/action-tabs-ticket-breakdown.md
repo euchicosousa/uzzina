@@ -1,6 +1,6 @@
 # Duas ações e busca — tickets aprovados
 
-Preparada em 27/10/2026 com a skill To Tickets. Fonte: [levantamento consolidado](action-tabs-and-search-scope.md). O proprietário aprovou a divisão ao autorizar o início do ticket 01. Tickets publicados localmente. Ticket01 implementado e testado pelo proprietário, sem problema relatado. Ticket02 concluído localmente, com abertura validada e ajuste final de fechamento entregue, incluindo Primary/Secondary Action e alternância por abas. Tickets03/04 concluídos e aprovados pelo proprietário. Ticket05, criar ações pela busca, autorizado em28/10 e em implementação.
+Preparada em 27/10/2026 com a skill To Tickets. Fonte: [levantamento consolidado](action-tabs-and-search-scope.md). O proprietário aprovou a divisão ao autorizar o início do ticket 01. Tickets publicados localmente. Ticket01 implementado e testado pelo proprietário, sem problema relatado. Ticket02 concluído localmente, com abertura validada e ajuste final de fechamento entregue, incluindo Primary/Secondary Action e alternância por abas. Tickets03/04 concluídos e aprovados pelo proprietário. Ticket05, criar ações pela busca, concluído e aprovado pelo proprietário em28/10.
 
 Destino aprovado: um arquivo por ticket em `.scratch/action-tabs/issues/`, seguindo o padrão local das entregas anteriores. Estado inicial ready-for-agent; dependências abaixo determinam quais podem iniciar. Ordem sugerida após o acréscimo: 01 (feito) → 02 (concluído localmente) → 03 → 04 → 05, sempre um executor por vez e revisão de cada entrega antes de avançar. A numeração anterior foi preservada. Tickets05 e03 dependem de02; 03 passa à frente de05 por orientação posterior do proprietário. Ticket04 continua independente.
 
@@ -11,8 +11,8 @@ Destino aprovado: um arquivo por ticket em `.scratch/action-tabs/issues/`, segui
 | 01 - Componente pai | Implementado e testado pelo proprietário | Nenhuma funcional neste escopo |
 | 02 - Segunda ação e fechamento | Concluído e validado | Nenhuma funcional neste escopo |
 | 03 - Lado a lado e larguras | Concluído e aprovado, commit local feito | Sem publicação solicitada |
-| 04 - Filtro de parceiros e arquivadas | Concluído e aprovado | Commit/publicação ainda não solicitados |
-| 05 - Criar ação pela busca | Implementado e verificado; ampliado com todos os comandos autorizados | Avaliação do proprietário da ultima ampliação; commit/publicação não solicitados |
+| 04 - Filtro de parceiros e arquivadas | Concluído e aprovado; commit local789eb96 | Sem publicação nesta entrega |
+| 05 - Criar ação pela busca | Concluído, aprovado e commitado localmente em789eb96 | Pendências posteriores separadas abaixo; sem publicação nesta entrega |
 
 Todos os cinco tickets estão implementados localmente. Conta, temas, navegação, Sair e administração tambem foram autorizados e implementados; ver [comandos](global-search-command-candidates.md). Nenhum novo ticket funcional pendente foi encontrado nesta sequência. Painel de uso de IA permanece somente registrado no TODO, fora deste escopo. Alterações de Hoje/Kanban de outra conversa não integram esta entrega.
 
@@ -134,3 +134,5 @@ Ticket05 implementado localmente em28/10: Criar ação com ativação comum/Shif
 Demais comandos aprovados. Relatados erros de import dinâmico ao criar parceiro/ação, duplicidade entre criar/gerenciar data comemorativa e ausência de Ajuda. Registrados [carregamento](../../.scratch/search-review/issues/01-fix-lazy-module-loading.md), [modal de data comemorativa](../../.scratch/search-review/issues/02-create-celebration-dialog.md) e [Ajuda](../../.scratch/search-review/issues/03-complete-help-page.md), sem iniciar correções. [Notificações](../../.scratch/notifications/issues/01-complete-notifications-page.md) já possui ticket próprio. Essas pendências substituem a declaração anterior de ausência de trabalho funcional restante, após nova conferência real do proprietário.
 
 Ticket de carregamento autorizado em28/10 e corrigido localmente: preflight de porta antes do Vite e cache por checkout, após regressão real de200→504 na inicialização duplicada. Navegador no servidor de desenvolvimento passou; avaliação do proprietário pendente. Modal de datas, Ajuda e Notificações continuam futuros. Ver [resultado](../audits/2026-10-28-local-lazy-imports.md).
+
+Encerramento confirmado em28/10: proprietário retestou com sucesso. Tickets01–05 originais e ticket de carregamento concluídos/aprovados; commits locais ad35010 e789eb96 conferidos. Restam somente os tickets posteriores de modal de data comemorativa, Ajuda e Notificações, adiados. Uso de IA permanece apenas ideia no TODO. Sem publicação nesta rodada.
