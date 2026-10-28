@@ -1,3 +1,4 @@
+import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { getQuerySessionGeneration } from "~/lib/query-client";
 import { useRef } from "react";
 import { UploadIcon, EyeIcon, EyeOffIcon } from "lucide-react";
@@ -312,6 +313,7 @@ function AdminClientPage() {
           </PrismButton>
         </div>
       </form>
+      <AppBarSpacer />
     </div>
   );
 }

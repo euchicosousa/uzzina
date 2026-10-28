@@ -1,3 +1,4 @@
+import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { useAppContext } from "~/contexts/AppContext";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -104,6 +105,7 @@ function AppLeads() {
               />
             ))
           )}
+          <AppBarSpacer />
         </div>
       </div>
 

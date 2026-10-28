@@ -1,3 +1,4 @@
+import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CheckCircle2Icon, ClockIcon, PhoneIcon } from "lucide-react";
@@ -118,6 +119,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
           </div>
         )}
       </div>
+      <AppBarSpacer />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { useAppContext } from "~/contexts/AppContext";
 import { FolderPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -105,6 +106,7 @@ function AdminPartnersPage() {
           </div>
         </>
       )}
+      <AppBarSpacer />
     </div>
   );
 }

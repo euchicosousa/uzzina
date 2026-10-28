@@ -1,3 +1,4 @@
+import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   ImageIcon,
@@ -473,6 +474,7 @@ function ProfilePage() {
           </PrismButton>
         </div>
       </form>
+      <AppBarSpacer />
     </div>
   );
 }

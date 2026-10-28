@@ -1,3 +1,4 @@
+import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { getQuerySessionGeneration } from "~/lib/query-client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -598,6 +599,7 @@ function AdminPartnerEditPage() {
           </PrismButton>
         </div>
       </form>
+      <AppBarSpacer />
     </div>
   );
 }

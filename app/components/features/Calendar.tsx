@@ -4,6 +4,7 @@ import { eachDayOfInterval, endOfWeek, format, startOfWeek } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import type { ViewOptions } from "~/components/features/ViewOptions";
 import { cn } from "cnfast";
+import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { CalendarDayCell } from "./CalendarDayCell";
 export { CalendarToolbar } from "./CalendarToolbar";
 export { CalendarToolbar as CalendarButtons } from "./CalendarToolbar";
@@ -11,6 +12,7 @@ export type CalendarLayoutOptions = {
   showBorder?: boolean;
   highlightThisWeek?: boolean;
   hideBorderOnLastRow?: boolean;
+  reserveAppBarSpace?: boolean;
 };
 export type CalendarActionsType = {
   date: Date;
@@ -33,7 +35,12 @@ export function CalendarActions({
   renderDayLabel?: (day: Date, label: ReactNode) => ReactNode;
   layoutOptions?: CalendarLayoutOptions;
 }) {
-  const { showBorder, highlightThisWeek, hideBorderOnLastRow } = layoutOptions;
+  const {
+    showBorder,
+    highlightThisWeek,
+    hideBorderOnLastRow,
+    reserveAppBarSpace,
+  } = layoutOptions;
   return (
     <div className="w-full shrink-0 overflow-x-auto">
       <div className="flex w-full min-w-375 flex-col lg:min-w-225">
@@ -59,6 +66,7 @@ export function CalendarActions({
             );
           })}
         </div>
+        {reserveAppBarSpace && <AppBarSpacer />}
       </div>
     </div>
   );

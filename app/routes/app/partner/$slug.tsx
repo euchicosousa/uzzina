@@ -1,3 +1,4 @@
+import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { useSelectionContext } from "~/hooks/useMultiSelection";
 import {
@@ -292,7 +293,7 @@ function PartnerPage() {
           className={cn(
             "min-h-0 overflow-y-auto border-l",
             view === "feed"
-              ? "flex min-w-full md:w-135 md:min-w-auto md:shrink-0"
+              ? "flex min-w-full flex-col md:w-135 md:min-w-auto md:shrink-0"
               : "hidden",
           )}
         >
@@ -303,6 +304,7 @@ function PartnerPage() {
               setPrimaryAction?.(action);
             }}
           />
+          <AppBarSpacer />
         </div>
       </div>
     </div>

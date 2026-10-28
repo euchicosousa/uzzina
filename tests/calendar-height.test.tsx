@@ -44,3 +44,25 @@ it("keeps all actions in both content groups", () => {
   expect(screen.getByText("Action 13")).toBeTruthy();
   expect(screen.getAllByLabelText("Ações de 16/10/2026")).toHaveLength(1);
 });
+
+it("reserves AppBar space after the last week only when asked", () => {
+  const calendar = [{ date: new Date(2026, 9, 16), actions: [] }];
+  const viewOptions = { variant: "line", showOptions: {} } as const;
+  const { container, rerender } = render(
+    <CalendarTestProviders>
+      <CalendarActions calendar={calendar} viewOptions={viewOptions} />
+    </CalendarTestProviders>,
+  );
+  expect(container.querySelector("[data-app-bar-spacer]")).toBeNull();
+  rerender(
+    <CalendarTestProviders>
+      <CalendarActions
+        calendar={calendar}
+        layoutOptions={{ reserveAppBarSpace: true }}
+        viewOptions={viewOptions}
+      />
+    </CalendarTestProviders>,
+  );
+  const spacer = container.querySelector("[data-app-bar-spacer]");
+  expect(spacer?.previousElementSibling?.className).toContain("grid-cols-7");
+});

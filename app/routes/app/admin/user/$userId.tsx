@@ -1,3 +1,4 @@
+import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { getQuerySessionGeneration } from "~/lib/query-client";
 import { useRef } from "react";
 
@@ -206,6 +207,7 @@ function AdminUserPage() {
         isSubmitting={isSubmitting}
         onSubmit={handleSubmit}
       />
+      <AppBarSpacer />
     </div>
   );
 }

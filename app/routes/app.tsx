@@ -12,8 +12,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { ChevronUpIcon } from "lucide-react";
-import { cn } from "cnfast";
 import type { Session } from "@supabase/supabase-js";
 import { useActionPanels } from "~/hooks/useActionPanels";
 import { resetQuerySession } from "~/lib/query-client";
@@ -72,12 +70,6 @@ function Dashboard() {
   const [openCmdK, setOpenCmdK] = useState(false);
   const [partnerFilters, setPartnerFilters] = useState<string[]>([]);
   const location = useLocation();
-  const [isAppBarVisible, setIsAppBarVisible] = useState(false);
-  const [appBarTimeout, setAppBarTimeout] = useState<ReturnType<
-    typeof setTimeout
-  > | null>(null);
-  const isHiddenByDefault =
-    location.pathname !== "/app" && location.pathname !== "/app/";
 
   const queryClient = useQueryClient();
 
@@ -284,29 +276,7 @@ function Dashboard() {
             </div>
 
             {!hasOpenActions && (
-              <div
-                className={cn(
-                  "pointer-events-none fixed right-0 bottom-0 left-0 z-30 flex justify-center pb-4 transition-all duration-1000 ease-in-out",
-                  isHiddenByDefault && !isAppBarVisible
-                    ? "translate-y-28 opacity-0"
-                    : "translate-y-0 opacity-100",
-                )}
-                onMouseEnter={() => {
-                  if (appBarTimeout) {
-                    clearTimeout(appBarTimeout);
-                    setAppBarTimeout(null);
-                  }
-                  setIsAppBarVisible(true);
-                }}
-                onMouseLeave={() => {
-                  if (isHiddenByDefault) {
-                    const timer = setTimeout(() => {
-                      setIsAppBarVisible(false);
-                    }, 500);
-                    setAppBarTimeout(timer);
-                  }
-                }}
-              >
+              <div className="pointer-events-none fixed right-0 bottom-0 left-0 z-30 flex justify-center pb-4">
                 <div className="pointer-events-auto">
                   <AppBar
                     partnerFilters={partnerFilters}
@@ -318,22 +288,6 @@ function Dashboard() {
                   />
                 </div>
               </div>
-            )}
-
-            {isHiddenByDefault && !isAppBarVisible && (
-              <button
-                aria-label="Revelar barra de navegação"
-                className="pointer-events-auto fixed bottom-0 left-1/2 z-40 flex h-10 w-32 -translate-x-1/2 cursor-pointer items-end justify-center rounded-t-xl pb-2 transition-all hover:pb-3 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                onClick={() => {
-                  setIsAppBarVisible(true);
-                }}
-                onMouseEnter={() => {
-                  setIsAppBarVisible(true);
-                }}
-                type="button"
-              >
-                <ChevronUpIcon className="size-5 text-muted-foreground opacity-60 transition-opacity hover:opacity-100" />
-              </button>
             )}
 
             <GlobalSearchCommand

@@ -397,6 +397,11 @@ html {
   scroll-behavior: smooth;
 }
 
+:root {
+  /* AppBar is 66px tall with a 16px offset below it; keep the same 16px above it */
+  --app-bar-space: 98px;
+}
+
 .page-height {
   @apply h-[calc(100vh-68px)];
 }

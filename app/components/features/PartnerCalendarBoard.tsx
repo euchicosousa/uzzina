@@ -59,6 +59,7 @@ export function PartnerCalendarBoard({
         highlightThisWeek: true,
         showBorder: true,
         hideBorderOnLastRow: true,
+        reserveAppBarSpace: true,
       }}
       onCreateAction={(day) => {
         setPrimaryAction(

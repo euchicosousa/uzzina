@@ -1,3 +1,4 @@
+import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { UserPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
@@ -72,6 +73,7 @@ function AdminClientsPage() {
             );
           })}
         </div>
+        <AppBarSpacer />
       </div>
     </AdminGuard>
   );

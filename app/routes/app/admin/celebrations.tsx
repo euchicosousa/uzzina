@@ -1,3 +1,4 @@
+import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { useAppContext } from "~/contexts/AppContext";
 import { CalendarDate } from "@internationalized/date";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -229,6 +230,7 @@ export function CelebrationsList({
           ))}
         </div>
       )}
+      <AppBarSpacer />
     </div>
   );
 }
