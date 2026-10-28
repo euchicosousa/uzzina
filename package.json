@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite --mode staging",
+    "dev": "node node_modules/vite/bin/vite.js --mode production --host 127.0.0.1 --port 5176 --strictPort",
     "preview": "vite preview",
     "typecheck": "tsc",
     "lint": "biome check .",

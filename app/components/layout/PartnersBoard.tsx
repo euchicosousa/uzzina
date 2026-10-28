@@ -62,7 +62,7 @@ function PartnerColumn({
   actions: Action[];
   currentDay: Date;
 }) {
-  const { person, setBaseAction } = useAppContext();
+  const { person, setPrimaryAction } = useAppContext();
   return (
     <div className="group/column flex flex-col overflow-hidden">
       {/* Header do parceiro */}
@@ -90,7 +90,7 @@ function PartnerColumn({
         <PrismButton
           className="opacity-0 group-hover/column:opacity-100"
           onClick={() =>
-            setBaseAction(
+            setPrimaryAction(
               createActionDraft({
                 userId: person.user_id,
                 partners: [partner.slug],

@@ -94,7 +94,7 @@ function AppHome() {
       ),
   });
 
-  const { setBaseAction, partnerFilters } = useAppContext();
+  const { setPrimaryAction, partnerFilters } = useAppContext();
 
   const filteredActions = useMemo(() => {
     const operational = filterOperationalActions(currentActions, partners);
@@ -166,7 +166,7 @@ function AppHome() {
       {/* <div className="-mx-8 h-2 border-b"></div> */}
       <HomeCalendarView
         actions={filteredActions}
-        setBaseAction={setBaseAction}
+        setPrimaryAction={setPrimaryAction}
       />
       <HomePartnersView actions={filteredLateActions} />
       <HomeLateView actions={filteredLateActions} />

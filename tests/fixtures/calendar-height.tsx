@@ -71,7 +71,7 @@ export function CalendarTestProviders({
           partners: [],
           cloudName: "test",
           uploadPreset: "test",
-          setBaseAction: () => {},
+          setPrimaryAction: () => {},
           partnerFilters: [],
           setPartnerFilters: () => {},
         }}

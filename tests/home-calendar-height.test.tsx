@@ -19,7 +19,7 @@ function renderHomeCalendar() {
   const rootRoute = createRootRoute({
     component: () => (
       <CalendarTestProviders>
-        <HomeCalendarView actions={[]} setBaseAction={() => {}} />
+        <HomeCalendarView actions={[]} setPrimaryAction={() => {}} />
       </CalendarTestProviders>
     ),
   });

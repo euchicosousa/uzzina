@@ -115,7 +115,7 @@ function PartnerPage() {
       allLateActions.filter((action) => action.partners?.includes(partnerSlug)),
     enabled: !skipActions && !!partnerSlug,
   });
-  const { setBaseAction } = useAppContext();
+  const { setPrimaryAction } = useAppContext();
   const currentDay = parseU(dateParam);
   const [query, setQuery] = useState("");
   const { followPartnerColor, applyPartnerColors, restoreThemeColors } =
@@ -206,7 +206,7 @@ function PartnerPage() {
                   <h5>Ações Atrasadas ({lateCount})</h5>
                   <ActionContainer
                     actions={currentLateActions}
-                    onClick={(action) => setBaseAction?.(action)}
+                    onClick={(action) => setPrimaryAction?.(action)}
                     variant="line"
                   />
                 </PrismPopover>
@@ -300,7 +300,7 @@ function PartnerPage() {
             actions={feedActions}
             currentPartner={partner}
             onActionClick={(action) => {
-              setBaseAction?.(action);
+              setPrimaryAction?.(action);
             }}
           />
         </div>

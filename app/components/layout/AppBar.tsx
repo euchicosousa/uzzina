@@ -41,14 +41,14 @@ import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 export function AppBar({
   partners,
   person,
-  setBaseAction,
+  setPrimaryAction,
   setOpenCmdK,
   partnerFilters,
   setPartnerFilters,
 }: {
   partners: Partner[];
   person: Person;
-  setBaseAction: (action: Action | null) => void;
+  setPrimaryAction: (action: Action | null) => void;
   setOpenCmdK: (open: boolean) => void;
   partnerFilters: string[];
   setPartnerFilters: (slugs: string[]) => void;
@@ -111,7 +111,7 @@ export function AppBar({
           ) : (
             <PrismButton
               onClick={() => {
-                setBaseAction(
+                setPrimaryAction(
                   createActionDraft({
                     userId: person.user_id,
                     partners: resolveDraftPartners({

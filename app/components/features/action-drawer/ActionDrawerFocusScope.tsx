@@ -4,6 +4,7 @@ import {
   useRef,
   useState,
   type ReactNode,
+  type KeyboardEventHandler,
 } from "react";
 import { FocusScope, useFocusManager } from "react-aria/FocusScope";
 
@@ -17,6 +18,7 @@ interface ActionDrawerFocusScopeProps {
   children: ReactNode;
   className: string;
   enabled: boolean;
+  onKeyDown?: KeyboardEventHandler<HTMLDivElement>;
 }
 
 export function ActionDrawerFocusScope(props: ActionDrawerFocusScopeProps) {
@@ -31,6 +33,7 @@ function DrawerFocusContent({
   children,
   className,
   enabled,
+  onKeyDown,
 }: ActionDrawerFocusScopeProps) {
   const focusManager = useFocusManager();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -61,6 +64,7 @@ function DrawerFocusContent({
       className={className}
       data-drawer-focus-scope
       ref={rootRef}
+      onKeyDown={onKeyDown}
       onKeyDownCapture={(event) => {
         const target = event.target;
         // React portals bubble through this component even outside its DOM scope.

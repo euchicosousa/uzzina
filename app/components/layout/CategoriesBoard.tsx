@@ -56,7 +56,7 @@ function CategoryColumn({
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending?: boolean;
 }) {
-  const { person, setBaseAction } = useAppContext();
+  const { person, setPrimaryAction } = useAppContext();
   return (
     <div className="group/column flex flex-col overflow-hidden">
       {/* Header da categoria */}
@@ -79,7 +79,7 @@ function CategoryColumn({
         <PrismButton
           className="opacity-0 group-hover/column:opacity-100"
           onClick={() =>
-            setBaseAction(
+            setPrimaryAction(
               createActionDraft({
                 userId: person.user_id,
                 category: category.slug,

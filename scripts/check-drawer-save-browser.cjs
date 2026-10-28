@@ -65,6 +65,7 @@ const assert = require("node:assert/strict");
         sow: "social",
       },
     ];
+    const social = process.env.DRAWER_TEST_SOCIAL === "true";
     const actions = partners.map((p, i) => ({
       id: `action-${i}`,
       title: i ? "AÇÃO OCULTA" : "AÇÃO ATIVA",
@@ -73,10 +74,11 @@ const assert = require("node:assert/strict");
       sprints: [],
       date: "2026-01-01T12:00:00Z",
       phase: "do",
-      category: "design",
+      category: social ? "post" : "design",
       priority: "medium",
       color: "#123456",
-      description: null,
+      description: social ? "<p>Existing description.</p>" : null,
+      content_description: social ? "<p>Existing content.</p>" : null,
       content_files: [],
       work_files: [],
       instagram_caption: "",
@@ -128,6 +130,13 @@ const assert = require("node:assert/strict");
       }
       if (url.pathname === "/rest/v1/people")
         return route.fulfill({ json: [person] });
+      if (url.pathname === "/rest/v1/rpc/update_my_preferences") {
+        person.preferences = {
+          ...(person.preferences || {}),
+          ...req.postDataJSON().p_patch,
+        };
+        return route.fulfill({ json: person.preferences });
+      }
       if (url.pathname.startsWith("/rest/v1/"))
         return route.fulfill({ json: [] });
       return route.abort();
@@ -142,15 +151,41 @@ const assert = require("node:assert/strict");
       }),
     ).toString("base64url");
     const token = `${Buffer.from('{"alg":"HS256","typ":"JWT"}').toString("base64url")}.${payload}.test-signature`;
-    await page.evaluate(async (token) => {
-      const { createSupabaseBrowserClient } =
-        await import("/app/lib/supabase.client.ts");
-      const { error } = await createSupabaseBrowserClient().auth.setSession({
-        access_token: token,
-        refresh_token: "controlled-test-refresh",
-      });
-      if (error) throw error;
-    }, token);
+    if (process.env.DRAWER_TEST_PREVIEW === "true") {
+      const { loadEnv } = await import("vite");
+      const { VITE_SUPABASE_URL } = loadEnv(
+        process.env.DRAWER_TEST_BUILD_MODE || "production",
+        process.cwd(),
+        "VITE_",
+      );
+      const projectRef = new URL(VITE_SUPABASE_URL).hostname.split(".")[0];
+      await page.evaluate(
+        ({ token, storageKey, user }) => {
+          localStorage.setItem(
+            storageKey,
+            JSON.stringify({
+              access_token: token,
+              refresh_token: "controlled-test-refresh",
+              token_type: "bearer",
+              expires_in: 3600,
+              expires_at: Math.floor(Date.now() / 1000) + 3600,
+              user,
+            }),
+          );
+        },
+        { token, storageKey: `sb-${projectRef}-auth-token`, user },
+      );
+    } else {
+      await page.evaluate(async (token) => {
+        const { createSupabaseBrowserClient } =
+          await import("/app/lib/supabase.client.ts");
+        const { error } = await createSupabaseBrowserClient().auth.setSession({
+          access_token: token,
+          refresh_token: "controlled-test-refresh",
+        });
+        if (error) throw error;
+      }, token);
+    }
     await page.goto(`${base}/app`);
     await page
       .getByRole("heading", { name: "Atrasadas", exact: true })
@@ -169,6 +204,45 @@ const assert = require("node:assert/strict");
       await page.getByRole("button", { name: "Fechar", exact: true }).waitFor();
     };
     await openDrawer();
+    const viewportWidth = page.viewportSize().width;
+    const bounds = await page.locator("[data-action-panel]").boundingBox();
+    assert.ok(bounds, "The parent panel must be visible");
+    assert.equal(bounds.width, viewportWidth < 640 ? viewportWidth : 672);
+    assert.equal(bounds.x + bounds.width, viewportWidth);
+    assert.equal(bounds.y, 64);
+    for (const theme of ["light", "dark"]) {
+      await page
+        .getByRole("button", { name: "Menu do perfil do usuário" })
+        .click();
+      await page
+        .getByRole("menuitem", {
+          name: theme === "dark" ? "Tema escuro" : "Tema claro",
+          exact: true,
+        })
+        .click();
+      if (social) {
+        await page.getByRole("tab", { name: "INSTAGRAM", exact: true }).click();
+        for (const name of ["Legenda", "Conteúdo"]) {
+          await page.getByRole("tab", { name, exact: true }).click();
+          const wideBounds = await page
+            .locator("[data-action-panel]")
+            .boundingBox();
+          assert.ok(wideBounds);
+          assert.equal(
+            wideBounds.width,
+            viewportWidth >= 1024 ? 896 : bounds.width,
+          );
+          assert.equal(wideBounds.x + wideBounds.width, viewportWidth);
+        }
+      }
+      if (process.env.DRAWER_TEST_SCREENSHOT_DIR) {
+        await page.screenshot({
+          animations: "disabled",
+          path: `${process.env.DRAWER_TEST_SCREENSHOT_DIR}/uzzina-action-panel-${viewportWidth}-${theme}.png`,
+        });
+      }
+    }
+    await page.getByRole("tab", { name: "ESSENCIAL", exact: true }).click();
     await page.getByRole("button", { name: "Fechar", exact: true }).click();
     await page
       .getByRole("button", { name: "Fechar", exact: true })
@@ -230,7 +304,7 @@ const assert = require("node:assert/strict");
       .waitFor({ state: "hidden" });
     assert.deepEqual(errors, []);
     console.log(
-      "PASS real browser: unchanged close; drawer date; redundant update; failed close preserves draft; retry saves. External HTTP controlled; no production writes.",
+      "PASS real browser: parent panel position/width and light/dark screenshots; unchanged close; drawer date; redundant update; failed close preserves draft; retry saves. External HTTP controlled; no production writes.",
     );
   } finally {
     await browser.close();

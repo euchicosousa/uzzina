@@ -6,7 +6,7 @@ export interface AppContextType {
   partners: Partner[];
   cloudName: string;
   uploadPreset: string;
-  setBaseAction: (action: Action | null) => void;
+  setPrimaryAction: (action: Action | null) => void;
   partnerFilters: string[];
   setPartnerFilters: React.Dispatch<React.SetStateAction<string[]>>;
 }

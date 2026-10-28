@@ -166,7 +166,7 @@ function mount(kind: Kind, initial: string[]) {
           partners,
           cloudName: "",
           uploadPreset: "",
-          setBaseAction: () => {},
+          setPrimaryAction: () => {},
           partnerFilters: [],
           setPartnerFilters: () => {},
         }}

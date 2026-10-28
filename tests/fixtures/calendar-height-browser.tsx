@@ -37,7 +37,7 @@ function Fixture() {
     showOptions: { variant: true, limitHeight: true },
   });
   if (mode === "home")
-    return <HomeCalendarView actions={actions} setBaseAction={() => {}} />;
+    return <HomeCalendarView actions={actions} setPrimaryAction={() => {}} />;
   if (mode === "portal")
     return (
       <div style={{ height: "500px" }}>

@@ -41,6 +41,7 @@ interface EssentialsTabProps {
   cloudName: string;
   uploadPreset: string;
   isAIProcessing: boolean;
+  autoFocus?: boolean;
   onOpenStrategyModal?: () => void;
   onDescriptionChange?: (description: string) => void;
   onTitleBlur?: (title: string) => Promise<void>;
@@ -65,6 +66,7 @@ export function EssentialsTab({
   onDescriptionChange,
   onTitleBlur,
   descriptionVersion,
+  autoFocus = true,
 }: EssentialsTabProps) {
   const workFilesRef = useRef(workFiles);
   workFilesRef.current = workFiles;
@@ -122,7 +124,7 @@ export function EssentialsTab({
       {/* Título */}
       <div data-drawer-focus="title">
         <ActionTitleInput
-          autoFocus
+          autoFocus={autoFocus}
           className="font-medium tracking-[-5%] transition-colors focus-within:bg-foreground/5"
           onBlur={async (title) => {
             if (onTitleBlur) {

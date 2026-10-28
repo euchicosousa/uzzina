@@ -7,7 +7,14 @@ import {
   XIcon,
 } from "lucide-react";
 import { Icons } from "~/components/uzzina/UIcons";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { toast } from "sonner";
 import { ActionFormFooter } from "./ActionFormFooter";
 import { ActionDrawerFocusScope } from "./ActionDrawerFocusScope";
@@ -45,32 +52,38 @@ import {
 const DEFAULT_PARTNER_FILTERS: string[] = [];
 const DEFAULT_PARTNERS: Partner[] = [];
 import { useAppContext } from "~/contexts/AppContext";
+export type ActionDrawerView = "essential" | "instagram" | "observations";
 export function ActionFormDrawer({
-  BaseAction,
+  initialAction,
   onClose,
   partnerFilters = DEFAULT_PARTNER_FILTERS,
   registerLeaveGuard,
+  view,
+  onViewChange: setView,
+  isActive,
+  onActionChange,
 }: {
-  BaseAction: Action;
-  onClose: () => void;
+  initialAction: Action;
+  onClose: () => Promise<void>;
   partnerFilters?: string[];
   registerLeaveGuard?: (guard: (() => Promise<boolean>) | null) => void;
+  view: ActionDrawerView;
+  onViewChange: (view: ActionDrawerView) => void;
+  isActive: boolean;
+  onActionChange: (action: Action) => void;
 }) {
   const [conflictVersion, setConflictVersion] = useState<Action | null>(null);
   const [isComparing, setIsComparing] = useState(false);
   const [isResolvingConflict, setIsResolvingConflict] = useState(false);
-  const [view, setView] = useState<"essential" | "instagram" | "observations">(
-    "essential",
-  );
   const { partners: routePartners, cloudName, uploadPreset } = useAppContext();
   const partners = routePartners ?? DEFAULT_PARTNERS;
   const { handleAction, isLoading: isMutationLoading } = useActionMutations();
   const [RawAction, commitRawAction] = useState<Action>(() => {
-    if (BaseAction.id) return BaseAction;
+    if (initialAction.id) return initialAction;
     const now = toDbTimestamp();
-    let initialPartners = BaseAction.partners || [];
-    let initialResponsibles = BaseAction.responsibles || [];
-    let initialColor = BaseAction.color;
+    let initialPartners = initialAction.partners || [];
+    let initialResponsibles = initialAction.responsibles || [];
+    let initialColor = initialAction.color;
     if (initialPartners.length === 0 && partnerFilters.length > 0) {
       initialPartners = partnerFilters;
     }
@@ -90,7 +103,7 @@ export function ActionFormDrawer({
       }
     }
     return {
-      ...BaseAction,
+      ...initialAction,
       partners: initialPartners,
       responsibles: initialResponsibles,
       color: initialColor,
@@ -105,10 +118,14 @@ export function ActionFormDrawer({
     rawActionRef.current = RawAction;
   }, [RawAction]);
 
-  // Saved title reference — initialized from BaseAction.title, updated only on confirmed save
+  useEffect(() => {
+    onActionChange(RawAction);
+  }, [RawAction, onActionChange]);
 
-  const draftKeyRef = useRef(`draft-${Date.now()}`);
-  const coordinatorKey = BaseAction.id || draftKeyRef.current;
+  // Saved title reference — initialized from initialAction.title, updated only on confirmed save
+
+  const draftId = useId();
+  const coordinatorKey = initialAction.id || draftId;
   const coordinatorRef = useRef<ActionSaveCoordinator | null>(null);
   if (!coordinatorRef.current) {
     coordinatorRef.current = new ActionSaveCoordinator({
@@ -145,10 +162,10 @@ export function ActionFormDrawer({
     () =>
       coordinatorRef.current?.getState() ?? {
         key: coordinatorKey,
-        status: BaseAction.id ? "saved" : "draft",
+        status: initialAction.id ? "saved" : "draft",
         errorMessage: null,
-        savedTitle: BaseAction.title || "",
-        confirmedAction: BaseAction,
+        savedTitle: initialAction.title || "",
+        confirmedAction: initialAction,
         pendingPatch: {},
         isDirty: false,
       },
@@ -181,8 +198,8 @@ export function ActionFormDrawer({
   // Ref for the latest description typed in Tiptap — updated on every keystroke
   // without triggering re-renders. handleSave reads from here so Cmd+Enter
   // always saves the latest typed content even without blur.
-  const descriptionRef = useRef(BaseAction.description || "");
-  const contentDescriptionRef = useRef(BaseAction.content_description || "");
+  const descriptionRef = useRef(initialAction.description || "");
+  const contentDescriptionRef = useRef(initialAction.content_description || "");
 
   const updateAction = useCallback(
     async (
@@ -399,16 +416,14 @@ export function ActionFormDrawer({
     registerLeaveGuard?.(prepareLeave);
     return () => registerLeaveGuard?.(null);
   }, [registerLeaveGuard, prepareLeave]);
-  const handleSafeClose = useCallback(async () => {
-    if (await prepareLeave()) onClose();
-  }, [onClose, prepareLeave]);
+  const handleSafeClose = onClose;
 
   // Guard: only update color and initial fallback responsibles on fresh draft
   // Preserve any explicit responsibles already set by creator or user
   const prevPrimaryPartnerRef = useRef(currentPartners[0]?.slug);
   useEffect(() => {
     const currentPrimarySlug = currentPartners[0]?.slug;
-    const isNewDraft = !rawActionRef.current.id && !BaseAction.id;
+    const isNewDraft = !rawActionRef.current.id && !initialAction.id;
     if (
       isNewDraft &&
       currentPrimarySlug &&
@@ -431,35 +446,20 @@ export function ActionFormDrawer({
         }));
       }
     }
-  }, [currentPartners, BaseAction.id, setRawAction]);
-  useEffect(() => {
-    async function handleKeyDown(event: KeyboardEvent) {
-      if (conflictVersion) return;
-      if (event.key.toLocaleLowerCase() === "escape") {
-        event.preventDefault();
-        event.stopPropagation();
-        handleSafeClose();
-      } else if (event.key.toLocaleLowerCase() === "enter" && event.metaKey) {
-        event.preventDefault();
-        event.stopPropagation();
-        const success = await handleSaveRef.current();
-        if (success && !event.shiftKey) {
-          handleSafeClose();
-        }
-      }
-    }
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [handleSafeClose, conflictVersion]);
+  }, [currentPartners, initialAction.id, setRawAction]);
   return (
     <ActionDrawerFocusScope
-      enabled={view === "essential"}
-      className={cn(
-        "fixed top-16 right-0 bottom-0 z-10 flex w-full max-w-full flex-col overflow-hidden border-l bg-background sm:max-w-2xl",
-        view === "instagram"
-          ? "lg:w-4xl lg:max-w-4xl"
-          : "lg:w-2xl lg:max-w-2xl",
-      )}
+      enabled={isActive && view === "essential"}
+      onKeyDown={async (event) => {
+        if (!isActive || conflictVersion || event.defaultPrevented) return;
+        if (event.key.toLowerCase() === "enter" && event.metaKey) {
+          event.preventDefault();
+          event.stopPropagation();
+          const success = await handleSaveRef.current();
+          if (success && !event.shiftKey) await handleSafeClose();
+        }
+      }}
+      className="flex h-full w-full max-w-full flex-col overflow-hidden"
     >
       {RawAction.archived && (
         <div className="flex shrink-0 items-center justify-center gap-2 border-b bg-error-background p-2 text-sm font-medium text-error">
@@ -585,7 +585,7 @@ export function ActionFormDrawer({
           <span className="truncate">OBSERVAÇÕES</span>
           <MessageSquareIcon className="size-4 shrink-0" />
         </button>
-        <div className="shrink-0">
+        <div className="flex shrink-0">
           <button
             aria-label="Fechar"
             className="flex cursor-pointer items-center justify-center border-b px-3 py-3 text-sm font-medium outline-none focus-visible:bg-input focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset sm:p-5"
@@ -609,6 +609,7 @@ export function ActionFormDrawer({
               )}
             >
               <EssentialsTab
+                autoFocus={isActive}
                 cloudName={cloudName}
                 currentPartners={currentPartners}
                 descriptionVersion={descriptionVersion}
@@ -675,7 +676,7 @@ export function ActionFormDrawer({
 
       <PrismDialog
         className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-3xl lg:max-w-5xl"
-        isOpen={conflictVersion !== null}
+        isOpen={isActive && conflictVersion !== null}
         isDismissable={!isResolvingConflict}
         showCloseButton={false}
         onOpenChange={(open) => {
@@ -728,7 +729,7 @@ export function ActionFormDrawer({
 
       <PrismDialog
         className="max-w-2xl sm:max-w-2xl"
-        isOpen={isStrategyModalOpen}
+        isOpen={isActive && isStrategyModalOpen}
         onOpenChange={setIsStrategyModalOpen}
       >
         <PrismDialogHeader className="px-10 pt-8">

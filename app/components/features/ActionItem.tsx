@@ -106,7 +106,7 @@ export function ActionItem({
     showResponsibles = false,
     showPriority = false,
   } = displayFlags;
-  const { person, setBaseAction } = useAppContext();
+  const { person, setPrimaryAction } = useAppContext();
   const {
     currentPhase,
     currentPartners,
@@ -204,8 +204,8 @@ export function ActionItem({
         if (!isEditing) {
           if (onClick) {
             onClick(action);
-          } else if (setBaseAction) {
-            setBaseAction(action);
+          } else if (setPrimaryAction) {
+            setPrimaryAction(action);
           }
         }
       }}
@@ -226,8 +226,8 @@ export function ActionItem({
           if (!isEditing) {
             if (onClick) {
               onClick(action);
-            } else if (setBaseAction) {
-              setBaseAction(action);
+            } else if (setPrimaryAction) {
+              setPrimaryAction(action);
             }
           }
         }

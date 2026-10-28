@@ -68,11 +68,13 @@ export function InstagramTab({
     "content",
   );
   return (
-    <div className="flex h-full w-full max-w-full flex-col overflow-x-hidden overflow-y-auto md:flex-row">
+    <div className="flex h-full w-full max-w-full flex-col overflow-x-hidden overflow-y-auto @[48rem]/action:flex-row">
       <div
         className={cn(
-          "mx-auto flex shrink-0 flex-col p-6 md:w-2/5",
-          instagramSubTab === "content" ? "lg:w-1/3" : "lg:w-1/2",
+          "mx-auto flex shrink-0 flex-col p-6 @[48rem]/action:w-2/5",
+          instagramSubTab === "content"
+            ? "@[56rem]/action:w-1/3"
+            : "@[56rem]/action:w-1/2",
         )}
       >
         <InstagramPreview files={contentFiles} />
@@ -86,8 +88,10 @@ export function InstagramTab({
 
       <div
         className={cn(
-          "flex min-h-80 flex-col md:w-3/5 md:overflow-hidden",
-          instagramSubTab === "content" ? "lg:w-2/3" : "lg:w-1/2",
+          "flex min-h-80 flex-col @[48rem]/action:w-3/5 @[48rem]/action:overflow-hidden",
+          instagramSubTab === "content"
+            ? "@[56rem]/action:w-2/3"
+            : "@[56rem]/action:w-1/2",
         )}
       >
         {/* Sub-tab navigation */}
@@ -115,7 +119,7 @@ export function InstagramTab({
         {/* Sub-aba CONTEÚDO */}
         {instagramSubTab === "content" && (
           <div className="flex h-full flex-col overflow-hidden">
-            <div className="flex min-w-0 items-center justify-between gap-3 border-b px-4 py-4 md:pl-0">
+            <div className="flex min-w-0 items-center justify-between gap-3 border-b px-4 py-4 @[48rem]/action:pl-0">
               <div className="flex min-w-0 shrink items-center gap-2">
                 <UAvatarGroup
                   avatars={currentPartners.map((partner) => ({
@@ -138,7 +142,7 @@ export function InstagramTab({
                 return (
                   strategies.length > 0 &&
                   onOpenStrategyModal && (
-                    <PrismButtonGroup className="max-w-70 min-w-0 shrink sm:max-w-xs md:max-w-sm">
+                    <PrismButtonGroup className="max-w-70 min-w-0 shrink @[40rem]/action:max-w-xs @[48rem]/action:max-w-sm">
                       <PrismButton
                         aria-label="Ver estratégias"
                         onClick={onOpenStrategyModal}
@@ -202,7 +206,7 @@ export function InstagramTab({
         {/* Sub-aba LEGENDA */}
         {instagramSubTab === "caption" && (
           <div className="flex h-full flex-col">
-            <div className="flex items-center justify-between border-b px-4 py-4 md:pl-0">
+            <div className="flex items-center justify-between border-b px-4 py-4 @[48rem]/action:pl-0">
               <div className="flex items-center gap-2">
                 <UAvatarGroup
                   avatars={currentPartners.map((partner) => ({
@@ -237,7 +241,7 @@ export function InstagramTab({
               />
               <textarea
                 aria-label="Legenda do Instagram"
-                className="h-full w-full resize-none p-4 outline-none disabled:opacity-50 md:pl-0"
+                className="h-full w-full resize-none p-4 outline-none disabled:opacity-50 @[48rem]/action:pl-0"
                 disabled={isAIProcessing}
                 onBlur={async () =>
                   await updateAction({

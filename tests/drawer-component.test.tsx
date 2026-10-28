@@ -1,4 +1,9 @@
 import { afterEach, beforeEach, expect, it, mock } from "bun:test";
+import { Suspense, useEffect, useRef, useState } from "react";
+import {
+  useActionPanels,
+  type ActionPanels,
+} from "../app/hooks/useActionPanels";
 import {
   act,
   cleanup,
@@ -9,13 +14,26 @@ import {
   within,
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  createMemoryHistory,
+  createRootRoute,
+  createRouter,
+  RouterContextProvider,
+} from "@tanstack/react-router";
+import { GlobalSearchCommand } from "../app/components/features/GlobalSearchCommand";
 import { AppContext } from "../app/contexts/AppContext";
-import { ActionFormDrawer } from "../app/components/features/action-drawer/ActionFormDrawer";
+import { ActionDrawerPanel } from "../app/components/features/action-drawer/ActionDrawerPanel";
 import type { Action, Person, Partner } from "../app/types";
 import { QUERY_KEYS } from "../app/lib/query-keys";
 import userEvent from "@testing-library/user-event";
 
-Object.assign(globalThis, { KeyboardEvent: window.KeyboardEvent });
+Object.assign(globalThis, {
+  KeyboardEvent: window.KeyboardEvent,
+  MouseEvent: window.MouseEvent,
+  PointerEvent: window.MouseEvent,
+});
+if (!("CSS" in globalThis))
+  Object.assign(globalThis, { CSS: { escape: (value: string) => value } });
 Object.assign(window.Range.prototype, {
   getClientRects: () => [],
   getBoundingClientRect: () => new window.DOMRect(),
@@ -23,6 +41,8 @@ Object.assign(window.Range.prototype, {
 
 type Row = Record<string, unknown>;
 let writes: Row[] = [];
+let writeIds: string[] = [];
+const databaseActions = new Map<string, Action>();
 let fail = false;
 let resolveWrite: ((value: { data: Action; error: null }) => void) | null =
   null;
@@ -87,9 +107,31 @@ mock.module("~/lib/supabase.client", () => ({
   createSupabaseBrowserClient: () => ({
     from: () => {
       let patch: Row | null = null;
+      let queriedId = action.id;
+      let searchQuery = "";
       const chain = {
         select: () => chain,
-        eq: () => chain,
+        eq: (field: string, value: unknown) => {
+          if (field === "id" && typeof value === "string") queriedId = value;
+          return chain;
+        },
+        ilike: (_field: string, value: string) => {
+          searchQuery = value.replaceAll("%", "").toLowerCase();
+          return chain;
+        },
+        overlaps: () => chain,
+        contains: () => chain,
+        limit: async () => ({
+          data: [
+            action,
+            {
+              ...action,
+              id: "22222222-2222-4222-8222-222222222222",
+              title: "Second title",
+            },
+          ].filter((entry) => entry.title.toLowerCase().includes(searchQuery)),
+          error: null,
+        }),
         is: () => chain,
         order: () => chain,
         insert: (value: Row) => {
@@ -101,7 +143,10 @@ mock.module("~/lib/supabase.client", () => ({
           return chain;
         },
         single: async () => {
-          if (patch) writes.push({ ...patch });
+          if (patch) {
+            writes.push({ ...patch });
+            writeIds.push(queriedId ?? "insert");
+          }
           if (patch && conflict)
             return {
               data: null,
@@ -112,10 +157,15 @@ mock.module("~/lib/supabase.client", () => ({
             return new Promise<{ data: Action; error: null }>((resolve) => {
               resolveWrite = resolve;
             });
-          return {
-            data: { ...action, ...patch, updated_at: "2026-10-06T10:01:00Z" },
-            error: null,
+          const canonical = {
+            ...(databaseActions.get(queriedId ?? "") ?? action),
+            id: queriedId,
+            ...patch,
+            updated_at: "2026-10-06T10:01:00Z",
           };
+          if (patch && canonical.id)
+            databaseActions.set(canonical.id, canonical);
+          return { data: canonical, error: null };
         },
       };
       return chain;
@@ -123,61 +173,179 @@ mock.module("~/lib/supabase.client", () => ({
   }),
 }));
 
+let viewportWidth = 1440;
+const mediaChanges = new Set<() => void>();
+const originalMatchMedia = Object.getOwnPropertyDescriptor(
+  window,
+  "matchMedia",
+);
+function resizeViewport(width: number) {
+  viewportWidth = width;
+  for (const notify of mediaChanges) notify();
+}
+function mockMatchMedia(query: string): MediaQueryList {
+  const events = new window.EventTarget();
+  const minimum = Number(query.match(/min-width: (\d+)px/)?.[1] ?? Infinity);
+  const media: MediaQueryList = {
+    media: query,
+    get matches() {
+      return viewportWidth >= minimum;
+    },
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: events.addEventListener.bind(events),
+    removeEventListener: events.removeEventListener.bind(events),
+    dispatchEvent: events.dispatchEvent.bind(events),
+  };
+  mediaChanges.add(() =>
+    events.dispatchEvent(
+      Object.assign(new window.Event("change"), {
+        matches: media.matches,
+        media: query,
+      }),
+    ),
+  );
+  return media;
+}
+
 beforeEach(() => {
+  viewportWidth = 1440;
+  mediaChanges.clear();
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    value: mockMatchMedia,
+  });
   writes = [];
+  writeIds = [];
+  databaseActions.clear();
   fail = false;
   delay = false;
   resolveWrite = null;
   conflict = false;
 });
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  if (originalMatchMedia)
+    Object.defineProperty(window, "matchMedia", originalMatchMedia);
+  else Reflect.deleteProperty(window, "matchMedia");
+});
 function draft(overrides: Partial<Action>): Action {
   return { ...action, ...overrides };
+}
+function TestPanel({
+  initialAction,
+  onClose,
+  partnerFilters,
+  onPanels,
+  showSearch,
+}: {
+  initialAction: Action;
+  onClose: () => void;
+  partnerFilters: string[];
+  onPanels: (panels: ActionPanels) => void;
+  showSearch: boolean;
+}) {
+  const panels = useActionPanels(initialAction);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const hadAction = useRef(true);
+  useEffect(() => {
+    onPanels(panels);
+  }, [onPanels, panels]);
+  const hasActions = Boolean(panels.primaryAction || panels.secondaryAction);
+  useEffect(() => {
+    if (hadAction.current && !hasActions) onClose();
+    hadAction.current = hasActions;
+  }, [hasActions, onClose]);
+  return (
+    <>
+      <Suspense fallback={null}>
+        <ActionDrawerPanel
+          panels={panels}
+          partnerFilters={partnerFilters}
+          isSearchOpen={searchOpen}
+        />
+      </Suspense>
+      {showSearch && (
+        <>
+          <button onClick={() => setSearchOpen(true)}>Abrir busca</button>
+          <GlobalSearchCommand
+            open={searchOpen}
+            onOpenChange={setSearchOpen}
+            partners={[partner]}
+            setPrimaryAction={panels.setPrimaryAction}
+            setSecondaryAction={panels.setSecondaryAction}
+          />
+        </>
+      )}
+    </>
+  );
 }
 function mount(
   base: Action = action,
   onClose = () => {},
   partnerFilters: string[] = [],
+  showSearch = false,
 ) {
+  if (base.id) databaseActions.set(base.id, base);
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   client.setQueryData(QUERY_KEYS.people("test-user"), []);
+  const router = createRouter({
+    routeTree: createRootRoute(),
+    history: createMemoryHistory({ initialEntries: ["/app"] }),
+  });
+  let latestPanels: ActionPanels | undefined;
+  const updatePanels = (panels: ActionPanels) => {
+    latestPanels = panels;
+  };
   const view = (selected: Action, version: number) => (
-    <QueryClientProvider client={client}>
-      <AppContext.Provider
-        value={{
-          person,
-          partners: [partner],
-          cloudName: "test",
-          uploadPreset: "test",
-          setBaseAction: () => {},
-          partnerFilters,
-          setPartnerFilters: () => {},
-        }}
-      >
-        <ActionFormDrawer
-          partnerFilters={partnerFilters}
-          key={`${selected.id || "draft"}:${version}`}
-          BaseAction={selected}
-          onClose={onClose}
-        />
-      </AppContext.Provider>
-    </QueryClientProvider>
+    <RouterContextProvider router={router}>
+      <QueryClientProvider client={client}>
+        <AppContext.Provider
+          value={{
+            person,
+            partners: [partner],
+            cloudName: "test",
+            uploadPreset: "test",
+            setPrimaryAction: () => {},
+            partnerFilters,
+            setPartnerFilters: () => {},
+          }}
+        >
+          <TestPanel
+            initialAction={selected}
+            onClose={onClose}
+            partnerFilters={partnerFilters}
+            onPanels={updatePanels}
+            showSearch={showSearch}
+            key={`${selected.id || "draft"}:${version}`}
+          />
+        </AppContext.Provider>
+      </QueryClientProvider>
+    </RouterContextProvider>
   );
   const mounted = render(view(base, 0));
   return {
     ...mounted,
+    panels: () => {
+      if (!latestPanels) throw new Error("Panels have not mounted");
+      return latestPanels;
+    },
     select: (selected: Action, version: number) =>
       mounted.rerender(view(selected, version)),
   };
 }
 async function descriptionEditor() {
-  await waitFor(() => {
-    expect(
-      document.querySelector(".tiptap[contenteditable=true]"),
-    ).not.toBeNull();
-  });
+  await waitFor(
+    () => {
+      expect(
+        document.querySelector(".tiptap[contenteditable=true]"),
+      ).not.toBeNull();
+    },
+    { timeout: 5000 },
+  );
   const editor = document.querySelector<HTMLElement>(
     ".tiptap[contenteditable=true]",
   );
@@ -528,6 +696,150 @@ it("real drawer closes unchanged without writing", async () => {
   await waitFor(() => expect(closed).toBe(1));
   expect(writes.length).toBe(0);
 });
+
+for (const closeWith of ["overlay", "escape", "button"]) {
+  it(`the panel closes safely through ${closeWith} without writing an unchanged action`, async () => {
+    let closed = 0;
+    mount(action, () => closed++);
+    if (closeWith === "escape") {
+      fireEvent.keyDown(document.activeElement ?? document, { key: "Escape" });
+    } else {
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: closeWith === "overlay" ? "Fechar painel de edição" : "Fechar",
+        }),
+      );
+    }
+    await waitFor(() => expect(closed).toBe(1));
+    expect(writes).toEqual([]);
+  });
+}
+
+for (const closeWith of ["overlay", "escape"]) {
+  it(`the panel preserves edits when ${closeWith} cannot save`, async () => {
+    let closed = 0;
+    mount(action, () => closed++);
+    fail = true;
+    const title = screen.getByRole<HTMLTextAreaElement>("textbox", {
+      name: "Título da ação",
+    });
+    fireEvent.change(title, { target: { value: "Keep this edit" } });
+    if (closeWith === "escape") {
+      fireEvent.keyDown(title, { key: "Escape" });
+    } else {
+      fireEvent.click(
+        screen.getByRole("button", { name: "Fechar painel de edição" }),
+      );
+    }
+    await screen.findByTestId("drawer-error-banner");
+    expect(closed).toBe(0);
+    expect(title.value).toBe("Keep this edit");
+    expect(writes).toHaveLength(1);
+  });
+}
+
+it("repeated close commands share one pending close and write", async () => {
+  let closed = 0;
+  mount(action, () => closed++);
+  delay = true;
+  fireEvent.change(screen.getByRole("textbox", { name: "Título da ação" }), {
+    target: { value: "Pending close" },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Fechar painel de edição" }),
+  );
+  await waitFor(() => expect(writes).toHaveLength(1));
+  fireEvent.keyDown(document, { key: "Escape" });
+  fireEvent.click(screen.getByRole("button", { name: "Fechar" }));
+  delay = false;
+  await act(async () => {
+    resolveWrite?.({
+      data: { ...action, title: "Pending close" },
+      error: null,
+    });
+  });
+  await waitFor(() => expect(closed).toBe(1));
+  expect(writes).toHaveLength(1);
+});
+
+it("a close that finishes after unmount cannot close a later panel", async () => {
+  let closed = 0;
+  const mounted = mount(action, () => closed++);
+  delay = true;
+  fireEvent.change(screen.getByRole("textbox", { name: "Título da ação" }), {
+    target: { value: "Old action" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Fechar" }));
+  await waitFor(() => expect(writes).toHaveLength(1));
+  mounted.select(draft({ title: "New action" }), 1);
+  delay = false;
+  await act(async () => {
+    resolveWrite?.({ data: { ...action, title: "Old action" }, error: null });
+  });
+  expect(closed).toBe(0);
+  expect(
+    screen.getByRole<HTMLTextAreaElement>("textbox", { name: "Título da ação" })
+      .value,
+  ).toBe("New action");
+});
+
+it("replacing an action uses its real leave guard before mounting the next one", async () => {
+  const mounted = mount(action);
+  fireEvent.change(screen.getByRole("textbox", { name: "Título da ação" }), {
+    target: { value: "Saved before replacement" },
+  });
+  await act(async () => {
+    expect(
+      await mounted.panels().setPrimaryAction(
+        draft({
+          id: "22222222-2222-4222-8222-222222222222",
+          title: "Replacement",
+        }),
+      ),
+    ).toBe(true);
+  });
+  expect(writes).toHaveLength(1);
+  expect(writes[0]?.title).toBe("Saved before replacement");
+  expect(
+    screen.getByRole<HTMLTextAreaElement>("textbox", { name: "Título da ação" })
+      .value,
+  ).toBe("Replacement");
+});
+
+it("the panel owns width changes without remounting the form", async () => {
+  mount(draft({ category: "post", partners: [] }));
+  const form = screen.getByRole("region", { name: "Edição da ação" });
+  fireEvent.change(screen.getByRole("textbox", { name: "Título da ação" }), {
+    target: { value: "Title retained across views" },
+  });
+  const panel = document.querySelector("[data-action-panel]");
+  expect(panel?.className).toContain("lg:w-2xl");
+  fireEvent.click(screen.getByRole("tab", { name: "INSTAGRAM" }));
+  expect(panel?.className).toContain("lg:w-4xl");
+  fireEvent.click(screen.getByRole("tab", { name: "ESSENCIAL" }));
+  expect(panel?.className).toContain("lg:w-2xl");
+  expect(screen.getByRole("region", { name: "Edição da ação" })).toBe(form);
+  expect(
+    screen.getByRole<HTMLTextAreaElement>("textbox", { name: "Título da ação" })
+      .value,
+  ).toBe("Title retained across views");
+  expect(writes).toEqual([]);
+});
+
+it("the save shortcut sends one write through the real panel", async () => {
+  let closed = 0;
+  mount(action, () => closed++);
+  fireEvent.change(screen.getByRole("textbox", { name: "Título da ação" }), {
+    target: { value: "Keyboard save" },
+  });
+  fireEvent.keyDown(document.activeElement ?? document, {
+    key: "Enter",
+    metaKey: true,
+  });
+  await waitFor(() => expect(closed).toBe(1));
+  expect(writes).toHaveLength(1);
+  expect(writes[0]?.title).toBe("Keyboard save");
+});
 it("real manual create sends complete draft and one insert", async () => {
   mount(
     draft({
@@ -727,3 +1039,495 @@ it("selecting a strategy adopts its headline as the action title", async () => {
   await waitFor(() => expect(writes.length).toBeGreaterThan(1));
   expect(writes.at(-1)?.title).toBeUndefined();
 });
+
+const secondAction = () =>
+  draft({ id: "22222222-2222-4222-8222-222222222222", title: "Second title" });
+
+it("two real forms remain mounted and tabs preserve edited title and view", async () => {
+  const mounted = mount(draft({ category: "post", partners: [] }));
+  const primaryTitle = screen.getByRole<HTMLTextAreaElement>("textbox", {
+    name: "Título da ação",
+  });
+  fireEvent.change(primaryTitle, { target: { value: "Primary work" } });
+  await act(async () => {
+    await mounted.panels().setSecondaryAction(secondAction());
+  });
+  const secondaryTitle = screen.getByRole<HTMLTextAreaElement>("textbox", {
+    name: "Título da ação",
+  });
+  expect(secondaryTitle).not.toBe(primaryTitle);
+  expect(document.querySelectorAll("[data-drawer-focus-scope]")).toHaveLength(
+    2,
+  );
+  const tabs = screen.getByRole("tablist", { name: "Ações abertas" });
+  fireEvent.click(within(tabs).getByRole("tab", { name: /Primary work/ }));
+  expect(screen.getByRole("textbox", { name: "Título da ação" })).toBe(
+    primaryTitle,
+  );
+  expect(primaryTitle.value).toBe("Primary work");
+  fireEvent.click(screen.getByRole("tab", { name: "INSTAGRAM" }));
+  fireEvent.click(within(tabs).getByRole("tab", { name: /Second title/ }));
+  expect(screen.getByRole("textbox", { name: "Título da ação" })).toBe(
+    secondaryTitle,
+  );
+  fireEvent.click(within(tabs).getByRole("tab", { name: /Primary work/ }));
+  expect(
+    screen
+      .getByRole("tab", { name: "INSTAGRAM" })
+      .getAttribute("aria-selected"),
+  ).toBe("true");
+});
+
+it("only the active form saves on the keyboard shortcut", async () => {
+  const mounted = mount();
+  await act(async () => {
+    await mounted.panels().setSecondaryAction(secondAction());
+  });
+  const title = screen.getByRole("textbox", { name: "Título da ação" });
+  fireEvent.change(title, { target: { value: "Saved secondary" } });
+  fireEvent.keyDown(title, { key: "Enter", metaKey: true, shiftKey: true });
+  await waitFor(() => expect(writes).toHaveLength(1));
+  expect(writeIds).toEqual([secondAction().id]);
+  expect(writes[0]?.title).toBe("Saved secondary");
+  expect(document.querySelectorAll("[data-drawer-focus-scope]")).toHaveLength(
+    2,
+  );
+});
+
+it("closing primary leaves the same secondary form with only its individual close button", async () => {
+  const mounted = mount();
+  const key = mounted.panels().primaryAction?.key;
+  if (!key) throw new Error("Missing primary");
+  await act(async () => {
+    await mounted.panels().setSecondaryAction(secondAction());
+  });
+  const secondaryTitle = screen.getByRole("textbox", {
+    name: "Título da ação",
+  });
+  expect(
+    screen.queryByRole("button", { name: "Fechar todas as ações" }),
+  ).toBeNull();
+  await act(async () => {
+    await mounted.panels().closeAction(key);
+  });
+  expect(mounted.panels().primaryAction).toBeNull();
+  expect(screen.getByRole("textbox", { name: "Título da ação" })).toBe(
+    secondaryTitle,
+  );
+  expect(
+    screen.queryByRole("button", { name: "Fechar todas as ações" }),
+  ).toBeNull();
+  expect(screen.queryByRole("tablist", { name: "Ações abertas" })).toBeNull();
+});
+
+it("individual close buttons keep each action independent without a close-all button", async () => {
+  const mounted = mount();
+  await act(async () => {
+    await mounted.panels().setSecondaryAction(secondAction());
+  });
+  await screen.findByRole("tab", { name: /Second title/ });
+  expect(
+    screen.queryByRole("button", { name: "Fechar todas as ações" }),
+  ).toBeNull();
+  await userEvent
+    .setup()
+    .click(screen.getByRole("tab", { name: /Original title/ }));
+  fireEvent.click(screen.getByRole("button", { name: "Fechar" }));
+  await waitFor(() => expect(mounted.panels().primaryAction).toBeNull());
+  expect(mounted.panels().secondaryAction?.currentAction.title).toBe(
+    "Second title",
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Fechar" }));
+  await waitFor(() => expect(mounted.panels().secondaryAction).toBeNull());
+});
+
+for (const method of ["overlay", "escape"]) {
+  it(`closing two forms via ${method} closes both without a write`, async () => {
+    const mounted = mount();
+    await act(async () => {
+      await mounted.panels().setSecondaryAction(secondAction());
+    });
+    if (method === "escape")
+      fireEvent.keyDown(
+        screen.getByRole("textbox", { name: "Título da ação" }),
+        { key: "Escape" },
+      );
+    else
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: "Fechar painel de edição",
+        }),
+      );
+    await waitFor(() =>
+      expect(
+        document.querySelectorAll("[data-drawer-focus-scope]"),
+      ).toHaveLength(0),
+    );
+    expect(mounted.panels().primaryAction).toBeNull();
+    expect(mounted.panels().secondaryAction).toBeNull();
+    expect(writes).toEqual([]);
+  });
+}
+
+it("a failed save on the second form blocks closing both and retains edits", async () => {
+  const mounted = mount();
+  await act(async () => {
+    await mounted.panels().setSecondaryAction(secondAction());
+  });
+  fail = true;
+  const title = screen.getByRole<HTMLTextAreaElement>("textbox", {
+    name: "Título da ação",
+  });
+  fireEvent.change(title, {
+    target: { value: "Retained after close-all failure" },
+  });
+  fireEvent.keyDown(title, { key: "Escape" });
+  await screen.findByTestId("drawer-error-banner");
+  expect(title.value).toBe("Retained after close-all failure");
+  expect(document.querySelectorAll("[data-drawer-focus-scope]")).toHaveLength(
+    2,
+  );
+  fail = false;
+  fireEvent.click(
+    screen.getByRole("button", { name: "Fechar painel de edição" }),
+  );
+  await waitFor(() =>
+    expect(document.querySelectorAll("[data-drawer-focus-scope]")).toHaveLength(
+      0,
+    ),
+  );
+  expect(writes.at(-1)?.title).toBe("Retained after close-all failure");
+});
+
+it("the outer action tabs keep arrow navigation without focusing a hidden form", async () => {
+  const mounted = mount();
+  await act(async () => {
+    await mounted.panels().setSecondaryAction(secondAction());
+  });
+  const tabs = screen.getByRole("tablist", { name: "Ações abertas" });
+  const primaryTab = within(tabs).getByRole("tab", { name: /Original title/ });
+  const secondaryTab = within(tabs).getByRole("tab", { name: /Second title/ });
+  const user = userEvent.setup();
+  await user.click(primaryTab);
+  expect(document.activeElement === primaryTab).toBe(true);
+  await user.keyboard("{ArrowRight}");
+  expect(document.activeElement === secondaryTab).toBe(true);
+  expect(
+    screen.getByRole<HTMLTextAreaElement>("textbox", { name: "Título da ação" })
+      .value,
+  ).toBe("Second title");
+});
+
+for (const activation of [
+  "click",
+  "enter",
+  "space",
+  "shift-click",
+  "shift-enter",
+  "shift-space",
+]) {
+  it(`the real global search opens the correct space with ${activation}`, async () => {
+    const mounted = mount(action, () => {}, [], true);
+    await screen.findByRole("textbox", { name: "Título da ação" });
+    fireEvent.click(screen.getByRole("button", { name: "Abrir busca" }));
+    const input = await screen.findByRole("searchbox");
+    fireEvent.change(input, { target: { value: "Second" } });
+    const item = await screen.findByRole("menuitem", { name: /Second title/ });
+    const user = userEvent.setup();
+    if (activation.endsWith("click")) {
+      if (activation.startsWith("shift")) await user.keyboard("{Shift>}");
+      await user.click(item);
+      if (activation.startsWith("shift")) await user.keyboard("{/Shift}");
+    } else {
+      act(() => input.focus());
+      await user.keyboard("{ArrowDown}");
+      const key = activation.endsWith("enter") ? "{Enter}" : " ";
+      await user.keyboard(
+        activation.startsWith("shift") ? `{Shift>}${key}{/Shift}` : key,
+      );
+    }
+    await waitFor(() =>
+      expect(screen.queryByRole("searchbox") === null).toBe(true),
+    );
+    if (activation.startsWith("shift")) {
+      expect(mounted.panels().primaryAction?.currentAction.id).toBe(action.id);
+      expect(mounted.panels().secondaryAction?.currentAction.id).toBe(
+        secondAction().id,
+      );
+    } else {
+      expect(mounted.panels().primaryAction?.currentAction.id).toBe(
+        secondAction().id,
+      );
+      expect(mounted.panels().secondaryAction).toBeNull();
+    }
+    expect(
+      screen.getByRole<HTMLTextAreaElement>("textbox", {
+        name: "Título da ação",
+      }).value,
+    ).toBe("Second title");
+  });
+}
+
+it("Escape inside the search closes only the search, preserving both actions", async () => {
+  const mounted = mount(action, () => {}, [], true);
+  await act(async () => {
+    await mounted.panels().setSecondaryAction(secondAction());
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Abrir busca" }));
+  await screen.findByRole("searchbox");
+  await userEvent.setup().keyboard("{Escape}");
+  await waitFor(() =>
+    expect(screen.queryByRole("searchbox") === null).toBe(true),
+  );
+  expect(mounted.panels().primaryAction?.currentAction.id).toBe(action.id);
+  expect(mounted.panels().secondaryAction?.currentAction.id).toBe(
+    secondAction().id,
+  );
+});
+
+it("spaces in a search query still type normally before navigating results", async () => {
+  const mounted = mount(action, () => {}, [], true);
+  await screen.findByRole("textbox", { name: "Título da ação" });
+  fireEvent.click(screen.getByRole("button", { name: "Abrir busca" }));
+  const input = await screen.findByRole<HTMLInputElement>("searchbox");
+  await userEvent.setup().type(input, "Second title");
+  await screen.findByRole("menuitem", { name: /Second title/ });
+  expect(input.value).toBe("Second title");
+  expect(mounted.panels().secondaryAction).toBeNull();
+  expect(mounted.panels().primaryAction?.currentAction.id).toBe(action.id);
+});
+
+it("a blocked replacement from search leaves the current action and search available", async () => {
+  const mounted = mount(action, () => {}, [], true);
+  const title = await screen.findByRole("textbox", { name: "Título da ação" });
+  fail = true;
+  fireEvent.change(title, { target: { value: "Unconfirmed primary" } });
+  fireEvent.click(screen.getByRole("button", { name: "Abrir busca" }));
+  const input = await screen.findByRole("searchbox");
+  fireEvent.change(input, { target: { value: "Second" } });
+  await userEvent
+    .setup()
+    .click(await screen.findByRole("menuitem", { name: /Second title/ }));
+  await waitFor(() => expect(writes.length > 0).toBe(true));
+  expect(screen.queryByRole("searchbox") !== null).toBe(true);
+  expect(mounted.panels().primaryAction?.currentAction.id).toBe(action.id);
+  expect(mounted.panels().secondaryAction).toBeNull();
+});
+
+it("an incomplete primary draft survives opening an existing secondary without a discard prompt", async () => {
+  const confirm = window.confirm;
+  let confirmations = 0;
+  window.confirm = () => {
+    confirmations++;
+    return false;
+  };
+  try {
+    const mounted = mount(
+      draft({
+        id: undefined,
+        title: "x",
+        created_at: undefined,
+        updated_at: undefined,
+      }),
+    );
+    await screen.findByRole("textbox", { name: "Título da ação" });
+    await act(async () => {
+      expect(await mounted.panels().setSecondaryAction(secondAction())).toBe(
+        true,
+      );
+    });
+    const tabs = screen.getByRole("tablist", { name: "Ações abertas" });
+    await userEvent
+      .setup()
+      .click(within(tabs).getByRole("tab", { name: /^x/ }));
+    expect(
+      screen.getByRole<HTMLTextAreaElement>("textbox", {
+        name: "Título da ação",
+      }).value,
+    ).toBe("x");
+    expect(confirmations).toBe(0);
+    expect(writes).toEqual([]);
+    expect(mounted.panels().primaryAction?.currentAction.id).toBeUndefined();
+  } finally {
+    window.confirm = confirm;
+  }
+});
+
+it("two mounted forms produce distinct DOM identifiers", async () => {
+  const mounted = mount(draft({ category: "post" }));
+  await screen.findByRole("textbox", { name: "Título da ação" });
+  await act(async () => {
+    await mounted
+      .panels()
+      .setSecondaryAction({ ...secondAction(), category: "post" });
+  });
+  const ids = Array.from(
+    document.querySelectorAll<HTMLElement>("[id]"),
+    (element) => element.id,
+  );
+  expect(ids.filter((id, index) => ids.indexOf(id) !== index)).toEqual([]);
+});
+
+it("wide desktop shows both complete forms without the outer action tabs", async () => {
+  resizeViewport(2048);
+  const mounted = mount();
+  await act(async () => {
+    await mounted.panels().setSecondaryAction(secondAction());
+  });
+  await waitFor(() =>
+    expect(
+      screen.getAllByRole("textbox", { name: "Título da ação" }),
+    ).toHaveLength(2),
+  );
+  expect(screen.queryByRole("tablist", { name: "Ações abertas" })).toBeNull();
+  expect(screen.getAllByRole("button", { name: "Fechar" })).toHaveLength(2);
+});
+
+it("resizing across the two-maximum-width threshold preserves both forms and their edits", async () => {
+  resizeViewport(1856);
+  const mounted = mount();
+  await act(async () => {
+    await mounted.panels().setSecondaryAction(secondAction());
+  });
+  const titles = await screen.findAllByRole<HTMLTextAreaElement>("textbox", {
+    name: "Título da ação",
+  });
+  await waitFor(() => expect(titles).toHaveLength(2));
+  const [primaryTitle, secondaryTitle] = titles;
+  if (!primaryTitle || !secondaryTitle)
+    throw new Error("Missing side-by-side forms");
+  const primaryEntry = primaryTitle.closest("[data-action-entry]");
+  const secondaryEntry = secondaryTitle.closest("[data-action-entry]");
+  fireEvent.change(primaryTitle, { target: { value: "Primary preserved" } });
+  fireEvent.change(secondaryTitle, {
+    target: { value: "Secondary preserved" },
+  });
+  await act(async () => {
+    resizeViewport(1855);
+  });
+  expect(screen.getAllByRole("textbox", { name: "Título da ação" })).toEqual([
+    secondaryTitle,
+  ]);
+  expect(screen.getByRole("tablist", { name: "Ações abertas" })).toBeTruthy();
+  expect(primaryTitle.closest("[inert]")).toBeTruthy();
+  await act(async () => {
+    resizeViewport(2560);
+  });
+  expect(screen.getAllByRole("textbox", { name: "Título da ação" })).toEqual([
+    primaryTitle,
+    secondaryTitle,
+  ]);
+  expect(primaryTitle.closest("[data-action-entry]")).toBe(primaryEntry);
+  expect(secondaryTitle.closest("[data-action-entry]")).toBe(secondaryEntry);
+  expect(primaryTitle.value).toBe("Primary preserved");
+  expect(secondaryTitle.value).toBe("Secondary preserved");
+  expect(primaryTitle.closest("[inert]")).toBeNull();
+  expect(writes).toEqual([]);
+  expect(mounted.panels().activeKey).toBe(
+    mounted.panels().secondaryAction?.key ?? null,
+  );
+});
+
+it("side-by-side focus and save shortcuts operate on the form receiving the event", async () => {
+  resizeViewport(2048);
+  const mounted = mount();
+  await act(async () => {
+    await mounted.panels().setSecondaryAction(secondAction());
+  });
+  await screen.findByRole("region", { name: "Original title" });
+  const primary = screen.getByRole("region", { name: "Original title" });
+  const secondary = screen.getByRole("region", { name: "Second title" });
+  const primaryTitle = within(primary).getByRole("textbox", {
+    name: "Título da ação",
+  });
+  const secondaryTitle = within(secondary).getByRole("textbox", {
+    name: "Título da ação",
+  });
+  const user = userEvent.setup();
+  await user.click(primaryTitle);
+  expect(mounted.panels().activeKey).toBe(
+    mounted.panels().primaryAction?.key ?? null,
+  );
+  fireEvent.change(primaryTitle, { target: { value: "Saved left" } });
+  fireEvent.keyDown(primaryTitle, {
+    key: "Enter",
+    metaKey: true,
+    shiftKey: true,
+  });
+  await waitFor(() => expect(writeIds).toEqual([action.id ?? ""]));
+  await user.click(secondaryTitle);
+  expect(mounted.panels().activeKey).toBe(
+    mounted.panels().secondaryAction?.key ?? null,
+  );
+  fireEvent.change(secondaryTitle, { target: { value: "Saved right" } });
+  fireEvent.keyDown(secondaryTitle, {
+    key: "Enter",
+    metaKey: true,
+    shiftKey: true,
+  });
+  await waitFor(() =>
+    expect(writeIds).toEqual([action.id ?? "", secondAction().id ?? ""]),
+  );
+  expect(document.activeElement).toBe(secondaryTitle);
+});
+
+it("internal tabs and individual closing preserve the other wide form", async () => {
+  resizeViewport(2048);
+  const mounted = mount(draft({ category: "post" }));
+  await act(async () => {
+    await mounted.panels().setSecondaryAction(secondAction());
+  });
+  const primary = await screen.findByRole("region", { name: "Original title" });
+  const secondary = screen.getByRole("region", { name: "Second title" });
+  const secondaryTitle = within(secondary).getByRole("textbox", {
+    name: "Título da ação",
+  });
+  const user = userEvent.setup();
+  await user.click(within(primary).getByRole("tab", { name: /INSTAGRAM/ }));
+  expect(
+    document.querySelector("[data-action-layout='side-by-side']"),
+  ).toBeTruthy();
+  expect(screen.queryByRole("tablist", { name: "Ações abertas" })).toBeNull();
+  await user.click(within(primary).getByRole("tab", { name: /OBSERVAÇÕES/ }));
+  expect(
+    within(secondary).getByRole("textbox", { name: "Título da ação" }),
+  ).toBe(secondaryTitle);
+  await user.click(within(primary).getByRole("button", { name: "Fechar" }));
+  expect(mounted.panels().primaryAction).toBeNull();
+  expect(mounted.panels().secondaryAction).not.toBeNull();
+  expect(screen.getByRole("textbox", { name: "Título da ação" })).toBe(
+    secondaryTitle,
+  );
+  expect(document.querySelector("[data-action-layout='tabs']")).toBeTruthy();
+});
+
+for (const method of ["overlay", "escape"]) {
+  it(`wide ${method} keeps both forms when a save fails and closes both on retry`, async () => {
+    resizeViewport(2048);
+    const mounted = mount();
+    await act(async () => {
+      await mounted.panels().setSecondaryAction(secondAction());
+    });
+    const secondary = await screen.findByRole("region", {
+      name: "Second title",
+    });
+    const title = within(secondary).getByRole("textbox", {
+      name: "Título da ação",
+    });
+    fireEvent.change(title, { target: { value: "Unsaved wide action" } });
+    const close = () =>
+      method === "overlay"
+        ? fireEvent.click(
+            screen.getByRole("button", { name: "Fechar painel de edição" }),
+          )
+        : fireEvent.keyDown(title, { key: "Escape" });
+    fail = true;
+    close();
+    await screen.findByTestId("drawer-error-banner");
+    expect(screen.getAllByRole("button", { name: "Fechar" })).toHaveLength(2);
+    fail = false;
+    close();
+    await waitFor(() => expect(mounted.panels().secondaryAction).toBeNull());
+    expect(mounted.panels().primaryAction).toBeNull();
+  });
+}

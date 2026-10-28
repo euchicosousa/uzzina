@@ -8,7 +8,7 @@
 
 ## Ideias para avaliar depois
 
-- [ ] [Consumo de IA por agência](docs/plans/2026-10-07-consumo-ia-por-agencia.md): múltiplos modelos, preços internos versionados e percentual de uso sem exibir custo da API. Somente proposta futura.
+- [ ] [Visualização do uso de IA](docs/plans/2026-10-07-consumo-ia-por-agencia.md): avaliar um painel ou outra forma de mostrar o uso no sistema, conforme pedido em27/10/2026. Formato e próximo passo serão definidos depois, em conjunto com a proposta existente de consumo por agência, múltiplos modelos, preços internos versionados e percentual sem exibir custo da API. Apenas registro futuro; sem implementação ou tickets agora.
 - [ ] Avaliar transferência/unificação da conta de staging após estabilização, mantendo produção e testes separados.
 
 ## Sugestões de UX preservadas da auditoria original

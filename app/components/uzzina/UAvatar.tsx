@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { SIZE } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
 import {
@@ -27,6 +28,7 @@ export function UAvatarGroup({
   clampAt,
   title,
 }: UAvatarGroupProps) {
+  const groupId = useId();
   const sizeClasses =
     {
       xs: "-space-x-0.5",
@@ -45,6 +47,7 @@ export function UAvatarGroup({
       {avatars.slice(0, effectiveClampAt).map((avatar, index) => (
         <UAvatar
           {...avatar}
+          id={avatar.id ? `${groupId}-${avatar.id}` : undefined}
           // biome-ignore lint/suspicious/noArrayIndexKey: index is required to guarantee uniqueness when duplicate avatars are mapped
           key={`${avatar.id || avatar.fallback}-${index}`}
           size={size}

@@ -75,7 +75,7 @@ it("keeps multiple fields under each version and preserves long safe rich text",
           partners: [],
           cloudName: "",
           uploadPreset: "",
-          setBaseAction: () => {},
+          setPrimaryAction: () => {},
           partnerFilters: [],
           setPartnerFilters: () => {},
         }}

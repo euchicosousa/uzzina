@@ -4,25 +4,20 @@ import {
   useLocation,
   useNavigate,
 } from "@tanstack/react-router";
-import { ChevronUpIcon } from "lucide-react";
 import {
   Suspense,
-  lazy,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+import { ChevronUpIcon } from "lucide-react";
+import { cn } from "cnfast";
 import type { Session } from "@supabase/supabase-js";
+import { useActionPanels } from "~/hooks/useActionPanels";
 import { resetQuerySession } from "~/lib/query-client";
-const ActionFormDrawer = lazy(() =>
-  import("~/components/features/action-drawer/ActionFormDrawer").then(
-    (module) => ({
-      default: module.ActionFormDrawer,
-    }),
-  ),
-);
+import { ActionDrawerPanel } from "~/components/features/action-drawer/ActionDrawerPanel";
 import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
 import { AppBar } from "~/components/layout/AppBar";
 import { Header } from "~/components/layout/Header";
@@ -31,7 +26,6 @@ import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
 import { createActionDraft, resolveDraftPartners } from "~/utils";
 import { getUserPreferences } from "~/lib/preferences";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
-import { cn } from "cnfast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { getOperationalPartners } from "~/models/partners";
@@ -50,34 +44,31 @@ function Dashboard() {
   const [person, setPerson] = useState<Person | null>(null);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
-  const [BaseAction, commitBaseAction] = useState<Action | null>(null);
-  const [drawerVersion, setDrawerVersion] = useState(0);
+  const actionPanels = useActionPanels();
+  const {
+    primaryAction,
+    secondaryAction,
+    setPrimaryAction: openPrimaryAction,
+    setSecondaryAction: openSecondaryAction,
+    reset: resetActionPanels,
+  } = actionPanels;
+  const hasOpenActions = Boolean(primaryAction || secondaryAction);
   const identityGeneration = useRef(0);
-  const leaveGuardRef = useRef<(() => Promise<boolean>) | null>(null);
-  const changingActionRef = useRef(false);
-  const registerLeaveGuard = useCallback(
-    (guard: (() => Promise<boolean>) | null) => {
-      leaveGuardRef.current = guard;
-    },
-    [],
+  const panelSessionGeneration = identityGeneration.current;
+  const setPrimaryAction = useCallback(
+    (action: Action | null) =>
+      panelSessionGeneration === identityGeneration.current
+        ? openPrimaryAction(action)
+        : Promise.resolve(false),
+    [openPrimaryAction, panelSessionGeneration],
   );
-  const setBaseAction = useCallback(async (next: Action | null) => {
-    if (changingActionRef.current) return;
-    changingActionRef.current = true;
-    const generation = identityGeneration.current;
-    try {
-      if (
-        (!leaveGuardRef.current || (await leaveGuardRef.current())) &&
-        generation === identityGeneration.current
-      ) {
-        commitBaseAction(next);
-        setDrawerVersion((version) => version + 1);
-      }
-    } finally {
-      if (generation === identityGeneration.current)
-        changingActionRef.current = false;
-    }
-  }, []);
+  const setSecondaryAction = useCallback(
+    (action: Action) =>
+      panelSessionGeneration === identityGeneration.current
+        ? openSecondaryAction(action)
+        : Promise.resolve(false),
+    [openSecondaryAction, panelSessionGeneration],
+  );
   const [openCmdK, setOpenCmdK] = useState(false);
   const [partnerFilters, setPartnerFilters] = useState<string[]>([]);
   const location = useLocation();
@@ -141,11 +132,9 @@ function Dashboard() {
       setLoading(true);
       setPerson(null);
       setPartners([]);
-      commitBaseAction(null);
+      resetActionPanels();
       setPartnerFilters([]);
       setOpenCmdK(false);
-      leaveGuardRef.current = null;
-      changingActionRef.current = false;
       if (!nextIdentity) {
         void navigate({ to: "/login", replace: true });
         return;
@@ -206,7 +195,7 @@ function Dashboard() {
       identityGeneration.current++;
       subscription.unsubscribe();
     };
-  }, [navigate, queryClient]);
+  }, [navigate, queryClient, resetActionPanels]);
   useEffect(() => {
     if (!person) return;
     const userId = person.user_id;
@@ -223,7 +212,7 @@ function Dashboard() {
         (event.metaKey || event.ctrlKey)
       ) {
         event.preventDefault();
-        setBaseAction(
+        setPrimaryAction(
           createActionDraft({
             userId,
             partners: resolveDraftPartners({
@@ -237,7 +226,7 @@ function Dashboard() {
     }
     document.addEventListener("keydown", keyDownGlobal, true);
     return () => document.removeEventListener("keydown", keyDownGlobal, true);
-  }, [person, partnerFilters, setBaseAction]);
+  }, [person, partnerFilters, setPrimaryAction]);
   if (loading || !person) {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center gap-4 bg-background">
@@ -257,7 +246,7 @@ function Dashboard() {
         partners: visiblePartners,
         cloudName,
         uploadPreset,
-        setBaseAction,
+        setPrimaryAction,
         partnerFilters,
         setPartnerFilters,
       }}
@@ -272,7 +261,7 @@ function Dashboard() {
             <Header
               partnerFilters={partnerFilters}
               person={person}
-              setBaseAction={setBaseAction}
+              setPrimaryAction={setPrimaryAction}
             />
             <div className="flex h-full w-full overflow-hidden">
               <div className="grow overflow-x-hidden overflow-y-auto">
@@ -283,31 +272,18 @@ function Dashboard() {
                 </div>
               </div>
 
-              {BaseAction ? (
+              {hasOpenActions ? (
                 <Suspense fallback={null}>
-                  <button
-                    aria-label="Fechar painel de edição"
-                    className="fixed inset-0 top-16 z-10 flex w-full shrink-0 cursor-default flex-col bg-black/20 dark:bg-black/80"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      setBaseAction(null);
-                    }}
-                    tabIndex={-1}
-                    type="button"
-                  />
-                  <ActionFormDrawer
-                    key={`${BaseAction.id || "draft"}:${drawerVersion}`}
-                    BaseAction={BaseAction}
-                    onClose={() => commitBaseAction(null)}
-                    registerLeaveGuard={registerLeaveGuard}
+                  <ActionDrawerPanel
+                    panels={actionPanels}
+                    isSearchOpen={openCmdK}
                     partnerFilters={partnerFilters}
                   />
                 </Suspense>
               ) : null}
             </div>
 
-            {!BaseAction && (
+            {!hasOpenActions && (
               <div
                 className={cn(
                   "pointer-events-none fixed right-0 bottom-0 left-0 z-30 flex justify-center pb-4 transition-all duration-1000 ease-in-out",
@@ -336,7 +312,7 @@ function Dashboard() {
                     partnerFilters={partnerFilters}
                     partners={visiblePartners}
                     person={person}
-                    setBaseAction={setBaseAction}
+                    setPrimaryAction={setPrimaryAction}
                     setOpenCmdK={setOpenCmdK}
                     setPartnerFilters={setPartnerFilters}
                   />
@@ -364,7 +340,8 @@ function Dashboard() {
               onOpenChange={setOpenCmdK}
               open={openCmdK}
               partners={visiblePartners}
-              setBaseAction={setBaseAction}
+              setPrimaryAction={setPrimaryAction}
+              setSecondaryAction={setSecondaryAction}
             />
           </MultiSelectionProvider>
         </ActionShortcutProvider>

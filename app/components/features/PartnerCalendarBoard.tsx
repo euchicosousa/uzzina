@@ -31,7 +31,7 @@ export function PartnerCalendarBoard({
     end: endOfWeek(endOfMonth(currentDay)),
   });
 
-  const { person, partners, setBaseAction } = useAppContext();
+  const { person, partners, setPrimaryAction } = useAppContext();
   const params = useParams({ strict: false }) as Record<
     string,
     string | undefined
@@ -61,7 +61,7 @@ export function PartnerCalendarBoard({
         hideBorderOnLastRow: true,
       }}
       onCreateAction={(day) => {
-        setBaseAction(
+        setPrimaryAction(
           createActionDraft({
             userId: person.user_id,
             date: day,

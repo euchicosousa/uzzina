@@ -25,20 +25,21 @@ bun install --frozen-lockfile
 bun run dev
 ```
 
-Vite inicia normalmente em localhost:5173. O adaptador local executa as APIs da pasta api; um preview do build estático não substitui esse servidor de desenvolvimento nem as funções da Vercel.
+Vite inicia em http://127.0.0.1:5176, com porta fixa. O adaptador local executa as APIs da pasta api; um preview do build estático não substitui esse servidor de desenvolvimento nem as funções da Vercel.
 
-`bun run dev` usa **somente o banco de staging** (`vite --mode staging`, projeto Supabase `zacrrtilppvekiyoybzn`); não há modo local apontando para produção. Entre no app com uma conta fictícia de `.env.staging-users.local`. A IA local passa pela reserva persistente `consume_ai_usage` do staging (limite diário e OpenAI reais). Não crie um `.env` com valores de produção nesta pasta: o Bun o pré-carrega e sobrepõe o modo staging.
+Por decisão do proprietário em27/10/2026, `bun run dev` usa **o banco de produção** (projeto Supabase `dfepmjcozszswocwvdpq`) e as contas reais. Edições no localhost afetam os mesmos dados do aplicativo publicado. O comando inicia Vite via Node no modo `production`, carregando `.env.production.local`; esse modo de configuração mantém o servidor de desenvolvimento e desativa o bypass local de quota. A IA usa `consume_ai_usage` de produção e OpenAI reais. Staging foi retirado do fluxo habitual.
 
 ## Arquivos de ambiente
 
 | Arquivo privado | Finalidade |
 |---|---|
-| .env.staging.local | Tudo o que o `bun run dev` precisa (staging; inclui Cloudinary e as chaves de servidor de teste) |
-| .env.staging-users.local | Contas fictícias de teste para entrar no app local e nos scripts; não importar na Vercel |
-| .env.vercel-production.local | Cópia das variáveis de produção para importar na Vercel UZZINA/Production; não é carregado pelo dev |
+| .env.production.local | Configuração ativa de desenvolvimento/build local, com banco/chaves de produção e APP_ORIGIN=http://127.0.0.1:5176 |
+| .env.vercel-production.local | Cópia das variáveis de publicação na Vercel UZZINA/Production; preserva APP_ORIGIN=https://uzzina.cnvt.com.br |
+| .env.staging.local | Configuração histórica de staging, preservada para scripts explicitamente destinados a esse projeto; não carregada pelo dev padrão |
+| .env.staging-users.local | Contas fictícias históricas dos scripts de staging; não usadas para login no localhost nem importadas na Vercel |
 | .env.backup.local | Conexão privada para backup/operações PostgreSQL; não importar na Vercel |
 
-O build local (`bun run build`) não precisa de nenhum arquivo de produção; a Vercel tem as próprias variáveis. Todos ficam fora do Git. O arquivo de produção da pasta lead pertence a outro projeto Vercel.
+O build local (`bun run build`) também carrega `.env.production.local`. A Vercel usa suas próprias variáveis. Todos esses arquivos ficam fora do Git. O arquivo de produção da pasta lead pertence a outro projeto Vercel. Mantenha os envs específicos por modo: um `.env` genérico pode ser pré-carregado pelo Bun e sobrepor valores antes do Vite.
 
 As dez variáveis do arquivo de publicação são:
 
@@ -52,7 +53,7 @@ As dez variáveis do arquivo de publicação são:
 | APP_ORIGIN | Origem exata autorizada do portal; em produção https://uzzina.cnvt.com.br |
 | AI_DAILY_LIMIT | Limite técnico opcional, padrão100 tentativas por usuário/dia UTC |
 
-O arquivo de produção não contém necessariamente todas as configurações de servidor da publicação. APIs administrativas/portal requerem suas variáveis no ambiente local (staging) quando forem testadas. O staging tem configuração própria; o Cloudinary usa as mesmas variáveis públicas da produção e não representa storage de testes separado.
+As variáveis de banco/servidor do arquivo local vêm da cópia de produção, sem credenciais de staging. APP_ORIGIN é a única substituição para o endereço local; o arquivo destinado à Vercel mantém sua origem publicada. Cloudinary e OpenAI também são os serviços reais.
 
 Variáveis VITE_ são públicas quando usadas no build. VITE_SESSION_SECRET, VITE_CLOUDINARY_API_KEY e VITE_CLOUDINARY_API_SECRET não são usadas pelo código atual e foram retiradas dos arquivos locais. Preserve cloud name/upload preset.
 
@@ -62,9 +63,11 @@ O cliente Supabase do navegador é singleton. Equipe autentica por Supabase Auth
 
 Listas de ações recebem criações e alterações após confirmação do servidor, com cache separado por identidade/escopo. Preview de arraste e rascunho da gaveta têm tratamento próprio. Edição usa controle de versão e comparação de conflito para evitar sobrescrever outra alteração. Parceiros arquivados permanecem na administração, fora da operação.
 
+O editor da equipe permite duas ações abertas. A busca global (Cmd/Ctrl+K) abre normalmente na principal; Shift+clique/Enter/Espaço abre na secundária. Sem nenhuma aberta, Shift abre a principal. Depois de navegar pelos resultados com as setas, Espaço ativa o resultado; durante a digitação normal, continua inserindo espaço no texto. Com duas ações, janelas de pelo menos1856px exibem principal à esquerda e secundária à direita, num grupo ancorado à direita; abaixo disso, as ações alternam por abas. O limite reserva duas larguras máximas de896px mais64px de overlay e não muda ao alternar abas internas. Uma ação sozinha continua à direita. Cada X fecha sua ação; Escape fora do editor e clique no overlay fecham ambas com as proteções de salvamento. Não há botão para fechar todas. Escape dentro do Tiptap é consumido pelo ProseMirror e mantém a edição. O atalho atual de Nova ação cria na principal e preserva a secundária; o comando de criação na busca fica para a próxima entrega.
+
 Preferências são salvas por patches e merge transacional; o perfil oferece preview. Tema inicial é aplicado por script em index.html antes do React. O design system vivo está em `/ui`.
 
-IA no Vite development habitual tem compatibilidade local explícita; staging/Vercel/produção exigem reserva persistente via consume_ai_usage. O contador técnico não mede tokens/custos por agência; essa evolução é apenas [plano futuro](docs/plans/2026-10-07-consumo-ia-por-agencia.md).
+O comando habitual usa o modo `production` e exige reserva persistente via consume_ai_usage, assim como a Vercel. A compatibilidade de desenvolvimento existente só pode ser ativada no modo `development` explícito; não é ativada por `bun run dev`. O contador técnico não mede tokens/custos por agência; essa evolução é apenas [plano futuro](docs/plans/2026-10-07-consumo-ia-por-agencia.md).
 
 ## Verificação e banco
 
@@ -85,13 +88,15 @@ Para trabalhar no código, consulte [AGENTS.md](AGENTS.md). Verificações pende
 
 ## Operação dos ambientes e integrações
 
-Produção: projeto Supabase dfepmjcozszswocwvdpq; app em https://uzzina.cnvt.com.br. Staging: zacrrtilppvekiyoybzn, com Auth oficial e usuários fictícios em .env.staging-users.local. As chaves de servidor dos dois projetos são distintas; não copiar credenciais de produção para staging. O bootstrap específico foi aplicado no staging vazio; versões remotas estão em supabase/staging/applied-manifest.json. Não usar esse bootstrap para reconstruir produção.
+Produção: projeto Supabase dfepmjcozszswocwvdpq; usado pelo app em https://uzzina.cnvt.com.br e pelo localhost. Staging zacrrtilppvekiyoybzn foi retirado do desenvolvimento habitual; seu projeto remoto, dados, credenciais históricas e manifests foram preservados. Os scripts específicos de staging continuam destinados exclusivamente àquele projeto e não devem ser redirecionados para produção. O bootstrap de supabase/staging não serve para reconstruir produção.
 
 Leads vive em /Users/euchicosousa/vercel/lead e https://lead.cnvt.com.br. Suas quatro variáveis de servidor são SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, LEADS_ORIGIN e LEAD_SESSION_SECRET. Origin deve ser a URL exata; segredo de sessão aleatório independente da chave do banco. API POST/PATCH usa cookie HttpOnly/HMAC de24h para autorizar edição do lead correspondente, valida schema/limites e preserva respostas em falha. Chave moderna sb_secret é usada no header apikey; não enviá-la como Bearer do visitante. Origin/cookie não são proteção completa contra bots. UZZINA lê Leads apenas para membro ativo; servidor realiza gravações.
 
 Scripts check-*-browser usam Playwright/Chromium externos ao lockfile do app: PLAYWRIGHT_MODULE pode indicar instalação existente e PLAYWRIGHT_EXECUTABLE o navegador instalado. PORTAL_TEST_URL indica o Vite local. Confira variáveis adicionais no script escolhido. Eles controlam HTTP e bloqueiam requisições externas não previstas; não usar a aprovação deles como comprovação de produção.
 
-`node scripts/check-calendar-height-browser.cjs` verifica os componentes reais e CSS dos calendários da equipe, Home e portal com fixtures locais, sem criar rota no produto. Usa `CALENDAR_TEST_URL` (padrão `http://127.0.0.1:5180`) e as mesmas variáveis Playwright acima. Inicie o Vite em staging; o script controla a página de teste e bloqueia requisições externas.
+`node scripts/check-action-panels-browser.cjs` confere as duas ações no app real, com Auth, consultas, mutações, preferências e logout simulados por HTTP. Inclui Shift+clique/Enter/Espaço, rascunho pelo atalho atual, estado independente, fechamento com falha/retry e limpeza de sessão. `DRAWER_TEST_WIDTH=390` executa o cenário estreito; `DRAWER_TEST_SCREENSHOT_DIR` habilita capturas com animações concluídas. O script não grava fixtures em produção.
+
+`node scripts/check-calendar-height-browser.cjs` verifica os componentes reais e CSS dos calendários da equipe, Home e portal com fixtures locais, sem criar rota no produto. Usa `CALENDAR_TEST_URL` (padrão `http://127.0.0.1:5180`) e as mesmas variáveis Playwright acima. O script controla a página de teste e bloqueia requisições externas; não depende do banco de staging.
 
 `bun run test:serverless` empacota as APIs de IA/portal com o builder `@vercel/node` instalado e importa os arquivos emitidos no Node nativo, em diretório descartável. Não carrega segredos nem faz chamadas externas. `node scripts/check-serverless-runtime.cjs --staging-caption` acrescenta uma geração fictícia com Auth real, cota persistente de staging e OpenAI; usa os envs de staging e consome uma tentativa de teste nesse ambiente. Os pacotes externos vêm do node_modules instalado; isso não equivale a um deploy Vercel. Sem CI, ele é obrigatório antes de qualquer push que toque APIs, `server/`, arquivos importados por elas ou dependências.
 

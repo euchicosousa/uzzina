@@ -62,11 +62,11 @@ import { UAvatar } from "../uzzina/UAvatar";
 const DEFAULT_PARTNER_FILTERS: string[] = [];
 export function Header({
   person,
-  setBaseAction,
+  setPrimaryAction,
   partnerFilters = DEFAULT_PARTNER_FILTERS,
 }: {
   person: Person;
-  setBaseAction: (action: Action | null) => void;
+  setPrimaryAction: (action: Action | null) => void;
   partnerFilters?: string[];
 }) {
   const { notifications, unreadCount, markAsRead, markAllAsRead } =
@@ -222,7 +222,7 @@ export function Header({
     try {
       const actionData = await getActionById(supabase, notif.action_id);
       if (actionData) {
-        setBaseAction(actionData);
+        setPrimaryAction(actionData);
       }
     } catch (err) {
       console.error("Erro ao carregar ação mencionada:", err);

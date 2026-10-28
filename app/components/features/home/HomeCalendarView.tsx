@@ -25,10 +25,10 @@ import { fetchCelebrations } from "~/lib/supabase.queries";
 import { useAppContext } from "~/contexts/AppContext";
 export function HomeCalendarView({
   actions,
-  setBaseAction,
+  setPrimaryAction,
 }: {
   actions: Action[];
-  setBaseAction: (action: Action | null) => void;
+  setPrimaryAction: (action: Action | null) => void;
 }) {
   const { person } = useAppContext();
   const { data: celebrations = [] } = useQuery({
@@ -121,7 +121,7 @@ export function HomeCalendarView({
             showBorder: period === "month",
           }}
           onCreateAction={(day) => {
-            setBaseAction(
+            setPrimaryAction(
               createActionDraft({ userId: person.user_id, date: day }),
             );
           }}
