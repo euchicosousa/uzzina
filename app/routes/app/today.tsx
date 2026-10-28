@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { z } from "zod";
 import { parseU } from "~/utils/date";
 import { createFileRoute } from "@tanstack/react-router";
-import { HomeTodayView } from "~/components/features/home/HomeTodayView";
+import { TodayPageView } from "~/components/features/today/TodayPageView";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchHomeActions } from "~/lib/supabase.queries";
 
@@ -61,8 +61,7 @@ function TodayPage() {
   }, [currentActions, partnerFilters, partners]);
 
   return (
-    <HomeTodayView
-      standalone
+    <TodayPageView
       actions={filteredActions}
       currentDay={currentDay}
       isLoading={isLoadingHomeActions}

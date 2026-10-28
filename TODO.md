@@ -11,6 +11,7 @@
 - [x] [Corrigir carregamento de Criar parceiro/Criar ação](.scratch/search-review/issues/01-fix-lazy-module-loading.md): correção local (inicialização duplicada/cache do Vite) testada e aprovada pelo proprietário em28/10.
 - [ ] [Criar data comemorativa por modal](.scratch/search-review/issues/02-create-celebration-dialog.md): diferenciar cadastro rápido de Gerenciar datas comemorativas.
 - [ ] [Implementar Ajuda e documentação](.scratch/search-review/issues/03-complete-help-page.md): rota ainda contém apenas texto provisório.
+- [x] [Separar a página Hoje e rolar só o conteúdo](.scratch/today-viewport/issues/02-dedicated-today-page-scroll.md): aprovado pelo proprietário e commitado localmente em28/10.
 
 - [ ] [Implementar a página de notificações](.scratch/notifications/issues/01-complete-notifications-page.md): rota ainda contém texto provisório; reaproveitar o fluxo do sino. Solicitado em28/10/2026 para execução posterior, sem início automático.
 

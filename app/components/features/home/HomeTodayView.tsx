@@ -1,27 +1,17 @@
 import { useSelectionContext } from "~/hooks/useMultiSelection";
-import { format, isSameDay, isToday } from "date-fns";
-import { parseU } from "~/utils/date";
-import { ptBR } from "date-fns/locale/pt-BR";
-import {
-  BlocksIcon,
-  Grid3x3Icon,
-  HeartHandshakeIcon,
-  KanbanIcon,
-} from "lucide-react";
-import { useMemo, useState } from "react";
+import { format } from "date-fns";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { CalendarToolbar } from "~/components/features/CalendarToolbar";
-import { CategoriesBoard } from "~/components/layout/CategoriesBoard";
-import KanbanPhasesBoard from "~/components/layout/KanbanPhasesBoard";
-import { PartnersBoard } from "~/components/layout/PartnersBoard";
-import { ActionContainer } from "~/components/features/ActionContainer";
-import { VARIANT } from "~/lib/CONSTANTS";
-import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
-import { isInstagramFeed } from "~/utils";
 import type { Action } from "~/types";
 import { HomeViewWrapper } from "./HomeViewWrapper";
-import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
-import { cn } from "~/lib/utils";
+import {
+  TodayBoard,
+  TodayViewToggle,
+  useTodayActions,
+  useTodayTitle,
+  type TodayViewMode,
+} from "./TodayViewParts";
 
 export function HomeTodayView({
   actions,
@@ -29,134 +19,57 @@ export function HomeTodayView({
   currentDay: controlledDay,
   onCurrentDayChange,
   linkTitle = false,
-  standalone = false,
 }: {
   actions: Action[];
   isLoading?: boolean;
   currentDay?: Date;
   onCurrentDayChange?: (date: Date) => void;
   linkTitle?: boolean;
-  standalone?: boolean;
 }) {
-  const [view, setView] = useState<
-    "kanban" | "feed" | "categories" | "partners"
-  >("partners");
+  const [view, setView] = useState<TodayViewMode>("partners");
 
   const [uncontrolledDay, setUncontrolledDay] = useState(new Date());
   const currentDay = controlledDay ?? uncontrolledDay;
   const setCurrentDay = onCurrentDayChange ?? setUncontrolledDay;
 
-  const filteredActions = useMemo(() => {
-    return view === "feed"
-      ? actions.filter((action) => {
-          return (
-            isSameDay(parseU(action.date), currentDay) &&
-            isInstagramFeed(action.category)
-          );
-        })
-      : actions.filter((action) => {
-          return isSameDay(parseU(action.date), currentDay);
-        });
-  }, [actions, view, currentDay]);
+  const filteredActions = useTodayActions(actions, view, currentDay);
 
   useSelectionContext(JSON.stringify([currentDay, view]));
-  const title = useMemo(() => {
-    if (isToday(currentDay)) return "Hoje";
-    const formatted = format(currentDay, "eeee, dd 'de' MMMM", {
-      locale: ptBR,
-    });
-    return formatted[0].toUpperCase() + formatted.slice(1);
-  }, [currentDay]);
+  const title = useTodayTitle(currentDay);
 
-  const fillViewport = standalone && view === "kanban";
   return (
-    <>
-      <HomeViewWrapper
-        fillViewport={fillViewport}
-        borderAfter={!fillViewport}
-        title={
-          linkTitle ? (
-            <Link
-              to="/app/today"
-              search={{ date: format(currentDay, "yyyy-MM-dd") }}
-              className="rounded-sm underline-offset-8 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-            >
-              {title}
-            </Link>
-          ) : (
-            title
-          )
-        }
-        OptionsComponent={
-          <div className="flex items-center gap-2">
-            <CalendarToolbar
-              currentDay={currentDay}
-              setCurrentDay={setCurrentDay}
-            />
-            <PrismToggleGroup
-              aria-label="Opções de Visualização da Home"
-              selectedKeys={[view]}
-              onSelectionChange={(keys) => {
-                const selected = Array.from(keys)[0] as typeof view;
-                if (selected) setView(selected);
-              }}
-              size="sm"
-            >
-              <PrismToggleGroupItem aria-label="Visão por Kanban" id="kanban">
-                <KanbanIcon />
-              </PrismToggleGroupItem>
-              <PrismToggleGroupItem
-                aria-label="Visão por Categorias"
-                id="categories"
-              >
-                <Grid3x3Icon />
-              </PrismToggleGroupItem>
-              <PrismToggleGroupItem aria-label="Visão por Feed" id="feed">
-                <BlocksIcon />
-              </PrismToggleGroupItem>
-              <PrismToggleGroupItem
-                aria-label="Visão por Parceiros"
-                id="partners"
-              >
-                <HeartHandshakeIcon />
-              </PrismToggleGroupItem>
-            </PrismToggleGroup>
-          </div>
-        }
-      >
-        <div className={cn("px-8 xl:px-16", fillViewport && "min-h-0 flex-1")}>
-          {view === "kanban" && (
-            <KanbanPhasesBoard
-              actions={filteredActions}
-              fillHeight={fillViewport}
-            />
-          )}
-          {view === "feed" && (
-            <div className="w-full max-w-full overflow-hidden">
-              <h5 className="pb-8">Feed do Instagram</h5>
-              <div className="pb-8">
-                <ActionContainer
-                  columns={6}
-                  actions={filteredActions}
-                  variant={VARIANT.content}
-                  displayFlags={{ showCategory: true }}
-                />
-              </div>
-            </div>
-          )}
-          {view === "categories" && (
-            <CategoriesBoard actions={filteredActions} />
-          )}
-          {view === "partners" && (
-            <PartnersBoard
-              actions={filteredActions}
-              isLoading={isLoading}
-              currentDay={currentDay}
-            />
-          )}
+    <HomeViewWrapper
+      title={
+        linkTitle ? (
+          <Link
+            to="/app/today"
+            search={{ date: format(currentDay, "yyyy-MM-dd") }}
+            className="rounded-sm underline-offset-8 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+          >
+            {title}
+          </Link>
+        ) : (
+          title
+        )
+      }
+      OptionsComponent={
+        <div className="flex items-center gap-2">
+          <CalendarToolbar
+            currentDay={currentDay}
+            setCurrentDay={setCurrentDay}
+          />
+          <TodayViewToggle view={view} onViewChange={setView} />
         </div>
-      </HomeViewWrapper>
-      {standalone && !fillViewport && <AppBarSpacer />}
-    </>
+      }
+    >
+      <div className="px-8 xl:px-16">
+        <TodayBoard
+          view={view}
+          actions={filteredActions}
+          isLoading={isLoading}
+          currentDay={currentDay}
+        />
+      </div>
+    </HomeViewWrapper>
   );
 }

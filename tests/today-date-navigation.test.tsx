@@ -33,6 +33,16 @@ afterEach(() => {
   geometrySpy?.mockRestore();
 });
 Object.assign(globalThis, { scrollTo: () => {} });
+// The Feed grid measures itself; happy-dom has no ResizeObserver.
+if (!("ResizeObserver" in globalThis)) {
+  Object.assign(globalThis, {
+    ResizeObserver: class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    },
+  });
+}
 if (!window.matchMedia) {
   window.matchMedia = (query) => ({
     matches: false,
@@ -102,6 +112,90 @@ async function renderToday(entry: string) {
   return { router, client };
 }
 
+it("keeps the dedicated Today header fixed and scrolls only its content in every view", async () => {
+  let viewportBottom = 900;
+  geometrySpy = spyOn(
+    Element.prototype,
+    "getBoundingClientRect",
+  ).mockImplementation(function (this: Element) {
+    const top = 80;
+    return {
+      x: 0,
+      y: top,
+      top,
+      left: 0,
+      right: 1200,
+      bottom: viewportBottom,
+      width: 1200,
+      height: viewportBottom - top,
+      toJSON: () => ({}),
+    };
+  });
+  const { router } = await renderToday("/app/today?date=2026-10-29");
+  const user = userEvent.setup();
+  const heading = await screen.findByRole("heading", {
+    name: "Quinta-feira, 29 de outubro",
+  });
+  const page = heading.closest("[data-today-page]");
+  if (!(page instanceof HTMLElement)) throw new Error("Missing Today page");
+
+  for (const [view, label] of [
+    ["Visão por Parceiros", "Parceiros"],
+    ["Visão por Categorias", "Categorias"],
+    ["Visão por Feed", "Feed do Instagram"],
+  ]) {
+    if (view !== "Visão por Parceiros") {
+      await user.click(screen.getByRole("radio", { name: view }));
+    }
+    // The view name lives in the header, not inside the scrolling content.
+    expect(screen.getAllByText(label, { selector: "p" })).toHaveLength(1);
+    expect(
+      screen
+        .getByRole("region", { name: "Ações do dia" })
+        .querySelector("h5")
+        ?.textContent?.includes("Feed do Instagram") ?? false,
+    ).toBe(false);
+    expect(page.style.height).toBe("820px");
+    const content = screen.getByRole("region", { name: "Ações do dia" });
+    expect(page.contains(content)).toBe(true);
+    expect(content.className).toContain("overflow-y-auto");
+    expect(content.lastElementChild?.hasAttribute("data-app-bar-spacer")).toBe(
+      true,
+    );
+    expect(document.querySelectorAll("[data-app-bar-spacer]").length).toBe(1);
+    content.scrollTop = 240;
+  }
+
+  await user.click(screen.getByRole("radio", { name: "Visão por Parceiros" }));
+  expect(screen.getByRole("region", { name: "Ações do dia" }).scrollTop).toBe(
+    0,
+  );
+  screen.getByRole("region", { name: "Ações do dia" }).scrollTop = 240;
+  const nextButton = document
+    .querySelector(".lucide-chevron-right")
+    ?.closest("button");
+  if (!nextButton) throw new Error("Missing next day button");
+  await user.click(nextButton);
+  await screen.findByRole("heading", { name: "Sexta-feira, 30 de outubro" });
+  expect(screen.getByRole("region", { name: "Ações do dia" }).scrollTop).toBe(
+    0,
+  );
+
+  viewportBottom = 700;
+  await act(async () => {
+    window.dispatchEvent(new Event("resize"));
+  });
+  expect(page.style.height).toBe("620px");
+
+  await act(async () => {
+    await router.navigate({ to: "/" });
+  });
+  await screen.findByRole("link", { name: "Hoje" });
+  expect(document.querySelector("[data-today-page]")).toBeNull();
+  expect(screen.queryByRole("region", { name: "Ações do dia" })).toBeNull();
+  expect(document.querySelectorAll("[data-app-bar-spacer]").length).toBe(0);
+});
+
 it("fits the dedicated Kanban to the available viewport and keeps Home compact", async () => {
   let viewportBottom = 900;
   geometrySpy = spyOn(
@@ -126,17 +220,20 @@ it("fits the dedicated Kanban to the available viewport and keeps Home compact",
   await user.click(
     await screen.findByRole("radio", { name: "Visão por Kanban" }),
   );
-  const section = screen.getByRole("heading", {
-    name: "Quinta-feira, 29 de outubro",
-  }).parentElement?.parentElement;
-  expect(section?.style.height).toBe("820px");
+  const section = screen
+    .getByRole("heading", { name: "Quinta-feira, 29 de outubro" })
+    .closest("[data-today-page]");
+  if (!(section instanceof HTMLElement)) throw new Error("Missing Today page");
+  expect(section.style.height).toBe("820px");
+  expect(screen.queryByRole("region", { name: "Ações do dia" })).toBeNull();
+  expect(
+    screen.getAllByRole("region", { name: /^Ações em / }).length,
+  ).toBeGreaterThan(0);
   viewportBottom = 700;
   await act(async () => {
     window.dispatchEvent(new Event("resize"));
   });
-  expect(section?.style.height).toBe("620px");
-  await user.click(screen.getByRole("radio", { name: "Visão por Parceiros" }));
-  expect(section?.style.height).toBe("");
+  expect(section.style.height).toBe("620px");
   await act(async () => {
     await router.navigate({ to: "/" });
   });
