@@ -1,7 +1,12 @@
 import { getQuerySessionGeneration } from "~/lib/query-client";
 import { useRef } from "react";
 import type { Notification } from "~/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { useAppContext } from "~/contexts/AppContext";
@@ -18,7 +23,9 @@ interface NotificationsResponse {
   unreadCount: number;
 }
 
-export function useNotifications() {
+const DEFAULT_LIMIT = 40;
+
+export function useNotifications(limit = DEFAULT_LIMIT) {
   const { person } = useAppContext();
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
@@ -27,11 +34,13 @@ export function useNotifications() {
     generation === getQuerySessionGeneration(queryClient);
 
   // Query das notificações com cache e polling
-  const { data, isLoading, error } = useQuery<NotificationsResponse>({
-    queryKey: QUERY_KEYS.notifications(person.user_id),
+  const { data, isLoading, error, refetch } = useQuery<NotificationsResponse>({
+    // The limit is the last key segment so the user prefix still invalidates every size.
+    queryKey: [...QUERY_KEYS.notifications(person.user_id), limit],
+    placeholderData: keepPreviousData,
     queryFn: async (): Promise<NotificationsResponse> => {
       const [notifications, unreadCount] = await Promise.all([
-        listNotifications(supabase, person.user_id),
+        listNotifications(supabase, person.user_id, limit),
         getUnreadCount(supabase, person.user_id),
       ]);
       return { notifications, unreadCount };
@@ -83,6 +92,7 @@ export function useNotifications() {
     unreadCount: data?.unreadCount ?? 0,
     isLoading,
     error,
+    refetch,
     markAsRead: (notificationIds: string[]) =>
       markReadMutation.mutate(notificationIds),
     isMarkingRead: markReadMutation.isPending,

@@ -118,3 +118,12 @@ export function sanitizeHtml(html: string | null | undefined): string {
     })
     .trim();
 }
+
+// Plain text of a stored notification excerpt. Excerpts were cut at a fixed length, so they can
+// end inside a tag (`<span class="mention" data-id="77c9…`) that has no closing `>`.
+export function notificationExcerptText(excerpt: string | null | undefined) {
+  return (excerpt ?? "")
+    .replace(/<[^>]*>/g, "")
+    .replace(/<[^>]*$/, "")
+    .trim();
+}

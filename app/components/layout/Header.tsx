@@ -42,6 +42,7 @@ import {
 } from "~/lib/supabase.queries";
 import { cn } from "cnfast";
 import type { Notification } from "~/types";
+import { notificationExcerptText } from "~/utils/sanitize";
 import { DashboardMetrics } from "../features/home/DashboardMetrics";
 import { UZZINALogo } from "../logo";
 import { getActionById } from "~/models/actions";
@@ -318,9 +319,7 @@ export function Header({
                       </div>
 
                       <p className="mt-1 line-clamp-2 border-l pl-2 text-sm text-foreground/60">
-                        {notif.comment_excerpt
-                          ? notif.comment_excerpt.replace(/<[^>]*>/g, "")
-                          : ""}
+                        {notificationExcerptText(notif.comment_excerpt)}
                       </p>
                     </button>
                   );

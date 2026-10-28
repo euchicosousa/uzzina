@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately). Independente dos tickets de duas ações/busca; os links para a página já existem.
 
-**Status:** ready-for-agent — deferred by owner; do not start automatically
+**Status:** implemented locally 2026-10-28 — awaiting owner review; visual/browser check pending
 
 ## Confirmed finding
 
