@@ -120,3 +120,7 @@ Escape fora do Tiptap fecha; dentro dele não fechou no teste do proprietário. 
 Encerramento do ticket02: botão conjunto ajustado e Escape conferido em Chromium e na dependência instalada. prosemirror-view captureKeyDown retorna true para Escape (keyCode27), e seu handler chama preventDefault; o pai respeita essa decisão. Comportamento preservado, sem pendência de diagnóstico. Próximo ticket solicitado pelo proprietário:03;05 fica depois dele.
 
 Revisão final: proprietário retirou o botão conjunto, pois a barra externa deixará de existir na apresentação lado a lado. Remoção autorizada e implementada; X individuais e guardas mantidos.
+
+Ticket04 implementado em28/10: PartnersCombobox.allowAll opt-in, filtro local e estado novo por abertura. searchActionsByTitle usa somente a interseção da seleção com parceiros disponíveis via overlaps; sem contains oculto da rota.453 testes passaram, sem publicação; verificação em docs/audits/2026-10-28-global-search-partners.md. Ticket05 permanece futuro.
+
+Revisão autorizada do04: controles no rodapé, sem rótulo “Ações de”. Incluir arquivadas começa desmarcado em cada abertura; desligado exclui arquivadas, ligado inclui ambas dentro do escopo de parceiros. O pedido substitui a orientação inicial de preservar a regra de arquivadas. Ring extra removido somente do seletor/popover da busca; foco permanece por fundo.

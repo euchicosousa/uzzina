@@ -294,6 +294,15 @@ function Dashboard() {
               onOpenChange={setOpenCmdK}
               open={openCmdK}
               partners={visiblePartners}
+              onBeforeLeave={async () => {
+                if (panelSessionGeneration !== identityGeneration.current)
+                  return false;
+                const allowed = await actionPanels.closeAllActions();
+                return (
+                  allowed &&
+                  panelSessionGeneration === identityGeneration.current
+                );
+              }}
               setPrimaryAction={setPrimaryAction}
               setSecondaryAction={setSecondaryAction}
             />

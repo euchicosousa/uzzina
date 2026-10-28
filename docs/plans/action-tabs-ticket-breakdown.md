@@ -1,8 +1,20 @@
 # Duas ações e busca — tickets aprovados
 
-Preparada em 27/10/2026 com a skill To Tickets. Fonte: [levantamento consolidado](action-tabs-and-search-scope.md). O proprietário aprovou a divisão ao autorizar o início do ticket 01. Tickets publicados localmente. Ticket01 implementado e testado pelo proprietário, sem problema relatado. Ticket02 concluído localmente, com abertura validada e ajuste final de fechamento entregue, incluindo Primary/Secondary Action e alternância por abas. Ticket05 solicitado para criar ações pela busca; tickets05/03/04 ainda não iniciados.
+Preparada em 27/10/2026 com a skill To Tickets. Fonte: [levantamento consolidado](action-tabs-and-search-scope.md). O proprietário aprovou a divisão ao autorizar o início do ticket 01. Tickets publicados localmente. Ticket01 implementado e testado pelo proprietário, sem problema relatado. Ticket02 concluído localmente, com abertura validada e ajuste final de fechamento entregue, incluindo Primary/Secondary Action e alternância por abas. Tickets03/04 concluídos e aprovados pelo proprietário. Ticket05, criar ações pela busca, autorizado em28/10 e em implementação.
 
-Destino aprovado: um arquivo por ticket em `.scratch/action-tabs/issues/`, seguindo o padrão local das entregas anteriores. Estado inicial ready-for-agent; dependências abaixo determinam quais podem iniciar. Ordem sugerida após o acréscimo: 01 (feito) → 02 (concluído localmente) → 03 → 05 → 04, sempre um executor por vez e revisão de cada entrega antes de avançar. A numeração anterior foi preservada. Tickets05 e03 dependem de02; 03 passa à frente de05 por orientação posterior do proprietário. Ticket04 continua independente.
+Destino aprovado: um arquivo por ticket em `.scratch/action-tabs/issues/`, seguindo o padrão local das entregas anteriores. Estado inicial ready-for-agent; dependências abaixo determinam quais podem iniciar. Ordem sugerida após o acréscimo: 01 (feito) → 02 (concluído localmente) → 03 → 04 → 05, sempre um executor por vez e revisão de cada entrega antes de avançar. A numeração anterior foi preservada. Tickets05 e03 dependem de02; 03 passa à frente de05 por orientação posterior do proprietário. Ticket04 continua independente.
+
+## Estado consolidado em28/10/2026
+
+| Ticket | Resultado | Pendência |
+| --- | --- | --- |
+| 01 - Componente pai | Implementado e testado pelo proprietário | Nenhuma funcional neste escopo |
+| 02 - Segunda ação e fechamento | Concluído e validado | Nenhuma funcional neste escopo |
+| 03 - Lado a lado e larguras | Concluído e aprovado, commit local feito | Sem publicação solicitada |
+| 04 - Filtro de parceiros e arquivadas | Concluído e aprovado | Commit/publicação ainda não solicitados |
+| 05 - Criar ação pela busca | Implementado e verificado; ampliado com todos os comandos autorizados | Avaliação do proprietário da ultima ampliação; commit/publicação não solicitados |
+
+Todos os cinco tickets estão implementados localmente. Conta, temas, navegação, Sair e administração tambem foram autorizados e implementados; ver [comandos](global-search-command-candidates.md). Nenhum novo ticket funcional pendente foi encontrado nesta sequência. Painel de uso de IA permanece somente registrado no TODO, fora deste escopo. Alterações de Hoje/Kanban de outra conversa não integram esta entrega.
 
 ## 01 — Centralizar o painel de ação em um componente pai
 
@@ -60,6 +72,8 @@ Destino aprovado: um arquivo por ticket em `.scratch/action-tabs/issues/`, segui
 
 ## 04 — Filtrar ações por parceiros dentro da busca
 
+**Estado:** concluído e aprovado pelo proprietário em28/10; [resultado](../audits/2026-10-28-global-search-partners.md).
+
 **Bloqueado por:** nenhum. Pode ser entregue com uma ação aberta; executar depois de 03 é organização do trabalho, não bloqueio técnico.
 
 **Entrega:** buscar ações de todos, um ou vários parceiros sem sair da página atual, com filtro reiniciado em cada abertura.
@@ -77,6 +91,8 @@ Destino aprovado: um arquivo por ticket em `.scratch/action-tabs/issues/`, segui
 
 ## 05 — Criar ação pela busca e combinar rascunho com ação aberta
 
+**Estado:** implementado e verificado localmente em28/10, aguardando avaliação do proprietário; [resultado](../audits/2026-10-28-search-create-action.md).
+
 **Bloqueado por:** 02 — Abrir e trabalhar com uma segunda ação pela busca.
 
 **Entrega:** comando Criar ação na busca global, sem retirar o atalho atual, com ativação comum na principal e Shift na secundária. Permitir rascunho principal + ação existente secundária e ação existente principal + rascunho secundário, com o mesmo limite de duas entradas, guardas e estado independente.
@@ -93,7 +109,7 @@ Tickets publicados localmente em 27/10/2026. Ticket 01 implementado e testado pe
 
 O pedido do comando Criar ação foi registrado no ticket05, sem implementação. Visualização de uso da IA continua como ideia no TODO, sem ticket ou posição nesta sequência.
 
-## Revisão após teste do proprietário
+## Histórico de revisões (decisões posteriores prevalecem)
 
 Abertura do ticket02 validada. Overlay confirmado; Escape dentro do Tiptap exige reprodução, pois fora do editor fecha normalmente. Ajuste solicitado: retirar CircleX da secundária e colocar X comum ao lado das abas externas, com title HTML “Fechar todas as ações”, visível com duas abertas. Manter abas externas/internas e X individuais; a última proposta substituiu a ideia inicial de fechar cada ação pela própria aba. Levantamento inicial seguido pelo ajuste de encerramento registrado abaixo.
 
@@ -106,3 +122,15 @@ Decisão final do proprietário: botão de fechar todas removido, para não depe
 Ticket03 verificado em28/10:438 testes, format/lint/typecheck/build e Chromium com HTTP controlado em390/1440/1855/1856/2560px passaram na cópia isolada do conteúdo selecionado para commit. Revisão do proprietário pendente. Sem push/deploy; próximos05 e04.
 
 Encerramento aprovado pelo proprietário em28/10: ticket03 concluído com Instagram3xl/768px e limiar1600px. Commit local autorizado, sem push/deploy. Próximo05; não iniciado nesta rodada.
+
+Proprietário priorizou04 depois de fechar03. Ticket04 implementado em28/10 com filtro local, Todos/um/vários e reset por abertura;453 testes e format/lint/typecheck/build passaram. Sem commit/deploy nesta entrega; avaliação do proprietário pendente. Ticket05 não iniciado.
+
+Em28/10 o proprietário aprovou o resultado final do04 e autorizou iniciar05, comando Criar ação na busca. Ticket04 encerrado localmente; sem commit ou publicação nesta passagem.
+
+Ticket05 implementado localmente em28/10: Criar ação com ativação comum/Shift, fábrica e contexto atuais, sem INSERT ao abrir e com guardas existentes.466 testes e verificações de código passaram; conferência de navegador com HTTP controlado no relatório. Aguarda avaliação do proprietário, sem commit/deploy.
+
+## Conferência do proprietário em28/10 — pendências posteriores
+
+Demais comandos aprovados. Relatados erros de import dinâmico ao criar parceiro/ação, duplicidade entre criar/gerenciar data comemorativa e ausência de Ajuda. Registrados [carregamento](../../.scratch/search-review/issues/01-fix-lazy-module-loading.md), [modal de data comemorativa](../../.scratch/search-review/issues/02-create-celebration-dialog.md) e [Ajuda](../../.scratch/search-review/issues/03-complete-help-page.md), sem iniciar correções. [Notificações](../../.scratch/notifications/issues/01-complete-notifications-page.md) já possui ticket próprio. Essas pendências substituem a declaração anterior de ausência de trabalho funcional restante, após nova conferência real do proprietário.
+
+Ticket de carregamento autorizado em28/10 e corrigido localmente: preflight de porta antes do Vite e cache por checkout, após regressão real de200→504 na inicialização duplicada. Navegador no servidor de desenvolvimento passou; avaliação do proprietário pendente. Modal de datas, Ajuda e Notificações continuam futuros. Ver [resultado](../audits/2026-10-28-local-lazy-imports.md).

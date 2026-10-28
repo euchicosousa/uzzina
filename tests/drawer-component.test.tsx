@@ -20,6 +20,7 @@ import {
   createRouter,
   RouterContextProvider,
 } from "@tanstack/react-router";
+import { AppThemeProvider } from "../app/hooks/useAppTheme";
 import { GlobalSearchCommand } from "../app/components/features/GlobalSearchCommand";
 import { AppContext } from "../app/contexts/AppContext";
 import { ActionDrawerPanel } from "../app/components/features/action-drawer/ActionDrawerPanel";
@@ -28,6 +29,7 @@ import { QUERY_KEYS } from "../app/lib/query-keys";
 import userEvent from "@testing-library/user-event";
 
 Object.assign(globalThis, {
+  localStorage: window.localStorage,
   KeyboardEvent: window.KeyboardEvent,
   MouseEvent: window.MouseEvent,
   PointerEvent: window.MouseEvent,
@@ -105,6 +107,12 @@ const partner = {
 // Only the external database boundary is controlled; drawer, editors, hooks and validation remain real.
 mock.module("~/lib/supabase.client", () => ({
   createSupabaseBrowserClient: () => ({
+    auth: {
+      getUser: async () => ({
+        data: { user: { id: person.user_id } },
+        error: null,
+      }),
+    },
     from: () => {
       let patch: Row | null = null;
       let queriedId = action.id;
@@ -273,6 +281,7 @@ function TestPanel({
             open={searchOpen}
             onOpenChange={setSearchOpen}
             partners={[partner]}
+            onBeforeLeave={panels.closeAllActions}
             setPrimaryAction={panels.setPrimaryAction}
             setSecondaryAction={panels.setSecondaryAction}
           />
@@ -303,26 +312,28 @@ function mount(
   const view = (selected: Action, version: number) => (
     <RouterContextProvider router={router}>
       <QueryClientProvider client={client}>
-        <AppContext.Provider
-          value={{
-            person,
-            partners: [partner],
-            cloudName: "test",
-            uploadPreset: "test",
-            setPrimaryAction: () => {},
-            partnerFilters,
-            setPartnerFilters: () => {},
-          }}
-        >
-          <TestPanel
-            initialAction={selected}
-            onClose={onClose}
-            partnerFilters={partnerFilters}
-            onPanels={updatePanels}
-            showSearch={showSearch}
-            key={`${selected.id || "draft"}:${version}`}
-          />
-        </AppContext.Provider>
+        <AppThemeProvider>
+          <AppContext.Provider
+            value={{
+              person,
+              partners: [partner],
+              cloudName: "test",
+              uploadPreset: "test",
+              setPrimaryAction: () => {},
+              partnerFilters,
+              setPartnerFilters: () => {},
+            }}
+          >
+            <TestPanel
+              initialAction={selected}
+              onClose={onClose}
+              partnerFilters={partnerFilters}
+              onPanels={updatePanels}
+              showSearch={showSearch}
+              key={`${selected.id || "draft"}:${version}`}
+            />
+          </AppContext.Provider>
+        </AppThemeProvider>
       </QueryClientProvider>
     </RouterContextProvider>
   );
@@ -1531,3 +1542,154 @@ for (const method of ["overlay", "escape"]) {
     expect(mounted.panels().primaryAction).toBeNull();
   });
 }
+
+it("search creates a secondary draft beside an existing form and saves it once without changing either identity", async () => {
+  const mounted = mount(action, () => {}, ["agency"], true);
+  const primaryTitle = await screen.findByRole("textbox", {
+    name: "Título da ação",
+  });
+  const primaryKey = mounted.panels().primaryAction?.key;
+  fireEvent.click(screen.getByRole("button", { name: "Abrir busca" }));
+  const user = userEvent.setup();
+  await user.keyboard("{Shift>}");
+  await user.click(await screen.findByRole("menuitem", { name: "Criar ação" }));
+  await user.keyboard("{/Shift}");
+  await waitFor(() => expect(mounted.panels().secondaryAction).not.toBeNull());
+  const draftKey = mounted.panels().secondaryAction?.key;
+  const secondaryTitle = screen.getByRole<HTMLTextAreaElement>("textbox", {
+    name: "Título da ação",
+  });
+  expect(secondaryTitle).not.toBe(primaryTitle);
+  expect(mounted.panels().secondaryAction?.currentAction.id).toBeUndefined();
+  expect(mounted.panels().secondaryAction?.currentAction.partners).toEqual([
+    "agency",
+  ]);
+  expect(writes).toHaveLength(0);
+  fireEvent.change(secondaryTitle, {
+    target: { value: "New secondary draft" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Criar" }));
+  await screen.findByRole("button", { name: "Atualizar" });
+  expect(writes).toHaveLength(1);
+  expect(mounted.panels().secondaryAction?.key).toBe(draftKey);
+  expect(mounted.panels().secondaryAction?.currentAction.id).toBeTruthy();
+  expect(mounted.panels().primaryAction?.key).toBe(primaryKey);
+  await user.click(
+    within(screen.getByRole("tablist", { name: "Ações abertas" })).getByRole(
+      "tab",
+      { name: /Original title/ },
+    ),
+  );
+  expect(screen.getByRole("textbox", { name: "Título da ação" })).toBe(
+    primaryTitle,
+  );
+});
+
+it("a search-created primary draft survives opening an existing secondary from search", async () => {
+  const mounted = mount(action, () => {}, ["agency"], true);
+  await screen.findByRole("textbox", { name: "Título da ação" });
+  const user = userEvent.setup();
+  fireEvent.click(screen.getByRole("button", { name: "Abrir busca" }));
+  await user.click(await screen.findByRole("menuitem", { name: "Criar ação" }));
+  await screen.findByRole("button", { name: "Criar" });
+  const draftKey = mounted.panels().primaryAction?.key;
+  const title = screen.getByRole<HTMLTextAreaElement>("textbox", {
+    name: "Título da ação",
+  });
+  fireEvent.change(title, { target: { value: "x" } });
+  fireEvent.click(screen.getByRole("button", { name: "Abrir busca" }));
+  await user.type(await screen.findByRole("searchbox"), "Second");
+  await user.keyboard("{Shift>}");
+  await user.click(
+    await screen.findByRole("menuitem", { name: /Second title/ }),
+  );
+  await user.keyboard("{/Shift}");
+  expect(mounted.panels().primaryAction?.key).toBe(draftKey);
+  expect(mounted.panels().primaryAction?.currentAction.id).toBeUndefined();
+  expect(mounted.panels().secondaryAction?.currentAction.id).toBe(
+    secondAction().id,
+  );
+  expect(writes).toHaveLength(0);
+  await user.click(
+    within(screen.getByRole("tablist", { name: "Ações abertas" })).getByRole(
+      "tab",
+      { name: /^x/ },
+    ),
+  );
+  expect(screen.getByRole("textbox", { name: "Título da ação" })).toBe(title);
+  expect(title.value).toBe("x");
+});
+
+it("a failed secondary save blocks replacing it with a search-created draft", async () => {
+  const mounted = mount(action, () => {}, ["agency"], true);
+  await act(async () => {
+    await mounted.panels().setSecondaryAction(secondAction());
+  });
+  const secondaryKey = mounted.panels().secondaryAction?.key;
+  const title = await screen.findByRole("textbox", { name: "Título da ação" });
+  fireEvent.change(title, { target: { value: "Pending secondary edit" } });
+  fail = true;
+  fireEvent.click(screen.getByRole("button", { name: "Abrir busca" }));
+  const user = userEvent.setup();
+  await user.keyboard("{Shift>}");
+  await user.click(await screen.findByRole("menuitem", { name: "Criar ação" }));
+  await user.keyboard("{/Shift}");
+  await waitFor(() => expect(writes.length).toBeGreaterThan(0));
+  expect(screen.getByRole("searchbox")).toBeTruthy();
+  expect(mounted.panels().secondaryAction?.key).toBe(secondaryKey);
+  expect(mounted.panels().secondaryAction?.currentAction.id).toBe(
+    secondAction().id,
+  );
+  expect(mounted.panels().primaryAction?.currentAction.id).toBe(action.id);
+});
+
+it("Shift creation with empty panels opens primary, then creates a distinct secondary draft", async () => {
+  const mounted = mount(action, () => {}, ["agency"], true);
+  await act(async () => {
+    mounted.panels().reset();
+  });
+  const user = userEvent.setup();
+  for (let index = 0; index < 2; index++) {
+    fireEvent.click(screen.getByRole("button", { name: "Abrir busca" }));
+    await user.keyboard("{Shift>}");
+    await user.click(
+      await screen.findByRole("menuitem", { name: "Criar ação" }),
+    );
+    await user.keyboard("{/Shift}");
+    await waitFor(() => expect(screen.queryByRole("searchbox")).toBeNull());
+    if (index === 0) {
+      expect(mounted.panels().primaryAction?.currentAction.id).toBeUndefined();
+      expect(mounted.panels().primaryAction).not.toBeNull();
+      expect(mounted.panels().secondaryAction).toBeNull();
+    }
+  }
+  expect(mounted.panels().primaryAction?.key).not.toBe(
+    mounted.panels().secondaryAction?.key,
+  );
+  expect(document.querySelectorAll("[data-drawer-focus-scope]")).toHaveLength(
+    2,
+  );
+  expect(writes).toHaveLength(0);
+});
+
+it("navigation from search respects both real form guards when a save fails", async () => {
+  const mounted = mount(action, () => {}, ["agency"], true);
+  await act(async () => {
+    await mounted.panels().setSecondaryAction(secondAction());
+  });
+  const primaryKey = mounted.panels().primaryAction?.key;
+  const secondaryKey = mounted.panels().secondaryAction?.key;
+  fireEvent.change(screen.getByRole("textbox", { name: "Título da ação" }), {
+    target: { value: "Pending secondary" },
+  });
+  fail = true;
+  fireEvent.click(screen.getByRole("button", { name: "Abrir busca" }));
+  const user = userEvent.setup();
+  await user.click(
+    await screen.findByRole("menuitem", { name: "Minha conta" }),
+  );
+  await waitFor(() => expect(writes.length).toBeGreaterThan(0));
+  expect(mounted.panels().primaryAction?.key).toBe(primaryKey);
+  expect(mounted.panels().secondaryAction?.key).toBe(secondaryKey);
+  expect(screen.getByRole("searchbox")).toBeTruthy();
+});

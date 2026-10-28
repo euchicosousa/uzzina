@@ -25,23 +25,27 @@ export async function searchActionsByTitle(
   {
     query,
     partnerSlugs,
-    activePartnerSlug,
+    selectedPartnerSlugs,
+    includeArchived = false,
     limit = 10,
   }: {
     query: string;
     partnerSlugs: string[];
-    activePartnerSlug?: string | null;
+    selectedPartnerSlugs?: string[];
+    includeArchived?: boolean;
     limit?: number;
   },
 ) {
+  const scope = selectedPartnerSlugs?.length
+    ? partnerSlugs.filter((slug) => selectedPartnerSlugs.includes(slug))
+    : partnerSlugs;
+  if (scope.length === 0) return [];
   let baseQuery = supabase
     .from("actions")
     .select("*")
     .ilike("title", `%${query}%`)
-    .overlaps("partners", partnerSlugs);
-  if (activePartnerSlug) {
-    baseQuery = baseQuery.contains("partners", [activePartnerSlug]);
-  }
+    .overlaps("partners", scope);
+  if (!includeArchived) baseQuery = baseQuery.eq("archived", false);
   const { data, error } = await baseQuery.limit(limit);
   if (error) throw error;
   return (data as unknown as Action[]) || [];

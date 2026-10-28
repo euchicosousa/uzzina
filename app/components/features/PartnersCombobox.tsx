@@ -22,6 +22,7 @@ export function PartnersCombobox({
   showText,
   variant = "form-footer",
   disabled = false,
+  allowAll = false,
 }: {
   selectedPartners?: string[];
   onSelect?: (partners: string[]) => void;
@@ -29,6 +30,7 @@ export function PartnersCombobox({
   showText?: boolean;
   variant?: "filter" | "form-footer";
   disabled?: boolean;
+  allowAll?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const { partners } = useAppContext();
@@ -36,6 +38,7 @@ export function PartnersCombobox({
     .map((slug) => partners.find((partner) => partner.slug === slug))
     .filter((partner): partner is Partner => partner !== undefined);
   const hasSelection = currentPartners.length > 0;
+  const emptyLabel = allowAll ? "Todos os parceiros" : "Parceiros";
   const handleSelect = (slug: string, isShiftPressed: boolean) => {
     let newPartners: string[];
     if (isShiftPressed) {
@@ -54,12 +57,17 @@ export function PartnersCombobox({
       onOpenChange={(open) => !disabled && setIsOpen(open)}
     >
       <ComboboxTrigger
-        aria-label={getFormattedPartnersName(currentPartners) || "Parceiros"}
-        className={cn("flex items-center gap-2 overflow-hidden")}
+        aria-label={getFormattedPartnersName(currentPartners) || emptyLabel}
+        className={cn(
+          "flex items-center gap-2 overflow-hidden",
+          allowAll &&
+            variant === "filter" &&
+            "max-w-full min-w-0 shrink border-0 px-2 font-normal focus-visible:border-transparent focus-visible:ring-0",
+        )}
         disabled={disabled}
         hasSelection={hasSelection}
         tabIndex={tabIndex}
-        title={getFormattedPartnersName(currentPartners) || "Parceiros"}
+        title={getFormattedPartnersName(currentPartners) || emptyLabel}
         variant={variant}
       >
         {hasSelection ? (
@@ -81,12 +89,17 @@ export function PartnersCombobox({
           <div className="overflow-hidden text-ellipsis whitespace-nowrap">
             {hasSelection
               ? getFormattedPartnersName(currentPartners)
-              : "Parceiros"}
+              : emptyLabel}
           </div>
         )}
       </ComboboxTrigger>
 
-      <PrismPopover className="w-[320px] overflow-hidden rounded-3xl border bg-popover p-0 shadow-xl squircle">
+      <PrismPopover
+        className={cn(
+          "w-[320px] overflow-hidden rounded-3xl border bg-popover p-0 shadow-xl squircle",
+          allowAll && "ring-0",
+        )}
+      >
         <PrismCommand className="p-0">
           <PrismCommandInput placeholder="Procurar parceiro..." />
           <PrismCommandList
@@ -95,9 +108,25 @@ export function PartnersCombobox({
             )}
           >
             <PrismCommandGroup>
+              {allowAll && (
+                <PrismCommandItem
+                  id="all-partners"
+                  textValue="Todos os parceiros"
+                  data-selected={
+                    selectedPartners.length === 0 ? "true" : undefined
+                  }
+                  onAction={() => {
+                    onSelect?.([]);
+                    setIsOpen(false);
+                  }}
+                >
+                  Todos os parceiros
+                </PrismCommandItem>
+              )}
               {partners.map((partner) => (
                 <PrismCommandItem
                   key={partner.id}
+                  shouldCloseOnSelect={!allowAll}
                   className="flex cursor-pointer items-center gap-2"
                   data-selected={
                     selectedPartners.includes(partner.slug) ? "true" : undefined

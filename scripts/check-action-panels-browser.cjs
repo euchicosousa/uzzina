@@ -15,6 +15,20 @@ const assert = require("node:assert/strict");
       },
       timezoneId: "America/Fortaleza",
     });
+    const moduleFailures = [];
+    page.on("response", (response) => {
+      const url = new URL(response.url());
+      if (
+        url.origin === base &&
+        /\.(?:tsx?|jsx?)$/.test(url.pathname) &&
+        response.status() >= 400
+      )
+        moduleFailures.push({
+          path: url.pathname,
+          status: response.status(),
+          message: response.statusText(),
+        });
+    });
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
     const userId = "11111111-1111-4111-8111-111111111111";
@@ -65,10 +79,17 @@ const assert = require("node:assert/strict");
         sow: "social",
       },
     ];
+    partners.push({
+      ...partners[0],
+      id: "p-beta",
+      slug: "beta",
+      title: "Parceiro Beta",
+      short: "Beta",
+    });
     const social = true;
     const actions = partners.map((p, i) => ({
       id: `action-${i}`,
-      title: i ? "AÇÃO OCULTA" : "AÇÃO ATIVA",
+      title: i === 2 ? "AÇÃO BETA" : i ? "AÇÃO OCULTA" : "AÇÃO ATIVA",
       partners: [p.slug],
       responsibles: [userId],
       sprints: [],
@@ -92,6 +113,14 @@ const assert = require("node:assert/strict");
       { ...actions[0], id: "action-1", title: "AÇÃO SECUNDÁRIA" },
       { ...actions[0], id: "action-2", title: "AÇÃO TERCEIRA" },
     );
+    actions.push({
+      ...actions.find((action) => action.partners.includes("beta")),
+      id: "action-archived",
+      title: "AÇÃO ARQUIVADA BETA",
+      archived: true,
+    });
+    const searchArchiveFilters = [];
+    const searchScopes = [];
     const partnerRequests = [];
     const scopes = [];
     const writes = [];
@@ -113,7 +142,9 @@ const assert = require("node:assert/strict");
         return route.fulfill({ json: { person, partners } });
       if (url.pathname === "/rest/v1/rpc/get_home_actions") {
         scopes.push(req.postDataJSON().p_partner_slugs);
-        return route.fulfill({ json: actions });
+        return route.fulfill({
+          json: actions.filter((action) => !action.archived),
+        });
       }
       if (url.pathname === "/rest/v1/partners") {
         partnerRequests.push(url.searchParams.get("archived"));
@@ -161,9 +192,21 @@ const assert = require("node:assert/strict");
           .replace(/^ilike\./, "")
           .replaceAll("%", "")
           .toLowerCase();
+        const partnerScope = url.searchParams.getAll("partners");
+        if (url.searchParams.has("title")) {
+          searchScopes.push(partnerScope);
+          searchArchiveFilters.push(url.searchParams.get("archived"));
+        }
+        const overlap = partnerScope.find((scope) => scope.startsWith("ov."));
+        const selected = overlap ? overlap.slice(4, -1).split(",") : null;
         return route.fulfill({
-          json: actions.filter((entry) =>
-            entry.title.toLowerCase().includes(title),
+          json: actions.filter(
+            (entry) =>
+              entry.title.toLowerCase().includes(title) &&
+              (url.searchParams.get("archived") !== "eq.false" ||
+                !entry.archived) &&
+              (!selected ||
+                entry.partners.some((slug) => selected.includes(slug))),
           ),
         });
       }
@@ -270,6 +313,262 @@ const assert = require("node:assert/strict");
       await tabs().getByRole("tab", { name }).click();
     };
 
+    if (process.env.DRAWER_TEST_LAZY_ONLY === "true") {
+      const openCreationCommand = async (label, secondary = false) => {
+        await page.keyboard.press("Meta+k");
+        await page
+          .getByRole("searchbox", { name: "Faça sua busca..." })
+          .fill(label);
+        await page
+          .getByRole("menuitem", { name: label, exact: true })
+          .click({ modifiers: secondary ? ["Shift"] : [] });
+        await page.getByRole("searchbox").waitFor({ state: "hidden" });
+      };
+      const checkDrafts = async () => {
+        const before = writes.length;
+        await openCreationCommand("Criar ação");
+        await title().waitFor();
+        const primaryKey = await key();
+        await openCreationCommand("Criar ação", true);
+        await tabs().waitFor();
+        assert.notEqual(await key(), primaryKey);
+        assert.equal(await page.locator("[data-action-entry]").count(), 2);
+        assert.equal(
+          writes.length,
+          before,
+          "Opening drafts must not insert rows",
+        );
+        await page.keyboard.press("Escape");
+        await page
+          .locator("[data-action-entry]")
+          .first()
+          .waitFor({ state: "hidden" });
+        await page.keyboard.press("Meta+Alt+a");
+        await title().waitFor();
+        assert.equal(writes.length, before);
+        await page.keyboard.press("Escape");
+        await page
+          .locator("[data-action-entry]")
+          .first()
+          .waitFor({ state: "hidden" });
+      };
+      const checkPartner = async () => {
+        const before = writes.length;
+        await openCreationCommand("Criar parceiro");
+        await page.waitForURL(`${base}/app/admin/partner/new`);
+        await page.locator('[contenteditable="true"]').first().waitFor();
+        assert.equal(
+          writes.length,
+          before,
+          "Opening a partner must not insert rows",
+        );
+        await page.keyboard.press("Meta+k");
+        await page.getByRole("searchbox").fill("Ir para início");
+        await page
+          .getByRole("menuitem", { name: "Ir para início", exact: true })
+          .click();
+        await page.waitForURL(`${base}/app`);
+        await page.getByRole("searchbox").waitFor({ state: "hidden" });
+      };
+      const checks =
+        process.env.DRAWER_TEST_LAZY_ORDER === "partner-first"
+          ? [checkPartner, checkDrafts]
+          : [checkDrafts, checkPartner];
+      for (const check of checks) await check();
+      // Compare another opening in the same session and a newly loaded page.
+      for (const check of checks) await check();
+      await page.reload();
+      await page.getByText("AÇÃO ATIVA", { exact: true }).first().waitFor();
+      for (const check of checks) await check();
+      assert.deepEqual(moduleFailures, [], "Local module requests failed");
+      assert.deepEqual(errors, [], "Lazy form imports failed in the browser");
+      console.log(
+        "PASS real dev browser imports: action/partner first opening, repeated opening, page reload, primary/secondary drafts and keyboard shortcut; no module errors or writes.",
+      );
+      return;
+    }
+
+    // Commands reuse existing screens and preference persistence, without creating records.
+    await page.keyboard.press("Meta+k");
+    await page
+      .getByRole("menuitem", { name: "Criar usuário", exact: true })
+      .waitFor();
+    if (process.env.DRAWER_TEST_SCREENSHOT_DIR)
+      await page.screenshot({
+        animations: "disabled",
+        path: `${process.env.DRAWER_TEST_SCREENSHOT_DIR}/uzzina-search-commands-${process.env.DRAWER_TEST_WIDTH || 1440}.png`,
+      });
+    for (const [label, theme] of [
+      ["Tema escuro", "dark"],
+      ["Tema claro", "light"],
+      ["Tema do sistema", "system"],
+    ]) {
+      await page
+        .getByRole("searchbox", { name: "Faça sua busca..." })
+        .fill(label);
+      await page.getByRole("menuitem", { name: label, exact: true }).click();
+      await page.getByRole("searchbox").waitFor({ state: "hidden" });
+      await page.waitForFunction(
+        (expected) => localStorage.getItem("uzzina-theme") === expected,
+        theme,
+      );
+      await page.waitForTimeout(350);
+      assert.equal(person.preferences.theme, theme);
+      await page.keyboard.press("Meta+k");
+    }
+    await page.getByRole("searchbox").fill("Minha conta");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+    await page.waitForURL(`${base}/app/profile`);
+    await page.getByRole("searchbox").waitFor({ state: "hidden" });
+    await page.keyboard.press("Meta+k");
+    await page.getByRole("searchbox").fill("Criar parceiro");
+    await page
+      .getByRole("menuitem", { name: "Criar parceiro", exact: true })
+      .click();
+    await page.waitForURL(`${base}/app/admin/partner/new`);
+    assert.equal(writes.length, 0);
+    await page.goto(`${base}/app`);
+    await page.getByText("AÇÃO ATIVA", { exact: true }).first().waitFor();
+    const partnerFilter = () =>
+      page.getByRole("group", { name: "Filtrar ações por parceiros" });
+    await page.keyboard.press("Meta+k");
+    assert.equal(
+      await partnerFilter().getByRole("button").getAttribute("aria-label"),
+      "Todos os parceiros",
+    );
+    await page
+      .getByRole("searchbox", { name: "Faça sua busca..." })
+      .fill("Parceiro ativo");
+    await page.getByRole("menuitem", { name: /Parceiro ativo/ }).click();
+    await page.waitForURL(`${base}/app/partner/active`);
+    await page.keyboard.press("Meta+k");
+    assert.equal(
+      await partnerFilter().getByRole("button").getAttribute("aria-label"),
+      "Parceiro ativo",
+    );
+    const globalInput = page.getByRole("searchbox", {
+      name: "Faça sua busca...",
+    });
+    await globalInput.fill("AÇÃO");
+    await page.getByRole("menuitem", { name: /AÇÃO ATIVA/ }).waitFor();
+    assert.equal(
+      await page.getByRole("menuitem", { name: /AÇÃO BETA/ }).count(),
+      0,
+    );
+    await partnerFilter().getByRole("button").click();
+    await page
+      .getByRole("menuitem", { name: "Todos os parceiros", exact: true })
+      .click();
+    await page.getByRole("menuitem", { name: /AÇÃO BETA/ }).waitFor();
+    assert.deepEqual(searchScopes.at(-1), ["ov.{active,beta}"]);
+    await partnerFilter().getByRole("button").click();
+    await page.getByRole("menuitem", { name: /Parceiro Beta$/ }).click();
+    await page.getByRole("menuitem", { name: /Parceiro ativo$/ }).click();
+    await page.keyboard.press("Escape");
+    await page.getByRole("menuitem", { name: /AÇÃO BETA/ }).waitFor();
+    await page.getByRole("menuitem", { name: /AÇÃO ATIVA/ }).waitFor();
+    assert.deepEqual(searchScopes.at(-1), ["ov.{active,beta}"]);
+    await partnerFilter().getByRole("button").click();
+    await page
+      .getByRole("menuitem", { name: /Parceiro Beta$/ })
+      .click({ modifiers: ["Shift"] });
+    await page
+      .getByRole("menuitem", { name: /AÇÃO ATIVA/ })
+      .waitFor({ state: "hidden" });
+    await page.getByRole("menuitem", { name: /AÇÃO BETA/ }).waitFor();
+    assert.deepEqual(searchScopes.at(-1), ["ov.{beta}"]);
+    const archivedOption = page.getByRole("checkbox", {
+      name: "Incluir arquivadas",
+    });
+    assert.equal(await archivedOption.isChecked(), false);
+    assert.equal(
+      await page.getByRole("menuitem", { name: /AÇÃO ARQUIVADA BETA/ }).count(),
+      0,
+    );
+    assert.equal(searchArchiveFilters.at(-1), "eq.false");
+    await page.getByText("Incluir arquivadas", { exact: true }).click();
+    await page.getByRole("menuitem", { name: /AÇÃO ARQUIVADA BETA/ }).waitFor();
+    assert.deepEqual(searchScopes.at(-1), ["ov.{beta}"]);
+    assert.equal(searchArchiveFilters.at(-1), null);
+    const menuBox = await page.getByRole("menu").boundingBox();
+    const footerBox = await page
+      .getByRole("group", { name: "Filtros da busca" })
+      .boundingBox();
+    assert.ok(footerBox.y >= menuBox.y + menuBox.height);
+    await partnerFilter().getByRole("button").focus();
+    const filterStyle = await partnerFilter()
+      .getByRole("button")
+      .evaluate((element) => ({
+        border: getComputedStyle(element).borderTopWidth,
+        shadow: getComputedStyle(element).boxShadow,
+      }));
+    assert.equal(filterStyle.border, "0px");
+    assert.ok(!/0px 0px 0px [1-9][0-9]*px/.test(filterStyle.shadow));
+    if (process.env.DRAWER_TEST_SCREENSHOT_DIR)
+      await page.screenshot({
+        animations: "disabled",
+        path: `${process.env.DRAWER_TEST_SCREENSHOT_DIR}/uzzina-search-filter-${page.viewportSize().width}.png`,
+      });
+    assert.equal(page.url(), `${base}/app/partner/active`);
+    assert.equal(writes.length, 0);
+    await partnerFilter().getByRole("button").focus();
+    await page.keyboard.press("Escape");
+    await globalInput.waitFor({ state: "hidden" });
+    await page.keyboard.press("Meta+k");
+    assert.equal(
+      await partnerFilter().getByRole("button").getAttribute("aria-label"),
+      "Parceiro ativo",
+    );
+    assert.equal(await globalInput.inputValue(), "");
+    assert.equal(
+      await page
+        .getByRole("checkbox", { name: "Incluir arquivadas" })
+        .isChecked(),
+      false,
+    );
+    await partnerFilter().getByRole("button").click();
+    await page
+      .getByRole("menuitem", { name: "Todos os parceiros", exact: true })
+      .click();
+    await globalInput.fill("AÇÃO BETA");
+    await page
+      .getByRole("menuitem", { name: /AÇÃO BETA/ })
+      .click({ modifiers: ["Shift"] });
+    await title().waitFor();
+    assert.equal(await title().inputValue(), "AÇÃO BETA");
+    await page.getByRole("button", { name: "Fechar", exact: true }).click();
+    await page.locator("[data-action-panel]").waitFor({ state: "hidden" });
+    await page
+      .getByRole("button", { name: "Menu do perfil do usuário" })
+      .click();
+    await page
+      .getByRole("menuitem", { name: "Tema escuro", exact: true })
+      .click();
+    await page.keyboard.press("Meta+k");
+    await globalInput.fill("AÇÃO");
+    await partnerFilter().getByRole("button").click();
+    const partnerPopup = page.locator('[data-slot="popover-content"]');
+    const popupShadow = await partnerPopup.evaluate(
+      (element) => getComputedStyle(element).boxShadow,
+    );
+    assert.ok(!/0px 0px 0px 1px/.test(popupShadow));
+    await page
+      .getByRole("menuitem", { name: /Parceiro Beta$/ })
+      .click({ modifiers: ["Shift"] });
+    await page.getByText("Incluir arquivadas", { exact: true }).click();
+    await page.getByRole("menuitem", { name: /AÇÃO ARQUIVADA BETA/ }).waitFor();
+    if (process.env.DRAWER_TEST_SCREENSHOT_DIR)
+      await page.screenshot({
+        animations: "disabled",
+        path: `${process.env.DRAWER_TEST_SCREENSHOT_DIR}/uzzina-search-filter-${page.viewportSize().width}-dark.png`,
+      });
+    await partnerFilter().getByRole("button").focus();
+    await page.keyboard.press("Escape");
+    await globalInput.waitFor({ state: "hidden" });
+    await page.goto(`${base}/app`);
+    await page.locator('[data-action-id="action-0"]').first().waitFor();
+
     await page.locator('[data-action-id="action-0"]').first().press("Enter");
     await title().waitFor();
     const primaryKey = await key();
@@ -308,7 +607,7 @@ const assert = require("node:assert/strict");
     assert.equal(await key(), primaryKey);
     await selectTab(/AÇÃO SECUNDÁRIA EDITADA/);
     await openSearchResult(/AÇÃO TERCEIRA/, "shift-enter");
-    const thirdKey = await key();
+    let thirdKey = await key();
     assert.notEqual(thirdKey, secondaryKey);
     await selectTab(/AÇÃO ATIVA EDITADA/);
     assert.equal(await key(), primaryKey);
@@ -316,10 +615,49 @@ const assert = require("node:assert/strict");
     assert.equal(await title().inputValue(), "AÇÃO SECUNDÁRIA EDITADA");
     await selectTab(/AÇÃO TERCEIRA/);
     assert.equal(await key(), thirdKey);
+    // Creation from search must preserve the occupied primary and perform no INSERT.
+    const beforeCreationWrites = writes.length;
+    await selectTab(/AÇÃO SECUNDÁRIA EDITADA/);
+    const preservedPrimaryKey = await key();
+    await selectTab(/AÇÃO TERCEIRA/);
+    await page.keyboard.press("Meta+k");
+    await page
+      .getByRole("searchbox", { name: "Faça sua busca..." })
+      .fill("Criar ação");
+    await page
+      .getByRole("menuitem", { name: "Criar ação", exact: true })
+      .waitFor();
+    await page.keyboard.press("ArrowDown");
+    await page.waitForFunction(() => {
+      const input = document.querySelector('[data-slot="command-input"]');
+      const activeId = input?.getAttribute("aria-activedescendant");
+      return (
+        activeId &&
+        document
+          .getElementById(activeId)
+          ?.hasAttribute("data-action-create-command")
+      );
+    });
+    await page.keyboard.press("Shift+Space");
+    await page.getByRole("button", { name: "Criar", exact: true }).waitFor();
+    assert.equal(await title().inputValue(), "");
+    assert.equal(writes.length, beforeCreationWrites);
+    await page.getByRole("button", { name: "Fechar", exact: true }).click();
+    assert.equal(await key(), preservedPrimaryKey);
+    await openSearchResult(/AÇÃO TERCEIRA/, "shift-enter");
+    thirdKey = await key();
     await page.keyboard.press("Meta+Alt+a");
     await page.getByRole("button", { name: "Criar", exact: true }).waitFor();
     assert.equal(await title().inputValue(), "");
+    const shortcutDraftKey = await key();
+    await page.keyboard.press("Meta+k");
+    await page
+      .getByRole("menuitem", { name: "Criar ação", exact: true })
+      .click();
+    await page.getByRole("button", { name: "Criar", exact: true }).waitFor();
     const draftKey = await key();
+    assert.notEqual(draftKey, shortcutDraftKey);
+    assert.equal(writes.filter((write) => write.method === "POST").length, 0);
     await page.getByRole("button", { name: "Parceiros", exact: true }).click();
     await page.getByRole("searchbox").fill("Parceiro ativo");
     await page.keyboard.press("ArrowDown");
@@ -574,15 +912,14 @@ const assert = require("node:assert/strict");
     await page.getByRole("menuitem", { name: /PRINCIPAL LADO A LADO/ }).click();
     await lastSearch.waitFor({ state: "hidden" });
     await page.locator('[data-action-layout="side-by-side"]').waitFor();
-    await page
-      .getByRole("button", { name: "Menu do perfil do usuário" })
-      .click();
+    await page.keyboard.press("Meta+k");
+    await page.getByRole("searchbox").fill("Sair");
     await page.getByRole("menuitem", { name: "Sair", exact: true }).click();
     await page.waitForURL(`${base}/login`);
     assert.equal(await page.locator("[data-action-entry]").count(), 0);
     assert.deepEqual(errors, []);
     console.log(
-      "PASS two real forms: Shift click/Enter/Space, ordinary replacement, tabs/state, scoped saving, draft creation and stable identity, isolated secondary, atomic close failure/retry, overlay close-all, Tiptap Escape ownership, wide geometry, resize without remount/writes, scoped wide saves, individual close, session cleanup, light/dark. HTTP controlled; no production writes.",
+      "PASS guarded navigation/admin creation entries, theme persistence after closing, search sign-out, footer partner filter, opt-in archived actions, reset, no extra trigger ring, all/one/multiple, route reset, cross-partner Shift opening and two real forms: Shift click/Enter/Space, ordinary replacement, tabs/state, scoped saving, draft creation and stable identity, isolated secondary, atomic close failure/retry, overlay close-all, Tiptap Escape ownership, wide geometry, resize without remount/writes, scoped wide saves, individual close, session cleanup, light/dark. HTTP controlled; no production writes.",
     );
   } finally {
     await browser.close();
