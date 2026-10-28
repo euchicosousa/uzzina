@@ -4,7 +4,15 @@
 
 **Blocked by:** None (can start immediately). Não depende do ticket02.
 
-**Status:** ready-for-agent — deferred by owner; do not start automatically
+**Status:** completed locally — approved by owner; local commit authorized; no deployment requested
+
+## Direção vigente após revisão do proprietário
+
+Substitui o requisito original de rodapé fixo: Salvar Alterações fica no cabeçalho, no lugar do texto auxiliar. Remover barra de salvamento e reserva externa; as duas colunas vão até o fim e cada região mantém seu próprio `AppBarSpacer`. O botão salva o formulário completo; não foi autorizada conversão para autosave. Menu de perfil e comandos de tema da busca já têm autosave; Minha Conta continua com confirmação manual. Critérios originais abaixo são históricos quando conflitarem com esta revisão. Ver resultado atualizado no relatório.
+
+## Resultado em28/10/2026
+
+Implementação autorizada pelo proprietário nesta conversa. Conta com altura contida, regiões independentes e botão de salvar no cabeçalho; seletor de seção abaixo de `lg` preserva campos montados. Validação nativa revela seção pessoal antes de focar campo inválido. Medição existente de Hoje reutilizada via hook compartilhado, sem mudança de lógica. Ver [relatório](../../../docs/audits/2026-10-28-profile-preferences-scroll.md) para evidências, verificações e limites; ticket02 permanece adiado. Os critérios abaixo são a especificação original; verificação física de teclado virtual/zoom permanece não executada.
 
 ## Contexto e evidências
 
