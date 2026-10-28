@@ -16,7 +16,13 @@ import { Draggable, Droppable } from "../features/DnD";
 import { DragStateContext } from "../features/DragStateContext";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { PrismBadge } from "../prism";
-export default function KanbanPhasesBoard({ actions }: { actions: Action[] }) {
+export default function KanbanPhasesBoard({
+  actions,
+  fillHeight = false,
+}: {
+  actions: Action[];
+  fillHeight?: boolean;
+}) {
   const isDesktop = useIsDesktop();
   const { handleAction } = useActionMutations();
   const {
@@ -56,9 +62,21 @@ export default function KanbanPhasesBoard({ actions }: { actions: Action[] }) {
     return map;
   }, [actionsWithOverrides]);
   return (
-    <div className="w-full max-w-full overflow-hidden">
-      <div className="overflow-x-auto pb-8">
-        <div className="grid min-w-300 grid-cols-6 overflow-hidden">
+    <div
+      className={cn(
+        "w-full max-w-full overflow-hidden",
+        fillHeight && "h-full min-h-0",
+      )}
+    >
+      <div
+        className={cn("overflow-x-auto pb-8", fillHeight && "h-full min-h-0")}
+      >
+        <div
+          className={cn(
+            "grid min-w-300 grid-cols-6 overflow-hidden",
+            fillHeight && "h-full min-h-0",
+          )}
+        >
           <DragStateContext.Provider value={!!activeAction}>
             {isDesktop ? (
               <DndContext
@@ -74,6 +92,7 @@ export default function KanbanPhasesBoard({ actions }: { actions: Action[] }) {
                     actions={actionsByPhase[phase.slug] ?? []}
                     id={phase.slug}
                     phase={phase}
+                    fillHeight={fillHeight}
                   />
                 ))}
                 <DragOverlay
@@ -105,6 +124,7 @@ export default function KanbanPhasesBoard({ actions }: { actions: Action[] }) {
                   actions={actionsByPhase[phase.slug] ?? []}
                   id={phase.slug}
                   phase={phase}
+                  fillHeight={fillHeight}
                 />
               ))
             )}
@@ -118,15 +138,20 @@ const KanbanColumn = ({
   actions,
   id,
   phase,
+  fillHeight,
 }: {
   actions: Action[];
   id: string;
   phase: PHASE_TYPE;
+  fillHeight: boolean;
 }) => {
   useSelectionActions(actions);
   return (
     <Droppable
-      className="flex h-[30vh] w-full flex-col overflow-hidden"
+      className={cn(
+        "flex w-full flex-col overflow-hidden",
+        fillHeight ? "h-full min-h-0" : "h-[30vh]",
+      )}
       id={id}
     >
       {(isOver) => {
@@ -140,12 +165,17 @@ const KanbanColumn = ({
               borderTopColor: phase.color,
             }}
           >
-            <div className="flex items-center gap-2 px-1 py-4 font-medium tracking-tight">
+            <div className="flex shrink-0 items-center gap-2 px-1 py-4 font-medium tracking-tight">
               <h4>{phase.title}</h4>
               <PrismBadge>{actions.length}</PrismBadge>
             </div>
 
-            <div className="flex h-full flex-col overflow-y-auto p-1">
+            <div
+              role="region"
+              aria-label={`Ações em ${phase.title}`}
+              tabIndex={0}
+              className="flex min-h-0 flex-1 flex-col overflow-y-auto p-1 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset"
+            >
               <div className="flex flex-col gap-1">
                 {actions.map((action) => (
                   <Draggable key={action.id} id={action.id}>

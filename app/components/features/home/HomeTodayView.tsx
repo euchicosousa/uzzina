@@ -20,6 +20,8 @@ import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
 import { isInstagramFeed } from "~/utils";
 import type { Action } from "~/types";
 import { HomeViewWrapper } from "./HomeViewWrapper";
+import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
+import { cn } from "~/lib/utils";
 
 export function HomeTodayView({
   actions,
@@ -27,12 +29,14 @@ export function HomeTodayView({
   currentDay: controlledDay,
   onCurrentDayChange,
   linkTitle = false,
+  standalone = false,
 }: {
   actions: Action[];
   isLoading?: boolean;
   currentDay?: Date;
   onCurrentDayChange?: (date: Date) => void;
   linkTitle?: boolean;
+  standalone?: boolean;
 }) {
   const [view, setView] = useState<
     "kanban" | "feed" | "categories" | "partners"
@@ -64,81 +68,95 @@ export function HomeTodayView({
     return formatted[0].toUpperCase() + formatted.slice(1);
   }, [currentDay]);
 
+  const fillViewport = standalone && view === "kanban";
   return (
-    <HomeViewWrapper
-      title={
-        linkTitle ? (
-          <Link
-            to="/app/today"
-            className="rounded-sm underline-offset-8 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-          >
-            {title}
-          </Link>
-        ) : (
-          title
-        )
-      }
-      OptionsComponent={
-        <div className="flex items-center gap-2">
-          <CalendarToolbar
-            currentDay={currentDay}
-            setCurrentDay={setCurrentDay}
-          />
-          <PrismToggleGroup
-            aria-label="Opções de Visualização da Home"
-            selectedKeys={[view]}
-            onSelectionChange={(keys) => {
-              const selected = Array.from(keys)[0] as typeof view;
-              if (selected) setView(selected);
-            }}
-            size="sm"
-          >
-            <PrismToggleGroupItem aria-label="Visão por Kanban" id="kanban">
-              <KanbanIcon />
-            </PrismToggleGroupItem>
-            <PrismToggleGroupItem
-              aria-label="Visão por Categorias"
-              id="categories"
+    <>
+      <HomeViewWrapper
+        fillViewport={fillViewport}
+        borderAfter={!fillViewport}
+        title={
+          linkTitle ? (
+            <Link
+              to="/app/today"
+              search={{ date: format(currentDay, "yyyy-MM-dd") }}
+              className="rounded-sm underline-offset-8 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
             >
-              <Grid3x3Icon />
-            </PrismToggleGroupItem>
-            <PrismToggleGroupItem aria-label="Visão por Feed" id="feed">
-              <BlocksIcon />
-            </PrismToggleGroupItem>
-            <PrismToggleGroupItem
-              aria-label="Visão por Parceiros"
-              id="partners"
+              {title}
+            </Link>
+          ) : (
+            title
+          )
+        }
+        OptionsComponent={
+          <div className="flex items-center gap-2">
+            <CalendarToolbar
+              currentDay={currentDay}
+              setCurrentDay={setCurrentDay}
+            />
+            <PrismToggleGroup
+              aria-label="Opções de Visualização da Home"
+              selectedKeys={[view]}
+              onSelectionChange={(keys) => {
+                const selected = Array.from(keys)[0] as typeof view;
+                if (selected) setView(selected);
+              }}
+              size="sm"
             >
-              <HeartHandshakeIcon />
-            </PrismToggleGroupItem>
-          </PrismToggleGroup>
-        </div>
-      }
-    >
-      <div className="px-8 xl:px-16">
-        {view === "kanban" && <KanbanPhasesBoard actions={filteredActions} />}
-        {view === "feed" && (
-          <div className="w-full max-w-full overflow-hidden">
-            <h5 className="pb-8">Feed do Instagram</h5>
-            <div className="pb-8">
-              <ActionContainer
-                columns={6}
-                actions={filteredActions}
-                variant={VARIANT.content}
-                displayFlags={{ showCategory: true }}
-              />
-            </div>
+              <PrismToggleGroupItem aria-label="Visão por Kanban" id="kanban">
+                <KanbanIcon />
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem
+                aria-label="Visão por Categorias"
+                id="categories"
+              >
+                <Grid3x3Icon />
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem aria-label="Visão por Feed" id="feed">
+                <BlocksIcon />
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem
+                aria-label="Visão por Parceiros"
+                id="partners"
+              >
+                <HeartHandshakeIcon />
+              </PrismToggleGroupItem>
+            </PrismToggleGroup>
           </div>
-        )}
-        {view === "categories" && <CategoriesBoard actions={filteredActions} />}
-        {view === "partners" && (
-          <PartnersBoard
-            actions={filteredActions}
-            isLoading={isLoading}
-            currentDay={currentDay}
-          />
-        )}
-      </div>
-    </HomeViewWrapper>
+        }
+      >
+        <div className={cn("px-8 xl:px-16", fillViewport && "min-h-0 flex-1")}>
+          {view === "kanban" && (
+            <KanbanPhasesBoard
+              actions={filteredActions}
+              fillHeight={fillViewport}
+            />
+          )}
+          {view === "feed" && (
+            <div className="w-full max-w-full overflow-hidden">
+              <h5 className="pb-8">Feed do Instagram</h5>
+              <div className="pb-8">
+                <ActionContainer
+                  columns={6}
+                  actions={filteredActions}
+                  variant={VARIANT.content}
+                  displayFlags={{ showCategory: true }}
+                />
+              </div>
+            </div>
+          )}
+          {view === "categories" && (
+            <CategoriesBoard actions={filteredActions} />
+          )}
+          {view === "partners" && (
+            <PartnersBoard
+              actions={filteredActions}
+              isLoading={isLoading}
+              currentDay={currentDay}
+            />
+          )}
+        </div>
+      </HomeViewWrapper>
+      {standalone && !fillViewport && <AppBarSpacer />}
+    </>
   );
 }

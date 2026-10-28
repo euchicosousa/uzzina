@@ -62,6 +62,7 @@ function TodayPage() {
 
   return (
     <HomeTodayView
+      standalone
       actions={filteredActions}
       currentDay={currentDay}
       isLoading={isLoadingHomeActions}
