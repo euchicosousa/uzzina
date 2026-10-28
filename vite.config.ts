@@ -24,6 +24,8 @@ function localApiPlugin(): Plugin {
 }
 
 const config = defineConfig({
+  // Keep optimizer files local even when checkouts share node_modules.
+  cacheDir: ".cache/vite",
   resolve: {
     tsconfigPaths: true,
   },
