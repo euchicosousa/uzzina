@@ -815,7 +815,7 @@ it("the panel owns width changes without remounting the form", async () => {
   const panel = document.querySelector("[data-action-panel]");
   expect(panel?.className).toContain("lg:w-2xl");
   fireEvent.click(screen.getByRole("tab", { name: "INSTAGRAM" }));
-  expect(panel?.className).toContain("lg:w-4xl");
+  expect(panel?.className).toContain("lg:w-3xl");
   fireEvent.click(screen.getByRole("tab", { name: "ESSENCIAL" }));
   expect(panel?.className).toContain("lg:w-2xl");
   expect(screen.getByRole("region", { name: "Edição da ação" })).toBe(form);
@@ -1384,7 +1384,7 @@ it("wide desktop shows both complete forms without the outer action tabs", async
 });
 
 it("resizing across the two-maximum-width threshold preserves both forms and their edits", async () => {
-  resizeViewport(1856);
+  resizeViewport(1600);
   const mounted = mount();
   await act(async () => {
     await mounted.panels().setSecondaryAction(secondAction());
@@ -1403,7 +1403,7 @@ it("resizing across the two-maximum-width threshold preserves both forms and the
     target: { value: "Secondary preserved" },
   });
   await act(async () => {
-    resizeViewport(1855);
+    resizeViewport(1599);
   });
   expect(screen.getAllByRole("textbox", { name: "Título da ação" })).toEqual([
     secondaryTitle,

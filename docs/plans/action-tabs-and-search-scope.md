@@ -38,7 +38,7 @@ O ticket01 transferiu o posicionamento ao pai; o ticket02 moveu o salvamento por
 
 ## 3. Layout fechado
 
-Ticket02 entregue com alternância por abas em todas as larguras. O ticket03 acrescenta o modo lado a lado abaixo, a partir de1856px, preservando as mesmas instâncias.
+Ticket02 entregue com alternância por abas em todas as larguras. O ticket03 acrescenta o modo lado a lado abaixo, a partir de1600px, preservando as mesmas instâncias.
 
 ### Mobile e telas estreitas
 
@@ -48,12 +48,12 @@ Uma ação visível por vez, com abas para alternar entre as abertas. Cada uma c
 
 - Grupo único ancorado à direita, como o painel atual.
 - Principal à esquerda, secundária à direita, dentro desse grupo.
-- Preservar larguras diferentes conforme a aba: normal até `2xl`; Instagram até `4xl` em telas grandes.
+- Preservar larguras diferentes conforme a aba: normal até `2xl`; Instagram até `3xl` em telas grandes.
 - Exibir duas lado a lado somente quando houver espaço para ambas na maior largura. Calcular limiar estável por essa referência, evitando trocar entre painéis e abas ao mudar de aba interna.
 - Abaixo do limiar, usar alternância por abas também no desktop.
 - Com uma ação, apresentar um único painel à direita, independentemente do espaço lógico ocupado; sem espaço vazio ou indicação obrigatória de “ação 2”.
 
-Em `InstagramTab.tsx`, Conteúdo e Legenda têm a mesma largura externa, mas proporções internas distintas de imagem/texto em lg. No ticket03 a composição interna passa a responder ao contêiner de cada painel. Limiar definido em1856px: duas larguras máximas de896px mais64px de overlay.
+Em `InstagramTab.tsx`, Conteúdo e Legenda têm a mesma largura externa, mas proporções internas distintas de imagem/texto em lg. No ticket03 a composição interna passa a responder ao contêiner de cada painel. Limiar definido em1600px: duas larguras máximas de768px mais64px de overlay.
 
 ## 4. Fechamento fechado
 

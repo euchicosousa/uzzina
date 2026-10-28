@@ -386,7 +386,7 @@ const assert = require("node:assert/strict");
           path: `${process.env.DRAWER_TEST_SCREENSHOT_DIR}/uzzina-two-actions-${page.viewportSize().width}-${theme}.png`,
         });
     }
-    if (page.viewportSize().width > 896) {
+    if (page.viewportSize().width > 768) {
       await page
         .getByRole("button", { name: "Fechar painel de edição", exact: true })
         .click({ position: { x: 5, y: 5 } });
@@ -474,7 +474,7 @@ const assert = require("node:assert/strict");
     await page.keyboard.press("Meta+Shift+Enter");
     assert.equal(writes.at(-1).id, "action-1");
     await left.getByRole("tab", { name: "INSTAGRAM", exact: true }).click();
-    await checkGeometry(896, 672);
+    await checkGeometry(768, 672);
     await right.getByRole("tab", { name: "INSTAGRAM", exact: true }).click();
     await right.getByRole("tab", { name: "Legenda", exact: true }).click();
     const caption = right.getByRole("textbox", {
@@ -494,7 +494,16 @@ const assert = require("node:assert/strict");
       (element) => element.scrollTop,
     );
     assert.ok(captionScroll > 0);
-    await checkGeometry(896, 896);
+    await checkGeometry(768, 768);
+    const previewBox = await left.locator("img").first().boundingBox();
+    const contentTabBox = await left
+      .getByRole("tab", { name: "Conteúdo", exact: true })
+      .boundingBox();
+    assert.ok(
+      contentTabBox.x >= previewBox.x + previewBox.width,
+      "Image and content must remain side by side at3xl",
+    );
+
     assert.equal(
       await left
         .locator("img")
@@ -519,13 +528,13 @@ const assert = require("node:assert/strict");
         });
     }
     const writeCount = writes.length;
-    await page.setViewportSize({ width: 1855, height: 1080 });
+    await page.setViewportSize({ width: 1599, height: 1080 });
     await page.locator('[data-action-layout="tabs"]').waitFor();
     await tabs().waitFor();
     assert.equal(await caption.inputValue(), captionText);
-    await page.setViewportSize({ width: 1856, height: 1080 });
+    await page.setViewportSize({ width: 1600, height: 1080 });
     await page.locator('[data-action-layout="side-by-side"]').waitFor();
-    await checkGeometry(896, 896);
+    await checkGeometry(768, 768);
     assert.equal(
       await left.evaluate((element, prior) => element === prior, leftHandle),
       true,
@@ -542,7 +551,7 @@ const assert = require("node:assert/strict");
     assert.equal(writes.length, writeCount);
     await page.setViewportSize({ width: 2560, height: 1080 });
     await left.getByRole("tab", { name: "OBSERVAÇÕES", exact: true }).click();
-    await checkGeometry(672, 896);
+    await checkGeometry(672, 768);
     if (process.env.DRAWER_TEST_SCREENSHOT_DIR)
       await page.screenshot({
         animations: "disabled",

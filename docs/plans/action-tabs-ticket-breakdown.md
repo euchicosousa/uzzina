@@ -42,7 +42,7 @@ Destino aprovado: um arquivo por ticket em `.scratch/action-tabs/issues/`, segui
 
 ## 03 — Exibir duas ações lado a lado em desktop amplo
 
-**Estado:** implementado localmente e verificado, aguardando avaliação do proprietário. Limiar estável1856px; larguras672px/896px; instâncias preservadas.
+**Estado:** concluído e aprovado pelo proprietário, incluindo Instagram3xl/768px e limiar1600px. Limiar estável1600px; larguras672px/768px; instâncias preservadas.
 
 **Bloqueado por:** 02 — Abrir e trabalhar com uma segunda ação pela busca.
 
@@ -104,3 +104,5 @@ Encerramento do02 autorizado: ajuste de fechamento implementado; Escape consumid
 Decisão final do proprietário: botão de fechar todas removido, para não depender da barra externa ao chegar ao lado a lado. Somente Escape/overlay fazem fechamento conjunto; X individuais permanecem. Substitui orientações anteriores sobre CircleX ou X junto às abas. Remoção implementada localmente, sem iniciar ticket03.
 
 Ticket03 verificado em28/10:438 testes, format/lint/typecheck/build e Chromium com HTTP controlado em390/1440/1855/1856/2560px passaram na cópia isolada do conteúdo selecionado para commit. Revisão do proprietário pendente. Sem push/deploy; próximos05 e04.
+
+Encerramento aprovado pelo proprietário em28/10: ticket03 concluído com Instagram3xl/768px e limiar1600px. Commit local autorizado, sem push/deploy. Próximo05; não iniciado nesta rodada.

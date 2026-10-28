@@ -21,3 +21,13 @@ Sem SQL ou escrita real em produção. HTTP controlado não certifica RLS/proved
 Chromium com o build isolado: fluxo inicial em1440px e390px, seguido de2560px e fronteira1855/1856px; HTTP externo totalmente controlado. Confirmados ordem/ancoragem, larguras672/896, imagens locais simuladas, Conteúdo e Legenda, Essencial/Observações, temas claro/escuro, ausência de rolagem horizontal nas superfícies, salvamentos por identidade, fechamento sem promoção, logout com duas abertas e resize preservando elementos, texto e scrollTop da legenda sem gravações extras. Capturas inspecionadas em /tmp/uzzina-side-by-side-instagram-light.png e -dark.png.
 
 No checkout compartilhado, lint detectou um thenable em teste externo de visibilidade da AppBar; esse arquivo não integra esta entrega. A cópia isolada validada preserva a AppBar anterior, incorpora apenas a migração de nomes necessária aos painéis e mantém fora dela o ajuste externo da data de Hoje, espaçadores e mudanças de layout. Nenhum arquivo privado de ambiente entra no commit.
+
+## Redução do Instagram para3xl
+
+Depois de validar o lado a lado, proprietário pediu Instagram em3xl:768px/48rem no lugar de896px/56rem, em uma ou duas ações. Limite de lado a lado passa de1856px para1600px:2×768+64. Essencial/Observações continuam672px. As proporções de imagem/texto passam a atuar a partir de47rem de espaço interno para acomodar a borda do painel de768px, mantendo Conteúdo em1/3+2/3 e Legenda em1/2+1/2. Sem reformulação dos controles.
+
+Teste da fronteira1599/1600 falhou com o limite anterior e passou após o ajuste;73 testes pertinentes passaram. Format/lint/typecheck e build passaram, com aviso conhecido de chunks. Roteiro de navegador atualizado para768px e a nova fronteira; Chromium com build isolado e HTTP controlado passou:768px por painel, fronteira1599/1600, imagem e Conteúdo lado a lado, Legenda, claro/escuro, preservação de DOM/texto/rolagem, foco, fechamento e sessão. Captura clara inspecionada. Contratos e KI sincronizados. Sem novo commit, push/deploy, SQL ou escrita real nesta revisão.
+
+## Encerramento aprovado
+
+Proprietário confirmou o funcionamento da versão final e autorizou encerrar o ticket03 e criar o commit local, sem publicação. Escopo final: Essencial/Observações672px, Instagram768px/3xl e lado a lado a partir de1600px, com os resultados de verificação registrados acima. Nesta rodada somente aceite/documentação e commit; referências/diff conferidos, sem nova mudança funcional ou necessidade de repetir testes. Alterações externas em Hoje/Kanban preservadas fora do commit.

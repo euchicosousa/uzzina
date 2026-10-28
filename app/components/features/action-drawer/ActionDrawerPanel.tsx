@@ -46,8 +46,8 @@ export function ActionDrawerPanel({
   );
   const activeAction = entries.find((entry) => entry.key === activeKey);
   const hasActions = entries.length > 0;
-  // Two maximum-width drawers (896px each), plus 64px of usable overlay.
-  const hasRoomForTwo = useIsDesktop(1856);
+  // Two maximum-width drawers (768px each), plus 64px of usable overlay.
+  const hasRoomForTwo = useIsDesktop(1600);
   const sideBySide = hasRoomForTwo && entries.length === 2;
   const requestCloseAll = useCallback(async () => {
     await closeAllActions();
@@ -96,7 +96,7 @@ export function ActionDrawerPanel({
           sideBySide
             ? undefined
             : activeAction?.view === "instagram"
-              ? "lg:w-4xl lg:max-w-4xl"
+              ? "lg:w-3xl lg:max-w-3xl"
               : "lg:w-2xl lg:max-w-2xl",
         )}
         data-action-panel
@@ -211,7 +211,7 @@ function ActionPanelSurfaceContent({
         hidden ? "hidden" : "block",
         sideBySide
           ? entry.view === "instagram"
-            ? "w-4xl shrink-0 border-r last:border-r-0"
+            ? "w-3xl shrink-0 border-r last:border-r-0"
             : "w-2xl shrink-0 border-r last:border-r-0"
           : "min-w-0 flex-1",
       )}

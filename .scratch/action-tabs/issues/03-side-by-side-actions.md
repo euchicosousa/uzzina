@@ -4,7 +4,7 @@
 
 **What to build:** aproveitar telas amplas para consultar/editar as duas ações simultaneamente, mantendo abas quando não houver espaço.
 
-**Status:** implemented-locally — verified; awaiting owner review
+**Status:** completed — accepted by owner; local commit authorized
 
 ## Acceptance criteria
 
@@ -23,3 +23,9 @@ Run relevant tests against real components, format, lint, typecheck and build ac
 ## Local result
 
 438 tests in41 files, format/format:check/lint/typecheck/build passed against an isolated copy of the selected commit content. Controlled Chromium checked1440px/390px and2560px with1855/1856 boundary, both themes, image/caption composition, preserved DOM/text/scroll on resize, scoped saving, individual close and logout. Stable threshold1856px; widths672/896px. No database/provider writes. Local commit authorized; no push/deploy. External Today/AppBar/layout changes excluded. See docs/audits/2026-10-28-side-by-side-actions.md.
+
+Owner follow-up: layout validated; Instagram reduced to3xl/768px and the side-by-side threshold to1600px (2×768+64). Essential stays672px. Relevant73 tests and format/lint/typecheck/build passed; previous verification above describes the original1856px release. No new commit or deployment for this follow-up.
+
+## Owner acceptance
+
+Proprietário confirmou que o resultado final está correto, incluindo Instagram3xl/768px e limiar1600px, e autorizou encerrar o ticket03 e criar o commit local. Sem push/deploy. Ticket05 permanece a próxima entrega, sem início automático.
