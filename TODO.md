@@ -8,6 +8,8 @@
 
 ## Trabalhos registrados para depois
 
+- [ ] [Visualização do uso de IA](.scratch/ai-usage/issues/01-ai-usage-visibility.md): ticket criado em28/10/2026; definir escopo, período, referência, permissões e apresentação antes de implementar. Preservar quota técnica atual e não expor custos do provedor. [Especificação existente](docs/plans/2026-10-07-consumo-ia-por-agencia.md).
+
 - [x] [Corrigir carregamento de Criar parceiro/Criar ação](.scratch/search-review/issues/01-fix-lazy-module-loading.md): correção local (inicialização duplicada/cache do Vite) testada e aprovada pelo proprietário em28/10.
 - [ ] [Criar data comemorativa por modal](.scratch/search-review/issues/02-create-celebration-dialog.md): diferenciar cadastro rápido de Gerenciar datas comemorativas.
 - [ ] [Implementar Ajuda e documentação](.scratch/search-review/issues/03-complete-help-page.md): rota ainda contém apenas texto provisório.
@@ -17,7 +19,6 @@
 
 ## Ideias para avaliar depois
 
-- [ ] [Visualização do uso de IA](docs/plans/2026-10-07-consumo-ia-por-agencia.md): avaliar um painel ou outra forma de mostrar o uso no sistema, conforme pedido em27/10/2026. Formato e próximo passo serão definidos depois, em conjunto com a proposta existente de consumo por agência, múltiplos modelos, preços internos versionados e percentual sem exibir custo da API. Apenas registro futuro; sem implementação ou tickets agora.
 - [ ] Avaliar transferência/unificação da conta de staging após estabilização, mantendo produção e testes separados.
 
 ## Sugestões de UX preservadas da auditoria original

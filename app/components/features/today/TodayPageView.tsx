@@ -1,3 +1,5 @@
+import { useAppContext } from "~/contexts/AppContext";
+import { getUserPreferences } from "~/lib/preferences";
 import { useFillScrollViewport } from "~/hooks/useFillScrollViewport";
 import { useRef, useState } from "react";
 import { CalendarToolbar } from "~/components/features/CalendarToolbar";
@@ -26,7 +28,10 @@ export function TodayPageView({
   currentDay: Date;
   onCurrentDayChange: (date: Date) => void;
 }) {
-  const [view, setView] = useState<TodayViewMode>("partners");
+  const { person } = useAppContext();
+  const [view, setView] = useState<TodayViewMode>(
+    () => getUserPreferences(person).defaultTodayView,
+  );
   const filteredActions = useTodayActions(actions, view, currentDay);
   useSelectionContext(JSON.stringify([currentDay, view]));
   const title = useTodayTitle(currentDay);

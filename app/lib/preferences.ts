@@ -1,3 +1,14 @@
+export type TodayViewMode = "kanban" | "feed" | "categories" | "partners";
+
+export function isTodayViewMode(value: unknown): value is TodayViewMode {
+  return (
+    value === "kanban" ||
+    value === "feed" ||
+    value === "categories" ||
+    value === "partners"
+  );
+}
+
 export type CustomThemeColors = {
   primaryHex: string;
   primaryFgHex: string;
@@ -15,6 +26,7 @@ export type UserPreferences = {
   themeColorIndex: number;
   followPartnerColor: boolean;
   defaultViewVariant: "line" | "block" | "content";
+  defaultTodayView: TodayViewMode;
   showInstagramSidebar: boolean;
   customTheme: CustomTheme | null;
 };
@@ -24,6 +36,7 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   themeColorIndex: 0,
   followPartnerColor: false,
   defaultViewVariant: "line",
+  defaultTodayView: "partners",
   showInstagramSidebar: true,
   customTheme: null,
 };
@@ -33,6 +46,7 @@ export type SerializedPreferences = {
   themeColorIndex?: number;
   followPartnerColor?: boolean;
   defaultViewVariant?: string;
+  defaultTodayView?: unknown;
   showInstagramSidebar?: boolean;
   customTheme?: {
     light?: {
@@ -114,6 +128,9 @@ export function getUserPreferences(person?: {
       prefs.defaultViewVariant === "content"
         ? prefs.defaultViewVariant
         : DEFAULT_PREFERENCES.defaultViewVariant,
+    defaultTodayView: isTodayViewMode(prefs.defaultTodayView)
+      ? prefs.defaultTodayView
+      : DEFAULT_PREFERENCES.defaultTodayView,
     showInstagramSidebar:
       typeof prefs.showInstagramSidebar === "boolean"
         ? prefs.showInstagramSidebar

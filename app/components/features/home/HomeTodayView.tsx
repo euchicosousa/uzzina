@@ -1,3 +1,5 @@
+import { useAppContext } from "~/contexts/AppContext";
+import { getUserPreferences } from "~/lib/preferences";
 import { useSelectionContext } from "~/hooks/useMultiSelection";
 import { format } from "date-fns";
 import { useState } from "react";
@@ -26,7 +28,10 @@ export function HomeTodayView({
   onCurrentDayChange?: (date: Date) => void;
   linkTitle?: boolean;
 }) {
-  const [view, setView] = useState<TodayViewMode>("partners");
+  const { person } = useAppContext();
+  const [view, setView] = useState<TodayViewMode>(
+    () => getUserPreferences(person).defaultTodayView,
+  );
 
   const [uncontrolledDay, setUncontrolledDay] = useState(new Date());
   const currentDay = controlledDay ?? uncontrolledDay;

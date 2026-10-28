@@ -14,7 +14,10 @@ export function createPreferencePersistence(options: {
   initial: PreferenceRecord;
   save: (patch: PreferencePatch) => Promise<PreferenceRecord>;
   isCurrent: () => boolean;
-  onChange: (preferences: PreferenceRecord) => void;
+  onChange: (
+    preferences: PreferenceRecord,
+    changedKeys: ReadonlySet<string>,
+  ) => void;
   onError: () => void;
   onSaved: () => void;
 }) {
@@ -24,8 +27,10 @@ export function createPreferencePersistence(options: {
   let busy = false;
   let stopped = false;
   let failed = false;
+  const changedKeys = new Set<string>();
   const active = () => !stopped && options.isCurrent();
-  const notify = () => options.onChange({ ...confirmed, ...pending });
+  const notify = () =>
+    options.onChange({ ...confirmed, ...pending }, changedKeys);
   const flush = async () => {
     if (!active() || busy || failed || Object.keys(pending).length === 0)
       return;
@@ -52,6 +57,7 @@ export function createPreferencePersistence(options: {
   return {
     queue(patch: PreferencePatch) {
       if (!active()) return;
+      for (const key of Object.keys(patch)) changedKeys.add(key);
       pending = { ...pending, ...patch };
       notify();
       clearTimeout(timer);

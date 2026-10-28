@@ -4,7 +4,13 @@
 
 **Blocked by:** None (can start immediately). Não depende do ticket01; a preferência pode ser acrescentada ao formulário atual. Se ambos forem executados, coordenar alterações em `ProfilePage`, sem dois executores escrevendo simultaneamente no checkout.
 
-**Status:** ready-for-agent — deferred by owner; do not start automatically
+**Status:** implemented and verified — production RPC applied with explicit owner approval; awaiting owner review of local UI; no frontend deployment requested
+
+## Resultado em28/10/2026
+
+Implementação autorizada após aceite e commit local do ticket01 (`064948e`). Componentes atuais são separados: `HomeTodayView` e `TodayPageView`, compartilhando `TodayViewParts`; as referências ao componente único e `standalone` abaixo são históricas. Ambos agora leem `defaultTodayView` na montagem, preservando alternância manual temporária. Seletor na conta salva explicitamente. Resposta atrasada de tema não substitui o novo campo salvo por outro fluxo.
+
+505 testes/1785 assertions passaram; navegador controlado e PostgreSQL isolado verificaram o fluxo, validação e isolamento. Após recusa inicial da revisão automática, proprietário autorizou explicitamente a alteração SQL. Migration aplicada à produção, versão remota `20261028205047`; catálogo, validação com identidade inexistente e permissões conferidos, sem tocar preferências reais. Bloqueio de SQL resolvido; interface local aguardando avaliação, sem deploy solicitado. Relatório: [visualização inicial de Hoje](../../../docs/audits/2026-10-28-today-default-view.md).
 
 ## Contexto técnico e pontos de integração
 

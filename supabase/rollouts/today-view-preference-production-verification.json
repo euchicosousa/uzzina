@@ -1,0 +1,65 @@
+{
+  "project_ref": "dfepmjcozszswocwvdpq",
+  "migration": {
+    "version": "20261028205047",
+    "name": "today_view_preference"
+  },
+  "catalog": {
+    "acl": "{postgres=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+    "owner": "postgres",
+    "search_path": [
+      "search_path=\"\""
+    ],
+    "anon_execute": false,
+    "definition_md5": "de0d9e5797bc6e1c39ba0eeb400eb46c",
+    "verified_at_utc": "2026-10-28T20:51:31.157533+00:00",
+    "security_definer": true,
+    "authenticated_execute": true,
+    "supports_default_today_view": true
+  },
+  "runtime": {
+    "status": "pass",
+    "valid_modes": 4,
+    "invalid_values": 6,
+    "active_member_guard": "preserved",
+    "missing_identity": "rejected",
+    "real_user_rows_touched": 0,
+    "transaction": "rolled back"
+  },
+  "advisors_before": [
+    {
+      "name": "auth_leaked_password_protection",
+      "level": "WARN",
+      "count": 1
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "level": "WARN",
+      "count": 8
+    },
+    {
+      "name": "rls_enabled_no_policy",
+      "level": "INFO",
+      "count": 4
+    }
+  ],
+  "advisors_after": [
+    {
+      "name": "auth_leaked_password_protection",
+      "level": "WARN",
+      "count": 1
+    },
+    {
+      "name": "authenticated_security_definer_function_executable",
+      "level": "WARN",
+      "count": 8
+    },
+    {
+      "name": "rls_enabled_no_policy",
+      "level": "INFO",
+      "count": 4
+    }
+  ],
+  "advisors_unchanged": true,
+  "scope": "Production catalog + validation with identity proven absent; authenticated positive writes and merge tested in isolated PostgreSQL; no real user preferences changed."
+}

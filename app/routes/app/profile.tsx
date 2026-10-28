@@ -1,6 +1,10 @@
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { createFileRoute } from "@tanstack/react-router";
 import {
+  BlocksIcon,
+  Grid3x3Icon,
+  HeartHandshakeIcon,
+  KanbanIcon,
   ImageIcon,
   LaptopIcon,
   LayoutGridIcon,
@@ -15,6 +19,7 @@ import { flushSync } from "react-dom";
 import { useFillScrollViewport } from "~/hooks/useFillScrollViewport";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQuerySessionGeneration } from "~/lib/query-client";
+import { preferenceRecord } from "~/lib/preference-persistence";
 import { toast } from "sonner";
 import { Theme, useAppThemeContext } from "~/hooks/useAppTheme";
 import {
@@ -29,7 +34,11 @@ import { UPreferenceSwitch } from "~/components/uzzina/UPreferenceSwitch";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { useAppContext } from "~/contexts/AppContext";
 import { PALLETE } from "~/lib/palettes";
-import { getUserPreferences } from "~/lib/preferences";
+import {
+  getUserPreferences,
+  isTodayViewMode,
+  type TodayViewMode,
+} from "~/lib/preferences";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { updateMyPreferences, updateOwnProfile } from "~/models/people";
 import { cn } from "cnfast";
@@ -75,6 +84,9 @@ function ProfilePage() {
   const [selectedVariant, setSelectedVariant] = useState<
     "line" | "block" | "content"
   >(preferences.defaultViewVariant);
+  const [selectedTodayView, setSelectedTodayView] = useState<TodayViewMode>(
+    preferences.defaultTodayView,
+  );
   const [showInstagramSidebar, setShowInstagramSidebar] = useState<boolean>(
     preferences.showInstagramSidebar,
   );
@@ -130,6 +142,10 @@ function ProfilePage() {
         themeColorIndex: themeColorIndexVal,
         followPartnerColor: selectedFollowPartnerColor,
         defaultViewVariant: selectedVariant,
+        ...(selectedTodayView !== preferences.defaultTodayView ||
+        Object.hasOwn(preferenceRecord(person.preferences), "defaultTodayView")
+          ? { defaultTodayView: selectedTodayView }
+          : {}),
         showInstagramSidebar,
         customTheme: customThemeToSave,
       };
@@ -505,6 +521,44 @@ function ProfilePage() {
               <PrismToggleGroupItem id="content">
                 <ImageIcon />
                 Conteúdo
+              </PrismToggleGroupItem>
+            </PrismToggleGroup>
+          </div>
+
+          <div className="grid gap-3 border-t pt-4">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                Visualização inicial do Hoje
+              </span>
+              <span className="text-xs text-muted-foreground">
+                Escolha como abrir o Hoje na Home e na página Hoje. As trocas de
+                visualização durante o uso continuam temporárias.
+              </span>
+            </div>
+            <PrismToggleGroup
+              aria-label="Visualização inicial do Hoje"
+              className="flex-wrap"
+              selectedKeys={[selectedTodayView]}
+              onSelectionChange={(keys) => {
+                const value = Array.from(keys)[0];
+                if (isTodayViewMode(value)) setSelectedTodayView(value);
+              }}
+            >
+              <PrismToggleGroupItem id="kanban">
+                <KanbanIcon />
+                Kanban
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem id="categories">
+                <Grid3x3Icon />
+                Categorias
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem id="feed">
+                <BlocksIcon />
+                Feed
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem id="partners">
+                <HeartHandshakeIcon />
+                Parceiros
               </PrismToggleGroupItem>
             </PrismToggleGroup>
           </div>

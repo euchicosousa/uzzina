@@ -34,8 +34,12 @@ export function usePreferencePersistence(person: Person) {
           await updateMyPreferences(createSupabaseBrowserClient(), patch),
         );
       },
-      onChange: (preferences) => {
-        owner.preferences = preferences;
+      onChange: (preferences, changedKeys) => {
+        // A delayed response must not replace fields saved by another owner.
+        const current = initialPerson.current;
+        const merged = preferenceRecord(current.preferences);
+        for (const key of changedKeys) merged[key] = preferences[key];
+        current.preferences = merged;
       },
       onSaved: () => {
         setHasError(false);

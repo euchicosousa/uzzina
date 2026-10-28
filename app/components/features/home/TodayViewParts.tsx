@@ -1,3 +1,4 @@
+import type { TodayViewMode } from "~/lib/preferences";
 import { format, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import {
@@ -18,7 +19,7 @@ import { isInstagramFeed } from "~/utils";
 import { parseU } from "~/utils/date";
 
 // Building blocks shared by the Home "Hoje" block and the dedicated Today page.
-export type TodayViewMode = "kanban" | "feed" | "categories" | "partners";
+export type { TodayViewMode } from "~/lib/preferences";
 
 export const TODAY_VIEW_LABELS: Record<TodayViewMode, string> = {
   kanban: "Status das ações",

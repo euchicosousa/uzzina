@@ -67,6 +67,10 @@ const fs = require("node:fs/promises");
       }
       if (url.pathname === "/rest/v1/rpc/update_my_preferences") {
         const body = request.postDataJSON();
+        assert(
+          !Object.hasOwn(body.p_patch, "defaultTodayView"),
+          "Unchanged legacy Today default must not require the new RPC contract",
+        );
         writes.push({ preferences: body.p_patch });
         if (fail)
           return route.fulfill({
