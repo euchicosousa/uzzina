@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately). Não depende do ticket01; a preferência pode ser acrescentada ao formulário atual. Se ambos forem executados, coordenar alterações em `ProfilePage`, sem dois executores escrevendo simultaneamente no checkout.
 
-**Status:** implemented and verified — production RPC applied with explicit owner approval; awaiting owner review of local UI; no frontend deployment requested
+**Status:** completed — owner approved 2026-10-29; frontend published and production RPC applied
 
 ## Resultado em28/10/2026
 
@@ -26,17 +26,17 @@ Inspeção do checkout em28/10/2026:
 
 ## Critérios de aceite
 
-- [ ] Preferências apresenta seletor acessível “Visualização inicial do Hoje” com as quatro opções existentes, explicando que vale para o bloco da Home e a página Hoje. O rótulo diferencia esta escolha do Layout Padrão dos clientes.
-- [ ] A seleção é rascunho até Salvar Alterações. Apenas abrir, selecionar sem salvar ou sair da tela não grava o novo campo. Sucesso confirma o valor canônico; envio bloqueia repetição; falha mantém rascunho e permite tentar novamente, sem anunciar persistência bem-sucedida.
-- [ ] Salvar persiste por usuário em `people.preferences` pelo model/RPC existente, sem escrita direta pela rota/componente. O contrato aceita somente `partners`, `kanban`, `categories` e `feed`; patches inválidos são recusados e autorização/merge/campos existentes são preservados. Preparar migration incremental e distinguir SQL preparado de SQL aplicado.
-- [ ] Sem campo salvo, ou com valor ausente, nulo ou inválido no registro legado, ambos os contextos iniciam em Parceiros, preservando o padrão atual. Não reutilizar `defaultViewVariant` nem criar preferências separadas por contexto.
-- [ ] Após salvar, cada nova montagem de Hoje na Home ou na página dedicada inicia pela mesma preferência confirmada, inclusive ao recarregar, sair/entrar na conta ou abrir outro navegador com a mesma conta. Nenhum estado local de outro usuário determina o modo inicial.
-- [ ] Alternar manualmente continua imediato e local à instância aberta, sem alterar a preferência persistida nem sincronizar forçadamente outra instância. A seleção manual permanece ao mudar data, filtros, dados da consulta, rerender ou resize durante essa montagem; sair/remontar volta ao padrão salvo. Uma resposta tardia não desfaz uma escolha manual já feita.
-- [ ] Salvar um novo padrão passa a valer na próxima abertura/montagem; sair da conta ou trocar identidade descarta operações antigas. Patches de tema/paleta em paralelo não apagam o novo campo, nem o novo campo sobrescreve outras preferências.
-- [ ] Preservar link de título e data selecionada, navegação de datas, filtros/escopo de parceiros operacionais, seleção múltipla e edição de ações. Os modos continuam usando os mesmos componentes e filtros, inclusive Feed vazio.
-- [ ] Ao iniciar em Kanban, respeitar Home compacta versus página standalone com altura útil/rolagem por coluna; nos outros modos preservar altura natural e reserva da AppBar. Preferências de altura dos calendários continuam independentes e não persistidas.
-- [ ] Testes no código real cobrem os quatro valores nos dois contextos, fallback legado/inválido, salvar/erro/retry, remontagem/recarga, alternância manual após atualização de dados/data, merge e troca de sessão. Reaproveitar a cobertura existente de persistência e navegação de Hoje; acrescentar verificação do novo contrato da RPC em ambiente autorizado, sem fixtures de escrita em produção.
-- [ ] Conferir seletor e os dois contextos em desktop/mobile e temas com HTTP controlado. Antes de publicar frontend dependente da nova chave, verificar compatibilidade da RPC no ambiente de destino e registrar evidência distinta de teste local, banco e deploy Ready.
+- Preferências apresenta seletor acessível “Visualização inicial do Hoje” com as quatro opções existentes, explicando que vale para o bloco da Home e a página Hoje. O rótulo diferencia esta escolha do Layout Padrão dos clientes.
+- A seleção é rascunho até Salvar Alterações. Apenas abrir, selecionar sem salvar ou sair da tela não grava o novo campo. Sucesso confirma o valor canônico; envio bloqueia repetição; falha mantém rascunho e permite tentar novamente, sem anunciar persistência bem-sucedida.
+- Salvar persiste por usuário em `people.preferences` pelo model/RPC existente, sem escrita direta pela rota/componente. O contrato aceita somente `partners`, `kanban`, `categories` e `feed`; patches inválidos são recusados e autorização/merge/campos existentes são preservados. Preparar migration incremental e distinguir SQL preparado de SQL aplicado.
+- Sem campo salvo, ou com valor ausente, nulo ou inválido no registro legado, ambos os contextos iniciam em Parceiros, preservando o padrão atual. Não reutilizar `defaultViewVariant` nem criar preferências separadas por contexto.
+- Após salvar, cada nova montagem de Hoje na Home ou na página dedicada inicia pela mesma preferência confirmada, inclusive ao recarregar, sair/entrar na conta ou abrir outro navegador com a mesma conta. Nenhum estado local de outro usuário determina o modo inicial.
+- Alternar manualmente continua imediato e local à instância aberta, sem alterar a preferência persistida nem sincronizar forçadamente outra instância. A seleção manual permanece ao mudar data, filtros, dados da consulta, rerender ou resize durante essa montagem; sair/remontar volta ao padrão salvo. Uma resposta tardia não desfaz uma escolha manual já feita.
+- Salvar um novo padrão passa a valer na próxima abertura/montagem; sair da conta ou trocar identidade descarta operações antigas. Patches de tema/paleta em paralelo não apagam o novo campo, nem o novo campo sobrescreve outras preferências.
+- Preservar link de título e data selecionada, navegação de datas, filtros/escopo de parceiros operacionais, seleção múltipla e edição de ações. Os modos continuam usando os mesmos componentes e filtros, inclusive Feed vazio.
+- Ao iniciar em Kanban, respeitar Home compacta versus página standalone com altura útil/rolagem por coluna; nos outros modos preservar altura natural e reserva da AppBar. Preferências de altura dos calendários continuam independentes e não persistidas.
+- Testes no código real cobrem os quatro valores nos dois contextos, fallback legado/inválido, salvar/erro/retry, remontagem/recarga, alternância manual após atualização de dados/data, merge e troca de sessão. Reaproveitar a cobertura existente de persistência e navegação de Hoje; acrescentar verificação do novo contrato da RPC em ambiente autorizado, sem fixtures de escrita em produção.
+- Conferir seletor e os dois contextos em desktop/mobile e temas com HTTP controlado. Antes de publicar frontend dependente da nova chave, verificar compatibilidade da RPC no ambiente de destino e registrar evidência distinta de teste local, banco e deploy Ready.
 
 ## Riscos e decisões de escopo
 
@@ -48,3 +48,7 @@ Inspeção do checkout em28/10/2026:
 ## Verificação deste registro
 
 Componentes, rotas, tipos/defaults, model, controlador de persistência, SQL versionado e testes existentes foram inspecionados. Sem alteração funcional, execução de testes/build, consulta/escrita de banco, migration aplicada, commit ou publicação. Somente a criação deste ticket foi autorizada.
+
+## Owner acceptance — 2026-10-29
+
+Owner explicitly approved and closed this delivery. Production deployment `dpl_99LPVHqzaaqxJ4m5UQ4LF4JSa8Mg` is READY on `uzzina.cnvt.com.br`, commit `c1d18b8`. Earlier findings and limits above describe the implementation history; they do not reopen this ticket or certify additional tests. No functional change or SQL in this acceptance update.

@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately). Independente dos tickets de duas ações/busca; os links para a página já existem.
 
-**Status:** implemented locally 2026-10-28 — awaiting owner review; visual/browser check pending
+**Status:** completed — owner approved 2026-10-29; published to production; future needs require a new ticket
 
 ## Confirmed finding
 
@@ -12,16 +12,22 @@ Em28/10/2026 o proprietário relatou a página vazia durante a conferência dos 
 
 ## Acceptance criteria
 
-- [ ] Substituir o texto provisório por uma página utilizável, acessível pelo comando Notificações e por Ver todas as notificações no sino, sem exigir perfil de administrador.
-- [ ] Consultar apenas notificações da pessoa autenticada, ordenadas das mais recentes para as antigas; exibir autor, ação, trecho legível e data, diferenciando lidas/não lidas.
-- [ ] Reaproveitar os models, hook/cache e políticas atuais; componentes/rotas não acessam diretamente as tabelas. Troca de sessão não expõe dados nem aplica respostas da identidade anterior.
-- [ ] Abrir a ação relacionada pelo fluxo comum da principal, respeitando guardas e tratando ação indisponível/sem acesso com mensagem apropriada.
-- [ ] Oferecer marcar como lida e marcar todas como lidas, sincronizando lista e contador do sino. Erros não apresentam sucesso falso nem descartam a leitura atual.
-- [ ] Distinguir carregamento, nenhuma notificação e falha de consulta, com possibilidade de tentar novamente. Ausência de dados não deve parecer página quebrada.
-- [ ] Não apresentar o limite atual de40 itens como histórico completo: permitir acessar os registros anteriores se existirem, sem redesenho adicional do fluxo.
-- [ ] Conferir desktop/mobile, temas, teclado, área rolável e reserva da AppBar com os componentes existentes.
-- [ ] Teste na rota real falha com a implementação provisória e passa após a entrega; verificar consulta/leitura/erro, abertura da ação, sincronização com sino e isolamento de sessão com fronteira externa controlada.
+- Substituir o texto provisório por uma página utilizável, acessível pelo comando Notificações e por Ver todas as notificações no sino, sem exigir perfil de administrador.
+- Consultar apenas notificações da pessoa autenticada, ordenadas das mais recentes para as antigas; exibir autor, ação, trecho legível e data, diferenciando lidas/não lidas.
+- Reaproveitar os models, hook/cache e políticas atuais; componentes/rotas não acessam diretamente as tabelas. Troca de sessão não expõe dados nem aplica respostas da identidade anterior.
+- Abrir a ação relacionada pelo fluxo comum da principal, respeitando guardas e tratando ação indisponível/sem acesso com mensagem apropriada.
+- Oferecer marcar como lida e marcar todas como lidas, sincronizando lista e contador do sino. Erros não apresentam sucesso falso nem descartam a leitura atual.
+- Distinguir carregamento, nenhuma notificação e falha de consulta, com possibilidade de tentar novamente. Ausência de dados não deve parecer página quebrada.
+- Não apresentar o limite atual de40 itens como histórico completo: permitir acessar os registros anteriores se existirem, sem redesenho adicional do fluxo.
+- Conferir desktop/mobile, temas, teclado, área rolável e reserva da AppBar com os componentes existentes.
+- Teste na rota real falha com a implementação provisória e passa após a entrega; verificar consulta/leitura/erro, abertura da ação, sincronização com sino e isolamento de sessão com fronteira externa controlada.
 
 ## Verification and limits
 
 Executar testes pertinentes, format/lint/typecheck/build e conferência de navegador com HTTP controlado. Localhost usa produção: não criar fixtures nem marcar notificações reais como lidas durante os testes. Preservar autorização do destinatário e acesso à ação no servidor/banco. Nenhuma mudança de schema presumida. Atualizar CURRENT e contratos/KI aplicáveis ao implementar. Sem commit, publicação ou início automático autorizados por este registro.
+
+## Owner acceptance — 2026-10-29
+
+Owner explicitly approved and closed this delivery. Production deployment `dpl_99LPVHqzaaqxJ4m5UQ4LF4JSa8Mg` is READY on `uzzina.cnvt.com.br`, commit `c1d18b8`. Earlier findings and limits above describe the implementation history; they do not reopen this ticket or certify additional tests. No functional change or SQL in this acceptance update.
+
+The owner accepts notifications as delivered and will open a separate ticket if needed. Extended real-world coverage is not a closure blocker and no follow-up ticket was opened automatically.

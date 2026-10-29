@@ -2,24 +2,27 @@
 
 Atualizado em 29/10/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-## Preparação para publicação
+## Publicação confirmada em29/10
 
-O proprietário solicitou preparar todas as entregas pendentes para deploy e limpar arquivos desnecessários. Preparação local concluída:528 testes, format/lint/typecheck/build,7 verificações serverless e regressão do launcher aprovados. Nenhum push, deploy ou SQL executado nesta rodada.
+Push realizado pelo proprietário. Git confirma `main` e `origin/main` em `c1d18b86dd4074342de6bf371588e57c0bdd9fac`. Antes desta atualização documental, checkout limpo e sem commits pendentes de envio.
 
-Conferência inicial do Git: `main`, quatro commits à frente da referência local `origin/main` (`1125131`). `git fetch origin` confirmou essa referência em29/10; ela não certifica publicação. Mudanças externas encontradas: proposta de Planejamento e seus dois registros no CURRENT preservados. Capturas temporárias do modal removidas na revisão de limpeza solicitada pelo proprietário.
+Vercel confirmou o mesmo SHA no deploy `dpl_99LPVHqzaaqxJ4m5UQ4LF4JSa8Mg`: estado READY, target production e alias `uzzina.cnvt.com.br`. O domínio `/app` respondeu HTTP200. Isso confirma publicação/resposta pública; uso autenticado e conferência visual não foram repetidos.
 
-| Entrega | Estado confirmado no checkout |
+| Entrega | Estado vigente |
 |---|---|
-| Notificações | Commit `4dbb90c`: página completa, histórico progressivo, leitura individual/todas, ação indisponível e trecho sem HTML; cache compartilhado com o sino. |
-| Ajuda | Commit `311d102`: índice desktop/seletor mobile, instruções dos fluxos atuais, administração restrita e rolagem própria. |
-| Modal de datas comemorativas | Commit `7a20122`: criar/editar pelo modal, calendário pt-BR, guardas de sessão e cache canônico. |
-| Revisão do calendário/modal | Commit `d5cb55a`: erro no título, Enter sem avançar mês, ordem de Tab visual e apresentação aprovada pelo proprietário. |
+| Duas ações: abas/lado a lado | Implementada, aprovada e incluída na versão publicada. |
+| Busca: filtros, arquivadas, criar ação e comandos | Implementada, aprovada e incluída na versão publicada. |
+| Falha de carregamento e AppBar | Correções aprovadas e incluídas na versão publicada. |
+| Página Hoje e Minha Conta | Layout/rolagem aprovados e incluídos na versão publicada. |
+| Visualização inicial de Hoje | Frontend e SQL publicados; aprovado pelo proprietário em29/10. Concluído. |
+| Notificações | Publicada e aprovada pelo proprietário em29/10. Ticket encerrado; eventual necessidade futura terá novo ticket. |
+| Ajuda | Publicada e aprovada pelo proprietário em29/10. Concluída. |
+| Modal de datas e revisão do calendário | Aprovados e publicados. |
+| Limpeza | Dez capturas removidas; roteiros salvam novas capturas fora do projeto; documentação consolidada e publicada. |
 
-Esses quatro commits formam o lote funcional ainda ausente da referência local `origin/main`. Duas ações, busca/comandos, correção de carregamento, AppBar, página Hoje, Minha Conta e preferência inicial de Hoje já são ancestrais de `origin/main`; não devem ser descritos como código ainda sem push. Deploy Ready desses ancestrais não foi conferido nesta rodada.
+A migration de `defaultTodayView` foi aplicada à produção em28/10, versão remota `20261028205047`, com catálogo/validação/permissões verificados: [manifest](../../supabase/rollouts/today-view-preference-manifest.json) e [evidência](../../supabase/rollouts/today-view-preference-production-verification.json). Publicação do frontend confirmada agora, sem reaplicar SQL.
 
-A migration de `defaultTodayView` já foi aplicada à produção em 28/10, versão remota `20261028205047`, com catálogo/validação/permissões verificados. Não reaplicar: [manifest](../../supabase/rollouts/today-view-preference-manifest.json) e [evidência](../../supabase/rollouts/today-view-preference-production-verification.json). O manifest ainda não confirma deploy do frontend.
-
-Verificação final, inventário da limpeza e limites: [preparação do deploy](2026-10-29-deploy-preparation.md). Verificações locais aprovadas; Notificações ainda tem validação visual/real pendente, conforme os limites desse documento. Publicação só fica confirmada após verificar a nova versão Ready e o domínio.
+Verificação anterior ao push:528 testes, format/lint/typecheck/build,7 verificações serverless e regressão do launcher aprovados. Limpeza dos roteiros verificada por sintaxe Node, format/lint/typecheck e referências. Operação e limites: [preparação e confirmação do deploy](2026-10-29-deploy-preparation.md).
 
 ## Limpeza revisada em29/10
 
@@ -29,12 +32,12 @@ Removidas dez capturas temporárias de Minha Conta/Hoje e do modal de datas; ref
 
 Proprietário solicitou versionar todas as alterações restantes: limpeza das capturas, saída temporária dos roteiros, consolidação documental e proposta existente de Planejamento. A proposta continua em revisão, sem autorizar implementação. Format/lint/typecheck, sintaxe dos roteiros, referências locais e diff aprovados na revisão anterior, sem alterações funcionais posteriores. Sem push, deploy ou SQL nesta rodada.
 
+## Aceite do proprietário em29/10
+
+Visualização inicial de Hoje, Ajuda e Notificações aprovadas explicitamente. As três entregas já estão em produção no deploy Ready acima. Tickets encerrados, sem exigir acompanhamento adicional para conclusão. Notificações foi aceita no estado atual; o proprietário abrirá outro ticket se surgir necessidade. Este aceite não equivale a certificar cenários técnicos não executados. Publicação desta atualização documental autorizada, sem mudança funcional ou SQL.
+
 ## Pendências reais
 
-- Publicar o lote preparado e conferir a versão Ready. Preparar para deploy não significa publicar.
-- Notificações: implementação e testes automatizados existentes; conferência visual desktop/mobile/temas e existência/entrega de notificações reais ainda não certificadas. Não marcar dados reais como lidos em ensaios automáticos.
-- Ajuda: navegador com HTTP controlado já verificou desktop/mobile claro/escuro, foco, âncoras e rolagem; avaliação final do proprietário e uso autenticado após publicação continuam pendentes.
-- Preferência inicial de Hoje: implementação/testes e SQL concluídos; avaliação do proprietário e confirmação da publicação do frontend permanecem sem registro conclusivo.
 - Qualidade editorial do novo prompt de estratégia: geração real após a alteração ainda sem avaliação registrada.
 - Validação física em Safari/telefone, teclado virtual/zoom e levantamento geral de foco/teclado continuam futuros. Os ajustes específicos da gaveta/toolbar já foram resolvidos.
 

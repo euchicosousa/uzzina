@@ -25,8 +25,8 @@
     "sql_fixture": "PGlite; actual baseline and new migration; four valid values, invalid types/keys, active member/identity, grants/owner, merge and field preservation passed",
     "browser": "controlled HTTP; four modes in Home/Today, draft/failure/retry/reload/manual/date and delayed theme response passed"
   },
-  "next_step": "Owner review of local frontend; no push or deployment requested. Migration history is partial; never bulk-push or repair historical migrations blindly.",
-  "frontend_deployed": false,
+  "next_step": "Delivery completed: owner approved the published preference on 2026-10-29. No remaining rollout action; SQL must not be reapplied.",
+  "frontend_deployed": true,
   "production_data_fixture_writes": false,
   "remote_version": "20261028205047",
   "production_after": {
@@ -42,5 +42,17 @@
     "authenticated_execute": true,
     "supports_default_today_view": true
   },
-  "verification": "supabase/rollouts/today-view-preference-production-verification.json"
+  "verification": "supabase/rollouts/today-view-preference-production-verification.json",
+  "frontend_deployment": {
+    "deployment_id": "dpl_99LPVHqzaaqxJ4m5UQ4LF4JSa8Mg",
+    "commit_sha": "c1d18b86dd4074342de6bf371588e57c0bdd9fac",
+    "ready_state": "READY",
+    "target": "production",
+    "alias": "uzzina.cnvt.com.br",
+    "verified_date": "2026-10-29",
+    "public_app_http_status": 200,
+    "authenticated_visual_retest": false
+  },
+  "owner_approved": true,
+  "owner_approved_date": "2026-10-29"
 }

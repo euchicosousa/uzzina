@@ -59,3 +59,11 @@ Verificação desta revisão: sintaxe Node dos três roteiros, formatação, lin
 ## Versionamento solicitado
 
 Em29/10, o proprietário solicitou o commit de tudo que restava no checkout: limpeza, registros de preparação, histórico do CURRENT e proposta de Planejamento já existente. Proposta permanece documental, em revisão; nenhuma implementação iniciada. Verificações reaproveitadas da revisão acima, sem nova mudança funcional. Commit local, sem push/deploy/SQL.
+
+## Publicação confirmada após push do proprietário
+
+Em29/10, `main`/`origin/main` passaram a `c1d18b86dd4074342de6bf371588e57c0bdd9fac`, sem alterações locais antes da atualização de status. Consulta de deployments e metadados Vercel confirmou o mesmo SHA em `dpl_99LPVHqzaaqxJ4m5UQ4LF4JSa8Mg`, READY/production, associado a `uzzina.cnvt.com.br`; `/app` respondeu HTTP200. Nenhum deploy disparado pelo agente, SQL executado ou dado real alterado. Teste autenticado/visual após publicação não realizado. As referências anteriores a ausência de push/deploy descrevem as etapas anteriores desta preparação e foram superadas por esta confirmação.
+
+## Aceite final em29/10
+
+Proprietário aprovou explicitamente a visualização inicial de Hoje, Ajuda e Notificações e autorizou publicar os registros. As funcionalidades já estão no deploy Ready confirmado acima. Tickets encerrados; uso prolongado de Notificações não bloqueia a conclusão, e eventual necessidade terá novo ticket aberto pelo proprietário. Somente documentação e manifest atualizados, com referências/diff conferidos; sem mudança funcional, novos testes/build, SQL ou dados reais.

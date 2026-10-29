@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately). A falha de carregamento de formulários é investigada em01; não bloqueia a implementação do conteúdo desta página.
 
-**Status:** implemented locally 2026-10-28 (owner authorized after layout review); awaiting owner evaluation. No commit/publication.
+**Status:** completed — owner approved 2026-10-29; published to production
 
 ## Evidence
 
@@ -26,3 +26,7 @@ Executar testes pertinentes, format/lint/typecheck/build e atualizar CURRENT/doc
 ## Result
 
 `HelpPage` (`app/components/features/HelpPage.tsx`) in `/app/help`: sticky index (desktop) / section selector (mobile), sections for global search, creating/editing, two actions, action shortcuts, account/themes, and admin-only Administração. Test `tests/help-page.test.tsx` failed on the placeholder before. Browser: scroll fixed after reproducing a clipped-container shift (absolute sr-only captions), see CURRENT.
+
+## Owner acceptance — 2026-10-29
+
+Owner explicitly approved and closed this delivery. Production deployment `dpl_99LPVHqzaaqxJ4m5UQ4LF4JSa8Mg` is READY on `uzzina.cnvt.com.br`, commit `c1d18b8`. Earlier findings and limits above describe the implementation history; they do not reopen this ticket or certify additional tests. No functional change or SQL in this acceptance update.
