@@ -55,6 +55,46 @@ export const Route = createFileRoute("/app/profile")({
   component: ProfilePage,
 });
 export const runtime = "edge";
+
+// Text-labelled choices need more horizontal room than the icon-sized Prism toggle default.
+const PROFILE_CHOICE_PADDING = "px-4";
+
+/**
+ * Decorative accent sample. Colors come from the same PALLETE data as the
+ * header menu; without a color it renders the neutral custom-theme chip.
+ */
+function PaletteSwatch({
+  color,
+  isDark,
+}: {
+  color?: { l: number; c: number; h: number };
+  isDark: boolean;
+}) {
+  if (!color) {
+    return (
+      <span
+        aria-hidden="true"
+        className="flex size-4 shrink-0 items-center justify-center rounded-lg border border-black/10 bg-zinc-200 text-zinc-600 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-400"
+        data-palette-swatch="custom"
+      >
+        <PipetteIcon className="size-2.5" />
+      </span>
+    );
+  }
+  return (
+    <span
+      aria-hidden="true"
+      className="size-4 shrink-0 rounded-lg"
+      data-palette-swatch="color"
+      style={{
+        backgroundColor: `oklch(${color.l} ${color.c} ${color.h})`,
+        border: isDark
+          ? "1px solid rgba(255,255,255,0.1)"
+          : "1px solid rgba(0,0,0,0.1)",
+      }}
+    />
+  );
+}
 function ProfilePage() {
   const { person, cloudName, uploadPreset } = useAppContext();
   const pageRef = useRef<HTMLDivElement>(null);
@@ -189,45 +229,6 @@ function ProfilePage() {
     }
   };
 
-  // Lista estendida contendo o Sentinel personalizado
-  const paletteOptions = [
-    ...PALLETE.map((p, idx) => {
-      const currentColors = theme === Theme.DARK ? p.dark : p.light;
-      return {
-        value: idx,
-        label: p.label,
-        icon: ({ className }: { className?: string }) => (
-          <div
-            className={cn(
-              "size-4 shrink-0 rounded-lg transition-transform duration-200",
-              className,
-            )}
-            style={{
-              backgroundColor: `oklch(${currentColors.primary.l} ${currentColors.primary.c} ${currentColors.primary.h})`,
-              border:
-                theme === Theme.DARK
-                  ? "1px solid rgba(255,255,255,0.1)"
-                  : "1px solid rgba(0,0,0,0.1)",
-            }}
-          />
-        ),
-      };
-    }),
-    {
-      value: -1,
-      label: "Personalizado",
-      icon: ({ className }: { className?: string }) => (
-        <div
-          className={cn(
-            "flex size-4 shrink-0 items-center justify-center rounded-lg border border-black/10 bg-zinc-200 text-zinc-600 transition-transform duration-200 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-400",
-            className,
-          )}
-        >
-          <PipetteIcon className="size-2.5" />
-        </div>
-      ),
-    },
-  ];
   return (
     <div
       ref={pageRef}
@@ -259,10 +260,13 @@ function ProfilePage() {
             setMobileSection(section);
         }}
       >
-        <PrismToggleGroupItem id="personal">
+        <PrismToggleGroupItem className={PROFILE_CHOICE_PADDING} id="personal">
           Informações pessoais
         </PrismToggleGroupItem>
-        <PrismToggleGroupItem id="preferences">
+        <PrismToggleGroupItem
+          className={PROFILE_CHOICE_PADDING}
+          id="preferences"
+        >
           Preferências
         </PrismToggleGroupItem>
       </PrismToggleGroup>
@@ -432,15 +436,24 @@ function ProfilePage() {
                 if (val) handleThemeChange(val);
               }}
             >
-              <PrismToggleGroupItem id="light">
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_PADDING}
+                id="light"
+              >
                 <SunIcon />
                 Claro
               </PrismToggleGroupItem>
-              <PrismToggleGroupItem id="dark">
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_PADDING}
+                id="dark"
+              >
                 <MoonIcon />
                 Escuro
               </PrismToggleGroupItem>
-              <PrismToggleGroupItem id="system">
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_PADDING}
+                id="system"
+              >
                 <LaptopIcon />
                 Sistema
               </PrismToggleGroupItem>
@@ -467,11 +480,27 @@ function ProfilePage() {
                 if (val !== undefined) handleColorChange(Number(val));
               }}
             >
-              {paletteOptions.map((opt) => (
-                <PrismToggleGroupItem id={String(opt.value)} key={opt.value}>
-                  {opt.label}
+              {PALLETE.map((palette, idx) => (
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_PADDING}
+                  id={String(idx)}
+                  key={palette.id}
+                >
+                  <PaletteSwatch
+                    color={
+                      theme === Theme.DARK
+                        ? palette.dark.primary
+                        : palette.light.primary
+                    }
+                    isDark={theme === Theme.DARK}
+                  />
+                  {palette.label}
                 </PrismToggleGroupItem>
               ))}
+              <PrismToggleGroupItem className={PROFILE_CHOICE_PADDING} id="-1">
+                <PaletteSwatch isDark={theme === Theme.DARK} />
+                Personalizado
+              </PrismToggleGroupItem>
             </PrismToggleGroup>
           </div>
 
@@ -510,15 +539,24 @@ function ProfilePage() {
                 if (val) setSelectedVariant(val);
               }}
             >
-              <PrismToggleGroupItem id="line">
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_PADDING}
+                id="line"
+              >
                 <ListIcon />
                 Linha
               </PrismToggleGroupItem>
-              <PrismToggleGroupItem id="block">
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_PADDING}
+                id="block"
+              >
                 <LayoutGridIcon />
                 Bloco
               </PrismToggleGroupItem>
-              <PrismToggleGroupItem id="content">
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_PADDING}
+                id="content"
+              >
                 <ImageIcon />
                 Conteúdo
               </PrismToggleGroupItem>
@@ -544,19 +582,31 @@ function ProfilePage() {
                 if (isTodayViewMode(value)) setSelectedTodayView(value);
               }}
             >
-              <PrismToggleGroupItem id="kanban">
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_PADDING}
+                id="kanban"
+              >
                 <KanbanIcon />
                 Kanban
               </PrismToggleGroupItem>
-              <PrismToggleGroupItem id="categories">
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_PADDING}
+                id="categories"
+              >
                 <Grid3x3Icon />
                 Categorias
               </PrismToggleGroupItem>
-              <PrismToggleGroupItem id="feed">
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_PADDING}
+                id="feed"
+              >
                 <BlocksIcon />
                 Feed
               </PrismToggleGroupItem>
-              <PrismToggleGroupItem id="partners">
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_PADDING}
+                id="partners"
+              >
                 <HeartHandshakeIcon />
                 Parceiros
               </PrismToggleGroupItem>

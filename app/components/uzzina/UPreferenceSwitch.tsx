@@ -38,6 +38,7 @@ export function UPreferenceSwitch({
         </span>
       </div>
       <PrismToggle
+        className="shrink-0 px-4"
         id={id}
         isSelected={checked}
         onChange={onCheckedChange}
