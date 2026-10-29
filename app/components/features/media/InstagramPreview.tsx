@@ -4,6 +4,8 @@ import { ChevronLeftIcon, ChevronRightIcon, ImageIcon } from "lucide-react";
 
 interface InstagramPreviewProps {
   files?: string[] | null;
+  /** Phone-width panel: keep the 4:5 frame but cap its height. */
+  compact?: boolean;
 }
 
 /**
@@ -13,13 +15,16 @@ interface InstagramPreviewProps {
  * - N imagens → carrossel com navegação
  * - 1 vídeo → player de vídeo (com capa opcional em files[1])
  */
-export function InstagramPreview({ files }: InstagramPreviewProps) {
+export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const type = detectPostType(files as string[]);
 
   // Proporção Instagram feed padrão 4:5
-  const frameClass =
-    "relative w-full overflow-hidden rounded-xl bg-black/5 border";
+  // On a compact panel the height is fixed and the width follows the ratio, so
+  // the preview leaves room for writing without cropping the post.
+  const frameClass = compact
+    ? "relative mx-auto h-[min(18rem,45svh)] w-auto max-w-full overflow-hidden rounded-xl bg-black/5 border"
+    : "relative w-full overflow-hidden rounded-xl bg-black/5 border";
   const aspectClass = "aspect-[4/5]";
 
   if (!files || files.length === 0) {

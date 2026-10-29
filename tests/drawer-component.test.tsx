@@ -27,6 +27,7 @@ import { ActionDrawerPanel } from "../app/components/features/action-drawer/Acti
 import type { Action, Person, Partner } from "../app/types";
 import { QUERY_KEYS } from "../app/lib/query-keys";
 import userEvent from "@testing-library/user-event";
+import { installVisualViewport } from "./fixtures/visual-viewport";
 
 Object.assign(globalThis, {
   localStorage: window.localStorage,
@@ -1715,8 +1716,11 @@ describe("phone-width action panel", () => {
   const elementPrototype = window.HTMLElement.prototype;
   let previousRect: PropertyDescriptor | undefined;
   let previousObserver: PropertyDescriptor | undefined;
+  // Visible area of the Instagram tab's scroll region, when a test lays it out.
+  let instagramScrollerRect: DOMRect | null = null;
   beforeEach(() => {
     panelWidth = 390;
+    instagramScrollerRect = null;
     resizeCallbacks.clear();
     previousObserver = Object.getOwnPropertyDescriptor(
       globalThis,
@@ -1735,6 +1739,11 @@ describe("phone-width action panel", () => {
         // The drawer's content area spans the whole action panel.
         if (this.hasAttribute("data-action-layout-width"))
           return new window.DOMRect(0, 0, panelWidth, 700);
+        if (
+          instagramScrollerRect &&
+          this.hasAttribute("data-instagram-scroller")
+        )
+          return instagramScrollerRect;
         return measure.call(this);
       },
     });
@@ -2075,5 +2084,283 @@ describe("phone-width action panel", () => {
       expect(document.activeElement === target).toBe(true);
     }
     expect(writes).toEqual([]);
+  });
+  const IMAGE = "https://res.cloudinary.com/test/image/upload/v1/post.jpg";
+  async function openInstagram(overrides: Partial<Action> = {}) {
+    mount(draft({ category: "post", description: "<p></p>", ...overrides }));
+    await descriptionEditor();
+    fireEvent.click(screen.getByRole("tab", { name: "INSTAGRAM" }));
+    const scroller = document.querySelector<HTMLElement>(
+      "[data-instagram-scroller]",
+    );
+    if (!scroller) throw new Error("Instagram tab did not render");
+    return scroller;
+  }
+  function instagramEditor(scroller: HTMLElement) {
+    const editor = scroller.querySelector<HTMLElement>(
+      ".tiptap[contenteditable=true]",
+    );
+    if (!editor) throw new Error("Content editor did not mount");
+    return editor;
+  }
+
+  it("without media the compact media area holds only Adicionar conteúdo", async () => {
+    const scroller = await openInstagram();
+    const media = within(scroller);
+    expect(
+      media.getByRole("button", { name: "Adicionar conteúdo" }),
+    ).toBeTruthy();
+    expect(
+      media.queryByRole("button", { name: /Gerenciar|arquivo/ }),
+    ).toBeNull();
+    expect(media.queryByText("Nenhum conteúdo")).toBeNull();
+    expect(scroller.querySelector("img, video")).toBeNull();
+  });
+
+  it("with media the compact area shows the preview, Adicionar conteúdo and Gerenciar", async () => {
+    const scroller = await openInstagram({ content_files: [IMAGE] });
+    const media = within(scroller);
+    expect(scroller.querySelector("img")?.getAttribute("src")).toBe(IMAGE);
+    expect(
+      media.getByRole("button", { name: "Adicionar conteúdo" }),
+    ).toBeTruthy();
+    await userEvent
+      .setup()
+      .click(media.getByRole("button", { name: "Gerenciar" }));
+    expect(
+      await screen.findByRole("heading", { name: /Gerenciar conteúdo/ }),
+    ).toBeTruthy();
+    expect(writes).toEqual([]);
+  });
+
+  it("the upload control stays the same mounted widget while files arrive", async () => {
+    let deliver: ((error: unknown, result: unknown) => void) | null = null;
+    let destroyed = 0;
+    Object.assign(window, {
+      cloudinary: {
+        createUploadWidget: (
+          _options: object,
+          callback: (error: unknown, result: unknown) => void,
+        ) => {
+          deliver = callback;
+          return { open: () => {}, destroy: () => destroyed++ };
+        },
+      },
+    });
+    try {
+      const scroller = await openInstagram();
+      const add = within(scroller).getByRole("button", {
+        name: "Adicionar conteúdo",
+      });
+      await userEvent.setup().click(add);
+      const success = (url: string, name: string) =>
+        act(() =>
+          deliver?.(null, {
+            event: "success",
+            info: { secure_url: url, public_id: name, original_filename: name },
+          }),
+        );
+      success(IMAGE, "a");
+      success(IMAGE.replace("post", "second"), "b");
+      expect(
+        within(scroller).getByRole("button", { name: "Adicionar conteúdo" }) ===
+          add,
+      ).toBe(true);
+      expect(destroyed).toBe(0);
+      expect(
+        within(scroller).getByRole("button", { name: "Gerenciar" }),
+      ).toBeTruthy();
+      await waitFor(() =>
+        expect(writes.at(-1)?.content_files).toEqual([
+          IMAGE,
+          IMAGE.replace("post", "second"),
+        ]),
+      );
+    } finally {
+      Reflect.deleteProperty(window, "cloudinary");
+    }
+  });
+
+  it("the compact content editor has one toolbar row and a menu for the other commands", async () => {
+    const scroller = await openInstagram({
+      content_description: "<p>Slide</p>",
+    });
+    const editor = instagramEditor(scroller);
+    const toolbar = within(scroller).getByRole("toolbar", {
+      name: "Formatação do texto",
+    });
+    expect(
+      within(toolbar).getByRole("button", { name: "Mais formatação" }),
+    ).toBeTruthy();
+    expect(
+      within(toolbar).queryByRole("button", { name: "Título 1" }),
+    ).toBeNull();
+    const user = userEvent.setup();
+    act(() => editor.focus());
+    await user.keyboard("{Alt>}{Shift>}{F10}{/Shift}{/Alt}");
+    expect(toolbar.contains(document.activeElement)).toBe(true);
+    await user.tab();
+    expect(document.activeElement === editor).toBe(true);
+    // A wide panel keeps the full toolbar on the same editor instance.
+    resizePanel(768);
+    const wideToolbar = within(scroller).getByRole("toolbar", {
+      name: "Formatação do texto",
+    });
+    expect(
+      within(wideToolbar).getByRole("button", { name: "Título 1" }),
+    ).toBeTruthy();
+    expect(
+      within(wideToolbar).queryByRole("button", { name: "Mais formatação" }),
+    ).toBeNull();
+    expect(instagramEditor(scroller) === editor).toBe(true);
+    expect(within(scroller).getByText("Nenhum conteúdo")).toBeTruthy();
+    expect(
+      within(scroller).getByRole("button", { name: "Gerenciar" }),
+    ).toBeTruthy();
+  });
+
+  it("the writing column follows the visible space and keeps the caption selection", async () => {
+    const viewport = installVisualViewport({ height: 800 });
+    try {
+      const scroller = await openInstagram();
+      const column = scroller.querySelector<HTMLElement>(
+        "[data-instagram-writing]",
+      );
+      if (!column) throw new Error("Writing column did not render");
+      // The tab's scroll area spans 100–700px of the layout viewport.
+      instagramScrollerRect = new window.DOMRect(0, 100, 390, 600);
+      resizePanel(390);
+      expect(column.style.height).toBe("600px");
+      fireEvent.click(within(column).getByRole("tab", { name: "Legenda" }));
+      const caption = within(column).getByRole("textbox", {
+        name: "Legenda do Instagram",
+      });
+      if (!(caption instanceof window.HTMLTextAreaElement))
+        throw new Error("Caption is not a textarea");
+      fireEvent.change(caption, { target: { value: "Primeira linha" } });
+      caption.setSelectionRange(3, 8);
+      // The iOS keyboard leaves 400px visible: only 300px of the area remain.
+      viewport.set({ height: 400 });
+      expect(column.style.height).toBe("300px");
+      // A very short viewport keeps a minimal writing region, not zero.
+      viewport.set({ height: 160 });
+      expect(column.style.height).toBe("144px");
+      expect(
+        within(column).getByRole("textbox", {
+          name: "Legenda do Instagram",
+        }) === caption,
+      ).toBe(true);
+      expect([caption.selectionStart, caption.selectionEnd]).toEqual([3, 8]);
+      expect(caption.value).toBe("Primeira linha");
+      // Wide panels return to their container-query layout.
+      resizePanel(768);
+      expect(column.style.height).toBe("");
+    } finally {
+      viewport.restore();
+    }
+  });
+  it("the writing column can scroll fully above the keyboard", async () => {
+    const viewport = installVisualViewport({ height: 844 });
+    try {
+      const scroller = await openInstagram();
+      const column = scroller.querySelector<HTMLElement>(
+        "[data-instagram-writing]",
+      );
+      if (!column) throw new Error("Writing column did not render");
+      // The drawer is fixed to the layout viewport: its scroll area spans
+      // 160–760px and keeps that box when the keyboard opens.
+      instagramScrollerRect = new window.DOMRect(0, 160, 390, 600);
+      resizePanel(390);
+      expect(column.style.height).toBe("600px");
+      expect(scroller.querySelector("[data-keyboard-inset]")).toBeNull();
+      viewport.set({ height: 470 });
+      const inset = scroller.querySelector<HTMLElement>(
+        "[data-keyboard-inset]",
+      );
+      if (!inset) throw new Error("No room was reserved under the keyboard");
+      // The spacer is the last scrolled content, directly after the column.
+      expect(column.nextElementSibling === inset).toBe(true);
+      expect(scroller.lastElementChild === inset).toBe(true);
+      const columnHeight = Number.parseFloat(column.style.height);
+      const insetHeight = Number.parseFloat(inset.style.height);
+      expect(columnHeight).toBe(310);
+      // Column and spacer fill the scroll area, so at maximum scroll the
+      // content ends at its bottom (760px) and the column ends above it.
+      expect(columnHeight + insetHeight).toBeGreaterThanOrEqual(600);
+      const columnBottom = 760 - insetHeight;
+      expect(columnBottom).toBeLessThanOrEqual(470);
+      expect(columnBottom - columnHeight).toBeGreaterThanOrEqual(160);
+      viewport.set({ height: 844 });
+      expect(scroller.querySelector("[data-keyboard-inset]")).toBeNull();
+      expect(column.style.height).toBe("600px");
+    } finally {
+      viewport.restore();
+    }
+  });
+
+  it("a wide but short landscape panel uses the writing layout without toggling on the keyboard", async () => {
+    const viewport = installVisualViewport({ width: 844, height: 390 });
+    try {
+      // Landscape phone: the panel is 672px wide (not compact) and the
+      // Instagram scroll area spans 120–340px.
+      panelWidth = 672;
+      instagramScrollerRect = new window.DOMRect(0, 120, 672, 220);
+      const scroller = await openInstagram();
+      const media = within(scroller);
+      const editor = instagramEditor(scroller);
+      const column = scroller.querySelector<HTMLElement>(
+        "[data-instagram-writing]",
+      );
+      if (!column) throw new Error("Writing column did not render");
+      expect(document.querySelector("[data-action-footer-strip]")).toBeNull();
+      expect(
+        media.getByRole("button", { name: "Adicionar conteúdo" }),
+      ).toBeTruthy();
+      expect(
+        media.queryByRole("button", { name: /Gerenciar|arquivo/ }),
+      ).toBeNull();
+      expect(media.queryByText("Nenhum conteúdo")).toBeNull();
+      const toolbar = () =>
+        within(media.getByRole("toolbar", { name: "Formatação do texto" }));
+      expect(
+        toolbar().getByRole("button", { name: "Mais formatação" }),
+      ).toBeTruthy();
+      expect(toolbar().queryByRole("button", { name: "Título 1" })).toBeNull();
+      expect(column.style.height).toBe("220px");
+      // The keyboard shrinks only the visual viewport: same layout, smaller
+      // column (kept at the minimum) and room to scroll it above the keyboard.
+      viewport.set({ height: 250 });
+      expect(
+        toolbar().getByRole("button", { name: "Mais formatação" }),
+      ).toBeTruthy();
+      expect(column.style.height).toBe("144px");
+      expect(
+        scroller.querySelector<HTMLElement>("[data-keyboard-inset]")?.style
+          .height,
+      ).toBe("90px");
+      viewport.set({ height: 390 });
+      // Near the limit the writing layout holds until clearly taller.
+      instagramScrollerRect = new window.DOMRect(0, 120, 672, 500);
+      resizePanel(672);
+      expect(
+        toolbar().getByRole("button", { name: "Mais formatação" }),
+      ).toBeTruthy();
+      instagramScrollerRect = new window.DOMRect(0, 120, 672, 600);
+      resizePanel(672);
+      expect(toolbar().getByRole("button", { name: "Título 1" })).toBeTruthy();
+      expect(
+        toolbar().queryByRole("button", { name: "Mais formatação" }),
+      ).toBeNull();
+      expect(media.getByText("Nenhum conteúdo")).toBeTruthy();
+      expect(column.style.height).toBe("");
+      expect(instagramEditor(scroller) === editor).toBe(true);
+      // Short desktop windows keep the side-by-side container-query layout.
+      instagramScrollerRect = new window.DOMRect(0, 120, 800, 220);
+      resizePanel(800);
+      expect(toolbar().getByRole("button", { name: "Título 1" })).toBeTruthy();
+      expect(column.style.height).toBe("");
+    } finally {
+      viewport.restore();
+    }
   });
 });

@@ -16,6 +16,11 @@ interface ContentFilesManagerProps {
   onChange: (files: string[]) => void;
   cloudName: string;
   uploadPreset: string;
+  /**
+   * Phone-width panel: without files only Adicionar conteúdo is shown; with
+   * files both Adicionar conteúdo and Gerenciar stay visible.
+   */
+  compact?: boolean;
 }
 
 /**
@@ -27,6 +32,7 @@ export function ContentFilesManager({
   onChange,
   cloudName,
   uploadPreset,
+  compact = false,
 }: ContentFilesManagerProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const type = !files || files.length === 0 ? "empty" : detectPostType(files);
@@ -74,11 +80,17 @@ export function ContentFilesManager({
   };
   return (
     <>
-      <div className="flex items-center justify-between py-2">
+      <div
+        className={cn(
+          "flex items-center justify-between py-2",
+          compact && "flex-wrap gap-2",
+        )}
+      >
         <div className="flex items-center gap-2">
-          {/* UploadIcon rápido (primeiro arquivo) */}
+          {/* Same element in every state: the widget must stay mounted while a
+              multiple upload is still delivering files. */}
           <CloudinaryUpload
-            className={cn(files.length > 0 && "hidden")}
+            className={cn(!compact && files.length > 0 && "hidden")}
             cloudName={cloudName}
             folder="uzzina/content"
             multiple
@@ -102,17 +114,19 @@ export function ContentFilesManager({
         </div>
 
         {/* Botão gerenciar (sempre visível quando há arquivos, ou para adicionar) */}
-        <PrismButton
-          variant={"ghost"}
-          size={"xs"}
-          onClick={() => setDialogOpen(true)}
-          type="button"
-        >
-          <SlidersHorizontalIcon />
-          {files.length === 0
-            ? "Gerenciar"
-            : `${files.length} arquivo${files.length !== 1 ? "s" : ""}`}
-        </PrismButton>
+        {(!compact || files.length > 0) && (
+          <PrismButton
+            variant={"ghost"}
+            size={"xs"}
+            onClick={() => setDialogOpen(true)}
+            type="button"
+          >
+            <SlidersHorizontalIcon />
+            {compact || files.length === 0
+              ? "Gerenciar"
+              : `${files.length} arquivo${files.length !== 1 ? "s" : ""}`}
+          </PrismButton>
+        )}
       </div>
 
       <ContentReorderDialog

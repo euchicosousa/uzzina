@@ -1,5 +1,5 @@
 import { ListIcon, LoaderIcon, SparkleIcon } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ContentFilesManager } from "~/components/features/media/InstagramContent";
 import { InstagramPreview } from "~/components/features/media/InstagramPreview";
 import { RichTextEditor } from "~/components/features/RichTextEditor";
@@ -9,6 +9,10 @@ import { INTENT } from "~/lib/CONSTANTS";
 import { getFormattedPartnersLinks, parseStrategies } from "~/utils/format";
 import type { Action, Partner } from "~/types";
 import { cn } from "cnfast";
+import {
+  useShortWritingPanel,
+  useWritingAreaHeight,
+} from "./useWritingAreaHeight";
 interface InstagramTabProps {
   RawAction: Action;
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;
@@ -27,6 +31,8 @@ interface InstagramTabProps {
   contentDescription: string;
   onContentDescriptionChange: (html: string) => void;
   onOpenStrategyModal?: () => void;
+  /** Phone-width panel, measured by the drawer from its own width. */
+  compact?: boolean;
 }
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
@@ -63,23 +69,48 @@ export function InstagramTab({
   contentDescription,
   onContentDescriptionChange,
   onOpenStrategyModal,
+  compact = false,
 }: InstagramTabProps) {
   const [instagramSubTab, setInstagramSubTab] = useState<"content" | "caption">(
     "content",
   );
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const columnRef = useRef<HTMLDivElement>(null);
+  // Phone-width panels, and landscape phones whose panel is wide but short,
+  // prioritize writing: media only when present, one-row toolbar, sized column.
+  const shortPanel = useShortWritingPanel(scrollerRef);
+  const writingLayout = compact || shortPanel;
+  // The writing column gets the visible height of this scroll area; media
+  // above it scrolls away instead of shrinking the text.
+  const { height: writingHeight, keyboardInset } = useWritingAreaHeight({
+    enabled: writingLayout,
+    scrollerRef,
+    columnRef,
+    layoutKey: `${instagramSubTab}:${isAIProcessing}`,
+  });
+  const sizedColumn = writingLayout && writingHeight !== null;
   return (
-    <div className="flex h-full w-full max-w-full flex-col overflow-x-hidden overflow-y-auto @[47rem]/action:flex-row">
+    <div
+      className="flex h-full w-full max-w-full flex-col overflow-x-hidden overflow-y-auto @[47rem]/action:flex-row"
+      data-instagram-scroller
+      ref={scrollerRef}
+    >
       <div
         className={cn(
           "mx-auto flex shrink-0 flex-col p-6",
+          writingLayout && "w-full px-4 pt-4 pb-0",
           instagramSubTab === "content"
             ? "@[47rem]/action:w-2/5"
             : "@[47rem]/action:w-1/2",
         )}
       >
-        <InstagramPreview files={contentFiles} />
+        {/* Compact panels show no empty preview: only Adicionar conteúdo. */}
+        {(!writingLayout || contentFiles.length > 0) && (
+          <InstagramPreview compact={writingLayout} files={contentFiles} />
+        )}
         <ContentFilesManager
           cloudName={cloudName}
+          compact={writingLayout}
           files={contentFiles}
           onChange={updateContentFiles}
           uploadPreset={uploadPreset}
@@ -88,14 +119,18 @@ export function InstagramTab({
 
       <div
         className={cn(
-          "flex min-h-80 flex-col @[47rem]/action:overflow-hidden",
+          "flex flex-col @[47rem]/action:overflow-hidden",
+          sizedColumn ? "shrink-0" : "min-h-80",
           instagramSubTab === "content"
             ? "@[47rem]/action:w-3/5"
             : "@[47rem]/action:w-1/2",
         )}
+        data-instagram-writing
+        ref={columnRef}
+        style={sizedColumn ? { height: writingHeight } : undefined}
       >
         {/* Sub-tab navigation */}
-        <div className="flex shrink-0" role="tablist">
+        <div className="flex shrink-0" data-writing-controls role="tablist">
           <button
             aria-selected={instagramSubTab === "content"}
             className={subTabClass(instagramSubTab === "content")}
@@ -118,8 +153,16 @@ export function InstagramTab({
 
         {/* Sub-aba CONTEÚDO */}
         {instagramSubTab === "content" && (
-          <div className="flex h-full flex-col overflow-hidden">
-            <div className="flex min-w-0 items-center justify-between gap-3 border-b px-4 py-4 @[47rem]/action:pl-0">
+          <div
+            className={cn(
+              "flex flex-col overflow-hidden",
+              writingLayout ? "min-h-0 flex-1" : "h-full",
+            )}
+          >
+            <div
+              className="flex min-w-0 shrink-0 items-center justify-between gap-3 border-b px-4 py-4 @[47rem]/action:pl-0"
+              data-writing-controls
+            >
               <div className="flex min-w-0 shrink items-center gap-2">
                 <UAvatarGroup
                   avatars={currentPartners.map((partner) => ({
@@ -189,7 +232,11 @@ export function InstagramTab({
               })()}
             </div>
             <RichTextEditor
-              className="flex-1 overflow-y-auto"
+              className={cn(
+                "flex-1 overflow-y-auto",
+                writingLayout && "min-h-0",
+              )}
+              compactToolbar={writingLayout}
               content={contentDescription}
               handleBlur={(html) => {
                 onContentDescriptionChange(html);
@@ -205,8 +252,19 @@ export function InstagramTab({
 
         {/* Sub-aba LEGENDA */}
         {instagramSubTab === "caption" && (
-          <div className="flex h-full flex-col">
-            <div className="flex items-center justify-between border-b px-4 py-4 @[47rem]/action:pl-0">
+          <div
+            className={cn(
+              "flex flex-col",
+              writingLayout ? "min-h-0 flex-1" : "h-full",
+            )}
+          >
+            <div
+              className={cn(
+                "flex items-center justify-between border-b px-4 py-4 @[47rem]/action:pl-0",
+                writingLayout && "shrink-0",
+              )}
+              data-writing-controls
+            >
               <div className="flex items-center gap-2">
                 <UAvatarGroup
                   avatars={currentPartners.map((partner) => ({
@@ -234,14 +292,22 @@ export function InstagramTab({
                 )}
               </PrismButton>
             </div>
-            <div className="flex h-full flex-col">
+            <div
+              className={cn(
+                "flex flex-col",
+                writingLayout ? "min-h-0 flex-1" : "h-full",
+              )}
+            >
               <AiProcessingMessage
                 activeAIIntent={activeAIIntent}
                 isAIProcessing={isAIProcessing}
               />
               <textarea
                 aria-label="Legenda do Instagram"
-                className="h-full w-full resize-none p-4 outline-none disabled:opacity-50 @[47rem]/action:pl-0"
+                className={cn(
+                  "w-full resize-none p-4 outline-none disabled:opacity-50 @[47rem]/action:pl-0",
+                  writingLayout ? "min-h-0 flex-1" : "h-full",
+                )}
                 disabled={isAIProcessing}
                 onBlur={async () =>
                   await updateAction({
@@ -268,6 +334,16 @@ export function InstagramTab({
           </div>
         )}
       </div>
+      {/* Room for the part of the scroll area under the iOS keyboard, so the
+          writing column can scroll fully into the visible area. */}
+      {writingLayout && keyboardInset > 0 && (
+        <div
+          aria-hidden="true"
+          className="shrink-0"
+          data-keyboard-inset
+          style={{ height: keyboardInset }}
+        />
+      )}
     </div>
   );
 }

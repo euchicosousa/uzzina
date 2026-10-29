@@ -645,6 +645,7 @@ export function ActionFormDrawer({
               <InstagramTab
                 activeAIIntent={activeAIIntent}
                 cloudName={cloudName}
+                compact={compact}
                 contentDescription={contentDescriptionRef.current}
                 contentFiles={contentFiles}
                 currentPartners={currentPartners}

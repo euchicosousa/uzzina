@@ -3,7 +3,9 @@ import { useLayoutEffect, useState } from "react";
 /** Visible area in layout-viewport (client) coordinates. */
 export type VisibleViewport = { top: number; height: number };
 
-function readVisibleViewport(previous?: VisibleViewport): VisibleViewport {
+export function readVisibleViewport(
+  previous?: VisibleViewport,
+): VisibleViewport {
   const viewport = window.visualViewport;
   if (!viewport) return { top: 0, height: window.innerHeight };
   // A pinch-zoomed visual viewport pans across the page; following it would

@@ -19,6 +19,7 @@ import {
   ChevronDown,
   ChevronRight,
   Columns,
+  Ellipsis,
   Heading1,
   Heading2,
   Heading3,
@@ -43,6 +44,23 @@ import {
   Button as AriaButton,
   Toolbar as AriaToolbar,
 } from "react-aria-components";
+import {
+  PrismMenuContent,
+  PrismMenuGroup,
+  PrismMenuItem,
+  PrismMenuSeparator,
+  PrismMenuTrigger,
+} from "~/components/prism";
+
+// Commands kept in the single toolbar row of a compact editor; every other
+// formatting command moves to the "Mais formatação" menu.
+const COMPACT_TOOLBAR_COMMANDS = new Set([
+  "Título 2",
+  "Negrito",
+  "Itálico",
+  "Lista com Marcadores",
+  "Lista Numerada",
+]);
 
 const toolbarButtonClass =
   "flex size-8 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all outline-none hover:bg-secondary hover:text-foreground data-[focus-visible]:bg-input data-[focus-visible]:text-foreground disabled:opacity-30 disabled:hover:bg-transparent";
@@ -71,6 +89,7 @@ function EditorToolbar({
 interface TiptapToolbarProps {
   editor: Editor | null;
   isRounded?: boolean;
+  compact?: boolean;
 }
 interface ToolbarButtonDef {
   icon: LucideIcon;
@@ -119,7 +138,82 @@ function ToolbarButton({
     </AriaButton>
   );
 }
-function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
+function MoreFormattingMenu({
+  editor,
+  commands,
+}: {
+  editor: Editor;
+  commands: ToolbarButtonDef[];
+}) {
+  const toggles = commands.filter((command) => command.isToggle !== false);
+  const inserts = commands.filter((command) => command.isToggle === false);
+  const state = useEditorState({
+    editor,
+    selector: ({ editor: e }) => ({
+      editable: e.isEditable,
+      // A string keeps the default equality check cheap and stable.
+      active: toggles
+        .filter((command) => command.selector(e))
+        .map((command) => command.label)
+        .join("\n"),
+    }),
+  });
+  const activeKeys = state.active ? state.active.split("\n") : [];
+  // Commands focus the editor themselves (Tiptap restores the stored
+  // selection), so the menu only restores its trigger when dismissed.
+  return (
+    <PrismMenuTrigger>
+      <AriaButton
+        aria-label="Mais formatação"
+        className={cn(toolbarButtonClass, "ml-auto")}
+        isDisabled={!state.editable}
+        type="button"
+      >
+        <span
+          className="flex size-full items-center justify-center"
+          title="Mais formatação"
+        >
+          <Ellipsis className="size-4" />
+        </span>
+      </AriaButton>
+      <PrismMenuContent className="w-56" placement="bottom end">
+        <PrismMenuGroup
+          aria-label="Estilos"
+          selectedKeys={activeKeys}
+          selectionMode="multiple"
+          shouldCloseOnSelect
+        >
+          {toggles.map((command) => (
+            <PrismMenuItem
+              id={command.label}
+              key={command.label}
+              onAction={command.action}
+              textValue={command.label}
+            >
+              <command.icon />
+              {command.label}
+            </PrismMenuItem>
+          ))}
+        </PrismMenuGroup>
+        <PrismMenuSeparator />
+        <PrismMenuGroup aria-label="Inserir e limpar">
+          {inserts.map((command) => (
+            <PrismMenuItem
+              id={command.label}
+              key={command.label}
+              onAction={command.action}
+              textValue={command.label}
+            >
+              <command.icon />
+              {command.label}
+            </PrismMenuItem>
+          ))}
+        </PrismMenuGroup>
+      </PrismMenuContent>
+    </PrismMenuTrigger>
+  );
+}
+function TiptapToolbar({ editor, isRounded, compact }: TiptapToolbarProps) {
   const history = useEditorState({
     editor,
     selector: ({ editor: e }) =>
@@ -275,15 +369,23 @@ function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
       selector: () => false,
     },
   ];
+  const visibleButtons = compact
+    ? buttons.filter((btn) => COMPACT_TOOLBAR_COMMANDS.has(btn.label))
+    : buttons;
+  const extraButtons = compact
+    ? buttons.filter((btn) => !COMPACT_TOOLBAR_COMMANDS.has(btn.label))
+    : [];
   return (
     <EditorToolbar
       label="Formatação do texto"
       className={cn(
-        "flex max-w-full shrink-0 flex-wrap items-center gap-1 overflow-hidden border-b bg-popover p-1.5",
+        "flex max-w-full shrink-0 items-center gap-1 overflow-hidden border-b bg-popover p-1.5",
+        // Compact: one row that stays visible above long text in its scroller.
+        compact ? "sticky top-0 z-10 flex-nowrap" : "flex-wrap",
         isRounded && "rounded-t-2xl squircle",
       )}
     >
-      {buttons.map((btn) => (
+      {visibleButtons.map((btn) => (
         <ToolbarButton key={btn.label} {...btn} editor={editor} />
       ))}
 
@@ -318,6 +420,10 @@ function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
           <Redo2 className="size-4" />
         </span>
       </AriaButton>
+
+      {compact && (
+        <MoreFormattingMenu commands={extraButtons} editor={editor} />
+      )}
     </EditorToolbar>
   );
 }
@@ -330,6 +436,7 @@ export function RichTextEditor({
   disabled,
   placeholder,
   isRounded,
+  compactToolbar = false,
 }: {
   content: string;
   handleBlur?: (content: string) => void;
@@ -339,6 +446,12 @@ export function RichTextEditor({
   disabled?: boolean;
   placeholder?: string;
   isRounded?: boolean;
+  /**
+   * One row of basic commands plus a "Mais formatação" menu. Callers decide
+   * it from their container width (the action drawer's compact panel), never
+   * from the window width; other editors keep the full toolbar.
+   */
+  compactToolbar?: boolean;
 }) {
   const editorRoot = useRef<HTMLDivElement>(null);
   const [extensions] = useState(() => {
@@ -582,7 +695,11 @@ export function RichTextEditor({
         ref={editorRoot}
         title="Alt+Shift+F10: formatação · Alt+Shift+F9: seleção ou tabela"
       >
-        <TiptapToolbar editor={editor} isRounded={isRounded} />
+        <TiptapToolbar
+          compact={compactToolbar}
+          editor={editor}
+          isRounded={isRounded}
+        />
         {editor && (
           <BubbleMenuComponent
             className="flex items-center gap-0.5 rounded-2xl border bg-background/95 p-1 shadow-lg backdrop-blur-md squircle"
