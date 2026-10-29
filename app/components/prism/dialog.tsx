@@ -11,6 +11,10 @@ import {
 import { cn } from "cnfast";
 import { XIcon } from "lucide-react";
 import { PrismButton } from ".";
+import {
+  useVisibleViewport,
+  type VisibleViewport,
+} from "~/hooks/useVisibleViewport";
 function DialogTrigger({ ...props }: DialogTriggerPrimitiveProps) {
   return <DialogTriggerPrimitive data-slot="dialog-trigger" {...props} />;
 }
@@ -52,29 +56,68 @@ function DialogOverlay({
     </ModalOverlayPrimitive>
   );
 }
-function Dialog({
+// Outer margin kept around dialogs inside the visible viewport.
+const DIALOG_MARGIN = 16;
+// Natural height of a top-aligned command dialog (input, list and footer).
+const TOP_DIALOG_HEIGHT = 416;
+
+type DialogPlacement = "center" | "top";
+
+function getDialogFrame(
+  { top, height }: VisibleViewport,
+  placement: DialogPlacement,
+): React.CSSProperties {
+  // Top-aligned dialogs start at a third of the visible height while their
+  // natural height still fits below; otherwise they move up to the margin.
+  const insetTop =
+    placement === "top"
+      ? Math.min(
+          height / 3,
+          Math.max(DIALOG_MARGIN, height - TOP_DIALOG_HEIGHT - DIALOG_MARGIN),
+        )
+      : DIALOG_MARGIN;
+  return {
+    top,
+    height: Math.max(0, height),
+    paddingTop: insetTop,
+    paddingRight: DIALOG_MARGIN,
+    paddingBottom: DIALOG_MARGIN,
+    paddingLeft: DIALOG_MARGIN,
+  };
+}
+
+// Mounted only while the overlay is open, so closed dialogs do not listen to
+// viewport changes.
+function DialogFrame({
   className,
   children,
-  showCloseButton = true,
-  isDismissable = true,
-  ...props
-}: Omit<ModalOverlayPrimitiveProps, "className" | "children"> &
-  Pick<React.ComponentProps<typeof ModalPrimitive>, "isDismissable"> & {
-    className?: string;
-    children: React.ReactNode;
-    showCloseButton?: boolean;
-  }) {
+  placement,
+  showCloseButton,
+}: {
+  className?: string;
+  children: React.ReactNode;
+  placement: DialogPlacement;
+  showCloseButton: boolean;
+}) {
+  const visible = useVisibleViewport();
   return (
-    <DialogOverlay isDismissable={isDismissable} {...props}>
+    <div
+      className={cn(
+        "pointer-events-none absolute inset-x-0 flex justify-center",
+        placement === "top" ? "items-start" : "items-center",
+      )}
+      data-slot="dialog-viewport"
+      style={getDialogFrame(visible, placement)}
+    >
       <ModalPrimitive
         className={cn(
-          "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-[min(var(--radius-4xl),24px)] bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none squircle sm:w-full dark:ring-foreground/10",
+          "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 pointer-events-auto relative z-50 grid max-h-full w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-[min(var(--radius-4xl),24px)] bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none squircle sm:w-full dark:ring-foreground/10",
           className,
         )}
         data-slot="dialog-content"
       >
         <DialogPrimitive
-          className="[display:inherit] gap-[inherit] outline-none"
+          className="[display:inherit] min-h-0 [flex-direction:inherit] gap-[inherit] outline-none"
           data-slot="dialog"
         >
           {children}
@@ -90,6 +133,36 @@ function Dialog({
           )}
         </DialogPrimitive>
       </ModalPrimitive>
+    </div>
+  );
+}
+function Dialog({
+  className,
+  children,
+  showCloseButton = true,
+  isDismissable = true,
+  placement = "center",
+  ...props
+}: Omit<ModalOverlayPrimitiveProps, "className" | "children"> &
+  Pick<React.ComponentProps<typeof ModalPrimitive>, "isDismissable"> & {
+    className?: string;
+    children: React.ReactNode;
+    showCloseButton?: boolean;
+    /**
+     * Vertical position inside the visible viewport. Dialogs taller than the
+     * available space keep the outer margin and scroll their content.
+     */
+    placement?: DialogPlacement;
+  }) {
+  return (
+    <DialogOverlay isDismissable={isDismissable} {...props}>
+      <DialogFrame
+        className={className}
+        placement={placement}
+        showCloseButton={showCloseButton}
+      >
+        {children}
+      </DialogFrame>
     </DialogOverlay>
   );
 }

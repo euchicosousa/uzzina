@@ -33,6 +33,7 @@ import { PartnersCombobox } from "~/components/features/PartnersCombobox";
 import { searchActionsByTitle } from "~/models/actions";
 import type { Action, Partner, Celebration } from "~/types";
 import { calendarAction, calendarPerson } from "./fixtures/calendar-height";
+import { installVisualViewport } from "./fixtures/visual-viewport";
 
 Object.assign(globalThis, {
   scrollTo: () => {},
@@ -291,10 +292,13 @@ beforeEach(() => {
   // The public API is identical; ESM/CJS declarations have distinct private class identities.
   client = sdkClient as unknown as SupabaseClient;
 });
+let restoreViewport: (() => void) | null = null;
 afterEach(() => {
   cleanup();
   releaseCelebrationCreate?.();
   release?.();
+  restoreViewport?.();
+  restoreViewport = null;
 });
 function Harness({
   standalone = false,
@@ -1146,4 +1150,69 @@ it("keeps the editing draft on failure, retries once and cancels without writing
   );
   await user.click(screen.getByRole("button", { name: "Cancelar" }));
   expect(celebrationEdits).toHaveLength(2);
+});
+
+// [top, height, paddingTop, paddingRight, paddingBottom, paddingLeft] of the
+// area the dialog is laid out in, in pixels.
+function dialogFrame() {
+  const frame = document.querySelector('[data-slot="dialog-viewport"]');
+  if (!(frame instanceof HTMLElement)) throw new Error("No dialog frame");
+  const { top, height, paddingTop, paddingRight, paddingBottom, paddingLeft } =
+    frame.style;
+  return [top, height, paddingTop, paddingRight, paddingBottom, paddingLeft]
+    .map((value) => Number.parseFloat(value))
+    .map((value) => Math.round(value * 100) / 100);
+}
+
+it("search follows the visible viewport above the keyboard keeping query, focus and results", async () => {
+  const viewport = installVisualViewport({ height: 844 });
+  restoreViewport = viewport.restore;
+  const { user } = await mount();
+  // Desktop-like room: the search keeps its top third position.
+  expect(dialogFrame()).toEqual([0, 844, 281.33, 16, 16, 16]);
+  await user.type(search(), "Campaign");
+  await screen.findByRole("menuitem", { name: /Campaign Alpha/ });
+  const input = search();
+  // The keyboard leaves 380px visible and Safari pans the visual viewport.
+  viewport.set({ height: 380, offsetTop: 120 });
+  expect(dialogFrame()).toEqual([120, 380, 16, 16, 16, 16]);
+  expect(search()).toBe(input);
+  expect(document.activeElement).toBe(input);
+  expect(input).toHaveProperty("value", "Campaign");
+  expect(
+    screen.getByRole("menuitem", { name: /Campaign Shared/ }),
+  ).toBeTruthy();
+  expect(screen.getByRole("group", { name: "Filtros da busca" })).toBeTruthy();
+  // Dismissing the keyboard restores the original geometry.
+  viewport.set({ height: 844, offsetTop: 0 });
+  expect(dialogFrame()).toEqual([0, 844, 281.33, 16, 16, 16]);
+  expect(document.activeElement).toBe(input);
+});
+
+it("celebration dialog stays centered in the visible viewport keeping title, focus and month", async () => {
+  const viewport = installVisualViewport({ height: 667 });
+  restoreViewport = viewport.restore;
+  const { user } = await mount();
+  await user.click(
+    screen.getByRole("menuitem", { name: "Criar data comemorativa" }),
+  );
+  const dialog = await screen.findByRole("dialog", {
+    name: "Criar data comemorativa",
+  });
+  expect(dialogFrame()).toEqual([0, 667, 16, 16, 16, 16]);
+  const title = within(dialog).getByRole("textbox", { name: "Título" });
+  await waitFor(() => expect(document.activeElement).toBe(title));
+  await user.type(title, "Dia do cliente");
+  const month = within(dialog).getByRole("grid").getAttribute("aria-label");
+  viewport.set({ height: 360, offsetTop: 90 });
+  expect(dialogFrame()).toEqual([90, 360, 16, 16, 16, 16]);
+  expect(screen.getByRole("dialog", { name: "Criar data comemorativa" })).toBe(
+    dialog,
+  );
+  expect(document.activeElement).toBe(title);
+  expect(title).toHaveProperty("value", "Dia do cliente");
+  expect(within(dialog).getByRole("grid").getAttribute("aria-label")).toBe(
+    month,
+  );
+  expect(celebrationWrites).toHaveLength(0);
 });

@@ -65,7 +65,7 @@ export function BulkColorDialog({
   };
   return (
     <PrismDialog
-      className="w-72 overflow-hidden"
+      className="w-72"
       isDismissable
       isOpen={open}
       onOpenChange={handleOpenChange}

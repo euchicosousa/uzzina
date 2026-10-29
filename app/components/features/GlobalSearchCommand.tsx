@@ -381,6 +381,8 @@ function GlobalSearchContent({
   };
   return (
     <div
+      // Shrinks with the dialog so the result list scrolls above the keyboard.
+      className="flex min-h-0 flex-col"
       onKeyDownCapture={(event) => {
         if (
           !(event.target instanceof Node) ||

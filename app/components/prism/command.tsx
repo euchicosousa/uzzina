@@ -107,13 +107,13 @@ function CommandDialog({
 }) {
   return (
     <PrismDialog
-      className={cn(
-        "top-1/3 translate-y-0 overflow-hidden sm:max-w-xl",
-        className,
-      )}
+      // A flex column lets the command shrink to the visible height, so the
+      // list scrolls while the input and footer stay reachable.
+      className={cn("flex flex-col overflow-hidden sm:max-w-xl", className)}
       isDismissable
       isOpen={open}
       onOpenChange={onOpenChange}
+      placement="top"
       showCloseButton={showCloseButton}
       {...props}
     >

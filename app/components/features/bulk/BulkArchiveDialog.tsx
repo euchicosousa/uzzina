@@ -25,7 +25,7 @@ export function BulkArchiveDialog({
       : `${selectedCount} ações selecionadas`;
   return (
     <PrismDialog
-      className="max-w-md overflow-hidden p-0"
+      className="max-w-md p-0"
       isDismissable
       isOpen={open}
       onOpenChange={onOpenChange}

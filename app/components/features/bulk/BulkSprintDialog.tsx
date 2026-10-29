@@ -45,7 +45,7 @@ export function BulkSprintDialog({
   if (!open) return null;
   return (
     <PrismDialog
-      className="max-w-md overflow-hidden"
+      className="max-w-md"
       isDismissable
       isOpen={open}
       onOpenChange={handleOpenChange}

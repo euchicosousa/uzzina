@@ -124,7 +124,7 @@ export function CelebrationDialog({
   if (!person.admin) return null;
   return (
     <PrismDialog
-      className="overflow-hidden sm:max-w-sm"
+      className="flex flex-col overflow-hidden sm:max-w-sm"
       isOpen
       isDismissable={!pending}
       isKeyboardDismissDisabled={pending}
@@ -133,7 +133,7 @@ export function CelebrationDialog({
       }}
       showCloseButton={false}
     >
-      <div className="flex max-h-[calc(100dvh-2rem)] flex-col">
+      <div className="flex min-h-0 flex-col">
         <PrismDialogHeader className="shrink-0">
           <PrismDialogTitle>
             {celebration

@@ -675,7 +675,7 @@ export function ActionFormDrawer({
       </div>
 
       <PrismDialog
-        className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-3xl lg:max-w-5xl"
+        className="sm:max-w-3xl lg:max-w-5xl"
         isOpen={isActive && conflictVersion !== null}
         isDismissable={!isResolvingConflict}
         showCloseButton={false}
@@ -728,11 +728,11 @@ export function ActionFormDrawer({
       </PrismDialog>
 
       <PrismDialog
-        className="max-w-2xl sm:max-w-2xl"
+        className="flex flex-col sm:max-w-2xl"
         isOpen={isActive && isStrategyModalOpen}
         onOpenChange={setIsStrategyModalOpen}
       >
-        <PrismDialogHeader className="px-10 pt-8">
+        <PrismDialogHeader className="shrink-0 px-10 pt-8">
           <PrismDialogTitle className="text-2xl">
             5 Estratégias Sugeridas
           </PrismDialogTitle>
@@ -741,7 +741,7 @@ export function ActionFormDrawer({
             da ação.
           </PrismDialogDescription>
         </PrismDialogHeader>
-        <div className="max-h-[70vh] overflow-y-auto px-5 pb-6">
+        <div className="max-h-[70vh] min-h-0 overflow-y-auto px-5 pb-6">
           <PrismAccordion className={"border-none"}>
             {parseStrategies(RawAction.strategies).map((strat, i) => (
               <PrismAccordionItem
