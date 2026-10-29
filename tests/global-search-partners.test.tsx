@@ -1,3 +1,7 @@
+import { Route as CelebrationsRoute } from "~/routes/app/admin/celebrations";
+import { resetQuerySession } from "~/lib/query-client";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { addDays, format } from "date-fns";
 import { afterEach, beforeEach, expect, it, mock } from "bun:test";
 import {
   act,
@@ -6,6 +10,7 @@ import {
   screen,
   waitFor,
   within,
+  fireEvent,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -19,16 +24,18 @@ import {
   createRoute,
   createRouter,
   RouterProvider,
+  Outlet,
 } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppContext } from "~/contexts/AppContext";
 import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
 import { PartnersCombobox } from "~/components/features/PartnersCombobox";
 import { searchActionsByTitle } from "~/models/actions";
-import type { Action, Partner } from "~/types";
+import type { Action, Partner, Celebration } from "~/types";
 import { calendarAction, calendarPerson } from "./fixtures/calendar-height";
 
 Object.assign(globalThis, {
+  scrollTo: () => {},
   KeyboardEvent: window.KeyboardEvent,
   MouseEvent: window.MouseEvent,
   PointerEvent: window.MouseEvent,
@@ -81,6 +88,12 @@ let savedPreferences: Record<string, unknown>[] = [];
 let signOutCalls = 0;
 let failPreferenceSave = false;
 let failSignOut = false;
+let celebrationEdits: { id: string; title: string; date: string }[] = [];
+let storedCelebrations: Celebration[] = [];
+let celebrationWrites: { title: string; date: string }[] = [];
+let failCelebrationCreate = false;
+let delayCelebrationCreate = false;
+let releaseCelebrationCreate: (() => void) | null = null;
 mock.module("~/lib/supabase.client", () => ({
   createSupabaseBrowserClient: () => client,
 }));
@@ -90,6 +103,19 @@ beforeEach(() => {
   signOutCalls = 0;
   failPreferenceSave = false;
   failSignOut = false;
+  celebrationWrites = [];
+  celebrationEdits = [];
+  storedCelebrations = [
+    {
+      id: "existing-celebration",
+      title: "Data original",
+      date: "2026-10-28",
+      created_at: "2026-01-01T00:00:00Z",
+    },
+  ];
+  failCelebrationCreate = false;
+  delayCelebrationCreate = false;
+  releaseCelebrationCreate = null;
   admin = true;
   beforeLeave.mockReset();
   beforeLeave.mockImplementation(async () => true);
@@ -142,6 +168,86 @@ beforeEach(() => {
               },
             );
           }
+          if (
+            url.pathname.endsWith("/celebrations") &&
+            init?.method === "PATCH"
+          ) {
+            const raw: unknown = JSON.parse(String(init.body));
+            if (
+              !raw ||
+              typeof raw !== "object" ||
+              !("title" in raw) ||
+              !("date" in raw) ||
+              typeof raw.title !== "string" ||
+              typeof raw.date !== "string"
+            )
+              throw new Error("Unexpected edit payload");
+            const id = (url.searchParams.get("id") || "").replace(/^eq\./, "");
+            const patch = { id, title: raw.title, date: raw.date };
+            celebrationEdits.push(patch);
+            if (delayCelebrationCreate)
+              await new Promise<void>((resolve) => {
+                releaseCelebrationCreate = resolve;
+              });
+            const original = storedCelebrations.find((item) => item.id === id);
+            if (failCelebrationCreate || !original)
+              return new Response(
+                JSON.stringify({ message: "Controlled update failure" }),
+                {
+                  status: 503,
+                  headers: { "Content-Type": "application/json" },
+                },
+              );
+            const updated = { ...original, ...patch };
+            storedCelebrations = storedCelebrations.map((item) =>
+              item.id === id ? updated : item,
+            );
+            return new Response(JSON.stringify(updated), {
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+          if (
+            url.pathname.endsWith("/celebrations") &&
+            (!init?.method || init.method === "GET")
+          ) {
+            return new Response(JSON.stringify(storedCelebrations), {
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+          if (
+            url.pathname.endsWith("/celebrations") &&
+            init?.method === "POST"
+          ) {
+            const raw: unknown = JSON.parse(String(init.body));
+            if (
+              !Array.isArray(raw) ||
+              !raw[0] ||
+              typeof raw[0].title !== "string" ||
+              typeof raw[0].date !== "string"
+            )
+              throw new Error("Unexpected celebration payload");
+            const item = { title: raw[0].title, date: raw[0].date };
+            celebrationWrites.push(item);
+            if (delayCelebrationCreate)
+              await new Promise<void>((resolve) => {
+                releaseCelebrationCreate = resolve;
+              });
+            return new Response(
+              JSON.stringify(
+                failCelebrationCreate
+                  ? { message: "Controlled creation failure" }
+                  : {
+                      id: "new-celebration",
+                      created_at: new Date().toISOString(),
+                      ...item,
+                    },
+              ),
+              {
+                status: failCelebrationCreate ? 503 : 201,
+                headers: { "Content-Type": "application/json" },
+              },
+            );
+          }
           if (url.pathname.endsWith("/logout")) {
             signOutCalls++;
             return new Response(
@@ -185,7 +291,11 @@ beforeEach(() => {
   // The public API is identical; ESM/CJS declarations have distinct private class identities.
   client = sdkClient as unknown as SupabaseClient;
 });
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  releaseCelebrationCreate?.();
+  release?.();
+});
 function Harness({
   standalone = false,
   allowAll = false,
@@ -221,6 +331,7 @@ function Harness({
       ) : (
         <>
           <button onClick={() => setOpen(true)}>Abrir busca</button>
+          <Outlet />
           <GlobalSearchCommand
             open={open}
             onOpenChange={setOpen}
@@ -256,19 +367,26 @@ async function mount(
         "/app/admin/partners",
         "/app/admin/clients",
         "/app/admin/users",
-      ].map((path) => createRoute({ getParentRoute: () => root, path })),
+      ].map((path) =>
+        createRoute({
+          getParentRoute: () => root,
+          path,
+          ...(path === "/app/admin/celebrations"
+            ? { component: CelebrationsRoute.options.component }
+            : {}),
+        }),
+      ),
     ]),
     history: createMemoryHistory({ initialEntries: [path] }),
   });
   await act(async () => {
     await router.load();
   });
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   render(
-    <QueryClientProvider
-      client={
-        new QueryClient({ defaultOptions: { queries: { retry: false } } })
-      }
-    >
+    <QueryClientProvider client={queryClient}>
       <AppThemeProvider>
         <RouterProvider router={router} />
       </AppThemeProvider>
@@ -279,7 +397,7 @@ async function mount(
     await user.click(
       await screen.findByRole("button", { name: "Abrir busca" }),
     );
-  return { user, router };
+  return { user, router, queryClient };
 }
 const filter = () =>
   screen.getByRole("group", { name: "Filtrar ações por parceiros" });
@@ -614,6 +732,9 @@ it("hides all administrative commands from ordinary members", async () => {
     screen.queryByRole("menuitem", { name: "Gerenciar usuários" }),
   ).toBeNull();
   expect(screen.queryByRole("group", { name: "Administração" })).toBeNull();
+  expect(
+    screen.queryByRole("menuitem", { name: "Criar data comemorativa" }),
+  ).toBeNull();
 });
 
 for (const [label, path] of [
@@ -626,7 +747,6 @@ for (const [label, path] of [
   ["Criar parceiro", "/app/admin/partner/new"],
   ["Criar cliente", "/app/admin/client/new"],
   ["Criar usuário", "/app/admin/user/new"],
-  ["Criar data comemorativa", "/app/admin/celebrations"],
   ["Gerenciar parceiros", "/app/admin/partners"],
   ["Gerenciar clientes", "/app/admin/clients"],
   ["Gerenciar usuários", "/app/admin/users"],
@@ -730,4 +850,254 @@ it("shows a command error and allows retry after sign out fails", async () => {
   await user.click(screen.getByRole("menuitem", { name: "Sair" }));
   expect(signOutCalls).toBe(2);
   expect(screen.queryByRole("searchbox")).toBeNull();
+});
+
+it("opens Create celebration as a focused modal without navigating or closing action panels", async () => {
+  const { user, router } = await mount("/app/partner/alpha");
+  await user.click(
+    screen.getByRole("menuitem", { name: "Criar data comemorativa" }),
+  );
+  const dialog = await screen.findByRole("dialog", {
+    name: "Criar data comemorativa",
+  });
+  expect(router.state.location.pathname).toBe("/app/partner/alpha");
+  expect(beforeLeave).not.toHaveBeenCalled();
+  expect(openPrimary).not.toHaveBeenCalled();
+  expect(openSecondary).not.toHaveBeenCalled();
+  expect(screen.queryByRole("searchbox")).toBeNull();
+  await waitFor(() =>
+    expect(document.activeElement).toBe(
+      within(dialog).getByRole("textbox", { name: "Título" }),
+    ),
+  );
+  await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("dialog", { name: "Criar data comemorativa" }),
+    ).toBeNull(),
+  );
+  await waitFor(() =>
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Abrir busca" }),
+    ),
+  );
+});
+
+it("creates one trimmed celebration with a calendar-selected date and updates only the current cache", async () => {
+  const { user, queryClient } = await mount();
+  const key = QUERY_KEYS.celebrations(calendarPerson.user_id);
+  queryClient.setQueryData(key, []);
+  queryClient.setQueryData(QUERY_KEYS.celebrations("other-user"), []);
+  await user.click(
+    screen.getByRole("menuitem", { name: "Criar data comemorativa" }),
+  );
+  const dialog = await screen.findByRole("dialog", {
+    name: "Criar data comemorativa",
+  });
+  fireEvent.change(within(dialog).getByRole("textbox", { name: "Título" }), {
+    target: { value: "  Evento de teste  " },
+  });
+  const day = dialog.querySelector('[role="grid"] [tabindex="0"]');
+  if (!(day instanceof HTMLElement))
+    throw new Error("Calendar focused day missing");
+  await act(async () => {
+    day.focus();
+  });
+  await user.keyboard("{ArrowRight}{Enter}");
+  delayCelebrationCreate = true;
+  const form = dialog.querySelector("form");
+  if (!form) throw new Error("Creation form missing");
+  fireEvent.submit(form);
+  fireEvent.submit(form);
+  await waitFor(() => expect(celebrationWrites).toHaveLength(1));
+  expect(celebrationWrites[0]).toEqual({
+    title: "Evento de teste",
+    date: format(addDays(new Date(), 1), "yyyy-MM-dd"),
+  });
+  expect(
+    within(dialog)
+      .getByRole("button", { name: "Criando..." })
+      .hasAttribute("disabled"),
+  ).toBe(true);
+  await user.keyboard("{Escape}");
+  expect(
+    screen.getByRole("dialog", { name: "Criar data comemorativa" }),
+  ).toBeTruthy();
+  releaseCelebrationCreate?.();
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("dialog", { name: "Criar data comemorativa" }),
+    ).toBeNull(),
+  );
+  expect(queryClient.getQueryData<Celebration[]>(key)).toEqual([
+    expect.objectContaining({
+      id: "new-celebration",
+      title: "Evento de teste",
+    }),
+  ]);
+  expect(queryClient.getQueryState(key)?.isInvalidated).toBe(true);
+  expect(
+    queryClient.getQueryState(QUERY_KEYS.celebrations("other-user"))
+      ?.isInvalidated,
+  ).toBe(false);
+});
+
+it("validates blank titles and preserves the draft/date after an error for explicit retry", async () => {
+  const { user } = await mount();
+  await user.click(
+    screen.getByRole("menuitem", { name: "Criar data comemorativa" }),
+  );
+  const dialog = await screen.findByRole("dialog", {
+    name: "Criar data comemorativa",
+  });
+  const title = within(dialog).getByRole("textbox", { name: "Título" });
+  fireEvent.change(title, { target: { value: "   " } });
+  await user.click(within(dialog).getByRole("button", { name: "Criar data" }));
+  expect(await within(dialog).findByRole("alert")).toBeTruthy();
+  expect(celebrationWrites).toHaveLength(0);
+  fireEvent.change(title, { target: { value: "Teste com retry" } });
+  failCelebrationCreate = true;
+  await user.click(within(dialog).getByRole("button", { name: "Criar data" }));
+  await waitFor(() =>
+    expect(within(dialog).getByRole("alert").textContent).toContain(
+      "Não foi possível",
+    ),
+  );
+  expect(title.getAttribute("value")).toBe("Teste com retry");
+  failCelebrationCreate = false;
+  await user.click(within(dialog).getByRole("button", { name: "Criar data" }));
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("dialog", { name: "Criar data comemorativa" }),
+    ).toBeNull(),
+  );
+  expect(celebrationWrites).toHaveLength(2);
+  expect(celebrationWrites[1]).toEqual(celebrationWrites[0]);
+});
+
+it("cancel and Escape never create and reopening starts a fresh draft", async () => {
+  const { user } = await mount();
+  await user.click(
+    screen.getByRole("menuitem", { name: "Criar data comemorativa" }),
+  );
+  fireEvent.change(await screen.findByRole("textbox", { name: "Título" }), {
+    target: { value: "Não gravar" },
+  });
+  await user.keyboard("{Escape}");
+  await waitFor(() =>
+    expect(screen.queryByRole("textbox", { name: "Título" })).toBeNull(),
+  );
+  expect(celebrationWrites).toHaveLength(0);
+  await user.click(screen.getByRole("button", { name: "Abrir busca" }));
+  await user.click(
+    screen.getByRole("menuitem", { name: "Criar data comemorativa" }),
+  );
+  expect(
+    (await screen.findByRole("textbox", { name: "Título" })).getAttribute(
+      "value",
+    ),
+  ).toBe("");
+});
+
+it("ignores a creation confirmation after the query session resets", async () => {
+  const { user, queryClient } = await mount();
+  await user.click(
+    screen.getByRole("menuitem", { name: "Criar data comemorativa" }),
+  );
+  fireEvent.change(await screen.findByRole("textbox", { name: "Título" }), {
+    target: { value: "Sessão anterior" },
+  });
+  delayCelebrationCreate = true;
+  await user.click(screen.getByRole("button", { name: "Criar data" }));
+  await waitFor(() => expect(celebrationWrites).toHaveLength(1));
+  resetQuerySession(queryClient);
+  releaseCelebrationCreate?.();
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 30));
+  });
+  expect(
+    queryClient.getQueryData(QUERY_KEYS.celebrations(calendarPerson.user_id)),
+  ).toBeUndefined();
+});
+
+it("edits the existing celebration title and date from the list without inserting or duplicating", async () => {
+  const { user, queryClient } = await mount("/app/admin/celebrations");
+  await user.keyboard("{Escape}");
+  await user.click(
+    await screen.findByRole("button", { name: "Editar Data original" }),
+  );
+  const dialog = await screen.findByRole("dialog", {
+    name: "Editar data comemorativa",
+  });
+  const title = within(dialog).getByRole("textbox", { name: "Título" });
+  expect(title.getAttribute("value")).toBe("Data original");
+  fireEvent.change(title, { target: { value: "  Data editada  " } });
+  const day = dialog.querySelector('[role="grid"] [tabindex="0"]');
+  if (!(day instanceof HTMLElement))
+    throw new Error("Selected calendar date missing");
+  await act(async () => {
+    day.focus();
+  });
+  await user.keyboard(
+    "{ArrowRight}{ArrowRight}{ArrowRight}{ArrowRight}{Enter}",
+  );
+  await user.click(
+    within(dialog).getByRole("button", { name: "Salvar alterações" }),
+  );
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("dialog", { name: "Editar data comemorativa" }),
+    ).toBeNull(),
+  );
+  expect(celebrationEdits).toEqual([
+    { id: "existing-celebration", title: "Data editada", date: "2026-11-01" },
+  ]);
+  expect(celebrationWrites).toHaveLength(0);
+  expect(
+    await screen.findByRole("heading", { name: "novembro de 2026" }),
+  ).toBeTruthy();
+  expect(screen.queryByRole("heading", { name: "outubro de 2026" })).toBeNull();
+  expect(
+    queryClient.getQueryData<Celebration[]>(
+      QUERY_KEYS.celebrations(calendarPerson.user_id),
+    ),
+  ).toHaveLength(1);
+  expect(
+    await screen.findByRole("button", { name: "Editar Data editada" }),
+  ).toBeTruthy();
+});
+
+it("keeps the editing draft on failure, retries once and cancels without writing", async () => {
+  const { user } = await mount("/app/admin/celebrations");
+  await user.keyboard("{Escape}");
+  await user.click(
+    await screen.findByRole("button", { name: "Editar Data original" }),
+  );
+  const dialog = await screen.findByRole("dialog", {
+    name: "Editar data comemorativa",
+  });
+  const title = within(dialog).getByRole("textbox", { name: "Título" });
+  fireEvent.change(title, { target: { value: "Título corrigido" } });
+  failCelebrationCreate = true;
+  await user.click(
+    within(dialog).getByRole("button", { name: "Salvar alterações" }),
+  );
+  await within(dialog).findByRole("alert");
+  expect(title.getAttribute("value")).toBe("Título corrigido");
+  expect(storedCelebrations[0]?.title).toBe("Data original");
+  failCelebrationCreate = false;
+  await user.click(
+    within(dialog).getByRole("button", { name: "Salvar alterações" }),
+  );
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("dialog", { name: "Editar data comemorativa" }),
+    ).toBeNull(),
+  );
+  expect(celebrationEdits).toHaveLength(2);
+  await user.click(
+    await screen.findByRole("button", { name: "Editar Título corrigido" }),
+  );
+  await user.click(screen.getByRole("button", { name: "Cancelar" }));
+  expect(celebrationEdits).toHaveLength(2);
 });

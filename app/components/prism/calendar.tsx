@@ -244,12 +244,17 @@ function CalendarInner({
     </div>
   );
 }
+// Month/year pickers read as plain caption text: no field background, only the
+// chevron icon; hover and keyboard focus still show feedback. Height follows
+// --cell-size so they line up with the previous/next buttons.
+const captionTriggerClassName =
+  "squircle h-(--cell-size) w-auto gap-1 bg-transparent px-2.5 py-0 font-medium data-[hovered]:bg-muted data-[size=default]:h-(--cell-size)";
 function MonthDropdown({ format }: { format?: Intl.DateTimeFormatOptions }) {
   return (
     <CalendarMonthPicker format={format?.month}>
       {(props) => (
         <PrismSelect {...props} className="relative">
-          <PrismSelectTrigger>
+          <PrismSelectTrigger className={captionTriggerClassName}>
             <PrismSelectValue />
           </PrismSelectTrigger>
           <PrismSelectContent className="min-w-0">
@@ -271,7 +276,7 @@ function YearDropdown({ format }: { format?: Intl.DateTimeFormatOptions }) {
     <CalendarYearPicker format={format}>
       {(props) => (
         <PrismSelect {...props} className="relative">
-          <PrismSelectTrigger>
+          <PrismSelectTrigger className={captionTriggerClassName}>
             <PrismSelectValue />
           </PrismSelectTrigger>
           <PrismSelectContent className="min-w-0">

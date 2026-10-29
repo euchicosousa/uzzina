@@ -1,3 +1,4 @@
+import { CelebrationDialog } from "./CelebrationDialog";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import type { Action, Partner } from "~/types";
@@ -52,33 +53,52 @@ export function GlobalSearchCommand({
   open,
   ...props
 }: GlobalSearchCommandProps) {
+  const [creatingCelebration, setCreatingCelebration] = useState<
+    "closed" | "pending" | "open"
+  >("closed");
   const location = useLocation();
   const { person } = useAppContext();
+  useEffect(() => {
+    if (creatingCelebration !== "pending" || open) return;
+    // Let the search restore its trigger before the next modal takes focus.
+    const frame = requestAnimationFrame(() => setCreatingCelebration("open"));
+    return () => cancelAnimationFrame(frame);
+  }, [creatingCelebration, open]);
   const { setTheme, themePreference } = useAppThemeContext();
   // Keep the persistence owner mounted when a command closes the search.
   const { queuePreference, hasError, retry } = usePreferencePersistence(person);
   const initialPartnerSlug =
     location.pathname.match(/^\/app\/partner\/([^/]+)\/?$/)?.[1] ?? null;
   return (
-    <PrismCommandDialog onOpenChange={props.onOpenChange} open={open}>
-      {open && (
-        <GlobalSearchContent
-          {...props}
-          initialPartnerSlug={initialPartnerSlug}
-          themePreference={themePreference}
-          onThemeChange={(theme) => {
-            setTheme(theme);
-            queuePreference({ theme });
-          }}
-          preferenceError={hasError}
-          retryPreferences={retry}
+    <>
+      <PrismCommandDialog onOpenChange={props.onOpenChange} open={open}>
+        {open && (
+          <GlobalSearchContent
+            {...props}
+            onCreateCelebration={() => setCreatingCelebration("pending")}
+            initialPartnerSlug={initialPartnerSlug}
+            themePreference={themePreference}
+            onThemeChange={(theme) => {
+              setTheme(theme);
+              queuePreference({ theme });
+            }}
+            preferenceError={hasError}
+            retryPreferences={retry}
+          />
+        )}
+      </PrismCommandDialog>
+      {creatingCelebration === "open" && person.admin && (
+        <CelebrationDialog
+          key={person.user_id}
+          onClose={() => setCreatingCelebration("closed")}
         />
       )}
-    </PrismCommandDialog>
+    </>
   );
 }
 
 function GlobalSearchContent({
+  onCreateCelebration,
   initialPartnerSlug,
   onOpenChange,
   partners,
@@ -91,6 +111,7 @@ function GlobalSearchContent({
   retryPreferences,
 }: Omit<GlobalSearchCommandProps, "open"> & {
   initialPartnerSlug: string | null;
+  onCreateCelebration: () => void;
   themePreference: ThemePreference;
   onThemeChange: (theme: ThemePreference) => void;
   preferenceError: boolean;
@@ -301,7 +322,7 @@ function GlobalSearchContent({
           id: "create-celebration",
           label: "Criar data comemorativa",
           Icon: CalendarIcon,
-          to: "/app/admin/celebrations",
+          to: null,
         },
         {
           id: "manage-partners",
@@ -329,7 +350,13 @@ function GlobalSearchContent({
         },
       ].map(({ to, ...command }) => ({
         ...command,
-        run: () => navigateCommand(to),
+        run: () => {
+          if (to === null) {
+            onCreateCelebration();
+            return true;
+          }
+          return navigateCommand(to);
+        },
       }))
     : [];
   const runCommand = async (id: string) => {

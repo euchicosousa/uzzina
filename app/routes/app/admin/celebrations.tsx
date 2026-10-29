@@ -1,3 +1,4 @@
+import { CelebrationDialog } from "~/components/features/CelebrationDialog";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { useAppContext } from "~/contexts/AppContext";
 import { CalendarDate } from "@internationalized/date";
@@ -5,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
-import { PlusIcon, TrashIcon } from "lucide-react";
+import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { Celebration } from "~/types";
 import { PrismButton, PrismCalendar, PrismInput } from "~/components/prism";
@@ -32,6 +33,8 @@ function AdminCelebrationsPage() {
   const { person } = useAppContext();
   const supabase = createSupabaseBrowserClient();
   const queryClient = useQueryClient();
+  const [editingCelebration, setEditingCelebration] =
+    useState<Celebration | null>(null);
   const { data: celebrations = [] } = useQuery({
     queryKey: ["celebrations", "team", person.user_id],
     queryFn: () => getAllCelebrations(supabase),
@@ -132,7 +135,15 @@ function AdminCelebrationsPage() {
         celebrations={celebrations}
         isSubmitting={isSubmitting}
         onDelete={(id) => deleteMutation.mutate(id)}
+        onEdit={setEditingCelebration}
       />
+      {editingCelebration && (
+        <CelebrationDialog
+          key={editingCelebration.id}
+          celebration={editingCelebration}
+          onClose={() => setEditingCelebration(null)}
+        />
+      )}
     </div>
   );
 }
@@ -141,10 +152,12 @@ export function CelebrationsList({
   celebrations,
   isSubmitting,
   onDelete,
+  onEdit,
 }: {
   celebrations: Celebration[];
   isSubmitting: boolean;
   onDelete: (id: string) => void;
+  onEdit: (celebration: Celebration) => void;
 }) {
   const listRef = useRef<HTMLDivElement>(null);
   const hasScrolled = useRef(false);
@@ -168,7 +181,7 @@ export function CelebrationsList({
   return (
     <div
       ref={listRef}
-      className="flex h-full w-full flex-col gap-4 overflow-y-auto p-8 md:w-full"
+      className="flex h-full w-full shrink-0 flex-col gap-4 overflow-y-auto p-8 md:w-full md:shrink"
     >
       {celebrations.length === 0 ? (
         <div className="rounded-2xl border border-dashed p-8 text-center text-muted-foreground">
@@ -202,10 +215,29 @@ export function CelebrationsList({
                 {monthCelebrations.map((celebration) => (
                   <div
                     key={celebration.id}
-                    className="group relative flex items-center justify-between rounded-xl px-3 py-2 transition-colors hover:bg-card"
+                    data-celebration-id={celebration.id}
+                    className="group flex items-center justify-between gap-4 rounded-xl px-3 py-2 transition-colors hover:bg-card"
                   >
-                    <div className="absolute top-1 left-1 z-10 h-full shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+                    <div className="flex min-w-0 items-center gap-4">
+                      <span className="w-6 shrink-0 text-center text-sm font-medium text-muted-foreground">
+                        {format(new Date(`${celebration.date}T00:00:00`), "dd")}
+                      </span>
+                      <span className="truncate font-medium tracking-tight">
+                        {celebration.title}
+                      </span>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-1 opacity-100 transition-opacity md:[@media(hover:hover)_and_(pointer:fine)]:opacity-0 md:[@media(hover:hover)_and_(pointer:fine)]:group-focus-within:opacity-100 md:[@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100">
                       <PrismButton
+                        aria-label={`Editar ${celebration.title}`}
+                        isDisabled={isSubmitting}
+                        onClick={() => onEdit(celebration)}
+                        size="icon-xs"
+                        variant="ghost"
+                      >
+                        <PencilIcon />
+                      </PrismButton>
+                      <PrismButton
+                        aria-label={`Apagar ${celebration.title}`}
                         isDisabled={isSubmitting}
                         onClick={() => onDelete(celebration.id)}
                         size="icon-xs"
@@ -213,15 +245,6 @@ export function CelebrationsList({
                       >
                         <TrashIcon />
                       </PrismButton>
-                    </div>
-                    <div className="flex items-center gap-4 overflow-hidden">
-                      <span className="w-6 text-center text-sm font-medium text-muted-foreground transition-opacity group-hover:opacity-0">
-                        {format(new Date(`${celebration.date}T00:00:00`), "dd")}
-                      </span>
-
-                      <span className="truncate font-medium tracking-tight">
-                        {celebration.title}
-                      </span>
                     </div>
                   </div>
                 ))}

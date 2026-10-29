@@ -67,7 +67,7 @@ function setupGeometry() {
 
 it("waits for dates, scrolls to the current month and year once, and preserves manual scrolling", () => {
   setupGeometry();
-  const props = { isSubmitting: false, onDelete: () => {} };
+  const props = { isSubmitting: false, onDelete: () => {}, onEdit: () => {} };
   const { container, rerender, unmount } = render(
     <CelebrationsList {...props} celebrations={[]} />,
   );
@@ -97,6 +97,7 @@ it("keeps the list available when the current month has no dates", () => {
       celebrations={celebrations.filter((item) => item.id !== "october")}
       isSubmitting={false}
       onDelete={() => {}}
+      onEdit={() => {}}
     />,
   );
   expect(container.firstElementChild?.scrollTop).toBe(0);
