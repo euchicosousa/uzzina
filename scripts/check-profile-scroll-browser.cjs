@@ -2,12 +2,13 @@
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
+const { tmpdir } = require("node:os");
+const { join } = require("node:path");
 
 (async () => {
   const browser = await chromium.launch({ headless: true });
   const base = process.env.PORTAL_TEST_URL || "http://127.0.0.1:5176";
-  const evidence = ".scratch/account-preferences/evidence";
-  await fs.mkdir(evidence, { recursive: true });
+  const evidence = await fs.mkdtemp(join(tmpdir(), "uzzina-profile-browser-"));
   try {
     const page = await browser.newPage({
       viewport: { width: 1440, height: 900 },

@@ -19,8 +19,10 @@ Modal respeita margens e altura útil; conteúdo pode rolar em janela baixa, com
 - Suíte geral:509 testes/1812 assertions em44 arquivos, zero falhas. Após locale/altura finais, os cinco testes do modal passaram novamente com30 assertions. Demais testes já aprovados não foram repetidos sem nova mudança em suas áreas.
 - `bun run format`, `bun run lint`, `bun run typecheck`, `bun run build` e `git diff --check` passaram. Aviso conhecido de chunks maiores que500kB permanece.
 - `scripts/check-celebration-dialog-browser.cjs` executa a aplicação real, SDK e componentes com sessão fictícia e HTTP interceptado; WebSockets fechados, requisições externas não previstas abortadas. Cenários1440×900 claro e390×700/480 escuro: título focado, calendário/meses, Escape de popup e modal, zero escrita ao abrir/cancelar, submit visível, estado pendente, falha/retry, uma inserção canônica simulada, criação exibida em Gerenciar, draft de ação aberto preservado, Shift sem secundária, comando ausente para membro comum, zero erros de página e zero escritas fora da fixture.
-- Capturas inspecionadas: [desktop](../../.scratch/search-review/evidence/celebration-1440x900.png), [mobile](../../.scratch/search-review/evidence/celebration-390x700.png), [janela baixa](../../.scratch/search-review/evidence/celebration-390x480.png).
+- Capturas inspecionadas: desktop, mobile, janela baixa.
 
 ## Estado e limites
 
 Implementado localmente, aguardando avaliação do proprietário. Sem consulta/escrita no banco real, criação de registro real, SQL, commit, push ou deploy. Autorização do banco foi preservada por reutilizar o model/policy existentes; HTTP controlado não certifica RLS remota. Sem teste físico de teclado virtual/Safari. Alterações prévias em CURRENT preservadas. Próximos itens da fila não iniciados.
+
+Capturas temporárias dessa verificação removidas em29/10/2026 a pedido do proprietário; o resultado e os limites acima permanecem registrados. Roteiros de navegador agora salvam novas capturas no diretório temporário do sistema, fora do checkout.

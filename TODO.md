@@ -15,7 +15,7 @@
 - [x] [Implementar Ajuda e documentação](.scratch/search-review/issues/03-complete-help-page.md): implementado e commitado localmente em28/10 (311d102); aguarda avaliação do proprietário.
 - [x] [Separar a página Hoje e rolar só o conteúdo](.scratch/today-viewport/issues/02-dedicated-today-page-scroll.md): aprovado pelo proprietário e commitado localmente em28/10.
 
-- [ ] [Implementar a página de notificações](.scratch/notifications/issues/01-complete-notifications-page.md): rota ainda contém texto provisório; reaproveitar o fluxo do sino. Solicitado em28/10/2026 para execução posterior, sem início automático.
+- [x] [Implementar a página de notificações](.scratch/notifications/issues/01-complete-notifications-page.md): implementada e commitada localmente em28/10 (`4dbb90c`), com histórico progressivo e cache do sino. Preparação para deploy em29/10; validação visual e com notificações reais permanece pendente.
 
 ## Ideias para avaliar depois
 

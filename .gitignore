@@ -21,3 +21,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 bun.lockb
+
+# Disposable browser screenshots
+/.scratch/**/evidence/

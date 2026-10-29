@@ -20,7 +20,7 @@ Após a correção, `scripts/check-profile-scroll-browser.cjs` usa a rota, SDK e
 - Resize para1024×600,390×700,390×480 e720×450 preserva ausência de overflow externo/horizontal e botão98px acima do fim da janela. O último tamanho cobre uma área CSS equivalente à janela1440×900 com zoom200%, mas não certifica zoom físico do navegador.
 - Tab do último controle chega a Salvar; Shift+Tab retorna às preferências. Campos ocultos pela seção compacta são revelados e recebem foco na validação; formulário inválido não envia.
 - Alteração de nome e layout, envio pendente/desabilitado, falha de preferências, rascunho preservado, nova tentativa, campo desconhecido preservado e submissão por Enter verificados. Cada envio válido fez exatamente uma escrita simulada de perfil e uma de preferências.
-- Temas claro/escuro, tema personalizado e resize conferidos; capturas [desktop inicial](../../.scratch/account-preferences/evidence/desktop-initial.png), [desktop personalizado](../../.scratch/account-preferences/evidence/desktop.png) e [mobile escuro](../../.scratch/account-preferences/evidence/mobile-dark.png) inspecionadas.
+- Temas claro/escuro, tema personalizado e resize conferidos; capturas desktop inicial, desktop personalizado e mobile escuro inspecionadas.
 - `bun test`:492 testes,1757 assertions,43 arquivos, zero falhas. Inclui os testes existentes da rota Hoje e persistência.
 - `bun run format`, `bun run lint`, `bun run typecheck`, `bun run build` e `git diff --check` passaram. Build mantém aviso conhecido de chunks maiores que500kB.
 
@@ -77,3 +77,5 @@ O proprietário recordava corretamente outro autosave. A rota administrativa `/a
 ## Aceite
 
 Proprietário aprovou a versão final e autorizou commit local em28/10/2026, seguido de implementação do ticket02. Nenhum push ou deploy solicitado.
+
+Capturas temporárias dessa verificação removidas em29/10/2026 a pedido do proprietário; o resultado e os limites acima permanecem registrados. Roteiros de navegador agora salvam novas capturas no diretório temporário do sistema, fora do checkout.
