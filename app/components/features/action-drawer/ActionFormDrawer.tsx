@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { ActionFormFooter } from "./ActionFormFooter";
 import { ActionDrawerFocusScope } from "./ActionDrawerFocusScope";
 import { useActionAI } from "./useActionAI";
+import { useCompactPanel } from "./useCompactPanel";
 import { EssentialsTab } from "./EssentialsTab";
 import { InstagramTab } from "./InstagramTab";
 import { ObservationsTab } from "./ObservationsTab";
@@ -417,6 +418,10 @@ export function ActionFormDrawer({
     return () => registerLeaveGuard?.(null);
   }, [registerLeaveGuard, prepareLeave]);
   const handleSafeClose = onClose;
+  const contentRef = useRef<HTMLDivElement>(null);
+  const compact = useCompactPanel(contentRef);
+  // Lives here so switching tabs keeps the compact details open.
+  const [detailsExpanded, setDetailsExpanded] = useState(false);
 
   // Guard: only update color and initial fallback responsibles on fresh draft
   // Preserve any explicit responsibles already set by creator or user
@@ -597,7 +602,11 @@ export function ActionFormDrawer({
         </div>
       </div>
 
-      <div className="relative flex h-full w-full max-w-full grow flex-col overflow-hidden">
+      <div
+        className="relative flex h-full w-full max-w-full grow flex-col overflow-hidden"
+        data-action-layout-width={compact ? "compact" : "regular"}
+        ref={contentRef}
+      >
         {/* Essencial */}
         <div className="flex h-full w-full divide-x overflow-hidden bg-popover">
           {view === "essential" && (
@@ -611,6 +620,9 @@ export function ActionFormDrawer({
               <EssentialsTab
                 autoFocus={isActive}
                 cloudName={cloudName}
+                compact={compact}
+                detailsExpanded={detailsExpanded}
+                onDetailsExpandedChange={setDetailsExpanded}
                 currentPartners={currentPartners}
                 descriptionVersion={descriptionVersion}
                 isAIProcessing={isAIProcessing}
@@ -664,6 +676,7 @@ export function ActionFormDrawer({
         </div>
         {/* Criar e Atualizar */}
         <ActionFormFooter
+          compact={compact}
           currentPartners={currentPartners}
           handleClose={handleSafeClose}
           handleSave={handleSave}

@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it, mock } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { Suspense, useEffect, useRef, useState } from "react";
 import {
   useActionPanels,
@@ -1692,4 +1692,388 @@ it("navigation from search respects both real form guards when a save fails", as
   expect(mounted.panels().primaryAction?.key).toBe(primaryKey);
   expect(mounted.panels().secondaryAction?.key).toBe(secondaryKey);
   expect(screen.getByRole("searchbox")).toBeTruthy();
+});
+
+describe("phone-width action panel", () => {
+  // Layout is the controlled boundary: jsdom has no CSS layout or ResizeObserver.
+  let panelWidth = 390;
+  const resizeCallbacks = new Set<() => void>();
+  class TestResizeObserver {
+    private readonly callback: () => void;
+    constructor(callback: () => void) {
+      this.callback = callback;
+    }
+    observe() {
+      resizeCallbacks.add(this.callback);
+    }
+    unobserve() {}
+    disconnect() {
+      resizeCallbacks.delete(this.callback);
+    }
+  }
+  // Other files spy on HTMLElement.prototype, so stub and restore at that level.
+  const elementPrototype = window.HTMLElement.prototype;
+  let previousRect: PropertyDescriptor | undefined;
+  let previousObserver: PropertyDescriptor | undefined;
+  beforeEach(() => {
+    panelWidth = 390;
+    resizeCallbacks.clear();
+    previousObserver = Object.getOwnPropertyDescriptor(
+      globalThis,
+      "ResizeObserver",
+    );
+    Object.assign(globalThis, { ResizeObserver: TestResizeObserver });
+    previousRect = Object.getOwnPropertyDescriptor(
+      elementPrototype,
+      "getBoundingClientRect",
+    );
+    const measure = elementPrototype.getBoundingClientRect;
+    Object.defineProperty(elementPrototype, "getBoundingClientRect", {
+      configurable: true,
+      writable: true,
+      value(this: HTMLElement) {
+        // The drawer's content area spans the whole action panel.
+        if (this.hasAttribute("data-action-layout-width"))
+          return new window.DOMRect(0, 0, panelWidth, 700);
+        return measure.call(this);
+      },
+    });
+  });
+  afterEach(() => {
+    if (previousRect)
+      Object.defineProperty(
+        elementPrototype,
+        "getBoundingClientRect",
+        previousRect,
+      );
+    else Reflect.deleteProperty(elementPrototype, "getBoundingClientRect");
+    if (previousObserver)
+      Object.defineProperty(globalThis, "ResizeObserver", previousObserver);
+    else Reflect.deleteProperty(globalThis, "ResizeObserver");
+  });
+  function resizePanel(width: number) {
+    panelWidth = width;
+    act(() => {
+      for (const notify of [...resizeCallbacks]) notify();
+    });
+  }
+  function footerStrip() {
+    const strip = document.querySelector<HTMLElement>(
+      "[data-action-footer-strip]",
+    );
+    if (!strip) throw new Error("Footer strip did not render");
+    const save = screen.getByRole("button", { name: /^(Atualiz|Cri)/ });
+    return { save, strip };
+  }
+  function expectSameElements(actual: Element[], expected: Element[]) {
+    expect(actual.length).toBe(expected.length);
+    expected.forEach((element, index) => {
+      expect(actual[index] === element).toBe(true);
+    });
+  }
+  function layout(element: Element, left: number, width: number) {
+    Object.defineProperty(element, "getBoundingClientRect", {
+      configurable: true,
+      value: () => new window.DOMRect(left, 0, width, 48),
+    });
+  }
+  function scrollMetrics(
+    element: HTMLElement,
+    metrics: { scrollWidth: number; clientWidth: number },
+  ) {
+    let scrollLeft = 0;
+    Object.defineProperties(element, {
+      scrollWidth: { configurable: true, value: metrics.scrollWidth },
+      clientWidth: { configurable: true, value: metrics.clientWidth },
+      scrollLeft: {
+        configurable: true,
+        get: () => scrollLeft,
+        set: (value: number) => {
+          scrollLeft = Math.max(
+            0,
+            Math.min(value, metrics.scrollWidth - metrics.clientWidth),
+          );
+        },
+      },
+    });
+  }
+  function fades(strip: HTMLElement) {
+    const overlays = strip.parentElement?.querySelectorAll(
+      ":scope > [data-strip-fade]",
+    );
+    return [...(overlays ?? [])].map((overlay) => {
+      // Decorative only: hidden from assistive tech and never holds controls.
+      expect(overlay.getAttribute("aria-hidden")).toBe("true");
+      expect(overlay.childElementCount).toBe(0);
+      return overlay.getAttribute("data-strip-fade");
+    });
+  }
+
+  it("collapses metadata to the date and an expand control without visible labels", async () => {
+    mount(draft({ description: "<p></p>" }));
+    await descriptionEditor();
+    const expand = screen.getByRole("button", { name: "Detalhes da ação" });
+    expect(expand.getAttribute("aria-expanded")).toBe("false");
+    const date = screen.getByRole("button", { name: /outubro às 10h/ });
+    const summary = expand.parentElement;
+    if (!summary) throw new Error("Summary did not render");
+    expect(summary.contains(date)).toBe(true);
+    // Only the date is written; icon controls carry accessible names instead.
+    expect(summary.textContent).toBe(date.textContent);
+    expect(screen.queryByText(/Mais detalhes/)).toBeNull();
+    expect(screen.queryByRole("img", { name: /arquivos/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Responsáveis" })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Alternar exibição do ID da ação" }),
+    ).toBeNull();
+    expect(writes).toEqual([]);
+  });
+
+  it("shows the file indicator only when work attachments exist", async () => {
+    mount(
+      draft({
+        description: "<p></p>",
+        work_files: ["https://files.test/brief.pdf"],
+      }),
+    );
+    await descriptionEditor();
+    const indicator = screen.getByRole("img", {
+      name: "Com arquivos de trabalho",
+    });
+    const summary = screen.getByRole("button", {
+      name: "Detalhes da ação",
+    }).parentElement;
+    expect(summary?.contains(indicator)).toBe(true);
+    // No file count or label next to the date.
+    expect(summary?.textContent).toBe(
+      screen.getByRole("button", { name: /outubro às 10h/ }).textContent,
+    );
+  });
+
+  it("collapsed details leave the focus order; expanded ones are reachable and keep state", async () => {
+    mount(draft({ category: "reels", description: "<p></p>" }));
+    const editor = await descriptionEditor();
+    const user = userEvent.setup();
+    const visitUntilEditor = async () => {
+      const visited: Element[] = [];
+      act(() =>
+        screen.getByRole("textbox", { name: "Título da ação" }).focus(),
+      );
+      for (let step = 0; step < 12; step++) {
+        await user.tab();
+        if (document.activeElement === editor) return visited;
+        if (document.activeElement) visited.push(document.activeElement);
+      }
+      throw new Error("Tab never reached the description");
+    };
+    await user.keyboard("{Alt>}{F10}{/Alt}");
+    const expand = screen.getByRole("button", { name: "Detalhes da ação" });
+    const details = document.getElementById(
+      expand.getAttribute("aria-controls") ?? "",
+    );
+    if (!details) throw new Error("Expand control does not name its region");
+    const collapsed = await visitUntilEditor();
+    expect(collapsed.includes(expand)).toBe(true);
+    expect(collapsed.some((node) => details.contains(node))).toBe(false);
+
+    await user.click(expand);
+    expect(expand.getAttribute("aria-expanded")).toBe("true");
+    const responsibles = screen.getByRole("button", { name: "Responsáveis" });
+    const idToggle = screen.getByRole("button", {
+      name: "Alternar exibição do ID da ação",
+    });
+    expect(screen.getByRole("button", { name: /ESTRATÉGIA/ })).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: /Adicionar arquivo/ }),
+    ).toBeTruthy();
+    const expanded = await visitUntilEditor();
+    expect(expanded.includes(responsibles)).toBe(true);
+    expect(expanded.includes(idToggle)).toBe(true);
+
+    // Collapsing keeps the same mounted controls and their local state.
+    await user.click(idToggle);
+    expect(idToggle.textContent).toBe(action.id);
+    await user.click(expand);
+    expect(screen.queryByRole("button", { name: "Responsáveis" })).toBeNull();
+    await user.click(expand);
+    expect(
+      screen.getByRole("button", {
+        name: "Alternar exibição do ID da ação",
+      }) === idToggle,
+    ).toBe(true);
+    expect(idToggle.textContent).toBe(action.id);
+    expect(writes).toEqual([]);
+  });
+
+  it("widening the panel restores the full metadata without losing compact state", async () => {
+    mount(draft({ description: "<p></p>" }));
+    await descriptionEditor();
+    await userEvent
+      .setup()
+      .click(screen.getByRole("button", { name: "Detalhes da ação" }));
+    const responsibles = screen.getByRole("button", { name: "Responsáveis" });
+    resizePanel(672);
+    expect(
+      screen.queryByRole("button", { name: "Detalhes da ação" }),
+    ).toBeNull();
+    expect(document.querySelector("[data-action-footer-strip]")).toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Responsáveis" }) === responsibles,
+    ).toBe(true);
+    expect(screen.getByRole("button", { name: "Atualizar" }).textContent).toBe(
+      "Atualizar",
+    );
+    resizePanel(390);
+    expect(
+      screen
+        .getByRole("button", { name: "Detalhes da ação" })
+        .getAttribute("aria-expanded"),
+    ).toBe("true");
+    expect(
+      screen.getByRole("button", { name: "Responsáveis" }) === responsibles,
+    ).toBe(true);
+  });
+
+  it("one strip holds every footer control in order, with save outside it", async () => {
+    mount(draft({ category: "reels", description: "<p></p>" }));
+    await descriptionEditor();
+    const { save, strip } = footerStrip();
+    expectSameElements(within(strip).getAllByRole("button"), [
+      screen.getByRole("button", { name: "Agency" }),
+      screen.getByRole("button", { name: /^Fase:/ }),
+      screen.getByRole("button", { name: /^Categoria:/ }),
+      screen.getByRole("button", { name: "Abrir seletor de cores" }),
+      screen.getByRole("button", { name: "Sprints" }),
+      screen.getByRole("button", { name: "Duplicar ação (Shift+D)" }),
+      screen.getByRole("button", { name: "Arquivar ação" }),
+    ]);
+    expect(strip.contains(save)).toBe(false);
+    expect(save.getAttribute("aria-label")).toBe("Atualizar");
+    expect(save.textContent).toBe("");
+  });
+
+  it("archived and draft actions keep their own strip commands", async () => {
+    mount(draft({ archived: true, description: "<p></p>" }));
+    await descriptionEditor();
+    expectSameElements(
+      within(footerStrip().strip).getAllByRole("button").slice(-3),
+      [
+        screen.getByRole("button", { name: "Sprints" }),
+        screen.getByRole("button", { name: "Duplicar ação (Shift+D)" }),
+        screen.getByRole("button", { name: "Desarquivar ação" }),
+      ],
+    );
+    cleanup();
+    mount(draft({ id: undefined, title: "", description: "<p></p>" }));
+    await descriptionEditor();
+    const { save, strip } = footerStrip();
+    expectSameElements(within(strip).getAllByRole("button"), [
+      screen.getByRole("button", { name: "Agency" }),
+      screen.getByRole("button", { name: /^Fase:/ }),
+      screen.getByRole("button", { name: /^Categoria:/ }),
+    ]);
+    expect(save.getAttribute("aria-label")).toBe("Criar");
+  });
+
+  it("the icon-only save keeps its pending name and state", async () => {
+    delay = true;
+    mount(action);
+    fireEvent.change(screen.getByRole("textbox", { name: "Título da ação" }), {
+      target: { value: "Pending compact save" },
+    });
+    fireEvent.click(footerStrip().save);
+    const pending = await screen.findByRole("button", {
+      name: "Atualizando...",
+    });
+    expect(pending.hasAttribute("disabled")).toBe(true);
+    expect(pending.querySelector(".animate-spin")).not.toBeNull();
+    expect(footerStrip().strip.contains(pending)).toBe(false);
+    act(() =>
+      resolveWrite?.({
+        data: { ...action, title: "Pending compact save" },
+        error: null,
+      }),
+    );
+    await screen.findByRole("button", { name: "Atualizar" });
+    expect(writes).toHaveLength(1);
+  });
+
+  it("edge fades follow the strip scroll position", async () => {
+    mount(draft({ category: "reels", description: "<p></p>" }));
+    await descriptionEditor();
+    const { strip } = footerStrip();
+    scrollMetrics(strip, { scrollWidth: 520, clientWidth: 300 });
+    fireEvent.scroll(strip);
+    expect(fades(strip)).toEqual(["end"]);
+    strip.scrollLeft = 120;
+    fireEvent.scroll(strip);
+    expect(fades(strip)).toEqual(["start", "end"]);
+    strip.scrollLeft = 220;
+    fireEvent.scroll(strip);
+    expect(fades(strip)).toEqual(["start"]);
+    scrollMetrics(strip, { scrollWidth: 300, clientWidth: 300 });
+    fireEvent.scroll(strip);
+    expect(fades(strip)).toEqual([]);
+  });
+
+  it("keyboard focus brings an offscreen strip control into view", async () => {
+    mount(draft({ description: "<p></p>" }));
+    await descriptionEditor();
+    const { strip } = footerStrip();
+    scrollMetrics(strip, { scrollWidth: 500, clientWidth: 300 });
+    layout(strip, 0, 300);
+    const duplicate = screen.getByRole("button", {
+      name: "Duplicar ação (Shift+D)",
+    });
+    const archive = screen.getByRole("button", { name: "Arquivar ação" });
+    layout(duplicate, 200, 48);
+    layout(archive, 398, 48);
+    const user = userEvent.setup();
+    act(() => duplicate.focus());
+    expect(strip.scrollLeft).toBe(0);
+    await user.keyboard("{Alt>}{F10}{/Alt}");
+    await user.tab();
+    expect(document.activeElement === archive).toBe(true);
+    // 446 - (300 - 24px fade): the control ends clear of the right fade.
+    expect(strip.scrollLeft).toBe(170);
+    expect(fades(strip)).toEqual(["start", "end"]);
+  });
+
+  it("pointer focus leaves the strip where it is", async () => {
+    mount(draft({ description: "<p></p>" }));
+    await descriptionEditor();
+    const { strip } = footerStrip();
+    scrollMetrics(strip, { scrollWidth: 500, clientWidth: 300 });
+    layout(strip, 0, 300);
+    const archive = screen.getByRole("button", { name: "Arquivar ação" });
+    layout(archive, 280, 48);
+    fireEvent.pointerDown(archive);
+    act(() => archive.focus());
+    // Scrolling here would move the control away before the press ends.
+    expect(strip.scrollLeft).toBe(0);
+  });
+
+  it("the Essencial Tab order is unchanged on a phone-width panel", async () => {
+    mount(draft({ category: "reels", description: "<p></p>" }));
+    const editor = await descriptionEditor();
+    const user = userEvent.setup();
+    const sequence = [
+      screen.getByRole("textbox", { name: "Título da ação" }),
+      editor,
+      screen.getByRole("button", { name: "Agency" }),
+      screen.getByRole("button", { name: /^Fase:/ }),
+      screen.getByRole("button", { name: /^Categoria:/ }),
+      screen.getByRole("button", { name: "Abrir seletor de cores" }),
+      screen.getByRole("button", { name: "Atualizar" }),
+    ];
+    for (const target of sequence.slice(1)) {
+      await user.tab();
+      expect(document.activeElement === target).toBe(true);
+    }
+    for (const target of sequence.slice(0, -1).reverse()) {
+      await user.tab({ shift: true });
+      expect(document.activeElement === target).toBe(true);
+    }
+    expect(writes).toEqual([]);
+  });
 });

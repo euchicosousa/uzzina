@@ -1,12 +1,14 @@
 import { parseU } from "~/utils/date";
 import {
   CalendarDaysIcon,
+  ChevronDownIcon,
+  FileIcon,
   FilePlus,
   ListIcon,
   LoaderIcon,
   SparkleIcon,
 } from "lucide-react";
-import { Suspense, lazy, useRef, useState } from "react";
+import { Suspense, lazy, useId, useRef, useState } from "react";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 const Tiptap = lazy(() =>
   import("~/components/features/RichTextEditor").then((module) => ({
@@ -42,6 +44,10 @@ interface EssentialsTabProps {
   uploadPreset: string;
   isAIProcessing: boolean;
   autoFocus?: boolean;
+  /** Phone-width panel: metadata collapses behind a date summary. */
+  compact?: boolean;
+  detailsExpanded?: boolean;
+  onDetailsExpandedChange?: (expanded: boolean) => void;
   onOpenStrategyModal?: () => void;
   onDescriptionChange?: (description: string) => void;
   onTitleBlur?: (title: string) => Promise<void>;
@@ -67,6 +73,9 @@ export function EssentialsTab({
   onTitleBlur,
   descriptionVersion,
   autoFocus = true,
+  compact = false,
+  detailsExpanded = false,
+  onDetailsExpandedChange,
 }: EssentialsTabProps) {
   const workFilesRef = useRef(workFiles);
   workFilesRef.current = workFiles;
@@ -119,6 +128,33 @@ export function EssentialsTab({
   const handleTriggerAI = async () => {
     await triggerAIAction(INTENT.ai_strategy);
   };
+  const detailsId = useId();
+  const isSocial = isSocialMediaContent(RawAction.category);
+  const dateControl = (
+    <div className="flex min-w-0 items-center gap-1">
+      <CalendarDaysIcon
+        className={cn(
+          "size-4 shrink-0",
+          isLateAction(RawAction) ? "text-destructive" : "opacity-50",
+        )}
+      />
+      <ActionDatePicker
+        className={cn(
+          isLateAction(RawAction) ? "text-destructive" : "opacity-50",
+        )}
+        date={parseU(RawAction.date)}
+        onSelect={async (date) => {
+          setRawAction({
+            ...RawAction,
+            ...getNewDateForAction(RawAction, date),
+          });
+          await updateAction({
+            ...getNewDateForAction(RawAction, date),
+          });
+        }}
+      />
+    </div>
+  );
   return (
     <div className="flex h-full w-full max-w-full flex-col overflow-hidden">
       {/* Título */}
@@ -150,143 +186,157 @@ export function EssentialsTab({
       </div>
 
       <div className="max-w-full text-sm">
-        <div className="flex max-w-full flex-wrap items-center gap-2 border-b px-4 py-2 sm:gap-4">
-          <div className="opacity-50">
-            <ActionTimeDisplay action={RawAction} />
+        {compact && (
+          <div className="flex max-w-full items-center gap-2 border-b py-1 pr-2 pl-4">
+            {dateControl}
+            {workFiles.length > 0 && (
+              <span
+                aria-label="Com arquivos de trabalho"
+                className="flex shrink-0 items-center opacity-50"
+                role="img"
+              >
+                <FileIcon aria-hidden="true" className="size-4" />
+              </span>
+            )}
+            <PrismButton
+              aria-controls={detailsId}
+              aria-expanded={detailsExpanded}
+              aria-label="Detalhes da ação"
+              className="ml-auto"
+              onPress={() => onDetailsExpandedChange?.(!detailsExpanded)}
+              size="icon-sm"
+              variant="ghost"
+            >
+              <ChevronDownIcon
+                className={cn(
+                  "size-4 transition-transform",
+                  detailsExpanded && "rotate-180",
+                )}
+              />
+            </PrismButton>
           </div>
-          <ResponsiblesCombobox
-            currentPartners={currentPartners}
-            onSelect={async (responsibles) => {
-              setRawAction({
-                ...RawAction,
-                responsibles,
-              });
-              await updateAction({
-                ...RawAction,
-                responsibles,
-              });
-            }}
-            selectedResponsibles={RawAction.responsibles}
-          />
-
-          <PrismButton
-            aria-label="Alternar exibição do ID da ação"
-            className="ml-auto h-6 px-2 font-mono text-[10px]"
-            onClick={() => {
-              setisIDVisible(!isIDVisible);
-            }}
-            variant="ghost"
-          >
-            {isIDVisible ? RawAction.id : "ID"}
-          </PrismButton>
-        </div>
-
-        <div className="flex max-w-full flex-wrap items-center justify-between gap-2 border-b px-4 py-1.5">
-          <div className="flex items-center gap-1">
-            <CalendarDaysIcon
-              className={cn(
-                "size-4",
-                isLateAction(RawAction) ? "text-destructive" : "opacity-50",
-              )}
-            />
-            <ActionDatePicker
-              className={cn(
-                isLateAction(RawAction) ? "text-destructive" : "opacity-50",
-              )}
-              date={parseU(RawAction.date)}
-              onSelect={async (date) => {
+        )}
+        {/* Collapsed details stay mounted (uploads, ID toggle) but leave focus order. */}
+        <div hidden={compact && !detailsExpanded} id={detailsId}>
+          <div className="flex max-w-full flex-wrap items-center gap-2 border-b px-4 py-2 sm:gap-4">
+            <div className="opacity-50">
+              <ActionTimeDisplay action={RawAction} />
+            </div>
+            <ResponsiblesCombobox
+              currentPartners={currentPartners}
+              onSelect={async (responsibles) => {
                 setRawAction({
                   ...RawAction,
-                  ...getNewDateForAction(RawAction, date),
+                  responsibles,
                 });
                 await updateAction({
-                  ...getNewDateForAction(RawAction, date),
+                  ...RawAction,
+                  responsibles,
                 });
               }}
+              selectedResponsibles={RawAction.responsibles}
             />
+
+            <PrismButton
+              aria-label="Alternar exibição do ID da ação"
+              className="ml-auto h-6 px-2 font-mono text-[10px]"
+              onClick={() => {
+                setisIDVisible(!isIDVisible);
+              }}
+              variant="ghost"
+            >
+              {isIDVisible ? RawAction.id : "ID"}
+            </PrismButton>
           </div>
 
-          {isSocialMediaContent(RawAction.category) &&
-            (() => {
-              const hasStrategies =
-                parseStrategies(RawAction.strategies).length > 0;
-              const buttonLabel = isAIProcessing
-                ? hasStrategies
-                  ? "RECRIANDO ESTRATÉGIAS..."
-                  : "CRIANDO ESTRATÉGIA..."
-                : hasStrategies
-                  ? "RECRIAR ESTRATÉGIAS"
-                  : "CRIAR ESTRATÉGIA";
-              return (
-                <PrismButtonGroup className="min-w-0 shrink">
-                  {hasStrategies && onOpenStrategyModal && (
+          <div
+            className="flex max-w-full flex-wrap items-center justify-between gap-2 border-b px-4 py-1.5"
+            hidden={compact && !isSocial}
+          >
+            {!compact && dateControl}
+
+            {isSocial &&
+              (() => {
+                const hasStrategies =
+                  parseStrategies(RawAction.strategies).length > 0;
+                const buttonLabel = isAIProcessing
+                  ? hasStrategies
+                    ? "RECRIANDO ESTRATÉGIAS..."
+                    : "CRIANDO ESTRATÉGIA..."
+                  : hasStrategies
+                    ? "RECRIAR ESTRATÉGIAS"
+                    : "CRIAR ESTRATÉGIA";
+                return (
+                  <PrismButtonGroup className="min-w-0 shrink">
+                    {hasStrategies && onOpenStrategyModal && (
+                      <PrismButton
+                        aria-label="Ver estratégias geradas"
+                        onClick={onOpenStrategyModal}
+                        size="xs"
+                        variant="secondary"
+                      >
+                        <ListIcon />
+                      </PrismButton>
+                    )}
                     <PrismButton
-                      aria-label="Ver estratégias geradas"
-                      onClick={onOpenStrategyModal}
+                      className="min-w-0 shrink"
+                      isDisabled={isAIProcessing}
+                      onClick={handleTriggerAI}
                       size="xs"
                       variant="secondary"
                     >
-                      <ListIcon />
+                      <span className="min-w-0 truncate" title={buttonLabel}>
+                        {buttonLabel}
+                      </span>
+                      {isAIProcessing ? (
+                        <LoaderIcon className="animate-spin" />
+                      ) : (
+                        <SparkleIcon />
+                      )}
                     </PrismButton>
-                  )}
-                  <PrismButton
-                    className="min-w-0 shrink"
-                    isDisabled={isAIProcessing}
-                    onClick={handleTriggerAI}
-                    size="xs"
-                    variant="secondary"
-                  >
-                    <span className="min-w-0 truncate" title={buttonLabel}>
-                      {buttonLabel}
-                    </span>
-                    {isAIProcessing ? (
-                      <LoaderIcon className="animate-spin" />
-                    ) : (
-                      <SparkleIcon />
-                    )}
-                  </PrismButton>
-                </PrismButtonGroup>
-              );
-            })()}
-        </div>
+                  </PrismButtonGroup>
+                );
+              })()}
+          </div>
 
-        <div className="flex max-w-full items-start gap-2 overflow-hidden border-b px-4 py-1">
-          <div className="flex max-w-full flex-wrap items-center gap-1">
-            {workFiles.map((url, i) => (
-              <WorkFileThumbnail
-                key={url}
-                onRemove={async () => {
-                  const next = workFiles.filter((_, idx) => idx !== i);
-                  setWorkFiles(next);
-                  setRawAction((prev) => ({
-                    ...prev,
-                    work_files: next,
-                  }));
-                  await updateAction({
-                    work_files: next,
-                  });
-                }}
-                url={url}
-              />
-            ))}
-            <CloudinaryUpload
-              className={cn(
-                workFiles.length === 0 &&
-                  "h-8 gap-1 p-0 font-normal text-muted-foreground hover:underline data-[focus-visible]:underline",
-              )}
-              cloudName={cloudName}
-              folder="uzzina/work"
-              multiple
-              onUpload={handleUpload}
-              outputWidth={1200}
-              resourceType="auto"
-              size={workFiles.length === 0 ? "sm" : "icon-xs"}
-              uploadPreset={uploadPreset}
-              variant={workFiles.length === 0 ? "unstyled" : "secondary"}
-            >
-              <FilePlus className="size-4" />
-              {workFiles.length === 0 && <span>Adicionar arquivo</span>}
-            </CloudinaryUpload>
+          <div className="flex max-w-full items-start gap-2 overflow-hidden border-b px-4 py-1">
+            <div className="flex max-w-full flex-wrap items-center gap-1">
+              {workFiles.map((url, i) => (
+                <WorkFileThumbnail
+                  key={url}
+                  onRemove={async () => {
+                    const next = workFiles.filter((_, idx) => idx !== i);
+                    setWorkFiles(next);
+                    setRawAction((prev) => ({
+                      ...prev,
+                      work_files: next,
+                    }));
+                    await updateAction({
+                      work_files: next,
+                    });
+                  }}
+                  url={url}
+                />
+              ))}
+              <CloudinaryUpload
+                className={cn(
+                  workFiles.length === 0 &&
+                    "h-8 gap-1 p-0 font-normal text-muted-foreground hover:underline data-[focus-visible]:underline",
+                )}
+                cloudName={cloudName}
+                folder="uzzina/work"
+                multiple
+                onUpload={handleUpload}
+                outputWidth={1200}
+                resourceType="auto"
+                size={workFiles.length === 0 ? "sm" : "icon-xs"}
+                uploadPreset={uploadPreset}
+                variant={workFiles.length === 0 ? "unstyled" : "secondary"}
+              >
+                <FilePlus className="size-4" />
+                {workFiles.length === 0 && <span>Adicionar arquivo</span>}
+              </CloudinaryUpload>
+            </div>
           </div>
         </div>
       </div>
