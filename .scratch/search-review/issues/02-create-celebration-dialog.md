@@ -34,3 +34,13 @@ Owner found the modal cluttered (calendar stretched across the dialog, unlabeled
 Second owner pass (same day): border around the calendar removed; the grid now spans the dialog width while each day keeps a fixed 36px square (no oversized rows). Month/year pickers in `PrismCalendar` lost their field background and now read as plain caption text with only the chevron (hover and keyboard focus still show feedback); this applies to every calendar with dropdown captions, as the owner asked. Full suite (525 tests), format, lint and typecheck passed; checked in the built-in browser with the controlled session, no writes.
 
 Third owner pass: month/year pickers now share the 36px height of the previous/next buttons (the trigger's default 48px height was overriding the caption style) with tighter horizontal padding; the written-out date next to "Data" was removed because the calendar already shows the selection. Search suite (49 tests), lint and typecheck passed; heights measured in the built-in browser (all four header controls 36px), no writes.
+
+## Design review follow-up (2026-10-28)
+
+Owner asked for a review with the design skills (design-critique, frontend-design, accessibility-review; read from their public repos because the newly enabled plugins only load in new sessions) and approved the three priorities:
+
+- Empty title now shows the error under the field (aria-invalid, aria-describedby, focus back on the title) instead of the browser bubble; the form uses `noValidate`.
+- `PrismCalendar` renders previous/next inside the caption row, so Tab follows the visual order (previous, month, year, next) in every calendar.
+- Days from other months are hidden (space kept) and the redundant dialog description was removed.
+
+While checking in the browser, a pre-existing defect showed up: React Aria's calendar renders a visually hidden "next" button without a type, so Enter in the title made it the form's default button and moved the calendar to the next month. The form now wraps only the title and the submit button joins it through the `form` attribute. Tests for the inline error, tab order and default button failed before and pass after; 528 tests, format, lint and typecheck passed. Built-in browser with the controlled session: inline error, month kept on Enter, one mocked POST with the selected date, no real writes. Approved by owner and committed locally, not pushed.

@@ -142,23 +142,7 @@ function CalendarInner({
   isRange?: boolean;
 }) {
   return (
-    <div className="relative flex flex-col gap-4 md:flex-row">
-      <header className="absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1">
-        <PrismButton
-          className="size-(--cell-size) p-0 select-none aria-disabled:opacity-50"
-          slot="previous"
-          variant={buttonVariant}
-        >
-          <ChevronLeftIcon className="cn-rtl-flip size-4" />
-        </PrismButton>
-        <PrismButton
-          className="size-(--cell-size) p-0 select-none aria-disabled:opacity-50"
-          slot="next"
-          variant={buttonVariant}
-        >
-          <ChevronRightIcon className="cn-rtl-flip size-4" />
-        </PrismButton>
-      </header>
+    <div className="flex flex-col gap-4 md:flex-row">
       {Array.from(
         {
           length: numberOfMonths,
@@ -166,20 +150,46 @@ function CalendarInner({
         (_, i) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: O número de meses renderizados é um range sequencial estático
           <div key={`month-offset-${i}`} className="flex w-full flex-col gap-4">
-            <div className="flex h-(--cell-size) w-full items-center justify-center gap-1 px-(--cell-size)">
-              {captionLayout === "dropdown" ? (
-                <>
-                  <MonthDropdown format={headerFormat} />
-                  <YearDropdown format={headerFormat} />
-                </>
+            {/* Previous/next live in the caption row so DOM (and Tab) order
+                matches the visual order: previous, month, year, next. */}
+            <div className="flex h-(--cell-size) w-full items-center justify-between gap-1">
+              {i === 0 ? (
+                <PrismButton
+                  className="size-(--cell-size) p-0 select-none aria-disabled:opacity-50"
+                  slot="previous"
+                  variant={buttonVariant}
+                >
+                  <ChevronLeftIcon className="cn-rtl-flip size-4" />
+                </PrismButton>
               ) : (
-                <CalendarHeading
-                  className="tra text-base font-medium select-none"
-                  format={headerFormat}
-                  offset={{
-                    months: i,
-                  }}
-                />
+                <span aria-hidden className="size-(--cell-size)" />
+              )}
+              <div className="flex items-center justify-center gap-1">
+                {captionLayout === "dropdown" ? (
+                  <>
+                    <MonthDropdown format={headerFormat} />
+                    <YearDropdown format={headerFormat} />
+                  </>
+                ) : (
+                  <CalendarHeading
+                    className="tra text-base font-medium select-none"
+                    format={headerFormat}
+                    offset={{
+                      months: i,
+                    }}
+                  />
+                )}
+              </div>
+              {i === numberOfMonths - 1 ? (
+                <PrismButton
+                  className="size-(--cell-size) p-0 select-none aria-disabled:opacity-50"
+                  slot="next"
+                  variant={buttonVariant}
+                >
+                  <ChevronRightIcon className="cn-rtl-flip size-4" />
+                </PrismButton>
+              ) : (
+                <span aria-hidden className="size-(--cell-size)" />
               )}
             </div>
             <CalendarGrid

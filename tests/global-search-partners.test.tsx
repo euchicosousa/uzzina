@@ -942,6 +942,52 @@ it("creates one trimmed celebration with a calendar-selected date and updates on
   ).toBe(false);
 });
 
+it("shows the empty-title error in the dialog instead of the browser bubble", async () => {
+  const { user } = await mount();
+  await user.click(
+    screen.getByRole("menuitem", { name: "Criar data comemorativa" }),
+  );
+  const dialog = await screen.findByRole("dialog", {
+    name: "Criar data comemorativa",
+  });
+  const title = within(dialog).getByRole("textbox", { name: "Título" });
+  expect(dialog.querySelector("form")?.noValidate).toBe(true);
+  await user.click(within(dialog).getByRole("button", { name: "Criar data" }));
+  const error = await within(dialog).findByRole("alert");
+  expect(error.textContent).toContain("Informe um título");
+  expect(title.getAttribute("aria-invalid")).toBe("true");
+  expect(title.getAttribute("aria-describedby")).toBe(error.id);
+  expect(document.activeElement).toBe(title);
+  expect(celebrationWrites).toHaveLength(0);
+  await user.type(title, "A");
+  expect(within(dialog).queryByRole("alert")).toBeNull();
+  expect(title.hasAttribute("aria-invalid")).toBe(false);
+});
+
+it("submits with Enter in the title without moving the calendar month", async () => {
+  const { user } = await mount();
+  await user.click(
+    screen.getByRole("menuitem", { name: "Criar data comemorativa" }),
+  );
+  const dialog = await screen.findByRole("dialog", {
+    name: "Criar data comemorativa",
+  });
+  const month = within(dialog).getByRole("grid").getAttribute("aria-label");
+  // The calendar's visually hidden next button has no type; it must not be
+  // the form's default button.
+  const form = dialog.querySelector("form");
+  const defaultButton = Array.from(document.querySelectorAll("button")).find(
+    (button) => button.form === form && button.type === "submit",
+  );
+  expect(defaultButton?.textContent).toBe("Criar data");
+  await user.type(
+    within(dialog).getByRole("textbox", { name: "Título" }),
+    "Data pelo Enter{Enter}",
+  );
+  await waitFor(() => expect(celebrationWrites).toHaveLength(1));
+  expect(month).toBeTruthy();
+});
+
 it("validates blank titles and preserves the draft/date after an error for explicit retry", async () => {
   const { user } = await mount();
   await user.click(
