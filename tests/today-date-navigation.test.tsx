@@ -134,7 +134,7 @@ it("keeps the dedicated Today header fixed and scrolls only its content in every
   const { router } = await renderToday("/app/today?date=2026-10-29");
   const user = userEvent.setup();
   const heading = await screen.findByRole("heading", {
-    name: "Quinta-feira, 29 de outubro",
+    name: /Quinta-feira, 29 de outubro/,
   });
   const page = heading.closest("[data-today-page]");
   if (!(page instanceof HTMLElement)) throw new Error("Missing Today page");
@@ -176,7 +176,7 @@ it("keeps the dedicated Today header fixed and scrolls only its content in every
     ?.closest("button");
   if (!nextButton) throw new Error("Missing next day button");
   await user.click(nextButton);
-  await screen.findByRole("heading", { name: "Sexta-feira, 30 de outubro" });
+  await screen.findByRole("heading", { name: /Sexta-feira, 30 de outubro/ });
   expect(screen.getByRole("region", { name: "Ações do dia" }).scrollTop).toBe(
     0,
   );
@@ -221,7 +221,7 @@ it("fits the dedicated Kanban to the available viewport and keeps Home compact",
     await screen.findByRole("radio", { name: "Visão por Kanban" }),
   );
   const section = screen
-    .getByRole("heading", { name: "Quinta-feira, 29 de outubro" })
+    .getByRole("heading", { name: /Quinta-feira, 29 de outubro/ })
     .closest("[data-today-page]");
   if (!(section instanceof HTMLElement)) throw new Error("Missing Today page");
   expect(section.style.height).toBe("820px");
@@ -261,14 +261,14 @@ it("opens the day selected in the home today block when its title is clicked", a
   await user.click(titleLink);
   expect(router.state.location.search).toEqual({ date: "2026-10-28" });
   expect(
-    await screen.findByRole("heading", { name: "Quarta-feira, 28 de outubro" }),
+    await screen.findByRole("heading", { name: /Quarta-feira, 28 de outubro/ }),
   ).toBeTruthy();
 });
 
 it("opens the requested local day and follows date changes and browser back", async () => {
   const { router, client } = await renderToday("/app/today?date=2026-10-29");
   expect(
-    await screen.findByRole("heading", { name: "Quinta-feira, 29 de outubro" }),
+    await screen.findByRole("heading", { name: /Quinta-feira, 29 de outubro/ }),
   ).toBeTruthy();
   const activeQueries = client
     .getQueryCache()
@@ -290,14 +290,14 @@ it("opens the requested local day and follows date changes and browser back", as
   if (!nextButton) throw new Error("Missing next day button");
   await userEvent.setup().click(nextButton);
   expect(
-    await screen.findByRole("heading", { name: "Sexta-feira, 30 de outubro" }),
+    await screen.findByRole("heading", { name: /Sexta-feira, 30 de outubro/ }),
   ).toBeTruthy();
   expect(router.state.location.search).toEqual({ date: "2026-10-30" });
   await act(async () => {
     router.history.back();
   });
   expect(
-    await screen.findByRole("heading", { name: "Quinta-feira, 29 de outubro" }),
+    await screen.findByRole("heading", { name: /Quinta-feira, 29 de outubro/ }),
   ).toBeTruthy();
 });
 
@@ -307,7 +307,11 @@ it.each([
   "/app/today?date=invalid",
 ])("opens today when no valid day is provided: %s", async (entry) => {
   await renderToday(entry);
-  expect(await screen.findByRole("heading", { name: "Hoje" })).toBeTruthy();
+  expect(
+    await screen.findByRole("heading", {
+      name: /Hoje, terça-feira, 27 de outubro/,
+    }),
+  ).toBeTruthy();
 });
 
 it("accepts only real calendar dates", () => {

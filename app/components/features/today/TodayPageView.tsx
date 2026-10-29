@@ -8,7 +8,7 @@ import {
   TodayBoard,
   TodayViewToggle,
   useTodayActions,
-  useTodayTitle,
+  useTodayPageHeading,
   type TodayViewMode,
 } from "~/components/features/home/TodayViewParts";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
@@ -34,7 +34,7 @@ export function TodayPageView({
   );
   const filteredActions = useTodayActions(actions, view, currentDay);
   useSelectionContext(JSON.stringify([currentDay, view]));
-  const title = useTodayTitle(currentDay);
+  const heading = useTodayPageHeading(currentDay);
 
   const pageRef = useRef<HTMLDivElement>(null);
   useFillScrollViewport(pageRef);
@@ -49,9 +49,11 @@ export function TodayPageView({
         isKanban && "pb-(--app-bar-space)",
       )}
     >
-      <div className="flex shrink-0 flex-col justify-between gap-2 border-b px-8 pb-4 lg:flex-row lg:items-center lg:gap-8 lg:py-6 xl:px-16">
-        <h1 className="pt-4 text-3xl font-semibold lg:pt-0 lg:text-5xl">
-          {title}
+      <div className="flex shrink-0 flex-col justify-between gap-1 border-b px-8 pb-3 lg:flex-row lg:items-center lg:gap-8 lg:py-6 xl:px-16">
+        {/* Only one variant is displayed (display:none leaves the other out of the accessibility tree). */}
+        <h1 className="pt-3 text-2xl font-semibold lg:pt-0 lg:text-3xl xl:text-4xl">
+          <span className="md:hidden">{heading.narrow}</span>
+          <span className="hidden md:inline">{heading.wide}</span>
         </h1>
         {/* Mobile already identifies the view through the selected control. */}
         <p className="hidden flex-1 text-center text-lg font-medium lg:block">

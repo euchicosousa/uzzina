@@ -1,4 +1,5 @@
 import type { Action, Partner } from "~/types";
+import { isToday } from "date-fns";
 import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
@@ -33,7 +34,9 @@ export function PartnersBoard({
         )}
         {!isLoading && activePartners.length === 0 && (
           <div className="col-span-full rounded-2xl border border-dashed border-border/50 bg-input/20 py-16 text-center text-sm text-muted-foreground">
-            Nenhuma ação para hoje.
+            {isToday(currentDay)
+              ? "Nenhuma ação para hoje."
+              : "Nenhuma ação para este dia."}
           </div>
         )}
         {activePartners.map((partner) => {

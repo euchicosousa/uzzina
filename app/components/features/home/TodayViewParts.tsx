@@ -54,6 +54,49 @@ export function useTodayTitle(currentDay: Date) {
   }, [currentDay]);
 }
 
+function capitalize(text: string) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+export interface TodayPageHeading {
+  wide: string;
+  narrow: string;
+}
+
+// Dedicated page heading: always names the selected date, adding the year only
+// when it differs from the current one. Home keeps using useTodayTitle.
+export function getTodayPageHeading(
+  currentDay: Date,
+  now: Date = new Date(),
+): TodayPageHeading {
+  const showYear = currentDay.getFullYear() !== now.getFullYear();
+  const locale = { locale: ptBR };
+  const wideDate = format(
+    currentDay,
+    showYear ? "d 'de' MMMM 'de' yyyy" : "d 'de' MMMM",
+    locale,
+  );
+  const narrowDate = format(
+    currentDay,
+    showYear ? "d MMM. yyyy" : "d MMM.",
+    locale,
+  );
+  if (isSameDay(currentDay, now)) {
+    return {
+      wide: `Hoje, ${format(currentDay, "eeee", locale)}, ${wideDate}`,
+      narrow: `Hoje, ${narrowDate}`,
+    };
+  }
+  return {
+    wide: `${capitalize(format(currentDay, "eeee", locale))}, ${wideDate}`,
+    narrow: `${capitalize(format(currentDay, "eeee", locale).slice(0, 3))}., ${narrowDate}`,
+  };
+}
+
+export function useTodayPageHeading(currentDay: Date) {
+  return useMemo(() => getTodayPageHeading(currentDay), [currentDay]);
+}
+
 export function TodayViewToggle({
   view,
   onViewChange,
