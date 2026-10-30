@@ -16,6 +16,12 @@ import {
   useState,
 } from "react";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { getQuerySessionGeneration } from "~/lib/query-client";
+import {
+  ActionUnavailableError,
+  readActionClient,
+} from "~/lib/supabase.mutations";
 import { ActionFormFooter } from "./ActionFormFooter";
 import { ActionDrawerFocusScope } from "./ActionDrawerFocusScope";
 import { useActionAI } from "./useActionAI";
@@ -73,12 +79,27 @@ export function ActionFormDrawer({
   isActive: boolean;
   onActionChange: (action: Action) => void;
 }) {
-  const [conflictVersion, setConflictVersion] = useState<Action | null>(null);
+  // Server snapshot shown in the comparison dialog; never the form's base by itself.
+  const [comparison, setComparison] = useState<Action | null>(null);
   const [isComparing, setIsComparing] = useState(false);
   const [isResolvingConflict, setIsResolvingConflict] = useState(false);
   const { partners: routePartners, cloudName, uploadPreset } = useAppContext();
   const partners = routePartners ?? DEFAULT_PARTNERS;
-  const { handleAction, isLoading: isMutationLoading } = useActionMutations();
+  const queryClient = useQueryClient();
+  const {
+    handleAction,
+    applyCanonicalAction,
+    isLoading: isMutationLoading,
+  } = useActionMutations();
+  const applyCanonicalActionRef = useRef(applyCanonicalAction);
+  applyCanonicalActionRef.current = applyCanonicalAction;
+  const mountedRef = useRef(false);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
   const [RawAction, commitRawAction] = useState<Action>(() => {
     if (initialAction.id) return initialAction;
     const now = toDbTimestamp();
@@ -169,6 +190,8 @@ export function ActionFormDrawer({
         confirmedAction: initialAction,
         pendingPatch: {},
         isDirty: false,
+        remoteVersion: null,
+        unavailable: false,
       },
   );
 
@@ -308,12 +331,16 @@ export function ActionFormDrawer({
       return false;
     }
 
-    return await coordinator.saveNow({
+    const saved = await coordinator.saveNow({
       ...(!current.id ? current : {}),
       title: titleTrimmed,
       description: descriptionRef.current,
       content_description: contentDescriptionRef.current,
     });
+    // Writes wait for an explicit decision about a known newer version.
+    const remote = coordinator.getState().remoteVersion;
+    if (!saved && remote && mountedRef.current) setComparison(remote);
+    return saved;
   }, []);
 
   // Ref always points to the latest handleSave to avoid stale closures in event listeners
@@ -387,6 +414,120 @@ export function ActionFormDrawer({
     },
     [updateAction, setRawAction],
   );
+  // Editors read their content only when mounted; a new key reloads them.
+  const [contentVersion, setContentVersion] = useState(0);
+  // Applies a base the user explicitly chose to the form, including state kept
+  // outside RawAction (editors and media), except fields still being changed.
+  // RawAction is committed here so remounted editors read the new content.
+  const syncFieldsFromBase = useCallback(
+    (base: Action, pending: Record<string, unknown>) => {
+      const next = { ...rawActionRef.current, ...base, ...pending } as Action;
+      rawActionRef.current = next;
+      commitRawAction(next);
+      const description = base.description || "";
+      if (
+        !Object.hasOwn(pending, "description") &&
+        descriptionRef.current !== description
+      ) {
+        descriptionRef.current = description;
+        setDescriptionVersion((version) => version + 1);
+      }
+      const contentDescription = base.content_description || "";
+      if (
+        !Object.hasOwn(pending, "content_description") &&
+        contentDescriptionRef.current !== contentDescription
+      ) {
+        contentDescriptionRef.current = contentDescription;
+        setContentVersion((version) => version + 1);
+      }
+      if (!Object.hasOwn(pending, "work_files"))
+        setWorkFiles(base.work_files ?? []);
+      if (!Object.hasOwn(pending, "content_files"))
+        setContentFiles(base.content_files ?? []);
+    },
+    [],
+  );
+
+  // One authorized read per opening of an existing action. The form stays
+  // editable meanwhile; a newer row is only offered for comparison.
+  const isCheckingRef = useRef(false);
+  const checkRemoteVersionRef = useRef<() => Promise<void>>(async () => {});
+  const checkRemoteVersion = useCallback(async () => {
+    const coordinator = coordinatorRef.current;
+    const id = coordinator?.getState().confirmedAction?.id;
+    if (!coordinator || !id || !mountedRef.current || isCheckingRef.current)
+      return;
+    isCheckingRef.current = true;
+    const generation = coordinator.getGeneration();
+    const session = getQuerySessionGeneration(queryClient);
+    const isCurrent = () =>
+      mountedRef.current &&
+      generation === coordinator.getGeneration() &&
+      session === getQuerySessionGeneration(queryClient);
+    try {
+      const remote = await readActionClient(id);
+      if (!isCurrent()) return;
+      coordinator.setUnavailable(false);
+      const result = await coordinator.receiveRemoteVersion(remote, generation);
+      if (result !== "newer" || !isCurrent()) return;
+      // Lists may show the canonical row; the form keeps its base until the user decides.
+      applyCanonicalActionRef.current(remote);
+      setComparison((current) => current ?? remote);
+    } catch (error) {
+      if (!isCurrent()) return;
+      if (error instanceof ActionUnavailableError)
+        coordinator.setUnavailable(true);
+      else
+        toast.error(
+          "Não foi possível verificar se esta ação mudou em outra sessão. Você pode continuar editando; o salvamento confere a versão.",
+          {
+            action: {
+              label: "Tentar novamente",
+              onClick: () => void checkRemoteVersionRef.current(),
+            },
+          },
+        );
+    } finally {
+      isCheckingRef.current = false;
+    }
+  }, [queryClient]);
+  checkRemoteVersionRef.current = checkRemoteVersion;
+  // Drafts and refocusing an already open action do not start a new check.
+  const checkedOpeningRef = useRef(false);
+  useEffect(() => {
+    if (!initialAction.id || checkedOpeningRef.current) return;
+    checkedOpeningRef.current = true;
+    void checkRemoteVersion();
+  }, [initialAction.id, checkRemoteVersion]);
+
+  const acceptServerVersion = useCallback(() => {
+    const coordinator = coordinatorRef.current;
+    const remote = comparison;
+    if (!coordinator || !remote || !coordinator.adoptRemoteVersion(remote))
+      return;
+    syncFieldsFromBase(remote, {});
+    // A version found after the reviewed one is offered next.
+    setComparison(coordinator.getState().remoteVersion);
+    setFocusRestoreRequest((request) => request + 1);
+  }, [comparison, syncFieldsFromBase]);
+
+  const keepLocalChanges = useCallback(async () => {
+    const coordinator = coordinatorRef.current;
+    const remote = comparison;
+    if (!coordinator || !remote || isResolvingConflict) return;
+    setIsResolvingConflict(true);
+    try {
+      // The reviewed version becomes the expected one; only real local changes are sent.
+      if (!coordinator.rebase(remote)) return;
+      syncFieldsFromBase(remote, coordinator.getState().pendingPatch);
+      const saved = await coordinator.saveNow();
+      // Writes stay paused while a newer version than the reviewed one is known.
+      if (mountedRef.current)
+        setComparison(saved ? null : coordinator.getState().remoteVersion);
+    } finally {
+      if (mountedRef.current) setIsResolvingConflict(false);
+    }
+  }, [comparison, isResolvingConflict, syncFieldsFromBase]);
 
   const prepareLeave = useCallback(async (): Promise<boolean> => {
     if (aiProcessingRef.current) {
@@ -406,12 +547,22 @@ export function ActionFormDrawer({
       );
       return !hasText || window.confirm("Descartar este rascunho incompleto?");
     }
-    return coordinator.safeClose({
+    const canLeave = await coordinator.safeClose({
       snapshot: !current.id ? current : undefined,
       title: current.title,
       description: descriptionRef.current,
       content_description: contentDescriptionRef.current,
     });
+    if (canLeave) return true;
+    const { remoteVersion, unavailable } = coordinator.getState();
+    // Nothing can be saved to an action this user can no longer read; leaving
+    // requires an explicit discard, and the edits stay visible until then.
+    if (unavailable)
+      return window.confirm(
+        "Esta ação não está disponível ou você não tem acesso a ela. Descartar as alterações não salvas e fechar?",
+      );
+    if (remoteVersion && mountedRef.current) setComparison(remoteVersion);
+    return false;
   }, [aiProcessingRef]);
   useEffect(() => {
     registerLeaveGuard?.(prepareLeave);
@@ -420,6 +571,38 @@ export function ActionFormDrawer({
   const handleSafeClose = onClose;
   const contentRef = useRef<HTMLDivElement>(null);
   const compact = useCompactPanel(contentRef);
+  // Accepting a version remounts the editors, which drops their focus; return
+  // it to the remounted editor or the form instead of the page.
+  const lastFocusRef = useRef<Element | null>(null);
+  const [focusRestoreRequest, setFocusRestoreRequest] = useState(0);
+  useEffect(() => {
+    if (focusRestoreRequest === 0) return;
+    const frame = requestAnimationFrame(() => {
+      const active = document.activeElement;
+      const content = contentRef.current;
+      if (
+        !content ||
+        (active && active !== document.body && active.isConnected)
+      )
+        return;
+      const last = lastFocusRef.current;
+      const editor =
+        last instanceof HTMLElement && last.matches(".tiptap")
+          ? content.querySelector<HTMLElement>(
+              '.tiptap[contenteditable="true"]',
+            )
+          : null;
+      const target =
+        editor ??
+        content
+          .closest("[data-drawer-focus-scope]")
+          ?.querySelector<HTMLElement>(
+            '[data-drawer-focus="title"] textarea, [data-drawer-navigation] button[aria-selected="true"]',
+          );
+      target?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [focusRestoreRequest]);
   // Lives here so switching tabs keeps the compact details open.
   const [detailsExpanded, setDetailsExpanded] = useState(false);
 
@@ -456,7 +639,7 @@ export function ActionFormDrawer({
     <ActionDrawerFocusScope
       enabled={isActive && view === "essential"}
       onKeyDown={async (event) => {
-        if (!isActive || conflictVersion || event.defaultPrevented) return;
+        if (!isActive || comparison || event.defaultPrevented) return;
         if (event.key.toLowerCase() === "enter" && event.metaKey) {
           event.preventDefault();
           event.stopPropagation();
@@ -510,13 +693,16 @@ export function ActionFormDrawer({
                 if (!id || isComparing) return;
                 setIsComparing(true);
                 try {
-                  const { readActionClient } =
-                    await import("~/lib/supabase.mutations");
-                  setConflictVersion(await readActionClient(id));
-                } catch {
-                  toast.error(
-                    "Não foi possível carregar a versão atual. Suas alterações continuam aqui.",
-                  );
+                  const latest = await readActionClient(id);
+                  coordinatorRef.current?.setUnavailable(false);
+                  setComparison(latest);
+                } catch (error) {
+                  if (error instanceof ActionUnavailableError)
+                    coordinatorRef.current?.setUnavailable(true);
+                  else
+                    toast.error(
+                      "Não foi possível carregar a versão atual. Suas alterações continuam aqui.",
+                    );
                 } finally {
                   setIsComparing(false);
                 }
@@ -527,6 +713,40 @@ export function ActionFormDrawer({
             </button>
           </div>
         </div>
+      )}
+
+      {coordinatorState.remoteVersion &&
+        coordinatorState.status !== "conflict" && (
+          <div
+            data-testid="drawer-remote-version-banner"
+            className="flex shrink-0 items-center justify-between gap-3 border-b bg-warning-background p-3 text-sm font-medium text-warning"
+          >
+            <div className="flex min-w-0 items-center gap-2">
+              <AlertTriangleIcon className="size-4 shrink-0" />
+              <span className="truncate">
+                {coordinatorState.isDirty
+                  ? "Há uma versão mais recente. Suas alterações aguardam a comparação."
+                  : "Há uma versão mais recente desta ação."}
+              </span>
+            </div>
+            <button
+              className="shrink-0 text-xs font-semibold underline hover:no-underline"
+              onClick={() => setComparison(coordinatorState.remoteVersion)}
+              type="button"
+            >
+              Comparar
+            </button>
+          </div>
+        )}
+
+      {coordinatorState.unavailable && (
+        <p
+          data-testid="drawer-unavailable-banner"
+          className="shrink-0 border-b bg-error-background p-3 text-sm font-medium text-error"
+          role="alert"
+        >
+          Esta ação não está disponível ou você não tem acesso a ela.
+        </p>
       )}
 
       {coordinatorState.status === "error" && (
@@ -605,6 +825,9 @@ export function ActionFormDrawer({
       <div
         className="relative flex h-full w-full max-w-full grow flex-col overflow-hidden"
         data-action-layout-width={compact ? "compact" : "regular"}
+        onFocusCapture={(event) => {
+          lastFocusRef.current = event.target;
+        }}
         ref={contentRef}
       >
         {/* Essencial */}
@@ -647,6 +870,7 @@ export function ActionFormDrawer({
                 cloudName={cloudName}
                 compact={compact}
                 contentDescription={contentDescriptionRef.current}
+                contentVersion={contentVersion}
                 contentFiles={contentFiles}
                 currentPartners={currentPartners}
                 isAIProcessing={isAIProcessing}
@@ -690,24 +914,26 @@ export function ActionFormDrawer({
 
       <PrismDialog
         className="sm:max-w-3xl lg:max-w-5xl"
-        isOpen={isActive && conflictVersion !== null}
+        isOpen={isActive && comparison !== null && !isStrategyModalOpen}
         isDismissable={!isResolvingConflict}
         showCloseButton={false}
         onOpenChange={(open) => {
-          if (!open && !isResolvingConflict) setConflictVersion(null);
+          if (!open && !isResolvingConflict) setComparison(null);
         }}
       >
         <PrismDialogHeader>
           <PrismDialogTitle>Comparar alterações</PrismDialogTitle>
           <PrismDialogDescription>
-            Outra pessoa ou sessão modificou esta ação. Confira os campos
-            abaixo. Ao confirmar, somente suas alterações pendentes serão salvas
-            sobre a versão carregada.
+            {coordinatorState.isDirty
+              ? "Outra pessoa ou sessão modificou esta ação. Confira os campos abaixo. Ao salvar, somente os campos que você alterou serão gravados sobre a versão atual."
+              : "Outra pessoa ou sessão modificou esta ação depois que ela foi aberta aqui. Você não tem alterações pendentes; use a versão atual para continuar a partir dela."}
           </PrismDialogDescription>
         </PrismDialogHeader>
-        {conflictVersion && (
+        {comparison && (
           <ConflictComparison
-            latest={conflictVersion}
+            base={coordinatorState.confirmedAction}
+            latest={comparison}
+            local={RawAction as unknown as Record<string, unknown>}
             pending={coordinatorState.pendingPatch}
           />
         )}
@@ -716,28 +942,27 @@ export function ActionFormDrawer({
             autoFocus
             isDisabled={isResolvingConflict}
             variant="outline"
-            onPress={() => setConflictVersion(null)}
+            onPress={() => setComparison(null)}
           >
             Cancelar
           </PrismButton>
           <PrismButton
-            isDisabled={isResolvingConflict}
-            onPress={async () => {
-              const coordinator = coordinatorRef.current;
-              if (!coordinator || !conflictVersion || isResolvingConflict)
-                return;
-              setIsResolvingConflict(true);
-              try {
-                coordinator.rebase(conflictVersion);
-                await coordinator.saveNow();
-                setConflictVersion(null);
-              } finally {
-                setIsResolvingConflict(false);
-              }
-            }}
+            isDisabled={isResolvingConflict || isPending}
+            variant={coordinatorState.isDirty ? "destructive" : "default"}
+            onPress={acceptServerVersion}
           >
-            {isResolvingConflict ? "Salvando…" : "Salvar minhas alterações"}
+            {coordinatorState.isDirty
+              ? "Descartar minhas alterações e usar a atual"
+              : "Usar versão atual"}
           </PrismButton>
+          {coordinatorState.isDirty && (
+            <PrismButton
+              isDisabled={isResolvingConflict || isPending}
+              onPress={keepLocalChanges}
+            >
+              {isResolvingConflict ? "Salvando…" : "Salvar minhas alterações"}
+            </PrismButton>
+          )}
         </PrismDialogFooter>
       </PrismDialog>
 

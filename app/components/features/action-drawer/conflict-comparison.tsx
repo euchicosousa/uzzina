@@ -8,6 +8,7 @@ import type { Action, Partner, Person } from "~/types";
 import { parseU } from "~/utils/date";
 import { parseStrategies } from "~/utils/format";
 import { sanitizeHtml } from "~/utils/sanitize";
+import { compareActionVersions } from "./action-save-coordinator";
 
 const FIELD_LABELS: Record<string, string> = {
   title: "Título",
@@ -28,6 +29,41 @@ const FIELD_LABELS: Record<string, string> = {
   time: "Tempo",
   archived: "Arquivamento",
 };
+const RICH_TEXT_FIELDS = new Set(["description", "content_description"]);
+
+/** Normalizes stored values so equivalent representations are not reported as changes. */
+function comparableValue(field: string, value: unknown): unknown {
+  if (field === "archived") return Boolean(value);
+  if (
+    value == null ||
+    value === "" ||
+    (Array.isArray(value) && value.length === 0) ||
+    (RICH_TEXT_FIELDS.has(field) && value === "<p></p>")
+  )
+    return null;
+  if (field === "date" && typeof value === "string") {
+    const date = parseU(value);
+    return isValid(date) ? date.getTime() : value;
+  }
+  if (field === "strategies") {
+    const strategies = parseStrategies(value);
+    return strategies.length > 0 ? strategies : null;
+  }
+  return value;
+}
+
+/** Content fields whose stored value differs between two versions of an action. */
+export function getChangedFields(
+  base: Record<string, unknown>,
+  next: Record<string, unknown>,
+): string[] {
+  return Object.keys(FIELD_LABELS).filter(
+    (field) =>
+      JSON.stringify(comparableValue(field, base[field])) !==
+      JSON.stringify(comparableValue(field, next[field])),
+  );
+}
+
 type ComparisonNames = {
   partners?: Pick<Partner, "slug" | "title">[];
   people?: Pick<Person, "user_id" | "name" | "surname">[];
@@ -112,12 +148,22 @@ export function formatConflictValue(
   return typeof value === "string" ? value : (JSON.stringify(value) ?? "Vazio");
 }
 
+/**
+ * Server version beside the values in this form. `pending` is the true local
+ * write patch; with `base` (the version the form was opened/confirmed from),
+ * fields changed only on the server are displayed too, without becoming part
+ * of that patch.
+ */
 export function ConflictComparison({
   latest,
   pending,
+  base,
+  local,
 }: {
   latest: Action;
   pending: Record<string, unknown>;
+  base?: Action | null;
+  local?: Record<string, unknown>;
 }) {
   const { person, partners } = useAppContext();
   const { data: people = [] } = useQuery({
@@ -125,16 +171,55 @@ export function ConflictComparison({
     queryFn: fetchPeople,
     staleTime: 30 * 60 * 1000,
   });
-  const fields = Object.keys(pending);
   const current = latest as unknown as Record<string, unknown>;
+  const opened = base as unknown as Record<string, unknown> | null | undefined;
+  const remoteChanged = new Set(
+    opened ? getChangedFields(opened, current) : [],
+  );
+  const pendingFields = Object.keys(pending);
+  const hasLocalChanges = pendingFields.length > 0;
+  const fields = [
+    ...Object.keys(FIELD_LABELS).filter(
+      (field) => remoteChanged.has(field) || Object.hasOwn(pending, field),
+    ),
+    ...pendingFields.filter((field) => !Object.hasOwn(FIELD_LABELS, field)),
+  ];
+  const localValues: Record<string, unknown> = {
+    ...opened,
+    ...local,
+    ...pending,
+  };
+  if (fields.length === 0)
+    return (
+      <p className="px-5 text-sm text-muted-foreground" role="status">
+        {opened &&
+        compareActionVersions(latest.updated_at, opened.updated_at) === 1
+          ? "Nenhum campo do conteúdo mudou. Somente o registro de versão no servidor é mais recente."
+          : "Nenhum campo difere entre esta tela e a versão atual."}
+      </p>
+    );
   return (
     <div
       className="grid grid-cols-2 gap-2 px-5 sm:gap-4"
       data-testid="conflict-comparison"
     >
       {[
-        { title: "Versão atual", values: current },
-        { title: "Sua edição", values: pending },
+        {
+          title: "Versão atual",
+          values: current,
+          note: (field: string) =>
+            remoteChanged.has(field)
+              ? "Mudou no servidor"
+              : "Sem mudança no servidor",
+        },
+        {
+          title: hasLocalChanges ? "Sua edição" : "Versão aberta",
+          values: localValues,
+          note: (field: string) =>
+            Object.hasOwn(pending, field)
+              ? "Alterado por você"
+              : "Sem alteração sua",
+        },
       ].map((column) => (
         <section
           aria-label={column.title}
@@ -160,6 +245,12 @@ export function ConflictComparison({
                   <div className="py-3" key={field}>
                     <dt className="mb-2 text-xs font-medium text-muted-foreground">
                       {FIELD_LABELS[field] || "Campo alterado"}
+                      {opened && (
+                        <span className="font-normal">
+                          {" · "}
+                          {column.note(field)}
+                        </span>
+                      )}
                     </dt>
                     <dd className="m-0 text-sm leading-relaxed wrap-anywhere whitespace-pre-wrap">
                       {richText ? (

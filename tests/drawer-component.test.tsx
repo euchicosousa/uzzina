@@ -166,11 +166,13 @@ mock.module("~/lib/supabase.client", () => ({
             return new Promise<{ data: Action; error: null }>((resolve) => {
               resolveWrite = resolve;
             });
+          const stored = databaseActions.get(queriedId ?? "") ?? action;
+          // Only a write advances the version; a read returns the stored row.
           const canonical = {
-            ...(databaseActions.get(queriedId ?? "") ?? action),
+            ...stored,
             id: queriedId,
             ...patch,
-            updated_at: "2026-10-06T10:01:00Z",
+            updated_at: patch ? "2026-10-06T10:01:00Z" : stored.updated_at,
           };
           if (patch && canonical.id)
             databaseActions.set(canonical.id, canonical);

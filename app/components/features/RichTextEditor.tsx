@@ -481,6 +481,14 @@ export function RichTextEditor({
       }),
     ];
   });
+  // An unchanged document reports the content it was given, so the editor's
+  // serialization of stored HTML (e.g. "<hr />" as "<hr>", or the paragraph
+  // the trailing-node plugin appends) is not mistaken for an edit.
+  const initialContentRef = useRef(content);
+  const baselineHtmlRef = useRef<string | null>(null);
+  const lastHtmlRef = useRef<string | null>(null);
+  const reportedHtml = (html: string) =>
+    html === baselineHtmlRef.current ? initialContentRef.current : html;
   const editor = useEditor({
     extensions,
     content,
@@ -492,11 +500,23 @@ export function RichTextEditor({
         tabindex: tabIndex?.toString() || "0",
       },
     },
+    onCreate: (props) => {
+      baselineHtmlRef.current = props.editor.getHTML();
+      lastHtmlRef.current = baselineHtmlRef.current;
+    },
     onUpdate: (props) => {
-      handleChange?.(props.editor.getHTML());
+      const html = props.editor.getHTML();
+      const wasUnchanged = lastHtmlRef.current === baselineHtmlRef.current;
+      lastHtmlRef.current = html;
+      // Only plugins changed the document (the root transaction made no step).
+      if (wasUnchanged && !props.transaction.docChanged) {
+        baselineHtmlRef.current = html;
+        return;
+      }
+      handleChange?.(reportedHtml(html));
     },
     onBlur: (props) => {
-      handleBlur?.(props.editor.getHTML());
+      handleBlur?.(reportedHtml(props.editor.getHTML()));
     },
   });
 

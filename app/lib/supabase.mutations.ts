@@ -58,14 +58,27 @@ export async function createActionClient(
   return data as Action;
 }
 
+/** The row is missing or no longer visible to this user (deleted or access revoked). */
+export class ActionUnavailableError extends Error {
+  readonly code = "ACTION_UNAVAILABLE";
+  constructor(
+    message = "Esta ação não está disponível ou você não tem acesso a ela.",
+  ) {
+    super(message);
+    this.name = "ActionUnavailableError";
+  }
+}
+
 export async function readActionClient(id: string): Promise<Action> {
   const { data, error } = await createSupabaseBrowserClient()
     .from("actions")
     .select("*")
     .eq("id", id)
     .single();
+  // Row-level authorization hides inaccessible rows, so single() finds none.
+  if (error?.code === "PGRST116") throw new ActionUnavailableError();
   if (error) throw error;
-  if (!data) throw new Error("A ação não está disponível.");
+  if (!data) throw new ActionUnavailableError();
   return data as Action;
 }
 

@@ -116,6 +116,21 @@ export function useActionMutations() {
     }
   };
 
+  // A canonical read: lists with a known scope take the row; the others are
+  // refreshed, never guessed, as after a write.
+  const applyCanonicalAction = (action: Action) => {
+    if (!isCurrentSession()) return;
+    applyConfirmedAction(action);
+    void queryClient.invalidateQueries({
+      queryKey: QUERY_KEYS.actions.all(),
+      predicate: (query) => !getActionListScope(query.queryKey),
+      refetchType:
+        queryClient.isMutating({ mutationKey: ["action-write"] }) > 0
+          ? "none"
+          : "active",
+    });
+  };
+
   // 1. Single Action Mutation
   const singleActionMutation = useMutation({
     mutationKey: ["action-write", "single"],
@@ -310,6 +325,7 @@ export function useActionMutations() {
 
   return {
     handleAction,
+    applyCanonicalAction,
     handleBulkAction,
     handleBulkDateOnly,
     handleBulkTimeOnly,

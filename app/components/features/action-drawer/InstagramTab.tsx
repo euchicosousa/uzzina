@@ -29,6 +29,8 @@ interface InstagramTabProps {
     customPayload?: Record<string, string | string[] | null>,
   ) => Promise<unknown>;
   contentDescription: string;
+  /** Changes when the content is replaced from outside the editor. */
+  contentVersion?: number;
   onContentDescriptionChange: (html: string) => void;
   onOpenStrategyModal?: () => void;
   /** Phone-width panel, measured by the drawer from its own width. */
@@ -67,6 +69,7 @@ export function InstagramTab({
   activeAIIntent,
   triggerAIAction,
   contentDescription,
+  contentVersion,
   onContentDescriptionChange,
   onOpenStrategyModal,
   compact = false,
@@ -232,6 +235,7 @@ export function InstagramTab({
               })()}
             </div>
             <RichTextEditor
+              key={contentVersion}
               className={cn(
                 "flex-1 overflow-y-auto",
                 writingLayout && "min-h-0",

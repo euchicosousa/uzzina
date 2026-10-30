@@ -12,7 +12,13 @@ export interface CoordinatorState {
   confirmedAction: Action | null;
   pendingPatch: Record<string, unknown>;
   isDirty: boolean;
+  /** A newer server row found by a read; never the write base until the user resolves it. */
+  remoteVersion: Action | null;
+  /** The authorized read found no row: writes stop until access is confirmed again. */
+  unavailable: boolean;
 }
+export type RemoteVersionResult =
+  "same" | "stale" | "newer" | "known" | "unknown" | "ignored";
 export type WriteFn = (
   payload: Record<string, unknown>,
 ) => Promise<Action | null | undefined>;
@@ -26,12 +32,54 @@ const metadata = new Set([
 const same = (a: unknown, b: unknown) =>
   JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
 
+const VERSION_PATTERN =
+  /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,6}))?(Z|[+-]\d{2}(?::?\d{2})?)?$/i;
+
+/**
+ * Microseconds since the epoch for an action version. updated_at is a UTC
+ * timestamp without time zone, so a value without an offset is read as UTC;
+ * the database trigger advances it by at least one microsecond per update.
+ */
+export function parseActionVersion(value: unknown): number | null {
+  if (typeof value !== "string") return null;
+  const match = value.trim().match(VERSION_PATTERN);
+  if (!match) return null;
+  const [, year, month, day, hour, minute, second, fraction = "", zone] = match;
+  let milliseconds = Date.UTC(
+    Number(year),
+    Number(month) - 1,
+    Number(day),
+    Number(hour),
+    Number(minute),
+    Number(second),
+  );
+  if (zone && zone.toUpperCase() !== "Z") {
+    const digits = zone.slice(1).replace(":", "");
+    const offset =
+      (Number(digits.slice(0, 2)) * 60 + Number(digits.slice(2) || 0)) * 60000;
+    milliseconds += zone.startsWith("-") ? offset : -offset;
+  }
+  if (!Number.isFinite(milliseconds)) return null;
+  return milliseconds * 1000 + Number(fraction.padEnd(6, "0"));
+}
+
+/** Orders two action versions by time; null when either cannot be read. */
+export function compareActionVersions(a: unknown, b: unknown): number | null {
+  if (typeof a === "string" && a === b) return 0;
+  const left = parseActionVersion(a);
+  const right = parseActionVersion(b);
+  if (left === null || right === null) return null;
+  return Math.sign(left - right);
+}
+
 /** One writer per drawer. Pending values survive errors and responses from older generations. */
 export class ActionSaveCoordinator {
   private key: string;
   private initialAction: Action | null;
   private confirmedAction: Action | null;
   private pendingPatch: Record<string, unknown> = {};
+  private remoteVersion: Action | null = null;
+  private unavailable = false;
   private status: SaveStatus;
   private errorMessage: string | null = null;
   private inFlightPromise: Promise<Action | null> | null = null;
@@ -58,6 +106,10 @@ export class ActionSaveCoordinator {
   getStatus() {
     return this.status;
   }
+  /** Identifies the current opening; reads started under another one are ignored. */
+  getGeneration() {
+    return this.generation;
+  }
   getState(): CoordinatorState {
     return {
       key: this.key,
@@ -67,6 +119,8 @@ export class ActionSaveCoordinator {
       confirmedAction: this.confirmedAction,
       pendingPatch: { ...this.pendingPatch },
       isDirty: this.isDirty(),
+      remoteVersion: this.remoteVersion,
+      unavailable: this.unavailable,
     };
   }
   subscribe(listener: (state: CoordinatorState) => void) {
@@ -112,6 +166,9 @@ export class ActionSaveCoordinator {
     if (this.status === "conflict") return Promise.resolve(null);
     if (this.confirmedAction && !this.isDirty())
       return Promise.resolve(this.confirmedAction);
+    // A known newer server version pauses writes until the user resolves it;
+    // a row this user can no longer read cannot be written either.
+    if (this.remoteVersion || this.unavailable) return Promise.resolve(null);
     const generation = this.generation;
     this.inFlightPromise = this.drain(generation).finally(() => {
       if (generation === this.generation) this.inFlightPromise = null;
@@ -168,13 +225,87 @@ export class ActionSaveCoordinator {
       return null;
     }
   }
-  /** Called only after the user compares the latest server version and keeps their edits. */
-  rebase(latest: Action) {
-    if (latest.id !== this.confirmedAction?.id || this.inFlightPromise) return;
-    this.confirmedAction = latest;
+  /**
+   * Compares an authorized read with the confirmed base. A write already sent
+   * is reconciled first, so a read older than its confirmation (including this
+   * user's own save) is stale. A newer row is only recorded for comparison:
+   * the form and the expected write version stay on the confirmed base.
+   */
+  async receiveRemoteVersion(
+    remote: Action,
+    generation: number,
+  ): Promise<RemoteVersionResult> {
+    if (generation !== this.generation) return "ignored";
+    while (this.inFlightPromise) {
+      await this.inFlightPromise;
+      if (generation !== this.generation) return "ignored";
+    }
+    const base = this.confirmedAction;
+    if (!base?.id || remote.id !== base.id) return "ignored";
+    const order = compareActionVersions(remote.updated_at, base.updated_at);
+    if (order === null) return "unknown";
+    if (order < 0) return "stale";
+    if (order === 0) return "same";
+    const known = this.remoteVersion;
+    if (
+      known &&
+      (compareActionVersions(remote.updated_at, known.updated_at) ?? 0) <= 0
+    )
+      return "known";
+    this.remoteVersion = remote;
+    this.emit();
+    return "newer";
+  }
+  setUnavailable(unavailable: boolean) {
+    if (this.unavailable === unavailable) return;
+    this.unavailable = unavailable;
+    this.emit();
+  }
+  /** Explicitly replaces the base and discards local values with the reviewed server version. */
+  adoptRemoteVersion(remote: Action) {
+    const base = this.confirmedAction;
+    if (this.inFlightPromise || !base?.id || remote.id !== base.id)
+      return false;
+    if ((compareActionVersions(remote.updated_at, base.updated_at) ?? 0) < 0)
+      return false;
+    this.confirmedAction = remote;
+    this.pendingPatch = {};
+    // A version found after the reviewed one still needs its own decision.
+    if (
+      this.remoteVersion &&
+      compareActionVersions(
+        this.remoteVersion.updated_at,
+        remote.updated_at,
+      ) !== 1
+    )
+      this.remoteVersion = null;
     this.status = "saved";
     this.errorMessage = null;
     this.emit();
+    return true;
+  }
+  /** Called only after the user compares the latest server version and keeps their edits. */
+  rebase(latest: Action) {
+    if (latest.id !== this.confirmedAction?.id || this.inFlightPromise)
+      return false;
+    this.confirmedAction = latest;
+    // Values equal to the reviewed version are no longer local changes.
+    const reviewed = latest as unknown as Record<string, unknown>;
+    for (const [field, value] of Object.entries(this.pendingPatch)) {
+      if (same(value, reviewed[field])) delete this.pendingPatch[field];
+    }
+    if (
+      this.remoteVersion &&
+      compareActionVersions(
+        this.remoteVersion.updated_at,
+        latest.updated_at,
+      ) !== 1
+    )
+      this.remoteVersion = null;
+    this.status = "saved";
+    this.errorMessage = null;
+    this.emit();
+    return true;
   }
   async saveNow(snapshot?: Record<string, unknown>): Promise<boolean> {
     if (snapshot) this.recordLocalChanges(snapshot);
@@ -222,6 +353,8 @@ export class ActionSaveCoordinator {
         : actionOrKey?.id || `draft-${this.generation}`;
     if (writeFn) this.writeFn = writeFn;
     this.pendingPatch = {};
+    this.remoteVersion = null;
+    this.unavailable = false;
     this.inFlightPromise = null;
     this.status = this.confirmedAction ? "saved" : "draft";
     this.errorMessage = null;
