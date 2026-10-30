@@ -1,6 +1,11 @@
 import { filterOperationalActions } from "~/utils/partner-visibility";
-import { useQuery } from "@tanstack/react-query";
-import { Link, useLocation, useParams } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "@tanstack/react-router";
 import {
   endOfDay,
   endOfMonth,
@@ -21,7 +26,14 @@ import {
   PaletteIcon,
   SunIcon,
 } from "lucide-react";
-import { useMemo } from "react";
+import {
+  type MouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { toast } from "sonner";
 import { usePreferencePersistence } from "~/hooks/usePreferencePersistence";
 import { useAppContext } from "~/contexts/AppContext";
@@ -33,6 +45,7 @@ import {
 import { useNotifications } from "~/hooks/useNotifications";
 import { PALLETE } from "~/lib/palettes";
 import { SIZE } from "~/lib/CONSTANTS";
+import { getQuerySessionGeneration } from "~/lib/query-client";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
@@ -61,18 +74,108 @@ import {
 } from "../prism";
 import { UAvatar } from "../uzzina/UAvatar";
 const DEFAULT_PARTNER_FILTERS: string[] = [];
+type LeaveTarget = { kind: "page"; to: string } | { kind: "signOut" };
+const samePath = (a: string, b: string) =>
+  (a.replace(/\/+$/, "") || "/") === (b.replace(/\/+$/, "") || "/");
 export function Header({
   person,
   setPrimaryAction,
+  onBeforeLeave,
   partnerFilters = DEFAULT_PARTNER_FILTERS,
 }: {
   person: Person;
-  setPrimaryAction: (action: Action | null) => void;
+  setPrimaryAction: (action: Action | null) => Promise<boolean>;
+  /** Requests closing every open action through its guard; false keeps the page. */
+  onBeforeLeave: () => Promise<boolean>;
   partnerFilters?: string[];
 }) {
   const { notifications, unreadCount, markAsRead, markAllAsRead } =
     useNotifications();
   const location = useLocation();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  // Each notification click or page change supersedes earlier pending requests.
+  const intentRef = useRef(0);
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      intentRef.current++;
+    };
+  }, []);
+  const pathname = location.pathname;
+  const lastPathnameRef = useRef(pathname);
+  useEffect(() => {
+    // A page change (including Back/Forward) makes pending notification loads obsolete.
+    if (lastPathnameRef.current === pathname) return;
+    lastPathnameRef.current = pathname;
+    intentRef.current++;
+  }, [pathname]);
+  // One leave runs at a time; later requests only retarget it (sign-out outranks a page).
+  const pendingLeaveRef = useRef<LeaveTarget | null>(null);
+  const requestLeave = useCallback(
+    async (target: LeaveTarget) => {
+      setNotificationsOpen(false);
+      const pending = pendingLeaveRef.current;
+      if (pending) {
+        if (pending.kind !== "signOut") pendingLeaveRef.current = target;
+        return;
+      }
+      // Asking for the page already shown is a no-op that keeps open actions.
+      if (target.kind === "page" && samePath(target.to, pathname)) return;
+      pendingLeaveRef.current = target;
+      const intent = ++intentRef.current;
+      try {
+        const allowed = await onBeforeLeave();
+        const latest = pendingLeaveRef.current;
+        if (
+          !allowed ||
+          !latest ||
+          !mountedRef.current ||
+          intent !== intentRef.current
+        )
+          return;
+        if (latest.kind === "page") {
+          await navigate({ to: latest.to });
+          return;
+        }
+        try {
+          const { error } = await createSupabaseBrowserClient().auth.signOut();
+          if (error) throw error;
+        } catch {
+          if (mountedRef.current)
+            toast.error("Não foi possível sair. Tente novamente.");
+        }
+      } finally {
+        pendingLeaveRef.current = null;
+      }
+    },
+    [navigate, onBeforeLeave, pathname],
+  );
+  const leaveTo = useCallback(
+    (to: string) => requestLeave({ kind: "page", to }),
+    [requestLeave],
+  );
+  const signOut = useCallback(
+    () => requestLeave({ kind: "signOut" }),
+    [requestLeave],
+  );
+  // Plain clicks go through the action guards; modified clicks keep browser link behavior.
+  const guardLinkClick =
+    (to: string) => (event: MouseEvent<HTMLAnchorElement>) => {
+      if (
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      )
+        return;
+      event.preventDefault();
+      void leaveTo(to);
+    };
   const params = useParams({
     strict: false,
   });
@@ -216,16 +319,26 @@ export function Header({
     partners,
   ]);
   const handleNotificationClick = async (notif: Notification) => {
+    const intent = ++intentRef.current;
+    const generation = getQuerySessionGeneration(queryClient);
+    const isCurrent = () =>
+      mountedRef.current &&
+      intent === intentRef.current &&
+      generation === getQuerySessionGeneration(queryClient);
+    // The popover must not cover the action while its detail loads.
+    setNotificationsOpen(false);
     const supabase = createSupabaseBrowserClient();
     if (!notif.read_at) {
       markAsRead([notif.id]);
     }
     try {
       const actionData = await getActionById(supabase, notif.action_id);
+      if (!isCurrent()) return;
       if (actionData) {
-        setPrimaryAction(actionData);
+        await setPrimaryAction(actionData);
       }
     } catch (err) {
+      if (!isCurrent()) return;
       console.error("Erro ao carregar ação mencionada:", err);
       toast.error("Não foi possível carregar o detalhe da ação.");
     }
@@ -234,7 +347,7 @@ export function Header({
     <div className="border_after flex w-full items-center justify-between px-2 lg:px-8">
       <div className="flex items-center gap-2 py-4">
         {/* Logo */}
-        <Link to="/app">
+        <Link onClick={guardLinkClick("/app")} to="/app">
           <UZZINALogo className="hidden h-8 sm:block" />
           <UZZINALogo className="h-8 sm:hidden" model="logo" />
         </Link>
@@ -253,7 +366,10 @@ export function Header({
       </div>
 
       <div className="flex items-center gap-2">
-        <PrismPopoverTrigger>
+        <PrismPopoverTrigger
+          isOpen={notificationsOpen}
+          onOpenChange={setNotificationsOpen}
+        >
           <PrismButton
             aria-label={
               unreadCount > 0
@@ -329,6 +445,7 @@ export function Header({
             <div className="border-t bg-muted/10 p-2 text-center">
               <Link
                 className="block w-full py-1 text-sm hover:underline"
+                onClick={guardLinkClick("/app/notifications")}
                 to="/app/notifications"
               >
                 Ver todas as notificações →
@@ -337,7 +454,11 @@ export function Header({
           </PrismPopover>
         </PrismPopoverTrigger>
 
-        <HeaderMenu person={person} />
+        <HeaderMenu
+          onNavigate={(to) => void leaveTo(to)}
+          onSignOut={() => void signOut()}
+          person={person}
+        />
       </div>
     </div>
   );
@@ -352,7 +473,16 @@ const THEME_OPTIONS: {
   { id: "system", label: "do sistema", Icon: LaptopIcon },
 ];
 
-export const HeaderMenu = ({ person }: { person: Person }) => {
+export const HeaderMenu = ({
+  person,
+  onNavigate,
+  onSignOut,
+}: {
+  person: Person;
+  /** Client-side page change after the open actions agree to close. */
+  onNavigate: (to: string) => void;
+  onSignOut: () => void;
+}) => {
   const {
     theme,
     themePreference,
@@ -494,24 +624,30 @@ export const HeaderMenu = ({ person }: { person: Person }) => {
         <PrismMenuSeparator />
 
         <PrismMenuGroup className="px-2 pb-2">
-          <PrismMenuItem href="/app/leads" textValue="Leads">
+          <PrismMenuItem
+            onAction={() => onNavigate("/app/leads")}
+            textValue="Leads"
+          >
             Leads
           </PrismMenuItem>
 
-          <PrismMenuItem href="/app/profile" textValue="Minha Conta">
+          <PrismMenuItem
+            onAction={() => onNavigate("/app/profile")}
+            textValue="Minha Conta"
+          >
             Minha Conta
           </PrismMenuItem>
 
-          <PrismMenuItem href="/app/help" textValue="Ajuda & Documentação">
+          <PrismMenuItem
+            onAction={() => onNavigate("/app/help")}
+            textValue="Ajuda & Documentação"
+          >
             Ajuda & Documentação
           </PrismMenuItem>
 
           <PrismMenuItem
             className="text-destructive focus:bg-destructive/10 focus:text-destructive"
-            onAction={async () => {
-              const supabase = createSupabaseBrowserClient();
-              await supabase.auth.signOut();
-            }}
+            onAction={onSignOut}
             textValue="Sair"
             variant="destructive"
           >
@@ -524,38 +660,47 @@ export const HeaderMenu = ({ person }: { person: Person }) => {
             <PrismMenuSeparator />
             <PrismMenuGroup className="-mt-2 bg-secondary/20 px-2 pb-2">
               <PrismMenuLabel>Admin</PrismMenuLabel>
-              <PrismMenuItem href="/app/admin/partners" textValue="Parceiros">
+              <PrismMenuItem
+                onAction={() => onNavigate("/app/admin/partners")}
+                textValue="Parceiros"
+              >
                 Parceiros
               </PrismMenuItem>
               <PrismMenuItem
-                href="/app/admin/partner/new"
+                onAction={() => onNavigate("/app/admin/partner/new")}
                 textValue="Novo Parceiro"
               >
                 Novo Parceiro
               </PrismMenuItem>
               <PrismMenuSeparator />
-              <PrismMenuItem href="/app/admin/users" textValue="Usuários">
+              <PrismMenuItem
+                onAction={() => onNavigate("/app/admin/users")}
+                textValue="Usuários"
+              >
                 Usuários
               </PrismMenuItem>
               <PrismMenuItem
-                href="/app/admin/user/new"
+                onAction={() => onNavigate("/app/admin/user/new")}
                 textValue="Novo Usuário"
               >
                 Novo Usuário
               </PrismMenuItem>
               <PrismMenuSeparator />
-              <PrismMenuItem href="/app/admin/clients" textValue="Clientes">
+              <PrismMenuItem
+                onAction={() => onNavigate("/app/admin/clients")}
+                textValue="Clientes"
+              >
                 Clientes
               </PrismMenuItem>
               <PrismMenuItem
-                href="/app/admin/client/new"
+                onAction={() => onNavigate("/app/admin/client/new")}
                 textValue="Novo Cliente"
               >
                 Novo Cliente
               </PrismMenuItem>
               <PrismMenuSeparator />
               <PrismMenuItem
-                href="/app/admin/celebrations"
+                onAction={() => onNavigate("/app/admin/celebrations")}
                 textValue="Datas Comemorativas"
               >
                 Datas Comemorativas

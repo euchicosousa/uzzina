@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, mock } from "bun:test";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppContext } from "~/contexts/AppContext";
@@ -16,6 +16,8 @@ const state = {
   actions: new Map<string, Action>(),
   updates: [] as { ids?: string[]; recipient?: unknown; all: boolean }[],
   listLimits: [] as number[],
+  // When set, action detail reads wait here until the test releases them.
+  heldDetails: null as (() => void)[] | null,
 };
 
 // Minimal Supabase query builder: records the filters the models apply and answers from `state`.
@@ -89,7 +91,13 @@ function query(table: string) {
       limit = value;
       return builder;
     },
-    single: () => Promise.resolve(run()),
+    single: () => {
+      const held = state.heldDetails;
+      if (!held) return Promise.resolve(run());
+      return new Promise<Result>((resolve) => {
+        held.push(() => resolve(run()));
+      });
+    },
     // biome-ignore lint/suspicious/noThenProperty: Supabase query builders are awaitable.
     then: (
       resolve: (value: Result) => unknown,
@@ -163,6 +171,7 @@ beforeEach(() => {
   state.actions = new Map();
   state.updates = [];
   state.listLimits = [];
+  state.heldDetails = null;
 });
 afterEach(cleanup);
 
@@ -212,6 +221,29 @@ it("opens the related action in the main panel and marks the notification read",
   expect(state.updates).toEqual([
     { ids: ["n1"], recipient: calendarPerson.user_id, all: false },
   ]);
+});
+
+it("only the latest click opens its action, and leaving the page discards a pending one", async () => {
+  state.notifications = [notification(1), notification(2)];
+  state.actions.set("a1", calendarAction(1, { id: "a1" }));
+  state.actions.set("a2", calendarAction(2, { id: "a2" }));
+  const held: (() => void)[] = [];
+  state.heldDetails = held;
+  const { unmount } = render(page());
+  await userEvent.click(
+    await screen.findByRole("button", { name: /Excerpt 1/ }),
+  );
+  await userEvent.click(screen.getByRole("button", { name: /Excerpt 2/ }));
+  await waitFor(() => expect(held).toHaveLength(2));
+  await act(async () => held[1]?.());
+  await act(async () => held[0]?.());
+  expect(opened.map((item) => item?.id)).toEqual(["a2"]);
+
+  await userEvent.click(screen.getByRole("button", { name: /Excerpt 1/ }));
+  await waitFor(() => expect(held).toHaveLength(3));
+  unmount();
+  await act(async () => held[2]?.());
+  expect(opened.map((item) => item?.id)).toEqual(["a2"]);
 });
 
 it("explains an unavailable action without opening a panel", async () => {

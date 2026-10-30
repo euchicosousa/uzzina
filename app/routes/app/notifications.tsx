@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { format, isValid } from "date-fns";
 import { BellIcon, CheckIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { PrismButton } from "~/components/prism";
 import { useAppContext } from "~/contexts/AppContext";
@@ -44,9 +44,21 @@ export function NotificationsPage() {
   } = useNotifications(limit);
   const pageRef = useRef<HTMLDivElement>(null);
   useFillScrollViewport(pageRef);
+  // Only the latest click on a still-mounted page may open its action.
+  const requestRef = useRef(0);
+  useEffect(
+    () => () => {
+      requestRef.current++;
+    },
+    [],
+  );
 
   const openAction = async (notification: Notification) => {
+    const request = ++requestRef.current;
     const generation = getQuerySessionGeneration(queryClient);
+    const isCurrent = () =>
+      request === requestRef.current &&
+      generation === getQuerySessionGeneration(queryClient);
     setUnavailable(null);
     if (!notification.read_at) markAsRead([notification.id]);
     try {
@@ -54,10 +66,10 @@ export function NotificationsPage() {
         createSupabaseBrowserClient(),
         notification.action_id,
       );
-      if (generation !== getQuerySessionGeneration(queryClient)) return;
+      if (!isCurrent()) return;
       setPrimaryAction(action);
     } catch {
-      if (generation !== getQuerySessionGeneration(queryClient)) return;
+      if (!isCurrent()) return;
       setUnavailable(notification.id);
     }
   };

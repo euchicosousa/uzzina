@@ -14,6 +14,7 @@ if (!("localStorage" in globalThis)) {
 }
 
 let savedPatches: Record<string, unknown>[] = [];
+let navigations: string[] = [];
 // Only the database boundary is controlled; the menu, theme and persistence logic are real.
 mock.module("~/lib/supabase.client", () => ({
   createSupabaseBrowserClient: () => ({
@@ -36,6 +37,7 @@ const person = {
 
 beforeEach(() => {
   savedPatches = [];
+  navigations = [];
   localStorage.clear();
   Object.defineProperty(window, "matchMedia", {
     configurable: true,
@@ -55,7 +57,11 @@ async function openMenu() {
   render(
     <QueryClientProvider client={new QueryClient()}>
       <AppThemeProvider>
-        <HeaderMenu person={person} />
+        <HeaderMenu
+          onNavigate={(to) => navigations.push(to)}
+          onSignOut={() => {}}
+          person={person}
+        />
       </AppThemeProvider>
     </QueryClientProvider>,
   );
@@ -100,4 +106,13 @@ it("picking a swatch while partner colors are active switches to that color", as
       { themeColorIndex: 2, followPartnerColor: false },
     ]),
   );
+});
+
+it("page items request a guarded client navigation instead of a document link", async () => {
+  await openMenu();
+  const account = screen.getByRole("menuitem", { name: "Minha Conta" });
+  // A native href would reload the document and drop open action forms.
+  expect(account.getAttribute("href")).toBeNull();
+  await user.click(account);
+  expect(navigations).toEqual(["/app/profile"]);
 });

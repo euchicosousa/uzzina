@@ -776,6 +776,28 @@ it("a blocked guard keeps navigation and search in place", async () => {
   ).toBeTruthy();
 });
 
+it("a partner result is a page change that waits for the action guards", async () => {
+  beforeLeave.mockImplementation(async () => false);
+  const { user, router } = await mount();
+  const partnerItem = () =>
+    within(screen.getByRole("group", { name: "Parceiros" })).getByRole(
+      "menuitem",
+      { name: /Beta/ },
+    );
+  await user.click(partnerItem());
+  expect(beforeLeave).toHaveBeenCalledTimes(1);
+  expect(router.state.location.pathname).toBe("/app");
+  expect(search()).toBeTruthy();
+
+  beforeLeave.mockImplementation(async () => true);
+  await user.click(partnerItem());
+  await waitFor(() =>
+    expect(router.state.location.pathname).toBe("/app/partner/beta"),
+  );
+  expect(beforeLeave).toHaveBeenCalledTimes(2);
+  expect(screen.queryByRole("searchbox")).toBeNull();
+});
+
 for (const [label, theme] of [
   ["Tema claro", "light"],
   ["Tema escuro", "dark"],

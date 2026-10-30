@@ -359,16 +359,15 @@ function GlobalSearchContent({
         },
       }))
     : [];
-  const runCommand = async (id: string) => {
-    const command = [...commands, ...adminCommands].find(
-      (entry) => entry.id === id,
-    );
-    if (!command || commandRunning.current) return;
+  const runExclusive = async (
+    run: () => boolean | Promise<boolean>,
+  ): Promise<void> => {
+    if (commandRunning.current) return;
     commandRunning.current = true;
     setCommandPending(true);
     setCommandError(false);
     try {
-      if ((await command.run()) && contentMounted.current) onOpenChange(false);
+      if ((await run()) && contentMounted.current) onOpenChange(false);
     } catch (error) {
       if (contentMounted.current) {
         console.error("Global search command failed:", error);
@@ -378,6 +377,12 @@ function GlobalSearchContent({
       commandRunning.current = false;
       if (contentMounted.current) setCommandPending(false);
     }
+  };
+  const runCommand = async (id: string) => {
+    const command = [...commands, ...adminCommands].find(
+      (entry) => entry.id === id,
+    );
+    if (command) await runExclusive(command.run);
   };
   return (
     <div
@@ -478,13 +483,12 @@ function GlobalSearchContent({
               <PrismCommandItem
                 key={partner.slug}
                 className={"h-10"}
-                onPress={() => {
-                  navigate({
-                    to: `/app/partner/${partner.slug}`,
-                  });
-                  setQuery("");
-                  onOpenChange(false);
-                }}
+                // A partner page is a page change, so open actions close through their guards first.
+                onPress={() =>
+                  void runExclusive(() =>
+                    navigateCommand(`/app/partner/${partner.slug}`),
+                  )
+                }
                 textValue={partner.title}
               >
                 <UAvatar

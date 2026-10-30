@@ -49,6 +49,7 @@ function Dashboard() {
     setPrimaryAction: openPrimaryAction,
     setSecondaryAction: openSecondaryAction,
     reset: resetActionPanels,
+    closeAllActions,
   } = actionPanels;
   const hasOpenActions = Boolean(primaryAction || secondaryAction);
   const identityGeneration = useRef(0);
@@ -67,6 +68,12 @@ function Dashboard() {
         : Promise.resolve(false),
     [openSecondaryAction, panelSessionGeneration],
   );
+  // Page-changing commands first ask both editing spaces to close through their guards.
+  const leaveOpenActions = useCallback(async () => {
+    if (panelSessionGeneration !== identityGeneration.current) return false;
+    const allowed = await closeAllActions();
+    return allowed && panelSessionGeneration === identityGeneration.current;
+  }, [closeAllActions, panelSessionGeneration]);
   const [openCmdK, setOpenCmdK] = useState(false);
   const [partnerFilters, setPartnerFilters] = useState<string[]>([]);
   const location = useLocation();
@@ -251,6 +258,7 @@ function Dashboard() {
             {/* HEADER */}
 
             <Header
+              onBeforeLeave={leaveOpenActions}
               partnerFilters={partnerFilters}
               person={person}
               setPrimaryAction={setPrimaryAction}
@@ -294,15 +302,7 @@ function Dashboard() {
               onOpenChange={setOpenCmdK}
               open={openCmdK}
               partners={visiblePartners}
-              onBeforeLeave={async () => {
-                if (panelSessionGeneration !== identityGeneration.current)
-                  return false;
-                const allowed = await actionPanels.closeAllActions();
-                return (
-                  allowed &&
-                  panelSessionGeneration === identityGeneration.current
-                );
-              }}
+              onBeforeLeave={leaveOpenActions}
               setPrimaryAction={setPrimaryAction}
               setSecondaryAction={setSecondaryAction}
             />
