@@ -8,6 +8,7 @@ import {
 } from "react-aria-components";
 import { useTabPanel } from "react-aria/useTabList";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
+import { useVisibleViewport } from "~/hooks/useVisibleViewport";
 import { useAppContext } from "~/contexts/AppContext";
 import type {
   ActionPanels,
@@ -46,6 +47,9 @@ export function ActionDrawerPanel({
   );
   const activeAction = entries.find((entry) => entry.key === activeKey);
   const hasActions = entries.length > 0;
+  const visible = useVisibleViewport();
+  const panelTop = Math.max(64, visible.top);
+  const panelHeight = Math.max(0, visible.top + visible.height - panelTop);
   // Two maximum-width drawers (768px each), plus 64px of usable overlay.
   const hasRoomForTwo = useIsDesktop(1600);
   const sideBySide = hasRoomForTwo && entries.length === 2;
@@ -91,7 +95,7 @@ export function ActionDrawerPanel({
       />
       <div
         className={cn(
-          "fixed top-16 right-0 bottom-0 z-10 overflow-hidden border-l bg-background",
+          "fixed right-0 z-10 overflow-hidden border-l bg-background",
           sideBySide ? "w-auto max-w-none" : "w-full max-w-full sm:max-w-2xl",
           sideBySide
             ? undefined
@@ -101,6 +105,7 @@ export function ActionDrawerPanel({
         )}
         data-action-panel
         data-action-layout={sideBySide ? "side-by-side" : "tabs"}
+        style={{ top: panelTop, height: panelHeight }}
       >
         <Tabs
           className="flex h-full min-h-0 flex-col"

@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import { CloudinaryUpload } from "./CloudinaryUpload";
 import { PrismButton } from "~/components/prism";
 import { ContentReorderDialog } from "./ContentReorderDialog";
-import { detectPostType } from "./InstagramHelpers";
 export { InstagramPreview } from "./InstagramPreview";
 
 // ---------------------------------------------------------------------------
@@ -25,7 +24,6 @@ interface ContentFilesManagerProps {
 
 /**
  * Barra de controle compacta que fica abaixo do InstagramPreview.
- * Exibe o tipo detectado e botões de gerenciamento.
  */
 export function ContentFilesManager({
   files,
@@ -35,7 +33,6 @@ export function ContentFilesManager({
   compact = false,
 }: ContentFilesManagerProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const type = !files || files.length === 0 ? "empty" : detectPostType(files);
   const filesRef = useRef(files);
   filesRef.current = files;
   const filesMetaRef = useRef<
@@ -101,16 +98,6 @@ export function ContentFilesManager({
             <PlusIcon className="size-3.5" />
             Adicionar conteúdo
           </CloudinaryUpload>
-
-          {files.length > 0 && (
-            <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium capitalize">
-              {type === "image"
-                ? "Imagem"
-                : type === "video"
-                  ? "Vídeo"
-                  : `Carrossel · ${files.length}`}
-            </span>
-          )}
         </div>
 
         {/* Botão gerenciar (sempre visível quando há arquivos, ou para adicionar) */}

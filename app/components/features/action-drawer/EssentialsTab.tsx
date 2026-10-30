@@ -156,9 +156,12 @@ export function EssentialsTab({
     </div>
   );
   return (
-    <div className="flex h-full w-full max-w-full flex-col overflow-hidden">
+    <div
+      className="flex h-full min-h-0 w-full max-w-full flex-col overflow-x-hidden overflow-y-auto overscroll-contain"
+      data-essential-scroller
+    >
       {/* Título */}
-      <div data-drawer-focus="title">
+      <div className="shrink-0" data-drawer-focus="title">
         <ActionTitleInput
           autoFocus={autoFocus}
           className="font-medium tracking-[-5%] transition-colors focus-within:bg-foreground/5"
@@ -185,7 +188,7 @@ export function EssentialsTab({
         />
       </div>
 
-      <div className="max-w-full text-sm">
+      <div className="max-w-full shrink-0 text-sm">
         {compact && (
           <div className="flex max-w-full items-center gap-2 border-b py-1 pr-2 pl-4">
             {dateControl}
@@ -342,7 +345,7 @@ export function EssentialsTab({
       </div>
       {/* Descrição */}
       <div
-        className="h-full w-full max-w-full overflow-hidden"
+        className="min-h-50 w-full max-w-full flex-1 shrink-0 overflow-hidden"
         data-drawer-focus="description"
       >
         <Suspense

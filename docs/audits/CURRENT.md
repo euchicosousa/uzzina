@@ -6,6 +6,12 @@ Produção confirmada Ready em29/10 no deploy `dpl_39Jnm4DEdyxyx24SEXtTpH92PZ6x`
 
 ## Pendências reais
 
+### Tickets13 e18 implementados localmente em30/10 — execução com subagentes
+
+Proprietário autorizou etapas1 e7: Sol/high executou13 e Luna/high executou18, com passagem explícita de slot e um único escritor.18 remove badge Imagem/Vídeo/Carrossel e import/estado sem uso, preservando upload montado, gerenciamento e contagem.13 corrige descrição Essencial recortada em paisagem (wrapper tinha altura0): região rolável com mínimos preservados; painel acompanha altura/offset visível; documento e região rolável do app ficam bloqueados enquanto qualquer ação permanecer aberta, com restauração final/reset/unmount e composição com overlays. Política da toolbar inalterada;17 não iniciado.
+
+[Relatório13](2026-10-30-drawer-scroll-landscape-writing.md): regressão real vermelha antes, probe de layout isolado e verde após;90 testes pertinentes e56+56 verificações Chromium normal/plataforma iPhone simulada passaram (digitação/texto longo/caret, rotação, viewport, pinch, popover, toque Chromium, duas ações/fechamento/reset). Format/lint/typecheck/build passaram nas duas entregas; apenas aviso informativo de lint e advisory de chunks preexistentes. Revisão do coordenador e referências/diff conferidos. Safari físico continua pendente: o gesto de fundo nativo não foi reproduzido no Chromium, e simulação não o certifica.18 sem novo ensaio visual, remoção cosmética revisada no código. Servidor isolado5189 encerrado;5176 do proprietário intocado. Commit local dos tickets13/18 autorizado pelo proprietário; sem banco/provedor/SQL, push ou deploy; alterações externas preservadas. Demais tickets e análise geral de estilo não iniciados por esta autorização seletiva.
+
 ### Portal /dash — ajustes preparados em30/10
 
 Commit desta entrega autorizado pelo proprietário nesta rodada: somente ajustes do portal, regressão e documentação correspondente; demais alterações do checkout preservadas.

@@ -14,6 +14,7 @@ import {
 } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { useActionPanels } from "~/hooks/useActionPanels";
+import { useActionDrawerScrollLock } from "~/hooks/useActionDrawerScrollLock";
 import { resetQuerySession } from "~/lib/query-client";
 import { ActionDrawerPanel } from "~/components/features/action-drawer/ActionDrawerPanel";
 import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
@@ -52,6 +53,8 @@ function Dashboard() {
     closeAllActions,
   } = actionPanels;
   const hasOpenActions = Boolean(primaryAction || secondaryAction);
+  const appScrollRef = useRef<HTMLDivElement>(null);
+  useActionDrawerScrollLock(appScrollRef, hasOpenActions);
   const identityGeneration = useRef(0);
   const panelSessionGeneration = identityGeneration.current;
   const setPrimaryAction = useCallback(
@@ -264,7 +267,11 @@ function Dashboard() {
               setPrimaryAction={setPrimaryAction}
             />
             <div className="flex h-full w-full overflow-hidden">
-              <div className="grow overflow-x-hidden overflow-y-auto">
+              <div
+                className="grow overflow-x-hidden overflow-y-auto"
+                data-app-scroller
+                ref={appScrollRef}
+              >
                 <div className="flex min-h-full grow flex-col">
                   <div className="flex min-h-full w-full shrink flex-col">
                     <Outlet />
