@@ -14,7 +14,7 @@ import {
 import { parseU } from "~/utils/date";
 import { ptBR } from "date-fns/locale";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import {
   PrismButton,
   PrismToggleGroup,
@@ -36,6 +36,7 @@ type ClientCalendarProps<
   view?: "week" | "month";
   calendarView?: "week" | "month";
   setCalendarView?: (view: "week" | "month") => void;
+  endContent?: ReactNode;
 };
 export function ClientCalendar<
   T extends Action | DashActionDto = Action | DashActionDto,
@@ -48,6 +49,7 @@ export function ClientCalendar<
   view = "week",
   calendarView,
   setCalendarView,
+  endContent,
 }: ClientCalendarProps<T>) {
   const weekStart = startOfWeek(currentDay, {
     weekStartsOn: 0,
@@ -93,20 +95,23 @@ export function ClientCalendar<
           </PrismButton>
         </div>
 
-        {setCalendarView && (
-          <PrismToggleGroup
-            aria-label="Visualização do calendário"
-            selectedKeys={calendarView ? [calendarView] : [view]}
-            onSelectionChange={(keys) => {
-              const selected = Array.from(keys)[0] as "week" | "month";
-              if (selected) setCalendarView(selected);
-            }}
-            size="sm"
-          >
-            <PrismToggleGroupItem id="week">Semana</PrismToggleGroupItem>
-            <PrismToggleGroupItem id="month">Mês</PrismToggleGroupItem>
-          </PrismToggleGroup>
-        )}
+        <div className="flex items-center gap-2">
+          {setCalendarView && (
+            <PrismToggleGroup
+              aria-label="Visualização do calendário"
+              selectedKeys={calendarView ? [calendarView] : [view]}
+              onSelectionChange={(keys) => {
+                const selected = Array.from(keys)[0] as "week" | "month";
+                if (selected) setCalendarView(selected);
+              }}
+              size="sm"
+            >
+              <PrismToggleGroupItem id="week">Semana</PrismToggleGroupItem>
+              <PrismToggleGroupItem id="month">Mês</PrismToggleGroupItem>
+            </PrismToggleGroup>
+          )}
+          {endContent}
+        </div>
       </div>
 
       {/* Container com rolagem global nos 2 eixos divididos */}

@@ -11,7 +11,7 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns";
-import { SidebarClose } from "lucide-react";
+import { PanelRightCloseIcon, PanelRightOpenIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { ClientCalendar } from "~/components/client/ClientCalendar";
@@ -213,12 +213,34 @@ function DashHome() {
             onPrev={handlePrev}
             setCalendarView={setCalendarView}
             view={calendarView}
+            endContent={
+              <PrismButton
+                aria-label={
+                  isSidebarVisible
+                    ? "Ocultar feed do Instagram"
+                    : "Mostrar feed do Instagram"
+                }
+                aria-expanded={isSidebarVisible}
+                aria-controls="dash-instagram-feed"
+                onClick={toggleSidebar}
+                size="icon"
+                variant="ghost"
+              >
+                {isSidebarVisible ? (
+                  <PanelRightCloseIcon />
+                ) : (
+                  <PanelRightOpenIcon />
+                )}
+              </PrismButton>
+            }
           />
         </div>
 
         {/* Feed — max-width 560px (agora com 3 colunas) */}
         <div
-          className={`w-full ${isSidebarVisible ? "max-w-140" : "max-w-0"} shrink-0 overflow-y-auto border-l`}
+          id="dash-instagram-feed"
+          hidden={!isSidebarVisible}
+          className="w-full max-w-140 shrink-0 overflow-y-auto border-l"
         >
           <InstagramFeedSection
             actions={feedActions}
@@ -227,14 +249,6 @@ function DashHome() {
           />
         </div>
       </div>
-      <PrismButton
-        className="absolute top-4 left-4 z-50 rounded-full"
-        onClick={toggleSidebar}
-        size="icon"
-        variant="ghost"
-      >
-        <SidebarClose />
-      </PrismButton>
     </div>
   );
 }

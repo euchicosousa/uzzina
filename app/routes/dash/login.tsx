@@ -60,17 +60,15 @@ function DashLogin() {
         <div className="mb-12">
           <UZZINALogo className="h-12" />
         </div>
-        {/* Logo / Título */}
-        <div className="text-center">
-          <h1 className="p-0 text-2xl font-bold tracking-tight">
-            Portal do Parceiro
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Informe seu e-mail e senha para acessar.
-          </p>
-        </div>
+        <p className="mb-4 text-center text-sm text-muted-foreground">
+          Informe seu e-mail e senha para acessar.
+        </p>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form
+          aria-label="Acesso à UZZINA"
+          className="space-y-4"
+          onSubmit={handleSubmit}
+        >
           {error && (
             <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
               {error}
@@ -81,17 +79,20 @@ function DashLogin() {
             <label className="text-sm font-medium" htmlFor="email">
               E-mail
             </label>
-            <PrismInputGroupInput
-              autoComplete="email"
-              autoFocus
-              id="email"
-              name="email"
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="seu@email.com"
-              required
-              type="email"
-              value={email}
-            />
+            <PrismInputGroup>
+              <PrismInputGroupInput
+                autoComplete="email"
+                autoFocus
+                className="px-4"
+                id="email"
+                name="email"
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="seu@email.com"
+                required
+                type="email"
+                value={email}
+              />
+            </PrismInputGroup>
           </div>
 
           <div className="space-y-2">

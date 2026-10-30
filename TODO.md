@@ -8,6 +8,8 @@
 
 ## Trabalhos registrados para depois
 
+- [ ] [Portal /dash: validar ajustes preparados](.scratch/partner-portal/issues/01-login-fields-and-feed-toggle.md#resultado-da-implementação--30102026): e-mail padronizado, título removido e controle do feed nos controles desktop do calendário; mobile mantém abas. Regressão Chromium e verificações locais passaram em30/10. Validação no Safari/aparelho e publicação pendentes; sem push/deploy.
+
 - [ ] [Controles de mídia sempre visíveis](.scratch/media-controls/issues/01-always-visible-media-controls.md): ticket preparado em29/10 para remoção/reordenação no gerenciador da UZZINA em desktop/mobile e por teclado. Não altera widget Cloudinary; implementação não iniciada.
 
 - [ ] Escolher próximas correções do [levantamento de teclado concluído](docs/audits/2026-10-29-keyboard-focus-inventory.md): cinco grupos de achados com prioridade e critérios, sem implementação automática. Não repetir a revisão como pendência aberta.
