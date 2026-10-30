@@ -21,11 +21,12 @@ export function LeadCard({ lead, isSelected, onClick }: LeadCardProps) {
         "flex w-full cursor-pointer flex-col gap-2 rounded-2xl p-4 text-left transition-all squircle",
         isSelected ? "bg-primary text-background" : "hover:bg-secondary/50",
       )}
+      data-lead-id={lead.id}
       onClick={onClick}
       type="button"
     >
       <div className="flex w-full items-start justify-between gap-2">
-        <span className="truncate font-medium">{lead.name}</span>
+        <span className="min-w-0 truncate font-medium">{lead.name}</span>
         {lead.completed ? (
           <CheckCircle2Icon className="size-4 shrink-0 opacity-50" />
         ) : (
@@ -36,7 +37,7 @@ export function LeadCard({ lead, isSelected, onClick }: LeadCardProps) {
       <div className="flex w-full items-center justify-between gap-2 text-xs opacity-50">
         {lead.main_need ? (
           <PrismBadge
-            className="h-5 border border-current px-2 py-0 capitalize"
+            className="h-5 max-w-[65%] min-w-0 shrink justify-start border border-current px-2 py-0 capitalize"
             variant="ghost"
           >
             {lead.main_need}
@@ -45,7 +46,9 @@ export function LeadCard({ lead, isSelected, onClick }: LeadCardProps) {
           <span />
         )}
 
-        {formattedTime && <span className="text-xs">{formattedTime}</span>}
+        {formattedTime && (
+          <span className="shrink-0 text-xs">{formattedTime}</span>
+        )}
       </div>
     </button>
   );
