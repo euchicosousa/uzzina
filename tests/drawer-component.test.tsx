@@ -1720,9 +1720,11 @@ describe("phone-width action panel", () => {
   let previousObserver: PropertyDescriptor | undefined;
   // Visible area of the Instagram tab's scroll region, when a test lays it out.
   let instagramScrollerRect: DOMRect | null = null;
+  let essentialScrollerRect: DOMRect | null = null;
   beforeEach(() => {
     panelWidth = 390;
     instagramScrollerRect = null;
+    essentialScrollerRect = null;
     resizeCallbacks.clear();
     previousObserver = Object.getOwnPropertyDescriptor(
       globalThis,
@@ -1746,6 +1748,11 @@ describe("phone-width action panel", () => {
           this.hasAttribute("data-instagram-scroller")
         )
           return instagramScrollerRect;
+        if (
+          essentialScrollerRect &&
+          this.hasAttribute("data-essential-scroller")
+        )
+          return essentialScrollerRect;
         return measure.call(this);
       },
     });
@@ -2181,6 +2188,62 @@ describe("phone-width action panel", () => {
     } finally {
       Reflect.deleteProperty(window, "cloudinary");
     }
+  });
+
+  it("Essential uses the existing compact toolbar on a phone-width panel", async () => {
+    mount(draft({ description: "<p>Essential text</p>" }));
+    const text = await screen.findByText("Essential text");
+    const editor = text.closest<HTMLElement>('[contenteditable="true"]');
+    if (!editor) throw new Error("Essential editor did not mount");
+    const toolbar = screen.getByRole("toolbar", {
+      name: "Formatação do texto",
+    });
+    expect(
+      within(toolbar).getByRole("button", { name: "Mais formatação" }),
+    ).toBeTruthy();
+    expect(
+      within(toolbar).queryByRole("button", { name: "Título 1" }),
+    ).toBeNull();
+    const user = userEvent.setup();
+    act(() => editor.focus());
+    await user.keyboard("{Alt>}{Shift>}{F10}{/Shift}{/Alt}");
+    expect(toolbar.contains(document.activeElement)).toBe(true);
+    await user.tab();
+    expect(document.activeElement).toBe(editor);
+  });
+
+  it("Essential follows a short672px writing area and preserves the editor across keyboard-sized resizes", async () => {
+    panelWidth = 672;
+    essentialScrollerRect = new window.DOMRect(0, 120, 672, 220);
+    mount(draft({ description: "<p>Essential landscape</p>" }));
+    const text = await screen.findByText("Essential landscape");
+    const editor = text.closest('[contenteditable="true"]');
+    const toolbar = () =>
+      within(screen.getByRole("toolbar", { name: "Formatação do texto" }));
+    expect(
+      toolbar().getByRole("button", { name: "Mais formatação" }),
+    ).toBeTruthy();
+    essentialScrollerRect = new window.DOMRect(0, 120, 672, 500);
+    resizePanel(672);
+    expect(
+      toolbar().getByRole("button", { name: "Mais formatação" }),
+    ).toBeTruthy();
+    essentialScrollerRect = new window.DOMRect(0, 120, 672, 600);
+    resizePanel(672);
+    expect(
+      toolbar().queryByRole("button", { name: "Mais formatação" }),
+    ).toBeNull();
+    expect(toolbar().getByRole("button", { name: "Título 1" })).toBeTruthy();
+    essentialScrollerRect = new window.DOMRect(0, 120, 672, 180);
+    resizePanel(672);
+    expect(
+      toolbar().getByRole("button", { name: "Mais formatação" }),
+    ).toBeTruthy();
+    expect(
+      screen
+        .getByText("Essential landscape")
+        .closest('[contenteditable="true"]'),
+    ).toBe(editor);
   });
 
   it("the compact content editor has one toolbar row and a menu for the other commands", async () => {

@@ -1,12 +1,12 @@
 # 13: Keep drawer writing reachable and prevent background scrolling on iPhone
 
-**Status:** implemented locally on 2026-10-30 — automated regression verified; physical iPhone/Safari acceptance pending. No commit, push or deploy.
+**Status:** implemented, committed locally as4540ef6 and owner-confirmed on2026-10-30 for the reported iPhone flows. No push or deploy.
 **Priority:** high — blocks writing in landscape.
 **Blocked by:** none. Coordinate ticket17 toolbar height; do not wait for the general style review.
 
 ## Problem and evidence
 
-Owner cannot reach/type the Essential description in landscape and reports scrolling the page behind the open drawer. Evidence: `UZZINA 4.png`, `IMG_9910.PNG`, `UZZINA 7.png`; [analysis](../../../docs/audits/2026-10-30-mobile-owner-feedback.md). Still screenshots do not distinguish background scroll from visual viewport movement. Fixed panel, independent app scroller and nested clipped Essential containers are inspection targets, not a closed causal diagnosis.
+Owner cannot reach/type the Essential description in landscape and reports scrolling the page behind the open drawer. Evidence: `UZZINA 4.png`, `IMG_9910.PNG`, `UZZINA 7.png`; [diagnosis](../../../docs/audits/2026-10-30-drawer-scroll-landscape-writing.md). Still screenshots do not distinguish background scroll from visual viewport movement. Fixed panel, independent app scroller and nested clipped Essential containers are inspection targets, not a closed causal diagnosis.
 
 ## Delivery and acceptance
 
@@ -23,6 +23,8 @@ Owner cannot reach/type the Essential description in landscape and reports scrol
 Follow README verification rules and run relevant tests/format/lint/typecheck/build when implementing. Controlled data only; no production fixtures or new persistence. Ticket01/02 owner acceptance remains valid for reported earlier scopes; this is the new functional follow-up. No implementation, server restart, commit, push or deploy authorized merely by preparing this file.
 
 ## Implementation and evidence — 2026-10-30
+
+Subsequent owner feedback: "13 confirmado." Accepted for the exercised device scenarios; the implementation-time limits below remain historical evidence, not a requirement to repeat the accepted flows. No additional automated/device execution is implied by this status update.
 
 Owner explicitly authorized execution step1/ticket13. [Operation report](../../../docs/audits/2026-10-30-drawer-scroll-landscape-writing.md) records red/green evidence and limits.
 

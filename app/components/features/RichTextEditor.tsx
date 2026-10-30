@@ -448,8 +448,8 @@ export function RichTextEditor({
   isRounded?: boolean;
   /**
    * One row of basic commands plus a "Mais formatação" menu. Callers decide
-   * it from their container width (the action drawer's compact panel), never
-   * from the window width; other editors keep the full toolbar.
+   * it from their container width and available writing height, never from
+   * the window width alone; other editors keep the full toolbar.
    */
   compactToolbar?: boolean;
 }) {

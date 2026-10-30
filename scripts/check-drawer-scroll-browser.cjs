@@ -358,7 +358,48 @@ const assert = require("node:assert/strict");
     const primaryKey = await active().getAttribute("data-action-surface");
     const originalEditor = await editor().elementHandle();
     const originalTitle = await title().inputValue();
+    const checkToolbar = async (label, compact) => {
+      const toolbar = active().getByRole("toolbar", {
+        name: "Formatação do texto",
+      });
+      const geometry = await toolbar.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        const buttons = [...element.querySelectorAll("button")].map((button) =>
+          button.getBoundingClientRect(),
+        );
+        return {
+          height: rect.height,
+          rows: [...new Set(buttons.map((button) => Math.round(button.top)))],
+          contained: buttons.every(
+            (button) => button.left >= rect.left && button.right <= rect.right,
+          ),
+          wrap: getComputedStyle(element).flexWrap,
+        };
+      });
+      record(
+        (await toolbar
+          .getByRole("button", { name: "Mais formatação", exact: true })
+          .count()) === (compact ? 1 : 0),
+        `${label}: expected toolbar mode`,
+        geometry,
+      );
+      if (compact)
+        record(
+          geometry.rows.length === 1 &&
+            geometry.contained &&
+            geometry.wrap === "nowrap",
+          `${label}: commands stay on one contained row`,
+          geometry,
+        );
+    };
     const checkWriting = async (label) => {
+      const constrained = await active()
+        .locator("[data-essential-scroller]")
+        .evaluate((e) => {
+          const r = e.getBoundingClientRect();
+          return r.width < 640 || (r.width < 752 && r.height < 480);
+        });
+      await checkToolbar(`${label} Essential`, constrained);
       // Scroll the actual Essential area, including title/metadata, then the
       // editor's own long-text region; no background region is used to reveal it.
       await editor().scrollIntoViewIfNeeded();
@@ -510,6 +551,93 @@ const assert = require("node:assert/strict");
         "rotation retains title",
       );
     }
+    // Essential's compact menu operates on the real retained selection/history.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.evaluate(() =>
+      window.__setVisibleViewport({ height: 430, top: 180 }),
+    );
+    await editor().fill("Formatting selection");
+    await editor().press("ControlOrMeta+A");
+    await active()
+      .getByRole("button", { name: "Mais formatação", exact: true })
+      .click();
+    await page
+      .getByRole("menuitemcheckbox", { name: "Tachado", exact: true })
+      .click();
+    record(
+      (await editor().locator("s").textContent()) === "Formatting selection",
+      "Essential menu formats retained selection",
+    );
+    record(
+      await editor().evaluate((e) => e === document.activeElement),
+      "Essential menu returns focus to editor",
+    );
+    await active()
+      .getByRole("button", { name: "Desfazer", exact: true })
+      .click();
+    record(
+      (await editor().locator("s").count()) === 0,
+      "Essential compact history undoes formatting",
+    );
+    await active()
+      .getByRole("button", { name: "Refazer", exact: true })
+      .click();
+    record(
+      (await editor().locator("s").count()) === 1,
+      "Essential compact history redoes formatting",
+    );
+    // Verify Instagram independently at phone width, landscape and desktop.
+    for (const scenario of [
+      { width: 390, height: 844, visible: 430, top: 180, compact: true },
+      { width: 844, height: 390, visible: 220, top: 90, compact: true },
+      { width: 1440, height: 1000, visible: 1000, top: 0, compact: false },
+    ]) {
+      await page.setViewportSize({
+        width: scenario.width,
+        height: scenario.height,
+      });
+      await page.evaluate(
+        ({ height, top }) => window.__setVisibleViewport({ height, top }),
+        { height: scenario.visible, top: scenario.top },
+      );
+      await active()
+        .getByRole("tab", { name: "INSTAGRAM", exact: true })
+        .click();
+      await active().locator(".tiptap").waitFor();
+      await page.waitForTimeout(80);
+      await checkToolbar(
+        `Instagram ${scenario.width}x${scenario.height}`,
+        scenario.compact,
+      );
+      await editor().fill("");
+      await checkToolbar(
+        `Instagram empty ${scenario.width}px`,
+        scenario.compact,
+      );
+      await editor().fill(
+        Array.from({ length: 40 }, (_, i) => `Content line ${i + 1}`).join(
+          "\n",
+        ),
+      );
+      await checkToolbar(
+        `Instagram long ${scenario.width}px`,
+        scenario.compact,
+      );
+      await active()
+        .getByRole("tab", { name: "ESSENCIAL", exact: true })
+        .click();
+      await editor().waitFor();
+      await checkToolbar(
+        `Essential ${scenario.width}x${scenario.height}`,
+        scenario.compact,
+      );
+    }
+    // Return to the existing ticket13 integration scenario.
+    await page.setViewportSize({ width: 1024, height: 600 });
+    await page.evaluate(() =>
+      window.__setVisibleViewport({ height: 600, top: 0 }),
+    );
+    await page.waitForTimeout(80);
     const unzoomed = await page.locator("[data-action-panel]").boundingBox();
     await page.evaluate(() =>
       window.__setVisibleViewport({ height: 300, top: 120, scale: 2 }),
@@ -564,6 +692,30 @@ const assert = require("node:assert/strict");
       "touch on backdrop preserves background position",
     );
     await open("AÇÃO SECUNDÁRIA", true);
+    await checkToolbar("second mounted Essential panel", true);
+    await page.setViewportSize({ width: 2000, height: 1000 });
+    await page.evaluate(() =>
+      window.__setVisibleViewport({ height: 1000, top: 0 }),
+    );
+    await page.locator('[data-action-layout="side-by-side"]').waitFor();
+    const dualToolbars = page.getByRole("toolbar", {
+      name: "Formatação do texto",
+    });
+    record(
+      (await dualToolbars.count()) === 2,
+      "both side-by-side panels retain their own toolbar",
+    );
+    record(
+      (await page
+        .getByRole("button", { name: "Mais formatação", exact: true })
+        .count()) === 0,
+      "normal desktop keeps full toolbar in both panels",
+    );
+    await page.setViewportSize({ width: 1024, height: 600 });
+    await page.evaluate(() =>
+      window.__setVisibleViewport({ height: 600, top: 0 }),
+    );
+    await page.locator('[data-action-layout="tabs"]').waitFor();
     record(
       (await page.locator("[data-action-entry]").count()) === 2,
       "both actions stay mounted",

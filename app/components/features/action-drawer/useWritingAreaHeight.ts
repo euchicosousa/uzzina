@@ -6,7 +6,7 @@ import { readVisibleViewport } from "~/hooks/useVisibleViewport";
 // the iOS keyboard in landscape.
 export const MIN_WRITING_HEIGHT = 144;
 
-// A panel whose Instagram scroll area is shorter than this cannot show the
+// A panel whose writing scroll area is shorter than this cannot show the
 // regular layout's controls (4:5 preview, wrapping toolbar, 320px minimum
 // column) together with a usable writing region; phones in landscape land at
 // roughly 150–250px, tablets and desktop windows well above it. Leaving the
@@ -20,11 +20,10 @@ export const SIDE_BY_SIDE_MIN_WIDTH = 752;
 
 /**
  * True when a panel that is not phone-width is still too short for the regular
- * Instagram layout (a landscape phone: the panel is 672px wide). It measures
- * the scroll area's layout box, which the software keyboard does not shrink
- * (iOS keeps the layout viewport; Chrome on Android resizes only the visual
- * one by default), so opening or closing the keyboard does not toggle it. The
- * hysteresis covers browsers that do resize the layout viewport.
+ * writing layout (a landscape phone: the panel is 672px wide). It measures
+ * the actual scroll area inside the drawer, whose bounds already follow the
+ * visible viewport, including the software keyboard. Hysteresis keeps small
+ * height changes near the threshold from repeatedly changing the toolbar.
  */
 export function useShortWritingPanel(
   scrollerRef: RefObject<HTMLElement | null>,

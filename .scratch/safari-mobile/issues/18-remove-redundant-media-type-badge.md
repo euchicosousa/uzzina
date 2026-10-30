@@ -1,6 +1,6 @@
 # 18: Remove the redundant media-type badge beside Add content
 
-**Status:** implemented locally — 2026-10-30.
+**Status:** implemented, committed locally as4540ef6 and owner-approved ("18 ok") — 2026-10-30. No push or deploy.
 **Priority:** low.
 **Blocked by:** none.
 
@@ -23,4 +23,4 @@ Verification: `bun run format`, `bun run lint`, `bun run typecheck` and `bun run
 
 ## Scope
 
-Separate from17 toolbar work and the existing media-controls visibility ticket. No Cloudinary widget redesign or broad preview rewrite. This implementation is local; no commit or publication.
+Separate from17 toolbar work and the existing media-controls visibility ticket. No Cloudinary widget redesign or broad preview rewrite. Subsequently committed locally with13 as4540ef6 at the owner's request; no publication.

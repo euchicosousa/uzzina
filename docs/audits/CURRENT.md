@@ -6,6 +6,14 @@ Produção confirmada Ready em29/10 no deploy `dpl_39Jnm4DEdyxyx24SEXtTpH92PZ6x`
 
 ## Pendências reais
 
+### Commit dos tickets12/17 e situação em30/10
+
+Proprietário autorizou o commit dos itens concluídos.12 (calendário compacto, com caption adaptável e texto ampliado preservado) e17 (toolbar compacta compartilhada por Essencial/Instagram) preparados para commit local com regressões, relatórios e contrato.13/18 já estão no commit `4540ef6`;13/18/17 foram explicitamente aprovados nos cenários relatados.12 implementado/verificado e autorizado para commit; não inferir nova execução física no iPhone do simples pedido de commit. Sem push/deploy.
+
+Verificações existentes preservadas:17 com100 testes e94 verificações Chromium;12 com WebKit45 geometrias, Chromium15 e Hoje real/WebKit15, comportamento/foco/teclado e teste de calendário1pass. Format/lint/typecheck/build passaram; nenhuma alteração funcional adicional nesta rodada de commit, sem repetir suites já verdes. [Toolbar](2026-10-30-compact-writing-toolbars.md) e [calendário](2026-10-30-calendar-picker-width.md) registram evidências e limites; referências/diff conferidos.
+
+Próximos desta fila:14 espaço mobile/data completa truncada,15 abas compartilhadas,16 botões do rodapé; análise geral de estilo ainda não iniciada. Demais pendências do CURRENT continuam com seus próprios estados. Mudanças externas do título e planejamento/documentação de outros tickets ficaram fora deste commit, preservadas no checkout. Sem SQL, banco/provedor ou servidor nesta rodada.
+
 ### Tickets13 e18 implementados localmente em30/10 — execução com subagentes
 
 Proprietário autorizou etapas1 e7: Sol/high executou13 e Luna/high executou18, com passagem explícita de slot e um único escritor.18 remove badge Imagem/Vídeo/Carrossel e import/estado sem uso, preservando upload montado, gerenciamento e contagem.13 corrige descrição Essencial recortada em paisagem (wrapper tinha altura0): região rolável com mínimos preservados; painel acompanha altura/offset visível; documento e região rolável do app ficam bloqueados enquanto qualquer ação permanecer aberta, com restauração final/reset/unmount e composição com overlays. Política da toolbar inalterada;17 não iniciado.

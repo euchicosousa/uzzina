@@ -30,6 +30,7 @@ import { ActionDatePicker } from "./ActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "~/components/features/media/WorkFileThumbnail";
+import { useShortWritingPanel } from "./useWritingAreaHeight";
 interface EssentialsTabProps {
   RawAction: Action;
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;
@@ -77,6 +78,8 @@ export function EssentialsTab({
   detailsExpanded = false,
   onDetailsExpandedChange,
 }: EssentialsTabProps) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const shortPanel = useShortWritingPanel(scrollerRef);
   const workFilesRef = useRef(workFiles);
   workFilesRef.current = workFiles;
   const workFilesMetaRef = useRef<
@@ -159,6 +162,7 @@ export function EssentialsTab({
     <div
       className="flex h-full min-h-0 w-full max-w-full flex-col overflow-x-hidden overflow-y-auto overscroll-contain"
       data-essential-scroller
+      ref={scrollerRef}
     >
       {/* Título */}
       <div className="shrink-0" data-drawer-focus="title">
@@ -355,6 +359,7 @@ export function EssentialsTab({
         >
           <Tiptap
             key={descriptionVersion}
+            compactToolbar={compact || shortPanel}
             className={cn(
               "h-full min-h-50 w-full bg-popover [&_.tiptap]:transition-colors [&_.tiptap:focus]:bg-foreground/5",
               isAIProcessing && "opacity-40",
