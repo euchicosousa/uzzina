@@ -67,3 +67,7 @@ Em29/10, `main`/`origin/main` passaram a `c1d18b86dd4074342de6bf371588e57c0bdd9f
 ## Aceite final em29/10
 
 Proprietário aprovou explicitamente a visualização inicial de Hoje, Ajuda e Notificações e autorizou publicar os registros. As funcionalidades já estão no deploy Ready confirmado acima. Tickets encerrados; uso prolongado de Notificações não bloqueia a conclusão, e eventual necessidade terá novo ticket aberto pelo proprietário. Somente documentação e manifest atualizados, com referências/diff conferidos; sem mudança funcional, novos testes/build, SQL ou dados reais.
+
+## Encerramento da lista de acompanhamento
+
+Após o commit `0392d70` e push, Vercel confirmou o deploy `dpl_39Jnm4DEdyxyx24SEXtTpH92PZ6x` Ready/production no domínio `uzzina.cnvt.com.br`. O proprietário pediu retirar os itens concluídos da lista: removidos do TODO e do resumo de entregas do CURRENT, mantendo apenas pendências/trabalho futuro no acompanhamento e o histórico nos relatórios/tickets existentes. Referências locais e diff conferidos; alteração exclusivamente documental, sem testes/build, SQL ou publicação nesta limpeza da lista.

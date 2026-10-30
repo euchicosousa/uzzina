@@ -20,6 +20,10 @@ Direção recomendada: referência de consumo por **agência**, compartilhada pe
 
 Luna e Sol são os nomes mencionados pelo proprietário. Não presumir que esses nomes sejam identificadores da API. Registrar separadamente nome de apresentação, provedor e identificador técnico efetivamente utilizado.
 
+## Decisão de localização em29/10/2026
+
+O proprietário definiu a visualização dentro de Minha Conta, pequena e discreta. Não criar página própria, destaque no cabeçalho ou indicador na navegação global. A localização não resolve as decisões ainda pendentes de agência, público autorizado, período ou referência de consumo. O ticket existente de visualização foi atualizado, sem iniciar implementação.
+
 ## 2. Experiência prevista
 
 O administrador da agência poderá consultar, por exemplo:

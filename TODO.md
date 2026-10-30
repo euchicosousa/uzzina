@@ -3,19 +3,16 @@
 ## Verificação de uso
 
 - [ ] Conferir durante a semana o app publicado: login/home, edição/data, preferências, IA, administração, portal/revisão, upload e Leads. Banco fase2 já conferido no catálogo; estado em [CURRENT](docs/audits/CURRENT.md).
-- [ ] Completar validação em Safari/telefone e foco dos fluxos restantes.
+- [ ] Executar o [roteiro Safari/telefone](docs/audits/2026-10-29-owner-validation-guide.md) e trazer os resultados em outro chat, conforme decisão do proprietário.
 - [ ] Revisar avisos/defaults da plataforma no contexto do banco atual.
 
 ## Trabalhos registrados para depois
 
-- [ ] [Visualização do uso de IA](.scratch/ai-usage/issues/01-ai-usage-visibility.md): ticket criado em28/10/2026; definir escopo, período, referência, permissões e apresentação antes de implementar. Preservar quota técnica atual e não expor custos do provedor. [Especificação existente](docs/plans/2026-10-07-consumo-ia-por-agencia.md).
+- [ ] [Controles de mídia sempre visíveis](.scratch/media-controls/issues/01-always-visible-media-controls.md): ticket preparado em29/10 para remoção/reordenação no gerenciador da UZZINA em desktop/mobile e por teclado. Não altera widget Cloudinary; implementação não iniciada.
 
-- [x] [Corrigir carregamento de Criar parceiro/Criar ação](.scratch/search-review/issues/01-fix-lazy-module-loading.md): correção local (inicialização duplicada/cache do Vite) testada e aprovada pelo proprietário em28/10.
-- [x] [Criar data comemorativa por modal](.scratch/search-review/issues/02-create-celebration-dialog.md): aprovado pelo proprietário após revisão visual e commitado localmente em28/10; Gerenciar mantém a página atual.
-- [x] [Implementar Ajuda e documentação](.scratch/search-review/issues/03-complete-help-page.md): publicada e aprovada pelo proprietário em29/10; concluída.
-- [x] [Separar a página Hoje e rolar só o conteúdo](.scratch/today-viewport/issues/02-dedicated-today-page-scroll.md): aprovado pelo proprietário e commitado localmente em28/10.
+- [ ] Escolher próximas correções do [levantamento de teclado concluído](docs/audits/2026-10-29-keyboard-focus-inventory.md): cinco grupos de achados com prioridade e critérios, sem implementação automática. Não repetir a revisão como pendência aberta.
 
-- [x] [Implementar a página de notificações](.scratch/notifications/issues/01-complete-notifications-page.md): publicada e aprovada pelo proprietário em29/10; ticket encerrado. Se necessário, o proprietário abrirá novo ticket.
+- [ ] [Visualização do uso de IA](.scratch/ai-usage/issues/01-ai-usage-visibility.md): ticket existente atualizado em29/10/2026: visualização discreta dentro de Minha Conta, uma entrega completa para continuar em outro chat. Definir escopo, período, referência e permissões antes de implementar. Preservar quota técnica atual e não expor custos do provedor. [Especificação existente](docs/plans/2026-10-07-consumo-ia-por-agencia.md).
 
 ## Ideias para avaliar depois
 
