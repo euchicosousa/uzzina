@@ -36,3 +36,8 @@ The unchanged viewport-height hook produces two transient WebKit notifications (
 ## Subsequent owner feedback
 
 Owner accepted14/19 and requested their commit. The separate top-alignment follow-up from UZZINA9.png will be investigated after this accepted implementation and before15; it is not claimed fixed in this commit.
+
+
+## Top alignment follow-up — clarified 2026-10-31
+
+Owner clarified that “top” means the global logo/menu Header. The initial Today-heading interpretation was withdrawn before commit; accepted14 page spacing is preserved. Header now aligns to the inner vertical frame edges, including the actual scrollbar gutter. Chromium36/WebKit36 bounded assertions passed; final integrated results are in the [follow-up report](../../../docs/audits/2026-10-30-today-header-alignment.md). Local correction, awaiting owner-device acceptance;14/19 remain accepted and committed as `53508d2`.

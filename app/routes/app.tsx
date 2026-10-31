@@ -265,6 +265,7 @@ function Dashboard() {
               partnerFilters={partnerFilters}
               person={person}
               setPrimaryAction={setPrimaryAction}
+              scrollContainerRef={appScrollRef}
             />
             <div className="flex h-full w-full overflow-hidden">
               <div

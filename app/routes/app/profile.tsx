@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useRef, useState } from "react";
 import { flushSync } from "react-dom";
+import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { useFillScrollViewport } from "~/hooks/useFillScrollViewport";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQuerySessionGeneration } from "~/lib/query-client";
@@ -23,6 +24,10 @@ import { preferenceRecord } from "~/lib/preference-persistence";
 import { toast } from "sonner";
 import { Theme, useAppThemeContext } from "~/hooks/useAppTheme";
 import {
+  PrismTabs,
+  PrismTabList,
+  PrismTab,
+  PrismTabPanel,
   PrismButton,
   PrismInput,
   PrismLabel,
@@ -100,6 +105,7 @@ function ProfilePage() {
   const { person, cloudName, uploadPreset } = useAppContext();
   const pageRef = useRef<HTMLDivElement>(null);
   useFillScrollViewport(pageRef);
+  const isDesktop = useIsDesktop();
   const [mobileSection, setMobileSection] = useState("preferences");
   const queryClient = useQueryClient();
   const generation = useRef(getQuerySessionGeneration(queryClient)).current;
@@ -231,8 +237,12 @@ function ProfilePage() {
   };
 
   return (
-    <div
+    <PrismTabs
       ref={pageRef}
+      selectedKey={mobileSection}
+      onSelectionChange={(key) => {
+        if (key === "personal" || key === "preferences") setMobileSection(key);
+      }}
       className="mx-auto flex min-h-0 w-full max-w-5xl flex-col overflow-hidden px-3 pt-3 lg:px-8 lg:pt-8"
     >
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b pb-3 lg:gap-8 lg:pb-6">
@@ -252,30 +262,12 @@ function ProfilePage() {
         </PrismButton>
       </div>
 
-      <PrismToggleGroup
-        aria-label="Seção da conta"
-        className="max-w-full shrink-0 flex-wrap py-2 lg:hidden"
-        size="sm"
-        selectedKeys={[mobileSection]}
-        onSelectionChange={(keys) => {
-          const section = Array.from(keys)[0];
-          if (section === "personal" || section === "preferences")
-            setMobileSection(section);
-        }}
-      >
-        <PrismToggleGroupItem
-          className={PROFILE_CHOICE_CLASS_NAME}
-          id="personal"
-        >
+      <PrismTabList aria-label="Seção da conta" className="shrink-0 lg:hidden">
+        <PrismTab id="personal" className="[overflow-wrap:anywhere]">
           Informações pessoais
-        </PrismToggleGroupItem>
-        <PrismToggleGroupItem
-          className={PROFILE_CHOICE_CLASS_NAME}
-          id="preferences"
-        >
-          Preferências
-        </PrismToggleGroupItem>
-      </PrismToggleGroup>
+        </PrismTab>
+        <PrismTab id="preferences">Preferências</PrismTab>
+      </PrismTabList>
       <form
         id="profile-form"
         className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)] gap-x-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1.8fr)]"
@@ -304,13 +296,15 @@ function ProfilePage() {
         />
 
         {/* Left Column: Personal Info */}
-        <div
-          role="region"
+        <PrismTabPanel
+          id="personal"
+          shouldForceMount
+          isAlwaysVisible={isDesktop}
           aria-label="Informações pessoais"
           tabIndex={0}
           className={cn(
             "min-h-0 flex-col gap-4 overflow-y-auto overscroll-contain py-3 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset lg:flex lg:gap-6 lg:py-6",
-            mobileSection === "personal" ? "flex" : "hidden",
+            "flex",
           )}
         >
           <h2 className="text-lg font-bold">Informações Pessoais</h2>
@@ -415,16 +409,18 @@ function ProfilePage() {
             </div>
           </div>
           <AppBarSpacer />
-        </div>
+        </PrismTabPanel>
 
         {/* Right Column: Preferences */}
-        <div
-          role="region"
+        <PrismTabPanel
+          id="preferences"
+          shouldForceMount
+          isAlwaysVisible={isDesktop}
           aria-label="Preferências"
           tabIndex={0}
           className={cn(
             "min-h-0 flex-col gap-4 overflow-y-auto overscroll-contain py-3 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset lg:col-start-2 lg:row-start-1 lg:flex lg:gap-6 lg:py-6",
-            mobileSection === "preferences" ? "flex" : "hidden",
+            "flex",
           )}
         >
           <h2 className="text-lg font-bold">Preferências</h2>
@@ -635,8 +631,8 @@ function ProfilePage() {
             onCheckedChange={setShowInstagramSidebar}
           />
           <AppBarSpacer />
-        </div>
+        </PrismTabPanel>
       </form>
-    </div>
+    </PrismTabs>
   );
 }

@@ -15,6 +15,7 @@ export { Button as PrismButton, buttonVariants } from "./button";
 export type { PrismButtonVariantProps } from "./button";
 export { PrismCalendar, PrismRangeCalendar } from "./calendar";
 export { PrismCheckbox, PrismCheckboxGroup } from "./checkbox";
+export { PrismTabs, PrismTabList, PrismTab, PrismTabPanel } from "./tabs";
 export {
   PrismButtonGroup,
   PrismButtonGroupSeparator,

@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import {
   type MouseEvent,
+  type RefObject,
   useCallback,
   useEffect,
   useMemo,
@@ -82,13 +83,35 @@ export function Header({
   setPrimaryAction,
   onBeforeLeave,
   partnerFilters = DEFAULT_PARTNER_FILTERS,
+  scrollContainerRef,
 }: {
   person: Person;
   setPrimaryAction: (action: Action | null) => Promise<boolean>;
   /** Requests closing every open action through its guard; false keeps the page. */
   onBeforeLeave: () => Promise<boolean>;
   partnerFilters?: string[];
+  scrollContainerRef?: RefObject<HTMLDivElement | null>;
 }) {
+  const [scrollbarWidth, setScrollbarWidth] = useState(0);
+  useEffect(() => {
+    const scroller = scrollContainerRef?.current;
+    if (!scroller) return;
+    const measure = () =>
+      setScrollbarWidth(
+        Math.max(0, scroller.offsetWidth - scroller.clientWidth),
+      );
+    measure();
+    const observer =
+      typeof ResizeObserver === "undefined"
+        ? undefined
+        : new ResizeObserver(measure);
+    observer?.observe(scroller);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [scrollContainerRef]);
   const { notifications, unreadCount, markAsRead, markAllAsRead } =
     useNotifications();
   const location = useLocation();
@@ -344,7 +367,10 @@ export function Header({
     }
   };
   return (
-    <div className="border_after flex w-full items-center justify-between px-2 lg:px-8">
+    <div
+      className="border_after mx-2 flex items-center justify-between border-x border-transparent lg:mx-8"
+      style={{ paddingRight: scrollbarWidth }}
+    >
       <div className="flex items-center gap-2 py-4">
         {/* Logo */}
         <Link onClick={guardLinkClick("/app")} to="/app">

@@ -198,15 +198,13 @@ const assert = require("node:assert/strict");
               false,
               "Desktop toggle must be absent on mobile",
             );
-            await page
-              .getByRole("button", { name: "Feed", exact: true })
-              .click();
+            await page.getByRole("tab", { name: "Feed", exact: true }).click();
             await page
               .getByText("Nenhuma publicação programada.")
               .filter({ visible: true })
               .waitFor();
             await page
-              .getByRole("button", { name: "Calendário", exact: true })
+              .getByRole("tab", { name: "Calendário", exact: true })
               .click();
             return;
           }
@@ -278,7 +276,7 @@ const assert = require("node:assert/strict");
       }
     }
     await page.setViewportSize({ width: 390, height: 900 });
-    await page.getByRole("button", { name: "Feed", exact: true }).click();
+    await page.getByRole("tab", { name: "Feed", exact: true }).click();
     await page
       .getByText("Nenhuma publicação programada.")
       .filter({ visible: true })

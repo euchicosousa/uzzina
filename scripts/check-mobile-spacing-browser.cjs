@@ -117,6 +117,7 @@ const engines = require(process.env.PLAYWRIGHT_MODULE || "playwright");
         `${condition ? "PASS" : "FAIL"} ${label}: ${JSON.stringify(metrics)}`,
       );
     };
+    const alignmentOnly = process.env.GLOBAL_HEADER_ALIGNMENT_ONLY === "true";
     const sizes = [
       { width: 320, height: 740 },
       { width: 375, height: 812 },
@@ -125,7 +126,9 @@ const engines = require(process.env.PLAYWRIGHT_MODULE || "playwright");
       { width: 844, height: 390 },
       { width: 1440, height: 900 },
     ];
-    for (const size of sizes) {
+    for (const size of sizes.filter(
+      (size) => !alignmentOnly || [320, 390, 430, 1440].includes(size.width),
+    )) {
       await page.setViewportSize(size);
       const mobile = size.width < 1024;
       phase = `Today ${size.width}px`;
@@ -147,6 +150,9 @@ const engines = require(process.env.PLAYWRIGHT_MODULE || "playwright");
           textOverflow: text.textOverflow,
           headerHeight: h.height,
           rootLeft: r.left,
+          rootRight: r.right,
+          headingLeft: element.getBoundingClientRect().left,
+          optionsRight: header.lastElementChild.getBoundingClientRect().right,
           contentLeft:
             c.left + parseFloat(getComputedStyle(region).paddingLeft),
           headerPadding: parseFloat(getComputedStyle(header).paddingLeft),
@@ -230,6 +236,9 @@ const engines = require(process.env.PLAYWRIGHT_MODULE || "playwright");
         return {
           text: element.textContent,
           rootLeft: root.getBoundingClientRect().left,
+          rootRight: root.getBoundingClientRect().right,
+          headingLeft: element.getBoundingClientRect().left,
+          optionsRight: header.lastElementChild.getBoundingClientRect().right,
           headerHeight: header.getBoundingClientRect().height,
           headingPadding: parseFloat(getComputedStyle(element).paddingTop),
           headerGap: parseFloat(getComputedStyle(header).rowGap),
@@ -269,6 +278,35 @@ const engines = require(process.env.PLAYWRIGHT_MODULE || "playwright");
           `${size.width}px Home desktop composition preserved`,
           home,
         );
+      if (alignmentOnly) {
+        const headerAlignment = await homeHeading.evaluate((element) => {
+          const frame = element.parentElement.parentElement;
+          const bounds = frame.getBoundingClientRect();
+          const frameStyle = getComputedStyle(frame);
+          const menu = document.querySelector(
+            '[aria-label="Menu do perfil do usuário"]',
+          );
+          const header = menu.closest(".border_after");
+          const logo = header.querySelector('a[href="/app"]');
+          return {
+            expectedLeft: bounds.left + parseFloat(frameStyle.borderLeftWidth),
+            expectedRight:
+              bounds.right - parseFloat(frameStyle.borderRightWidth),
+            logoLeft: logo.getBoundingClientRect().left,
+            menuRight: menu.getBoundingClientRect().right,
+          };
+        });
+        check(
+          Math.abs(headerAlignment.logoLeft - headerAlignment.expectedLeft) <=
+            0.5 &&
+            Math.abs(
+              headerAlignment.menuRight - headerAlignment.expectedRight,
+            ) <= 0.5,
+          `${size.width}px global logo and profile menu align to page-frame inner edges`,
+          headerAlignment,
+        );
+        continue;
+      }
       phase = `Profile ${size.width}px`;
       await page.goto(`${base}/app/profile`);
       await page
@@ -277,9 +315,7 @@ const engines = require(process.env.PLAYWRIGHT_MODULE || "playwright");
       const profile = await page.evaluate(() => {
         const form = document.getElementById("profile-form");
         const root = form.parentElement;
-        const region = document.querySelector(
-          '[aria-label="Preferências"][role="region"]',
-        );
+        const region = document.querySelector('[aria-label="Preferências"]');
         return {
           padding: parseFloat(getComputedStyle(root).paddingLeft),
           topPadding: parseFloat(getComputedStyle(root).paddingTop),
@@ -334,6 +370,14 @@ const engines = require(process.env.PLAYWRIGHT_MODULE || "playwright");
       "layout/view changes do not save the account",
       writes,
     );
+    if (alignmentOnly) {
+      assert.deepEqual(errors, []);
+      assert.deepEqual(failures, []);
+      console.log(
+        `PASS ${checks} global-header alignment and accepted Today/Home behavior assertions`,
+      );
+      return;
+    }
     // Increasing text can wrap controls, while labels, fields and the save action remain reachable.
     for (const route of [
       "/app/today?date=2027-11-25",
@@ -406,14 +450,14 @@ const engines = require(process.env.PLAYWRIGHT_MODULE || "playwright");
         );
       }
       if (route === "/app/profile") {
-        const section = page.getByRole("radiogroup", {
+        const section = page.getByRole("tablist", {
           name: "Seção da conta",
           exact: true,
         });
         await section
-          .getByRole("radio", { name: "Preferências", exact: true })
+          .getByRole("tab", { name: "Preferências", exact: true })
           .click();
-        const prefs = page.getByRole("region", {
+        const prefs = page.getByRole("tabpanel", {
           name: "Preferências",
           exact: true,
         });
@@ -452,17 +496,17 @@ const engines = require(process.env.PLAYWRIGHT_MODULE || "playwright");
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(`${base}/app/profile`);
     await page
-      .getByRole("radiogroup", { name: "Seção da conta", exact: true })
-      .getByRole("radio", { name: "Informações pessoais", exact: true })
+      .getByRole("tablist", { name: "Seção da conta", exact: true })
+      .getByRole("tab", { name: "Informações pessoais", exact: true })
       .click();
     await page.getByLabel("Nome", { exact: true }).fill("Nome preservado");
-    const section = page.getByRole("radiogroup", {
+    const section = page.getByRole("tablist", {
       name: "Seção da conta",
       exact: true,
     });
     await page.getByLabel("Sobrenome", { exact: true }).fill("");
     await section
-      .getByRole("radio", { name: "Preferências", exact: true })
+      .getByRole("tab", { name: "Preferências", exact: true })
       .click();
     const save = page.getByRole("button", {
       name: "Salvar Alterações",
@@ -478,7 +522,7 @@ const engines = require(process.env.PLAYWRIGHT_MODULE || "playwright");
     check(writes.length === 0, "invalid profile does not write");
     await page.getByLabel("Sobrenome", { exact: true }).fill("Teste");
     await section
-      .getByRole("radio", { name: "Preferências", exact: true })
+      .getByRole("tab", { name: "Preferências", exact: true })
       .click();
     await page
       .getByRole("radiogroup", {
@@ -490,7 +534,7 @@ const engines = require(process.env.PLAYWRIGHT_MODULE || "playwright");
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.setViewportSize({ width: 390, height: 844 });
     await section
-      .getByRole("radio", { name: "Informações pessoais", exact: true })
+      .getByRole("tab", { name: "Informações pessoais", exact: true })
       .click();
     check(
       (await page.getByLabel("Nome", { exact: true }).inputValue()) ===

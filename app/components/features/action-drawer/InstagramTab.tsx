@@ -4,7 +4,14 @@ import { ContentFilesManager } from "~/components/features/media/InstagramConten
 import { InstagramPreview } from "~/components/features/media/InstagramPreview";
 import { RichTextEditor } from "~/components/features/RichTextEditor";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
-import { PrismButton, PrismButtonGroup } from "~/components/prism";
+import {
+  PrismTabs,
+  PrismTabList,
+  PrismTab,
+  PrismTabPanel,
+  PrismButton,
+  PrismButtonGroup,
+} from "~/components/prism";
 import { INTENT } from "~/lib/CONSTANTS";
 import { getFormattedPartnersLinks, parseStrategies } from "~/utils/format";
 import type { Action, Partner } from "~/types";
@@ -120,7 +127,11 @@ export function InstagramTab({
         />
       </div>
 
-      <div
+      <PrismTabs
+        selectedKey={instagramSubTab}
+        onSelectionChange={(key) => {
+          if (key === "content" || key === "caption") setInstagramSubTab(key);
+        }}
         className={cn(
           "flex flex-col @[47rem]/action:overflow-hidden",
           sizedColumn ? "shrink-0" : "min-h-80",
@@ -132,31 +143,15 @@ export function InstagramTab({
         ref={columnRef}
         style={sizedColumn ? { height: writingHeight } : undefined}
       >
-        {/* Sub-tab navigation */}
-        <div className="flex shrink-0" data-writing-controls role="tablist">
-          <button
-            aria-selected={instagramSubTab === "content"}
-            className={subTabClass(instagramSubTab === "content")}
-            onClick={() => setInstagramSubTab("content")}
-            role="tab"
-            type="button"
-          >
-            Conteúdo
-          </button>
-          <button
-            aria-selected={instagramSubTab === "caption"}
-            className={subTabClass(instagramSubTab === "caption")}
-            onClick={() => setInstagramSubTab("caption")}
-            role="tab"
-            type="button"
-          >
-            Legenda
-          </button>
-        </div>
+        <PrismTabList aria-label="Texto do Instagram" data-writing-controls>
+          <PrismTab id="content">Conteúdo</PrismTab>
+          <PrismTab id="caption">Legenda</PrismTab>
+        </PrismTabList>
 
         {/* Sub-aba CONTEÚDO */}
         {instagramSubTab === "content" && (
-          <div
+          <PrismTabPanel
+            id="content"
             className={cn(
               "flex flex-col overflow-hidden",
               writingLayout ? "min-h-0 flex-1" : "h-full",
@@ -251,12 +246,13 @@ export function InstagramTab({
               handleChange={onContentDescriptionChange}
               placeholder="Descreva o conteúdo do post: slides do carrossel, roteiro do reel..."
             />
-          </div>
+          </PrismTabPanel>
         )}
 
         {/* Sub-aba LEGENDA */}
         {instagramSubTab === "caption" && (
-          <div
+          <PrismTabPanel
+            id="caption"
             className={cn(
               "flex flex-col",
               writingLayout ? "min-h-0 flex-1" : "h-full",
@@ -335,9 +331,9 @@ export function InstagramTab({
                 }
               />
             </div>
-          </div>
+          </PrismTabPanel>
         )}
-      </div>
+      </PrismTabs>
       {/* Room for the part of the scroll area under the iOS keyboard, so the
           writing column can scroll fully into the visible area. */}
       {writingLayout && keyboardInset > 0 && (
@@ -351,10 +347,3 @@ export function InstagramTab({
     </div>
   );
 }
-const subTabClass = (active: boolean) =>
-  cn(
-    "flex-1 cursor-pointer py-3 px-4 text-xs font-semibold tracking-wide uppercase transition-colors text-center border-b-2 border-transparent",
-    active
-      ? "text-foreground border-b-2 border-foreground"
-      : "text-muted-foreground hover:text-foreground",
-  );

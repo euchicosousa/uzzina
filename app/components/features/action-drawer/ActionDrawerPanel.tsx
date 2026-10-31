@@ -1,12 +1,10 @@
-import { lazy, useCallback, useContext, useEffect, useRef } from "react";
+import { lazy, useCallback, useEffect, useRef } from "react";
 import {
-  Tab,
-  TabList,
-  TabListStateContext,
-  Tabs,
-  type TabListRenderProps,
-} from "react-aria-components";
-import { useTabPanel } from "react-aria/useTabList";
+  PrismTabs,
+  PrismTabList,
+  PrismTab,
+  PrismTabPanel,
+} from "~/components/prism";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { useVisibleViewport } from "~/hooks/useVisibleViewport";
 import { useAppContext } from "~/contexts/AppContext";
@@ -107,7 +105,7 @@ export function ActionDrawerPanel({
         data-action-layout={sideBySide ? "side-by-side" : "tabs"}
         style={{ top: panelTop, height: panelHeight }}
       >
-        <Tabs
+        <PrismTabs
           className="flex h-full min-h-0 flex-col"
           selectedKey={activeKey ?? undefined}
           onSelectionChange={(key) => activateAction(String(key))}
@@ -119,17 +117,20 @@ export function ActionDrawerPanel({
             )}
             hidden={entries.length < 2 || sideBySide}
           >
-            <TabList aria-label="Ações abertas" className="flex min-w-0 flex-1">
+            <PrismTabList
+              aria-label="Ações abertas"
+              className="flex min-w-0 flex-1"
+            >
               {entries.map((entry) => {
                 const title = entry.currentAction.title || "Nova ação";
                 const partner = partners.find((candidate) =>
                   entry.currentAction.partners.includes(candidate.slug),
                 );
                 return (
-                  <Tab
+                  <PrismTab
                     id={entry.key}
                     key={entry.key}
-                    className="min-w-0 flex-1 cursor-pointer border-t-2 border-r border-t-transparent px-4 py-2 text-left outline-none last:border-r-0 data-[focus-visible]:bg-input data-[focus-visible]:ring-2 data-[focus-visible]:ring-ring data-[focus-visible]:ring-inset data-[selected]:border-t-primary data-[selected]:bg-primary/5"
+                    className="flex-col items-start gap-0 px-4 py-2 text-left"
                   >
                     <span
                       className="block truncate text-sm font-medium"
@@ -142,10 +143,10 @@ export function ActionDrawerPanel({
                         {partner.title}
                       </span>
                     )}
-                  </Tab>
+                  </PrismTab>
                 );
               })}
-            </TabList>
+            </PrismTabList>
           </div>
           <div className="flex min-h-0 flex-1 overflow-hidden">
             {entries.map((entry) => (
@@ -160,7 +161,7 @@ export function ActionDrawerPanel({
               />
             ))}
           </div>
-        </Tabs>
+        </PrismTabs>
       </div>
     </>
   );
@@ -175,45 +176,31 @@ interface ActionPanelSurfaceProps {
   sideBySide: boolean;
 }
 
-function ActionPanelSurface(props: ActionPanelSurfaceProps) {
-  const tabState = useContext(TabListStateContext);
-  // React Aria also traverses children while building its tab collection.
-  if (!tabState) return null;
-  return <ActionPanelSurfaceContent {...props} tabState={tabState} />;
-}
-
-function ActionPanelSurfaceContent({
+function ActionPanelSurface({
   entry,
   panels,
   partnerFilters,
   isActive,
   isSearchOpen,
   sideBySide,
-  tabState,
-}: ActionPanelSurfaceProps & { tabState: TabListRenderProps["state"] }) {
+}: ActionPanelSurfaceProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const { tabPanelProps } = useTabPanel({ id: entry.key }, tabState, ref);
-  const hidden = !sideBySide && !isActive;
   const activate = (target: EventTarget) => {
     if (!isActive && target instanceof Node && ref.current?.contains(target)) {
       panels.activateAction(entry.key);
     }
   };
   return (
-    <div
-      {...(sideBySide
-        ? {
-            role: "region",
-            "aria-label": entry.currentAction.title || "Nova ação",
-          }
-        : tabPanelProps)}
+    <PrismTabPanel
+      id={entry.key}
+      shouldForceMount
+      isAlwaysVisible={sideBySide}
+      aria-label={entry.currentAction.title || "Nova ação"}
       ref={ref}
-      hidden={hidden}
-      inert={hidden}
       data-action-surface={entry.key}
       className={cn(
         "@container/action min-h-0 overflow-hidden outline-none",
-        hidden ? "hidden" : "block",
+        "block",
         sideBySide
           ? entry.view === "instagram"
             ? "w-3xl shrink-0 border-r last:border-r-0"
@@ -230,7 +217,7 @@ function ActionPanelSurfaceContent({
         isActive={isActive}
         isSearchOpen={isSearchOpen}
       />
-    </div>
+    </PrismTabPanel>
   );
 }
 
@@ -285,7 +272,7 @@ function ActionPanelEntry({
       return;
     }
     const target = root.querySelector<HTMLElement>(
-      '[data-drawer-focus="title"] textarea, [data-drawer-navigation] button[aria-selected="true"]',
+      '[data-drawer-focus="title"] textarea, [data-drawer-navigation] [role="tab"][aria-selected="true"]',
     );
     if (target) {
       target.focus({ preventScroll: true });

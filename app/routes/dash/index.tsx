@@ -16,7 +16,13 @@ import { useState } from "react";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { ClientCalendar } from "~/components/client/ClientCalendar";
 import { InstagramFeedSection } from "~/components/features/InstagramFeedSection";
-import { PrismButton } from "~/components/prism";
+import {
+  PrismTabs,
+  PrismTabList,
+  PrismTab,
+  PrismTabPanel,
+  PrismButton,
+} from "~/components/prism";
 import { useQuery } from "@tanstack/react-query";
 import { useDashContext } from "~/contexts/DashContext";
 import { fetchDashActions, type DashActionDto } from "~/services/dash-client";
@@ -156,49 +162,43 @@ function DashHome() {
   return (
     <div className="flex min-h-0 w-full flex-1 overflow-hidden">
       {/* Mobile: abas */}
-      <div className="flex min-h-0 w-full flex-1 flex-col lg:hidden">
-        <div className="flex items-center justify-between border-b pr-2">
-          <div className="flex flex-1">
-            <button
-              className={`flex-1 border-b-2 py-3 text-sm font-medium transition-colors ${mobileTab === "calendar" ? "border-foreground" : "border-transparent text-muted-foreground"}`}
-              onClick={() => setMobileTab("calendar")}
-              type="button"
-            >
-              Calendário
-            </button>
-            <button
-              className={`flex-1 border-b-2 py-3 text-sm font-medium transition-colors ${mobileTab === "feed" ? "border-foreground" : "border-transparent text-muted-foreground"}`}
-              onClick={() => setMobileTab("feed")}
-              type="button"
-            >
-              Feed
-            </button>
-          </div>
-        </div>
+      <PrismTabs
+        selectedKey={mobileTab}
+        onSelectionChange={(key) => {
+          if (key === "calendar" || key === "feed") setMobileTab(key);
+        }}
+        className="min-h-0 w-full flex-1 lg:hidden"
+      >
+        <PrismTabList aria-label="Visualização do portal">
+          <PrismTab id="calendar">Calendário</PrismTab>
+          <PrismTab id="feed">Feed</PrismTab>
+        </PrismTabList>
 
         <div className="min-h-0 flex-1 overflow-hidden">
           {mobileTab === "calendar" ? (
-            <ClientCalendar
-              actions={calendarActions}
-              calendarView={calendarView}
-              currentDay={currentDay}
-              onActionClick={handleActionClick}
-              onNext={handleNext}
-              onPrev={handlePrev}
-              setCalendarView={setCalendarView}
-              view={calendarView}
-            />
+            <PrismTabPanel id="calendar" className="h-full">
+              <ClientCalendar
+                actions={calendarActions}
+                calendarView={calendarView}
+                currentDay={currentDay}
+                onActionClick={handleActionClick}
+                onNext={handleNext}
+                onPrev={handlePrev}
+                setCalendarView={setCalendarView}
+                view={calendarView}
+              />
+            </PrismTabPanel>
           ) : (
-            <div className="h-full w-full overflow-y-auto">
+            <PrismTabPanel id="feed" className="h-full w-full overflow-y-auto">
               <InstagramFeedSection
                 actions={feedActions}
                 currentPartner={currentPartner}
                 onActionClick={handleActionClick}
               />
-            </div>
+            </PrismTabPanel>
           )}
         </div>
-      </div>
+      </PrismTabs>
 
       {/* Desktop (lg+): calendário + feed lado a lado */}
       <div className="hidden min-h-0 flex-1 overflow-hidden lg:flex">

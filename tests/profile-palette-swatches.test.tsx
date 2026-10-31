@@ -1,6 +1,6 @@
 import "./dom-setup";
 import { afterEach, beforeEach, expect, it, mock } from "bun:test";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { act, cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppContext } from "~/contexts/AppContext";
@@ -116,5 +116,32 @@ it("selecting a palette previews it without writing until the manual save", asyn
   const option = within(group).getByRole("radio", { name: target.label });
   await userEvent.setup().click(option);
   expect(option.getAttribute("aria-checked")).toBe("true");
+  expect(writes).toBe(0);
+});
+
+it("uses real mobile section tabs while preference choices remain radios", async () => {
+  const mounted = renderProfile();
+  const tabs = screen.getByRole("tablist", { name: "Seção da conta" });
+  const personal = within(tabs).getByRole("tab", {
+    name: "Informações pessoais",
+  });
+  const preferences = within(tabs).getByRole("tab", { name: "Preferências" });
+  expect(preferences.getAttribute("aria-selected")).toBe("true");
+  const name =
+    mounted.container.querySelector<HTMLInputElement>('input[name="name"]');
+  if (!name) throw new Error("Personal section must stay mounted");
+  const original = name;
+  const user = userEvent.setup();
+  act(() => preferences.focus());
+  await user.keyboard("{ArrowLeft}");
+  expect(personal.getAttribute("aria-selected")).toBe("true");
+  await user.clear(name);
+  await user.type(name, "Draft preserved");
+  act(() => personal.focus());
+  await user.keyboard("{ArrowRight}");
+  expect(preferences.getAttribute("aria-selected")).toBe("true");
+  expect(mounted.container.querySelector('input[name="name"]')).toBe(original);
+  expect(name.value).toBe("Draft preserved");
+  expect(screen.getByRole("radiogroup", { name: "Tema do App" })).toBeTruthy();
   expect(writes).toBe(0);
 });

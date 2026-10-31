@@ -124,6 +124,10 @@ Use estados React Aria data-[hovered], data-[pressed], data-[focused] e data-[di
 
 `/ui` reúne tokens, componentes Prism e componentes Uzzina; novas seções ficam em app/components/ui-sections e são integradas à rota.
 
+`PrismTabs`/`PrismTabList`/`PrismTab`/`PrismTabPanel` unificam navegação entre painéis: seleção por linha inferior e foco por teclado na borda superior de2px. Preferências de valor continuam em ToggleGroup. Perfil mobile mantém ambos os painéis montados; desktop os expõe como regiões simultâneas. Gaveta, texto do Instagram e abas mobile do portal reutilizam o mesmo padrão. `shouldForceMount` preserva conteúdo oculto/inert; `isAlwaysVisible` mantém regiões lado a lado interativas. Contextos de abas são isolados dentro do painel para permitir abas aninhadas. A navegação Essencial/Instagram/Observações preserva todos os Tab stops do percurso local da gaveta, além das setas; menus do rodapé ficam fora da coleção de abas. Exemplo em `/ui`.
+
+Header global alinha logo/menu às bordas internas das linhas laterais do app, com margens responsivas e compensação da largura real da barra de rolagem do contêiner. Recebe a referência do scroller existente; alinhamento não altera o padding dos títulos/corpos de Hoje/Home.
+
 `PrismCommandItem` fornece `{ shiftKey }` ao `onAction`, capturado pelo `PrismCommand` antes da ativação React Aria. Parceiros, responsáveis, sprint e filtros múltiplos de fase/categoria usam esse modificador para seleção exclusiva com Shift+clique/Shift+Enter; não usar `window.event` para essa decisão.
 
 Comandos da busca: conta, light/dark/system, início/Hoje/notificações/leads/ajuda e Sair ficam abaixo dos resultados. Administração somente para person.admin, usando cadastros/listas existentes. Navegação por comando e Sair validam closeAllActions; bloqueio mantém busca/ações. Persistência de tema pertence ao wrapper montado e usa usePreferencePersistence com retry, sem alterar paleta.
