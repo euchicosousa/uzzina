@@ -1,6 +1,6 @@
 # 12: Fit date-picker calendars to the available mobile width
 
-**Status:** implemented and verified locally on2026-10-30 — normal/increased-text sizing and legibility corrected; awaiting owner-device acceptance. Original screenshot normal-text root cause is not claimed as reproduced. See [diagnosis and verification](../../../docs/audits/2026-10-30-calendar-picker-width.md).
+**Status:** completed — owner confirmed the device checks passed and authorized closure/commit on2026-10-31. Implementation in `ceafc6f`; publication remains separate.
 **Blocked by:** none for reproduction. Preserve ticket01 viewport behavior and the approved celebration calendar.
 
 ## Report and evidence
@@ -34,3 +34,7 @@ CalendarToolbar now bounds day/navigation squares to32px and reduces only its ca
 Owner requested verification/completion after accepting13/18/17. The final local CalendarToolbar correction uses bounded32–40px days matched to text size, width equal to seven cells,8px popover padding and a caption that wraps month/year with natural trigger height. A real200%-text failure (320px: scroll391/client256) went green (296/296), including numeric/caption text bounds; fonts are not reduced. Normal/125% remain green. Shared calendars/range/celebration36px are untouched.
 
 Clean final verification: WebKit45 fixture geometries plus keyboard/selection/focus/short-height; Chromium15 geometries plus the same behavior; real Today WebKit15 controlled-HTTP geometries. Format/lint/typecheck/build and calendar caption test passed. Two final screenshots visually inspected. Implementation complete locally; physical Safari/iPhone acceptance and publication remain separate and pending. See report for exact source behavior, historical evidence and limits.
+
+## Owner acceptance — 2026-10-31
+
+Calendar width, legibility, controls and selection were accepted by the owner after the short device-validation guide. Earlier reproduction limitations remain historical evidence and do not reopen the accepted delivery. No new code, test execution, SQL, push or deployment in this acceptance update.

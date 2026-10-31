@@ -1,5 +1,7 @@
 # Safari/mobile follow-up — approved tickets and open decisions
 
+Latest owner acceptance —2026-10-31:12 and15 passed the requested device checks and are closed; acceptance commit authorized.06 presentation is covered by accepted14, and08 is complete through its accepted colors,14 spacing and15 tabs.16 remains implemented in `6019a80`, without a new owner acceptance inferred from12/15. No push/deploy.
+
 Latest result —2026-10-31:14/19 accepted and committed as `53508d2`. Owner clarified top alignment means global logo/menu Header; initial Today-heading interpretation withdrawn, accepted page spacing preserved. Header correction and15 shared Prism tabs implemented locally, tests/checks passed; local commit authorized on2026-10-31; owner-device acceptance/publication pending.16/general style audit remain unstarted. [Integrated report](../../docs/audits/2026-10-31-shared-tabs.md). Earlier status paragraphs are historical.
 
 Prepared 2026-10-29 from the owner's Safari feedback and subsequent approval. Tickets are local planning artifacts, not external issues or implementation authorization. Existing external working-tree changes must be preserved.

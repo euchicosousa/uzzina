@@ -6,6 +6,14 @@ Produção confirmada Ready em29/10 no deploy `dpl_39Jnm4DEdyxyx24SEXtTpH92PZ6x`
 
 ## Pendências reais
 
+### Aceite e encerramento12/15 — 31/10
+
+Proprietário confirmou que ambos passaram o roteiro no aparelho e autorizou concluir/commitar.12 (seletor de data, código em `ceafc6f`) e15 (abas, código em `566cbbe`) encerrados; relatórios, tickets e índice atualizados.06 já estava resolvido pelo14 aprovado;08 fica integralmente coberto pelos aceites de cores,14 (espaçamento) e15 (abas), com cabeçalhos reconciliados. Aceites antigos preservados; não inferir novos testes ou aceite dos outros cinco ajustes a partir desta confirmação específica.
+
+Fila aberta de implementação/definição:07 diálogo/progresso das estratégias,09 geração persistente, análise geral de estilo e visualização de uso de IA (definições pendentes). Planejamento continua proposta de sete entregas. Implementados/commitados em `6019a80`, sem aceite novo nesta rodada:16, controles de mídia, identidade do parceiro na IA e foco de Hoje; título também corrigido/verificado nesse commit, sem ticket próprio.03 tem complementos13/17/18 aprovados, mas encerramento final ainda não registrado. Demais achados do inventário de teclado aguardam escolha.
+
+Portal já encerrado. Fora dos tickets: relato de acesso ao `/dash` segue para investigação; candidato de foco em data/hora em lote ainda estático, sem reprodução confirmada. Nenhum ticket novo. Publicação continua separada e não foi verificada novamente. Rodada exclusivamente documental: referências/diff conferidos, sem suites repetidas, código, banco/provedor/SQL, servidor, push ou deploy.
+
 ### Commit dos cinco ajustes e encerramento do portal — 31/10
 
 A pedido do proprietário, criado o commit local `6019a80`: título, mídia, rodapé16, identidade do parceiro na IA e foco de Hoje, incluindo regressões, contratos e relatórios. Mesma implementação já verificada:254 testes, matrizes delimitadas, format/lint/typecheck/build e7 PASS serverless. Nesta rodada somente preparação/conferência do commit e documentação de aceite; sem repetir suites sem mudança funcional. Sem push/deploy.

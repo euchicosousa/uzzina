@@ -1,6 +1,6 @@
 # 15: Unify panel tabs and distinguish them from preference pills
 
-**Status:** implemented locally on 2026-10-31 after owner authorization; final verification recorded in the report, physical-device acceptance/publication pending.
+**Status:** completed — owner confirmed the device checks passed and authorized closure/commit on2026-10-31. Implementation in `566cbbe`; portal already accepted separately; publication remains separate.
 **Priority:** normal.
 **Blocked by:** none for inventory. Agree the bounded shared presentation during execution before extending it to unrelated consumers.
 
@@ -25,3 +25,7 @@ Resolves the section-navigation remainder of08. Cross-app visual review tracks f
 ## Implementation
 
 Shared Prism tabs replace Profile section pills and unify action panels, action views, Instagram text sections and mobile portal views. Value selectors remain radios. Mounted forms, manual save, native validation, drawer keyboard loop and independent action identity are preserved. Primitive exported and demonstrated in /ui. Inventory, justified navigation exceptions, real regressions and verification limits: [report](../../../docs/audits/2026-10-31-shared-tabs.md). No new library, database change, push or deploy.
+
+## Owner acceptance — 2026-10-31
+
+Profile and action/Instagram tabs were accepted by the owner after the short device-validation guide, including visual selection/content and retained account draft. Portal acceptance was already recorded separately; no repeat portal check required. No new code, test execution, SQL, push or deployment in this acceptance update.

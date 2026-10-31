@@ -1,6 +1,6 @@
 # 06: Show a consistent responsive date in the dedicated Today heading
 
-**Status:** implemented-revision-requested — owner acknowledged selected-date behavior on 2026-10-30 but requested full date with one-line truncation and less mobile space; not published.
+**Status:** completed — selected-date behavior accepted previously; the presentation follow-up was delivered and owner-approved through ticket14 (`53508d2`). Publication remains separate.
 **Original proposal:** item 7. **Priority:** normal.
 **Blocked by:** none.
 

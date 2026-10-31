@@ -36,3 +36,7 @@ Owner must validate the appearance and native touch/keyboard behavior on iPhone.
 ## Commit preparation — 2026-10-31
 
 Owner authorized committing completed work. Fresh checks found an unsupported `exact` option in the tab-panel test query; replaced it with an anchored accessible-name regular expression, preserving the exact-name assertion. The two primitive tests pass again and typecheck passes. Format/lint/build and117 pertinent tests (112 drawer/panels/Header +5 primitive/Profile) passed in this round; the previously recorded controlled browser results remain unchanged. Physical-device acceptance and publication remain pending.
+
+## Owner acceptance — 2026-10-31
+
+Owner confirmed ticket15 passed the device checks and authorized closing/committing its acceptance. Implementation remains in `566cbbe`; portal was already accepted. No new execution or publication is inferred.

@@ -50,3 +50,7 @@ The clean final isolated server disables HMR: an intermediate run's geometry and
 Final verification: WebKit45 geometry cases (five widths ×100/125/200% ×three five/six-week months) plus keyboard/month/year/Escape/focus/short-height behavior; Chromium15 geometry cases (five widths ×three text sizes, September) plus the same behavior; complete Today route WebKit15 geometry cases (five widths ×three text sizes, controlled current date). All passed. Existing earlier normal/125% three-month coverage remains recorded above; no unrelated test suites were repeated. `bun test tests/prism-calendar.test.tsx`1pass; format/lint/typecheck/build passed, with only the previously recorded informational lint/build notices. Normal geometry: grid224px, popover240px;125%: grid245px, popover261px;200%: grid280px, popover296px. ClientWidth equals scrollWidth at each size.
 
 Implementation is complete for the tested source behavior. Remaining validation is the owner's physical iPhone/Safari acceptance and any eventual deployment; the screenshot's original normal-text cause is not retroactively attributed to the increased-text finding. No production/database/provider writes, paid AI, SQL, commit, push or deploy. Owner's5176 server/cache and external changes remain preserved. Isolated5190 and temporary launch/probe files are removed after verification.
+
+## Owner acceptance — 2026-10-31
+
+Owner confirmed ticket12 passed the device checks and authorized closing/committing its acceptance. Implementation remains in `ceafc6f`; no new execution or publication is inferred.

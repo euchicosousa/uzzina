@@ -1,6 +1,6 @@
 # 08: Show profile palette swatches and balance text-control spacing
 
-**Status:** implemented-partially-accepted — owner confirmed palette colors on 2026-10-30; mobile spacing and section-tab presentation require review; not published.
+**Status:** completed — colors accepted previously; spacing owner-approved through14 and section tabs through15 on2026-10-31. No remaining implementation/acceptance item in this scope; publication remains separate.
 **Original proposal:** item 8, explicitly approved in the latest owner feedback.
 **Priority:** normal.
 **Blocked by:** none for palette functionality; finalize visual spacing after ticket 10 establishes actual font metrics.

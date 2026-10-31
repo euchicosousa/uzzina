@@ -13,7 +13,7 @@
 - [ ] Validar os [cinco ajustes de31/10](docs/audits/CURRENT.md): título, mídia, rodapé, identidade na IA e foco de Hoje. Implementação commitada em `6019a80`; aceite no aparelho e publicação são etapas separadas.
 
 
-- [ ] [Correções do retorno mobile](.scratch/safari-mobile/README.md#correction-tickets-registered--2026-10-30):12/17 commitados em `ceafc6f`,13/18 em `4540ef6`;14/19 aceitos e commitados em `53508d2`. Header global e15 (abas compartilhadas) implementados/verificados e commitados em `566cbbe`; Header aprovado pelo proprietário em31/10, aceite visual de15 e publicação pendentes.16 rodapé implementado/verificado e commitado em `6019a80`; aceites anteriores preservados.
+- [ ] [Correções do retorno mobile](.scratch/safari-mobile/README.md#correction-tickets-registered--2026-10-30):12/17 commitados em `ceafc6f`,13/18 em `4540ef6`;14/19 aceitos e commitados em `53508d2`. Header global e15 (abas compartilhadas) implementados/verificados e commitados em `566cbbe`; Header,12 e15 aprovados pelo proprietário em31/10; publicação pendente.16 rodapé implementado/verificado e commitado em `6019a80`; aceites anteriores preservados.
 
 - [ ] [Análise geral de estilo e simplificação](.scratch/visual-consistency/issues/01-app-style-analysis-and-simplification.md): novo ticket para inventário visual/técnico, menos padrões de botões/controles, espaçamento responsivo e proposta de consolidação. Análise ainda não executada; não autoriza redesenho automático nem duplica os tickets de correção existentes.
 
