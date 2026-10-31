@@ -24,7 +24,11 @@ it("does not accept a successful HTTP response with invalid generated content", 
       ),
   ) as unknown as typeof fetch;
   await expect(
-    callAI({ intent: "ai-caption", category: "post" }),
+    callAI({
+      intent: "ai-caption",
+      category: "post",
+      partner_name: "Hospital Dr. Thomaz Corrêa",
+    }),
   ).rejects.toThrow("resposta válida");
 });
 it.each([401, 403, 429, 502, 503])(
@@ -38,7 +42,11 @@ it.each([401, 403, 429, 502, 503])(
         }),
     ) as unknown as typeof fetch;
     try {
-      await callAI({ intent: "ai-caption", category: "post" });
+      await callAI({
+        intent: "ai-caption",
+        category: "post",
+        partner_name: "Hospital Dr. Thomaz Corrêa",
+      });
       throw new Error("Expected rejection");
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
@@ -59,11 +67,19 @@ it("rejects no session and invalid input before network access", async () => {
   globalThis.fetch = send as unknown as typeof fetch;
   token = null;
   await expect(
-    callAI({ intent: "ai-caption", category: "post" }),
+    callAI({
+      intent: "ai-caption",
+      category: "post",
+      partner_name: "Hospital Dr. Thomaz Corrêa",
+    }),
   ).rejects.toThrow("sessão expirou");
-  await expect(callAI({ intent: "bad", category: "post" })).rejects.toThrow(
-    "campos inválidos",
-  );
+  await expect(
+    callAI({
+      intent: "bad",
+      category: "post",
+      partner_name: "Hospital Dr. Thomaz Corrêa",
+    }),
+  ).rejects.toThrow("campos inválidos");
   expect(send).not.toHaveBeenCalled();
 });
 it("preserves legitimate strategy fields and verifies the matching intent", async () => {
@@ -80,6 +96,7 @@ it("preserves legitimate strategy fields and verifies the matching intent", asyn
   const payload = {
     intent: "ai-content",
     category: "post",
+    partner_name: "Hospital Dr. Thomaz Corrêa",
     headline: "Headline",
     racional: "Racional",
     direcionamento: "Direção",
@@ -97,6 +114,7 @@ it("shows a connection error without replacing input", async () => {
   const payload = {
     intent: "ai-caption",
     category: "post",
+    partner_name: "Hospital Dr. Thomaz Corrêa",
     description: "Original",
   };
   await expect(callAI(payload)).rejects.toThrow("Verifique sua conexão");
@@ -113,6 +131,10 @@ it.each([
       }),
   ) as unknown as typeof fetch;
   await expect(
-    callAI({ intent: "ai-caption", category: "post" }),
+    callAI({
+      intent: "ai-caption",
+      category: "post",
+      partner_name: "Hospital Dr. Thomaz Corrêa",
+    }),
   ).rejects.toThrow(phrase);
 });

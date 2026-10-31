@@ -38,11 +38,13 @@ function SortableThumbnail({
   url,
   index,
   onRemove,
+  removeRef,
 }: {
   id: string;
   url: string;
   index: number;
   onRemove: () => void;
+  removeRef: (element: HTMLButtonElement | null) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
@@ -63,27 +65,30 @@ function SortableThumbnail({
       style={style}
       className="group relative aspect-square overflow-hidden rounded-lg border bg-muted"
     >
-      {/* Handle de drag */}
-      <div
+      <button
+        type="button"
         {...attributes}
         {...listeners}
-        className="absolute top-1 left-1 z-10 cursor-grab rounded bg-black/40 p-0.5 opacity-0 transition group-hover:opacity-100 active:cursor-grabbing"
+        aria-label={`Reordenar arquivo ${index + 1}`}
+        className="absolute top-1 left-1 z-10 flex size-8 cursor-grab touch-none items-center justify-center rounded bg-black/70 text-white outline-none focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing"
       >
-        <GripVerticalIcon className="size-3 text-white" />
-      </div>
+        <GripVerticalIcon className="size-4" />
+      </button>
 
       {/* Número de ordem */}
-      <div className="absolute top-1 right-6 z-10 rounded bg-black/40 px-1 text-[9px] font-bold text-white opacity-0 group-hover:opacity-100">
+      <div className="absolute bottom-1 left-1 z-10 rounded bg-black/70 px-1 text-xs font-bold text-white">
         {index + 1}
       </div>
 
       {/* Remover */}
       <button
+        ref={removeRef}
         type="button"
+        aria-label={`Remover arquivo ${index + 1}`}
         onClick={onRemove}
-        className="absolute top-1 right-1 z-10 hidden size-4 items-center justify-center rounded-full bg-destructive text-white group-hover:flex"
+        className="absolute top-1 right-1 z-10 flex size-8 items-center justify-center rounded bg-destructive text-white outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <XIcon className="size-2.5" />
+        <XIcon className="size-4" />
       </button>
 
       {/* Preview */}
@@ -131,11 +136,27 @@ export function ContentReorderDialog({
   useEffect(() => {
     if (!open) {
       setItems(files.map((url, i) => ({ id: `${url}-${i}`, url })));
+      setDragging(false);
     }
   }, [files, open]);
 
   const itemsRef = useRef(items);
   itemsRef.current = items;
+  const removeRefs = useRef(new Map<string, HTMLButtonElement>());
+  const addRef = useRef<HTMLDivElement>(null);
+  const pendingFocus = useRef<string | null>(null);
+  const [dragging, setDragging] = useState(false);
+
+  useEffect(() => {
+    const target = pendingFocus.current;
+    if (target === null) return;
+    pendingFocus.current = null;
+    const nextItem = items.find((item) => item.id === target);
+    const button =
+      (nextItem && removeRefs.current.get(nextItem.id)) ??
+      addRef.current?.querySelector("button");
+    button?.focus();
+  }, [items]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -145,23 +166,28 @@ export function ContentReorderDialog({
   );
 
   function handleDragEnd(event: DragEndEvent) {
+    setDragging(false);
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    setItems((prev) => {
-      const oldIndex = prev.findIndex((i) => i.id === active.id);
-      const newIndex = prev.findIndex((i) => i.id === over.id);
-      const next = arrayMove(prev, oldIndex, newIndex);
-      onChange(next.map((i) => i.url));
-      return next;
-    });
+    const previous = itemsRef.current;
+    const oldIndex = previous.findIndex((item) => item.id === active.id);
+    const newIndex = previous.findIndex((item) => item.id === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+    const next = arrayMove(previous, oldIndex, newIndex);
+    itemsRef.current = next;
+    setItems(next);
+    onChange(next.map((item) => item.url));
   }
 
   function handleRemove(id: string) {
-    setItems((prev) => {
-      const next = prev.filter((i) => i.id !== id);
-      onChange(next.map((i) => i.url));
-      return next;
-    });
+    const previous = itemsRef.current;
+    const index = previous.findIndex((item) => item.id === id);
+    if (index < 0) return;
+    const next = previous.filter((item) => item.id !== id);
+    pendingFocus.current = next[Math.min(index, next.length - 1)]?.id ?? "";
+    itemsRef.current = next;
+    setItems(next);
+    onChange(next.map((item) => item.url));
   }
 
   function handleAdd(
@@ -200,7 +226,11 @@ export function ContentReorderDialog({
   const postType = detectPostType(items.map((i) => i.url));
 
   return (
-    <PrismDialog isOpen={open} onOpenChange={onOpenChange}>
+    <PrismDialog
+      isOpen={open}
+      onOpenChange={onOpenChange}
+      isKeyboardDismissDisabled={dragging}
+    >
       <PrismDialogHeader className="border-b">
         <PrismDialogTitle className="flex items-center gap-2">
           <SlidersHorizontalIcon />
@@ -247,12 +277,14 @@ export function ContentReorderDialog({
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
+          onDragStart={() => setDragging(true)}
+          onDragCancel={() => setDragging(false)}
         >
           <SortableContext
             items={items.map((i) => i.id)}
             strategy={rectSortingStrategy}
           >
-            <div className="grid grid-cols-4 gap-2 px-5 py-3">
+            <div className="grid grid-cols-3 gap-2 px-5 py-3 sm:grid-cols-4">
               {items.map((item, index) => (
                 <SortableThumbnail
                   key={item.id}
@@ -260,6 +292,10 @@ export function ContentReorderDialog({
                   url={item.url}
                   index={index}
                   onRemove={() => handleRemove(item.id)}
+                  removeRef={(element) => {
+                    if (element) removeRefs.current.set(item.id, element);
+                    else removeRefs.current.delete(item.id);
+                  }}
                 />
               ))}
             </div>
@@ -269,7 +305,7 @@ export function ContentReorderDialog({
 
       {/* Toolbar inferior */}
       <div className="flex items-center justify-between border-t px-5 py-3">
-        <div className="flex items-center gap-2">
+        <div ref={addRef} className="flex items-center gap-2">
           <CloudinaryUpload
             cloudName={cloudName}
             uploadPreset={uploadPreset}
@@ -287,6 +323,8 @@ export function ContentReorderDialog({
               variant="destructive"
               size="xs"
               onClick={() => {
+                pendingFocus.current = "";
+                itemsRef.current = [];
                 setItems([]);
                 onChange([]);
               }}

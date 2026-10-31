@@ -139,7 +139,7 @@ export function ViewOptionsSection() {
             <GalleryItem label="5. Modo Form-Link (variant='form-link')">
               <CategoriesDemoSingle triggerVariant="form-link" />
             </GalleryItem>
-            <GalleryItem label="6. Modo Form-Footer (variant='form-footer')">
+            <GalleryItem label="6. Rodapé — botão padrão ghost, 48px (variant='form-footer')">
               <div className="max-w-md rounded-2xl border bg-card/80 p-2 squircle">
                 <CategoriesDemoSingle triggerVariant="form-footer" />
               </div>

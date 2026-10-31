@@ -84,6 +84,7 @@ function SinglePhaseTrigger({
   iconVariant,
   currentPhase,
   disabled,
+  triggerVariant,
   ...props
 }: {
   tabIndex?: number;
@@ -93,6 +94,7 @@ function SinglePhaseTrigger({
   iconVariant?: "progress" | "icon";
   currentPhase: PHASE_TYPE;
   disabled?: boolean;
+  triggerVariant: "form-inline" | "form-footer";
 }) {
   return (
     <ComboboxTrigger
@@ -104,7 +106,7 @@ function SinglePhaseTrigger({
       size={size}
       tabIndex={tabIndex}
       title={`Fase: ${currentPhase?.title}`}
-      variant="form-inline"
+      variant={triggerVariant}
       {...props}
     >
       {!showText ? (
@@ -138,6 +140,7 @@ export function PhaseCombobox({
   iconVariant = "progress",
   size = "lg",
   disabled = false,
+  triggerVariant = "form-inline",
 }: {
   selectedPhase?: string | null;
   selectedPhases?: string[];
@@ -149,6 +152,7 @@ export function PhaseCombobox({
   iconVariant?: "progress" | "icon";
   size?: "sm" | "lg";
   disabled?: boolean;
+  triggerVariant?: "form-inline" | "form-footer";
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const PHASES_LIST = Object.values(PHASES);
@@ -219,6 +223,7 @@ export function PhaseCombobox({
           showText={showText}
           size={size}
           tabIndex={tabIndex}
+          triggerVariant={triggerVariant}
         />
       )}
       <PrismPopover className="w-56 p-0">

@@ -1,6 +1,6 @@
 # 16: Use existing app button frames throughout the action footer
 
-**Status:** prepared — owner agreed to this correction direction and requested tickets on 2026-10-30; not implemented.
+**Status:** implemented locally on2026-10-31 — existing Prism button frames reused; focused tests/browser verification recorded in the [report](../../../docs/audits/2026-10-31-footer-controls.md). Physical-device acceptance/publication pending.
 **Priority:** normal.
 **Blocked by:** none; coordinate ticket13 scroll behavior and the general style inventory.
 

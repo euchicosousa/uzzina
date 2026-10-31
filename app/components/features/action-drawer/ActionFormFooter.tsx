@@ -184,6 +184,7 @@ export function ActionFormFooter({
         {/* Fases Phase Combobox */}
         <div className="shrink-0" data-drawer-focus="control">
           <PhaseCombobox
+            triggerVariant="form-footer"
             iconVariant="progress"
             onSelect={async (selected) => {
               const phaseValue =
@@ -210,6 +211,7 @@ export function ActionFormFooter({
         {/* Categorias Categories Combobox */}
         <div className="shrink-0" data-drawer-focus="control">
           <CategoriesCombobox
+            triggerVariant="form-footer"
             onSelect={async ({ category }) => {
               setRawAction({
                 ...RawAction,

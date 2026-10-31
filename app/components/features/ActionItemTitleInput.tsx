@@ -7,7 +7,6 @@ export function ActionItemTitleInput({
   setIsEditing,
   className,
   InputButtonClassName,
-  lines = 1,
   onBlur,
 }: {
   title: string;
@@ -16,7 +15,6 @@ export function ActionItemTitleInput({
   setIsEditing: (value: boolean) => void;
   className?: string;
   InputButtonClassName?: string;
-  lines?: 1 | 2;
   onBlur?: (title: string) => void;
 }) {
   const [overrideTitle, setOverrideTitle] = useState<string | null>(null);
@@ -40,7 +38,7 @@ export function ActionItemTitleInput({
           ref={inputRef}
           aria-label="Editar título da ação"
           className={cn(
-            "w-full text-base outline-none md:text-[length:inherit]",
+            "w-full text-[length:inherit] leading-[inherit] outline-none",
             InputButtonClassName,
           )}
           onBlur={() => {
@@ -69,10 +67,7 @@ export function ActionItemTitleInput({
       ) : (
         <button
           className={cn(
-            "w-full cursor-text text-left",
-            lines === 1
-              ? "overflow-hidden text-ellipsis whitespace-nowrap"
-              : "line-clamp-2",
+            "w-full cursor-text overflow-hidden text-left text-ellipsis whitespace-nowrap",
             isDragging ? "cursor-grabbing" : "",
             InputButtonClassName,
           )}

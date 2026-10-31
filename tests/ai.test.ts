@@ -3,6 +3,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import handler from "../api/ai";
 
 let calls = 0;
+let providerMessages: { role: string; content: string }[] = [];
 let rpcCalls = 0;
 let eventOrder: string[] = [];
 let lastClientKey: string | undefined;
@@ -90,7 +91,10 @@ mock.module("openai", () => ({
   default: class {
     chat = {
       completions: {
-        create: async () => {
+        create: async (request: {
+          messages: { role: string; content: string }[];
+        }) => {
+          providerMessages = request.messages;
           calls++;
           eventOrder.push("openai");
           if (failUpstream) throw new Error("secret provider failure");
@@ -103,6 +107,7 @@ mock.module("openai", () => ({
 
 beforeEach(() => {
   calls = 0;
+  providerMessages = [];
   rpcCalls = 0;
   eventOrder = [];
   lastClientKey = undefined;
@@ -137,7 +142,12 @@ afterEach(() => {
   }
 });
 
-const payload = { intent: "ai-caption", category: "post", title: "Tema" };
+const payload = {
+  intent: "ai-caption",
+  category: "post",
+  title: "Tema",
+  partner_name: "Hospital Dr. Thomaz Corrêa",
+};
 
 async function request(
   body: unknown = payload,
@@ -204,11 +214,44 @@ it.each(["ai-strategy", "ai-hooks", "ai-content", "ai-caption"])(
           : JSON.stringify({
               strategies: Array.from({ length: 5 }, () => strategy),
             });
-    const response = await request({ ...payload, intent });
+    const response = await request({
+      ...payload,
+      intent,
+      partner_context: "O hospital tem mais de70 anos.",
+    });
     expect(response.status).toBe(200);
     expect(calls).toBe(1);
+    const system = providerMessages.find(
+      (message) => message.role === "system",
+    );
+    expect(system?.content).toContain('"Hospital Dr. Thomaz Corrêa"');
+    expect(system?.content).not.toContain("Agência CNVT");
   },
 );
+
+it.each([undefined, null, "", "  ", 42, {}, "a".repeat(501)])(
+  "rejects an invalid partner identity before quota or provider calls: %j",
+  async (partner_name) => {
+    expect((await request({ ...payload, partner_name })).status).toBe(400);
+    expect(rpcCalls).toBe(0);
+    expect(calls).toBe(0);
+  },
+);
+
+it("preserves CNVT as a legitimate publishing partner and briefing mention", async () => {
+  const response = await request({
+    ...payload,
+    partner_name: "Agência CNVT",
+    description: "Agradeça à Agência CNVT pela parceria.",
+  });
+  expect(response.status).toBe(200);
+  expect(
+    providerMessages.find((message) => message.role === "system")?.content,
+  ).toContain('"Agência CNVT"');
+  expect(
+    providerMessages.find((message) => message.role === "user")?.content,
+  ).toContain("Agradeça à Agência CNVT pela parceria.");
+});
 
 for (const [index, body] of [
   null,

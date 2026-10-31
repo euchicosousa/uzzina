@@ -87,7 +87,7 @@ export function ActionColorDropdown({
       <ComboboxTrigger
         aria-label="Abrir seletor de cores"
         title="Cor da Ação"
-        variant="form-inline"
+        variant="form-footer"
       >
         <div
           className="size-5 rounded-full border border-black/5"

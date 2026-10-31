@@ -74,9 +74,6 @@ type ActionItemProps = {
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
   /** Optional click handler override */
   onClick?: (action: Action) => void;
-  /** Whether to wrap the item with a hover card detailing the action */
-  /** Max lines for the title layout in certain variants */
-  lines?: 1 | 2;
 };
 
 /**
@@ -96,7 +93,6 @@ export function ActionItem({
   displayFlags = DEFAULT_DISPLAY_FLAGS,
   dateTimeDisplay,
   onClick,
-  lines = 1,
 }: ActionItemProps) {
   const {
     showLate = false,
@@ -282,7 +278,6 @@ export function ActionItem({
         handleAction={handleAction}
         handleSetIsEditing={handleSetIsEditing}
         isEditing={isEditing}
-        lines={lines}
         showCategory={showCategory}
         showPartner={showPartner}
         showPriority={showPriority}

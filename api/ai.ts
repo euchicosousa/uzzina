@@ -92,12 +92,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       intent,
       title,
       description,
+      partner_name,
       partner_context,
       category,
       racional,
       headline,
       direcionamento,
     } = parsed.data;
+    const publisherIdentity = `A marca que publica este conteúdo é ${JSON.stringify(partner_name)}. Escreva na voz dessa marca, como autora da publicação. A agência operadora não é a autora por padrão. Preserve menções legítimas a outras marcas quando solicitadas nos insumos; não substitua nem apague essas menções.`;
 
     const clientKey = localCompatibility
       ? (publicKey as string)
@@ -190,7 +192,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         messages: [
           {
             role: "system",
-            content: `Você é o Estrategista de Conteúdo da Agência CNVT.
+            content: `Você é o Estrategista de Conteúdo da marca informada.
+${publisherIdentity}
 Gere exatamente 5 estratégias para a ação no formato ${formattedCategory}. Cada estratégia tem duas partes que não se confundem:
 - a TESE: o que a peça vai sustentar, a conclusão a que o público chega no fim;
 - a HEADLINE: a abertura que faz a pessoa certa parar e querer ver o resto.
@@ -241,7 +244,8 @@ Mantenha cada campo com no máximo 1800 caracteres, para permitir seu uso na pr�
       return res.status(200).json(aiResultSchema.parse({ output, intent }));
     }
     if (intent === "ai-content") {
-      const systemPrompt = `Você é o Redator-Chefe e Especialista de Conteúdo da Agência CNVT.
+      const systemPrompt = `Você é o Redator-Chefe e Especialista de Conteúdo da marca informada.
+${publisherIdentity}
 Sua missão é gerar a resposta exclusivamente em HTML limpo e básico.
 
 REGRAS DE FORMATAÇÃO:
@@ -338,7 +342,8 @@ Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
         messages: [
           {
             role: "system",
-            content: `Você cria hooks para a Agência CNVT. Gere exatamente 5 aberturas para a direção recebida, em 2 ou 3 rotas de atenção. Preserve a estratégia e o pedido; não escreva a peça completa.
+            content: `Você cria hooks para a marca informada. ${publisherIdentity}
+Gere exatamente 5 aberturas para a direção recebida, em 2 ou 3 rotas de atenção. Preserve a estratégia e o pedido; não escreva a peça completa.
 Escolha os mecanismos pelo que a pessoa precisa perceber: reconhecimento, curiosidade, contraste, consequência, utilidade específica, identidade ou prova/demonstração. Use a rota principal sugerida pelo briefing e alternativas fundamentadas. As opções devem variar em mecanismo ou construção, não ser paráfrases; use no máximo duas da mesma família de construção.
 Cada abertura deve ser clara de primeira, específica deste público e natural na voz da marca. A promessa deve caber na entrega planejada ou no corpo fornecido. Não invente comportamentos, fatos, estatísticas, casos, resultados ou tendências. Sem corpo pronto, não alegue ter conferido uma entrega que ainda não existe.
 Adapte ao formato informado: Reel combina fala, texto de tela e primeira imagem sem repetição; carrossel combina capa e visual legíveis em miniatura; estático relaciona frase e imagem; Stories abre a sequência com uma cena ou unidade clara. Sem formato definido, não presuma um.
@@ -365,8 +370,7 @@ Retorne somente JSON com "strategies": exatamente 5 objetos, cada um com apenas 
         messages: [
           {
             role: "system",
-            content:
-              "Você escreve legendas para a Agência CNVT. Preserve o pedido, a tese, a abertura e a direção do conteúdo fornecido, na voz da marca e em português brasileiro natural. A primeira linha deve dar um motivo específico para continuar; o restante desenvolve a ideia sem repetir mecanicamente o conteúdo. Não invente fatos, dados, depoimentos, hábitos do público ou condições comerciais. Respeite a conversão indicada: OFF sem oferta; ASSISTIDA com a ponte prevista; DIRETA com a oferta fornecida. Sem indicação de venda, não acrescente chamada comercial. Retorne somente JSON com a propriedade 'caption', contendo o texto final não vazio da legenda, sem diagnóstico nem comentários externos.",
+            content: `Você escreve legendas para a marca informada. ${publisherIdentity} Preserve o pedido, a tese, a abertura e a direção do conteúdo fornecido, na voz da marca e em português brasileiro natural. A primeira linha deve dar um motivo específico para continuar; o restante desenvolve a ideia sem repetir mecanicamente o conteúdo. Não invente fatos, dados, depoimentos, hábitos do público ou condições comerciais. Respeite a conversão indicada: OFF sem oferta; ASSISTIDA com a ponte prevista; DIRETA com a oferta fornecida. Sem indicação de venda, não acrescente chamada comercial. Retorne somente JSON com a propriedade 'caption', contendo o texto final não vazio da legenda, sem diagnóstico nem comentários externos.`,
           },
           {
             role: "user",

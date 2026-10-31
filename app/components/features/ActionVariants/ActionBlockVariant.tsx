@@ -17,7 +17,6 @@ export function ActionBlockVariant({
   showPartner,
   isEditing,
   handleSetIsEditing,
-  lines,
   dateTimeDisplay,
   handleAction,
 }: ActionVariantRendererProps) {
@@ -26,7 +25,6 @@ export function ActionBlockVariant({
       <ActionItemTitleInput
         className="pb-2 text-2xl leading-tight font-medium"
         isEditing={isEditing}
-        lines={lines}
         onBlur={(title) => {
           handleAction({
             intent: INTENT.update_action,

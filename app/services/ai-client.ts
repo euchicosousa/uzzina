@@ -9,7 +9,7 @@ import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 export type AIPayload = Omit<ValidAIPayload, "intent"> & { intent: string };
 export type { AIResult };
 const messages: Record<number, string> = {
-  400: "A solicitação de IA contém campos inválidos ou grandes demais. Revise o título, as descrições e a estratégia.",
+  400: "A solicitação de IA contém campos inválidos ou grandes demais. Revise o parceiro, o título, as descrições e a estratégia.",
   401: "Sua sessão expirou. Entre novamente para usar a IA.",
   403: "Seu acesso à IA está desativado. Fale com o administrador.",
   413: "A solicitação de IA excede 64 KB. Reduza as descrições e o contexto do parceiro.",

@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately). Independente dos tickets de Safari, geração em segundo plano, Planejamento e uso de IA. Coordenar arquivos compartilhados com um executor por vez, sem criar dependência funcional artificial.
 
-**Status:** ready-for-agent — owner authorized ticket creation 2026-10-29; implementation not started
+**Status:** implemented locally on 2026-10-31 after owner authorization;75 focused tests pass, final integrated code/runtime checks delegated to coordinator; no real provider generation or publication.
 
 ## Origem e evidência
 
@@ -40,3 +40,9 @@ Uma entrega vertical: seleção atual do parceiro → identidade explícita no p
 ## Limites
 
 Não alterar schema, permissões, dados existentes, política de duplicação ou estratégia editorial por proximidade. Não depende de novo fluxo para preencher contexto, de revisão de qualidade de todos os prompts ou de novos controles na interface. Preparar o ticket não inicia implementação, commit, push ou deploy.
+
+## Local implementation — 2026-10-31
+
+`partner_name` is required and bounded in the shared input contract. The real hook uses the first current partner in the existing action order, prevents custom strategy fields from replacing identity, and rejects missing/blank/oversized names before sending. The four API prompts identify that publisher explicitly instead of imposing agency authorship; legitimate CNVT publishing/mentions and existing editorial instructions remain. Name and caption tail are captured together for the request.
+
+Real hook/API/client regressions passed (75 tests/210 expectations) after a red run confirmed missing/overridden identity and rejection by the old schema. Validation covers short/empty context, four intents, changed partner/reopening, independent mounted actions, paired request/footer, legitimate CNVT and invalid identity before quota/provider. Full browser duplication→partner change→save→close→reopen was not exercised; hook rerender/reopening and API boundary tests are the evidence. See [report](../../../docs/audits/2026-10-31-ai-partner-identity.md). Final format/lint/typecheck/build/serverless checks belong to the coordinator. No real Supabase/provider writes, paid generation, SQL, commit, push or deployment.

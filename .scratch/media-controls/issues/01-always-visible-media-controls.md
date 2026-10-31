@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately). Independente dos tickets de Safari, Planejamento e uso de IA. A entrega mobile de Instagram prepara a área que abre o gerenciador; esta tarefa atua nos controles internos. Coordenar alterações compartilhadas, com um executor por vez no checkout, sem inventar dependência funcional.
 
-**Status:** ready-for-agent — owner authorized ticket preparation 2026-10-29; implementation not started
+**Status:** implemented locally on2026-10-31 — controlled browser and real drawer regression passed; physical-device acceptance/publication pending. See [result](../../../docs/audits/2026-10-31-media-controls.md).
 
 ## Decisão e origem
 

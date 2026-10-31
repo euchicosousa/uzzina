@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { INTENT } from "~/lib/CONSTANTS";
 import { callAI, type AIPayload } from "~/services/ai-client";
@@ -43,10 +43,6 @@ export function useActionAI({
   const [isAIProcessing, setIsAIProcessing] = useState(false);
   const aiProcessingRef = useRef(false);
   const [activeAIIntent, setActiveAIIntent] = useState<string | null>(null);
-  const captionTailRef = useRef(currentPartners[0]?.instagram_caption_tail);
-  useEffect(() => {
-    captionTailRef.current = currentPartners[0]?.instagram_caption_tail;
-  }, [currentPartners]);
 
   const triggerAIAction = async (
     intent: string,
@@ -57,15 +53,25 @@ export function useActionAI({
     setIsAIProcessing(true);
     setActiveAIIntent(intent);
     try {
+      const partner = currentPartners[0];
+      const partnerName = partner?.title.trim();
+      if (!partner || !partnerName || partnerName.length > 500) {
+        throw new Error(
+          "Selecione um parceiro com nome válido antes de gerar conteúdo com IA. Seu texto foi mantido.",
+        );
+      }
+      const captionTail = partner.instagram_caption_tail;
       const aiPayload: AIPayload = {
         intent,
         title: action.title || "",
         description: `DESCRIÇÃO: ${descriptionRef.current} DESCRIÇÃO DO CONTEÚDO: ${contentDescriptionRef.current}`,
-        partner_context: `${currentPartners[0]?.context || ""} — ${action.category || ""}`,
+        partner_name: partnerName,
+        partner_context: `${partner.context || ""} — ${action.category || ""}`,
         category: action.category || "",
       };
       if (customPayload) {
         for (const [key, val] of Object.entries(customPayload)) {
+          if (key === "partner_name") continue;
           if (val !== null && val !== undefined) {
             (aiPayload as unknown as Record<string, string>)[key] = String(val);
           }
@@ -73,7 +79,6 @@ export function useActionAI({
       }
       const data = await callAI(aiPayload);
       if (data?.output) {
-        const captionTail = captionTailRef.current;
         if (intent === INTENT.ai_strategy) {
           const newStrategies = parseStrategies(data.output);
           // Set strategies in local state FIRST

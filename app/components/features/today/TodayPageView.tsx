@@ -84,8 +84,11 @@ export function TodayPageView({
           key={`${view}-${currentDay.getTime()}`}
           role="region"
           aria-label="Ações do dia"
-          tabIndex={0}
-          className="min-h-0 flex-1 overflow-y-auto px-3 pt-4 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset lg:px-8 lg:pt-6 xl:px-16"
+          tabIndex={-1}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) event.preventDefault();
+          }}
+          className="min-h-0 flex-1 overflow-y-auto px-3 pt-4 lg:px-8 lg:pt-6 xl:px-16"
         >
           <TodayBoard
             view={view}

@@ -77,7 +77,8 @@ function CategoryColumn({
         </div>
 
         <PrismButton
-          className="opacity-0 group-hover/column:opacity-100"
+          aria-label={`Criar ação em ${category.title}`}
+          className="opacity-0 group-hover/column:opacity-100 data-[focused]:opacity-100"
           onClick={() =>
             setPrimaryAction(
               createActionDraft({

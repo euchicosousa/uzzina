@@ -6,6 +6,7 @@ export const aiInputSchema = z
     category: z.string().trim().min(1).max(100),
     title: z.string().max(500).default(""),
     description: z.string().max(10000).default(""),
+    partner_name: z.string().trim().min(1).max(500),
     partner_context: z.string().max(10000).default(""),
     racional: z.string().max(2000).default(""),
     headline: z.string().max(2000).default(""),

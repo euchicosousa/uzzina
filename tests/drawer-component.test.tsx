@@ -2142,6 +2142,46 @@ describe("phone-width action panel", () => {
     expect(writes).toEqual([]);
   });
 
+  it("media removal keeps duplicate occurrences distinct and saves through the real drawer", async () => {
+    const last = IMAGE.replace("post", "last");
+    const scroller = await openInstagram({
+      content_files: [IMAGE, IMAGE, last],
+    });
+    const user = userEvent.setup();
+    const manage = within(scroller).getByRole("button", { name: "Gerenciar" });
+    await user.click(manage);
+    const dialog = await screen.findByRole("dialog", {
+      name: /Gerenciar conteúdo/,
+    });
+    await user.click(
+      within(dialog).getByRole("button", { name: "Remover arquivo 2" }),
+    );
+    expect(document.activeElement).toBe(
+      within(dialog).getByRole("button", { name: "Remover arquivo 2" }),
+    );
+    await user.click(within(dialog).getByRole("button", { name: "Concluir" }));
+    await waitFor(() =>
+      expect(writes.at(-1)?.content_files).toEqual([IMAGE, last]),
+    );
+    await user.click(manage);
+    const reopened = await screen.findByRole("dialog", {
+      name: /Gerenciar conteúdo/,
+    });
+    expect(
+      within(reopened).getAllByRole("button", { name: /^Remover arquivo/ }),
+    ).toHaveLength(2);
+    await user.click(
+      within(reopened).getByRole("button", { name: "Remover arquivo 2" }),
+    );
+    await user.click(
+      within(reopened).getByRole("button", { name: "Remover arquivo 1" }),
+    );
+    expect(document.activeElement).toBe(
+      within(reopened).getByRole("button", { name: /^Adicionar$/ }),
+    );
+    await waitFor(() => expect(writes.at(-1)?.content_files).toEqual([]));
+  });
+
   it("the upload control stays the same mounted widget while files arrive", async () => {
     let deliver: ((error: unknown, result: unknown) => void) | null = null;
     let destroyed = 0;

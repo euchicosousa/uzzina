@@ -136,7 +136,7 @@ const { FileFsRef } = require("@vercel/build-utils");
           const response = {setHeader() {return this;}, status(code) {this.code = code; return this;},
             json(body) {this.body = body; return this;}};
           await handler({method: 'POST', headers: {authorization: 'Bearer ' + data.session.access_token},
-            body: {intent: 'ai-caption', category: 'post', title: 'Teste técnico de legenda',
+            body: {intent: 'ai-caption', category: 'post', partner_name: 'Marca fictícia de teste', title: 'Teste técnico de legenda',
               description: 'Escreva uma legenda fictícia de duas palavras: Teste concluído.',
               partner_context: 'Marca fictícia de teste.'}}, response);
           assert.equal(response.code, 200, JSON.stringify(response.body));

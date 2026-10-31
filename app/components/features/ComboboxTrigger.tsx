@@ -21,6 +21,8 @@ export function ComboboxTrigger({
   className,
   children,
   type = "button",
+  disabled,
+  isDisabled,
   ...props
 }: ComboboxTriggerProps) {
   return (
@@ -47,10 +49,14 @@ export function ComboboxTrigger({
         variant === "form-link" &&
           "cursor-pointer rounded-md underline-offset-4 hover:underline data-[focus-visible]:underline",
         variant === "form-footer" &&
-          "flex w-full items-center gap-2 overflow-hidden px-6 py-5.5 text-sm hover:bg-secondary focus:bg-secondary/50",
+          cn(
+            buttonVariants({ variant: "ghost", size: "icon" }),
+            "w-auto min-w-12 gap-2 overflow-hidden px-2",
+          ),
         className,
       )}
       type={type}
+      isDisabled={disabled || isDisabled}
       {...props}
     >
       {children}

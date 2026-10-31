@@ -19,7 +19,6 @@ export interface ActionVariantRendererProps {
   showPriority?: boolean;
   isEditing: boolean;
   handleSetIsEditing: (val: boolean) => void;
-  lines: 1 | 2 | undefined;
   dateTimeDisplay:
     (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY] | undefined;
   handleAction: (

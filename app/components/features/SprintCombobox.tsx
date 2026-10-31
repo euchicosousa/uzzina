@@ -1,7 +1,6 @@
 import { useAppContext } from "~/contexts/AppContext";
 import { ZapIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { cn } from "cnfast";
 import { useState } from "react";
 import {
   PrismCommand,
@@ -19,7 +18,6 @@ import { fetchPeople } from "~/lib/supabase.queries";
 import type { Partner, Person } from "~/types";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
 import { ComboboxTrigger } from "./ComboboxTrigger";
-import { buttonVariants } from "../prism/button";
 interface SprintComboboxProps {
   selectedSprints: string[];
   responsibles: string[];
@@ -95,19 +93,12 @@ export function SprintCombobox({
     >
       <ComboboxTrigger
         aria-label="Sprints"
-        className={cn(
-          size === "lg" &&
-            cn(
-              buttonVariants({ variant: "ghost", size: "icon" }),
-              "p-0 data-[focus-visible]:bg-transparent",
-            ),
-          className,
-        )}
+        className={className}
         disabled={disabled}
         size={size}
         tabIndex={tabIndex}
         title="Sprints"
-        variant="form-inline"
+        variant={size === "lg" ? "form-footer" : "form-inline"}
       >
         {selectedSprints.length > 0 ? (
           <UAvatarGroup

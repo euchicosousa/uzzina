@@ -6,6 +6,18 @@ Produção confirmada Ready em29/10 no deploy `dpl_39Jnm4DEdyxyx24SEXtTpH92PZ6x`
 
 ## Pendências reais
 
+### Cinco ajustes implementados localmente — 31/10
+
+Autorizados pelo proprietário com subagentes e economia de contexto, executados com um único escritor por vez. Título, mídia e16 pelo executor de interface; identidade na IA por outro executor; Hoje preparado por subagente e concluído pelo coordenador após o limite de uso. Sem iniciar os demais itens ou investigar `/dash` nesta entrega.
+
+- [Título inline](2026-10-30-inline-title-height-diagnosis.md): fonte/altura de linha herdadas em todos os breakpoints;28 cenários passaram, incluindo as duas regressões do Bloco móvel. Remoção anterior de duas linhas preservada; a pendência antiga do título fica superada.
+- [Mídia](2026-10-31-media-controls.md): controles sempre visíveis, nomes/alvos, ordem por ocorrência, foco após remover e Escape do arraste.29 grupos Chromium e integração real da gaveta passaram.
+- [Rodapé16](2026-10-31-footer-controls.md): frame Prism48px com largura natural para conteúdo, sem nova variante; corrigido disabled→isDisabled.27 grupos de navegador e testes de seleção/Shift/gaveta passaram; filtros/links/inline pequeno preservados.
+- [Identidade na IA](2026-10-31-ai-partner-identity.md): partner_name obrigatório, marca explícita nos quatro comandos, bloqueio pré-envio/quota, nome/rodapé pareados;75 testes passaram. Sem geração real ou mudança de autorização.
+- [Foco de Hoje](2026-10-31-today-focus.md): wrapper fora do Tab/ring, guarda local para clique direto no fundo, criação nomeada e visível no foco em Parceiros/Categorias/Home.12 regressões verdes; inspeção complementar diferencia comprovação, comportamento preservado e candidato estático de data/hora em lote, sem novo ticket/correção automática.
+
+Verificação integrada:254 testes passaram (75 IA,144 gaveta/painéis/comboboxes,35 Hoje/Prism/Perfil/Header), com testes focalizados repetidos após ajustes de integração. Format/lint/typecheck/build e7 PASS de test:serverless; avisos informativos preexistentes de lint/chunks preservados. Hoje passou37 grupos Chromium e37 WebKit com código/CSS reais; importações canceladas pelo harness com recarga automática foram isoladas e o ensaio final passou sem suprimir erros. Isolado5187 encerrado,5176/cache do proprietário preservados. Evidências e limites nos relatórios. Commit local dos cinco ajustes autorizado pelo proprietário nesta rodada; sem push/deploy, SQL ou dados reais. Aceite no iPhone continua separado. Header já aprovado/commitado;15 mantém seu próprio aceite visual pendente. `/dash` permanece somente relatado para investigação, sem ticket.
+
 ### Aceite do Header e relato de acesso ao portal — 31/10
 
 Proprietário confirmou “Header global ok” e pediu commit. Código do Header já está no commit `566cbbe`, junto do15; esta rodada registra somente o aceite do Header, sem estendê-lo ao ticket15, que mantém aceite visual pendente. Registro de aceite preparado para commit documental, sem push/deploy.

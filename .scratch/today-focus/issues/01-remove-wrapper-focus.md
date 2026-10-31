@@ -4,7 +4,7 @@
 
 **Priority:** P2 — interação de teclado e indicação visual incorretas; sem evidência de perda de dados ou bloqueio total.
 
-**Status:** ready-for-agent — owner authorized investigation and ticket preparation on 2026-10-29; implementation not started.
+**Status:** implemented locally on2026-10-31 — wrapper and creation focus corrected; bounded complementary investigation delivered. See [report](../../../docs/audits/2026-10-31-today-focus.md). Physical-device acceptance/publication remain separate.
 
 Escopo ampliado pelo proprietário em29/10: dois ajustes confirmados em Hoje e investigação complementar do mesmo padrão no app. Preparar este ticket não executa a investigação ampliada nem inicia implementação.
 
