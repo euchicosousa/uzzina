@@ -1,6 +1,6 @@
 # 01: Corrigir o campo de e-mail, retirar o título do login e reposicionar o controle do feed em /dash
 
-**Status:** implemented locally — ajustes autorizados e preparados em30/10/2026; verificação local concluída, sem push/deploy. Validação no Safari/aparelho do proprietário pendente.
+**Status:** completed — owner explicitly validated and closed the portal adjustments on2026-10-31. Implementation already committed as `eb2cd35`; no new push/deploy.
 
 **Prioridade:** P2 — apresentação inconsistente do login e controle sobreposto à identidade da conta; sem evidência de falha na autenticação ou perda de dados.
 
@@ -60,3 +60,9 @@ Reprodução: gerar o build (`bun run build`), servir com `vite preview` em127.0
 ## Limites da entrega
 
 Um ticket local com duas frentes de correção relacionadas ao portal, implementadas após autorização do proprietário. Não inclui redesenho completo do login/cabeçalho, novos recursos, alterações de autenticação, banco ou publicação. A análise geral de estilo permanece em trabalho separado; esta correção não depende de executá-la. Os critérios acima preservam o roteiro de aceite; a evidência executada e seus limites estão registrados neste resultado.
+
+## Owner acceptance — 2026-10-31
+
+Owner stated that the portal is already validated and authorized closing/committing this delivery. Login presentation and feed-control adjustments are accepted for the exercised scenarios; no repeat generic portal validation is required. Implementation already belongs to `eb2cd35`; this update records closure, not additional functional work or test execution. Publication remains separate.
+
+The separately reported multi-user access failure remains an investigation note without a ticket; this presentation acceptance does not establish its cause or silently close that independent report. Shared-tabs ticket15 retains its non-portal acceptance scope.

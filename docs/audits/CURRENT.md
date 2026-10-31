@@ -6,6 +6,14 @@ Produção confirmada Ready em29/10 no deploy `dpl_39Jnm4DEdyxyx24SEXtTpH92PZ6x`
 
 ## Pendências reais
 
+### Commit dos cinco ajustes e encerramento do portal — 31/10
+
+A pedido do proprietário, criado o commit local `6019a80`: título, mídia, rodapé16, identidade do parceiro na IA e foco de Hoje, incluindo regressões, contratos e relatórios. Mesma implementação já verificada:254 testes, matrizes delimitadas, format/lint/typecheck/build e7 PASS serverless. Nesta rodada somente preparação/conferência do commit e documentação de aceite; sem repetir suites sem mudança funcional. Sem push/deploy.
+
+Proprietário informou que o portal já está validado e autorizou concluir/commitar: [ticket encerrado](../../.scratch/partner-portal/issues/01-login-fields-and-feed-toggle.md#owner-acceptance--2026-10-31), retirado da fila de validação. Código dos ajustes já está em `eb2cd35`; esta entrega registra o aceite, sem nova execução física inferida. O relato separado de falha de acesso com vários usuários permanece para investigação, sem ticket, sem causa confirmada ou resolução presumida pelo aceite visual.
+
+12 (seletor pequeno de data) e15 (abas fora do portal) continuam implementados/commitados, aguardando somente o aceite no aparelho dos respectivos comportamentos. Roteiro curto comunicado ao proprietário:12 todas as sete colunas/controles cabem e a escolha funciona;15 aba ativa/conteúdo correto e rascunho da conta preservado ao alternar, além da composição das abas da gaveta. Não exigir repetir o portal já aceito. Referências e diff documentais conferidos; nenhum novo código, SQL, banco/provedor ou servidor nesta rodada.
+
 ### Cinco ajustes implementados localmente — 31/10
 
 Autorizados pelo proprietário com subagentes e economia de contexto, executados com um único escritor por vez. Título, mídia e16 pelo executor de interface; identidade na IA por outro executor; Hoje preparado por subagente e concluído pelo coordenador após o limite de uso. Sem iniciar os demais itens ou investigar `/dash` nesta entrega.
