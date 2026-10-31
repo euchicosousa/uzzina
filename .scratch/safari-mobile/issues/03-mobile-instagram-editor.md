@@ -1,6 +1,6 @@
 # 03: Prioritize writing space in the mobile Instagram tab
 
-**Status:** ready-for-agent — ticket preparation authorized 2026-10-29; implementation not started.
+**Status:** implemented-follow-up-required — local implementation exists; owner feedback on 2026-10-30 requests media-label simplification and writing/toolbar review; no final acceptance or publication.
 **Original proposal:** item 3, refined by owner. **Priority:** high.
 **Blocked by:** none for implementation; final keyboard acceptance requires ticket 01. Coordinate layout with ticket 02.
 
@@ -23,3 +23,7 @@ IMG_9844.PNG, IMG_9845.PNG and IMG_9846.PNG. Inspect InstagramTab, InstagramPrev
 ## Verification
 
 Cover no media, image, video, multiple files, long content and caption, both tabs, orientation change, keyboard open/closed and narrow/wide panels. Test real toolbar commands in the editor, including selection preservation through the additional menu, rather than a copied toolbar fixture. Follow ../README.md.
+
+## Owner feedback — 2026-10-30
+
+See the [acceptance and follow-up analysis](../../../docs/audits/2026-10-30-mobile-owner-feedback.md). Acceptance applies to the scenarios the owner reported, not all potential device/database/provider cases. Earlier preparation-only wording describes the historical ticket-creation round; implementation results are recorded in CURRENT.

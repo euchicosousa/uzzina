@@ -1,6 +1,6 @@
 # 10: Load the existing brand web font consistently across browsers
 
-**Status:** ready-for-agent — ticket preparation and investigation authorized 2026-10-29; implementation not started.
+**Status:** implemented-owner-approved — explicitly tested and approved by owner on 2026-10-30; local commit exists, not published.
 **Priority:** high, before final mobile spacing acceptance.
 **Blocked by:** none.
 
@@ -33,3 +33,7 @@ Add a meaningful regression on the real entry path/browser font registration and
 ## Format reference
 
 [WebKit: Improved Font Loading](https://webkit.org/blog/6643/improved-font-loading/) documents WOFF2 support on macOS Sierra/iOS10 and the WOFF2-first, WOFF-fallback src pattern already used by these assets. Format support is therefore not evidence that every supplied file is valid; actual target Safari decoding/rendering still needs verification. This reference was checked on 2026-10-29.
+
+## Owner feedback — 2026-10-30
+
+See the [acceptance and follow-up analysis](../../../docs/audits/2026-10-30-mobile-owner-feedback.md). Acceptance applies to the scenarios the owner reported, not all potential device/database/provider cases. Earlier preparation-only wording describes the historical ticket-creation round; implementation results are recorded in CURRENT.

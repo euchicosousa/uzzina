@@ -1,6 +1,6 @@
 # 01: Keep dialogs and searchable selectors reachable above the mobile keyboard
 
-**Status:** ready-for-agent — ticket preparation authorized 2026-10-29; implementation not started.
+**Status:** implemented-owner-accepted — owner reported OK on iPhone on 2026-10-30 for the exercised overlay scope; not published. Drawer background/landscape follow-up is tracked separately.
 **Original proposal:** item 1. **Priority:** high.
 **Blocked by:** none.
 
@@ -26,3 +26,7 @@ Adapt search, dialogs and searchable selectors to the currently visible viewport
 ## Verification
 
 Reproduce on the real components with controlled HTTP and test viewport resize/offset and overlay lifecycle at the necessary boundary. Device validation must include reaching the last result and footer with the keyboard open. Desktop emulation alone does not certify iOS Safari. Follow the shared execution requirements in ../README.md.
+
+## Owner feedback — 2026-10-30
+
+See the [acceptance and follow-up analysis](../../../docs/audits/2026-10-30-mobile-owner-feedback.md). Acceptance applies to the scenarios the owner reported, not all potential device/database/provider cases. Earlier preparation-only wording describes the historical ticket-creation round; implementation results are recorded in CURRENT.

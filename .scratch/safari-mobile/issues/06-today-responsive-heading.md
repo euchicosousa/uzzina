@@ -1,6 +1,6 @@
 # 06: Show a consistent responsive date in the dedicated Today heading
 
-**Status:** ready-for-agent — ticket preparation authorized 2026-10-29; implementation not started.
+**Status:** implemented-revision-requested — owner acknowledged selected-date behavior on 2026-10-30 but requested full date with one-line truncation and less mobile space; not published.
 **Original proposal:** item 7. **Priority:** normal.
 **Blocked by:** none.
 
@@ -22,3 +22,7 @@ IMG_9838.PNG and IMG_9839.PNG: today's title is only “Hoje”; a different dat
 ## Verification
 
 Real heading/route behavior for today, another date, long weekday/month, another year, narrow/wide screen, day changes and Back. Assert selected-day meaning, not just copied formatting logic. Verify desktop header and mobile fit visually. Follow ../README.md.
+
+## Owner feedback — 2026-10-30
+
+See the [acceptance and follow-up analysis](../../../docs/audits/2026-10-30-mobile-owner-feedback.md). Acceptance applies to the scenarios the owner reported, not all potential device/database/provider cases. Earlier preparation-only wording describes the historical ticket-creation round; implementation results are recorded in CURRENT.

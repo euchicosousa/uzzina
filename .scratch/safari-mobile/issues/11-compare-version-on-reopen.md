@@ -1,6 +1,6 @@
 # 11: Compare a newer action version on reopen without replacing local edits
 
-**Status:** ready-for-agent — ticket preparation authorized 2026-10-29; implementation not started.
+**Status:** implemented-owner-accepted — owner reported OK on iPhone on 2026-10-30 for exercised reopen/comparison behavior; not published.
 **Original proposal:** item 5; final owner decision: immediately editable, check in background, automatically show comparison only when a newer version exists.
 **Priority:** high.
 **Blocked by:** none for implementation; dialog viewport acceptance integrates ticket 01.
@@ -39,3 +39,7 @@ Inspect useActionPanels, ActionFormDrawer, ActionSaveCoordinator, conflict-compa
 Use the actual opening path, coordinator and comparison components with controlled reads/writes. Cover: same version with/without local edits; newer version with clean form; same-field and different-field edits while read is pending; remote-only media deletion; editor blur/IME; own-save confirmation racing the read; stale read; newer conflict during resolution; cancel/reopen comparison; accepting server; saving only the true local patch; read failure/access revoked; session/panel change and two actions.
 
 No automatic merge, read-only opening gate or silent clean-form replacement is authorized. This is independent of the closed recovery/duplication ticket; do not reopen that work or add duplication safeguards here. Follow ../README.md.
+
+## Owner feedback — 2026-10-30
+
+See the [acceptance and follow-up analysis](../../../docs/audits/2026-10-30-mobile-owner-feedback.md). Acceptance applies to the scenarios the owner reported, not all potential device/database/provider cases. Earlier preparation-only wording describes the historical ticket-creation round; implementation results are recorded in CURRENT.

@@ -1,6 +1,6 @@
 # 05: Make the leads list and detail usable on phones
 
-**Status:** ready-for-agent — ticket preparation authorized 2026-10-29; implementation not started.
+**Status:** implemented-owner-accepted — owner reported OK on iPhone on 2026-10-30 for exercised lead flows; not published.
 **Original proposal:** item 6. **Priority:** high.
 **Blocked by:** none.
 
@@ -23,3 +23,7 @@ IMG_9857.PNG shows the fixed-width list taking almost the entire phone screen wh
 ## Verification
 
 Test list→detail→return, direct link/reload, browser Back/Forward, search/scroll restoration, long answers, no leads, deleted/invalid id and orientation/desktop transition using real route/components and controlled data. Update existing flow documentation as required by AGENTS without asserting real-device verification from emulation. Follow ../README.md.
+
+## Owner feedback — 2026-10-30
+
+See the [acceptance and follow-up analysis](../../../docs/audits/2026-10-30-mobile-owner-feedback.md). Acceptance applies to the scenarios the owner reported, not all potential device/database/provider cases. Earlier preparation-only wording describes the historical ticket-creation round; implementation results are recorded in CURRENT.

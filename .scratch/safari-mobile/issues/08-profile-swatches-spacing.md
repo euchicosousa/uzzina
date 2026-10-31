@@ -1,6 +1,6 @@
 # 08: Show profile palette swatches and balance text-control spacing
 
-**Status:** ready-for-agent — ticket preparation authorized 2026-10-29; implementation not started.
+**Status:** implemented-partially-accepted — owner confirmed palette colors on 2026-10-30; mobile spacing and section-tab presentation require review; not published.
 **Original proposal:** item 8, explicitly approved in the latest owner feedback.
 **Priority:** normal.
 **Blocked by:** none for palette functionality; finalize visual spacing after ticket 10 establishes actual font metrics.
@@ -25,3 +25,7 @@ Inspect app/routes/app/profile.tsx, HeaderMenu in app/components/layout/Header.t
 ## Verification
 
 Use real profile controls and controlled account responses for select/preview/save/reload behavior. Inspect selected/unselected and long-label spacing at phone/desktop widths, light/dark/system and after loading the intended font. Follow ../README.md. No new theme persistence mechanism or global design redesign.
+
+## Owner feedback — 2026-10-30
+
+See the [acceptance and follow-up analysis](../../../docs/audits/2026-10-30-mobile-owner-feedback.md). Acceptance applies to the scenarios the owner reported, not all potential device/database/provider cases. Earlier preparation-only wording describes the historical ticket-creation round; implementation results are recorded in CURRENT.

@@ -1,6 +1,6 @@
 # 02: Give the mobile action drawer more space and a discoverable complete footer
 
-**Status:** ready-for-agent — ticket preparation authorized 2026-10-29; implementation not started.
+**Status:** implemented-owner-accepted — compact behavior reported OK on iPhone on 2026-10-30; footer visual unification and landscape reachability have follow-up; not published.
 **Original proposal:** item 2, refined by owner. **Priority:** high.
 **Blocked by:** none for implementation; final keyboard acceptance requires ticket 01.
 
@@ -25,3 +25,7 @@ IMG_9843.PNG and IMG_9856.PNG. Inspect ActionFormDrawer, EssentialsTab, ActionFo
 Exercise new/existing/archived actions, long title/date, attachments absent/present, conditional color, keyboard-only scrolling and both ends of overflow. Verify focus navigation with expanded/collapsed details; hidden controls must not remain focusable. No second permanent footer row.
 
 This ticket changes layout, not duplicate/save semantics; preserve the existing save/duplicate protections. The save-recovery/duplication ticket was closed without implementation and is not reopened here. Follow ../README.md.
+
+## Owner feedback — 2026-10-30
+
+See the [acceptance and follow-up analysis](../../../docs/audits/2026-10-30-mobile-owner-feedback.md). Acceptance applies to the scenarios the owner reported, not all potential device/database/provider cases. Earlier preparation-only wording describes the historical ticket-creation round; implementation results are recorded in CURRENT.
