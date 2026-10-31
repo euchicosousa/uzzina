@@ -45,21 +45,22 @@ export function TodayPageView({
       ref={pageRef}
       data-today-page
       className={cn(
-        "relative mx-4 flex min-h-0 flex-col overflow-hidden border-x lg:mx-8",
+        "relative mx-2 flex min-h-0 flex-col overflow-hidden border-x lg:mx-8",
         isKanban && "pb-(--app-bar-space)",
       )}
     >
-      <div className="flex shrink-0 flex-col justify-between gap-1 border-b px-8 pb-3 lg:flex-row lg:items-center lg:gap-8 lg:py-6 xl:px-16">
-        {/* Only one variant is displayed (display:none leaves the other out of the accessibility tree). */}
-        <h1 className="pt-3 text-2xl font-semibold lg:pt-0 lg:text-3xl xl:text-4xl">
-          <span className="md:hidden">{heading.narrow}</span>
-          <span className="hidden md:inline">{heading.wide}</span>
+      <div className="flex min-w-0 shrink-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b px-3 py-2 lg:flex-nowrap lg:gap-8 lg:px-8 lg:py-6 xl:px-16">
+        <h1
+          className="min-w-0 flex-1 basis-40 truncate text-2xl font-semibold lg:flex-initial lg:basis-auto lg:text-3xl xl:text-4xl"
+          title={heading}
+        >
+          {heading}
         </h1>
         {/* Mobile already identifies the view through the selected control. */}
         <p className="hidden flex-1 text-center text-lg font-medium lg:block">
           {TODAY_VIEW_LABELS[view]}
         </p>
-        <div className="flex items-center gap-2 self-end lg:self-auto">
+        <div className="flex max-w-full shrink-0 flex-wrap items-center justify-end gap-2 self-end lg:self-auto">
           <CalendarToolbar
             currentDay={currentDay}
             setCurrentDay={onCurrentDayChange}
@@ -68,7 +69,7 @@ export function TodayPageView({
         </div>
       </div>
       {isKanban ? (
-        <div className="min-h-0 flex-1 px-8 pt-6 xl:px-16">
+        <div className="min-h-0 flex-1 px-3 pt-4 lg:px-8 lg:pt-6 xl:px-16">
           <TodayBoard
             view={view}
             actions={filteredActions}
@@ -84,7 +85,7 @@ export function TodayPageView({
           role="region"
           aria-label="Ações do dia"
           tabIndex={0}
-          className="min-h-0 flex-1 overflow-y-auto px-8 pt-6 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset xl:px-16"
+          className="min-h-0 flex-1 overflow-y-auto px-3 pt-4 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset lg:px-8 lg:pt-6 xl:px-16"
         >
           <TodayBoard
             view={view}

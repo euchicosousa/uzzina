@@ -58,17 +58,9 @@ function capitalize(text: string) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-export interface TodayPageHeading {
-  wide: string;
-  narrow: string;
-}
-
 // Dedicated page heading: always names the selected date, adding the year only
 // when it differs from the current one. Home keeps using useTodayTitle.
-export function getTodayPageHeading(
-  currentDay: Date,
-  now: Date = new Date(),
-): TodayPageHeading {
+export function getTodayPageHeading(currentDay: Date, now: Date = new Date()) {
   const showYear = currentDay.getFullYear() !== now.getFullYear();
   const locale = { locale: ptBR };
   const wideDate = format(
@@ -76,21 +68,10 @@ export function getTodayPageHeading(
     showYear ? "d 'de' MMMM 'de' yyyy" : "d 'de' MMMM",
     locale,
   );
-  const narrowDate = format(
-    currentDay,
-    showYear ? "d MMM. yyyy" : "d MMM.",
-    locale,
-  );
   if (isSameDay(currentDay, now)) {
-    return {
-      wide: `Hoje, ${format(currentDay, "eeee", locale)}, ${wideDate}`,
-      narrow: `Hoje, ${narrowDate}`,
-    };
+    return `Hoje, ${format(currentDay, "eeee", locale)}, ${wideDate}`;
   }
-  return {
-    wide: `${capitalize(format(currentDay, "eeee", locale))}, ${wideDate}`,
-    narrow: `${capitalize(format(currentDay, "eeee", locale).slice(0, 3))}., ${narrowDate}`,
-  };
+  return `${capitalize(format(currentDay, "eeee", locale))}, ${wideDate}`;
 }
 
 export function useTodayPageHeading(currentDay: Date) {
@@ -107,6 +88,7 @@ export function TodayViewToggle({
   return (
     <PrismToggleGroup
       aria-label="Opções de Visualização da Home"
+      className="max-w-full flex-wrap"
       selectedKeys={[view]}
       onSelectionChange={(keys) => {
         const selected = Array.from(keys)[0] as TodayViewMode;

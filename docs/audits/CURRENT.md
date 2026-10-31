@@ -6,6 +6,12 @@ Produção confirmada Ready em29/10 no deploy `dpl_39Jnm4DEdyxyx24SEXtTpH92PZ6x`
 
 ## Pendências reais
 
+### Aceite e commit dos tickets14/19 em30/10
+
+Proprietário informou que as duas entregas estão corretas e autorizou o commit:19 rolagem única da página de datas no mobile,14 data completa truncada e espaços mobile menores em Hoje/HomeToday/Minha Conta. Commit local preparado com código, regressões, contratos e relatórios; sem push/deploy. Foi solicitado complemento de alinhamento no topo pelo print `UZZINA 9.png`, a executar após esse commit e antes do15; não invalida o aceite do escopo já entregue.
+
+[Datas](2026-10-30-celebrations-responsive-scroll.md):3 testes e verificações reais Chromium/WebKit em seis larguras, gestos/resize/último item e desktop baixo passaram. [Espaçamento/Hoje](2026-10-30-mobile-spacing-today-heading.md):30 testes,70 verificações Chromium e71 WebKit passaram, desktop preservado. Format/lint/typecheck/build já verdes; somente documentação de aceite/commit nesta etapa, referências/diff conferidos, sem repetir suites sem mudança funcional. Servidor5176 e demais alterações externas preservados.15/16/análise geral não iniciados; título inline e planejamento/documentação de outros tickets continuam fora do commit.
+
 ### Commit dos tickets12/17 e situação em30/10
 
 Proprietário autorizou o commit dos itens concluídos.12 (calendário compacto, com caption adaptável e texto ampliado preservado) e17 (toolbar compacta compartilhada por Essencial/Instagram) preparados para commit local com regressões, relatórios e contrato.13/18 já estão no commit `4540ef6`;13/18/17 foram explicitamente aprovados nos cenários relatados.12 implementado/verificado e autorizado para commit; não inferir nova execução física no iPhone do simples pedido de commit. Sem push/deploy.

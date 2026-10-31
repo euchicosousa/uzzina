@@ -44,6 +44,7 @@ export function HomeTodayView({
 
   return (
     <HomeViewWrapper
+      compactMobile
       title={
         linkTitle ? (
           <Link
@@ -58,7 +59,7 @@ export function HomeTodayView({
         )
       }
       OptionsComponent={
-        <div className="flex items-center gap-2">
+        <div className="flex max-w-full flex-wrap items-center justify-end gap-2">
           <CalendarToolbar
             currentDay={currentDay}
             setCurrentDay={setCurrentDay}
@@ -67,7 +68,7 @@ export function HomeTodayView({
         </div>
       }
     >
-      <div className="px-8 xl:px-16">
+      <div className="px-3 lg:px-8 xl:px-16">
         <TodayBoard
           view={view}
           actions={filteredActions}

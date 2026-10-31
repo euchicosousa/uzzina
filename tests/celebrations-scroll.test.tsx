@@ -1,6 +1,7 @@
 import {
   afterAll,
   afterEach,
+  beforeEach,
   expect,
   it,
   setSystemTime,
@@ -36,6 +37,29 @@ const celebrations: Celebration[] = [
     date: "2026-12-25",
   },
 ];
+
+const originalMatchMedia = Object.getOwnPropertyDescriptor(
+  window,
+  "matchMedia",
+);
+let desktop = true;
+beforeEach(() => {
+  desktop = true;
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    value: (media: string) => ({
+      media,
+      matches: desktop,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }),
+  });
+});
+afterAll(() => {
+  if (originalMatchMedia)
+    Object.defineProperty(window, "matchMedia", originalMatchMedia);
+  else Reflect.deleteProperty(window, "matchMedia");
+});
 
 const geometry = spyOn(HTMLElement.prototype, "getBoundingClientRect");
 
@@ -102,4 +126,18 @@ it("keeps the list available when the current month has no dates", () => {
   );
   expect(container.firstElementChild?.scrollTop).toBe(0);
   expect(screen.getByText("January")).toBeTruthy();
+});
+
+it("keeps the mobile list at its natural start without an inner scroll", () => {
+  setupGeometry();
+  desktop = false;
+  const { container } = render(
+    <CelebrationsList
+      celebrations={celebrations}
+      isSubmitting={false}
+      onDelete={() => {}}
+      onEdit={() => {}}
+    />,
+  );
+  expect(container.firstElementChild?.scrollTop).toBe(0);
 });

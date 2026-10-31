@@ -57,7 +57,8 @@ export const Route = createFileRoute("/app/profile")({
 export const runtime = "edge";
 
 // Text-labelled choices need more horizontal room than the icon-sized Prism toggle default.
-const PROFILE_CHOICE_PADDING = "px-4";
+const PROFILE_CHOICE_CLASS_NAME =
+  "max-w-full px-4 whitespace-normal [overflow-wrap:anywhere]";
 
 /**
  * Decorative accent sample. Colors come from the same PALLETE data as the
@@ -232,26 +233,28 @@ function ProfilePage() {
   return (
     <div
       ref={pageRef}
-      className="mx-auto flex min-h-0 w-full max-w-5xl flex-col overflow-hidden px-4 pt-4 sm:px-8 sm:pt-8"
+      className="mx-auto flex min-h-0 w-full max-w-5xl flex-col overflow-hidden px-3 pt-3 lg:px-8 lg:pt-8"
     >
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b pb-4 lg:gap-8 lg:pb-6">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b pb-3 lg:gap-8 lg:pb-6">
         <h1 className="p-0 text-2xl font-bold tracking-tight text-foreground">
           Minha Conta
         </h1>
         <PrismButton
-          className="h-11 rounded-2xl squircle lg:h-10"
+          className="h-auto min-h-11 max-w-full rounded-2xl px-3 py-2 squircle lg:h-10 lg:min-h-10 lg:px-5 lg:py-0"
           form="profile-form"
           isDisabled={isSubmitting}
           type="submit"
         >
           <CloudIcon />
-          {isSubmitting ? "Salvando..." : "Salvar Alterações"}
+          <span className="min-w-0 whitespace-normal">
+            {isSubmitting ? "Salvando..." : "Salvar Alterações"}
+          </span>
         </PrismButton>
       </div>
 
       <PrismToggleGroup
         aria-label="Seção da conta"
-        className="shrink-0 py-2 lg:hidden"
+        className="max-w-full shrink-0 flex-wrap py-2 lg:hidden"
         size="sm"
         selectedKeys={[mobileSection]}
         onSelectionChange={(keys) => {
@@ -260,11 +263,14 @@ function ProfilePage() {
             setMobileSection(section);
         }}
       >
-        <PrismToggleGroupItem className={PROFILE_CHOICE_PADDING} id="personal">
+        <PrismToggleGroupItem
+          className={PROFILE_CHOICE_CLASS_NAME}
+          id="personal"
+        >
           Informações pessoais
         </PrismToggleGroupItem>
         <PrismToggleGroupItem
-          className={PROFILE_CHOICE_PADDING}
+          className={PROFILE_CHOICE_CLASS_NAME}
           id="preferences"
         >
           Preferências
@@ -303,7 +309,7 @@ function ProfilePage() {
           aria-label="Informações pessoais"
           tabIndex={0}
           className={cn(
-            "min-h-0 flex-col gap-6 overflow-y-auto overscroll-contain py-6 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset lg:flex",
+            "min-h-0 flex-col gap-4 overflow-y-auto overscroll-contain py-3 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset lg:flex lg:gap-6 lg:py-6",
             mobileSection === "personal" ? "flex" : "hidden",
           )}
         >
@@ -417,7 +423,7 @@ function ProfilePage() {
           aria-label="Preferências"
           tabIndex={0}
           className={cn(
-            "min-h-0 flex-col gap-6 overflow-y-auto overscroll-contain py-6 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset lg:col-start-2 lg:row-start-1 lg:flex",
+            "min-h-0 flex-col gap-4 overflow-y-auto overscroll-contain py-3 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset lg:col-start-2 lg:row-start-1 lg:flex lg:gap-6 lg:py-6",
             mobileSection === "preferences" ? "flex" : "hidden",
           )}
         >
@@ -429,6 +435,7 @@ function ProfilePage() {
               Tema do App
             </span>
             <PrismToggleGroup
+              className="max-w-full flex-wrap"
               aria-label="Tema do App"
               selectedKeys={[selectedTheme]}
               onSelectionChange={(keys) => {
@@ -437,21 +444,21 @@ function ProfilePage() {
               }}
             >
               <PrismToggleGroupItem
-                className={PROFILE_CHOICE_PADDING}
+                className={PROFILE_CHOICE_CLASS_NAME}
                 id="light"
               >
                 <SunIcon />
                 Claro
               </PrismToggleGroupItem>
               <PrismToggleGroupItem
-                className={PROFILE_CHOICE_PADDING}
+                className={PROFILE_CHOICE_CLASS_NAME}
                 id="dark"
               >
                 <MoonIcon />
                 Escuro
               </PrismToggleGroupItem>
               <PrismToggleGroupItem
-                className={PROFILE_CHOICE_PADDING}
+                className={PROFILE_CHOICE_CLASS_NAME}
                 id="system"
               >
                 <LaptopIcon />
@@ -473,7 +480,7 @@ function ProfilePage() {
             </div>
             <PrismToggleGroup
               aria-label="Cor de Destaque"
-              className="flex-wrap"
+              className="max-w-full flex-wrap"
               selectedKeys={[String(selectedThemeColor)]}
               onSelectionChange={(keys) => {
                 const val = Array.from(keys)[0];
@@ -482,7 +489,7 @@ function ProfilePage() {
             >
               {PALLETE.map((palette, idx) => (
                 <PrismToggleGroupItem
-                  className={PROFILE_CHOICE_PADDING}
+                  className={PROFILE_CHOICE_CLASS_NAME}
                   id={String(idx)}
                   key={palette.id}
                 >
@@ -497,7 +504,10 @@ function ProfilePage() {
                   {palette.label}
                 </PrismToggleGroupItem>
               ))}
-              <PrismToggleGroupItem className={PROFILE_CHOICE_PADDING} id="-1">
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="-1"
+              >
                 <PaletteSwatch isDark={theme === Theme.DARK} />
                 Personalizado
               </PrismToggleGroupItem>
@@ -513,6 +523,7 @@ function ProfilePage() {
 
           {/* Follow Partner Color Toggle */}
           <UPreferenceSwitch
+            className="max-lg:flex-wrap max-lg:gap-3 max-lg:[&>div]:min-w-0 max-lg:[&>div]:flex-1 max-lg:[&>div]:basis-40"
             checked={selectedFollowPartnerColor}
             description="Substitui as cores do tema do aplicativo pelas cores da marca do cliente ativo."
             id="followPartnerColor"
@@ -532,6 +543,7 @@ function ProfilePage() {
               </span>
             </div>
             <PrismToggleGroup
+              className="max-w-full flex-wrap"
               aria-label="Layout padrão"
               selectedKeys={[selectedVariant]}
               onSelectionChange={(keys) => {
@@ -540,21 +552,21 @@ function ProfilePage() {
               }}
             >
               <PrismToggleGroupItem
-                className={PROFILE_CHOICE_PADDING}
+                className={PROFILE_CHOICE_CLASS_NAME}
                 id="line"
               >
                 <ListIcon />
                 Linha
               </PrismToggleGroupItem>
               <PrismToggleGroupItem
-                className={PROFILE_CHOICE_PADDING}
+                className={PROFILE_CHOICE_CLASS_NAME}
                 id="block"
               >
                 <LayoutGridIcon />
                 Bloco
               </PrismToggleGroupItem>
               <PrismToggleGroupItem
-                className={PROFILE_CHOICE_PADDING}
+                className={PROFILE_CHOICE_CLASS_NAME}
                 id="content"
               >
                 <ImageIcon />
@@ -575,7 +587,7 @@ function ProfilePage() {
             </div>
             <PrismToggleGroup
               aria-label="Visualização inicial do Hoje"
-              className="flex-wrap"
+              className="max-w-full flex-wrap"
               selectedKeys={[selectedTodayView]}
               onSelectionChange={(keys) => {
                 const value = Array.from(keys)[0];
@@ -583,28 +595,28 @@ function ProfilePage() {
               }}
             >
               <PrismToggleGroupItem
-                className={PROFILE_CHOICE_PADDING}
+                className={PROFILE_CHOICE_CLASS_NAME}
                 id="kanban"
               >
                 <KanbanIcon />
                 Kanban
               </PrismToggleGroupItem>
               <PrismToggleGroupItem
-                className={PROFILE_CHOICE_PADDING}
+                className={PROFILE_CHOICE_CLASS_NAME}
                 id="categories"
               >
                 <Grid3x3Icon />
                 Categorias
               </PrismToggleGroupItem>
               <PrismToggleGroupItem
-                className={PROFILE_CHOICE_PADDING}
+                className={PROFILE_CHOICE_CLASS_NAME}
                 id="feed"
               >
                 <BlocksIcon />
                 Feed
               </PrismToggleGroupItem>
               <PrismToggleGroupItem
-                className={PROFILE_CHOICE_PADDING}
+                className={PROFILE_CHOICE_CLASS_NAME}
                 id="partners"
               >
                 <HeartHandshakeIcon />
@@ -615,6 +627,7 @@ function ProfilePage() {
 
           {/* Show Instagram Sidebar by Default Toggle */}
           <UPreferenceSwitch
+            className="max-lg:flex-wrap max-lg:gap-3 max-lg:[&>div]:min-w-0 max-lg:[&>div]:flex-1 max-lg:[&>div]:basis-40"
             checked={showInstagramSidebar}
             description="Decida se o painel do feed do Instagram inicia aberto nas páginas dos clientes."
             id="showInstagramSidebar"

@@ -68,31 +68,26 @@ function renderPage(day: Date) {
   return screen.getByRole("heading", { level: 1 });
 }
 
-it("names today's date on both responsive variants", () => {
+it("names today with the complete date in one heading", () => {
   const heading = renderPage(new Date(2026, 9, 29, 9));
-  expect(heading.textContent).toContain("Hoje, quinta-feira, 29 de outubro");
-  expect(heading.textContent).toContain("Hoje, 29 out.");
+  expect(heading.textContent).toBe("Hoje, quinta-feira, 29 de outubro");
 });
 
 it("shows weekday and date for another day", () => {
   const heading = renderPage(new Date(2026, 10, 25, 9));
-  expect(heading.textContent).toContain("Quarta-feira, 25 de novembro");
-  expect(heading.textContent).toContain("Qua., 25 nov.");
+  expect(heading.textContent).toBe("Quarta-feira, 25 de novembro");
   expect(heading.textContent).not.toContain("Hoje");
 });
 
 it("adds the year only when it differs from the current one", () => {
   const heading = renderPage(new Date(2027, 10, 25, 9));
-  expect(heading.textContent).toContain("Quinta-feira, 25 de novembro de 2027");
-  expect(heading.textContent).toContain("Qui., 25 nov. 2027");
+  expect(heading.textContent).toBe("Quinta-feira, 25 de novembro de 2027");
 });
 
-it("hides exactly one variant at each breakpoint", () => {
+it("keeps one complete date available while the visual heading can truncate", () => {
   const heading = renderPage(new Date(2026, 10, 25, 9));
-  const [narrow, wide] = Array.from(heading.children);
-  expect(narrow?.className).toContain("md:hidden");
-  expect(wide?.className).toContain("hidden");
-  expect(wide?.className).toContain("md:inline");
+  expect(heading.children.length).toBe(0);
+  expect(heading.textContent).toBe("Quarta-feira, 25 de novembro");
 });
 
 it("does not say today in the empty state of another day", () => {

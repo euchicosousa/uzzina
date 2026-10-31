@@ -16,6 +16,7 @@ import {
   deleteCelebration,
   getAllCelebrations,
 } from "~/models/celebrations";
+import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { AdminGuard } from "~/components/features/AdminGuard";
 
 export const Route = createFileRoute("/app/admin/celebrations")({
@@ -75,9 +76,9 @@ function AdminCelebrationsPage() {
     setTitle("");
   };
   return (
-    <div className="page-height mx-auto flex w-full max-w-7xl flex-col overflow-y-auto md:flex-row md:overflow-hidden">
+    <div className="mx-auto flex w-full max-w-7xl shrink-0 flex-col md:h-[calc(100vh-68px)] md:flex-row md:overflow-hidden">
       {/* Coluna da Esquerda: Adicionar Novo */}
-      <div className="flex h-full w-full shrink-0 flex-col gap-4 p-8 md:w-96">
+      <div className="flex w-full shrink-0 flex-col gap-4 p-8 md:h-full md:w-96 md:overflow-y-auto">
         <div>
           <h1 className="pb-2 text-3xl font-bold">Datas Comemorativas</h1>
           <p className="text-muted-foreground">
@@ -129,6 +130,7 @@ function AdminCelebrationsPage() {
             </div>
           </form>
         </div>
+        <AppBarSpacer className="hidden md:block" />
       </div>
 
       <CelebrationsList
@@ -161,10 +163,12 @@ export function CelebrationsList({
 }) {
   const listRef = useRef<HTMLDivElement>(null);
   const hasScrolled = useRef(false);
+  const isDesktop = useIsDesktop(768);
 
   useEffect(() => {
     const list = listRef.current;
-    if (!list || hasScrolled.current || celebrations.length === 0) return;
+    if (!isDesktop || !list || hasScrolled.current || celebrations.length === 0)
+      return;
     const currentMonth = format(new Date(), "yyyy-MM");
     const month = list.querySelector<HTMLElement>(
       `[data-month="${currentMonth}"]`,
@@ -176,12 +180,12 @@ export function CelebrationsList({
       month.getBoundingClientRect().top -
       list.getBoundingClientRect().top -
       padding;
-  }, [celebrations]);
+  }, [celebrations, isDesktop]);
 
   return (
     <div
       ref={listRef}
-      className="flex h-full w-full shrink-0 flex-col gap-4 overflow-y-auto p-8 md:w-full md:shrink"
+      className="flex w-full shrink-0 flex-col gap-4 p-8 md:h-full md:shrink md:overflow-y-auto"
     >
       {celebrations.length === 0 ? (
         <div className="rounded-2xl border border-dashed p-8 text-center text-muted-foreground">
