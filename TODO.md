@@ -2,7 +2,9 @@
 
 ## Verificação de uso
 
-- [ ] Investigar falha de acesso ao `/dash`: proprietário não consegue entrar ao tentar com vários usuários (31/10). Suspeita de conexão ainda sem causa confirmada; registro de acompanhamento, sem ticket criado.
+Deploy de todas as entregas informado pelo proprietário em31/10; publicação deixa de ser pendência dessas entregas. Os aceites específicos continuam nos registros de CURRENT.
+
+- [ ] [Origem do portal local](.scratch/dash-local-auth/issues/01-canonical-local-origin.md): correção implementada/verificada em31/10; entrada HTML de `/dash` por localhost normalizada para origem canônica, login normal da equipe preservado. Recarregar o portal para conferir no uso real.73 testes,6 grupos de navegador e10 GETs locais passaram; commit local realizado, sem login real ou deploy.
 
 - [ ] Conferir durante a semana o app publicado: login/home, edição/data, preferências, IA, administração, portal/revisão, upload e Leads. Banco fase2 já conferido no catálogo; estado em [CURRENT](docs/audits/CURRENT.md).
 - [ ] Executar o [roteiro Safari/telefone](docs/audits/2026-10-29-owner-validation-guide.md) e trazer os resultados em outro chat, conforme decisão do proprietário.
@@ -10,14 +12,14 @@
 
 ## Trabalhos registrados para depois
 
-- [ ] Validar os [cinco ajustes de31/10](docs/audits/CURRENT.md): título, mídia, rodapé, identidade na IA e foco de Hoje. Implementação commitada em `6019a80`; aceite no aparelho e publicação são etapas separadas.
+- [ ] Validar os [cinco ajustes de31/10](docs/audits/CURRENT.md): título, mídia, rodapé, identidade na IA e foco de Hoje. Implementação commitada em `6019a80`; publicação informada pelo proprietário; aceite específico no aparelho ainda não registrado para esses cinco ajustes.
 
 
-- [ ] [Correções do retorno mobile](.scratch/safari-mobile/README.md#correction-tickets-registered--2026-10-30):12/17 commitados em `ceafc6f`,13/18 em `4540ef6`;14/19 aceitos e commitados em `53508d2`. Header global e15 (abas compartilhadas) implementados/verificados e commitados em `566cbbe`; Header,12 e15 aprovados pelo proprietário em31/10; publicação pendente.16 rodapé implementado/verificado e commitado em `6019a80`; aceites anteriores preservados.
+- [ ] [Correções do retorno mobile](.scratch/safari-mobile/README.md#correction-tickets-registered--2026-10-30):12/17 commitados em `ceafc6f`,13/18 em `4540ef6`;14/19 aceitos e commitados em `53508d2`. Header global e15 (abas compartilhadas) implementados/verificados e commitados em `566cbbe`; Header,12 e15 aprovados pelo proprietário em31/10; deploy informado pelo proprietário.16 rodapé implementado/verificado e commitado em `6019a80`; aceites anteriores preservados.
 
 - [ ] [Análise geral de estilo e simplificação](.scratch/visual-consistency/issues/01-app-style-analysis-and-simplification.md): novo ticket para inventário visual/técnico, menos padrões de botões/controles, espaçamento responsivo e proposta de consolidação. Análise ainda não executada; não autoriza redesenho automático nem duplica os tickets de correção existentes.
 
-- [ ] [Controles de mídia sempre visíveis](.scratch/media-controls/issues/01-always-visible-media-controls.md): implementado/verificado localmente em31/10: remoção/alça/posição sempre visíveis, foco após exclusão e Escape do arraste. Aceite no aparelho e publicação pendentes; widget Cloudinary preservado.
+- [ ] [Controles de mídia sempre visíveis](.scratch/media-controls/issues/01-always-visible-media-controls.md): implementado/verificado localmente em31/10: remoção/alça/posição sempre visíveis, foco após exclusão e Escape do arraste. Deploy informado; aceite específico no aparelho ainda não registrado; widget Cloudinary preservado.
 
 - [ ] Escolher próximas correções do [levantamento de teclado concluído](docs/audits/2026-10-29-keyboard-focus-inventory.md): cinco grupos de achados com prioridade e critérios, sem implementação automática. Não repetir a revisão como pendência aberta.
 

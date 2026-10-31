@@ -25,7 +25,7 @@ bun install --frozen-lockfile
 bun run dev
 ```
 
-Vite inicia em http://127.0.0.1:5176, com porta fixa. O adaptador local executa as APIs da pasta api; um preview do build estático não substitui esse servidor de desenvolvimento nem as funções da Vercel.
+Vite inicia em http://127.0.0.1:5176, com porta fixa. O adaptador local executa as APIs da pasta api; um preview do build estático não substitui esse servidor de desenvolvimento nem as funções da Vercel. Ao abrir `/dash` ou `/dash/login` por `localhost` na mesma porta, o adaptador direciona a página para a origem local configurada antes do login. O login da equipe (`/login` → `/app`) e links de revisão mantêm seus endereços. Essa normalização não libera outras origens na API nem muda a autenticação publicada.
 
 Por decisão do proprietário em27/10/2026, `bun run dev` usa **o banco de produção** (projeto Supabase `dfepmjcozszswocwvdpq`) e as contas reais. Edições no localhost afetam os mesmos dados do aplicativo publicado. O comando inicia Vite via Node no modo `production`, carregando `.env.production.local`; esse modo de configuração mantém o servidor de desenvolvimento e desativa o bypass local de quota. A IA usa `consume_ai_usage` de produção e OpenAI reais. Staging foi retirado do fluxo habitual. O launcher `scripts/dev-server.cjs` verifica a porta antes de iniciar o Vite; uma segunda inicialização com a porta ocupada termina sem invalidar o cache do processo ativo. O cache do Vite fica em `.cache/vite`, próprio de cada checkout, inclusive quando `node_modules` é compartilhado.
 
