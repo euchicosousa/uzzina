@@ -13,3 +13,7 @@ Header uses the same responsive outer margins as the app frame, a transparent on
 Before the final tab integration, Chromium36 and WebKit36 bounded assertions passed. The complete layout checker additionally covers accepted Today/Home/Profile geometry, retained edits, native invalid-field handling, resizing and manual save with controlled HTTP. See the [shared-tabs report](2026-10-31-shared-tabs.md) for final integrated results/checks.
 
 Local source only. Automated WebKit does not certify native iPhone browser chrome or keyboard. No production/database/provider writes, SQL, push or deploy. Owner's5176/cache and external inline-title/documentation work are preserved.14/19's earlier device acceptance is separate from this clarified correction.
+
+## Owner acceptance — 2026-10-31
+
+Owner confirmed “Header global ok” and requested a commit. Header implementation already belongs to local commit `566cbbe`; this update records its acceptance only. Shared-tabs ticket15 retains separate visual acceptance. No new functional changes, test execution, push or deployment in this acceptance round.

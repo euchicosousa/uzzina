@@ -6,6 +6,12 @@ Produção confirmada Ready em29/10 no deploy `dpl_39Jnm4DEdyxyx24SEXtTpH92PZ6x`
 
 ## Pendências reais
 
+### Aceite do Header e relato de acesso ao portal — 31/10
+
+Proprietário confirmou “Header global ok” e pediu commit. Código do Header já está no commit `566cbbe`, junto do15; esta rodada registra somente o aceite do Header, sem estendê-lo ao ticket15, que mantém aceite visual pendente. Registro de aceite preparado para commit documental, sem push/deploy.
+
+Investigação pendente, sem criar ticket: proprietário relata que não consegue entrar em `/dash` ao tentar com vários usuários e suspeita de erro de conexão. Falha de acesso relatada; causa de conexão ainda não confirmada. Não houve reprodução, inspeção de respostas HTTP, sessão/cookie, logs do servidor ou autorização/vínculos das contas nesta rodada. Distinguir falha de rede/serviço, autenticação e autorização durante a investigação; não confundir o relato com validação aprovada do login real. Preservar autenticação e dados reais. Nenhuma alteração funcional ou novo teste nesta atualização documental; referências e diff conferidos. Trabalho local de título preservado.
+
 ### Commits autorizados de documentação e Header/15 — 31/10
 
 Proprietário autorizou commitar o que está pronto. Separados documentação de feedback/aceites/fila e entrega funcional Header/15 com PrismTabs, consumidores, galeria, regressões e contratos. Aceite visual físico continua pendente e não é inferido do pedido de commit. Sem push/deploy ou SQL. Alterações externas do título inline e seu script/fixture permanecem fora por duas falhas conhecidas no Bloco móvel. Documentação de feedback/aceites/fila commitada em `bca66c5`; Header/15 e seus registros integram o commit funcional desta rodada. Verificação renovada:117 testes pertinentes passaram (112 gaveta/painéis/Header +5 Prism/Perfil), mais2 testes Prism reexecutados após corrigir uma opção de consulta não suportada pelo TypeScript, preservando a asserção de nome exato. Format/lint/typecheck/build e diff/referências passaram; avisos informativos preexistentes preservados. Sem nova execução de navegador; evidências Chromium/WebKit anteriores mantidas. Estados históricos abaixo que dizem Header/15 sem commit ficam superados por esta entrega.
