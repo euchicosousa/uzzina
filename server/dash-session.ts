@@ -74,39 +74,3 @@ export function serializeClearSessionCookie(
   const secureFlag = isProduction ? "; Secure" : "";
   return `${SESSION_COOKIE_NAME}=; HttpOnly; SameSite=Lax; Path=/api; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT${secureFlag}`;
 }
-
-/**
- * Valida a origem da requisição para prevenir requisições forjadas entre sites (CSRF).
- * Em produção exige correspondência estrita com APP_ORIGIN configurado.
- * Em desenvolvimento/testes, aceita origens localhost caso APP_ORIGIN não esteja fixado.
- */
-export function validateRequestOrigin(
-  origin: string | undefined | null,
-  configuredOrigin: string | undefined | null,
-  isProduction: boolean,
-): boolean {
-  if (!origin) {
-    // Rejeita requisições mutantes sem cabeçalho Origin
-    return false;
-  }
-
-  // Se APP_ORIGIN estiver explicitamente configurado, exige correspondência exata
-  if (configuredOrigin) {
-    return (
-      origin.trim().toLowerCase() === configuredOrigin.trim().toLowerCase()
-    );
-  }
-
-  // Se for produção e não houver APP_ORIGIN configurado, rejeita por segurança
-  if (isProduction) {
-    return false;
-  }
-
-  // Em ambiente local de desenvolvimento/teste, permite localhost e 127.0.0.1
-  try {
-    const parsed = new URL(origin);
-    return parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1";
-  } catch {
-    return false;
-  }
-}

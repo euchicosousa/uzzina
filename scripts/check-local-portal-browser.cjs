@@ -154,7 +154,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
         `${alias}/dash/login?partner=partner&sidebar=hide`,
       );
       assert(response);
-      assert.equal(new URL(page.url()).origin, base);
+      assert.equal(new URL(page.url()).origin, alias);
       assert.equal(new URL(page.url()).searchParams.get("sidebar"), "hide");
       await page.getByLabel("E-mail", { exact: true }).fill(client.email);
       await page.getByLabel("Senha", { exact: true }).fill("fixture-password");
@@ -162,14 +162,14 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
       await page.waitForURL((url) => url.pathname === "/dash");
       await page.getByRole("button", { name: "Sair", exact: true }).waitFor();
       await page.getByText(client.name, { exact: false }).first().waitFor();
-      const cookies = await context.cookies(`${base}/api/dash-auth`);
+      const cookies = await context.cookies(`${alias}/api/dash-auth`);
       assert(
         cookies.some(
           (cookie) =>
             cookie.name === "uzzina_dash_session" &&
             cookie.httpOnly &&
             cookie.path === "/api" &&
-            cookie.domain === "127.0.0.1",
+            cookie.domain === "localhost",
         ),
       );
       await page.reload();
@@ -188,7 +188,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
         status === 401
           ? "E-mail ou senha incorretos ou conta inativa."
           : status === 403
-            ? "Este endereço não está autorizado. Abra o link correto do portal e tente novamente."
+            ? "Não foi possível entrar no portal. Tente novamente."
             : "O portal está temporariamente indisponível. Tente novamente.";
       await page.getByText(message, { exact: true }).waitFor();
       groups++;
@@ -196,13 +196,13 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
     assert(requests.length > 0);
     assert(
       requests.every(
-        (request) => request.origin === base && request.url === base,
+        (request) => request.origin === alias && request.url === alias,
       ),
     );
     assert.equal(unexpectedApiLoads, 0);
     assert.deepEqual(errors, []);
     console.log(
-      `PASS ${groups} real-build groups: team entry unchanged; canonical portal, two accounts, cookie/reload/logout, 401/403/503`,
+      `PASS ${groups} real-build groups: team entry unchanged; portal without address restriction, two accounts, cookie/reload/logout, 401/403/503`,
     );
   } finally {
     await browser.close();

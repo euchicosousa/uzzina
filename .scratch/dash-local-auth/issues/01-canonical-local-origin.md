@@ -1,6 +1,6 @@
 # 01: Normalize the local portal entry to its configured origin
 
-**Status:** implemented, verified and committed locally on2026-10-31 after owner authorization. Real-credential/device acceptance remains separate; no push/deploy.
+**Status:** origin-rule-removed — owner explicitly requested removal rather than another normalization fix on2026-11-01 after network-IP denial. [Removal and verification](../../../docs/audits/2026-11-01-remove-portal-origin-rule.md). Earlier canonicalization/strict-Origin criteria below are historical and superseded; do not reintroduce the rule.
 **Priority:** P2 — local development portal access blocked through localhost; published portal works according to owner. Not a confirmed production outage.
 **Blocked by:** none for the reproduced origin failure. A credentialed failure at the canonical address, if separately reported, requires its own response evidence before expanding scope.
 

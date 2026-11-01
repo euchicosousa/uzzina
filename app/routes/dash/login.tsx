@@ -45,11 +45,9 @@ function DashLogin() {
     } catch (err) {
       console.error("Erro na autenticação do cliente:", err);
       setError(
-        err instanceof PortalHttpError && err.status === 403
-          ? "Este endereço não está autorizado. Abra o link correto do portal e tente novamente."
-          : err instanceof PortalHttpError && err.status === 503
-            ? "O portal está temporariamente indisponível. Tente novamente."
-            : "Não foi possível entrar no portal. Tente novamente.",
+        err instanceof PortalHttpError && err.status === 503
+          ? "O portal está temporariamente indisponível. Tente novamente."
+          : "Não foi possível entrar no portal. Tente novamente.",
       );
       setIsSubmitting(false);
     }

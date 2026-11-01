@@ -15,45 +15,6 @@ const HANDLERS: Record<string, string> = {
   "/api/create-user": "./api/create-user.ts",
 };
 
-function localPortalLocation(req: IncomingMessage, url: URL): string | null {
-  if (
-    process.env.VERCEL ||
-    req.method !== "GET" ||
-    !/^\/dash(?:\/login)?\/?$/.test(url.pathname) ||
-    !req.headers.accept?.toLowerCase().includes("text/html")
-  )
-    return null;
-
-  const configuredOrigin = process.env.APP_ORIGIN?.trim();
-  const host = req.headers.host;
-  if (!configuredOrigin || !host) return null;
-  try {
-    const canonical = new URL(configuredOrigin);
-    const incoming = new URL(`http://${host}`);
-    const loopback = (hostname: string) =>
-      hostname === "localhost" || hostname === "127.0.0.1";
-    if (
-      canonical.protocol !== "http:" ||
-      canonical.origin.toLowerCase() !== configuredOrigin.toLowerCase() ||
-      !loopback(canonical.hostname) ||
-      !loopback(incoming.hostname) ||
-      incoming.username ||
-      incoming.password ||
-      incoming.pathname !== "/" ||
-      incoming.search ||
-      incoming.hash ||
-      incoming.port !== canonical.port ||
-      incoming.hostname === canonical.hostname
-    )
-      return null;
-    canonical.pathname = url.pathname;
-    canonical.search = url.search;
-    return canonical.href;
-  } catch {
-    return null;
-  }
-}
-
 /** Local adapter for the same serverless handlers deployed to Vercel. */
 export function createDevApiMiddleware(
   loadHandler: (path: string) => Promise<Handler>,
@@ -64,14 +25,6 @@ export function createDevApiMiddleware(
     next: (error?: unknown) => void,
   ) => {
     const url = new URL(req.url || "/", "http://localhost");
-    const location = localPortalLocation(req, url);
-    if (location) {
-      res.statusCode = 307;
-      res.setHeader("Location", location);
-      res.setHeader("Cache-Control", "no-store");
-      res.end();
-      return;
-    }
     const path = HANDLERS[url.pathname];
     if (!path) return next();
     let body: unknown;

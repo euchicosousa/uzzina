@@ -402,7 +402,7 @@ it("anexo não confirma zero linhas nem falha do banco", async () => {
     ).status,
   ).toBe(503);
 });
-it("mutações rejeitam origem ausente ou externa", async () => {
+it("mutações autorizadas pela sessão não dependem da origem", async () => {
   for (const origin of ["", "https://attacker.example"]) {
     expect(
       (
@@ -413,9 +413,9 @@ it("mutações rejeitam origem ausente ou externa", async () => {
           { origin },
         )
       ).status,
-    ).toBe(403);
+    ).toBe(201);
   }
-  expect(writes).toBe(0);
+  expect(writes).toBe(2);
 });
 it("sessões ausentes, expiradas e revogadas não escrevem", async () => {
   expect(

@@ -25,7 +25,7 @@ bun install --frozen-lockfile
 bun run dev
 ```
 
-Vite inicia em http://127.0.0.1:5176, com porta fixa. O adaptador local executa as APIs da pasta api; um preview do build estático não substitui esse servidor de desenvolvimento nem as funções da Vercel. Ao abrir `/dash` ou `/dash/login` por `localhost` na mesma porta, o adaptador direciona a página para a origem local configurada antes do login. O login da equipe (`/login` → `/app`) e links de revisão mantêm seus endereços. Essa normalização não libera outras origens na API nem muda a autenticação publicada.
+Vite inicia em http://127.0.0.1:5176, com porta fixa. O adaptador executa as APIs da pasta api; preview estático não substitui o servidor/APIs. O portal mantém o endereço solicitado (localhost,127.0.0.1 ou IP da máquina na rede), sem exigir APP_ORIGIN e sem redirecionamento canônico obrigatório. A regra de endereço foi removida por pedido explícito do proprietário em01/11/2026.
 
 Por decisão do proprietário em27/10/2026, `bun run dev` usa **o banco de produção** (projeto Supabase `dfepmjcozszswocwvdpq`) e as contas reais. Edições no localhost afetam os mesmos dados do aplicativo publicado. O comando inicia Vite via Node no modo `production`, carregando `.env.production.local`; esse modo de configuração mantém o servidor de desenvolvimento e desativa o bypass local de quota. A IA usa `consume_ai_usage` de produção e OpenAI reais. Staging foi retirado do fluxo habitual. O launcher `scripts/dev-server.cjs` verifica a porta antes de iniciar o Vite; uma segunda inicialização com a porta ocupada termina sem invalidar o cache do processo ativo. O cache do Vite fica em `.cache/vite`, próprio de cada checkout, inclusive quando `node_modules` é compartilhado.
 
@@ -33,8 +33,8 @@ Por decisão do proprietário em27/10/2026, `bun run dev` usa **o banco de produ
 
 | Arquivo privado | Finalidade |
 |---|---|
-| .env.production.local | Configuração ativa de desenvolvimento/build local, com banco/chaves de produção e APP_ORIGIN=http://127.0.0.1:5176 |
-| .env.vercel-production.local | Cópia das variáveis de publicação na Vercel UZZINA/Production; preserva APP_ORIGIN=https://uzzina.cnvt.com.br |
+| .env.production.local | Configuração ativa de desenvolvimento/build local, com banco/chaves de produção |
+| .env.vercel-production.local | Cópia das variáveis de publicação na Vercel UZZINA/Production |
 | .env.staging.local | Configuração histórica de staging, preservada para scripts explicitamente destinados a esse projeto; não carregada pelo dev padrão |
 | .env.staging-users.local | Contas fictícias históricas dos scripts de staging; não usadas para login no localhost nem importadas na Vercel |
 | .env.backup.local | Conexão privada para backup/operações PostgreSQL; não importar na Vercel |
@@ -50,10 +50,10 @@ As dez variáveis do arquivo de publicação são:
 | SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY | APIs; mesmos valores das correspondentes públicas, exigidos diretamente por create-user |
 | SUPABASE_SERVICE_ROLE_KEY | Acesso privilegiado somente no servidor; aceita a secret key moderna configurada |
 | OPENAI_API_KEY | Geração de IA somente no servidor |
-| APP_ORIGIN | Origem exata autorizada do portal; em produção https://uzzina.cnvt.com.br |
+| APP_ORIGIN | Legado sem uso no portal; não restringe login, logout ou mutações |
 | AI_DAILY_LIMIT | Limite técnico opcional, padrão100 tentativas por usuário/dia UTC |
 
-As variáveis de banco/servidor do arquivo local vêm da cópia de produção, sem credenciais de staging. APP_ORIGIN é a única substituição para o endereço local; o arquivo destinado à Vercel mantém sua origem publicada. Cloudinary e OpenAI também são os serviços reais.
+As variáveis de banco/servidor do arquivo local vêm da cópia de produção, sem credenciais de staging. APP_ORIGIN não é mais exigido pelo portal. Cloudinary e OpenAI também são os serviços reais.
 
 Variáveis VITE_ são públicas quando usadas no build. VITE_SESSION_SECRET, VITE_CLOUDINARY_API_KEY e VITE_CLOUDINARY_API_SECRET não são usadas pelo código atual e foram retiradas dos arquivos locais. Preserve cloud name/upload preset.
 

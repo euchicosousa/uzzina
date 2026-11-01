@@ -13,7 +13,6 @@ import {
   hashSessionToken,
   serializeClearSessionCookie,
   serializeSessionCookie,
-  validateRequestOrigin,
 } from "../server/dash-session.js";
 
 async function handleRequest(req: VercelRequest, res: VercelResponse) {
@@ -26,8 +25,6 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
   }
 
   const isProduction = process.env.NODE_ENV === "production";
-  const appOrigin = process.env.APP_ORIGIN;
-  const originHeader = req.headers.origin as string | undefined;
 
   const serviceConfig = getServiceConfig();
 
@@ -42,15 +39,6 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: "Pedido inválido." });
   }
   const { action = "login", email, password } = req.body || {};
-
-  // Validação de Origin para ações que alteram estado (login, logout)
-  if (action === "login" || action === "logout") {
-    if (!validateRequestOrigin(originHeader, appOrigin, isProduction)) {
-      return res
-        .status(403)
-        .json({ error: "Origem da requisição não autorizada." });
-    }
-  }
 
   const supabaseAdmin = createServiceClient(serviceConfig);
 

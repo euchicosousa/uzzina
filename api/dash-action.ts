@@ -8,7 +8,6 @@ import {
   extractCookie,
   hashSessionToken,
   SESSION_COOKIE_NAME,
-  validateRequestOrigin,
 } from "../server/dash-session.js";
 
 async function handleRequest(req: VercelRequest, res: VercelResponse) {
@@ -17,16 +16,6 @@ async function handleRequest(req: VercelRequest, res: VercelResponse) {
     res.setHeader("Allow", "GET, POST, PATCH, DELETE");
     return res.status(405).json({ error: "Método não permitido." });
   }
-  if (
-    req.method !== "GET" &&
-    !validateRequestOrigin(
-      typeof req.headers.origin === "string" ? req.headers.origin : undefined,
-      process.env.APP_ORIGIN,
-      process.env.NODE_ENV === "production",
-    )
-  )
-    return res.status(403).json({ error: "Origem não autorizada." });
-
   const serviceConfig = getServiceConfig();
   if (!serviceConfig)
     return res

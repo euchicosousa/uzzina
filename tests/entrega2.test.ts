@@ -9,7 +9,6 @@ import {
   hashSessionToken,
   serializeClearSessionCookie,
   serializeSessionCookie,
-  validateRequestOrigin,
 } from "../server/dash-session";
 
 interface MockClient {
@@ -563,32 +562,6 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
       expect(clearCookie).toContain("Max-Age=0");
       expect(clearCookie).toContain("Expires=Thu, 01 Jan 1970 00:00:00 GMT");
     });
-
-    it("valida Origin contra APP_ORIGIN e rejeita origens não autorizadas", () => {
-      expect(
-        validateRequestOrigin(
-          "https://app.uzzina.com",
-          "https://app.uzzina.com",
-          true,
-        ),
-      ).toBe(true);
-      expect(
-        validateRequestOrigin(
-          "https://evil.com",
-          "https://app.uzzina.com",
-          true,
-        ),
-      ).toBe(false);
-      expect(validateRequestOrigin(null, "https://app.uzzina.com", true)).toBe(
-        false,
-      );
-      expect(
-        validateRequestOrigin(undefined, "https://app.uzzina.com", false),
-      ).toBe(false);
-      expect(validateRequestOrigin("http://localhost:5173", null, false)).toBe(
-        true,
-      );
-    });
   });
 
   describe("Handler do Servidor (api/dash-auth.ts)", () => {
@@ -615,11 +588,11 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
       expect(res._headers().Allow).toEqual(["POST"]);
     });
 
-    it("rejeita requisições mutantes com Origin externo não autorizado com 403", async () => {
+    it("permite login válido pelo endereço da rede sem exigir Origin autorizado", async () => {
       const res = createMockRes();
       const req = createMockReq({
         method: "POST",
-        headers: { origin: "https://atacante.com" },
+        headers: { origin: "http://192.168.0.21:5176" },
         body: {
           action: "login",
           email: "ativo@empresa.com",
@@ -628,9 +601,9 @@ describe("Entrega 2 - S01: Login e Retomada por Sessão de Servidor (Ticket 02)"
       });
 
       await dashAuthHandler(req, res);
-      expect(res._status()).toBe(403);
-      expect(String(res._body()?.error)).toContain(
-        "Origem da requisição não autorizada",
+      expect(res._status()).toBe(200);
+      expect(res._body()?.client).toEqual(
+        expect.objectContaining({ id: "cli-active" }),
       );
     });
 
