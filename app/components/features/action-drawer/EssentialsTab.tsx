@@ -8,7 +8,14 @@ import {
   LoaderIcon,
   SparkleIcon,
 } from "lucide-react";
-import { Suspense, lazy, useId, useRef, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
 const Tiptap = lazy(() =>
   import("~/components/features/RichTextEditor").then((module) => ({
@@ -32,6 +39,8 @@ import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "~/components/features/media/WorkFileThumbnail";
 import { useShortWritingPanel } from "./useWritingAreaHeight";
 interface EssentialsTabProps {
+  /** Height Essencial needs without scrolling (title + metadata + description minimum). */
+  onNeededHeightChange?: (height: number) => void;
   RawAction: Action;
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;
   updateAction: (
@@ -82,9 +91,34 @@ export function EssentialsTab({
   compact = false,
   detailsExpanded = false,
   onDetailsExpandedChange,
+  onNeededHeightChange,
 }: EssentialsTabProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const shortPanel = useShortWritingPanel(scrollerRef);
+  const neededHeightCallback = useRef(onNeededHeightChange);
+  neededHeightCallback.current = onNeededHeightChange;
+  useLayoutEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller || typeof ResizeObserver === "undefined") return;
+    // Children: title, metadata (both shrink-0) and the description, whose
+    // own height depends on the scroller; only its minimum counts as needed.
+    const [title, metadata, description] = Array.from(scroller.children);
+    if (!title || !metadata || !description) return;
+    const measure = () => {
+      const minimum =
+        Number.parseFloat(getComputedStyle(description).minHeight) || 0;
+      neededHeightCallback.current?.(
+        title.getBoundingClientRect().height +
+          metadata.getBoundingClientRect().height +
+          minimum,
+      );
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(title);
+    observer.observe(metadata);
+    return () => observer.disconnect();
+  }, []);
   const workFilesRef = useRef(workFiles);
   workFilesRef.current = workFiles;
   const workFilesMetaRef = useRef<

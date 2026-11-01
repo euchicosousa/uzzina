@@ -4,6 +4,7 @@ import {
   AlertTriangleIcon,
   HeartIcon,
   MessageSquareIcon,
+  SmartphoneIcon,
   XIcon,
 } from "lucide-react";
 import { Icons } from "~/components/uzzina/UIcons";
@@ -27,6 +28,7 @@ import { ActionDrawerFocusScope } from "./ActionDrawerFocusScope";
 import { useActionAI } from "./useActionAI";
 import { useDurableStrategies } from "./useDurableStrategies";
 import { useCompactPanel } from "./useCompactPanel";
+import { useLandscapeSpaceAdvisory } from "./useLandscapeSpaceAdvisory";
 import { EssentialsTab } from "./EssentialsTab";
 import { InstagramTab } from "./InstagramTab";
 import { ObservationsTab } from "./ObservationsTab";
@@ -714,6 +716,20 @@ export function ActionFormDrawer({
   const handleSafeClose = onClose;
   const contentRef = useRef<HTMLDivElement>(null);
   const compact = useCompactPanel(contentRef);
+  const { lowSpace, reportEssentialHeight } =
+    useLandscapeSpaceAdvisory(contentRef);
+  // Only the visible form blocks; with two forms mounted just one overlay shows.
+  const blocked = lowSpace && isActive;
+  useEffect(() => {
+    if (!blocked) return;
+    // Close the on-screen keyboard; the content stays mounted but inert.
+    const active = document.activeElement;
+    if (
+      active instanceof HTMLElement &&
+      contentRef.current?.closest("[data-drawer-focus-scope]")?.contains(active)
+    )
+      active.blur();
+  }, [blocked]);
   // Accepting a version remounts the editors, which drops their focus; return
   // it to the remounted editor or the form instead of the page.
   const lastFocusRef = useRef<Element | null>(null);
@@ -790,275 +806,302 @@ export function ActionFormDrawer({
           if (success && !event.shiftKey) await handleSafeClose();
         }
       }}
-      className="flex h-full w-full max-w-full flex-col overflow-hidden"
+      className="relative flex h-full w-full max-w-full flex-col overflow-hidden"
     >
-      {RawAction.archived && (
-        <div className="flex shrink-0 items-center justify-center gap-2 border-b bg-error-background p-2 text-sm font-medium text-error">
-          <ArchiveIcon className="size-4" />
-          Esta ação está arquivada.
-          <button
-            className="ml-2 underline hover:no-underline"
-            onClick={() => {
-              setRawAction((prev) => ({
-                ...prev,
-                archived: false,
-              }));
-              updateAction({
-                archived: false,
-              });
-            }}
-            type="button"
-          >
-            Desarquivar
-          </button>
-        </div>
-      )}
-
-      {coordinatorState.status === "conflict" && (
-        <div
-          data-testid="drawer-conflict-banner"
-          className="flex shrink-0 items-center justify-between gap-3 border-b bg-warning-background p-3 text-sm font-medium text-warning"
-        >
-          <div className="flex min-w-0 items-center gap-2">
-            <AlertTriangleIcon className="size-4 shrink-0" />
-            <span className="truncate">
-              {coordinatorState.errorMessage ||
-                "Esta ação foi modificada em outra sessão. Suas edições foram retidas localmente."}
-            </span>
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
+      {/* Layout-neutral wrapper so the whole form can be made inert. */}
+      <div className="contents" inert={blocked}>
+        {RawAction.archived && (
+          <div className="flex shrink-0 items-center justify-center gap-2 border-b bg-error-background p-2 text-sm font-medium text-error">
+            <ArchiveIcon className="size-4" />
+            Esta ação está arquivada.
             <button
-              className="text-xs font-semibold underline hover:no-underline"
-              disabled={isComparing}
-              onClick={compareLatestForSave}
+              className="ml-2 underline hover:no-underline"
+              onClick={() => {
+                setRawAction((prev) => ({
+                  ...prev,
+                  archived: false,
+                }));
+                updateAction({
+                  archived: false,
+                });
+              }}
               type="button"
             >
-              Comparar e salvar
+              Desarquivar
             </button>
           </div>
-        </div>
-      )}
+        )}
 
-      {coordinatorState.remoteVersion &&
-        coordinatorState.status !== "conflict" && (
+        {coordinatorState.status === "conflict" && (
           <div
-            data-testid="drawer-remote-version-banner"
+            data-testid="drawer-conflict-banner"
             className="flex shrink-0 items-center justify-between gap-3 border-b bg-warning-background p-3 text-sm font-medium text-warning"
           >
             <div className="flex min-w-0 items-center gap-2">
               <AlertTriangleIcon className="size-4 shrink-0" />
               <span className="truncate">
-                {coordinatorState.isDirty
-                  ? "Há uma versão mais recente. Suas alterações aguardam a comparação."
-                  : "Há uma versão mais recente desta ação."}
+                {coordinatorState.errorMessage ||
+                  "Esta ação foi modificada em outra sessão. Suas edições foram retidas localmente."}
+              </span>
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                className="text-xs font-semibold underline hover:no-underline"
+                disabled={isComparing}
+                onClick={compareLatestForSave}
+                type="button"
+              >
+                Comparar e salvar
+              </button>
+            </div>
+          </div>
+        )}
+
+        {coordinatorState.remoteVersion &&
+          coordinatorState.status !== "conflict" && (
+            <div
+              data-testid="drawer-remote-version-banner"
+              className="flex shrink-0 items-center justify-between gap-3 border-b bg-warning-background p-3 text-sm font-medium text-warning"
+            >
+              <div className="flex min-w-0 items-center gap-2">
+                <AlertTriangleIcon className="size-4 shrink-0" />
+                <span className="truncate">
+                  {coordinatorState.isDirty
+                    ? "Há uma versão mais recente. Suas alterações aguardam a comparação."
+                    : "Há uma versão mais recente desta ação."}
+                </span>
+              </div>
+              <button
+                className="shrink-0 text-xs font-semibold underline hover:no-underline"
+                onClick={() => setComparison(coordinatorState.remoteVersion)}
+                type="button"
+              >
+                Comparar
+              </button>
+            </div>
+          )}
+
+        {coordinatorState.unavailable && (
+          <p
+            data-testid="drawer-unavailable-banner"
+            className="shrink-0 border-b bg-error-background p-3 text-sm font-medium text-error"
+            role="alert"
+          >
+            Esta ação não está disponível ou você não tem acesso a ela.
+          </p>
+        )}
+
+        {coordinatorState.status === "error" && (
+          <div
+            data-testid="drawer-error-banner"
+            className="flex shrink-0 items-center justify-between gap-3 border-b bg-error-background p-3 text-sm font-medium text-error"
+          >
+            <div className="flex min-w-0 items-center gap-2">
+              <AlertTriangleIcon className="size-4 shrink-0" />
+              <span className="truncate">
+                {coordinatorState.errorMessage || "Erro ao salvar alterações."}
               </span>
             </div>
             <button
               className="shrink-0 text-xs font-semibold underline hover:no-underline"
-              onClick={() => setComparison(coordinatorState.remoteVersion)}
+              onClick={() => {
+                handleSave();
+              }}
               type="button"
             >
-              Comparar
+              Tentar novamente
             </button>
           </div>
         )}
 
-      {coordinatorState.unavailable && (
-        <p
-          data-testid="drawer-unavailable-banner"
-          className="shrink-0 border-b bg-error-background p-3 text-sm font-medium text-error"
-          role="alert"
-        >
-          Esta ação não está disponível ou você não tem acesso a ela.
-        </p>
-      )}
-
-      {coordinatorState.status === "error" && (
-        <div
-          data-testid="drawer-error-banner"
-          className="flex shrink-0 items-center justify-between gap-3 border-b bg-error-background p-3 text-sm font-medium text-error"
-        >
-          <div className="flex min-w-0 items-center gap-2">
-            <AlertTriangleIcon className="size-4 shrink-0" />
-            <span className="truncate">
-              {coordinatorState.errorMessage || "Erro ao salvar alterações."}
-            </span>
-          </div>
-          <button
-            className="shrink-0 text-xs font-semibold underline hover:no-underline"
-            onClick={() => {
-              handleSave();
-            }}
-            type="button"
-          >
-            Tentar novamente
-          </button>
-        </div>
-      )}
-
-      <PrismTabs
-        selectedKey={view}
-        keyboardActivation="manual"
-        onSelectionChange={(key) => {
-          if (
-            key === "essential" ||
-            key === "instagram" ||
-            key === "observations"
-          )
-            setView(key);
-        }}
-        className="min-h-0 flex-1"
-      >
-        {/* Tabs */}
-        <div
-          className="flex w-full shrink-0 border-b"
-          data-drawer-navigation
-          onKeyDownCapture={(event) => {
-            // These view tabs keep the drawer's existing full Tab sequence;
-            // React Aria still handles arrows and activation within the list.
-            if (event.key === "Tab") event.stopPropagation();
+        <PrismTabs
+          selectedKey={view}
+          keyboardActivation="manual"
+          onSelectionChange={(key) => {
+            if (
+              key === "essential" ||
+              key === "instagram" ||
+              key === "observations"
+            )
+              setView(key);
           }}
+          className="min-h-0 flex-1"
         >
-          <PrismTabList
-            aria-label="Seções da ação"
-            className="min-w-0 flex-1 border-b-0"
+          {/* Tabs */}
+          <div
+            className="flex w-full shrink-0 border-b"
+            data-drawer-navigation
+            onKeyDownCapture={(event) => {
+              // These view tabs keep the drawer's existing full Tab sequence;
+              // React Aria still handles arrows and activation within the list.
+              if (event.key === "Tab") event.stopPropagation();
+            }}
           >
-            <PrismTab
-              id="essential"
-              tabIndex={0}
-              className="px-2 py-3 text-xs sm:p-4 sm:text-sm"
+            <PrismTabList
+              aria-label="Seções da ação"
+              className="min-w-0 flex-1 border-b-0"
             >
-              <span className="truncate">ESSENCIAL</span>
-              <HeartIcon className="size-4 shrink-0" />
-            </PrismTab>
-            {isSocialMediaContent(RawAction.category) && (
               <PrismTab
-                id="instagram"
+                id="essential"
                 tabIndex={0}
                 className="px-2 py-3 text-xs sm:p-4 sm:text-sm"
               >
-                <span className="truncate">INSTAGRAM</span>
-                <Icons className="size-4 shrink-0" slug="instagram" />
+                <span className="truncate">ESSENCIAL</span>
+                <HeartIcon className="size-4 shrink-0" />
               </PrismTab>
-            )}
-            <PrismTab
-              id="observations"
-              tabIndex={0}
-              className="px-2 py-3 text-xs sm:p-4 sm:text-sm"
-            >
-              <span className="truncate">OBSERVAÇÕES</span>
-              <MessageSquareIcon className="size-4 shrink-0" />
-            </PrismTab>
-          </PrismTabList>
-          <div className="flex shrink-0">
-            <button
-              aria-label="Fechar"
-              className="flex cursor-pointer items-center justify-center border-b px-3 py-3 text-sm font-medium outline-none focus-visible:bg-input focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset sm:p-5"
-              onClick={handleSafeClose}
-              type="button"
-            >
-              <XIcon className="size-4" />
-            </button>
-          </div>
-        </div>
-
-        <div
-          className="relative flex h-full w-full max-w-full grow flex-col overflow-hidden"
-          data-action-layout-width={compact ? "compact" : "regular"}
-          onFocusCapture={(event) => {
-            lastFocusRef.current = event.target;
-          }}
-          ref={contentRef}
-        >
-          {/* Essencial */}
-          <div className="flex h-full w-full divide-x overflow-hidden bg-popover">
-            {view === "essential" && (
-              <PrismTabPanel
-                id="essential"
-                className={cn(
-                  view !== "essential" && "hidden",
-                  "w-full max-w-full",
-                  "h-full overflow-hidden",
-                )}
-              >
-                <EssentialsTab
-                  autoFocus={isActive}
-                  cloudName={cloudName}
-                  compact={compact}
-                  detailsExpanded={detailsExpanded}
-                  onDetailsExpandedChange={setDetailsExpanded}
-                  currentPartners={currentPartners}
-                  descriptionVersion={descriptionVersion}
-                  isAIProcessing={isAIProcessing}
-                  strategyStatus={strategyStatus}
-                  hasStrategyActivity={hasStrategyActivity}
-                  onDescriptionChange={handleDescriptionChange}
-                  onOpenStrategyModal={() => setIsStrategyModalOpen(true)}
-                  onTitleBlur={handleTitleBlur}
-                  RawAction={RawAction}
-                  setRawAction={setRawAction}
-                  setWorkFiles={setWorkFiles}
-                  triggerAIAction={triggerAIAction}
-                  updateAction={updateAction}
-                  uploadPreset={uploadPreset}
-                  workFiles={workFiles}
-                />
-              </PrismTabPanel>
-            )}
-            {/* Instagram */}
-            {view === "instagram" && (
-              <PrismTabPanel id="instagram" className={cn("w-full", "h-full")}>
-                <InstagramTab
-                  activeAIIntent={activeAIIntent}
-                  cloudName={cloudName}
-                  compact={compact}
-                  contentDescription={contentDescriptionRef.current}
-                  contentVersion={contentVersion}
-                  contentFiles={contentFiles}
-                  currentPartners={currentPartners}
-                  isAIProcessing={isAIProcessing}
-                  strategiesBlocked={strategyControlsBlocked}
-                  onContentDescriptionChange={(html) => {
-                    contentDescriptionRef.current = html;
-                    coordinatorRef.current?.recordLocalChanges({
-                      content_description: html,
-                    });
-                  }}
-                  onOpenStrategyModal={() => setIsStrategyModalOpen(true)}
-                  RawAction={RawAction}
-                  setRawAction={setRawAction}
-                  triggerAIAction={triggerAIAction}
-                  updateAction={updateAction}
-                  updateContentFiles={updateContentFiles}
-                  uploadPreset={uploadPreset}
-                />
-              </PrismTabPanel>
-            )}
-            {view === "observations" && (
-              <PrismTabPanel
+              {isSocialMediaContent(RawAction.category) && (
+                <PrismTab
+                  id="instagram"
+                  tabIndex={0}
+                  className="px-2 py-3 text-xs sm:p-4 sm:text-sm"
+                >
+                  <span className="truncate">INSTAGRAM</span>
+                  <Icons className="size-4 shrink-0" slug="instagram" />
+                </PrismTab>
+              )}
+              <PrismTab
                 id="observations"
-                className={cn("w-full", "h-full")}
+                tabIndex={0}
+                className="px-2 py-3 text-xs sm:p-4 sm:text-sm"
               >
-                <ObservationsTab
-                  actionId={RawAction.id}
-                  partnerUsersIds={currentPartners[0]?.users_ids || []}
-                />
-              </PrismTabPanel>
-            )}
+                <span className="truncate">OBSERVAÇÕES</span>
+                <MessageSquareIcon className="size-4 shrink-0" />
+              </PrismTab>
+            </PrismTabList>
+            <div className="flex shrink-0">
+              <button
+                aria-label="Fechar"
+                className="flex cursor-pointer items-center justify-center border-b px-3 py-3 text-sm font-medium outline-none focus-visible:bg-input focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset sm:p-5"
+                onClick={handleSafeClose}
+                type="button"
+              >
+                <XIcon className="size-4" />
+              </button>
+            </div>
           </div>
+
+          <div
+            className="relative flex h-full w-full max-w-full grow flex-col overflow-hidden"
+            data-action-layout-width={compact ? "compact" : "regular"}
+            onFocusCapture={(event) => {
+              lastFocusRef.current = event.target;
+            }}
+            ref={contentRef}
+          >
+            {/* Essencial */}
+            <div className="flex h-full w-full divide-x overflow-hidden bg-popover">
+              {view === "essential" && (
+                <PrismTabPanel
+                  id="essential"
+                  className={cn(
+                    view !== "essential" && "hidden",
+                    "w-full max-w-full",
+                    "h-full overflow-hidden",
+                  )}
+                >
+                  <EssentialsTab
+                    autoFocus={isActive}
+                    cloudName={cloudName}
+                    compact={compact}
+                    onNeededHeightChange={reportEssentialHeight}
+                    detailsExpanded={detailsExpanded}
+                    onDetailsExpandedChange={setDetailsExpanded}
+                    currentPartners={currentPartners}
+                    descriptionVersion={descriptionVersion}
+                    isAIProcessing={isAIProcessing}
+                    strategyStatus={strategyStatus}
+                    hasStrategyActivity={hasStrategyActivity}
+                    onDescriptionChange={handleDescriptionChange}
+                    onOpenStrategyModal={() => setIsStrategyModalOpen(true)}
+                    onTitleBlur={handleTitleBlur}
+                    RawAction={RawAction}
+                    setRawAction={setRawAction}
+                    setWorkFiles={setWorkFiles}
+                    triggerAIAction={triggerAIAction}
+                    updateAction={updateAction}
+                    uploadPreset={uploadPreset}
+                    workFiles={workFiles}
+                  />
+                </PrismTabPanel>
+              )}
+              {/* Instagram */}
+              {view === "instagram" && (
+                <PrismTabPanel
+                  id="instagram"
+                  className={cn("w-full", "h-full")}
+                >
+                  <InstagramTab
+                    activeAIIntent={activeAIIntent}
+                    cloudName={cloudName}
+                    compact={compact}
+                    contentDescription={contentDescriptionRef.current}
+                    contentVersion={contentVersion}
+                    contentFiles={contentFiles}
+                    currentPartners={currentPartners}
+                    isAIProcessing={isAIProcessing}
+                    strategiesBlocked={strategyControlsBlocked}
+                    onContentDescriptionChange={(html) => {
+                      contentDescriptionRef.current = html;
+                      coordinatorRef.current?.recordLocalChanges({
+                        content_description: html,
+                      });
+                    }}
+                    onOpenStrategyModal={() => setIsStrategyModalOpen(true)}
+                    RawAction={RawAction}
+                    setRawAction={setRawAction}
+                    triggerAIAction={triggerAIAction}
+                    updateAction={updateAction}
+                    updateContentFiles={updateContentFiles}
+                    uploadPreset={uploadPreset}
+                  />
+                </PrismTabPanel>
+              )}
+              {view === "observations" && (
+                <PrismTabPanel
+                  id="observations"
+                  className={cn("w-full", "h-full")}
+                >
+                  <ObservationsTab
+                    actionId={RawAction.id}
+                    partnerUsersIds={currentPartners[0]?.users_ids || []}
+                  />
+                </PrismTabPanel>
+              )}
+            </div>
+          </div>
+        </PrismTabs>
+        {/* Create/update stays outside the tab collection. */}
+        <ActionFormFooter
+          compact={compact}
+          currentPartners={currentPartners}
+          handleClose={handleSafeClose}
+          handleSave={handleSave}
+          isPending={isPending}
+          RawAction={RawAction}
+          setRawAction={setRawAction}
+          updateAction={updateAction}
+        />
+      </div>
+      {blocked && (
+        <div
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-background p-6 text-center"
+          role="status"
+        >
+          <SmartphoneIcon
+            aria-hidden="true"
+            className="size-8 text-muted-foreground"
+          />
+          <p className="text-base font-medium text-foreground">
+            Gire o telefone
+          </p>
+          <p className="text-sm text-muted-foreground">
+            A edição da ação precisa da tela na vertical.
+          </p>
+          <PrismButton variant="outline" size="sm" onPress={handleSafeClose}>
+            Fechar ação
+          </PrismButton>
         </div>
-      </PrismTabs>
-      {/* Create/update stays outside the tab collection. */}
-      <ActionFormFooter
-        compact={compact}
-        currentPartners={currentPartners}
-        handleClose={handleSafeClose}
-        handleSave={handleSave}
-        isPending={isPending}
-        RawAction={RawAction}
-        setRawAction={setRawAction}
-        updateAction={updateAction}
-      />
+      )}
       <PrismDialog
         className="sm:max-w-3xl lg:max-w-5xl"
         isOpen={isActive && comparison !== null && !isStrategyModalOpen}
