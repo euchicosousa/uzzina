@@ -56,7 +56,7 @@ function ForgotPassword() {
     }
   };
   return (
-    <div className="grid h-screen grid-cols-[2rem_20rem_2rem] justify-center overflow-x-hidden md:grid-cols-[2rem_30rem_2rem]">
+    <div className="grid h-screen grid-cols-[1rem_minmax(0,28rem)_1rem] justify-center overflow-x-hidden sm:grid-cols-[2rem_minmax(0,28rem)_2rem]">
       <div className="border-r"></div>
 
       <div className="border_after border_before relative my-auto flex flex-col gap-12 p-8">
@@ -93,8 +93,8 @@ function ForgotPassword() {
             </p>
           </div>
         ) : (
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-4">
+          <form onSubmit={handleSubmit}>
+            <div className="mb-6 space-y-4">
               <h3>Recuperar Senha</h3>
               <p className="text-muted-foreground">
                 Digite seu e-mail cadastrado e enviaremos um link de
@@ -102,8 +102,9 @@ function ForgotPassword() {
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div>
               <TextField
+                className="mb-6"
                 isRequired
                 name="email"
                 onChange={setEmail}
@@ -128,9 +129,8 @@ function ForgotPassword() {
               </TextField>
             </div>
 
-            <div className="flex justify-end pt-2">
+            <div className="mt-6 flex justify-end">
               <PrismButton
-                className="w-full"
                 isDisabled={isSubmitting}
                 type="submit"
                 variant="default"
