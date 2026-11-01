@@ -1,0 +1,92 @@
+{
+  "projectRef": "dfepmjcozszswocwvdpq",
+  "projectName": "bussola",
+  "observedAt": "2026-11-01T14:05:07Z",
+  "postgres": "17.11.0.003",
+  "migration": {
+    "version": "20261101140254",
+    "name": "durable_strategy_operations",
+    "appliedAt": "2026-11-01T14:02:54Z",
+    "verification": "supabase/rollouts/strategy-operations-production-verification.json"
+  },
+  "migrationSha256": "efd1477c23d0d292cc09e576131ef9cf5daf976562f8190657261322f9e0825e",
+  "changes": "Only the incremental09 schema migration applied; no action/person/account data changed",
+  "tables": {
+    "strategy_operations": {
+      "rls": true,
+      "browserPrivileges": false,
+      "serviceRoleSelect": true
+    },
+    "strategy_runtime": {
+      "rls": true,
+      "browserPrivileges": false,
+      "serviceRoleSelect": true
+    }
+  },
+  "functions": {
+    "count": 11,
+    "securityDefiner": false,
+    "searchPath": "empty",
+    "anonExecute": false,
+    "authenticatedExecute": false,
+    "serviceRoleExecute": true
+  },
+  "httpChecks": [
+    {
+      "role": "anon",
+      "target": "strategy_operations SELECT limit0",
+      "status": 401,
+      "code": "42501"
+    },
+    {
+      "role": "anon",
+      "target": "strategy_ready RPC",
+      "status": 401,
+      "code": "42501"
+    },
+    {
+      "role": "service_role",
+      "target": "strategy_ready RPC",
+      "status": 200,
+      "value": false
+    },
+    {
+      "role": "service_role",
+      "target": "strategy_scope with unknown zero UUIDs",
+      "status": 200,
+      "value": false
+    }
+  ],
+  "operationCount": 0,
+  "ready": false,
+  "securityAdvisors": {
+    "newWarnings": 0,
+    "newInfo": "RLS enabled/no policy for2 private tables; intentional deny to browser roles, service-only access",
+    "existingWarningsPreserved": [
+      "8 authenticated SECURITY DEFINER functions",
+      "leaked password protection (previous owner decision)"
+    ],
+    "infoReference": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy"
+  },
+  "limitations": [
+    "One combined SET ROLE/DO verification returned an internal connector error and was not counted as passed; separate catalog and real HTTP checks succeeded",
+    "No signed-in real-user authorization matrix or production fixture writes",
+    "No paid generation",
+    "pg_cron/pg_net remain uninstalled; scheduler/secret/env/backend deployment pending",
+    "No full data backup created; additive migration had no preexisting object-name collisions and did not modify existing application tables/functions"
+  ],
+  "publishedEndpointChecks": [
+    {
+      "path": "/api/strategy-worker",
+      "method": "GET",
+      "status": 404,
+      "contentType": "application/json"
+    },
+    {
+      "path": "/api/strategy-operations",
+      "method": "GET",
+      "status": 404,
+      "contentType": "application/json"
+    }
+  ]
+}

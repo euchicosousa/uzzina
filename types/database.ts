@@ -14,6 +14,18 @@ export type Database = {
   }
   public: {
     Tables: {
+      strategy_operations: {
+        Row: {id: string; action_id: string; requester_id: string; state: string; source: Json; apply_source: Json; result: Json | null; error_code: string | null; quota_reserved: boolean; write_attempts: number; lease_id: string | null; lease_until: string | null; created_at: string; updated_at: string}
+        Insert: {id: string; action_id: string; requester_id: string; state: string; source: Json; apply_source: Json; result?: Json | null; error_code?: string | null; quota_reserved?: boolean; write_attempts?: number; lease_id?: string | null; lease_until?: string | null; created_at?: string; updated_at?: string}
+        Update: {id?: string; action_id?: string; requester_id?: string; state?: string; source?: Json; apply_source?: Json; result?: Json | null; error_code?: string | null; quota_reserved?: boolean; write_attempts?: number; lease_id?: string | null; lease_until?: string | null; created_at?: string; updated_at?: string}
+        Relationships: [{foreignKeyName: "strategy_operations_action_id_fkey"; columns: ["action_id"]; isOneToOne: false; referencedRelation: "actions"; referencedColumns: ["id"]}]
+      }
+      strategy_runtime: {
+        Row: {singleton: boolean; last_worker_at: string | null}
+        Insert: {singleton?: boolean; last_worker_at?: string | null}
+        Update: {singleton?: boolean; last_worker_at?: string | null}
+        Relationships: []
+      }
       ai_usage: {
         Row: {user_id: string; usage_day: string; attempts: number}
         Insert: {user_id: string; usage_day: string; attempts: number}
@@ -457,6 +469,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      strategy_scope: {Args: {p_user_id: string; p_action_id: string}; Returns: boolean}
+      strategy_source: {Args: {p_action_id: string; p_user_id: string}; Returns: Json}
+      strategy_ready: {Args: Record<string, never>; Returns: boolean}
+      strategy_public_operation: {Args: {p_operation: Database["public"]["Tables"]["strategy_operations"]["Row"]}; Returns: Json}
+      accept_strategy_operation: {Args: {p_user_id: string; p_action_id: string; p_operation_id: string; p_expected_version: string}; Returns: Json}
+      read_strategy_operation: {Args: {p_user_id: string; p_action_id: string}; Returns: Json}
+      claim_strategy_operation: {Args: {p_lease_id: string; p_limit: number}; Returns: Json}
+      store_strategy_result: {Args: {p_operation_id: string; p_lease_id: string; p_result: Json}; Returns: undefined}
+      finish_strategy_operation: {Args: {p_operation_id: string; p_lease_id: string}; Returns: Json}
+      fail_strategy_operation: {Args: {p_operation_id: string; p_lease_id: string; p_code: string}; Returns: undefined}
+      retry_strategy_result: {Args: {p_user_id: string; p_operation_id: string; p_expected_version: string; p_confirm_changed_source?: boolean}; Returns: Json}
       can_notify_mention: {Args: {p_comment_id: string; p_action_id: string; p_recipient_id: string}; Returns: boolean}
       update_my_preferences: {Args: {p_patch: Json}; Returns: Json}
       consume_ai_usage: {Args: {p_user_id: string; p_limit: number}; Returns: boolean}

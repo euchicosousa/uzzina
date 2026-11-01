@@ -1,4 +1,4 @@
-import type { Action, Partner } from "~/types";
+import type { Action, Partner, StrategyItem } from "~/types";
 import {
   ArchiveIcon,
   AlertTriangleIcon,
@@ -25,6 +25,7 @@ import {
 import { ActionFormFooter } from "./ActionFormFooter";
 import { ActionDrawerFocusScope } from "./ActionDrawerFocusScope";
 import { useActionAI } from "./useActionAI";
+import { useDurableStrategies } from "./useDurableStrategies";
 import { useCompactPanel } from "./useCompactPanel";
 import { EssentialsTab } from "./EssentialsTab";
 import { InstagramTab } from "./InstagramTab";
@@ -354,7 +355,8 @@ export function ActionFormDrawer({
   }, [handleSave]);
   const [isStrategyModalOpen, setIsStrategyModalOpen] = useState(false);
   // Selecting a strategy also adopts its headline as the action title.
-  const selectStrategy = (index: number, isSelected: boolean) => {
+  const selectStrategy = async (index: number, isSelected: boolean) => {
+    if (strategyControlsBlocked) return false;
     const strategies = parseStrategies(rawActionRef.current.strategies);
     const updated = strategies.map((s, idx) => ({
       ...s,
@@ -367,10 +369,10 @@ export function ActionFormDrawer({
       strategies: updated,
       ...(title ? { title } : {}),
     }));
-    updateAction({
+    return !!(await updateAction({
       strategies: updated,
       ...(title ? { title } : {}),
-    });
+    }));
   };
   const [descriptionVersion, setDescriptionVersion] = useState(0);
   const currentPartners = useMemo(() => {
@@ -378,23 +380,131 @@ export function ActionFormDrawer({
       .map((slug) => partners.find((partner) => partner.slug === slug))
       .filter((partner): partner is Partner => partner !== undefined);
   }, [RawAction.partners, partners]);
-  const { isAIProcessing, aiProcessingRef, activeAIIntent, triggerAIAction } =
-    useActionAI({
-      action: RawAction,
-      rawActionRef,
-      descriptionRef,
-      contentDescriptionRef,
-      currentPartners,
-      setRawAction,
-      updateAction,
-      setIsStrategyModalOpen,
-      setDescriptionVersion,
-    });
+  const durableStrategies = useDurableStrategies({
+    actionId: RawAction.id,
+    isActive,
+    queryClient,
+    prepareAction: async () => {
+      if (!(await handleSave())) {
+        if (coordinatorRef.current?.getState().remoteVersion)
+          setIsStrategyModalOpen(false);
+        return null;
+      }
+      const state = coordinatorRef.current?.getState();
+      return state &&
+        !state.isDirty &&
+        !state.remoteVersion &&
+        !state.unavailable
+        ? state.confirmedAction
+        : null;
+    },
+    onComplete: () => {
+      void queryClient.invalidateQueries({ queryKey: ["actions"] });
+    },
+  });
+  const {
+    isAIProcessing,
+    aiProcessingRef,
+    activeAIIntent,
+    triggerAIAction,
+    strategyGeneration,
+  } = useActionAI({
+    action: RawAction,
+    queryClient,
+    rawActionRef,
+    descriptionRef,
+    contentDescriptionRef,
+    currentPartners,
+    setRawAction,
+    updateAction,
+    setIsStrategyModalOpen,
+    setDescriptionVersion,
+    startDurableStrategy: durableStrategies.start,
+  });
   const isPending =
     isMutationLoading ||
     isAIProcessing ||
     coordinatorState.status === "creating" ||
     coordinatorState.status === "saving";
+  const strategiesPending = Object.hasOwn(
+    coordinatorState.pendingPatch,
+    "strategies",
+  );
+  const strategyStatus =
+    strategyGeneration.phase === "generating"
+      ? "generating"
+      : !durableStrategies.reconciled &&
+          strategyGeneration.phase === "generation-error"
+        ? "error"
+        : durableStrategies.operation
+          ? durableStrategies.pending
+            ? durableStrategies.operation.state === "generated"
+              ? "saving"
+              : "generating"
+            : durableStrategies.operation.state === "succeeded"
+              ? "saved"
+              : durableStrategies.operation.result
+                ? "unsaved"
+                : "error"
+          : strategiesPending
+            ? coordinatorState.status === "saving" ||
+              coordinatorState.status === "creating"
+              ? "saving"
+              : "unsaved"
+            : strategyGeneration.phase === "generation-error"
+              ? "error"
+              : null;
+  const canonicalStrategies = parseStrategies(RawAction.strategies);
+  const generatedOptions = durableStrategies.operation?.result;
+  const isDurablePreview =
+    !!generatedOptions &&
+    (canonicalStrategies.length !== generatedOptions.length ||
+      generatedOptions.some((strategy, index) =>
+        (["headline", "angulo", "racional", "direcionamento"] as const).some(
+          (field) => strategy[field] !== canonicalStrategies[index]?.[field],
+        ),
+      ));
+  const strategyControlsBlocked =
+    isPending ||
+    strategiesPending ||
+    durableStrategies.pending ||
+    !!coordinatorState.remoteVersion ||
+    isDurablePreview;
+  const strategyOptions: StrategyItem[] =
+    isDurablePreview && generatedOptions
+      ? generatedOptions
+      : canonicalStrategies;
+  const hasStrategyActivity = strategyStatus !== null;
+  const retryStrategySave = async () => {
+    if (isPending || isComparing) return;
+    if (durableStrategies.operation?.result) {
+      const changed =
+        durableStrategies.operation.state === "conflict" ||
+        durableStrategies.needsReview;
+      if (
+        changed &&
+        !window.confirm(
+          "Aplicar estas cinco estratégias preservadas à versão atual? Elas foram geradas antes das alterações e substituirão as estratégias atuais.",
+        )
+      )
+        return;
+      await durableStrategies.retry(changed);
+      return;
+    }
+    if (
+      coordinatorState.status === "conflict" ||
+      coordinatorState.remoteVersion
+    ) {
+      await compareLatestForSave();
+      return;
+    }
+    await handleSave();
+    const remote = coordinatorRef.current?.getState().remoteVersion;
+    if (remote && mountedRef.current) {
+      setIsStrategyModalOpen(false);
+      setComparison(remote);
+    }
+  };
   const [workFiles, setWorkFiles] = useState<string[]>(
     RawAction.work_files ?? [],
   );
@@ -533,6 +643,35 @@ export function ActionFormDrawer({
     }
   }, [comparison, isResolvingConflict, syncFieldsFromBase]);
 
+  const compareLatestForSave = async () => {
+    const coordinator = coordinatorRef.current;
+    const id = coordinator?.getState().confirmedAction?.id;
+    if (!coordinator || !id || isComparing) return;
+    const generation = coordinator.getGeneration();
+    const session = getQuerySessionGeneration(queryClient);
+    const isCurrent = () =>
+      mountedRef.current &&
+      generation === coordinator.getGeneration() &&
+      session === getQuerySessionGeneration(queryClient);
+    setIsComparing(true);
+    try {
+      const latest = await readActionClient(id);
+      if (!isCurrent()) return;
+      coordinator.setUnavailable(false);
+      setIsStrategyModalOpen(false);
+      setComparison(latest);
+    } catch (error) {
+      if (!isCurrent()) return;
+      if (error instanceof ActionUnavailableError)
+        coordinator.setUnavailable(true);
+      else
+        toast.error(
+          "Não foi possível carregar a versão atual. Suas alterações continuam aqui.",
+        );
+    } finally {
+      if (isCurrent()) setIsComparing(false);
+    }
+  };
   const prepareLeave = useCallback(async (): Promise<boolean> => {
     if (aiProcessingRef.current) {
       toast.info(
@@ -691,26 +830,7 @@ export function ActionFormDrawer({
             <button
               className="text-xs font-semibold underline hover:no-underline"
               disabled={isComparing}
-              onClick={async () => {
-                const id =
-                  coordinatorRef.current?.getState().confirmedAction?.id;
-                if (!id || isComparing) return;
-                setIsComparing(true);
-                try {
-                  const latest = await readActionClient(id);
-                  coordinatorRef.current?.setUnavailable(false);
-                  setComparison(latest);
-                } catch (error) {
-                  if (error instanceof ActionUnavailableError)
-                    coordinatorRef.current?.setUnavailable(true);
-                  else
-                    toast.error(
-                      "Não foi possível carregar a versão atual. Suas alterações continuam aqui.",
-                    );
-                } finally {
-                  setIsComparing(false);
-                }
-              }}
+              onClick={compareLatestForSave}
               type="button"
             >
               Comparar e salvar
@@ -870,6 +990,8 @@ export function ActionFormDrawer({
                   currentPartners={currentPartners}
                   descriptionVersion={descriptionVersion}
                   isAIProcessing={isAIProcessing}
+                  strategyStatus={strategyStatus}
+                  hasStrategyActivity={hasStrategyActivity}
                   onDescriptionChange={handleDescriptionChange}
                   onOpenStrategyModal={() => setIsStrategyModalOpen(true)}
                   onTitleBlur={handleTitleBlur}
@@ -895,6 +1017,7 @@ export function ActionFormDrawer({
                   contentFiles={contentFiles}
                   currentPartners={currentPartners}
                   isAIProcessing={isAIProcessing}
+                  strategiesBlocked={strategyControlsBlocked}
                   onContentDescriptionChange={(html) => {
                     contentDescriptionRef.current = html;
                     coordinatorRef.current?.recordLocalChanges({
@@ -1005,8 +1128,70 @@ export function ActionFormDrawer({
           </PrismDialogDescription>
         </PrismDialogHeader>
         <div className="max-h-[70vh] min-h-0 overflow-y-auto px-5 pb-6">
+          {(strategyStatus === "generating" ||
+            strategyStatus === "saving" ||
+            strategyStatus === "saved") && (
+            <p className="px-2 py-3" role="status" aria-live="polite">
+              {strategyStatus === "generating"
+                ? parseStrategies(RawAction.strategies).length
+                  ? "Recriando estratégias…"
+                  : "Criando estratégias…"
+                : strategyStatus === "saving"
+                  ? "Salvando estratégias…"
+                  : "Estratégias salvas."}
+            </p>
+          )}
+          {strategyStatus === "error" && (
+            <div className="space-y-3 px-2 py-3">
+              <p role="alert">
+                {durableStrategies.error || strategyGeneration.error}
+              </p>
+              <PrismButton
+                isDisabled={isPending}
+                onPress={() => triggerAIAction(INTENT.ai_strategy)}
+              >
+                Tentar gerar novamente
+              </PrismButton>
+            </div>
+          )}
+          {strategyStatus === "unsaved" && (
+            <div className="space-y-3 px-2 py-3">
+              <p role="alert">
+                As estratégias ainda não foram salvas.{" "}
+                {durableStrategies.error ||
+                  coordinatorState.errorMessage ||
+                  "Use o salvamento da ação para confirmar as alterações."}
+              </p>
+              <PrismButton isDisabled={isPending} onPress={retryStrategySave}>
+                {coordinatorState.remoteVersion ||
+                coordinatorState.status === "conflict"
+                  ? "Revisar conflito"
+                  : durableStrategies.operation?.result
+                    ? durableStrategies.needsReview ||
+                      durableStrategies.operation.state === "conflict"
+                      ? "Revisar e aplicar resultado preservado"
+                      : "Aplicar resultado preservado"
+                    : "Tentar salvar estratégias"}
+              </PrismButton>
+            </div>
+          )}
+          {strategyStatus === "saved" && (
+            <PrismButton
+              onPress={() => {
+                setIsStrategyModalOpen(false);
+                void checkRemoteVersionRef.current();
+              }}
+            >
+              Conferir estratégias salvas
+            </PrismButton>
+          )}
+          {
+            <PrismButton variant="ghost" onPress={durableStrategies.refresh}>
+              Conferir andamento
+            </PrismButton>
+          }
           <PrismAccordion className={"border-none"}>
-            {parseStrategies(RawAction.strategies).map((strat, i) => (
+            {strategyOptions.map((strat, i) => (
               <PrismAccordionItem
                 key={strat.headline || i}
                 defaultExpanded={i === 0}
@@ -1017,7 +1202,10 @@ export function ActionFormDrawer({
                     aria-label="Selecionar estratégia"
                     className="mt-5 shrink-0"
                     isSelected={!!strat.selected}
-                    onChange={(isSelected) => selectStrategy(i, isSelected)}
+                    isDisabled={strategyControlsBlocked}
+                    onChange={(isSelected) => {
+                      void selectStrategy(i, isSelected);
+                    }}
                   />
                   <PrismAccordionTrigger className="min-w-0 flex-1 px-2">
                     <div
@@ -1043,8 +1231,9 @@ export function ActionFormDrawer({
                     </p>
                     <PrismButton
                       className="self-end"
-                      onClick={() => {
-                        selectStrategy(i, true);
+                      isDisabled={strategyControlsBlocked}
+                      onClick={async () => {
+                        if (!(await selectStrategy(i, true))) return;
                         triggerAIAction(INTENT.ai_content, {
                           headline: strat.headline,
                           racional: strat.racional,

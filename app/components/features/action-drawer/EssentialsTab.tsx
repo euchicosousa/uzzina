@@ -44,6 +44,9 @@ interface EssentialsTabProps {
   cloudName: string;
   uploadPreset: string;
   isAIProcessing: boolean;
+  strategyStatus?:
+    "generating" | "saving" | "unsaved" | "error" | "saved" | null;
+  hasStrategyActivity?: boolean;
   autoFocus?: boolean;
   /** Phone-width panel: metadata collapses behind a date summary. */
   compact?: boolean;
@@ -67,6 +70,8 @@ export function EssentialsTab({
   currentPartners,
   cloudName,
   isAIProcessing,
+  strategyStatus,
+  hasStrategyActivity = false,
   onOpenStrategyModal,
   triggerAIAction,
   uploadPreset,
@@ -266,28 +271,41 @@ export function EssentialsTab({
               (() => {
                 const hasStrategies =
                   parseStrategies(RawAction.strategies).length > 0;
-                const buttonLabel = isAIProcessing
-                  ? hasStrategies
-                    ? "RECRIANDO ESTRATÉGIAS..."
-                    : "CRIANDO ESTRATÉGIA..."
-                  : hasStrategies
-                    ? "RECRIAR ESTRATÉGIAS"
-                    : "CRIAR ESTRATÉGIA";
+                const buttonLabel =
+                  strategyStatus === "saving"
+                    ? "SALVANDO ESTRATÉGIAS..."
+                    : strategyStatus === "generating"
+                      ? hasStrategies
+                        ? "RECRIANDO ESTRATÉGIAS..."
+                        : "CRIANDO ESTRATÉGIA..."
+                      : hasStrategies
+                        ? "RECRIAR ESTRATÉGIAS"
+                        : "CRIAR ESTRATÉGIA";
                 return (
                   <PrismButtonGroup className="min-w-0 shrink">
-                    {hasStrategies && onOpenStrategyModal && (
-                      <PrismButton
-                        aria-label="Ver estratégias geradas"
-                        onClick={onOpenStrategyModal}
-                        size="xs"
-                        variant="secondary"
-                      >
-                        <ListIcon />
-                      </PrismButton>
-                    )}
+                    {(hasStrategies || hasStrategyActivity) &&
+                      onOpenStrategyModal && (
+                        <PrismButton
+                          aria-label={
+                            hasStrategies &&
+                            !["generating", "saving"].includes(
+                              strategyStatus || "",
+                            )
+                              ? "Ver estratégias geradas"
+                              : "Ver progresso das estratégias"
+                          }
+                          onClick={onOpenStrategyModal}
+                          size="xs"
+                          variant="secondary"
+                        >
+                          <ListIcon />
+                        </PrismButton>
+                      )}
                     <PrismButton
                       className="min-w-0 shrink"
-                      isDisabled={isAIProcessing}
+                      isDisabled={
+                        isAIProcessing || strategyStatus === "unsaved"
+                      }
                       onClick={handleTriggerAI}
                       size="xs"
                       variant="secondary"

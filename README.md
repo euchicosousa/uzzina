@@ -108,6 +108,16 @@ A correção incremental de leitura de ações é `supabase/migrations/202610081
 
 Após uma publicação, o proprietário pode conferir login/home, ações/data, preferências, IA, administração, portal/revisão, upload e Leads. Em edição simultânea, alterar a mesma ação em duas sessões e verificar conflito/preservação do rascunho; atualizar para confirmar persistência. Fazer essas verificações com registros próprios de teste e relatar passos/erro/navegador, sem segredos. O resultado vigente fica em CURRENT.
 
+## Geração persistente de estratégias
+
+Estratégias usam permanentemente a fila privada no servidor. Não configurar `UZZINA_DURABLE_STRATEGIES` nem `VITE_DURABLE_STRATEGIES`: essas chaves foram removidas a pedido do proprietário. A aplicação salva/cria a ação canônica antes de aceitar a operação; depois da aceitação pode fechar a página. Readiness, autorização, versão, quota e confirmação de persistência continuam obrigatórias, sem fallback para geração de estratégias pelo navegador.
+
+A migration estrutural já foi aplicada em produção em01/11 (remota `20261101140254`); não reaplicá-la. [Manifest](supabase/rollouts/strategy-operations-manifest.json) e [registro operacional](docs/audits/2026-11-01-strategy-activation.md) distinguem SQL, configuração e publicação. O executor exige `STRATEGY_WORKER_SECRET` independente (mínimo32 caracteres), igual ao segredo Vault `uzzina_strategy_worker_secret`; não usar uma chave Supabase nem prefixar segredos com VITE_. O segredo foi configurado nesta ativação sem ser exibido/versionado.
+
+O [scheduler separado](supabase/rollouts/strategy-operations-scheduler.sql) instala pg_cron/pg_net e um job inicialmente inativo. Depois de verificar o novo backend Ready e sua chamada autenticada, ativar somente esse job. Acorda a cada30s; timeout HTTP120s, uma geração por chamada, modelo90s sem retry, lease150s e Vercel180s. `UZZINA_STRATEGY_ACCEPTING=false` pausa opcionalmente novas aceitações mantendo worker/status/recuperação para drenar; não apagar resultados/tabelas nem desligar executor com operações aceitas pendentes.
+
+Teste SQL isolado com PostgreSQL17 e módulo `pg` fora do projeto: `PG_MODULE=/caminho/para/pg PG_SOCKET=/caminho/absoluto/socket PG_PORT=55434 node scripts/check-strategy-database.cjs`. O script só aceita socket local, cria/remove seu banco descartável e aplica a migration real com dados fictícios. Não redirecionar essas fixtures para produção.
+
 ## Teclado na edição de ações
 
 Na aba Essencial, Tab percorre Título → Descrição → Parceiros → Fase → Categoria → Cor, quando disponível → Criar/Atualizar. Após Criar/Atualizar, segue para Essencial → Instagram, quando disponível → Observações → Fechar → Título. As abas mostram uma borda superior na cor principal ao receber foco. Shift+Tab faz o caminho inverso. Alt+F10 alterna para navegar por todos os controles; o aviso inferior desse atalho está oculto.

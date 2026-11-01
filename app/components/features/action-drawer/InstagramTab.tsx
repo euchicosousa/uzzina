@@ -30,6 +30,7 @@ interface InstagramTabProps {
   cloudName: string;
   uploadPreset: string;
   isAIProcessing: boolean;
+  strategiesBlocked?: boolean;
   activeAIIntent?: string | null;
   triggerAIAction: (
     intent: string,
@@ -73,6 +74,7 @@ export function InstagramTab({
   cloudName,
   uploadPreset,
   isAIProcessing,
+  strategiesBlocked = false,
   activeAIIntent,
   triggerAIAction,
   contentDescription,
@@ -195,7 +197,7 @@ export function InstagramTab({
 
                       <PrismButton
                         className="min-w-0 flex-1 shrink truncate"
-                        isDisabled={isAIProcessing}
+                        isDisabled={isAIProcessing || strategiesBlocked}
                         onClick={() => {
                           const stratToUse = selectedStrat || strategies[0];
                           if (stratToUse) {

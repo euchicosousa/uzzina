@@ -1,12 +1,18 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { QueryClient } from "@tanstack/react-query";
+import { getQuerySessionGeneration } from "~/lib/query-client";
 import { toast } from "sonner";
 import { INTENT } from "~/lib/CONSTANTS";
 import { callAI, type AIPayload } from "~/services/ai-client";
 import type { Action, Partner } from "~/types";
-import { parseStrategies } from "~/utils";
 
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
+}
+
+export interface StrategyGeneration {
+  phase: "idle" | "generating" | "generation-error";
+  error: string | null;
 }
 
 type SetRawAction = (value: Action | ((prev: Action) => Action)) => void;
@@ -21,6 +27,7 @@ type UpdateAction = (
  */
 export function useActionAI({
   action,
+  queryClient,
   rawActionRef,
   descriptionRef,
   contentDescriptionRef,
@@ -29,8 +36,10 @@ export function useActionAI({
   updateAction,
   setIsStrategyModalOpen,
   setDescriptionVersion,
+  startDurableStrategy,
 }: {
   action: Action;
+  queryClient: QueryClient;
   rawActionRef: { current: Action };
   descriptionRef: { current: string };
   contentDescriptionRef: { current: string };
@@ -39,7 +48,19 @@ export function useActionAI({
   updateAction: UpdateAction;
   setIsStrategyModalOpen: (open: boolean) => void;
   setDescriptionVersion: (update: (version: number) => number) => void;
+  startDurableStrategy: () => Promise<boolean>;
 }) {
+  const mounted = useRef(false);
+  const opening = useRef(0);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      opening.current++;
+    };
+  }, []);
+  const [strategyGeneration, setStrategyGeneration] =
+    useState<StrategyGeneration>({ phase: "idle", error: null });
   const [isAIProcessing, setIsAIProcessing] = useState(false);
   const aiProcessingRef = useRef(false);
   const [activeAIIntent, setActiveAIIntent] = useState<string | null>(null);
@@ -49,10 +70,28 @@ export function useActionAI({
     customPayload?: Record<string, string | string[] | null>,
   ) => {
     if (aiProcessingRef.current) return;
+    const generation = opening.current;
+    const session = getQuerySessionGeneration(queryClient);
+    const isCurrent = () =>
+      mounted.current &&
+      generation === opening.current &&
+      session === getQuerySessionGeneration(queryClient);
+    if (!isCurrent()) return;
+    const isStrategy = intent === INTENT.ai_strategy;
+    if (isStrategy) {
+      setStrategyGeneration({ phase: "generating", error: null });
+      setIsStrategyModalOpen(true);
+    }
     aiProcessingRef.current = true;
     setIsAIProcessing(true);
     setActiveAIIntent(intent);
     try {
+      if (isStrategy) {
+        await startDurableStrategy();
+        if (isCurrent()) setStrategyGeneration({ phase: "idle", error: null });
+        return;
+      }
+      if (!isCurrent()) return;
       const partner = currentPartners[0];
       const partnerName = partner?.title.trim();
       if (!partner || !partnerName || partnerName.length > 500) {
@@ -78,26 +117,8 @@ export function useActionAI({
         }
       }
       const data = await callAI(aiPayload);
+      if (!isCurrent()) return;
       if (data?.output) {
-        if (intent === INTENT.ai_strategy) {
-          const newStrategies = parseStrategies(data.output);
-          // Set strategies in local state FIRST
-          setRawAction((prev) => ({
-            ...prev,
-            strategies: newStrategies,
-          }));
-          setIsStrategyModalOpen(true);
-          // Save to DB — updateAction internally calls setRawAction(result) which
-          // will overwrite strategies with the DB's Json type. We re-apply strategies after.
-          await updateAction({
-            strategies: newStrategies,
-          });
-          // Re-apply strategies after DB write since setRawAction(result) resets it
-          setRawAction((prev) => ({
-            ...prev,
-            strategies: newStrategies,
-          }));
-        }
         if (intent === INTENT.ai_content) {
           const out = data.output as
             | {
@@ -172,6 +193,15 @@ export function useActionAI({
       }
       return data;
     } catch (err) {
+      if (!isCurrent()) return;
+      if (isStrategy)
+        setStrategyGeneration({
+          phase: "generation-error",
+          error:
+            err instanceof Error
+              ? err.message
+              : "Não foi possível criar estratégias. Tente novamente.",
+        });
       console.error("Erro no processamento de IA:", err);
       toast.error(
         err instanceof Error
@@ -179,11 +209,19 @@ export function useActionAI({
           : "Falha ao gerar conteúdo com IA. Seu texto foi mantido.",
       );
     } finally {
-      aiProcessingRef.current = false;
-      setIsAIProcessing(false);
-      setActiveAIIntent(null);
+      if (isCurrent()) {
+        aiProcessingRef.current = false;
+        setIsAIProcessing(false);
+        setActiveAIIntent(null);
+      }
     }
   };
 
-  return { isAIProcessing, aiProcessingRef, activeAIIntent, triggerAIAction };
+  return {
+    isAIProcessing,
+    aiProcessingRef,
+    activeAIIntent,
+    triggerAIAction,
+    strategyGeneration,
+  };
 }

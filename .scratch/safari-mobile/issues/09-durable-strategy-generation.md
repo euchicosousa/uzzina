@@ -1,11 +1,11 @@
 # 09: Persist strategy generation independently of the action drawer
 
-**Status:** ready-for-agent — ticket preparation authorized 2026-10-29; implementation not started.
+**Status:** schema-applied-runtime-pending — local implementation verified; production structure migration applied2026-11-01 as `20261101140254`. [Remaining activation steps](../../../docs/audits/2026-11-01-strategy-activation.md), [verification](../../../supabase/rollouts/strategy-operations-production-verification.json). Secrets/env, new backend Ready, extensions/scheduler/heartbeat and frontend activation still pending; no operational acceptance inferred.
 **Original proposal:** owner-authorized extension of item 9.
 **Priority:** high.
 **Blocked by:** none for design/source preparation; any remote database rollout requires verified environment/catalog and an explicit reviewed rollout. Integrates ticket 07 presentation.
 
-## Problem and confirmed current behavior
+## Original problem and behavior (superseded locally; rollout pending)
 
 useActionAI calls the generation endpoint, applies all parsed strategies to local state, then calls updateAction({ strategies: newStrategies }). The full set is intended to persist in actions.strategies, not only the selected option. Selecting an option updates its selected marker and may adopt its headline as the action title.
 

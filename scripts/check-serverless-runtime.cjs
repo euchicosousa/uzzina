@@ -57,6 +57,8 @@ const { FileFsRef } = require("@vercel/build-utils");
   try {
     const sources = [
       "api/ai.ts",
+      "api/strategy-operations.ts",
+      "api/strategy-worker.ts",
       "api/dash-auth.ts",
       "api/dash-data.ts",
       "api/dash-action.ts",
@@ -64,6 +66,9 @@ const { FileFsRef } = require("@vercel/build-utils");
       "api/review-links.ts",
       "api/client-accounts.ts",
       "app/lib/ai-contract.ts",
+      "app/lib/strategy-operation-contract.ts",
+      "server/strategy-generation.ts",
+      "server/strategy-operations.ts",
       "server/dash-session.ts",
       "server/auth.ts",
       "server/supabase-admin.ts",

@@ -1,0 +1,88 @@
+{
+  "status": "permanent-runtime-configured-deployment-pending",
+  "observedAt": "2026-10-31",
+  "projectRef": "dfepmjcozszswocwvdpq",
+  "observedPostgres": "17.11",
+  "observedExtensions": {
+    "supabase_vault": "0.3.1 installed",
+    "pgcrypto": "1.3 installed",
+    "pg_cron": "1.6.4 installed",
+    "pg_net": "0.20.4 installed"
+  },
+  "migration": "supabase/migrations/20261101005905_durable_strategy_operations.sql",
+  "scheduler": "supabase/rollouts/strategy-operations-scheduler.sql",
+  "runtime": "Vercel Node awaited worker; one lease/request; OpenAI90s maxRetries0; lease150s; configured maxDuration180s; pg_net120s",
+  "activation": [
+    "Structure migration already applied and verified; do not reapply",
+    "Matching distinct worker secret configured in Vercel Production and Vault without displaying its value",
+    "Publish permanent code as a Production deployment without domain promotion",
+    "Verify Ready and authenticated empty-queue worker response using Vault/pg_net",
+    "Promote verified deployment and activate only the named scheduler job",
+    "Verify actual scheduled HTTP200 and fresh heartbeat; record current production deployment",
+    "Owner use may validate a chosen real generation separately; no production test fixtures"
+  ],
+  "rollback": [
+    "Set UZZINA_STRATEGY_ACCEPTING=false to pause new jobs while worker/status/retry drain accepted operations",
+    "Preserve stored results and reconcile ambiguous operations; do not drop private tables or quota records",
+    "Restore a previous deployment only after draining/reconciling accepted work; no normal behavior activation flags"
+  ],
+  "remoteMutationsPerformed": true,
+  "paidGenerationsPerformed": false,
+  "deploymentVerified": false,
+  "migrationSha256": "efd1477c23d0d292cc09e576131ef9cf5daf976562f8190657261322f9e0825e",
+  "localVerification": {
+    "completedAt": "2026-11-01",
+    "nativePostgres": "17.0 isolated Unix socket, synthetic data only; temporary database removed and server stopped",
+    "sqlAssertions": 44,
+    "apiWorkerHookTests": 46,
+    "fullDrawerTests": 99,
+    "serverlessEndpoints": 9,
+    "format": "pass",
+    "lint": "pass with existing informational notice",
+    "typecheck": "pass",
+    "build": "pass with existing chunk warning",
+    "scope": "Local verification only; Supabase extensions/scheduler, actual Vercel runtime and production activation unverified"
+  },
+  "productionMigration": {
+    "version": "20261101140254",
+    "name": "durable_strategy_operations",
+    "appliedAt": "2026-11-01T14:02:54Z",
+    "verification": "supabase/rollouts/strategy-operations-production-verification.json"
+  },
+  "deploymentObserved": {
+    "id": "dpl_H2foQzWHoNYFCwHnx3Qwx1GHUkQr",
+    "state": "Ready",
+    "url": "https://uzzina.cnvt.com.br",
+    "hasStrategyWorker": false,
+    "note": "Existing production deployment predates the new uncommitted09 endpoints; no deployment performed in this step"
+  },
+  "permanentBehavior": true,
+  "activationFlagsRemoved": [
+    "UZZINA_DURABLE_STRATEGIES",
+    "VITE_DURABLE_STRATEGIES"
+  ],
+  "secretsConfigured": {
+    "vercelProduction": true,
+    "vault": true,
+    "valuesDisplayed": false,
+    "temporaryTransportFilesRemoved": true
+  },
+  "schedulerState": {
+    "installed": true,
+    "active": false,
+    "remoteMigration": "20261101154221",
+    "name": "uzzina-strategy-worker",
+    "schedule": "30 seconds"
+  },
+  "permanentVerification": {
+    "tests": 155,
+    "apiTests": 19,
+    "hookAndCoordinatorTests": 38,
+    "drawerTests": 98,
+    "serverlessPass": 9,
+    "format": "pass",
+    "lint": "pass",
+    "typecheck": "pass",
+    "build": "pass"
+  }
+}

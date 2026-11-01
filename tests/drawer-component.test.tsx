@@ -27,6 +27,7 @@ import { ActionDrawerPanel } from "../app/components/features/action-drawer/Acti
 import type { Action, Person, Partner } from "../app/types";
 import { QUERY_KEYS } from "../app/lib/query-keys";
 import userEvent from "@testing-library/user-event";
+import type { StrategyOperation } from "~/lib/strategy-operation-contract";
 import { installVisualViewport } from "./fixtures/visual-viewport";
 
 Object.assign(globalThis, {
@@ -109,6 +110,9 @@ const partner = {
 mock.module("~/lib/supabase.client", () => ({
   createSupabaseBrowserClient: () => ({
     auth: {
+      getSession: async () => ({
+        data: { session: { access_token: "fixture-token" } },
+      }),
       getUser: async () => ({
         data: { user: { id: person.user_id } },
         error: null,
@@ -184,6 +188,24 @@ mock.module("~/lib/supabase.client", () => ({
   }),
 }));
 
+let aiGate: Promise<void> | undefined;
+let aiFailure = false;
+let aiCalls = 0;
+const generatedStrategies = Array.from({ length: 5 }, (_, i) => ({
+  headline: `Generated strategy ${i + 1}`,
+  angulo: "Angle",
+  racional: "Rationale",
+  direcionamento: "Direction",
+  selected: false,
+}));
+mock.module("~/services/ai-client", () => ({
+  callAI: async (payload: { intent: string }) => {
+    aiCalls++;
+    await aiGate;
+    if (aiFailure) throw new Error("Generation unavailable");
+    return { intent: payload.intent, output: generatedStrategies };
+  },
+}));
 let viewportWidth = 1440;
 const mediaChanges = new Set<() => void>();
 const originalMatchMedia = Object.getOwnPropertyDescriptor(
@@ -220,7 +242,12 @@ function mockMatchMedia(query: string): MediaQueryList {
   return media;
 }
 
+const originalStrategyFetch = globalThis.fetch;
 beforeEach(() => {
+  durableFixture(null);
+  aiGate = undefined;
+  aiFailure = false;
+  aiCalls = 0;
   viewportWidth = 1440;
   mediaChanges.clear();
   Object.defineProperty(window, "matchMedia", {
@@ -237,6 +264,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   cleanup();
+  globalThis.fetch = originalStrategyFetch;
   if (originalMatchMedia)
     Object.defineProperty(window, "matchMedia", originalMatchMedia);
   else Reflect.deleteProperty(window, "matchMedia");
@@ -2468,4 +2496,353 @@ describe("phone-width action panel", () => {
       viewport.restore();
     }
   });
+});
+
+it("opens permanent strategy progress before acceptance and preserves dismissal without a browser generation", async () => {
+  let release = () => {};
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const durable = durableFixture(null, gate);
+  mount(draft({ category: "post" }));
+  fireEvent.click(
+    await screen.findByRole("button", { name: "CRIAR ESTRATÉGIA" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  expect(within(dialog).getByRole("status").textContent).toContain(
+    "Criando estratégias",
+  );
+  await waitFor(() => expect(durable.requests).toHaveLength(1));
+  fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
+  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(
+    screen.getByRole("button", { name: "Ver progresso das estratégias" }),
+  ).toBeTruthy();
+  await act(async () => release());
+  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(aiCalls).toBe(0);
+  expect(writes).toHaveLength(0);
+});
+it("shows durable saving separately from canonical success without a browser write", async () => {
+  const durable = durableFixture(durableOperation("generated"));
+  mount(draft({ category: "post" }));
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Ver progresso das estratégias",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  expect(within(dialog).getByRole("status").textContent).toContain(
+    "Salvando estratégias",
+  );
+  expect(
+    within(dialog)
+      .getAllByRole<HTMLInputElement>("checkbox", {
+        name: "Selecionar estratégia",
+      })
+      .every((input) => input.disabled),
+  ).toBe(true);
+  durable.setOperation(durableOperation("succeeded"));
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Conferir andamento" }),
+  );
+  await waitFor(() =>
+    expect(within(dialog).getByRole("status").textContent).toContain(
+      "Estratégias salvas",
+    ),
+  );
+  expect(writes).toHaveLength(0);
+  expect(aiCalls).toBe(0);
+});
+it("retries a retained durable result without browser generation or local persistence", async () => {
+  const durable = durableFixture({
+    ...durableOperation("failed"),
+    errorCode: "SAVE_FAILED",
+  });
+  mount(draft({ category: "post" }));
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Ver progresso das estratégias",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  expect(await within(dialog).findByRole("alert")).toBeTruthy();
+  fireEvent.click(
+    within(dialog).getByRole("button", {
+      name: "Aplicar resultado preservado",
+    }),
+  );
+  await waitFor(() => expect(durable.requests).toHaveLength(1));
+  expect(durable.requests[0]).toMatchObject({
+    command: "retry",
+    confirmChangedSource: false,
+  });
+  await waitFor(() =>
+    expect(within(dialog).getByRole("status").textContent).toContain(
+      "Salvando estratégias",
+    ),
+  );
+  expect(writes).toHaveLength(0);
+  expect(aiCalls).toBe(0);
+});
+it("keeps prior canonical strategies when durable generation fails and deliberately accepts another operation", async () => {
+  const durable = durableFixture(durableOperation("failed", false));
+  mount(draft({ category: "post", strategies: generatedStrategies }));
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Ver estratégias geradas" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  expect(await within(dialog).findByRole("alert")).toBeTruthy();
+  expect(
+    within(dialog).getAllByRole("checkbox", { name: "Selecionar estratégia" }),
+  ).toHaveLength(5);
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Tentar gerar novamente" }),
+  );
+  await waitFor(() => expect(durable.requests).toHaveLength(1));
+  expect(durable.requests[0]).toMatchObject({ command: "accept" });
+  expect(writes).toHaveLength(0);
+  expect(aiCalls).toBe(0);
+});
+it("requires explicit source review before applying a conflicting durable result", async () => {
+  const durable = durableFixture(durableOperation("conflict"));
+  const originalConfirm = window.confirm;
+  window.confirm = () => true;
+  try {
+    mount(draft({ category: "post" }));
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: "Ver progresso das estratégias",
+      }),
+    );
+    const dialog = await screen.findByRole("dialog");
+    await within(dialog).findByRole("alert");
+    fireEvent.click(
+      within(dialog).getByRole("button", {
+        name: "Revisar e aplicar resultado preservado",
+      }),
+    );
+    await waitFor(() => expect(durable.requests).toHaveLength(1));
+    expect(durable.requests[0]).toMatchObject({
+      command: "retry",
+      confirmChangedSource: true,
+    });
+    expect(writes).toHaveLength(0);
+    expect(aiCalls).toBe(0);
+  } finally {
+    window.confirm = originalConfirm;
+  }
+});
+it("creates no orphan durable work for an incomplete draft and saves it before explicit retry", async () => {
+  const durable = durableFixture(null);
+  mount(draft({ id: undefined, category: "post", title: "X" }));
+  fireEvent.click(
+    await screen.findByRole("button", { name: "CRIAR ESTRATÉGIA" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  expect(await within(dialog).findByRole("alert")).toHaveProperty(
+    "textContent",
+    expect.stringContaining("Salve a ação"),
+  );
+  expect(durable.requests).toHaveLength(0);
+  expect(writes).toHaveLength(0);
+  fireEvent.change(
+    screen.getByRole("textbox", { name: "Título da ação", hidden: true }),
+    { target: { value: "Saved before acceptance" } },
+  );
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Tentar gerar novamente" }),
+  );
+  await waitFor(() => expect(durable.requests).toHaveLength(1));
+  expect(writes).toHaveLength(1);
+  expect(writes[0]?.strategies).toEqual([]);
+  expect(aiCalls).toBe(0);
+});
+
+function durableFixture(
+  initial: StrategyOperation | null,
+  acceptGate?: Promise<void>,
+) {
+  let operation = initial;
+  const requests: unknown[] = [];
+  globalThis.fetch = (async (
+    input: string | URL | Request,
+    init?: RequestInit,
+  ) => {
+    const url = String(input);
+    if (!url.startsWith("/api/strategy-operations"))
+      throw new Error(`Unexpected fixture request: ${url}`);
+    if (url.includes("capability"))
+      return Response.json({ configured: true, ready: true });
+    if (init?.method === "POST") {
+      const body: unknown = JSON.parse(String(init.body));
+      requests.push(body);
+      if (
+        !body ||
+        typeof body !== "object" ||
+        !("operationId" in body) ||
+        typeof body.operationId !== "string"
+      )
+        throw new Error("Invalid fixture command");
+      await acceptGate;
+      const isRetry = "command" in body && body.command === "retry";
+      operation = {
+        id: body.operationId,
+        actionId: action.id,
+        state: isRetry ? "generated" : "queued",
+        result: isRetry ? generatedStrategies : null,
+        errorCode: null,
+        createdAt: "2026-10-31T12:00:00Z",
+        updatedAt: "2026-10-31T12:00:00Z",
+      };
+    }
+    return Response.json({ operation });
+  }) as typeof fetch;
+  return {
+    requests,
+    setOperation: (next: StrategyOperation | null) => {
+      operation = next;
+    },
+  };
+}
+function durableOperation(
+  state: StrategyOperation["state"],
+  withResult = true,
+): StrategyOperation {
+  return {
+    id: "33333333-3333-4333-8333-333333333333",
+    actionId: action.id,
+    state,
+    result: withResult ? generatedStrategies : null,
+    errorCode: null,
+    createdAt: "2026-10-31T12:00:00Z",
+    updatedAt: "2026-10-31T12:00:00Z",
+  };
+}
+it("durable strategy preview cannot select stale raw options; explicit canonical review enables the correct headline", async () => {
+  durableFixture(durableOperation("succeeded"));
+  mount(
+    draft({
+      category: "post",
+      strategies: generatedStrategies.map((strategy) => ({
+        ...strategy,
+        headline: `Old ${strategy.headline}`,
+      })),
+    }),
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Ver estratégias geradas" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  await waitFor(() =>
+    expect(
+      within(dialog).getByRole("button", {
+        name: "Conferir estratégias salvas",
+      }),
+    ).toBeTruthy(),
+  );
+  const boxes = within(dialog).getAllByRole<HTMLInputElement>("checkbox", {
+    name: "Selecionar estratégia",
+  });
+  expect(boxes.every((box) => box.disabled)).toBe(true);
+  fireEvent.click(boxes[0] as HTMLElement);
+  expect(writes).toHaveLength(0);
+  databaseActions.set(
+    action.id,
+    draft({
+      category: "post",
+      strategies: generatedStrategies,
+      updated_at: "2026-10-06T10:03:00Z",
+    }),
+  );
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Conferir estratégias salvas" }),
+  );
+  const comparison = await screen.findByRole("dialog");
+  fireEvent.click(
+    await within(comparison).findByRole("button", {
+      name: "Usar versão atual",
+    }),
+  );
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  fireEvent.click(
+    screen.getByRole("button", { name: "Ver estratégias geradas" }),
+  );
+  const reviewed = await screen.findByRole("dialog");
+  const first = within(reviewed).getAllByRole<HTMLInputElement>("checkbox", {
+    name: "Selecionar estratégia",
+  })[0];
+  expect(first?.disabled).toBe(false);
+  fireEvent.click(first as HTMLElement);
+  await waitFor(() =>
+    expect(writes.some((write) => write.title === "Generated strategy 1")).toBe(
+      true,
+    ),
+  );
+  expect(writes.at(-1)?.strategies).toEqual(
+    generatedStrategies.map((strategy, index) => ({
+      ...strategy,
+      selected: index === 0,
+    })),
+  );
+});
+it.each(["failed", "uncertain"] as const)(
+  "durable terminal %s without a result preserves existing canonical selection",
+  async (state) => {
+    durableFixture(durableOperation(state, false));
+    mount(draft({ category: "post", strategies: generatedStrategies }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Ver estratégias geradas" }),
+    );
+    const dialog = await screen.findByRole("dialog");
+    await within(dialog).findByRole("alert");
+    const first = within(dialog).getAllByRole<HTMLInputElement>("checkbox", {
+      name: "Selecionar estratégia",
+    })[0];
+    expect(first?.disabled).toBe(false);
+    fireEvent.click(first as HTMLElement);
+    await waitFor(() =>
+      expect(
+        writes.some((write) => write.title === "Generated strategy 1"),
+      ).toBe(true),
+    );
+  },
+);
+it("durable accepted work releases the drawer leave guard without browser persistence", async () => {
+  const durable = durableFixture(null);
+  const fixture = mount(draft({ category: "post" }));
+  fireEvent.click(
+    await screen.findByRole("button", { name: "CRIAR ESTRATÉGIA" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  await waitFor(() => expect(durable.requests).toHaveLength(1));
+  fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
+  let closed = false;
+  await act(async () => {
+    closed = await fixture.panels().closeAllActions();
+  });
+  expect(closed).toBe(true);
+  expect(aiCalls).toBe(0);
+  expect(writes.some((write) => write.strategies)).toBe(false);
+});
+it("durable acceptance preserves the leave guard for unrelated unsaved edits", async () => {
+  const durable = durableFixture(null);
+  const fixture = mount(draft({ category: "post" }));
+  fireEvent.click(
+    await screen.findByRole("button", { name: "CRIAR ESTRATÉGIA" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  await waitFor(() => expect(durable.requests).toHaveLength(1));
+  fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
+  const editor = await descriptionEditor();
+  act(() => editor.focus());
+  await userEvent.setup().keyboard("Unsaved edit while server generates");
+  fail = true;
+  let closed = true;
+  await act(async () => {
+    closed = await fixture.panels().closeAllActions();
+  });
+  expect(closed).toBe(false);
+  expect(editor.textContent).toContain("Unsaved edit while server generates");
+  expect(aiCalls).toBe(0);
 });
