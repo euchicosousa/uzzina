@@ -20,6 +20,7 @@ import { parseU } from "~/utils/date";
 import {
   BellIcon,
   BriefcaseIcon,
+  CalendarRangeIcon,
   CheckIcon,
   LaptopIcon,
   MoonIcon,
@@ -161,7 +162,16 @@ export function Header({
         )
           return;
         if (latest.kind === "page") {
-          await navigate({ to: latest.to });
+          const [pathname, queryString] = latest.to.split("?", 2);
+          if (pathname === "/app/planejamento" && queryString) {
+            const partner = new URLSearchParams(queryString).get("partner");
+            await navigate({
+              to: "/app/planejamento",
+              search: partner ? { partner } : {},
+            });
+          } else {
+            await navigate({ to: latest.to });
+          }
           return;
         }
         try {
@@ -211,6 +221,20 @@ export function Header({
   // Get partners list from AppContext
   const { partners } = useAppContext();
   const partnerSlugs = partners.map((p) => p.slug).sort();
+  const planningContextSlug =
+    location.pathname.match(/^\/app\/partner\/([^/]+)\/?$/)?.[1] ??
+    (location.pathname === "/app/planejamento" &&
+    typeof location.search.partner === "string"
+      ? location.search.partner
+      : undefined);
+  const planningPartnerSlug = partners.some(
+    (partner) => partner.slug === planningContextSlug,
+  )
+    ? planningContextSlug
+    : undefined;
+  const planningTo = planningPartnerSlug
+    ? `/app/planejamento?partner=${encodeURIComponent(planningPartnerSlug)}`
+    : "/app/planejamento";
 
   // 1. Queries for Home page actions
   const now = new Date();
@@ -487,6 +511,7 @@ export function Header({
         <HeaderMenu
           onNavigate={(to) => void leaveTo(to)}
           onSignOut={() => void signOut()}
+          planningTo={planningTo}
           person={person}
         />
       </div>
@@ -507,11 +532,13 @@ export const HeaderMenu = ({
   person,
   onNavigate,
   onSignOut,
+  planningTo = "/app/planejamento",
 }: {
   person: Person;
   /** Client-side page change after the open actions agree to close. */
   onNavigate: (to: string) => void;
   onSignOut: () => void;
+  planningTo?: string;
 }) => {
   const {
     theme,
@@ -659,6 +686,14 @@ export const HeaderMenu = ({
             textValue="Leads"
           >
             Leads
+          </PrismMenuItem>
+
+          <PrismMenuItem
+            onAction={() => onNavigate(planningTo)}
+            textValue="Planejamento"
+          >
+            <CalendarRangeIcon className="size-4" />
+            Planejamento
           </PrismMenuItem>
 
           <PrismMenuItem

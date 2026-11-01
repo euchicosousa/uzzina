@@ -12,6 +12,21 @@ export interface AppContextType {
 }
 
 export const AppContext = createContext<AppContextType | null>(null);
+const LeaveOpenActionsContext = createContext<(() => Promise<boolean>) | null>(
+  null,
+);
+
+export const AppNavigationProvider = LeaveOpenActionsContext.Provider;
+
+export function useLeaveOpenActions() {
+  const leaveOpenActions = useContext(LeaveOpenActionsContext);
+  if (!leaveOpenActions) {
+    throw new Error(
+      "useLeaveOpenActions must be used within AppNavigationProvider",
+    );
+  }
+  return leaveOpenActions;
+}
 
 export function useAppContext() {
   const context = useContext(AppContext);

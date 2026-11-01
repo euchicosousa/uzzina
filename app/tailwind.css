@@ -327,8 +327,9 @@
   /* VARIÁVEIS DA UZZINA  */
 
   --font-sans:
-    "PP Object Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    /* "PP Object Sans", */
+    ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
 
   --color-action: var(--action);
   --color-action-hover: var(--action-hover);

@@ -12,7 +12,12 @@ import {
   startOfWeek,
 } from "date-fns";
 import { parseU } from "~/utils/date";
-import { Grid3X3Icon, SearchIcon, SettingsIcon } from "lucide-react";
+import {
+  CalendarRangeIcon,
+  Grid3X3Icon,
+  SearchIcon,
+  SettingsIcon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import { PartnerCalendarBoard } from "~/components/features/PartnerCalendarBoard";
@@ -54,7 +59,7 @@ export const Route = createFileRoute("/app/partner/$slug")({
   validateSearch: partnerSearchSchema,
   component: PartnerPage,
 });
-import { useAppContext } from "~/contexts/AppContext";
+import { useAppContext, useLeaveOpenActions } from "~/contexts/AppContext";
 import type { Partner } from "~/types";
 function PartnerPage() {
   const { slug } = Route.useParams();
@@ -116,6 +121,7 @@ function PartnerPage() {
       allLateActions.filter((action) => action.partners?.includes(partnerSlug)),
     enabled: !skipActions && !!partnerSlug,
   });
+  const leaveOpenActions = useLeaveOpenActions();
   const { setPrimaryAction } = useAppContext();
   const currentDay = parseU(dateParam);
   const [query, setQuery] = useState("");
@@ -180,9 +186,9 @@ function PartnerPage() {
   return (
     <div className="page-height flex min-h-0 flex-col overflow-hidden">
       {/* Header */}
-      <div className="flex shrink-0 flex-wrap items-center justify-between border-b 2xl:flex-nowrap 2xl:gap-4">
+      <div className="flex shrink-0 flex-wrap items-center justify-between border-b 2xl:flex-nowrap 2xl:gap-4 2xl:p-2">
         {/* Mobile Top */}
-        <div className="order-1 flex w-full shrink-0 items-center justify-between gap-4 overflow-hidden border-b p-2 2xl:w-auto 2xl:border-b-0">
+        <div className="order-1 flex w-full shrink-0 items-center justify-between gap-4 overflow-hidden border-b p-2 2xl:contents">
           <div className="flex shrink-0 items-center justify-between gap-2 overflow-hidden">
             <UAvatar
               backgroundColor={partner.colors[0]}
@@ -216,6 +222,21 @@ function PartnerPage() {
             <div className="hidden truncate p-0 py-2 text-lg font-medium sm:block">
               {partner.title}
             </div>
+            <PrismButton
+              aria-label={`Planejar conteúdo para ${partner.title}`}
+              className="shrink-0"
+              onClick={async () => {
+                if (!(await leaveOpenActions())) return;
+                await navigate({
+                  to: "/app/planejamento",
+                  search: { partner: partner.slug },
+                });
+              }}
+              size="sm"
+              variant="ghost"
+            >
+              <CalendarRangeIcon />
+            </PrismButton>
             <Link
               params={{
                 slug: partner.slug,
@@ -252,9 +273,10 @@ function PartnerPage() {
           </PrismInputGroup>
         </div>
         {/* Mobile Bottom */}
-        <div className="order-3 w-full overflow-hidden p-2 2xl:order-2">
+        <div className="order-3 w-full overflow-hidden p-2 2xl:contents">
           {/* Organização */}
           <ViewOptionsComponent
+            className="2xl:contents"
             endComponents={
               <PrismToggle
                 aria-label="Alternar Visão Feed"

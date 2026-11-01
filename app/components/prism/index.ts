@@ -14,6 +14,11 @@ export { PrismBadge } from "./badge";
 export { Button as PrismButton, buttonVariants } from "./button";
 export type { PrismButtonVariantProps } from "./button";
 export { PrismCalendar, PrismRangeCalendar } from "./calendar";
+export {
+  PrismDateRangePicker,
+  type DateRangeValue,
+  type PrismDateRangePickerProps,
+} from "./date-range-picker";
 export { PrismCheckbox, PrismCheckboxGroup } from "./checkbox";
 export { PrismTabs, PrismTabList, PrismTab, PrismTabPanel } from "./tabs";
 export {
@@ -54,6 +59,13 @@ export {
 export { PrismColorArea } from "./color-area";
 export { PrismColorField } from "./color-field";
 export { PrismColorSlider } from "./color-slider";
+export {
+  PrismSlider,
+  PrismSliderTrack,
+  PrismSliderThumb,
+  PrismSliderFill,
+  PrismSliderOutput,
+} from "./slider";
 export {
   PrismDialog,
   PrismDialogClose,

@@ -13,6 +13,8 @@ import {
   BadgeSection,
   ToggleSection,
   TabsSection,
+  SliderSection,
+  DateRangePickerSection,
   CheckboxSection,
   RadioGroupSection,
   PopoverSection,
@@ -54,6 +56,8 @@ function UIPage() {
               "prism-badge",
               "prism-toggle",
               "prism-tabs",
+              "prism-slider",
+              "prism-date-range-picker",
               "prism-alert",
               "prism-popover",
               "prism-menu",
@@ -203,6 +207,16 @@ function UIPage() {
                   targetId="prism-tabs"
                 />
                 <SidebarAnchorLink
+                  active={activeAnchor === "prism-slider"}
+                  label="PrismSlider"
+                  targetId="prism-slider"
+                />
+                <SidebarAnchorLink
+                  active={activeAnchor === "prism-date-range-picker"}
+                  label="PrismDateRangePicker"
+                  targetId="prism-date-range-picker"
+                />
+                <SidebarAnchorLink
                   active={activeAnchor === "prism-checkbox"}
                   label="PrismCheckbox"
                   targetId="prism-checkbox"
@@ -277,6 +291,8 @@ function UIPage() {
               <BadgeSection />
               <ToggleSection />
               <TabsSection />
+              <SliderSection />
+              <DateRangePickerSection />
               <CheckboxSection />
               <RadioGroupSection />
               <AlertSection />

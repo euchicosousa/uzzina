@@ -28,6 +28,7 @@ import {
   LaptopIcon,
   HomeIcon,
   CalendarIcon,
+  CalendarRangeIcon,
   BellIcon,
   UsersIcon,
   HelpCircleIcon,
@@ -220,6 +221,25 @@ function GlobalSearchContent({
     await navigate({ to });
     return true;
   };
+  const planningContextSlug =
+    location.pathname.match(/^\/app\/partner\/([^/]+)\/?$/)?.[1] ??
+    (location.pathname === "/app/planejamento" &&
+    typeof location.search.partner === "string"
+      ? location.search.partner
+      : null);
+  const planningPartnerSlug = partners.some(
+    (partner) => partner.slug === planningContextSlug,
+  )
+    ? planningContextSlug
+    : undefined;
+  const navigateToPlanning = async () => {
+    if (!(await onBeforeLeave()) || !contentMounted.current) return false;
+    await navigate({
+      to: "/app/planejamento",
+      search: planningPartnerSlug ? { partner: planningPartnerSlug } : {},
+    });
+    return true;
+  };
   const commands = [
     {
       id: "account",
@@ -254,6 +274,12 @@ function GlobalSearchContent({
       label: "Ir para Hoje",
       Icon: CalendarIcon,
       run: () => navigateCommand("/app/today"),
+    },
+    {
+      id: "planning",
+      label: "Planejamento",
+      Icon: CalendarRangeIcon,
+      run: navigateToPlanning,
     },
     {
       id: "notifications",

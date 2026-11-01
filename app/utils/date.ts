@@ -1,5 +1,13 @@
 import type { Action } from "~/types";
-import { format, formatDistanceToNow, parseISO } from "date-fns";
+import {
+  endOfMonth,
+  endOfWeek,
+  format,
+  formatDistanceToNow,
+  parseISO,
+  startOfMonth,
+  startOfWeek,
+} from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 
@@ -88,3 +96,24 @@ export const getActionRevision = (value: string | undefined) =>
     ? Date.parse(value) * 1000 +
       Number(value.match(/\.\d{3}(\d{1,3})/)?.[1]?.padEnd(3, "0") || 0)
     : 0;
+
+/**
+ * Calculates the month boundary period matching the app's calendar grid:
+ * starts on the first day of the week containing the 1st of the month (Sunday, weekStartsOn: 0),
+ * and ends on the last day of the week containing the last day of the month (Saturday, weekStartsOn: 0).
+ */
+export function getMonthCalendarPeriod(referenceDate: Date = new Date()): {
+  start: Date;
+  end: Date;
+  startDateString: string;
+  endDateString: string;
+} {
+  const start = startOfWeek(startOfMonth(referenceDate), { weekStartsOn: 0 });
+  const end = endOfWeek(endOfMonth(referenceDate), { weekStartsOn: 0 });
+  return {
+    start,
+    end,
+    startDateString: format(start, "yyyy-MM-dd"),
+    endDateString: format(end, "yyyy-MM-dd"),
+  };
+}

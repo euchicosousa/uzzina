@@ -29,7 +29,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { getOperationalPartners } from "~/models/partners";
 import type { Action, Partner, Person } from "~/types";
-import { AppContext } from "~/contexts/AppContext";
+import { AppContext, AppNavigationProvider } from "~/contexts/AppContext";
 import { UZZINALogo } from "~/components/logo";
 export const Route = createFileRoute("/app")({
   component: Dashboard,
@@ -275,7 +275,9 @@ function Dashboard() {
               >
                 <div className="flex min-h-full grow flex-col">
                   <div className="flex min-h-full w-full shrink flex-col">
-                    <Outlet />
+                    <AppNavigationProvider value={leaveOpenActions}>
+                      <Outlet />
+                    </AppNavigationProvider>
                   </div>
                 </div>
               </div>

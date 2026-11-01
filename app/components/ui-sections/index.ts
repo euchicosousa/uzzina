@@ -13,6 +13,8 @@ export * from "./ToasterSection";
 export * from "./BadgeSection";
 export * from "./ToggleSection";
 export * from "./TabsSection";
+export * from "./SliderSection";
+export * from "./DateRangePickerSection";
 export * from "./TextareaSection";
 export * from "./SeparatorSection";
 export * from "./CheckboxSection";

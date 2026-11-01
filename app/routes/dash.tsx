@@ -207,13 +207,13 @@ function DashLayout() {
       }}
     >
       <div className="flex h-screen w-full flex-col bg-background">
-        <header className="border_after flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-3 sm:px-6">
-          <div className="flex min-w-0 flex-1 items-center gap-3 sm:flex-none">
+        <header className="border_after flex min-w-0 shrink-0 items-center gap-2 px-3 py-2 sm:gap-3 sm:px-6 sm:py-3">
+          <div className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3">
             <UAvatar
               fallback={clientData.name ?? "Cliente"}
               image={clientData.image ?? undefined}
             />
-            <span className="min-w-0 truncate text-sm text-muted-foreground">
+            <span className="sr-only min-w-0 truncate text-sm text-muted-foreground sm:not-sr-only">
               Olá,{" "}
               <span className="font-medium text-foreground">
                 {clientData.name ?? "Cliente"}
@@ -223,9 +223,9 @@ function DashLayout() {
 
           {/* Seletor de Parceiro */}
           {partners.length > 0 && (
-            <div className="order-last flex w-full max-w-xs min-w-0 items-center gap-3 sm:order-none sm:w-auto">
+            <div className="flex min-w-0 flex-1 items-center">
               {partners.length === 1 ? (
-                <div className="flex items-center gap-2 rounded-xl px-3 py-1.5">
+                <div className="min-w-0 truncate px-2 py-1.5 sm:px-3">
                   <span className="truncate text-sm font-semibold">
                     {partners[0].title}
                   </span>
@@ -233,12 +233,13 @@ function DashLayout() {
               ) : (
                 <PrismSelect
                   aria-label="Selecione o parceiro"
+                  className="w-full min-w-0"
                   onSelectionChange={(key) => {
                     if (key) handlePartnerChange(String(key));
                   }}
                   selectedKey={currentPartnerSlug}
                 >
-                  <PrismSelectTrigger className="w-full min-w-0 rounded-xl border-none text-sm font-semibold shadow-none sm:w-45">
+                  <PrismSelectTrigger className="w-full min-w-0 rounded-xl border-none text-sm font-semibold shadow-none">
                     <PrismSelectValue className="block! min-w-0 truncate" />
                   </PrismSelectTrigger>
                   <PrismSelectContent>
@@ -254,12 +255,14 @@ function DashLayout() {
           )}
 
           <PrismButton
-            className="shrink-0 gap-2"
+            aria-label="Sair"
+            className="shrink-0 gap-2 px-2 sm:px-3"
             onClick={handleLogout}
             size="sm"
             variant="ghost"
           >
-            <LogOutIcon className="size-4" /> Sair
+            <LogOutIcon aria-hidden="true" className="size-4" />
+            <span className="sr-only sm:not-sr-only">Sair</span>
           </PrismButton>
         </header>
         {logoutError && (

@@ -116,3 +116,24 @@ it("page items request a guarded client navigation instead of a document link", 
   await user.click(account);
   expect(navigations).toEqual(["/app/profile"]);
 });
+
+it("planning menu item uses the guarded navigation callback", async () => {
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <AppThemeProvider>
+        <HeaderMenu
+          onNavigate={(to) => navigations.push(to)}
+          onSignOut={() => {}}
+          person={person}
+          planningTo="/app/planejamento?partner=cnvt"
+        />
+      </AppThemeProvider>
+    </QueryClientProvider>,
+  );
+  await user.click(
+    screen.getByRole("button", { name: "Menu do perfil do usuário" }),
+  );
+  await user.click(screen.getByRole("menuitem", { name: "Planejamento" }));
+
+  expect(navigations).toEqual(["/app/planejamento?partner=cnvt"]);
+});

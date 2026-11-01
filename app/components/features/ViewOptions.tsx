@@ -31,6 +31,7 @@ import {
   PrismMenuTrigger,
 } from "~/components/prism";
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
+import { cn } from "~/lib/utils";
 
 export type ViewOptions = {
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
@@ -356,11 +357,13 @@ export function ViewOptionsComponent({
   setViewOptions,
   startComponents,
   endComponents,
+  className,
 }: {
   viewOptions: ViewOptions;
   setViewOptions: (viewOptions: ViewOptions) => void;
   startComponents?: React.ReactNode;
   endComponents?: React.ReactNode;
+  className?: string;
 }) {
   viewOptions.variant ||= VARIANT.line;
   const { showOptions } = viewOptions;
@@ -375,7 +378,12 @@ export function ViewOptionsComponent({
     showOptions.partner ||
     showOptions.category;
   return (
-    <div className="flex w-full shrink flex-wrap items-center justify-between gap-x-2 gap-y-2">
+    <div
+      className={cn(
+        "flex w-full shrink flex-wrap items-center justify-between gap-x-2 gap-y-2",
+        className,
+      )}
+    >
       {/* Componentes no começo */}
       {startComponents}
 
