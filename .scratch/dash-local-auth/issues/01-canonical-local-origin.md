@@ -1,6 +1,6 @@
 # 01: Normalize the local portal entry to its configured origin
 
-**Status:** origin-rule-removed — owner explicitly requested removal rather than another normalization fix on2026-11-01 after network-IP denial. [Removal and verification](../../../docs/audits/2026-11-01-remove-portal-origin-rule.md). Earlier canonicalization/strict-Origin criteria below are historical and superseded; do not reintroduce the rule.
+**Status:** closed — owner approved portal access on2026-11-01 after the requested origin-rule removal (`a714b2d`, already committed/published). No further local-login acceptance pending. The separately requested login appearance alignment is tracked in its own implementation report; earlier normalization requirements below remain superseded.
 **Priority:** P2 — local development portal access blocked through localhost; published portal works according to owner. Not a confirmed production outage.
 **Blocked by:** none for the reproduced origin failure. A credentialed failure at the canonical address, if separately reported, requires its own response evidence before expanding scope.
 

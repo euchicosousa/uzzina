@@ -17,3 +17,7 @@ The active local server picked up the source removal; no manual cache cleanup/re
 ## Publication
 
 Commit `a714b2d`, published Ready as `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz` (`https://uzzina-gleu6zm27-agenciacnvt.vercel.app`) on the production domain. Real published empty login with absent/network/other Origin returned400 required-fields; anonymous mutation returned401 session-required rather than address403. No valid credentials or production writes used. Older address-normalization diagnosis is historical, not a requirement to restore.
+
+## Owner acceptance
+
+Owner approved the portal on01/11/2026 and requested committing it. Rule-removal implementation was already committed/published as a714b2d; this records the explicit acceptance. A new request targets only login appearance, not a reopening of the accepted access behavior.

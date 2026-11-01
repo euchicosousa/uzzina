@@ -6,6 +6,13 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### Portal aprovado; login alinhado ao principal — 01/11
+
+Proprietário aprovou o portal e pediu commit: acesso local/origem encerrado por aceite explícito; código já estava commitado/publicado em `a714b2d`. Pedido separado: login do portal deve seguir exatamente o estilo do principal mostrado nos prints. Alterada somente apresentação de `/dash/login`: mesmas classes de frame28rem, espaçamentos, campos/ícones/Labels React Aria, alerta Prism e botão à direita; removido texto introdutório e botão/larguras próprios. Autenticação e remoção da regra de endereço preservadas. [Registro e roteiro](2026-11-01-portal-login-style.md).
+
+Novo modo de trabalho solicitado: mudanças diretas, roteiro ao proprietário e testes automatizados somente quando necessários; AGENTS atualizado. Nesta alteração visual, sem novos testes/suites/build/publicação: formatação apenas dos arquivos tocados, leitura do diff e atualização dos seletores dos scripts existentes ao rótulo Fazer Login. Validação visual/funcional do novo login será do proprietário. Mudanças externas preservadas; escopo limitado a esse login e ao registro de aceite.
+
+
 ### Regra de endereço do portal removida — 01/11
 
 Proprietário rejeitou nova correção e pediu remover a regra após bloqueio no iPhone via192.168.0.21. Removidos o gate Origin/APP_ORIGIN de login/logout e mutações do portal, helper de validação, redirecionamento local obrigatório e mensagem de endereço não autorizado. Nenhuma nova allowlist/normalização substituiu a regra. Credenciais, sessão opaca/cookie e autorização por conta/ação mantidas. [Registro](2026-11-01-remove-portal-origin-rule.md).

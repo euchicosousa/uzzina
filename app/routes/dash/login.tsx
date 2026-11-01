@@ -1,13 +1,23 @@
-import { LogInIcon, EyeIcon, EyeOffIcon } from "lucide-react";
+import {
+  AlertTriangleIcon,
+  EyeIcon,
+  EyeOffIcon,
+  LogInIcon,
+  LockIcon,
+  AtSignIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
+import { TextField, Label } from "react-aria-components";
 import { UZZINALogo } from "~/components/logo";
 import {
   PrismButton,
   PrismInputGroup,
   PrismInputGroupAddon,
-  PrismInputGroupButton,
   PrismInputGroupInput,
+  PrismAlert,
+  PrismAlertTitle,
+  PrismAlertDescription,
 } from "~/components/prism";
 import { authenticateClient } from "~/models/clients";
 import { PortalHttpError } from "~/services/portal-http";
@@ -53,89 +63,102 @@ function DashLogin() {
     }
   };
   return (
-    <div className="grid h-screen w-full grid-cols-[2rem_20rem_2rem] justify-center overflow-x-hidden md:grid-cols-[2rem_30rem_2rem]">
+    <div className="grid h-screen grid-cols-[2rem_28rem_2rem] justify-center overflow-x-hidden">
       <div className="border-r"></div>
 
-      <div className="border_after border_before relative my-auto p-8">
-        <div className="mb-12">
+      <div className="border_after border_before relative my-auto flex flex-col gap-12 p-8">
+        <div>
           <UZZINALogo className="h-12" />
         </div>
-        <p className="mb-4 text-center text-sm text-muted-foreground">
-          Informe seu e-mail e senha para acessar.
-        </p>
+        {error && (
+          <PrismAlert variant="error">
+            <AlertTriangleIcon />
+            <PrismAlertTitle>Erro ao fazer login</PrismAlertTitle>
+            <PrismAlertDescription>{error}</PrismAlertDescription>
+          </PrismAlert>
+        )}
 
-        <form
-          aria-label="Acesso à UZZINA"
-          className="space-y-4"
-          onSubmit={handleSubmit}
-        >
-          {error && (
-            <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-              {error}
-            </div>
-          )}
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium" htmlFor="email">
+        <form aria-label="Acesso à UZZINA" onSubmit={handleSubmit}>
+          <TextField
+            className="mb-6"
+            isRequired
+            name="email"
+            onChange={setEmail}
+            value={email}
+          >
+            <Label className="mb-1.5 block cursor-pointer font-medium text-foreground">
               E-mail
-            </label>
+            </Label>
             <PrismInputGroup>
+              <PrismInputGroupAddon
+                align="inline-start"
+                className="pr-1 pl-4 [&_svg]:text-foreground/40"
+              >
+                <AtSignIcon className="size-5" />
+              </PrismInputGroupAddon>
               <PrismInputGroupInput
+                className="h-full px-3"
                 autoComplete="email"
                 autoFocus
-                className="px-4"
-                id="email"
-                name="email"
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="seu@email.com"
-                required
+                placeholder="name@example.com"
                 type="email"
-                value={email}
               />
             </PrismInputGroup>
-          </div>
+          </TextField>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium" htmlFor="password">
-              Senha
-            </label>
-            <PrismInputGroup>
+          <TextField
+            className="mb-6"
+            isRequired
+            name="password"
+            onChange={setPassword}
+            value={password}
+          >
+            <div className="mb-1.5 flex w-full items-center justify-between">
+              <Label className="block cursor-pointer font-medium text-foreground">
+                Senha
+              </Label>
+            </div>
+            <PrismInputGroup className="squircle">
+              <PrismInputGroupAddon
+                align="inline-start"
+                className="pr-1 pl-4 [&_svg]:text-foreground/40"
+              >
+                <LockIcon className="size-5" />
+              </PrismInputGroupAddon>
               <PrismInputGroupInput
+                className="h-full px-3"
                 autoComplete="current-password"
-                className="px-4"
-                id="password"
-                name="password"
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="*******"
-                required
+                placeholder="••••••••"
                 type={showPassword ? "text" : "password"}
-                value={password}
               />
-              <PrismInputGroupAddon align="inline-end">
-                <PrismInputGroupButton
+              <PrismInputGroupAddon align="inline-end" className="pr-2 pl-1">
+                <PrismButton
                   aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                  onClick={() => setShowPassword(!showPassword)}
-                  size="icon-xs"
+                  onPress={() => setShowPassword(!showPassword)}
+                  size="icon-sm"
                   type="button"
+                  variant="ghost"
                 >
                   {showPassword ? (
-                    <EyeOffIcon className="size-4" />
-                  ) : (
                     <EyeIcon className="size-4" />
+                  ) : (
+                    <EyeOffIcon className="size-4" />
                   )}
-                </PrismInputGroupButton>
+                </PrismButton>
               </PrismInputGroupAddon>
             </PrismInputGroup>
-          </div>
+          </TextField>
 
-          <PrismButton
-            className="w-full rounded-2xl squircle"
-            isDisabled={isSubmitting}
-            type="submit"
-          >
-            {isSubmitting ? "Entrando..." : "Entrar no Portal"}
-            <LogInIcon className="size-4" />
-          </PrismButton>
+          <div className="mt-6 flex justify-end">
+            <PrismButton
+              isDisabled={isSubmitting}
+              type="submit"
+              variant="default"
+            >
+              {isSubmitting ? "Entrando..." : "Fazer Login"}
+              <LogInIcon />
+            </PrismButton>
+          </div>
         </form>
       </div>
 

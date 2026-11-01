@@ -158,7 +158,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
       assert.equal(new URL(page.url()).searchParams.get("sidebar"), "hide");
       await page.getByLabel("E-mail", { exact: true }).fill(client.email);
       await page.getByLabel("Senha", { exact: true }).fill("fixture-password");
-      await page.getByRole("button", { name: "Entrar no Portal" }).click();
+      await page.getByRole("button", { name: "Fazer Login" }).click();
       await page.waitForURL((url) => url.pathname === "/dash");
       await page.getByRole("button", { name: "Sair", exact: true }).waitFor();
       await page.getByText(client.name, { exact: false }).first().waitFor();
@@ -183,7 +183,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
       mode = String(status);
       await page.getByLabel("E-mail", { exact: true }).fill(clients[0].email);
       await page.getByLabel("Senha", { exact: true }).fill("fixture-password");
-      await page.getByRole("button", { name: "Entrar no Portal" }).click();
+      await page.getByRole("button", { name: "Fazer Login" }).click();
       const message =
         status === 401
           ? "E-mail ou senha incorretos ou conta inativa."
