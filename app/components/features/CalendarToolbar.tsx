@@ -28,6 +28,7 @@ export function CalendarToolbar({
   return (
     <div className="flex items-center gap-1">
       <PrismButton
+        aria-label={days === 1 ? "Dia anterior" : `Voltar ${days} dias`}
         className="hidden md:flex"
         onClick={() => {
           setCurrentDay(addDays(currentDay, -days));
@@ -39,7 +40,10 @@ export function CalendarToolbar({
       </PrismButton>
 
       <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
-        <PrismButton variant="ghost">
+        <PrismButton
+          aria-label={`Escolher data, ${format(currentDay, showDate ? "MMMM/yy" : "dd/MM/yyyy", { locale: ptBR })}`}
+          variant="ghost"
+        >
           <CalendarDaysIcon />
           {showDate && (
             <>
@@ -81,6 +85,7 @@ export function CalendarToolbar({
       </PrismPopoverTrigger>
 
       <PrismButton
+        aria-label={days === 1 ? "Próximo dia" : `Avançar ${days} dias`}
         className="hidden md:flex"
         onClick={() => {
           setCurrentDay(addDays(currentDay, days));

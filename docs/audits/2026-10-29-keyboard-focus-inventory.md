@@ -59,6 +59,8 @@ As prioridades são relativas a este levantamento: P2 = impacto funcional/local 
 
 ### K03 — P2 — comandos de ícone sem nome acessível
 
+**Atualização31/10:** correção autorizada como item2 da priorização, implementada e verificada localmente; incluída no commit local solicitado pelo proprietário após a entrega. [Resultado e regressões](2026-10-31-icon-control-names.md): nomes por ação/estado nos consumidores abaixo;28 testes pertinentes, format/lint/typecheck/build passaram. Sem publicação nesta rodada; aceite com leitor de tela/aparelho não realizado. O levantamento original permanece concluído; K04/K05 não foram implementados.
+
 **Reprodução observada na árvore:** mostrar senha no login/redefinição da equipe aparece como botão sem identificação; AppBar contém seleção/filtro/busca sem nome; Home/Hoje/parceiro têm controles de data sem identificação; portal tem anterior/próximo sem nome. Link do logo também é sem nome. Login do portal e formulários administrativos de senha já possuem Mostrar/Ocultar senha, portanto a correção deve ser localizada aos consumidores faltantes.
 
 **Evidência:** [login](../../app/routes/login.tsx), linha130; [reset](../../app/routes/reset-password.tsx); [AppBar](../../app/components/layout/AppBar.tsx); [Header](../../app/components/layout/Header.tsx), link do logo; [ClientCalendar](../../app/components/client/ClientCalendar.tsx), linhas87/91. Localizar o consumidor de datas atual de Home/Hoje/parceiro antes de corrigir.

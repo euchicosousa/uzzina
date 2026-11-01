@@ -373,7 +373,11 @@ export function Header({
     >
       <div className="flex items-center gap-2 py-4">
         {/* Logo */}
-        <Link onClick={guardLinkClick("/app")} to="/app">
+        <Link
+          aria-label="Ir para o início da UZZINA"
+          onClick={guardLinkClick("/app")}
+          to="/app"
+        >
           <UZZINALogo className="hidden h-8 sm:block" />
           <UZZINALogo className="h-8 sm:hidden" model="logo" />
         </Link>

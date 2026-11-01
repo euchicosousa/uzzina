@@ -6,6 +6,18 @@ Produção confirmada Ready em29/10 no deploy `dpl_39Jnm4DEdyxyx24SEXtTpH92PZ6x`
 
 ## Pendências reais
 
+### Commit K03 e fila atualizada — 31/10
+
+A pedido do proprietário, K03 integra o commit local desta rodada, com código, regressões e registros. Mesma implementação já verificada:28 testes, format/lint/typecheck/build; nesta etapa apenas diff/referências e escopo conferidos, sem repetir suites ou alterar comportamento. Sem push/deploy. Portal local já commitado em `6c7f4ed`, ainda sem aceite de login real registrado.
+
+Fila recomendada por impacto/esforço: K04 rótulos de campos/editores (pequeno/médio),07 diálogo/progresso das estratégias (médio),09 geração persistente (grande),K05 contato de Lead (muito pequeno, impacto menor),análise geral de estilo (análise ampla),uso de IA (definições pendentes). Por rapidez: K05 → K04 →07;09 não é ajuste rápido. Planejamento permanece proposta de sete entregas. Foco de data/hora em lote pede reprodução antes de ticket/correção. Aceites pendentes separados:03 Instagram (complementos aprovados, encerramento final não registrado),16 e ajustes de título/mídia/identidade/foco já entregues. Nenhuma dessas recomendações inicia outro item.
+
+### K03 — nomes de controles implementados — 31/10
+
+Proprietário autorizou o item2 da priorização anterior. [Resultado](2026-10-31-icon-control-names.md): botões de senha da equipe com Mostrar/Ocultar conforme estado; AppBar com nomes de início/parceiro/filtro/seleção/busca; logo do Header identificado; CalendarToolbar com data e intervalo real em dias; calendário do portal com semana/mês conforme visualização. Somente atributos nos consumidores, preservando visual, handlers e percurso existentes.
+
+Regressão nos componentes/rotas reais:11 falhas antes →11 pass após; conjunto pertinente28 pass, format/lint/typecheck/build passaram, com avisos preexistentes. Autenticação controlada e consultas desativadas nos testes; sem login real, banco/SQL/env, reinício do servidor, commit/push/deploy ou aceite de leitor de tela/aparelho. K04/K05 e demais itens não iniciados; auditoria de teclado original continua concluída. Referências/diff conferidos.
+
 ### Commit do portal local — 31/10
 
 A pedido do proprietário, entrega do portal local registrada em commit local com código, regressão HTTP, verificação do build no navegador, diagnóstico/ticket e contratos/operação. Mesma árvore já verificada:73 testes,6 grupos Chromium,10 GETs locais, format/lint/typecheck/build e7 PASS serverless. Nesta rodada conferidos diff/referências e escopo, sem nova alteração funcional nem repetição de suites. Aceite com credenciais reais continua separado do pedido de commit; sem push/deploy, env/SQL/banco ou outros itens implementados. Documentação anterior de deploy/priorização preservada.

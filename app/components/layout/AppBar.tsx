@@ -85,6 +85,7 @@ export function AppBar({
       <div className="flex items-center gap-2 rounded-3xl border bg-popover p-2 squircle">
         {/* Home */}
         <Link
+          aria-label="Início"
           className={buttonVariants({
             variant: "ghost",
             size: "icon",
@@ -133,6 +134,7 @@ export function AppBar({
         <div className="flex items-center">
           {isSelectionMode ? (
             <PrismButton
+              aria-label="Encerrar seleção de ações"
               onPress={() => {
                 toggleSelectionMode();
               }}
@@ -143,6 +145,7 @@ export function AppBar({
             </PrismButton>
           ) : (
             <PrismButton
+              aria-label="Ativar seleção de ações"
               onPress={() => {
                 toggleSelectionMode();
               }}
@@ -155,6 +158,7 @@ export function AppBar({
         </div>
         {/* Slot 4: Busca / CmdK */}
         <PrismButton
+          aria-label="Buscar ações"
           onClick={() => setOpenCmdK(true)}
           size="icon"
           variant="ghost"
@@ -189,6 +193,7 @@ function PartnerFilterPopover({
   return (
     <PrismPopoverTrigger>
       <PrismButton
+        aria-label="Selecionar parceiro"
         className="sm"
         size={partnerFilters.length > 1 ? "default" : "icon"}
         variant={"ghost"}
@@ -226,6 +231,7 @@ function PartnerFilterPopover({
             <PrismCommandInput placeholder="Parceiro..." />
             {isAtHome && (
               <PrismToggle
+                aria-label="Filtrar ações por parceiro"
                 className={"mr-2"}
                 isSelected={isFilterMode}
                 onChange={(selected) => {

@@ -86,11 +86,21 @@ export function ClientCalendar<
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex items-center justify-between border-b px-4 py-3">
         <div className="flex items-center gap-2">
-          <PrismButton onClick={onPrev} size="icon" variant="ghost">
+          <PrismButton
+            aria-label={view === "week" ? "Semana anterior" : "Mês anterior"}
+            onClick={onPrev}
+            size="icon"
+            variant="ghost"
+          >
             <ChevronLeftIcon className="size-4" />
           </PrismButton>
           <span className="text-sm font-medium capitalize">{title}</span>
-          <PrismButton onClick={onNext} size="icon" variant="ghost">
+          <PrismButton
+            aria-label={view === "week" ? "Próxima semana" : "Próximo mês"}
+            onClick={onNext}
+            size="icon"
+            variant="ghost"
+          >
             <ChevronRightIcon className="size-4" />
           </PrismButton>
         </div>

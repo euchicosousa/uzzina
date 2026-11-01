@@ -128,6 +128,7 @@ function Login() {
               />
               <PrismInputGroupAddon align="inline-end" className="pr-2 pl-1">
                 <PrismButton
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   onPress={() => setShowPassword(!showPassword)}
                   size="icon-sm"
                   type="button"
