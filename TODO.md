@@ -2,6 +2,8 @@
 
 ## Verificação de uso
 
+[Lista vigente de tickets abertos](docs/audits/2026-11-01-open-tickets.md), reconciliada após publicação permanente de estratégias em01/11.
+
 Deploy de todas as entregas informado pelo proprietário em31/10; publicação deixa de ser pendência dessas entregas. Os aceites específicos continuam nos registros de CURRENT.
 
 - [ ] [Origem do portal local](.scratch/dash-local-auth/issues/01-canonical-local-origin.md): correção implementada/verificada em31/10; entrada HTML de `/dash` por localhost normalizada para origem canônica, login normal da equipe preservado. Recarregar o portal para conferir no uso real.73 testes,6 grupos de navegador e10 GETs locais passaram; commit local realizado, sem login real ou deploy.
@@ -12,6 +14,8 @@ Deploy de todas as entregas informado pelo proprietário em31/10; publicação d
 
 ## Trabalhos registrados para depois
 
+- [x] [Estratégias07/09 permanentes](docs/audits/2026-11-01-strategy-permanent-rollout.md): código commitado/publicado Ready em01/11, SQL/segredo/agendamento assinados e heartbeat verificados; sem flags de ativação. Uso real escolhido pelo proprietário permanece separado dos testes controlados.
+
 - [ ] Validar os [cinco ajustes de31/10](docs/audits/CURRENT.md): título, mídia, rodapé, identidade na IA e foco de Hoje. Implementação commitada em `6019a80`; publicação informada pelo proprietário; aceite específico no aparelho ainda não registrado para esses cinco ajustes.
 
 
@@ -21,7 +25,7 @@ Deploy de todas as entregas informado pelo proprietário em31/10; publicação d
 
 - [ ] [Controles de mídia sempre visíveis](.scratch/media-controls/issues/01-always-visible-media-controls.md): implementado/verificado localmente em31/10: remoção/alça/posição sempre visíveis, foco após exclusão e Escape do arraste. Deploy informado; aceite específico no aparelho ainda não registrado; widget Cloudinary preservado.
 
-- [ ] Escolher próximas correções do [levantamento de teclado concluído](docs/audits/2026-10-29-keyboard-focus-inventory.md): K03 nomes de controles implementado/verificado em31/10 e incluído no commit local solicitado ([resultado](docs/audits/2026-10-31-icon-control-names.md)), sem deploy; K04 rótulos de campos/editores e K05 contato de Lead aguardam autorização. K01/K02 têm entregas nos registros de Hoje/mídia. Não repetir a revisão como pendência aberta.
+- [x] [Correções de teclado K03/K04/K05](docs/audits/2026-10-29-keyboard-focus-inventory.md): K03 `a4eac79`,K04/K05 `3b4d2a4`, publicados Ready em01/11. Auditoria original concluída; demais aceites específicos constam da lista vigente.
 
 - [ ] [Visualização do uso de IA](.scratch/ai-usage/issues/01-ai-usage-visibility.md): ticket existente atualizado em29/10/2026: visualização discreta dentro de Minha Conta, uma entrega completa para continuar em outro chat. Definir escopo, período, referência e permissões antes de implementar. Preservar quota técnica atual e não expor custos do provedor. [Especificação existente](docs/plans/2026-10-07-consumo-ia-por-agencia.md).
 

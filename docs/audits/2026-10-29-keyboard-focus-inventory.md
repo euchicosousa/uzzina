@@ -69,6 +69,8 @@ As prioridades são relativas a este levantamento: P2 = impacto funcional/local 
 
 ### K04 — P2 — campos sem associação com sua finalidade
 
+**Publicação01/11:** commit `3b4d2a4`, incluído no deploy Ready `dpl_4NiCX2REw75oXxCXEJ5HT1G47mZW`; sem implementação pendente.
+
 **Atualização01/11:** implementado/verificado localmente na sequência autorizada, sem commit/deploy. [Resultado](2026-10-31-field-accessible-names.md): campo de data, observação e editores reais de Contexto/Tom nomeados; busca de Leads já estava correta.30 testes pertinentes e verificações passaram; aceite de aparelho/leitor de tela separado.
 
 **Reprodução:** busca de Leads renderiza input sem label/aria-label; formulário de criação de data pela lista também. Dois editores administrativos de Contexto/Tom têm contenteditable sem id/role/aria-label/aria-labelledby; o label visual aponta a um input oculto, não à área editável. Campo de observação do portal tem apenas placeholder, sem rótulo associado. Nomes/ordem das toolbars não identificam qual editor está sendo editado.
@@ -78,6 +80,8 @@ As prioridades são relativas a este levantamento: P2 = impacto funcional/local 
 **Correção proposta:** associar o nome ao controle efetivamente editável; nomes distintos para os dois editores. Manter placeholders e aparência existentes quando adequados, sem reabrir o percurso principal da gaveta. **Regressão:** localizar cada campo por papel/nome e acessar texto por teclado; rótulos não focam somente elemento oculto. **Dependências:** nenhuma; verificar consumidores do editor antes de ampliar sua interface.
 
 ### K05 — P3 — duas paradas de Tab para o mesmo contato de Lead
+
+**Publicação01/11:** commit `3b4d2a4`, incluído no deploy Ready `dpl_4NiCX2REw75oXxCXEJ5HT1G47mZW`; sem implementação pendente.
 
 **Atualização01/11:** implementado/verificado após09, com link nativo único e variantes existentes. [Resultado](2026-11-01-lead-contact-keyboard.md):2 regressões vermelhas→verdes;12 testes pertinentes passaram, Tab/Enter e destino preservados, sem contato externo. Sem commit/deploy ou novo aceite físico.
 

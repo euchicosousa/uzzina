@@ -88,5 +88,82 @@
       "status": 404,
       "contentType": "application/json"
     }
-  ]
+  ],
+  "permanentRuntime": {
+    "job": {
+      "name": "uzzina-strategy-worker",
+      "active": true,
+      "schedule": "30 seconds"
+    },
+    "runs": [
+      {
+        "status": "succeeded",
+        "end_time": "2026-11-01T16:12:47.384205+00:00",
+        "start_time": "2026-11-01T16:12:47.370929+00:00"
+      },
+      {
+        "status": "succeeded",
+        "end_time": "2026-11-01T16:12:17.397383+00:00",
+        "start_time": "2026-11-01T16:12:17.353053+00:00"
+      }
+    ],
+    "ready": true,
+    "checked_at": "2026-11-01T16:13:09.625877+00:00",
+    "operations": 0,
+    "last_worker_at": "2026-11-01T16:12:48.039997+00:00",
+    "response_statuses": [
+      {
+        "id": 2,
+        "created": "2026-11-01T16:12:47.384083+00:00",
+        "timed_out": false,
+        "status_code": 200
+      },
+      {
+        "id": 1,
+        "created": "2026-11-01T16:12:17.404102+00:00",
+        "timed_out": false,
+        "status_code": 200
+      }
+    ],
+    "runtime_migrations": [
+      {
+        "name": "strategy_worker_scheduler_inactive",
+        "version": "20261101154221"
+      },
+      {
+        "name": "strategy_worker_transport_privacy",
+        "version": "20261101155241"
+      },
+      {
+        "name": "strategy_worker_signed_wakeup",
+        "version": "20261101155807"
+      }
+    ]
+  },
+  "productionDeployment": "dpl_4NiCX2REw75oXxCXEJ5HT1G47mZW",
+  "signedWorkerProbe": {
+    "via": "Vault SQL generated HMAC to Vercel-protected Ready deployment through CLI bypass",
+    "status": 200,
+    "processed": false,
+    "paidModelCalled": false
+  },
+  "publishedEndpoints": {
+    "workerGet": 405,
+    "anonymousOperationsGet": 401
+  },
+  "hardening": {
+    "signedWake": true,
+    "rawWorkerSecretEnqueued": false,
+    "windowSeconds": 60,
+    "queueTables": "Platform managed net schema; default PUBLIC object privileges, not exposed through Data API; no privilege bypass",
+    "revokeAttempt": "Migration20261101155241 had no effective change because objects are owned by supabase_admin",
+    "schemaMove": "Rejected by automatic review; not executed; default installation retained",
+    "responseProbe": "Raw response inspection rejected; status/timestamp-only verification succeeded"
+  },
+  "publishedClientChecks": {
+    "loginStatus": 200,
+    "permanentEndpointInPublishedModuleGraph": true,
+    "activationFlagAbsent": true,
+    "modulesRead": 4
+  }
 }

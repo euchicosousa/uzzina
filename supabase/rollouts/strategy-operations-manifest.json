@@ -1,5 +1,5 @@
 {
-  "status": "permanent-runtime-configured-deployment-pending",
+  "status": "active-permanent-production",
   "observedAt": "2026-10-31",
   "projectRef": "dfepmjcozszswocwvdpq",
   "observedPostgres": "17.11",
@@ -28,7 +28,7 @@
   ],
   "remoteMutationsPerformed": true,
   "paidGenerationsPerformed": false,
-  "deploymentVerified": false,
+  "deploymentVerified": true,
   "migrationSha256": "efd1477c23d0d292cc09e576131ef9cf5daf976562f8190657261322f9e0825e",
   "localVerification": {
     "completedAt": "2026-11-01",
@@ -50,11 +50,13 @@
     "verification": "supabase/rollouts/strategy-operations-production-verification.json"
   },
   "deploymentObserved": {
-    "id": "dpl_H2foQzWHoNYFCwHnx3Qwx1GHUkQr",
+    "id": "dpl_4NiCX2REw75oXxCXEJ5HT1G47mZW",
     "state": "Ready",
     "url": "https://uzzina.cnvt.com.br",
-    "hasStrategyWorker": false,
-    "note": "Existing production deployment predates the new uncommitted09 endpoints; no deployment performed in this step"
+    "deploymentUrl": "https://uzzina-pk3qf5pvw-agenciacnvt.vercel.app",
+    "sourceCommit": "c27d0a0",
+    "hasStrategyWorker": true,
+    "hasStrategyOperations": true
   },
   "permanentBehavior": true,
   "activationFlagsRemoved": [
@@ -69,20 +71,79 @@
   },
   "schedulerState": {
     "installed": true,
-    "active": false,
+    "active": true,
     "remoteMigration": "20261101154221",
     "name": "uzzina-strategy-worker",
-    "schedule": "30 seconds"
+    "schedule": "30 seconds",
+    "signature": "HMAC SHA256 timestamp/UUID,60s skew; raw secret never enqueued",
+    "signedWakeMigration": "20261101155807"
   },
   "permanentVerification": {
-    "tests": 155,
-    "apiTests": 19,
+    "tests": 184,
+    "apiTests": 48,
     "hookAndCoordinatorTests": 38,
     "drawerTests": 98,
     "serverlessPass": 9,
     "format": "pass",
     "lint": "pass",
     "typecheck": "pass",
-    "build": "pass"
+    "build": "pass",
+    "note": "48 signedworker/API +38 hooks/coordinator +98 realdrawer, source unchanged outsideworker after first155 cohort"
+  },
+  "runtimeVerification": {
+    "job": {
+      "name": "uzzina-strategy-worker",
+      "active": true,
+      "schedule": "30 seconds"
+    },
+    "runs": [
+      {
+        "status": "succeeded",
+        "end_time": "2026-11-01T16:12:47.384205+00:00",
+        "start_time": "2026-11-01T16:12:47.370929+00:00"
+      },
+      {
+        "status": "succeeded",
+        "end_time": "2026-11-01T16:12:17.397383+00:00",
+        "start_time": "2026-11-01T16:12:17.353053+00:00"
+      }
+    ],
+    "ready": true,
+    "checked_at": "2026-11-01T16:13:09.625877+00:00",
+    "operations": 0,
+    "last_worker_at": "2026-11-01T16:12:48.039997+00:00",
+    "response_statuses": [
+      {
+        "id": 2,
+        "created": "2026-11-01T16:12:47.384083+00:00",
+        "timed_out": false,
+        "status_code": 200
+      },
+      {
+        "id": 1,
+        "created": "2026-11-01T16:12:17.404102+00:00",
+        "timed_out": false,
+        "status_code": 200
+      }
+    ],
+    "runtime_migrations": [
+      {
+        "name": "strategy_worker_scheduler_inactive",
+        "version": "20261101154221"
+      },
+      {
+        "name": "strategy_worker_transport_privacy",
+        "version": "20261101155241"
+      },
+      {
+        "name": "strategy_worker_signed_wakeup",
+        "version": "20261101155807"
+      }
+    ]
+  },
+  "remainingAcceptance": "Owner normal use may confirm a chosen real generation/reopen; no paid generation or production action fixture used for verification",
+  "advisory": {
+    "pg_net_public_schema": "Default installation retained; automatic review rejected drop/recreate in another schema due shared-object risk",
+    "platformAcl": "No platform role/default privilege bypass; signed wake avoids raw secret in transport queues"
   }
 }

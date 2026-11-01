@@ -1,6 +1,6 @@
 # 07: Open the strategy dialog immediately and show generation progress
 
-**Status:** implemented-local — execution authorized and implemented 2026-10-31; verification in [implementation report](../../../docs/audits/2026-10-31-strategy-dialog-progress.md). No commit/deploy or physical-device acceptance inferred. Durable browser-independent execution belongs to09.
+**Status:** implemented-published — permanent09 integrated, committed and published Ready on2026-11-01; real signed worker/scheduler HTTP200 and heartbeat verified. [Rollout record](../../../docs/audits/2026-11-01-strategy-permanent-rollout.md). No paid real generation or physical-device acceptance inferred. No implementation/activation step pending.
 **Original proposal:** approved presentation from item 9. **Priority:** normal.
 **Blocked by:** none for presentation; final viewport/margin acceptance integrates ticket 01. Coordinate operation state with ticket 09.
 
