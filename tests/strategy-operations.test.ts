@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, expect, it, mock } from "bun:test";
+import { afterEach, beforeEach, expect, it, mock, spyOn } from "bun:test";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { randomUUID } from "node:crypto";
+import { createHmac, randomUUID } from "node:crypto";
 import handler from "../api/strategy-operations";
 import worker from "../api/strategy-worker";
 
@@ -121,11 +121,13 @@ async function request(
     token = "valid",
     query = {},
     body = {},
+    headers = {},
   }: {
     method?: string;
     token?: string | null;
     query?: Record<string, string>;
     body?: unknown;
+    headers?: Record<string, string | string[]>;
   } = {},
 ) {
   let status = 200;
@@ -144,7 +146,10 @@ async function request(
   await target(
     {
       method,
-      headers: token ? { authorization: `Bearer ${token}` } : {},
+      headers: {
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
+        ...headers,
+      },
       query,
       body,
     } as VercelRequest,
@@ -266,10 +271,7 @@ it("awaits generation, retains output, then finalizes independently of a browser
     },
     result: null,
   };
-  const response = await request(worker, {
-    method: "POST",
-    token: "s".repeat(40),
-  });
+  const response = await signedWake();
   expect(response.status).toBe(200);
   expect(events.map((event) => event.name)).toEqual([
     "claim_strategy_operation",
@@ -282,9 +284,7 @@ it("awaits generation, retains output, then finalizes independently of a browser
 });
 it("reuses a retained result on worker retry without model or quota calls", async () => {
   claim = { id: operationId, payload: {}, result: strategies };
-  expect(
-    (await request(worker, { method: "POST", token: "s".repeat(40) })).status,
-  ).toBe(200);
+  expect((await signedWake()).status).toBe(200);
   expect(events.map((event) => event.name)).toEqual([
     "claim_strategy_operation",
     "finish_strategy_operation",
@@ -304,7 +304,7 @@ it.each(["store_strategy_result", "finish_strategy_operation"])(
       result: null,
     };
     failRPC = failure;
-    await request(worker, { method: "POST", token: "s".repeat(40) });
+    await signedWake();
     expect(events.at(-1)).toMatchObject({
       name: "fail_strategy_operation",
       args: {
@@ -328,7 +328,7 @@ it("does not automatically retry an ambiguous provider completion", async () => 
     result: null,
   };
   providerFails = true;
-  await request(worker, { method: "POST", token: "s".repeat(40) });
+  await signedWake();
   expect(providerCalls).toBe(1);
   expect(events.at(-1)).toMatchObject({
     name: "fail_strategy_operation",
@@ -347,9 +347,7 @@ it("pauses new acceptance while keeping the worker and authorized status availab
   expect((await request(handler, { query: { actionId } })).body).toEqual({
     operation,
   });
-  expect(
-    (await request(worker, { method: "POST", token: "s".repeat(40) })).status,
-  ).toBe(200);
+  expect((await signedWake()).status).toBe(200);
 });
 
 it("accepts permanent strategy work with real configuration and no rollout flag", async () => {
@@ -361,10 +359,200 @@ it("accepts permanent strategy work with real configuration and no rollout flag"
     (await request(handler, { method: "POST", body: accept })).status,
   ).toBe(202);
 });
-it("runs the configured permanent worker with its valid secret and no rollout flag", async () => {
+it("runs the configured permanent worker with a signed wake and no rollout flag", async () => {
   delete process.env.UZZINA_DURABLE_STRATEGIES;
-  expect(
-    (await request(worker, { method: "POST", token: "s".repeat(40) })).status,
-  ).toBe(200);
+  expect((await signedWake()).status).toBe(200);
   expect(events[0]?.name).toBe("claim_strategy_operation");
 });
+
+function signedWakeHeaders(
+  timestamp = String(Math.floor(Date.now() / 1000)),
+  nonce: string = randomUUID(),
+  secret = "s".repeat(40),
+  target = "POST:/api/strategy-worker",
+) {
+  return {
+    "x-strategy-timestamp": timestamp,
+    "x-strategy-nonce": nonce,
+    "x-strategy-signature": createHmac("sha256", secret)
+      .update(`${timestamp}:${nonce}:${target}`)
+      .digest("hex"),
+  };
+}
+const signedWake = () =>
+  request(worker, {
+    method: "POST",
+    token: null,
+    headers: signedWakeHeaders(),
+  });
+it("accepts a fresh correctly signed worker wake without sending the raw worker key", async () => {
+  const response = await signedWake();
+  expect(response.status).toBe(200);
+  expect(events[0]?.name).toBe("claim_strategy_operation");
+});
+it("rejects the legacy raw worker bearer even when its key is valid", async () => {
+  expect(
+    (await request(worker, { method: "POST", token: "s".repeat(40) })).status,
+  ).toBe(401);
+  expect(events).toHaveLength(0);
+});
+
+it.each(["x-strategy-timestamp", "x-strategy-nonce", "x-strategy-signature"])(
+  "rejects a signed wake missing %s before any claim",
+  async (field) => {
+    const headers: Record<string, string> = signedWakeHeaders();
+    delete headers[field];
+    expect(
+      (await request(worker, { method: "POST", token: null, headers })).status,
+    ).toBe(401);
+    expect(events).toHaveLength(0);
+  },
+);
+it.each(["01", "1.5", "-1", "NaN", "", "9007199254740992"])(
+  "rejects noncanonical worker timestamp %s even with its matching signature",
+  async (timestamp) => {
+    expect(
+      (
+        await request(worker, {
+          method: "POST",
+          token: null,
+          headers: signedWakeHeaders(timestamp),
+        })
+      ).status,
+    ).toBe(401);
+    expect(events).toHaveLength(0);
+  },
+);
+it.each([-61, 61])(
+  "rejects a correctly signed wake outside the clock window by %s seconds",
+  async (offset) => {
+    const timestamp = String(Math.floor(Date.now() / 1000) + offset);
+    expect(
+      (
+        await request(worker, {
+          method: "POST",
+          token: null,
+          headers: signedWakeHeaders(timestamp),
+        })
+      ).status,
+    ).toBe(401);
+    expect(events).toHaveLength(0);
+  },
+);
+it.each(["GET:/api/strategy-worker", "POST:/api/another-worker"])(
+  "rejects a signature issued for %s",
+  async (target) => {
+    expect(
+      (
+        await request(worker, {
+          method: "POST",
+          token: null,
+          headers: signedWakeHeaders(undefined, undefined, undefined, target),
+        })
+      ).status,
+    ).toBe(401);
+    expect(events).toHaveLength(0);
+  },
+);
+it.each([
+  "timestamp",
+  "nonce",
+  "signature",
+  "secret",
+  "array",
+  "invalid-nonce",
+  "invalid-hex",
+])("rejects tampered worker %s before claiming", async (field) => {
+  const headers: Record<string, string | string[]> = signedWakeHeaders();
+  if (field === "timestamp")
+    headers["x-strategy-timestamp"] = String(Math.floor(Date.now() / 1000) + 1);
+  if (field === "nonce") headers["x-strategy-nonce"] = randomUUID();
+  if (field === "signature") {
+    const signature = String(headers["x-strategy-signature"]);
+    headers["x-strategy-signature"] =
+      (signature.startsWith("0") ? "1" : "0") + signature.slice(1);
+  }
+  if (field === "secret")
+    Object.assign(
+      headers,
+      signedWakeHeaders(undefined, undefined, "wrong".repeat(10)),
+    );
+  if (field === "array")
+    headers["x-strategy-signature"] = [String(headers["x-strategy-signature"])];
+  if (field === "invalid-nonce")
+    Object.assign(headers, signedWakeHeaders(undefined, "not-a-uuid"));
+  if (field === "invalid-hex") headers["x-strategy-signature"] = "g".repeat(64);
+  expect(
+    (await request(worker, { method: "POST", token: null, headers })).status,
+  ).toBe(401);
+  expect(events).toHaveLength(0);
+});
+it("rejects a raw bearer even when valid signed wake headers are also supplied", async () => {
+  expect(
+    (
+      await request(worker, {
+        method: "POST",
+        token: "s".repeat(40),
+        headers: signedWakeHeaders(),
+      })
+    ).status,
+  ).toBe(401);
+  expect(events).toHaveLength(0);
+});
+it("permits a still-valid signed wake to be delivered again while persisted operation leases own work deduplication", async () => {
+  const headers = signedWakeHeaders();
+  expect(
+    (await request(worker, { method: "POST", token: null, headers })).status,
+  ).toBe(200);
+  expect(
+    (await request(worker, { method: "POST", token: null, headers })).status,
+  ).toBe(200);
+  expect(events.map((event) => event.name)).toEqual([
+    "claim_strategy_operation",
+    "claim_strategy_operation",
+  ]);
+  expect(providerCalls).toBe(0);
+});
+
+it.each([-60, 60])(
+  "accepts the exact signed clock boundary of %s seconds",
+  async (offset) => {
+    const now = Math.floor(Date.now() / 1000);
+    const clock = spyOn(Date, "now").mockReturnValue(now * 1000);
+    try {
+      expect(
+        (
+          await request(worker, {
+            method: "POST",
+            token: null,
+            headers: signedWakeHeaders(String(now + offset)),
+          })
+        ).status,
+      ).toBe(200);
+    } finally {
+      clock.mockRestore();
+    }
+  },
+);
+it.each(["leading-zero", "decimal", "exponent"])(
+  "rejects the current timestamp in noncanonical %s notation",
+  async (notation) => {
+    const now = Math.floor(Date.now() / 1000);
+    const timestamp =
+      notation === "leading-zero"
+        ? `0${now}`
+        : notation === "decimal"
+          ? `${now}.0`
+          : now.toExponential();
+    expect(
+      (
+        await request(worker, {
+          method: "POST",
+          token: null,
+          headers: signedWakeHeaders(timestamp),
+        })
+      ).status,
+    ).toBe(401);
+    expect(events).toHaveLength(0);
+  },
+);

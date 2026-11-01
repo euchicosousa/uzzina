@@ -1,4 +1,4 @@
-import { timingSafeEqual } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import {
   createServiceClient,
@@ -15,14 +15,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const secret = process.env.STRATEGY_WORKER_SECRET;
   if (!secret || secret.length < 32)
     return res.status(503).json({ error: "Executor não configurado." });
-  const header = req.headers.authorization;
-  const provided =
-    typeof header === "string" ? Buffer.from(header) : Buffer.alloc(0);
-  const expected = Buffer.from(`Bearer ${secret}`);
+  const timestamp = req.headers["x-strategy-timestamp"];
+  const nonce = req.headers["x-strategy-nonce"];
+  const signature = req.headers["x-strategy-signature"];
+  const issuedAt = typeof timestamp === "string" ? Number(timestamp) : NaN;
   if (
-    provided.length !== expected.length ||
-    !timingSafeEqual(provided, expected)
+    req.headers.authorization !== undefined ||
+    typeof timestamp !== "string" ||
+    !/^(0|[1-9]\d{0,15})$/.test(timestamp) ||
+    !Number.isSafeInteger(issuedAt) ||
+    Math.abs(Date.now() / 1000 - issuedAt) > 60 ||
+    typeof nonce !== "string" ||
+    !/^[\da-f]{8}-[\da-f]{4}-[1-8][\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i.test(
+      nonce,
+    ) ||
+    typeof signature !== "string" ||
+    !/^[\da-f]{64}$/i.test(signature)
   )
+    return res.status(401).json({ error: "Acesso não autorizado." });
+  const expected = createHmac("sha256", secret)
+    .update(`${timestamp}:${nonce}:POST:/api/strategy-worker`)
+    .digest();
+  if (!timingSafeEqual(Buffer.from(signature, "hex"), expected))
     return res.status(401).json({ error: "Acesso não autorizado." });
   const config = getServiceConfig();
   const rawLimit = process.env.AI_DAILY_LIMIT ?? "100";
