@@ -18,7 +18,7 @@ Updated after permanent strategy publication: Production Ready `dpl_4NiCX2REw75o
 | [Media controls](../../.scratch/media-controls/issues/01-always-visible-media-controls.md) | Remove/reorder controls and focus in normal device use. |
 | [Partner identity in AI](../../.scratch/ai-partner-identity/issues/01-use-current-partner-identity.md) | A real generation uses the selected partner's identity. |
 | [Today focus](../../.scratch/today-focus/issues/01-remove-wrapper-focus.md) | Navigation/focus in normal use. |
-| [Local portal origin](../../.scratch/dash-local-auth/issues/01-canonical-local-origin.md) | Real login through the canonical local address; production authentication was not the original defect. |
+| [Local portal origin](../../.scratch/dash-local-auth/issues/01-canonical-local-origin.md) | Origin/address requirement removed by owner request on01/11; verify normal real login through the requested local/network address. |
 
 No new functional defect was inferred from missing acceptance. Title inline is also delivered and remains part of the existing weekly-use checklist, without a separate ticket. Header, portal visual,12 and15 keep their recorded acceptance; no reopened ticket for those scopes.
 

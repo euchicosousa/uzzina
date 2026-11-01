@@ -2,9 +2,16 @@
 
 Atualizado em 01/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-Produção confirmada Ready em01/11 no deploy `dpl_4NiCX2REw75oXxCXEJ5HT1G47mZW`, domínio `uzzina.cnvt.com.br`, código `c27d0a0`. Estratégias09 permanentes, sem flags de ativação; agendamento real e heartbeat verificados. [Registro](2026-11-01-strategy-permanent-rollout.md). Verificações/releases anteriores permanecem no histórico.
+Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`, domínio `uzzina.cnvt.com.br`, código `a714b2d`: regra de endereço do portal removida a pedido do proprietário. Estratégias09 permanecem permanentes/ativas. [Remoção](2026-11-01-remove-portal-origin-rule.md), [rollout de estratégias](2026-11-01-strategy-permanent-rollout.md). Verificações anteriores permanecem no histórico.
 
 ## Pendências reais
+
+### Regra de endereço do portal removida — 01/11
+
+Proprietário rejeitou nova correção e pediu remover a regra após bloqueio no iPhone via192.168.0.21. Removidos o gate Origin/APP_ORIGIN de login/logout e mutações do portal, helper de validação, redirecionamento local obrigatório e mensagem de endereço não autorizado. Nenhuma nova allowlist/normalização substituiu a regra. Credenciais, sessão opaca/cookie e autorização por conta/ação mantidas. [Registro](2026-11-01-remove-portal-origin-rule.md).
+
+Reprodução real anônima com login vazio no5176: IP da rede403 por origem antes →400 de campos obrigatórios depois; localhost também400, logout sem sessão200 com cookie local sem Secure. Sem credencial do print usada, login real ou acesso ao banco nesses probes. Regressão HTTP contra snapshot Git anterior:2pass/9fail; fonte atual11pass, mais66 testes de contratos e6 grupos do build no navegador com contas fictícias/HTTP controlado. Format/lint/typecheck/build e9 PASS serverless. Sem SQL, regra alternativa, troca de senha ou limpeza manual do cache/servidor. Commit `a714b2d`, produção Ready `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`; HTTP real publicado confirmou login vazio400 sem Origin/pelo IP/outra origem e mutação sem sessão401. Contrato anterior de canonicalização fica revogado por este pedido.
+
 
 ### Estratégias permanentes publicadas e lista reconciliada — 01/11
 

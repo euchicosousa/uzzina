@@ -16,4 +16,4 @@ The active local server picked up the source removal; no manual cache cleanup/re
 
 ## Publication
 
-Local source removal is verified. Commit and production Ready details are recorded here on completion; older address-normalization diagnosis remains historical, not a requirement to restore.
+Commit `a714b2d`, published Ready as `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz` (`https://uzzina-gleu6zm27-agenciacnvt.vercel.app`) on the production domain. Real published empty login with absent/network/other Origin returned400 required-fields; anonymous mutation returned401 session-required rather than address403. No valid credentials or production writes used. Older address-normalization diagnosis is historical, not a requirement to restore.
