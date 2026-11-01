@@ -13,16 +13,19 @@ import {
   PipetteIcon,
   SunIcon,
   UploadIcon,
+  SparklesIcon,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { useFillScrollViewport } from "~/hooks/useFillScrollViewport";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getQuerySessionGeneration } from "~/lib/query-client";
 import { preferenceRecord } from "~/lib/preference-persistence";
 import { toast } from "sonner";
 import { Theme, useAppThemeContext } from "~/hooks/useAppTheme";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { getAgencyAIUsage } from "~/models/ai-usage";
 import {
   PrismTabs,
   PrismTabList,
@@ -141,6 +144,13 @@ function ProfilePage() {
   const [customThemeDraft, setCustomThemeDraft] = useState(() =>
     createCustomThemeDraft(preferences.customTheme),
   );
+
+  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+  const { data: aiUsage, isLoading: isLoadingAIUsage } = useQuery({
+    queryKey: QUERY_KEYS.aiUsage(person.user_id),
+    queryFn: () => getAgencyAIUsage(supabase),
+    staleTime: 60 * 1000,
+  });
 
   // Aplica preview do tema na UI quando o usuário apenas seleciona
   const handleThemeChange = (val: "light" | "dark" | "system") => {
@@ -630,6 +640,70 @@ function ProfilePage() {
             label="Sidebar do Instagram por Padrão"
             onCheckedChange={setShowInstagramSidebar}
           />
+
+          {/* AI Consumption (Agency Monthly Usage) */}
+          <div className="grid gap-3 pt-2">
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                <SparklesIcon className="size-3.5 text-primary" />
+                Uso de IA da Agência
+              </span>
+              {aiUsage?.period && (
+                <span className="text-xs font-medium text-muted-foreground">
+                  {aiUsage.period}
+                </span>
+              )}
+            </div>
+
+            {isLoadingAIUsage ? (
+              <div className="h-20 w-full animate-pulse rounded-2xl bg-muted/40" />
+            ) : aiUsage ? (
+              <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-muted/20 p-4 transition-colors">
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="text-sm font-semibold text-foreground">
+                    Franquia do Mês
+                  </span>
+                  <span className="text-sm font-bold tracking-tight text-foreground">
+                    {aiUsage.percentage}%{" "}
+                    <span className="text-xs font-normal text-muted-foreground">
+                      utilizado
+                    </span>
+                  </span>
+                </div>
+
+                {/* Progress bar */}
+                <div className="h-2 w-full overflow-hidden rounded-full bg-muted/60">
+                  <div
+                    className={cn(
+                      "h-full rounded-full transition-all duration-500",
+                      aiUsage.percentage > 90
+                        ? "bg-rose-500"
+                        : aiUsage.percentage > 75
+                          ? "bg-amber-500"
+                          : "bg-primary",
+                    )}
+                    style={{
+                      width: `${Math.min(100, Math.max(0, aiUsage.percentage))}%`,
+                    }}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>
+                    {aiUsage.total_generations}{" "}
+                    {aiUsage.total_generations === 1
+                      ? "geração registrada"
+                      : "gerações registradas"}
+                  </span>
+                  <span>Referência compartilhada CNVT</span>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-border/40 bg-muted/10 p-4 text-xs text-muted-foreground">
+                Consumo de IA ainda não medido neste mês.
+              </div>
+            )}
+          </div>
           <AppBarSpacer />
         </PrismTabPanel>
       </form>

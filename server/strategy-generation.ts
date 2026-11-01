@@ -9,6 +9,9 @@ export async function generateStrategies(
     timeout: 90000,
     maxRetries: 0,
   }),
+  onUsage?: (
+    usage: OpenAI.Completions.CompletionUsage | undefined,
+  ) => Promise<void> | void,
 ) {
   const { category, partner_name, partner_context, title, description } = input;
   const model = "gpt-6-luna";
@@ -74,6 +77,13 @@ Mantenha cada campo com no m√°ximo 1800 caracteres, para permitir seu uso na pr√
       },
     ],
   });
+  if (onUsage) {
+    try {
+      await onUsage(response.usage);
+    } catch (err) {
+      console.error("Strategy onUsage error:", err);
+    }
+  }
   const output: unknown = JSON.parse(
     response.choices[0]?.message.content ?? "{}",
   );

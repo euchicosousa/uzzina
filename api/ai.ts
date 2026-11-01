@@ -176,9 +176,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       apiKey,
     });
 
+    const logUsage = async (
+      usage: OpenAI.Completions.CompletionUsage | undefined,
+      intentName: string,
+      modelName: string,
+    ) => {
+      if (!usage || !user) return;
+      const promptTokens = usage.prompt_tokens ?? 0;
+      const completionTokens = usage.completion_tokens ?? 0;
+      const totalTokens = usage.total_tokens ?? promptTokens + completionTokens;
+      const units = Number(
+        ((promptTokens + completionTokens * 2) / 1000).toFixed(2),
+      );
+      try {
+        await supabase.rpc("log_ai_generation", {
+          p_user_id: user.id,
+          p_intent: intentName,
+          p_model: modelName,
+          p_prompt_tokens: promptTokens,
+          p_completion_tokens: completionTokens,
+          p_total_tokens: totalTokens,
+          p_units_consumed: units,
+        });
+      } catch (err) {
+        console.error("Failed to log AI generation event", err);
+      }
+    };
+
     // Vamos mapear os intents conforme definidos no app/lib/CONSTANTS.ts e no ai.ts original
     if (intent === "ai-strategy") {
-      const strategies = await generateStrategies(parsed.data, client);
+      const strategies = await generateStrategies(
+        parsed.data,
+        client,
+        async (usage) => {
+          await logUsage(usage, intent, "gpt-6-luna");
+        },
+      );
       return res.status(200).json({ intent, output: { strategies } });
     }
     if (intent === "ai-content") {
@@ -264,6 +297,7 @@ Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
           },
         ],
       });
+      await logUsage(response.usage, intent, model);
       const generatedHtml = response.choices[0]?.message.content ?? "";
       return res
         .status(200)
@@ -294,6 +328,7 @@ Retorne somente JSON com "strategies": exatamente 5 objetos, cada um com apenas 
           },
         ],
       });
+      await logUsage(response.usage, intent, model);
       const output: unknown = JSON.parse(
         response.choices[0]?.message.content ?? "{}",
       );
@@ -316,6 +351,7 @@ Retorne somente JSON com "strategies": exatamente 5 objetos, cada um com apenas 
           },
         ],
       });
+      await logUsage(response.usage, intent, model);
       const output: unknown = JSON.parse(
         response.choices[0]?.message.content ?? "{}",
       );

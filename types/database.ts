@@ -4,580 +4,747 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[]
+  | Json[];
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.0.2 (a4e00ff)"
-  }
+    PostgrestVersion: "12.0.2 (a4e00ff)";
+  };
   public: {
     Tables: {
       strategy_operations: {
-        Row: {id: string; action_id: string; requester_id: string; state: string; source: Json; apply_source: Json; result: Json | null; error_code: string | null; quota_reserved: boolean; write_attempts: number; lease_id: string | null; lease_until: string | null; created_at: string; updated_at: string}
-        Insert: {id: string; action_id: string; requester_id: string; state: string; source: Json; apply_source: Json; result?: Json | null; error_code?: string | null; quota_reserved?: boolean; write_attempts?: number; lease_id?: string | null; lease_until?: string | null; created_at?: string; updated_at?: string}
-        Update: {id?: string; action_id?: string; requester_id?: string; state?: string; source?: Json; apply_source?: Json; result?: Json | null; error_code?: string | null; quota_reserved?: boolean; write_attempts?: number; lease_id?: string | null; lease_until?: string | null; created_at?: string; updated_at?: string}
-        Relationships: [{foreignKeyName: "strategy_operations_action_id_fkey"; columns: ["action_id"]; isOneToOne: false; referencedRelation: "actions"; referencedColumns: ["id"]}]
-      }
+        Row: {
+          id: string;
+          action_id: string;
+          requester_id: string;
+          state: string;
+          source: Json;
+          apply_source: Json;
+          result: Json | null;
+          error_code: string | null;
+          quota_reserved: boolean;
+          write_attempts: number;
+          lease_id: string | null;
+          lease_until: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          action_id: string;
+          requester_id: string;
+          state: string;
+          source: Json;
+          apply_source: Json;
+          result?: Json | null;
+          error_code?: string | null;
+          quota_reserved?: boolean;
+          write_attempts?: number;
+          lease_id?: string | null;
+          lease_until?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          action_id?: string;
+          requester_id?: string;
+          state?: string;
+          source?: Json;
+          apply_source?: Json;
+          result?: Json | null;
+          error_code?: string | null;
+          quota_reserved?: boolean;
+          write_attempts?: number;
+          lease_id?: string | null;
+          lease_until?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "strategy_operations_action_id_fkey";
+            columns: ["action_id"];
+            isOneToOne: false;
+            referencedRelation: "actions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       strategy_runtime: {
-        Row: {singleton: boolean; last_worker_at: string | null}
-        Insert: {singleton?: boolean; last_worker_at?: string | null}
-        Update: {singleton?: boolean; last_worker_at?: string | null}
-        Relationships: []
-      }
+        Row: { singleton: boolean; last_worker_at: string | null };
+        Insert: { singleton?: boolean; last_worker_at?: string | null };
+        Update: { singleton?: boolean; last_worker_at?: string | null };
+        Relationships: [];
+      };
       ai_usage: {
-        Row: {user_id: string; usage_day: string; attempts: number}
-        Insert: {user_id: string; usage_day: string; attempts: number}
-        Update: {user_id?: string; usage_day?: string; attempts?: number}
-        Relationships: []
-      }
+        Row: { user_id: string; usage_day: string; attempts: number };
+        Insert: { user_id: string; usage_day: string; attempts: number };
+        Update: { user_id?: string; usage_day?: string; attempts?: number };
+        Relationships: [];
+      };
+      ai_generation_logs: {
+        Row: {
+          id: string;
+          created_at: string;
+          user_id: string;
+          intent: string;
+          model: string;
+          prompt_tokens: number;
+          completion_tokens: number;
+          total_tokens: number;
+          units_consumed: number;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          user_id: string;
+          intent: string;
+          model: string;
+          prompt_tokens?: number;
+          completion_tokens?: number;
+          total_tokens?: number;
+          units_consumed?: number;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          user_id?: string;
+          intent?: string;
+          model?: string;
+          prompt_tokens?: number;
+          completion_tokens?: number;
+          total_tokens?: number;
+          units_consumed?: number;
+        };
+        Relationships: [];
+      };
       action_comments: {
         Row: {
-          action_id: string
-          author_id: string
-          author_name: string
-          content: string
-          created_at: string
-          id: string
-          is_internal: boolean | null
-          is_user: boolean
-          mentions: string[] | null
-        }
+          action_id: string;
+          author_id: string;
+          author_name: string;
+          content: string;
+          created_at: string;
+          id: string;
+          is_internal: boolean | null;
+          is_user: boolean;
+          mentions: string[] | null;
+        };
         Insert: {
-          action_id: string
-          author_id: string
-          author_name: string
-          content: string
-          created_at?: string
-          id?: string
-          is_internal?: boolean | null
-          is_user?: boolean
-          mentions?: string[] | null
-        }
+          action_id: string;
+          author_id: string;
+          author_name: string;
+          content: string;
+          created_at?: string;
+          id?: string;
+          is_internal?: boolean | null;
+          is_user?: boolean;
+          mentions?: string[] | null;
+        };
         Update: {
-          action_id?: string
-          author_id?: string
-          author_name?: string
-          content?: string
-          created_at?: string
-          id?: string
-          is_internal?: boolean | null
-          is_user?: boolean
-          mentions?: string[] | null
-        }
+          action_id?: string;
+          author_id?: string;
+          author_name?: string;
+          content?: string;
+          created_at?: string;
+          id?: string;
+          is_internal?: boolean | null;
+          is_user?: boolean;
+          mentions?: string[] | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "action_comments_action_id_fkey"
-            columns: ["action_id"]
-            isOneToOne: false
-            referencedRelation: "actions"
-            referencedColumns: ["id"]
+            foreignKeyName: "action_comments_action_id_fkey";
+            columns: ["action_id"];
+            isOneToOne: false;
+            referencedRelation: "actions";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       actions: {
         Row: {
-          archived: boolean | null
-          category: string
-          color: string
-          content_description: string | null
-          content_files: string[] | null
-          created_at: string
-          date: string
-          description: string | null
-          id: string
-          instagram_caption: string | null
-          partners: string[]
-          phase: string
-          priority: string
-          responsibles: string[]
-          sprints: string[] | null
-          strategies: Json | null
-          time: number
-          title: string
-          updated_at: string
-          user_id: string
-          work_files: string[] | null
-        }
+          archived: boolean | null;
+          category: string;
+          color: string;
+          content_description: string | null;
+          content_files: string[] | null;
+          created_at: string;
+          date: string;
+          description: string | null;
+          id: string;
+          instagram_caption: string | null;
+          partners: string[];
+          phase: string;
+          priority: string;
+          responsibles: string[];
+          sprints: string[] | null;
+          strategies: Json | null;
+          time: number;
+          title: string;
+          updated_at: string;
+          user_id: string;
+          work_files: string[] | null;
+        };
         Insert: {
-          archived?: boolean | null
-          category: string
-          color?: string
-          content_description?: string | null
-          content_files?: string[] | null
-          created_at: string
-          date: string
-          description?: string | null
-          id?: string
-          instagram_caption?: string | null
-          partners: string[]
-          phase?: string
-          priority: string
-          responsibles: string[]
-          sprints?: string[] | null
-          strategies?: Json | null
-          time?: number
-          title: string
-          updated_at: string
-          user_id?: string
-          work_files?: string[] | null
-        }
+          archived?: boolean | null;
+          category: string;
+          color?: string;
+          content_description?: string | null;
+          content_files?: string[] | null;
+          created_at: string;
+          date: string;
+          description?: string | null;
+          id?: string;
+          instagram_caption?: string | null;
+          partners: string[];
+          phase?: string;
+          priority: string;
+          responsibles: string[];
+          sprints?: string[] | null;
+          strategies?: Json | null;
+          time?: number;
+          title: string;
+          updated_at: string;
+          user_id?: string;
+          work_files?: string[] | null;
+        };
         Update: {
-          archived?: boolean | null
-          category?: string
-          color?: string
-          content_description?: string | null
-          content_files?: string[] | null
-          created_at?: string
-          date?: string
-          description?: string | null
-          id?: string
-          instagram_caption?: string | null
-          partners?: string[]
-          phase?: string
-          priority?: string
-          responsibles?: string[]
-          sprints?: string[] | null
-          strategies?: Json | null
-          time?: number
-          title?: string
-          updated_at?: string
-          user_id?: string
-          work_files?: string[] | null
-        }
-        Relationships: []
-      }
+          archived?: boolean | null;
+          category?: string;
+          color?: string;
+          content_description?: string | null;
+          content_files?: string[] | null;
+          created_at?: string;
+          date?: string;
+          description?: string | null;
+          id?: string;
+          instagram_caption?: string | null;
+          partners?: string[];
+          phase?: string;
+          priority?: string;
+          responsibles?: string[];
+          sprints?: string[] | null;
+          strategies?: Json | null;
+          time?: number;
+          title?: string;
+          updated_at?: string;
+          user_id?: string;
+          work_files?: string[] | null;
+        };
+        Relationships: [];
+      };
       celebrations: {
         Row: {
-          created_at: string
-          date: string
-          id: string
-          title: string
-        }
+          created_at: string;
+          date: string;
+          id: string;
+          title: string;
+        };
         Insert: {
-          created_at?: string
-          date: string
-          id?: string
-          title: string
-        }
+          created_at?: string;
+          date: string;
+          id?: string;
+          title: string;
+        };
         Update: {
-          created_at?: string
-          date?: string
-          id?: string
-          title?: string
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          date?: string;
+          id?: string;
+          title?: string;
+        };
+        Relationships: [];
+      };
       clients: {
         Row: {
-          active: boolean
-          created_at: string | null
-          email: string
-          id: string
-          image: string | null
-          name: string | null
-          partners: string[]
-          password: string | null
-          password_hash: string | null
-        }
+          active: boolean;
+          created_at: string | null;
+          email: string;
+          id: string;
+          image: string | null;
+          name: string | null;
+          partners: string[];
+          password: string | null;
+          password_hash: string | null;
+        };
         Insert: {
-          active?: boolean
-          created_at?: string | null
-          email: string
-          id?: string
-          image?: string | null
-          name?: string | null
-          partners: string[]
-          password?: string | null
-          password_hash?: string | null
-        }
+          active?: boolean;
+          created_at?: string | null;
+          email: string;
+          id?: string;
+          image?: string | null;
+          name?: string | null;
+          partners: string[];
+          password?: string | null;
+          password_hash?: string | null;
+        };
         Update: {
-          active?: boolean
-          created_at?: string | null
-          email?: string
-          id?: string
-          image?: string | null
-          name?: string | null
-          partners?: string[]
-          password?: string | null
-          password_hash?: string | null
-        }
-        Relationships: []
-      }
+          active?: boolean;
+          created_at?: string | null;
+          email?: string;
+          id?: string;
+          image?: string | null;
+          name?: string | null;
+          partners?: string[];
+          password?: string | null;
+          password_hash?: string | null;
+        };
+        Relationships: [];
+      };
       dash_sessions: {
         Row: {
-          client_id: string
-          created_at: string
-          expires_at: string
-          id: string
-          revoked_at: string | null
-          token_hash: string
-        }
+          client_id: string;
+          created_at: string;
+          expires_at: string;
+          id: string;
+          revoked_at: string | null;
+          token_hash: string;
+        };
         Insert: {
-          client_id: string
-          created_at?: string
-          expires_at: string
-          id?: string
-          revoked_at?: string | null
-          token_hash: string
-        }
+          client_id: string;
+          created_at?: string;
+          expires_at: string;
+          id?: string;
+          revoked_at?: string | null;
+          token_hash: string;
+        };
         Update: {
-          client_id?: string
-          created_at?: string
-          expires_at?: string
-          id?: string
-          revoked_at?: string | null
-          token_hash?: string
-        }
+          client_id?: string;
+          created_at?: string;
+          expires_at?: string;
+          id?: string;
+          revoked_at?: string | null;
+          token_hash?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "dash_sessions_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
+            foreignKeyName: "dash_sessions_client_id_fkey";
+            columns: ["client_id"];
+            isOneToOne: false;
+            referencedRelation: "clients";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       review_links: {
         Row: {
-          action_ids: string[]
-          created_at: string
-          created_by: string
-          expires_at: string
-          id: string
-          partner_slug: string
-          revoked_at: string | null
-          token_hash: string
-        }
+          action_ids: string[];
+          created_at: string;
+          created_by: string;
+          expires_at: string;
+          id: string;
+          partner_slug: string;
+          revoked_at: string | null;
+          token_hash: string;
+        };
         Insert: {
-          action_ids: string[]
-          created_at?: string
-          created_by: string
-          expires_at: string
-          id?: string
-          partner_slug: string
-          revoked_at?: string | null
-          token_hash: string
-        }
+          action_ids: string[];
+          created_at?: string;
+          created_by: string;
+          expires_at: string;
+          id?: string;
+          partner_slug: string;
+          revoked_at?: string | null;
+          token_hash: string;
+        };
         Update: {
-          action_ids?: string[]
-          created_at?: string
-          created_by?: string
-          expires_at?: string
-          id?: string
-          partner_slug?: string
-          revoked_at?: string | null
-          token_hash?: string
-        }
+          action_ids?: string[];
+          created_at?: string;
+          created_by?: string;
+          expires_at?: string;
+          id?: string;
+          partner_slug?: string;
+          revoked_at?: string | null;
+          token_hash?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "review_links_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "people"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
+            foreignKeyName: "review_links_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "people";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       leads: {
         Row: {
-          answers: Json | null
-          completed: boolean | null
-          created_at: string | null
-          id: string
-          main_need: string | null
-          name: string
-          updated_at: string | null
-          whatsapp: string
-        }
+          answers: Json | null;
+          completed: boolean | null;
+          created_at: string | null;
+          id: string;
+          main_need: string | null;
+          name: string;
+          updated_at: string | null;
+          whatsapp: string;
+        };
         Insert: {
-          answers?: Json | null
-          completed?: boolean | null
-          created_at?: string | null
-          id?: string
-          main_need?: string | null
-          name: string
-          updated_at?: string | null
-          whatsapp: string
-        }
+          answers?: Json | null;
+          completed?: boolean | null;
+          created_at?: string | null;
+          id?: string;
+          main_need?: string | null;
+          name: string;
+          updated_at?: string | null;
+          whatsapp: string;
+        };
         Update: {
-          answers?: Json | null
-          completed?: boolean | null
-          created_at?: string | null
-          id?: string
-          main_need?: string | null
-          name?: string
-          updated_at?: string | null
-          whatsapp?: string
-        }
-        Relationships: []
-      }
+          answers?: Json | null;
+          completed?: boolean | null;
+          created_at?: string | null;
+          id?: string;
+          main_need?: string | null;
+          name?: string;
+          updated_at?: string | null;
+          whatsapp?: string;
+        };
+        Relationships: [];
+      };
       notifications: {
         Row: {
-          action_id: string
-          action_title: string
-          author_name: string
-          comment_excerpt: string
-          comment_id: string | null
-          created_at: string
-          id: string
-          read_at: string | null
-          recipient_id: string
-          type: string
-        }
+          action_id: string;
+          action_title: string;
+          author_name: string;
+          comment_excerpt: string;
+          comment_id: string | null;
+          created_at: string;
+          id: string;
+          read_at: string | null;
+          recipient_id: string;
+          type: string;
+        };
         Insert: {
-          action_id: string
-          action_title?: string
-          author_name?: string
-          comment_excerpt?: string
-          comment_id?: string | null
-          created_at?: string
-          id?: string
-          read_at?: string | null
-          recipient_id: string
-          type?: string
-        }
+          action_id: string;
+          action_title?: string;
+          author_name?: string;
+          comment_excerpt?: string;
+          comment_id?: string | null;
+          created_at?: string;
+          id?: string;
+          read_at?: string | null;
+          recipient_id: string;
+          type?: string;
+        };
         Update: {
-          action_id?: string
-          action_title?: string
-          author_name?: string
-          comment_excerpt?: string
-          comment_id?: string | null
-          created_at?: string
-          id?: string
-          read_at?: string | null
-          recipient_id?: string
-          type?: string
-        }
+          action_id?: string;
+          action_title?: string;
+          author_name?: string;
+          comment_excerpt?: string;
+          comment_id?: string | null;
+          created_at?: string;
+          id?: string;
+          read_at?: string | null;
+          recipient_id?: string;
+          type?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "notifications_action_id_fkey"
-            columns: ["action_id"]
-            isOneToOne: false
-            referencedRelation: "actions"
-            referencedColumns: ["id"]
+            foreignKeyName: "notifications_action_id_fkey";
+            columns: ["action_id"];
+            isOneToOne: false;
+            referencedRelation: "actions";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "notifications_comment_id_fkey"
-            columns: ["comment_id"]
-            isOneToOne: false
-            referencedRelation: "action_comments"
-            referencedColumns: ["id"]
+            foreignKeyName: "notifications_comment_id_fkey";
+            columns: ["comment_id"];
+            isOneToOne: false;
+            referencedRelation: "action_comments";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       partners: {
         Row: {
-          archived: boolean
-          colors: string[]
-          context: string | null
-          created_at: string
-          id: string
-          image: string | null
-          instagram_caption_tail: string | null
-          short: string
-          slug: string
-          sow: Database["public"]["Enums"]["sow"]
-          title: string
-          users_ids: string[]
-          voice: string | null
-        }
+          archived: boolean;
+          colors: string[];
+          context: string | null;
+          created_at: string;
+          id: string;
+          image: string | null;
+          instagram_caption_tail: string | null;
+          short: string;
+          slug: string;
+          sow: Database["public"]["Enums"]["sow"];
+          title: string;
+          users_ids: string[];
+          voice: string | null;
+        };
         Insert: {
-          archived?: boolean
-          colors: string[]
-          context?: string | null
-          created_at?: string
-          id?: string
-          image?: string | null
-          instagram_caption_tail?: string | null
-          short: string
-          slug: string
-          sow?: Database["public"]["Enums"]["sow"]
-          title: string
-          users_ids: string[]
-          voice?: string | null
-        }
+          archived?: boolean;
+          colors: string[];
+          context?: string | null;
+          created_at?: string;
+          id?: string;
+          image?: string | null;
+          instagram_caption_tail?: string | null;
+          short: string;
+          slug: string;
+          sow?: Database["public"]["Enums"]["sow"];
+          title: string;
+          users_ids: string[];
+          voice?: string | null;
+        };
         Update: {
-          archived?: boolean
-          colors?: string[]
-          context?: string | null
-          created_at?: string
-          id?: string
-          image?: string | null
-          instagram_caption_tail?: string | null
-          short?: string
-          slug?: string
-          sow?: Database["public"]["Enums"]["sow"]
-          title?: string
-          users_ids?: string[]
-          voice?: string | null
-        }
-        Relationships: []
-      }
+          archived?: boolean;
+          colors?: string[];
+          context?: string | null;
+          created_at?: string;
+          id?: string;
+          image?: string | null;
+          instagram_caption_tail?: string | null;
+          short?: string;
+          slug?: string;
+          sow?: Database["public"]["Enums"]["sow"];
+          title?: string;
+          users_ids?: string[];
+          voice?: string | null;
+        };
+        Relationships: [];
+      };
       people: {
         Row: {
-          admin: boolean
-          areas: string[]
-          created_at: string
-          email: string | null
-          id: string
-          image: string | null
-          initials: string
-          name: string
-          preferences: Json | null
-          short: string
-          surname: string
-          user_id: string
-          visible: boolean
-        }
+          admin: boolean;
+          areas: string[];
+          created_at: string;
+          email: string | null;
+          id: string;
+          image: string | null;
+          initials: string;
+          name: string;
+          preferences: Json | null;
+          short: string;
+          surname: string;
+          user_id: string;
+          visible: boolean;
+        };
         Insert: {
-          admin?: boolean
-          areas: string[]
-          created_at?: string
-          email?: string | null
-          id?: string
-          image?: string | null
-          initials: string
-          name: string
-          preferences?: Json | null
-          short: string
-          surname: string
-          user_id: string
-          visible?: boolean
-        }
+          admin?: boolean;
+          areas: string[];
+          created_at?: string;
+          email?: string | null;
+          id?: string;
+          image?: string | null;
+          initials: string;
+          name: string;
+          preferences?: Json | null;
+          short: string;
+          surname: string;
+          user_id: string;
+          visible?: boolean;
+        };
         Update: {
-          admin?: boolean
-          areas?: string[]
-          created_at?: string
-          email?: string | null
-          id?: string
-          image?: string | null
-          initials?: string
-          name?: string
-          preferences?: Json | null
-          short?: string
-          surname?: string
-          user_id?: string
-          visible?: boolean
-        }
-        Relationships: []
-      }
-    }
+          admin?: boolean;
+          areas?: string[];
+          created_at?: string;
+          email?: string | null;
+          id?: string;
+          image?: string | null;
+          initials?: string;
+          name?: string;
+          preferences?: Json | null;
+          short?: string;
+          surname?: string;
+          user_id?: string;
+          visible?: boolean;
+        };
+        Relationships: [];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
-      strategy_scope: {Args: {p_user_id: string; p_action_id: string}; Returns: boolean}
-      strategy_source: {Args: {p_action_id: string; p_user_id: string}; Returns: Json}
-      strategy_ready: {Args: Record<string, never>; Returns: boolean}
-      strategy_public_operation: {Args: {p_operation: Database["public"]["Tables"]["strategy_operations"]["Row"]}; Returns: Json}
-      accept_strategy_operation: {Args: {p_user_id: string; p_action_id: string; p_operation_id: string; p_expected_version: string}; Returns: Json}
-      read_strategy_operation: {Args: {p_user_id: string; p_action_id: string}; Returns: Json}
-      claim_strategy_operation: {Args: {p_lease_id: string; p_limit: number}; Returns: Json}
-      store_strategy_result: {Args: {p_operation_id: string; p_lease_id: string; p_result: Json}; Returns: undefined}
-      finish_strategy_operation: {Args: {p_operation_id: string; p_lease_id: string}; Returns: Json}
-      fail_strategy_operation: {Args: {p_operation_id: string; p_lease_id: string; p_code: string}; Returns: undefined}
-      retry_strategy_result: {Args: {p_user_id: string; p_operation_id: string; p_expected_version: string; p_confirm_changed_source?: boolean}; Returns: Json}
-      can_notify_mention: {Args: {p_comment_id: string; p_action_id: string; p_recipient_id: string}; Returns: boolean}
-      update_my_preferences: {Args: {p_patch: Json}; Returns: Json}
-      consume_ai_usage: {Args: {p_user_id: string; p_limit: number}; Returns: boolean}
-      admin_update_person: {Args: {p_user_id: string; p_changes: Json}; Returns: undefined}
+      strategy_scope: {
+        Args: { p_user_id: string; p_action_id: string };
+        Returns: boolean;
+      };
+      strategy_source: {
+        Args: { p_action_id: string; p_user_id: string };
+        Returns: Json;
+      };
+      strategy_ready: { Args: Record<string, never>; Returns: boolean };
+      strategy_public_operation: {
+        Args: {
+          p_operation: Database["public"]["Tables"]["strategy_operations"]["Row"];
+        };
+        Returns: Json;
+      };
+      accept_strategy_operation: {
+        Args: {
+          p_user_id: string;
+          p_action_id: string;
+          p_operation_id: string;
+          p_expected_version: string;
+        };
+        Returns: Json;
+      };
+      read_strategy_operation: {
+        Args: { p_user_id: string; p_action_id: string };
+        Returns: Json;
+      };
+      claim_strategy_operation: {
+        Args: { p_lease_id: string; p_limit: number };
+        Returns: Json;
+      };
+      store_strategy_result: {
+        Args: { p_operation_id: string; p_lease_id: string; p_result: Json };
+        Returns: undefined;
+      };
+      finish_strategy_operation: {
+        Args: { p_operation_id: string; p_lease_id: string };
+        Returns: Json;
+      };
+      fail_strategy_operation: {
+        Args: { p_operation_id: string; p_lease_id: string; p_code: string };
+        Returns: undefined;
+      };
+      retry_strategy_result: {
+        Args: {
+          p_user_id: string;
+          p_operation_id: string;
+          p_expected_version: string;
+          p_confirm_changed_source?: boolean;
+        };
+        Returns: Json;
+      };
+      can_notify_mention: {
+        Args: {
+          p_comment_id: string;
+          p_action_id: string;
+          p_recipient_id: string;
+        };
+        Returns: boolean;
+      };
+      update_my_preferences: { Args: { p_patch: Json }; Returns: Json };
+      consume_ai_usage: {
+        Args: { p_user_id: string; p_limit: number };
+        Returns: boolean;
+      };
+      log_ai_generation: {
+        Args: {
+          p_user_id: string;
+          p_intent: string;
+          p_model: string;
+          p_prompt_tokens: number;
+          p_completion_tokens: number;
+          p_total_tokens: number;
+          p_units_consumed: number;
+        };
+        Returns: string;
+      };
+      get_agency_ai_usage: {
+        Args: Record<string, never>;
+        Returns: Json;
+      };
+      admin_update_person: {
+        Args: { p_user_id: string; p_changes: Json };
+        Returns: undefined;
+      };
       admin_update_client_account: {
-        Args: {p_client_id: string; p_changes: Json; p_password_hash: string | null}
-        Returns: Json
-      }
+        Args: {
+          p_client_id: string;
+          p_changes: Json;
+          p_password_hash: string | null;
+        };
+        Returns: Json;
+      };
       admin_update_client_password: {
         Args: {
-          p_client_id: string
-          p_password_hash: string
-        }
-        Returns: undefined
-      }
+          p_client_id: string;
+          p_password_hash: string;
+        };
+        Returns: undefined;
+      };
       admin_deactivate_client: {
         Args: {
-          p_client_id: string
-        }
-        Returns: undefined
-      }
+          p_client_id: string;
+        };
+        Returns: undefined;
+      };
       client_migrate_legacy_password: {
         Args: {
-          p_client_id: string
-          p_legacy_hash: string
-          p_new_hash: string
-        }
-        Returns: number
-      }
-      get_app_bootstrap: { Args: { p_user_id: string }; Returns: Json }
+          p_client_id: string;
+          p_legacy_hash: string;
+          p_new_hash: string;
+        };
+        Returns: number;
+      };
+      get_app_bootstrap: { Args: { p_user_id: string }; Returns: Json };
       get_home_actions: {
         Args: {
-          p_end_date: string
-          p_partner_slugs?: string[]
-          p_start_date: string
-          p_today_end: string
-          p_user_id: string
-        }
+          p_end_date: string;
+          p_partner_slugs?: string[];
+          p_start_date: string;
+          p_today_end: string;
+          p_user_id: string;
+        };
         Returns: {
-          archived: boolean | null
-          category: string
-          color: string
-          content_description: string | null
-          content_files: string[] | null
-          created_at: string
-          date: string
-          description: string | null
-          id: string
-          instagram_caption: string | null
-          partners: string[]
-          phase: string
-          priority: string
-          responsibles: string[]
-          sprints: string[] | null
-          strategies: Json | null
-          time: number
-          title: string
-          updated_at: string
-          user_id: string
-          work_files: string[] | null
-        }[]
+          archived: boolean | null;
+          category: string;
+          color: string;
+          content_description: string | null;
+          content_files: string[] | null;
+          created_at: string;
+          date: string;
+          description: string | null;
+          id: string;
+          instagram_caption: string | null;
+          partners: string[];
+          phase: string;
+          priority: string;
+          responsibles: string[];
+          sprints: string[] | null;
+          strategies: Json | null;
+          time: number;
+          title: string;
+          updated_at: string;
+          user_id: string;
+          work_files: string[] | null;
+        }[];
         SetofOptions: {
-          from: "*"
-          to: "actions"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
-    }
+          from: "*";
+          to: "actions";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
+    };
     Enums: {
-      sow: "marketing" | "socialmedia" | "demand"
-    }
+      sow: "marketing" | "socialmedia" | "demand";
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<
+  keyof Database,
+  "public"
+>];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+      Row: infer R;
     }
     ? R
     : never
@@ -585,95 +752,92 @@ export type Tables<
         DefaultSchema["Views"])
     ? (DefaultSchema["Tables"] &
         DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
+        Row: infer R;
       }
       ? R
       : never
-    : never
+    : never;
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+      Insert: infer I;
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
+        Insert: infer I;
       }
       ? I
       : never
-    : never
+    : never;
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+      Update: infer U;
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
+        Update: infer U;
       }
       ? U
       : never
-    : never
+    : never;
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
   EnumName extends (DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+    : never;
 
 export const Constants = {
   public: {
@@ -681,4 +845,4 @@ export const Constants = {
       sow: ["marketing", "socialmedia", "demand"],
     },
   },
-} as const
+} as const;

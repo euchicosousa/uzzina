@@ -109,4 +109,5 @@ export const QUERY_KEYS = {
     public: (actionId: string, userId: string) =>
       ["comments", "team", userId, "public", actionId] as const,
   },
+  aiUsage: (userId: string) => ["ai-usage", "team", userId] as const,
 } as const;

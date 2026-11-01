@@ -4,7 +4,14 @@
 
 **Blocked by:** nenhuma dependência dos tickets de busca, datas comemorativas, Ajuda ou Notificações. Antes de implementar, resolver as definições de produto e verificar o vínculo autorizado de agência/membros descritos abaixo.
 
-**Status:** backlog — standalone vertical delivery; owner authorized ticket preparation 2026-10-29; placement confirmed in Minha Conta; product definitions required before implementation
+**Status:** implemented locally (2026-11-01) — visualização e registro preparados; migração SQL preparada; 9 PASS serverless e tsc sem erros; aguarda validação do proprietário; sem commit, push ou deploy.
+
+## Owner decisions — 2026-11-01
+
+- **Público autorizado:** Todos os membros internos ativos da agência em `public.people` visualizam o consumo da agência em Minha Conta.
+- **Formato de exibição:** Percentual relativo de 0% a 100% com base em franquia mensal interna da agência (referência padrão: 1.000 unidades/mês), sem expor tarifas ou custos do fornecedor OpenAI.
+- **Período e fuso:** Mês civil no fuso de Fortaleza (`America/Fortaleza`), exibido como ex.: "Novembro de 2026".
+- **Localização:** Bloco compacto e somente de leitura ao final da coluna de Preferências em `/app/profile`, antes do `AppBarSpacer`. Preserva o formulário e salvamento do perfil.
 
 ## Context and scope
 
