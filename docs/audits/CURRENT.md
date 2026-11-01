@@ -6,6 +6,10 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### C1/C2 corrigidos localmente — 01/11
+
+Autorizado pelo proprietário. C2: `/login` e `/dash/login` passam de `grid-cols-[2rem_28rem_2rem]` para `grid-cols-[1rem_minmax(0,28rem)_1rem] sm:grid-cols-[2rem_minmax(0,28rem)_2rem]`, iguais entre si; desktop mantém moldura de448px. C1: cabeçalho de `/dash` quebra linha no celular (seletor de parceiro em linha própria, largura total e texto truncado; saudação truncada; Sair sem encolher), layout de `sm` para cima preservado. Verificado no navegador sem credenciais: login e login do portal sem overflow em320px e com moldura32/448/32px em1440px. Cabeçalho do portal não renderizado (exige sessão): validação do proprietário. Esqueci/redefinir senha usam outra grade e podem cortar em320px; não alterados. Prettier nos arquivos tocados e typecheck limpo; sem testes novos ou deploy; commitado e enviado ao GitHub a pedido do proprietário, aguardando validação dele.
+
 ### Push sem deploy; limiar do aviso Instagram; reconciliação — 01/11
 
 Push de main ao GitHub (a4eac79..7f53e85) após `bun run test:serverless` com exit 0, sem deploy Vercel por escolha do proprietário: produção segue em `a714b2d`, então o estilo de login `08a0006` não está em produção. Instagram03: limiar do aviso para girar o telefone decidido como o ponto em que a aba Essencial começa a rolar (título + metadados + 200px da descrição acima da altura do scroller), só em paisagem por ora; retrato com teclado fora do escopo, teste em aparelho pode mudar; apresentação/implementação não autorizadas, medição natural em `useShortWritingPanel`. [Ticket 03](../../.scratch/safari-mobile/issues/03-mobile-instagram-editor.md). [Decisões pendentes](2026-11-01-pending-decisions.md) reconciliadas (V2, V3, V5, V6, V7 aceitos; V1 e V8 abertos). C2 possivelmente se estende ao login do portal, que desde `08a0006` usa o mesmo frame de28rem; não verificado em runtime. Somente documentação; sem testes, build, deploy ou código.

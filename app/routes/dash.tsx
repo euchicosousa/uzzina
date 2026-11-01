@@ -207,13 +207,13 @@ function DashLayout() {
       }}
     >
       <div className="flex h-screen w-full flex-col bg-background">
-        <header className="border_after flex items-center justify-between px-6 py-3">
-          <div className="flex items-center gap-3">
+        <header className="border_after flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-3 sm:px-6">
+          <div className="flex min-w-0 flex-1 items-center gap-3 sm:flex-none">
             <UAvatar
               fallback={clientData.name ?? "Cliente"}
               image={clientData.image ?? undefined}
             />
-            <span className="truncate text-sm text-muted-foreground">
+            <span className="min-w-0 truncate text-sm text-muted-foreground">
               Olá,{" "}
               <span className="font-medium text-foreground">
                 {clientData.name ?? "Cliente"}
@@ -223,10 +223,10 @@ function DashLayout() {
 
           {/* Seletor de Parceiro */}
           {partners.length > 0 && (
-            <div className="flex max-w-xs items-center gap-3">
+            <div className="order-last flex w-full max-w-xs min-w-0 items-center gap-3 sm:order-none sm:w-auto">
               {partners.length === 1 ? (
                 <div className="flex items-center gap-2 rounded-xl px-3 py-1.5">
-                  <span className="text-sm font-semibold">
+                  <span className="truncate text-sm font-semibold">
                     {partners[0].title}
                   </span>
                 </div>
@@ -238,8 +238,8 @@ function DashLayout() {
                   }}
                   selectedKey={currentPartnerSlug}
                 >
-                  <PrismSelectTrigger className="w-45 rounded-xl border-none text-sm font-semibold shadow-none">
-                    <PrismSelectValue />
+                  <PrismSelectTrigger className="w-full min-w-0 rounded-xl border-none text-sm font-semibold shadow-none sm:w-45">
+                    <PrismSelectValue className="block! min-w-0 truncate" />
                   </PrismSelectTrigger>
                   <PrismSelectContent>
                     {partners.map((partner) => (
@@ -254,7 +254,7 @@ function DashLayout() {
           )}
 
           <PrismButton
-            className="gap-2"
+            className="shrink-0 gap-2"
             onClick={handleLogout}
             size="sm"
             variant="ghost"
@@ -263,7 +263,7 @@ function DashLayout() {
           </PrismButton>
         </header>
         {logoutError && (
-          <p role="alert" className="px-6 text-error">
+          <p role="alert" className="px-4 text-error sm:px-6">
             {logoutError}
           </p>
         )}

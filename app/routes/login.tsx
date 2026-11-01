@@ -55,7 +55,7 @@ function Login() {
     }
   };
   return (
-    <div className="grid h-screen grid-cols-[2rem_28rem_2rem] justify-center overflow-x-hidden">
+    <div className="grid h-screen grid-cols-[1rem_minmax(0,28rem)_1rem] justify-center overflow-x-hidden sm:grid-cols-[2rem_minmax(0,28rem)_2rem]">
       <div className="border-r"></div>
 
       <div className="border_after border_before relative my-auto flex flex-col gap-12 p-8">

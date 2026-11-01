@@ -24,7 +24,7 @@ These are findings/proposed scopes from the other agent's style review. The owne
 | C5 | Admin320px layout/names, AppBar width, drawer tab labels and badges under enlarged spacing: all labels and controls remain readable/reachable. | Medium | Medium |
 | C6 | Action cards with nested interactive controls and alternate movement paths: preserve opening, selection, drag and inner commands while correcting semantics/keyboard operation. Coordinate D10. | Medium | Hard |
 
-Suggested execution order: C1/C2 → C3/C4 → C5 → C6. Creating individual correction tickets or starting the batch still depends on the owner's execution choice; this table creates no new tracker tickets.
+C1/C2 implemented locally on 01/11 (see CURRENT), awaiting owner check; not deployed. Suggested execution order: C1/C2 → C3/C4 → C5 → C6. Creating individual correction tickets or starting the batch still depends on the owner's execution choice; this table creates no new tracker tickets.
 
 ## 2. Visual and interaction choices
 
