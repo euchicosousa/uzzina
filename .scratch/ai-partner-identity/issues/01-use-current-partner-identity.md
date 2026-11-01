@@ -1,5 +1,7 @@
 # 01: Gerar conteúdo de IA com a identidade do parceiro atual
 
+**Latest owner acceptance — 2026-11-01: approved and closed.** This supersedes historical pending-acceptance statements below. Separate media performance/carousel observations and Today design work remain in the [current queue](../../../docs/audits/2026-11-01-open-tickets.md).
+
 **What to build:** ao gerar estratégias, aberturas, conteúdo ou legenda de uma ação, usar explicitamente a marca do parceiro atual como autora do conteúdo. Um hospital continua falando como hospital, inclusive após duplicar uma ação da agência, trocar o parceiro, salvar e reabrir dias depois. A identidade da agência que opera a UZZINA não deve ser imposta como marca publicadora pelos comandos de IA.
 
 **Blocked by:** None (can start immediately). Independente dos tickets de Safari, geração em segundo plano, Planejamento e uso de IA. Coordenar arquivos compartilhados com um executor por vez, sem criar dependência funcional artificial.

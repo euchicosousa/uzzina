@@ -2,15 +2,25 @@
 
 Atualizado em 01/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`, domínio `uzzina.cnvt.com.br`, código `a714b2d`: regra de endereço do portal removida a pedido do proprietário. Estratégias09 permanecem permanentes/ativas. [Remoção](2026-11-01-remove-portal-origin-rule.md), [rollout de estratégias](2026-11-01-strategy-permanent-rollout.md). Verificações anteriores permanecem no histórico.
+Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`, domínio `uzzina.cnvt.com.br`, código `a714b2d`: regra de endereço do portal removida a pedido do proprietário. GitHub sincronizado com main até `7f53e85` (a4eac79..7f53e85); produção continua em `a714b2d`. Estratégias09 permanecem permanentes/ativas. [Remoção](2026-11-01-remove-portal-origin-rule.md), [rollout de estratégias](2026-11-01-strategy-permanent-rollout.md). Verificações anteriores permanecem no histórico.
 
 ## Pendências reais
+
+### Push sem deploy; limiar do aviso Instagram; reconciliação — 01/11
+
+Push de main ao GitHub (a4eac79..7f53e85) após `bun run test:serverless` com exit 0, sem deploy Vercel por escolha do proprietário: produção segue em `a714b2d`, então o estilo de login `08a0006` não está em produção. Instagram03: limiar do aviso para girar o telefone decidido como o ponto em que a aba Essencial começa a rolar (título + metadados + 200px da descrição acima da altura do scroller), só em paisagem por ora; retrato com teclado fora do escopo, teste em aparelho pode mudar; apresentação/implementação não autorizadas, medição natural em `useShortWritingPanel`. [Ticket 03](../../.scratch/safari-mobile/issues/03-mobile-instagram-editor.md). [Decisões pendentes](2026-11-01-pending-decisions.md) reconciliadas (V2, V3, V5, V6, V7 aceitos; V1 e V8 abertos). C2 possivelmente se estende ao login do portal, que desde `08a0006` usa o mesmo frame de28rem; não verificado em runtime. Somente documentação; sem testes, build, deploy ou código.
+
+### Aceites finais e pendências remanescentes — 01/11
+
+Proprietário aprovou e encerrou16 rodapé, controles de mídia, identidade do parceiro na IA e fluxo de foco em Hoje. Design de Hoje fica com o outro agente. Instagram03 funciona em retrato segundo o proprietário; paisagem com teclado é inutilizável por falta de espaço. Permanece apenas avaliar aviso por área útil mínima, sugerindo girar o telefone quando em paisagem; sem implementar abas laterais ou novo redesenho automaticamente, e sem limiar ainda definido.
+
+Mídia aprovada quanto a remover/reordenar/persistir. Observações separadas para estudo posterior: atraso/travamento ao soltar o arraste (cerca de1s no mobile, menor no desktop, item suspenso antes de assentar) e possível gesto/transição lateral no carrossel, hoje com troca direta de imagem. Gesto é melhoria sugerida, não erro confirmado. Sem reprodução independente, novos tickets ou alteração de código. [Fila vigente](2026-11-01-open-tickets.md). Estilo/acessibilidade com outro agente; uso de IA e Planejamento adiados. Registro documental sem testes/build/deploy; mudanças externas preservadas.
 
 ### Login aprovado; fila de validação delimitada — 01/11
 
 Proprietário aprovou o login e autorizou commit. Implementação já commitada em `08a0006`; aceite visual/funcional encerrado por declaração do proprietário, sem inferir teste independente ou nova publicação. [Registro](2026-11-01-portal-login-style.md).
 
-Restam os aceites de03 Instagram,16 rodapé, mídia, identidade do parceiro na IA e foco em Hoje, com [roteiros objetivos](2026-11-01-open-tickets.md). Estilo/acessibilidade ficam com o outro agente; uso de IA em Minha Conta e Planejamento adiados pelo proprietário. Nenhuma implementação adicional autorizada nesta rodada. Somente documentação, referências/diff conferidos; sem testes, build, SQL, push ou deploy. Mudanças externas preservadas.
+Aceites posteriores no mesmo dia estão na entrada acima e em [fila vigente](2026-11-01-open-tickets.md). Estilo/acessibilidade ficam com o outro agente; uso de IA em Minha Conta e Planejamento adiados pelo proprietário. Nenhuma implementação adicional autorizada nesta rodada. Somente documentação, referências/diff conferidos; sem testes, build, SQL, push ou deploy. Mudanças externas preservadas.
 
 ### Portal aprovado; login alinhado ao principal — 01/11
 
@@ -18,13 +28,17 @@ Proprietário aprovou o portal e pediu commit: acesso local/origem encerrado por
 
 Novo modo de trabalho solicitado: mudanças diretas, roteiro ao proprietário e testes automatizados somente quando necessários; AGENTS atualizado. Nesta alteração visual, sem novos testes/suites/build/publicação: formatação apenas dos arquivos tocados, leitura do diff e atualização dos seletores dos scripts existentes ao rótulo Fazer Login. Validação visual/funcional do novo login será do proprietário. Mudanças externas preservadas; escopo limitado a esse login e ao registro de aceite.
 
-
 ### Regra de endereço do portal removida — 01/11
 
 Proprietário rejeitou nova correção e pediu remover a regra após bloqueio no iPhone via192.168.0.21. Removidos o gate Origin/APP_ORIGIN de login/logout e mutações do portal, helper de validação, redirecionamento local obrigatório e mensagem de endereço não autorizado. Nenhuma nova allowlist/normalização substituiu a regra. Credenciais, sessão opaca/cookie e autorização por conta/ação mantidas. [Registro](2026-11-01-remove-portal-origin-rule.md).
 
 Reprodução real anônima com login vazio no5176: IP da rede403 por origem antes →400 de campos obrigatórios depois; localhost também400, logout sem sessão200 com cookie local sem Secure. Sem credencial do print usada, login real ou acesso ao banco nesses probes. Regressão HTTP contra snapshot Git anterior:2pass/9fail; fonte atual11pass, mais66 testes de contratos e6 grupos do build no navegador com contas fictícias/HTTP controlado. Format/lint/typecheck/build e9 PASS serverless. Sem SQL, regra alternativa, troca de senha ou limpeza manual do cache/servidor. Commit `a714b2d`, produção Ready `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`; HTTP real publicado confirmou login vazio400 sem Origin/pelo IP/outra origem e mutação sem sessão401. Contrato anterior de canonicalização fica revogado por este pedido.
 
+### Especificações das decisões e prioridade — 01/11
+
+Proprietário pediu separar pendências e explicitar todas as decisões, urgência e facilidade. [Consolidação](2026-11-01-pending-decisions.md): autorização de correções objetivas da revisão de estilo,11 escolhas visuais/interação documentadas com propostas,6 definições de uso de IA,7 grupos de aprovação do Planejamento,8 roteiros de aceite/uso e investigação/manutenção separadas. Recomendações/estimativas não são decisões aprovadas nem autorização de implementação. Revisão externa já chegou à rodada3; lista aberta reconciliada com isso. Lacuna registrada: CURRENT menciona12 decisões no site privado, mas o relatório enumera11; conferência dessa correspondência cabe ao autor da revisão, sem inventar requisito para o proprietário.
+
+Prioridade sugerida: conferir09/identidade na IA e eventual bloqueio local; autorizar portal/login mobile, foco/nomes e política de contraste; depois demais aceites/usabilidade, preferências estéticas, uso de IA e Planejamento conforme prioridade de negócio. Aviso pg_net/possível foco em lote permanecem fora de escolhas de produto e sem novo ticket. Somente documentação/consulta dirigida; referências/diff conferidos, sem alteração funcional, teste/build, banco/provedor, deploy ou aceite novo. Mudanças externas de estilo preservadas.
 
 ### Estratégias permanentes publicadas e lista reconciliada — 01/11
 
@@ -55,6 +69,18 @@ Sem commit/push/deploy, alteração de env/SQL remoto, geração paga ou contato
 Proprietário pediu análise completa, conformidade com os padrões de design e um site para aprovação, sem correções. [Resultado](2026-10-31-style-analysis.md#round-3--conformance-to-the-design-standards-2026-11-01): três subagentes mediram Prism (regras do AGENTS.md em235 arquivos), WCAG2.2 AA (revisão estática + contraste OKLCH de12 paletas×2 modos:606 pares,134 reprovam) e runtime em5193 isolado (axe-core em25 telas×375/1440×claro/escuro:43/100 limpas; alvo de toque, reflow320, espaçamento de texto,261 paradas de Tab, zoom200%, listas populadas). Coordenador conferiu os achados citados. Principais: controles sem nome, foco invisível na variante `unstyled` (avatar do cabeçalho), texto do botão principal reprova em9 combinações de paleta, cor de atrasada3,96:1 no claro, bordas/campos abaixo de3:1, cartão de ação com controles aninhados, sem autocomplete/skip link; A6/N5/N1 reconfirmados com dados populados. Prism: tipagem100%, ícones92%, tokens82%, estados React Aria≈15%. Site de aprovação privado (artifact claude.ai/artifact/DnmhJK3KmyATdigjev5T46) com plano S0–S11 e12 decisões; nenhuma implementação autorizada.
 
 Indicadores automáticos, não certificação; Chromium apenas; sem leitor de tela/Safari físico. Sem código do repositório, testes/build, SQL/banco/provedor, servidor5176, commit, push ou deploy;5193 encerrado.
+
+### Análise geral de estilo — rodada2 — 01/11
+
+Proprietário pediu a rodada2. [Resultado](2026-10-31-style-analysis.md#round-2--runtime-matrix-with-controlled-data-2026-11-01): dois subagentes mediram o app real em Chromium headless contra servidor isolado5193 (cache próprio), com sessão fictícia e todo HTTP externo/`/api` controlado ou abortado; 0 escritas e 0 erros de página. Equipe em375/390/paisagem/1440 claro/escuro; auth em320–1440 (+WebKit no login); admin/perfil/leads/ajuda/portal/revisão em375/1440. Achados da rodada1 confirmados, exceto ComboboxTrigger: `filter`/`form-footer` têm anel, só `form-inline`/`form-link` não. Novos: cabeçalho do `/dash` não quebra e transborda até256px em375 com dois parceiros (a suíte anterior só mediu390/1440 com nomes curtos); aba "Observações" truncada no celular; contraste do selo de status de Lead abaixo de4,5:1 no claro; nome some ao lado do selo Admin em375; foco fraco no botão principal preenchido. Mockups antes/depois aplicados só no navegador, em folha comparativa fora do Git. Sequência atualizada S0 (portal) → S1 (login) → S1b/S2…, sem implementação autorizada.
+
+Servidor mediu a árvore de trabalho com edições não commitadas de outra sessão. Sem Safari físico/toque, listas populadas de leads/admin, `/dash/action`. Sem código do repositório, testes/build, SQL/banco/provedor, servidor5176, commit, push ou deploy;5193 encerrado. Scripts/prints no scratchpad da sessão.
+
+### Análise geral de estilo — rodada1 — 31/10
+
+Proprietário autorizou iniciar o ticket. [Relatório](2026-10-31-style-analysis.md): inventário estático por quatro subagentes somente leitura (botões, seleção/navegação/overlays, espaçamento/títulos, campos/toolbars), afirmações usadas conferidas no código pelo coordenador (duas descartadas por serem falsas) e amostra em runtime só de páginas públicas sem dados (`/ui`, `/login`, `/forgot-password`) no5176, apenas GET. Achado funcional reproduzido: `/login` corta campos e botão em375px (grade fixa de28rem); demais funcionais (foco só por fundo na toolbar do editor/ComboboxTrigger, UToggleInput sem foco visível, grade admin de duas colunas) são estáticos. Proposta de mapeamento papel→componente, política de espaçamento, seis decisões do proprietário e sequência S1–S10, sem implementação autorizada.
+
+Rodada2 pendente: matriz de telas autenticadas com dados controlados, escuro/paisagem/estados e mockups visuais. Somente documentação: sem código, testes/build, SQL/banco, reinício do servidor, commit, push ou deploy. `tests/field-accessible-names.test.tsx` externo, não rastreado, preservado. Referências/diff conferidos.
 
 ### Commit K03 e fila atualizada — 31/10
 

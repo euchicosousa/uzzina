@@ -1,5 +1,7 @@
 # 01: Manter os controles de mídia sempre visíveis e operáveis
 
+**Latest owner acceptance — 2026-11-01: approved and closed.** This supersedes historical pending-acceptance statements below. Separate media performance/carousel observations and Today design work remain in the [current queue](../../../docs/audits/2026-11-01-open-tickets.md).
+
 **What to build:** na janela Gerenciar conteúdo da UZZINA, mostrar permanentemente a remoção individual, a alça de reordenação e a posição de cada arquivo, no desktop e no celular. A pessoa consegue remover/reordenar com ponteiro, toque ou teclado sem depender de hover; miniaturas, ordem, retorno de foco e persistência existentes permanecem coerentes.
 
 **Blocked by:** None (can start immediately). Independente dos tickets de Safari, Planejamento e uso de IA. A entrega mobile de Instagram prepara a área que abre o gerenciador; esta tarefa atua nos controles internos. Coordenar alterações compartilhadas, com um executor por vez no checkout, sem inventar dependência funcional.

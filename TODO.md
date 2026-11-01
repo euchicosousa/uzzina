@@ -6,7 +6,7 @@
 
 Deploy de todas as entregas informado pelo proprietário em31/10; publicação deixa de ser pendência dessas entregas. Os aceites específicos continuam nos registros de CURRENT.
 
-- [x] [Acesso ao portal local](.scratch/dash-local-auth/issues/01-canonical-local-origin.md): aprovado pelo proprietário em01/11 após remoção da regra de endereço, commit `a714b2d`. Login também aprovado pelo proprietário em01/11; implementação `08a0006`.
+- [x] [Acesso ao portal local](.scratch/dash-local-auth/issues/01-canonical-local-origin.md): aprovado pelo proprietário em01/11 após remoção da regra de endereço, commit `a714b2d`. Login também aprovado pelo proprietário em01/11; implementação `08a0006` (push feito, ainda não publicada em produção).
 
 - [ ] Conferir durante a semana o app publicado: login/home, edição/data, preferências, IA, administração, portal/revisão, upload e Leads. Banco fase2 já conferido no catálogo; estado em [CURRENT](docs/audits/CURRENT.md).
 - [ ] Executar o [roteiro Safari/telefone](docs/audits/2026-10-29-owner-validation-guide.md) e trazer os resultados em outro chat, conforme decisão do proprietário.
@@ -16,14 +16,14 @@ Deploy de todas as entregas informado pelo proprietário em31/10; publicação d
 
 - [x] [Estratégias07/09 permanentes](docs/audits/2026-11-01-strategy-permanent-rollout.md): código commitado/publicado Ready em01/11, SQL/segredo/agendamento assinados e heartbeat verificados; sem flags de ativação. Uso real escolhido pelo proprietário permanece separado dos testes controlados.
 
-- [ ] Validar os [cinco ajustes de31/10](docs/audits/CURRENT.md): título, mídia, rodapé, identidade na IA e foco de Hoje. Implementação commitada em `6019a80`; publicação informada pelo proprietário; aceite específico no aparelho ainda não registrado para esses cinco ajustes.
+- [x] Mídia, rodapé16, identidade na IA e foco de Hoje aprovados pelo proprietário em01/11. Título permanece entregue no roteiro geral de uso, sem aceite específico novo inferido. [Fila remanescente](docs/audits/2026-11-01-open-tickets.md): Instagram paisagem/aviso de espaço e estudos posteriores de arraste/carrossel.
 
 
-- [ ] [Correções do retorno mobile](.scratch/safari-mobile/README.md#correction-tickets-registered--2026-10-30):12/17 commitados em `ceafc6f`,13/18 em `4540ef6`;14/19 aceitos e commitados em `53508d2`. Header global e15 (abas compartilhadas) implementados/verificados e commitados em `566cbbe`; Header,12 e15 aprovados pelo proprietário em31/10; deploy informado pelo proprietário.16 rodapé implementado/verificado e commitado em `6019a80`; aceites anteriores preservados.
+- [ ] [Correções do retorno mobile](.scratch/safari-mobile/README.md#correction-tickets-registered--2026-10-30):12/17 commitados em `ceafc6f`,13/18 em `4540ef6`;14/19 aceitos e commitados em `53508d2`. Header global e15 (abas compartilhadas) implementados/verificados e commitados em `566cbbe`; Header,12 e15 aprovados pelo proprietário em31/10; deploy informado pelo proprietário.16 rodapé implementado/verificado e commitado em `6019a80`, aprovado em01/11; Instagram retrato aprovado, paisagem permanece para avaliação de aviso de espaço. Aceites anteriores preservados.
 
-- [ ] [Análise geral de estilo e simplificação](.scratch/visual-consistency/issues/01-app-style-analysis-and-simplification.md): novo ticket para inventário visual/técnico, menos padrões de botões/controles, espaçamento responsivo e proposta de consolidação. Análise ainda não executada; não autoriza redesenho automático nem duplica os tickets de correção existentes.
+- [ ] [Análise geral de estilo e simplificação](.scratch/visual-consistency/issues/01-app-style-analysis-and-simplification.md): novo ticket para inventário visual/técnico, menos padrões de botões/controles, espaçamento responsivo e proposta de consolidação. Rodadas1–3 entregues em [relatório](docs/audits/2026-10-31-style-analysis.md) (inventário, matriz em runtime com dados controlados, mockups, conformidade Prism/WCAG2.2 AA e sequência S0–S11; site de aprovação privado); aguarda decisões/autorização do proprietário. Não autoriza redesenho automático nem duplica os tickets de correção existentes.
 
-- [ ] [Controles de mídia sempre visíveis](.scratch/media-controls/issues/01-always-visible-media-controls.md): implementado/verificado localmente em31/10: remoção/alça/posição sempre visíveis, foco após exclusão e Escape do arraste. Deploy informado; aceite específico no aparelho ainda não registrado; widget Cloudinary preservado.
+- [x] [Controles de mídia sempre visíveis](.scratch/media-controls/issues/01-always-visible-media-controls.md): implementado/verificado localmente em31/10: remoção/alça/posição sempre visíveis, foco após exclusão e Escape do arraste. Deploy informado; aprovado pelo proprietário em01/11; widget Cloudinary preservado. Lentidão do arraste e gesto do carrossel registrados para estudo posterior.
 
 - [x] [Correções de teclado K03/K04/K05](docs/audits/2026-10-29-keyboard-focus-inventory.md): K03 `a4eac79`,K04/K05 `3b4d2a4`, publicados Ready em01/11. Auditoria original concluída; demais aceites específicos constam da lista vigente.
 

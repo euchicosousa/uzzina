@@ -1,5 +1,7 @@
 # 01: Corrigir o foco de Hoje e investigar controles dependentes de hover e wrappers focáveis
 
+**Latest owner acceptance — 2026-11-01: approved and closed.** This supersedes historical pending-acceptance statements below. Separate media performance/carousel observations and Today design work remain in the [current queue](../../../docs/audits/2026-11-01-open-tickets.md).
+
 **What to build:** em `/app/today`, retirar o wrapper “Ações do dia” do percurso de foco e eliminar seu contorno, além de revelar o botão “+” do parceiro quando receber foco pelo teclado. Complementar a revisão anterior com uma investigação dirigida nas telas/componentes existentes da UZZINA: controles cuja disponibilidade/visibilidade depende de hover e wrappers que recebem foco sem uma finalidade de interação. Entregar ocorrências verificadas, lacunas da revisão anterior e propostas delimitadas. Tab/Shift+Tab devem percorrer controles úteis, com indicação visual no controle efetivamente focado. Preservar rolagem, layout e abertura das ações.
 
 **Priority:** P2 — interação de teclado e indicação visual incorretas; sem evidência de perda de dados ou bloqueio total.

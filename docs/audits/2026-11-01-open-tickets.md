@@ -1,23 +1,20 @@
-# Open tickets — 01/11/2026
+# Open items — 01/11/2026
 
-Portal access and login appearance approved and closed by the owner. Login implementation: `08a0006`.07/09 and K04/K05 delivered. Acceptance does not imply a new production deployment.
+## Closed by owner acceptance
 
-## Implemented, awaiting owner checks
+Portal/access and login;16 action footer; media controls (remove/reorder/persist); partner identity in AI; Today keyboard focus. Earlier acceptances remain valid. Today design concerns belong to the other agent. No further validation requested for these closed items.
 
-| Item | Practical owner check |
+## Remaining
+
+| Item | Next step / status |
 |---|---|
-| [03 — Instagram mobile](../../.scratch/safari-mobile/issues/03-mobile-instagram-editor.md) | On the phone, open an action with media and one without; edit text/caption with the keyboard open and rotate the phone. Text and toolbar remain reachable and edits are retained. Accepted follow-ups remain accepted. |
-| [16 — action footer](../../.scratch/safari-mobile/issues/16-unify-action-footer-buttons.md) | On the phone, scroll the footer strip, open partner/phase/category controls and save. Save remains reachable; dragging the strip does not activate a command. |
-| [Media controls](../../.scratch/media-controls/issues/01-always-visible-media-controls.md) | In Manage content, remove one item and reorder another; save/reopen. Only the selected item disappears and the order persists; controls stay visible. |
-| [Partner identity in AI](../../.scratch/ai-partner-identity/issues/01-use-current-partner-identity.md) | Generate a caption for a partner other than CNVT: it should speak as that brand. Legitimate mentions supplied in context remain allowed. |
-| [Today focus](../../.scratch/today-focus/issues/01-remove-wrapper-focus.md) | On the computer, Tab through Today: the whole actions region should not receive focus; the partner/category creation control becomes visible on focus and Enter opens the corresponding draft. |
+| [03 — Instagram mobile](../../.scratch/safari-mobile/issues/03-mobile-instagram-editor.md) | Portrait approved. Landscape with keyboard lacks usable space. Evaluate a minimum-visible-space advisory, suggesting rotating the phone to portrait when applicable. Threshold decided: advisory where the Essencial tab starts scrolling (title + metadata + 200px description exceed the scroller height), landscape only for now; portrait with keyboard deliberately out of scope, real-device testing may change it. Presentation/implementation not yet authorized; no new layout implementation authorized. See ticket 03. |
+| Media drag delay | Study later: owner reports roughly1s delay on mobile, shorter on desktop, with the dragged item suspended before settling. Not independently reproduced; separate from approved media functionality. |
+| Carousel gesture | Study later: optional sideways swipe/slide transition instead of direct image replacement. Enhancement suggestion, not a confirmed defect. |
+| [Style/accessibility](../../.scratch/visual-consistency/issues/01-app-style-analysis-and-simplification.md) | Other agent, including Today design. |
+| [AI usage in My Account](../../.scratch/ai-usage/issues/01-ai-usage-visibility.md) | Deferred by owner. |
+| [Social planning](../plans/social-planning-ticket-breakdown.md) | Deferred by owner; seven proposed deliveries, no new tickets started. |
 
-## Outside this agent's current queue
+07/09 and K04/K05 delivered. Optional platform maintenance and unreproduced bulk date/time focus candidate remain recorded for later, without new tickets. Inline title remains delivered in the general use checklist, without a separate ticket; no new specific acceptance inferred. Historical decision specifications and pending-acceptance statements are superseded by this owner feedback where applicable.
 
-| Item | Owner direction |
-|---|---|
-| [Style/accessibility review](../../.scratch/visual-consistency/issues/01-app-style-analysis-and-simplification.md) | Handled by the other agent. |
-| [AI usage in My Account](../../.scratch/ai-usage/issues/01-ai-usage-visibility.md) | Deferred by the owner. |
-| [Social planning](../plans/social-planning-ticket-breakdown.md) | Deferred by the owner; seven proposed deliveries, no new tickets started. |
-
-Optional platform maintenance and the unreproduced bulk date/time focus candidate remain recorded, without new tickets. Inline title is delivered and belongs to the existing use checklist, without a separate ticket. Header, portal, login,12 and15 keep their acceptance. Historical decision specifications predate this latest owner direction.
+Documentation only: no code changes, automated tests, paid AI generation, SQL or deployment for this update.
