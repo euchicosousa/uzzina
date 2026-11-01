@@ -9,7 +9,12 @@ import { ptBR } from "date-fns/locale/pt-BR";
 import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { Celebration } from "~/types";
-import { PrismButton, PrismCalendar, PrismInput } from "~/components/prism";
+import {
+  PrismButton,
+  PrismCalendar,
+  PrismCheckbox,
+  PrismInput,
+} from "~/components/prism";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
   createCelebration,
@@ -41,8 +46,16 @@ function AdminCelebrationsPage() {
     queryFn: () => getAllCelebrations(supabase),
   });
   const createMutation = useMutation({
-    mutationFn: async ({ title, date }: { title: string; date: string }) => {
-      await createCelebration(supabase, title, date);
+    mutationFn: async ({
+      title,
+      date,
+      is_holiday,
+    }: {
+      title: string;
+      date: string;
+      is_holiday?: boolean;
+    }) => {
+      await createCelebration(supabase, title, date, is_holiday);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -64,6 +77,7 @@ function AdminCelebrationsPage() {
     new Date(),
   );
   const [title, setTitle] = useState("");
+  const [isHoliday, setIsHoliday] = useState(false);
   const isSubmitting = createMutation.isPending || deleteMutation.isPending;
   const isAdding = createMutation.isPending;
   const handleCreate = async (e: React.FormEvent) => {
@@ -72,8 +86,10 @@ function AdminCelebrationsPage() {
     await createMutation.mutateAsync({
       title,
       date: format(selectedDate, "yyyy-MM-dd"),
+      is_holiday: isHoliday,
     });
     setTitle("");
+    setIsHoliday(false);
   };
   return (
     <div className="mx-auto flex w-full max-w-7xl shrink-0 flex-col md:h-[calc(100vh-68px)] md:flex-row md:overflow-hidden">
@@ -128,6 +144,16 @@ function AdminCelebrationsPage() {
                   <PlusIcon />
                 )}
               </PrismButton>
+            </div>
+            <div className="flex items-center justify-between px-1">
+              <PrismCheckbox
+                isSelected={isHoliday}
+                onChange={setIsHoliday}
+                isDisabled={!selectedDate || isSubmitting}
+                size="sm"
+              >
+                <span className="text-xs font-medium">É feriado</span>
+              </PrismCheckbox>
             </div>
           </form>
         </div>
@@ -223,13 +249,18 @@ export function CelebrationsList({
                     data-celebration-id={celebration.id}
                     className="group flex items-center justify-between gap-4 rounded-xl px-3 py-2 transition-colors hover:bg-card"
                   >
-                    <div className="flex min-w-0 items-center gap-4">
+                    <div className="flex min-w-0 items-center gap-3">
                       <span className="w-6 shrink-0 text-center text-sm font-medium text-muted-foreground">
                         {format(new Date(`${celebration.date}T00:00:00`), "dd")}
                       </span>
                       <span className="truncate font-medium tracking-tight">
                         {celebration.title}
                       </span>
+                      {celebration.is_holiday && (
+                        <span className="shrink-0 rounded-md border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                          Feriado
+                        </span>
+                      )}
                     </div>
                     <div className="flex shrink-0 items-center gap-1 opacity-100 transition-opacity md:[@media(hover:hover)_and_(pointer:fine)]:opacity-0 md:[@media(hover:hover)_and_(pointer:fine)]:group-focus-within:opacity-100 md:[@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100">
                       <PrismButton

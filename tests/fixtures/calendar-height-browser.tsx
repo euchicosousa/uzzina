@@ -96,6 +96,7 @@ function Fixture() {
                       date: format(date, "yyyy-MM-dd"),
                       created_at: date.toISOString(),
                       title: "Calendar celebration",
+                      is_holiday: false,
                     },
                   ]
                 : [],

@@ -112,6 +112,7 @@ beforeEach(() => {
       title: "Data original",
       date: "2026-10-28",
       created_at: "2026-01-01T00:00:00Z",
+      is_holiday: false,
     },
   ];
   failCelebrationCreate = false;

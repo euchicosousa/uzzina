@@ -6,6 +6,126 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### Planejamento — instruções reutilizáveis da marca no banco — 01/11
+
+Proprietário confirmou armazenamento por marca/parceiro e autorizou somente Supabase, com integração visual por outro agente. Aplicado em produção `partners.planning_instructions text` nullable/sem default, migration remota `20261101225709`:30 parceiros preservados, campo inicialmente nulo; hash dos dados originais e RLS/policies/grants inalterados. Leitura real com administrador/membro ativos respeitou o escopo esperado. [Aplicação e limites](2026-11-01-partner-planning-instructions.md); [ticket08](../../.scratch/social-planning/issues/08-brand-planning-instructions.md) registra banco concluído e tipos/models/cache/UI/gerador pendentes, sem migração implícita dos planejamentos locais. Guia/KI de banco atualizados. Sem fixture de escrita remota, teste automatizado/build, alteração funcional do app, commit, push ou deploy. Mudanças externas preservadas.
+
+### Uso e consumo de IA — implementação vertical completa — 01/11
+
+A pedido do proprietário ("vamos fazer esse uso e consumo de IA"), foram alinhadas as decisões essenciais e implementada a entrega vertical completa:
+
+- **Decisões aprovadas**: Todos os membros da agência visualizam o consumo; percentual relativo de 0% a 100% baseado em franquia mensal de referência compartilhada (1.000 unidades/mês); período mensal em `America/Fortaleza`; sem expor tarifas ou custos de API da OpenAI.
+- **Banco de Dados**: Migration `20261101230000_ai_agency_usage.sql` preparada com tabela `public.ai_generation_logs` (RLS ativo, service-role apenas), RPC `log_ai_generation` e RPC `get_agency_ai_usage` (autorização restrita a membros com `visible = true` em `public.people`). Types atualizados em `types/database.ts`.
+- **Registro no Servidor**: `api/ai.ts` e `server/strategy-generation.ts` registram os tokens reais retornados pela OpenAI (`prompt_tokens`, `completion_tokens`, `total_tokens`) e unidades consumidas de forma não bloqueante (erros de log não falham a geração do usuário).
+- **Interface em Minha Conta**: `app/routes/app/profile.tsx` inclui bloco compacto e somente de leitura ao final de Preferências, com período ("Novembro de 2026"), percentual e barra de progresso visual (verde/âmbar/rosa), contagem de gerações e estado de carregamento/vazio; preserva intactos o formulário único de perfil, o salvamento e o `AppBarSpacer`.
+- **Model e Cache**: `app/models/ai-usage.ts` e chave de cache isolada `QUERY_KEYS.aiUsage(userId)`. Conectado à RPC `get_agency_ai_usage`. Mock temporário removido após aceite visual do proprietário.
+- **Verificação**: `tsc --noEmit` limpo (0 erros), `node scripts/check-serverless-runtime.cjs` (9 PASS), Prettier e Biome conferidos. Sem commit, push ou deploy.
+
+### Feriados — implementação completa (Tickets 01 e 02) — 01/11
+
+A pedido do proprietário ("agora faça o 3. feriados e datas comemorativas"), com migrations confirmadas no Supabase de produção (`celebrations.is_holiday` e `partner_holidays`/`replace_partner_holidays`), foi implementada a entrega completa dos Tickets 01 e 02:
+
+- **Banco de Dados**: Confirmado ao vivo em produção (`dfepmjcozszswocwvdpq`): `celebrations.is_holiday` (boolean, default false), tabela `partner_holidays` com chave estrangeira composta restrita a feriados (`celebration_is_holiday = true`), cascade em remoções, e RPC atômica `replace_partner_holidays(p_partner_id, p_celebration_ids)` com advisory lock por parceiro.
+- **Tipos e Models**:
+  - `types/database.ts`: atualizado com `is_holiday` em `celebrations`, tabela `partner_holidays` e função `replace_partner_holidays`.
+  - `app/models/celebrations.ts`: `getAllCelebrations`, `getHolidayCelebrations`, `createCelebration`, `updateCelebration` com suporte a `is_holiday`.
+  - `app/models/partners.ts`: `getPartnerHolidayIds`, `updatePartnerHolidays` e retorno de `Partner` em `createPartner`.
+  - `app/lib/query-keys.ts`: chave de cache `QUERY_KEYS.partnerHolidays(partnerId)`.
+- **Interface de Datas Comemorativas (Ticket 01)**:
+  - `CelebrationDialog.tsx` (busca global e gerenciar datas): checkbox Prism "É feriado" com descrição explicativa, persistência ao criar/editar, tratamento do erro Postgres `23503` (aviso caso tente desmarcar feriado associado a parceiro).
+  - `app/routes/app/admin/celebrations.tsx`: formulário lateral com checkbox "É feriado", e badge "Feriado" visual na lista de datas.
+  - `app/components/features/CalendarDayCell.tsx`: destaque visual em tom âmbar (`bg-amber-500`, texto amber-600/400) no calendário para datas classificadas como feriado.
+- **Interface da Gestão de Parceiros (Ticket 02)**:
+  - `app/components/features/PartnerCelebrationsSelector.tsx`: seletor integrado fluindo diretamente sobre o fundo da página (sem moldura externa de cartão, borda ou fundo isolado, conforme regra de design em AGENTS.md), com seletor de mês em pills horizontais ("Todos", "Jan", "Fev" ... "Dez"), busca rápida por nome e lista em grid de 2 colunas com altura máxima de 320px (`max-h-80`) e rolagem vertical interna.
+  - Exibe todas as datas comemorativas do sistema (feriados e datas temáticas), com dia do mês, título e badge "Feriado" quando aplicável.
+  - Contadores por mês e totalizador geral, checkboxes para seleção múltipla, botão "Limpar todas" e autosave atômico via `replace_partner_holidays`.
+  - Migration `20261101233000_partner_celebrations_allow_all.sql` aplicada em produção pelo proprietário, permitindo associar qualquer data comemorativa à marca.
+- **Verificação**:
+  - `bun test tests/global-search-partners.test.tsx`: 54/54 PASS.
+  - `bun test tests/celebrations-scroll.test.tsx`: 3/3 PASS.
+  - `node scripts/check-serverless-runtime.cjs`: 9 PASS.
+  - `tsc --noEmit`: 0 erros.
+  - Prettier e Biome conferidos. Sem commit, push ou deploy. Pronto para validação pelo proprietário.
+
+### Fonte do sistema — transição para sans-serif padrão — 01/11
+
+A pedido do proprietário, a tipografia global do app foi alterada para a fonte sans-serif padrão dos sistemas (`ui-sans-serif, system-ui, sans-serif...` em `--font-sans` em `app/tailwind.css`). Os arquivos de fonte de PP Object Sans em `public/object-sans/` foram preservados; os `@font-face` em `public/object-sans/object-sans.css` e o link em `index.html` foram comentados para permitir reativação futura caso desejado. Prettier e Biome conferidos; sem commit ou deploy.
+
+### Planejamento — execução paralela dos Tickets 01 a 07 — 01/11
+
+A pedido do proprietário ("00 aprovado por hora... rode subagentes para ter paralelismo, faça quantos puder dentro de 20 minutos"), foram orquestrados 3 subagentes em paralelo cobrindo as camadas do Planejamento Social:
+
+- **Subagente 1 (Tickets 03, 04, 05 — Slots e Frequência)**:
+  - `app/lib/social-planning/types.ts`: tipos fundamentais `PlanFormat`, `PlanMode`, `PlanSuggestionStatus`, `PlanSuggestion`, `SocialPlan`.
+  - `app/lib/social-planning/slot-calculator.ts`:
+    - `calculatePeriodSlots`: cálculo determinístico de slots respeitando dias civis e limite de posts por semana, com semana iniciando no domingo (padrão Brasil) e suporte a semanas parciais.
+    - `distributeFormats`: distribuição automática balanceada (reels/carrossel/estático) e manual com quantidades definidas.
+    - `mergeCommemorativeSlots`: mesclagem de datas comemorativas selecionadas no período como slots comemorativos ou slots extras.
+  - Testes unitários em `tests/social-planning-slots.test.ts` (14/14 PASS).
+- **Subagente 2 (Tickets 01 e 02 — Persistência e Geração)**:
+  - `app/lib/social-planning/storage.ts`: persistência durável no cliente em `localStorage` (`saveSocialPlan`, `getSocialPlan`, `listSocialPlans`, `updatePlanSuggestion`, `deleteSocialPlan`). Permite listar e reabrir propostas salvas na mesa.
+  - `app/lib/social-planning/generator.ts`: `generateSocialPlan` gerando propostas contextuais ricas tanto no modo tema quanto período, com múltiplos ângulos editoriais e suporte a datas comemorativas.
+  - Testes unitários em `tests/social-planning-generator.test.ts` (4/4 PASS).
+- **Subagente 3 (Ticket 07 — Finalização e Conversão em Ações)**:
+  - `app/lib/social-planning/finalizer.ts`: `finalizeSocialPlan` filtrando sugestões aprovadas, convertendo para o contrato `ActionCreateInput` (`date`, `category`, `partners`, `description`, `phase: 'idea'`) e criando ações no banco via `createActionClient`, marcando a proposta como finalizada.
+- **Coordenação do Agente Principal (Tickets 02, 06 e Integração na Mesa)**:
+  - `app/components/planning/PlanningSuggestionEditor.tsx`: modal para edição de título, formato, data, objetivo e briefing de uma sugestão.
+  - `app/components/planning/PlanningSuggestionsList.tsx`: lista de sugestões com contadores em tempo real (aprovadas, descartadas, pendentes), filtros rápidos, aprovar todas as pendentes, aprovação/descarte unitário, edição e botão de finalização em lote.
+  - `app/components/planning/PlanningCalendarView.tsx`: visualização em calendário mensal/semanal com alternância Lista / Calendário, exibição dos cards nos dias correspondentes e ações rápidas no card.
+  - `app/routes/app/planejamento.tsx`: botão "Gerar planejamento" ativo ao escolher parceiro, gerador conectado aos parâmetros do formulário, alternância Lista / Calendário, exibição de histórico de propostas anteriores para reabertura direta e fluxo de finalização com feedback visual.
+- **Verificação**:
+  - `tsc --noEmit`: 0 erros.
+  - `bun test tests/social-planning*.test.ts`: 18/18 PASS.
+  - `bun run test:serverless`: 9 PASS.
+  - Prettier e Biome conferidos.
+  - Sem commit nem deploy (seguindo AGENTS.md). Pronto para validação pelo proprietário.
+
+### Planejamento — ticket00 de fidelidade ao mockup implementado — 01/11
+
+Executado o alinhamento visual da página `/app/planejamento` aos controles da Mesa de planejamento:
+
+- Criado o componente primitivo `PrismSlider` (`app/components/prism/slider.tsx`) baseado em React Aria Components, exportado em `app/components/prism/index.ts` e demonstrado na galeria `/ui` (`SliderSection.tsx`).
+- Configuração de Planejamento atualizada com `PrismTabs`: alternância Por período / Por tema preservando o estado local durante a montagem.
+- Ajustes de layout aprovados pelo proprietário: remoção de todos os divisores horizontais (`hr`/`border-t`) na coluna de configuração, espaçamento expandido entre seções (`gap-8`), tipografia aumentada (substituição de `text-xs` por `text-sm` para legibilidade e conforto visual).
+- Datas de início e fim preenchidas automaticamente para o período de um mês tomando como referência a data atual, usando o mesmo cálculo do calendário mensal do app (`getMonthCalendarPeriod` em `app/utils/date.ts`: domingo da semana do dia 1 do mês até sábado da última semana do mês, com semana brasileira iniciando no domingo).
+- Seleção dos dias da semana ordenada de Domingo a Sábado (`dom`, `seg`, `ter`, `qua`, `qui`, `sex`, `sab`).
+- Criado o componente primitivo `PrismDateRangePicker` (`app/components/prism/date-range-picker.tsx`), integrando `PrismRangeCalendar` e popover do Prism para seleção visual de intervalo, exportado em `app/components/prism/index.ts` e demonstrado na galeria `/ui` (`DateRangePickerSection.tsx`).
+- Modo por período: campo único de Período com `PrismDateRangePicker` pré-preenchido com o mês corrente, slider de Conteúdos por semana com valor visível numérico, seleção de dias da semana logo abaixo com `PrismToggle` múltiplos e campo de texto multilinha explícito de Direcionamento.
+- Modo por tema: quantidade de conteúdos e campo de tema e direcionamento dedicado.
+- Formatos: rádio para distribuição automática vs. quantidades manuais (reels, estáticos, carrosséis).
+- Datas comemorativas: ao marcar a opção no modo período, exibe a lista das datas comemorativas do mês com checkboxes individuais, todos inicialmente desmarcados, para seleção explícita pelo usuário.
+- Referência discreta ao contexto e tom de voz sobre a superfície limpa da página.
+- Botão Gerar planejamento permanece desativado; coluna direita preserva a futura área de prévia com rolagem e `AppBarSpacer`. Sem IA, banco, persistência ou calendário paralelo.
+- Prettier, Biome e typecheck limpos. 9 PASS no teste serverless. Sem commit ou deploy. Pendente validação visual do proprietário.
+
+### Cabeçalho do parceiro — distribuição de espaço — 01/11
+
+Primeira tentativa rejeitada pelo proprietário por transferir o vazio da direita para a esquerda. Corrigido localmente: em `2xl`, wrappers usam `display: contents` e uma única linha flex distribui igualmente o espaço entre seis grupos: parceiro/acessos, navegação de data, busca, menus de visualização/ordenação/exibição, filtros e alternância de feed. Controles internos de cada grupo permanecem juntos. `ViewOptionsComponent` recebe `className` opcional somente para esse uso; demais consumidores e disposição abaixo de `2xl` preservados. Aparência conferida no Comet autenticado em `/app/partner/clinicadengo`, na janela ampla original após HMR; Prettier, Biome dos dois arquivos e diff sem erros. Sem testes automatizados/build, escrita de dados, commit ou deploy. Mudanças externas de Planejamento preservadas. Pendente aceite visual do proprietário e conferência em outras larguras.
+
+### Planejamento — tickets locais publicados — 01/11
+
+Após revisão da divisão pelo proprietário, publicados os sete tickets individuais e o [índice local](../../.scratch/social-planning/README.md). #01 completa geração/persistência na página e nos acessos já preparados, sem recriá-los; #02 depende de #01; #03/#04 também dependem de #01; #05 de #03; #06/#07 de #02. Status e decisões pendentes constam por ticket. Regras propostas de campos/compartilhamento, frequência em semanas incompletas, distribuição, extras, pendentes na finalização e horário/fuso não foram promovidas a decisões; limites50/10/90 e11h não assumidos. Somente documentação: sem código/teste/build, IA/banco/SQL, commit ou deploy. A implementação permanece pendente de decisões e dos bloqueadores indicados.
+
+### Planejamento — shell limpo, acessos e cabeçalho do portal — 01/11
+
+Proprietário autorizou a segunda etapa local: página `/app/planejamento` simplificada sem cartões/gutters externos ou placeholder ilustrado; busca/menu comum e botão ao lado do parceiro navegam com a guarda de saída existente. A rota valida `partner`, lista apenas `AppContext.partners`, atualiza a URL e não seleciona fallback indisponível. Campos/geração continuam desativados; IA, banco, persistência, sugestões e calendário seguem pendentes. `/dash` reorganizado em uma linha flexível, com saudação/Sair compactados em tela estreita; autenticação e seleção preservadas. Prettier, Biome e `bun run typecheck` passaram; teste focado `tests/header-menu.test.tsx`: 4 PASS. KI de arquitetura atualizado. Sem build, dados reais, commit ou deploy. A aparência aguarda validação do proprietário: desktop em `/app/planejamento` e cabeçalho do portal em largura de telefone.
+
+### Planejamento — casca visual em `/app/planejamento` — 01/11
+
+Proprietário autorizou delegar a modelo leve somente a estrutura da página; executada por Luna. Rota interna e árvore gerada, Header/AppBar existentes preservados sem mudança global; duas colunas com rolagens independentes, `useFillScrollViewport` e `AppBarSpacer` em ambas, prévia com overflow nos dois eixos. Campos/botão desativados e prévia vazia; sem IA/banco, calendário real, sugestão/ação, seleção funcional de parceiro ou novos acessos de busca/menu. Abaixo de `lg`, aviso (limiar técnico provisório). Prettier/Biome do arquivo e typecheck conferidos; sem suite/build, teste visual autenticado, SQL, commit/deploy. Comando generate-routes indisponível (`tsr` ausente); árvore gerada apareceu atualizada no checkout, conferida no diff e pela tipagem. Guia/KI e [escopo](../plans/social-planning-design-decisions.md#estrutura-visual-autorizada-posteriormente--0111) registrados; aguarda validação do proprietário acessando a rota local e conferindo ambas as rolagens/AppBar. Não equivale à implementação do ticket01 funcional.
+
+### Planejamento — página interna e calendário existentes — 01/11
+
+Proprietário esclareceu: Planejamento é apenas outra página dentro do layout atual do app, com o mesmo cabeçalho global, sem shell/topo exclusivo. Mesa organiza só o conteúdo. Calendário deve ser o existente no aplicativo, preservando controles/ajustes laterais e rolagens vertical e horizontal; adaptar dados/eventos para sugestões sem gravar ações antes de finalizar, sem criar calendário paralelo. [Decisões](../plans/social-planning-design-decisions.md), [ticket01/06 na proposta](../plans/social-planning-ticket-breakdown.md) e [limites do mockup](../plans/social-planning-mockup.md) corrigidos. Barra superior e grade simplificada da demonstração não são implementação aprovada. Somente documentação, referências/diff conferidos; sem código, testes/build, instalação, banco/IA, SQL, commit ou deploy.
+
+### Planejamento — Mesa escolhida e escopo de telas amplas — 01/11
+
+Proprietário escolheu a segunda alternativa do mockup: criação/configuração à esquerda e visualização/revisão à direita, simultâneas. Primeira versão só para computador/telas amplas; tablet apenas com espaço para o mesmo layout, sem adaptação mobile. Largura mínima numérica ainda não escolhida; referência1024px registrada somente como proposta técnica. Reutilizar componentes do app/Prism; lacunas podem usar fonte externa/CDN com incorporação/adaptação ao Prism/galeria, sem dependência remota ou design system paralelo por padrão. [Decisões registradas](../plans/social-planning-design-decisions.md), [mockup](../plans/social-planning-mockup.md) e [divisão de tickets](../plans/social-planning-ticket-breakdown.md) atualizados, retirando requisitos de workspace mobile e mantendo aviso abaixo do limite/preservação de estado. Apenas documentação a pedido do proprietário antes de começar; referências/diff conferidos, sem instalação, implementação, testes/build, banco/IA, SQL, commit ou deploy. Escolha visual não aprova automaticamente regras editoriais/operacionais restantes; tickets individuais continuam não publicados.
+
+### Planejamento — mockup para aprovação — 01/11
+
+Proprietário pediu visualizar o fluxo antes de aprovar. [Mockup](../plans/social-planning-mockup.md) interativo nesta conversa compara Etapas e Mesa de planejamento; dados fictícios, seleção de parceiro, acessos por busca/menu/botão contextual, período/tema, formatos, extras, lista/calendário, edição/decisões e finalização simulada somente das aprovadas. Conferido em Chromium isolado:13 sugestões, editar título, aprovar/finalizar, modo tema/seleção e largura360px, sem erro JavaScript/overflow nos cenários observados; capturas inspecionadas. Apenas protótipo fora do app e documentação; sem banco/IA real, rota, suite/build do produto, SQL, commit ou deploy. Aguarda escolha/revisão do proprietário; divisão de sete tickets e regras continuam propostas, sem publicação individual ou implementação autorizada. Mudanças externas preservadas.
+
 ### Bloqueio de paisagem, foco em lote e carrossel — 01/11
 
 Aprovado pelo proprietário em01/11 (tudo ok) e commitado sem push nem deploy. Esqueci a senha aprovado e enviado em `b49d02f`; redefinir senha também aprovado. Aviso de paisagem refeito a pedido do proprietário: faixa substituída por overlay bloqueante `absolute inset-0` em `ActionFormDrawer` (todas as abas), mesmo limiar/hook; conteúdo permanece montado sob `inert`, foco interno sai (teclado fecha), saída por girar ou "Fechar ação" com as guardas existentes; [ticket20](../../.scratch/safari-mobile/issues/20-landscape-space-advisory.md) atualizado. `BulkDateTimeDialog`: seções recolhidas Mudar Data/Hora recebem `inert`, confirmando pelo código que eram focáveis; valores preservados. `InstagramPreview`: carrossel com trilho CSS scroll-snap (swipe nativo), setas/pontos rolam o trilho, índice vem da rolagem, setas do teclado na região focável; vídeo/imagem única inalterados. Typecheck limpo; sem navegador/aparelho nem testes novos. Entrada anterior sobre a faixa fica superada.

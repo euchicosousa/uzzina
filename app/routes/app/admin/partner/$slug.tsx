@@ -19,7 +19,18 @@ const Tiptap = lazy(() =>
     default: module.Tiptap,
   })),
 );
-import { PrismButton, PrismInput, PrismTextarea } from "~/components/prism";
+import {
+  PrismButton,
+  PrismCheckbox,
+  PrismInput,
+  PrismTextarea,
+  PrismToggleGroup,
+  PrismToggleGroupItem,
+} from "~/components/prism";
+import { format } from "date-fns";
+import { QUERY_KEYS } from "~/lib/query-keys";
+import { getAllCelebrations } from "~/models/celebrations";
+import { PartnerCelebrationsSelector } from "~/components/features/PartnerCelebrationsSelector";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
@@ -31,11 +42,12 @@ import { fetchPeople } from "~/lib/supabase.queries";
 import {
   createPartner,
   getPartnerBySlug,
+  getPartnerHolidayIds,
   partnerSlugExists,
   updatePartnerBySlug,
+  updatePartnerHolidays,
 } from "~/models/partners";
 import type { Partner } from "~/types";
-import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
 import { CloudIcon } from "lucide-react";
 import { AdminGuard } from "~/components/features/AdminGuard";
 export const Route = createFileRoute("/app/admin/partner/$slug")({
@@ -85,6 +97,70 @@ function AdminPartnerEditPage() {
   >("marketing");
   const [_justSaved, setJustSaved] = useState(false);
   const [savingFields, setSavingFields] = useState<Set<string>>(new Set());
+
+  // Todas as datas comemorativas e feriados vinculados ao parceiro
+  const { data: celebrations = [], isLoading: isLoadingCelebrations } =
+    useQuery({
+      queryKey: ["celebrations", "all"],
+      queryFn: () => getAllCelebrations(supabase),
+    });
+
+  const { data: partnerHolidayIds } = useQuery({
+    queryKey: QUERY_KEYS.partnerHolidays(partner?.id || ""),
+    queryFn: () =>
+      partner?.id ? getPartnerHolidayIds(supabase, partner.id) : [],
+    enabled: !isNew && !!partner?.id,
+  });
+
+  const [selectedHolidays, setSelectedHolidays] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (partnerHolidayIds) {
+      setSelectedHolidays(partnerHolidayIds);
+    }
+  }, [partnerHolidayIds]);
+
+  const handleToggleHoliday = async (holidayId: string, isChecked: boolean) => {
+    const next = isChecked
+      ? [...selectedHolidays, holidayId]
+      : selectedHolidays.filter((id) => id !== holidayId);
+    setSelectedHolidays(next);
+
+    if (!isNew && partner?.id) {
+      setSavingFields((prev) => new Set(prev).add("holidays"));
+      try {
+        await updatePartnerHolidays(supabase, partner.id, next);
+        queryClient.setQueryData(QUERY_KEYS.partnerHolidays(partner.id), next);
+      } catch {
+        toast.error("Erro ao salvar datas da marca.");
+      } finally {
+        setSavingFields((prev) => {
+          const s = new Set(prev);
+          s.delete("holidays");
+          return s;
+        });
+      }
+    }
+  };
+
+  const handleClearHolidays = async () => {
+    setSelectedHolidays([]);
+    if (!isNew && partner?.id) {
+      setSavingFields((prev) => new Set(prev).add("holidays"));
+      try {
+        await updatePartnerHolidays(supabase, partner.id, []);
+        queryClient.setQueryData(QUERY_KEYS.partnerHolidays(partner.id), []);
+      } catch {
+        toast.error("Erro ao limpar datas da marca.");
+      } finally {
+        setSavingFields((prev) => {
+          const s = new Set(prev);
+          s.delete("holidays");
+          return s;
+        });
+      }
+    }
+  };
 
   // Armazena valores atuais de formulário para referência rápida e mutações parciais
   const stateRef = useRef({
@@ -148,7 +224,10 @@ function AdminPartnerEditPage() {
         if (slugTaken) {
           throw new Error("Este slug já está em uso.");
         }
-        await createPartner(supabase, partnerData);
+        const created = await createPartner(supabase, partnerData);
+        if (created?.id && selectedHolidays.length > 0) {
+          await updatePartnerHolidays(supabase, created.id, selectedHolidays);
+        }
       } else {
         await updatePartnerBySlug(supabase, slug || "", partnerData);
       }
@@ -533,6 +612,27 @@ function AdminPartnerEditPage() {
                   colors,
                 });
               }}
+            />
+          </div>
+
+          <div className="grid gap-4">
+            <div className="flex items-center justify-between gap-2 font-medium">
+              <div>
+                <span>Datas Comemorativas da Marca</span>
+                <p className="text-xs font-normal text-muted-foreground">
+                  Selecione as datas comemorativas e feriados relevantes para
+                  esta marca.
+                </p>
+              </div>
+              {savingFields.has("holidays") && <ULoader />}
+            </div>
+            <PartnerCelebrationsSelector
+              celebrations={celebrations}
+              selectedIds={selectedHolidays}
+              isLoading={isLoadingCelebrations}
+              onToggle={handleToggleHoliday}
+              onClear={handleClearHolidays}
+              saving={savingFields.has("holidays")}
             />
           </div>
 

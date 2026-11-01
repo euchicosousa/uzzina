@@ -17,24 +17,28 @@ const celebrations: Celebration[] = [
     title: "Previous October",
     created_at: "2026-01-01T00:00:00Z",
     date: "2025-10-01",
+    is_holiday: false,
   },
   {
     id: "january",
     title: "January",
     created_at: "2026-01-01T00:00:00Z",
     date: "2026-01-01",
+    is_holiday: false,
   },
   {
     id: "october",
     title: "October",
     created_at: "2026-01-01T00:00:00Z",
     date: "2026-10-12",
+    is_holiday: false,
   },
   {
     id: "december",
     title: "December",
     created_at: "2026-01-01T00:00:00Z",
     date: "2026-12-25",
+    is_holiday: false,
   },
 ];
 

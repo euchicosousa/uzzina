@@ -10,19 +10,19 @@ Antes de editar, confira o estado do Git e preserve mudanças externas. Um execu
 
 UZZINA é a aplicação existente de gestão de ações da agência CNVT: React, TanStack Router em SPA, TanStack Query, Supabase, Tailwind CSS v4, Prism/React Aria, Tiptap, Cloudinary e OpenAI. Vercel executa o frontend e as APIs.
 
-| Caminho | Responsabilidade |
-|---|---|
-| `app/routes/` | Rotas; `app/routeTree.gen.ts` é gerado |
-| `app/components/prism/` | Primitivos do design system |
-| `app/components/uzzina/` | Componentes reutilizáveis de alto nível |
-| `app/components/features/` | Fluxos de negócio, incluindo gaveta e upload |
-| `app/components/layout/`, `ui-sections/` | Layout e galeria `/ui` |
-| `app/hooks/`, `app/lib/` | Estado, cache, preferências e contratos compartilhados; paletas em `lib/palettes.ts`, variáveis CSS em `lib/palette-vars.ts`, rascunho de tema personalizado em `lib/custom-theme.ts` |
-| `app/utils/` | Utilitários puros (barrel `~/utils`, `uzzina-utils`, `factory`); `cn` permanece em `~/lib/utils` |
-| `app/data/` | Dados preservados sem uso pelo app (`hooks-library.ts`) |
-| `app/models/`, `app/services/` | Consultas por entidade e clientes de API |
-| `api/`, `server/` | Handlers Vercel, sessão e adaptador local; `server/supabase-admin.ts` (config/cliente service-role) e `server/auth.ts` (token Bearer) são compartilhados pelos handlers de portal/revisão/contas |
-| `supabase/`, `tests/`, `scripts/` | Contratos do banco e verificações |
+| Caminho                                  | Responsabilidade                                                                                                                                                                                 |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `app/routes/`                            | Rotas; `app/routeTree.gen.ts` é gerado                                                                                                                                                           |
+| `app/components/prism/`                  | Primitivos do design system                                                                                                                                                                      |
+| `app/components/uzzina/`                 | Componentes reutilizáveis de alto nível                                                                                                                                                          |
+| `app/components/features/`               | Fluxos de negócio, incluindo gaveta e upload                                                                                                                                                     |
+| `app/components/layout/`, `ui-sections/` | Layout e galeria `/ui`                                                                                                                                                                           |
+| `app/hooks/`, `app/lib/`                 | Estado, cache, preferências e contratos compartilhados; paletas em `lib/palettes.ts`, variáveis CSS em `lib/palette-vars.ts`, rascunho de tema personalizado em `lib/custom-theme.ts`            |
+| `app/utils/`                             | Utilitários puros (barrel `~/utils`, `uzzina-utils`, `factory`); `cn` permanece em `~/lib/utils`                                                                                                 |
+| `app/data/`                              | Dados preservados sem uso pelo app (`hooks-library.ts`)                                                                                                                                          |
+| `app/models/`, `app/services/`           | Consultas por entidade e clientes de API                                                                                                                                                         |
+| `api/`, `server/`                        | Handlers Vercel, sessão e adaptador local; `server/supabase-admin.ts` (config/cliente service-role) e `server/auth.ts` (token Bearer) são compartilhados pelos handlers de portal/revisão/contas |
+| `supabase/`, `tests/`, `scripts/`        | Contratos do banco e verificações                                                                                                                                                                |
 
 ## 2. Convenções e verificação
 
@@ -69,6 +69,10 @@ UZZINA é a aplicação existente de gestão de ações da agência CNVT: React,
 
 ### Preferências e visual
 
+- Superfícies e caixas de formulário (regra de design): nunca empacotar seções de formulários, seletores, listas ou blocos de campos em caixas/cartões externos com borda arredondada e fundo (padrão card/caixa com `rounded`, `border`, `bg-card` ou `bg-surface`). Os elementos, seletores e listas fluem diretamente sobre o fundo da página e da área rolável, mantendo a composição limpa e integrada, sem molduras de cartão ao redor de blocos de configuração.
+
+- Planejamento (`/app/planejamento`) herda Header/AppBar; busca, menu comum e botão da página operacional navegam com guardas de saída. `?partner=slug` só seleciona parceiro disponível em `AppContext`; sem parceiro, oferece escolha, sem seleção automática. Campos/geração seguem desativados e a prévia continua vazia, sem IA, consulta nova ou calendário funcional. Duas colunas rolam separadamente com `AppBarSpacer`; abaixo de `lg`, aviso simples. Portal `/dash` mantém identidade, seletor flexível e saída em uma linha, com saudação e texto de sair compactados visualmente no telefone. Regras futuras em [decisões do Planejamento](docs/plans/social-planning-design-decisions.md).
+
 - Minha Conta (`/app/profile`) limita sua altura ao contêiner rolável por `useFillScrollViewport`, também reutilizado pela página Hoje. As duas colunas vão até o fim da janela, com rolagem independente e `AppBarSpacer` somente no final de cada região; Preferências não tem borda, arredondamento ou fundo de cartão. No desktop, as regiões começam diretamente na divisória do cabeçalho, sem gap externo: ela é o corte visível durante a rolagem; não reservar faixa externa ou padding inferior na página. AppBar flutua sobre o conteúdo. Salvar Alterações fica no cabeçalho ao lado de Minha Conta, ligado pelo atributo `form` ao formulário único; não há texto auxiliar no cabeçalho nem rodapé de salvar na coluna direita. Abaixo de `lg`, o espaçamento é local e escolhas/rótulos podem quebrar linha sem corte; o seletor de seção alterna áreas montadas sem perder valores. Validação nativa revela a seção pessoal antes de focar um campo inválido. O salvamento da conta continua manual; tema pode ser aplicado/gravado localmente antes de confirmar, enquanto menu do perfil e comandos de tema da busca persistem automaticamente na conta pelo controlador existente.
 
 - AppBar fica sempre visível em `/app`, oculta apenas com ação aberta na gaveta; não reintroduzir ocultação por hover/timer nem faixa fixa abaixo dela. O conteúdo passa sob a barra e cada área rolável termina com `AppBarSpacer` (`app/components/layout/AppBarSpacer.tsx`), altura `--app-bar-space` de98px em `app/tailwind.css` (barra de66px com16px abaixo e acima). Páginas que rolam inteiras colocam o espaço como último elemento; páginas `page-height` o colocam no fim de cada coluna com rolagem própria (feed do parceiro, lista/detalhe de leads, datas comemorativas). Calendário só reserva com `layoutOptions.reserveAppBarSpace`, ligado apenas no parceiro, como linha após a última semana; Home usa o rodapé e Hoje standalone reserva dentro da altura medida. Novas páginas/colunas roláveis da equipe seguem a mesma regra; portal `/dash` não tem AppBar.
@@ -103,6 +107,8 @@ UZZINA é a aplicação existente de gestão de ações da agência CNVT: React,
 - Controle de concorrência usa um único trigger/versão UTC em updated_at timestamp sem timezone; preserve a data de execução e a compatibilidade com moddatetime legado.
 - Funções de trigger `handle_actions_updated_at`, `handle_new_user` e `update_updated_at` têm `search_path` vazio e não permitem EXECUTE direto por PUBLIC/anon/authenticated. Preserve os triggers existentes; não reabra essas funções como RPCs. Defaults de aplicação pertencem a `postgres`; defaults de `supabase_admin` são gerenciados pela plataforma e não devem ser alterados por contorno de permissões.
 - Contratos de autorização: datas comemorativas com escrita administrativa; notificações pelo destinatário ativo autorizado à ação, UPDATE apenas de read_at e menção/autoria/escopo verificados pelo servidor/banco.
+- Feriados: `celebrations.is_holiday` é boolean obrigatório, default false; registros antigos não são classificados automaticamente. Campo aplicado em produção em01/11; relação `partner_holidays` e RPC de seleção estão somente preparadas, sem aplicação remota. Antes de continuar banco ou integrar a UI, consulte [estado e contrato de feriados](docs/audits/2026-11-01-holiday-schema.md).
+- Instruções reutilizáveis de Planejamento pertencem à marca: `partners.planning_instructions text` opcional (`NULL` = ausente), sob RLS/grants atuais do parceiro. Campo aplicado em produção em01/11; integração de tipos/models/UI/gerador está pendente no [ticket08](.scratch/social-planning/issues/08-brand-planning-instructions.md). [Aplicação e verificação](docs/audits/2026-11-01-partner-planning-instructions.md).
 - As migrations incrementam o catálogo existente; não constituem sozinhas um schema inicial completo. SQL versionado não confirma aplicação. Consulte CURRENT e o manifest do rollout antes de publicar ou alterar permissões.
 - Catálogo de produção verificado em31/10/2026: PostgreSQL17.11; staging cloud também usa17. Registros anteriores de produção15 são históricos. `supabase/config.toml` major15 configura o ambiente local, não os serviços cloud. Bootstrap/manifest em supabase/staging são exclusivos do staging; versões remotas diferem dos nomes locais.
 - Não executar db push/repair/reset cegamente: produção foi atualizada por bundles parciais, sem histórico de migrations. Publicação exige verificar nova versão Ready antes de restringir os acessos legados.
@@ -117,17 +123,17 @@ Ao adicionar/modificar tabelas ou models, atualize este guia e `~/.gemini/antigr
 
 Preserve o estilo próprio, temas e paletas OKLCH da UZZINA. Novos primitivos ficam em `app/components/prism/`, exportados por index.ts, com React Aria Components, CVA e `cn()` de `~/lib/utils`. Componentes de negócio reutilizam esses primitivos. Consulte implementação e `/ui` para props e variantes atuais.
 
-| Token | Uso |
-|---|---|
-| bg-background / bg-card / bg-input | Página, painéis e campos |
+| Token                                   | Uso                          |
+| --------------------------------------- | ---------------------------- |
+| bg-background / bg-card / bg-input      | Página, painéis e campos     |
 | text-foreground / text-muted-foreground | Texto principal e secundário |
-| border-border / border-input | Bordas |
-| bg-primary / text-primary-foreground | Ação principal |
-| border-ring / ring-ring/50 | Foco |
-| text-error / bg-error-background | Erro |
-| text-success / bg-success-background | Sucesso |
-| text-warning / bg-warning-background | Aviso |
-| text-info / bg-info-background | Informação |
+| border-border / border-input            | Bordas                       |
+| bg-primary / text-primary-foreground    | Ação principal               |
+| border-ring / ring-ring/50              | Foco                         |
+| text-error / bg-error-background        | Erro                         |
+| text-success / bg-success-background    | Sucesso                      |
+| text-warning / bg-warning-background    | Aviso                        |
+| text-info / bg-info-background          | Informação                   |
 
 Use estados React Aria data-[hovered], data-[pressed], data-[focused] e data-[disabled]. Ícones Lucide novos seguem sufixo Icon; botões definem tamanho padrão e focus ring. PrismInput aplica foco/erro ao Group que inclui prefixo/sufixo. PrismAlert reúne ícone, título e descrição por variante. Componente composto precisa de verificação própria de foco/teclado, além das garantias dos primitivos.
 
@@ -148,6 +154,5 @@ Comandos da busca: conta, light/dark/system, início/Hoje/notificações/leads/a
 Criar data comemorativa na busca abre `CelebrationDialog` (também usado para editar na página de administração), exclusivo para `person.admin`, com título e calendário Prism em pt-BR, sem navegar/fechar ações nem usar Shift para secundária. Gerenciar datas comemorativas mantém `/app/admin/celebrations`. A busca fecha e restaura foco antes de montar o modal no próximo frame; Cancelar/Escape retornam ao controle anterior. Envio pendente bloqueia duplicação/dismissal; falha preserva campos; sucesso usa `createCelebration`, atualiza o cache canônico existente e invalida somente `QUERY_KEYS.celebrations(userId)`. Identidade/geração/montagem validam antes de enviar e antes de aplicar confirmação; chamadas já enviadas não são desfeitas pelo reset. Preservar a autorização administrativa existente no banco. Não adicionar regras de criação à rota nem acessar `.from()` pelo componente. O form envolve só o título e o botão de envio se liga pelo atributo `form`: o calendário React Aria renderiza um botão oculto sem type que viraria o botão padrão e mudaria o mês ao apertar Enter; não colocar o calendário dentro do form. Título vazio mostra erro no campo (`noValidate`), sem balão do navegador; sem descrição no cabeçalho. Layout aprovado: rótulo Data sem repetir a data escrita, dias de outros meses ocultos, calendário sem borda na largura do modal com dias fixos de36px e ponto em hoje; seletores de mês/ano do `PrismCalendar` sem fundo, só texto e seta, na altura das setas; anterior/próximo ficam na linha do título do mês para o Tab seguir a ordem visual.
 
 Ajuda (`/app/help`, `HelpPage`): página de orientação sem consulta ao banco, com índice lateral (desktop) ou seletor (celular) e região de rolagem própria terminada em `AppBarSpacer`. Seção Administração só para `person.admin`. Rolagem por âncora move apenas essa região (não `scrollIntoView`, que também move o contêiner recortado); a região é `relative` para que elementos `sr-only` absolutos não ampliem o contêiner externo. Textos descrevem somente recursos existentes; atualize-os ao mudar atalhos ou fluxos.
-
 
 Datas comemorativas (`/app/admin/celebrations`): abaixo de `md` (768px), formulário e lista seguem altura natural e rolam somente pelo contêiner do app; não manter `h-full` ou rolagem interna nas colunas. A partir de `md`, as colunas ficam lado a lado com rolagem independente e `AppBarSpacer` ao final de cada uma. A ida inicial ao mês/ano atual pertence somente à lista desktop, uma vez quando houver dados; montagem no celular não a consome nem rola a página. Resize desktop preserva a posição manual; não usar `scrollIntoView`.

@@ -242,21 +242,54 @@ export type Database = {
           created_at: string;
           date: string;
           id: string;
+          is_holiday: boolean;
           title: string;
         };
         Insert: {
           created_at?: string;
           date: string;
           id?: string;
+          is_holiday?: boolean;
           title: string;
         };
         Update: {
           created_at?: string;
           date?: string;
           id?: string;
+          is_holiday?: boolean;
           title?: string;
         };
         Relationships: [];
+      };
+      partner_holidays: {
+        Row: {
+          celebration_id: string;
+          partner_id: string;
+        };
+        Insert: {
+          celebration_id: string;
+          partner_id: string;
+        };
+        Update: {
+          celebration_id?: string;
+          partner_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "partner_holidays_celebration_id_fkey";
+            columns: ["celebration_id"];
+            isOneToOne: false;
+            referencedRelation: "celebrations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "partner_holidays_partner_id_fkey";
+            columns: ["partner_id"];
+            isOneToOne: false;
+            referencedRelation: "partners";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       clients: {
         Row: {
@@ -639,6 +672,13 @@ export type Database = {
       get_agency_ai_usage: {
         Args: Record<string, never>;
         Returns: Json;
+      };
+      replace_partner_holidays: {
+        Args: {
+          p_partner_id: string;
+          p_celebration_ids: string[];
+        };
+        Returns: string[];
       };
       admin_update_person: {
         Args: { p_user_id: string; p_changes: Json };

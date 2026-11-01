@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import {
   PrismButton,
   PrismCalendar,
+  PrismCheckbox,
   PrismDialog,
   PrismDialogFooter,
   PrismDialogHeader,
@@ -43,6 +44,7 @@ export function CelebrationDialog({
       now.getDate(),
     );
   });
+  const [isHoliday, setIsHoliday] = useState(celebration?.is_holiday ?? false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [titleError, setTitleError] = useState<string | null>(null);
@@ -89,8 +91,14 @@ export function CelebrationDialog({
             celebration.id,
             title.trim(),
             date.toString(),
+            isHoliday,
           )
-        : await createCelebration(supabase, title.trim(), date.toString());
+        : await createCelebration(
+            supabase,
+            title.trim(),
+            date.toString(),
+            isHoliday,
+          );
       if (!isCurrent()) return;
       const key = QUERY_KEYS.celebrations(userId);
       client.setQueryData<Celebration[]>(key, (current) =>
@@ -107,13 +115,21 @@ export function CelebrationDialog({
           : "Data comemorativa criada.",
       );
       onClose();
-    } catch {
-      if (isCurrent())
-        setError(
-          celebration
-            ? "Não foi possível atualizar a data comemorativa. Tente novamente."
-            : "Não foi possível criar a data comemorativa. Tente novamente.",
-        );
+    } catch (err: unknown) {
+      if (isCurrent()) {
+        const pgError = err as { code?: string; message?: string };
+        if (pgError?.code === "23503") {
+          setError(
+            "Não é possível desclassificar este feriado pois ele está associado a uma ou mais marcas. Remova a associação na gestão do parceiro primeiro.",
+          );
+        } else {
+          setError(
+            celebration
+              ? "Não foi possível atualizar a data comemorativa. Tente novamente."
+              : "Não foi possível criar a data comemorativa. Tente novamente.",
+          );
+        }
+      }
     } finally {
       if (isCurrent()) {
         saving.current = false;
@@ -177,6 +193,19 @@ export function CelebrationDialog({
                 </p>
               )}
             </form>
+            <div className="pt-1">
+              <PrismCheckbox
+                isSelected={isHoliday}
+                onChange={setIsHoliday}
+                isDisabled={pending}
+              >
+                <span className="text-sm font-medium">É feriado</span>
+              </PrismCheckbox>
+              <p className="pl-6 text-xs text-muted-foreground">
+                Feriados podem ser selecionados pelas marcas como dias de folga
+                no planejamento.
+              </p>
+            </div>
             <div className="grid gap-2">
               <PrismLabel elementType="span" id={dateLabelId}>
                 Data

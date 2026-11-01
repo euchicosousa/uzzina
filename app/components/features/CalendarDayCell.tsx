@@ -181,10 +181,31 @@ function CelebrationContainer({
   return (
     <div className="flex shrink-0 flex-col gap-1 px-2 py-4 text-xs">
       {celebrations.map((celebration) => (
-        <div key={celebration.id} title={celebration.title}>
-          <div className="flex items-center gap-2">
-            <div className="size-1 rounded-full bg-primary"></div>
-            <div className="truncate opacity-50">{celebration.title}</div>
+        <div
+          key={celebration.id}
+          title={
+            celebration.is_holiday
+              ? `Feriado: ${celebration.title}`
+              : celebration.title
+          }
+        >
+          <div className="flex items-center gap-1.5">
+            <div
+              className={cn(
+                "size-1.5 shrink-0 rounded-full",
+                celebration.is_holiday ? "bg-amber-500" : "bg-primary",
+              )}
+            />
+            <div
+              className={cn(
+                "truncate",
+                celebration.is_holiday
+                  ? "font-medium text-amber-600 opacity-90 dark:text-amber-400"
+                  : "opacity-50",
+              )}
+            >
+              {celebration.title}
+            </div>
           </div>
         </div>
       ))}

@@ -110,4 +110,6 @@ export const QUERY_KEYS = {
       ["comments", "team", userId, "public", actionId] as const,
   },
   aiUsage: (userId: string) => ["ai-usage", "team", userId] as const,
+  partnerHolidays: (partnerId: string) =>
+    ["partner-holidays", "team", partnerId] as const,
 } as const;

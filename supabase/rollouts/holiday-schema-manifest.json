@@ -1,0 +1,77 @@
+{
+  "date": "2026-11-01",
+  "projectRef": "dfepmjcozszswocwvdpq",
+  "environment": "production",
+  "databaseVersion": "17.11",
+  "frontendChanged": false,
+  "frontendDeployed": false,
+  "migrations": [
+    {
+      "local": "20261101215111_celebration_holiday_classification.sql",
+      "sha256": "78615ddefeb27d935c0e23ba4124ddc1f3bacf68bc7cac69f62b8d67b2371908",
+      "remoteVersion": "20261101215328",
+      "status": "applied_and_verified"
+    },
+    {
+      "local": "20261101215117_partner_holiday_associations.sql",
+      "sha256": "f46ea971405f91cd0137c576ea0fe4801dc2b049f7deedd1649c4216eee118ae",
+      "remoteVersion": null,
+      "status": "prepared_and_locally_verified_not_applied",
+      "blocker": "Supabase apply_migration confirmation expired twice; relation and RPC absent in remote catalog"
+    }
+  ],
+  "remoteVerification": {
+    "celebrations": 110,
+    "classified": 0,
+    "nulls": 0,
+    "column": {
+      "data_type": "boolean",
+      "is_nullable": "NO",
+      "column_default": "false"
+    },
+    "originalCelebrationRowsUnchanged": true,
+    "partnerRowsUnchanged": true,
+    "policiesUnchanged": true,
+    "grantsUnchanged": true,
+    "adminAndMemberReadVerified": true,
+    "syntheticWrites": false,
+    "partnerHolidaysTable": null,
+    "replacePartnerHolidaysRpc": null,
+    "newSecurityAdvisorFindings": 0
+  },
+  "localVerification": {
+    "postgresMajor": 17,
+    "script": "scripts/check-holiday-schema.cjs",
+    "isolated": true,
+    "temporaryClusterStopped": true,
+    "passed": 18,
+    "checks": [
+      "real migrations apply and old records default false",
+      "RPC deduplicates, sorts, is idempotent",
+      "partner fields preserved",
+      "duplicate, nonholiday, nonexistent and generated override blocked",
+      "linked holiday unclassification blocked",
+      "invalid replacement preserves prior selection",
+      "null inputs and missing partner refused",
+      "RLS member scope and inactive deny",
+      "nonadmin RPC/direct insert/delete denied",
+      "anon read and RPC denied",
+      "write failure after delete rolls back prior selection",
+      "explicit rollback preserves selection",
+      "concurrent same-partner replacements serialize",
+      "concurrent insert then unclassify waits and rejects",
+      "concurrent unclassify then insert rejects dangling classification",
+      "partner cascade isolated from other brand",
+      "celebration delete cascades",
+      "empty array clears selection"
+    ]
+  },
+  "remaining": [
+    "Apply and verify partner_holiday_associations after tool confirmation",
+    "Integrate application types, models and cache",
+    "Add holiday controls to celebration create/edit and indicators",
+    "Add partner holiday selection in management UI",
+    "Owner visual validation"
+  ],
+  "commitPushDeploy": false
+}

@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "types/database";
 import type { Partner } from "~/types";
 
 export async function getPartnerBySlug(supabase: SupabaseClient, slug: string) {
@@ -66,9 +67,14 @@ export async function partnerSlugExists(
 export async function createPartner(
   supabase: SupabaseClient,
   partner: Omit<Partner, "id" | "created_at">,
-) {
-  const { error } = await supabase.from("partners").insert(partner);
+): Promise<Partner> {
+  const { data, error } = await supabase
+    .from("partners")
+    .insert(partner)
+    .select()
+    .single();
   if (error) throw error;
+  return data as Partner;
 }
 
 export async function updatePartnerBySlug(
@@ -81,4 +87,29 @@ export async function updatePartnerBySlug(
     .update(partner)
     .eq("slug", slug);
   if (error) throw error;
+}
+
+export async function getPartnerHolidayIds(
+  supabase: SupabaseClient<Database>,
+  partnerId: string,
+): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("partner_holidays")
+    .select("celebration_id")
+    .eq("partner_id", partnerId);
+  if (error) throw error;
+  return (data || []).map((row) => row.celebration_id);
+}
+
+export async function updatePartnerHolidays(
+  supabase: SupabaseClient<Database>,
+  partnerId: string,
+  celebrationIds: string[],
+): Promise<string[]> {
+  const { data, error } = await supabase.rpc("replace_partner_holidays", {
+    p_partner_id: partnerId,
+    p_celebration_ids: celebrationIds,
+  });
+  if (error) throw error;
+  return (data as string[]) || [];
 }

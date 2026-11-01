@@ -10,6 +10,7 @@ export function useIsDesktop(minWidth = 1024) {
   const [isDesktop, setIsDesktop] = useState(() => matchesMinWidth(minWidth));
 
   useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
     // Match the breakpoint of the view using this hook.
     const mq = window.matchMedia(`(min-width: ${minWidth}px)`);
 
