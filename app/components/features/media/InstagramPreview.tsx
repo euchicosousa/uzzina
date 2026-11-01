@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { detectPostType } from "./InstagramHelpers";
 import { ChevronLeftIcon, ChevronRightIcon, ImageIcon } from "lucide-react";
 
@@ -8,16 +8,44 @@ interface InstagramPreviewProps {
   compact?: boolean;
 }
 
+/** Keeps a slide index inside the carousel bounds. */
+function clampIndex(index: number, total: number) {
+  return Math.min(Math.max(index, 0), Math.max(total - 1, 0));
+}
+
 /**
  * Prévia visual de um post do Instagram com base nos content_files.
  * - 0 arquivos → placeholder
  * - 1 imagem → imagem estática
- * - N imagens → carrossel com navegação
+ * - N imagens → carrossel com swipe (scroll-snap) e navegação
  * - 1 vídeo → player de vídeo (com capa opcional em files[1])
  */
 export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<number | null>(null);
   const type = detectPostType(files as string[]);
+  const total = files?.length ?? 0;
+  const filesKey = files?.join("\n") ?? "";
+
+  // Cancel a pending scroll frame when the preview unmounts.
+  useEffect(() => {
+    return () => {
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+    };
+  }, []);
+
+  // When the slides change, keep the index in bounds and re-align without animation.
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track || total === 0 || track.clientWidth === 0) return;
+    const index = clampIndex(
+      Math.round(track.scrollLeft / track.clientWidth),
+      total,
+    );
+    track.scrollTo({ left: index * track.clientWidth, behavior: "auto" });
+    setCarouselIndex(index);
+  }, [filesKey, total]);
 
   // Proporção Instagram feed padrão 4:5
   // On a compact panel the height is fixed and the width follows the ratio, so
@@ -68,23 +96,73 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
   }
 
   // Carrossel
-  const total = files.length;
   const canPrev = carouselIndex > 0;
   const canNext = carouselIndex < total - 1;
 
+  const scrollToSlide = (index: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    track.scrollTo({ left: index * track.clientWidth, behavior: "smooth" });
+  };
+
+  // Scroll position drives the index; at most one update per frame.
+  const handleScroll = () => {
+    if (frameRef.current !== null) return;
+    frameRef.current = requestAnimationFrame(() => {
+      frameRef.current = null;
+      const track = trackRef.current;
+      if (!track || track.clientWidth === 0) return;
+      const next = clampIndex(
+        Math.round(track.scrollLeft / track.clientWidth),
+        total,
+      );
+      setCarouselIndex((prev) => (prev === next ? prev : next));
+    });
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    event.preventDefault();
+    const step = event.key === "ArrowLeft" ? -1 : 1;
+    scrollToSlide(clampIndex(carouselIndex + step, total));
+  };
+
   return (
     <div className={`${frameClass} ${aspectClass}`}>
-      <img
-        src={files[carouselIndex]}
-        alt={`Slide ${carouselIndex + 1}`}
-        className="h-full w-full object-cover"
-      />
+      <div
+        ref={trackRef}
+        role="region"
+        aria-roledescription="carrossel"
+        aria-label="Imagens do post"
+        tabIndex={0}
+        onScroll={handleScroll}
+        onKeyDown={handleKeyDown}
+        className="flex h-full w-full touch-pan-x touch-pan-y snap-x snap-mandatory [scrollbar-width:none] overflow-x-auto overscroll-x-contain outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset [&::-webkit-scrollbar]:hidden"
+      >
+        {files.map((url, i) => (
+          <div
+            key={`${i}-${url}`}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`Slide ${i + 1} de ${total}`}
+            className="h-full w-full shrink-0 snap-center snap-always"
+          >
+            <img
+              src={url}
+              alt={`Slide ${i + 1}`}
+              loading={i === 0 ? "eager" : "lazy"}
+              draggable={false}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ))}
+      </div>
 
       {/* Setas de navegação */}
       {canPrev && (
         <button
           type="button"
-          onClick={() => setCarouselIndex((i) => i - 1)}
+          onClick={() => scrollToSlide(carouselIndex - 1)}
           className="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
           aria-label="Imagem anterior"
         >
@@ -94,7 +172,7 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
       {canNext && (
         <button
           type="button"
-          onClick={() => setCarouselIndex((i) => i + 1)}
+          onClick={() => scrollToSlide(carouselIndex + 1)}
           className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
           aria-label="Próxima imagem"
         >
@@ -106,9 +184,9 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
       <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1">
         {files.map((url, i) => (
           <button
-            key={url}
+            key={`${i}-${url}`}
             type="button"
-            onClick={() => setCarouselIndex(i)}
+            onClick={() => scrollToSlide(i)}
             aria-label={`Ir para o slide ${i + 1}`}
             className={`size-1.5 rounded-full transition ${
               i === carouselIndex ? "bg-white" : "bg-white/40"
