@@ -13,3 +13,7 @@ Per the owner's new workflow, no automated test, test suite, typecheck or build 
 3. Use a valid portal account: login still opens the portal. A wrong password should show the existing error, with the new alert presentation.
 
 This is not a new portal-access acceptance requirement; access was approved. The new layout has not been visually/device certified by the agent, and no screenshot credentials were used. Other-agent style-analysis work remains separate.
+
+## Owner acceptance — 01/11/2026
+
+The owner explicitly approved the login and requested the commit. Implementation is already committed as `08a0006`; this entry closes the pending appearance/login acceptance. The checklist above is retained as delivery history, with no further login validation required. No new source change, automated check or deployment was performed for this acceptance.

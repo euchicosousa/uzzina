@@ -6,6 +6,12 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### Login aprovado; fila de validação delimitada — 01/11
+
+Proprietário aprovou o login e autorizou commit. Implementação já commitada em `08a0006`; aceite visual/funcional encerrado por declaração do proprietário, sem inferir teste independente ou nova publicação. [Registro](2026-11-01-portal-login-style.md).
+
+Restam os aceites de03 Instagram,16 rodapé, mídia, identidade do parceiro na IA e foco em Hoje, com [roteiros objetivos](2026-11-01-open-tickets.md). Estilo/acessibilidade ficam com o outro agente; uso de IA em Minha Conta e Planejamento adiados pelo proprietário. Nenhuma implementação adicional autorizada nesta rodada. Somente documentação, referências/diff conferidos; sem testes, build, SQL, push ou deploy. Mudanças externas preservadas.
+
 ### Portal aprovado; login alinhado ao principal — 01/11
 
 Proprietário aprovou o portal e pediu commit: acesso local/origem encerrado por aceite explícito; código já estava commitado/publicado em `a714b2d`. Pedido separado: login do portal deve seguir exatamente o estilo do principal mostrado nos prints. Alterada somente apresentação de `/dash/login`: mesmas classes de frame28rem, espaçamentos, campos/ícones/Labels React Aria, alerta Prism e botão à direita; removido texto introdutório e botão/larguras próprios. Autenticação e remoção da regra de endereço preservadas. [Registro e roteiro](2026-11-01-portal-login-style.md).
