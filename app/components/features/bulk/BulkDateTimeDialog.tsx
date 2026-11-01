@@ -103,6 +103,7 @@ export function BulkDateTimeDialog({
         </label>
 
         <div
+          inert={!changeDate}
           className={cn(
             "overflow-hidden transition-all duration-200",
             changeDate
@@ -144,6 +145,7 @@ export function BulkDateTimeDialog({
         </label>
 
         <div
+          inert={!changeTime}
           className={cn(
             "overflow-hidden transition-all duration-200",
             changeTime
