@@ -14,9 +14,9 @@ Deploy de todas as entregas informado pelo proprietário em31/10; publicação d
 
 ## Trabalhos registrados para depois
 
-- [x] [Estratégias07/09 permanentes](docs/audits/2026-11-01-strategy-permanent-rollout.md): código commitado/publicado Ready em01/11, SQL/segredo/agendamento assinados e heartbeat verificados; sem flags de ativação. Uso real escolhido pelo proprietário permanece separado dos testes controlados.
+- [x] [Estratégias07/09 permanentes](docs/audits/2026-11-01-strategy-permanent-rollout.md): código commitado/publicado Ready em01/11, SQL/segredo/agendamento assinados e heartbeat verificados; sem flags de ativação. Uso real (V1) aceito pelo proprietário em01/11.
 
-- [x] Mídia, rodapé16, identidade na IA e foco de Hoje aprovados pelo proprietário em01/11. Título permanece entregue no roteiro geral de uso, sem aceite específico novo inferido. [Fila remanescente](docs/audits/2026-11-01-open-tickets.md): Instagram paisagem/aviso de espaço e estudos posteriores de arraste/carrossel.
+- [x] Mídia, rodapé16, identidade na IA e foco de Hoje aprovados pelo proprietário em01/11. Título inline no celular aceito pelo proprietário em01/11 (V8). [Fila remanescente](docs/audits/2026-11-01-open-tickets.md): Instagram paisagem/aviso de espaço e estudos posteriores de arraste/carrossel.
 
 
 - [ ] [Correções do retorno mobile](.scratch/safari-mobile/README.md#correction-tickets-registered--2026-10-30):12/17 commitados em `ceafc6f`,13/18 em `4540ef6`;14/19 aceitos e commitados em `53508d2`. Header global e15 (abas compartilhadas) implementados/verificados e commitados em `566cbbe`; Header,12 e15 aprovados pelo proprietário em31/10; deploy informado pelo proprietário.16 rodapé implementado/verificado e commitado em `6019a80`, aprovado em01/11; Instagram retrato aprovado, paisagem permanece para avaliação de aviso de espaço. Aceites anteriores preservados.

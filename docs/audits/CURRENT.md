@@ -6,9 +6,13 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### Aceites C1/C2, V1 e V8 — 01/11
+
+Proprietário aceitou C1 (cabeçalho do portal em celular estreito) e C2 (login da equipe e do portal em celular), commit `b1ff935`; V1 (estratégias09 permanentes: geração real na ação; fechar e reabrir mostra as cinco estratégias salvas, sem seleção nem troca automática de título) e V8 (título inline em uma linha no celular não altera a altura do cartão). Produção continua em `a714b2d` (`dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`): `b1ff935` e `08a0006` estão commitados e enviados ao GitHub, sem deploy. Em andamento nesta rodada, feito separadamente e registrado na entrega: aviso de espaço do Instagram em paisagem (ticket 03), largura estreita de esqueci/redefinir senha (seguir o padrão do login) e investigação do gesto do carrossel. Ver [decisões pendentes](2026-11-01-pending-decisions.md) e [fila vigente](2026-11-01-open-tickets.md).
+
 ### C1/C2 corrigidos localmente — 01/11
 
-Autorizado pelo proprietário. C2: `/login` e `/dash/login` passam de `grid-cols-[2rem_28rem_2rem]` para `grid-cols-[1rem_minmax(0,28rem)_1rem] sm:grid-cols-[2rem_minmax(0,28rem)_2rem]`, iguais entre si; desktop mantém moldura de448px. C1: cabeçalho de `/dash` quebra linha no celular (seletor de parceiro em linha própria, largura total e texto truncado; saudação truncada; Sair sem encolher), layout de `sm` para cima preservado. Verificado no navegador sem credenciais: login e login do portal sem overflow em320px e com moldura32/448/32px em1440px. Cabeçalho do portal não renderizado (exige sessão): validação do proprietário. Esqueci/redefinir senha usam outra grade e podem cortar em320px; não alterados. Prettier nos arquivos tocados e typecheck limpo; sem testes novos ou deploy; commitado e enviado ao GitHub a pedido do proprietário, aguardando validação dele.
+Autorizado pelo proprietário. C2: `/login` e `/dash/login` passam de `grid-cols-[2rem_28rem_2rem]` para `grid-cols-[1rem_minmax(0,28rem)_1rem] sm:grid-cols-[2rem_minmax(0,28rem)_2rem]`, iguais entre si; desktop mantém moldura de448px. C1: cabeçalho de `/dash` quebra linha no celular (seletor de parceiro em linha própria, largura total e texto truncado; saudação truncada; Sair sem encolher), layout de `sm` para cima preservado. Verificado no navegador sem credenciais: login e login do portal sem overflow em320px e com moldura32/448/32px em1440px. Cabeçalho do portal não renderizado (exige sessão): validação do proprietário. Esqueci/redefinir senha usam outra grade e podem cortar em320px; não alterados. Prettier nos arquivos tocados e typecheck limpo; sem testes novos ou deploy; commitado e enviado ao GitHub a pedido do proprietário, validado pelo proprietário.
 
 ### Push sem deploy; limiar do aviso Instagram; reconciliação — 01/11
 

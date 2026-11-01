@@ -17,14 +17,14 @@ These are findings/proposed scopes from the other agent's style review. The owne
 
 | Ref | Scope and acceptance | Urgency | Effort |
 |---|---|---|---|
-| C1 | Portal header on320–375px: greeting, partner picker and Sair remain visible/reachable with multiple partners and long names; no horizontal page overflow. | High | Easy |
-| C2 | Team login on320–430px: fields and Entrar fit; desktop remains intact. Note: since commit 08a0006 the portal login `/dash/login` uses the same `grid-cols-[2rem_28rem_2rem]` frame as `/login` (`app/routes/dash/login.tsx:66`, `app/routes/login.tsx:58`), so the narrow-phone clipping found for the team login (style report A1: fields cut at 320/375, card cut at 390) likely also affects the portal login. Unverified at runtime. 08a0006 is committed and pushed but not deployed; production remains a714b2d (`dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`). | High | Easy |
+| C1 | **Accepted by owner 01/11 (`b1ff935`), closed.** Portal header on320–375px: greeting, partner picker and Sair remain visible/reachable with multiple partners and long names; no horizontal page overflow. | High | Easy |
+| C2 | **Accepted by owner 01/11 (`b1ff935`), closed.** Team login on320–430px: fields and Entrar fit; desktop remains intact. Note: since commit 08a0006 the portal login `/dash/login` uses the same `grid-cols-[2rem_28rem_2rem]` frame as `/login` (`app/routes/dash/login.tsx:66`, `app/routes/login.tsx:58`), so the narrow-phone clipping found for the team login (style report A1: fields cut at 320/375, card cut at 390) likely also affects the portal login. Unverified at runtime. 08a0006 is committed and pushed but not deployed; production remains a714b2d (`dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`). | High | Easy |
 | C3 | Remaining unnamed controls, invisible focus and autocomplete: name actual controls, show keyboard focus, preserve editor/popover behavior. These are additional occurrences from round3, not reopening the already fixed K03/K04 occurrences. | High | Medium |
 | C4 | Text/field/status contrast: correct failing combinations; authorize the palette/border policy in D7/D8. Passing legibility is the target, not a personal preference to waive it. | High | Medium |
 | C5 | Admin320px layout/names, AppBar width, drawer tab labels and badges under enlarged spacing: all labels and controls remain readable/reachable. | Medium | Medium |
 | C6 | Action cards with nested interactive controls and alternate movement paths: preserve opening, selection, drag and inner commands while correcting semantics/keyboard operation. Coordinate D10. | Medium | Hard |
 
-C1/C2 implemented locally on 01/11 (see CURRENT), awaiting owner check; not deployed. Suggested execution order: C1/C2 → C3/C4 → C5 → C6. Creating individual correction tickets or starting the batch still depends on the owner's execution choice; this table creates no new tracker tickets.
+C1/C2 accepted by the owner on 01/11 (commit `b1ff935`); production remains `a714b2d`, so they are not deployed. Suggested execution order: C3/C4 → C5 → C6 (C1/C2 accepted). Creating individual correction tickets or starting the batch still depends on the owner's execution choice; this table creates no new tracker tickets.
 
 ## 2. Visual and interaction choices
 
@@ -83,18 +83,18 @@ Technical invariants retained without a new preference vote: server-authorized p
 
 ## 5. Accept or report failure for implemented work
 
-Owner accepted V2, V3, V5, V6 and V7 on 01/11 (see open tickets, "Closed by owner acceptance"); V4 is partly decided. These are user checks, not requests for another design choice. Use own suitable records; report pass/fail with page/device/steps. Passing a narrow check does not imply every scenario/device is certified.
+Owner accepted V1, V2, V3, V5, V6, V7 and V8 on 01/11 (see open tickets, "Closed by owner acceptance"); V4 is partly decided. These are user checks, not requests for another design choice. Use own suitable records; report pass/fail with page/device/steps. Passing a narrow check does not imply every scenario/device is certified.
 
 | Ref | Item and exact short check | Urgency | Effort to validate |
 |---|---|---|---|
-| V1 | Permanent09: generate on an action, let server acceptance finish, close and later reopen; all five saved strategies appear, without automatic selection/title replacement. Infrastructure already verified. | High after publication | Easy |
+| V1 | **Accepted by owner 01/11, closed.** Permanent09: generate on an action, let server acceptance finish, close and later reopen; all five saved strategies appear, without automatic selection/title replacement. Infrastructure already verified. | Closed | None |
 | V2 | Partner identity in AI: **accepted by owner 01/11, closed.** | Closed | None |
 | V3 | Local portal: **accepted by owner 01/11 after the address rule was removed (a714b2d); closed.** No normalization applies. | Closed | None |
 | V4 | Instagram03: portrait accepted. Landscape advisory threshold decided 01/11: where the Essencial tab starts scrolling (title + metadata + 200px description exceed the scroller height), landscape only; portrait with keyboard out of scope for now. Presentation/implementation not yet authorized. Accepted13/17/18 remain accepted. See [ticket 03](../../.scratch/safari-mobile/issues/03-mobile-instagram-editor.md). | Medium | Medium |
 | V5 | Media controls: **accepted by owner 01/11, closed.** | Closed | None |
 | V6 | Footer16: **accepted by owner 01/11, closed.** | Closed | None |
 | V7 | Today focus: **accepted by owner 01/11, closed.** | Closed | None |
-| V8 | Inline title, without its own ticket: editing/cancelling/saving a one-line title on phone does not change card/neighbor height. | Low | Easy |
+| V8 | **Accepted by owner 01/11, closed.** Inline title, without its own ticket: editing/cancelling/saving a one-line title on phone does not change card/neighbor height. | Closed | None |
 
 Header, portal visual,12 and15 retain their prior acceptance. C1 is the later narrower-phone/multiple-partner portal finding, not cancellation of the earlier approval.
 
@@ -105,7 +105,7 @@ Header, portal visual,12 and15 retain their prior acceptance. C1 is the later na
 | Bulk date/time focus candidate | Reproduce with steps/device before defining a fix or creating a ticket. No owner feature decision is missing. | Low until reproduced; reassess impact afterward | Unknown |
 | Platform advisories / pg_net schema | Decide whether to defer optional schema maintenance or authorize a separately reviewed maintenance plan. Worker is active with signed requests; default net schema is not Data-API exposed. Drop/recreate was rejected automatically for shared-object risk; no bypass attempted. | Low, no new blocking incident established | Medium/risk-sensitive |
 
-Recommended sequence now: V1 (09 real generation check) and V8 → V4 presentation decision → approve C1/C2/C3 and contrast policy D7/D8 → aesthetic choices → U1–U6 → planning approval when selected as business priority. The owner may approve recommendations by group and specify only exceptions; missing numeric agency allowance/conversion still needs explicit resolution.
+Recommended sequence now: V4 presentation decision (Instagram landscape advisory, in progress separately) → approve C3 and contrast policy D7/D8 (C1/C2, V1 and V8 accepted; forgot/reset narrow-width fix in progress, owner-authorized) → aesthetic choices → U1–U6 → planning approval when selected as business priority. The owner may approve recommendations by group and specify only exceptions; missing numeric agency allowance/conversion still needs explicit resolution.
 
 ## Evidence and limits
 
