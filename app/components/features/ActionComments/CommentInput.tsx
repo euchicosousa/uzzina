@@ -67,6 +67,7 @@ export function CommentInput({
   return (
     <div className="relative flex flex-col gap-2 bg-input px-5 py-4 dark:bg-input/30">
       <PrismTextarea
+        aria-label="Observação"
         className="min-h-20 w-full rounded-none border-0 p-0 text-sm shadow-none focus:border-0 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}

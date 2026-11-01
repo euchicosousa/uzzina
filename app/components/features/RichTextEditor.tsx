@@ -428,6 +428,8 @@ function TiptapToolbar({ editor, isRounded, compact }: TiptapToolbarProps) {
   );
 }
 export function RichTextEditor({
+  id,
+  "aria-labelledby": ariaLabelledBy,
   content,
   handleBlur,
   handleChange,
@@ -438,6 +440,8 @@ export function RichTextEditor({
   isRounded,
   compactToolbar = false,
 }: {
+  id?: string;
+  "aria-labelledby"?: string;
   content: string;
   handleBlur?: (content: string) => void;
   handleChange?: (content: string) => void;
@@ -498,6 +502,14 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         tabindex: tabIndex?.toString() || "0",
+        ...(id ? { id } : {}),
+        ...(ariaLabelledBy
+          ? {
+              role: "textbox",
+              "aria-multiline": "true",
+              "aria-labelledby": ariaLabelledBy,
+            }
+          : {}),
       },
     },
     onCreate: (props) => {

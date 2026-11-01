@@ -3,7 +3,7 @@ import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CheckCircle2Icon, ClockIcon, PhoneIcon } from "lucide-react";
 import { useMemo } from "react";
-import { PrismBadge, PrismButton } from "~/components/prism";
+import { PrismBadge, buttonVariants } from "~/components/prism";
 interface LeadDetailProps {
   lead: Lead;
 }
@@ -77,15 +77,16 @@ export function LeadDetail({ lead }: LeadDetailProps) {
 
         {/* Botão para WhatsApp */}
         <a
-          className="inline-flex max-w-full items-center gap-2 self-start"
+          className={buttonVariants({
+            className:
+              "max-w-full gap-2 self-start border-0 bg-[#25D366] font-medium text-white hover:bg-[#20bd5a]",
+          })}
           href={whatsappUrl}
           rel="noopener noreferrer"
           target="_blank"
         >
-          <PrismButton className="max-w-full gap-2 border-0 bg-[#25D366] font-medium text-white hover:bg-[#20bd5a]">
-            <PhoneIcon className="size-4" />
-            <span className="min-w-0 truncate">{lead.whatsapp}</span>
-          </PrismButton>
+          <PhoneIcon className="size-4" />
+          <span className="min-w-0 truncate">{lead.whatsapp}</span>
         </a>
       </div>
 

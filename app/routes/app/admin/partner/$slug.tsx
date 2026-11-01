@@ -406,17 +406,17 @@ function AdminPartnerEditPage() {
 
           <div className="grid gap-4">
             <div className="flex items-center justify-between gap-2">
-              <label className="font-medium" htmlFor="context">
+              <label
+                className="font-medium"
+                htmlFor="context"
+                id="context-label"
+                onClick={() => document.getElementById("context")?.focus()}
+              >
                 Contexto
               </label>
               {savingFields.has("context") && <ULoader />}
             </div>
-            <input
-              id="context"
-              name="context"
-              type="hidden"
-              value={contextValue}
-            />
+            <input name="context" type="hidden" value={contextValue} />
             <div className="min-h-25 overflow-hidden rounded-2xl bg-input/50 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
               <Suspense
                 fallback={
@@ -424,6 +424,8 @@ function AdminPartnerEditPage() {
                 }
               >
                 <Tiptap
+                  aria-labelledby="context-label"
+                  id="context"
                   className="prose prose-sm dark:prose-invert h-full max-w-none focus:outline-none"
                   content={contextValue}
                   handleBlur={(content: string) => {
@@ -440,12 +442,17 @@ function AdminPartnerEditPage() {
 
           <div className="grid gap-4">
             <div className="flex items-center justify-between gap-2">
-              <label className="font-medium" htmlFor="voice">
+              <label
+                className="font-medium"
+                htmlFor="voice"
+                id="voice-label"
+                onClick={() => document.getElementById("voice")?.focus()}
+              >
                 Tom de Voz
               </label>
               {savingFields.has("voice") && <ULoader />}
             </div>
-            <input id="voice" name="voice" type="hidden" value={voiceValue} />
+            <input name="voice" type="hidden" value={voiceValue} />
             <div className="min-h-25 overflow-hidden rounded-2xl bg-input/50 text-base shadow-sm transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
               <Suspense
                 fallback={
@@ -453,6 +460,8 @@ function AdminPartnerEditPage() {
                 }
               >
                 <Tiptap
+                  aria-labelledby="voice-label"
+                  id="voice"
                   className="prose prose-sm dark:prose-invert h-full max-w-none focus:outline-none"
                   content={voiceValue}
                   handleBlur={(content: string) => {

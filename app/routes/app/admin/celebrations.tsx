@@ -108,6 +108,7 @@ function AdminCelebrationsPage() {
           <form className="flex w-full flex-col gap-4" onSubmit={handleCreate}>
             <div className="flex w-full items-center gap-2">
               <PrismInput
+                aria-label="Nome do feriado/data"
                 disabled={!selectedDate || isSubmitting}
                 name="title"
                 onChange={(e) => setTitle(e.target.value)}
