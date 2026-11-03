@@ -17,10 +17,14 @@ const toggleVariants = cva(
       },
       size: {
         default:
-          "h-12 min-w-12 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        xs: "h-8 min-w-8 px-1.5 has-data-[icon=inline-end]:pr-1 has-data-[icon=inline-start]:pl-1 [&_svg:not([class*='size-'])]:size-4",
-        sm: "h-10 min-w-10 px-2 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-4",
-        lg: "h-14 min-w-14 px-3 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-6",
+          "h-10 min-w-10 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        xs: "h-6 min-w-6 px-1.5 text-xs has-data-[icon=inline-end]:pr-1 has-data-[icon=inline-start]:pl-1 [&_svg:not([class*='size-'])]:size-3",
+        sm: "h-8 min-w-8 px-2 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5",
+        lg: "h-12 min-w-12 px-3 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        "icon-xs": "size-6 p-0 [&_svg:not([class*='size-'])]:size-3",
+        "icon-sm": "size-8 p-0 [&_svg:not([class*='size-'])]:size-4",
+        icon: "size-10 p-0 [&_svg:not([class*='size-'])]:size-5",
+        "icon-lg": "size-12 p-0 [&_svg:not([class*='size-'])]:size-5",
       },
     },
     defaultVariants: {

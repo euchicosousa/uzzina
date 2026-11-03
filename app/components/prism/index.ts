@@ -11,16 +11,29 @@ export {
   PrismAccordionContent,
 } from "./accordion";
 export { PrismBadge } from "./badge";
+export { PrismKbd, type PrismKbdProps } from "./kbd";
 export { Button as PrismButton, buttonVariants } from "./button";
 export type { PrismButtonVariantProps } from "./button";
-export { PrismCalendar, PrismRangeCalendar } from "./calendar";
+export {
+  PrismCalendar,
+  PrismRangeCalendar,
+  type CalendarCellSize,
+  type PrismCalendarProps,
+  type PrismRangeCalendarProps,
+} from "./calendar";
 export {
   PrismDateRangePicker,
   type DateRangeValue,
   type PrismDateRangePickerProps,
 } from "./date-range-picker";
 export { PrismCheckbox, PrismCheckboxGroup } from "./checkbox";
-export { PrismTabs, PrismTabList, PrismTab, PrismTabPanel } from "./tabs";
+export {
+  PrismTabs,
+  PrismTabList,
+  PrismTab,
+  PrismTabPanel,
+  type TabsVariant,
+} from "./tabs";
 export {
   PrismButtonGroup,
   PrismButtonGroupSeparator,
@@ -68,6 +81,7 @@ export {
 } from "./slider";
 export {
   PrismDialog,
+  PrismDialogBody,
   PrismDialogClose,
   PrismDialogDescription,
   PrismDialogFooter,

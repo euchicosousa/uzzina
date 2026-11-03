@@ -36,8 +36,16 @@ export interface PrismDateRangePickerProps {
   isDisabled?: boolean;
   numberOfMonths?: number;
   placeholder?: string;
+  size?: "sm" | "default" | "lg";
+  cellSize?: "sm" | "default" | "lg";
   "aria-label"?: string;
 }
+
+const triggerSizeClasses = {
+  sm: "h-8 px-4",
+  default: "h-10 px-5",
+  lg: "h-12 px-5",
+} as const;
 
 function toDate(d: Date | string | null | undefined): Date | null {
   if (!d) return null;
@@ -64,6 +72,8 @@ export function PrismDateRangePicker({
   isDisabled = false,
   numberOfMonths = 1,
   placeholder = "Selecione o período",
+  size = "default",
+  cellSize,
   "aria-label": ariaLabel = "Selecionar período",
 }: PrismDateRangePickerProps) {
   const [internalValue, setInternalValue] = useState<{
@@ -106,7 +116,8 @@ export function PrismDateRangePicker({
         <ButtonPrimitive
           aria-label={ariaLabel}
           className={cn(
-            "flex h-12 w-full items-center justify-between gap-3 rounded-2xl border border-transparent bg-input/50 px-4 py-2 text-sm transition-[color,box-shadow] duration-200 outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50",
+            "flex w-full items-center justify-between gap-3 rounded-2xl border border-transparent bg-input/50 py-2 text-sm transition-[color,box-shadow] duration-200 outline-none squircle focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50",
+            triggerSizeClasses[size],
             triggerClassName,
           )}
           id={id}
@@ -133,6 +144,7 @@ export function PrismDateRangePicker({
           placement="bottom start"
         >
           <PrismRangeCalendar
+            cellSize={cellSize}
             numberOfMonths={numberOfMonths}
             onChange={(range) => {
               if (range?.start && range?.end) {
@@ -166,4 +178,3 @@ export function PrismDateRangePicker({
     </div>
   );
 }
-

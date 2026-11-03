@@ -45,7 +45,7 @@ const PrismToaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast: cn(
-            "cn-toast squircle px-5! py-3.5! border-2!",
+            "cn-toast squircle px-5! py-3.5! border!",
             "data-[type=default]:bg-card! data-[type=default]:text-card-foreground! data-[type=default]:border-border!",
             "data-[type=success]:bg-success-background! data-[type=success]:text-success! data-[type=success]:border-success!",
             "data-[type=error]:bg-error-background! data-[type=error]:text-error! data-[type=error]:border-error!",

@@ -1,6 +1,7 @@
 import {
   PrismDialogTrigger,
   PrismDialog,
+  PrismDialogBody,
   PrismDialogHeader,
   PrismDialogTitle,
   PrismDialogDescription,
@@ -21,8 +22,9 @@ export function DialogSection() {
     <div id="prism-dialog">
       <GallerySection>
         <GallerySectionHeader
+          approved
           description="Modais de caixa de diálogo com tratamento nativo de foco, acessibilidade e escurecimento do fundo."
-          title="PrismDialog"
+          title="Dialog"
         />
         <GallerySectionContent>
           <GalleryItem label="Modal Simples">
@@ -36,12 +38,12 @@ export function DialogSection() {
                     do Uzzina.
                   </PrismDialogDescription>
                 </PrismDialogHeader>
-                <div className="flex flex-col gap-2 py-4">
+                <PrismDialogBody>
                   <p className="text-sm text-foreground">
                     Conteúdo dinâmico do modal. Suporta inputs, tabelas e botões
                     adicionais de ação.
                   </p>
-                </div>
+                </PrismDialogBody>
                 <PrismDialogFooter>
                   <PrismDialogClose variant="outline">
                     Cancelar

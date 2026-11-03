@@ -14,8 +14,9 @@ export function RadioGroupSection() {
     <div id="prism-radio-group">
       <GallerySection>
         <GallerySectionHeader
+          approved
           description="Botões de rádio acessíveis baseados no React Aria Components com suporte a tamanhos, foco com anel OKLCH e estados ativados/desativados."
-          title="PrismRadioGroup"
+          title="Radio Group"
         />
         <GallerySectionContent className="grid gap-6">
           <GalleryItem label="Variantes de Tamanho">

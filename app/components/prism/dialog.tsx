@@ -111,7 +111,7 @@ function DialogFrame({
     >
       <ModalPrimitive
         className={cn(
-          "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 pointer-events-auto relative z-50 grid max-h-full w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-[min(var(--radius-4xl),24px)] bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none squircle sm:w-full dark:ring-foreground/10",
+          "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 pointer-events-auto relative z-50 grid max-h-full w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-2xl bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none squircle sm:w-full sm:max-w-lg dark:ring-foreground/10",
           className,
         )}
         data-slot="dialog-content"
@@ -225,10 +225,20 @@ function DialogDescription({
     />
   );
 }
+function DialogBody({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      className={cn("flex flex-col gap-2 px-5 py-2", className)}
+      data-slot="dialog-body"
+      {...props}
+    />
+  );
+}
 export {
   type DialogPrimitiveProps,
   type DialogTriggerPrimitiveProps,
   Dialog as PrismDialog,
+  DialogBody as PrismDialogBody,
   DialogClose as PrismDialogClose,
   DialogDescription as PrismDialogDescription,
   DialogFooter as PrismDialogFooter,

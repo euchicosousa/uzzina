@@ -7,46 +7,64 @@ import {
 } from "react-aria-components";
 import { PrismToggle, type toggleVariants } from "~/components/prism";
 import { cn } from "cnfast";
-const ToggleGroupContext = createContext<
-  VariantProps<typeof toggleVariants> & {
-    spacing?: number;
-    orientation?: "horizontal" | "vertical";
-  }
->({
-  size: "default",
-  variant: "default",
+
+interface ToggleGroupContextValue extends VariantProps<typeof toggleVariants> {
+  spacing?: number;
+  orientation?: "horizontal" | "vertical";
+  attached?: boolean;
+}
+
+const ToggleGroupContext = createContext<ToggleGroupContextValue>({
+  size: undefined,
+  variant: undefined,
   spacing: 2,
   orientation: "horizontal",
+  attached: false,
 });
+
+export interface ToggleGroupProps
+  extends
+    Omit<ToggleButtonGroupProps, "children">,
+    VariantProps<typeof toggleVariants> {
+  spacing?: number;
+  orientation?: "horizontal" | "vertical";
+  attached?: boolean;
+  children?: React.ReactNode;
+}
+
 function ToggleGroup({
   className,
   variant,
   size,
   spacing = 2,
   orientation = "horizontal",
+  attached = false,
   children,
   ...props
-}: Omit<ToggleButtonGroupProps, "children"> &
-  VariantProps<typeof toggleVariants> & {
-    spacing?: number;
-    orientation?: "horizontal" | "vertical";
-    children?: React.ReactNode;
-  }) {
+}: ToggleGroupProps) {
   return (
     <ToggleGroupPrimitive
       className={cn(
-        "group/toggle-group flex w-fit flex-row items-center gap-(--gap) data-vertical:flex-col data-vertical:items-stretch data-[spacing=0]:data-[variant=outline]:rounded-2xl",
+        "group/toggle-group flex w-fit",
+        orientation === "vertical"
+          ? "flex-col items-stretch data-vertical:flex-col data-vertical:items-stretch"
+          : "flex-row items-center",
+        attached ? "gap-0" : "gap-(--gap)",
         className,
       )}
+      data-attached={attached ? "true" : undefined}
+      data-orientation={orientation}
       data-size={size}
       data-slot="toggle-group"
-      data-spacing={spacing}
+      data-spacing={attached ? 0 : spacing}
       data-variant={variant}
       orientation={orientation}
       style={
-        {
-          "--gap": `calc(var(--spacing) * ${spacing})`,
-        } as React.CSSProperties
+        attached
+          ? undefined
+          : ({
+              "--gap": `calc(var(--spacing) * ${spacing})`,
+            } as React.CSSProperties)
       }
       {...props}
     >
@@ -54,8 +72,9 @@ function ToggleGroup({
         value={{
           variant,
           size,
-          spacing,
+          spacing: attached ? 0 : spacing,
           orientation,
+          attached,
         }}
       >
         {children}
@@ -63,25 +82,60 @@ function ToggleGroup({
     </ToggleGroupPrimitive>
   );
 }
+
+export interface ToggleGroupItemProps
+  extends ToggleButtonProps, VariantProps<typeof toggleVariants> {
+  attached?: boolean;
+}
+
 function ToggleGroupItem({
   className,
   children,
   variant,
   size,
+  attached,
   ...props
-}: ToggleButtonProps & VariantProps<typeof toggleVariants>) {
+}: ToggleGroupItemProps) {
   const context = useContext(ToggleGroupContext);
-  const effectiveVariant = context.variant || variant || "default";
-  const effectiveSize = context.size || size || "default";
+  const effectiveVariant = variant ?? context.variant ?? "default";
+  const effectiveSize = size ?? context.size ?? "default";
+  const isAttached = attached ?? context.attached ?? false;
+  const isVertical = context.orientation === "vertical";
+
+  const isSm =
+    effectiveSize === "sm" ||
+    effectiveSize === "xs" ||
+    effectiveSize === "icon-xs" ||
+    effectiveSize === "icon-sm";
+  const isLg = effectiveSize === "lg" || effectiveSize === "icon-lg";
+
+  const attachedClasses = isAttached
+    ? cn(
+        "relative hover:z-10 data-[selected=true]:z-10 data-selected:z-10 focus-visible:z-20 rounded-none",
+        isVertical
+          ? "[&:not(:first-child)]:-mt-px"
+          : "[&:not(:first-child)]:-ml-px",
+        isVertical
+          ? isSm
+            ? "first:rounded-t-xl first:rounded-b-none first:squircle last:rounded-b-xl last:rounded-t-none last:squircle only:rounded-xl only:squircle"
+            : isLg
+              ? "first:rounded-t-3xl first:rounded-b-none first:squircle last:rounded-b-3xl last:rounded-t-none last:squircle only:rounded-3xl only:squircle"
+              : "first:rounded-t-2xl first:rounded-b-none first:squircle last:rounded-b-2xl last:rounded-t-none last:squircle only:rounded-2xl only:squircle"
+          : isSm
+            ? "first:rounded-l-xl first:rounded-r-none first:squircle last:rounded-r-xl last:rounded-l-none last:squircle only:rounded-xl only:squircle"
+            : isLg
+              ? "first:rounded-l-3xl first:rounded-r-none first:squircle last:rounded-r-3xl last:rounded-l-none last:squircle only:rounded-3xl only:squircle"
+              : "first:rounded-l-2xl first:rounded-r-none first:squircle last:rounded-r-2xl last:rounded-l-none last:squircle only:rounded-2xl only:squircle",
+      )
+    : "";
+
   return (
     <PrismToggle
-      className={cn(
-        "shrink-0 group-data-[spacing=0]/toggle-group:rounded-none group-data-[spacing=0]/toggle-group:px-2 group-data-[spacing=0]/toggle-group:shadow-none focus:z-10 focus-visible:z-10 group-data-[spacing=0]/toggle-group:has-data-[icon=inline-end]:pr-1.5 group-data-[spacing=0]/toggle-group:has-data-[icon=inline-start]:pl-1.5 group-data-horizontal/toggle-group:data-[spacing=0]:first:rounded-l-2xl group-data-vertical/toggle-group:data-[spacing=0]:first:rounded-t-2xl group-data-horizontal/toggle-group:data-[spacing=0]:last:rounded-r-2xl group-data-vertical/toggle-group:data-[spacing=0]:last:rounded-b-2xl data-[state=on]:bg-muted group-data-horizontal/toggle-group:data-[spacing=0]:data-[variant=outline]:border-l-0 group-data-vertical/toggle-group:data-[spacing=0]:data-[variant=outline]:border-t-0 group-data-horizontal/toggle-group:data-[spacing=0]:data-[variant=outline]:first:border-l group-data-vertical/toggle-group:data-[spacing=0]:data-[variant=outline]:first:border-t",
-        className,
-      )}
+      className={cn("shrink-0", attachedClasses, className)}
+      data-attached={isAttached ? "true" : undefined}
       data-size={effectiveSize}
       data-slot="toggle-group-item"
-      data-spacing={context.spacing}
+      data-spacing={isAttached ? 0 : context.spacing}
       data-variant={effectiveVariant}
       size={effectiveSize}
       variant={effectiveVariant}
@@ -91,6 +145,7 @@ function ToggleGroupItem({
     </PrismToggle>
   );
 }
+
 export {
   ToggleGroup as PrismToggleGroup,
   ToggleGroupItem as PrismToggleGroupItem,

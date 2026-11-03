@@ -42,8 +42,9 @@ export function ToasterSection() {
     <div id="prism-toaster">
       <GallerySection>
         <GallerySectionHeader
+          approved
           description="Notificações flutuantes (Toasts) acionadas por eventos ou ações da aplicação."
-          title="PrismToaster"
+          title="Toaster"
         />
         <GallerySectionContent>
           <GalleryItem label="Disparar Toasts">

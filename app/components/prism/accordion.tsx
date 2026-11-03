@@ -19,7 +19,7 @@ function Accordion({ className, ...props }: DisclosureGroupProps) {
     <AccordionPrimitive
       data-slot="accordion"
       className={cn(
-        "flex w-full flex-col overflow-hidden rounded-2xl border",
+        "flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border squircle",
         className,
       )}
       {...props}
@@ -31,7 +31,10 @@ function AccordionItem({ className, ...props }: DisclosureProps) {
   return (
     <AccordionItemPrimitive
       data-slot="accordion-item"
-      className={cn("not-last:border-b data-open:bg-muted/50", className)}
+      className={cn(
+        "w-full min-w-0 not-last:border-b data-open:bg-muted/50",
+        className,
+      )}
       {...props}
     />
   );
@@ -43,24 +46,29 @@ function AccordionTrigger({
   ...props
 }: Omit<ButtonProps, "children"> & { children: React.ReactNode }) {
   return (
-    <AccordionHeaderPrimitive className="flex min-w-0 flex-1" level={6}>
+    <AccordionHeaderPrimitive className="flex w-full min-w-0 flex-1" level={6}>
       <AccordionTriggerPrimitive
         slot="trigger"
         data-slot="accordion-trigger"
         className={cn(
-          "group/accordion-trigger relative flex flex-1 items-start justify-between gap-6 border border-transparent p-4 text-left text-sm font-medium transition-all outline-none hover:underline disabled:pointer-events-none disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground",
+          "group/accordion-trigger relative flex w-full min-w-0 flex-1 items-center justify-between gap-4 overflow-hidden border border-transparent p-4 text-left text-sm font-medium transition-all outline-none hover:underline disabled:pointer-events-none disabled:opacity-50",
           className,
         )}
         {...props}
       >
-        {children}
+        <span
+          className="min-w-0 flex-1 truncate text-left"
+          title={typeof children === "string" ? children : undefined}
+        >
+          {children}
+        </span>
         <ChevronDownIcon
           data-slot="accordion-trigger-icon"
-          className="pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden"
+          className="pointer-events-none ml-auto size-4 shrink-0 text-muted-foreground group-aria-expanded/accordion-trigger:hidden"
         />
         <ChevronUpIcon
           data-slot="accordion-trigger-icon"
-          className="pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline"
+          className="pointer-events-none ml-auto hidden size-4 shrink-0 text-muted-foreground group-aria-expanded/accordion-trigger:inline"
         />
       </AccordionTriggerPrimitive>
     </AccordionHeaderPrimitive>
@@ -75,12 +83,12 @@ function AccordionContent({
   return (
     <AccordionContentPrimitive
       data-slot="accordion-content"
-      className="data-open:animate-accordion-down data-closed:animate-accordion-up h-(--disclosure-panel-height) overflow-clip px-4 text-sm transition-[height]"
+      className="data-open:animate-accordion-down data-closed:animate-accordion-up h-(--disclosure-panel-height) w-full min-w-0 overflow-clip px-4 text-sm transition-[height]"
       {...props}
     >
       <div
         className={cn(
-          "pt-0 pb-4 [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4",
+          "pt-0 pb-4 break-words [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4",
           className,
         )}
       >

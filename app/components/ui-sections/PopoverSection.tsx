@@ -15,8 +15,9 @@ export function PopoverSection() {
     <div id="prism-popover">
       <GallerySection>
         <GallerySectionHeader
+          approved
           description="Popover contextual construído sobre o React Aria Components com posicionamento automático e transições suaves."
-          title="PrismPopover"
+          title="Popover"
         />
         <GallerySectionContent>
           <GalleryItem label="Default Popover">

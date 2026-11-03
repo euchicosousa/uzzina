@@ -27,8 +27,40 @@ import {
   PrismSelectValue,
 } from "~/components/prism";
 import { buttonVariants } from "./button";
+
+export type CalendarCellSize = "sm" | "default" | "md" | "lg";
+
+function normalizeCellSize(size?: CalendarCellSize): "sm" | "default" | "lg" {
+  if (size === "md") return "default";
+  return size ?? "default";
+}
+
+const cellSizeConfig = {
+  sm: {
+    container: "[--cell-radius:var(--radius-lg)] [--cell-size:28px] text-xs",
+    cell: "size-(--cell-size) text-xs squircle rounded-(--cell-radius) [&>span]:text-[10px]",
+    headerCell: "size-(--cell-size) text-[0.7rem]",
+    heading: "text-sm",
+    icon: "size-3.5",
+  },
+  default: {
+    container: "[--cell-radius:var(--radius-xl)] [--cell-size:32px] text-sm",
+    cell: "size-(--cell-size) text-sm squircle rounded-(--cell-radius) [&>span]:text-xs",
+    headerCell: "size-(--cell-size) text-xs",
+    heading: "text-base",
+    icon: "size-4",
+  },
+  lg: {
+    container: "[--cell-radius:var(--radius-2xl)] [--cell-size:40px] text-base",
+    cell: "size-(--cell-size) text-base squircle rounded-(--cell-radius) [&>span]:text-sm",
+    headerCell: "size-(--cell-size) text-sm",
+    heading: "text-lg",
+    icon: "size-5",
+  },
+} as const;
+
 const cellVariants = cva(
-  "group/day relative mt-2 aspect-square h-full w-full cursor-default rounded-(--cell-radius) p-0 text-center select-none [&:is(:last-child>[data-selected=true])>div]:rounded-r-(--cell-radius)",
+  "group/day relative mt-2 aspect-square h-full w-full cursor-default squircle rounded-(--cell-radius) p-0 text-center select-none [&:is(:last-child>[data-selected=true])>div]:rounded-r-(--cell-radius)",
   {
     variants: {
       showWeekNumber: {
@@ -37,13 +69,13 @@ const cellVariants = cva(
         true: "[&:is(:nth-child(2)>[data-selected=true])>div]:rounded-l-(--cell-radius)",
       },
       isToday: {
-        true: "rounded-(--cell-radius) bg-muted text-foreground",
+        true: "squircle rounded-(--cell-radius) bg-secondary text-foreground",
       },
       isSelectionStart: {
-        true: "relative isolate z-0 rounded-l-(--cell-radius) bg-muted after:absolute after:inset-y-0 after:right-0 after:w-4 after:bg-muted",
+        true: "relative isolate z-0 squircle rounded-l-(--cell-radius) bg-secondary after:absolute after:inset-y-0 after:right-0 after:w-4 after:bg-secondary",
       },
       isSelectionEnd: {
-        true: "relative isolate z-0 rounded-r-(--cell-radius) bg-muted after:absolute after:inset-y-0 after:left-0 after:w-4 after:bg-muted",
+        true: "relative isolate z-0 squircle rounded-r-(--cell-radius) bg-secondary after:absolute after:inset-y-0 after:left-0 after:w-4 after:bg-secondary",
       },
       isUnavailable: {
         true: "text-muted-foreground opacity-50 [&>div]:line-through",
@@ -57,72 +89,93 @@ const cellVariants = cva(
     },
   },
 );
+
+export interface PrismCalendarProps<
+  T extends DateValue,
+  M extends "single" | "multiple" = "single",
+> extends Omit<CalendarProps<T, M>, "visibleDuration"> {
+  buttonVariant?: React.ComponentProps<typeof PrismButton>["variant"];
+  captionLayout?: "label" | "dropdown";
+  cellSize?: CalendarCellSize;
+  numberOfMonths?: number;
+  showWeekNumber?: boolean;
+  headerFormat?: Intl.DateTimeFormatOptions;
+  renderCell?: (
+    renderProps: CalendarCellRenderProps & {
+      defaultChildren: React.ReactNode;
+    },
+  ) => React.ReactNode;
+}
+
 function Calendar<
   T extends DateValue,
   M extends "single" | "multiple" = "single",
->(
-  props: Omit<CalendarProps<T, M>, "visibleDuration"> & {
-    buttonVariant?: React.ComponentProps<typeof PrismButton>["variant"];
-    captionLayout?: "label" | "dropdown";
-    numberOfMonths?: number;
-    showWeekNumber?: boolean;
-    headerFormat?: Intl.DateTimeFormatOptions;
-    renderCell?: (
-      renderProps: CalendarCellRenderProps & {
-        defaultChildren: React.ReactNode;
-      },
-    ) => React.ReactNode;
-  },
-) {
+>(props: PrismCalendarProps<T, M>) {
+  const { cellSize = "default", ...restProps } = props;
+  const resolvedCellSize = normalizeCellSize(cellSize);
+
   return (
     <AriaCalendar
-      {...props}
+      {...restProps}
       className={cn(
-        "group/calendar w-fit bg-background [--cell-radius:var(--radius-2xl)] [--cell-size:--spacing(7)] in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
+        "group/calendar w-fit bg-background in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
+        cellSizeConfig[resolvedCellSize].container,
         props.className,
       )}
+      data-cell-size={resolvedCellSize}
       data-slot="calendar"
       visibleDuration={{
         months: props.numberOfMonths || 1,
       }}
     >
-      <CalendarInner {...props} />
+      <CalendarInner {...restProps} cellSize={resolvedCellSize} />
     </AriaCalendar>
   );
 }
-function RangeCalendar<T extends DateValue>(
-  props: RangeCalendarProps<T> & {
-    buttonVariant?: React.ComponentProps<typeof PrismButton>["variant"];
-    captionLayout?: "label" | "dropdown";
-    headerFormat?: Intl.DateTimeFormatOptions;
-    numberOfMonths?: number;
-    showWeekNumber?: boolean;
-    renderCell?: (
-      renderProps: CalendarCellRenderProps & {
-        defaultChildren: React.ReactNode;
-      },
-    ) => React.ReactNode;
-  },
-) {
+
+export interface PrismRangeCalendarProps<
+  T extends DateValue,
+> extends RangeCalendarProps<T> {
+  buttonVariant?: React.ComponentProps<typeof PrismButton>["variant"];
+  captionLayout?: "label" | "dropdown";
+  cellSize?: CalendarCellSize;
+  headerFormat?: Intl.DateTimeFormatOptions;
+  numberOfMonths?: number;
+  showWeekNumber?: boolean;
+  renderCell?: (
+    renderProps: CalendarCellRenderProps & {
+      defaultChildren: React.ReactNode;
+    },
+  ) => React.ReactNode;
+}
+
+function RangeCalendar<T extends DateValue>(props: PrismRangeCalendarProps<T>) {
+  const { cellSize = "default", ...restProps } = props;
+  const resolvedCellSize = normalizeCellSize(cellSize);
+
   return (
     <AriaRangeCalendar
-      {...props}
+      {...restProps}
       className={cn(
-        "group/calendar w-fit bg-background [--cell-radius:var(--radius-2xl)] [--cell-size:--spacing(7)] in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
+        "group/calendar w-fit bg-background in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
+        cellSizeConfig[resolvedCellSize].container,
         props.className,
       )}
+      data-cell-size={resolvedCellSize}
       data-slot="calendar"
       visibleDuration={{
         months: props.numberOfMonths || 1,
       }}
     >
-      <CalendarInner {...props} isRange />
+      <CalendarInner {...restProps} cellSize={resolvedCellSize} isRange />
     </AriaRangeCalendar>
   );
 }
+
 function CalendarInner({
   captionLayout = "label",
   buttonVariant = "ghost",
+  cellSize = "default",
   numberOfMonths = 1,
   showWeekNumber = false,
   headerFormat,
@@ -131,6 +184,7 @@ function CalendarInner({
 }: {
   buttonVariant?: React.ComponentProps<typeof PrismButton>["variant"];
   captionLayout?: "label" | "dropdown";
+  cellSize?: "sm" | "default" | "lg";
   numberOfMonths?: number;
   showWeekNumber?: boolean;
   headerFormat?: Intl.DateTimeFormatOptions;
@@ -155,11 +209,13 @@ function CalendarInner({
             <div className="flex h-(--cell-size) w-full items-center justify-between gap-1">
               {i === 0 ? (
                 <PrismButton
-                  className="size-(--cell-size) p-0 select-none aria-disabled:opacity-50"
+                  className="size-(--cell-size) rounded-(--cell-radius) p-0 select-none squircle aria-disabled:opacity-50"
                   slot="previous"
                   variant={buttonVariant}
                 >
-                  <ChevronLeftIcon className="cn-rtl-flip size-4" />
+                  <ChevronLeftIcon
+                    className={cn("cn-rtl-flip", cellSizeConfig[cellSize].icon)}
+                  />
                 </PrismButton>
               ) : (
                 <span aria-hidden className="size-(--cell-size)" />
@@ -167,12 +223,15 @@ function CalendarInner({
               <div className="flex items-center justify-center gap-1">
                 {captionLayout === "dropdown" ? (
                   <>
-                    <MonthDropdown format={headerFormat} />
-                    <YearDropdown format={headerFormat} />
+                    <MonthDropdown cellSize={cellSize} format={headerFormat} />
+                    <YearDropdown cellSize={cellSize} format={headerFormat} />
                   </>
                 ) : (
                   <CalendarHeading
-                    className="tra text-base font-medium select-none"
+                    className={cn(
+                      "font-medium select-none",
+                      cellSizeConfig[cellSize].heading,
+                    )}
                     format={headerFormat}
                     offset={{
                       months: i,
@@ -182,11 +241,13 @@ function CalendarInner({
               </div>
               {i === numberOfMonths - 1 ? (
                 <PrismButton
-                  className="size-(--cell-size) p-0 select-none aria-disabled:opacity-50"
+                  className="size-(--cell-size) rounded-(--cell-radius) p-0 select-none squircle aria-disabled:opacity-50"
                   slot="next"
                   variant={buttonVariant}
                 >
-                  <ChevronRightIcon className="cn-rtl-flip size-4" />
+                  <ChevronRightIcon
+                    className={cn("cn-rtl-flip", cellSizeConfig[cellSize].icon)}
+                  />
                 </PrismButton>
               ) : (
                 <span aria-hidden className="size-(--cell-size)" />
@@ -200,7 +261,12 @@ function CalendarInner({
             >
               <AriaCalendarGridHeader>
                 {(day) => (
-                  <CalendarHeaderCell className="rounded-(--cell-radius) text-[0.8rem] font-normal text-muted-foreground select-none">
+                  <CalendarHeaderCell
+                    className={cn(
+                      "rounded-(--cell-radius) p-0 text-center align-middle font-normal text-muted-foreground select-none squircle",
+                      cellSizeConfig[cellSize].headerCell,
+                    )}
+                  >
                     {day}
                   </CalendarHeaderCell>
                 )}
@@ -223,7 +289,8 @@ function CalendarInner({
                             variant: "ghost",
                             size: "icon",
                           }),
-                          "relative isolate z-10 flex aspect-square h-full w-full min-w-(--cell-size) flex-col gap-1 border-0 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-[3px] group-data-[focused=true]/day:ring-ring/50 data-[range-end=true]:rounded-(--cell-radius) data-[range-end=true]:rounded-r-(--cell-radius) data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground data-[range-middle=true]:rounded-none data-[range-middle=true]:bg-muted data-[range-middle=true]:text-foreground data-[range-start=true]:rounded-(--cell-radius) data-[range-start=true]:rounded-l-(--cell-radius) data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground dark:hover:text-foreground [&>span]:text-xs [&>span]:opacity-70",
+                          "relative isolate z-10 flex aspect-square h-full w-full min-w-(--cell-size) flex-col gap-1 rounded-(--cell-radius) border-0 leading-none font-normal squircle group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-[3px] group-data-[focused=true]/day:ring-ring/50 data-[range-end=true]:rounded-(--cell-radius) data-[range-end=true]:rounded-r-(--cell-radius) data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground data-[range-end=true]:squircle data-[range-middle=true]:rounded-none data-[range-middle=true]:bg-secondary data-[range-middle=true]:text-foreground data-[range-start=true]:rounded-(--cell-radius) data-[range-start=true]:rounded-l-(--cell-radius) data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-start=true]:squircle data-[selected-single=true]:rounded-(--cell-radius) data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[selected-single=true]:squircle data-[today=true]:rounded-(--cell-radius) data-[today=true]:squircle dark:hover:text-foreground [&>span]:opacity-70",
+                          cellSizeConfig[cellSize].cell,
                         )}
                         data-range-end={renderProps.isSelectionEnd && isRange}
                         data-range-middle={
@@ -238,6 +305,7 @@ function CalendarInner({
                         data-selected-single={
                           renderProps.isSelected && !isRange
                         }
+                        data-today={renderProps.isToday}
                       >
                         {renderCell
                           ? renderCell(renderProps)
@@ -259,12 +327,23 @@ function CalendarInner({
 // --cell-size so they line up with the previous/next buttons.
 const captionTriggerClassName =
   "squircle h-(--cell-size) w-auto gap-1 bg-transparent px-2.5 py-0 font-medium data-[hovered]:bg-muted data-[size=default]:h-(--cell-size)";
-function MonthDropdown({ format }: { format?: Intl.DateTimeFormatOptions }) {
+function MonthDropdown({
+  format,
+  cellSize = "default",
+}: {
+  format?: Intl.DateTimeFormatOptions;
+  cellSize?: "sm" | "default" | "lg";
+}) {
   return (
     <CalendarMonthPicker format={format?.month}>
       {(props) => (
         <PrismSelect {...props} className="relative">
-          <PrismSelectTrigger className={captionTriggerClassName}>
+          <PrismSelectTrigger
+            className={cn(
+              captionTriggerClassName,
+              cellSizeConfig[cellSize].heading,
+            )}
+          >
             <PrismSelectValue />
           </PrismSelectTrigger>
           <PrismSelectContent className="min-w-0">
@@ -281,12 +360,23 @@ function MonthDropdown({ format }: { format?: Intl.DateTimeFormatOptions }) {
     </CalendarMonthPicker>
   );
 }
-function YearDropdown({ format }: { format?: Intl.DateTimeFormatOptions }) {
+function YearDropdown({
+  format,
+  cellSize = "default",
+}: {
+  format?: Intl.DateTimeFormatOptions;
+  cellSize?: "sm" | "default" | "lg";
+}) {
   return (
     <CalendarYearPicker format={format}>
       {(props) => (
         <PrismSelect {...props} className="relative">
-          <PrismSelectTrigger className={captionTriggerClassName}>
+          <PrismSelectTrigger
+            className={cn(
+              captionTriggerClassName,
+              cellSizeConfig[cellSize].heading,
+            )}
+          >
             <PrismSelectValue />
           </PrismSelectTrigger>
           <PrismSelectContent className="min-w-0">

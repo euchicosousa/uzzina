@@ -20,11 +20,12 @@ export function SliderSection() {
     <div id="prism-slider">
       <GallerySection>
         <GallerySectionHeader
-          title="PrismSlider"
+          approved
+          title="Slider"
           description="Controle deslizante contínuo ou discreto baseado em React Aria. Usado para seleção de frequência e valores numéricos com resposta imediata e acessibilidade completa por teclado."
         />
         <GallerySectionContent>
-          <div className="grid max-w-md gap-6">
+          <div className="grid w-full max-w-md gap-6">
             <PrismSlider
               aria-label="Conteúdos por semana"
               maxValue={7}
@@ -34,7 +35,7 @@ export function SliderSection() {
               }}
               value={value}
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-4">
                 <PrismLabel>Conteúdos por semana</PrismLabel>
                 <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
                   <PrismSliderOutput />
@@ -54,7 +55,7 @@ export function SliderSection() {
               maxValue={10}
               minValue={1}
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-4">
                 <PrismLabel>Desabilitado</PrismLabel>
                 <PrismSliderOutput className="text-muted-foreground" />
               </div>
@@ -69,4 +70,3 @@ export function SliderSection() {
     </div>
   );
 }
-

@@ -22,6 +22,7 @@ import {
   PrismButton,
   PrismToggle,
   PrismBadge,
+  PrismKbd,
   toast,
 } from "~/components/prism";
 import {
@@ -32,7 +33,7 @@ import {
 } from "./GalleryHelperComponents";
 function CommandPopoverDemo() {
   const [partnerFilters, setPartnerFilters] = useState<string[]>([]);
-  const [isFilterMode, setIsFilterMode] = useState(false);
+  const [query, setQuery] = useState("");
   const partners = [
     {
       slug: "cnvt",
@@ -50,6 +51,11 @@ function CommandPopoverDemo() {
       short: "ACM",
     },
   ];
+
+  const filteredPartners = partners.filter((p) =>
+    p.title.toLowerCase().includes(query.toLowerCase()),
+  );
+
   return (
     <PrismPopoverTrigger>
       <PrismButton className="relative" size="icon" variant="ghost">
@@ -59,23 +65,16 @@ function CommandPopoverDemo() {
           <HandshakeIcon />
         )}
       </PrismButton>
-      <PrismPopover className="rounded-4xl p-0">
-        <PrismCommand className="w-72 p-0">
-          <div className="flex items-center border-b px-1">
-            <PrismCommandInput placeholder="Parceiro..." />
-            <PrismToggle
-              className="mr-2"
-              isSelected={isFilterMode}
-              onChange={(selected) => {
-                if (!selected) {
-                  setPartnerFilters([]);
-                }
-                setIsFilterMode(selected);
-              }}
-              size="sm"
-            >
-              <FilterIcon />
-            </PrismToggle>
+      <PrismPopover className="w-56 overflow-hidden p-0">
+        <PrismCommand className="p-0">
+          <div className="flex items-center border-b px-3 py-2">
+            <SearchIcon className="mr-2 size-3.5 shrink-0 opacity-50" />
+            <input
+              className="w-full bg-transparent text-xs outline-none placeholder:text-muted-foreground"
+              placeholder="Buscar parceiro..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
           </div>
           <PrismCommandList
             renderEmptyState={() => (
@@ -83,25 +82,21 @@ function CommandPopoverDemo() {
             )}
           >
             <PrismCommandGroup>
-              {partners.map((partner) => {
+              {filteredPartners.map((partner) => {
                 const isSelected = partnerFilters.includes(partner.slug);
                 return (
                   <PrismCommandItem
                     key={partner.slug}
-                    className={isSelected ? "bg-secondary" : ""}
+                    className={isSelected ? "bg-secondary font-medium" : ""}
                     data-checked={isSelected}
                     id={partner.slug}
                     onPress={() => {
-                      if (isFilterMode) {
-                        if (isSelected) {
-                          setPartnerFilters(
-                            partnerFilters.filter((s) => s !== partner.slug),
-                          );
-                        } else {
-                          setPartnerFilters([...partnerFilters, partner.slug]);
-                        }
+                      if (isSelected) {
+                        setPartnerFilters(
+                          partnerFilters.filter((s) => s !== partner.slug),
+                        );
                       } else {
-                        toast.info(`Selecionou parceiro ${partner.title}`);
+                        setPartnerFilters([...partnerFilters, partner.slug]);
                       }
                     }}
                     textValue={partner.title}
@@ -170,17 +165,11 @@ function CommandDialogDemo() {
           <SearchIcon className="size-4" />
           Faça sua busca...
         </span>
-        <kbd className="rounded border bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-          ⌘K
-        </kbd>
+        <PrismKbd>⌘K</PrismKbd>
       </PrismButton>
 
       <PrismCommandDialog onOpenChange={setOpen} open={open}>
-        <PrismCommand
-          className="p-1"
-          inputValue={query}
-          onInputChange={setQuery}
-        >
+        <PrismCommand inputValue={query} onInputChange={setQuery}>
           <PrismCommandInput placeholder="Faça sua busca..." />
           <PrismCommandList
             renderEmptyState={() => (
@@ -226,7 +215,7 @@ function CommandDialogDemo() {
                     <span>{item.title}</span>
                     {item.shortcut && (
                       <PrismCommandShortcut>
-                        {item.shortcut}
+                        <PrismKbd>{item.shortcut}</PrismKbd>
                       </PrismCommandShortcut>
                     )}
                   </PrismCommandItem>
@@ -244,8 +233,9 @@ export function CommandSection() {
     <div id="prism-command">
       <GallerySection>
         <GallerySectionHeader
+          approved
           description="Barra de busca e menu de comandos para atalhos do teclado, navegação ou filtros."
-          title="PrismCommand"
+          title="Command"
         />
         <GallerySectionContent>
           <GalleryItem label="Command em Popover (Filtro Inline / AppBar)">

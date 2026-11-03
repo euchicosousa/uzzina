@@ -15,12 +15,13 @@ export function CheckboxSection() {
     <div id="prism-checkbox">
       <GallerySection>
         <GallerySectionHeader
+          approved
           description="Caixas de seleção acessíveis nativas do React Aria com suporte a tamanhos, estados selecionado, indeterminado e desativado."
-          title="PrismCheckbox"
+          title="Checkbox"
         />
         <GallerySectionContent className="grid gap-6">
           <GalleryItem label="Variantes de Tamanho">
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center gap-6">
               <PrismCheckbox defaultSelected size="sm">
                 Pequeno (sm)
               </PrismCheckbox>
@@ -34,7 +35,7 @@ export function CheckboxSection() {
           </GalleryItem>
 
           <GalleryItem label="Estados (Controlado, Indeterminado & Desativado)">
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center gap-6">
               <PrismCheckbox isSelected={checked} onChange={setChecked}>
                 {checked ? "Selecionado" : "Desmarcado"}
               </PrismCheckbox>

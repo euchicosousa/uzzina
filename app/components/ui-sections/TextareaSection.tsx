@@ -15,8 +15,9 @@ export function TextareaSection() {
     <div id="prism-textarea">
       <GallerySection>
         <GallerySectionHeader
+          approved
           description="Campo de entrada de texto multilinhas para descrições, observações e comentários."
-          title="PrismTextarea"
+          title="Textarea"
         />
         <GallerySectionContent>
           <GalleryItem className="w-full max-w-md" label="Default Textarea">

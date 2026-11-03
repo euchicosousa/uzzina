@@ -39,8 +39,9 @@ export function MenuSection() {
     <div id="prism-menu">
       <GallerySection>
         <GallerySectionHeader
+          approved
           description="Menu suspenso avançado contendo agrupamentos, atalhos, itens de seleção múltipla (checkbox), itens destrutivos e submenus aninhados."
-          title="PrismMenu"
+          title="Dropdown Menu"
         />
         <GallerySectionContent>
           <GalleryItem label="Menu de Ações Completo">

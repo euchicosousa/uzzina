@@ -2,24 +2,33 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cnfast";
 import { Separator } from "~/components/prism/separator";
 const buttonGroupVariants = cva(
-  "inline-flex w-fit items-stretch group/button-group *:focus-visible:relative *:focus-visible:z-10 *:hover:z-10",
+  "inline-flex w-fit items-stretch group/button-group *:focus-visible:relative *:focus-visible:z-20 *:hover:z-10",
   {
     variants: {
+      size: {
+        xs: "[&>*:first-child]:rounded-l-xl! [&>*:last-child]:rounded-r-xl! [&>*:only-child]:rounded-xl!",
+        sm: "[&>*:first-child]:rounded-l-xl! [&>*:last-child]:rounded-r-xl! [&>*:only-child]:rounded-xl!",
+        default:
+          "[&>*:first-child]:rounded-l-2xl! [&>*:last-child]:rounded-r-2xl! [&>*:only-child]:rounded-2xl!",
+        lg: "[&>*:first-child]:rounded-l-3xl! [&>*:last-child]:rounded-r-3xl! [&>*:only-child]:rounded-3xl!",
+      },
       orientation: {
         horizontal:
-          "flex-row [&>*:not(:first-child)]:-ml-px [&>*:first-child]:rounded-r-none! [&>*:first-child]:rounded-l-xl! [&>*:first-child]:squircle! [&>*:not(:first-child):not(:last-child)]:rounded-none! [&>*:last-child]:rounded-l-none! [&>*:last-child]:rounded-r-xl! [&>*:last-child]:squircle! [&>*:only-child]:rounded-xl! [&>*:only-child]:squircle!",
+          "flex-row [&>*:not(:first-child)]:-ml-px [&>*:first-child]:rounded-r-none! [&>*:first-child]:squircle! [&>*:not(:first-child):not(:last-child)]:rounded-none! [&>*:last-child]:rounded-l-none! [&>*:last-child]:squircle! [&>*:only-child]:squircle!",
         vertical:
-          "flex-col [&>*:not(:first-child)]:-mt-px [&>*:first-child]:rounded-b-none! [&>*:first-child]:rounded-t-xl! [&>*:first-child]:squircle! [&>*:not(:first-child):not(:last-child)]:rounded-none! [&>*:last-child]:rounded-t-none! [&>*:last-child]:rounded-b-xl! [&>*:last-child]:squircle! [&>*:only-child]:rounded-xl! [&>*:only-child]:squircle!",
+          "flex-col [&>*:not(:first-child)]:-mt-px [&>*:first-child]:rounded-b-none! [&>*:first-child]:squircle! [&>*:not(:first-child):not(:last-child)]:rounded-none! [&>*:last-child]:rounded-t-none! [&>*:last-child]:squircle! [&>*:only-child]:squircle!",
       },
     },
     defaultVariants: {
       orientation: "horizontal",
+      size: "default",
     },
   },
 );
 function ButtonGroup({
   className,
   orientation,
+  size,
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof buttonGroupVariants>) {
   return (
@@ -27,10 +36,12 @@ function ButtonGroup({
       className={cn(
         buttonGroupVariants({
           orientation,
+          size,
         }),
         className,
       )}
       data-orientation={orientation || "horizontal"}
+      data-size={size || "default"}
       data-slot="button-group"
       role="group"
       {...props}
@@ -48,7 +59,7 @@ function ButtonGroupText({
     const renderProps = {
       "data-slot": "button-group-text",
       className: cn(
-        "flex items-center gap-2 rounded-xl squircle border bg-muted px-3 text-sm font-medium text-muted-foreground [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5",
+        "flex items-center gap-2 rounded-2xl squircle border bg-muted px-3 text-sm font-medium text-muted-foreground [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5",
         className,
       ),
       ...props,
@@ -58,7 +69,7 @@ function ButtonGroupText({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-xl border bg-muted px-3 text-sm font-medium text-muted-foreground squircle [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5",
+        "flex items-center gap-2 rounded-2xl border bg-muted px-3 text-sm font-medium text-muted-foreground squircle [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5",
         className,
       )}
       data-slot="button-group-text"
@@ -74,7 +85,7 @@ function ButtonGroupSeparator({
   return (
     <Separator
       className={cn(
-        "relative z-10 self-stretch bg-input data-horizontal:mx-px data-horizontal:w-auto data-vertical:my-px data-vertical:h-auto",
+        "pointer-events-none relative z-20 shrink-0 self-stretch bg-border/80 group-has-data-[variant=default]/button-group:bg-primary-foreground/30 aria-[orientation=horizontal]:h-px aria-[orientation=vertical]:w-px",
         className,
       )}
       data-slot="button-group-separator"

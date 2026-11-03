@@ -16,8 +16,9 @@ export function AlertSection() {
     <div id="prism-alert">
       <GallerySection>
         <GallerySectionHeader
+          approved
           description="Componentes de notificação semântica utilizando a paleta de cores corrigida no OKLCH."
-          title="PrismAlert"
+          title="Alert"
         />
         <GallerySectionContent>
           <GalleryItem label="Default">

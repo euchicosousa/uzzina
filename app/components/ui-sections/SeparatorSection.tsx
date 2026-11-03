@@ -10,8 +10,9 @@ export function SeparatorSection() {
     <div id="prism-separator">
       <GallerySection>
         <GallerySectionHeader
+          approved
           description="Linhas divisórias horizontais e verticais para agrupamento e separação semântica de conteúdo."
-          title="PrismSeparator"
+          title="Separator"
         />
         <GallerySectionContent className="grid gap-6">
           <GalleryItem className="w-full max-w-md" label="Horizontal Separator">

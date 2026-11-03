@@ -1,4 +1,4 @@
-import { PrismBadge } from "~/components/prism";
+import { PrismBadge, PrismKbd } from "~/components/prism";
 import { CheckIcon, XIcon, StarIcon } from "lucide-react";
 import {
   GallerySection,
@@ -11,8 +11,9 @@ export function BadgeSection() {
     <div id="prism-badge">
       <GallerySection>
         <GallerySectionHeader
+          approved
           description="Etiquetas visuais semânticas para contadores, status de processos e marcas de identificação."
-          title="PrismBadge"
+          title="Badge"
         />
         <GallerySectionContent className="grid gap-6">
           <GalleryItem label="Variants Básicas (default, secondary, outline, ghost, destructive)">
@@ -43,6 +44,23 @@ export function BadgeSection() {
                 <CheckIcon />
                 Processando
               </PrismBadge>
+            </div>
+          </GalleryItem>
+
+          <GalleryItem label="PrismKbd ao lado de PrismBadge">
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-2">
+                <PrismBadge variant="default">Busca</PrismBadge>
+                <PrismKbd>⌘K</PrismKbd>
+              </div>
+              <div className="flex items-center gap-2">
+                <PrismBadge variant="secondary">Salvar</PrismBadge>
+                <PrismKbd>⌘S</PrismKbd>
+              </div>
+              <div className="flex items-center gap-2">
+                <PrismBadge variant="outline">Ação Secundária</PrismBadge>
+                <PrismKbd>Shift + Enter</PrismKbd>
+              </div>
             </div>
           </GalleryItem>
         </GallerySectionContent>

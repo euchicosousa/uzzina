@@ -1,5 +1,10 @@
-import { cva } from "class-variance-authority";
-import { useContext, type ComponentProps, type Ref } from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import {
+  createContext,
+  useContext,
+  type ComponentProps,
+  type Ref,
+} from "react";
 import {
   Tabs,
   TabsContext,
@@ -16,23 +21,45 @@ import { useTabPanel } from "react-aria/useTabList";
 import { useObjectRef } from "react-aria/useObjectRef";
 import { cn } from "~/lib/utils";
 
-const tabVariants = cva(
-  "relative flex min-h-11 min-w-0 flex-1 cursor-pointer items-center justify-center gap-1.5 border-t-2 border-t-transparent px-3 py-2 text-center text-sm font-medium text-muted-foreground outline-none transition-colors after:absolute after:right-0 after:bottom-0 after:left-0 after:h-0.5 after:bg-transparent data-[hovered]:bg-input/50 data-[hovered]:text-foreground data-[pressed]:bg-input data-[selected]:text-foreground data-[selected]:after:bg-primary data-[focus-visible]:border-t-primary data-[focus-visible]:bg-input data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
+export type TabsVariant = "underline" | "drawer";
+
+const TabsVariantContext = createContext<TabsVariant>("underline");
+
+export const tabVariants = cva(
+  "relative flex h-10 min-w-0 flex-1 cursor-pointer items-center justify-center gap-1.5 px-4 text-center font-medium outline-none transition-colors data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
+  {
+    variants: {
+      variant: {
+        underline:
+          "-mb-px border-b-2 border-b-transparent text-muted-foreground transition-colors data-[hovered]:text-foreground data-[pressed]:text-foreground data-[selected]:border-b-primary data-[selected]:text-foreground data-[focus-visible]:bg-input",
+        drawer:
+          "-mb-px border-t-2 border-t-transparent border-x border-x-transparent border-b border-b-border bg-transparent text-muted-foreground transition-colors data-[hovered]:text-foreground data-[selected]:border-t-primary data-[selected]:border-x-border data-[selected]:border-b-transparent data-[selected]:bg-popover data-[selected]:text-foreground data-[focus-visible]:border-t-primary data-[focus-visible]:bg-input",
+      },
+    },
+    defaultVariants: {
+      variant: "underline",
+    },
+  },
 );
 
 export function PrismTabs({
   className,
+  variant = "underline",
   ...props
 }: Omit<TabsProps, "className"> & {
   className?: string;
+  variant?: TabsVariant;
   ref?: Ref<HTMLDivElement>;
 }) {
   return (
-    <Tabs
-      className={cn("flex min-h-0 flex-col", className)}
-      data-slot="tabs"
-      {...props}
-    />
+    <TabsVariantContext.Provider value={variant}>
+      <Tabs
+        className={cn("flex min-h-0 flex-col", className)}
+        data-slot="tabs"
+        data-variant={variant}
+        {...props}
+      />
+    </TabsVariantContext.Provider>
   );
 }
 
@@ -43,6 +70,7 @@ export function PrismTabList<T extends object>({
   className?: string;
   ref?: Ref<HTMLDivElement>;
 }) {
+  const variant = useContext(TabsVariantContext);
   return (
     <TabList
       className={cn("flex min-w-0 shrink-0 border-b border-border", className)}
@@ -55,16 +83,20 @@ export function PrismTabList<T extends object>({
 export function PrismTab({
   className,
   tabIndex,
+  variant: propVariant,
   ...props
 }: Omit<TabProps, "className" | "render"> & {
   className?: string;
   ref?: Ref<HTMLDivElement>;
   tabIndex?: number;
+  variant?: TabsVariant;
 }) {
+  const contextVariant = useContext(TabsVariantContext);
+  const variant = propVariant || contextVariant || "underline";
   return (
     <Tab
       {...props}
-      className={cn(tabVariants(), className)}
+      className={cn(tabVariants({ variant }), className)}
       data-slot="tab"
       render={(domProps) => {
         // The action drawer deliberately keeps every view tab in its local Tab

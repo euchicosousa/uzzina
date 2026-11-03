@@ -22,20 +22,22 @@ const buttonVariants = cva(
           "hover:bg-secondary/50 border-transparent hover:text-foreground aria-expanded:bg-secondary/50 aria-expanded:text-foreground",
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+        success:
+          "bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-700 focus-visible:border-emerald-600 focus-visible:ring-emerald-500/30",
         link: "text-primary underline-offset-4 hover:underline border-transparent",
         unstyled:
           "bg-transparent border-0 ring-0 focus-visible:ring-0 active:translate-y-0",
       },
       size: {
+        xs: "h-6 gap-1 px-3 text-xs has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-3",
+        sm: "h-8 gap-1 px-4 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-4",
         default:
-          "h-12 gap-1.5 px-5 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5",
-        xs: "h-8 gap-1 px-3 text-xs has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-4",
-        sm: "h-10 gap-1 px-4 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        lg: "h-14 gap-1.5 px-5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3",
-        icon: "size-12",
-        "icon-xs": "size-8 [&_svg:not([class*='size-'])]:size-4 rounded-2xl",
-        "icon-sm": "size-10",
-        "icon-lg": "size-14",
+          "h-10 gap-1.5 px-5 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5",
+        lg: "h-12 gap-1.5 px-5 text-base has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3  rounded-3xl",
+        icon: "size-10",
+        "icon-xs": "size-6 [&_svg:not([class*='size-'])]:size-4 rounded-2xl",
+        "icon-sm": "size-8 [&_svg:not([class*='size-'])]:size-4",
+        "icon-lg": "size-12 rounded-3xl",
         unstyled: "h-auto p-0 gap-0",
       },
     },

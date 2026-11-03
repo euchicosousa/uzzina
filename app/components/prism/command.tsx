@@ -49,7 +49,7 @@ function Command({
   return (
     <div
       className={cn(
-        "flex size-full flex-col overflow-hidden rounded-3xl bg-popover text-popover-foreground squircle",
+        "flex size-full flex-col overflow-hidden rounded-2xl bg-popover text-popover-foreground squircle",
         className,
       )}
       data-slot="command"
@@ -109,7 +109,10 @@ function CommandDialog({
     <PrismDialog
       // A flex column lets the command shrink to the visible height, so the
       // list scrolls while the input and footer stay reachable.
-      className={cn("flex flex-col overflow-hidden sm:max-w-xl", className)}
+      className={cn(
+        "flex flex-col overflow-hidden p-0 sm:max-w-xl [&_[data-slot=command]]:rounded-none [&_[data-slot=command]]:border-0 [&_[data-slot=command]]:bg-transparent [&_[data-slot=command]]:shadow-none",
+        className,
+      )}
       isDismissable
       isOpen={open}
       onOpenChange={onOpenChange}
@@ -125,27 +128,33 @@ function CommandDialog({
     </PrismDialog>
   );
 }
-function CommandInput({ className, ...props }: InputProps) {
+function CommandInput({
+  className,
+  size = "default",
+  ...props
+}: Omit<InputProps, "size"> & { size?: "sm" | "default" }) {
   return (
     <SearchField
       aria-label={props.placeholder || "Search"}
       autoFocus
-      className="w-full p-2"
+      className="flex w-full items-center border-b border-border px-3.5"
       data-slot="command-input-wrapper"
     >
-      <InputGroup className="h-10 rounded-2xl bg-input squircle">
-        <Input
-          {...props}
-          className={cn(
-            "w-full text-base outline-hidden disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-search-cancel-button]:hidden",
-            className,
-          )}
-          data-slot="command-input"
-        />
-        <InputGroupAddon>
-          <SearchIcon className="size-4 shrink-0 opacity-50" />
-        </InputGroupAddon>
-      </InputGroup>
+      <SearchIcon
+        className={cn(
+          "mr-2.5 shrink-0 opacity-50",
+          size === "sm" ? "size-3.5" : "size-4",
+        )}
+      />
+      <Input
+        {...props}
+        className={cn(
+          "flex h-11 w-full bg-transparent outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-search-cancel-button]:hidden",
+          size === "sm" ? "h-9 text-xs" : "text-sm",
+          className,
+        )}
+        data-slot="command-input"
+      />
     </SearchField>
   );
 }
@@ -154,7 +163,7 @@ function CommandList<T extends object>({ className, ...props }: MenuProps<T>) {
     <Menu
       {...props}
       className={cn(
-        "no-scrollbar max-h-72 scroll-py-1 overflow-x-hidden overflow-y-auto border-t outline-none",
+        "no-scrollbar max-h-72 scroll-py-2 overflow-x-hidden overflow-y-auto p-1.5 pb-3.5 outline-none",
         className,
       )}
       data-slot="command-list"
@@ -182,7 +191,7 @@ function CommandGroup<T extends object>({
   return (
     <MenuSection
       className={cn(
-        "space-y-1 overflow-hidden p-2 text-foreground **:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium **:[[cmdk-group-heading]]:text-muted-foreground",
+        "space-y-1 overflow-hidden p-0 text-foreground **:[[cmdk-group-heading]]:px-3 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium **:[[cmdk-group-heading]]:text-muted-foreground",
         className,
       )}
       data-slot="command-group"
@@ -237,7 +246,7 @@ function CommandItem<T extends object>({
         onAction?.({ shiftKey });
       }}
       className={cn(
-        "group/command-item relative flex h-8 min-h-7 cursor-default items-center gap-2 rounded-2xl px-4 outline-hidden select-none squircle in-data-[slot=dialog-content]:rounded-2xl data-focused:bg-secondary/50 data-focused:text-foreground data-[checked=true]:bg-secondary/50 data-[checked=true]:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary/50 data-[selected=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-[checked=true]:*:[svg]:text-foreground data-[selected=true]:*:[svg]:text-foreground",
+        "group/command-item relative flex h-8 min-h-7 cursor-default items-center gap-2 rounded-xl px-3 outline-hidden select-none squircle data-focused:bg-secondary/50 data-focused:text-foreground data-[checked=true]:bg-secondary/50 data-[checked=true]:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary/50 data-[selected=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-[checked=true]:*:[svg]:text-foreground data-[selected=true]:*:[svg]:text-foreground",
         className,
       )}
       data-checked={selected ? "true" : undefined}

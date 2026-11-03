@@ -43,7 +43,7 @@ function DropdownMenu({
   return (
     <PopoverPrimitive
       className={cn(
-        "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 data-[placement=bottom]:slide-in-from-top-2 data-[placement=left]:slide-in-from-right-2 data-[placement=right]:slide-in-from-left-2 data-[placement=top]:slide-in-from-bottom-2 z-50 w-(--trigger-width) min-w-48 origin-(--trigger-anchor-point) overflow-x-hidden overflow-y-auto rounded-3xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/5 outline-none squircle data-exiting:overflow-hidden dark:ring-foreground/10",
+        "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 data-[placement=bottom]:slide-in-from-top-2 data-[placement=left]:slide-in-from-right-2 data-[placement=right]:slide-in-from-left-2 data-[placement=top]:slide-in-from-bottom-2 z-50 w-(--trigger-width) min-w-48 origin-(--trigger-anchor-point) overflow-x-hidden overflow-y-auto rounded-2xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/5 outline-none squircle data-exiting:overflow-hidden dark:ring-foreground/10",
         className,
       )}
       crossOffset={crossOffset}
@@ -91,11 +91,11 @@ const dropdownMenuItemVariants = cva(
   {
     variants: {
       selectionMode: {
-        none: "min-h-7 gap-2 rounded-lg px-3 py-1.5 text-sm focus:bg-secondary/50 focus:text-secondary-foreground focus:**:text-secondary-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
+        none: "min-h-7 gap-2 rounded-xl px-3 py-1.5 text-sm squircle focus:bg-secondary/50 focus:text-secondary-foreground focus:**:text-secondary-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
         single:
-          "min-h-7 gap-2 rounded-lg py-1.5 pr-8 pl-3 text-sm focus:bg-secondary/50 focus:text-secondary-foreground focus:**:text-secondary-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
+          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-3 text-sm squircle focus:bg-secondary/50 focus:text-secondary-foreground focus:**:text-secondary-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
         multiple:
-          "min-h-7 gap-2 rounded-lg py-1.5 pr-8 pl-3 text-sm focus:bg-secondary/50 focus:text-secondary-foreground focus:**:text-secondary-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
+          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-3 text-sm squircle focus:bg-secondary/50 focus:text-secondary-foreground focus:**:text-secondary-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
       },
     },
   },
@@ -160,7 +160,7 @@ function DropdownMenuSubTrigger({
   return (
     <MenuItemPrimitive
       className={cn(
-        "flex min-h-7 cursor-default items-center gap-2 rounded-lg px-3 py-1.5 text-sm outline-hidden select-none focus:bg-secondary/50 focus:text-secondary-foreground not-data-[variant=destructive]:focus:**:text-secondary-foreground data-inset:pl-7 data-open:bg-secondary/50 data-open:text-secondary-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:opacity-50 [&_svg:not([class*='size-'])]:size-4",
+        "flex min-h-7 cursor-default items-center gap-2 rounded-xl px-3 py-1.5 text-sm outline-hidden select-none squircle focus:bg-secondary/50 focus:text-secondary-foreground not-data-[variant=destructive]:focus:**:text-secondary-foreground data-inset:pl-7 data-open:bg-secondary/50 data-open:text-secondary-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:opacity-50 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       data-inset={inset}
@@ -186,7 +186,7 @@ function DropdownMenuSubContent({
   return (
     <DropdownMenu
       className={cn(
-        "w-auto min-w-24 rounded-3xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/5 duration-100 squircle dark:ring-foreground/10",
+        "w-auto min-w-24 rounded-2xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/5 duration-100 squircle dark:ring-foreground/10",
         className,
       )}
       crossOffset={crossOffset}

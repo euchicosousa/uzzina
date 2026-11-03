@@ -1,27 +1,49 @@
 import type React from "react";
+import { CheckIcon } from "lucide-react";
+import { cn } from "~/lib/utils";
 
 export interface GallerySectionProps {
   children: React.ReactNode;
+  className?: string;
 }
 
-export function GallerySection({ children }: GallerySectionProps) {
+export function GallerySection({ children, className }: GallerySectionProps) {
   return (
-    <section className="space-y-6 border-b px-8 py-12">{children}</section>
+    <section
+      className={cn(
+        "w-full max-w-full min-w-0 space-y-6 border-b px-8 py-12",
+        className,
+      )}
+    >
+      {children}
+    </section>
   );
 }
 
 export interface GallerySectionHeaderProps {
   title: string;
   description: string;
+  approved?: boolean;
 }
 
 export function GallerySectionHeader({
   title,
   description,
+  approved,
 }: GallerySectionHeaderProps) {
   return (
     <div className="flex flex-col gap-4">
-      <h3>{title}</h3>
+      <h3 className="flex items-center gap-2">
+        <span>{title}</span>
+        {approved && (
+          <span
+            className="inline-flex size-5 items-center justify-center rounded-full bg-green-400 text-green-950 shadow-xs ring-2 ring-green-400/50"
+            title="Aprovado"
+          >
+            <CheckIcon className="size-3.5 stroke-[3]" />
+          </span>
+        )}
+      </h3>
       <p className="text-sm text-muted-foreground">{description}</p>
     </div>
   );
@@ -36,7 +58,16 @@ export function GallerySectionContent({
   children,
   className,
 }: GallerySectionContentProps) {
-  return <div className={className || "flex flex-wrap gap-8"}>{children}</div>;
+  return (
+    <div
+      className={cn(
+        "w-full max-w-full min-w-0",
+        className || "flex flex-wrap gap-8",
+      )}
+    >
+      {children}
+    </div>
+  );
 }
 
 export interface GalleryItemProps {
@@ -51,7 +82,7 @@ export function GalleryItem({
   className = "",
 }: GalleryItemProps) {
   return (
-    <div className={`flex flex-col gap-4 ${className}`}>
+    <div className={cn("flex max-w-full min-w-0 flex-col gap-4", className)}>
       <span className="text-xs font-semibold text-muted-foreground uppercase">
         {label}
       </span>
@@ -64,25 +95,39 @@ export interface SidebarAnchorLinkProps {
   targetId: string;
   label: string;
   active?: boolean;
+  approved?: boolean;
 }
 
 export function SidebarAnchorLink({
   targetId,
   label,
   active,
+  approved,
 }: SidebarAnchorLinkProps) {
   return (
     <a
-      className={`border-l py-2 pl-4 text-muted-foreground transition-colors hover:text-foreground ${active ? "border-foreground" : ""}`}
+      className={`flex items-center justify-between border-l py-2 pr-2 pl-4 text-muted-foreground transition-colors hover:text-foreground ${active ? "border-foreground font-medium text-foreground" : ""}`}
       href={`#${targetId}`}
       onClick={(e) => {
         e.preventDefault();
-        document.getElementById(targetId)?.scrollIntoView({
-          behavior: "smooth",
-        });
+        const element = document.getElementById(targetId);
+        if (element) {
+          element.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
       }}
     >
-      {label}
+      <span>{label}</span>
+      {approved && (
+        <span
+          className="inline-flex size-4 items-center justify-center rounded-full bg-green-400 text-green-950 shadow-2xs ring-1 ring-green-400/60"
+          title="Aprovado"
+        >
+          <CheckIcon className="size-2.5 stroke-[3]" />
+        </span>
+      )}
     </a>
   );
 }
