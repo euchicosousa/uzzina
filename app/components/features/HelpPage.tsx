@@ -24,7 +24,7 @@ function Keys({ keys }: { keys: string[] }) {
       {keys.map((key, index) => (
         <span className="inline-flex items-center gap-1" key={key}>
           {index > 0 && <span className="text-muted-foreground">+</span>}
-          <kbd className="rounded-md border bg-secondary/50 px-1.5 py-0.5 font-sans text-xs font-medium">
+          <kbd className="rounded-md border bg-secondary/50 px-1.5 py-0.5 font-sans text-xs font-medium squircle">
             {key}
           </kbd>
         </span>
@@ -290,7 +290,7 @@ export function HelpPage() {
           </label>
           <select
             id="help-section"
-            className="w-full rounded-md border bg-input px-3 py-2 text-base outline-none focus-visible:bg-foreground/5"
+            className="w-full rounded-md border bg-input px-3 py-2 text-base outline-none squircle focus-visible:bg-secondary/50"
             value={active}
             onChange={(event) => {
               setActive(event.target.value);
@@ -319,7 +319,7 @@ export function HelpPage() {
               href={`#${section.id}`}
               aria-current={active === section.id ? "location" : undefined}
               className={cn(
-                "rounded-md px-2 py-1.5 text-sm outline-none hover:bg-secondary/50 focus-visible:bg-foreground/5",
+                "rounded-md px-2 py-1.5 text-sm outline-none squircle hover:bg-secondary/50 focus-visible:bg-secondary/50",
                 active === section.id
                   ? "bg-secondary/50 font-semibold"
                   : "text-muted-foreground",

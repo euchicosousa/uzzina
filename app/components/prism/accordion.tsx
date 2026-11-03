@@ -51,7 +51,7 @@ function AccordionTrigger({
         slot="trigger"
         data-slot="accordion-trigger"
         className={cn(
-          "group/accordion-trigger relative flex w-full min-w-0 flex-1 items-center justify-between gap-4 overflow-hidden border border-transparent p-4 text-left text-sm font-medium transition-all outline-none hover:underline disabled:pointer-events-none disabled:opacity-50",
+          "group/accordion-trigger relative flex w-full min-w-0 flex-1 items-center justify-between gap-4 overflow-hidden border border-transparent p-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:underline disabled:pointer-events-none disabled:opacity-50",
           className,
         )}
         {...props}
@@ -64,11 +64,11 @@ function AccordionTrigger({
         </span>
         <ChevronDownIcon
           data-slot="accordion-trigger-icon"
-          className="pointer-events-none ml-auto size-4 shrink-0 text-muted-foreground group-aria-expanded/accordion-trigger:hidden"
+          className="pointer-events-none ml-auto size-4 shrink-0 opacity-60 group-aria-expanded/accordion-trigger:hidden"
         />
         <ChevronUpIcon
           data-slot="accordion-trigger-icon"
-          className="pointer-events-none ml-auto hidden size-4 shrink-0 text-muted-foreground group-aria-expanded/accordion-trigger:inline"
+          className="pointer-events-none ml-auto hidden size-4 shrink-0 opacity-60 group-aria-expanded/accordion-trigger:inline"
         />
       </AccordionTriggerPrimitive>
     </AccordionHeaderPrimitive>

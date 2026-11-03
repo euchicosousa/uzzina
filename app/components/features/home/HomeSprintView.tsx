@@ -103,7 +103,10 @@ export function HomeSprintView({ actions }: { actions: Action[] }) {
           <div className="grid grid-cols-4 gap-4 py-4">
             {["sprint-sk-1", "sprint-sk-2", "sprint-sk-3", "sprint-sk-4"].map(
               (skKey) => (
-                <PrismSkeleton key={skKey} className="h-32 rounded-2xl" />
+                <PrismSkeleton
+                  key={skKey}
+                  className="h-32 rounded-2xl squircle"
+                />
               ),
             )}
           </div>

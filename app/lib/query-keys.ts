@@ -98,6 +98,8 @@ export const QUERY_KEYS = {
   people: (userId: string) => ["people", "team", userId] as const,
   peopleAdmin: (userId: string) => ["people", "team", userId, "admin"] as const,
   notifications: (userId: string) => ["notifications", "team", userId] as const,
+  socialPlans: (userId: string, partnerSlug: string) =>
+    ["social_plans", "team", userId, partnerSlug] as const,
   leads: {
     all: (userId: string) => ["leads", "team", userId] as const,
     detail: (userId: string, id: string) =>

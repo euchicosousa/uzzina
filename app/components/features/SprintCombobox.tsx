@@ -17,16 +17,21 @@ import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
 import type { Partner, Person } from "~/types";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
-import { ComboboxTrigger } from "./ComboboxTrigger";
+import {
+  ComboboxTrigger,
+  getTriggerAvatarPadding,
+  getTriggerAvatarSize,
+  type ComboboxTriggerProps,
+} from "./ComboboxTrigger";
 interface SprintComboboxProps {
   selectedSprints: string[];
   responsibles: string[];
   currentPartners: Partner[];
   onSelect: (newSprints: string[], newResponsibles: string[]) => void;
   tabIndex?: number;
-  className?: string;
-  size?: "sm" | "lg";
   disabled?: boolean;
+  variant?: ComboboxTriggerProps["variant"];
+  size?: ComboboxTriggerProps["size"];
 }
 export function SprintCombobox({
   selectedSprints = [],
@@ -34,9 +39,9 @@ export function SprintCombobox({
   currentPartners,
   onSelect,
   tabIndex,
-  className,
-  size = "lg",
   disabled = false,
+  variant,
+  size,
 }: SprintComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { person } = useAppContext();
@@ -93,12 +98,12 @@ export function SprintCombobox({
     >
       <ComboboxTrigger
         aria-label="Sprints"
-        className={className}
         disabled={disabled}
-        size={size}
         tabIndex={tabIndex}
         title="Sprints"
-        variant={size === "lg" ? "form-footer" : "form-inline"}
+        className={getTriggerAvatarPadding(size)}
+        size={size}
+        variant={variant}
       >
         {selectedSprints.length > 0 ? (
           <UAvatarGroup
@@ -108,7 +113,7 @@ export function SprintCombobox({
               image: person.image,
             }))}
             clampAt={2}
-            size={size === "sm" ? "sm" : "md"}
+            size={getTriggerAvatarSize(size)}
           />
         ) : (
           <ZapIcon />
@@ -116,8 +121,9 @@ export function SprintCombobox({
       </ComboboxTrigger>
 
       <PrismPopover
-        className="w-75 overflow-hidden rounded-3xl border bg-popover p-0 shadow-xl squircle"
+        className="overflow-hidden p-0"
         placement="bottom end"
+        size="lg"
       >
         <PrismCommand className="p-0">
           <PrismCommandInput placeholder="Procurar usuário para sprint..." />

@@ -146,7 +146,7 @@ export function NotificationsPage() {
                     )}
                   />
                   <button
-                    className="flex min-w-0 flex-1 flex-col gap-1.5 rounded-md text-left outline-none focus-visible:bg-foreground/5"
+                    className="flex min-w-0 flex-1 flex-col gap-1.5 rounded-md text-left outline-none squircle focus-visible:bg-secondary/50"
                     onClick={() => openAction(notification)}
                     type="button"
                   >

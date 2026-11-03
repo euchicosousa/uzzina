@@ -109,15 +109,13 @@ function CommandDialog({
     <PrismDialog
       // A flex column lets the command shrink to the visible height, so the
       // list scrolls while the input and footer stay reachable.
-      className={cn(
-        "flex flex-col overflow-hidden p-0 sm:max-w-xl [&_[data-slot=command]]:rounded-none [&_[data-slot=command]]:border-0 [&_[data-slot=command]]:bg-transparent [&_[data-slot=command]]:shadow-none",
-        className,
-      )}
+      className={cn("flex flex-col overflow-hidden p-0", className)}
       isDismissable
       isOpen={open}
       onOpenChange={onOpenChange}
       placement="top"
       showCloseButton={showCloseButton}
+      size="lg"
       {...props}
     >
       <PrismDialogHeader className="sr-only">
@@ -142,15 +140,15 @@ function CommandInput({
     >
       <SearchIcon
         className={cn(
-          "mr-2.5 shrink-0 opacity-50",
+          "mr-2.5 shrink-0 opacity-60",
           size === "sm" ? "size-3.5" : "size-4",
         )}
       />
       <Input
         {...props}
         className={cn(
-          "flex h-11 w-full bg-transparent outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-search-cancel-button]:hidden",
-          size === "sm" ? "h-9 text-xs" : "text-sm",
+          "flex h-11 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-search-cancel-button]:hidden",
+          size === "sm" && "h-9",
           className,
         )}
         data-slot="command-input"
@@ -163,7 +161,7 @@ function CommandList<T extends object>({ className, ...props }: MenuProps<T>) {
     <Menu
       {...props}
       className={cn(
-        "no-scrollbar max-h-72 scroll-py-2 overflow-x-hidden overflow-y-auto p-1.5 pb-3.5 outline-none",
+        "no-scrollbar max-h-72 scroll-py-2 overflow-x-hidden overflow-y-auto p-1 outline-none",
         className,
       )}
       data-slot="command-list"
@@ -246,7 +244,7 @@ function CommandItem<T extends object>({
         onAction?.({ shiftKey });
       }}
       className={cn(
-        "group/command-item relative flex h-8 min-h-7 cursor-default items-center gap-2 rounded-xl px-3 outline-hidden select-none squircle data-focused:bg-secondary/50 data-focused:text-foreground data-[checked=true]:bg-secondary/50 data-[checked=true]:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary/50 data-[selected=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-[checked=true]:*:[svg]:text-foreground data-[selected=true]:*:[svg]:text-foreground",
+        "group/command-item relative flex h-8 min-h-7 cursor-default items-center gap-2 rounded-xl px-3 outline-hidden select-none squircle data-focused:bg-secondary/50 data-focused:text-foreground data-[checked=true]:bg-secondary/50 data-[checked=true]:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary/50 data-[selected=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-[checked=true]:*:[svg]:text-foreground data-[selected=true]:*:[svg]:text-foreground",
         className,
       )}
       data-checked={selected ? "true" : undefined}
@@ -259,7 +257,7 @@ function CommandItem<T extends object>({
       {composeRenderProps(children, (children) => (
         <>
           {children}
-          <CheckCircle2Icon className="ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-50 group-data-[selected=true]/command-item:opacity-50" />
+          <CheckCircle2Icon className="ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100 group-data-[selected=true]/command-item:opacity-100" />
         </>
       ))}
     </MenuItem>

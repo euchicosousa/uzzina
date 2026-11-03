@@ -329,7 +329,8 @@ function Harness({
             onSelect={setSelected}
             allowAll={allowAll}
             showText
-            variant="filter"
+            variant="ghost"
+            size="sm"
           />
           <output data-testid="selection">{selected.join(",")}</output>
         </>

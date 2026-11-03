@@ -6,8 +6,8 @@ const buttonGroupVariants = cva(
   {
     variants: {
       size: {
-        xs: "[&>*:first-child]:rounded-l-xl! [&>*:last-child]:rounded-r-xl! [&>*:only-child]:rounded-xl!",
-        sm: "[&>*:first-child]:rounded-l-xl! [&>*:last-child]:rounded-r-xl! [&>*:only-child]:rounded-xl!",
+        xs: "[&>*:first-child]:rounded-l-2xl! [&>*:last-child]:rounded-r-2xl! [&>*:only-child]:rounded-2xl!",
+        sm: "[&>*:first-child]:rounded-l-2xl! [&>*:last-child]:rounded-r-2xl! [&>*:only-child]:rounded-2xl!",
         default:
           "[&>*:first-child]:rounded-l-2xl! [&>*:last-child]:rounded-r-2xl! [&>*:only-child]:rounded-2xl!",
         lg: "[&>*:first-child]:rounded-l-3xl! [&>*:last-child]:rounded-r-3xl! [&>*:only-child]:rounded-3xl!",
@@ -59,7 +59,7 @@ function ButtonGroupText({
     const renderProps = {
       "data-slot": "button-group-text",
       className: cn(
-        "flex items-center gap-2 rounded-2xl squircle border bg-muted px-3 text-sm font-medium text-muted-foreground [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5",
+        "flex items-center gap-2 rounded-2xl squircle border bg-muted px-3 text-sm font-medium text-muted-foreground group-data-[size=lg]/button-group:text-base [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5",
         className,
       ),
       ...props,
@@ -69,7 +69,7 @@ function ButtonGroupText({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-2xl border bg-muted px-3 text-sm font-medium text-muted-foreground squircle [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5",
+        "flex items-center gap-2 rounded-2xl border bg-muted px-3 text-sm font-medium text-muted-foreground squircle group-data-[size=lg]/button-group:text-base [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5",
         className,
       )}
       data-slot="button-group-text"

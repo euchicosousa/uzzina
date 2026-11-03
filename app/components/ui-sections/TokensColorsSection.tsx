@@ -128,7 +128,7 @@ export function TokensColorsSection() {
             title="Cores Semânticas OKLCH"
           />
 
-          <div className="flex flex-wrap items-center justify-between gap-6 rounded-2xl border border-border/50 bg-card p-4 shadow-xs">
+          <div className="flex flex-wrap items-center justify-between gap-6">
             {/* Seletor Compacto Light / Dark */}
             <div className="flex items-center gap-3">
               <span className="text-xs font-semibold text-muted-foreground uppercase">
@@ -157,7 +157,7 @@ export function TokensColorsSection() {
               <span className="text-xs font-semibold text-muted-foreground uppercase">
                 Paleta:
               </span>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-4">
                 {PALLETE.map((item, idx) => {
                   const isSelected = primaryColorIndex === idx;
                   const isDark = theme === Theme.DARK;
@@ -168,7 +168,7 @@ export function TokensColorsSection() {
                     <button
                       key={item.id}
                       className={cn(
-                        "relative flex size-7 items-center justify-center rounded-full border border-black/10 transition-transform hover:scale-110 focus:outline-none dark:border-white/20",
+                        "relative flex size-5 items-center justify-center rounded-full border border-black/10 transition-transform hover:scale-110 focus:outline-none dark:border-white/20",
                         isSelected &&
                           "scale-105 ring-2 ring-primary ring-offset-2 ring-offset-background",
                       )}
@@ -200,10 +200,10 @@ export function TokensColorsSection() {
           {COLOR_SWATCHES.map((swatch) => (
             <div
               key={swatch.name}
-              className="flex items-center gap-3 rounded-xl border border-border/40 bg-card p-3 shadow-xs"
+              className="flex items-center gap-3 rounded-xl border border-border/40 bg-card p-3 shadow-xs squircle"
             >
               <div
-                className={`size-7 shrink-0 rounded-lg border border-border/40 ${swatch.bg}`}
+                className={`size-7 shrink-0 rounded-lg border border-border/40 ${swatch.bg} squircle`}
               />
               <div className="flex min-w-0 flex-col">
                 <span className="truncate text-xs font-semibold">
@@ -224,10 +224,10 @@ export function TokensColorsSection() {
           </h4>
 
           {/* Container simulando a superfície da página (bg-background) */}
-          <div className="space-y-8 rounded-3xl border border-border/60 bg-background p-8 shadow-inner">
+          <div className="space-y-8 rounded-3xl border border-border/60 bg-background p-8 shadow-inner squircle">
             <div className="grid gap-6 md:grid-cols-3">
               {/* Bloco 1: Estruturas de Superfície (bg-card sobre bg-background) */}
-              <div className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <div className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm squircle">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-muted-foreground uppercase">
                     Card (bg-card) & Forms
@@ -252,11 +252,11 @@ export function TokensColorsSection() {
               </div>
 
               {/* Bloco 2: Elementos Flutuantes, Accent & Workflow */}
-              <div className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <div className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm squircle">
                 <span className="text-xs font-bold text-muted-foreground uppercase">
                   Popover (bg-popover) & Actions
                 </span>
-                <div className="space-y-2 rounded-2xl border border-border bg-popover p-4 text-popover-foreground shadow-md">
+                <div className="space-y-2 rounded-2xl border border-border bg-popover p-4 text-popover-foreground shadow-md squircle">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold">
                       Painel Popover
@@ -273,18 +273,18 @@ export function TokensColorsSection() {
                     .
                   </p>
                 </div>
-                <div className="flex items-center justify-between rounded-xl border border-border/40 bg-action p-3 text-xs">
+                <div className="flex items-center justify-between rounded-xl border border-border/40 bg-action p-3 text-xs squircle">
                   <span>
                     Ação (<code className="font-mono">bg-action</code>)
                   </span>
-                  <span className="rounded-md bg-late px-2 py-0.5 text-[10px] font-bold text-late-foreground">
+                  <span className="rounded-md bg-late px-2 py-0.5 text-[10px] font-bold text-late-foreground squircle">
                     Late (Atrasado)
                   </span>
                 </div>
               </div>
 
               {/* Bloco 3: Feedback Semântico */}
-              <div className="space-y-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <div className="space-y-3 rounded-2xl border border-border bg-card p-6 shadow-sm squircle">
                 <span className="text-xs font-bold text-muted-foreground uppercase">
                   Feedbacks Semânticos
                 </span>

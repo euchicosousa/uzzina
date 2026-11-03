@@ -9,7 +9,12 @@ it("maps disabled footer triggers to React Aria and excludes them from activatio
   render(
     <>
       <button type="button">Before</button>
-      <ComboboxTrigger variant="form-footer" disabled onPress={() => presses++}>
+      <ComboboxTrigger
+        variant="ghost"
+        size="icon-lg"
+        disabled
+        onPress={() => presses++}
+      >
         Disabled
       </ComboboxTrigger>
       <button type="button">After</button>

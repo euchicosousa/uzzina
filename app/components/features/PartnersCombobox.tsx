@@ -14,13 +14,19 @@ import { getFormattedPartnersName } from "~/utils";
 import { cn } from "cnfast";
 import type { Partner } from "~/types";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
-import { ComboboxTrigger } from "./ComboboxTrigger";
+import {
+  ComboboxTrigger,
+  getTriggerAvatarPadding,
+  getTriggerAvatarSize,
+  type ComboboxTriggerProps,
+} from "./ComboboxTrigger";
 export function PartnersCombobox({
   selectedPartners = [],
   onSelect,
   tabIndex,
   showText,
-  variant = "form-footer",
+  variant,
+  size,
   disabled = false,
   allowAll = false,
 }: {
@@ -28,7 +34,8 @@ export function PartnersCombobox({
   onSelect?: (partners: string[]) => void;
   tabIndex?: number;
   showText?: boolean;
-  variant?: "filter" | "form-footer";
+  variant?: ComboboxTriggerProps["variant"];
+  size?: ComboboxTriggerProps["size"];
   disabled?: boolean;
   allowAll?: boolean;
 }) {
@@ -38,6 +45,7 @@ export function PartnersCombobox({
     .map((slug) => partners.find((partner) => partner.slug === slug))
     .filter((partner): partner is Partner => partner !== undefined);
   const hasSelection = currentPartners.length > 0;
+  const footerAvatarSize = getTriggerAvatarSize(size);
   const emptyLabel = allowAll ? "Todos os parceiros" : "Parceiros";
   const handleSelect = (slug: string, isShiftPressed: boolean) => {
     let newPartners: string[];
@@ -59,15 +67,15 @@ export function PartnersCombobox({
       <ComboboxTrigger
         aria-label={getFormattedPartnersName(currentPartners) || emptyLabel}
         className={cn(
-          "flex items-center gap-2 overflow-hidden",
           allowAll &&
-            variant === "filter" &&
-            "max-w-full min-w-0 shrink border-0 px-2 font-normal focus-visible:border-transparent focus-visible:ring-0",
+            (variant ?? "ghost") === "ghost" &&
+            "max-w-full min-w-0 shrink gap-3",
+          getTriggerAvatarPadding(size),
         )}
         disabled={disabled}
-        hasSelection={hasSelection}
         tabIndex={tabIndex}
         title={getFormattedPartnersName(currentPartners) || emptyLabel}
+        size={size}
         variant={variant}
       >
         {hasSelection ? (
@@ -80,10 +88,10 @@ export function PartnersCombobox({
               color: partner?.colors[1],
             }))}
             clampAt={2}
-            size="sm"
+            size={footerAvatarSize}
           />
         ) : (
-          <UAvatar fallback="P" size="sm" />
+          <UAvatar fallback="P" size={footerAvatarSize} />
         )}
         {showText && (
           <div className="overflow-hidden text-ellipsis whitespace-nowrap">
@@ -94,12 +102,7 @@ export function PartnersCombobox({
         )}
       </ComboboxTrigger>
 
-      <PrismPopover
-        className={cn(
-          "w-[320px] overflow-hidden rounded-3xl border bg-popover p-0 shadow-xl squircle",
-          allowAll && "ring-0",
-        )}
-      >
+      <PrismPopover className="overflow-hidden p-0" size="lg">
         <PrismCommand className="p-0">
           <PrismCommandInput placeholder="Procurar parceiro..." />
           <PrismCommandList

@@ -20,12 +20,20 @@ import { parseU } from "~/utils/date";
 import {
   BellIcon,
   BriefcaseIcon,
+  Building2Icon,
+  CalendarIcon,
   CalendarRangeIcon,
   CheckIcon,
+  HelpCircleIcon,
   LaptopIcon,
+  LogOutIcon,
   MoonIcon,
   PaletteIcon,
+  PlusIcon,
   SunIcon,
+  UserIcon,
+  UserPlusIcon,
+  UsersIcon,
 } from "lucide-react";
 import {
   type MouseEvent,
@@ -438,8 +446,9 @@ export function Header({
             {unreadCount > 0 ? <PrismBadge>{unreadCount}</PrismBadge> : null}
           </PrismButton>
           <PrismPopover
-            className="w-80 overflow-hidden rounded-2xl p-0"
+            className="overflow-hidden p-0"
             placement="bottom end"
+            size="lg"
           >
             <div className="flex items-center justify-between border-b bg-muted/20 px-4 py-3">
               <h5 className="text-sm font-semibold">Notificações</h5>
@@ -584,8 +593,8 @@ export const HeaderMenu = ({
           />
         </PrismButton>
       </PrismMenuTrigger>
-      <PrismMenuContent className="w-64 p-0" placement="bottom end">
-        <PrismMenuGroup className="p-2">
+      <PrismMenuContent className="w-64" placement="bottom end">
+        <PrismMenuGroup>
           {hasError && (
             <PrismMenuItem
               onAction={retry}
@@ -613,7 +622,6 @@ export const HeaderMenu = ({
 
         <PrismMenuGroup
           aria-label="Origem das cores"
-          className="px-2"
           disallowEmptySelection
           onSelectionChange={(keys) => {
             const selected = Array.from(keys)[0];
@@ -642,7 +650,7 @@ export const HeaderMenu = ({
 
         <PrismMenuGroup
           aria-label="Paleta de cores"
-          className="grid grid-cols-6 gap-1 px-2 pt-1 pb-2"
+          className="grid grid-cols-6 gap-1 pt-1 pb-1"
         >
           {PALLETE.map((paletteConfig, i) => {
             const { light, dark } = paletteConfig;
@@ -680,11 +688,12 @@ export const HeaderMenu = ({
 
         <PrismMenuSeparator />
 
-        <PrismMenuGroup className="px-2 pb-2">
+        <PrismMenuGroup>
           <PrismMenuItem
             onAction={() => onNavigate("/app/leads")}
             textValue="Leads"
           >
+            <UsersIcon className="size-4" />
             Leads
           </PrismMenuItem>
 
@@ -700,6 +709,7 @@ export const HeaderMenu = ({
             onAction={() => onNavigate("/app/profile")}
             textValue="Minha Conta"
           >
+            <UserIcon className="size-4" />
             Minha Conta
           </PrismMenuItem>
 
@@ -707,6 +717,7 @@ export const HeaderMenu = ({
             onAction={() => onNavigate("/app/help")}
             textValue="Ajuda & Documentação"
           >
+            <HelpCircleIcon className="size-4" />
             Ajuda & Documentação
           </PrismMenuItem>
 
@@ -716,6 +727,7 @@ export const HeaderMenu = ({
             textValue="Sair"
             variant="destructive"
           >
+            <LogOutIcon className="size-4" />
             Sair
           </PrismMenuItem>
         </PrismMenuGroup>
@@ -729,12 +741,14 @@ export const HeaderMenu = ({
                 onAction={() => onNavigate("/app/admin/partners")}
                 textValue="Parceiros"
               >
+                <BriefcaseIcon className="size-4" />
                 Parceiros
               </PrismMenuItem>
               <PrismMenuItem
                 onAction={() => onNavigate("/app/admin/partner/new")}
                 textValue="Novo Parceiro"
               >
+                <PlusIcon className="size-4" />
                 Novo Parceiro
               </PrismMenuItem>
               <PrismMenuSeparator />
@@ -742,12 +756,14 @@ export const HeaderMenu = ({
                 onAction={() => onNavigate("/app/admin/users")}
                 textValue="Usuários"
               >
+                <UsersIcon className="size-4" />
                 Usuários
               </PrismMenuItem>
               <PrismMenuItem
                 onAction={() => onNavigate("/app/admin/user/new")}
                 textValue="Novo Usuário"
               >
+                <UserPlusIcon className="size-4" />
                 Novo Usuário
               </PrismMenuItem>
               <PrismMenuSeparator />
@@ -755,12 +771,14 @@ export const HeaderMenu = ({
                 onAction={() => onNavigate("/app/admin/clients")}
                 textValue="Clientes"
               >
+                <Building2Icon className="size-4" />
                 Clientes
               </PrismMenuItem>
               <PrismMenuItem
                 onAction={() => onNavigate("/app/admin/client/new")}
                 textValue="Novo Cliente"
               >
+                <PlusIcon className="size-4" />
                 Novo Cliente
               </PrismMenuItem>
               <PrismMenuSeparator />
@@ -768,6 +786,7 @@ export const HeaderMenu = ({
                 onAction={() => onNavigate("/app/admin/celebrations")}
                 textValue="Datas Comemorativas"
               >
+                <CalendarIcon className="size-4" />
                 Datas Comemorativas
               </PrismMenuItem>
             </PrismMenuGroup>

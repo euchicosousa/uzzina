@@ -69,7 +69,7 @@ export function CommentItem({
         />
       </div>
       <div
-        className={`group relative flex max-w-[85%] flex-col rounded-lg px-4 py-2 ring ring-black/5 md:max-w-[75%] ${
+        className={`group relative flex max-w-[85%] flex-col rounded-lg px-4 py-2 ring ring-black/5 squircle md:max-w-[75%] ${
           isOwn ? "bg-primary text-primary-foreground" : "bg-card"
         }`}
       >
@@ -111,7 +111,7 @@ export function CommentItem({
                     setOverrideContent(htmlToPlainText(comment.content));
                     setEditing(true);
                   }}
-                  className="rounded p-2 transition-colors hover:bg-black/10 dark:hover:bg-white/10"
+                  className="rounded p-2 transition-colors squircle hover:bg-black/10 dark:hover:bg-white/10"
                 >
                   <Pencil className="size-3" />
                 </button>
@@ -119,7 +119,7 @@ export function CommentItem({
                   type="button"
                   aria-label="Excluir observação"
                   onClick={onDelete}
-                  className="rounded p-2 transition-colors hover:bg-black/10 dark:hover:bg-white/10"
+                  className="rounded p-2 transition-colors squircle hover:bg-black/10 dark:hover:bg-white/10"
                 >
                   <Trash className="size-3" />
                 </button>

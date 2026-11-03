@@ -365,7 +365,7 @@ function DashActionDetail() {
                 Descrição
               </div>
               <div
-                className="rounded-xl border bg-card p-4"
+                className="rounded-xl border bg-card p-4 squircle"
                 // biome-ignore lint/security/noDangerouslySetInnerHtml: safe rich text description sanitized
                 dangerouslySetInnerHTML={{
                   __html: sanitizeHtml(action.description),
@@ -389,7 +389,7 @@ function DashActionDetail() {
             <div className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
               Seus Anexos e Materiais
             </div>
-            <div className="flex flex-wrap items-center gap-1.5 rounded-xl">
+            <div className="flex flex-wrap items-center gap-1.5 rounded-xl squircle">
               {workFiles.map((url, i) => (
                 <WorkFileThumbnail
                   key={url}

@@ -68,7 +68,7 @@ function CommandPopoverDemo() {
       <PrismPopover className="w-56 overflow-hidden p-0">
         <PrismCommand className="p-0">
           <div className="flex items-center border-b px-3 py-2">
-            <SearchIcon className="mr-2 size-3.5 shrink-0 opacity-50" />
+            <SearchIcon className="mr-2 shrink-0" />
             <input
               className="w-full bg-transparent text-xs outline-none placeholder:text-muted-foreground"
               placeholder="Buscar parceiro..."

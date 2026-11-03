@@ -39,12 +39,7 @@ export function BulkResponsiblesDialog({
   };
   if (!open) return null;
   return (
-    <PrismDialog
-      className="max-w-md"
-      isDismissable
-      isOpen={open}
-      onOpenChange={handleOpenChange}
-    >
+    <PrismDialog isDismissable isOpen={open} onOpenChange={handleOpenChange}>
       <PrismDialogHeader className="border-b">
         <PrismDialogTitle>Alterar Responsáveis</PrismDialogTitle>
         <PrismDialogDescription>

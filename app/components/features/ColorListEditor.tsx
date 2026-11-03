@@ -207,7 +207,7 @@ function SortableColorItem({
     <div
       ref={setNodeRef}
       className={cn(
-        "flex items-center gap-2 rounded-md",
+        "flex items-center gap-2 rounded-md squircle",
         isDragging && "ring-2 ring-primary",
       )}
       style={style}
@@ -215,7 +215,7 @@ function SortableColorItem({
       <div
         {...attributes}
         {...listeners}
-        className="cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing"
+        className="cursor-grab opacity-60 hover:opacity-100 active:cursor-grabbing"
       >
         <GripVerticalIcon className="size-4" />
       </div>

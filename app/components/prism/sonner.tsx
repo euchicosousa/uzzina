@@ -26,7 +26,7 @@ const PrismToaster = ({ ...props }: ToasterProps) => {
           "--normal-bg": "var(--card)",
           "--normal-text": "var(--card-foreground)",
           "--normal-border": "var(--border)",
-          "--border-radius": "24px",
+          "--border-radius": "16px",
           // Mapeamento exato das variáveis OKLCH no tailwind.css (--color-*)
           "--success-bg": "var(--color-success-background)",
           "--success-text": "var(--color-success)",

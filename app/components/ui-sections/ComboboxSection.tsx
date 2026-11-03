@@ -70,7 +70,7 @@ function FruitsMultiSelect() {
             return (
               <button
                 key={fruitId}
-                className="flex items-center gap-1 rounded-lg border bg-secondary px-2.5 py-1 text-xs font-semibold text-foreground transition-colors hover:bg-secondary/80"
+                className="flex items-center gap-1 rounded-lg border bg-secondary px-2.5 py-1 text-xs font-semibold text-foreground transition-colors squircle hover:bg-secondary/80"
                 onClick={() =>
                   setSelectedFruits(
                     selectedFruits.filter((id) => id !== fruitId),

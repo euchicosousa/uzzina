@@ -88,12 +88,22 @@ function getDialogFrame(
 
 // Mounted only while the overlay is open, so closed dialogs do not listen to
 // viewport changes.
+type DialogSize = "sm" | "default" | "lg" | "xl";
+// Width scale: sm 24rem, default 32rem, lg 36rem, xl 42rem.
+const dialogWidths: Record<DialogSize, string> = {
+  sm: "sm:max-w-sm",
+  default: "sm:max-w-lg",
+  lg: "sm:max-w-xl",
+  xl: "sm:max-w-2xl",
+};
 function DialogFrame({
   className,
   children,
   placement,
   showCloseButton,
+  size,
 }: {
+  size: DialogSize;
   className?: string;
   children: React.ReactNode;
   placement: DialogPlacement;
@@ -111,7 +121,8 @@ function DialogFrame({
     >
       <ModalPrimitive
         className={cn(
-          "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 pointer-events-auto relative z-50 grid max-h-full w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-2xl bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/5 duration-100 outline-none squircle sm:w-full sm:max-w-lg dark:ring-foreground/10",
+          "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 pointer-events-auto relative z-50 grid max-h-full w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-2xl border border-foreground/5 bg-popover text-sm text-popover-foreground shadow-lg duration-100 outline-none squircle sm:w-full dark:border-foreground/10",
+          dialogWidths[size],
           className,
         )}
         data-slot="dialog-content"
@@ -142,12 +153,15 @@ function Dialog({
   showCloseButton = true,
   isDismissable = true,
   placement = "center",
+  size = "default",
   ...props
 }: Omit<ModalOverlayPrimitiveProps, "className" | "children"> &
   Pick<React.ComponentProps<typeof ModalPrimitive>, "isDismissable"> & {
     className?: string;
     children: React.ReactNode;
     showCloseButton?: boolean;
+    /** Width scale: sm, default (lg of Tailwind), lg and xl. */
+    size?: DialogSize;
     /**
      * Vertical position inside the visible viewport. Dialogs taller than the
      * available space keep the outer margin and scroll their content.
@@ -160,6 +174,7 @@ function Dialog({
         className={className}
         placement={placement}
         showCloseButton={showCloseButton}
+        size={size}
       >
         {children}
       </DialogFrame>

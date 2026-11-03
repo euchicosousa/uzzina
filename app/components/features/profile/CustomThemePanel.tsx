@@ -23,7 +23,7 @@ export function CustomThemePanel({
   onChange: (mode: ThemeMode, key: ThemeColorKey, value: string) => void;
 }) {
   return (
-    <div className="grid gap-4 rounded-xl border bg-zinc-50/50 p-4 dark:bg-zinc-950/20">
+    <div className="grid gap-4 rounded-xl border bg-zinc-50/50 p-4 squircle dark:bg-zinc-950/20">
       <div className="flex items-center gap-2 border-b pb-2">
         <PipetteIcon className="size-4 text-primary" />
         <span className="text-sm font-semibold">Editar Tema Personalizado</span>
@@ -42,7 +42,7 @@ export function CustomThemePanel({
                   </PrismLabel>
                   <label className="group flex cursor-pointer items-center gap-2">
                     <div
-                      className="size-8 rounded-lg border border-border shadow-sm transition duration-200 group-hover:scale-105"
+                      className="size-8 rounded-lg border border-border shadow-sm transition duration-200 squircle group-hover:scale-105"
                       style={{ backgroundColor: theme[mode][key] }}
                     />
                     <input
@@ -68,19 +68,19 @@ export function CustomThemePanel({
           Pré-visualização de Elementos Derivados
         </span>
         <div className="grid grid-cols-3 gap-3">
-          <div className="flex flex-col justify-between rounded-lg border bg-primary p-3 text-primary-foreground">
+          <div className="flex flex-col justify-between rounded-lg border bg-primary p-3 text-primary-foreground squircle">
             <span className="text-xs font-semibold">Botão Destaque</span>
             <span className="text-[9px] opacity-80">Usa o Accent Fg</span>
           </div>
-          <div className="rounded-lg border bg-card p-3 text-card-foreground">
+          <div className="rounded-lg border bg-card p-3 text-card-foreground squircle">
             <span className="block text-xs font-semibold">Card & Popover</span>
             <span className="text-[9px] text-muted-foreground">
               Fundo & texto derivados.
             </span>
           </div>
-          <div className="flex items-center justify-between rounded-lg border bg-muted p-3 text-muted-foreground">
+          <div className="flex items-center justify-between rounded-lg border bg-muted p-3 text-muted-foreground squircle">
             <span className="text-xs font-semibold">Muted</span>
-            <span className="rounded border border-border bg-background px-1.5 py-0.5 text-[9px] text-foreground">
+            <span className="rounded border border-border bg-background px-1.5 py-0.5 text-[9px] text-foreground squircle">
               Borda
             </span>
           </div>

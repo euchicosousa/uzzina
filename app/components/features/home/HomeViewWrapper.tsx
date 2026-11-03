@@ -17,25 +17,16 @@ export function HomeViewWrapper({
     <div
       className={cn(
         "relative border-x",
-        compactMobile ? "mx-2 pb-6 lg:mx-8 lg:pb-12" : "mx-4 pb-12 lg:mx-8",
+        "mx-2 py-8 lg:mx-8",
         borderAfter && "border_after",
       )}
     >
       <div
-        className={
-          compactMobile
-            ? "flex min-w-0 flex-col justify-between gap-2 px-3 lg:flex-row lg:items-center lg:gap-8 lg:px-8 xl:px-16"
-            : "flex flex-col justify-between gap-8 px-8 lg:flex-row lg:items-center xl:px-16"
-        }
+        className={cn(
+          "flex items-center justify-between gap-2 px-3 pb-4 lg:gap-8 lg:px-8 lg:pb-8",
+        )}
       >
-        <h1
-          className={cn(
-            "font-semibold",
-            compactMobile
-              ? "min-w-0 py-4 text-3xl lg:py-12 lg:text-5xl"
-              : "py-12 text-5xl",
-          )}
-        >
+        <h1 className={cn("font-medium", "min-w-0 text-3xl lg:text-5xl")}>
           {title}
         </h1>
         {OptionsComponent && (

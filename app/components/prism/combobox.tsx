@@ -55,7 +55,7 @@ function ComboboxTrigger({
       {...props}
     >
       {children}
-      <ChevronDownIcon className="pointer-events-none size-4 text-muted-foreground" />
+      <ChevronDownIcon className="pointer-events-none size-4 opacity-60" />
     </ButtonPrimitive>
   );
 }
@@ -138,7 +138,7 @@ function ComboboxContent({
   return (
     <PopoverPrimitive
       className={cn(
-        "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 data-[placement=bottom]:slide-in-from-top-2 data-[placement=left]:slide-in-from-right-2 data-[placement=right]:slide-in-from-left-2 data-[placement=top]:slide-in-from-bottom-2 relative isolate z-50 max-h-72 w-(--trigger-width) min-w-36 origin-(--trigger-anchor-point) overflow-hidden rounded-2xl bg-popover text-popover-foreground shadow-lg ring-1 ring-foreground/5 duration-100 squircle *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:bg-input/50 *:data-[slot=input-group]:shadow-none dark:ring-foreground/10",
+        "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 data-[placement=bottom]:slide-in-from-top-2 data-[placement=left]:slide-in-from-right-2 data-[placement=right]:slide-in-from-left-2 data-[placement=top]:slide-in-from-bottom-2 relative isolate z-50 max-h-72 w-(--trigger-width) min-w-36 origin-(--trigger-anchor-point) overflow-hidden rounded-2xl border border-foreground/5 bg-popover text-popover-foreground shadow-lg duration-100 squircle *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:bg-input *:data-[slot=input-group]:shadow-none dark:border-foreground/10",
         className,
       )}
       crossOffset={crossOffset}
@@ -173,7 +173,7 @@ function ComboboxItem<T extends object>({
   return (
     <ListBoxItemPrimitive
       className={cn(
-        "relative flex min-h-7 w-full cursor-default items-center gap-2 rounded-xl py-1.5 pr-8 pl-2 text-sm outline-hidden select-none squircle data-disabled:pointer-events-none data-disabled:opacity-50 data-focused:bg-secondary/50 data-focused:text-foreground data-highlighted:bg-secondary/50 data-highlighted:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex min-h-7 w-full cursor-default items-center gap-2 rounded-xl py-1.5 pr-8 pl-2 text-sm outline-hidden select-none squircle data-disabled:pointer-events-none data-disabled:opacity-50 data-focused:bg-secondary/50 data-focused:text-foreground data-highlighted:bg-secondary/50 data-highlighted:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       data-slot="combobox-item"
@@ -184,7 +184,9 @@ function ComboboxItem<T extends object>({
         <>
           {children}
           <span className="pointer-events-none absolute right-2 flex size-4 items-center justify-center">
-            {isSelected ? <CheckIcon className="pointer-events-none" /> : null}
+            {isSelected ? (
+              <CheckIcon className="pointer-events-none opacity-100" />
+            ) : null}
           </span>
         </>
       ))}
@@ -234,9 +236,13 @@ function ComboboxSeparator({ className, ...props }: SeparatorProps) {
   );
 }
 const chipsContainerSizes = {
-  sm: "min-h-8 text-xs py-1 px-2 gap-1",
-  default: "min-h-10 text-sm py-1.5 px-2.5 gap-1.5",
-  lg: "min-h-12 text-base py-2 px-3 gap-2",
+  // Vertical padding = (field height - chip height) / 2 - 1px border, so the
+  // chip inset is the same on top, bottom and left. The left padding only
+  // shrinks when a chip is present; the bare input keeps the Input padding.
+  sm: "min-h-8 py-1 px-2 gap-1 has-[[data-slot=combobox-chip]]:pl-1",
+  default:
+    "min-h-10 py-1.5 px-2.5 gap-1.5 has-[[data-slot=combobox-chip]]:pl-1.5",
+  lg: "min-h-12 text-base py-[7px] px-3 gap-2 has-[[data-slot=combobox-chip]]:pl-[7px]",
 };
 
 const chipSizes = {
@@ -256,7 +262,7 @@ function ComboboxChips({
   return (
     <Group
       className={cn(
-        "flex flex-wrap items-center rounded-2xl border border-input bg-input/40 bg-clip-padding transition-[color,box-shadow] duration-200 squircle focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/30 has-aria-invalid:border-destructive has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:border-destructive/50 dark:has-aria-invalid:ring-destructive/40",
+        "flex flex-wrap items-center rounded-2xl border border-input bg-input/40 bg-clip-padding text-sm transition-[color,box-shadow] duration-200 squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring/30 has-aria-invalid:border-destructive has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:border-destructive/50 dark:has-aria-invalid:ring-destructive/40",
         chipsContainerSizes[size],
         className,
       )}
@@ -320,7 +326,7 @@ function ComboboxChip({
       {showRemove && (
         <Button
           className={cn(
-            "rounded-full p-0 text-foreground/70 opacity-70 hover:bg-foreground/15 hover:text-foreground hover:opacity-100 aria-disabled:pointer-events-none",
+            "rounded-full p-0 hover:bg-foreground/15 hover:text-foreground aria-disabled:pointer-events-none",
             size === "sm" ? "size-3.5" : size === "lg" ? "size-4.5" : "size-4",
           )}
           data-slot="combobox-chip-remove"
@@ -348,7 +354,7 @@ function ComboboxChipsInput({ className, ...props }: InputProps) {
   return (
     <InputPrimitive
       className={cn(
-        "min-w-16 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground md:text-sm",
+        "min-w-16 flex-1 bg-transparent outline-none placeholder:text-muted-foreground",
         className,
       )}
       data-slot="combobox-chip-input"

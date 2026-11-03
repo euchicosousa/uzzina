@@ -99,7 +99,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
         </div>
 
         {parsedAnswers.length === 0 ? (
-          <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
+          <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground squircle">
             Nenhuma resposta gravada para este lead.
           </div>
         ) : (

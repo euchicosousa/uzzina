@@ -28,7 +28,7 @@ export function LeadCard({ lead, isSelected, onClick }: LeadCardProps) {
       <div className="flex w-full items-start justify-between gap-2">
         <span className="min-w-0 truncate font-medium">{lead.name}</span>
         {lead.completed ? (
-          <CheckCircle2Icon className="size-4 shrink-0 opacity-50" />
+          <CheckCircle2Icon className="size-4 shrink-0 opacity-60" />
         ) : (
           <ClockIcon className="size-4 shrink-0 opacity-50" />
         )}

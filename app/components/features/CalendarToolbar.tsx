@@ -60,13 +60,11 @@ export function CalendarToolbar({
             </>
           )}
         </PrismButton>
-        <PrismPopover
-          className="w-auto max-w-[calc(100vw-16px)] p-[8px]"
-          placement="bottom"
-        >
+        <PrismPopover className="w-auto p-2" placement="bottom">
           <PrismCalendar
             captionLayout="dropdown"
-            className="w-[calc(7*var(--cell-size))] max-w-full [--cell-size:clamp(32px,2em,40px)] [&_[data-slot=select-trigger]]:min-h-(--cell-size) [&_[data-slot=select-trigger]]:px-1 [&_[data-slot=select-trigger][data-size]]:h-auto [&_td>div]:aspect-auto [&_td>div>div]:size-(--cell-size) [&>div>div>div]:h-auto [&>div>div>div>div]:min-w-0 [&>div>div>div>div]:flex-1 [&>div>div>div>div]:flex-wrap"
+            cellSize="sm"
+            className="max-w-full"
             onChange={(day) => {
               if (day) {
                 setCurrentDay(new Date(day.year, day.month - 1, day.day));

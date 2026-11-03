@@ -53,14 +53,14 @@ export function MenuSection() {
                   <PrismMenuItem
                     onAction={() => toast.info("Navegar para Perfil")}
                   >
-                    <UserIcon className="mr-2 size-4 text-muted-foreground" />
+                    <UserIcon className="mr-2" />
                     <span>Meu Perfil</span>
                     <PrismMenuShortcut>⌘P</PrismMenuShortcut>
                   </PrismMenuItem>
                   <PrismMenuItem
                     onAction={() => toast.info("Navegar para Configurações")}
                   >
-                    <SettingsIcon className="mr-2 size-4 text-muted-foreground" />
+                    <SettingsIcon className="mr-2" />
                     <span>Configurações</span>
                     <PrismMenuShortcut>⌘S</PrismMenuShortcut>
                   </PrismMenuItem>
@@ -69,7 +69,7 @@ export function MenuSection() {
 
                   <PrismMenuSub>
                     <PrismMenuSubTrigger>
-                      <KeyboardIcon className="mr-2 size-4 text-muted-foreground" />
+                      <KeyboardIcon className="mr-2" />
                       <span>Preferências</span>
                     </PrismMenuSubTrigger>
                     <PrismMenuSubContent className="w-48">
@@ -93,7 +93,7 @@ export function MenuSection() {
                     onAction={() => toast.warning("Saindo da conta...")}
                     variant="destructive"
                   >
-                    <LogOutIcon className="mr-2 size-4" />
+                    <LogOutIcon className="mr-2" />
                     <span>Sair da Conta</span>
                     <PrismMenuShortcut>⇧⌘Q</PrismMenuShortcut>
                   </PrismMenuItem>
@@ -152,15 +152,15 @@ export function MenuSection() {
                 >
                   <PrismMenuLabel>Tema do Sistema</PrismMenuLabel>
                   <PrismMenuItem id="light">
-                    <SunIcon className="mr-2 size-4 shrink-0 text-muted-foreground" />
+                    <SunIcon className="mr-2" />
                     <span className="truncate">Claro</span>
                   </PrismMenuItem>
                   <PrismMenuItem id="dark">
-                    <MoonIcon className="mr-2 size-4 shrink-0 text-muted-foreground" />
+                    <MoonIcon className="mr-2" />
                     <span className="truncate">Escuro</span>
                   </PrismMenuItem>
                   <PrismMenuItem id="system">
-                    <MonitorIcon className="mr-2 size-4 shrink-0 text-muted-foreground" />
+                    <MonitorIcon className="mr-2" />
                     <span className="truncate">Padrão do Sistema</span>
                   </PrismMenuItem>
                 </PrismMenuContent>

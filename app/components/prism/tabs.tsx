@@ -33,7 +33,7 @@ export const tabVariants = cva(
         underline:
           "-mb-px border-b-2 border-b-transparent text-muted-foreground transition-colors data-[hovered]:text-foreground data-[pressed]:text-foreground data-[selected]:border-b-primary data-[selected]:text-foreground data-[focus-visible]:bg-input",
         drawer:
-          "-mb-px border-t-2 border-t-transparent border-x border-x-transparent border-b border-b-border bg-transparent text-muted-foreground transition-colors data-[hovered]:text-foreground data-[selected]:border-t-primary data-[selected]:border-x-border data-[selected]:border-b-transparent data-[selected]:bg-popover data-[selected]:text-foreground data-[focus-visible]:border-t-primary data-[focus-visible]:bg-input",
+          "-mb-px border-t-2 border-t-transparent border-x border-x-transparent border-b border-b-border bg-transparent text-muted-foreground transition-colors data-[hovered]:text-foreground data-[selected]:border-t-primary data-[selected]:border-x-border data-[selected]:border-b-transparent data-[selected]:bg-popover data-[selected]:text-foreground data-[focus-visible]:border-t-primary data-[focus-visible]:bg-input data-[selected]:data-[focus-visible]:bg-input",
       },
     },
     defaultVariants: {

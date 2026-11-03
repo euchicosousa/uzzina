@@ -16,24 +16,28 @@ import { SIZE } from "~/lib/CONSTANTS";
 import { getFormattedPeopleName } from "~/utils";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
-import { cn } from "cnfast";
 import type { Partner } from "~/types";
 import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
-import { ComboboxTrigger } from "./ComboboxTrigger";
+import {
+  ComboboxTrigger,
+  getTriggerAvatarPadding,
+  getTriggerAvatarSize,
+  type ComboboxTriggerProps,
+} from "./ComboboxTrigger";
 export function ResponsiblesCombobox({
   selectedResponsibles = [],
   currentPartners,
   onSelect,
-  variant = "default",
-  className,
   disabled = false,
+  variant,
+  size,
 }: {
   selectedResponsibles: string[];
   currentPartners: Partner[];
   onSelect?: (responsibles: string[]) => void;
-  variant?: "default" | "filter";
-  className?: string;
   disabled?: boolean;
+  variant?: ComboboxTriggerProps["variant"];
+  size?: ComboboxTriggerProps["size"];
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const { person } = useAppContext();
@@ -72,18 +76,23 @@ export function ResponsiblesCombobox({
     >
       <ComboboxTrigger
         aria-label="Responsáveis"
-        className={cn(className, "overflow-hidden")}
         disabled={disabled}
         title={getFormattedPeopleName(currentResponsibles)}
-        variant={variant === "filter" ? "filter" : "form-link"}
+        className={
+          (variant ?? "link") === "link"
+            ? undefined
+            : getTriggerAvatarPadding(size)
+        }
+        size={size}
+        variant={variant ?? "link"}
       >
         <ActionResponsiblesDisplay
           responsibles={selectedResponsibles}
-          size={SIZE.sm}
+          size={getTriggerAvatarSize(size)}
         />
       </ComboboxTrigger>
 
-      <PrismPopover className="w-[320px] overflow-hidden rounded-3xl border bg-popover p-0 shadow-xl squircle">
+      <PrismPopover className="overflow-hidden p-0" size="lg">
         <PrismCommand className="p-0">
           <PrismCommandInput placeholder="Procurar responsável..." />
           <PrismCommandList
@@ -138,10 +147,10 @@ function ActionResponsiblesDisplay({
     .map((r) => people.find((p) => p.user_id === r))
     .filter((p) => p !== undefined);
   return (
-    <div className="flex items-center gap-2 overflow-hidden text-xs text-muted-foreground">
+    <div className="flex items-center gap-2 overflow-hidden">
       {responsibles.length === 0 ? (
         <>
-          <User2Icon className="size-4" />
+          <User2Icon />
           <span className="truncate">Responsáveis</span>
         </>
       ) : (

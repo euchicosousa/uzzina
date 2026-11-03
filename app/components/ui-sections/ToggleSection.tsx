@@ -91,9 +91,9 @@ export function ToggleSection() {
                 onChange={setIsStarred}
               >
                 {isStarred ? (
-                  <StarIcon className="size-5 fill-amber-500 text-amber-500" />
+                  <StarIcon className="fill-favorite text-favorite" />
                 ) : (
-                  <StarIcon className="size-5" />
+                  <StarIcon />
                 )}
                 <span>{isStarred ? "Favoritado" : "Favoritar"}</span>
               </PrismToggle>
@@ -118,13 +118,13 @@ export function ToggleSection() {
                   selectionMode="multiple"
                 >
                   <PrismToggleGroupItem aria-label="Negrito" id="bold">
-                    <BoldIcon className="size-4" />
+                    <BoldIcon />
                   </PrismToggleGroupItem>
                   <PrismToggleGroupItem aria-label="Itálico" id="italic">
-                    <ItalicIcon className="size-4" />
+                    <ItalicIcon />
                   </PrismToggleGroupItem>
                   <PrismToggleGroupItem aria-label="Sublinhado" id="underline">
-                    <UnderlineIcon className="size-4" />
+                    <UnderlineIcon />
                   </PrismToggleGroupItem>
                 </PrismToggleGroup>
               </div>
@@ -144,11 +144,11 @@ export function ToggleSection() {
                   variant="outline"
                 >
                   <PrismToggleGroupItem aria-label="Lista" id="list">
-                    <ListIcon className="size-4" />
+                    <ListIcon />
                     <span>Lista</span>
                   </PrismToggleGroupItem>
                   <PrismToggleGroupItem aria-label="Grade" id="grid">
-                    <LayoutGridIcon className="size-4" />
+                    <LayoutGridIcon />
                     <span>Grade</span>
                   </PrismToggleGroupItem>
                 </PrismToggleGroup>
@@ -175,11 +175,11 @@ export function ToggleSection() {
                   variant="outline"
                 >
                   <PrismToggleGroupItem aria-label="Lista" id="list">
-                    <ListIcon className="size-4" />
+                    <ListIcon />
                     <span>Lista</span>
                   </PrismToggleGroupItem>
                   <PrismToggleGroupItem aria-label="Grade" id="grid">
-                    <LayoutGridIcon className="size-4" />
+                    <LayoutGridIcon />
                     <span>Grade</span>
                   </PrismToggleGroupItem>
                 </PrismToggleGroup>
@@ -200,13 +200,13 @@ export function ToggleSection() {
                   variant="outline"
                 >
                   <PrismToggleGroupItem aria-label="Negrito" id="bold">
-                    <BoldIcon className="size-4" />
+                    <BoldIcon />
                   </PrismToggleGroupItem>
                   <PrismToggleGroupItem aria-label="Itálico" id="italic">
-                    <ItalicIcon className="size-4" />
+                    <ItalicIcon />
                   </PrismToggleGroupItem>
                   <PrismToggleGroupItem aria-label="Sublinhado" id="underline">
-                    <UnderlineIcon className="size-4" />
+                    <UnderlineIcon />
                   </PrismToggleGroupItem>
                 </PrismToggleGroup>
               </div>
@@ -230,16 +230,16 @@ export function ToggleSection() {
                     aria-label="Alinhar à esquerda"
                     id="left"
                   >
-                    <AlignLeftIcon className="size-4" />
+                    <AlignLeftIcon />
                   </PrismToggleGroupItem>
                   <PrismToggleGroupItem aria-label="Centralizar" id="center">
-                    <AlignCenterIcon className="size-4" />
+                    <AlignCenterIcon />
                   </PrismToggleGroupItem>
                   <PrismToggleGroupItem
                     aria-label="Alinhar à direita"
                     id="right"
                   >
-                    <AlignRightIcon className="size-4" />
+                    <AlignRightIcon />
                   </PrismToggleGroupItem>
                 </PrismToggleGroup>
               </div>
@@ -275,11 +275,11 @@ export function ToggleSection() {
                     variant="outline"
                   >
                     <PrismToggleGroupItem aria-label="Lista" id="list">
-                      <ListIcon className="size-4" />
+                      <ListIcon />
                       <span>Lista</span>
                     </PrismToggleGroupItem>
                     <PrismToggleGroupItem aria-label="Grade" id="grid">
-                      <LayoutGridIcon className="size-4" />
+                      <LayoutGridIcon />
                       <span>Grade</span>
                     </PrismToggleGroupItem>
                   </PrismToggleGroup>
@@ -299,16 +299,16 @@ export function ToggleSection() {
                     variant="outline"
                   >
                     <PrismToggleGroupItem aria-label="Negrito" id="bold">
-                      <BoldIcon className="size-4" />
+                      <BoldIcon />
                     </PrismToggleGroupItem>
                     <PrismToggleGroupItem aria-label="Itálico" id="italic">
-                      <ItalicIcon className="size-4" />
+                      <ItalicIcon />
                     </PrismToggleGroupItem>
                     <PrismToggleGroupItem
                       aria-label="Sublinhado"
                       id="underline"
                     >
-                      <UnderlineIcon className="size-4" />
+                      <UnderlineIcon />
                     </PrismToggleGroupItem>
                   </PrismToggleGroup>
                 </div>

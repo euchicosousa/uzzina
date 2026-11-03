@@ -37,10 +37,10 @@ export function GallerySectionHeader({
         <span>{title}</span>
         {approved && (
           <span
-            className="inline-flex size-5 items-center justify-center rounded-full bg-green-400 text-green-950 shadow-xs ring-2 ring-green-400/50"
+            className="inline-flex size-5 items-center justify-center rounded-full bg-approved text-approved-foreground shadow-xs ring-2 ring-approved/50"
             title="Aprovado"
           >
-            <CheckIcon className="size-3.5 stroke-[3]" />
+            <CheckIcon className="stroke3 size-3.5" />
           </span>
         )}
       </h3>
@@ -96,6 +96,7 @@ export interface SidebarAnchorLinkProps {
   label: string;
   active?: boolean;
   approved?: boolean;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 export function SidebarAnchorLink({
@@ -103,6 +104,7 @@ export function SidebarAnchorLink({
   label,
   active,
   approved,
+  onClick,
 }: SidebarAnchorLinkProps) {
   return (
     <a
@@ -110,11 +112,21 @@ export function SidebarAnchorLink({
       href={`#${targetId}`}
       onClick={(e) => {
         e.preventDefault();
+        if (onClick) {
+          onClick(e);
+          return;
+        }
         const element = document.getElementById(targetId);
-        if (element) {
-          element.scrollIntoView({
+        if (!element) return;
+        const scrollParent = element.closest("main");
+        if (scrollParent) {
+          const parentRect = scrollParent.getBoundingClientRect();
+          const elemRect = element.getBoundingClientRect();
+          const targetTop =
+            elemRect.top - parentRect.top + scrollParent.scrollTop - 64;
+          scrollParent.scrollTo({
+            top: Math.max(0, targetTop),
             behavior: "smooth",
-            block: "start",
           });
         }
       }}
@@ -122,10 +134,10 @@ export function SidebarAnchorLink({
       <span>{label}</span>
       {approved && (
         <span
-          className="inline-flex size-4 items-center justify-center rounded-full bg-green-400 text-green-950 shadow-2xs ring-1 ring-green-400/60"
+          className="inline-flex size-4 items-center justify-center rounded-full bg-approved text-approved-foreground shadow-2xs ring-1 ring-approved/60"
           title="Aprovado"
         >
-          <CheckIcon className="size-2.5 stroke-[3]" />
+          <CheckIcon className="size-2.5 stroke-3" />
         </span>
       )}
     </a>
@@ -149,7 +161,7 @@ export function SidebarTabButton({
 }: SidebarTabButtonProps) {
   return (
     <button
-      className={`flex shrink-0 cursor-pointer items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold tracking-tight transition-all hover:bg-card ${isActive ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+      className={`flex shrink-0 cursor-pointer items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold tracking-tight transition-all hover:bg-card ${isActive ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground"} squircle`}
       onClick={onClick}
       type="button"
     >

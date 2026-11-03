@@ -7,8 +7,21 @@ import {
   type LinkProps as LinkPrimitiveProps,
 } from "react-aria-components";
 import { cn } from "cnfast";
+// Single source of truth for control sizes (also used by Toggle).
+const buttonSizeClasses = {
+  xs: "h-6 gap-1 px-3 text-xs has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-3",
+  sm: "h-8 gap-1 px-4  has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-4",
+  default:
+    "h-10 gap-1.5 px-5 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5",
+  lg: "h-12 gap-1.5 px-5 text-base has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3  rounded-3xl",
+  icon: "size-10",
+  "icon-xs": "size-6 [&_svg:not([class*='size-'])]:size-4 rounded-2xl",
+  "icon-sm": "size-8 [&_svg:not([class*='size-'])]:size-4",
+  "icon-lg": "size-12 rounded-3xl",
+  unstyled: "h-auto p-0 gap-0",
+} as const;
 const buttonVariants = cva(
-  "group/button squircle inline-flex shrink-0 items-center justify-center rounded-2xl border bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:opacity-75 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
+  "group/button squircle inline-flex shrink-0 items-center justify-center rounded-2xl border bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
   {
     variants: {
       variant: {
@@ -21,25 +34,14 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-secondary/50 border-transparent hover:text-foreground aria-expanded:bg-secondary/50 aria-expanded:text-foreground",
         destructive:
-          "bg-destructive/10 text-destructive hover:bg-destructive/20 border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+          "bg-destructive/10 text-destructive hover:bg-destructive/20 border-destructive/40 focus-visible:border-destructive/60 focus-visible:ring-destructive/30 dark:bg-destructive/20 dark:hover:bg-destructive/30",
         success:
-          "bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-700 focus-visible:border-emerald-600 focus-visible:ring-emerald-500/30",
+          "bg-success-strong border-success-strong text-success-strong-foreground hover:bg-success-strong-hover focus-visible:border-success-strong focus-visible:ring-success-accent/30",
         link: "text-primary underline-offset-4 hover:underline border-transparent",
         unstyled:
           "bg-transparent border-0 ring-0 focus-visible:ring-0 active:translate-y-0",
       },
-      size: {
-        xs: "h-6 gap-1 px-3 text-xs has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-8 gap-1 px-4 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-4",
-        default:
-          "h-10 gap-1.5 px-5 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5",
-        lg: "h-12 gap-1.5 px-5 text-base has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3  rounded-3xl",
-        icon: "size-10",
-        "icon-xs": "size-6 [&_svg:not([class*='size-'])]:size-4 rounded-2xl",
-        "icon-sm": "size-8 [&_svg:not([class*='size-'])]:size-4",
-        "icon-lg": "size-12 rounded-3xl",
-        unstyled: "h-auto p-0 gap-0",
-      },
+      size: buttonSizeClasses,
     },
     defaultVariants: {
       variant: "default",
@@ -99,4 +101,4 @@ function LinkButton({
   );
 }
 export type PrismButtonVariantProps = VariantProps<typeof buttonVariants>;
-export { Button, LinkButton, buttonVariants };
+export { Button, LinkButton, buttonSizeClasses, buttonVariants };

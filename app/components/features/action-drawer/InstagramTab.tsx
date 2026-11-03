@@ -15,6 +15,7 @@ import {
 import { INTENT } from "~/lib/CONSTANTS";
 import { getFormattedPartnersLinks, parseStrategies } from "~/utils/format";
 import type { Action, Partner } from "~/types";
+import type { TextDraftField } from "~/components/features/action-drawer/ActionFormDrawer";
 import { cn } from "cnfast";
 import {
   useShortWritingPanel,
@@ -41,11 +42,51 @@ interface InstagramTabProps {
   contentVersion?: number;
   onContentDescriptionChange: (html: string) => void;
   onOpenStrategyModal?: () => void;
+  /** Receives each typed caption without re-rendering the drawer. */
+  onTextDraft?: (field: TextDraftField, value: string) => void;
+  /** Commits the typed caption to the form on blur. */
+  onTextCommit?: (field: TextDraftField, value: string) => void;
   /** Phone-width panel, measured by the drawer from its own width. */
   compact?: boolean;
 }
 function getCaptionTail(instagram_caption_tail: string | null) {
   return "".concat("\n\n").concat(instagram_caption_tail || "");
+}
+/** Keeps typing local to the field; the form receives the caption on blur. */
+function CaptionTextarea({
+  caption,
+  fallback,
+  className,
+  disabled,
+  onChange,
+  onBlur,
+}: {
+  caption: string | null | undefined;
+  fallback: string;
+  className?: string;
+  disabled?: boolean;
+  onChange: (caption: string) => void;
+  /** Receives the typed caption, or null when nothing was typed. */
+  onBlur: (caption: string | null) => void;
+}) {
+  const [typed, setTyped] = useState<string | null>(null);
+  return (
+    <textarea
+      aria-label="Legenda do Instagram"
+      className={className}
+      disabled={disabled}
+      onBlur={() => {
+        onBlur(typed);
+        setTyped(null);
+      }}
+      onChange={(e) => {
+        setTyped(e.target.value);
+        onChange(e.target.value);
+      }}
+      placeholder="Legenda"
+      value={typed ?? (caption || fallback)}
+    />
+  );
 }
 function AiProcessingMessage({
   isAIProcessing,
@@ -81,6 +122,8 @@ export function InstagramTab({
   contentVersion,
   onContentDescriptionChange,
   onOpenStrategyModal,
+  onTextDraft,
+  onTextCommit,
   compact = false,
 }: InstagramTabProps) {
   const [instagramSubTab, setInstagramSubTab] = useState<"content" | "caption">(
@@ -304,32 +347,34 @@ export function InstagramTab({
                 activeAIIntent={activeAIIntent}
                 isAIProcessing={isAIProcessing}
               />
-              <textarea
-                aria-label="Legenda do Instagram"
+              <CaptionTextarea
+                caption={RawAction.instagram_caption}
                 className={cn(
                   "w-full resize-none p-4 outline-none disabled:opacity-50 @[47rem]/action:pl-0",
                   writingLayout ? "min-h-0 flex-1" : "h-full",
                 )}
                 disabled={isAIProcessing}
-                onBlur={async () =>
+                fallback={getCaptionTail(
+                  currentPartners.length > 0
+                    ? currentPartners[0].instagram_caption_tail
+                    : "",
+                )}
+                onBlur={async (caption) => {
+                  if (caption !== null) {
+                    if (onTextCommit)
+                      onTextCommit("instagram_caption", caption);
+                    else
+                      setRawAction((prev) => ({
+                        ...prev,
+                        instagram_caption: caption,
+                      }));
+                  }
                   await updateAction({
-                    instagram_caption: RawAction.instagram_caption,
-                  })
-                }
-                onChange={(e) =>
-                  setRawAction((prev) => ({
-                    ...prev,
-                    instagram_caption: e.target.value,
-                  }))
-                }
-                placeholder="Legenda"
-                value={
-                  RawAction.instagram_caption ||
-                  getCaptionTail(
-                    currentPartners.length > 0
-                      ? currentPartners[0].instagram_caption_tail
-                      : "",
-                  )
+                    instagram_caption: caption ?? RawAction.instagram_caption,
+                  });
+                }}
+                onChange={(caption) =>
+                  onTextDraft?.("instagram_caption", caption)
                 }
               />
             </div>

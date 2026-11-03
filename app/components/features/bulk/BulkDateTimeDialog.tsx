@@ -78,7 +78,7 @@ export function BulkDateTimeDialog({
   if (!open) return null;
   return (
     <PrismDialog
-      className="w-72"
+      size="sm"
       isDismissable
       isOpen={open}
       onOpenChange={handleOpenChange}

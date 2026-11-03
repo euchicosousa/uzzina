@@ -44,7 +44,7 @@ export interface PrismDateRangePickerProps {
 const triggerSizeClasses = {
   sm: "h-8 px-4",
   default: "h-10 px-5",
-  lg: "h-12 px-5",
+  lg: "h-12 rounded-3xl px-5 text-base squircle",
 } as const;
 
 function toDate(d: Date | string | null | undefined): Date | null {
@@ -116,7 +116,7 @@ export function PrismDateRangePicker({
         <ButtonPrimitive
           aria-label={ariaLabel}
           className={cn(
-            "flex w-full items-center justify-between gap-3 rounded-2xl border border-transparent bg-input/50 py-2 text-sm transition-[color,box-shadow] duration-200 outline-none squircle focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50",
+            "flex w-full items-center justify-between gap-3 rounded-2xl border border-transparent bg-input py-2 text-sm transition-[color,box-shadow] duration-200 outline-none squircle focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50",
             triggerSizeClasses[size],
             triggerClassName,
           )}
@@ -124,10 +124,10 @@ export function PrismDateRangePicker({
           isDisabled={isDisabled}
         >
           <div className="flex min-w-0 items-center gap-2.5">
-            <CalendarIcon className="size-4 shrink-0 text-muted-foreground" />
+            <CalendarIcon className="size-4 shrink-0 opacity-60" />
             <span
               className={cn(
-                "truncate text-sm font-medium",
+                "truncate font-medium",
                 !currentStart || !currentEnd
                   ? "text-muted-foreground"
                   : "text-foreground",
@@ -136,11 +136,11 @@ export function PrismDateRangePicker({
               {formattedDisplayText}
             </span>
           </div>
-          <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground" />
+          <ChevronDownIcon className="size-4 shrink-0 opacity-60" />
         </ButtonPrimitive>
 
         <PrismPopover
-          className={cn("w-auto p-3", popoverClassName)}
+          className={cn("w-auto p-2", popoverClassName)}
           placement="bottom start"
         >
           <PrismRangeCalendar

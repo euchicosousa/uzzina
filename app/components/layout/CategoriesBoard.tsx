@@ -63,7 +63,7 @@ function CategoryColumn({
       <div className="flex h-10 items-center justify-between gap-4 overflow-hidden p-2">
         <div className="flex items-center gap-2 overflow-hidden">
           <div
-            className="flex size-6 shrink-0 items-center justify-center rounded-lg"
+            className="flex size-6 shrink-0 items-center justify-center rounded-lg squircle"
             style={{
               color: category.color,
             }}

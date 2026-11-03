@@ -1,6 +1,10 @@
 import Color from "color";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { PrismInput } from "~/components/prism";
+import {
+  PrismInput,
+  PrismToggleGroup,
+  PrismToggleGroupItem,
+} from "~/components/prism";
 import { cn } from "cnfast";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -62,27 +66,30 @@ export function PartnerColorPicker({
   const hexColors = useMemo(() => colors.map(toHex), [colors]);
   return (
     <div className="space-y-3">
-      {/* Swatches do parceiro — aspecto 3:4 igual ao ActionColorDropdown original */}
+      {/* Swatches do parceiro: PrismToggleGroup, igual ao ActionColorDropdown */}
       {hexColors.length > 0 ? (
-        <div className={cn("grid gap-2", className)}>
+        <PrismToggleGroup
+          aria-label="Cores do parceiro"
+          className={cn("w-full flex-wrap", className)}
+          onSelectionChange={(keys) => {
+            const selected = Array.from(keys)[0] as string | undefined;
+            if (selected) onChange(selected);
+          }}
+          selectedKeys={hexColors.filter(
+            (hex) => hex.toLowerCase() === value.toLowerCase(),
+          )}
+          selectionMode="single"
+          spacing={0}
+        >
           {hexColors.map((hex) => (
-            <button
-              key={hex}
-              aria-label={`Cor ${hex}`}
-              className={cn(
-                "w-fill aspect-3/4 rounded border border-black/5 transition-all hover:opacity-80",
-                value.toLowerCase() === hex.toLowerCase() &&
-                  "scale-105 ring-2 ring-primary ring-offset-1",
-              )}
-              onClick={() => onChange(hex)}
-              style={{
-                backgroundColor: hex,
-              }}
-              title={hex}
-              type="button"
-            />
+            <PrismToggleGroupItem key={hex} aria-label={`Cor ${hex}`} id={hex}>
+              <span
+                className="size-5 rounded-full border border-border"
+                style={{ backgroundColor: hex }}
+              />
+            </PrismToggleGroupItem>
           ))}
-        </div>
+        </PrismToggleGroup>
       ) : (
         <p className="text-sm text-muted-foreground">
           Nenhuma cor definida para este parceiro.

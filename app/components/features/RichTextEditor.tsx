@@ -63,7 +63,7 @@ const COMPACT_TOOLBAR_COMMANDS = new Set([
 ]);
 
 const toolbarButtonClass =
-  "flex size-8 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all outline-none hover:bg-secondary hover:text-foreground data-[focus-visible]:bg-input data-[focus-visible]:text-foreground disabled:opacity-30 disabled:hover:bg-transparent";
+  "flex size-8 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all outline-none hover:bg-secondary hover:text-foreground data-[focus-visible]:bg-input data-[focus-visible]:text-foreground disabled:opacity-30 disabled:hover:bg-transparent squircle";
 
 function EditorToolbar({
   children,
@@ -734,7 +734,7 @@ export function RichTextEditor({
         />
         {editor && (
           <BubbleMenuComponent
-            className="flex items-center gap-0.5 rounded-2xl border bg-background/95 p-1 shadow-lg backdrop-blur-md squircle"
+            className="flex items-center gap-0.5 rounded-2xl border border-foreground/5 bg-popover/95 p-1 shadow-lg backdrop-blur-md squircle dark:border-foreground/10"
             data-editor-context-toolbar
             editor={editor}
             tabIndex={-1}

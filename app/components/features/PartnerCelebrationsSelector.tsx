@@ -68,7 +68,9 @@ export function PartnerCelebrationsSelector({
   }, [celebrations]);
 
   if (isLoading) {
-    return <div className="h-48 w-full animate-pulse rounded-xl bg-muted/20" />;
+    return (
+      <div className="h-48 w-full animate-pulse rounded-xl bg-muted/20 squircle" />
+    );
   }
 
   if (celebrations.length === 0) {
@@ -107,7 +109,7 @@ export function PartnerCelebrationsSelector({
           <div className="relative w-44 sm:w-52">
             <PrismInputGroup size="sm">
               <PrismInputGroupAddon>
-                <SearchIcon className="size-3.5 text-muted-foreground" />
+                <SearchIcon className="size-3.5" />
               </PrismInputGroupAddon>
               <PrismInputGroupInput
                 placeholder="Filtrar por nome..."
@@ -158,7 +160,7 @@ export function PartnerCelebrationsSelector({
               type="button"
               onClick={() => setActiveMonth(m.key)}
               className={cn(
-                "flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-colors",
+                "flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-colors squircle",
                 isSelected
                   ? "bg-primary text-primary-foreground"
                   : "bg-input/50 text-muted-foreground hover:bg-input hover:text-foreground",
@@ -242,7 +244,7 @@ export function PartnerCelebrationsSelector({
                         }
                       }}
                       className={cn(
-                        "group flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs transition-colors select-none",
+                        "group flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs transition-colors select-none squircle",
                         isChecked
                           ? "bg-primary/10 font-medium text-foreground"
                           : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
@@ -253,7 +255,7 @@ export function PartnerCelebrationsSelector({
                         checked={isChecked}
                         onChange={(e) => onToggle(c.id, e.target.checked)}
                         onClick={(e) => e.stopPropagation()}
-                        className="size-3.5 shrink-0 cursor-pointer rounded border-border accent-primary"
+                        className="size-3.5 shrink-0 cursor-pointer rounded border-border accent-primary squircle"
                       />
                       <span className="w-5 shrink-0 text-center font-bold text-foreground/80">
                         {day}
@@ -262,7 +264,7 @@ export function PartnerCelebrationsSelector({
                         {c.title}
                       </span>
                       {c.is_holiday && (
-                        <span className="py-0.2 shrink-0 rounded border border-amber-500/30 bg-amber-500/15 px-1.5 text-[9px] font-semibold text-amber-600 dark:text-amber-400">
+                        <span className="py-0.2 shrink-0 rounded border border-amber-500/30 bg-amber-500/15 px-1.5 text-[9px] font-semibold text-amber-600 squircle dark:text-amber-400">
                           Feriado
                         </span>
                       )}

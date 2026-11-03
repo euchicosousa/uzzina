@@ -250,7 +250,7 @@ function AppLeads() {
 
             <PrismInputGroup size="sm">
               <PrismInputGroupAddon align="inline-start">
-                <SearchIcon className="ml-1 size-4 text-muted-foreground" />
+                <SearchIcon className="ml-1 size-4" />
               </PrismInputGroupAddon>
               <PrismInputGroupInput
                 aria-label="Buscar leads"

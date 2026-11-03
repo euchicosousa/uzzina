@@ -63,7 +63,7 @@ export function InputSection() {
                   <span className="text-xs font-semibold text-muted-foreground uppercase">
                     {label}
                   </span>
-                  <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex flex-wrap items-center gap-4 border-y border-[#00f]">
                     <PrismButton size={size} variant="default">
                       Botão ({height})
                     </PrismButton>
@@ -77,7 +77,7 @@ export function InputSection() {
                     <div className="w-72">
                       <PrismInputGroup size={size}>
                         <PrismInputGroupAddon align="inline-start">
-                          <SearchIcon className="opacity-50" />
+                          <SearchIcon />
                         </PrismInputGroupAddon>
                         <PrismInputGroupInput
                           placeholder={`InputGroup busca (${size})`}
@@ -123,7 +123,7 @@ export function InputSection() {
                 </Label>
                 <PrismInputGroup size="sm">
                   <PrismInputGroupAddon align="inline-start">
-                    <SearchIcon className="opacity-50" />
+                    <SearchIcon />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput placeholder="Pesquisar ações..." />
                 </PrismInputGroup>
@@ -135,7 +135,7 @@ export function InputSection() {
                 </Label>
                 <PrismInputGroup size="default">
                   <PrismInputGroupAddon align="inline-start">
-                    <SearchIcon className="opacity-50" />
+                    <SearchIcon />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput placeholder="Pesquisar ações..." />
                 </PrismInputGroup>
@@ -147,7 +147,7 @@ export function InputSection() {
                 </Label>
                 <PrismInputGroup size="lg">
                   <PrismInputGroupAddon align="inline-start">
-                    <SearchIcon className="opacity-50" />
+                    <SearchIcon />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput placeholder="Pesquisar ações..." />
                 </PrismInputGroup>
@@ -164,7 +164,7 @@ export function InputSection() {
                 <PrismInputGroup size="sm">
                   <PrismInputGroupInput defaultValue="uzzina.app/agencia" />
                   <PrismInputGroupAddon align="inline-end">
-                    <CheckIcon className="text-emerald-500" />
+                    <CheckIcon className="text-success-accent" />
                   </PrismInputGroupAddon>
                 </PrismInputGroup>
               </TextField>
@@ -176,7 +176,7 @@ export function InputSection() {
                 <PrismInputGroup size="default">
                   <PrismInputGroupInput defaultValue="uzzina.app/agencia" />
                   <PrismInputGroupAddon align="inline-end">
-                    <CheckIcon className="text-emerald-500" />
+                    <CheckIcon className="text-success-accent" />
                   </PrismInputGroupAddon>
                 </PrismInputGroup>
               </TextField>
@@ -188,7 +188,7 @@ export function InputSection() {
                 <PrismInputGroup size="lg">
                   <PrismInputGroupInput defaultValue="uzzina.app/agencia" />
                   <PrismInputGroupAddon align="inline-end">
-                    <CheckIcon className="text-emerald-500" />
+                    <CheckIcon className="text-success-accent" />
                   </PrismInputGroupAddon>
                 </PrismInputGroup>
               </TextField>
@@ -243,7 +243,7 @@ export function InputSection() {
                 </Label>
                 <PrismInputGroup size="sm">
                   <PrismInputGroupAddon align="inline-start">
-                    <LockIcon className="opacity-50" />
+                    <LockIcon />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput
                     placeholder="••••••••"
@@ -266,7 +266,7 @@ export function InputSection() {
                 </Label>
                 <PrismInputGroup size="default">
                   <PrismInputGroupAddon align="inline-start">
-                    <LockIcon className="opacity-50" />
+                    <LockIcon />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput
                     placeholder="••••••••"
@@ -289,7 +289,7 @@ export function InputSection() {
                 </Label>
                 <PrismInputGroup size="lg">
                   <PrismInputGroupAddon align="inline-start">
-                    <LockIcon className="opacity-50" />
+                    <LockIcon />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput
                     placeholder="••••••••"
@@ -316,7 +316,7 @@ export function InputSection() {
                 </Label>
                 <PrismInputGroup size="sm">
                   <PrismInputGroupAddon align="inline-start">
-                    <SearchIcon className="opacity-50" />
+                    <SearchIcon />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput
                     onChange={(e) => setSearchValue(e.target.value)}
@@ -341,7 +341,7 @@ export function InputSection() {
                 </Label>
                 <PrismInputGroup size="default">
                   <PrismInputGroupAddon align="inline-start">
-                    <SearchIcon className="opacity-50" />
+                    <SearchIcon />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput
                     onChange={(e) => setSearchValue(e.target.value)}
@@ -366,7 +366,7 @@ export function InputSection() {
                 </Label>
                 <PrismInputGroup size="lg">
                   <PrismInputGroupAddon align="inline-start">
-                    <SearchIcon className="opacity-50" />
+                    <SearchIcon />
                   </PrismInputGroupAddon>
                   <PrismInputGroupInput
                     onChange={(e) => setSearchValue(e.target.value)}
@@ -445,10 +445,10 @@ export function InputSection() {
               <Label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground">
                 <span>ColorArea & ColorSlider</span>
                 <span
-                  className="inline-flex size-5 items-center justify-center rounded-full bg-green-400 text-green-950 shadow-xs ring-2 ring-green-400/50"
+                  className="inline-flex size-5 items-center justify-center rounded-full bg-approved text-approved-foreground shadow-xs ring-2 ring-approved/50"
                   title="Aprovado"
                 >
-                  <CheckIcon className="size-3.5 stroke-[3]" />
+                  <CheckIcon className="size-3.5 stroke-3" />
                 </span>
               </Label>
               <PrismColorArea defaultValue="#FF5733" />

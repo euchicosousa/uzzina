@@ -63,20 +63,20 @@ function SortableThumbnail({
     <div
       ref={setNodeRef}
       style={style}
-      className="group relative aspect-square overflow-hidden rounded-lg border bg-muted"
+      className="group relative aspect-square overflow-hidden rounded-lg border bg-muted squircle"
     >
       <button
         type="button"
         {...attributes}
         {...listeners}
         aria-label={`Reordenar arquivo ${index + 1}`}
-        className="absolute top-1 left-1 z-10 flex size-8 cursor-grab touch-none items-center justify-center rounded bg-black/70 text-white outline-none focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing"
+        className="absolute top-1 left-1 z-10 flex size-8 cursor-grab touch-none items-center justify-center rounded bg-black/70 text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30 active:cursor-grabbing"
       >
         <GripVerticalIcon className="size-4" />
       </button>
 
       {/* Número de ordem */}
-      <div className="absolute bottom-1 left-1 z-10 rounded bg-black/70 px-1 text-xs font-bold text-white">
+      <div className="absolute bottom-1 left-1 z-10 rounded bg-black/70 px-1 text-xs font-bold text-white squircle">
         {index + 1}
       </div>
 
@@ -86,7 +86,7 @@ function SortableThumbnail({
         type="button"
         aria-label={`Remover arquivo ${index + 1}`}
         onClick={onRemove}
-        className="absolute top-1 right-1 z-10 flex size-8 items-center justify-center rounded bg-destructive text-white outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="absolute top-1 right-1 z-10 flex size-8 items-center justify-center rounded bg-destructive text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30"
       >
         <XIcon className="size-4" />
       </button>
@@ -261,7 +261,7 @@ export function ContentReorderDialog({
       </div>
 
       {postType === "video" && (
-        <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
+        <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground squircle">
           <strong>Vídeo:</strong> 1º arquivo = vídeo principal. 2º arquivo
           (opcional) = capa/thumbnail que aparece antes do play.
         </p>
@@ -269,7 +269,7 @@ export function ContentReorderDialog({
 
       {/* Grid DnD */}
       {items.length === 0 ? (
-        <div className="m-5 flex h-32 items-center justify-center rounded-xl border border-dashed bg-muted text-sm text-muted-foreground">
+        <div className="m-5 flex h-32 items-center justify-center rounded-xl border border-dashed bg-muted text-sm text-muted-foreground squircle">
           Nenhum arquivo adicionado ainda
         </div>
       ) : (

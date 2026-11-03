@@ -94,10 +94,9 @@ export function CalendarDayCell({
         <div
           aria-label={`Ações de ${format(day, "dd/MM/yyyy")}`}
           className={cn(
-            "min-h-0 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset",
+            "min-h-0",
             viewOptions.limitHeight && "overflow-y-auto",
           )}
-          tabIndex={viewOptions.limitHeight ? 0 : undefined}
         >
           {isLoading && actions.length === 0 && (
             <PrismSkeletonGroup

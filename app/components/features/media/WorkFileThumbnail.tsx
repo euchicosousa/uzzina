@@ -33,7 +33,7 @@ export function WorkFileThumbnail({
     <div className="group relative size-8 shrink-0">
       <a
         aria-label="Abrir anexo"
-        className="block size-full rounded-2xl outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+        className="block size-full rounded-2xl border border-transparent outline-none squircle focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30"
         href={url}
         rel="noopener noreferrer"
         target="_blank"
@@ -45,14 +45,14 @@ export function WorkFileThumbnail({
             src={url}
           />
         ) : (
-          <div className="flex size-full items-center justify-center rounded-lg border bg-muted text-[8px] font-bold tracking-wide uppercase opacity-70">
+          <div className="flex size-full items-center justify-center rounded-2xl border bg-muted text-[10px] font-bold tracking-wide uppercase opacity-70 squircle">
             {ext.slice(0, 4)}
           </div>
         )}
       </a>
       {onRemove && (
         <button
-          className="absolute -top-1.5 -right-1.5 hidden size-4 items-center justify-center rounded-full bg-destructive text-white outline-none group-focus-within:flex group-hover:flex focus-visible:ring-2 focus-visible:ring-ring"
+          className="absolute -top-1.5 -right-1.5 hidden size-4 items-center justify-center rounded-full bg-destructive text-white outline-none group-focus-within:flex group-hover:flex focus-visible:ring-3 focus-visible:ring-ring/30"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();

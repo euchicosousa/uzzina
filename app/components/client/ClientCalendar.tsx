@@ -191,8 +191,9 @@ export function ClientCalendar<
                         <button
                           key={action.id}
                           className={cn(
-                            "w-full rounded-md px-1.5 py-1 text-left transition-colors hover:bg-muted/60",
-                            view === "week" && "rounded-lg px-2 py-1.5",
+                            "w-full rounded-md px-1.5 py-1 text-left transition-colors squircle hover:bg-muted/60",
+                            view === "week" &&
+                              "rounded-lg px-2 py-1.5 squircle",
                           )}
                           onClick={() => onActionClick(action)}
                           type="button"

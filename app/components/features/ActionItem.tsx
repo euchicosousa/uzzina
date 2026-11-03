@@ -136,7 +136,7 @@ export function ActionItem({
         return "flex-col gap-2 px-4 py-3";
       // case VARIANT.line:
       default:
-        return "rounded-xl px-3 py-1 transition-colors @xs:p-1";
+        return "rounded-xl px-3 py-1 transition-colors @xs:p-1 squircle";
     }
   }, [variant]);
   const bgClasses = useMemo(() => {
@@ -151,6 +151,10 @@ export function ActionItem({
     border-white
     z-0
     ring ring-foreground/3
+    focus-within:outline-1
+    focus-within:outline-ring/45
+    focus-within:ring-4
+    focus-within:ring-ring/30
     hover:z-10
     hover:shadow-lg
     hover:bg-action-hover
@@ -169,9 +173,9 @@ export function ActionItem({
       baseStyles = cn(baseStyles, "ring-2 ring-primary");
     }
 
-    // 2. Apply editing ring/focus overrides on top of the base style
+    // 2. Editing raises the card; focus styling comes from focus-within above
     if (isEditing) {
-      baseStyles = cn(baseStyles, "ring-primary focus-within:ring-2 z-100");
+      baseStyles = cn(baseStyles, "z-100");
     }
     return baseStyles;
   }, [isEditing, showLate, isLate, action, person, showSprint]);

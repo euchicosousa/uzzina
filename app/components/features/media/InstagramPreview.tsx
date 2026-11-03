@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { detectPostType } from "./InstagramHelpers";
 import { ChevronLeftIcon, ChevronRightIcon, ImageIcon } from "lucide-react";
 
@@ -51,8 +51,8 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
   // On a compact panel the height is fixed and the width follows the ratio, so
   // the preview leaves room for writing without cropping the post.
   const frameClass = compact
-    ? "relative mx-auto h-[min(18rem,45svh)] w-auto max-w-full overflow-hidden rounded-xl bg-black/5 border"
-    : "relative w-full overflow-hidden rounded-xl bg-black/5 border";
+    ? "relative mx-auto h-[min(18rem,45svh)] w-auto max-w-full overflow-hidden rounded-xl bg-black/5 border squircle"
+    : "relative w-full overflow-hidden rounded-xl bg-black/5 border squircle";
   const aspectClass = "aspect-[4/5]";
 
   if (!files || files.length === 0) {
@@ -120,13 +120,6 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
     });
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-    event.preventDefault();
-    const step = event.key === "ArrowLeft" ? -1 : 1;
-    scrollToSlide(clampIndex(carouselIndex + step, total));
-  };
-
   return (
     <div className={`${frameClass} ${aspectClass}`}>
       <div
@@ -134,10 +127,8 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
         role="region"
         aria-roledescription="carrossel"
         aria-label="Imagens do post"
-        tabIndex={0}
         onScroll={handleScroll}
-        onKeyDown={handleKeyDown}
-        className="flex h-full w-full touch-pan-x touch-pan-y snap-x snap-mandatory [scrollbar-width:none] overflow-x-auto overscroll-x-contain outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset [&::-webkit-scrollbar]:hidden"
+        className="flex h-full w-full touch-pan-x touch-pan-y snap-x snap-mandatory [scrollbar-width:none] overflow-x-auto overscroll-x-contain [&::-webkit-scrollbar]:hidden"
       >
         {files.map((url, i) => (
           <div

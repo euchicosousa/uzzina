@@ -9,13 +9,13 @@ import {
 import { cn } from "cnfast";
 
 const timeFieldVariants = cva(
-  "squircle inline-flex w-full min-w-0 items-center rounded-2xl border border-transparent bg-input/50 transition-[color,box-shadow] duration-200 outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/30 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+  "squircle inline-flex w-full min-w-0 text-sm placeholder:text-sm items-center rounded-2xl border border-transparent bg-input transition-[color,box-shadow] duration-200 outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring/30 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
   {
     variants: {
       size: {
-        default: "h-10 px-2 py-1 text-sm placeholder:text-sm",
-        sm: "h-8 px-1 py-0 text-xs placeholder:text-xs",
-        lg: "h-12 px-2 py-0 text-base placeholder:text-base",
+        default: "h-10 px-1",
+        sm: "h-8 px-0.5",
+        lg: "h-12 rounded-3xl px-2 text-base placeholder:text-base",
       },
     },
     defaultVariants: {
@@ -54,7 +54,7 @@ function PrismTimeField<T extends TimeValue = TimeValue>({
         {(segment) => (
           <DateSegmentPrimitive
             className={cn(
-              "rounded-xl p-1 px-2 text-foreground outline-none squircle focus:bg-primary focus:text-primary-foreground data-placeholder:text-muted-foreground data-[type=literal]:px-0.5 data-[type=literal]:text-muted-foreground",
+              "rounded-xl p-1 px-3 text-foreground outline-none squircle focus:bg-primary focus:text-primary-foreground data-placeholder:text-muted-foreground data-[type=literal]:px-0 data-[type=literal]:text-muted-foreground",
             )}
             segment={segment}
           />

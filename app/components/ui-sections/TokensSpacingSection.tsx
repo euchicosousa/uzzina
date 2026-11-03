@@ -16,9 +16,9 @@ export function TokensSpacingSection() {
           <GalleryItem className="w-full space-y-4" label="Escala Modular">
             <div className="flex items-center gap-4">
               <span className="w-12 font-mono text-xs">4px (xs)</span>
-              <div className="w-full rounded bg-secondary">
+              <div className="w-full rounded bg-secondary squircle">
                 <div
-                  className="h-4 rounded bg-primary"
+                  className="h-4 rounded bg-primary squircle"
                   style={{
                     width: "4px",
                   }}
@@ -27,9 +27,9 @@ export function TokensSpacingSection() {
             </div>
             <div className="flex items-center gap-4">
               <span className="w-12 font-mono text-xs">8px (sm)</span>
-              <div className="w-full rounded bg-secondary">
+              <div className="w-full rounded bg-secondary squircle">
                 <div
-                  className="h-4 rounded bg-primary"
+                  className="h-4 rounded bg-primary squircle"
                   style={{
                     width: "8px",
                   }}
@@ -38,9 +38,9 @@ export function TokensSpacingSection() {
             </div>
             <div className="flex items-center gap-4">
               <span className="w-12 font-mono text-xs">16px (md)</span>
-              <div className="w-full rounded bg-secondary">
+              <div className="w-full rounded bg-secondary squircle">
                 <div
-                  className="h-4 rounded bg-primary"
+                  className="h-4 rounded bg-primary squircle"
                   style={{
                     width: "16px",
                   }}
@@ -49,9 +49,9 @@ export function TokensSpacingSection() {
             </div>
             <div className="flex items-center gap-4">
               <span className="w-12 font-mono text-xs">32px (lg)</span>
-              <div className="w-full rounded bg-secondary">
+              <div className="w-full rounded bg-secondary squircle">
                 <div
-                  className="h-4 rounded bg-primary"
+                  className="h-4 rounded bg-primary squircle"
                   style={{
                     width: "32px",
                   }}

@@ -215,7 +215,7 @@ export function CelebrationsList({
       className="flex w-full shrink-0 flex-col gap-4 p-8 md:h-full md:shrink md:overflow-y-auto"
     >
       {celebrations.length === 0 ? (
-        <div className="rounded-2xl border border-dashed p-8 text-center text-muted-foreground">
+        <div className="rounded-2xl border border-dashed p-8 text-center text-muted-foreground squircle">
           Nenhuma data comemorativa cadastrada ainda.
         </div>
       ) : (
@@ -247,7 +247,7 @@ export function CelebrationsList({
                   <div
                     key={celebration.id}
                     data-celebration-id={celebration.id}
-                    className="group flex items-center justify-between gap-4 rounded-xl px-3 py-2 transition-colors hover:bg-card"
+                    className="group flex items-center justify-between gap-4 rounded-xl px-3 py-2 transition-colors squircle hover:bg-card"
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <span className="w-6 shrink-0 text-center text-sm font-medium text-muted-foreground">
@@ -257,7 +257,7 @@ export function CelebrationsList({
                         {celebration.title}
                       </span>
                       {celebration.is_holiday && (
-                        <span className="shrink-0 rounded-md border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                        <span className="shrink-0 rounded-md border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600 squircle dark:text-amber-400">
                           Feriado
                         </span>
                       )}

@@ -223,14 +223,14 @@ export function ConflictComparison({
       ].map((column) => (
         <section
           aria-label={column.title}
-          className="min-w-0 rounded-xl border border-border"
+          className="min-w-0 rounded-xl border border-border squircle"
           key={column.title}
         >
           <h3 className="border-b border-border px-3 py-3 text-sm font-semibold sm:text-base">
             {column.title}
           </h3>
           <div
-            className="max-h-[48dvh] overflow-y-auto overscroll-contain px-3 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset"
+            className="max-h-[48dvh] overflow-y-auto overscroll-contain px-3 outline-none focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:ring-inset"
             tabIndex={0}
             aria-label={`Campos de ${column.title.toLowerCase()}`}
           >

@@ -229,7 +229,24 @@ function Dashboard() {
     document.addEventListener("keydown", keyDownGlobal, true);
     return () => document.removeEventListener("keydown", keyDownGlobal, true);
   }, [person, partnerFilters, setPrimaryAction]);
-  if (loading || !person) {
+  // A stable value keeps every context consumer (calendar cards included) from
+  // re-rendering when only the layout's own state changes.
+  const appContextValue = useMemo(
+    () =>
+      person
+        ? {
+            person,
+            partners: visiblePartners,
+            cloudName,
+            uploadPreset,
+            setPrimaryAction,
+            partnerFilters,
+            setPartnerFilters,
+          }
+        : null,
+    [person, visiblePartners, setPrimaryAction, partnerFilters],
+  );
+  if (loading || !person || !appContextValue) {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center gap-4 bg-background">
         <UZZINALogo className="h-24 scale-down opacity-20" model="logo" />
@@ -241,18 +258,7 @@ function Dashboard() {
     );
   }
   return (
-    <AppContext.Provider
-      key={person.user_id}
-      value={{
-        person,
-        partners: visiblePartners,
-        cloudName,
-        uploadPreset,
-        setPrimaryAction,
-        partnerFilters,
-        setPartnerFilters,
-      }}
-    >
+    <AppContext.Provider key={person.user_id} value={appContextValue}>
       <div className="flex h-screen flex-col" id="app">
         <ActionShortcutProvider>
           <MultiSelectionProvider

@@ -140,7 +140,8 @@ export function CelebrationDialog({
   if (!person.admin) return null;
   return (
     <PrismDialog
-      className="flex flex-col overflow-hidden sm:max-w-sm"
+      className="flex flex-col overflow-hidden"
+      size="sm"
       isOpen
       isDismissable={!pending}
       isKeyboardDismissDisabled={pending}
@@ -219,7 +220,7 @@ export function CelebrationDialog({
                 <PrismCalendar
                   aria-labelledby={dateLabelId}
                   captionLayout="dropdown"
-                  className="w-full bg-transparent [--cell-size:--spacing(9)] [&_[data-outside-month]]:invisible [&_[data-today]>div]:after:absolute [&_[data-today]>div]:after:bottom-1 [&_[data-today]>div]:after:size-1 [&_[data-today]>div]:after:rounded-full [&_[data-today]>div]:after:bg-current [&_td>div]:aspect-auto [&_td>div>div]:mx-auto [&_td>div>div]:size-(--cell-size)"
+                  className="w-full bg-transparent [&_[data-outside-month]]:invisible [&_[data-today]>div]:after:absolute [&_[data-today]>div]:after:bottom-1 [&_[data-today]>div]:after:size-1 [&_[data-today]>div]:after:rounded-full [&_[data-today]>div]:after:bg-current [&_td>div]:aspect-auto [&_td>div>div]:mx-auto [&_td>div>div]:size-(--cell-size)"
                   value={date}
                   onChange={setDate}
                   isDisabled={pending}

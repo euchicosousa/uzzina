@@ -12,7 +12,7 @@ Portal/access and login;16 action footer; media controls (remove/reorder/persist
 | Forgot/reset password narrow widths — in progress (owner authorized 01/11): follow login pattern | Not yet delivered; these screens use a separate grid that can clip at narrow widths. Recorded on delivery. |
 | Media drag delay | Study later: owner reports roughly1s delay on mobile, shorter on desktop, with the dragged item suspended before settling. Not independently reproduced; separate from approved media functionality. |
 | Carousel gesture — investigation in progress | Optional sideways swipe/slide transition instead of direct image replacement. Enhancement suggestion, not a confirmed defect; investigation running separately, recorded on delivery. |
-| [Style/accessibility](../../.scratch/visual-consistency/issues/01-app-style-analysis-and-simplification.md) | Other agent, including Today design. |
+| [Style/accessibility — Linear + Swiss Design System](../../.scratch/visual-consistency/README.md) | Deep 5-stream audit completed ([2026-11-01-strict-design-system-audit.md](2026-11-01-strict-design-system-audit.md)), canonical specification in [docs/design-system.md](../design-system.md) and 10 ready-for-agent tickets (`01`–`10`) published in `.scratch/visual-consistency/issues/`. |
 | [AI usage in My Account](../../.scratch/ai-usage/issues/01-ai-usage-visibility.md) | Deferred by owner. |
 | [Social planning](../plans/social-planning-ticket-breakdown.md) | Deferred by owner; seven proposed deliveries, no new tickets started. |
 

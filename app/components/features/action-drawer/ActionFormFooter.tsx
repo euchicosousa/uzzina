@@ -24,7 +24,6 @@ import { useActionMutations } from "~/hooks/useActionMutations";
 import { INTENT } from "~/lib/CONSTANTS";
 import { isSocialMediaContent } from "~/utils";
 import { PrismButton } from "~/components/prism";
-import { cn } from "cnfast";
 interface ActionFormFooterProps {
   /** Phone-width panel: one scrolling strip plus an icon-only save button. */
   compact?: boolean;
@@ -54,229 +53,150 @@ export function ActionFormFooter({
     : isPending
       ? "Criando..."
       : "Criar";
-  // In the compact strip each command is its own divided item.
-  const command = (node: ReactNode) =>
-    compact ? <div className="flex shrink-0 items-center">{node}</div> : node;
   const actionCommands = RawAction.id && (
     <>
-      {command(
-        <SprintCombobox
-          currentPartners={currentPartners}
-          onSelect={async (newSprints, newResponsibles) => {
-            const finalSprints = newSprints.length > 0 ? newSprints : null;
+      <PrismButton
+        aria-label="Duplicar ação (Shift+D)"
+        onClick={() => {
+          handleAction({ id: RawAction.id, intent: INTENT.duplicate_action });
+          handleClose();
+        }}
+        size="icon-lg"
+        variant="ghost"
+      >
+        <CopyIcon />
+      </PrismButton>
+      <PrismButton
+        aria-label={RawAction.archived ? "Desarquivar ação" : "Arquivar ação"}
+        onClick={async () => {
+          const archived = !RawAction.archived;
+          if (
+            confirm(
+              `Tem certeza que deseja ${archived ? "arquivar" : "desarquivar"} esta ação?`,
+            )
+          ) {
             setRawAction({
               ...RawAction,
-              sprints: finalSprints,
-              responsibles: newResponsibles,
+              archived,
+              ...(archived && { sprints: null }),
             });
-            await updateAction({
-              sprints: finalSprints,
-              responsibles: newResponsibles,
-            });
-          }}
-          responsibles={RawAction.responsibles || []}
-          selectedSprints={RawAction.sprints || []}
-          tabIndex={0}
-        />,
-      )}
-      {command(
-        <PrismButton
-          aria-label="Duplicar ação (Shift+D)"
-          onClick={() => {
-            handleAction({
-              id: RawAction.id,
-              intent: INTENT.duplicate_action,
-            });
+            await updateAction({ archived });
             handleClose();
-          }}
-          size="icon"
-          variant="ghost"
-        >
-          <CopyIcon />
-        </PrismButton>,
-      )}
-      {!RawAction.archived &&
-        command(
-          <PrismButton
-            aria-label="Arquivar ação"
-            onClick={async () => {
-              if (confirm("Tem certeza que deseja arquivar esta ação?")) {
-                setRawAction({
-                  ...RawAction,
-                  archived: true,
-                  sprints: null,
-                });
-                await updateAction({
-                  archived: true,
-                });
-                handleClose();
-              }
-            }}
-            size="icon"
-            variant="ghost"
-          >
-            <ArchiveIcon />
-          </PrismButton>,
-        )}
-      {RawAction.archived &&
-        command(
-          <PrismButton
-            aria-label="Desarquivar ação"
-            className="text-amber-500 hover:text-amber-600"
-            onClick={async () => {
-              if (confirm("Tem certeza que deseja desarquivar esta ação?")) {
-                setRawAction({
-                  ...RawAction,
-                  archived: false,
-                });
-                await updateAction({
-                  archived: false,
-                });
-                handleClose();
-              }
-            }}
-            size="icon"
-            variant="ghost"
-          >
-            <ArchiveRestoreIcon />
-          </PrismButton>,
-        )}
+          }
+        }}
+        size="icon-lg"
+        variant="ghost"
+      >
+        {RawAction.archived ? <ArchiveRestoreIcon /> : <ArchiveIcon />}
+      </PrismButton>
     </>
   );
   return (
-    <div className="flex w-full shrink-0 items-center justify-between overflow-hidden border-t">
-      {/* Coisas */}
+    <div
+      className="flex w-full shrink-0 items-center justify-between border-t"
+      data-drawer-focus="control"
+    >
       <FooterStrip compact={compact}>
-        {/* Parceiros Partners Combobox */}
-        <div className="shrink-0" data-drawer-focus="control">
-          <PartnersCombobox
-            onSelect={async (selected) => {
-              const selectedPartnersData = currentPartners.filter((p) =>
-                selected.includes(p.slug),
-              );
-
-              let newColor = RawAction.color;
-              if (
-                !RawAction.id &&
-                selectedPartnersData.length > 0 &&
-                selectedPartnersData[0].colors &&
-                selectedPartnersData[0].colors.length > 0 &&
-                (!newColor || newColor === "#666666" || newColor === "#666")
-              ) {
-                newColor = selectedPartnersData[0].colors[0];
-              }
-
-              setRawAction({
-                ...RawAction,
-                partners: selected,
-                color: newColor,
-              });
-              await updateAction({
-                partners: selected,
-                color: newColor,
-              });
-            }}
-            selectedPartners={RawAction.partners}
-            showText={false}
-            tabIndex={0}
-          />
-        </div>
-        {/* Fases Phase Combobox */}
-        <div className="shrink-0" data-drawer-focus="control">
-          <PhaseCombobox
-            triggerVariant="form-footer"
-            iconVariant="progress"
-            onSelect={async (selected) => {
-              const phaseValue =
-                typeof selected === "string"
-                  ? selected
-                  : (
-                      selected as {
-                        phase: string;
-                      }
-                    ).phase;
-              setRawAction({
-                ...RawAction,
-                phase: phaseValue as Action["phase"],
-              });
-              await updateAction({
-                phase: phaseValue,
-              });
-            }}
-            selectedPhase={RawAction.phase ?? "idea"}
-            showText={false}
-            tabIndex={0}
-          />
-        </div>
-        {/* Categorias Categories Combobox */}
-        <div className="shrink-0" data-drawer-focus="control">
-          <CategoriesCombobox
-            triggerVariant="form-footer"
-            onSelect={async ({ category }) => {
-              setRawAction({
-                ...RawAction,
-                category,
-              });
-              await updateAction({
-                category,
-              });
-            }}
-            selectedCategories={[RawAction.category]}
-            showText={false}
-            tabIndex={0}
-          />
-        </div>
+        <PartnersCombobox
+          size={currentPartners.length > 1 ? "lg" : "icon-lg"}
+          variant="ghost"
+          onSelect={async (selected) => {
+            const first = currentPartners.find((p) => p.slug === selected[0]);
+            let color = RawAction.color;
+            if (
+              !RawAction.id &&
+              first?.colors?.length &&
+              (!color || color === "#666666" || color === "#666")
+            ) {
+              color = first.colors[0];
+            }
+            setRawAction({ ...RawAction, partners: selected, color });
+            await updateAction({ partners: selected, color });
+          }}
+          selectedPartners={RawAction.partners}
+          showText={false}
+          tabIndex={0}
+        />
+        <PhaseCombobox
+          size="icon-lg"
+          variant="ghost"
+          iconVariant="progress"
+          onSelect={async (selected) => {
+            const phase = (
+              typeof selected === "string" ? selected : selected.phase
+            ) as Action["phase"];
+            setRawAction({ ...RawAction, phase });
+            await updateAction({ phase });
+          }}
+          selectedPhase={RawAction.phase ?? "idea"}
+          showText={false}
+          tabIndex={0}
+        />
+        <CategoriesCombobox
+          size="icon-lg"
+          variant="ghost"
+          onSelect={async ({ category }) => {
+            setRawAction({ ...RawAction, category });
+            await updateAction({ category });
+          }}
+          selectedCategories={[RawAction.category]}
+          showText={false}
+          tabIndex={0}
+        />
         {isSocialMediaContent(RawAction.category) && (
-          <div className="shrink-0" data-drawer-focus="control">
-            <ActionColorDropdown
-              action={RawAction}
-              onSelect={async (color) => {
-                setRawAction({
-                  ...RawAction,
-                  color,
-                });
-                await updateAction({
-                  color,
-                });
-              }}
-              partners={currentPartners}
-              tabIndex={0}
-            />
-          </div>
+          <ActionColorDropdown
+            size="icon-lg"
+            variant="ghost"
+            action={RawAction}
+            onSelect={async (color) => {
+              setRawAction({ ...RawAction, color });
+              await updateAction({ color });
+            }}
+            partners={currentPartners}
+            tabIndex={0}
+          />
+        )}
+        {RawAction.id && (
+          <SprintCombobox
+            size="icon-lg"
+            variant="ghost"
+            currentPartners={currentPartners}
+            onSelect={async (newSprints, responsibles) => {
+              const sprints = newSprints.length > 0 ? newSprints : null;
+              setRawAction({ ...RawAction, sprints, responsibles });
+              await updateAction({ sprints, responsibles });
+            }}
+            responsibles={RawAction.responsibles || []}
+            selectedSprints={RawAction.sprints || []}
+            tabIndex={0}
+          />
         )}
         {compact && actionCommands}
       </FooterStrip>
-      {/* Botão de criar e atualizar */}
-      <div className={cn("flex items-center gap-2 p-2", compact && "shrink-0")}>
+      <div className="flex shrink-0 items-center gap-1 p-2">
         {!compact && actionCommands}
-        <div data-drawer-focus="control">
-          <PrismButton
-            aria-label={compact ? saveLabel : undefined}
-            className={cn(
-              "overflow-hidden rounded-2xl squircle",
-              !compact && "w-32",
-            )}
-            isDisabled={isPending}
-            onClick={async (event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              const success = await handleSave();
-              if (success && event.shiftKey) {
-                handleClose();
-              }
-            }}
-            size={compact ? "icon" : "default"}
-          >
-            {!compact && <div className="truncate">{saveLabel}</div>}
-            {isPending ? (
-              <LoaderIcon className="animate-spin" />
-            ) : RawAction.id ? (
-              <CloudUploadIcon />
-            ) : (
-              <PlusIcon />
-            )}
-          </PrismButton>
-        </div>
+        <PrismButton
+          aria-label={compact ? saveLabel : undefined}
+          isDisabled={isPending}
+          onClick={async (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const success = await handleSave();
+            if (success && event.shiftKey) {
+              handleClose();
+            }
+          }}
+          size={compact ? "icon-lg" : "lg"}
+        >
+          {!compact && saveLabel}
+          {isPending ? (
+            <LoaderIcon className="animate-spin" />
+          ) : RawAction.id ? (
+            <CloudUploadIcon />
+          ) : (
+            <PlusIcon />
+          )}
+        </PrismButton>
       </div>
     </div>
   );
@@ -345,42 +265,36 @@ function FooterStrip({
     }
     updateEdges();
   };
+  // p-2 inside the scroller keeps the 3px focus rings (box-shadow) from being
+  // clipped by overflow; the mask fades whichever edge has hidden content.
+  const fade = (visible: boolean) => (visible ? "transparent" : "#000");
   return (
-    <div className={cn("relative flex min-w-0", compact ? "flex-1" : "shrink")}>
-      <div
-        className="no-scrollbar flex min-w-0 shrink items-center overflow-x-auto"
-        data-action-footer-strip={compact ? "" : undefined}
-        onFocus={revealFocused}
-        onPointerCancelCapture={() => {
-          pointerFocusRef.current = false;
-        }}
-        onPointerDownCapture={() => {
-          pointerFocusRef.current = true;
-        }}
-        onPointerUpCapture={() => {
-          pointerFocusRef.current = false;
-        }}
-        onScroll={compact ? updateEdges : undefined}
-        ref={scrollerRef}
-      >
-        <div className="flex shrink-0 items-center divide-x" ref={trackRef}>
-          {children}
-        </div>
+    <div
+      className="no-scrollbar min-w-0 flex-1 overflow-x-auto"
+      data-action-footer-strip={compact ? "" : undefined}
+      onFocus={revealFocused}
+      onPointerCancelCapture={() => {
+        pointerFocusRef.current = false;
+      }}
+      onPointerDownCapture={() => {
+        pointerFocusRef.current = true;
+      }}
+      onPointerUpCapture={() => {
+        pointerFocusRef.current = false;
+      }}
+      onScroll={compact ? updateEdges : undefined}
+      ref={scrollerRef}
+      style={
+        compact && (edges.start || edges.end)
+          ? {
+              maskImage: `linear-gradient(to right, ${fade(edges.start)}, #000 ${STRIP_FADE_PX}px, #000 calc(100% - ${STRIP_FADE_PX}px), ${fade(edges.end)})`,
+            }
+          : undefined
+      }
+    >
+      <div className="flex w-max items-center gap-1 p-2" ref={trackRef}>
+        {children}
       </div>
-      {compact && edges.start && (
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-background to-transparent"
-          data-strip-fade="start"
-        />
-      )}
-      {compact && edges.end && (
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-linear-to-l from-background to-transparent"
-          data-strip-fade="end"
-        />
-      )}
     </div>
   );
 }

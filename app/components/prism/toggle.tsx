@@ -3,28 +3,56 @@ import {
   ToggleButton as TogglePrimitive,
   type ToggleButtonProps,
 } from "react-aria-components";
+import { Children, isValidElement, type ReactNode } from "react";
 import { cn } from "cnfast";
+import { buttonSizeClasses } from "~/components/prism/button";
+
+type ToggleSize = NonNullable<VariantProps<typeof toggleVariants>["size"]>;
+
+const ICON_SIZE: Record<ToggleSize, ToggleSize> = {
+  xs: "icon-xs",
+  sm: "icon-sm",
+  default: "icon",
+  lg: "icon-lg",
+  "icon-xs": "icon-xs",
+  "icon-sm": "icon-sm",
+  icon: "icon",
+  "icon-lg": "icon-lg",
+};
+
+// A toggle with no text (only icons) is an icon button: square, like Button icon-*.
+function hasTextContent(children: unknown): boolean {
+  if (typeof children === "function") return true;
+  return Children.toArray(children as ReactNode).some((child) => {
+    if (typeof child === "string" || typeof child === "number") return true;
+    if (isValidElement<{ children?: unknown }>(child)) {
+      return hasTextContent(child.props.children);
+    }
+    return false;
+  });
+}
 
 const toggleVariants = cva(
-  "group/toggle inline-flex border border-transparent items-center justify-center gap-1 rounded-2xl squircle text-sm font-medium whitespace-nowrap transition-colors outline-none hover:bg-secondary hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 aria-pressed:bg-secondary dark:aria-invalid:ring-destructive/40 data-selected:bg-secondary [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
+  "group/toggle inline-flex border border-transparent items-center justify-center rounded-2xl squircle text-sm font-medium whitespace-nowrap transition-colors outline-none hover:bg-secondary hover:text-foreground focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 aria-pressed:bg-secondary dark:aria-invalid:ring-destructive/40 data-selected:bg-secondary [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5",
   {
     variants: {
       variant: {
         default: "aria-expanded:bg-secondary aria-expanded:text-foreground",
+        ghost: "aria-expanded:bg-secondary aria-expanded:text-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] data-selected:bg-primary data-selected:text-primary-foreground aria-pressed:bg-primary aria-pressed:text-primary-foreground",
         outline: "border border-input bg-transparent",
       },
+      // Same names and classes as PrismButton (single source of truth).
       size: {
-        default:
-          "h-10 min-w-10 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        xs: "h-6 min-w-6 px-1.5 text-xs has-data-[icon=inline-end]:pr-1 has-data-[icon=inline-start]:pl-1 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-8 min-w-8 px-2 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5",
-        lg: "h-12 min-w-12 px-3 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        "icon-xs": "size-6 p-0 [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm": "size-8 p-0 [&_svg:not([class*='size-'])]:size-4",
-        icon: "size-10 p-0 [&_svg:not([class*='size-'])]:size-5",
-        "icon-lg": "size-12 p-0 [&_svg:not([class*='size-'])]:size-5",
+        xs: buttonSizeClasses.xs,
+        sm: buttonSizeClasses.sm,
+        default: buttonSizeClasses.default,
+        lg: buttonSizeClasses.lg,
+        "icon-xs": buttonSizeClasses["icon-xs"],
+        "icon-sm": buttonSizeClasses["icon-sm"],
+        icon: buttonSizeClasses.icon,
+        "icon-lg": buttonSizeClasses["icon-lg"],
       },
     },
     defaultVariants: {
@@ -40,12 +68,14 @@ function Toggle({
   size = "default",
   ...props
 }: ToggleButtonProps & VariantProps<typeof toggleVariants>) {
+  const resolvedSize =
+    size && !hasTextContent(props.children) ? ICON_SIZE[size] : size;
   return (
     <TogglePrimitive
       className={cn(
         toggleVariants({
           variant,
-          size,
+          size: resolvedSize,
         }),
         className,
       )}

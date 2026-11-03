@@ -207,7 +207,7 @@ function ReviewPage() {
                     <div className="mb-2 flex flex-wrap items-center gap-2">
                       {category && (
                         <span
-                          className="rounded-md px-2 py-0.5 text-xs font-semibold tracking-wide uppercase"
+                          className="rounded-md px-2 py-0.5 text-xs font-semibold tracking-wide uppercase squircle"
                           style={{
                             backgroundColor: `${category.color}20`,
                             color: category.color,

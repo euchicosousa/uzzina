@@ -11,6 +11,8 @@ type UAvatarGroupProps = {
   size?: (typeof SIZE)[keyof typeof SIZE];
   clampAt?: number;
   title?: string;
+  /** Overrides the size classes of every avatar in the group. */
+  avatarClassName?: string;
 };
 type UAvatarItem = {
   id?: string;
@@ -27,6 +29,7 @@ export function UAvatarGroup({
   size = SIZE.md,
   clampAt,
   title,
+  avatarClassName,
 }: UAvatarGroupProps) {
   const groupId = useId();
   const sizeClasses =
@@ -47,6 +50,7 @@ export function UAvatarGroup({
       {avatars.slice(0, effectiveClampAt).map((avatar, index) => (
         <UAvatar
           {...avatar}
+          className={cn(avatarClassName, avatar.className)}
           id={avatar.id ? `${groupId}-${avatar.id}` : undefined}
           // biome-ignore lint/suspicious/noArrayIndexKey: index is required to guarantee uniqueness when duplicate avatars are mapped
           key={`${avatar.id || avatar.fallback}-${index}`}
@@ -55,6 +59,7 @@ export function UAvatarGroup({
       ))}
       {effectiveClampAt < avatars.length && (
         <UAvatar
+          className={avatarClassName}
           fallback={`+${avatars.length - effectiveClampAt}`}
           size={size}
         />

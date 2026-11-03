@@ -564,7 +564,7 @@ function GlobalSearchContent({
                   />
                   <div className="w-full truncate">{action.title}</div>
                   {action.archived && (
-                    <ArchiveIcon className="size-3 opacity-50" />
+                    <ArchiveIcon className="size-3 opacity-60" />
                   )}
                   <div className="text-xs opacity-40">
                     {getFormattedDateTime(
@@ -647,7 +647,8 @@ function GlobalSearchContent({
             <PartnersCombobox
               allowAll
               showText
-              variant="filter"
+              size="sm"
+              variant="ghost"
               selectedPartners={selectedPartners}
               onSelect={(value) => {
                 navigatingResultsRef.current = false;
@@ -657,7 +658,7 @@ function GlobalSearchContent({
           </div>
           <PrismCheckbox
             size="sm"
-            className="shrink-0 rounded-lg px-2 py-2 font-normal text-muted-foreground data-[selected]:text-foreground"
+            className="shrink-0 rounded-lg px-2 py-2 font-normal text-muted-foreground squircle data-selected:text-foreground"
             isSelected={includeArchived}
             onChange={(value) => {
               navigatingResultsRef.current = false;

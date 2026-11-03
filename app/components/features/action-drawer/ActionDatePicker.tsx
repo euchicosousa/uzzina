@@ -1,8 +1,8 @@
 import { CalendarDaysIcon } from "lucide-react";
 import { useState } from "react";
-import { Pressable } from "react-aria-components";
 import { CalendarDate, Time } from "@internationalized/date";
 import {
+  PrismButton,
   PrismCalendar,
   PrismLabel,
   PrismPopover,
@@ -12,18 +12,21 @@ import {
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
 import { getFormattedDateTime } from "~/utils/date";
+
 export function ActionDatePicker({
   onSelect,
   date,
   dateTimeDisplay = DATE_TIME_DISPLAY.DayDateMonthTime,
   className,
-  size = "lg",
+  size = "sm",
+  isLate,
 }: {
   onSelect?: (date: Date) => void;
   date?: Date;
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
   className?: string;
-  size?: "sm" | "lg";
+  size?: "sm" | "default" | "lg";
+  isLate?: boolean;
 }) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(date);
   const handleCalendarSelect = (newDate: CalendarDate | null) => {
@@ -46,25 +49,23 @@ export function ActionDatePicker({
   };
   return (
     <PrismPopoverTrigger onOpenChange={handleOpenChange}>
-      <Pressable>
-        <div
-          className={cn(
-            "cursor-pointer underline-offset-2 outline-none hover:underline focus-visible:underline",
-            className,
-          )}
-          role="button"
-        >
-          {size === "sm" && (
-            <CalendarDaysIcon className="size-3.5 shrink-0 text-muted-foreground" />
-          )}
+      <PrismButton
+        aria-label="Data e hora da ação"
+        className={cn(isLate && "text-destructive", className)}
+        size={size}
+        variant="link"
+      >
+        <CalendarDaysIcon />
+        <span>
           {date
             ? getFormattedDateTime(date, dateTimeDisplay)
             : "Escolha a data"}
-        </div>
-      </Pressable>
+        </span>
+      </PrismButton>
 
-      <PrismPopover className="w-auto">
+      <PrismPopover className="w-auto p-2">
         <PrismCalendar
+          cellSize="sm"
           onChange={handleCalendarSelect}
           value={
             selectedDate
@@ -76,7 +77,9 @@ export function ActionDatePicker({
               : undefined
           }
         />
-        <hr className="-mx-4" />
+
+        <hr className="-mx-2 -my-2" />
+
         <div className="flex items-center justify-between gap-2">
           <PrismLabel>Defina a hora</PrismLabel>
           <PrismTimeField

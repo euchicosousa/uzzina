@@ -83,7 +83,7 @@ function PaletteSwatch({
     return (
       <span
         aria-hidden="true"
-        className="flex size-4 shrink-0 items-center justify-center rounded-lg border border-black/10 bg-zinc-200 text-zinc-600 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-400"
+        className="flex size-4 shrink-0 items-center justify-center rounded-lg border border-black/10 bg-zinc-200 text-zinc-600 squircle dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-400"
         data-palette-swatch="custom"
       >
         <PipetteIcon className="size-2.5" />
@@ -93,7 +93,7 @@ function PaletteSwatch({
   return (
     <span
       aria-hidden="true"
-      className="size-4 shrink-0 rounded-lg"
+      className="size-4 shrink-0 rounded-lg squircle"
       data-palette-swatch="color"
       style={{
         backgroundColor: `oklch(${color.l} ${color.c} ${color.h})`,
@@ -311,9 +311,8 @@ function ProfilePage() {
           shouldForceMount
           isAlwaysVisible={isDesktop}
           aria-label="Informações pessoais"
-          tabIndex={0}
           className={cn(
-            "min-h-0 flex-col gap-4 overflow-y-auto overscroll-contain py-3 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset lg:flex lg:gap-6 lg:py-6",
+            "min-h-0 flex-col gap-4 overflow-y-auto overscroll-contain py-3 lg:flex lg:gap-6 lg:py-6",
             "flex",
           )}
         >
@@ -427,9 +426,8 @@ function ProfilePage() {
           shouldForceMount
           isAlwaysVisible={isDesktop}
           aria-label="Preferências"
-          tabIndex={0}
           className={cn(
-            "min-h-0 flex-col gap-4 overflow-y-auto overscroll-contain py-3 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset lg:col-start-2 lg:row-start-1 lg:flex lg:gap-6 lg:py-6",
+            "min-h-0 flex-col gap-4 overflow-y-auto overscroll-contain py-3 lg:col-start-2 lg:row-start-1 lg:flex lg:gap-6 lg:py-6",
             "flex",
           )}
         >
@@ -656,9 +654,9 @@ function ProfilePage() {
             </div>
 
             {isLoadingAIUsage ? (
-              <div className="h-20 w-full animate-pulse rounded-2xl bg-muted/40" />
+              <div className="h-20 w-full animate-pulse rounded-2xl bg-muted/40 squircle" />
             ) : aiUsage ? (
-              <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-muted/20 p-4 transition-colors">
+              <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-muted/20 p-4 transition-colors squircle">
                 <div className="flex items-baseline justify-between gap-2">
                   <span className="text-sm font-semibold text-foreground">
                     Franquia do Mês
@@ -699,7 +697,7 @@ function ProfilePage() {
                 </div>
               </div>
             ) : (
-              <div className="rounded-2xl border border-border/40 bg-muted/10 p-4 text-xs text-muted-foreground">
+              <div className="rounded-2xl border border-border/40 bg-muted/10 p-4 text-xs text-muted-foreground squircle">
                 Consumo de IA ainda não medido neste mês.
               </div>
             )}

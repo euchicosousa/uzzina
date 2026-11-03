@@ -43,7 +43,7 @@ function DropdownMenu({
   return (
     <PopoverPrimitive
       className={cn(
-        "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 data-[placement=bottom]:slide-in-from-top-2 data-[placement=left]:slide-in-from-right-2 data-[placement=right]:slide-in-from-left-2 data-[placement=top]:slide-in-from-bottom-2 z-50 w-(--trigger-width) min-w-48 origin-(--trigger-anchor-point) overflow-x-hidden overflow-y-auto rounded-2xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/5 outline-none squircle data-exiting:overflow-hidden dark:ring-foreground/10",
+        "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 data-[placement=bottom]:slide-in-from-top-2 data-[placement=left]:slide-in-from-right-2 data-[placement=right]:slide-in-from-left-2 data-[placement=top]:slide-in-from-bottom-2 z-50 w-(--trigger-width) min-w-48 origin-(--trigger-anchor-point) overflow-x-hidden overflow-y-auto rounded-2xl border border-foreground/5 bg-popover p-1 text-popover-foreground shadow-lg outline-none squircle data-exiting:overflow-hidden dark:border-foreground/10",
         className,
       )}
       crossOffset={crossOffset}
@@ -87,7 +87,7 @@ function DropdownMenuLabel({
   );
 }
 const dropdownMenuItemVariants = cva(
-  "group/dropdown-menu-item relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 min-w-0 [&_svg]:opacity-50",
+  "group/dropdown-menu-item relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 min-w-0 [&_svg:not([class*='opacity-'])]:opacity-60",
   {
     variants: {
       selectionMode: {
@@ -136,7 +136,7 @@ function DropdownMenuItem({
                 data-selected={isSelected}
                 data-slot="menu-item-indicator"
               >
-                {isSelected ? <CheckIcon /> : null}
+                {isSelected ? <CheckIcon className="opacity-100" /> : null}
               </span>
             ) : null}
           </>
@@ -186,7 +186,7 @@ function DropdownMenuSubContent({
   return (
     <DropdownMenu
       className={cn(
-        "w-auto min-w-24 rounded-2xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/5 duration-100 squircle dark:ring-foreground/10",
+        "w-auto min-w-24 rounded-2xl border border-foreground/5 bg-popover p-1 text-popover-foreground shadow-lg duration-100 squircle dark:border-foreground/10",
         className,
       )}
       crossOffset={crossOffset}

@@ -117,12 +117,12 @@ function ToggleGroupItem({
           : "[&:not(:first-child)]:-ml-px",
         isVertical
           ? isSm
-            ? "first:rounded-t-xl first:rounded-b-none first:squircle last:rounded-b-xl last:rounded-t-none last:squircle only:rounded-xl only:squircle"
+            ? "first:rounded-t-2xl first:rounded-b-none first:squircle last:rounded-b-2xl last:rounded-t-none last:squircle only:rounded-2xl only:squircle"
             : isLg
               ? "first:rounded-t-3xl first:rounded-b-none first:squircle last:rounded-b-3xl last:rounded-t-none last:squircle only:rounded-3xl only:squircle"
               : "first:rounded-t-2xl first:rounded-b-none first:squircle last:rounded-b-2xl last:rounded-t-none last:squircle only:rounded-2xl only:squircle"
           : isSm
-            ? "first:rounded-l-xl first:rounded-r-none first:squircle last:rounded-r-xl last:rounded-l-none last:squircle only:rounded-xl only:squircle"
+            ? "first:rounded-l-2xl first:rounded-r-none first:squircle last:rounded-r-2xl last:rounded-l-none last:squircle only:rounded-2xl only:squircle"
             : isLg
               ? "first:rounded-l-3xl first:rounded-r-none first:squircle last:rounded-r-3xl last:rounded-l-none last:squircle only:rounded-3xl only:squircle"
               : "first:rounded-l-2xl first:rounded-r-none first:squircle last:rounded-r-2xl last:rounded-l-none last:squircle only:rounded-2xl only:squircle",

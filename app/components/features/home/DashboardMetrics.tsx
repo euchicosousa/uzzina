@@ -148,7 +148,10 @@ export function DashboardMetrics({
           <PrismButton aria-label="Ver métricas" size="icon-sm" variant="ghost">
             <BarChart3Icon className="size-4" />
           </PrismButton>
-          <PrismPopover className="flex max-w-60 flex-col gap-2 rounded-2xl border-border bg-popover/80 p-2.5 backdrop-blur-2xl">
+          <PrismPopover
+            className="gap-2 bg-popover/80 p-2 backdrop-blur-2xl"
+            size="sm"
+          >
             {showToday && (
               <MetricPill
                 actions={stats.today.actions}

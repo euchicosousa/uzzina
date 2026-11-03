@@ -1,3 +1,4 @@
+import type { ComboboxTriggerProps } from "~/components/features/ComboboxTrigger";
 import { useState } from "react";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { PhaseCombobox } from "~/components/features/PhaseCombobox";
@@ -59,12 +60,12 @@ export function ViewOptionsSection() {
         />
         <GallerySectionContent className="grid gap-6">
           <GalleryItem label="1. Modo Completo (Todas as Opções e Filtros Ativos)">
-            <div className="flex w-full flex-col gap-4 rounded-2xl border bg-card/50 p-4 squircle">
+            <div className="flex w-full flex-col gap-4">
               <ViewOptionsComponent
                 setViewOptions={setFullViewOptions}
                 viewOptions={fullViewOptions}
               />
-              <div className="overflow-x-auto rounded-xl bg-muted/40 p-3 font-mono text-xs text-muted-foreground">
+              <div className="overflow-x-auto rounded-xl bg-muted/40 p-3 font-mono text-xs text-muted-foreground squircle">
                 <span className="font-semibold text-foreground">
                   Estado Atual:
                 </span>{" "}
@@ -90,12 +91,12 @@ export function ViewOptionsSection() {
           </GalleryItem>
 
           <GalleryItem label="2. Modo Simplificado (Estilo SprintHomeComponent)">
-            <div className="flex w-full flex-col gap-4 rounded-2xl border bg-card/50 p-4 squircle">
+            <div className="flex w-full flex-col gap-4">
               <ViewOptionsComponent
                 setViewOptions={setSprintViewOptions}
                 viewOptions={sprintViewOptions}
               />
-              <div className="overflow-x-auto rounded-xl bg-muted/40 p-3 font-mono text-xs text-muted-foreground">
+              <div className="overflow-x-auto rounded-xl bg-muted/40 p-3 font-mono text-xs text-muted-foreground squircle">
                 <span className="font-semibold text-foreground">
                   Estado Atual:
                 </span>{" "}
@@ -116,32 +117,33 @@ export function ViewOptionsSection() {
       <div className="mt-8" id="uzzina-categories-combobox">
         <GallerySection>
           <GallerySectionHeader
-            description="Seletor de Categoria refatorado para o Prism exibindo todas as variantes de gatilhos (filter, form-inline lg/sm, icon-only, form-link e form-footer)."
+            description="Seletor de Categoria refatorado para o Prism exibindo as combinações de variant/size do gatilho (ghost sm, apenas ícone, link sm e ghost icon-lg)."
             title="CategoriesCombobox (Todas as Variantes)"
           />
           <GallerySectionContent className="grid gap-6">
-            <GalleryItem label="1. Modo Filtro Múltiplo (variant='filter' + isMulti)">
+            <GalleryItem label="1. Filtro Múltiplo (isMulti, padrão ghost sm)">
               <CategoriesDemoMulti />
             </GalleryItem>
-            <GalleryItem label="2. Modo Form-Inline Grande (variant='form-inline', size='lg')">
-              <CategoriesDemoSingle size="lg" triggerVariant="form-inline" />
+            <GalleryItem label="2. Texto (variant='ghost' size='sm', seleção única)">
+              <CategoriesDemoSingle size="sm" variant="ghost" />
             </GalleryItem>
-            <GalleryItem label="3. Modo Form-Inline Pequeno (variant='form-inline', size='sm')">
-              <CategoriesDemoSingle size="sm" triggerVariant="form-inline" />
-            </GalleryItem>
-            <GalleryItem label="4. Modo Apenas Ícone (variant='form-inline', showText=false)">
+            <GalleryItem label="3. Modo Apenas Ícone (showText=false)">
               <CategoriesDemoSingle
                 showText={false}
                 size="sm"
-                triggerVariant="form-inline"
+                variant="ghost"
               />
             </GalleryItem>
-            <GalleryItem label="5. Modo Form-Link (variant='form-link')">
-              <CategoriesDemoSingle triggerVariant="form-link" />
+            <GalleryItem label="4. Link (variant='link' size='sm')">
+              <CategoriesDemoSingle size="sm" variant="link" />
             </GalleryItem>
-            <GalleryItem label="6. Rodapé — botão padrão ghost, 48px (variant='form-footer')">
+            <GalleryItem label="5. Rodapé (variant='ghost' size='icon-lg', 48px, anel padrão)">
               <div className="max-w-md rounded-2xl border bg-card/80 p-2 squircle">
-                <CategoriesDemoSingle triggerVariant="form-footer" />
+                <CategoriesDemoSingle
+                  showText={false}
+                  size="icon-lg"
+                  variant="ghost"
+                />
               </div>
             </GalleryItem>
           </GallerySectionContent>
@@ -177,7 +179,8 @@ function CategoriesDemoMulti() {
         onSelect={({ categories }) => setSelected(categories)}
         selectedCategories={selected}
         showInstagramGroup
-        triggerVariant="filter"
+        size="sm"
+        variant="ghost"
       />
       <span className="font-mono text-xs text-muted-foreground">
         Selecionados: {selected.join(", ")}
@@ -187,12 +190,12 @@ function CategoriesDemoMulti() {
 }
 
 function CategoriesDemoSingle({
-  triggerVariant,
-  size = "lg",
+  variant,
+  size,
   showText = true,
 }: {
-  triggerVariant: "form-inline" | "form-link" | "form-footer";
-  size?: "sm" | "lg";
+  variant: ComboboxTriggerProps["variant"];
+  size: ComboboxTriggerProps["size"];
   showText?: boolean;
 }) {
   const [selected, setSelected] = useState<string>("post");
@@ -204,7 +207,7 @@ function CategoriesDemoSingle({
         showInstagramGroup
         showText={showText}
         size={size}
-        triggerVariant={triggerVariant}
+        variant={variant}
       />
       <span className="font-mono text-xs text-muted-foreground">
         Selecionado: {selected}

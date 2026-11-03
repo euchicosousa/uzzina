@@ -14,8 +14,6 @@ import {
   PrismToggleGroup,
   PrismToggleGroupItem,
 } from "~/components/prism";
-import { cn } from "cnfast";
-import { getGridCols } from "~/utils/uzzina-utils";
 interface BulkColorDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -65,7 +63,7 @@ export function BulkColorDialog({
   };
   return (
     <PrismDialog
-      className="w-72"
+      size="sm"
       isDismissable
       isOpen={open}
       onOpenChange={handleOpenChange}
@@ -81,10 +79,8 @@ export function BulkColorDialog({
         {normalizedColors.length > 0 ? (
           <PrismToggleGroup
             aria-label="Seleção de Cor dos Parceiros"
-            className={cn(
-              "grid w-full justify-start gap-3",
-              getGridCols(normalizedColors.length, 8),
-            )}
+            className="w-full flex-wrap"
+            spacing={0}
             onSelectionChange={(keys) => {
               const selected = Array.from(keys)[0] as string | undefined;
               if (selected) {
@@ -106,12 +102,13 @@ export function BulkColorDialog({
               <PrismToggleGroupItem
                 key={hex}
                 aria-label={`Cor ${hex}`}
-                className="h-5 min-w-0 shrink-0 rounded-2xl border border-black/10 p-0 transition-all squircle data-selected:scale-110 data-selected:ring-2 data-selected:ring-primary data-selected:ring-offset-2 data-selected:ring-offset-background"
                 id={hex}
-                style={{
-                  backgroundColor: hex,
-                }}
-              />
+              >
+                <span
+                  className="size-5 rounded-full border border-border"
+                  style={{ backgroundColor: hex }}
+                />
+              </PrismToggleGroupItem>
             ))}
           </PrismToggleGroup>
         ) : (

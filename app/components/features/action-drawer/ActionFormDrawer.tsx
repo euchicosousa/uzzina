@@ -67,6 +67,7 @@ const DEFAULT_PARTNER_FILTERS: string[] = [];
 const DEFAULT_PARTNERS: Partner[] = [];
 import { useAppContext } from "~/contexts/AppContext";
 export type ActionDrawerView = "essential" | "instagram" | "observations";
+export type TextDraftField = "title" | "instagram_caption";
 export function ActionFormDrawer({
   initialAction,
   onClose,
@@ -186,6 +187,27 @@ export function ActionFormDrawer({
     },
     [],
   );
+
+  // Plain text fields keep what is typed here until blur, so typing renders only
+  // the field. Save and leave flush these drafts before reading the action.
+  const textDraftsRef = useRef<Partial<Record<TextDraftField, string>>>({});
+  const setTextDraft = useCallback((field: TextDraftField, value: string) => {
+    textDraftsRef.current[field] = value;
+  }, []);
+  const commitTextDraft = useCallback(
+    (field: TextDraftField, value: string) => {
+      delete textDraftsRef.current[field];
+      if ((rawActionRef.current[field] ?? "") === value) return;
+      setRawAction((prev) => ({ ...prev, [field]: value }));
+    },
+    [setRawAction],
+  );
+  const flushTextDrafts = useCallback(() => {
+    const drafts = textDraftsRef.current;
+    if (Object.keys(drafts).length === 0) return;
+    textDraftsRef.current = {};
+    setRawAction((prev) => ({ ...prev, ...drafts }));
+  }, [setRawAction]);
 
   const [coordinatorState, setCoordinatorState] = useState<CoordinatorState>(
     () =>
@@ -320,6 +342,7 @@ export function ActionFormDrawer({
   );
 
   const handleSave = useCallback(async (): Promise<boolean> => {
+    flushTextDrafts();
     const current = rawActionRef.current;
     const coordinator = coordinatorRef.current;
     if (!coordinator) return false;
@@ -348,7 +371,7 @@ export function ActionFormDrawer({
     const remote = coordinator.getState().remoteVersion;
     if (!saved && remote && mountedRef.current) setComparison(remote);
     return saved;
-  }, []);
+  }, [flushTextDrafts]);
 
   // Ref always points to the latest handleSave to avoid stale closures in event listeners
   const handleSaveRef = useRef(handleSave);
@@ -513,9 +536,9 @@ export function ActionFormDrawer({
   const [contentFiles, setContentFiles] = useState<string[]>(
     RawAction.content_files ?? [],
   );
+  // The editor reports to the coordinator on blur; save and leave read the ref.
   const handleDescriptionChange = useCallback((desc: string) => {
     descriptionRef.current = desc;
-    coordinatorRef.current?.recordLocalChanges({ description: desc });
   }, []);
   const updateContentFiles = useCallback(
     (next: string[]) => {
@@ -683,6 +706,7 @@ export function ActionFormDrawer({
     }
     const coordinator = coordinatorRef.current;
     if (!coordinator) return true;
+    flushTextDrafts();
     const current = rawActionRef.current;
     if (!current.id && (current.title || "").trim().length < 2) {
       const hasText = Boolean(
@@ -708,7 +732,7 @@ export function ActionFormDrawer({
       );
     if (remoteVersion && mountedRef.current) setComparison(remoteVersion);
     return false;
-  }, [aiProcessingRef]);
+  }, [aiProcessingRef, flushTextDrafts]);
   useEffect(() => {
     registerLeaveGuard?.(prepareLeave);
     return () => registerLeaveGuard?.(null);
@@ -971,7 +995,7 @@ export function ActionFormDrawer({
             <div className="flex shrink-0">
               <button
                 aria-label="Fechar"
-                className="flex cursor-pointer items-center justify-center border-b px-3 py-3 text-sm font-medium outline-none focus-visible:bg-input focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset sm:p-5"
+                className="flex cursor-pointer items-center justify-center px-3 py-2 font-medium outline-none hover:bg-input focus-visible:bg-input"
                 onClick={handleSafeClose}
                 type="button"
               >
@@ -1014,6 +1038,8 @@ export function ActionFormDrawer({
                     onDescriptionChange={handleDescriptionChange}
                     onOpenStrategyModal={() => setIsStrategyModalOpen(true)}
                     onTitleBlur={handleTitleBlur}
+                    onTextDraft={setTextDraft}
+                    onTextCommit={commitTextDraft}
                     RawAction={RawAction}
                     setRawAction={setRawAction}
                     setWorkFiles={setWorkFiles}
@@ -1042,11 +1068,10 @@ export function ActionFormDrawer({
                     strategiesBlocked={strategyControlsBlocked}
                     onContentDescriptionChange={(html) => {
                       contentDescriptionRef.current = html;
-                      coordinatorRef.current?.recordLocalChanges({
-                        content_description: html,
-                      });
                     }}
                     onOpenStrategyModal={() => setIsStrategyModalOpen(true)}
+                    onTextDraft={setTextDraft}
+                    onTextCommit={commitTextDraft}
                     RawAction={RawAction}
                     setRawAction={setRawAction}
                     triggerAIAction={triggerAIAction}
@@ -1103,7 +1128,7 @@ export function ActionFormDrawer({
         </div>
       )}
       <PrismDialog
-        className="sm:max-w-3xl lg:max-w-5xl"
+        size="xl"
         isOpen={isActive && comparison !== null && !isStrategyModalOpen}
         isDismissable={!isResolvingConflict}
         showCloseButton={false}
@@ -1157,7 +1182,8 @@ export function ActionFormDrawer({
       </PrismDialog>
 
       <PrismDialog
-        className="flex flex-col sm:max-w-2xl"
+        className="flex flex-col"
+        size="xl"
         isOpen={isActive && isStrategyModalOpen}
         onOpenChange={setIsStrategyModalOpen}
       >

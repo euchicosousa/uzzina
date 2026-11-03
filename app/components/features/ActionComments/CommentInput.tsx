@@ -93,7 +93,7 @@ export function CommentInput({
             >
               {isInternal ? (
                 <>
-                  <LockIcon className="size-3 text-muted-foreground" />
+                  <LockIcon className="size-3 opacity-60" />
                   <span>Nota interna</span>
                 </>
               ) : (
@@ -137,7 +137,11 @@ export function CommentInput({
                 <span>{getFormattedPeopleName(selectedPeople)}</span>
               )}
             </PrismButton>
-            <PrismPopover className="w-60 p-0" placement="bottom start">
+            <PrismPopover
+              className="overflow-hidden p-0"
+              placement="bottom start"
+              size="sm"
+            >
               <PrismCommand>
                 <PrismCommandInput placeholder="Procurar membro..." />
                 <PrismCommandList
@@ -155,7 +159,7 @@ export function CommentInput({
                     return (
                       <PrismCommandItem
                         key={person.user_id}
-                        className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs hover:bg-muted"
+                        className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs squircle hover:bg-muted"
                         isSelected={isSelected}
                         onAction={() => toggleMention(person.user_id)}
                       >
@@ -189,7 +193,7 @@ export function CommentInput({
           </span>
           {onCancel && (
             <PrismButton
-              className="h-8 rounded-lg px-3 text-xs"
+              className="h-8 rounded-lg px-3 text-sm squircle"
               isDisabled={isSubmitting}
               onClick={onCancel}
               variant="ghost"
@@ -198,7 +202,7 @@ export function CommentInput({
             </PrismButton>
           )}
           <PrismButton
-            className="h-8 rounded-lg px-3 text-xs"
+            className="h-8 rounded-lg px-3 text-sm squircle"
             isDisabled={isSubmitting || !value.trim()}
             onClick={handleSend}
           >

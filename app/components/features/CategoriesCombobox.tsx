@@ -11,18 +11,17 @@ import {
 } from "~/components/prism";
 import { AREAS, CATEGORIES } from "~/lib/CONSTANTS";
 import { Icons } from "~/utils";
-import { ComboboxTrigger } from "./ComboboxTrigger";
+import { ComboboxTrigger, type ComboboxTriggerProps } from "./ComboboxTrigger";
 const AREA_ORDER = ["all", "instagram", "creative", "account", "adm"];
 export function CategoriesCombobox({
   selectedCategories,
   onSelect,
   isMulti,
   showInstagramGroup,
-  className,
   tabIndex,
   showText = true,
-  size = "lg",
-  triggerVariant,
+  variant,
+  size,
 }: {
   selectedCategories: string[];
   onSelect?: ({
@@ -34,11 +33,10 @@ export function CategoriesCombobox({
   }) => void;
   isMulti?: boolean;
   showInstagramGroup?: boolean;
-  className?: string;
   tabIndex?: number;
   showText?: boolean;
-  size?: "sm" | "lg";
-  triggerVariant?: "filter" | "form-inline" | "form-link" | "form-footer";
+  variant?: ComboboxTriggerProps["variant"];
+  size?: ComboboxTriggerProps["size"];
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const CATEGORIES_LIST = Object.values(CATEGORIES);
@@ -93,14 +91,12 @@ export function CategoriesCombobox({
   );
   const hasSelection =
     currentCategories.length > 0 && currentCategories[0].slug !== "all";
-  const effectiveVariant =
-    triggerVariant || (isMulti ? "filter" : "form-inline");
+  const effectiveVariant = variant ?? "ghost";
   return (
     <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
-      {isMulti && effectiveVariant === "filter" ? (
+      {isMulti && effectiveVariant === "ghost" && (size ?? "sm") === "sm" ? (
         <ComboboxTrigger
           data-state={hasSelection && "on"}
-          hasSelection={hasSelection}
           tabIndex={tabIndex}
           title={
             currentCategories.length === 0 ||
@@ -108,16 +104,16 @@ export function CategoriesCombobox({
               ? "Escolha a categoria"
               : currentCategories.map((category) => category.title).join(" • ")
           }
-          variant="filter"
+          size="sm"
+          variant="ghost"
         >
           {currentCategories.length === 0 ||
           currentCategories[0].slug === "all" ? (
-            <Icons className="size-4" color="#666" slug="categories" />
+            <Icons slug="categories" />
           ) : (
             currentCategories.map((category) => (
               <Icons
                 key={category.slug}
-                className="size-4"
                 color={category.color}
                 slug={category.slug}
               />
@@ -131,17 +127,13 @@ export function CategoriesCombobox({
               ? `Categoria: ${currentCategories[0]?.title || "Selecione"}`
               : undefined
           }
-          className={className}
-          size={size}
           tabIndex={tabIndex}
           title={currentCategories[0]?.title || "Categoria"}
-          variant={effectiveVariant}
+          size={size}
+          variant={variant}
         >
           <Icons
-            className={
-              !showText ? "size-5" : size === "sm" ? "size-4" : "size-5"
-            }
-            color={currentCategories[0]?.color || "#666"}
+            color={currentCategories[0]?.color}
             slug={currentCategories[0]?.slug || "categories"}
           />
           {showText && (
@@ -151,7 +143,7 @@ export function CategoriesCombobox({
           )}
         </ComboboxTrigger>
       )}
-      <PrismPopover className="p-0">
+      <PrismPopover className="overflow-hidden p-0">
         <PrismCommand>
           <PrismCommandInput placeholder="Procurar categoria..." />
 

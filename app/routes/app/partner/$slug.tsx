@@ -207,7 +207,8 @@ function PartnerPage() {
                   <PrismBadge>{lateCount}</PrismBadge>
                 </PrismButton>
                 <PrismPopover
-                  className="max-h-100 w-95 space-y-4 overflow-y-auto"
+                  className="max-h-100 space-y-4 overflow-y-auto"
+                  size="lg"
                   placement="bottom start"
                 >
                   <h5>Ações Atrasadas ({lateCount})</h5>

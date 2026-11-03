@@ -239,7 +239,7 @@ function DashLayout() {
                   }}
                   selectedKey={currentPartnerSlug}
                 >
-                  <PrismSelectTrigger className="w-full min-w-0 rounded-xl border-none text-sm font-semibold shadow-none">
+                  <PrismSelectTrigger className="w-full min-w-0 rounded-xl border-none text-sm font-semibold shadow-none squircle">
                     <PrismSelectValue className="block! min-w-0 truncate" />
                   </PrismSelectTrigger>
                   <PrismSelectContent>

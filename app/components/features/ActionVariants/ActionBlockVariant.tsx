@@ -67,7 +67,7 @@ export function ActionBlockVariant({
         </div>
 
         <div className="flex shrink-0 items-center gap-2 text-xs opacity-50">
-          <CalendarDaysIcon className="size-3 opacity-50" />
+          <CalendarDaysIcon className="size-3" />
           <div className="font-medium">
             {getFormattedDateTime(action.date, dateTimeDisplay)}
           </div>

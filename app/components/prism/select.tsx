@@ -81,7 +81,7 @@ function SelectTrigger({
   return (
     <ButtonPrimitive
       className={cn(
-        "flex w-full items-center justify-between gap-1.5 rounded-2xl border border-transparent bg-input/50 px-3 py-2 text-sm whitespace-nowrap transition-[color,box-shadow] duration-200 outline-none squircle focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-placeholder:text-muted-foreground data-[size=default]:h-10 data-[size=lg]:h-12 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "flex w-full items-center justify-between gap-1.5 rounded-2xl border border-transparent bg-input px-3 py-2 text-sm whitespace-nowrap transition-[color,box-shadow] duration-200 outline-none squircle focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-placeholder:text-muted-foreground data-[size=default]:h-10 data-[size=lg]:h-12 data-[size=lg]:rounded-3xl data-[size=lg]:text-base data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       data-size={size}
@@ -89,7 +89,7 @@ function SelectTrigger({
       {...props}
     >
       {children}
-      <ChevronsUpDownIcon className="pointer-events-none size-4 text-muted-foreground" />
+      <ChevronsUpDownIcon className="pointer-events-none size-4 opacity-60" />
     </ButtonPrimitive>
   );
 }
@@ -136,7 +136,7 @@ function SelectPopover({
   return (
     <PopoverPrimitive
       className={cn(
-        "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 data-[placement=bottom]:slide-in-from-top-2 data-[placement=left]:slide-in-from-right-2 data-[placement=right]:slide-in-from-left-2 data-[placement=top]:slide-in-from-bottom-2 relative isolate z-50 w-(--trigger-width) min-w-36 origin-(--trigger-anchor-point) overflow-hidden rounded-2xl bg-popover text-popover-foreground shadow-lg ring-1 ring-foreground/5 duration-100 squircle dark:ring-foreground/10",
+        "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 data-[placement=bottom]:slide-in-from-top-2 data-[placement=left]:slide-in-from-right-2 data-[placement=right]:slide-in-from-left-2 data-[placement=top]:slide-in-from-bottom-2 relative isolate z-50 w-(--trigger-width) min-w-36 origin-(--trigger-anchor-point) overflow-hidden rounded-2xl border border-foreground/5 bg-popover text-popover-foreground shadow-lg duration-100 squircle dark:border-foreground/10",
         className,
       )}
       crossOffset={crossOffset}
@@ -178,7 +178,7 @@ function SelectInput({ className, ...props }: SearchFieldProps) {
           data-slot="select-input"
         />
         <InputGroupAddon>
-          <SearchIcon className="size-4 shrink-0 opacity-50" />
+          <SearchIcon className="size-4 shrink-0 opacity-60" />
         </InputGroupAddon>
       </InputGroup>
     </SearchField>
@@ -204,7 +204,7 @@ function SelectItem({
   return (
     <ListBoxItemPrimitive
       className={cn(
-        "relative flex min-h-7 w-full cursor-default items-center gap-2 rounded-xl py-1.5 pr-12 pl-2 text-sm outline-hidden select-none squircle focus:bg-secondary/50 focus:text-foreground data-disabled:pointer-events-none data-disabled:opacity-50 data-focused:bg-secondary/50 data-focused:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        "relative flex min-h-7 w-full cursor-default items-center gap-2 rounded-xl py-1.5 pr-12 pl-2 text-sm outline-hidden select-none squircle focus:bg-secondary/50 focus:text-foreground data-disabled:pointer-events-none data-disabled:opacity-50 data-focused:bg-secondary/50 data-focused:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className,
       )}
       data-slot="select-item"
@@ -217,7 +217,9 @@ function SelectItem({
             {children}
           </span>
           <span className="pointer-events-none absolute right-2 flex size-4 items-center justify-center">
-            {isSelected ? <CheckIcon className="pointer-events-none" /> : null}
+            {isSelected ? (
+              <CheckIcon className="pointer-events-none opacity-100" />
+            ) : null}
           </span>
         </>
       ))}

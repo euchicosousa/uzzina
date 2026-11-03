@@ -114,7 +114,7 @@ function ViewMenuTrigger({
   label: string;
 }) {
   return (
-    <PrismButton className="max-sm:px-2" size="xs" variant="secondary">
+    <PrismButton size="sm" variant="ghost">
       {icon}
       {label}
       <ChevronDownIcon className="max-sm:hidden" />

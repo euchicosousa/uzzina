@@ -1,3 +1,4 @@
+import { cn } from "cnfast";
 import type { Action, Partner } from "~/types";
 import { useMemo, useState, useRef } from "react";
 import { parseColor, type Color } from "react-aria-components";
@@ -10,16 +11,21 @@ import {
   PrismToggleGroup,
   PrismToggleGroupItem,
 } from "~/components/prism";
-import { ComboboxTrigger } from "~/components/features/ComboboxTrigger";
+import {
+  ComboboxTrigger,
+  getTriggerContentSizeClass,
+  type ComboboxTriggerProps,
+} from "~/components/features/ComboboxTrigger";
 import { toHex } from "./PartnerColorPicker";
-import { cn } from "cnfast";
-import { getGridCols, safeColor } from "~/utils/uzzina-utils";
+import { safeColor } from "~/utils/uzzina-utils";
 interface ActionColorDropdownProps {
   action: Action;
   partners: Partner[];
   /** Chamado quando o usuário seleciona ou digita uma nova cor */
   onSelect?: (color: string) => void;
   tabIndex?: number;
+  variant?: ComboboxTriggerProps["variant"];
+  size?: ComboboxTriggerProps["size"];
 }
 
 /**
@@ -33,6 +39,8 @@ export function ActionColorDropdown({
   action,
   partners,
   onSelect,
+  variant,
+  size,
 }: ActionColorDropdownProps) {
   const normalizedActionColor = useMemo(
     () => safeColor(action.color),
@@ -87,10 +95,14 @@ export function ActionColorDropdown({
       <ComboboxTrigger
         aria-label="Abrir seletor de cores"
         title="Cor da Ação"
-        variant="form-footer"
+        size={size}
+        variant={variant}
       >
         <div
-          className="size-5 rounded-full border border-black/5"
+          className={cn(
+            getTriggerContentSizeClass(size),
+            "rounded-full border border-border",
+          )}
           style={{
             backgroundColor: colorValue.toString("hex"),
           }}
@@ -98,19 +110,17 @@ export function ActionColorDropdown({
       </ComboboxTrigger>
 
       {/* Conteúdo do Popover */}
-      <PrismPopover className="flex w-64 flex-col gap-3 p-3">
+      <PrismPopover size="sm">
         {/* 1. Swatches do Parceiro */}
         {partnerColors.length > 0 && (
-          <div className="flex flex-col gap-1.5 border-b pb-2">
+          <div className="flex flex-col gap-1.5">
             <span className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
               Cores do Parceiro
             </span>
             <PrismToggleGroup
               aria-label="Cores do Parceiro"
-              className={cn(
-                "grid w-full justify-start gap-2",
-                getGridCols(partnerColors.length, 6),
-              )}
+              className="w-full flex-wrap"
+              spacing={0}
               onSelectionChange={(keys) => {
                 const selected = Array.from(keys)[0] as string | undefined;
                 if (selected) {
@@ -128,12 +138,13 @@ export function ActionColorDropdown({
                 <PrismToggleGroupItem
                   key={hex}
                   aria-label={`Cor ${hex}`}
-                  className="h-5 min-w-0 shrink-0 rounded-2xl border border-black/10 p-0 transition-all squircle data-selected:scale-110 data-selected:ring-2 data-selected:ring-primary data-selected:ring-offset-background"
                   id={hex}
-                  style={{
-                    backgroundColor: hex,
-                  }}
-                />
+                >
+                  <span
+                    className="size-5 rounded-full border border-border"
+                    style={{ backgroundColor: hex }}
+                  />
+                </PrismToggleGroupItem>
               ))}
             </PrismToggleGroup>
           </div>

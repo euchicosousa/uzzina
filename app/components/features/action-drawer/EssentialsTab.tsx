@@ -1,6 +1,5 @@
 import { parseU } from "~/utils/date";
 import {
-  CalendarDaysIcon,
   ChevronDownIcon,
   FileIcon,
   FilePlus,
@@ -25,6 +24,7 @@ const Tiptap = lazy(() =>
 import { PrismButton, PrismButtonGroup } from "~/components/prism";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { INTENT } from "~/lib/CONSTANTS";
+import type { TextDraftField } from "~/components/features/action-drawer/ActionFormDrawer";
 import {
   getNewDateForAction,
   isSocialMediaContent,
@@ -64,6 +64,10 @@ interface EssentialsTabProps {
   onOpenStrategyModal?: () => void;
   onDescriptionChange?: (description: string) => void;
   onTitleBlur?: (title: string) => Promise<void>;
+  /** Receives each typed title without re-rendering the drawer. */
+  onTextDraft?: (field: TextDraftField, value: string) => void;
+  /** Commits the typed title to the form on blur. */
+  onTextCommit?: (field: TextDraftField, value: string) => void;
   descriptionVersion?: number;
   triggerAIAction: (
     intent: string,
@@ -86,6 +90,8 @@ export function EssentialsTab({
   uploadPreset,
   onDescriptionChange,
   onTitleBlur,
+  onTextDraft,
+  onTextCommit,
   descriptionVersion,
   autoFocus = true,
   compact = false,
@@ -173,29 +179,19 @@ export function EssentialsTab({
   const detailsId = useId();
   const isSocial = isSocialMediaContent(RawAction.category);
   const dateControl = (
-    <div className="flex min-w-0 items-center gap-1">
-      <CalendarDaysIcon
-        className={cn(
-          "size-4 shrink-0",
-          isLateAction(RawAction) ? "text-destructive" : "opacity-50",
-        )}
-      />
-      <ActionDatePicker
-        className={cn(
-          isLateAction(RawAction) ? "text-destructive" : "opacity-50",
-        )}
-        date={parseU(RawAction.date)}
-        onSelect={async (date) => {
-          setRawAction({
-            ...RawAction,
-            ...getNewDateForAction(RawAction, date),
-          });
-          await updateAction({
-            ...getNewDateForAction(RawAction, date),
-          });
-        }}
-      />
-    </div>
+    <ActionDatePicker
+      date={parseU(RawAction.date)}
+      isLate={isLateAction(RawAction)}
+      onSelect={async (date) => {
+        setRawAction({
+          ...RawAction,
+          ...getNewDateForAction(RawAction, date),
+        });
+        await updateAction({
+          ...getNewDateForAction(RawAction, date),
+        });
+      }}
+    />
   );
   return (
     <div
@@ -207,8 +203,10 @@ export function EssentialsTab({
       <div className="shrink-0" data-drawer-focus="title">
         <ActionTitleInput
           autoFocus={autoFocus}
-          className="font-medium tracking-[-5%] transition-colors focus-within:bg-foreground/5"
+          className="font-medium tracking-[-5%] transition-colors focus-within:bg-input"
           onBlur={async (title) => {
+            if (onTextCommit) onTextCommit("title", title);
+            else setRawAction((prev) => ({ ...prev, title }));
             if (onTitleBlur) {
               await onTitleBlur(title);
             } else {
@@ -220,12 +218,7 @@ export function EssentialsTab({
               );
             }
           }}
-          onChange={(title) => {
-            setRawAction((prev) => ({
-              ...prev,
-              title,
-            }));
-          }}
+          onChange={(title) => onTextDraft?.("title", title)}
           tabIndex={0}
           title={RawAction.title}
         />
@@ -233,12 +226,12 @@ export function EssentialsTab({
 
       <div className="max-w-full shrink-0 text-sm">
         {compact && (
-          <div className="flex max-w-full items-center gap-2 border-b py-1 pr-2 pl-4">
+          <div className="flex max-w-full items-center gap-2 border-b px-4 py-1">
             {dateControl}
             {workFiles.length > 0 && (
               <span
                 aria-label="Com arquivos de trabalho"
-                className="flex shrink-0 items-center opacity-50"
+                className="flex size-8 shrink-0 items-center justify-center text-muted-foreground"
                 role="img"
               >
                 <FileIcon aria-hidden="true" className="size-4" />
@@ -264,11 +257,10 @@ export function EssentialsTab({
         )}
         {/* Collapsed details stay mounted (uploads, ID toggle) but leave focus order. */}
         <div hidden={compact && !detailsExpanded} id={detailsId}>
-          <div className="flex max-w-full flex-wrap items-center gap-2 border-b px-4 py-2 sm:gap-4">
-            <div className="opacity-50">
-              <ActionTimeDisplay action={RawAction} />
-            </div>
+          <div className="flex max-w-full flex-wrap items-center justify-between gap-2 border-b py-1 pr-4">
             <ResponsiblesCombobox
+              size="sm"
+              variant="link"
               currentPartners={currentPartners}
               onSelect={async (responsibles) => {
                 setRawAction({
@@ -283,12 +275,15 @@ export function EssentialsTab({
               selectedResponsibles={RawAction.responsibles}
             />
 
+            <ActionTimeDisplay action={RawAction} />
+
             <PrismButton
               aria-label="Alternar exibição do ID da ação"
-              className="ml-auto h-6 px-2 font-mono text-[10px]"
+              className="font-mono"
               onClick={() => {
                 setisIDVisible(!isIDVisible);
               }}
+              size="icon-sm"
               variant="ghost"
             >
               {isIDVisible ? RawAction.id : "ID"}
@@ -296,7 +291,7 @@ export function EssentialsTab({
           </div>
 
           <div
-            className="flex max-w-full flex-wrap items-center justify-between gap-2 border-b px-4 py-1.5"
+            className="flex max-w-full flex-wrap items-center justify-between gap-2 border-b py-1 pr-4"
             hidden={compact && !isSocial}
           >
             {!compact && dateControl}
@@ -329,7 +324,7 @@ export function EssentialsTab({
                               : "Ver progresso das estratégias"
                           }
                           onClick={onOpenStrategyModal}
-                          size="xs"
+                          size="sm"
                           variant="secondary"
                         >
                           <ListIcon />
@@ -341,7 +336,7 @@ export function EssentialsTab({
                         isAIProcessing || strategyStatus === "unsaved"
                       }
                       onClick={handleTriggerAI}
-                      size="xs"
+                      size="sm"
                       variant="secondary"
                     >
                       <span className="min-w-0 truncate" title={buttonLabel}>
@@ -358,7 +353,7 @@ export function EssentialsTab({
               })()}
           </div>
 
-          <div className="flex max-w-full items-start gap-2 overflow-hidden border-b px-4 py-1">
+          <div className="flex max-w-full items-center gap-2 overflow-hidden border-b py-1">
             <div className="flex max-w-full flex-wrap items-center gap-1">
               {workFiles.map((url, i) => (
                 <WorkFileThumbnail
@@ -378,19 +373,15 @@ export function EssentialsTab({
                 />
               ))}
               <CloudinaryUpload
-                className={cn(
-                  workFiles.length === 0 &&
-                    "h-8 gap-1 p-0 font-normal text-muted-foreground hover:underline data-[focus-visible]:underline",
-                )}
                 cloudName={cloudName}
                 folder="uzzina/work"
                 multiple
                 onUpload={handleUpload}
                 outputWidth={1200}
                 resourceType="auto"
-                size={workFiles.length === 0 ? "sm" : "icon-xs"}
+                size={workFiles.length === 0 ? "sm" : "icon-sm"}
                 uploadPreset={uploadPreset}
-                variant={workFiles.length === 0 ? "unstyled" : "secondary"}
+                variant={"link"}
               >
                 <FilePlus className="size-4" />
                 {workFiles.length === 0 && <span>Adicionar arquivo</span>}
@@ -406,14 +397,14 @@ export function EssentialsTab({
       >
         <Suspense
           fallback={
-            <div className="h-full min-h-50 w-full animate-pulse rounded-2xl bg-muted" />
+            <div className="h-full min-h-50 w-full animate-pulse rounded-2xl bg-muted squircle" />
           }
         >
           <Tiptap
             key={descriptionVersion}
             compactToolbar={compact || shortPanel}
             className={cn(
-              "h-full min-h-50 w-full bg-popover [&_.tiptap]:transition-colors [&_.tiptap:focus]:bg-foreground/5",
+              "h-full min-h-50 w-full bg-popover [&_.tiptap]:transition-colors [&_.tiptap:focus]:bg-input",
               isAIProcessing && "opacity-40",
             )}
             content={RawAction.description || ""}

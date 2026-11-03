@@ -13,42 +13,48 @@ import {
 } from "~/components/prism";
 import { PHASES, type PHASE_TYPE } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
-import { ComboboxTrigger } from "./ComboboxTrigger";
+import {
+  ComboboxTrigger,
+  getTriggerContentSizeClass,
+  getTriggerPhaseIconSize,
+  type ComboboxTriggerProps,
+} from "./ComboboxTrigger";
 import { PhaseIcon } from "./PhaseIcon";
 const DEFAULT_SELECTED_PHASES: string[] = [];
 function MultiPhaseTrigger({
   tabIndex,
-  className,
   currentPhases,
   hasRealSelection,
   showText,
   disabled,
+  variant,
+  size,
   ...props
 }: {
   tabIndex?: number;
-  className?: string;
   currentPhases: PHASE_TYPE[];
   hasRealSelection: boolean;
   showText?: boolean;
   disabled?: boolean;
+  variant?: ComboboxTriggerProps["variant"];
+  size?: ComboboxTriggerProps["size"];
 }) {
   return (
     <ComboboxTrigger
-      className={cn(className, "overflow-hidden")}
       disabled={disabled}
-      hasSelection={hasRealSelection}
       tabIndex={tabIndex}
       title={
         !hasRealSelection
           ? "Filtrar por fase"
           : currentPhases.map((s) => s.title).join(" • ")
       }
-      variant="filter"
+      size={size}
+      variant={variant}
       {...props}
     >
       {!hasRealSelection ? (
         <>
-          <FilterIcon className="size-4 shrink-0" />
+          <FilterIcon />
           {showText && (
             <span className="overflow-hidden text-ellipsis whitespace-nowrap">
               Fases
@@ -61,7 +67,10 @@ function MultiPhaseTrigger({
             {currentPhases.map((s) => (
               <div
                 key={s.slug}
-                className="size-4 rounded-full border"
+                className={cn(
+                  getTriggerContentSizeClass(size),
+                  "rounded-full border",
+                )}
                 style={{
                   backgroundColor: s.color,
                 }}
@@ -78,47 +87,47 @@ function MultiPhaseTrigger({
 }
 function SinglePhaseTrigger({
   tabIndex,
-  className,
-  size,
   showText,
   iconVariant,
   currentPhase,
   disabled,
-  triggerVariant,
+  variant,
+  size,
   ...props
 }: {
   tabIndex?: number;
-  className?: string;
-  size?: "sm" | "lg";
   showText?: boolean;
   iconVariant?: "progress" | "icon";
   currentPhase: PHASE_TYPE;
   disabled?: boolean;
-  triggerVariant: "form-inline" | "form-footer";
+  variant?: ComboboxTriggerProps["variant"];
+  size?: ComboboxTriggerProps["size"];
 }) {
   return (
     <ComboboxTrigger
       aria-label={
         !showText ? `Fase: ${currentPhase?.title ?? "Sem fase"}` : undefined
       }
-      className={cn(disabled && "pointer-events-none opacity-40", className)}
       disabled={disabled}
-      size={size}
       tabIndex={tabIndex}
       title={`Fase: ${currentPhase?.title}`}
-      variant={triggerVariant}
+      size={size}
+      variant={variant}
       {...props}
     >
       {!showText ? (
         <PhaseIcon
           phase={currentPhase as PHASE_TYPE}
-          size="md"
+          size={getTriggerPhaseIconSize(size)}
           variant={iconVariant}
         />
       ) : (
         <>
           <div
-            className="size-2 rounded-full"
+            className={cn(
+              size === "xs" ? "size-1.5" : "size-2",
+              "rounded-full",
+            )}
             style={{
               backgroundColor: currentPhase?.color,
             }}
@@ -136,11 +145,10 @@ export function PhaseCombobox({
   isMulti = false,
   tabIndex,
   showText = true,
-  className,
   iconVariant = "progress",
-  size = "lg",
   disabled = false,
-  triggerVariant = "form-inline",
+  variant,
+  size,
 }: {
   selectedPhase?: string | null;
   selectedPhases?: string[];
@@ -148,11 +156,10 @@ export function PhaseCombobox({
   isMulti?: boolean;
   tabIndex?: number;
   showText?: boolean;
-  className?: string;
   iconVariant?: "progress" | "icon";
-  size?: "sm" | "lg";
   disabled?: boolean;
-  triggerVariant?: "form-inline" | "form-footer";
+  variant?: ComboboxTriggerProps["variant"];
+  size?: ComboboxTriggerProps["size"];
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const PHASES_LIST = Object.values(PHASES);
@@ -207,26 +214,26 @@ export function PhaseCombobox({
     >
       {isMulti ? (
         <MultiPhaseTrigger
-          className={className}
           currentPhases={currentPhases}
           disabled={disabled}
           hasRealSelection={hasRealSelection}
           showText
+          size={size}
           tabIndex={tabIndex}
+          variant={variant}
         />
       ) : (
         <SinglePhaseTrigger
-          className={className}
           currentPhase={currentPhases[0]}
           disabled={disabled}
           iconVariant={iconVariant}
           showText={showText}
-          size={size}
           tabIndex={tabIndex}
-          triggerVariant={triggerVariant}
+          size={size}
+          variant={variant}
         />
       )}
-      <PrismPopover className="w-56 p-0">
+      <PrismPopover className="overflow-hidden p-0" size="sm">
         <PrismCommand className="p-0">
           <PrismCommandInput placeholder="Procurar fase..." />
 

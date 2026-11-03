@@ -124,6 +124,15 @@
     var(--luminosity-background) var(--chroma-background) var(--info-hue)
   );
 
+  /* Fixed-palette semantic tokens: same value in light and dark themes. */
+  --success-strong: var(--color-emerald-600);
+  --success-strong-hover: var(--color-emerald-700);
+  --success-strong-foreground: var(--color-white);
+  --success-accent: var(--color-emerald-500);
+  --approved: var(--color-green-400);
+  --approved-foreground: var(--color-green-950);
+  --favorite: var(--color-amber-500);
+
   --font-heading: var(--font-sans);
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
@@ -256,6 +265,15 @@
     var(--luminosity-background) var(--chroma-background) var(--info-hue)
   );
 
+  /* Fixed-palette semantic tokens: same value in light and dark themes. */
+  --success-strong: var(--color-emerald-600);
+  --success-strong-hover: var(--color-emerald-700);
+  --success-strong-foreground: var(--color-white);
+  --success-accent: var(--color-emerald-500);
+  --approved: var(--color-green-400);
+  --approved-foreground: var(--color-green-950);
+  --favorite: var(--color-amber-500);
+
   --dark-action-l-delta: 0.1;
   --dark-action-hover-l-delta: 0.2;
   --action: oklch(
@@ -346,15 +364,29 @@
   --color-success-background: var(--color-success-background);
   --color-info: var(--color-info);
   --color-info-background: var(--color-info-background);
+
+  --color-success-strong: var(--success-strong);
+  --color-success-strong-hover: var(--success-strong-hover);
+  --color-success-strong-foreground: var(--success-strong-foreground);
+  --color-success-accent: var(--success-accent);
+  --color-approved: var(--approved);
+  --color-approved-foreground: var(--approved-foreground);
+  --color-favorite: var(--favorite);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/30;
+  }
+
+  :focus-visible {
+    outline-style: solid;
+    outline-width: 3px;
+    outline-offset: 0;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
   }
 
   button:not(:disabled),
@@ -517,12 +549,12 @@ html {
 
 /* Highlights */
 .tiptap.ProseMirror mark {
-  @apply rounded bg-amber-200 px-0.5 text-inherit dark:bg-amber-500/30;
+  @apply rounded bg-amber-200 px-0.5 text-inherit squircle dark:bg-amber-500/30;
 }
 
 /* Tabelas */
 .tiptap.ProseMirror table {
-  @apply my-4 w-full table-fixed border-collapse overflow-hidden rounded-xl border border-border;
+  @apply my-4 w-full table-fixed border-collapse overflow-hidden rounded-xl border border-border squircle;
 }
 
 .tiptap.ProseMirror th,

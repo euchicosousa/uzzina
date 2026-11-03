@@ -38,7 +38,7 @@ export function ActionItemTitleInput({
           ref={inputRef}
           aria-label="Editar título da ação"
           className={cn(
-            "w-full text-[length:inherit] leading-[inherit] outline-none",
+            "-mx-1.5 -my-0.5 w-full px-1.5 py-0.5 text-[length:inherit] leading-[inherit] text-foreground outline-none focus:outline-none",
             InputButtonClassName,
           )}
           onBlur={() => {

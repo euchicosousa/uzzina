@@ -19,17 +19,17 @@ const CELL_SIZE_DEMOS: {
   {
     cellSize: "sm",
     label: "Campo default · cellSize='sm'",
-    description: "Input h-10 com popover compacto (28px / text-xs)",
+    description: "Input h-10 com popover compacto (32px / text-xs)",
   },
   {
     cellSize: "default",
     label: "Campo default · cellSize='default'",
-    description: "Input h-10 com popover padrão (32px / text-sm)",
+    description: "Input h-10 com popover padrão (40px / text-sm)",
   },
   {
     cellSize: "lg",
     label: "Campo default · cellSize='lg'",
-    description: "Input h-10 com popover expandido (40px / text-base)",
+    description: "Input h-10 com popover expandido (48px / text-base)",
   },
 ];
 

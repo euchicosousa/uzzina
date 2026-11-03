@@ -18,10 +18,19 @@ export function SkeletonSection() {
         <GallerySectionContent className="grid gap-6">
           <GalleryItem label="Cards de Sprint (HomeSprintView)">
             <div className="grid w-full max-w-2xl grid-cols-2 gap-4 sm:grid-cols-4">
-              <PrismSkeleton className="h-28 rounded-2xl" />
-              <PrismSkeleton className="h-28 rounded-2xl" delay={100} />
-              <PrismSkeleton className="h-28 rounded-2xl" delay={200} />
-              <PrismSkeleton className="h-28 rounded-2xl" delay={300} />
+              <PrismSkeleton className="h-28 rounded-2xl squircle" />
+              <PrismSkeleton
+                className="h-28 rounded-2xl squircle"
+                delay={100}
+              />
+              <PrismSkeleton
+                className="h-28 rounded-2xl squircle"
+                delay={200}
+              />
+              <PrismSkeleton
+                className="h-28 rounded-2xl squircle"
+                delay={300}
+              />
             </div>
           </GalleryItem>
 

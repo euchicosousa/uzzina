@@ -75,7 +75,8 @@ function Fixture() {
           {innerWidth >= 1600 && <Footer name="secondary" />}
         </div>
         <ComboboxTrigger
-          variant="form-footer"
+          variant="ghost"
+          size="icon-lg"
           disabled
           onPress={() => setPresses((value) => value + 1)}
         >

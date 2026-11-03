@@ -66,6 +66,8 @@ export function HomeCalendarView({
       OptionsComponent={
         <div className="flex items-center gap-8">
           <PrismToggleGroup
+            attached
+            variant={"secondary"}
             aria-label="Alternar Período"
             onSelectionChange={(keys) => {
               const selected = Array.from(keys)[0] as typeof period;
@@ -75,7 +77,10 @@ export function HomeCalendarView({
             selectionMode="single"
             size="sm"
           >
-            <PrismToggleGroupItem id="week">Semana</PrismToggleGroupItem>
+            <PrismToggleGroupItem id="week">
+              <span className="hidden md:block">Semana</span>
+              <span className="md:hidden">Sem</span>
+            </PrismToggleGroupItem>
             <PrismToggleGroupItem id="month">Mês</PrismToggleGroupItem>
           </PrismToggleGroup>
           <ViewOptionsComponent
@@ -112,7 +117,7 @@ export function HomeCalendarView({
               to="/app/today"
               search={{ date: format(day, "yyyy-MM-dd") }}
               aria-label={`Ver ações de ${format(day, "dd/MM/yyyy")}`}
-              className="block rounded-sm underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="block rounded-sm underline-offset-4 outline-none squircle hover:underline focus-visible:underline"
             >
               {label}
             </Link>
