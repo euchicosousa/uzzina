@@ -1,6 +1,6 @@
 # 20 — `/ui`: seção "Sheet" (`PrismSheet`)
 
-Status: A fazer — executor: Gemini. **Depende da aprovação do 17** (usa `PropsPlayground`).
+Status: Concluído — aguarda validação do proprietário. Executor: Gemini.
 Escopo: criar a seção do `PrismSheet`, que não existe no `/ui`, com playground de propriedades. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)
@@ -69,6 +69,18 @@ Corpo curto: um parágrafo. Com cabeçalho desligado, mantenha um `PrismSheetTit
 ## Relatório do executor
 
 - Arquivos:
+  - `app/components/ui-sections/SheetSection.tsx` (criado com `SheetPlayground`)
+  - `app/components/ui-sections/index.ts` (export de `SheetSection` adicionado após `SeparatorSection`)
+  - `app/routes/ui.tsx` (import adicionado, `prism-sheet` inserido entre `prism-separator` e `prism-skeleton` no `SIDEBAR_ITEMS` e na renderização)
+  - `AGENTS.md` (contagem de seções Prism atualizada para 24)
 - Prettier / `tsc`:
+  - Prettier: 100% formatado sem pendências.
+  - `tsc --noEmit`: 0 erros.
 - Navegador:
+  - Painel abre no lado selecionado (`top`, `right`, `bottom`, `left`).
+  - Fechamento funcional por botão X, botão Cancelar, botão Salvar, tecla Escape e clique no overlay (quando `isDismissable` ativo).
+  - Conteúdo longo ativa rolagem interna independente mantendo cabeçalho e rodapé visíveis.
+  - Retorno de foco para o botão gatilho após o fechamento.
+  - Em 375px: painel lateral ocupa 3/4 da largura conforme especificação, sem gerar overflow horizontal na página.
 - Observações (ex.: "Close" em inglês):
+  - Conforme previsto no ticket, o botão de fechar (X) interno do primitivo `PrismSheet` possui texto `sr-only` em inglês ("Close"). Preservado intacto sem alterações em `app/components/prism/sheet.tsx`.

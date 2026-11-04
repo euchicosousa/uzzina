@@ -1,6 +1,6 @@
 # 19 — `/ui`: seção "Avatar" (`PrismAvatar`)
 
-Status: A fazer — executor: Gemini. **Depende da aprovação do 17** (usa `PropsPlayground`).
+Status: Concluído — aguarda validação do proprietário. Executor: Gemini.
 Escopo: criar a seção do `PrismAvatar` (família `PrismAvatar*`), que não existe no `/ui`, com playground de propriedades. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)
@@ -91,6 +91,17 @@ Fallbacks em ordem: `AO`, `BS`, `GC`, `DF`, `EL`, `FM`. `PrismAvatarGroupCount` 
 ## Relatório do executor
 
 - Arquivos:
+  - `app/components/ui-sections/AvatarSection.tsx` (criado com `AvatarPlayground` e `AvatarGroupPlayground`)
+  - `app/components/ui-sections/index.ts` (export de `AvatarSection` adicionado após `AlertSection`)
+  - `app/routes/ui.tsx` (import adicionado, `prism-avatar` inserido entre `prism-alert` e `prism-badge` no `SIDEBAR_ITEMS` e na renderização)
+  - `AGENTS.md` (contagem de seções Prism atualizada para 24)
 - Prettier / `tsc`:
+  - Prettier: 100% formatado sem pendências.
+  - `tsc --noEmit`: 0 erros.
 - Navegador (claro, escuro, 375px):
-- Pendências:
+  - Barra lateral com âncora `prism-avatar` funcionando entre Alert e Badge.
+  - Imagem válida inline em SVG via data URL (sem chamadas de rede); opção "Quebrada" cai corretamente no fallback de texto.
+  - Selo `PrismAvatarBadge` com ícone `CheckIcon`.
+  - Grupo de avatares com sobreposição `-space-x-2` e contador `+3` dinâmico.
+  - Totalmente responsivo em 375px sem rolagem horizontal indesejada.
+- Pendências: Nenhuma.

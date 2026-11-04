@@ -20,6 +20,7 @@ import {
   InputSection,
   TextareaSection,
   AlertSection,
+  AvatarSection,
   BadgeSection,
   ToggleSection,
   TabsSection,
@@ -34,6 +35,7 @@ import {
   CommandSection,
   ToasterSection,
   SeparatorSection,
+  SheetSection,
   ViewOptionsSection,
   UzzinaPartnersComboboxSection,
   UzzinaCategoriesComboboxSection,
@@ -148,6 +150,12 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     keywords: ["alerta", "aviso", "notificacao"],
   },
   {
+    id: "prism-avatar",
+    label: "Avatar",
+    section: "components",
+    keywords: ["avatar", "imagem", "foto", "grupo", "badge"],
+  },
+  {
     id: "prism-badge",
     label: "Badge",
     section: "components",
@@ -244,6 +252,12 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     section: "components",
     approved: true,
     keywords: ["divisor", "linha", "divider"],
+  },
+  {
+    id: "prism-sheet",
+    label: "Sheet",
+    section: "components",
+    keywords: ["sheet", "painel", "lateral", "drawer", "gaveta"],
   },
   {
     id: "prism-skeleton",
@@ -564,6 +578,7 @@ function UIPage() {
             <div className="flex w-full max-w-full min-w-0 flex-col">
               <AccordionSection />
               <AlertSection />
+              <AvatarSection />
               <BadgeSection />
               <ButtonSection />
               <CalendarSection />
@@ -578,6 +593,7 @@ function UIPage() {
               <RadioGroupSection />
               <SelectSection />
               <SeparatorSection />
+              <SheetSection />
               <SkeletonSection />
               <SliderSection />
               <TabsSection />
