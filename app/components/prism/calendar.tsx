@@ -50,14 +50,14 @@ const cellSizeConfig = {
   },
   default: {
     container: "[--cell-radius:var(--radius-2xl)] [--cell-size:40px]",
-    cell: "",
+    cell: "text-base [&>span]:text-sm",
     headerCell: "",
     heading: "text-base",
     icon: "size-5",
   },
   lg: {
     container: "[--cell-radius:var(--radius-3xl)] [--cell-size:48px] text-base",
-    cell: "text-base [&>span]:text-sm",
+    cell: "text-lg [&>span]:text-base",
     headerCell: "text-sm",
     heading: "text-lg",
     icon: "size-6",

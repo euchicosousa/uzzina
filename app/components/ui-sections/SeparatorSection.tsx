@@ -1,10 +1,57 @@
+import { useState } from "react";
 import { PrismSeparator } from "~/components/prism";
 import {
-  GallerySection,
-  GallerySectionHeader,
-  GallerySectionContent,
   GalleryItem,
+  GallerySection,
+  GallerySectionContent,
+  GallerySectionHeader,
 } from "./GalleryHelperComponents";
+import { PropsPlayground, PlaygroundRadio } from "./PropsPlayground";
+
+const SEPARATOR_ORIENTATIONS = ["horizontal", "vertical"] as const;
+type SeparatorOrientation = (typeof SEPARATOR_ORIENTATIONS)[number];
+
+const SEPARATOR_ORIENTATION_LABELS: Record<SeparatorOrientation, string> = {
+  horizontal: "Horizontal",
+  vertical: "Vertical",
+};
+
+function SeparatorPlayground() {
+  const [orientation, setOrientation] =
+    useState<SeparatorOrientation>("horizontal");
+
+  return (
+    <PropsPlayground
+      caption={`orientation="${orientation}"`}
+      preview={
+        orientation === "horizontal" ? (
+          <div className="flex w-64 flex-col gap-3">
+            <span className="text-sm text-foreground">Acima</span>
+            <PrismSeparator orientation="horizontal" />
+            <span className="text-sm text-foreground">Abaixo</span>
+          </div>
+        ) : (
+          <div className="flex h-10 items-center gap-3">
+            <span className="text-sm text-foreground">Esquerda</span>
+            <PrismSeparator orientation="vertical" />
+            <span className="text-sm text-foreground">Direita</span>
+          </div>
+        )
+      }
+      title="Separator"
+    >
+      <PlaygroundRadio
+        label="Orientação"
+        onChange={setOrientation}
+        optionLabels={SEPARATOR_ORIENTATION_LABELS}
+        options={SEPARATOR_ORIENTATIONS}
+        prop="orientation"
+        value={orientation}
+      />
+    </PropsPlayground>
+  );
+}
+
 export function SeparatorSection() {
   return (
     <div id="prism-separator">
@@ -14,30 +61,9 @@ export function SeparatorSection() {
           description="Linhas divisórias horizontais e verticais para agrupamento e separação semântica de conteúdo."
           title="Separator"
         />
-        <GallerySectionContent className="grid gap-6">
-          <GalleryItem className="w-full max-w-md" label="Horizontal Separator">
-            <div className="space-y-3">
-              <div className="mb-2">
-                <h5 className="mb-2">Uzzina Design System</h5>
-                <p>Componentes de interface proprietários para o painel.</p>
-              </div>
-              <PrismSeparator />
-              <div className="flex gap-4 text-xs text-muted-foreground">
-                <span>Documentação</span>
-                <span>Componentes</span>
-                <span>Tokens</span>
-              </div>
-            </div>
-          </GalleryItem>
-
-          <GalleryItem label="Vertical Separator">
-            <div className="flex h-6 items-center gap-4 text-sm">
-              <span className="font-medium">Sprints</span>
-              <PrismSeparator orientation="vertical" />
-              <span className="font-medium">Ações</span>
-              <PrismSeparator orientation="vertical" />
-              <span className="font-medium">Calendário</span>
-            </div>
+        <GallerySectionContent className="grid gap-12">
+          <GalleryItem label="Separator">
+            <SeparatorPlayground />
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>

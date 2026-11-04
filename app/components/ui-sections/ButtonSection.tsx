@@ -1,15 +1,5 @@
-import type { ReactNode } from "react";
-import {
-  ChevronDownIcon,
-  PlusIcon,
-  SendIcon,
-  SettingsIcon,
-  SearchIcon,
-  Share2Icon,
-  Trash2Icon,
-  CheckIcon,
-  ExternalLinkIcon,
-} from "lucide-react";
+import { useState } from "react";
+import { ChevronDownIcon, PlusIcon } from "lucide-react";
 import {
   PrismButton,
   PrismButtonGroup,
@@ -22,87 +12,244 @@ import {
   GallerySectionContent,
   GallerySectionHeader,
 } from "./GalleryHelperComponents";
+import {
+  PropsPlayground,
+  PlaygroundSelect,
+  PlaygroundRadio,
+  PlaygroundBoolean,
+  PlaygroundText,
+} from "./PropsPlayground";
 
-type ButtonVariant = NonNullable<PrismButtonVariantProps["variant"]>;
-type ButtonSize = NonNullable<PrismButtonVariantProps["size"]>;
+const BUTTON_VARIANTS = [
+  "default",
+  "secondary",
+  "outline",
+  "ghost",
+  "destructive",
+  "success",
+  "link",
+] as const;
 
-const VARIANTS: { variant: ButtonVariant; label: string }[] = [
-  { variant: "default", label: "default" },
-  { variant: "secondary", label: "secondary" },
-  { variant: "outline", label: "outline" },
-  { variant: "ghost", label: "ghost" },
-  { variant: "destructive", label: "destructive" },
-  { variant: "success", label: "success" },
-  { variant: "link", label: "link" },
-];
+const BUTTON_SIZES = [
+  "xs",
+  "sm",
+  "default",
+  "lg",
+  "icon-xs",
+  "icon-sm",
+  "icon",
+  "icon-lg",
+] as const;
 
-const TEXT_SIZES: { size: ButtonSize; label: string }[] = [
-  { size: "xs", label: "xs · h-6 / 24px" },
-  { size: "sm", label: "sm · h-8 / 32px" },
-  { size: "default", label: "default · h-10 / 40px" },
-  { size: "lg", label: "lg · h-12 / 48px" },
-];
+const BUTTON_CONTENTS = ["text", "icon-start", "icon-end"] as const;
 
-const ICON_SIZES: { size: ButtonSize; label: string }[] = [
-  { size: "icon-xs", label: "icon-xs · 24px" },
-  { size: "icon-sm", label: "icon-sm · 32px" },
-  { size: "icon", label: "icon · 40px" },
-  { size: "icon-lg", label: "icon-lg · 48px" },
-];
+type GalleryButtonVariant = (typeof BUTTON_VARIANTS)[number];
+type GalleryButtonSize = (typeof BUTTON_SIZES)[number];
+type GalleryButtonContent = (typeof BUTTON_CONTENTS)[number];
 
-const VARIANT_ICONS: Record<
-  ButtonVariant,
-  React.ComponentType<{ className?: string }>
-> = {
-  default: PlusIcon,
-  secondary: SettingsIcon,
-  outline: SearchIcon,
-  ghost: Share2Icon,
-  destructive: Trash2Icon,
-  success: CheckIcon,
-  link: ExternalLinkIcon,
-  unstyled: PlusIcon,
+const SIZE_METRICS: Record<GalleryButtonSize, string> = {
+  xs: "altura 24px · ícone 12px",
+  sm: "altura 32px · ícone 16px",
+  default: "altura 40px · ícone 20px",
+  lg: "altura 48px · ícone 20px",
+  "icon-xs": "24 × 24px · ícone 16px",
+  "icon-sm": "32 × 32px · ícone 16px",
+  icon: "40 × 40px · ícone 20px",
+  "icon-lg": "48 × 48px · ícone 20px",
 };
 
-const GROUP_SIZES: {
-  size: "sm" | "default" | "lg";
-  iconSize: ButtonSize;
-  label: string;
-}[] = [
-  { size: "sm", iconSize: "icon-sm", label: "sm · h-8 / 32px" },
-  { size: "default", iconSize: "icon", label: "default · h-10 / 40px" },
-  { size: "lg", iconSize: "icon-lg", label: "lg · h-12 / 48px" },
-];
+const BUTTON_CONTENT_LABELS: Record<GalleryButtonContent, string> = {
+  text: "Texto",
+  "icon-start": "Ícone + texto",
+  "icon-end": "Texto + ícone",
+};
 
-interface ButtonMatrixProps {
-  columns: { size: ButtonSize; label: string }[];
-  renderCell: (variant: ButtonVariant, size: ButtonSize) => ReactNode;
+const BUTTON_GROUP_SIZES = ["xs", "sm", "default", "lg"] as const;
+type ButtonGroupSize = (typeof BUTTON_GROUP_SIZES)[number];
+
+const BUTTON_GROUP_ORIENTATIONS = ["horizontal", "vertical"] as const;
+type ButtonGroupOrientation = (typeof BUTTON_GROUP_ORIENTATIONS)[number];
+
+const BUTTON_GROUP_CHILD_VARIANTS = [
+  "default",
+  "outline",
+  "secondary",
+  "ghost",
+] as const;
+type ButtonGroupChildVariant = (typeof BUTTON_GROUP_CHILD_VARIANTS)[number];
+
+const GROUP_ICON_SIZES: Record<
+  ButtonGroupSize,
+  PrismButtonVariantProps["size"]
+> = {
+  xs: "icon-xs",
+  sm: "icon-sm",
+  default: "icon",
+  lg: "icon-lg",
+};
+
+function ButtonPlayground() {
+  const [variant, setVariant] = useState<GalleryButtonVariant>("default");
+  const [size, setSize] = useState<GalleryButtonSize>("default");
+  const [content, setContent] = useState<GalleryButtonContent>("text");
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [text, setText] = useState("Botão");
+
+  const isIconOnly = size.startsWith("icon");
+
+  let previewButton: React.ReactNode;
+  if (isIconOnly) {
+    previewButton = (
+      <PrismButton
+        aria-label={text}
+        isDisabled={isDisabled}
+        size={size}
+        variant={variant}
+      >
+        <PlusIcon />
+      </PrismButton>
+    );
+  } else if (content === "icon-start") {
+    previewButton = (
+      <PrismButton isDisabled={isDisabled} size={size} variant={variant}>
+        <PlusIcon data-icon="inline-start" />
+        {text}
+      </PrismButton>
+    );
+  } else if (content === "icon-end") {
+    previewButton = (
+      <PrismButton isDisabled={isDisabled} size={size} variant={variant}>
+        {text}
+        <ChevronDownIcon data-icon="inline-end" />
+      </PrismButton>
+    );
+  } else {
+    previewButton = (
+      <PrismButton isDisabled={isDisabled} size={size} variant={variant}>
+        {text}
+      </PrismButton>
+    );
+  }
+
+  return (
+    <PropsPlayground
+      caption={`${variant} / ${size} · ${SIZE_METRICS[size]}`}
+      preview={previewButton}
+      title="Button"
+    >
+      <PlaygroundSelect
+        label="Variante"
+        onChange={setVariant}
+        options={BUTTON_VARIANTS}
+        prop="variant"
+        value={variant}
+      />
+      <PlaygroundSelect
+        label="Tamanho"
+        onChange={setSize}
+        options={BUTTON_SIZES}
+        prop="size"
+        value={size}
+      />
+      <PlaygroundRadio
+        isDisabled={isIconOnly}
+        label="Conteúdo"
+        onChange={setContent}
+        optionLabels={BUTTON_CONTENT_LABELS}
+        options={BUTTON_CONTENTS}
+        prop="children"
+        value={content}
+      />
+      <PlaygroundBoolean
+        label="Desabilitado"
+        onChange={setIsDisabled}
+        prop="isDisabled"
+        value={isDisabled}
+      />
+      <PlaygroundText
+        label="Texto"
+        onChange={setText}
+        prop="children"
+        value={text}
+      />
+    </PropsPlayground>
+  );
 }
 
-// Four fixed columns: one per size. Rows are variants; items-center keeps
-// buttons of different heights on a shared centre line for comparison.
-function ButtonMatrix({ columns, renderCell }: ButtonMatrixProps) {
+function ButtonGroupPlayground() {
+  const [size, setSize] = useState<ButtonGroupSize>("default");
+  const [orientation, setOrientation] =
+    useState<ButtonGroupOrientation>("horizontal");
+  const [variant, setVariant] = useState<ButtonGroupChildVariant>("outline");
+  const [showSeparator, setShowSeparator] = useState(true);
+  const [hasMenuButton, setHasMenuButton] = useState(false);
+
+  const separatorOrientation =
+    orientation === "horizontal" ? "vertical" : "horizontal";
+  const iconSize = GROUP_ICON_SIZES[size];
+
   return (
-    <div className="w-full min-w-0 overflow-x-auto pb-2">
-      <div className="grid min-w-max grid-cols-[7rem_repeat(4,max-content)] items-center gap-x-6 gap-y-4">
-        <span />
-        {columns.map((column) => (
-          <span className="text-xs text-muted-foreground" key={column.size}>
-            {column.label}
-          </span>
-        ))}
-        {VARIANTS.map(({ variant, label }) => (
-          <div className="contents" key={variant}>
-            <span className="text-xs font-medium text-foreground">{label}</span>
-            {columns.map((column) => (
-              <div key={`${variant}-${column.size}`}>
-                {renderCell(variant, column.size)}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
+    <PropsPlayground
+      caption={`size="${size}" · orientation="${orientation}" · variant="${variant}"`}
+      preview={
+        <PrismButtonGroup orientation={orientation} size={size}>
+          <PrismButton size={size} variant={variant}>
+            Salvar
+          </PrismButton>
+          {showSeparator && (
+            <PrismButtonGroupSeparator orientation={separatorOrientation} />
+          )}
+          {hasMenuButton ? (
+            <PrismButton
+              aria-label="Mais opções"
+              size={iconSize}
+              variant={variant}
+            >
+              <ChevronDownIcon />
+            </PrismButton>
+          ) : (
+            <PrismButton size={size} variant={variant}>
+              Publicar
+            </PrismButton>
+          )}
+        </PrismButtonGroup>
+      }
+      title="ButtonGroup"
+    >
+      <PlaygroundRadio
+        label="Tamanho"
+        onChange={setSize}
+        options={BUTTON_GROUP_SIZES}
+        prop="size"
+        value={size}
+      />
+      <PlaygroundRadio
+        label="Orientação"
+        onChange={setOrientation}
+        options={BUTTON_GROUP_ORIENTATIONS}
+        prop="orientation"
+        value={orientation}
+      />
+      <PlaygroundSelect
+        label="Variante dos botões"
+        onChange={setVariant}
+        options={BUTTON_GROUP_CHILD_VARIANTS}
+        prop="variant"
+        value={variant}
+      />
+      <PlaygroundBoolean
+        label="Separador"
+        onChange={setShowSeparator}
+        prop="PrismButtonGroupSeparator"
+        value={showSeparator}
+      />
+      <PlaygroundBoolean
+        label="Botão de menu"
+        onChange={setHasMenuButton}
+        prop="hasMenuButton"
+        value={hasMenuButton}
+      />
+    </PropsPlayground>
   );
 }
 
@@ -112,105 +259,15 @@ export function ButtonSection() {
       <GallerySection>
         <GallerySectionHeader
           approved
-          description="Componente de botão baseado no React Aria Components com suporte a estados nativos e ícones do Tabler."
+          description="Botão do Prism sobre React Aria. Ajuste as propriedades à direita para ver uma instância real; variantes e tamanhos vêm de buttonVariants."
           title="Button"
         />
-        <GallerySectionContent className="grid gap-6">
-          <GalleryItem label="Texto · variants (linhas) × tamanhos (colunas)">
-            <ButtonMatrix
-              columns={TEXT_SIZES}
-              renderCell={(variant, size) => (
-                <PrismButton size={size} variant={variant}>
-                  Texto
-                </PrismButton>
-              )}
-            />
+        <GallerySectionContent className="grid gap-12">
+          <GalleryItem label="Button">
+            <ButtonPlayground />
           </GalleryItem>
-
-          <GalleryItem label="Com ícone inicial · data-icon=inline-start">
-            <ButtonMatrix
-              columns={TEXT_SIZES}
-              renderCell={(variant, size) => (
-                <PrismButton size={size} variant={variant}>
-                  <SendIcon data-icon="inline-start" />
-                  Enviar
-                </PrismButton>
-              )}
-            />
-          </GalleryItem>
-
-          <GalleryItem label="Com ícone final · data-icon=inline-end">
-            <ButtonMatrix
-              columns={TEXT_SIZES}
-              renderCell={(variant, size) => (
-                <PrismButton size={size} variant={variant}>
-                  Próximo
-                  <ChevronDownIcon data-icon="inline-end" />
-                </PrismButton>
-              )}
-            />
-          </GalleryItem>
-
-          <GalleryItem label="Somente ícone · variants (linhas) × tamanhos (colunas)">
-            <ButtonMatrix
-              columns={ICON_SIZES}
-              renderCell={(variant, size) => {
-                const IconComponent = VARIANT_ICONS[variant] || PlusIcon;
-                return (
-                  <PrismButton
-                    aria-label={`Ação ${variant}`}
-                    size={size}
-                    variant={variant}
-                  >
-                    <IconComponent />
-                  </PrismButton>
-                );
-              }}
-            />
-          </GalleryItem>
-
-          <GalleryItem label="Estados desabilitados · tamanho default">
-            <div className="flex flex-wrap items-end gap-6">
-              {VARIANTS.map(({ variant, label }) => (
-                <div className="flex flex-col items-start gap-2" key={variant}>
-                  <span className="text-xs text-muted-foreground">{label}</span>
-                  <PrismButton isDisabled size="default" variant={variant}>
-                    Desabilitado
-                  </PrismButton>
-                </div>
-              ))}
-            </div>
-          </GalleryItem>
-
-          <GalleryItem label="ButtonGroup (Botões Conectados) · sm, default, lg">
-            <div className="flex flex-col gap-4">
-              {GROUP_SIZES.map(({ size, iconSize, label }) => (
-                <div className="flex flex-wrap items-center gap-4" key={size}>
-                  <span className="w-40 text-xs text-muted-foreground">
-                    {label}
-                  </span>
-                  <PrismButtonGroup size={size}>
-                    <PrismButton size={size} variant="outline">
-                      Anterior
-                    </PrismButton>
-                    <PrismButtonGroupSeparator />
-                    <PrismButton size={size} variant="outline">
-                      Próximo
-                    </PrismButton>
-                  </PrismButtonGroup>
-
-                  <PrismButtonGroup size={size}>
-                    <PrismButton size={size} variant="default">
-                      Salvar
-                    </PrismButton>
-                    <PrismButtonGroupSeparator />
-                    <PrismButton size={iconSize} variant="default">
-                      <ChevronDownIcon />
-                    </PrismButton>
-                  </PrismButtonGroup>
-                </div>
-              ))}
-            </div>
+          <GalleryItem label="ButtonGroup">
+            <ButtonGroupPlayground />
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>

@@ -567,7 +567,7 @@ html {
 }
 
 .tiptap.ProseMirror p.is-editor-empty:first-child::before {
-  @apply pointer-events-none float-left h-0 text-muted-foreground;
+  @apply pointer-events-none float-left h-0 text-foreground/50;
   content: attr(data-placeholder);
 }
 

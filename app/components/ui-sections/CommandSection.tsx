@@ -1,12 +1,5 @@
-import { useState, useEffect } from "react";
-import {
-  SearchIcon,
-  FilterIcon,
-  HandshakeIcon,
-  CalendarIcon,
-  UserIcon,
-  SettingsIcon,
-} from "lucide-react";
+import { useState } from "react";
+import { CalendarIcon, SettingsIcon, UserIcon, PlusIcon } from "lucide-react";
 import {
   PrismCommand,
   PrismCommandDialog,
@@ -20,8 +13,6 @@ import {
   PrismPopoverTrigger,
   PrismPopover,
   PrismButton,
-  PrismToggle,
-  PrismBadge,
   PrismKbd,
   toast,
 } from "~/components/prism";
@@ -31,203 +22,217 @@ import {
   GallerySectionContent,
   GalleryItem,
 } from "./GalleryHelperComponents";
-function CommandPopoverDemo() {
-  const [partnerFilters, setPartnerFilters] = useState<string[]>([]);
-  const [query, setQuery] = useState("");
-  const partners = [
-    {
-      slug: "cnvt",
-      title: "CNVT Creative",
-      short: "CNVT",
-    },
-    {
-      slug: "uzzina",
-      title: "Uzzina Tech",
-      short: "UZZ",
-    },
-    {
-      slug: "acme",
-      title: "Acme Corp",
-      short: "ACM",
-    },
-  ];
+import {
+  PropsPlayground,
+  PlaygroundRadio,
+  PlaygroundBoolean,
+} from "./PropsPlayground";
 
-  const filteredPartners = partners.filter((p) =>
-    p.title.toLowerCase().includes(query.toLowerCase()),
-  );
+const COMMAND_CONTAINERS = ["dialog", "popover"] as const;
+type CommandContainer = (typeof COMMAND_CONTAINERS)[number];
+const COMMAND_CONTAINER_LABELS: Record<CommandContainer, string> = {
+  dialog: "Diálogo",
+  popover: "Popover",
+};
 
-  return (
-    <PrismPopoverTrigger>
-      <PrismButton className="relative" size="icon" variant="ghost">
-        {partnerFilters.length > 0 ? (
-          <PrismBadge variant="info">{partnerFilters.length}</PrismBadge>
-        ) : (
-          <HandshakeIcon />
-        )}
-      </PrismButton>
-      <PrismPopover className="w-56 overflow-hidden p-0">
-        <PrismCommand className="p-0">
-          <div className="flex items-center border-b px-3 py-2">
-            <SearchIcon className="mr-2 shrink-0" />
-            <input
-              className="w-full bg-transparent text-xs outline-none placeholder:text-muted-foreground"
-              placeholder="Buscar parceiro..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </div>
-          <PrismCommandList
-            renderEmptyState={() => (
-              <PrismCommandEmpty>Nenhum parceiro encontrado.</PrismCommandEmpty>
-            )}
-          >
-            <PrismCommandGroup>
-              {filteredPartners.map((partner) => {
-                const isSelected = partnerFilters.includes(partner.slug);
-                return (
-                  <PrismCommandItem
-                    key={partner.slug}
-                    className={isSelected ? "bg-secondary font-medium" : ""}
-                    data-checked={isSelected}
-                    id={partner.slug}
-                    onPress={() => {
-                      if (isSelected) {
-                        setPartnerFilters(
-                          partnerFilters.filter((s) => s !== partner.slug),
-                        );
-                      } else {
-                        setPartnerFilters([...partnerFilters, partner.slug]);
-                      }
-                    }}
-                    textValue={partner.title}
-                  >
-                    <span>{partner.title}</span>
-                  </PrismCommandItem>
-                );
-              })}
-            </PrismCommandGroup>
-          </PrismCommandList>
-        </PrismCommand>
-      </PrismPopover>
-    </PrismPopoverTrigger>
-  );
-}
-function CommandDialogDemo() {
+function CommandPlayground() {
+  const [container, setContainer] = useState<CommandContainer>("dialog");
+  const [showGroups, setShowGroups] = useState(true);
+  const [showShortcuts, setShowShortcuts] = useState(true);
+  const [showCloseButton, setShowCloseButton] = useState(false);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen((open) => !open);
-      }
-    };
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, []);
-  const items = [
-    {
-      id: "cal",
-      title: "Ver Calendário",
-      group: "Ações Rápidas",
-      icon: <CalendarIcon className="size-4" />,
-    },
-    {
-      id: "user",
-      title: "Perfil do Usuário",
-      group: "Ações Rápidas",
-      icon: <UserIcon className="size-4" />,
-    },
-    {
-      id: "settings",
-      title: "Configurações da Conta",
-      group: "Sistema",
-      icon: <SettingsIcon className="size-4" />,
-      shortcut: "⌘S",
-    },
-  ];
-  const filtered =
-    query.trim() === ""
-      ? items
-      : items.filter((i) =>
-          i.title.toLowerCase().includes(query.toLowerCase()),
-        );
-  const actions = filtered.filter((i) => i.group === "Ações Rápidas");
-  const system = filtered.filter((i) => i.group === "Sistema");
-  return (
-    <div className="flex flex-col gap-3">
-      <PrismButton
-        className="w-72 justify-between border bg-input/50"
-        onClick={() => setOpen(true)}
-        variant="ghost"
+
+  const renderCommandContent = (onSelectClose: () => void) => (
+    <PrismCommand inputValue={query} onInputChange={setQuery}>
+      <PrismCommandInput placeholder="Buscar ação ou atalho..." />
+      <PrismCommandList
+        renderEmptyState={() => (
+          <PrismCommandEmpty>Nenhum item foi encontrado.</PrismCommandEmpty>
+        )}
       >
-        <span className="flex items-center gap-2 text-sm text-muted-foreground">
-          <SearchIcon className="size-4" />
-          Faça sua busca...
-        </span>
-        <PrismKbd>⌘K</PrismKbd>
-      </PrismButton>
+        {showGroups ? (
+          <>
+            <PrismCommandGroup heading="Ações">
+              <PrismCommandItem
+                id="new-action"
+                onAction={() => {
+                  toast.success("Nova ação criada");
+                  onSelectClose();
+                }}
+                textValue="Nova Ação"
+              >
+                <PlusIcon className="mr-2" />
+                <span>Nova Ação</span>
+                {showShortcuts && (
+                  <PrismCommandShortcut>
+                    <PrismKbd>⌘N</PrismKbd>
+                  </PrismCommandShortcut>
+                )}
+              </PrismCommandItem>
+              <PrismCommandItem
+                id="calendar"
+                onAction={() => {
+                  toast.info("Navegando para Calendário");
+                  onSelectClose();
+                }}
+                textValue="Ir para Calendário"
+              >
+                <CalendarIcon className="mr-2" />
+                <span>Ir para Calendário</span>
+                {showShortcuts && (
+                  <PrismCommandShortcut>
+                    <PrismKbd>⌘C</PrismKbd>
+                  </PrismCommandShortcut>
+                )}
+              </PrismCommandItem>
+            </PrismCommandGroup>
+            <PrismCommandSeparator />
+            <PrismCommandGroup heading="Configurações">
+              <PrismCommandItem
+                id="profile"
+                onAction={() => {
+                  toast.info("Abrir Perfil");
+                  onSelectClose();
+                }}
+                textValue="Minha Conta"
+              >
+                <UserIcon className="mr-2" />
+                <span>Minha Conta</span>
+                {showShortcuts && (
+                  <PrismCommandShortcut>
+                    <PrismKbd>⌘P</PrismKbd>
+                  </PrismCommandShortcut>
+                )}
+              </PrismCommandItem>
+              <PrismCommandItem
+                id="settings"
+                onAction={() => {
+                  toast.info("Abrir Configurações");
+                  onSelectClose();
+                }}
+                textValue="Preferências"
+              >
+                <SettingsIcon className="mr-2" />
+                <span>Preferências</span>
+              </PrismCommandItem>
+            </PrismCommandGroup>
+          </>
+        ) : (
+          <>
+            <PrismCommandItem
+              id="new-action"
+              onAction={() => {
+                toast.success("Nova ação criada");
+                onSelectClose();
+              }}
+              textValue="Nova Ação"
+            >
+              <PlusIcon className="mr-2" />
+              <span>Nova Ação</span>
+              {showShortcuts && (
+                <PrismCommandShortcut>
+                  <PrismKbd>⌘N</PrismKbd>
+                </PrismCommandShortcut>
+              )}
+            </PrismCommandItem>
+            <PrismCommandItem
+              id="calendar"
+              onAction={() => {
+                toast.info("Navegando para Calendário");
+                onSelectClose();
+              }}
+              textValue="Ir para Calendário"
+            >
+              <CalendarIcon className="mr-2" />
+              <span>Ir para Calendário</span>
+              {showShortcuts && (
+                <PrismCommandShortcut>
+                  <PrismKbd>⌘C</PrismKbd>
+                </PrismCommandShortcut>
+              )}
+            </PrismCommandItem>
+            <PrismCommandItem
+              id="profile"
+              onAction={() => {
+                toast.info("Abrir Perfil");
+                onSelectClose();
+              }}
+              textValue="Minha Conta"
+            >
+              <UserIcon className="mr-2" />
+              <span>Minha Conta</span>
+              {showShortcuts && (
+                <PrismCommandShortcut>
+                  <PrismKbd>⌘P</PrismKbd>
+                </PrismCommandShortcut>
+              )}
+            </PrismCommandItem>
+          </>
+        )}
+      </PrismCommandList>
+    </PrismCommand>
+  );
 
-      <PrismCommandDialog onOpenChange={setOpen} open={open}>
-        <PrismCommand inputValue={query} onInputChange={setQuery}>
-          <PrismCommandInput placeholder="Faça sua busca..." />
-          <PrismCommandList
-            renderEmptyState={() => (
-              <PrismCommandEmpty>Nenhum item foi encontrado.</PrismCommandEmpty>
-            )}
-          >
-            {actions.length > 0 && (
-              <PrismCommandGroup heading="Ações Rápidas">
-                {actions.map((item) => (
-                  <PrismCommandItem
-                    key={item.id}
-                    id={item.id}
-                    onPress={() => {
-                      toast.success(`Executou: ${item.title}`);
-                      setOpen(false);
-                    }}
-                    textValue={item.title}
-                  >
-                    {item.icon}
-                    <span>{item.title}</span>
-                  </PrismCommandItem>
-                ))}
-              </PrismCommandGroup>
-            )}
-
-            {actions.length > 0 && system.length > 0 && (
-              <PrismCommandSeparator />
-            )}
-
-            {system.length > 0 && (
-              <PrismCommandGroup heading="Sistema">
-                {system.map((item) => (
-                  <PrismCommandItem
-                    key={item.id}
-                    id={item.id}
-                    onPress={() => {
-                      toast.success(`Executou: ${item.title}`);
-                      setOpen(false);
-                    }}
-                    textValue={item.title}
-                  >
-                    {item.icon}
-                    <span>{item.title}</span>
-                    {item.shortcut && (
-                      <PrismCommandShortcut>
-                        <PrismKbd>{item.shortcut}</PrismKbd>
-                      </PrismCommandShortcut>
-                    )}
-                  </PrismCommandItem>
-                ))}
-              </PrismCommandGroup>
-            )}
-          </PrismCommandList>
-        </PrismCommand>
-      </PrismCommandDialog>
-    </div>
+  return (
+    <PropsPlayground
+      caption={`container="${container}" · showGroups={${showGroups}}`}
+      preview={
+        container === "dialog" ? (
+          <>
+            <PrismButton onClick={() => setOpen(true)} variant="outline">
+              Abrir comando
+            </PrismButton>
+            <PrismCommandDialog
+              onOpenChange={setOpen}
+              open={open}
+              showCloseButton={showCloseButton}
+            >
+              {renderCommandContent(() => setOpen(false))}
+            </PrismCommandDialog>
+          </>
+        ) : (
+          <PrismPopoverTrigger>
+            <PrismButton variant="outline">Abrir comando</PrismButton>
+            <PrismPopover className="w-80 overflow-hidden p-0">
+              {renderCommandContent(() => {})}
+            </PrismPopover>
+          </PrismPopoverTrigger>
+        )
+      }
+      title="Command"
+    >
+      <PlaygroundRadio
+        label="Onde abre"
+        onChange={setContainer}
+        optionLabels={COMMAND_CONTAINER_LABELS}
+        options={COMMAND_CONTAINERS}
+        prop="contêiner"
+        value={container}
+      />
+      <PlaygroundBoolean
+        label="Grupos"
+        onChange={setShowGroups}
+        prop="PrismCommandGroup"
+        value={showGroups}
+      />
+      <PlaygroundBoolean
+        label="Atalhos"
+        onChange={setShowShortcuts}
+        prop="PrismCommandShortcut"
+        value={showShortcuts}
+      />
+      <PlaygroundBoolean
+        isDisabled={container === "popover"}
+        label="Botão fechar (X)"
+        onChange={setShowCloseButton}
+        prop="showCloseButton"
+        value={showCloseButton}
+      />
+    </PropsPlayground>
   );
 }
+
 export function CommandSection() {
   return (
     <div id="prism-command">
@@ -237,12 +242,9 @@ export function CommandSection() {
           description="Barra de busca e menu de comandos para atalhos do teclado, navegação ou filtros."
           title="Command"
         />
-        <GallerySectionContent>
-          <GalleryItem label="Command em Popover (Filtro Inline / AppBar)">
-            <CommandPopoverDemo />
-          </GalleryItem>
-          <GalleryItem label="Command em Dialog (Busca Global ⌘K)">
-            <CommandDialogDemo />
+        <GallerySectionContent className="grid gap-12">
+          <GalleryItem label="Command">
+            <CommandPlayground />
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>

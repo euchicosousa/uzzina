@@ -1,4 +1,5 @@
 export * from "./GalleryHelperComponents";
+export * from "./PropsPlayground";
 export * from "./TokensColorsSection";
 export * from "./TokensSpacingSection";
 export * from "./TokensFocusSection";
@@ -28,4 +29,7 @@ export * from "./SkeletonSection";
 export * from "./RichTextEditorSection";
 export * from "./ViewOptionsSection";
 export * from "./UzzinaPartnersComboboxSection";
-export * from "./UzzinaComponentsSection";
+export * from "./UzzinaCategoriesComboboxSection";
+export * from "./UzzinaPhaseComboboxSection";
+export * from "./UzzinaIconsSection";
+export * from "./UzzinaAvatarSection";

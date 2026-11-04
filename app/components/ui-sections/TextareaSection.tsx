@@ -1,16 +1,60 @@
 import { useState } from "react";
-import { TextField, Label } from "react-aria-components";
 import { PrismTextarea } from "~/components/prism";
 import {
-  GallerySection,
-  GallerySectionHeader,
-  GallerySectionContent,
   GalleryItem,
+  GallerySection,
+  GallerySectionContent,
+  GallerySectionHeader,
 } from "./GalleryHelperComponents";
+import {
+  PropsPlayground,
+  PlaygroundBoolean,
+  PlaygroundText,
+} from "./PropsPlayground";
+
+function TextareaPlayground() {
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isInvalid, setIsInvalid] = useState(false);
+  const [placeholder, setPlaceholder] = useState("Escreva algo...");
+
+  return (
+    <PropsPlayground
+      caption="PrismTextarea"
+      preview={
+        <div className="w-full max-w-md">
+          <PrismTextarea
+            aria-invalid={isInvalid || undefined}
+            aria-label="Exemplo de textarea"
+            disabled={isDisabled}
+            placeholder={placeholder}
+          />
+        </div>
+      }
+      title="Textarea"
+    >
+      <PlaygroundBoolean
+        label="Desabilitado"
+        onChange={setIsDisabled}
+        prop="disabled"
+        value={isDisabled}
+      />
+      <PlaygroundBoolean
+        label="Inválido"
+        onChange={setIsInvalid}
+        prop="aria-invalid"
+        value={isInvalid}
+      />
+      <PlaygroundText
+        label="Placeholder"
+        onChange={setPlaceholder}
+        prop="placeholder"
+        value={placeholder}
+      />
+    </PropsPlayground>
+  );
+}
 
 export function TextareaSection() {
-  const [value, setValue] = useState("");
-
   return (
     <div id="prism-textarea">
       <GallerySection>
@@ -19,23 +63,9 @@ export function TextareaSection() {
           description="Campo de entrada de texto multilinhas para descrições, observações e comentários."
           title="Textarea"
         />
-        <GallerySectionContent>
-          <GalleryItem className="w-full max-w-md" label="Default Textarea">
-            <TextField onChange={setValue} value={value}>
-              <Label className="mb-1.5 block cursor-pointer font-medium text-foreground">
-                Descrição da Ação
-              </Label>
-              <PrismTextarea placeholder="Digite a descrição detalhada..." />
-            </TextField>
-          </GalleryItem>
-
-          <GalleryItem className="w-full max-w-md" label="Disabled Textarea">
-            <TextField isDisabled value="Este conteúdo não pode ser editado.">
-              <Label className="mb-1.5 block cursor-pointer font-medium text-foreground">
-                Observações (Desabilitado)
-              </Label>
-              <PrismTextarea />
-            </TextField>
+        <GallerySectionContent className="grid gap-12">
+          <GalleryItem label="Textarea">
+            <TextareaPlayground />
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>

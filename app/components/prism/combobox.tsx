@@ -354,7 +354,7 @@ function ComboboxChipsInput({ className, ...props }: InputProps) {
   return (
     <InputPrimitive
       className={cn(
-        "min-w-16 flex-1 bg-transparent outline-none placeholder:text-muted-foreground",
+        "min-w-16 flex-1 bg-transparent outline-none placeholder:text-foreground/50",
         className,
       )}
       data-slot="combobox-chip-input"

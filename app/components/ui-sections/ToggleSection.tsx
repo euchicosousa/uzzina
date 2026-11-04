@@ -1,78 +1,293 @@
 import { useState } from "react";
 import {
-  BoldIcon,
-  ItalicIcon,
-  UnderlineIcon,
-  ListIcon,
-  LayoutGridIcon,
-  StarIcon,
   AlignLeftIcon,
   AlignCenterIcon,
   AlignRightIcon,
+  AlignJustifyIcon,
+  BoldIcon,
 } from "lucide-react";
 import {
-  PrismButton,
   PrismToggle,
   PrismToggleGroup,
   PrismToggleGroupItem,
 } from "~/components/prism";
 import {
-  GallerySection,
-  GallerySectionHeader,
-  GallerySectionContent,
   GalleryItem,
+  GallerySection,
+  GallerySectionContent,
+  GallerySectionHeader,
 } from "./GalleryHelperComponents";
+import {
+  PropsPlayground,
+  PlaygroundSelect,
+  PlaygroundRadio,
+  PlaygroundBoolean,
+  PlaygroundNumber,
+} from "./PropsPlayground";
 
-const TOGGLE_SIZES: { size: "xs" | "sm" | "default" | "lg"; label: string }[] =
-  [
-    { size: "xs", label: "xs · h-6 / 24px" },
-    { size: "sm", label: "sm · h-8 / 32px" },
-    { size: "default", label: "default · h-10 / 40px" },
-    { size: "lg", label: "lg · h-12 / 48px" },
-  ];
+const TOGGLE_VARIANTS = ["default", "ghost", "secondary", "outline"] as const;
 
-const ATTACHED_SIZES: {
-  size: "sm" | "default" | "lg";
-  label: string;
-  radiusLabel: string;
-}[] = [
-  { size: "sm", label: "sm · h-8 / 32px", radiusLabel: "squircle xl" },
-  {
-    size: "default",
-    label: "default · h-10 / 40px",
-    radiusLabel: "squircle 2xl",
-  },
-  { size: "lg", label: "lg · h-12 / 48px", radiusLabel: "squircle 3xl" },
-];
+const TOGGLE_SIZES = [
+  "xs",
+  "sm",
+  "default",
+  "lg",
+  "icon-xs",
+  "icon-sm",
+  "icon",
+  "icon-lg",
+] as const;
+
+type ToggleVariant = (typeof TOGGLE_VARIANTS)[number];
+type ToggleSize = (typeof TOGGLE_SIZES)[number];
+
+const TOGGLE_CONTENTS = ["icon", "text", "icon-text"] as const;
+type ToggleContent = (typeof TOGGLE_CONTENTS)[number];
+
+const TOGGLE_CONTENT_LABELS: Record<ToggleContent, string> = {
+  icon: "Ícone",
+  text: "Texto",
+  "icon-text": "Ícone + texto",
+};
+
+const SELECTION_MODES = ["single", "multiple"] as const;
+type SelectionMode = (typeof SELECTION_MODES)[number];
+
+const SELECTION_MODE_LABELS: Record<SelectionMode, string> = {
+  single: "Única",
+  multiple: "Múltipla",
+};
+
+const ORIENTATIONS = ["horizontal", "vertical"] as const;
+type Orientation = (typeof ORIENTATIONS)[number];
+
+function TogglePlayground() {
+  const [variant, setVariant] = useState<ToggleVariant>("default");
+  const [size, setSize] = useState<ToggleSize>("default");
+  const [content, setContent] = useState<ToggleContent>("icon-text");
+  const [isSelected, setIsSelected] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  let childrenNode: React.ReactNode;
+  if (content === "icon") {
+    childrenNode = <BoldIcon />;
+  } else if (content === "text") {
+    childrenNode = "Negrito";
+  } else {
+    childrenNode = (
+      <>
+        <BoldIcon />
+        <span>Negrito</span>
+      </>
+    );
+  }
+
+  return (
+    <PropsPlayground
+      caption={`variant="${variant}" · size="${size}" · ${isSelected ? "selected" : "unselected"}`}
+      preview={
+        <PrismToggle
+          aria-label={content === "icon" ? "Negrito" : undefined}
+          isDisabled={isDisabled}
+          isSelected={isSelected}
+          onChange={setIsSelected}
+          size={size}
+          variant={variant}
+        >
+          {childrenNode}
+        </PrismToggle>
+      }
+      title="Toggle"
+    >
+      <PlaygroundRadio
+        label="Variante"
+        onChange={setVariant}
+        options={TOGGLE_VARIANTS}
+        prop="variant"
+        value={variant}
+      />
+      <PlaygroundSelect
+        label="Tamanho"
+        onChange={setSize}
+        options={TOGGLE_SIZES}
+        prop="size"
+        value={size}
+      />
+      <PlaygroundRadio
+        label="Conteúdo"
+        onChange={setContent}
+        optionLabels={TOGGLE_CONTENT_LABELS}
+        options={TOGGLE_CONTENTS}
+        prop="children"
+        value={content}
+      />
+      <PlaygroundBoolean
+        label="Selecionado"
+        onChange={setIsSelected}
+        prop="isSelected"
+        value={isSelected}
+      />
+      <PlaygroundBoolean
+        label="Desabilitado"
+        onChange={setIsDisabled}
+        prop="isDisabled"
+        value={isDisabled}
+      />
+    </PropsPlayground>
+  );
+}
+
+const ALIGN_ITEMS = [
+  { id: "left", label: "Esquerda", icon: AlignLeftIcon },
+  { id: "center", label: "Centro", icon: AlignCenterIcon },
+  { id: "right", label: "Direita", icon: AlignRightIcon },
+  { id: "justify", label: "Justificar", icon: AlignJustifyIcon },
+] as const;
+
+function ToggleGroupPlayground() {
+  const [variant, setVariant] = useState<ToggleVariant>("outline");
+  const [size, setSize] = useState<ToggleSize>("default");
+  const [selectionMode, setSelectionMode] = useState<SelectionMode>("single");
+  const [orientation, setOrientation] = useState<Orientation>("horizontal");
+  const [content, setContent] = useState<ToggleContent>("icon-text");
+  const [attached, setAttached] = useState(true);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [spacing, setSpacing] = useState(2);
+  const [count, setCount] = useState(3);
+  const [selectedKeys, setSelectedKeys] = useState<string[]>(["left"]);
+
+  const handleSelectionModeChange = (mode: SelectionMode) => {
+    setSelectionMode(mode);
+    if (mode === "single" && selectedKeys.length > 1) {
+      const first = selectedKeys[0];
+      setSelectedKeys(first !== undefined ? [first] : ["left"]);
+    }
+  };
+
+  const currentItems = ALIGN_ITEMS.slice(0, count);
+
+  return (
+    <PropsPlayground
+      caption={`variant="${variant}" · size="${size}" · selectionMode="${selectionMode}" · [${selectedKeys.join(", ")}]`}
+      preview={
+        <PrismToggleGroup
+          aria-label="Alinhamento de texto"
+          attached={attached}
+          isDisabled={isDisabled}
+          onSelectionChange={(keys) => {
+            const nextKeys = Array.from(keys, String);
+            setSelectedKeys(nextKeys);
+          }}
+          orientation={orientation}
+          selectedKeys={selectedKeys}
+          selectionMode={selectionMode}
+          size={size}
+          spacing={spacing}
+          variant={variant}
+        >
+          {currentItems.map((item) => {
+            const Icon = item.icon;
+            let itemChildren: React.ReactNode;
+            if (content === "icon") {
+              itemChildren = <Icon />;
+            } else if (content === "text") {
+              itemChildren = item.label;
+            } else {
+              itemChildren = (
+                <>
+                  <Icon />
+                  <span>{item.label}</span>
+                </>
+              );
+            }
+
+            return (
+              <PrismToggleGroupItem
+                aria-label={content === "icon" ? item.label : undefined}
+                id={item.id}
+                key={item.id}
+              >
+                {itemChildren}
+              </PrismToggleGroupItem>
+            );
+          })}
+        </PrismToggleGroup>
+      }
+      title="ToggleGroup"
+    >
+      <PlaygroundRadio
+        label="Variante"
+        onChange={setVariant}
+        options={TOGGLE_VARIANTS}
+        prop="variant"
+        value={variant}
+      />
+      <PlaygroundSelect
+        label="Tamanho"
+        onChange={setSize}
+        options={TOGGLE_SIZES}
+        prop="size"
+        value={size}
+      />
+      <PlaygroundRadio
+        label="Seleção"
+        onChange={handleSelectionModeChange}
+        optionLabels={SELECTION_MODE_LABELS}
+        options={SELECTION_MODES}
+        prop="selectionMode"
+        value={selectionMode}
+      />
+      <PlaygroundRadio
+        label="Orientação"
+        onChange={setOrientation}
+        options={ORIENTATIONS}
+        prop="orientation"
+        value={orientation}
+      />
+      <PlaygroundRadio
+        label="Conteúdo"
+        onChange={setContent}
+        optionLabels={TOGGLE_CONTENT_LABELS}
+        options={TOGGLE_CONTENTS}
+        prop="children"
+        value={content}
+      />
+      <PlaygroundBoolean
+        label="Conectado"
+        onChange={setAttached}
+        prop="attached"
+        value={attached}
+      />
+      <PlaygroundBoolean
+        label="Desabilitado"
+        onChange={setIsDisabled}
+        prop="isDisabled"
+        value={isDisabled}
+      />
+      <PlaygroundNumber
+        isDisabled={attached}
+        label="Espaçamento"
+        max={4}
+        min={0}
+        onChange={setSpacing}
+        prop="spacing"
+        step={1}
+        value={spacing}
+      />
+      <PlaygroundNumber
+        label="Quantidade de itens"
+        max={4}
+        min={2}
+        onChange={setCount}
+        prop="count"
+        step={1}
+        value={count}
+      />
+    </PropsPlayground>
+  );
+}
 
 export function ToggleSection() {
-  const [isStarred, setIsStarred] = useState(false);
-
-  // Estados do Modelo Separado
-  const [separateFormatting, setSeparateFormatting] = useState<string[]>([
-    "bold",
-  ]);
-  const [separateViewMode, setSeparateViewMode] = useState<string>("grid");
-
-  // Estados do Modelo Conectado (attached)
-  const [attachedFormatting, setAttachedFormatting] = useState<string[]>([
-    "bold",
-  ]);
-  const [attachedViewMode, setAttachedViewMode] = useState<string>("grid");
-  const [attachedAlign, setAttachedAlign] = useState<string>("left");
-
-  // Estados para tamanhos do modelo conectado
-  const [sizeViews, setSizeViews] = useState<Record<string, string>>({
-    sm: "grid",
-    default: "grid",
-    lg: "grid",
-  });
-  const [sizeFormats, setSizeFormats] = useState<Record<string, string[]>>({
-    sm: ["bold"],
-    default: ["bold"],
-    lg: ["bold"],
-  });
-
   return (
     <div id="prism-toggle">
       <GallerySection>
@@ -81,297 +296,12 @@ export function ToggleSection() {
           description="Botões de alternância individual (Toggle) e grupos de seleção (ToggleGroup) com alinhamento visual rigoroso aos botões. Suporta modelo separado (botões individuais com gap) e modelo conectado (attached com cantos squircle proporcionais)."
           title="Toggle & ToggleGroup"
         />
-        <GallerySectionContent className="grid gap-6">
-          {/* 1. Toggle Individual */}
-          <GalleryItem label="Toggle Individual (Simples & Ícone)">
-            <div className="flex flex-wrap items-center gap-4">
-              <PrismToggle
-                aria-label="Favoritar"
-                isSelected={isStarred}
-                onChange={setIsStarred}
-              >
-                {isStarred ? (
-                  <StarIcon className="fill-favorite text-favorite" />
-                ) : (
-                  <StarIcon />
-                )}
-                <span>{isStarred ? "Favoritado" : "Favoritar"}</span>
-              </PrismToggle>
-
-              <PrismToggle variant="outline">Modo Rascunho</PrismToggle>
-            </div>
+        <GallerySectionContent className="grid gap-12">
+          <GalleryItem label="Toggle">
+            <TogglePlayground />
           </GalleryItem>
-
-          {/* 2. Modelo Separado (Padrão) */}
-          <GalleryItem label="Modelo Separado (Botões Individuais com Espaçamento · gap-2)">
-            <div className="flex flex-wrap items-center gap-8">
-              {/* Seleção Múltipla */}
-              <div className="flex flex-col gap-2">
-                <span className="text-xs text-muted-foreground">
-                  Seleção múltipla (Formatação)
-                </span>
-                <PrismToggleGroup
-                  onSelectionChange={(keys) =>
-                    setSeparateFormatting(Array.from(keys as Set<string>))
-                  }
-                  selectedKeys={separateFormatting}
-                  selectionMode="multiple"
-                >
-                  <PrismToggleGroupItem aria-label="Negrito" id="bold">
-                    <BoldIcon />
-                  </PrismToggleGroupItem>
-                  <PrismToggleGroupItem aria-label="Itálico" id="italic">
-                    <ItalicIcon />
-                  </PrismToggleGroupItem>
-                  <PrismToggleGroupItem aria-label="Sublinhado" id="underline">
-                    <UnderlineIcon />
-                  </PrismToggleGroupItem>
-                </PrismToggleGroup>
-              </div>
-
-              {/* Seleção Única */}
-              <div className="flex flex-col gap-2">
-                <span className="text-xs text-muted-foreground">
-                  Seleção única (Modo de exibição)
-                </span>
-                <PrismToggleGroup
-                  onSelectionChange={(keys) => {
-                    const selected = Array.from(keys as Set<string>)[0];
-                    if (selected) setSeparateViewMode(selected);
-                  }}
-                  selectedKeys={[separateViewMode]}
-                  selectionMode="single"
-                  variant="outline"
-                >
-                  <PrismToggleGroupItem aria-label="Lista" id="list">
-                    <ListIcon />
-                    <span>Lista</span>
-                  </PrismToggleGroupItem>
-                  <PrismToggleGroupItem aria-label="Grade" id="grid">
-                    <LayoutGridIcon />
-                    <span>Grade</span>
-                  </PrismToggleGroupItem>
-                </PrismToggleGroup>
-              </div>
-            </div>
-          </GalleryItem>
-
-          {/* 3. Modelo Conectado (attached) */}
-          <GalleryItem label="Modelo Conectado (attached · Segmented Control com bordas compartilhadas)">
-            <div className="flex flex-wrap items-center gap-8">
-              {/* Seleção Única - attached */}
-              <div className="flex flex-col gap-2">
-                <span className="text-xs text-muted-foreground">
-                  Seleção única · Lista / Grade (variant outline)
-                </span>
-                <PrismToggleGroup
-                  attached
-                  onSelectionChange={(keys) => {
-                    const selected = Array.from(keys as Set<string>)[0];
-                    if (selected) setAttachedViewMode(selected);
-                  }}
-                  selectedKeys={[attachedViewMode]}
-                  selectionMode="single"
-                  variant="outline"
-                >
-                  <PrismToggleGroupItem aria-label="Lista" id="list">
-                    <ListIcon />
-                    <span>Lista</span>
-                  </PrismToggleGroupItem>
-                  <PrismToggleGroupItem aria-label="Grade" id="grid">
-                    <LayoutGridIcon />
-                    <span>Grade</span>
-                  </PrismToggleGroupItem>
-                </PrismToggleGroup>
-              </div>
-
-              {/* Seleção Múltipla - attached */}
-              <div className="flex flex-col gap-2">
-                <span className="text-xs text-muted-foreground">
-                  Seleção múltipla · Formatação (variant outline)
-                </span>
-                <PrismToggleGroup
-                  attached
-                  onSelectionChange={(keys) =>
-                    setAttachedFormatting(Array.from(keys as Set<string>))
-                  }
-                  selectedKeys={attachedFormatting}
-                  selectionMode="multiple"
-                  variant="outline"
-                >
-                  <PrismToggleGroupItem aria-label="Negrito" id="bold">
-                    <BoldIcon />
-                  </PrismToggleGroupItem>
-                  <PrismToggleGroupItem aria-label="Itálico" id="italic">
-                    <ItalicIcon />
-                  </PrismToggleGroupItem>
-                  <PrismToggleGroupItem aria-label="Sublinhado" id="underline">
-                    <UnderlineIcon />
-                  </PrismToggleGroupItem>
-                </PrismToggleGroup>
-              </div>
-
-              {/* Seleção Única - Alinhamento (3 itens com intermediário) */}
-              <div className="flex flex-col gap-2">
-                <span className="text-xs text-muted-foreground">
-                  Seleção única · Alinhamento (3 itens conectados)
-                </span>
-                <PrismToggleGroup
-                  attached
-                  onSelectionChange={(keys) => {
-                    const selected = Array.from(keys as Set<string>)[0];
-                    if (selected) setAttachedAlign(selected);
-                  }}
-                  selectedKeys={[attachedAlign]}
-                  selectionMode="single"
-                  variant="outline"
-                >
-                  <PrismToggleGroupItem
-                    aria-label="Alinhar à esquerda"
-                    id="left"
-                  >
-                    <AlignLeftIcon />
-                  </PrismToggleGroupItem>
-                  <PrismToggleGroupItem aria-label="Centralizar" id="center">
-                    <AlignCenterIcon />
-                  </PrismToggleGroupItem>
-                  <PrismToggleGroupItem
-                    aria-label="Alinhar à direita"
-                    id="right"
-                  >
-                    <AlignRightIcon />
-                  </PrismToggleGroupItem>
-                </PrismToggleGroup>
-              </div>
-            </div>
-          </GalleryItem>
-
-          {/* 4. Modelo Conectado nos tamanhos sm, default e lg */}
-          <GalleryItem label="Modelo Conectado (attached) · Tamanhos sm, default e lg com raio squircle proporcional">
-            <div className="grid gap-4">
-              {ATTACHED_SIZES.map(({ size, label, radiusLabel }) => (
-                <div className="flex flex-wrap items-center gap-4" key={size}>
-                  <div className="flex w-52 flex-col">
-                    <span className="text-xs font-medium text-foreground">
-                      {label}
-                    </span>
-                    <span className="text-[11px] text-muted-foreground">
-                      Bordas: {radiusLabel}
-                    </span>
-                  </div>
-
-                  {/* Seleção única no tamanho */}
-                  <PrismToggleGroup
-                    attached
-                    onSelectionChange={(keys) => {
-                      const selected = Array.from(keys as Set<string>)[0];
-                      if (selected) {
-                        setSizeViews((prev) => ({ ...prev, [size]: selected }));
-                      }
-                    }}
-                    selectedKeys={[sizeViews[size] || "grid"]}
-                    selectionMode="single"
-                    size={size}
-                    variant="outline"
-                  >
-                    <PrismToggleGroupItem aria-label="Lista" id="list">
-                      <ListIcon />
-                      <span>Lista</span>
-                    </PrismToggleGroupItem>
-                    <PrismToggleGroupItem aria-label="Grade" id="grid">
-                      <LayoutGridIcon />
-                      <span>Grade</span>
-                    </PrismToggleGroupItem>
-                  </PrismToggleGroup>
-
-                  {/* Seleção múltipla no tamanho */}
-                  <PrismToggleGroup
-                    attached
-                    onSelectionChange={(keys) => {
-                      setSizeFormats((prev) => ({
-                        ...prev,
-                        [size]: Array.from(keys as Set<string>),
-                      }));
-                    }}
-                    selectedKeys={sizeFormats[size] || ["bold"]}
-                    selectionMode="multiple"
-                    size={size}
-                    variant="outline"
-                  >
-                    <PrismToggleGroupItem aria-label="Negrito" id="bold">
-                      <BoldIcon />
-                    </PrismToggleGroupItem>
-                    <PrismToggleGroupItem aria-label="Itálico" id="italic">
-                      <ItalicIcon />
-                    </PrismToggleGroupItem>
-                    <PrismToggleGroupItem
-                      aria-label="Sublinhado"
-                      id="underline"
-                    >
-                      <UnderlineIcon />
-                    </PrismToggleGroupItem>
-                  </PrismToggleGroup>
-                </div>
-              ))}
-            </div>
-          </GalleryItem>
-
-          {/* 5. Comparativo de Alinhamento de Tamanhos */}
-          <GalleryItem label="Comparativo de Tamanhos · PrismButton, Toggle individual, ToggleGroup separado e ToggleGroup conectado">
-            <div className="grid gap-3">
-              {TOGGLE_SIZES.map(({ size, label }) => (
-                <div className="flex flex-wrap items-center gap-4" key={size}>
-                  <span className="w-44 text-xs text-muted-foreground">
-                    {label}
-                  </span>
-                  <PrismButton size={size} variant="outline">
-                    Botão
-                  </PrismButton>
-                  <PrismToggle
-                    aria-label={`Negrito ${size}`}
-                    size={size}
-                    variant="outline"
-                  >
-                    <BoldIcon />
-                  </PrismToggle>
-                  {/* Modelo Separado */}
-                  <PrismToggleGroup
-                    defaultSelectedKeys={["bold"]}
-                    selectionMode="multiple"
-                    size={size}
-                    variant="outline"
-                  >
-                    <PrismToggleGroupItem aria-label="Negrito" id="bold">
-                      <BoldIcon />
-                    </PrismToggleGroupItem>
-                    <PrismToggleGroupItem aria-label="Itálico" id="italic">
-                      <ItalicIcon />
-                    </PrismToggleGroupItem>
-                  </PrismToggleGroup>
-                  {/* Modelo Conectado */}
-                  <PrismToggleGroup
-                    attached
-                    defaultSelectedKeys={["bold"]}
-                    selectionMode="multiple"
-                    size={size}
-                    variant="outline"
-                  >
-                    <PrismToggleGroupItem
-                      aria-label="Negrito conectado"
-                      id="bold"
-                    >
-                      <BoldIcon />
-                    </PrismToggleGroupItem>
-                    <PrismToggleGroupItem
-                      aria-label="Itálico conectado"
-                      id="italic"
-                    >
-                      <ItalicIcon />
-                    </PrismToggleGroupItem>
-                  </PrismToggleGroup>
-                </div>
-              ))}
-            </div>
+          <GalleryItem label="ToggleGroup">
+            <ToggleGroupPlayground />
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>

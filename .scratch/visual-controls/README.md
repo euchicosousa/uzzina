@@ -3,7 +3,7 @@
 Tickets da rodada de padronização dos controles. Regras oficiais em
 [visual-controls-final-status.md](../../docs/plans/visual-controls-final-status.md);
 lista de componentes em [visual-controls-where.md](../../docs/plans/visual-controls-where.md).
-Executado nesta sessão (Claude), sem Gemini. Um ticket por tema; cada um é avaliado isoladamente.
+Tickets 01–16 executados por Claude. A partir do 17 (playground de propriedades no `/ui`), executor Gemini: o 17 é o piloto e precisa da aprovação do proprietário antes do 18 e dos tickets 19–34. Um ticket por tema; cada um é avaliado isoladamente.
 
 | #   | Ticket                                                                                                        | Status                                                                                                     |
 | --- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
@@ -11,7 +11,7 @@ Executado nesta sessão (Claude), sem Gemini. Um ticket por tema; cada um é ava
 | 02  | [Tamanho de texto por tamanho de controle](issues/02-text-sizes.md)                                           | Aprovado (03/11)                                                                                           |
 | 03  | [Popovers e containers](issues/03-popovers-and-containers.md)                                                 | Aprovado (03/11)                                                                                           |
 | 04  | [Calendário da barra de ferramentas](issues/04-calendar-toolbar-date-picker.md)                               | Aprovado (03/11)                                                                                           |
-| 05  | [Rodapé da gaveta (gatilhos)](issues/05-drawer-footer-triggers.md)                                            | Aplicado, aguarda conferência visual                                                                       |
+| 05  | [Rodapé da gaveta (gatilhos)](issues/05-drawer-footer-triggers.md)                                            | Aprovado pelo proprietário (03/11), 100%                                                                   |
 | 06  | Calendário com largura fluida (colunas mín. `--cell-size`, máx. flexível)                                     | Aprovado (03/11)                                                                                           |
 | 07  | `/ui`: rolagem única e altura acompanhando a janela                                                           | Aprovado (03/11)                                                                                           |
 | 08  | Seção temporária "Teste — tamanhos de texto" no `/ui`                                                         | Removida (03/11)                                                                                           |
@@ -20,6 +20,24 @@ Executado nesta sessão (Claude), sem Gemini. Um ticket por tema; cada um é ava
 | 11  | Toggle alinhado ao Button + inset dos chips                                                                   | Aprovado (03/11)                                                                                           |
 | 12  | [Busca global: filtros como sufixo do campo](issues/12-global-search-filters.md)                              | A fazer — executor: Claude                                                                                 |
 | 13  | [Variantes de `ComboboxTrigger` e conteúdo dos comboboxes fora do rodapé](issues/13-combobox-variants.md)     | Concluído (03/11)                                                                                          |
-| 14  | [`/ui`: seção "Ícones" (ícones usados no app, com significado)](issues/14-ui-icons-section.md)                | Aplicado, aguarda conferência visual                                                                       |
-| 15  | [Linhas de metadados da aba Essencial: tamanho único e recolher/expandir](issues/15-essentials-rows.md)       | Aplicado, aguarda conferência visual                                                                       |
+| 14  | [`/ui`: seção "Ícones" (ícones usados no app, com significado)](issues/14-ui-icons-section.md)                | Aprovado pelo proprietário (03/11), 100% |
+| 15  | [Linhas de metadados da aba Essencial: tamanho único e recolher/expandir](issues/15-essentials-rows.md)       | Aprovado pelo proprietário (03/11), 100% |
 | 16  | [`/ui`: matriz de `PartnersCombobox` (avatar por tamanho de botão)](issues/16-ui-partners-combobox-matrix.md) | Concluído (03/11)                                                                                          |
+| 17  | [`/ui`: playground de propriedades — piloto no `PrismButton`](issues/17-ui-props-playground-pilot.md)         | Aprovado pelo proprietário (03/11), 100% |
+| 18  | [`/ui`: playground em todas as seções existentes (4 lotes)](issues/18-ui-props-playground-rollout.md)         | Concluído (100%), encerramento autorizado |
+| 19  | [`/ui`: seção Avatar (`PrismAvatar`)](issues/19-ui-prism-avatar-section.md)                                   | A fazer — executor: Gemini; depende do 17                                                                  |
+| 20  | [`/ui`: seção Sheet (`PrismSheet`)](issues/20-ui-prism-sheet-section.md)                                      | A fazer — executor: Gemini; depende do 17                                                                  |
+| 21  | [`/ui`: seção `ComboboxTrigger`](issues/21-ui-combobox-trigger-section.md)                                    | A fazer — executor: Gemini; depende do 17                                                                  |
+| 22  | [`/ui`: seção `ResponsiblesCombobox`](issues/22-ui-responsibles-combobox-section.md)                          | A fazer — executor: Gemini; depende do 17 e do lote 4 do 18                                                |
+| 23  | [`/ui`: seção `SprintCombobox`](issues/23-ui-sprint-combobox-section.md)                                      | A fazer — executor: Gemini; depende do 17 e do lote 4 do 18                                                |
+| 24  | [`/ui`: seção `PhaseIcon`](issues/24-ui-phase-icon-section.md)                                                | A fazer — executor: Gemini; depende do 17                                                                  |
+| 25  | [`/ui`: seção `ULoader`](issues/25-ui-uloader-section.md)                                                     | A fazer — executor: Gemini; depende do 17                                                                  |
+| 26  | [`/ui`: seção `UToggleInput`](issues/26-ui-utoggle-input-section.md)                                          | A fazer — executor: Gemini; depende do 17                                                                  |
+| 27  | [`/ui`: seção `UPreferenceSwitch`](issues/27-ui-upreference-switch-section.md)                                | A fazer — executor: Gemini; depende do 17                                                                  |
+| 28  | [`/ui`: seção `UAvatarSelector`](issues/28-ui-uavatar-selector-section.md)                                    | A fazer — executor: Gemini; depende do 17                                                                  |
+| 29  | [`/ui`: seção `UAdminItemCard`](issues/29-ui-uadmin-item-card-section.md)                                     | A fazer — executor: Gemini; depende do 17                                                                  |
+| 30  | [`/ui`: seção `CalendarToolbar`](issues/30-ui-calendar-toolbar-section.md)                                    | A fazer — executor: Gemini; depende do 17                                                                  |
+| 31  | [`/ui`: seção `ColorListEditor`](issues/31-ui-color-list-editor-section.md)                                   | A fazer — executor: Gemini; depende do 17                                                                  |
+| 32  | [`/ui`: seção `ActionDatePicker`](issues/32-ui-action-date-picker-section.md)                                 | A fazer — executor: Gemini; depende do 17                                                                  |
+| 33  | [`/ui`: seção `ActionColorDropdown`](issues/33-ui-action-color-dropdown-section.md)                           | A fazer — executor: Gemini; depende do 17 e do lote 4 do 18                                                |
+| 34  | [`/ui`: seção `PartnerCelebrationsSelector`](issues/34-ui-partner-celebrations-selector-section.md)           | A fazer — executor: Gemini; depende do 17                                                                  |

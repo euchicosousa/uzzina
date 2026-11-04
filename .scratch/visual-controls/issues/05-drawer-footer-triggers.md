@@ -1,6 +1,14 @@
 # 05 — Gatilhos do rodapé da gaveta: anatomia única
 
-Status: **Simplificado ao padrão, botões `lg` (03/11); aguarda conferência visual** (03/11/2026). Decisão: os controles do rodapé seguem exatamente os variants/tamanhos padrão do PrismButton, sem privilégios.
+Status: Aprovado pelo proprietário em 03/11/2026. Conclusão 100%.
+
+## Aceite e regra vigente — 03/11/2026
+
+O proprietário confirmou que o V05 está correto e que verificou e ajustou todos os tamanhos de avatares. Encerrado por esse aceite.
+
+Gatilhos de ícone mantêm altura e largura mínima da escala Prism, com largura automática para acomodar grupos. No rodapé usam `ghost` e `icon-lg` (mínimo 48px). Avatares seguem V13, com 16/24/32px conforme o tamanho do botão, e 32px nos gatilhos grandes. Ícones e amostras grandes usam 20px. O espaçamento interno da faixa é `gap-px` com `p-2`. Os registros anteriores de largura fixa e avatares de 20px abaixo são históricos.
+
+Verificação desta rodada e limites no [relatório central](../../../docs/audits/2026-11-03-ticket-dispatch.md). Ajustes do proprietário permanecem no diff local sobre `b5b5f33`.
 
 ## Aplicado (03/11/2026)
 

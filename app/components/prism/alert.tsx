@@ -4,7 +4,7 @@ import type * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cnfast";
 const alertVariants = cva(
-  "group/alert relative w-full rounded-2xl border p-4 text-sm grid grid-cols-[0_1fr] gap-y-0.5 items-start [&>svg]:size-28 [&>svg]:opacity-10 [&>svg]:absolute [&>svg]:-right-4 [&>svg]:text-current overflow-hidden squircle",
+  "group/alert relative w-full rounded-2xl border p-4 text-sm grid grid-cols-[0_1fr] gap-y-0.5 items-start [&>svg]:size-28 [&>svg]:opacity-10 [&>svg]:absolute [&>svg]:-right-4 has-[[data-slot=alert-action]]:[&>svg]:right-auto has-[[data-slot=alert-action]]:[&>svg]:-left-4 [&>svg]:text-current overflow-hidden squircle",
   {
     variants: {
       variant: {

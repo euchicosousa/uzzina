@@ -45,7 +45,7 @@ function ToggleGroup({
   return (
     <ToggleGroupPrimitive
       className={cn(
-        "group/toggle-group flex w-fit",
+        "group/toggle-group flex w-fit max-w-full",
         orientation === "vertical"
           ? "flex-col items-stretch data-vertical:flex-col data-vertical:items-stretch"
           : "flex-row items-center",
@@ -129,9 +129,20 @@ function ToggleGroupItem({
       )
     : "";
 
+  const hasCustomFlex =
+    typeof className === "string" &&
+    (className.includes("flex-1") ||
+      className.includes("shrink") ||
+      className.includes("grow"));
+
   return (
     <PrismToggle
-      className={cn("shrink-0", attachedClasses, className)}
+      className={cn(
+        !hasCustomFlex && "shrink-0",
+        "min-w-0",
+        attachedClasses,
+        className,
+      )}
       data-attached={isAttached ? "true" : undefined}
       data-size={effectiveSize}
       data-slot="toggle-group-item"

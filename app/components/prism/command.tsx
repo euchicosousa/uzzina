@@ -25,7 +25,6 @@ import {
   PrismDialogHeader,
   PrismDialogTitle,
 } from "~/components/prism";
-import { InputGroup, InputGroupAddon } from "~/components/prism/input-group";
 import { SearchIcon, CheckCircle2Icon } from "lucide-react";
 type CommandActionModifiers = { shiftKey: boolean };
 const CommandActivationContext = createContext<{
@@ -147,7 +146,7 @@ function CommandInput({
       <Input
         {...props}
         className={cn(
-          "flex h-11 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-search-cancel-button]:hidden",
+          "flex h-11 w-full bg-transparent text-sm outline-none placeholder:text-foreground/50 disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-search-cancel-button]:hidden",
           size === "sm" && "h-9",
           className,
         )}

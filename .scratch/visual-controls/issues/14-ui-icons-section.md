@@ -1,6 +1,6 @@
 # 14 — `/ui`: seção "Ícones" (vitrine dos ícones usados no app)
 
-Status: Entregue (aguardando validação visual do proprietário) — executor: Gemini
+Status: Aprovado pelo proprietário em 03/11/2026, 100%. Aceite dos componentes não citados na revisão por capturas.
 Escopo: criar UMA seção de vitrine nova em `/ui`, logo após "Foco", no primeiro grupo (Tokens). A seção mostra os ícones que o app já usa, com nome técnico e significado. **Não altere nenhum componente do app.** Não altere estilos, props, imports ou textos de nenhum arquivo de feature.
 
 ## Contexto para o executor

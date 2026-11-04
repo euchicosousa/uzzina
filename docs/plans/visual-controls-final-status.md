@@ -23,38 +23,39 @@ Fonte de verdade: o código em `app/components/prism/`, `app/tailwind.css` e `ap
 | Calendário            | `cellSize` `sm` 32px, `default` 40px, `lg` 48px (independente do `size` do gatilho). Largura fluida: colunas mínimas `--cell-size`. `CelebrationDialog` usa o padrão de 40px.                                                                                                                                                                                        |
 | Toggle                | `PrismToggle` = mesmos tamanhos e raios do `PrismButton`; sem texto vira botão de ícone. Seletores de cor usam `PrismToggleGroup`.                                                                                                                                                                                                                                   |
 | Combobox              | `ComboboxTrigger` e comboboxes recebem `variant`/`size` do botão (padrão `ghost` + `sm`); sem variantes próprias. Avatares: `xs`/`sm` botões 16px, `default` 24px, `lg` 32px; amostras, marcadores e `PhaseIcon` seguem o ícone do botão (helpers `getTriggerAvatarSize` e `getTriggerContentSizeClass`). `ComboboxChips` `min-h-8/10/12`; chips com inset uniforme. |
-| Rodapé da gaveta      | Gatilhos `ghost` `icon-lg` (só ícone) ou `lg` (texto/avatares); salvar `lg`/`icon-lg`; conteúdo `size-5`; altura 64px (48 + `p-2`). Foco com o anel padrão do botão.                                                                                                                                                                                                 |
+| Rodapé da gaveta      | Gatilhos `ghost` `icon-lg` (só ícone) ou `lg` (texto/avatares); salvar `lg`/`icon-lg`; ícones/amostras `size-5`, avatares 32px e largura automática com mínimo 48px; altura 64px (48 + `p-2`). Foco com o anel padrão do botão.                                                                                                                                      |
 | Sem alteração         | Itens de menu (`min-h-7`), Checkbox/Radio (`size-4/5/6`), Slider, Avatar (`UAvatar`) e toolbar do `RichTextEditor` (32px) ficam fora da escala de botões.                                                                                                                                                                                                            |
 
 ## 2. Concluído
 
-| Ticket | Assunto                                                             | Status                               |
-| ------ | ------------------------------------------------------------------- | ------------------------------------ |
-| 01     | Anéis de foco                                                       | Aprovado                             |
-| 02     | Texto por tamanho de controle                                       | Aprovado                             |
-| 03     | Popovers e containers                                               | Aprovado                             |
-| 04     | Calendário da barra de ferramentas                                  | Aprovado                             |
-| 05     | Rodapé da gaveta (botões `lg`)                                      | Aplicado, aguarda conferência visual |
-| 06     | Calendário de largura fluida                                        | Aprovado                             |
-| 07     | `/ui`: rolagem única e altura da janela                             | Aprovado                             |
-| 08     | Seção temporária de tamanhos de texto                               | Removida                             |
-| 09     | `/ui`: seção Foco e ajustes (incl. `ActionItem`)                    | Aprovado                             |
-| 10     | Squircle universal                                                  | Aprovado                             |
-| 11     | Toggle = Button e inset dos chips                                   | Aprovado                             |
-| 13     | Variantes de `ComboboxTrigger` e tamanho do conteúdo dos comboboxes | Concluído (03/11)                    |
-| 14     | `/ui`: seção Ícones                                                 | Aplicado, aguarda conferência        |
-| 15     | Linhas de metadados da aba Essencial                                | Aplicado, aguarda conferência        |
-| 16     | `/ui`: matriz de `PartnersCombobox`                                 | Concluído (03/11)                    |
-| —      | Seções Prism da galeria `/ui` (commit `e22925a`)                    | Aprovado                             |
+| Ticket | Assunto                                                             | Status                             |
+| ------ | ------------------------------------------------------------------- | ---------------------------------- |
+| 01     | Anéis de foco                                                       | Aprovado                           |
+| 02     | Texto por tamanho de controle                                       | Aprovado                           |
+| 03     | Popovers e containers                                               | Aprovado                           |
+| 04     | Calendário da barra de ferramentas                                  | Aprovado                           |
+| 05     | Rodapé da gaveta (botões `lg`)                                      | Aprovado pelo proprietário (03/11) |
+| 06     | Calendário de largura fluida                                        | Aprovado                           |
+| 07     | `/ui`: rolagem única e altura da janela                             | Aprovado                           |
+| 08     | Seção temporária de tamanhos de texto                               | Removida                           |
+| 09     | `/ui`: seção Foco e ajustes (incl. `ActionItem`)                    | Aprovado                           |
+| 10     | Squircle universal                                                  | Aprovado                           |
+| 11     | Toggle = Button e inset dos chips                                   | Aprovado                           |
+| 13     | Variantes de `ComboboxTrigger` e tamanho do conteúdo dos comboboxes | Concluído (03/11)                  |
+| 14     | `/ui`: seção Ícones                                                 | Aplicado, aguarda conferência      |
+| 15     | Linhas de metadados da aba Essencial                                | Aplicado, aguarda conferência      |
+| 16     | `/ui`: matriz de `PartnersCombobox`                                 | Concluído (03/11)                  |
+| —      | Seções Prism da galeria `/ui` (commit `e22925a`)                    | Aprovado                           |
 
 ## 3. O que falta
 
-1. **Ticket 05:** conferir visualmente o rodapé da gaveta (proprietário). [05](../../.scratch/visual-controls/issues/05-drawer-footer-triggers.md)
+1. **Ticket 05 encerrado:** aceite visual registrado pelo proprietário em 03/11. [05](../../.scratch/visual-controls/issues/05-drawer-footer-triggers.md)
 2. **Tickets 14 e 15:** conferir visualmente a seção Ícones do `/ui` e as linhas da aba Essencial (proprietário). [14](../../.scratch/visual-controls/issues/14-ui-icons-section.md), [15](../../.scratch/visual-controls/issues/15-essentials-rows.md)
 3. **Ticket 12:** executar a busca global: filtro de parceiros como sufixo do `CommandInput` e "Incluir arquivadas" como `PrismToggle` só de ícone; hoje continuam no rodapé (executor: Claude). [12](../../.scratch/visual-controls/issues/12-global-search-filters.md)
 4. **Lista de componentes:** atualizar `visual-controls-where.md` e conferir visualmente os itens "Em ajuste" (proprietário). [where](visual-controls-where.md)
 5. **Limpeza:** remover o selo verde de aprovado (`approved`) do `/ui`.
-6. **Commit:** nenhuma alteração local de 03/11 foi commitada.
+6. **Commit:** base local `b5b5f33`; ajustes posteriores permanecem no diff.
+7. **`/ui` com playground de propriedades:** V17 e V18 implementados localmente por Gemini, aguardando aceite do proprietário. V19–V34 continuam a fazer, com as dependências descritas nos tickets.
 
 ## 4. Onde ver
 
@@ -62,3 +63,7 @@ Fonte de verdade: o código em `app/components/prism/`, `app/tailwind.css` e `ap
 - Tickets e status: [`.scratch/visual-controls/README.md`](../../.scratch/visual-controls/README.md) e `issues/`.
 - Lista de trabalho por componente: [visual-controls-where.md](visual-controls-where.md).
 - Regras de projeto: AGENTS.md, seção 5 (Prism).
+
+## Encerramento da rodada
+
+V05/V14/V15/V17/V18 encerrados em 100%, com autorização do proprietário para commit. Seis correções finalizadas, incluindo ação do toaster no extremo direito. V19–V34 permanecem a fazer.

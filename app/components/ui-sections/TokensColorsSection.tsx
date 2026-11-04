@@ -198,12 +198,9 @@ export function TokensColorsSection() {
         {/* 1. Grid Limpo de Amostras de Cores Semânticas */}
         <GallerySectionContent className="grid grid-cols-2 gap-3 pt-6 sm:grid-cols-3 md:grid-cols-5">
           {COLOR_SWATCHES.map((swatch) => (
-            <div
-              key={swatch.name}
-              className="flex items-center gap-3 rounded-xl border border-border/40 bg-card p-3 shadow-xs squircle"
-            >
+            <div key={swatch.name} className="flex items-center gap-3">
               <div
-                className={`size-7 shrink-0 rounded-lg border border-border/40 ${swatch.bg} squircle`}
+                className={`/40 size-7 shrink-0 rounded-lg border ${swatch.bg} squircle`}
               />
               <div className="flex min-w-0 flex-col">
                 <span className="truncate text-xs font-semibold">
@@ -224,83 +221,77 @@ export function TokensColorsSection() {
           </h4>
 
           {/* Container simulando a superfície da página (bg-background) */}
-          <div className="space-y-8 rounded-3xl border border-border/60 bg-background p-8 shadow-inner squircle">
-            <div className="grid gap-6 md:grid-cols-3">
-              {/* Bloco 1: Estruturas de Superfície (bg-card sobre bg-background) */}
-              <div className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm squircle">
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Bloco 1: Estruturas de Superfície (bg-card sobre bg-background) */}
+            <div className="space-y-4 rounded-2xl border bg-card p-6 squircle">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-muted-foreground uppercase">
+                  Card (bg-card) & Forms
+                </span>
+                <PrismBadge variant="default">Primary</PrismBadge>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-xs font-medium text-foreground">
+                  Input (bg-input)
+                </span>
+                <PrismInput placeholder="Digite algo..." />
+              </div>
+              <div className="flex items-center justify-between pt-2">
+                <PrismCheckbox defaultSelected>Opção Ativa</PrismCheckbox>
+                <div className="flex items-center gap-2">
+                  <PrismButton size="sm" variant="ghost">
+                    Ghost
+                  </PrismButton>
+                  <PrismButton size="sm">Salvar</PrismButton>
+                </div>
+              </div>
+            </div>
+
+            {/* Bloco 2: Elementos Flutuantes, Accent & Workflow */}
+            <div className="space-y-4 rounded-2xl border bg-card p-6 squircle">
+              <span className="text-xs font-bold text-muted-foreground uppercase">
+                Popover (bg-popover) & Actions
+              </span>
+              <div className="space-y-2 rounded-2xl border bg-popover p-4 text-popover-foreground squircle">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-muted-foreground uppercase">
-                    Card (bg-card) & Forms
+                  <span className="text-xs font-semibold">Painel Popover</span>
+                  <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-accent-foreground">
+                    bg-accent
                   </span>
-                  <PrismBadge variant="default">Primary</PrismBadge>
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-xs font-medium text-foreground">
-                    Input (bg-input)
-                  </span>
-                  <PrismInput placeholder="Digite algo..." />
-                </div>
-                <div className="flex items-center justify-between pt-2">
-                  <PrismCheckbox defaultSelected>Opção Ativa</PrismCheckbox>
-                  <div className="flex items-center gap-2">
-                    <PrismButton size="sm" variant="ghost">
-                      Ghost
-                    </PrismButton>
-                    <PrismButton size="sm">Salvar</PrismButton>
-                  </div>
-                </div>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  Elemento flutuante de camada{" "}
+                  <code className="font-mono text-foreground">bg-popover</code>.
+                </p>
               </div>
-
-              {/* Bloco 2: Elementos Flutuantes, Accent & Workflow */}
-              <div className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm squircle">
-                <span className="text-xs font-bold text-muted-foreground uppercase">
-                  Popover (bg-popover) & Actions
+              <div className="/40 flex items-center justify-between rounded-xl border bg-action p-3 text-xs squircle">
+                <span>
+                  Ação (<code className="font-mono">bg-action</code>)
                 </span>
-                <div className="space-y-2 rounded-2xl border border-border bg-popover p-4 text-popover-foreground shadow-md squircle">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold">
-                      Painel Popover
-                    </span>
-                    <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-accent-foreground">
-                      bg-accent
-                    </span>
-                  </div>
-                  <p className="text-xs leading-relaxed text-muted-foreground">
-                    Elemento flutuante de camada{" "}
-                    <code className="font-mono text-foreground">
-                      bg-popover
-                    </code>
-                    .
-                  </p>
-                </div>
-                <div className="flex items-center justify-between rounded-xl border border-border/40 bg-action p-3 text-xs squircle">
-                  <span>
-                    Ação (<code className="font-mono">bg-action</code>)
-                  </span>
-                  <span className="rounded-md bg-late px-2 py-0.5 text-[10px] font-bold text-late-foreground squircle">
-                    Late (Atrasado)
-                  </span>
-                </div>
-              </div>
-
-              {/* Bloco 3: Feedback Semântico */}
-              <div className="space-y-3 rounded-2xl border border-border bg-card p-6 shadow-sm squircle">
-                <span className="text-xs font-bold text-muted-foreground uppercase">
-                  Feedbacks Semânticos
+                <span className="rounded-md bg-late px-2 py-0.5 text-[10px] font-bold text-late-foreground squircle">
+                  Late (Atrasado)
                 </span>
-                <PrismAlert variant="success">
-                  <PrismAlertTitle>Sucesso</PrismAlertTitle>
-                  <PrismAlertDescription>
-                    Operação concluída com sucesso.
-                  </PrismAlertDescription>
-                </PrismAlert>
-                <PrismAlert variant="error">
-                  <PrismAlertTitle>Erro detectado</PrismAlertTitle>
-                  <PrismAlertDescription>
-                    Falha na comunicação com a API.
-                  </PrismAlertDescription>
-                </PrismAlert>
               </div>
+            </div>
+
+            {/* Bloco 3: Feedback Semântico */}
+            <div className="space-y-3 rounded-2xl border bg-card p-6 shadow-sm squircle">
+              <span className="text-xs font-bold text-muted-foreground uppercase">
+                Feedbacks Semânticos
+              </span>
+              <PrismAlert variant="success">
+                <PrismAlertTitle>Sucesso</PrismAlertTitle>
+                <PrismAlertDescription>
+                  Operação concluída com sucesso.
+                </PrismAlertDescription>
+              </PrismAlert>
+              <PrismAlert variant="error">
+                <PrismAlertTitle>Erro detectado</PrismAlertTitle>
+                <PrismAlertDescription>
+                  Falha na comunicação com a API.
+                </PrismAlertDescription>
+              </PrismAlert>
             </div>
           </div>
         </div>

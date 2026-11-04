@@ -1,14 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { PaletteIcon, LayoutGridIcon, SearchIcon, XIcon } from "lucide-react";
+import { SearchIcon, XIcon } from "lucide-react";
 import {
   PrismInputGroup,
   PrismInputGroupAddon,
   PrismInputGroupButton,
   PrismInputGroupInput,
+  PrismTabs,
+  PrismTabList,
+  PrismTab,
 } from "~/components/prism";
 import {
-  SidebarTabButton,
   SidebarAnchorLink,
   TokensColorsSection,
   TokensSpacingSection,
@@ -34,7 +36,10 @@ import {
   SeparatorSection,
   ViewOptionsSection,
   UzzinaPartnersComboboxSection,
-  UzzinaComponentsSection,
+  UzzinaCategoriesComboboxSection,
+  UzzinaPhaseComboboxSection,
+  UzzinaIconsSection,
+  UzzinaAvatarSection,
   SelectSection,
   CalendarSection,
   AccordionSection,
@@ -85,35 +90,46 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
 
   // Uzzina
   {
-    id: "uzzina-view-options",
-    label: "ViewOptionsComponent",
+    id: "uzzina-categories-combobox",
+    label: "CategoriesCombobox",
     section: "uzzina",
-    keywords: ["visualizacao", "kanban", "lista", "feed", "opcoes"],
+    keywords: ["categorias", "categories", "combobox", "filtro"],
+  },
+  {
+    id: "uzzina-icons",
+    label: "Icons",
+    section: "uzzina",
+    keywords: ["icones", "ícones", "icons", "categoria", "fase"],
   },
   {
     id: "uzzina-partners-combobox",
     label: "PartnersCombobox",
     section: "uzzina",
-    keywords: [
-      "parceiros",
-      "partners",
-      "combobox",
-      "avatar",
-      "tamanho",
-      "matriz",
-    ],
+    keywords: ["parceiros", "partners", "combobox", "filtro", "playground"],
   },
   {
-    id: "uzzina-components",
-    label: "Icons & UAvatar",
+    id: "uzzina-phase-combobox",
+    label: "PhaseCombobox",
     section: "uzzina",
-    keywords: ["avatar", "uavatar", "icones", "icons", "imagem"],
+    keywords: ["fase", "phase", "combobox", "progresso"],
   },
   {
     id: "uzzina-rich-text-editor",
     label: "RichTextEditor",
     section: "uzzina",
-    keywords: ["editor", "tiptap", "texto", "rich text", "formatacao"],
+    keywords: ["editor", "tiptap", "texto", "rico", "rich", "markdown"],
+  },
+  {
+    id: "uzzina-avatar",
+    label: "UAvatar e UAvatarGroup",
+    section: "uzzina",
+    keywords: ["avatar", "uavatar", "grupo", "imagem"],
+  },
+  {
+    id: "uzzina-view-options",
+    label: "ViewOptionsComponent",
+    section: "uzzina",
+    keywords: ["visualizacao", "view", "options", "ordenacao", "colunas"],
   },
 
   // Components
@@ -424,29 +440,18 @@ function UIPage() {
         </div>
 
         {/* Alternador de Abas Principais */}
-        <div className="flex min-w-0 gap-1 overflow-x-auto">
-          <SidebarTabButton
-            activeIcon={<PaletteIcon className="size-4 text-primary" />}
-            inactiveIcon={<PaletteIcon className="size-4" />}
-            isActive={activeSection === "tokens"}
-            label="Design Tokens"
-            onClick={() => handleSectionChange("tokens")}
-          />
-          <SidebarTabButton
-            activeIcon={<LayoutGridIcon className="size-4 text-primary" />}
-            inactiveIcon={<LayoutGridIcon className="size-4" />}
-            isActive={activeSection === "components"}
-            label="Componentes de UI"
-            onClick={() => handleSectionChange("components")}
-          />
-          <SidebarTabButton
-            activeIcon={<LayoutGridIcon className="size-4 text-primary" />}
-            inactiveIcon={<LayoutGridIcon className="size-4" />}
-            isActive={activeSection === "uzzina"}
-            label="Componentes Uzzina"
-            onClick={() => handleSectionChange("uzzina")}
-          />
-        </div>
+        <PrismTabs
+          onSelectionChange={(key) =>
+            handleSectionChange(key as "tokens" | "components" | "uzzina")
+          }
+          selectedKey={activeSection}
+        >
+          <PrismTabList aria-label="Seções do Prism" className="h-16">
+            <PrismTab id="tokens">Design Tokens</PrismTab>
+            <PrismTab id="components">Componentes de UI</PrismTab>
+            <PrismTab id="uzzina">Componentes Uzzina</PrismTab>
+          </PrismTabList>
+        </PrismTabs>
       </header>
 
       <div className="flex h-full min-h-0 min-w-0 flex-col overflow-clip lg:flex-row">
@@ -547,10 +552,13 @@ function UIPage() {
             </div>
           ) : activeSection === "uzzina" ? (
             <div className="flex w-full max-w-full min-w-0 flex-col">
-              <ViewOptionsSection />
+              <UzzinaCategoriesComboboxSection />
+              <UzzinaIconsSection />
               <UzzinaPartnersComboboxSection />
-              <UzzinaComponentsSection />
+              <UzzinaPhaseComboboxSection />
               <RichTextEditorSection />
+              <UzzinaAvatarSection />
+              <ViewOptionsSection />
             </div>
           ) : (
             <div className="flex w-full max-w-full min-w-0 flex-col">

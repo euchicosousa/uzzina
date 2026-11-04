@@ -69,6 +69,22 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
         const partners = footer.getByRole("button", { name: /Alpha/ });
         const avatars = await partners.locator('[data-slot="avatar"]').count();
         assert.ok(avatars >= 2);
+        assert.ok(
+          await partners.evaluate((button) => {
+            const frame = button.getBoundingClientRect();
+            return [...button.querySelectorAll('[data-slot="avatar"]')].every(
+              (avatar) => {
+                const box = avatar.getBoundingClientRect();
+                return (
+                  box.width === 32 &&
+                  box.left >= frame.left &&
+                  box.right <= frame.right
+                );
+              },
+            );
+          }),
+          "large trigger must contain all of its 32px avatars",
+        );
         groups++;
         await partners.click();
         const beta = page.getByRole("menuitem", { name: /Beta$/ });
@@ -103,7 +119,16 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
           await strip.evaluate((element) => {
             element.scrollLeft = element.scrollWidth;
           });
-          await footer.locator('[data-strip-fade="start"]').waitFor();
+          await page.waitForFunction(() => {
+            const strip = document.querySelector(
+              '[data-testid="primary"] [data-action-footer-strip]',
+            );
+            return (
+              strip &&
+              strip.scrollLeft > 0 &&
+              getComputedStyle(strip).maskImage.includes("linear-gradient")
+            );
+          });
           const save = await footer
             .getByRole("button", { name: "Atualizar" })
             .evaluate(

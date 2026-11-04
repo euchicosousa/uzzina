@@ -1,4 +1,4 @@
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import {
   createContext,
   useContext,
@@ -26,14 +26,14 @@ export type TabsVariant = "underline" | "drawer";
 const TabsVariantContext = createContext<TabsVariant>("underline");
 
 export const tabVariants = cva(
-  "relative flex h-10 min-w-0 flex-1 cursor-pointer items-center justify-center gap-1.5 px-4 text-center font-medium outline-none transition-colors data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
+  "relative flex min-w-0 flex-auto cursor-pointer items-center justify-center gap-1.5 px-4 text-center font-medium outline-none transition-colors data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 truncate h-full data-[focus-visible]:bg-input hover:bg-input",
   {
     variants: {
       variant: {
         underline:
-          "-mb-px border-b-2 border-b-transparent text-muted-foreground transition-colors data-[hovered]:text-foreground data-[pressed]:text-foreground data-[selected]:border-b-primary data-[selected]:text-foreground data-[focus-visible]:bg-input",
+          "-mb-px border-b-2 border-b-transparent text-muted-foreground transition-colors data-[hovered]:text-foreground data-[pressed]:text-foreground data-[selected]:border-b-primary data-[selected]:text-foreground",
         drawer:
-          "-mb-px border-t-2 border-t-transparent border-x border-x-transparent border-b border-b-border bg-transparent text-muted-foreground transition-colors data-[hovered]:text-foreground data-[selected]:border-t-primary data-[selected]:border-x-border data-[selected]:border-b-transparent data-[selected]:bg-popover data-[selected]:text-foreground data-[focus-visible]:border-t-primary data-[focus-visible]:bg-input data-[selected]:data-[focus-visible]:bg-input",
+          "border-t-2 border-t-transparent border-x border-x-transparent border-b border-b-border bg-transparent text-muted-foreground transition-colors data-[hovered]:text-foreground data-[selected]:border-t-primary data-[selected]:border-x-border data-[selected]:border-b-transparent data-[selected]:bg-popover data-[selected]:text-foreground data-[focus-visible]:border-t-primary data-[selected]:data-[focus-visible]:bg-input",
       },
     },
     defaultVariants: {
@@ -73,7 +73,11 @@ export function PrismTabList<T extends object>({
   const variant = useContext(TabsVariantContext);
   return (
     <TabList
-      className={cn("flex min-w-0 shrink-0 border-b border-border", className)}
+      className={cn(
+        "flex h-10 min-w-0 shrink-0",
+        variant === "underline" && "border-b border-border",
+        className,
+      )}
       data-slot="tab-list"
       {...props}
     />

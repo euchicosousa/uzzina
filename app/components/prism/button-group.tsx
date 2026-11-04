@@ -6,17 +6,16 @@ const buttonGroupVariants = cva(
   {
     variants: {
       size: {
-        xs: "[&>*:first-child]:rounded-l-2xl! [&>*:last-child]:rounded-r-2xl! [&>*:only-child]:rounded-2xl!",
-        sm: "[&>*:first-child]:rounded-l-2xl! [&>*:last-child]:rounded-r-2xl! [&>*:only-child]:rounded-2xl!",
-        default:
-          "[&>*:first-child]:rounded-l-2xl! [&>*:last-child]:rounded-r-2xl! [&>*:only-child]:rounded-2xl!",
-        lg: "[&>*:first-child]:rounded-l-3xl! [&>*:last-child]:rounded-r-3xl! [&>*:only-child]:rounded-3xl!",
+        xs: "[--group-radius:var(--radius-2xl)]",
+        sm: "[--group-radius:var(--radius-2xl)]",
+        default: "[--group-radius:var(--radius-2xl)]",
+        lg: "[--group-radius:var(--radius-3xl)]",
       },
       orientation: {
         horizontal:
-          "flex-row [&>*:not(:first-child)]:-ml-px [&>*:first-child]:rounded-r-none! [&>*:first-child]:squircle! [&>*:not(:first-child):not(:last-child)]:rounded-none! [&>*:last-child]:rounded-l-none! [&>*:last-child]:squircle! [&>*:only-child]:squircle!",
+          "flex-row [&>*]:rounded-none! [&>*:not(:first-child)]:-ml-px [&>*:first-child]:rounded-l-(--group-radius)! [&>*:last-child]:rounded-r-(--group-radius)!",
         vertical:
-          "flex-col [&>*:not(:first-child)]:-mt-px [&>*:first-child]:rounded-b-none! [&>*:first-child]:squircle! [&>*:not(:first-child):not(:last-child)]:rounded-none! [&>*:last-child]:rounded-t-none! [&>*:last-child]:squircle! [&>*:only-child]:squircle!",
+          "flex-col [&>*]:rounded-none! [&>*:not(:first-child)]:-mt-px [&>*:first-child]:rounded-t-(--group-radius)! [&>*:last-child]:rounded-b-(--group-radius)!",
       },
     },
     defaultVariants: {

@@ -79,6 +79,10 @@ export function ComboboxTrigger({
         "cursor-pointer",
         buttonVariants({ variant, size }),
         className,
+        size === "icon-xs" ? "w-auto min-w-6 px-1" : "",
+        size === "icon-sm" ? "w-auto min-w-8 px-2" : "",
+        size === "icon" ? "w-auto min-w-10 px-2" : "",
+        size === "icon-lg" ? "w-auto min-w-12 px-2" : "",
       )}
       type={type}
       isDisabled={disabled || isDisabled}

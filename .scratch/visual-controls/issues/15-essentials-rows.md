@@ -1,6 +1,6 @@
 # 15 — Linhas de metadados da aba Essencial: tamanho único e padrão de recolher/expandir
 
-Status: Concluído — aplicado localmente em 03/11/2026, aguarda validação visual do proprietário.
+Status: Aprovado pelo proprietário em 03/11/2026, 100%. Aceite dos componentes não citados na revisão por capturas.
 Escopo: as 3 linhas entre o título e a descrição em `app/components/features/action-drawer/EssentialsTab.tsx` (linhas 238–405), mais a barra compacta (<640px, `useCompactPanel`) que as recolhe.
 
 ## Objetivo

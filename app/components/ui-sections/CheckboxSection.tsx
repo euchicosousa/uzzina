@@ -6,11 +6,140 @@ import {
   GallerySectionContent,
   GallerySectionHeader,
 } from "./GalleryHelperComponents";
+import {
+  PropsPlayground,
+  PlaygroundRadio,
+  PlaygroundBoolean,
+  PlaygroundNumber,
+  PlaygroundText,
+} from "./PropsPlayground";
+
+const CHECKBOX_SIZES = ["sm", "default", "lg"] as const;
+type CheckboxSize = (typeof CHECKBOX_SIZES)[number];
+
+function CheckboxPlayground() {
+  const [size, setSize] = useState<CheckboxSize>("default");
+  const [checked, setChecked] = useState(true);
+  const [isIndeterminate, setIsIndeterminate] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isInvalid, setIsInvalid] = useState(false);
+  const [text, setText] = useState("Aceito os termos");
+
+  return (
+    <PropsPlayground
+      caption={`size="${size}" · ${checked ? "checked" : "unchecked"}${isIndeterminate ? " · indeterminate" : ""}`}
+      preview={
+        <PrismCheckbox
+          isDisabled={isDisabled}
+          isIndeterminate={isIndeterminate}
+          isInvalid={isInvalid}
+          isSelected={checked}
+          onChange={setChecked}
+          size={size}
+        >
+          {text}
+        </PrismCheckbox>
+      }
+      title="Checkbox"
+    >
+      <PlaygroundRadio
+        label="Tamanho"
+        onChange={setSize}
+        options={CHECKBOX_SIZES}
+        prop="size"
+        value={size}
+      />
+      <PlaygroundBoolean
+        label="Selecionado"
+        onChange={setChecked}
+        prop="isSelected"
+        value={checked}
+      />
+      <PlaygroundBoolean
+        label="Indeterminado"
+        onChange={setIsIndeterminate}
+        prop="isIndeterminate"
+        value={isIndeterminate}
+      />
+      <PlaygroundBoolean
+        label="Desabilitado"
+        onChange={setIsDisabled}
+        prop="isDisabled"
+        value={isDisabled}
+      />
+      <PlaygroundBoolean
+        label="Inválido"
+        onChange={setIsInvalid}
+        prop="isInvalid"
+        value={isInvalid}
+      />
+      <PlaygroundText
+        label="Texto"
+        onChange={setText}
+        prop="children"
+        value={text}
+      />
+    </PropsPlayground>
+  );
+}
+
+function CheckboxGroupPlayground() {
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isInvalid, setIsInvalid] = useState(false);
+  const [count, setCount] = useState(3);
+  const [groupValues, setGroupValues] = useState<string[]>(["opcao-1"]);
+
+  const options = Array.from({ length: count }, (_, i) => ({
+    id: `opcao-${i + 1}`,
+    label: `Opção ${i + 1}`,
+  }));
+
+  return (
+    <PropsPlayground
+      caption={`Selecionados: [${groupValues.join(", ")}]`}
+      preview={
+        <PrismCheckboxGroup
+          aria-label="Exemplo de grupo"
+          isDisabled={isDisabled}
+          isInvalid={isInvalid}
+          onChange={setGroupValues}
+          value={groupValues}
+        >
+          {options.map((opt) => (
+            <PrismCheckbox key={opt.id} value={opt.id}>
+              {opt.label}
+            </PrismCheckbox>
+          ))}
+        </PrismCheckboxGroup>
+      }
+      title="CheckboxGroup"
+    >
+      <PlaygroundBoolean
+        label="Desabilitado"
+        onChange={setIsDisabled}
+        prop="isDisabled"
+        value={isDisabled}
+      />
+      <PlaygroundBoolean
+        label="Inválido"
+        onChange={setIsInvalid}
+        prop="isInvalid"
+        value={isInvalid}
+      />
+      <PlaygroundNumber
+        label="Quantidade de opções"
+        max={5}
+        min={2}
+        onChange={setCount}
+        prop="count"
+        step={1}
+        value={count}
+      />
+    </PropsPlayground>
+  );
+}
 
 export function CheckboxSection() {
-  const [checked, setChecked] = useState(true);
-  const [groupValues, setGroupValues] = useState<string[]>(["option1"]);
-
   return (
     <div id="prism-checkbox">
       <GallerySection>
@@ -19,47 +148,12 @@ export function CheckboxSection() {
           description="Caixas de seleção acessíveis nativas do React Aria com suporte a tamanhos, estados selecionado, indeterminado e desativado."
           title="Checkbox"
         />
-        <GallerySectionContent className="grid gap-6">
-          <GalleryItem label="Variantes de Tamanho">
-            <div className="flex flex-wrap items-center gap-6">
-              <PrismCheckbox defaultSelected size="sm">
-                Pequeno (sm)
-              </PrismCheckbox>
-              <PrismCheckbox defaultSelected size="default">
-                Padrão (default)
-              </PrismCheckbox>
-              <PrismCheckbox defaultSelected size="lg">
-                Grande (lg)
-              </PrismCheckbox>
-            </div>
+        <GallerySectionContent className="grid gap-12">
+          <GalleryItem label="Checkbox">
+            <CheckboxPlayground />
           </GalleryItem>
-
-          <GalleryItem label="Estados (Controlado, Indeterminado & Desativado)">
-            <div className="flex flex-wrap items-center gap-6">
-              <PrismCheckbox isSelected={checked} onChange={setChecked}>
-                {checked ? "Selecionado" : "Desmarcado"}
-              </PrismCheckbox>
-              <PrismCheckbox isIndeterminate>Indeterminado</PrismCheckbox>
-              <PrismCheckbox isDisabled>Desativado</PrismCheckbox>
-              <PrismCheckbox defaultSelected isDisabled>
-                Marcado & Desativado
-              </PrismCheckbox>
-            </div>
-          </GalleryItem>
-
-          <GalleryItem label="PrismCheckboxGroup">
-            <div className="flex flex-col gap-2">
-              <PrismCheckboxGroup value={groupValues} onChange={setGroupValues}>
-                <PrismCheckbox value="option1">Opção 1 (Sprints)</PrismCheckbox>
-                <PrismCheckbox value="option2">Opção 2 (Ações)</PrismCheckbox>
-                <PrismCheckbox value="option3">
-                  Opção 3 (Parceiros)
-                </PrismCheckbox>
-              </PrismCheckboxGroup>
-              <span className="font-mono text-xs text-muted-foreground">
-                Selecionados no Grupo: {groupValues.join(", ")}
-              </span>
-            </div>
+          <GalleryItem label="CheckboxGroup">
+            <CheckboxGroupPlayground />
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>

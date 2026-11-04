@@ -1,13 +1,11 @@
 import { useState } from "react";
-import type { Selection } from "react-aria-components";
+import type { Key } from "react-aria-components";
 import {
-  UserIcon,
-  SettingsIcon,
-  KeyboardIcon,
-  LogOutIcon,
-  SunIcon,
-  MoonIcon,
-  MonitorIcon,
+  PencilIcon,
+  CopyIcon,
+  ArchiveIcon,
+  Trash2Icon,
+  FolderIcon,
 } from "lucide-react";
 import {
   PrismMenu,
@@ -15,6 +13,7 @@ import {
   PrismMenuItem,
   PrismMenuLabel,
   PrismMenuSeparator,
+  PrismMenuGroup,
   PrismMenuSub,
   PrismMenuSubContent,
   PrismMenuSubTrigger,
@@ -28,13 +27,193 @@ import {
   GallerySectionContent,
   GalleryItem,
 } from "./GalleryHelperComponents";
+import {
+  PropsPlayground,
+  PlaygroundSelect,
+  PlaygroundRadio,
+  PlaygroundBoolean,
+} from "./PropsPlayground";
+
+const SELECTION_MODES = ["none", "single", "multiple"] as const;
+type MenuSelectionMode = (typeof SELECTION_MODES)[number];
+const SELECTION_MODE_LABELS: Record<MenuSelectionMode, string> = {
+  none: "Nenhuma",
+  single: "Única",
+  multiple: "Múltipla",
+};
+
+const MENU_PLACEMENTS = [
+  "bottom start",
+  "bottom end",
+  "top start",
+  "right top",
+] as const;
+type MenuPlacement = (typeof MENU_PLACEMENTS)[number];
+
+function MenuPlayground() {
+  const [selectionMode, setSelectionMode] = useState<MenuSelectionMode>("none");
+  const [placement, setPlacement] = useState<MenuPlacement>("bottom start");
+  const [showIcons, setShowIcons] = useState(true);
+  const [showShortcuts, setShowShortcuts] = useState(true);
+  const [showGroups, setShowGroups] = useState(true);
+  const [showSubmenu, setShowSubmenu] = useState(false);
+  const [hasDisabled, setHasDisabled] = useState(false);
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+
+  const disabledKeys = hasDisabled ? ["archive"] : [];
+
+  return (
+    <PropsPlayground
+      caption={`selectionMode="${selectionMode}" · placement="${placement}"`}
+      preview={
+        <PrismMenu>
+          <PrismButton variant="outline">Abrir menu</PrismButton>
+          <PrismMenuContent
+            className="w-56"
+            disabledKeys={disabledKeys}
+            onSelectionChange={(keys) => {
+              setSelectedKeys(Array.from(keys as Set<Key>, String));
+            }}
+            placement={placement}
+            selectedKeys={selectedKeys}
+            selectionMode={selectionMode}
+          >
+            {showGroups ? (
+              <PrismMenuGroup>
+                <PrismMenuLabel>Ações da Ação</PrismMenuLabel>
+                <PrismMenuItem
+                  id="edit"
+                  onAction={() => toast.info("Editar ação")}
+                >
+                  {showIcons && <PencilIcon className="mr-2" />}
+                  <span>Editar</span>
+                  {showShortcuts && <PrismMenuShortcut>⌘E</PrismMenuShortcut>}
+                </PrismMenuItem>
+                <PrismMenuItem
+                  id="duplicate"
+                  onAction={() => toast.info("Duplicar ação")}
+                >
+                  {showIcons && <CopyIcon className="mr-2" />}
+                  <span>Duplicar</span>
+                  {showShortcuts && <PrismMenuShortcut>⌘D</PrismMenuShortcut>}
+                </PrismMenuItem>
+              </PrismMenuGroup>
+            ) : (
+              <>
+                <PrismMenuItem
+                  id="edit"
+                  onAction={() => toast.info("Editar ação")}
+                >
+                  {showIcons && <PencilIcon className="mr-2" />}
+                  <span>Editar</span>
+                  {showShortcuts && <PrismMenuShortcut>⌘E</PrismMenuShortcut>}
+                </PrismMenuItem>
+                <PrismMenuItem
+                  id="duplicate"
+                  onAction={() => toast.info("Duplicar ação")}
+                >
+                  {showIcons && <CopyIcon className="mr-2" />}
+                  <span>Duplicar</span>
+                  {showShortcuts && <PrismMenuShortcut>⌘D</PrismMenuShortcut>}
+                </PrismMenuItem>
+              </>
+            )}
+
+            {showSubmenu && (
+              <PrismMenuSub>
+                <PrismMenuSubTrigger>
+                  {showIcons && <FolderIcon className="mr-2" />}
+                  <span>Mover para</span>
+                </PrismMenuSubTrigger>
+                <PrismMenuSubContent className="w-48">
+                  <PrismMenuItem
+                    id="folder-sprint"
+                    onAction={() => toast.info("Movido para Sprint")}
+                  >
+                    Próxima Sprint
+                  </PrismMenuItem>
+                  <PrismMenuItem
+                    id="folder-backlog"
+                    onAction={() => toast.info("Movido para Backlog")}
+                  >
+                    Backlog
+                  </PrismMenuItem>
+                </PrismMenuSubContent>
+              </PrismMenuSub>
+            )}
+
+            {showGroups && <PrismMenuSeparator />}
+
+            <PrismMenuItem
+              id="archive"
+              onAction={() => toast.info("Arquivar ação")}
+            >
+              {showIcons && <ArchiveIcon className="mr-2" />}
+              <span>Arquivar</span>
+            </PrismMenuItem>
+            <PrismMenuItem
+              className="text-destructive focus:text-destructive"
+              id="delete"
+              onAction={() => toast.warning("Excluir ação")}
+            >
+              {showIcons && <Trash2Icon className="mr-2" />}
+              <span>Excluir</span>
+            </PrismMenuItem>
+          </PrismMenuContent>
+        </PrismMenu>
+      }
+      title="Menu"
+    >
+      <PlaygroundRadio
+        label="Seleção"
+        onChange={setSelectionMode}
+        optionLabels={SELECTION_MODE_LABELS}
+        options={SELECTION_MODES}
+        prop="selectionMode"
+        value={selectionMode}
+      />
+      <PlaygroundSelect
+        label="Posição"
+        onChange={setPlacement}
+        options={MENU_PLACEMENTS}
+        prop="placement"
+        value={placement}
+      />
+      <PlaygroundBoolean
+        label="Ícones"
+        onChange={setShowIcons}
+        prop="svg"
+        value={showIcons}
+      />
+      <PlaygroundBoolean
+        label="Atalhos"
+        onChange={setShowShortcuts}
+        prop="PrismMenuShortcut"
+        value={showShortcuts}
+      />
+      <PlaygroundBoolean
+        label="Grupos e rótulos"
+        onChange={setShowGroups}
+        prop="PrismMenuGroup"
+        value={showGroups}
+      />
+      <PlaygroundBoolean
+        label="Submenu"
+        onChange={setShowSubmenu}
+        prop="PrismMenuSub"
+        value={showSubmenu}
+      />
+      <PlaygroundBoolean
+        label="Item desabilitado"
+        onChange={setHasDisabled}
+        prop="disabledKeys"
+        value={hasDisabled}
+      />
+    </PropsPlayground>
+  );
+}
 
 export function MenuSection() {
-  const [notificationKeys, setNotificationKeys] = useState<Selection>(
-    new Set(["notifications"]),
-  );
-  const [themeKeys, setThemeKeys] = useState<Selection>(new Set(["system"]));
-
   return (
     <div id="prism-menu">
       <GallerySection>
@@ -43,129 +222,9 @@ export function MenuSection() {
           description="Menu suspenso avançado contendo agrupamentos, atalhos, itens de seleção múltipla (checkbox), itens destrutivos e submenus aninhados."
           title="Dropdown Menu"
         />
-        <GallerySectionContent>
-          <GalleryItem label="Menu de Ações Completo">
-            <div className="flex items-center gap-4">
-              <PrismMenu>
-                <PrismButton variant="default">Abrir Menu Avançado</PrismButton>
-                <PrismMenuContent className="w-64" placement="bottom start">
-                  <PrismMenuLabel>Minha Conta</PrismMenuLabel>
-                  <PrismMenuItem
-                    onAction={() => toast.info("Navegar para Perfil")}
-                  >
-                    <UserIcon className="mr-2" />
-                    <span>Meu Perfil</span>
-                    <PrismMenuShortcut>⌘P</PrismMenuShortcut>
-                  </PrismMenuItem>
-                  <PrismMenuItem
-                    onAction={() => toast.info("Navegar para Configurações")}
-                  >
-                    <SettingsIcon className="mr-2" />
-                    <span>Configurações</span>
-                    <PrismMenuShortcut>⌘S</PrismMenuShortcut>
-                  </PrismMenuItem>
-
-                  <PrismMenuSeparator />
-
-                  <PrismMenuSub>
-                    <PrismMenuSubTrigger>
-                      <KeyboardIcon className="mr-2" />
-                      <span>Preferências</span>
-                    </PrismMenuSubTrigger>
-                    <PrismMenuSubContent className="w-48">
-                      <PrismMenuItem
-                        onAction={() => toast.info("Tema Escuro selecionado")}
-                      >
-                        Tema Escuro
-                      </PrismMenuItem>
-                      <PrismMenuItem
-                        onAction={() => toast.info("Tema Claro selecionado")}
-                      >
-                        Tema Claro
-                      </PrismMenuItem>
-                    </PrismMenuSubContent>
-                  </PrismMenuSub>
-
-                  <PrismMenuSeparator />
-
-                  <PrismMenuItem
-                    className="text-destructive"
-                    onAction={() => toast.warning("Saindo da conta...")}
-                    variant="destructive"
-                  >
-                    <LogOutIcon className="mr-2" />
-                    <span>Sair da Conta</span>
-                    <PrismMenuShortcut>⇧⌘Q</PrismMenuShortcut>
-                  </PrismMenuItem>
-                </PrismMenuContent>
-              </PrismMenu>
-            </div>
-          </GalleryItem>
-
-          <GalleryItem label="Menu com Checkbox (Seleção Múltipla)">
-            <div className="flex items-center gap-4">
-              <PrismMenu>
-                <PrismButton variant="secondary">
-                  Opções de Notificação
-                </PrismButton>
-                <PrismMenuContent
-                  className="w-56"
-                  onSelectionChange={setNotificationKeys}
-                  placement="bottom start"
-                  selectedKeys={notificationKeys}
-                  selectionMode="multiple"
-                >
-                  <PrismMenuLabel>Notificações</PrismMenuLabel>
-                  <PrismMenuItem id="notifications">
-                    Ativar Notificações
-                  </PrismMenuItem>
-                  <PrismMenuItem id="sounds">Efeitos Sonoros</PrismMenuItem>
-                </PrismMenuContent>
-              </PrismMenu>
-            </div>
-          </GalleryItem>
-
-          <GalleryItem label="Menu com Radio (Seleção Única)">
-            <div className="flex items-center gap-4">
-              <PrismMenu>
-                <PrismButton
-                  aria-label="Seletor de Tema"
-                  className="rounded-full"
-                  size="icon"
-                  variant="ghost"
-                >
-                  {themeKeys !== "all" && themeKeys.has("light") && (
-                    <SunIcon className="size-5" />
-                  )}
-                  {themeKeys !== "all" && themeKeys.has("dark") && (
-                    <MoonIcon className="size-5" />
-                  )}
-                  {themeKeys !== "all" && themeKeys.has("system") && (
-                    <MonitorIcon className="size-5" />
-                  )}
-                </PrismButton>
-                <PrismMenuContent
-                  onSelectionChange={setThemeKeys}
-                  placement="bottom start"
-                  selectedKeys={themeKeys}
-                  selectionMode="single"
-                >
-                  <PrismMenuLabel>Tema do Sistema</PrismMenuLabel>
-                  <PrismMenuItem id="light">
-                    <SunIcon className="mr-2" />
-                    <span className="truncate">Claro</span>
-                  </PrismMenuItem>
-                  <PrismMenuItem id="dark">
-                    <MoonIcon className="mr-2" />
-                    <span className="truncate">Escuro</span>
-                  </PrismMenuItem>
-                  <PrismMenuItem id="system">
-                    <MonitorIcon className="mr-2" />
-                    <span className="truncate">Padrão do Sistema</span>
-                  </PrismMenuItem>
-                </PrismMenuContent>
-              </PrismMenu>
-            </div>
+        <GallerySectionContent className="grid gap-12">
+          <GalleryItem label="Dropdown Menu">
+            <MenuPlayground />
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>

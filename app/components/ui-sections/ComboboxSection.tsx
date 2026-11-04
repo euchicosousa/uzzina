@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { TagGroup, TagList } from "react-aria-components";
 import {
   PrismButton,
   PrismCombobox,
@@ -9,6 +8,7 @@ import {
   PrismComboboxItem,
   PrismComboboxChips,
   PrismComboboxChip,
+  PrismComboboxChipList,
   PrismComboboxChipsInput,
 } from "~/components/prism";
 import {
@@ -17,90 +17,113 @@ import {
   GallerySectionContent,
   GalleryItem,
 } from "./GalleryHelperComponents";
+import {
+  PropsPlayground,
+  PlaygroundRadio,
+  PlaygroundBoolean,
+  PlaygroundNumber,
+  PlaygroundText,
+} from "./PropsPlayground";
 
-const COMBOBOX_SIZES: { size: "sm" | "default" | "lg"; label: string }[] = [
-  { size: "sm", label: "sm · h-8 / 32px" },
-  { size: "default", label: "default · h-10 / 40px" },
-  { size: "lg", label: "lg · h-12 / 48px" },
-];
+const COMBOBOX_SIZES = ["sm", "default", "lg"] as const;
+type ComboboxSize = (typeof COMBOBOX_SIZES)[number];
 
-function FruitsMultiSelect() {
-  const [selectedFruits, setSelectedFruits] = useState<string[]>([]);
-  const [query, setQuery] = useState("");
-  const fruitItems = [
-    { id: "apple", label: "🍎 Maçã" },
-    { id: "banana", label: "🍌 Banana" },
-    { id: "grape", label: "🍇 Uva" },
-    { id: "strawberry", label: "🍓 Morango" },
-    { id: "watermelon", label: "🍉 Melancia" },
-  ];
-  const filteredItems = fruitItems.filter(
-    (item) =>
-      !selectedFruits.includes(item.id) &&
-      item.label.toLowerCase().includes(query.toLowerCase()),
-  );
+const ANIMAL_ITEMS = [
+  { id: "cat", label: "🐱 Gato" },
+  { id: "dog", label: "🐶 Cachorro" },
+  { id: "lion", label: "🦁 Leão" },
+  { id: "rabbit", label: "🐰 Coelho" },
+  { id: "panda", label: "🐼 Panda" },
+] as const;
+
+function ComboboxPlayground() {
+  const [size, setSize] = useState<ComboboxSize>("default");
+  const [showTrigger, setShowTrigger] = useState(true);
+  const [showClear, setShowClear] = useState(false);
+  const [disabled, setDisabled] = useState(false);
+  const [compareButton, setCompareButton] = useState(false);
+  const [placeholder, setPlaceholder] = useState("Buscar animal...");
+
   return (
-    <div className="flex w-80 flex-col gap-2">
-      <PrismCombobox
-        inputValue={query}
-        onInputChange={setQuery}
-        onSelectionChange={(key) => {
-          if (key) {
-            setSelectedFruits([...selectedFruits, key as string]);
-            setQuery("");
-          }
-        }}
-      >
-        <PrismComboboxInput placeholder="Selecione frutas..." />
-        <PrismComboboxContent>
-          <PrismComboboxList>
-            {filteredItems.map((item) => (
-              <PrismComboboxItem key={item.id} id={item.id}>
-                {item.label}
-              </PrismComboboxItem>
-            ))}
-          </PrismComboboxList>
-        </PrismComboboxContent>
-      </PrismCombobox>
-
-      {selectedFruits.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 rounded-xl border bg-muted/20 p-1 squircle">
-          {selectedFruits.map((fruitId) => {
-            const fruit = fruitItems.find((f) => f.id === fruitId);
-            return (
-              <button
-                key={fruitId}
-                className="flex items-center gap-1 rounded-lg border bg-secondary px-2.5 py-1 text-xs font-semibold text-foreground transition-colors squircle hover:bg-secondary/80"
-                onClick={() =>
-                  setSelectedFruits(
-                    selectedFruits.filter((id) => id !== fruitId),
-                  )
-                }
-                type="button"
-              >
-                <span>{fruit?.label}</span>
-                <span className="text-muted-foreground hover:text-foreground">
-                  ×
-                </span>
-              </button>
-            );
-          })}
+    <PropsPlayground
+      caption={`size="${size}"`}
+      preview={
+        <div className="flex items-center gap-4">
+          <PrismCombobox className="w-64" isDisabled={disabled}>
+            <PrismComboboxInput
+              disabled={disabled}
+              placeholder={placeholder}
+              showClear={showClear}
+              showTrigger={showTrigger}
+              size={size}
+            />
+            <PrismComboboxContent>
+              <PrismComboboxList>
+                {ANIMAL_ITEMS.map((animal) => (
+                  <PrismComboboxItem id={animal.id} key={animal.id}>
+                    {animal.label}
+                  </PrismComboboxItem>
+                ))}
+              </PrismComboboxList>
+            </PrismComboboxContent>
+          </PrismCombobox>
+          {compareButton && (
+            <PrismButton size={size} variant="default">
+              Botão
+            </PrismButton>
+          )}
         </div>
-      )}
-    </div>
+      }
+      title="Combobox"
+    >
+      <PlaygroundRadio
+        label="Tamanho"
+        onChange={setSize}
+        options={COMBOBOX_SIZES}
+        prop="size"
+        value={size}
+      />
+      <PlaygroundBoolean
+        label="Botão de abrir"
+        onChange={setShowTrigger}
+        prop="showTrigger"
+        value={showTrigger}
+      />
+      <PlaygroundBoolean
+        label="Botão de limpar"
+        onChange={setShowClear}
+        prop="showClear"
+        value={showClear}
+      />
+      <PlaygroundBoolean
+        label="Desabilitado"
+        onChange={setDisabled}
+        prop="disabled"
+        value={disabled}
+      />
+      <PlaygroundBoolean
+        label="Comparar com botão"
+        onChange={setCompareButton}
+        prop="compareButton"
+        value={compareButton}
+      />
+      <PlaygroundText
+        label="Placeholder"
+        onChange={setPlaceholder}
+        prop="placeholder"
+        value={placeholder}
+      />
+    </PropsPlayground>
   );
 }
 
 function ChipsComboboxDemo({
   size = "default",
+  initialCount = 2,
 }: {
   size?: "sm" | "default" | "lg";
+  initialCount?: number;
 }) {
-  const [selectedKeys, setSelectedKeys] = useState<string[]>([
-    "design",
-    "copy",
-  ]);
-  const [inputValue, setInputValue] = useState("");
   const availableTags = [
     { id: "design", label: "Design" },
     { id: "copy", label: "Copywriting" },
@@ -109,57 +132,83 @@ function ChipsComboboxDemo({
     { id: "estrategia", label: "Estratégia" },
   ];
 
-  const selectedTags = availableTags.filter((t) => selectedKeys.includes(t.id));
+  const [selectedKeys, setSelectedKeys] = useState<string[]>(() =>
+    availableTags.slice(0, initialCount).map((t) => t.id),
+  );
+  const [inputValue, setInputValue] = useState("");
 
   return (
     <div className="w-80 sm:w-96">
       <PrismCombobox
+        items={availableTags}
         aria-label={`Combobox com Chips ${size}`}
         inputValue={inputValue}
         onInputChange={setInputValue}
-        onSelectionChange={(key) => {
-          if (key && !selectedKeys.includes(String(key))) {
-            setSelectedKeys([...selectedKeys, String(key)]);
-            setInputValue("");
-          }
-        }}
+        selectionMode="multiple"
+        value={selectedKeys}
+        onChange={(keys) => setSelectedKeys(keys.map(String))}
       >
         <PrismComboboxChips size={size}>
-          <TagGroup
-            aria-label="Tags selecionadas"
-            className="contents"
-            onRemove={(keys) => {
-              const key = Array.from(keys)[0];
-              setSelectedKeys(selectedKeys.filter((k) => k !== key));
-            }}
-          >
-            <TagList className="contents" items={selectedTags}>
-              {(item) => (
-                <PrismComboboxChip
-                  id={item.id}
-                  size={size}
-                  textValue={item.label}
-                >
-                  {item.label}
-                </PrismComboboxChip>
-              )}
-            </TagList>
-          </TagGroup>
+          <PrismComboboxChipList<{ id: string; label: string }>>
+            {(item) => (
+              <PrismComboboxChip
+                id={item.id}
+                size={size}
+                textValue={item.label}
+              >
+                {item.label}
+              </PrismComboboxChip>
+            )}
+          </PrismComboboxChipList>
           <PrismComboboxChipsInput placeholder="Adicionar tag..." />
         </PrismComboboxChips>
         <PrismComboboxContent>
-          <PrismComboboxList>
-            {availableTags
-              .filter((t) => !selectedKeys.includes(t.id))
-              .map((tag) => (
-                <PrismComboboxItem key={tag.id} id={tag.id}>
-                  {tag.label}
-                </PrismComboboxItem>
-              ))}
+          <PrismComboboxList items={availableTags}>
+            {(tag) => (
+              <PrismComboboxItem id={tag.id} key={tag.id}>
+                {tag.label}
+              </PrismComboboxItem>
+            )}
           </PrismComboboxList>
         </PrismComboboxContent>
       </PrismCombobox>
     </div>
+  );
+}
+
+function ComboboxChipsPlayground() {
+  const [size, setSize] = useState<ComboboxSize>("default");
+  const [count, setCount] = useState(2);
+
+  return (
+    <PropsPlayground
+      caption={`size="${size}" · ${count} selecionados`}
+      preview={
+        <ChipsComboboxDemo
+          initialCount={count}
+          key={`${size}-${count}`}
+          size={size}
+        />
+      }
+      title="ComboboxChips"
+    >
+      <PlaygroundRadio
+        label="Tamanho"
+        onChange={setSize}
+        options={COMBOBOX_SIZES}
+        prop="size"
+        value={size}
+      />
+      <PlaygroundNumber
+        label="Quantidade selecionada"
+        max={5}
+        min={0}
+        onChange={setCount}
+        prop="count"
+        step={1}
+        value={count}
+      />
+    </PropsPlayground>
   );
 }
 
@@ -172,137 +221,12 @@ export function ComboboxSection() {
           description="Inputs de seleção com preenchimento automático filtrado (Combobox/Autocomplete) e chips com alto contraste nos tamanhos sm, default e lg."
           title="Combobox"
         />
-        <GallerySectionContent className="flex flex-col gap-10">
-          <GalleryItem label="Combobox Simples">
-            <PrismCombobox className="w-64">
-              <PrismComboboxInput placeholder="Selecione um animal..." />
-              <PrismComboboxContent>
-                <PrismComboboxList>
-                  <PrismComboboxItem id="cat">🐱 Gato</PrismComboboxItem>
-                  <PrismComboboxItem id="dog">🐶 Cachorro</PrismComboboxItem>
-                  <PrismComboboxItem id="lion">🦁 Leão</PrismComboboxItem>
-                </PrismComboboxList>
-              </PrismComboboxContent>
-            </PrismCombobox>
+        <GallerySectionContent className="grid gap-12">
+          <GalleryItem label="Combobox">
+            <ComboboxPlayground />
           </GalleryItem>
-
-          <GalleryItem label="Chips Standalone (PrismComboboxChip) · Todos os tamanhos">
-            <div className="flex flex-wrap items-center gap-6">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-muted-foreground">
-                  sm:
-                </span>
-                <TagGroup
-                  aria-label="Chips sm"
-                  className="flex items-center gap-1.5"
-                >
-                  <TagList className="flex items-center gap-1.5">
-                    <PrismComboboxChip id="sm1" size="sm">
-                      Design
-                    </PrismComboboxChip>
-                    <PrismComboboxChip id="sm2" size="sm">
-                      Copywriting
-                    </PrismComboboxChip>
-                  </TagList>
-                </TagGroup>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-muted-foreground">
-                  default:
-                </span>
-                <TagGroup
-                  aria-label="Chips default"
-                  className="flex items-center gap-2"
-                >
-                  <TagList className="flex items-center gap-2">
-                    <PrismComboboxChip id="def1" size="default">
-                      Design
-                    </PrismComboboxChip>
-                    <PrismComboboxChip id="def2" size="default">
-                      Copywriting
-                    </PrismComboboxChip>
-                  </TagList>
-                </TagGroup>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-muted-foreground">
-                  lg:
-                </span>
-                <TagGroup
-                  aria-label="Chips lg"
-                  className="flex items-center gap-2"
-                >
-                  <TagList className="flex items-center gap-2">
-                    <PrismComboboxChip id="lg1" size="lg">
-                      Design
-                    </PrismComboboxChip>
-                    <PrismComboboxChip id="lg2" size="lg">
-                      Copywriting
-                    </PrismComboboxChip>
-                  </TagList>
-                </TagGroup>
-              </div>
-            </div>
-          </GalleryItem>
-
-          <GalleryItem label="Combobox de Chips no Input · Tamanhos sm, default e lg">
-            <div className="flex flex-wrap items-start gap-6">
-              <div className="flex flex-col gap-1.5">
-                <span className="text-xs font-medium text-muted-foreground">
-                  sm · h-8 (32px)
-                </span>
-                <ChipsComboboxDemo size="sm" />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <span className="text-xs font-medium text-muted-foreground">
-                  default · h-10 (40px)
-                </span>
-                <ChipsComboboxDemo size="default" />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <span className="text-xs font-medium text-muted-foreground">
-                  lg · h-12 (48px)
-                </span>
-                <ChipsComboboxDemo size="lg" />
-              </div>
-            </div>
-          </GalleryItem>
-
-          <GalleryItem label="Combobox Múltiplo (Tags/Frutas)">
-            <FruitsMultiSelect />
-          </GalleryItem>
-
-          <GalleryItem label="Tamanhos · combobox ao lado de PrismButton do mesmo tamanho">
-            <div className="grid gap-3">
-              {COMBOBOX_SIZES.map(({ size, label }) => (
-                <div className="flex flex-wrap items-center gap-4" key={size}>
-                  <span className="w-44 text-xs text-muted-foreground">
-                    {label}
-                  </span>
-                  <PrismButton size={size} variant="outline">
-                    Botão
-                  </PrismButton>
-                  <PrismCombobox className="w-64">
-                    <PrismComboboxInput
-                      placeholder="Selecione um animal..."
-                      size={size}
-                    />
-                    <PrismComboboxContent>
-                      <PrismComboboxList>
-                        <PrismComboboxItem id="cat">🐱 Gato</PrismComboboxItem>
-                        <PrismComboboxItem id="dog">
-                          🐶 Cachorro
-                        </PrismComboboxItem>
-                      </PrismComboboxList>
-                    </PrismComboboxContent>
-                  </PrismCombobox>
-                </div>
-              ))}
-            </div>
+          <GalleryItem label="ComboboxChips">
+            <ComboboxChipsPlayground />
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>

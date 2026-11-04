@@ -69,7 +69,7 @@ export function PartnersCombobox({
         className={cn(
           allowAll &&
             (variant ?? "ghost") === "ghost" &&
-            "max-w-full min-w-0 shrink gap-3",
+            "w-40 max-w-full min-w-0 shrink gap-3",
           getTriggerAvatarPadding(size),
         )}
         disabled={disabled}

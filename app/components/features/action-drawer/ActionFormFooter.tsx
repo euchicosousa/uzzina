@@ -98,7 +98,8 @@ export function ActionFormFooter({
     >
       <FooterStrip compact={compact}>
         <PartnersCombobox
-          size={currentPartners.length > 1 ? "lg" : "icon-lg"}
+          // size={currentPartners.length > 1 ? "lg" : "icon-lg"}
+          size={"icon-lg"}
           variant="ghost"
           onSelect={async (selected) => {
             const first = currentPartners.find((p) => p.slug === selected[0]);
@@ -292,7 +293,7 @@ function FooterStrip({
           : undefined
       }
     >
-      <div className="flex w-max items-center gap-1 p-2" ref={trackRef}>
+      <div className="flex w-max items-center gap-px p-2" ref={trackRef}>
         {children}
       </div>
     </div>

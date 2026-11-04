@@ -1,13 +1,6 @@
 import { useState } from "react";
-import { TextField, Label } from "react-aria-components";
-import {
-  LockIcon,
-  EyeIcon,
-  EyeOffIcon,
-  SearchIcon,
-  CheckIcon,
-  XIcon,
-} from "lucide-react";
+import { TextField, Label, parseColor } from "react-aria-components";
+import { EyeIcon, EyeOffIcon, SearchIcon, XIcon } from "lucide-react";
 import {
   PrismInput,
   PrismInputGroup,
@@ -28,25 +21,358 @@ import {
   GallerySectionContent,
   GalleryItem,
 } from "./GalleryHelperComponents";
+import {
+  PropsPlayground,
+  PlaygroundSelect,
+  PlaygroundRadio,
+  PlaygroundBoolean,
+  PlaygroundText,
+} from "./PropsPlayground";
 
-const SIZES: {
-  size: "sm" | "default" | "lg";
-  height: string;
-  label: string;
-}[] = [
-  { size: "sm", height: "h-8 (32px)", label: "Tamanho sm · h-8 (32px)" },
-  {
-    size: "default",
-    height: "h-10 (40px)",
-    label: "Tamanho default · h-10 (40px)",
-  },
-  { size: "lg", height: "h-12 (48px)", label: "Tamanho lg · h-12 (48px)" },
-];
+const INPUT_SIZES = ["sm", "default", "lg"] as const;
+type InputSize = (typeof INPUT_SIZES)[number];
+
+const INPUT_TYPES = ["text", "email", "password"] as const;
+type InputType = (typeof INPUT_TYPES)[number];
+
+function InputPlayground() {
+  const [size, setSize] = useState<InputSize>("default");
+  const [type, setType] = useState<InputType>("text");
+  const [disabled, setDisabled] = useState(false);
+  const [isInvalid, setIsInvalid] = useState(false);
+  const [hasLabel, setHasLabel] = useState(true);
+  const [compareButton, setCompareButton] = useState(false);
+  const [placeholder, setPlaceholder] = useState("Digite aqui...");
+  const [value, setValue] = useState("");
+
+  return (
+    <PropsPlayground
+      caption={`size="${size}" · type="${type}"`}
+      preview={
+        <div className="flex w-full max-w-sm items-end gap-3">
+          <TextField
+            className="flex-1"
+            isDisabled={disabled}
+            isInvalid={isInvalid}
+            onChange={setValue}
+            value={value}
+          >
+            {hasLabel && (
+              <Label className="mb-1.5 block cursor-pointer text-xs font-medium text-foreground">
+                Exemplo de Rótulo
+              </Label>
+            )}
+            <PrismInput placeholder={placeholder} size={size} type={type} />
+          </TextField>
+          {compareButton && (
+            <PrismButton size={size} variant="default">
+              Botão
+            </PrismButton>
+          )}
+        </div>
+      }
+      title="Input"
+    >
+      <PlaygroundRadio
+        label="Tamanho"
+        onChange={setSize}
+        options={INPUT_SIZES}
+        prop="size"
+        value={size}
+      />
+      <PlaygroundRadio
+        label="Tipo"
+        onChange={setType}
+        options={INPUT_TYPES}
+        prop="type"
+        value={type}
+      />
+      <PlaygroundBoolean
+        label="Desabilitado"
+        onChange={setDisabled}
+        prop="disabled"
+        value={disabled}
+      />
+      <PlaygroundBoolean
+        label="Inválido"
+        onChange={setIsInvalid}
+        prop="isInvalid"
+        value={isInvalid}
+      />
+      <PlaygroundBoolean
+        label="Com rótulo"
+        onChange={setHasLabel}
+        prop="Label"
+        value={hasLabel}
+      />
+      <PlaygroundBoolean
+        label="Comparar com botão"
+        onChange={setCompareButton}
+        prop="compareButton"
+        value={compareButton}
+      />
+      <PlaygroundText
+        label="Placeholder"
+        onChange={setPlaceholder}
+        prop="placeholder"
+        value={placeholder}
+      />
+    </PropsPlayground>
+  );
+}
+
+const PREFIX_OPTIONS = ["none", "icon", "text"] as const;
+type PrefixOption = (typeof PREFIX_OPTIONS)[number];
+const PREFIX_LABELS: Record<PrefixOption, string> = {
+  none: "Nenhum",
+  icon: "Ícone",
+  text: "Texto",
+};
+
+const SUFFIX_OPTIONS = ["none", "kbd", "clear", "password"] as const;
+type SuffixOption = (typeof SUFFIX_OPTIONS)[number];
+const SUFFIX_LABELS: Record<SuffixOption, string> = {
+  none: "Nenhum",
+  kbd: "Atalho",
+  clear: "Limpar",
+  password: "Mostrar senha",
+};
+
+function InputGroupPlayground() {
+  const [size, setSize] = useState<InputSize>("default");
+  const [prefix, setPrefix] = useState<PrefixOption>("icon");
+  const [suffix, setSuffix] = useState<SuffixOption>("none");
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [text, setText] = useState("UZZINA");
+  const [showPassword, setShowPassword] = useState(false);
+
+  return (
+    <PropsPlayground
+      caption={`size="${size}" · prefix="${prefix}" · suffix="${suffix}"`}
+      preview={
+        <div className="w-full max-w-sm">
+          <PrismInputGroup isDisabled={isDisabled} size={size}>
+            {prefix === "icon" && (
+              <PrismInputGroupAddon align="inline-start">
+                <SearchIcon />
+              </PrismInputGroupAddon>
+            )}
+            {prefix === "text" && (
+              <PrismInputGroupAddon align="inline-start">
+                <PrismInputGroupText>https://</PrismInputGroupText>
+              </PrismInputGroupAddon>
+            )}
+            <PrismInputGroupInput
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Digite algo..."
+              type={
+                suffix === "password" && showPassword
+                  ? "text"
+                  : suffix === "password"
+                    ? "password"
+                    : "text"
+              }
+              value={text}
+            />
+            {suffix === "kbd" && (
+              <PrismInputGroupAddon align="inline-end">
+                <PrismKbd>⌘K</PrismKbd>
+              </PrismInputGroupAddon>
+            )}
+            {suffix === "clear" && (
+              <PrismInputGroupAddon align="inline-end">
+                <PrismInputGroupButton
+                  aria-label="Limpar busca"
+                  onPress={() => setText("")}
+                >
+                  <XIcon />
+                </PrismInputGroupButton>
+              </PrismInputGroupAddon>
+            )}
+            {suffix === "password" && (
+              <PrismInputGroupAddon align="inline-end">
+                <PrismInputGroupButton
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  onPress={() => setShowPassword((prev) => !prev)}
+                >
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </PrismInputGroupButton>
+              </PrismInputGroupAddon>
+            )}
+          </PrismInputGroup>
+        </div>
+      }
+      title="InputGroup"
+    >
+      <PlaygroundRadio
+        label="Tamanho"
+        onChange={setSize}
+        options={INPUT_SIZES}
+        prop="size"
+        value={size}
+      />
+      <PlaygroundRadio
+        label="Prefixo"
+        onChange={setPrefix}
+        optionLabels={PREFIX_LABELS}
+        options={PREFIX_OPTIONS}
+        prop='align="inline-start"'
+        value={prefix}
+      />
+      <PlaygroundSelect
+        label="Sufixo"
+        onChange={setSuffix}
+        optionLabels={SUFFIX_LABELS}
+        options={SUFFIX_OPTIONS}
+        prop='align="inline-end"'
+        value={suffix}
+      />
+      <PlaygroundBoolean
+        label="Desabilitado"
+        onChange={setIsDisabled}
+        prop="isDisabled"
+        value={isDisabled}
+      />
+    </PropsPlayground>
+  );
+}
+
+function TimeFieldPlayground() {
+  const [size, setSize] = useState<InputSize>("default");
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isInvalid, setIsInvalid] = useState(false);
+
+  return (
+    <PropsPlayground
+      caption={`size="${size}"`}
+      preview={
+        <div className="w-48">
+          <PrismTimeField
+            aria-label="Horário"
+            isDisabled={isDisabled}
+            isInvalid={isInvalid}
+            size={size}
+          />
+        </div>
+      }
+      title="TimeField"
+    >
+      <PlaygroundRadio
+        label="Tamanho"
+        onChange={setSize}
+        options={INPUT_SIZES}
+        prop="size"
+        value={size}
+      />
+      <PlaygroundBoolean
+        label="Desabilitado"
+        onChange={setIsDisabled}
+        prop="isDisabled"
+        value={isDisabled}
+      />
+      <PlaygroundBoolean
+        label="Inválido"
+        onChange={setIsInvalid}
+        prop="isInvalid"
+        value={isInvalid}
+      />
+    </PropsPlayground>
+  );
+}
+
+function ColorFieldPlayground() {
+  const [size, setSize] = useState<InputSize>("default");
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isInvalid, setIsInvalid] = useState(false);
+
+  return (
+    <PropsPlayground
+      caption={`size="${size}" · defaultValue="#FF5733"`}
+      preview={
+        <div className="w-48">
+          <PrismColorField
+            aria-label="Cor"
+            defaultValue="#FF5733"
+            isDisabled={isDisabled}
+            isInvalid={isInvalid}
+            size={size}
+          />
+        </div>
+      }
+      title="ColorField"
+    >
+      <PlaygroundRadio
+        label="Tamanho"
+        onChange={setSize}
+        options={INPUT_SIZES}
+        prop="size"
+        value={size}
+      />
+      <PlaygroundBoolean
+        label="Desabilitado"
+        onChange={setIsDisabled}
+        prop="isDisabled"
+        value={isDisabled}
+      />
+      <PlaygroundBoolean
+        label="Inválido"
+        onChange={setIsInvalid}
+        prop="isInvalid"
+        value={isInvalid}
+      />
+    </PropsPlayground>
+  );
+}
+
+const COLOR_CHANNELS = ["hue", "saturation", "lightness", "alpha"] as const;
+type ColorChannelOption = (typeof COLOR_CHANNELS)[number];
+
+function ColorPickerPlayground() {
+  const [channel, setChannel] = useState<ColorChannelOption>("hue");
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [color, setColor] = useState(() => parseColor("#FF5733"));
+
+  const hslColor = color.toFormat("hsl");
+
+  return (
+    <PropsPlayground
+      caption={color.toString("hex")}
+      preview={
+        <div className="flex w-full max-w-sm flex-col gap-2">
+          <PrismColorArea
+            isDisabled={isDisabled}
+            onChange={setColor}
+            value={color}
+          />
+          <PrismColorSlider
+            channel={channel}
+            colorSpace="hsl"
+            isDisabled={isDisabled}
+            onChange={(c) => c && setColor(c)}
+            value={hslColor}
+          />
+        </div>
+      }
+      title="ColorArea e ColorSlider"
+    >
+      <PlaygroundSelect
+        label="Canal do slider"
+        onChange={setChannel}
+        options={COLOR_CHANNELS}
+        prop="channel"
+        value={channel}
+      />
+      <PlaygroundBoolean
+        label="Desabilitado"
+        onChange={setIsDisabled}
+        prop="isDisabled"
+        value={isDisabled}
+      />
+    </PropsPlayground>
+  );
+}
 
 export function InputSection() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [searchValue, setSearchValue] = useState("UZZINA Design System");
-
   return (
     <div id="prism-input">
       <GallerySection>
@@ -55,405 +381,21 @@ export function InputSection() {
           description="Campos de entrada de texto e grupos acoplados (Input e InputGroup) com alinhamento visual rigoroso aos botões em todos os tamanhos."
           title="Input"
         />
-        <GallerySectionContent className="flex flex-col gap-10">
-          <GalleryItem label="Comparação Direta de Tamanhos · Input lado a lado com Button">
-            <div className="flex flex-col gap-6">
-              {SIZES.map(({ size, height, label }) => (
-                <div className="flex flex-col gap-2" key={size}>
-                  <span className="text-xs font-semibold text-muted-foreground uppercase">
-                    {label}
-                  </span>
-                  <div className="flex flex-wrap items-center gap-4 border-y border-[#00f]">
-                    <PrismButton size={size} variant="default">
-                      Botão ({height})
-                    </PrismButton>
-                    <div className="w-64">
-                      <PrismInput
-                        aria-label={`Input simples ${size}`}
-                        placeholder={`Input simples (${size})`}
-                        size={size}
-                      />
-                    </div>
-                    <div className="w-72">
-                      <PrismInputGroup size={size}>
-                        <PrismInputGroupAddon align="inline-start">
-                          <SearchIcon />
-                        </PrismInputGroupAddon>
-                        <PrismInputGroupInput
-                          placeholder={`InputGroup busca (${size})`}
-                        />
-                      </PrismInputGroup>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+        <GallerySectionContent className="grid gap-12">
+          <GalleryItem label="Input">
+            <InputPlayground />
           </GalleryItem>
-
-          <GalleryItem label="Campos com Rótulo (Label) · sm, default e lg">
-            <div className="grid gap-6 sm:grid-cols-3">
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-xs font-medium text-foreground">
-                  Nome Completo (sm · h-8 / 32px)
-                </Label>
-                <PrismInput placeholder="Ex: Chico Sousa" size="sm" />
-              </TextField>
-
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-foreground">
-                  Nome Completo (default · h-10 / 40px)
-                </Label>
-                <PrismInput placeholder="Ex: Francisco Sousa" size="default" />
-              </TextField>
-
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-foreground">
-                  Nome Completo (lg · h-12 / 48px)
-                </Label>
-                <PrismInput placeholder="Ex: Francisco Sousa" size="lg" />
-              </TextField>
-            </div>
+          <GalleryItem label="InputGroup">
+            <InputGroupPlayground />
           </GalleryItem>
-
-          <GalleryItem label="InputGroup · Apenas Prefixo (Ícone de Busca) · sm, default e lg">
-            <div className="grid gap-6 sm:grid-cols-3">
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-xs font-medium text-foreground">
-                  Busca (sm · h-8 / 32px · ícone 16px)
-                </Label>
-                <PrismInputGroup size="sm">
-                  <PrismInputGroupAddon align="inline-start">
-                    <SearchIcon />
-                  </PrismInputGroupAddon>
-                  <PrismInputGroupInput placeholder="Pesquisar ações..." />
-                </PrismInputGroup>
-              </TextField>
-
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-foreground">
-                  Busca (default · h-10 / 40px · ícone 20px)
-                </Label>
-                <PrismInputGroup size="default">
-                  <PrismInputGroupAddon align="inline-start">
-                    <SearchIcon />
-                  </PrismInputGroupAddon>
-                  <PrismInputGroupInput placeholder="Pesquisar ações..." />
-                </PrismInputGroup>
-              </TextField>
-
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-foreground">
-                  Busca (lg · h-12 / 48px · ícone 24px)
-                </Label>
-                <PrismInputGroup size="lg">
-                  <PrismInputGroupAddon align="inline-start">
-                    <SearchIcon />
-                  </PrismInputGroupAddon>
-                  <PrismInputGroupInput placeholder="Pesquisar ações..." />
-                </PrismInputGroup>
-              </TextField>
-            </div>
+          <GalleryItem label="TimeField">
+            <TimeFieldPlayground />
           </GalleryItem>
-
-          <GalleryItem label="InputGroup · Apenas Sufixo (Status & Atalho) · sm, default e lg">
-            <div className="grid gap-6 sm:grid-cols-3">
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-xs font-medium text-foreground">
-                  Domínio (sm · h-8 / 32px · ícone 16px)
-                </Label>
-                <PrismInputGroup size="sm">
-                  <PrismInputGroupInput defaultValue="uzzina.app/agencia" />
-                  <PrismInputGroupAddon align="inline-end">
-                    <CheckIcon className="text-success-accent" />
-                  </PrismInputGroupAddon>
-                </PrismInputGroup>
-              </TextField>
-
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-foreground">
-                  Domínio (default · h-10 / 40px · ícone 20px)
-                </Label>
-                <PrismInputGroup size="default">
-                  <PrismInputGroupInput defaultValue="uzzina.app/agencia" />
-                  <PrismInputGroupAddon align="inline-end">
-                    <CheckIcon className="text-success-accent" />
-                  </PrismInputGroupAddon>
-                </PrismInputGroup>
-              </TextField>
-
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-foreground">
-                  Domínio (lg · h-12 / 48px · ícone 24px)
-                </Label>
-                <PrismInputGroup size="lg">
-                  <PrismInputGroupInput defaultValue="uzzina.app/agencia" />
-                  <PrismInputGroupAddon align="inline-end">
-                    <CheckIcon className="text-success-accent" />
-                  </PrismInputGroupAddon>
-                </PrismInputGroup>
-              </TextField>
-            </div>
+          <GalleryItem label="ColorField">
+            <ColorFieldPlayground />
           </GalleryItem>
-
-          <GalleryItem label="InputGroup · Prefixo de Texto (InputGroupText) · sm, default e lg">
-            <div className="grid gap-6 sm:grid-cols-3">
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-xs font-medium text-foreground">
-                  URL (sm · h-8 / 32px · texto 12px)
-                </Label>
-                <PrismInputGroup size="sm">
-                  <PrismInputGroupAddon align="inline-start">
-                    <PrismInputGroupText>https://</PrismInputGroupText>
-                  </PrismInputGroupAddon>
-                  <PrismInputGroupInput defaultValue="uzzina.app/agencia" />
-                </PrismInputGroup>
-              </TextField>
-
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-foreground">
-                  URL (default · h-10 / 40px · texto 14px)
-                </Label>
-                <PrismInputGroup size="default">
-                  <PrismInputGroupAddon align="inline-start">
-                    <PrismInputGroupText>https://</PrismInputGroupText>
-                  </PrismInputGroupAddon>
-                  <PrismInputGroupInput defaultValue="uzzina.app/agencia" />
-                </PrismInputGroup>
-              </TextField>
-
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-foreground">
-                  URL (lg · h-12 / 48px · texto 16px)
-                </Label>
-                <PrismInputGroup size="lg">
-                  <PrismInputGroupAddon align="inline-start">
-                    <PrismInputGroupText>https://</PrismInputGroupText>
-                  </PrismInputGroupAddon>
-                  <PrismInputGroupInput defaultValue="uzzina.app/agencia" />
-                </PrismInputGroup>
-              </TextField>
-            </div>
-          </GalleryItem>
-
-          <GalleryItem label="InputGroup · Prefixo e Sufixo de Ação (Senha) · sm, default e lg">
-            <div className="grid gap-6 sm:grid-cols-3">
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-xs font-medium text-foreground">
-                  Senha (sm · h-8 / 32px · ícone 16px · botão 24px)
-                </Label>
-                <PrismInputGroup size="sm">
-                  <PrismInputGroupAddon align="inline-start">
-                    <LockIcon />
-                  </PrismInputGroupAddon>
-                  <PrismInputGroupInput
-                    placeholder="••••••••"
-                    type={showPassword ? "text" : "password"}
-                  />
-                  <PrismInputGroupAddon align="inline-end">
-                    <PrismInputGroupButton
-                      aria-label={showPassword ? "Ocultar" : "Mostrar"}
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                    </PrismInputGroupButton>
-                  </PrismInputGroupAddon>
-                </PrismInputGroup>
-              </TextField>
-
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-foreground">
-                  Senha (default · h-10 / 40px · ícone 20px · botão 32px)
-                </Label>
-                <PrismInputGroup size="default">
-                  <PrismInputGroupAddon align="inline-start">
-                    <LockIcon />
-                  </PrismInputGroupAddon>
-                  <PrismInputGroupInput
-                    placeholder="••••••••"
-                    type={showPassword ? "text" : "password"}
-                  />
-                  <PrismInputGroupAddon align="inline-end">
-                    <PrismInputGroupButton
-                      aria-label={showPassword ? "Ocultar" : "Mostrar"}
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                    </PrismInputGroupButton>
-                  </PrismInputGroupAddon>
-                </PrismInputGroup>
-              </TextField>
-
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-foreground">
-                  Senha (lg · h-12 / 48px · ícone 24px · botão 40px)
-                </Label>
-                <PrismInputGroup size="lg">
-                  <PrismInputGroupAddon align="inline-start">
-                    <LockIcon />
-                  </PrismInputGroupAddon>
-                  <PrismInputGroupInput
-                    placeholder="••••••••"
-                    type={showPassword ? "text" : "password"}
-                  />
-                  <PrismInputGroupAddon align="inline-end">
-                    <PrismInputGroupButton
-                      aria-label={showPassword ? "Ocultar" : "Mostrar"}
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                    </PrismInputGroupButton>
-                  </PrismInputGroupAddon>
-                </PrismInputGroup>
-              </TextField>
-            </div>
-          </GalleryItem>
-
-          <GalleryItem label="InputGroup · Prefixo e Botão de Ação de Limpeza · sm, default e lg">
-            <div className="grid gap-6 sm:grid-cols-3">
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-xs font-medium text-foreground">
-                  Filtrar (sm · h-8 / 32px)
-                </Label>
-                <PrismInputGroup size="sm">
-                  <PrismInputGroupAddon align="inline-start">
-                    <SearchIcon />
-                  </PrismInputGroupAddon>
-                  <PrismInputGroupInput
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    value={searchValue}
-                  />
-                  {searchValue && (
-                    <PrismInputGroupAddon align="inline-end">
-                      <PrismInputGroupButton
-                        aria-label="Limpar busca"
-                        onClick={() => setSearchValue("")}
-                      >
-                        <XIcon />
-                      </PrismInputGroupButton>
-                    </PrismInputGroupAddon>
-                  )}
-                </PrismInputGroup>
-              </TextField>
-
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-foreground">
-                  Filtrar (default · h-10 / 40px)
-                </Label>
-                <PrismInputGroup size="default">
-                  <PrismInputGroupAddon align="inline-start">
-                    <SearchIcon />
-                  </PrismInputGroupAddon>
-                  <PrismInputGroupInput
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    value={searchValue}
-                  />
-                  {searchValue && (
-                    <PrismInputGroupAddon align="inline-end">
-                      <PrismInputGroupButton
-                        aria-label="Limpar busca"
-                        onClick={() => setSearchValue("")}
-                      >
-                        <XIcon />
-                      </PrismInputGroupButton>
-                    </PrismInputGroupAddon>
-                  )}
-                </PrismInputGroup>
-              </TextField>
-
-              <TextField>
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-foreground">
-                  Filtrar (lg · h-12 / 48px)
-                </Label>
-                <PrismInputGroup size="lg">
-                  <PrismInputGroupAddon align="inline-start">
-                    <SearchIcon />
-                  </PrismInputGroupAddon>
-                  <PrismInputGroupInput
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    value={searchValue}
-                  />
-                  {searchValue && (
-                    <PrismInputGroupAddon align="inline-end">
-                      <PrismInputGroupButton
-                        aria-label="Limpar busca"
-                        onClick={() => setSearchValue("")}
-                      >
-                        <XIcon />
-                      </PrismInputGroupButton>
-                    </PrismInputGroupAddon>
-                  )}
-                </PrismInputGroup>
-              </TextField>
-            </div>
-          </GalleryItem>
-
-          <GalleryItem label="Estados (Desabilitado e Inválido) · default · h-10 (40px)">
-            <div className="grid gap-6 sm:grid-cols-2">
-              <TextField isDisabled value="contato@cnvt.com.br">
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-muted-foreground">
-                  E-mail (Desabilitado · default · 40px)
-                </Label>
-                <PrismInput size="default" />
-              </TextField>
-
-              <TextField isInvalid value="usuario_invalido">
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-destructive">
-                  Nome de Usuário (Inválido / Erro · default · 40px)
-                </Label>
-                <PrismInput size="default" />
-              </TextField>
-            </div>
-          </GalleryItem>
-
-          <GalleryItem label="Campos Especializados (TimeField e ColorField)">
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <div>
-                <Label className="mb-1.5 block cursor-pointer text-xs font-medium text-foreground">
-                  Horário (sm · h-8 / 32px)
-                </Label>
-                <PrismTimeField aria-label="Horário sm" size="sm" />
-              </div>
-              <div>
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-foreground">
-                  Horário (default · h-10 / 40px)
-                </Label>
-                <PrismTimeField aria-label="Horário default" size="default" />
-              </div>
-              <div>
-                <Label className="mb-1.5 block cursor-pointer text-xs font-medium text-foreground">
-                  Cor Hex (sm · h-8 / 32px)
-                </Label>
-                <PrismColorField
-                  aria-label="Cor sm"
-                  defaultValue="#FF5733"
-                  size="sm"
-                />
-              </div>
-              <div>
-                <Label className="mb-1.5 block cursor-pointer text-sm font-medium text-foreground">
-                  Cor Hex (default · h-10 / 40px)
-                </Label>
-                <PrismColorField
-                  aria-label="Cor default"
-                  defaultValue="#FF5733"
-                  size="default"
-                />
-              </div>
-            </div>
-
-            <div className="mt-4 flex max-w-sm flex-col gap-2">
-              <Label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground">
-                <span>ColorArea & ColorSlider</span>
-                <span
-                  className="inline-flex size-5 items-center justify-center rounded-full bg-approved text-approved-foreground shadow-xs ring-2 ring-approved/50"
-                  title="Aprovado"
-                >
-                  <CheckIcon className="size-3.5 stroke-3" />
-                </span>
-              </Label>
-              <PrismColorArea defaultValue="#FF5733" />
-              <PrismColorSlider defaultValue="#FF5733" />
-            </div>
+          <GalleryItem label="ColorArea e ColorSlider">
+            <ColorPickerPlayground />
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>

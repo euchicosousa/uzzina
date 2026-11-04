@@ -33,7 +33,7 @@ function hasTextContent(children: unknown): boolean {
 }
 
 const toggleVariants = cva(
-  "group/toggle inline-flex border border-transparent items-center justify-center rounded-2xl squircle text-sm font-medium whitespace-nowrap transition-colors outline-none hover:bg-secondary hover:text-foreground focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 aria-pressed:bg-secondary dark:aria-invalid:ring-destructive/40 data-selected:bg-secondary [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5",
+  "group/toggle inline-flex min-w-0 border border-transparent items-center justify-center rounded-2xl squircle text-sm font-medium truncate transition-colors outline-none hover:bg-secondary hover:text-foreground focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 aria-pressed:bg-secondary dark:aria-invalid:ring-destructive/40 data-selected:bg-secondary [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5",
   {
     variants: {
       variant: {
@@ -41,7 +41,7 @@ const toggleVariants = cva(
         ghost: "aria-expanded:bg-secondary aria-expanded:text-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] data-selected:bg-primary data-selected:text-primary-foreground aria-pressed:bg-primary aria-pressed:text-primary-foreground",
-        outline: "border border-input bg-transparent",
+        outline: "border border-border bg-transparent",
       },
       // Same names and classes as PrismButton (single source of truth).
       size: {

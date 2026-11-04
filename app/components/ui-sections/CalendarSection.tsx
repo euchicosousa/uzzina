@@ -1,39 +1,179 @@
-import { CalendarDate } from "@internationalized/date";
+import { CalendarDate, today, getLocalTimeZone } from "@internationalized/date";
 import { useState } from "react";
-import { PrismCalendar, PrismRangeCalendar } from "~/components/prism";
+import type { RangeValue } from "react-aria-components";
 import {
-  GallerySection,
-  GallerySectionHeader,
-  GallerySectionContent,
+  PrismCalendar,
+  PrismRangeCalendar,
+  type CalendarCellSize,
+} from "~/components/prism";
+import { cn } from "~/lib/utils";
+import {
   GalleryItem,
+  GallerySection,
+  GallerySectionContent,
+  GallerySectionHeader,
 } from "./GalleryHelperComponents";
+import {
+  PropsPlayground,
+  PlaygroundSelect,
+  PlaygroundRadio,
+  PlaygroundBoolean,
+  PlaygroundNumber,
+} from "./PropsPlayground";
 
-const CELL_SIZES: {
-  size: "sm" | "default" | "lg";
-  label: string;
-  dimension: string;
-}[] = [
-  { size: "sm", label: "Pequeno (sm)", dimension: "32px · h-8 · text-sm" },
-  {
-    size: "default",
-    label: "Padrão (default)",
-    dimension: "40px · h-10 · text-sm",
-  },
-  { size: "lg", label: "Grande (lg)", dimension: "48px · h-12 · text-base" },
-];
+const CALENDAR_MODES = ["single", "range"] as const;
+type CalendarMode = (typeof CALENDAR_MODES)[number];
+const CALENDAR_MODE_LABELS: Record<CalendarMode, string> = {
+  single: "Data",
+  range: "Intervalo",
+};
 
-export function CalendarSection() {
-  const [singleDate, setSingleDate] = useState<CalendarDate>(
-    new CalendarDate(2026, 11, 3),
-  );
-  const [rangeDate, setRangeDate] = useState<{
-    start: CalendarDate;
-    end: CalendarDate;
-  }>({
-    start: new CalendarDate(2026, 11, 3),
-    end: new CalendarDate(2026, 11, 7),
+const CELL_SIZES = ["sm", "default", "lg"] as const;
+
+const CAPTION_LAYOUTS = ["label", "dropdown"] as const;
+type CaptionLayout = (typeof CAPTION_LAYOUTS)[number];
+const CAPTION_LAYOUT_LABELS: Record<CaptionLayout, string> = {
+  label: "Texto",
+  dropdown: "Seletores",
+};
+
+const BUTTON_VARIANTS = ["ghost", "outline", "secondary", "default"] as const;
+type CalendarButtonVariant = (typeof BUTTON_VARIANTS)[number];
+
+const PANEL_WIDTHS = ["auto", "max-w-xs", "max-w-md", "max-w-xl"] as const;
+type PanelWidth = (typeof PANEL_WIDTHS)[number];
+const PANEL_WIDTH_LABELS: Record<PanelWidth, string> = {
+  auto: "Automático (auto)",
+  "max-w-xs": "Estreito (~320px)",
+  "max-w-md": "Médio (~448px)",
+  "max-w-xl": "Largo (~576px)",
+};
+
+function CalendarPlayground() {
+  const [mode, setMode] = useState<CalendarMode>("single");
+  const [cellSize, setCellSize] = useState<CalendarCellSize>("default");
+  const [captionLayout, setCaptionLayout] = useState<CaptionLayout>("label");
+  const [buttonVariant, setButtonVariant] =
+    useState<CalendarButtonVariant>("ghost");
+  const [showWeekNumber, setShowWeekNumber] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [numberOfMonths, setNumberOfMonths] = useState(1);
+  const [panelWidth, setPanelWidth] = useState<PanelWidth>("auto");
+
+  const now = today(getLocalTimeZone());
+  const [singleValue, setSingleValue] = useState<CalendarDate>(now);
+  const [rangeValue, setRangeValue] = useState<RangeValue<CalendarDate>>({
+    start: now,
+    end: now.add({ days: 4 }),
   });
 
+  const isFluid = panelWidth !== "auto";
+
+  return (
+    <PropsPlayground
+      caption={`mode="${mode}" · cellSize="${cellSize}" · numberOfMonths={${numberOfMonths}}`}
+      preview={
+        <div
+          className={cn(
+            "w-full transition-all",
+            panelWidth === "auto" ? "w-fit" : `${panelWidth} w-full`,
+          )}
+        >
+          {mode === "single" ? (
+            <PrismCalendar
+              aria-label="Calendário simples"
+              buttonVariant={buttonVariant}
+              captionLayout={captionLayout}
+              cellSize={cellSize}
+              className={isFluid ? "w-full" : undefined}
+              isDisabled={isDisabled}
+              numberOfMonths={numberOfMonths}
+              onChange={setSingleValue}
+              showWeekNumber={showWeekNumber}
+              value={singleValue}
+            />
+          ) : (
+            <PrismRangeCalendar
+              aria-label="Calendário de intervalo"
+              buttonVariant={buttonVariant}
+              captionLayout={captionLayout}
+              cellSize={cellSize}
+              className={isFluid ? "w-full" : undefined}
+              isDisabled={isDisabled}
+              numberOfMonths={numberOfMonths}
+              onChange={setRangeValue}
+              showWeekNumber={showWeekNumber}
+              value={rangeValue}
+            />
+          )}
+        </div>
+      }
+      title="Calendar"
+    >
+      <PlaygroundRadio
+        label="Modo"
+        onChange={setMode}
+        optionLabels={CALENDAR_MODE_LABELS}
+        options={CALENDAR_MODES}
+        prop="componente"
+        value={mode}
+      />
+      <PlaygroundRadio
+        label="Tamanho das células"
+        onChange={setCellSize}
+        options={CELL_SIZES}
+        prop="cellSize"
+        value={cellSize}
+      />
+      <PlaygroundRadio
+        label="Cabeçalho"
+        onChange={setCaptionLayout}
+        optionLabels={CAPTION_LAYOUT_LABELS}
+        options={CAPTION_LAYOUTS}
+        prop="captionLayout"
+        value={captionLayout}
+      />
+      <PlaygroundSelect
+        label="Variante dos botões"
+        onChange={setButtonVariant}
+        options={BUTTON_VARIANTS}
+        prop="buttonVariant"
+        value={buttonVariant}
+      />
+      <PlaygroundBoolean
+        label="Número da semana"
+        onChange={setShowWeekNumber}
+        prop="showWeekNumber"
+        value={showWeekNumber}
+      />
+      <PlaygroundBoolean
+        label="Desabilitado"
+        onChange={setIsDisabled}
+        prop="isDisabled"
+        value={isDisabled}
+      />
+      <PlaygroundNumber
+        label="Meses visíveis"
+        max={3}
+        min={1}
+        onChange={setNumberOfMonths}
+        prop="numberOfMonths"
+        step={1}
+        value={numberOfMonths}
+      />
+      <PlaygroundSelect
+        label="Largura do painel"
+        onChange={setPanelWidth}
+        optionLabels={PANEL_WIDTH_LABELS}
+        options={PANEL_WIDTHS}
+        prop="contêiner"
+        value={panelWidth}
+      />
+    </PropsPlayground>
+  );
+}
+
+export function CalendarSection() {
   return (
     <div id="prism-calendar">
       <GallerySection>
@@ -42,108 +182,11 @@ export function CalendarSection() {
           description="Calendário acessível baseado em React Aria Components com opções de tamanho de célula (sm, default, lg) para ajustar escala de coluna, células e tipografia, sem moldura externa."
           title="Calendar"
         />
-        <div className="flex flex-col gap-10">
-          <div>
-            <h4 className="mb-4 text-sm font-semibold text-foreground">
-              Calendário Simples (PrismCalendar — w-fit)
-            </h4>
-            <GallerySectionContent className="flex flex-wrap items-start gap-8">
-              {CELL_SIZES.map(({ size, label, dimension }) => (
-                <GalleryItem
-                  key={`calendar-${size}`}
-                  label={`${label} — ${dimension}`}
-                >
-                  <div className="w-fit">
-                    <PrismCalendar
-                      aria-label={`Data da ação (${size})`}
-                      cellSize={size}
-                    />
-                  </div>
-                </GalleryItem>
-              ))}
-            </GallerySectionContent>
-          </div>
-
-          <div>
-            <h4 className="mb-4 text-sm font-semibold text-foreground">
-              Calendário de Intervalo (PrismRangeCalendar — w-fit)
-            </h4>
-            <GallerySectionContent className="flex flex-wrap items-start gap-8">
-              {CELL_SIZES.map(({ size, label, dimension }) => (
-                <GalleryItem
-                  key={`range-calendar-${size}`}
-                  label={`${label} — ${dimension}`}
-                >
-                  <div className="w-fit">
-                    <PrismRangeCalendar
-                      aria-label={`Intervalo de datas (${size})`}
-                      cellSize={size}
-                    />
-                  </div>
-                </GalleryItem>
-              ))}
-            </GallerySectionContent>
-          </div>
-
-          <div>
-            <h4 className="mb-1 text-sm font-semibold text-foreground">
-              Largura Total (w-full — Colunas Iguais que Acompanham o Container)
-            </h4>
-            <p className="mb-4 text-xs text-muted-foreground">
-              Sem <code>w-full</code>, o calendário mantém a largura natural de
-              7 × <code>--cell-size</code>. Com <code>w-full</code>, as 7
-              colunas dividem igualmente a largura disponível, cada uma com no
-              mínimo <code>--cell-size</code>; o dia ocupa toda a largura da
-              coluna e a altura continua <code>--cell-size</code>. Assim, o
-              intervalo selecionado fica contínuo na linha e os dias da semana
-              seguem alinhados às colunas. Em containers estreitos o resultado é
-              igual ao calendário natural.
-            </p>
-            <GallerySectionContent className="flex flex-wrap items-start gap-8">
-              <GalleryItem
-                className="w-full max-w-xs"
-                label="Painel Estreito / Lateral (max-w-xs · ~320px — igual a Datas Comemorativas)"
-              >
-                <div className="w-full rounded-2xl border bg-card/40 p-4 squircle">
-                  <PrismCalendar
-                    aria-label="Calendário em painel estreito"
-                    className="w-full"
-                    onChange={(val) => val && setSingleDate(val)}
-                    value={singleDate}
-                  />
-                </div>
-              </GalleryItem>
-
-              <GalleryItem
-                className="w-full max-w-md"
-                label="Painel Médio (max-w-md · ~448px — formulários e diálogos)"
-              >
-                <div className="w-full rounded-2xl border bg-card/40 p-4 squircle">
-                  <PrismCalendar
-                    aria-label="Calendário em painel médio"
-                    className="w-full"
-                    onChange={(val) => val && setSingleDate(val)}
-                    value={singleDate}
-                  />
-                </div>
-              </GalleryItem>
-
-              <GalleryItem
-                className="w-full max-w-xl"
-                label="Painel Amplo com Intervalo (max-w-xl · ~576px)"
-              >
-                <div className="w-full rounded-2xl border bg-card/40 p-4 squircle">
-                  <PrismRangeCalendar
-                    aria-label="Calendário de intervalo em painel amplo"
-                    className="w-full"
-                    onChange={(val) => val && setRangeDate(val)}
-                    value={rangeDate}
-                  />
-                </div>
-              </GalleryItem>
-            </GallerySectionContent>
-          </div>
-        </div>
+        <GallerySectionContent className="grid gap-12">
+          <GalleryItem label="Calendar">
+            <CalendarPlayground />
+          </GalleryItem>
+        </GallerySectionContent>
       </GallerySection>
     </div>
   );
