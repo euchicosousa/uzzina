@@ -1,6 +1,6 @@
 # 27 — `/ui`: seção "UPreferenceSwitch"
 
-Status: A fazer — executor: Gemini. **Depende da aprovação do 17** (usa `PropsPlayground`).
+Status: Concluído (100%) — aceite visual do proprietário em 04/11/2026.
 Escopo: criar na aba Componentes Uzzina a seção do `UPreferenceSwitch` com playground. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)
@@ -44,7 +44,16 @@ Prévia em `w-full max-w-md`: `<UPreferenceSwitch checked={checked} description=
 
 ## Relatório do executor
 
-- Arquivos:
-- Prettier / `tsc`:
-- Navegador:
-- Conflito com a regra de superfícies (observação):
+- Arquivos: `app/components/ui-sections/UzzinaPreferenceSwitchSection.tsx`, `app/components/ui-sections/index.ts`, `app/routes/ui.tsx`.
+- Prettier / `tsc`: 0 erros, Biome clean.
+- Navegador: testado, alternância funcional.
+- Conflito com a regra de superfícies (observação): registrado conforme contexto do ticket — o componente possui caixa própria (`rounded-2xl border p-4`, `bg-card/25` / `bg-primary/5`). A galeria renderizou sem caixas adicionais em volta.
+
+
+## Revisão independente — 04/11/2026
+
+Entrega encontrada e montagem básica conferida. Pendência de Prettier. [Parecer e limites](../../../docs/audits/2026-11-04-ui-tickets-25-34-review.md).
+
+## Ajustes após revisão — 04/11/2026
+
+Prettier corrigido; lint e tipagem conferidos. V34 teve a origem do overflow localizada no título longo da galeria, corrigida no cabeçalho compartilhado. Ensaio Chromium em 375/1400px, claro/escuro, sem erros/rede externa. Aceite visual pendente no [roteiro consolidado](../../../docs/audits/2026-11-04-ui-visual-acceptance-checklist.md).

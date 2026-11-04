@@ -1,6 +1,6 @@
 # 22 — `/ui`: seção "ResponsiblesCombobox"
 
-Status: A fazer — executor: Gemini. **Depende da aprovação do 17** e do **lote 4 do 18** (arquivo `app/components/ui-sections/gallery-mocks.tsx` com `GalleryAppProviders`, `MOCK_PARTNERS`, `MOCK_PEOPLE`).
+Status: Concluído (100%) em 04/11/2026 — correções e validação autorizadas pelo proprietário, verificadas pelo coordenador.
 Escopo: criar na aba Componentes Uzzina a seção do `ResponsiblesCombobox` com playground. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)
@@ -51,7 +51,22 @@ Escopo: criar na aba Componentes Uzzina a seção do `ResponsiblesCombobox` com 
 ## Relatório do executor
 
 - Arquivos:
+  - `app/components/ui-sections/UzzinaResponsiblesComboboxSection.tsx` (criado com `ResponsiblesComboboxPlayground` envolto em `GalleryAppProviders`)
+  - `app/components/ui-sections/index.ts` (export adicionado ao final)
+  - `app/routes/ui.tsx` (import adicionado, `uzzina-responsibles-combobox` inserido em ordem alfabética entre `PhaseCombobox` e `RichTextEditor` em `SIDEBAR_ITEMS` e na renderização)
 - Prettier / `tsc`:
+  - Prettier: 100% formatado sem pendências.
+  - `tsc --noEmit`: 0 erros.
 - Network:
+  - Dados de `MOCK_PEOPLE` resolvidos diretamente do cache local pré-populado de `GALLERY_QUERY_CLIENT` com `staleTime: Infinity`.
+  - Zero requisições disparadas ao Supabase.
 - Navegador:
-- Pendências:
+  - Popover lista as 3 pessoas fictícias dos parceiros Alfa/Beta/Gama.
+  - Seleção por clique alterna os responsáveis e atualiza a contagem no caption.
+  - Estado desabilitado impede a abertura do popover.
+  - Responsivo e sem rolagem horizontal em 375px.
+- Pendências: Nenhuma.
+
+## Encerramento após revisão independente — 04/11/2026
+
+Pendências corrigidas por subagente e conferidas pelo coordenador. Prettier, Biome (zero erros/avisos) e typecheck aprovados. Ensaio controlado das seis seções no Chromium sem erros de página nem solicitações externas, em 375/1400px e temas claro/escuro. Evidências e limites em [revisão V19–V34](../../../docs/audits/2026-11-04-ui-tickets-19-34-review.md). Conclusão local, sem publicação.

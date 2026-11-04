@@ -1,6 +1,6 @@
 # 20 — `/ui`: seção "Sheet" (`PrismSheet`)
 
-Status: Concluído — aguarda validação do proprietário. Executor: Gemini.
+Status: Concluído (100%) em 04/11/2026 — correções e validação autorizadas pelo proprietário, verificadas pelo coordenador.
 Escopo: criar a seção do `PrismSheet`, que não existe no `/ui`, com playground de propriedades. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)
@@ -84,3 +84,7 @@ Corpo curto: um parágrafo. Com cabeçalho desligado, mantenha um `PrismSheetTit
   - Em 375px: painel lateral ocupa 3/4 da largura conforme especificação, sem gerar overflow horizontal na página.
 - Observações (ex.: "Close" em inglês):
   - Conforme previsto no ticket, o botão de fechar (X) interno do primitivo `PrismSheet` possui texto `sr-only` em inglês ("Close"). Preservado intacto sem alterações em `app/components/prism/sheet.tsx`.
+
+## Encerramento após revisão independente — 04/11/2026
+
+Pendências corrigidas por subagente e conferidas pelo coordenador. Prettier, Biome (zero erros/avisos) e typecheck aprovados. Ensaio controlado das seis seções no Chromium sem erros de página nem solicitações externas, em 375/1400px e temas claro/escuro. Evidências e limites em [revisão V19–V34](../../../docs/audits/2026-11-04-ui-tickets-19-34-review.md). Conclusão local, sem publicação.

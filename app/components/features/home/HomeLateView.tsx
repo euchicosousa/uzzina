@@ -30,7 +30,7 @@ export function HomeLateView({ actions }: { actions: Action[] }) {
         />
       }
     >
-      <div className="px-8 xl:px-16">
+      <div className="px-8">
         <ActionContainer
           actions={actions}
           ascending={viewOptions.ascending}

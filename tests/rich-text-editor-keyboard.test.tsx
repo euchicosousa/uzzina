@@ -23,7 +23,11 @@ afterEach(cleanup);
 
 async function mountEditor(disabled = false) {
   const mounted = render(
-    <RichTextEditor content="<p>Hello</p>" disabled={disabled} />,
+    <RichTextEditor
+      compactToolbar={false}
+      content="<p>Hello</p>"
+      disabled={disabled}
+    />,
   );
   await screen.findByRole("toolbar", { name: "Formatação do texto" });
   const editor = mounted.container.querySelector<HTMLElement>(".tiptap");
@@ -192,9 +196,7 @@ describe("compact toolbar", () => {
     "Refazer",
   ];
   async function mountCompact() {
-    const mounted = render(
-      <RichTextEditor compactToolbar content="<p>Hello</p>" />,
-    );
+    const mounted = render(<RichTextEditor content="<p>Hello</p>" />);
     const toolbar = await screen.findByRole("toolbar", {
       name: "Formatação do texto",
     });

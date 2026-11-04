@@ -10,6 +10,7 @@ import { useNavigate, createFileRoute } from "@tanstack/react-router";
 import { TextField, Label } from "react-aria-components";
 import { toast } from "sonner";
 import { UZZINALogo } from "~/components/logo";
+import { ULoader } from "~/components/uzzina/ULoader";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
   PrismButton,
@@ -156,7 +157,7 @@ function ResetPassword() {
 
         {checkingSession ? (
           <div className="flex flex-col items-center justify-center py-6 text-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+            <ULoader size="xl" className="text-primary" />
             <p className="mt-4 text-sm text-muted-foreground">
               Validando link de recuperação...
             </p>

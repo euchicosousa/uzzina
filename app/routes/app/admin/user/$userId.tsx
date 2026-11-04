@@ -1,4 +1,5 @@
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
+import { ULoader } from "~/components/uzzina/ULoader";
 import { getQuerySessionGeneration } from "~/lib/query-client";
 import { useRef } from "react";
 
@@ -180,7 +181,7 @@ function AdminUserPage() {
   if (isLoadingPerson) {
     return (
       <div className="flex h-full w-full items-center justify-center gap-4 bg-background">
-        <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <ULoader size="2xl" className="text-primary" />
         <p className="animate-pulse text-sm font-medium text-muted-foreground">
           Carregando membro...
         </p>

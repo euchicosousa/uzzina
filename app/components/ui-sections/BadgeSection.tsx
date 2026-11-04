@@ -122,10 +122,10 @@ export function BadgeSection() {
           title="Badge"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="Badge">
+          <GalleryItem id="prism-badge-badge" label="Badge">
             <BadgePlayground />
           </GalleryItem>
-          <GalleryItem label="Kbd">
+          <GalleryItem id="prism-badge-kbd" label="Kbd">
             <KbdPlayground />
           </GalleryItem>
         </GallerySectionContent>

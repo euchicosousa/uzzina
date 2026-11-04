@@ -25,6 +25,7 @@ const BUTTON_VARIANTS = [
   "secondary",
   "outline",
   "ghost",
+  "ghost-destructive",
   "destructive",
   "success",
   "link",
@@ -263,10 +264,10 @@ export function ButtonSection() {
           title="Button"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="Button">
+          <GalleryItem id="prism-button-button" label="Button">
             <ButtonPlayground />
           </GalleryItem>
-          <GalleryItem label="ButtonGroup">
+          <GalleryItem id="prism-button-group" label="ButtonGroup">
             <ButtonGroupPlayground />
           </GalleryItem>
         </GallerySectionContent>

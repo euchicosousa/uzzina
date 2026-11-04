@@ -4,7 +4,6 @@ import { CalendarDate, Time } from "@internationalized/date";
 import {
   PrismButton,
   PrismCalendar,
-  PrismLabel,
   PrismPopover,
   PrismPopoverTrigger,
   PrismTimeField,
@@ -80,25 +79,23 @@ export function ActionDatePicker({
 
         <hr className="-mx-2 -my-2" />
 
-        <div className="flex items-center justify-between gap-2">
-          <PrismLabel>Defina a hora</PrismLabel>
-          <PrismTimeField
-            size={"sm"}
-            aria-label="Defina a hora"
-            onChange={(time) => {
-              if (selectedDate && time) {
-                const newDate = new Date(selectedDate);
-                newDate.setHours(time.hour, time.minute);
-                setSelectedDate(newDate);
-              }
-            }}
-            value={
-              selectedDate
-                ? new Time(selectedDate.getHours(), selectedDate.getMinutes())
-                : undefined
+        <PrismTimeField
+          className="flex items-center justify-between gap-2 pl-2"
+          label="Defina a hora"
+          onChange={(time) => {
+            if (selectedDate && time) {
+              const newDate = new Date(selectedDate);
+              newDate.setHours(time.hour, time.minute);
+              setSelectedDate(newDate);
             }
-          />
-        </div>
+          }}
+          size="sm"
+          value={
+            selectedDate
+              ? new Time(selectedDate.getHours(), selectedDate.getMinutes())
+              : undefined
+          }
+        />
       </PrismPopover>
     </PrismPopoverTrigger>
   );

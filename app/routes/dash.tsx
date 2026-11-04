@@ -1,4 +1,5 @@
 import { resetQuerySession } from "~/lib/query-client";
+import { ULoader } from "~/components/uzzina/ULoader";
 import type { Client } from "~/types";
 import {
   Outlet,
@@ -156,7 +157,7 @@ function DashLayout() {
   if ((loading || (isReviewPath && !reviewReady)) && !isLoginPath) {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center gap-4 bg-background">
-        <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <ULoader size="2xl" className="text-primary" />
         <p className="animate-pulse text-sm font-medium text-muted-foreground">
           Carregando portal...
         </p>

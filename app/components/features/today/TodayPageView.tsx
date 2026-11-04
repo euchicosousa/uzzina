@@ -49,7 +49,7 @@ export function TodayPageView({
         isKanban && "pb-(--app-bar-space)",
       )}
     >
-      <div className="flex min-w-0 shrink-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b px-3 py-2 lg:flex-nowrap lg:gap-8 lg:px-8 lg:py-6 xl:px-16">
+      <div className="flex min-w-0 shrink-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b px-3 py-2 lg:flex-nowrap lg:gap-8 lg:px-8 lg:py-6">
         <h1
           className="min-w-0 flex-1 basis-40 truncate text-2xl font-semibold lg:flex-initial lg:basis-auto lg:text-3xl xl:text-4xl"
           title={heading}
@@ -69,7 +69,7 @@ export function TodayPageView({
         </div>
       </div>
       {isKanban ? (
-        <div className="min-h-0 flex-1 px-3 pt-4 lg:px-8 lg:pt-6 xl:px-16">
+        <div className="min-h-0 flex-1 px-3 pt-4 lg:px-8 lg:pt-6">
           <TodayBoard
             view={view}
             actions={filteredActions}
@@ -88,7 +88,7 @@ export function TodayPageView({
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) event.preventDefault();
           }}
-          className="min-h-0 flex-1 overflow-y-auto px-3 pt-4 lg:px-8 lg:pt-6 xl:px-16"
+          className="min-h-0 flex-1 overflow-y-auto px-3 pt-4 lg:px-8 lg:pt-6"
         >
           <TodayBoard
             view={view}

@@ -24,16 +24,18 @@ const colorFieldVariants = cva(
 
 export interface PrismColorFieldProps
   extends
-    Omit<ColorFieldPrimitiveProps, "className">,
+    Omit<ColorFieldPrimitiveProps, "className" | "children">,
     VariantProps<typeof colorFieldVariants> {
   className?: string;
   inputClassName?: string;
+  children?: React.ReactNode;
 }
 
 function PrismColorField({
   className,
   inputClassName,
   size = "default",
+  children,
   ...props
 }: PrismColorFieldProps) {
   return (
@@ -52,6 +54,7 @@ function PrismColorField({
         )}
         data-slot="input"
       />
+      {children}
     </ColorFieldPrimitive>
   );
 }

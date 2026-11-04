@@ -31,6 +31,8 @@ const SIDE_LABELS: Record<SheetSide, string> = {
   left: "Esquerda",
 };
 
+const PARAGRAPH_NUMBERS = Array.from({ length: 15 }, (_, index) => index + 1);
+
 export function SheetPlayground() {
   const [side, setSide] = useState<SheetSide>("right");
   const [showCloseButton, setShowCloseButton] = useState(true);
@@ -65,9 +67,9 @@ export function SheetPlayground() {
             <div className="flex-1 overflow-y-auto px-6 text-sm">
               {isLongContent ? (
                 <div className="flex flex-col gap-3 py-4">
-                  {Array.from({ length: 15 }, (_, i) => (
-                    <p key={i}>
-                      Parágrafo {i + 1}: Informações complementares de teste
+                  {PARAGRAPH_NUMBERS.map((number) => (
+                    <p key={number}>
+                      Parágrafo {number}: Informações complementares de teste
                       para verificar a rolagem independente dentro do painel
                       modal do Sheet.
                     </p>
@@ -152,4 +154,3 @@ export function SheetSection() {
     </div>
   );
 }
-

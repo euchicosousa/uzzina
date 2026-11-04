@@ -1,0 +1,13 @@
+# 08: Mesa de Planejamento unificada ao Design System (Configuração Suíça + Revisão Linear)
+
+**What to build:** a página `/app/planejamento` e todos os componentes em `app/components/planning/` (`PlanningSuggestionsList`, `PlanningCalendarView`, `PlanningSuggestionEditor`) seguem rigorosamente o sistema Linear + Suíço: coluna esquerda na Zona 1 (arejada e alinhada), coluna direita na Zona 2 (sem caixas/cores `emerald`/`amber` improvisadas), controles convertidos de `<button>`/`<span>` manuais para primitivos Prism e modal de edição convertido para `PrismDialog`.
+
+**Blocked by:** #02 (Alinhamento geométrico dos primitivos Prism e vitrine oficial em `/ui`).
+
+**Status:** completed
+
+- [x] No cabeçalho de `/app/planejamento`, os botões de ação ficam nivelados na mesma altura, apenas o CTA principal ("Gerar planejamento") usa a variante preenchida `default` (lanterna funcional Linear), a margem lateral extra `mx-2 lg:mx-8 border-x` é alinhada ao grid padrão das páginas `page-height`, e todos os campos da coluna esquerda (`PrismSelectTrigger`, `PrismDateRangePicker`, `PrismInput`, `PrismTextarea`, `PrismSlider`, `PrismToggle`) compartilham o mesmo alinhamento horizontal (`px-3.5`), raio `rounded-md` (`6px`) e gap uniforme label→input (`gap-2` = `8px`).
+- [x] O seletor de visualização ("Lista" / "Calendário") em `app/routes/app/planejamento.tsx` e os filtros de status ("Todas", "Pendentes", "Aprovadas", "Descartadas") em `PlanningSuggestionsList.tsx` deixam de usar `<button>` HTML manual e passam a usar `PrismToggleGroup` + `PrismToggleGroupItem`.
+- [x] Todas as cores hardcoded `emerald-*`, `amber-*` e `text-destructive-foreground` em `planejamento.tsx`, `PlanningSuggestionsList.tsx` e `PlanningCalendarView.tsx` são substituídas pelos tokens semânticos (`success`, `warning`, `error`) e pelas variantes do `PrismBadge` (`rounded-sm` = `4px`), e os tamanhos arbitrários `text-[10px]` em rótulos/datas do calendário de planejamento passam para `text-xs` (`12px`).
+- [x] Em `PlanningCalendarView.tsx`, o `<span onClick>` inacessível por teclado é convertido em um botão acessível (`PrismButton` ou botão semântico com `focus-visible`), os botões de aprovar/descartar e de sugestões sem data usam `PrismButton`, e as molduras externas desnecessárias (`rounded-xl border bg-card shadow-xs`) são limpas em favor de divisórias estruturais `1px`.
+- [x] Em `PlanningSuggestionEditor.tsx`, o modal construído manualmente com `<div className="fixed inset-0...">` é substituído por `PrismDialog` (`PrismDialogHeader`, `PrismDialogTitle`, corpo com `PrismLabel` + campos alinhados e `PrismDialogFooter`), herdando trap de foco, fechamento por `Escape` e adaptação ao teclado mobile.

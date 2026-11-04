@@ -546,7 +546,7 @@ const ENTITY_ICONS: IconItemDef[] = [
   {
     icon: User2Icon,
     name: "User2Icon",
-    meaning: "Gatilho do seletor de Responsáveis (ResponsiblesCombobox)",
+    meaning: "Gatilho do seletor de Responsáveis (UPeopleCombobox)",
   },
   {
     icon: UserCheckIcon,
@@ -861,7 +861,7 @@ export function TokensIconsSection() {
         />
         <GallerySectionContent className="flex flex-col gap-10">
           {/* 1. Ações e edição */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4" id="tokens-icons-actions">
             <h4 className="text-sm font-medium">1. Ações e edição</h4>
             <div className="grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-4">
               {ACTION_ICONS.map((item) => (
@@ -876,7 +876,7 @@ export function TokensIconsSection() {
           </div>
 
           {/* 2. Estados e feedback */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4" id="tokens-icons-feedback">
             <h4 className="text-sm font-medium">2. Estados e feedback</h4>
             <div className="grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-4">
               {FEEDBACK_ICONS.map((item) => (
@@ -891,7 +891,7 @@ export function TokensIconsSection() {
           </div>
 
           {/* 3. Navegação e layout */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4" id="tokens-icons-navigation">
             <h4 className="text-sm font-medium">3. Navegação e layout</h4>
             <div className="grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-4">
               {NAVIGATION_ICONS.map((item) => (
@@ -906,7 +906,7 @@ export function TokensIconsSection() {
           </div>
 
           {/* 4. Entidades */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4" id="tokens-icons-entities">
             <h4 className="text-sm font-medium">
               4. Entidades (pessoas, parceiros, contas)
             </h4>
@@ -923,7 +923,7 @@ export function TokensIconsSection() {
           </div>
 
           {/* 5. Texto (editor) */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4" id="tokens-icons-text">
             <h4 className="text-sm font-medium">
               5. Texto (barra do editor, RichTextEditor.tsx)
             </h4>
@@ -940,7 +940,7 @@ export function TokensIconsSection() {
           </div>
 
           {/* 6. Customizados */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6" id="tokens-icons-custom">
             <div className="flex flex-col gap-1">
               <h4 className="text-sm font-medium">
                 6. Customizados (UIcons.tsx, função Icons)

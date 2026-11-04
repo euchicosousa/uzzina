@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { SearchIcon, XIcon } from "lucide-react";
 import {
@@ -12,6 +12,7 @@ import {
 } from "~/components/prism";
 import {
   SidebarAnchorLink,
+  SidebarSubsectionLink,
   TokensColorsSection,
   TokensSpacingSection,
   TokensFocusSection,
@@ -42,6 +43,19 @@ import {
   UzzinaPhaseComboboxSection,
   UzzinaIconsSection,
   UzzinaAvatarSection,
+  UzzinaComboboxTriggerSection,
+  UzzinaPeopleComboboxSection,
+  UzzinaPhaseIconSection,
+  UzzinaColorPickerDropdownSection,
+  UzzinaActionDatePickerSection,
+  UzzinaCalendarToolbarSection,
+  UzzinaPaletteEditorSection,
+  UzzinaPartnerCelebrationsSelectorSection,
+  UzzinaAdminItemCardSection,
+  UzzinaAvatarSelectorSection,
+  UzzinaLoaderSection,
+  UzzinaPreferenceSwitchSection,
+  UzzinaToggleInputSection,
   SelectSection,
   CalendarSection,
   AccordionSection,
@@ -49,12 +63,19 @@ import {
   RichTextEditorSection,
 } from "~/components/ui-sections";
 
+export interface GallerySubsection {
+  id: string;
+  label: string;
+  keywords?: string[];
+}
+
 interface GallerySidebarItem {
   id: string;
   label: string;
   section: "tokens" | "components" | "uzzina";
   approved?: boolean;
   keywords?: string[];
+  subsections?: GallerySubsection[];
 }
 
 const SECTION_LABELS: Record<"tokens" | "components" | "uzzina", string> = {
@@ -70,6 +91,11 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     label: "Cores Semânticas",
     section: "tokens",
     keywords: ["cores", "paleta", "palette", "tokens", "theme"],
+    subsections: [
+      { id: "tokens-colors-palettes", label: "Paletas de Marca" },
+      { id: "tokens-colors-semantics", label: "Camadas Semânticas" },
+      { id: "tokens-colors-real-world", label: "Aplicação no Mundo Real" },
+    ],
   },
   {
     id: "spacing",
@@ -82,56 +108,209 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     label: "Foco",
     section: "tokens",
     keywords: ["foco", "focus", "ring", "anel", "outline", "teclado", "tab"],
+    subsections: [
+      { id: "focus-outer", label: "Anel externo (padrão)" },
+      { id: "focus-inset", label: "Anel por dentro (ring-inset)" },
+      { id: "focus-background", label: "Foco por fundo" },
+      { id: "focus-none", label: "Sem anel de propósito" },
+      { id: "focus-selection", label: "Estados de seleção" },
+      { id: "focus-global", label: "Fallback global (outline)" },
+    ],
   },
   {
     id: "tokens-icons",
     label: "Ícones",
     section: "tokens",
     keywords: ["icones", "ícones", "icon", "lucide", "glifo"],
+    subsections: [
+      { id: "tokens-icons-actions", label: "1. Ações e edição" },
+      { id: "tokens-icons-feedback", label: "2. Estados e feedback" },
+      { id: "tokens-icons-navigation", label: "3. Navegação e layout" },
+      { id: "tokens-icons-entities", label: "4. Entidades" },
+      { id: "tokens-icons-text", label: "5. Texto" },
+      { id: "tokens-icons-custom", label: "6. Customizados" },
+    ],
   },
 
   // Uzzina
+  {
+    id: "uzzina-action-date-picker",
+    label: "ActionDatePicker",
+    section: "uzzina",
+    keywords: ["data", "hora", "acao", "gaveta", "calendario"],
+    approved: true,
+  },
+  {
+    id: "uzzina-calendar-toolbar",
+    label: "CalendarToolbar",
+    section: "uzzina",
+    keywords: ["calendario", "data", "dia", "navegacao", "toolbar"],
+    approved: true,
+  },
   {
     id: "uzzina-categories-combobox",
     label: "CategoriesCombobox",
     section: "uzzina",
     keywords: ["categorias", "categories", "combobox", "filtro"],
+    approved: true,
+  },
+  {
+    id: "uzzina-combobox-trigger",
+    label: "ComboboxTrigger",
+    section: "uzzina",
+    keywords: ["gatilho", "trigger", "combobox", "botao", "avatar"],
+    approved: true,
   },
   {
     id: "uzzina-icons",
     label: "Icons",
     section: "uzzina",
     keywords: ["icones", "ícones", "icons", "categoria", "fase"],
+    subsections: [
+      { id: "uzzina-icons-curated", label: "Icons" },
+      { id: "uzzina-icons-all", label: "Todos os Ícones" },
+    ],
+    approved: true,
+  },
+  {
+    id: "uzzina-partner-celebrations-selector",
+    approved: true,
+    label: "PartnerCelebrationsSelector",
+    section: "uzzina",
+    keywords: ["datas", "comemorativas", "feriados", "parceiro", "selecao"],
   },
   {
     id: "uzzina-partners-combobox",
     label: "PartnersCombobox",
     section: "uzzina",
     keywords: ["parceiros", "partners", "combobox", "filtro", "playground"],
+    approved: true,
   },
   {
     id: "uzzina-phase-combobox",
     label: "PhaseCombobox",
     section: "uzzina",
     keywords: ["fase", "phase", "combobox", "progresso"],
+    approved: true,
+  },
+  {
+    id: "uzzina-phase-icon",
+    label: "PhaseIcon",
+    section: "uzzina",
+    keywords: ["fase", "phase", "icone", "progresso", "status"],
+    approved: true,
+  },
+  {
+    id: "uzzina-people-combobox",
+    approved: true,
+    label: "UPeopleCombobox",
+    section: "uzzina",
+    keywords: [
+      "pessoas",
+      "responsaveis",
+      "sprint",
+      "combobox",
+      "equipe",
+      "people",
+      "responsiblescombobox",
+      "sprintcombobox",
+    ],
+    subsections: [
+      { id: "uzzina-people-responsibles", label: "Responsáveis" },
+      { id: "uzzina-people-sprint", label: "Sprint" },
+    ],
   },
   {
     id: "uzzina-rich-text-editor",
+    approved: true,
     label: "RichTextEditor",
     section: "uzzina",
     keywords: ["editor", "tiptap", "texto", "rico", "rich", "markdown"],
+  },
+  {
+    id: "uzzina-admin-item-card",
+    approved: true,
+    label: "UAdminItemCard",
+    section: "uzzina",
+    keywords: ["admin", "cartao", "lista", "item", "parceiro"],
   },
   {
     id: "uzzina-avatar",
     label: "UAvatar e UAvatarGroup",
     section: "uzzina",
     keywords: ["avatar", "uavatar", "grupo", "imagem"],
+    subsections: [
+      { id: "uzzina-avatar-uavatar", label: "UAvatar" },
+      { id: "uzzina-avatar-uavatargroup", label: "UAvatarGroup" },
+    ],
+    approved: true,
+  },
+  {
+    id: "uzzina-avatar-selector",
+    approved: true,
+    label: "UAvatarSelector",
+    section: "uzzina",
+    keywords: ["avatar", "selecao", "pessoas", "parceiros", "grade"],
+  },
+  {
+    id: "uzzina-color-picker-dropdown",
+    approved: true,
+    label: "UColorPickerDropdown",
+    section: "uzzina",
+    keywords: [
+      "cor",
+      "acao",
+      "gaveta",
+      "paleta",
+      "colorpicker",
+      "picker",
+      "dropdown",
+      "actioncolordropdown",
+    ],
+  },
+  {
+    id: "uzzina-loader",
+    approved: true,
+    label: "ULoader",
+    section: "uzzina",
+    keywords: ["loader", "carregando", "spinner", "loading"],
+  },
+  {
+    id: "uzzina-palette-editor",
+    approved: true,
+    label: "UPaletteEditor",
+    section: "uzzina",
+    keywords: [
+      "cores",
+      "paleta",
+      "lista",
+      "reordenar",
+      "parceiro",
+      "palette",
+      "editor",
+      "colorlisteditor",
+    ],
+  },
+  {
+    id: "uzzina-preference-switch",
+    approved: true,
+    label: "UPreferenceSwitch",
+    section: "uzzina",
+    keywords: ["preferencia", "switch", "alternar", "ativo", "inativo"],
+  },
+  {
+    id: "uzzina-toggle-input",
+    approved: true,
+    label: "UToggleInput",
+    section: "uzzina",
+    keywords: ["toggle", "checkbox", "arquivado", "formulario", "input"],
   },
   {
     id: "uzzina-view-options",
     label: "ViewOptionsComponent",
     section: "uzzina",
     keywords: ["visualizacao", "view", "options", "ordenacao", "colunas"],
+    approved: true,
   },
 
   // Components
@@ -153,7 +332,12 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     id: "prism-avatar",
     label: "Avatar",
     section: "components",
+    approved: true,
     keywords: ["avatar", "imagem", "foto", "grupo", "badge"],
+    subsections: [
+      { id: "prism-avatar-single", label: "Avatar" },
+      { id: "prism-avatar-group", label: "AvatarGroup" },
+    ],
   },
   {
     id: "prism-badge",
@@ -161,6 +345,10 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     section: "components",
     approved: true,
     keywords: ["tag", "etiqueta", "selo"],
+    subsections: [
+      { id: "prism-badge-badge", label: "Badge" },
+      { id: "prism-badge-kbd", label: "Kbd" },
+    ],
   },
   {
     id: "prism-button",
@@ -168,6 +356,10 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     section: "components",
     approved: true,
     keywords: ["botao", "acao", "clique"],
+    subsections: [
+      { id: "prism-button-button", label: "Button" },
+      { id: "prism-button-group", label: "ButtonGroup" },
+    ],
   },
   {
     id: "prism-calendar",
@@ -182,6 +374,10 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     section: "components",
     approved: true,
     keywords: ["selecao", "marcar", "check"],
+    subsections: [
+      { id: "prism-checkbox-single", label: "Checkbox" },
+      { id: "prism-checkbox-group", label: "CheckboxGroup" },
+    ],
   },
   {
     id: "prism-combobox",
@@ -189,6 +385,10 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     section: "components",
     approved: true,
     keywords: ["autocomplete", "select", "busca", "pesquisa"],
+    subsections: [
+      { id: "prism-combobox-single", label: "Combobox" },
+      { id: "prism-combobox-chips", label: "ComboboxChips" },
+    ],
   },
   {
     id: "prism-command",
@@ -224,6 +424,13 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     section: "components",
     approved: true,
     keywords: ["campo", "texto", "inputgroup", "entrada"],
+    subsections: [
+      { id: "prism-input-single", label: "Input" },
+      { id: "prism-input-group", label: "InputGroup" },
+      { id: "prism-input-timefield", label: "TimeField" },
+      { id: "prism-input-colorfield", label: "ColorField" },
+      { id: "prism-input-colorarea", label: "ColorArea e ColorSlider" },
+    ],
   },
   {
     id: "prism-popover",
@@ -257,6 +464,7 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     id: "prism-sheet",
     label: "Sheet",
     section: "components",
+    approved: true,
     keywords: ["sheet", "painel", "lateral", "drawer", "gaveta"],
   },
   {
@@ -300,6 +508,10 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     section: "components",
     approved: true,
     keywords: ["switch", "alternador", "toggle group"],
+    subsections: [
+      { id: "prism-toggle-single", label: "Toggle" },
+      { id: "prism-toggle-group", label: "ToggleGroup" },
+    ],
   },
 ];
 
@@ -308,20 +520,38 @@ export const Route = createFileRoute("/ui")({
 });
 
 function UIPage() {
+  const navigate = useNavigate({ from: "/ui" });
   const mainRef = useRef<HTMLElement>(null);
+  const navigationRef = useRef<{
+    id: string;
+    section: string;
+    offset: number;
+  } | null>(null);
   const [activeSection, setActiveSection] = useState<
     "tokens" | "components" | "uzzina"
-  >("tokens");
-  const [activeAnchor, setActiveAnchor] = useState<string>("");
+  >("uzzina");
+  const [activeAnchor, setActiveAnchor] = useState<string>("colors");
+  const [expandedItemId, setExpandedItemId] = useState<string>("colors");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [navigationRequest, setNavigationRequest] = useState<{
+    id: string;
+    section: string;
+    offset: number;
+  } | null>(null);
 
   const handleSectionChange = (section: "tokens" | "components" | "uzzina") => {
+    navigationRef.current = null;
     setActiveSection(section);
-    setActiveAnchor("");
+    const firstItem = SIDEBAR_ITEMS.find((item) => item.section === section);
+    const firstId = firstItem ? firstItem.id : "";
+    setActiveAnchor(firstId);
+    setExpandedItemId(firstId);
     setSearchQuery("");
     mainRef.current?.scrollTo({
       top: 0,
-      behavior: "smooth",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
     });
   };
 
@@ -350,13 +580,40 @@ function UIPage() {
         return true;
       }
       if (item.keywords) {
-        return item.keywords.some((kw) => {
+        const kwMatch = item.keywords.some((kw) => {
           const normKw = kw
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
             .toLowerCase();
           return normKw.includes(normQuery);
         });
+        if (kwMatch) return true;
+      }
+      if (item.subsections) {
+        const subMatch = item.subsections.some((sub) => {
+          const normSubLabel = sub.label
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase();
+          const normSubId = sub.id.toLowerCase();
+          if (
+            normSubLabel.includes(normQuery) ||
+            normSubId.includes(normQuery)
+          ) {
+            return true;
+          }
+          if (sub.keywords) {
+            return sub.keywords.some((skw) => {
+              const normSkw = skw
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase();
+              return normSkw.includes(normQuery);
+            });
+          }
+          return false;
+        });
+        if (subMatch) return true;
       }
       return false;
     });
@@ -374,71 +631,226 @@ function UIPage() {
   }, [filteredItems, isSearching]);
 
   const handleItemClick = (item: GallerySidebarItem) => {
-    setActiveAnchor(item.id);
+    const firstSubsection = item.subsections?.[0];
+    const targetId = firstSubsection?.id ?? item.id;
+    setActiveAnchor(targetId);
+    setExpandedItemId(item.id);
 
-    const scrollToTarget = () => {
-      const element = document.getElementById(item.id);
-      if (!element) return;
-      const scrollParent = element.closest("main");
-      if (scrollParent) {
-        const parentRect = scrollParent.getBoundingClientRect();
-        const elemRect = element.getBoundingClientRect();
-        const targetTop =
-          elemRect.top - parentRect.top + scrollParent.scrollTop - 64;
-        scrollParent.scrollTo({
-          top: Math.max(0, targetTop),
-          behavior: "smooth",
-        });
-      }
+    // The gallery owns scrolling; router hash scrolling would cancel it.
+    void navigate({
+      hash: targetId,
+      replace: true,
+      resetScroll: false,
+      hashScrollIntoView: false,
+    });
+
+    const request = {
+      id: targetId,
+      section: item.section,
+      offset: 64,
     };
+    navigationRef.current = request;
+    setNavigationRequest(request);
+    setActiveSection(item.section);
+  };
 
-    if (item.section !== activeSection) {
-      setActiveSection(item.section);
-      setTimeout(scrollToTarget, 60);
-    } else {
-      scrollToTarget();
-    }
+  const handleSubsectionClick = (
+    parentItem: GallerySidebarItem,
+    sub: GallerySubsection,
+  ) => {
+    setActiveAnchor(sub.id);
+    setExpandedItemId(parentItem.id);
+
+    // The gallery owns scrolling; router hash scrolling would cancel it.
+    void navigate({
+      hash: sub.id,
+      replace: true,
+      resetScroll: false,
+      hashScrollIntoView: false,
+    });
+
+    const request = {
+      id: sub.id,
+      section: parentItem.section,
+      offset: 72,
+    };
+    navigationRef.current = request;
+    setNavigationRequest(request);
+    setActiveSection(parentItem.section);
   };
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    const initialHash =
+      typeof window !== "undefined"
+        ? window.location.hash.replace(/^#/, "")
+        : "";
+    const rawHash =
+      initialHash === "uzzina-color-list-editor"
+        ? "uzzina-palette-editor"
+        : initialHash === "uzzina-action-color-dropdown"
+          ? "uzzina-color-picker-dropdown"
+          : initialHash === "uzzina-responsibles-combobox"
+            ? "uzzina-people-responsibles"
+            : initialHash === "uzzina-sprint-combobox"
+              ? "uzzina-people-sprint"
+              : initialHash;
+    if (!rawHash) return;
+
+    for (const item of SIDEBAR_ITEMS) {
+      if (item.id === rawHash) {
+        setActiveSection(item.section);
+        setExpandedItemId(item.id);
+        const targetId = item.subsections?.[0]?.id ?? item.id;
+        setActiveAnchor(targetId);
+        void navigate({
+          hash: targetId,
+          replace: true,
+          resetScroll: false,
+          hashScrollIntoView: false,
+        });
+        const request = {
+          id: targetId,
+          section: item.section,
+          offset: 64,
+        };
+        navigationRef.current = request;
+        setNavigationRequest(request);
+        return;
+      }
+      if (item.subsections) {
+        const sub = item.subsections.find((s) => s.id === rawHash);
+        if (sub) {
+          setActiveSection(item.section);
+          setExpandedItemId(item.id);
+          setActiveAnchor(sub.id);
+          void navigate({
+            hash: sub.id,
+            replace: true,
+            resetScroll: false,
+            hashScrollIntoView: false,
+          });
+          const request = {
+            id: sub.id,
+            section: item.section,
+            offset: 72,
+          };
+          navigationRef.current = request;
+          setNavigationRequest(request);
+          return;
+        }
+      }
+    }
+  }, [navigate]);
 
   useEffect(() => {
-    const targets = SIDEBAR_ITEMS.filter(
-      (item) => item.section === activeSection,
-    ).map((item) => item.id);
+    if (!navigationRequest || navigationRequest.section !== activeSection)
+      return;
+    // Wait for the expanded sidebar and native focus scrolling to settle.
+    const frame = window.requestAnimationFrame(() => {
+      if (navigationRef.current !== navigationRequest) return;
+      const element = document.getElementById(navigationRequest.id);
+      const main = mainRef.current;
+      if (!element || !main) return;
+      const top = Math.max(
+        0,
+        element.getBoundingClientRect().top -
+          main.getBoundingClientRect().top +
+          main.scrollTop -
+          navigationRequest.offset,
+      );
+      main.scrollTo({
+        top,
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
+      });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeSection, navigationRequest]);
 
-    if (!targets.includes(activeAnchor)) {
-      setActiveAnchor(targets[0]);
+  useEffect(() => {
+    const targets: Array<{ id: string; parentId: string; isSub: boolean }> = [];
+    for (const item of currentSectionItems) {
+      targets.push({ id: item.id, parentId: item.id, isSub: false });
+      if (item.subsections) {
+        for (const sub of item.subsections) {
+          targets.push({ id: sub.id, parentId: item.id, isSub: true });
+        }
+      }
     }
 
     const mainElement = mainRef.current;
     if (!mainElement) return;
 
     const handleScroll = () => {
-      if (mainElement.scrollTop < 80) {
-        setActiveAnchor(targets[0]);
+      const navigation = navigationRef.current;
+      if (navigation?.section === activeSection) {
         return;
       }
-      let currentActive = targets[0];
+      if (mainElement.scrollTop < 80) {
+        if (targets[0]) {
+          setActiveAnchor(targets[0].id);
+          setExpandedItemId(targets[0].parentId);
+        }
+        return;
+      }
+      let currentTarget = targets[0];
       const mainRect = mainElement.getBoundingClientRect();
-      for (const id of targets) {
-        const element = document.getElementById(id);
+      for (const target of targets) {
+        const element = document.getElementById(target.id);
         if (element) {
           const rect = element.getBoundingClientRect();
           if (rect.top - mainRect.top <= 120) {
-            currentActive = id;
+            currentTarget = target;
           }
         }
       }
-      setActiveAnchor(currentActive);
+      if (currentTarget) {
+        setActiveAnchor(currentTarget.id);
+        if (currentTarget.parentId !== expandedItemId) {
+          setExpandedItemId(currentTarget.parentId);
+        }
+      }
     };
+
     mainElement.addEventListener("scroll", handleScroll, {
       passive: true,
     });
     return () => mainElement.removeEventListener("scroll", handleScroll);
-  }, [activeSection, activeAnchor]);
+  }, [currentSectionItems, expandedItemId, activeSection]);
+
+  useEffect(() => {
+    const main = mainRef.current;
+    if (!main) return;
+    const interrupt = () => {
+      navigationRef.current = null;
+    };
+    main.addEventListener("wheel", interrupt, { passive: true });
+    main.addEventListener("touchstart", interrupt, { passive: true });
+    main.addEventListener("pointerdown", interrupt, { passive: true });
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        [
+          "ArrowDown",
+          "ArrowUp",
+          "PageDown",
+          "PageUp",
+          "Home",
+          "End",
+          " ",
+        ].includes(event.key)
+      ) {
+        interrupt();
+      }
+    };
+    main.addEventListener("keydown", handleKeyDown);
+    return () => {
+      main.removeEventListener("wheel", interrupt);
+      main.removeEventListener("touchstart", interrupt);
+      main.removeEventListener("pointerdown", interrupt);
+      main.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <div className="fixed inset-0 overflow-clip bg-background font-sans text-foreground">
@@ -512,16 +924,51 @@ function UIPage() {
                       {group.label} ({group.items.length})
                     </span>
                     <div className="flex overflow-x-auto text-sm whitespace-nowrap lg:ml-4 lg:flex-col lg:overflow-visible lg:whitespace-normal [&>a]:gap-2">
-                      {group.items.map((item) => (
-                        <SidebarAnchorLink
-                          active={activeAnchor === item.id}
-                          approved={item.approved}
-                          key={item.id}
-                          label={item.label}
-                          onClick={() => handleItemClick(item)}
-                          targetId={item.id}
-                        />
-                      ))}
+                      {group.items.map((item) => {
+                        const isExpanded = expandedItemId === item.id;
+                        const isParentActive =
+                          activeAnchor === item.id ||
+                          (item.subsections?.some(
+                            (sub) => sub.id === activeAnchor,
+                          ) ??
+                            false);
+
+                        return (
+                          <div
+                            className="flex shrink-0 flex-col lg:w-full"
+                            key={item.id}
+                          >
+                            <SidebarAnchorLink
+                              active={isParentActive}
+                              approved={item.approved}
+                              label={item.label}
+                              onClick={() => handleItemClick(item)}
+                              targetId={item.id}
+                            />
+                            {isExpanded &&
+                              item.subsections &&
+                              item.subsections.length > 0 && (
+                                <div
+                                  aria-label={`Subseções de ${item.label}`}
+                                  className="flex flex-row overflow-x-auto text-xs lg:flex-col lg:overflow-visible"
+                                  role="group"
+                                >
+                                  {item.subsections.map((sub) => (
+                                    <SidebarSubsectionLink
+                                      active={activeAnchor === sub.id}
+                                      key={sub.id}
+                                      label={sub.label}
+                                      onClick={() =>
+                                        handleSubsectionClick(item, sub)
+                                      }
+                                      targetId={sub.id}
+                                    />
+                                  ))}
+                                </div>
+                              )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 ))
@@ -536,16 +983,51 @@ function UIPage() {
                   {SECTION_LABELS[activeSection]}
                 </span>
                 <div className="flex overflow-x-auto text-sm whitespace-nowrap lg:ml-4 lg:flex-col lg:overflow-visible lg:whitespace-normal [&>a]:gap-2">
-                  {currentSectionItems.map((item) => (
-                    <SidebarAnchorLink
-                      active={activeAnchor === item.id}
-                      approved={item.approved}
-                      key={item.id}
-                      label={item.label}
-                      onClick={() => handleItemClick(item)}
-                      targetId={item.id}
-                    />
-                  ))}
+                  {currentSectionItems.map((item) => {
+                    const isExpanded = expandedItemId === item.id;
+                    const isParentActive =
+                      activeAnchor === item.id ||
+                      (item.subsections?.some(
+                        (sub) => sub.id === activeAnchor,
+                      ) ??
+                        false);
+
+                    return (
+                      <div
+                        className="flex shrink-0 flex-col lg:w-full"
+                        key={item.id}
+                      >
+                        <SidebarAnchorLink
+                          active={isParentActive}
+                          approved={item.approved}
+                          label={item.label}
+                          onClick={() => handleItemClick(item)}
+                          targetId={item.id}
+                        />
+                        {isExpanded &&
+                          item.subsections &&
+                          item.subsections.length > 0 && (
+                            <div
+                              aria-label={`Subseções de ${item.label}`}
+                              className="flex flex-row overflow-x-auto text-xs lg:flex-col lg:overflow-visible"
+                              role="group"
+                            >
+                              {item.subsections.map((sub) => (
+                                <SidebarSubsectionLink
+                                  active={activeAnchor === sub.id}
+                                  key={sub.id}
+                                  label={sub.label}
+                                  onClick={() =>
+                                    handleSubsectionClick(item, sub)
+                                  }
+                                  targetId={sub.id}
+                                />
+                              ))}
+                            </div>
+                          )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -566,12 +1048,25 @@ function UIPage() {
             </div>
           ) : activeSection === "uzzina" ? (
             <div className="flex w-full max-w-full min-w-0 flex-col">
+              <UzzinaActionDatePickerSection />
+              <UzzinaCalendarToolbarSection />
               <UzzinaCategoriesComboboxSection />
+              <UzzinaComboboxTriggerSection />
               <UzzinaIconsSection />
+              <UzzinaPartnerCelebrationsSelectorSection />
               <UzzinaPartnersComboboxSection />
               <UzzinaPhaseComboboxSection />
+              <UzzinaPhaseIconSection />
+              <UzzinaPeopleComboboxSection />
               <RichTextEditorSection />
+              <UzzinaAdminItemCardSection />
               <UzzinaAvatarSection />
+              <UzzinaAvatarSelectorSection />
+              <UzzinaColorPickerDropdownSection />
+              <UzzinaLoaderSection />
+              <UzzinaPaletteEditorSection />
+              <UzzinaPreferenceSwitchSection />
+              <UzzinaToggleInputSection />
               <ViewOptionsSection />
             </div>
           ) : (

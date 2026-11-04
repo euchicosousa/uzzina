@@ -794,7 +794,7 @@ export const PALLETE = [
       cardLDelta: -0.02,
       secondaryLDelta: -0.04,
       mutedLDelta: -0.02,
-      borderLDelta: -0.05,
+      borderLDelta: -0.1,
       inputLDelta: -0.02,
       actionLDelta: -0.02,
       actionHoverLDelta: 0.04,

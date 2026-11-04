@@ -17,6 +17,8 @@ if (typeof globalThis.window === "undefined") {
   globalThis.HTMLInputElement = window.HTMLInputElement;
   globalThis.HTMLTextAreaElement = window.HTMLTextAreaElement;
   globalThis.HTMLSelectElement = window.HTMLSelectElement;
+  globalThis.HTMLFormElement = window.HTMLFormElement;
+  globalThis.FormData = window.FormData;
   globalThis.Element = window.Element;
   globalThis.SVGElement = window.SVGElement;
   globalThis.getComputedStyle = window.getComputedStyle.bind(window);

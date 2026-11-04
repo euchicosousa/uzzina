@@ -6,9 +6,112 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
-### Microseções no menu da galeria — 04/11
+### V35: causa do segundo clique reproduzida e corrigida — 04/11
 
-Criado [V35](../../.scratch/visual-controls/issues/35-ui-sidebar-subsections.md), com parte 1 funcional: revelar links das microseções somente sob a seção selecionada e navegar ao trecho correspondente. Parte 2 de animação adiada para avaliação posterior, sem usar o Accordion da galeria. Índice e relatório central atualizados para 34 abertos. Referências e diff conferidos; implementação pendente.
+Reprodução direta no Comet do proprietário: pai UAvatar abria sem deslocar o conteúdo. Histórico real também reproduziu timeout; o roteador reagia ao replaceState com scrollIntoView e cancelava o scrollTo suave da galeria. Testes anteriores com histórico em memória ocultavam essa disputa. Atualização do hash agora usa useNavigate com resetScroll:false e hashScrollIntoView:false, sem alterar a configuração global. Primeiro clique conferido no Comet após a correção. Regressão permanente em scripts/check-ui-sidebar-browser.cjs/fixture usa histórico real, restauração e StrictMode: pais/filhos, cliques rápidos, links diretos e movimento normal/reduzido passaram, zero pageerror. Prettier/Biome/typecheck aprovados. [Evidências e limite de acesso ao vídeo](2026-11-04-v35-selection-flicker-study.md). V35 aguarda aceite final do proprietário. Sem commit/deploy.
+
+### V39 aprovado e primeiro clique do V35 reforçado — 04/11
+
+Proprietário aprovou PartnerCelebrationsSelector; V39 encerrado e OK no cabeçalho/menu. Novo relato V35: seleção abria no primeiro clique, mas rolagem exigia outro. Pedido de navegação unificado em objeto e disparo após commit do menu via requestAnimationFrame, sem contador independente. Regressão conferiu posição real em primeiro clique de UAvatar/UAvatarGroup e Button/ButtonGroup, inclusive troca rápida, sem erros. Prettier/lint/typecheck passaram. O ensaio inicial isolado não reproduziu a falha exata; confirmação no navegador do proprietário permanece necessária. Sem commit/deploy.
+
+### Ajustes V35/V39 após conferência visual — 04/11
+
+Subagente leve restaurou pai → primeiro filho no V35 com hash coerente, mantendo a correção do glitch. V39 agora usa Tabs underline e painel ativo, badges nas contagens, scrollbar horizontal oculta, cabeçalhos sem vazamento com borda superior e aviso Feriado no lugar da contagem. Títulos truncados. Aviso identifica mês com ao menos um feriado visível. Prettier/lint aprovados; coordenador confirmou ambos no Chromium, incluindo cliques rápidos/hash/scroll manual e seletor em 375/1200 claro/escuro sem erros/overflow/rede externa. Logs /tmp/uzzina-v35-followup-browser.log e /tmp/uzzina-v39-followup-browser.log. Aguarda aceite do proprietário; sem commit/deploy.
+
+### V35 corrigido e V39 revisado — 04/11
+
+Dois subagentes leves executaram correção do V35 e revisão independente do V39. V35 agora preserva o destino clique/hash durante rolagem programática e reativa scroll-spy com entrada manual, usando todos os destinos independentemente da expansão. Sem animação de submenu. Prettier/lint/typecheck aprovados; Chromium com Button/ButtonGroup, cliques rápidos, link direto, reduced motion e wheel passou sem oscilação de seleção ou pageerror. [Evidências](2026-11-04-v35-selection-flicker-study.md).
+
+V39 sem defeitos funcionais concretos na segunda revisão; critérios do ticket alinhados à implementação com tamanhos padrão e marcados. Preservados IDs, datas, seleção e responsividade; busca/filtros livres e mutação desabilitada em saving. [Entrega](../../.scratch/visual-controls/issues/39-celebrations-selector-prism-alignment.md). Ambos tecnicamente prontos, aguardando aceite visual do proprietário. Sem commit/deploy.
+
+### Histórico da revisão anterior à implementação do V39 — 04/11
+
+[Análise independente](2026-11-04-v37-v39-independent-review.md): V35 parte 1 presente; V37/V38 com código; V39 e V40–V43 ainda pendentes. V39 conserva estilos próprios, duas semânticas focáveis por linha, ausência de mensagem para busca sem resultado em Todos e saving somente informativo. Ticket refinado. V37 no navegador descarta HEX incompleto no blur sem erro e não mostra nomes dos grupos exigidos no ticket. Typecheck e seis testes passaram, mas os testes não montam os componentes. Sem correção funcional nesta rodada; não concluir V37/V39 como entregues.
+
+### Unificação total em UColorPickerDropdown (Tickets V37/V38) — 04/11
+
+- **Unificação e exclusão:** `ActionColorDropdown` foi completamente absorvido e excluído do repositório. O único componente de seleção de cor agora é [`UColorPickerDropdown`](app/components/uzzina/UColorPickerDropdown.tsx).
+- **Gatilho responsivo:** em tamanhos com texto (`xs`, `sm`, `default`, `lg`), exibe o swatch circular acompanhado do código `#HEX` em fonte mono; em tamanhos `icon-*`, exibe apenas o swatch circular.
+- **Amostras dos parceiros:** layout compacto com botões `icon-sm` em fluxo `flex-wrap`, sem cabeçalhos ou títulos, com separadores verticais `PrismSeparator` (`|`) entre as paletas de marcas diferentes.
+- **Consumidores atualizados:** `ActionFormFooter.tsx` consome `UColorPickerDropdown` diretamente (`size="icon-lg"`).
+- **Galeria `/ui`:** migrada para `UColorPickerDropdownSection` com controle interativo de quantidade de parceiros (`0`, `1`, `2`, `3`, `4`).
+- **Verificação:** `tsc --noEmit` 0 erros, Biome 0 erros, Prettier formatado, 6/6 testes PASS em `tests/color-picker-and-palette-editor.test.tsx`.
+
+### Tickets V37 e V38 concluídos e integrados — 04/11
+
+Implementados os tickets V37 e V38 conforme especificação:
+
+- **V37 (`UColorPickerDropdown` e `ActionColorDropdown`):**
+  - Núcleo desacoplado `UColorPickerDropdown` com controle de `value`/`onChange`, swatches agrupados por parceiro com nome compacto e preservação de origem para cores idênticas. Parceiros sem cores não geram amostras fictícias.
+  - Seletor de formatos com botão `ghost xs` para alternar entre HEX (1 campo), RGB, HSL e HSB (3 campos por canal com labels acessíveis e mini legendas mono).
+  - Validação nativa via React Aria preservando drafts incompletos/inválidos com feedback visual sem converter em preto ou preencher com zeros.
+  - Conversão canônica para `#RRGGBB` em caixa alta sem transparência. Prevenção de callbacks duplicados no blur/fechamento.
+  - `ActionColorDropdown` adaptando os dados da ação e parceiros para o novo núcleo.
+- **V38 (`UPaletteEditor` e `ghost-destructive`):**
+  - Componente `UPaletteEditor` criado em `app/components/uzzina/UPaletteEditor.tsx` com reexport de compatibilidade em `ColorListEditor.tsx`.
+  - Integração do `UColorPickerDropdown` no botão de amostra de cada linha, eliminando o `<input type="color">` nativo.
+  - Validação compartilhada sem substituição por preto ou zeros artificiais.
+  - Nova variante `PrismButton` `ghost-destructive` (transparente e discreta em repouso, destrutiva no hover/foco) em tamanho `icon-sm` para exclusão da linha.
+  - Rota administrativa `/app/admin/partner/$slug` e galeria `/ui` atualizadas para `UPaletteEditor` (com alias de hash `#uzzina-color-list-editor`).
+- **Verificação técnica:**
+  - `npx tsc --noEmit`: 0 erros.
+  - `npx biome lint`: 0 erros/avisos.
+  - Prettier formatado com `prettier-plugin-tailwindcss`.
+  - `bun test tests/color-picker-and-palette-editor.test.tsx`: 5/5 PASS.
+  - `bun test tests/icon-control-names.test.tsx`: 11/11 PASS.
+
+### Tickets V40–V43 de consolidação — 04/11
+
+Criados os quatro tickets solicitados para Gemini: V40 unificar Sprint/Responsáveis, V41 padronizar nomes U, V42 padronizar loaders e V43 substituir UToggleInput por PrismToggle. V41 depende de V38/V40/V43; demais sem bloqueio funcional inicial. Documentação apenas, referências e diff conferidos. PhaseIcon permanece como está por decisão do proprietário. Relatório com 31 itens abertos.
+
+### Tickets V37–V39 preparados para Gemini — 04/11
+
+Proprietário decidiu manter PhaseIcon como está. Registrados os três estudos anteriores a ele como tickets: V37 seletor de cor com grupos/formatos/validação, V38 UPaletteEditor reutilizando o seletor de V37 e ghost-destructive, V39 datas comemorativas alinhadas ao Prism. V38 depende de V37; V39 independente. Somente documentação, referências/diff conferidos. Nenhuma implementação nesta rodada.
+
+### Editor compacto e estudos de consolidação — 04/11
+
+RichTextEditor passa a compactToolbar=true por padrão, conforme pedido. Aceite visual registrado para editor, UAdminItemCard/V29, UAvatarSelector/V28 e UPreferenceSwitch/V27, com OK no cabeçalho e menu. [Estudos dos subagentes](2026-11-04-component-consolidation-studies.md): seletor comum de pessoas preservando regras de Sprint, convenção U, 16 spinners candidatos à padronização e troca de UToggleInput preservando FormData/autosave. Somente o padrão do editor e os sinais de aceite foram implementados; refatorações propostas aguardam decisão.
+
+### Novos aceites e estudos visuais — 04/11
+
+Proprietário aprovou ActionDatePicker (V32), ComboboxTrigger (V21), CalendarToolbar (V30, incluindo ajustes próprios) e PhaseIcon (V24). OK aplicado aos cabeçalhos e menu, também sincronizando no menu os cabeçalhos com aprovação já registrada. [Estudos de cor e seletor de datas](2026-11-04-color-and-celebration-studies.md) por subagentes somente leitura: agrupamento por parceiro, formatos/validação de cor, PaletteEditor e controles Prism para datas. [Inventário de PhaseIcon concluído](2026-11-04-phase-icon-usage.md): usos operacionais sm/md/dot e ambas as variantes; lg/xl/2xl só galeria, xs apenas capacidade do helper. Tipagem dos ajustes de aceite aprovada. Sem implementação das propostas.
+
+### Editor reconciliado e roteiro visual — 04/11
+
+Três buffers não salvos no Antigravity, tickets 30/32/34, preservados em cópias e comparados ao disco. Os buffers eram versões antigas sem as notas da revisão; o disco já continha integralmente os relatos do executor mais a revisão. Mantidas as versões em disco, editor sem arquivos não salvos ao término. Prettier V25–V34 corrigido. Overflow V34 vinha do título longo no cabeçalho compartilhado da galeria; quebra de texto corrigida. Chromium 375/375 e 1400/1400 em claro/escuro, sem erros nem rede externa. [Roteiro visual](2026-11-04-ui-visual-acceptance-checklist.md) reúne os 21 cabeçalhos sem selo e distingue aceites anteriores. V25–V34 aguardam aceite visual. Sem commit/deploy.
+
+### Revisão independente V25–V34 — 04/11
+
+[Revisão](2026-11-04-ui-tickets-25-34-review.md): dez entregas presentes e integradas. Typecheck e lint aprovados, sem imports/assertions problemáticos. Prettier falha em nove arquivos. Chromium sem erros/rede externa; V34 provoca overflow de 5px em viewport 375px, claro/escuro. Demais controles principais exercitados conforme parecer. V31 apto a seguir para aceite visual; encerramento conjunto aguarda formatação e correção de V34. Sem alteração funcional nesta revisão.
+
+### V25–V34 implementados e integrados — 04/11
+
+Implementadas as 10 seções restantes da galeria `/ui` (aba Componentes Uzzina), com playgrounds de propriedades dedicados:
+
+- V25 `ULoader`: indicador giratório nos 6 tamanhos da escala.
+- V26 `UToggleInput`: alternador ligado a formulário (checkbox/radio, padrão/destrutivo).
+- V27 `UPreferenceSwitch`: linha de preferência com rótulo, descrição e alternador Ativo/Inativo.
+- V28 `UAvatarSelector`: grade de seleção múltipla com avatares, sem imagem, presets e minSelected.
+- V29 `UAdminItemCard`: cartão de lista com cores, subtítulo e badge com truncamento.
+- V30 `CalendarToolbar`: navegação por dias, popover com calendário e toggle de mês.
+- V31 `ColorListEditor`: reordenação dnd-kit, adição, remoção e edição de hex.
+- V32 `ActionDatePicker`: link de data/hora, popover com calendário e time field, formatos e flag atrasada.
+- V33 `ActionColorDropdown`: dropdown com amostras dos parceiros, color area, slider e hex, com `MOCK_ACTION` completo sem asserções de tipo.
+- V34 `PartnerCelebrationsSelector`: seletor de datas comemorativas com filtro por mês e busca, sem requisições de rede.
+
+Ordem alfabética rigorosa mantida em `SIDEBAR_ITEMS` e na montagem do JSX de `app/routes/ui.tsx`. Verificação técnica aprovada: `npx tsc --noEmit` 0 erros, Biome lint 0 erros/avisos, Prettier formatado. Superfícies desencaixotadas (unboxed) respeitadas.
+
+### V19–V24 corrigidos e concluídos — 04/11
+
+Correções executadas por subagente e conferidas pelo coordenador. Seis tickets encerrados em 100% conforme autorização do proprietário. Prettier, lint e typecheck aprovados; ensaio Chromium das seis seções sem erros/requisições externas, em 375/1400px e claro/escuro. Sheet conferido em quatro lados, fechamentos, retorno de foco, rolagem e opção de clique fora. [Evidências e limites](2026-11-04-ui-tickets-19-34-review.md). Relatório central com 29 abertos. V25–V34 permanecem pendentes. Alterações locais, sem commit/publicação nesta rodada.
+
+### Revisão V19–V34 — 04/11
+
+[Revisão independente](2026-11-04-ui-tickets-19-34-review.md): V19–V24 presentes e com ensaio básico no Chromium aprovado (375/1400, claro/escuro, sem erros ou requisições externas). V25–V34 ausentes no checkout e na navegação. Typecheck passou. Quatro arquivos com pendências de Prettier, três erros de lint e assertion vedada no ticket V24. Ajustes especificados no parecer antes de finalizar. Sem alteração funcional, banco ou deploy nesta revisão.
+
+### Microseções no menu da galeria (V35) — 04/11
+
+Parte 1 funcional entregue e integrada na rota `/ui`: links das microseções são revelados imediatamente sob a seção ativa com hierarquia e recuo visual (`SidebarSubsectionLink`). Seções sem filhos (ex: `spacing`, `Alert`, `Accordion`) não geram containers vazios. Seções com múltiplos playgrounds (ex: `Button` com 2, `Input` com 5, `Foco` com 6) exibem sublinks semânticos com scroll direto e compensação de respiro do cabeçalho fixo. Links diretos via hash (ex: `/ui#focus-outer`) abrem a categoria e a seção pai correspondentes. Scroll-spy atualizado para acompanhar subdestinos e expandir/recolher conforme a navegação. `tsc` e Biome sem erros; parte 2 (animação) aguarda avaliação.
 
 ### Encerramento e commit da rodada visual — 03/11
 
@@ -62,7 +165,7 @@ A pedido do proprietário ("vamos à parte 1. faça seu trabalho. solicite o que
 
 ### Sistema de Design (Prism) — aprovações de 03/11 e itens em aberto
 
-Proprietário aprovou (03/11/2026) os tickets 02 (texto; chips 11/12/14px intencionais, regra de fonte do Calendar só nas células), 03 (containers), 04 (calendário da barra), 06 (calendário fluido), 07 (rolagem `/ui`), 10 (squircle) e 17 (piloto do playground de propriedades no `PrismButton`). Seção de teste de tamanhos segue em uso, temporária. Em aberto: 05 (rodapé da gaveta, aguarda correções visuais do proprietário), 01 (anéis de foco), 09 (seção Foco no `/ui`, vitrine de levantamento aplicada local, aguarda validação), 11 (Toggle com os tamanhos/ícones do Button via `buttonSizeClasses` e inset uniforme dos chips do Combobox, aplicado local, aguarda validação), 14 (seção Ícones no `/ui`, vitrine dos ícones do app aplicada local, aguarda validação), 15 (linhas de metadados da aba Essencial: altura única de 41px com controles `sm` 32px, `ActionDatePicker` como `PrismButton ghost sm`, `ActionTimeDisplay` em `h-8`, ID `sm`, botões de estratégia `sm`, miniaturas `rounded-2xl squircle text-[10px]`, upload `sm/icon-sm`, ícone de arquivos compacto alinhado em 32px; aplicado local, aguarda validação), 16 (matriz de `PartnersCombobox` no `/ui`: 77 células combinando variantes, tamanhos e seleções com legendas de avatar e ícone px para subsidiar a decisão 1 do ticket 13; aplicado local, aguarda validação do proprietário), 18 (rollout de playgrounds no `/ui`: Lotes 1, 2, 3 e 4 [controles simples + campos e datas + sobreposições + componentes Uzzina] integralmente concluídos e aprovados), 19 (seção Avatar / `PrismAvatar` criada com `AvatarPlayground` e `AvatarGroupPlayground`) e 20 (seção Sheet / `PrismSheet` criada com `SheetPlayground`). Total de seções Prism na galeria ampliado para 24. Nada commitado após `ce1230b5`. Detalhes em [visual-controls-final-status](../plans/visual-controls-final-status.md) e [.scratch/visual-controls/README.md](../../.scratch/visual-controls/README.md).
+Proprietário aprovou (03/11/2026) os tickets 02 (texto; chips 11/12/14px intencionais, regra de fonte do Calendar só nas células), 03 (containers), 04 (calendário da barra), 06 (calendário fluido), 07 (rolagem `/ui`), 10 (squircle) e 17 (piloto do playground de propriedades no `PrismButton`). Seção de teste de tamanhos segue em uso, temporária. Em aberto: 05 (rodapé da gaveta, aguarda correções visuais do proprietário), 01 (anéis de foco), 09 (seção Foco no `/ui`, vitrine de levantamento aplicada local, aguarda validação), 11 (Toggle com os tamanhos/ícones do Button via `buttonSizeClasses` e inset uniforme dos chips do Combobox, aplicado local, aguarda validação), 14 (seção Ícones no `/ui`, vitrine dos ícones do app aplicada local, aguarda validação), 15 (linhas de metadados da aba Essencial: altura única de 41px com controles `sm` 32px, `ActionDatePicker` como `PrismButton ghost sm`, `ActionTimeDisplay` em `h-8`, ID `sm`, botões de estratégia `sm`, miniaturas `rounded-2xl squircle text-[10px]`, upload `sm/icon-sm`, ícone de arquivos compacto alinhado em 32px; aplicado local, aguarda validação), 16 (matriz de `PartnersCombobox` no `/ui`: 77 células combinando variantes, tamanhos e seleções com legendas de avatar e ícone px para subsidiar a decisão 1 do ticket 13; aplicado local, aguarda validação do proprietário), 18 (rollout de playgrounds no `/ui`: Lotes 1, 2, 3 e 4 integralmente concluídos e aprovados), 19 (seção Avatar / `PrismAvatar` aprovada em 04/11), 20 (seção Sheet / `PrismSheet` aprovada em 04/11), 21 (`ComboboxTrigger`), 22 (`ResponsiblesCombobox`), 23 (`SprintCombobox` criado com `SprintComboboxPlayground`) e 24 (`PhaseIcon` criado com `PhaseIconPlayground`). Total de seções Prism na galeria ampliado para 24 e seções Uzzina ampliadas para 11 (ambas em ordem alfabética estrita). Nada commitado após `8d80249`. Detalhes em [visual-controls-final-status](../plans/visual-controls-final-status.md) e [.scratch/visual-controls/README.md](../../.scratch/visual-controls/README.md).
 
 ### Sistema de Design (Prism) — controles e galeria `/ui` aprovados — 03/11
 
@@ -590,3 +693,16 @@ A pedido do proprietário, [validação das demais variantes](2026-10-30-inline-
 ## Opção de duas linhas removida em30/10
 
 A pedido do proprietário, removidos a prop `lines` e o ramo de duas linhas da cadeia ActionItem→renderer→título. Títulos editáveis passam a oferecer somente uma linha com reticências. Fixture/script atualizados;24 verificações de uma linha passaram, mais4 verificações de Conteúdo sem editor. Comparação de altura segue26 pass/2 fail pelo Bloco móvel já diagnosticado (complemento da fonte ainda pendente). Format/lint/build passaram; typecheck falhou em alteração externa de `ActionFormDrawer.tsx:185` (estado inicial sem `unavailable`), fora desta tarefa e preservada. [Detalhes](2026-10-30-inline-title-height-diagnosis.md#remoção-da-opção-de-duas-linhas). Diff conferido, servidor encerrado; código local sem commit/push/deploy, banco ou SQL. Safari não verificado.
+
+Limite da checagem geral desta rodada: typecheck encontrou import de UToggle não resolvido e parâmetro checked sem tipo no cadastro administrativo do parceiro, em alterações paralelas fora dos arquivos deste ajuste. Logs em /tmp/uzzina-followup-types.log. Verificação de navegador dos ajustes V35/V39 passou.
+
+## Consolidação de Controles Visuais e Unificação (04/11/2026)
+
+- **V37 (`UColorPickerDropdown`)**: Unificado e substituindo `ActionColorDropdown` (excluído). Suporte a formatos (HEX, RGB, HSL, HSB), swatches agrupados com separadores, modo texto com hex nos botões não-ícone e seletor de parceiros na galeria. Aprovado pelo proprietário.
+- **V38 (`UPaletteEditor`)**: Migrado do antigo `ColorListEditor` para o seletor compartilhado `UColorPickerDropdown` e botão `ghost-destructive` do PrismButton. Aprovado pelo proprietário.
+- **V39 (`PartnerCelebrationsSelector`)**: Alinhamento com primitivos Prism (text sizes, ToggleGroup e badges). Aprovado pelo proprietário.
+- **V40 (`UPeopleCombobox`)**: Unificação completa e eliminação das duplicações `ResponsiblesCombobox` e `SprintCombobox` (arquivos excluídos). Chamadores reais (`EssentialsTab`, `ActionFormFooter`, `combobox-shift.test.tsx` e galeria `/ui`) usam diretamente `UPeopleCombobox` com `mode="responsibles" | "sprint"`. Aprovado pelo proprietário.
+- **V42 (`ULoader`)**: Padronização dos loaders em 6 tamanhos da escala e prop `inheritColor`, migrando 8 loaders inline e 8 loaders de tela inteira. Aprovado (100%).
+- **V43 (`PrismToggle`)**: Migração do `UToggleInput` para `PrismToggle` com input hidden nativo no formulário administrativo de parceiros. `UToggle.tsx` excluído. Aprovado (100%).
+- **Navegação `/ui` (V35)**: Truncamento de rótulos longos com `min-w-0 truncate` impedindo sobreposição de badges; foco strictly por fundo (`focus-visible:bg-input`); linha indicadora ativa mantida no alinhamento da categoria pai; fonte do subitem alinhada (`font-normal`).
+- **Verificação**: `npx tsc --noEmit` aprovado (0 erros), Biome lint aprovado (0 erros), 49 testes unitários passando.

@@ -33,6 +33,8 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         ghost:
           "hover:bg-secondary/50 border-transparent hover:text-foreground aria-expanded:bg-secondary/50 aria-expanded:text-foreground",
+        "ghost-destructive":
+          "bg-transparent border-transparent text-muted-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive/40 focus-visible:border-destructive/60 focus-visible:ring-destructive/30 focus-visible:text-destructive focus-visible:bg-destructive/10 dark:hover:bg-destructive/20 dark:focus-visible:bg-destructive/20",
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 border-destructive/40 focus-visible:border-destructive/60 focus-visible:ring-destructive/30 dark:bg-destructive/20 dark:hover:bg-destructive/30",
         success:

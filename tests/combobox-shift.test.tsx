@@ -6,8 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { AppContext } from "../app/contexts/AppContext";
 import { PartnersCombobox } from "../app/components/features/PartnersCombobox";
-import { ResponsiblesCombobox } from "../app/components/features/ResponsiblesCombobox";
-import { SprintCombobox } from "../app/components/features/SprintCombobox";
+import { UPeopleCombobox } from "../app/components/uzzina/UPeopleCombobox";
 import { PhaseCombobox } from "../app/components/features/PhaseCombobox";
 import { CategoriesCombobox } from "../app/components/features/CategoriesCombobox";
 import { QUERY_KEYS } from "../app/lib/query-keys";
@@ -116,21 +115,23 @@ function Harness({ kind, initial }: { kind: Kind; initial: string[] }) {
         />
       )}
       {kind === "responsibles" && (
-        <ResponsiblesCombobox
-          selectedResponsibles={selection}
+        <UPeopleCombobox
           currentPartners={partners}
+          mode="responsibles"
           onSelect={setSelection}
+          selectedResponsibles={selection}
         />
       )}
       {kind === "sprint" && (
-        <SprintCombobox
-          selectedSprints={selection}
-          responsibles={responsibles}
+        <UPeopleCombobox
           currentPartners={partners}
+          mode="sprint"
           onSelect={(sprints, nextResponsibles) => {
             setSelection(sprints);
-            setResponsibles(nextResponsibles);
+            if (nextResponsibles) setResponsibles(nextResponsibles);
           }}
+          responsibles={responsibles}
+          selectedSprints={selection}
         />
       )}
       {kind === "phases" && (

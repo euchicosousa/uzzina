@@ -4,9 +4,9 @@ import {
   FileIcon,
   FilePlus,
   ListIcon,
-  LoaderIcon,
   SparkleIcon,
 } from "lucide-react";
+import { ULoader } from "~/components/uzzina/ULoader";
 import {
   Suspense,
   lazy,
@@ -15,7 +15,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { ResponsiblesCombobox } from "~/components/features/ResponsiblesCombobox";
+import { UPeopleCombobox } from "~/components/uzzina/UPeopleCombobox";
 const Tiptap = lazy(() =>
   import("~/components/features/RichTextEditor").then((module) => ({
     default: module.Tiptap,
@@ -258,7 +258,8 @@ export function EssentialsTab({
         {/* Collapsed details stay mounted (uploads, ID toggle) but leave focus order. */}
         <div hidden={compact && !detailsExpanded} id={detailsId}>
           <div className="flex max-w-full flex-wrap items-center justify-between gap-2 border-b py-1 pr-4">
-            <ResponsiblesCombobox
+            <UPeopleCombobox
+              mode="responsibles"
               size="sm"
               variant="link"
               currentPartners={currentPartners}
@@ -343,7 +344,7 @@ export function EssentialsTab({
                         {buttonLabel}
                       </span>
                       {isAIProcessing ? (
-                        <LoaderIcon className="animate-spin" />
+                        <ULoader size="sm" inheritColor />
                       ) : (
                         <SparkleIcon />
                       )}

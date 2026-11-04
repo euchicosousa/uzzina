@@ -297,10 +297,10 @@ export function ToggleSection() {
           title="Toggle & ToggleGroup"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="Toggle">
+          <GalleryItem id="prism-toggle-single" label="Toggle">
             <TogglePlayground />
           </GalleryItem>
-          <GalleryItem label="ToggleGroup">
+          <GalleryItem id="prism-toggle-group" label="ToggleGroup">
             <ToggleGroupPlayground />
           </GalleryItem>
         </GallerySectionContent>

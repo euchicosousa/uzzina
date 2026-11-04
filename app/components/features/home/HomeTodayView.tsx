@@ -68,7 +68,7 @@ export function HomeTodayView({
         </div>
       }
     >
-      <div className="px-3 lg:px-8 xl:px-16">
+      <div className="px-3 lg:px-8">
         <TodayBoard
           view={view}
           actions={filteredActions}

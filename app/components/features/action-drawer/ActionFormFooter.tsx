@@ -4,7 +4,6 @@ import {
   ArchiveRestoreIcon,
   CloudUploadIcon,
   CopyIcon,
-  LoaderIcon,
   PlusIcon,
 } from "lucide-react";
 import {
@@ -15,11 +14,12 @@ import {
   type FocusEvent,
   type ReactNode,
 } from "react";
-import { ActionColorDropdown } from "./ActionColorDropdown";
+import { UColorPickerDropdown } from "~/components/uzzina/UColorPickerDropdown";
+import { ULoader } from "~/components/uzzina/ULoader";
 import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
 import { PartnersCombobox } from "~/components/features/PartnersCombobox";
 import { PhaseCombobox } from "~/components/features/PhaseCombobox";
-import { SprintCombobox } from "~/components/features/SprintCombobox";
+import { UPeopleCombobox } from "~/components/uzzina/UPeopleCombobox";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { INTENT } from "~/lib/CONSTANTS";
 import { isSocialMediaContent } from "~/utils";
@@ -145,11 +145,11 @@ export function ActionFormFooter({
           tabIndex={0}
         />
         {isSocialMediaContent(RawAction.category) && (
-          <ActionColorDropdown
+          <UColorPickerDropdown
             size="icon-lg"
             variant="ghost"
-            action={RawAction}
-            onSelect={async (color) => {
+            value={RawAction.color}
+            onChange={async (color) => {
               setRawAction({ ...RawAction, color });
               await updateAction({ color });
             }}
@@ -158,16 +158,17 @@ export function ActionFormFooter({
           />
         )}
         {RawAction.id && (
-          <SprintCombobox
+          <UPeopleCombobox
+            mode="sprint"
             size="icon-lg"
             variant="ghost"
             currentPartners={currentPartners}
-            onSelect={async (newSprints, responsibles) => {
+            onSelect={async (newSprints, responsibles = []) => {
               const sprints = newSprints.length > 0 ? newSprints : null;
               setRawAction({ ...RawAction, sprints, responsibles });
               await updateAction({ sprints, responsibles });
             }}
-            responsibles={RawAction.responsibles || []}
+            selectedResponsibles={RawAction.responsibles || []}
             selectedSprints={RawAction.sprints || []}
             tabIndex={0}
           />
@@ -191,7 +192,7 @@ export function ActionFormFooter({
         >
           {!compact && saveLabel}
           {isPending ? (
-            <LoaderIcon className="animate-spin" />
+            <ULoader size="default" inheritColor />
           ) : RawAction.id ? (
             <CloudUploadIcon />
           ) : (

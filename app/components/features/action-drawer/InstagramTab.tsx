@@ -1,4 +1,5 @@
-import { ListIcon, LoaderIcon, SparkleIcon } from "lucide-react";
+import { ListIcon, SparkleIcon } from "lucide-react";
+import { ULoader } from "~/components/uzzina/ULoader";
 import { useRef, useState } from "react";
 import { ContentFilesManager } from "~/components/features/media/InstagramContent";
 import { InstagramPreview } from "~/components/features/media/InstagramPreview";
@@ -99,7 +100,7 @@ function AiProcessingMessage({
   return (
     <div className="flex w-full items-center justify-center gap-2 border-b py-4 text-xs font-medium">
       <div className="relative flex items-center justify-center">
-        <LoaderIcon className="size-4 animate-spin opacity-50" />
+        <ULoader size="sm" className="opacity-50" />
       </div>
       <span className="animate-pulse">Gerando legenda com IA...</span>
     </div>
@@ -264,7 +265,7 @@ export function InstagramTab({
                         </span>
                         {isAIProcessing &&
                         activeAIIntent === INTENT.ai_content ? (
-                          <LoaderIcon className="animate-spin" />
+                          <ULoader size="sm" inheritColor />
                         ) : (
                           <SparkleIcon className="shrink-0" />
                         )}
@@ -331,7 +332,7 @@ export function InstagramTab({
               >
                 Gerar legenda
                 {isAIProcessing && activeAIIntent === INTENT.ai_caption ? (
-                  <LoaderIcon className="animate-spin" />
+                  <ULoader size="xs" inheritColor />
                 ) : (
                   <SparkleIcon />
                 )}

@@ -14,49 +14,39 @@ export function TokensSpacingSection() {
         />
         <GallerySectionContent>
           <GalleryItem className="w-full space-y-4" label="Escala Modular">
-            <div className="flex items-center gap-4">
-              <span className="w-12 font-mono text-xs">4px (xs)</span>
-              <div className="w-full rounded bg-secondary squircle">
-                <div
-                  className="h-4 rounded bg-primary squircle"
-                  style={{
-                    width: "4px",
-                  }}
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="w-12 font-mono text-xs">8px (sm)</span>
-              <div className="w-full rounded bg-secondary squircle">
-                <div
-                  className="h-4 rounded bg-primary squircle"
-                  style={{
-                    width: "8px",
-                  }}
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="w-12 font-mono text-xs">16px (md)</span>
-              <div className="w-full rounded bg-secondary squircle">
-                <div
-                  className="h-4 rounded bg-primary squircle"
-                  style={{
-                    width: "16px",
-                  }}
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="w-12 font-mono text-xs">32px (lg)</span>
-              <div className="w-full rounded bg-secondary squircle">
-                <div
-                  className="h-4 rounded bg-primary squircle"
-                  style={{
-                    width: "32px",
-                  }}
-                />
-              </div>
+            <div className="grid grid-cols-4 gap-8">
+              {[
+                {
+                  title: "4px (xs)",
+                  value: "4px",
+                },
+                {
+                  title: "8px (sm)",
+                  value: "8px",
+                },
+                {
+                  title: "16px (md)",
+                  value: "16px",
+                },
+                {
+                  title: "32px (lg)",
+                  value: "32px",
+                },
+              ].map((item) => (
+                <div className="flex items-center gap-4" key={item.value}>
+                  <div className="w-20 font-mono text-xs whitespace-nowrap">
+                    {item.title}
+                  </div>
+                  <div className="w-full bg-secondary">
+                    <div
+                      className="h-4 bg-primary"
+                      style={{
+                        width: item.value,
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </GalleryItem>
         </GallerySectionContent>

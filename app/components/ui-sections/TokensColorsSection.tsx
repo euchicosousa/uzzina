@@ -119,10 +119,13 @@ export function TokensColorsSection() {
   const { theme, setTheme, primaryColorIndex, setPrimaryColorIndex } =
     useAppThemeContext();
   return (
-    <div id="colors">
+    <div id="tokens-colors">
       <GallerySection>
         {/* Cabeçalho Limpo + Seletor Elegante de Tema e Cores em Swatches Círculos */}
-        <div className="flex flex-col gap-6 border-b pb-6">
+        <div
+          className="flex flex-col gap-6 border-b pb-6"
+          id="tokens-colors-palettes"
+        >
           <GallerySectionHeader
             description="Organização das camadas de superfície, marca e feedbacks com alternância dinâmica de modo e paletas."
             title="Cores Semânticas OKLCH"
@@ -196,26 +199,28 @@ export function TokensColorsSection() {
         </div>
 
         {/* 1. Grid Limpo de Amostras de Cores Semânticas */}
-        <GallerySectionContent className="grid grid-cols-2 gap-3 pt-6 sm:grid-cols-3 md:grid-cols-5">
-          {COLOR_SWATCHES.map((swatch) => (
-            <div key={swatch.name} className="flex items-center gap-3">
-              <div
-                className={`/40 size-7 shrink-0 rounded-lg border ${swatch.bg} squircle`}
-              />
-              <div className="flex min-w-0 flex-col">
-                <span className="truncate text-xs font-semibold">
-                  {swatch.name}
-                </span>
-                <code className="truncate font-mono text-[10px] text-muted-foreground">
-                  {swatch.bg}
-                </code>
+        <div id="tokens-colors-semantics">
+          <GallerySectionContent className="grid grid-cols-2 gap-3 pt-6 sm:grid-cols-3 md:grid-cols-5">
+            {COLOR_SWATCHES.map((swatch) => (
+              <div key={swatch.name} className="flex items-center gap-3">
+                <div
+                  className={`/40 size-7 shrink-0 rounded-lg border ${swatch.bg} squircle`}
+                />
+                <div className="flex min-w-0 flex-col">
+                  <span className="truncate text-xs font-semibold">
+                    {swatch.name}
+                  </span>
+                  <code className="truncate font-mono text-[10px] text-muted-foreground">
+                    {swatch.bg}
+                  </code>
+                </div>
               </div>
-            </div>
-          ))}
-        </GallerySectionContent>
+            ))}
+          </GallerySectionContent>
+        </div>
 
         {/* 2. Demonstração dos Componentes Vivos sobre bg-background (Canvas Real) */}
-        <div className="space-y-6 pt-10">
+        <div className="space-y-6 pt-10" id="tokens-colors-real-world">
           <h4 className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
             Aplicação no Mundo Real (Montados sobre o Canvas bg-background)
           </h4>

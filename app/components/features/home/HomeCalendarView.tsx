@@ -107,7 +107,7 @@ export function HomeCalendarView({
         )
       }
     >
-      <div className="flex flex-col px-8 xl:px-16">
+      <div className="flex flex-col px-8">
         <CalendarWithDnd
           actions={actions}
           calendarDays={calendarDays}

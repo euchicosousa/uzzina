@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { ColorListEditor } from "~/components/features/ColorListEditor";
+import { UPaletteEditor } from "~/components/uzzina/UPaletteEditor";
 
 const Tiptap = lazy(() =>
   import("~/components/features/RichTextEditor").then((module) => ({
@@ -21,13 +21,12 @@ const Tiptap = lazy(() =>
 );
 import {
   PrismButton,
-  PrismCheckbox,
   PrismInput,
   PrismTextarea,
+  PrismToggle,
   PrismToggleGroup,
   PrismToggleGroupItem,
 } from "~/components/prism";
-import { format } from "date-fns";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { getAllCelebrations } from "~/models/celebrations";
 import { PartnerCelebrationsSelector } from "~/components/features/PartnerCelebrationsSelector";
@@ -35,7 +34,6 @@ import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
 import { ULoader } from "~/components/uzzina/ULoader";
-import { UToggleInput } from "~/components/uzzina/UToggle";
 import { useAppContext } from "~/contexts/AppContext";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { fetchPeople } from "~/lib/supabase.queries";
@@ -95,6 +93,7 @@ function AdminPartnerEditPage() {
   const [sowValue, setSowValue] = useState<
     "marketing" | "socialmedia" | "demand"
   >("marketing");
+  const [isArchived, setIsArchived] = useState(false);
   const [_justSaved, setJustSaved] = useState(false);
   const [savingFields, setSavingFields] = useState<Set<string>>(new Set());
 
@@ -200,13 +199,15 @@ function AdminPartnerEditPage() {
 
       const initialSow = partner.sow || "marketing";
       setSowValue(initialSow);
+      const initialArchived = partner.archived || false;
+      setIsArchived(initialArchived);
       stateRef.current = {
         title: partner.title || "",
         short: partner.short || "",
         slug: partner.slug || "",
         instagram_caption_tail: partner.instagram_caption_tail || "",
         sow: initialSow,
-        archived: partner.archived || false,
+        archived: initialArchived,
       };
     }
   }, [partner]);
@@ -339,7 +340,7 @@ function AdminPartnerEditPage() {
   if (isLoadingPartner) {
     return (
       <div className="flex h-full w-full items-center justify-center gap-4 bg-background">
-        <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <ULoader size="2xl" className="text-primary" />
         <p className="animate-pulse text-sm font-medium text-muted-foreground">
           Carregando parceiro...
         </p>
@@ -604,7 +605,7 @@ function AdminPartnerEditPage() {
               <span>Cores da Marca</span>
               {savingFields.has("colors") && <ULoader />}
             </div>
-            <ColorListEditor
+            <UPaletteEditor
               initialColors={partner?.colors || []}
               onChange={(colors) => {
                 setBrandColors(colors);
@@ -673,25 +674,27 @@ function AdminPartnerEditPage() {
         </div>
 
         <div className="mb-18 flex items-center justify-between gap-4">
-          <UToggleInput
-            defaultChecked={partner?.archived || false}
+          {isArchived && <input name="archived" type="hidden" value="on" />}
+          <PrismToggle
             id="archived"
-            name="archived"
-            onCheckedChange={(checked) => {
-              stateRef.current.archived = checked;
+            isDisabled={isSubmitting}
+            isSelected={isArchived}
+            onChange={(selected) => {
+              setIsArchived(selected);
+              stateRef.current.archived = selected;
               triggerAutoSave({
-                archived: checked,
+                archived: selected,
               });
             }}
-            variant="destructive"
+            variant="outline"
           >
             {savingFields.has("archived") ? (
-              <ULoader className="size-4 text-white" />
+              <ULoader className="size-4" />
             ) : (
               <ArchiveIcon className="size-4" />
             )}
-            {partner?.archived ? "Arquivado" : "Visível"}
-          </UToggleInput>
+            {isArchived ? "Arquivado" : "Visível"}
+          </PrismToggle>
 
           <PrismButton
             className="rounded-2xl squircle"

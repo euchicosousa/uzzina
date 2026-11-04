@@ -9,32 +9,56 @@ import { CalendarDate } from "@internationalized/date";
 import { useState } from "react";
 import {
   PrismButton,
+  PrismButtonGroup,
   PrismCalendar,
   PrismPopover,
   PrismPopoverTrigger,
 } from "~/components/prism";
+
+export type CalendarToolbarVariant =
+  "default" | "ghost" | "outline" | "secondary";
+
+export type CalendarToolbarSize = "xs" | "sm" | "default" | "lg";
+
+export interface CalendarToolbarProps {
+  currentDay: Date;
+  setCurrentDay: (day: Date) => void;
+  days?: number;
+  showDate?: boolean;
+  variant?: CalendarToolbarVariant;
+  size?: CalendarToolbarSize;
+  className?: string;
+}
+
+const SIDE_BUTTON_SIZES = {
+  xs: "icon-xs",
+  sm: "icon-sm",
+  default: "icon",
+  lg: "icon-lg",
+} as const;
+
 export function CalendarToolbar({
   currentDay,
   setCurrentDay,
   days = 1,
   showDate,
-}: {
-  currentDay: Date;
-  setCurrentDay: (day: Date) => void;
-  days?: number;
-  showDate?: boolean;
-}) {
+  variant = "ghost",
+  size = "sm",
+  className,
+}: CalendarToolbarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const sideButtonSize = SIDE_BUTTON_SIZES[size];
+
   return (
-    <div className="flex items-center gap-1">
+    <PrismButtonGroup className={className} size={size}>
       <PrismButton
         aria-label={days === 1 ? "Dia anterior" : `Voltar ${days} dias`}
         className="hidden md:flex"
         onClick={() => {
           setCurrentDay(addDays(currentDay, -days));
         }}
-        size="icon"
-        variant="ghost"
+        size={sideButtonSize}
+        variant={variant}
       >
         <ChevronLeftIcon />
       </PrismButton>
@@ -42,7 +66,9 @@ export function CalendarToolbar({
       <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
         <PrismButton
           aria-label={`Escolher data, ${format(currentDay, showDate ? "MMMM/yy" : "dd/MM/yyyy", { locale: ptBR })}`}
-          variant="ghost"
+          className="max-md:ml-0! max-md:rounded-(--group-radius)!"
+          size={showDate ? size : sideButtonSize}
+          variant={variant}
         >
           <CalendarDaysIcon />
           {showDate && (
@@ -63,7 +89,6 @@ export function CalendarToolbar({
         <PrismPopover className="w-auto p-2" placement="bottom">
           <PrismCalendar
             captionLayout="dropdown"
-            cellSize="sm"
             className="max-w-full"
             onChange={(day) => {
               if (day) {
@@ -88,11 +113,11 @@ export function CalendarToolbar({
         onClick={() => {
           setCurrentDay(addDays(currentDay, days));
         }}
-        size="icon"
-        variant="ghost"
+        size={sideButtonSize}
+        variant={variant}
       >
         <ChevronRightIcon />
       </PrismButton>
-    </div>
+    </PrismButtonGroup>
   );
 }

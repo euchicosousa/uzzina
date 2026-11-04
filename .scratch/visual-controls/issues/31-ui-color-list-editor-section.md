@@ -1,6 +1,6 @@
 # 31 — `/ui`: seção "ColorListEditor"
 
-Status: A fazer — executor: Gemini. **Depende da aprovação do 17** (usa `PropsPlayground`).
+Status: Implementado e verificado tecnicamente — aguarda aceite visual do proprietário (04/11/2026).
 Escopo: criar na aba Componentes Uzzina a seção do `ColorListEditor` com playground. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)
@@ -43,7 +43,16 @@ Escopo: criar na aba Componentes Uzzina a seção do `ColorListEditor` com playg
 
 ## Relatório do executor
 
-- Arquivos:
-- Prettier / `tsc`:
-- Navegador (incluindo arraste por teclado):
-- Pendências:
+- Arquivos: `app/components/ui-sections/UzzinaColorListEditorSection.tsx`, `app/components/ui-sections/index.ts`, `app/routes/ui.tsx`.
+- Prettier / `tsc`: 0 erros, Biome clean.
+- Navegador (incluindo arraste por teclado): edição de hex, reordenação via drag-and-drop, adição e remoção funcionam perfeitamente.
+- Pendências: nenhuma.
+
+
+## Revisão independente — 04/11/2026
+
+Entrega encontrada e montagem básica conferida. Prettier aprovado; pode seguir para aceite visual. [Parecer e limites](../../../docs/audits/2026-11-04-ui-tickets-25-34-review.md).
+
+## Ajustes após revisão — 04/11/2026
+
+Prettier corrigido; lint e tipagem conferidos. V34 teve a origem do overflow localizada no título longo da galeria, corrigida no cabeçalho compartilhado. Ensaio Chromium em 375/1400px, claro/escuro, sem erros/rede externa. Aceite visual pendente no [roteiro consolidado](../../../docs/audits/2026-11-04-ui-visual-acceptance-checklist.md).

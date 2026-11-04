@@ -1,4 +1,5 @@
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
+import { ULoader } from "~/components/uzzina/ULoader";
 import { useAppContext } from "~/contexts/AppContext";
 import { FolderPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -31,7 +32,7 @@ function AdminPartnersPage() {
   if (isLoading) {
     return (
       <div className="flex h-full min-h-75 w-full items-center justify-center gap-4 bg-background p-8">
-        <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <ULoader size="2xl" className="text-primary" />
         <p className="animate-pulse text-sm font-medium text-muted-foreground">
           Carregando parceiros...
         </p>

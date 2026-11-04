@@ -222,10 +222,10 @@ export function ComboboxSection() {
           title="Combobox"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="Combobox">
+          <GalleryItem id="prism-combobox-single" label="Combobox">
             <ComboboxPlayground />
           </GalleryItem>
-          <GalleryItem label="ComboboxChips">
+          <GalleryItem id="prism-combobox-chips" label="ComboboxChips">
             <ComboboxChipsPlayground />
           </GalleryItem>
         </GallerySectionContent>

@@ -53,7 +53,7 @@ interface PartnerColorPickerProps {
  * Componente puramente controlado: não guarda estado interno além do HexInput.
  *
  * Usado por:
- *  - ActionColorDropdown  → inline no footer do form de ação
+ *  - UColorPickerDropdown → seleção unificada de cores
  *  - BulkActionMenu       → dentro de um Dialog de multi-seleção
  */
 export function PartnerColorPicker({
@@ -66,7 +66,7 @@ export function PartnerColorPicker({
   const hexColors = useMemo(() => colors.map(toHex), [colors]);
   return (
     <div className="space-y-3">
-      {/* Swatches do parceiro: PrismToggleGroup, igual ao ActionColorDropdown */}
+      {/* Swatches do parceiro: PrismToggleGroup, igual ao UColorPickerDropdown */}
       {hexColors.length > 0 ? (
         <PrismToggleGroup
           aria-label="Cores do parceiro"

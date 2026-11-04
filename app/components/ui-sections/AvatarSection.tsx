@@ -161,10 +161,10 @@ export function AvatarSection() {
           title="Avatar"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="Avatar">
+          <GalleryItem id="prism-avatar-single" label="Avatar">
             <AvatarPlayground />
           </GalleryItem>
-          <GalleryItem label="AvatarGroup">
+          <GalleryItem id="prism-avatar-group" label="AvatarGroup">
             <AvatarGroupPlayground />
           </GalleryItem>
         </GallerySectionContent>
@@ -172,4 +172,3 @@ export function AvatarSection() {
     </div>
   );
 }
-

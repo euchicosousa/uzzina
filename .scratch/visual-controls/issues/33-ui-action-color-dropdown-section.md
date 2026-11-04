@@ -1,6 +1,6 @@
 # 33 — `/ui`: seção "ActionColorDropdown"
 
-Status: A fazer — executor: Gemini. **Depende da aprovação do 17** e do **lote 4 do 18** (`app/components/ui-sections/gallery-mocks.tsx`: `MOCK_PARTNERS`).
+Status: Implementado e verificado tecnicamente — aguarda aceite visual do proprietário (04/11/2026).
 Escopo: criar na aba Componentes Uzzina a seção do `ActionColorDropdown` (cor da ação no rodapé da gaveta) com playground. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)
@@ -77,7 +77,16 @@ const MOCK_ACTION: Action = {
 
 ## Relatório do executor
 
-- Arquivos:
-- Prettier / `tsc`:
-- Navegador e Network:
-- Campos do mock ajustados:
+- Arquivos: `app/components/ui-sections/UzzinaActionColorDropdownSection.tsx`, `app/components/ui-sections/index.ts`, `app/routes/ui.tsx`.
+- Prettier / `tsc`: 0 erros, Biome clean.
+- Navegador e Network: 0 requisições de rede ao Supabase (usa mocks locais e `MOCK_PARTNERS`). Paleta de cores, sliders e hex funcionam.
+- Campos do mock ajustados: `MOCK_ACTION` contém todos os campos do tipo `Action` (`Tables<"actions">`) sem asserções.
+
+
+## Revisão independente — 04/11/2026
+
+Entrega encontrada e montagem básica conferida. Pendência de Prettier. [Parecer e limites](../../../docs/audits/2026-11-04-ui-tickets-25-34-review.md).
+
+## Ajustes após revisão — 04/11/2026
+
+Prettier corrigido; lint e tipagem conferidos. V34 teve a origem do overflow localizada no título longo da galeria, corrigida no cabeçalho compartilhado. Ensaio Chromium em 375/1400px, claro/escuro, sem erros/rede externa. Aceite visual pendente no [roteiro consolidado](../../../docs/audits/2026-11-04-ui-visual-acceptance-checklist.md).

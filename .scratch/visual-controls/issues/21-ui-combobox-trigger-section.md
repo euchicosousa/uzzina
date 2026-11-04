@@ -1,6 +1,6 @@
 # 21 — `/ui`: seção "ComboboxTrigger"
 
-Status: A fazer — executor: Gemini. **Depende da aprovação do 17** (usa `PropsPlayground`).
+Status: Concluído (100%) — aceite visual explícito do proprietário em 04/11/2026.
 Escopo: criar na aba Componentes Uzzina a seção do `ComboboxTrigger` (gatilho comum a todos os comboboxes), que hoje só aparece dentro de outras seções. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)
@@ -61,6 +61,20 @@ Prévia (`ComboboxTrigger` com `aria-label={text}`, `onPress` vazio):
 ## Relatório do executor
 
 - Arquivos:
+  - `app/components/ui-sections/UzzinaComboboxTriggerSection.tsx` (criado com `ComboboxTriggerPlayground`)
+  - `app/components/ui-sections/index.ts` (export adicionado ao final)
+  - `app/routes/ui.tsx` (import adicionado, `uzzina-combobox-trigger` inserido em ordem alfabética entre `CategoriesCombobox` e `Icons` em `SIDEBAR_ITEMS` e na renderização)
 - Prettier / `tsc`:
+  - Prettier: 100% formatado sem pendências.
+  - `tsc --noEmit`: 0 erros.
 - Navegador e conferência de tamanhos no inspetor:
-- Pendências:
+  - Helpers reais utilizados: `getTriggerAvatarSize`, `getTriggerContentSizeClass`, `getTriggerAvatarPadding`.
+  - Em `sm`: avatar 16px (`xs`), conteúdo 16px (`size-4`), padding `pl-3`.
+  - Em `lg`: avatar 32px (`md`), conteúdo 20px (`size-5`), padding `pl-4`.
+  - Tamanhos `icon-*` ocultam o texto conforme especificado, mantendo somente o avatar/amostra/ícone.
+  - Totalmente funcional em 375px sem quebra ou overflow horizontal.
+- Pendências: Nenhuma.
+
+## Encerramento após revisão independente — 04/11/2026
+
+Pendências corrigidas por subagente e conferidas pelo coordenador. Prettier, Biome (zero erros/avisos) e typecheck aprovados. Ensaio controlado das seis seções no Chromium sem erros de página nem solicitações externas, em 375/1400px e temas claro/escuro. Evidências e limites em [revisão V19–V34](../../../docs/audits/2026-11-04-ui-tickets-19-34-review.md). Conclusão local, sem publicação.

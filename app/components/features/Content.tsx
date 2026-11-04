@@ -47,7 +47,7 @@ export function Content({
     <div className={cn("relative", className)}>
       <div
         className={cn(
-          "aspect-4/5 overflow-hidden bg-secondary ring ring-foreground/5 transition-opacity duration-500 group-hover/action:opacity-80",
+          "aspect-4/5 overflow-hidden bg-secondary ring ring-border transition-opacity duration-500 group-hover/action:opacity-80",
           !isSquared && "rounded-2xl squircle",
         )}
       >

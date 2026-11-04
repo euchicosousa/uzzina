@@ -34,7 +34,7 @@ export function GallerySectionHeader({
   return (
     <div className="flex flex-col gap-4">
       <h3 className="flex items-center gap-2">
-        <span>{title}</span>
+        <span className="min-w-0 wrap-anywhere">{title}</span>
         {approved && (
           <span
             className="inline-flex size-5 items-center justify-center rounded-full bg-approved text-approved-foreground shadow-xs ring-2 ring-approved/50"
@@ -74,15 +74,20 @@ export interface GalleryItemProps {
   children: React.ReactNode;
   label: string;
   className?: string;
+  id?: string;
 }
 
 export function GalleryItem({
   children,
   label,
   className = "",
+  id,
 }: GalleryItemProps) {
   return (
-    <div className={cn("flex max-w-full min-w-0 flex-col gap-4", className)}>
+    <div
+      className={cn("flex max-w-full min-w-0 flex-col gap-4", className)}
+      id={id}
+    >
       <span className="text-xs font-semibold text-muted-foreground uppercase">
         {label}
       </span>
@@ -108,7 +113,12 @@ export function SidebarAnchorLink({
 }: SidebarAnchorLinkProps) {
   return (
     <a
-      className={`flex items-center justify-between border-l py-2 pr-2 pl-4 text-muted-foreground transition-colors hover:text-foreground ${active ? "border-foreground font-medium text-foreground" : ""}`}
+      className={cn(
+        "flex items-center justify-between border-l py-2 pr-2 pl-4 text-muted-foreground transition-colors outline-none hover:bg-input/60 hover:text-foreground focus:ring-0 focus:outline-none focus-visible:bg-input focus-visible:ring-0 focus-visible:outline-none",
+        active
+          ? "border-foreground font-medium text-foreground"
+          : "border-border/40",
+      )}
       href={`#${targetId}`}
       onClick={(e) => {
         e.preventDefault();
@@ -131,15 +141,63 @@ export function SidebarAnchorLink({
         }
       }}
     >
-      <span>{label}</span>
+      <span className="mr-2 min-w-0 truncate">{label}</span>
       {approved && (
         <span
-          className="inline-flex size-4 items-center justify-center rounded-full bg-approved text-approved-foreground shadow-2xs ring-1 ring-approved/60"
+          className="inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-approved text-approved-foreground shadow-2xs ring-1 ring-approved/60"
           title="Aprovado"
         >
           <CheckIcon className="size-2.5 stroke-3" />
         </span>
       )}
+    </a>
+  );
+}
+
+export interface SidebarSubsectionLinkProps {
+  targetId: string;
+  label: string;
+  active?: boolean;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+}
+
+export function SidebarSubsectionLink({
+  targetId,
+  label,
+  active,
+  onClick,
+}: SidebarSubsectionLinkProps) {
+  return (
+    <a
+      className={cn(
+        "flex items-center border-l py-1.5 pr-2 pl-7 text-xs font-normal transition-colors outline-none hover:bg-input/60 hover:text-foreground focus:ring-0 focus:outline-none focus-visible:bg-input focus-visible:ring-0 focus-visible:outline-none",
+        active
+          ? "border-border/40 bg-input/30 text-foreground"
+          : "border-border/40 text-muted-foreground",
+      )}
+      href={`#${targetId}`}
+      onClick={(e) => {
+        e.preventDefault();
+        if (onClick) {
+          onClick(e);
+          return;
+        }
+        const element = document.getElementById(targetId);
+        if (!element) return;
+        const scrollParent = element.closest("main");
+        if (scrollParent) {
+          const parentRect = scrollParent.getBoundingClientRect();
+          const elemRect = element.getBoundingClientRect();
+          const targetTop =
+            elemRect.top - parentRect.top + scrollParent.scrollTop - 72;
+          scrollParent.scrollTo({
+            top: Math.max(0, targetTop),
+            behavior: "smooth",
+          });
+        }
+      }}
+    >
+      <span className="min-w-0 truncate">{label}</span>
     </a>
   );
 }

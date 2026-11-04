@@ -138,10 +138,10 @@ export function UzzinaAvatarSection() {
           title="UAvatar e UAvatarGroup"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="UAvatar">
+          <GalleryItem id="uzzina-avatar-uavatar" label="UAvatar">
             <UAvatarPlayground />
           </GalleryItem>
-          <GalleryItem label="UAvatarGroup">
+          <GalleryItem id="uzzina-avatar-uavatargroup" label="UAvatarGroup">
             <UAvatarGroupPlayground />
           </GalleryItem>
         </GallerySectionContent>

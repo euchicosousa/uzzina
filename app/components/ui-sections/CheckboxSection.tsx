@@ -149,10 +149,10 @@ export function CheckboxSection() {
           title="Checkbox"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="Checkbox">
+          <GalleryItem id="prism-checkbox-single" label="Checkbox">
             <CheckboxPlayground />
           </GalleryItem>
-          <GalleryItem label="CheckboxGroup">
+          <GalleryItem id="prism-checkbox-group" label="CheckboxGroup">
             <CheckboxGroupPlayground />
           </GalleryItem>
         </GallerySectionContent>

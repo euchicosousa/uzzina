@@ -1,4 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
+import type React from "react";
 import {
   DateInput as DateInputPrimitive,
   DateSegment as DateSegmentPrimitive,
@@ -7,9 +8,10 @@ import {
   type TimeValue,
 } from "react-aria-components";
 import { cn } from "cnfast";
+import { Label } from "./label";
 
 const timeFieldVariants = cva(
-  "squircle inline-flex w-full min-w-0 text-sm placeholder:text-sm items-center rounded-2xl border border-transparent bg-input transition-[color,box-shadow] duration-200 outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-foreground/50 focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring/30 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+  "squircle inline-flex min-w-0 text-sm placeholder:text-sm items-center rounded-2xl border border-transparent bg-input transition-[color,box-shadow] duration-200 outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-foreground/50 focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring/30 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
   {
     variants: {
       size: {
@@ -29,20 +31,25 @@ export interface PrismTimeFieldProps<T extends TimeValue = TimeValue>
     Omit<TimeFieldPrimitiveProps<T>, "className">,
     VariantProps<typeof timeFieldVariants> {
   className?: string;
+  label?: React.ReactNode;
 }
 
 function PrismTimeField<T extends TimeValue = TimeValue>({
   className,
   size = "default",
+  label,
   ...props
 }: PrismTimeFieldProps<T>) {
   return (
     <TimeFieldPrimitive
-      aria-label={props["aria-label"] ?? "Horário"}
+      aria-label={
+        label ? props["aria-label"] : (props["aria-label"] ?? "Horário")
+      }
       className={cn("w-auto", className)}
       data-slot="time-field"
       {...props}
     >
+      {label && <Label>{label}</Label>}
       <DateInputPrimitive
         className={cn(
           timeFieldVariants({

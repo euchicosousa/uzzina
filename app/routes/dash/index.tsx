@@ -2,6 +2,7 @@ import {
   retryPortalQuery,
   usePortalSessionError,
 } from "~/hooks/usePortalSessionError";
+import { ULoader } from "~/components/uzzina/ULoader";
 import {
   addMonths,
   addWeeks,
@@ -128,7 +129,7 @@ function DashHome() {
   if (isLoading) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-background">
-        <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <ULoader size="2xl" className="text-primary" />
         <p className="animate-pulse text-sm font-medium text-muted-foreground">
           Carregando calendário...
         </p>

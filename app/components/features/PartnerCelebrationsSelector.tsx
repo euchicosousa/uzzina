@@ -1,11 +1,18 @@
 import { useMemo, useState } from "react";
 import { SearchIcon, XIcon } from "lucide-react";
 import type { Celebration } from "~/types";
-import { cn } from "cnfast";
 import {
+  PrismBadge,
+  PrismButton,
+  PrismCheckbox,
   PrismInputGroup,
   PrismInputGroupAddon,
+  PrismInputGroupButton,
   PrismInputGroupInput,
+  PrismTab,
+  PrismTabList,
+  PrismTabPanel,
+  PrismTabs,
 } from "~/components/prism";
 
 const MONTHS = [
@@ -47,19 +54,13 @@ export function PartnerCelebrationsSelector({
   const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
   const searchNormalized = search.trim().toLowerCase();
 
-  // Agrupa datas por mês (01 a 12)
   const celebrationsByMonth = useMemo(() => {
     const map = new Map<string, Celebration[]>();
-    for (let i = 1; i <= 12; i++) {
-      const key = String(i).padStart(2, "0");
-      map.set(key, []);
+    for (const month of MONTHS) {
+      if (month.key !== "all") map.set(month.key, []);
     }
-    for (const c of celebrations) {
-      const monthKey = c.date.slice(5, 7);
-      const list = map.get(monthKey);
-      if (list) {
-        list.push(c);
-      }
+    for (const celebration of celebrations) {
+      map.get(celebration.date.slice(5, 7))?.push(celebration);
     }
     for (const list of map.values()) {
       list.sort((a, b) => a.date.localeCompare(b.date));
@@ -67,215 +68,165 @@ export function PartnerCelebrationsSelector({
     return map;
   }, [celebrations]);
 
+  const visibleMonths = MONTHS.filter(
+    (month) =>
+      month.key !== "all" &&
+      (activeMonth === "all" || month.key === activeMonth),
+  )
+    .map((month) => ({
+      ...month,
+      celebrations: (celebrationsByMonth.get(month.key) ?? []).filter(
+        (celebration) =>
+          celebration.title.toLowerCase().includes(searchNormalized) ||
+          celebration.date.includes(searchNormalized),
+      ),
+    }))
+    .filter((month) => month.celebrations.length > 0);
+
   if (isLoading) {
     return (
-      <div className="h-48 w-full animate-pulse rounded-xl bg-muted/20 squircle" />
+      <p className="py-6 text-sm text-muted-foreground" role="status">
+        Carregando datas comemorativas...
+      </p>
     );
   }
 
   if (celebrations.length === 0) {
     return (
-      <div className="p-6 text-center text-xs text-muted-foreground">
+      <p className="py-6 text-sm text-muted-foreground">
         Nenhuma data comemorativa cadastrada no sistema ainda.
-      </div>
+      </p>
     );
   }
 
-  // Meses a renderizar de acordo com a aba selecionada
-  const monthsToRender =
-    activeMonth === "all"
-      ? MONTHS.filter((m) => m.key !== "all")
-      : MONTHS.filter((m) => m.key === activeMonth);
-
   return (
-    <div className="flex w-full max-w-full min-w-0 flex-col gap-3">
-      {/* Barra superior: contadores, busca e limpar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/40 pb-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-foreground">
+    <div className="flex w-full min-w-0 flex-col gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm font-medium">
             {selectedIds.length} de {celebrations.length}{" "}
             {selectedIds.length === 1
               ? "data selecionada"
               : "datas selecionadas"}
           </span>
           {saving && (
-            <span className="animate-pulse text-[11px] text-muted-foreground">
+            <span className="text-xs text-muted-foreground" role="status">
               Salvando...
             </span>
           )}
         </div>
-
-        <div className="flex items-center gap-3">
-          <div className="relative w-44 sm:w-52">
-            <PrismInputGroup size="sm">
+        <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto">
+          <div className="min-w-0 flex-1 sm:w-64 sm:flex-none">
+            <PrismInputGroup>
               <PrismInputGroupAddon>
-                <SearchIcon className="size-3.5" />
+                <SearchIcon />
               </PrismInputGroupAddon>
               <PrismInputGroupInput
+                aria-label="Filtrar datas comemorativas"
                 placeholder="Filtrar por nome..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="h-7 text-xs"
+                onChange={(event) => setSearch(event.target.value)}
               />
               {search && (
-                <button
-                  type="button"
-                  aria-label="Limpar filtro"
-                  onClick={() => setSearch("")}
-                  className="mr-1 text-muted-foreground hover:text-foreground"
-                >
-                  <XIcon className="size-3" />
-                </button>
+                <PrismInputGroupAddon align="inline-end">
+                  <PrismInputGroupButton
+                    aria-label="Limpar filtro"
+                    onPress={() => setSearch("")}
+                  >
+                    <XIcon />
+                  </PrismInputGroupButton>
+                </PrismInputGroupAddon>
               )}
             </PrismInputGroup>
           </div>
-
           {selectedIds.length > 0 && (
-            <button
-              type="button"
-              className="cursor-pointer text-xs font-medium text-primary hover:underline"
-              onClick={onClear}
-            >
+            <PrismButton isDisabled={saving} onPress={onClear} variant="link">
               Limpar todas
-            </button>
+            </PrismButton>
           )}
         </div>
       </div>
 
-      {/* Seletor de mês (pills simples sem cartão) */}
-      <div className="flex w-full min-w-0 gap-1 overflow-x-auto pb-1 text-xs">
-        {MONTHS.map((m) => {
-          const isSelected = activeMonth === m.key;
-          const monthDates =
-            m.key === "all"
-              ? celebrations
-              : celebrationsByMonth.get(m.key) || [];
-          const selectedInMonth = monthDates.filter((c) =>
-            selectedSet.has(c.id),
-          ).length;
+      <PrismTabs
+        className="min-w-0"
+        onSelectionChange={(key) => setActiveMonth(String(key))}
+        selectedKey={activeMonth}
+      >
+        <PrismTabList
+          aria-label="Filtrar por mês"
+          className="h-10 scrollbar-none overflow-x-auto [&::-webkit-scrollbar]:hidden"
+        >
+          {MONTHS.map((month) => {
+            const dates =
+              month.key === "all"
+                ? celebrations
+                : (celebrationsByMonth.get(month.key) ?? []);
+            const selectedCount = dates.filter((date) =>
+              selectedSet.has(date.id),
+            ).length;
+            return (
+              <PrismTab
+                aria-label={`${month.name}, ${selectedCount} selecionadas`}
+                id={month.key}
+                key={month.key}
+                className="flex-none px-3"
+              >
+                {month.short}
+                {selectedCount > 0 && (
+                  <PrismBadge variant="secondary">{selectedCount}</PrismBadge>
+                )}
+              </PrismTab>
+            );
+          })}
+        </PrismTabList>
 
-          return (
-            <button
-              key={m.key}
-              type="button"
-              onClick={() => setActiveMonth(m.key)}
-              className={cn(
-                "flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-colors squircle",
-                isSelected
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-input/50 text-muted-foreground hover:bg-input hover:text-foreground",
-              )}
-            >
-              <span>{m.short}</span>
-              {selectedInMonth > 0 && (
-                <span
-                  className={cn(
-                    "py-0.2 rounded-full px-1.5 text-[10px] leading-none font-semibold",
-                    isSelected
-                      ? "bg-primary-foreground/20 text-primary-foreground"
-                      : "bg-primary/15 text-primary",
-                  )}
-                >
-                  {selectedInMonth}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Lista com rolagem vertical sem moldura de cartão */}
-      <div className="flex max-h-80 min-h-36 flex-col gap-3 overflow-y-auto pr-1">
-        {monthsToRender.map((m) => {
-          const list = celebrationsByMonth.get(m.key) || [];
-          const filtered = searchNormalized
-            ? list.filter(
-                (c) =>
-                  c.title.toLowerCase().includes(searchNormalized) ||
-                  c.date.includes(searchNormalized),
-              )
-            : list;
-
-          if (filtered.length === 0) {
-            if (activeMonth !== "all") {
-              return (
-                <div
-                  key={m.key}
-                  className="py-6 text-center text-xs text-muted-foreground/60 italic"
-                >
-                  {searchNormalized
-                    ? `Nenhuma data em ${m.name} para "${search}"`
-                    : `Nenhuma data comemorativa cadastrada em ${m.name}`}
+        <PrismTabPanel
+          className="flex max-h-80 min-h-36 flex-col gap-4 overflow-y-auto px-1 pt-0 pb-1"
+          id={activeMonth}
+        >
+          {visibleMonths.length === 0 ? (
+            <p className="py-6 text-sm text-muted-foreground" role="status">
+              {searchNormalized
+                ? `Nenhuma data encontrada para "${search}".`
+                : `Nenhuma data comemorativa cadastrada em ${MONTHS.find((month) => month.key === activeMonth)?.name}.`}
+            </p>
+          ) : (
+            visibleMonths.map((month) => (
+              <div className="flex flex-col gap-2" key={month.key}>
+                <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background py-2">
+                  <span className="text-sm font-semibold">{month.name}</span>
+                  {month.celebrations.some(
+                    (celebration) => celebration.is_holiday,
+                  ) && <PrismBadge variant="warning">Feriado</PrismBadge>}
                 </div>
-              );
-            }
-            return null;
-          }
-
-          return (
-            <div key={m.key} className="flex flex-col gap-1.5">
-              {activeMonth === "all" && (
-                <div className="sticky top-0 z-10 flex items-center justify-between bg-background/95 py-1 backdrop-blur-xs">
-                  <span className="text-xs font-semibold text-foreground">
-                    {m.name}
-                  </span>
-                  <span className="text-[11px] text-muted-foreground">
-                    {filtered.length} {filtered.length === 1 ? "data" : "datas"}
-                  </span>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
-                {filtered.map((c) => {
-                  const isChecked = selectedSet.has(c.id);
-                  const day = c.date.slice(8, 10);
-
-                  return (
-                    <div
-                      key={c.id}
-                      onClick={() => onToggle(c.id, !isChecked)}
-                      role="checkbox"
-                      aria-checked={isChecked}
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === " " || e.key === "Enter") {
-                          e.preventDefault();
-                          onToggle(c.id, !isChecked);
-                        }
-                      }}
-                      className={cn(
-                        "group flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs transition-colors select-none squircle",
-                        isChecked
-                          ? "bg-primary/10 font-medium text-foreground"
-                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-                      )}
+                <div className="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">
+                  {month.celebrations.map((celebration) => (
+                    <PrismCheckbox
+                      className="min-w-0 py-2"
+                      isDisabled={saving}
+                      isSelected={selectedSet.has(celebration.id)}
+                      key={celebration.id}
+                      onChange={(isChecked) =>
+                        onToggle(celebration.id, isChecked)
+                      }
                     >
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={(e) => onToggle(c.id, e.target.checked)}
-                        onClick={(e) => e.stopPropagation()}
-                        className="size-3.5 shrink-0 cursor-pointer rounded border-border accent-primary squircle"
-                      />
-                      <span className="w-5 shrink-0 text-center font-bold text-foreground/80">
-                        {day}
+                      <span className="w-5 shrink-0 text-center text-sm text-muted-foreground">
+                        {celebration.date.slice(8, 10)}
                       </span>
-                      <span className="flex-1 truncate leading-tight">
-                        {c.title}
+                      <span
+                        className="min-w-0 flex-1 truncate text-sm whitespace-nowrap"
+                        title={celebration.title}
+                      >
+                        {celebration.title}
                       </span>
-                      {c.is_holiday && (
-                        <span className="py-0.2 shrink-0 rounded border border-amber-500/30 bg-amber-500/15 px-1.5 text-[9px] font-semibold text-amber-600 squircle dark:text-amber-400">
-                          Feriado
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
+                    </PrismCheckbox>
+                  ))}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            ))
+          )}
+        </PrismTabPanel>
+      </PrismTabs>
     </div>
   );
 }

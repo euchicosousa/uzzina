@@ -1,6 +1,6 @@
 # 23 — `/ui`: seção "SprintCombobox"
 
-Status: A fazer — executor: Gemini. **Depende da aprovação do 17** e do **lote 4 do 18** (`app/components/ui-sections/gallery-mocks.tsx`: `GalleryAppProviders`, `MOCK_PARTNERS`, `MOCK_PEOPLE`).
+Status: Concluído (100%) em 04/11/2026 — correções e validação autorizadas pelo proprietário, verificadas pelo coordenador.
 Escopo: criar na aba Componentes Uzzina a seção do `SprintCombobox` com playground. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)
@@ -52,7 +52,21 @@ Escopo: criar na aba Componentes Uzzina a seção do `SprintCombobox` com playgr
 ## Relatório do executor
 
 - Arquivos:
+  - `app/components/ui-sections/UzzinaSprintComboboxSection.tsx` (criado com `SprintComboboxPlayground` envolto em `GalleryAppProviders`)
+  - `app/components/ui-sections/index.ts` (export adicionado ao final)
+  - `app/routes/ui.tsx` (import adicionado, `uzzina-sprint-combobox` inserido em ordem alfabética entre `RichTextEditor` e `UAvatar e UAvatarGroup` em `SIDEBAR_ITEMS` e na renderização)
 - Prettier / `tsc`:
+  - Prettier: 100% formatado sem pendências.
+  - `tsc --noEmit`: 0 erros.
 - Network:
+  - Dados de `people` resolvidos do cache estático de `GALLERY_QUERY_CLIENT` com `staleTime: Infinity`.
+  - Zero chamadas externas ao Supabase.
 - Navegador:
-- Pendências:
+  - Grupos de responsáveis e demais pessoas renderizam perfeitamente no popover do comando.
+  - Predefinições de sprint (`0`, `1`, `2`) e de responsáveis (`none`, `one`, `all`) integradas ao `onSelect` interativo.
+  - Totalmente adaptado para 375px sem overflow.
+- Pendências: Nenhuma.
+
+## Encerramento após revisão independente — 04/11/2026
+
+Pendências corrigidas por subagente e conferidas pelo coordenador. Prettier, Biome (zero erros/avisos) e typecheck aprovados. Ensaio controlado das seis seções no Chromium sem erros de página nem solicitações externas, em 375/1400px e temas claro/escuro. Evidências e limites em [revisão V19–V34](../../../docs/audits/2026-11-04-ui-tickets-19-34-review.md). Conclusão local, sem publicação.

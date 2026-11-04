@@ -3,13 +3,13 @@ import {
   CalendarIcon,
   FlagIcon,
   KanbanIcon,
-  LoaderIcon,
   PaletteIcon,
   SendIcon,
   TagIcon,
   UserIcon,
   XIcon,
 } from "lucide-react";
+import { ULoader } from "~/components/uzzina/ULoader";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
@@ -347,7 +347,7 @@ export function BulkActionMenu() {
           >
             {isProcessing ? (
               <span className="flex items-center gap-1.5">
-                <LoaderIcon className="size-4 animate-spin" /> Atualizando...
+                <ULoader size="sm" inheritColor /> Atualizando...
               </span>
             ) : effectiveCount > 0 ? (
               `${effectiveCount} Selecionada${effectiveCount > 1 ? "s" : ""}`

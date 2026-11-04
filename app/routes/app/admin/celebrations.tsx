@@ -1,5 +1,6 @@
 import { CelebrationDialog } from "~/components/features/CelebrationDialog";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
+import { ULoader } from "~/components/uzzina/ULoader";
 import { useAppContext } from "~/contexts/AppContext";
 import { CalendarDate } from "@internationalized/date";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -133,16 +134,13 @@ function AdminCelebrationsPage() {
                 value={title}
               />
               <PrismButton
+                aria-label={isAdding ? "Adicionando..." : "Adicionar data"}
                 className="shrink-0 rounded-2xl squircle"
                 isDisabled={!selectedDate || isSubmitting}
                 size="icon"
                 type="submit"
               >
-                {isAdding ? (
-                  <div className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                ) : (
-                  <PlusIcon />
-                )}
+                {isAdding ? <ULoader size="sm" inheritColor /> : <PlusIcon />}
               </PrismButton>
             </div>
             <div className="flex items-center justify-between px-1">

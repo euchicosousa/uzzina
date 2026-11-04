@@ -5,8 +5,8 @@ import {
   InfoIcon,
   AlertTriangleIcon,
   OctagonAlertIcon,
-  Loader2Icon,
 } from "lucide-react";
+import { ULoader } from "~/components/uzzina/ULoader";
 import { cn } from "cnfast";
 const PrismToaster = ({ ...props }: ToasterProps) => {
   const { theme } = useAppThemeContext();
@@ -19,7 +19,7 @@ const PrismToaster = ({ ...props }: ToasterProps) => {
         info: <InfoIcon className="size-5" />,
         warning: <AlertTriangleIcon className="size-5" />,
         error: <OctagonAlertIcon className="size-5" />,
-        loading: <Loader2Icon className="size-5 animate-spin" />,
+        loading: <ULoader size="default" inheritColor />,
       }}
       style={
         {

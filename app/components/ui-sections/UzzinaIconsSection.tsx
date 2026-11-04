@@ -129,11 +129,14 @@ export function UzzinaIconsSection() {
           title="Icons"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="Icons">
+          <GalleryItem id="uzzina-icons-curated" label="Icons">
             <IconsPlayground />
           </GalleryItem>
 
-          <GalleryItem label="Todos os Ícones (Referência Visual)">
+          <GalleryItem
+            id="uzzina-icons-all"
+            label="Todos os Ícones (Referência Visual)"
+          >
             <div className="space-y-6">
               {ICON_CATEGORIES.map((cat) => (
                 <div className="space-y-3" key={cat.name}>

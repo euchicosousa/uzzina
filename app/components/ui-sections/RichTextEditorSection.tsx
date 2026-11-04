@@ -102,6 +102,7 @@ export function RichTextEditorSection() {
     <div id="uzzina-rich-text-editor">
       <GallerySection>
         <GallerySectionHeader
+          approved
           description="Editor de texto rico baseado em Tiptap e React Aria Toolbar, com comandos essenciais, atalhos de teclado e modo compacto."
           title="RichTextEditor"
         />

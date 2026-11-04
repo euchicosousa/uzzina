@@ -438,7 +438,7 @@ export function RichTextEditor({
   disabled,
   placeholder,
   isRounded,
-  compactToolbar = false,
+  compactToolbar = true,
 }: {
   id?: string;
   "aria-labelledby"?: string;
@@ -451,9 +451,9 @@ export function RichTextEditor({
   placeholder?: string;
   isRounded?: boolean;
   /**
-   * One row of basic commands plus a "Mais formatação" menu. Callers decide
-   * it from their container width and available writing height, never from
-   * the window width alone; other editors keep the full toolbar.
+   * Defaults to one row of basic commands plus a "Mais formatação" menu.
+   * Pass false to show the full toolbar. Responsive callers can choose from
+   * their container width and available writing height.
    */
   compactToolbar?: boolean;
 }) {

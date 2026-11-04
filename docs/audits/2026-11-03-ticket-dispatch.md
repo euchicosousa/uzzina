@@ -6,45 +6,42 @@ As quatro notas são estimativas de triagem em porcentagem. Conclusão mede o av
 
 Sol = Sol 6.1. Terra = Terra 6.1. São os dois modelos pedidos disponíveis para disparo direto neste chat. Os demais nomes indicados pelo proprietário podem receber o mesmo ticket por um executor externo.
 
-|  Nº | ID e entrega                                                                                                                                   | Conclusão | Urgência | Facilidade | Delegação | Agente direto  | Próximo passo e bloqueios                                                                                                                                     |
-| --: | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------: | -------: | ---------: | --------: | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1 | [T01 · Rastrear decisões D1–D6](../../.scratch/social-planning-recovery/issues/01-confirm-decisions.md)                                        |       35% |      95% |        80% |       85% | Sol            | Começar agora. Vincular cada decisão à aprovação do proprietário e marcar quais dependências estão liberadas.                                                 |
-| 2 | [T02 · Persistência por parceiro e conflito entre edições](../../.scratch/social-planning-recovery/issues/02-canonical-storage.md)             |       55% |      95% |        30% |       85% | Terra          | Após D1/D6. Modelo e rota usam Supabase. Executar em banco isolado com dois clientes, verificar RLS, conflito, reabertura e ausência de cópia local indevida. |
-| 3 | [T03 · Datas, frequência, formatos e extras](../../.scratch/social-planning-recovery/issues/03-normalized-input.md)                            |       30% |      80% |        60% |       90% | Sol            | Após D2–D4. Exercitar data impossível e soma manual com extras pelo formulário e pelo cálculo compartilhado.                                                  |
-| 4 | [T04 · Separar proposta aberta de configuração nova](../../.scratch/social-planning-recovery/issues/04-workspace-state.md)                     |       25% |      75% |        55% |       90% | Terra          | Após T02/D6. Trocar marca e proposta com edição ou resposta em voo sem misturar estado.                                                                       |
-| 5 | [T05 · Preservar edição até confirmação](../../.scratch/social-planning-recovery/issues/05-editor-confirmation.md)                             |       30% |      70% |        65% |       85% | Sol            | Após T02/T04. Falhar ao salvar, manter o texto e recuperar foco e teclado do diálogo.                                                                         |
-| 6 | [T06 · Usar o calendário existente na revisão](../../.scratch/social-planning-recovery/issues/06-shared-calendar.md)                           |       15% |      60% |        40% |       75% | Terra          | Após T02/T04/T05. Substituir grade paralela e mover sugestão sem criar ação. Conferir rolagem no navegador.                                                   |
-| 7 | [T07 · Gerar por tema com IA e recuperar falhas](../../.scratch/social-planning-recovery/issues/07-real-theme-ai.md)                           |       10% |      80% |        25% |       80% | Terra          | Após T02/D6. Demonstrar handler, autorização, quota e persistência com provedor controlado e retry sem segunda geração.                                       |
-| 8 | [T08 · Gerar por período com IA](../../.scratch/social-planning-recovery/issues/08-real-period-ai.md)                                          |       15% |      65% |        40% |       85% | Terra          | Após T03/T07. Comparar slots, formatos e extras pedidos com os persistidos.                                                                                   |
-| 9 | [T09 · Finalizar aprovadas em uma transação](../../.scratch/social-planning-recovery/issues/09-transactional-finalization.md)                  |       10% |      95% |        20% |       85% | Terra          | Após T02/D5. Forçar falha na segunda criação e repetir por duas conexões. Exigir zero criação parcial ou duplicada.                                           |
-| 10 | [T10 · Confirmar finalização e atualizar a Mesa](../../.scratch/social-planning-recovery/issues/10-finalization-ui.md)                         |       20% |      75% |        45% |       85% | Sol            | Após T04/T05/T09. Perder resposta após gravação, reabrir e reconciliar IDs, estado e lista.                                                                   |
-| 11 | [T11 · Aceite independente do Planejamento](../../.scratch/social-planning-recovery/issues/11-independent-acceptance.md)                       |        0% |      85% |        35% |       70% | Terra          | Último. Revisor diferente do implementador reexecuta R1–R11 e separa prova de banco, provedor e visual.                                                       |
-| 12 | [P00 · Fidelidade da Mesa ao mockup](../../.scratch/social-planning/issues/00-align-page-with-approved-mockup.md)                              |       85% |      35% |        90% |       25% | Sol            | Residual da série original. Há aprovação parcial de layout. Conferir se o aceite visual integral já foi dado e anexar a T11.                                  |
-| 13 | [P08 · Instruções reutilizáveis por marca](../../.scratch/social-planning/issues/08-brand-planning-instructions.md)                            |       30% |      60% |        55% |       85% | Sol            | Coluna registrada em produção. Fechar leitura, edição autorizada, troca de marca e uso pelo gerador em coordenação com T07/T08.                               |
-| 14 | [V12 · Filtros no campo de busca global](../../.scratch/visual-controls/issues/12-global-search-filters.md)                                    |       20% |      65% |        80% |       95% | Sol            | Decisões registradas. Implementar parceiros e arquivadas no sufixo, conferir teclado e escopo. Claude consta como executor. Confirmar posse antes de editar.  |
-| 15 | [F01 · Classificar feriados](../../.scratch/brand-holidays/issues/01-classify-holidays.md)                                                     |       85% |      50% |        80% |       40% | Sol            | Campo confirmado em produção e UI local. Validar criar, reabrir e reconhecer o feriado na lista e no calendário.                                              |
-| 16 | [F02 · Selecionar feriados por marca](../../.scratch/brand-holidays/issues/02-partner-holidays.md)                                             |       70% |      70% |        55% |       70% | Terra          | Registros divergem sobre tabela e RPC remotas. Conferir catálogo em leitura antes de qualquer SQL. Validar isolamento entre marcas e retry.                   |
-| 17 | [IA01 · Consumo de IA em Minha Conta](../../.scratch/ai-usage/issues/01-ai-usage-visibility.md)                                                |       75% |      55% |        50% |       75% | Terra          | Visual aceito segundo CURRENT. Confirmar migration, permissões e agregação mensal com registro real controlado, inclusive duplicidade.                        |
-| 18 | [V19 · /ui: seção "Avatar" (PrismAvatar)](../../.scratch/visual-controls/issues/19-ui-prism-avatar-section.md)                                 |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17.                                                                                                                            |
-| 19 | [V20 · /ui: seção "Sheet" (PrismSheet)](../../.scratch/visual-controls/issues/20-ui-prism-sheet-section.md)                                    |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17.                                                                                                                            |
-| 20 | [V21 · /ui: seção "ComboboxTrigger"](../../.scratch/visual-controls/issues/21-ui-combobox-trigger-section.md)                                  |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17.                                                                                                                            |
-| 21 | [V22 · /ui: seção "ResponsiblesCombobox"](../../.scratch/visual-controls/issues/22-ui-responsibles-combobox-section.md)                        |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17. Também depende do lote 4 de V18.                                                                                           |
-| 22 | [V23 · /ui: seção "SprintCombobox"](../../.scratch/visual-controls/issues/23-ui-sprint-combobox-section.md)                                    |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17. Também depende do lote 4 de V18.                                                                                           |
-| 23 | [V24 · /ui: seção "PhaseIcon"](../../.scratch/visual-controls/issues/24-ui-phase-icon-section.md)                                              |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17.                                                                                                                            |
-| 24 | [V25 · /ui: seção "ULoader"](../../.scratch/visual-controls/issues/25-ui-uloader-section.md)                                                   |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17.                                                                                                                            |
-| 25 | [V26 · /ui: seção "UToggleInput"](../../.scratch/visual-controls/issues/26-ui-utoggle-input-section.md)                                        |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17.                                                                                                                            |
-| 26 | [V27 · /ui: seção "UPreferenceSwitch"](../../.scratch/visual-controls/issues/27-ui-upreference-switch-section.md)                              |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17.                                                                                                                            |
-| 27 | [V28 · /ui: seção "UAvatarSelector"](../../.scratch/visual-controls/issues/28-ui-uavatar-selector-section.md)                                  |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17.                                                                                                                            |
-| 28 | [V29 · /ui: seção "UAdminItemCard"](../../.scratch/visual-controls/issues/29-ui-uadmin-item-card-section.md)                                   |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17.                                                                                                                            |
-| 29 | [V30 · /ui: seção "CalendarToolbar"](../../.scratch/visual-controls/issues/30-ui-calendar-toolbar-section.md)                                  |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17.                                                                                                                            |
-| 30 | [V31 · /ui: seção "ColorListEditor"](../../.scratch/visual-controls/issues/31-ui-color-list-editor-section.md)                                 |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17.                                                                                                                            |
-| 31 | [V32 · /ui: seção "ActionDatePicker"](../../.scratch/visual-controls/issues/32-ui-action-date-picker-section.md)                               |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17.                                                                                                                            |
-| 32 | [V33 · /ui: seção "ActionColorDropdown"](../../.scratch/visual-controls/issues/33-ui-action-color-dropdown-section.md)                         |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17. Também depende do lote 4 de V18.                                                                                           |
-| 33 | [V34 · /ui: seção "PartnerCelebrationsSelector"](../../.scratch/visual-controls/issues/34-ui-partner-celebrations-selector-section.md)         |        0% |      20% |        75% |       90% | Gemini externo | A fazer. Depende do aceite de V17.                                                                                                                            |
+|  Nº | ID e entrega                                                                                                                           | Conclusão | Urgência | Facilidade | Delegação | Agente direto  | Próximo passo e bloqueios                                                                                                                                     |
+| --: | -------------------------------------------------------------------------------------------------------------------------------------- | --------: | -------: | ---------: | --------: | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | [T01 · Rastrear decisões D1–D6](../../.scratch/social-planning-recovery/issues/01-confirm-decisions.md)                                |       35% |      95% |        80% |       85% | Sol            | Começar agora. Vincular cada decisão à aprovação do proprietário e marcar quais dependências estão liberadas.                                                 |
+| 2 | [T02 · Persistência por parceiro e conflito entre edições](../../.scratch/social-planning-recovery/issues/02-canonical-storage.md)     |       55% |      95% |        30% |       85% | Terra          | Após D1/D6. Modelo e rota usam Supabase. Executar em banco isolado com dois clientes, verificar RLS, conflito, reabertura e ausência de cópia local indevida. |
+| 3 | [T03 · Datas, frequência, formatos e extras](../../.scratch/social-planning-recovery/issues/03-normalized-input.md)                    |       30% |      80% |        60% |       90% | Sol            | Após D2–D4. Exercitar data impossível e soma manual com extras pelo formulário e pelo cálculo compartilhado.                                                  |
+| 4 | [T04 · Separar proposta aberta de configuração nova](../../.scratch/social-planning-recovery/issues/04-workspace-state.md)             |       25% |      75% |        55% |       90% | Terra          | Após T02/D6. Trocar marca e proposta com edição ou resposta em voo sem misturar estado.                                                                       |
+| 5 | [T05 · Preservar edição até confirmação](../../.scratch/social-planning-recovery/issues/05-editor-confirmation.md)                     |       30% |      70% |        65% |       85% | Sol            | Após T02/T04. Falhar ao salvar, manter o texto e recuperar foco e teclado do diálogo.                                                                         |
+| 6 | [T06 · Usar o calendário existente na revisão](../../.scratch/social-planning-recovery/issues/06-shared-calendar.md)                   |       15% |      60% |        40% |       75% | Terra          | Após T02/T04/T05. Substituir grade paralela e mover sugestão sem criar ação. Conferir rolagem no navegador.                                                   |
+| 7 | [T07 · Gerar por tema com IA e recuperar falhas](../../.scratch/social-planning-recovery/issues/07-real-theme-ai.md)                   |       10% |      80% |        25% |       80% | Terra          | Após T02/D6. Demonstrar handler, autorização, quota e persistência com provedor controlado e retry sem segunda geração.                                       |
+| 8 | [T08 · Gerar por período com IA](../../.scratch/social-planning-recovery/issues/08-real-period-ai.md)                                  |       15% |      65% |        40% |       85% | Terra          | Após T03/T07. Comparar slots, formatos e extras pedidos com os persistidos.                                                                                   |
+| 9 | [T09 · Finalizar aprovadas em uma transação](../../.scratch/social-planning-recovery/issues/09-transactional-finalization.md)          |       10% |      95% |        20% |       85% | Terra          | Após T02/D5. Forçar falha na segunda criação e repetir por duas conexões. Exigir zero criação parcial ou duplicada.                                           |
+| 10 | [T10 · Confirmar finalização e atualizar a Mesa](../../.scratch/social-planning-recovery/issues/10-finalization-ui.md)                 |       20% |      75% |        45% |       85% | Sol            | Após T04/T05/T09. Perder resposta após gravação, reabrir e reconciliar IDs, estado e lista.                                                                   |
+| 11 | [T11 · Aceite independente do Planejamento](../../.scratch/social-planning-recovery/issues/11-independent-acceptance.md)               |        0% |      85% |        35% |       70% | Terra          | Último. Revisor diferente do implementador reexecuta R1–R11 e separa prova de banco, provedor e visual.                                                       |
+| 12 | [P00 · Fidelidade da Mesa ao mockup](../../.scratch/social-planning/issues/00-align-page-with-approved-mockup.md)                      |       85% |      35% |        90% |       25% | Sol            | Residual da série original. Há aprovação parcial de layout. Conferir se o aceite visual integral já foi dado e anexar a T11.                                  |
+| 13 | [P08 · Instruções reutilizáveis por marca](../../.scratch/social-planning/issues/08-brand-planning-instructions.md)                    |       30% |      60% |        55% |       85% | Sol            | Coluna registrada em produção. Fechar leitura, edição autorizada, troca de marca e uso pelo gerador em coordenação com T07/T08.                               |
+| 14 | [V12 · Filtros no campo de busca global](../../.scratch/visual-controls/issues/12-global-search-filters.md)                            |       20% |      65% |        80% |       95% | Sol            | Decisões registradas. Implementar parceiros e arquivadas no sufixo, conferir teclado e escopo. Claude consta como executor. Confirmar posse antes de editar.  |
+| 15 | [F01 · Classificar feriados](../../.scratch/brand-holidays/issues/01-classify-holidays.md)                                             |       85% |      50% |        80% |       40% | Sol            | Campo confirmado em produção e UI local. Validar criar, reabrir e reconhecer o feriado na lista e no calendário.                                              |
+| 16 | [F02 · Selecionar feriados por marca](../../.scratch/brand-holidays/issues/02-partner-holidays.md)                                     |       70% |      70% |        55% |       70% | Terra          | Registros divergem sobre tabela e RPC remotas. Conferir catálogo em leitura antes de qualquer SQL. Validar isolamento entre marcas e retry.                   |
+| 17 | [IA01 · Consumo de IA em Minha Conta](../../.scratch/ai-usage/issues/01-ai-usage-visibility.md)                                        |       75% |      55% |        50% |       75% | Terra          | Visual aceito segundo CURRENT. Confirmar migration, permissões e agregação mensal com registro real controlado, inclusive duplicidade.                        |
+| 18 | [V25 · /ui: seção "ULoader"](../../.scratch/visual-controls/issues/25-ui-uloader-section.md)                                           | 90% |      20% |        75% |       90% | Gemini externo | Entrega presente. Pronto tecnicamente; aguarda aceite visual.|
+| 19 | [V26 · /ui: seção "UToggleInput"](../../.scratch/visual-controls/issues/26-ui-utoggle-input-section.md)                                | 90% |      20% |        75% |       90% | Gemini externo | Entrega presente. Pronto tecnicamente; aguarda aceite visual.|
+| 20 | [V31 · /ui: seção "ColorListEditor"](../../.scratch/visual-controls/issues/31-ui-color-list-editor-section.md)                         | 90% |      20% |        75% |       90% | Gemini externo | Entrega presente. Prettier aprovado; apto a seguir para aceite visual.|
+| 21 | [V33 · /ui: seção "ActionColorDropdown"](../../.scratch/visual-controls/issues/33-ui-action-color-dropdown-section.md)                 | 90% |      20% |        75% |       90% | Gemini externo | Entrega presente. Pronto tecnicamente; aguarda aceite visual.|
+| 22 | [V34 · /ui: seção "PartnerCelebrationsSelector"](../../.scratch/visual-controls/issues/34-ui-partner-celebrations-selector-section.md) | 85% |      20% |        75% |       90% | Gemini externo | Entrega presente. Formatação/overflow corrigidos; aguarda aceite visual.|
+| 23 | [V35 · Microseções no menu lateral da galeria](../../.scratch/visual-controls/issues/35-ui-sidebar-subsections.md) | 90% | 35% | 90% | 25% | Sol | Primeiro clique corrigido após reprodução no Comet e histórico real; aguarda aceite final. |
+| 24 | [V36 · Estudo dos wrappers de avatar](../../.scratch/visual-controls/issues/36-avatar-wrapper-comparison-study.md) | 0% | 25% | 75% | 90% | Sol | Comparar recursos, consumidores e responsabilidades. Entrega somente de estudo. |
+| 25 | [V37 · Seletor de cor e formatos](../../.scratch/visual-controls/issues/37-partner-color-picker-formats.md) | 0% | 60% | 45% | 85% | Gemini | Pronto. |
+| 26 | [V38 · UPaletteEditor](../../.scratch/visual-controls/issues/38-palette-editor-shared-color-picker.md) | 0% | 55% | 60% | 85% | Gemini | Depende de V37. |
+| 27 | [V40 · Unificar Sprint e Responsáveis](../../.scratch/visual-controls/issues/40-unify-people-combobox.md) | 0% | 40% | 55% | 85% | Gemini | Pronto — Gemini. |
+| 28 | [V41 · Padronizar nomes com prefixo U](../../.scratch/visual-controls/issues/41-standardize-uzzina-component-names.md) | 0% | 40% | 55% | 85% | Gemini | Gemini; depende de V38/V40/V43. |
+| 29 | [V42 · Padronizar loaders](../../.scratch/visual-controls/issues/42-standardize-loading-indicators.md) | 0% | 40% | 55% | 85% | Gemini | Pronto — Gemini. |
+| 30 | [V43 · UToggleInput para PrismToggle](../../.scratch/visual-controls/issues/43-replace-native-toggle-wrapper.md) | 0% | 40% | 55% | 85% | Gemini | Pronto — Gemini. |
 
 ## Mudanças desde a primeira triagem
 
-A fila vigente tem **33 tickets abertos**. V05 foi encerrado com 100% após o aceite explícito do proprietário e a verificação desta rodada. V13 e V16 continuam concluídos. Foram acrescentados V17–V34, dos quais V17/V18 têm implementação local e aguardam aceite, enquanto V19–V34 constam a fazer. A contagem aumentou pela criação desses 18 tickets. [Índice da galeria](../../.scratch/visual-controls/README.md)
+A fila vigente tem **30 tickets abertos**. V05 foi encerrado com 100% após o aceite explícito do proprietário e a verificação desta rodada. V13 e V16 continuam concluídos. Foram acrescentados V17–V34, dos quais V17/V18 têm implementação local e aguardam aceite, enquanto V19–V34 constam a fazer. A contagem aumentou pela criação desses 18 tickets. [Índice da galeria](../../.scratch/visual-controls/README.md)
 
 ## Verificação solicitada pelo proprietário — 03/11/2026
 
@@ -152,3 +149,69 @@ Proprietário encerrou Alert, ButtonGroup vertical, placeholders, chips e Tabs. 
 ## Encerramento e commit da rodada visual — 03/11/2026
 
 V18 encerrado em 100% após a conclusão das seis correções e autorização do proprietário para fechar os tickets finalizados e fazer commit. Botão do toaster alinhado ao extremo direito. V05, V14, V15 e V17 também encerrados. Fila atual com 33 tickets abertos. Alterações da galeria, primitivos, rodapé aprovado e registros desta rodada integram o commit local. Trabalho em andamento de Planejamento permanece separado. As 15 falhas gerais já documentadas continuam como pendência de diagnóstico.
+
+## Novo ticket — 04/11/2026
+
+V35 criado com duas partes. Parte 1 mostra links das microseções apenas sob a seção selecionada. Parte 2 reserva a animação para avaliação posterior. Fila vigente com 34 tickets abertos. Somente documentação nesta rodada.
+
+## Estudo de avatares — 04/11/2026
+
+Criado V36 para comparar PrismAvatar/PrismAvatarGroup com UAvatar/UAvatarGroup, identificando regras próprias e duplicações. Sem autorização de refatoração nesta entrega. Fila vigente com 35 tickets abertos.
+
+## Revisão independente V19–V34 — 04/11/2026
+
+[Resultado e correções](2026-11-04-ui-tickets-19-34-review.md). Somente V19–V24 foram encontrados, com ensaio básico de navegador aprovado e pequenos ajustes de formatação/lint/contrato pendentes. V25–V34 sem entrega no checkout. Estados de conclusão nesta revisão não equivalem a aceite visual.
+
+## V19–V24 encerrados — 04/11/2026
+
+Os seis tickets foram corrigidos por subagente e validados pelo coordenador a pedido do proprietário. Conclusão 100%, conforme [revisão atualizada](2026-11-04-ui-tickets-19-34-review.md). Fila vigente com 29 abertos; V25–V34 continuam pendentes.
+
+## Revisão V25–V34 — 04/11/2026
+
+[Entregas e pendências verificadas](2026-11-04-ui-tickets-25-34-review.md). Dez seções presentes. Lint/typecheck aprovados, nove arquivos com formatação pendente e overflow em V34 a 375px. V31 pode seguir para aceite visual. Nenhum encerramento nesta revisão.
+
+## Ajustes e aceite visual — 04/11/2026
+
+V25–V34 com formatação corrigida e overflow do título V34 resolvido no cabeçalho da galeria. Confirmação controlada no navegador sem erros. [Lista de verificação visual](2026-11-04-ui-visual-acceptance-checklist.md). Tickets 30/32/34 reconciliados com os buffers do editor, mantendo os relatos e a revisão.
+
+## Aceites e estudos — 04/11/2026
+
+Aceite visual de V21/V24/V30/V32 registrado e OK aplicado na galeria/menu. V33/V31/V34 permanecem em estudo de revisão conforme [parecer dos subagentes](2026-11-04-color-and-celebration-studies.md). Propostas ainda sem implementação.
+
+## Novos aceites e estudos de consolidação — 04/11/2026
+
+V27/V28/V29 e RichTextEditor aprovados visualmente. Padrão compacto do editor aplicado. [Estudos de Sprint, nomes, loaders e ToggleInput](2026-11-04-component-consolidation-studies.md) disponíveis para decisão.
+
+Fila numerada após registrar os aceites de V27/V28/V29/V30/V32: 24 itens abertos.
+
+## V37–V39 criados — 04/11/2026
+
+Tickets dos estudos de cores, paleta e seletor de datas, destinados ao Gemini. PhaseIcon preservado por decisão do proprietário. Fila vigente com 27 itens.
+
+## V40–V43 criados — 04/11/2026
+
+Quatro tickets de consolidação para Gemini. V41 aguarda V38/V40/V43 para renomear a estrutura final. V40/V42/V43 podem iniciar independentemente, respeitando um escritor por checkout. Fila vigente com 31 itens.
+
+## Revisão calma do V39 — 04/11/2026
+
+[Achados verificados](2026-11-04-v37-v39-independent-review.md). V39 sem implementação; V37/V38 presentes, com ressalvas em validação e cobertura. Ticket V39 recebeu critérios complementares de foco, vazio de filtro e saving.
+
+## V35 e V39 — 04/11/2026
+
+Animação de submenu retirada do V35; [flicker estudado](2026-11-04-v35-selection-flicker-study.md), correção ainda pendente. V39 implementado com tamanhos padrão e verificado no navegador, aguardando aceite visual.
+
+## V35 corrigido e V39 revisado por subagentes leves — 04/11/2026
+
+V35 corrigido e validado no Chromium, incluindo seleção estável, hash e scroll manual. V39 aprovado tecnicamente em segunda revisão independente. Tickets/índice/CURRENT alinhados; ambos aguardam aceite visual. Sem commit/publicação.
+
+## Refinamentos V35/V39 — 04/11/2026
+
+Pai navega ao primeiro filho; seletor com Tabs, badges, borda superior no cabeçalho, aviso Feriado por mês e títulos truncados. Ambos conferidos no Chromium e aguardam aceite visual. Detalhes nos respectivos tickets.
+
+## Aceite V39 e ajuste V35 — 04/11/2026
+
+V39 aprovado pelo proprietário, retirado da fila aberta. V35 reforçado e testado medindo posição real do conteúdo no primeiro clique; aguarda confirmação do proprietário.
+
+## V35 — conflito de rolagem identificado — 04/11/2026
+
+Falha reproduzida no Comet e no histórico real: rolagem automática de hash do roteador cancelava a rolagem do menu. Corrigido pela navegação com controle explícito de rolagem. Primeiro clique confirmado na página do proprietário; regressão permanente usa histórico real e mede deslocamento. Aceite final ainda pendente. Ensaios anteriores em memória não reproduziam esse conflito.

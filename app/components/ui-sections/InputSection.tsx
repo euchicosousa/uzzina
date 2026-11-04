@@ -382,19 +382,22 @@ export function InputSection() {
           title="Input"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="Input">
+          <GalleryItem id="prism-input-single" label="Input">
             <InputPlayground />
           </GalleryItem>
-          <GalleryItem label="InputGroup">
+          <GalleryItem id="prism-input-group" label="InputGroup">
             <InputGroupPlayground />
           </GalleryItem>
-          <GalleryItem label="TimeField">
+          <GalleryItem id="prism-input-timefield" label="TimeField">
             <TimeFieldPlayground />
           </GalleryItem>
-          <GalleryItem label="ColorField">
+          <GalleryItem id="prism-input-colorfield" label="ColorField">
             <ColorFieldPlayground />
           </GalleryItem>
-          <GalleryItem label="ColorArea e ColorSlider">
+          <GalleryItem
+            id="prism-input-colorarea"
+            label="ColorArea e ColorSlider"
+          >
             <ColorPickerPlayground />
           </GalleryItem>
         </GallerySectionContent>

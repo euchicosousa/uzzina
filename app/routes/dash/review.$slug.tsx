@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { ULoader } from "~/components/uzzina/ULoader";
 import { useQuery } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -92,7 +93,7 @@ function ReviewPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          <div className="size-10 animate-spin rounded-full border-4 border-foreground/20 border-t-foreground" />
+          <ULoader className="size-10 text-foreground" />
           <p className="text-sm text-muted-foreground">Carregando revisão...</p>
         </div>
       </div>
