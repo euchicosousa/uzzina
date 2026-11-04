@@ -1,5 +1,9 @@
 # 17 — `/ui`: playground de propriedades (piloto no `PrismButton`)
 
+**Resumo:** Introduz o playground interativo de propriedades usando Button como piloto.
+
+**Commit de referência:** `ce1230b` — entrega versionada no histórico local.
+
 Status: Aprovado pelo proprietário em 03/11/2026, 100%. Aceite dos componentes não citados na revisão por capturas.
 Escopo: criar UM componente auxiliar de galeria, `PropsPlayground` (prévia à esquerda, lista vertical de controles à direita), e aplicá-lo **somente** ao `PrismButton` na seção "Button" do `/ui`. É o piloto: o proprietário valida o padrão antes do ticket 18 (todas as seções existentes) e dos tickets 19–34 (seções novas). **Não altere nenhum componente do app** (`app/components/prism/`, `uzzina/`, `features/`). Somente arquivos de galeria.
 

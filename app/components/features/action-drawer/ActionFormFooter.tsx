@@ -16,9 +16,9 @@ import {
 } from "react";
 import { UColorPickerDropdown } from "~/components/uzzina/UColorPickerDropdown";
 import { ULoader } from "~/components/uzzina/ULoader";
-import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
-import { PartnersCombobox } from "~/components/features/PartnersCombobox";
-import { PhaseCombobox } from "~/components/features/PhaseCombobox";
+import { UCategoriesCombobox } from "~/components/uzzina/UCategoriesCombobox";
+import { UPartnersCombobox } from "~/components/uzzina/UPartnersCombobox";
+import { UPhaseCombobox } from "~/components/uzzina/UPhaseCombobox";
 import { UPeopleCombobox } from "~/components/uzzina/UPeopleCombobox";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { INTENT } from "~/lib/CONSTANTS";
@@ -97,7 +97,7 @@ export function ActionFormFooter({
       data-drawer-focus="control"
     >
       <FooterStrip compact={compact}>
-        <PartnersCombobox
+        <UPartnersCombobox
           // size={currentPartners.length > 1 ? "lg" : "icon-lg"}
           size={"icon-lg"}
           variant="ghost"
@@ -118,7 +118,7 @@ export function ActionFormFooter({
           showText={false}
           tabIndex={0}
         />
-        <PhaseCombobox
+        <UPhaseCombobox
           size="icon-lg"
           variant="ghost"
           iconVariant="progress"
@@ -133,7 +133,7 @@ export function ActionFormFooter({
           showText={false}
           tabIndex={0}
         />
-        <CategoriesCombobox
+        <UCategoriesCombobox
           size="icon-lg"
           variant="ghost"
           onSelect={async ({ category }) => {

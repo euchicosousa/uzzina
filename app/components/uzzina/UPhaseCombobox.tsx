@@ -14,13 +14,15 @@ import {
 import { PHASES, type PHASE_TYPE } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
 import {
-  ComboboxTrigger,
+  UComboboxTrigger,
   getTriggerContentSizeClass,
   getTriggerPhaseIconSize,
-  type ComboboxTriggerProps,
-} from "./ComboboxTrigger";
-import { PhaseIcon } from "./PhaseIcon";
+  type UComboboxTriggerProps,
+} from "./UComboboxTrigger";
+import { UPhaseIcon } from "./UPhaseIcon";
+
 const DEFAULT_SELECTED_PHASES: string[] = [];
+
 function MultiPhaseTrigger({
   tabIndex,
   currentPhases,
@@ -36,11 +38,11 @@ function MultiPhaseTrigger({
   hasRealSelection: boolean;
   showText?: boolean;
   disabled?: boolean;
-  variant?: ComboboxTriggerProps["variant"];
-  size?: ComboboxTriggerProps["size"];
+  variant?: UComboboxTriggerProps["variant"];
+  size?: UComboboxTriggerProps["size"];
 }) {
   return (
-    <ComboboxTrigger
+    <UComboboxTrigger
       disabled={disabled}
       tabIndex={tabIndex}
       title={
@@ -82,9 +84,10 @@ function MultiPhaseTrigger({
           </div>
         </>
       )}
-    </ComboboxTrigger>
+    </UComboboxTrigger>
   );
 }
+
 function SinglePhaseTrigger({
   tabIndex,
   showText,
@@ -100,11 +103,11 @@ function SinglePhaseTrigger({
   iconVariant?: "progress" | "icon";
   currentPhase: PHASE_TYPE;
   disabled?: boolean;
-  variant?: ComboboxTriggerProps["variant"];
-  size?: ComboboxTriggerProps["size"];
+  variant?: UComboboxTriggerProps["variant"];
+  size?: UComboboxTriggerProps["size"];
 }) {
   return (
-    <ComboboxTrigger
+    <UComboboxTrigger
       aria-label={
         !showText ? `Fase: ${currentPhase?.title ?? "Sem fase"}` : undefined
       }
@@ -116,7 +119,7 @@ function SinglePhaseTrigger({
       {...props}
     >
       {!showText ? (
-        <PhaseIcon
+        <UPhaseIcon
           phase={currentPhase as PHASE_TYPE}
           size={getTriggerPhaseIconSize(size)}
           variant={iconVariant}
@@ -135,10 +138,24 @@ function SinglePhaseTrigger({
           {currentPhase?.title}
         </>
       )}
-    </ComboboxTrigger>
+    </UComboboxTrigger>
   );
 }
-export function PhaseCombobox({
+
+export interface UPhaseComboboxProps {
+  selectedPhase?: string | null;
+  selectedPhases?: string[];
+  onSelect?: (value: { phase?: string; phases: string[] }) => void;
+  isMulti?: boolean;
+  tabIndex?: number;
+  showText?: boolean;
+  iconVariant?: "progress" | "icon";
+  disabled?: boolean;
+  variant?: UComboboxTriggerProps["variant"];
+  size?: UComboboxTriggerProps["size"];
+}
+
+export function UPhaseCombobox({
   selectedPhase,
   selectedPhases = DEFAULT_SELECTED_PHASES,
   onSelect,
@@ -149,18 +166,7 @@ export function PhaseCombobox({
   disabled = false,
   variant,
   size,
-}: {
-  selectedPhase?: string | null;
-  selectedPhases?: string[];
-  onSelect?: (value: { phase?: string; phases: string[] }) => void;
-  isMulti?: boolean;
-  tabIndex?: number;
-  showText?: boolean;
-  iconVariant?: "progress" | "icon";
-  disabled?: boolean;
-  variant?: ComboboxTriggerProps["variant"];
-  size?: ComboboxTriggerProps["size"];
-}) {
+}: UPhaseComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const PHASES_LIST = Object.values(PHASES);
   const phasesList = PHASES_LIST;
@@ -274,7 +280,7 @@ export function PhaseCombobox({
                   }
                   textValue={phase.title}
                 >
-                  <PhaseIcon phase={phase as PHASE_TYPE} variant="icon" />
+                  <UPhaseIcon phase={phase as PHASE_TYPE} variant="icon" />
                   <span className="truncate">{phase.title}</span>
                 </PrismCommandItem>
               ))}

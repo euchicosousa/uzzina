@@ -1,6 +1,10 @@
 # 19 — `/ui`: seção "Avatar" (`PrismAvatar`)
 
-Status: Concluído (100%) em 04/11/2026 — correções e validação autorizadas pelo proprietário, verificadas pelo coordenador.
+**Resumo:** Demonstra Avatar e AvatarGroup do Prism com imagem, fallback, selo e agrupamento.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
+**Status:** Concluído (100%) — revisado e encerrado em 04/11/2026.
 Escopo: criar a seção do `PrismAvatar` (família `PrismAvatar*`), que não existe no `/ui`, com playground de propriedades. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)

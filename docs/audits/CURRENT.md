@@ -6,6 +6,30 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### Padronização dos componentes próprios com prefixo U (Ticket V41) — 04/11
+
+- **Migração canônica completa:** Todos os componentes compartilhados próprios foram movidos para `app/components/uzzina/U*` com nomes padronizados no prefixo `U*`:
+  - `UActionDatePicker`
+  - `UCalendarToolbar`
+  - `UCategoriesCombobox`
+  - `UComboboxTrigger`
+  - `UIcons`
+  - `UPartnerCelebrationsSelector`
+  - `UPartnersCombobox`
+  - `UPeopleCombobox` (unificado a partir de Responsibles/Sprint no Ticket 40)
+  - `UPhaseCombobox`
+  - `UPhaseIcon`
+  - `UViewOptions`
+- **Exclusão de arquivos legados e wrappers:** Todos os 12 arquivos antigos de reexportação em `app/components/features/` e `app/components/ui-sections/` foram removidos; eliminados quaisquer aliases de compatibilidade reversa (`export { New as Old }`).
+- **Atualização de consumidores:** Todos os pontos de consumo em `app/components/`, `app/routes/`, `app/utils/` e `tests/` foram atualizados para importar e invocar diretamente os componentes `U*`.
+- **Truncação na barra lateral `/ui`:** `SidebarAnchorLink` e `SidebarSubsectionLink` receberam `w-full min-w-0 max-w-full overflow-hidden`, `truncate` no texto com tooltip `title`, e badge com `shrink-0`, impedindo qualquer sobreposição visual entre nomes extensos e o ícone de aprovação.
+- **Verificação:** `npx tsc --noEmit` limpo (0 erros), `bun run test:serverless` com 9 PASS, e 109 testes em `bun test` aprovados.
+
+### Tickets visuais: situação e commits reconciliados — 04/11
+
+Checkout estava limpo em `d7efe5f`, que consolidou a rodada visual; não há código local pendente dessa rodada. Atualizados cabeçalhos individuais V01–V43 existentes com resumo e commit de referência, índice com uma linha por ticket e inclusão do V36 ausente. V19–V34 e V37–V40/V42/V43 concluídos segundo os registros da série. V35 corrigido/commitado, mas aceite final pendente nesta conversa (índice anterior dizia aprovado); V36 sem estudo entregue; V41 sem migração, agora liberado após V38/V40/V43; V12 mantido pendente. Fila central remove os itens encerrados e checklist atualizado preserva roteiros. Verificação documental de caminhos, commits e diff; sem testes de app por ser documentação. Esta atualização não confirma push/deploy nem cria novo commit.
+
+
 ### V35: causa do segundo clique reproduzida e corrigida — 04/11
 
 Reprodução direta no Comet do proprietário: pai UAvatar abria sem deslocar o conteúdo. Histórico real também reproduziu timeout; o roteador reagia ao replaceState com scrollIntoView e cancelava o scrollTo suave da galeria. Testes anteriores com histórico em memória ocultavam essa disputa. Atualização do hash agora usa useNavigate com resetScroll:false e hashScrollIntoView:false, sem alterar a configuração global. Primeiro clique conferido no Comet após a correção. Regressão permanente em scripts/check-ui-sidebar-browser.cjs/fixture usa histórico real, restauração e StrictMode: pais/filhos, cliques rápidos, links diretos e movimento normal/reduzido passaram, zero pageerror. Prettier/Biome/typecheck aprovados. [Evidências e limite de acesso ao vídeo](2026-11-04-v35-selection-flicker-study.md). V35 aguarda aceite final do proprietário. Sem commit/deploy.
@@ -30,7 +54,7 @@ V39 sem defeitos funcionais concretos na segunda revisão; critérios do ticket 
 
 ### Unificação total em UColorPickerDropdown (Tickets V37/V38) — 04/11
 
-- **Unificação e exclusão:** `ActionColorDropdown` foi completamente absorvido e excluído do repositório. O único componente de seleção de cor agora é [`UColorPickerDropdown`](app/components/uzzina/UColorPickerDropdown.tsx).
+- **Unificação e exclusão:** `ActionColorDropdown` foi completamente absorvido e excluído do repositório. O único componente de seleção de cor agora é [`UColorPickerDropdown`](../../app/components/uzzina/UColorPickerDropdown.tsx).
 - **Gatilho responsivo:** em tamanhos com texto (`xs`, `sm`, `default`, `lg`), exibe o swatch circular acompanhado do código `#HEX` em fonte mono; em tamanhos `icon-*`, exibe apenas o swatch circular.
 - **Amostras dos parceiros:** layout compacto com botões `icon-sm` em fluxo `flex-wrap`, sem cabeçalhos ou títulos, com separadores verticais `PrismSeparator` (`|`) entre as paletas de marcas diferentes.
 - **Consumidores atualizados:** `ActionFormFooter.tsx` consome `UColorPickerDropdown` diretamente (`size="icon-lg"`).
@@ -566,7 +590,7 @@ Commit desta entrega autorizado pelo proprietário nesta rodada: somente ajustes
 
 Proprietário concordou com a análise mobile e pediu registrar as correções e um ticket próprio de análise geral de estilo. [Fila Safari/mobile](../../.scratch/safari-mobile/README.md):12 calendário reaproveitado; novos13 rolagem/escrita em paisagem (prioridade funcional),14 espaço mobile/data completa com truncate,15 abas compartilhadas distintas das pills,16 botões padrão no rodapé,17 toolbar compacta nos editores e18 remoção do badge de tipo de mídia. Todos preparados, sem implementação;07/09 de estratégias continuam pendentes e aceites anteriores preservados.
 
-[Análise geral de estilo](../../.scratch/visual-consistency/issues/01-app-style-analysis-and-simplification.md) registrada separadamente: inventário de telas/estados/consumidores, inconsistências e diferenças justificadas, proposta de menos padrões baseados no Prism existente, exemplos comparativos e sequência finita de simplificações. Não executada nesta rodada; não autoriza redesenho automático e não bloqueia o defeito funcional em paisagem. Índice, TODO e relatório de feedback atualizados. Referências/diff documentais conferidos; sem testes/build, mudança funcional, servidor, dados reais/SQL, commit, push ou deploy. Alterações externas preservadas.
+[Análise geral de estilo](../../.scratch/visual-consistency/issues/00-app-style-analysis-and-simplification.md) registrada separadamente: inventário de telas/estados/consumidores, inconsistências e diferenças justificadas, proposta de menos padrões baseados no Prism existente, exemplos comparativos e sequência finita de simplificações. Não executada nesta rodada; não autoriza redesenho automático e não bloqueia o defeito funcional em paisagem. Índice, TODO e relatório de feedback atualizados. Referências/diff documentais conferidos; sem testes/build, mudança funcional, servidor, dados reais/SQL, commit, push ou deploy. Alterações externas preservadas.
 
 ### Retorno do proprietário no iPhone em30/10 — estado vigente
 

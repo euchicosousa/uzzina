@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Icons } from "~/components/uzzina/UIcons";
+import { UIcons } from "~/components/uzzina/UIcons";
 import { cn } from "~/lib/utils";
 import {
   GallerySection,
@@ -85,14 +85,14 @@ function IconsPlayground() {
       caption={`slug="${slug}" · ${sizeClass}${useColor ? ' · color="#7c3aed"' : ""}`}
       preview={
         <div className="flex items-center justify-center p-6">
-          <Icons
+          <UIcons
             className={cn(sizeClass, "text-foreground")}
             color={selectedColor}
             slug={slug}
           />
         </div>
       }
-      title="Icons"
+      title="UIcons"
     >
       <PlaygroundSelect
         label="Ícone"
@@ -126,10 +126,10 @@ export function UzzinaIconsSection() {
         <GallerySectionHeader
           approved
           description="Ícones customizados da UZZINA (categorias, fases e estações), em UIcons.tsx."
-          title="Icons"
+          title="UIcons"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem id="uzzina-icons-curated" label="Icons">
+          <GalleryItem id="uzzina-icons-curated" label="UIcons">
             <IconsPlayground />
           </GalleryItem>
 
@@ -149,7 +149,7 @@ export function UzzinaIconsSection() {
                         className="flex flex-col items-center justify-center gap-1.5 py-2 text-center"
                         key={item.slug}
                       >
-                        <Icons
+                        <UIcons
                           className="size-5 text-foreground"
                           slug={item.slug}
                         />

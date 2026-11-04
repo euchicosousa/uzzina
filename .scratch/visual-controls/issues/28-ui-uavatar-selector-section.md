@@ -1,6 +1,10 @@
 # 28 — `/ui`: seção "UAvatarSelector"
 
-Status: Concluído (100%) — aceite visual do proprietário em 04/11/2026.
+**Resumo:** Demonstra seleção por avatares, presets, subtítulo e limite mínimo de seleção.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
+**Status:** Concluído (100%) — aceite registrado no índice da série em 04/11/2026.
 Escopo: criar na aba Componentes Uzzina a seção do `UAvatarSelector` com playground. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)

@@ -10,19 +10,15 @@ import {
   PrismPopoverTrigger,
 } from "~/components/prism";
 import { AREAS, CATEGORIES } from "~/lib/CONSTANTS";
-import { Icons } from "~/utils";
-import { ComboboxTrigger, type ComboboxTriggerProps } from "./ComboboxTrigger";
+import { UIcons } from "~/components/uzzina/UIcons";
+import {
+  UComboboxTrigger,
+  type UComboboxTriggerProps,
+} from "./UComboboxTrigger";
+
 const AREA_ORDER = ["all", "instagram", "creative", "account", "adm"];
-export function CategoriesCombobox({
-  selectedCategories,
-  onSelect,
-  isMulti,
-  showInstagramGroup,
-  tabIndex,
-  showText = true,
-  variant,
-  size,
-}: {
+
+export interface UCategoriesComboboxProps {
   selectedCategories: string[];
   onSelect?: ({
     category,
@@ -35,9 +31,20 @@ export function CategoriesCombobox({
   showInstagramGroup?: boolean;
   tabIndex?: number;
   showText?: boolean;
-  variant?: ComboboxTriggerProps["variant"];
-  size?: ComboboxTriggerProps["size"];
-}) {
+  variant?: UComboboxTriggerProps["variant"];
+  size?: UComboboxTriggerProps["size"];
+}
+
+export function UCategoriesCombobox({
+  selectedCategories,
+  onSelect,
+  isMulti,
+  showInstagramGroup,
+  tabIndex,
+  showText = true,
+  variant,
+  size,
+}: UCategoriesComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const CATEGORIES_LIST = Object.values(CATEGORIES);
   let categoriesList = showInstagramGroup
@@ -95,7 +102,7 @@ export function CategoriesCombobox({
   return (
     <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
       {isMulti && effectiveVariant === "ghost" && (size ?? "sm") === "sm" ? (
-        <ComboboxTrigger
+        <UComboboxTrigger
           data-state={hasSelection && "on"}
           tabIndex={tabIndex}
           title={
@@ -109,19 +116,19 @@ export function CategoriesCombobox({
         >
           {currentCategories.length === 0 ||
           currentCategories[0].slug === "all" ? (
-            <Icons slug="categories" />
+            <UIcons slug="categories" />
           ) : (
             currentCategories.map((category) => (
-              <Icons
+              <UIcons
                 key={category.slug}
                 color={category.color}
                 slug={category.slug}
               />
             ))
           )}
-        </ComboboxTrigger>
+        </UComboboxTrigger>
       ) : (
-        <ComboboxTrigger
+        <UComboboxTrigger
           aria-label={
             !showText
               ? `Categoria: ${currentCategories[0]?.title || "Selecione"}`
@@ -132,7 +139,7 @@ export function CategoriesCombobox({
           size={size}
           variant={variant}
         >
-          <Icons
+          <UIcons
             color={currentCategories[0]?.color}
             slug={currentCategories[0]?.slug || "categories"}
           />
@@ -141,7 +148,7 @@ export function CategoriesCombobox({
               {currentCategories[0]?.title || "Selecione..."}
             </div>
           )}
-        </ComboboxTrigger>
+        </UComboboxTrigger>
       )}
       <PrismPopover className="overflow-hidden p-0">
         <PrismCommand>
@@ -222,7 +229,7 @@ export function CategoriesCombobox({
                       }}
                       textValue={category.title}
                     >
-                      <Icons
+                      <UIcons
                         className="size-4"
                         color={category.color}
                         slug={category.slug}

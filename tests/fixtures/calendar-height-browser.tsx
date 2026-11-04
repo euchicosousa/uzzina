@@ -11,9 +11,9 @@ import { CalendarActions } from "~/components/features/Calendar";
 import { ClientCalendar } from "~/components/client/ClientCalendar";
 import { HomeCalendarView } from "~/components/features/home/HomeCalendarView";
 import {
-  ViewOptionsComponent,
-  useViewOptions,
-} from "~/components/features/ViewOptions";
+  UViewOptions,
+  useUViewOptions,
+} from "~/components/uzzina/UViewOptions";
 import { CalendarTestProviders, calendarAction } from "./calendar-height";
 import "~/tailwind.css";
 
@@ -33,7 +33,7 @@ function Fixture() {
     }),
   );
   const [variant, setVariant] = useState<"line" | "block" | "content">("line");
-  const [options, setOptions] = useViewOptions({
+  const [options, setOptions] = useUViewOptions({
     showOptions: { variant: true, limitHeight: true },
   });
   if (mode === "home")
@@ -54,7 +54,7 @@ function Fixture() {
   const start = startOfWeek(startOfMonth(date));
   return (
     <>
-      <ViewOptionsComponent viewOptions={options} setViewOptions={setOptions} />
+      <UViewOptions viewOptions={options} setViewOptions={setOptions} />
       <button
         onClick={() =>
           setOptions((previous) => ({

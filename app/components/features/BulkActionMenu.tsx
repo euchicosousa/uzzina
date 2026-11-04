@@ -43,7 +43,7 @@ import {
   PrismMenuSubTrigger,
   PrismMenuTrigger,
 } from "../prism";
-import { Icons } from "../uzzina/UIcons";
+import { UIcons } from "../uzzina/UIcons";
 
 export function BulkActionMenu() {
   // ─── Multi-seleção ───────────────────────────────────────────────────────────
@@ -375,7 +375,7 @@ export function BulkActionMenu() {
                     }
                     textValue={phase.title}
                   >
-                    <Icons
+                    <UIcons
                       slug={phase.slug}
                       style={{
                         color: phase.color,
@@ -405,7 +405,7 @@ export function BulkActionMenu() {
                     }
                     textValue={category.title}
                   >
-                    <Icons
+                    <UIcons
                       slug={category.slug}
                       style={{
                         color: category.color,
@@ -454,7 +454,7 @@ export function BulkActionMenu() {
             onAction={() => setSprintOpen(true)}
             textValue="Sprints"
           >
-            <Icons slug="sprint" /> Alterar Sprints
+            <UIcons slug="sprint" /> Alterar Sprints
           </PrismMenuItem>
 
           {/* Data e Hora */}

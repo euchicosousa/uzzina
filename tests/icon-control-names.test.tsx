@@ -13,7 +13,7 @@ import {
 import { AppContext } from "~/contexts/AppContext";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
 import { AppThemeProvider } from "~/hooks/useAppTheme";
-import { CalendarToolbar } from "~/components/features/CalendarToolbar";
+import { UCalendarToolbar } from "~/components/uzzina/UCalendarToolbar";
 import { ClientCalendar } from "~/components/client/ClientCalendar";
 import { AppBar } from "~/components/layout/AppBar";
 import { calendarPerson } from "./fixtures/calendar-height";
@@ -159,7 +159,7 @@ it.each([
     function Fixture() {
       const [day, setDay] = useState(new Date(2026, 9, 16));
       return (
-        <CalendarToolbar
+        <UCalendarToolbar
           days={days}
           currentDay={day}
           setCurrentDay={(value) => {
@@ -181,7 +181,7 @@ it.each([
 );
 it("the date trigger retains its visible month in its name and returns focus after Escape", async () => {
   await mount(
-    <CalendarToolbar
+    <UCalendarToolbar
       currentDay={new Date(2026, 9, 16)}
       setCurrentDay={() => {}}
       showDate

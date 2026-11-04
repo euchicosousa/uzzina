@@ -22,12 +22,12 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import { PartnerCalendarBoard } from "~/components/features/PartnerCalendarBoard";
 import { ActionContainer } from "~/components/features/ActionContainer";
-import { CalendarButtons } from "~/components/features/Calendar";
 import { InstagramFeedSection } from "~/components/features/InstagramFeedSection";
 import {
-  ViewOptionsComponent,
-  useViewOptions,
-} from "~/components/features/ViewOptions";
+  UViewOptions,
+  useUViewOptions,
+} from "~/components/uzzina/UViewOptions";
+import { UCalendarToolbar } from "~/components/uzzina/UCalendarToolbar";
 import {
   PrismBadge,
   PrismButton,
@@ -147,7 +147,7 @@ function PartnerPage() {
     applyPartnerColors,
   ]);
   const preferences = getUserPreferences(person);
-  const [viewOptions, setViewOptions] = useViewOptions({
+  const [viewOptions, setViewOptions] = useUViewOptions({
     sprint: true,
     variant: preferences.defaultViewVariant,
     showOptions: {
@@ -248,7 +248,7 @@ function PartnerPage() {
             </Link>
           </div>
 
-          <CalendarButtons
+          <UCalendarToolbar
             currentDay={currentDay}
             days={30}
             setCurrentDay={(day: Date) => {
@@ -276,7 +276,7 @@ function PartnerPage() {
         {/* Mobile Bottom */}
         <div className="order-3 w-full overflow-hidden p-2 2xl:contents">
           {/* Organização */}
-          <ViewOptionsComponent
+          <UViewOptions
             className="2xl:contents"
             endComponents={
               <PrismToggle

@@ -1,6 +1,10 @@
 # 33 — `/ui`: seção "ActionColorDropdown"
 
-Status: Implementado e verificado tecnicamente — aguarda aceite visual do proprietário (04/11/2026).
+**Resumo:** Demonstra o seletor de cor da ação, substituído pelo UColorPickerDropdown do V37.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
+**Status:** Concluído (100%) — aceite registrado no índice da série em 04/11/2026.
 Escopo: criar na aba Componentes Uzzina a seção do `ActionColorDropdown` (cor da ação no rodapé da gaveta) com playground. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)

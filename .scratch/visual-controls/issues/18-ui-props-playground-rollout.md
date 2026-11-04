@@ -1,5 +1,9 @@
 # 18 — `/ui`: playground de propriedades em todas as seções existentes
 
+**Resumo:** Expande os playgrounds da galeria e corrige Alert, grupos, placeholders, chips, Tabs e Toaster.
+
+**Commit de referência:** `ce1230b` — entrega versionada no histórico local.
+
 Status: Concluído em 100%. Componentes aprovados pelo proprietário, correções finalizadas e botão do toaster alinhado ao extremo direito. Encerramento e commit autorizados.
 Escopo: trocar os exemplos estáticos de cada seção de componente do `/ui` por playgrounds feitos com o auxiliar do ticket 17 (`app/components/ui-sections/PropsPlayground.tsx`). Uma instância viva por componente, com os controles listados aqui. **Não altere nenhum componente do app** (`app/components/prism/`, `uzzina/`, `features/`, `contexts/`, `hooks/`, `lib/`). Somente arquivos de galeria e `app/routes/ui.tsx`.
 

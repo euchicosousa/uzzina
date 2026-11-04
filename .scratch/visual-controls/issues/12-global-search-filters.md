@@ -1,5 +1,9 @@
 # 12 — Busca global: filtros como sufixo do campo
 
+**Resumo:** Prevê filtros de parceiros e ações arquivadas integrados ao campo da busca global.
+
+**Commit de referência:** `b5b5f33` — somente o registro do ticket; implementação/estudo pendente.
+
 Status: Pronto para executar (respostas do proprietário em 03/11/2026, registradas abaixo; perguntas abertas removidas).
 Escopo: refazer a posição e a anatomia dos dois filtros da busca global (parceiros e arquivadas), usando **somente** componentes e variantes padrão do Prism, sem customização.
 

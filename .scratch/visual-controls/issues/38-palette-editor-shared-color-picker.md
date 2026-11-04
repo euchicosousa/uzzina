@@ -1,10 +1,14 @@
 # 38 — Editor de paleta com seletor compartilhado e exclusão discreta
 
+**Resumo:** Substitui ColorListEditor por UPaletteEditor com seletor compartilhado, reordenação e exclusão discreta.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
 **What to build:** substituir o seletor nativo de cor da lista pelo mesmo seletor da ação, renomear o editor para UPaletteEditor e tornar o comando de exclusão discreto em repouso.
 
 **Blocked by:** V37, seletor reutilizável UColorPickerDropdown funcional. Executor previsto Gemini.
 
-**Status:** concluído tecnicamente, aguarda aceite visual
+**Status:** Concluído (100%) — aceite registrado no índice da série em 04/11/2026.
 
 ## Entrega
 

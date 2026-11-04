@@ -2,21 +2,21 @@ import "./dom-setup";
 import { afterEach, expect, it } from "bun:test";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ComboboxTrigger } from "~/components/features/ComboboxTrigger";
+import { UComboboxTrigger } from "~/components/uzzina/UComboboxTrigger";
 afterEach(cleanup);
 it("maps disabled footer triggers to React Aria and excludes them from activation and Tab", async () => {
   let presses = 0;
   render(
     <>
       <button type="button">Before</button>
-      <ComboboxTrigger
+      <UComboboxTrigger
         variant="ghost"
         size="icon-lg"
         disabled
         onPress={() => presses++}
       >
         Disabled
-      </ComboboxTrigger>
+      </UComboboxTrigger>
       <button type="button">After</button>
     </>,
   );

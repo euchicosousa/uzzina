@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PhaseIcon } from "~/components/features/PhaseIcon";
+import { UPhaseIcon } from "~/components/uzzina/UPhaseIcon";
 import { PHASES } from "~/lib/CONSTANTS";
 import {
   GallerySection,
@@ -63,7 +63,7 @@ export function PhaseIconPlayground() {
       <PropsPlayground
         caption={`${PHASES[phase].title} · ${size} · ${SIZE_PX[size]}px`}
         preview={
-          <PhaseIcon phase={PHASES[phase]} size={size} variant={variant} />
+          <UPhaseIcon phase={PHASES[phase]} size={size} variant={variant} />
         }
         title="PhaseIcon"
       >
@@ -96,7 +96,7 @@ export function PhaseIconPlayground() {
       <div className="flex flex-wrap items-center justify-center gap-6 border-t pt-6">
         {PHASE_SLUGS.map((slug) => (
           <div className="flex flex-col items-center gap-1.5" key={slug}>
-            <PhaseIcon phase={PHASES[slug]} size="md" variant="progress" />
+            <UPhaseIcon phase={PHASES[slug]} size="md" variant="progress" />
             <span className="text-xs text-muted-foreground">
               {PHASES[slug].title}
             </span>

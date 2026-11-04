@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { PhaseCombobox } from "~/components/features/PhaseCombobox";
-import type { ComboboxTriggerProps } from "~/components/features/ComboboxTrigger";
+import { UPhaseCombobox } from "~/components/uzzina/UPhaseCombobox";
+import type { UComboboxTriggerProps } from "~/components/uzzina/UComboboxTrigger";
 import {
   GallerySection,
   GallerySectionHeader,
@@ -15,8 +15,8 @@ import {
   PlaygroundBoolean,
 } from "./PropsPlayground";
 
-type TriggerVariant = NonNullable<ComboboxTriggerProps["variant"]>;
-type TriggerSize = NonNullable<ComboboxTriggerProps["size"]>;
+type TriggerVariant = NonNullable<UComboboxTriggerProps["variant"]>;
+type TriggerSize = NonNullable<UComboboxTriggerProps["size"]>;
 
 const PHASE_VARIANTS = [
   "ghost",
@@ -70,15 +70,13 @@ function PhaseComboboxPlayground() {
         key={String(isMulti)}
         preview={
           <div className="flex w-fit items-center justify-center p-4">
-            <PhaseCombobox
+            <UPhaseCombobox
               disabled={disabled}
-              iconVariant={iconVariant}
               isMulti={isMulti}
               onSelect={({ phase, phases }) => {
                 if (phase !== undefined) setSelectedPhase(phase);
                 setSelectedPhases(phases);
               }}
-              selectedPhase={selectedPhase}
               selectedPhases={selectedPhases}
               showText={showText}
               size={size}
@@ -86,7 +84,7 @@ function PhaseComboboxPlayground() {
             />
           </div>
         }
-        title="PhaseCombobox"
+        title="UPhaseCombobox"
       >
         <PlaygroundSelect
           label="Variante"
@@ -140,10 +138,10 @@ export function UzzinaPhaseComboboxSection() {
         <GallerySectionHeader
           approved
           description="Seletor de Fase refatorado para o Prism com suporte a estados de progresso, ícones coloridos e seleção única/múltipla."
-          title="PhaseCombobox"
+          title="UPhaseCombobox"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="PhaseCombobox">
+          <GalleryItem label="UPhaseCombobox">
             <PhaseComboboxPlayground />
           </GalleryItem>
         </GallerySectionContent>

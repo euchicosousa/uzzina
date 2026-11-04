@@ -1,10 +1,14 @@
 # 43 — Substituir UToggleInput por PrismToggle preservando formulário
 
+**Resumo:** Remove UToggleInput e usa PrismToggle preservando Arquivado e o contrato de FormData.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
 **What to build:** usar PrismToggle no controle Arquivado do cadastro de parceiro, preservando formulário, autosave e estados existentes, e remover o wrapper redundante após migração.
 
 **Blocked by:** nenhum. Executor Gemini.
 
-**Status:** completed
+**Status:** Concluído (100%) — aceite registrado no índice da série em 04/11/2026.
 
 - [x] Confirmar consumidores. O estudo encontrou um uso operacional no cadastro administrativo do parceiro e outro na galeria. Não há uso operacional de radio.
 - [x] Substituir por PrismToggle controlado com isSelected/onChange, mantendo rótulo, ícone, nome acessível, disabled e teclado. Controlar type=button para não submeter formulário por acidente.

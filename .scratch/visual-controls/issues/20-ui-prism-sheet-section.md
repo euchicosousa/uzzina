@@ -1,6 +1,10 @@
 # 20 — `/ui`: seção "Sheet" (`PrismSheet`)
 
-Status: Concluído (100%) em 04/11/2026 — correções e validação autorizadas pelo proprietário, verificadas pelo coordenador.
+**Resumo:** Demonstra Sheet com quatro direções, fechamento, foco e conteúdo longo.
+
+**Commit de referência:** `ce1230b + 8d80249 + d7efe5f` — entrega versionada no histórico local.
+
+**Status:** Concluído (100%) — revisado e encerrado em 04/11/2026.
 Escopo: criar a seção do `PrismSheet`, que não existe no `/ui`, com playground de propriedades. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)

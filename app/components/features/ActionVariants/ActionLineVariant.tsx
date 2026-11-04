@@ -1,10 +1,10 @@
 import type { PRIORITY } from "~/lib/CONSTANTS";
 import { INTENT } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
-import { Icons, isLateAction } from "~/utils";
+import { UIcons, isLateAction } from "~/utils";
 import type { ActionVariantRendererProps } from "./types";
 import { ActionItemTitleInput } from "../ActionItemTitleInput";
-import { PhaseIcon } from "../PhaseIcon";
+import { UPhaseIcon } from "~/components/uzzina/UPhaseIcon";
 import {
   ActionItemDateTimeDisplay,
   ActionItemPartners,
@@ -35,7 +35,7 @@ export function ActionLineVariant({
           {isLateAction(action) ? (
             <AlertCircleIcon className="size-4 text-late-foreground" />
           ) : (
-            <PhaseIcon phase={currentPhase} size="dot" />
+            <UPhaseIcon phase={currentPhase} size="dot" />
           )}
         </div>
         {isLateAction(action) && <ActionItemSprint action={action} />}
@@ -77,7 +77,7 @@ export function ActionLineVariant({
           <ActionItemPriority priority={action.priority as PRIORITY} />
         )}
         {showCategory && (
-          <Icons
+          <UIcons
             className="size-4"
             color={currentCategory.color}
             slug={currentCategory.slug}

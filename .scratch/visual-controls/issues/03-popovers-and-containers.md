@@ -1,5 +1,9 @@
 # 03 - Padronizar popovers e containers flutuantes
 
+**Resumo:** Padroniza superfícies, espaçamento e dimensões dos popovers e containers.
+
+**Commit de referência:** `b5b5f33` — entrega versionada no histórico local.
+
 **Status:** Aprovado (proprietário, 03/11/2026). Sem commit.
 **Escopo original:** levantamento e plano; aplicado conforme as decisões do proprietário abaixo.
 

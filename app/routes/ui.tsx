@@ -37,7 +37,7 @@ import {
   ToasterSection,
   SeparatorSection,
   SheetSection,
-  ViewOptionsSection,
+  UzzinaViewOptionsSection,
   UzzinaPartnersComboboxSection,
   UzzinaCategoriesComboboxSection,
   UzzinaPhaseComboboxSection,
@@ -135,39 +135,39 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
   // Uzzina
   {
     id: "uzzina-action-date-picker",
-    label: "ActionDatePicker",
+    label: "UActionDatePicker",
     section: "uzzina",
     keywords: ["data", "hora", "acao", "gaveta", "calendario"],
     approved: true,
   },
   {
     id: "uzzina-calendar-toolbar",
-    label: "CalendarToolbar",
+    label: "UCalendarToolbar",
     section: "uzzina",
     keywords: ["calendario", "data", "dia", "navegacao", "toolbar"],
     approved: true,
   },
   {
     id: "uzzina-categories-combobox",
-    label: "CategoriesCombobox",
+    label: "UCategoriesCombobox",
     section: "uzzina",
     keywords: ["categorias", "categories", "combobox", "filtro"],
     approved: true,
   },
   {
     id: "uzzina-combobox-trigger",
-    label: "ComboboxTrigger",
+    label: "UComboboxTrigger",
     section: "uzzina",
     keywords: ["gatilho", "trigger", "combobox", "botao", "avatar"],
     approved: true,
   },
   {
     id: "uzzina-icons",
-    label: "Icons",
+    label: "UIcons",
     section: "uzzina",
     keywords: ["icones", "ícones", "icons", "categoria", "fase"],
     subsections: [
-      { id: "uzzina-icons-curated", label: "Icons" },
+      { id: "uzzina-icons-curated", label: "UIcons" },
       { id: "uzzina-icons-all", label: "Todos os Ícones" },
     ],
     approved: true,
@@ -175,27 +175,27 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
   {
     id: "uzzina-partner-celebrations-selector",
     approved: true,
-    label: "PartnerCelebrationsSelector",
+    label: "UPartnerCelebrationsSelector",
     section: "uzzina",
     keywords: ["datas", "comemorativas", "feriados", "parceiro", "selecao"],
   },
   {
     id: "uzzina-partners-combobox",
-    label: "PartnersCombobox",
+    label: "UPartnersCombobox",
     section: "uzzina",
     keywords: ["parceiros", "partners", "combobox", "filtro", "playground"],
     approved: true,
   },
   {
     id: "uzzina-phase-combobox",
-    label: "PhaseCombobox",
+    label: "UPhaseCombobox",
     section: "uzzina",
     keywords: ["fase", "phase", "combobox", "progresso"],
     approved: true,
   },
   {
     id: "uzzina-phase-icon",
-    label: "PhaseIcon",
+    label: "UPhaseIcon",
     section: "uzzina",
     keywords: ["fase", "phase", "icone", "progresso", "status"],
     approved: true,
@@ -307,7 +307,7 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
   },
   {
     id: "uzzina-view-options",
-    label: "ViewOptionsComponent",
+    label: "UViewOptions",
     section: "uzzina",
     keywords: ["visualizacao", "view", "options", "ordenacao", "colunas"],
     approved: true,
@@ -1067,7 +1067,7 @@ function UIPage() {
               <UzzinaPaletteEditorSection />
               <UzzinaPreferenceSwitchSection />
               <UzzinaToggleInputSection />
-              <ViewOptionsSection />
+              <UzzinaViewOptionsSection />
             </div>
           ) : (
             <div className="flex w-full max-w-full min-w-0 flex-col">

@@ -1,5 +1,9 @@
 # 01 — Anéis de foco consistentes (ring-ring/30)
 
+**Resumo:** Uniformiza os anéis de foco dos controles com opacidade /30.
+
+**Commit de referência:** `b5b5f33` — entrega versionada no histórico local.
+
 Status: Aplicado local (03/11) — aguarda validação visual do proprietário
 Escopo: somente estilos de foco em `app/` (sem mudar comportamento de teclado/foco).
 

@@ -19,7 +19,9 @@ import {
   TagIcon,
   UsersIcon,
 } from "lucide-react";
-import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
+import { useState } from "react";
+import { UCategoriesCombobox } from "~/components/uzzina/UCategoriesCombobox";
+import { UPhaseCombobox } from "~/components/uzzina/UPhaseCombobox";
 import {
   PrismButton,
   PrismMenu,
@@ -33,7 +35,7 @@ import {
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 
-export type ViewOptions = {
+export type UViewOptions = {
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
   columns?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   limitHeight?: boolean;
@@ -64,8 +66,6 @@ export type ViewOptions = {
     filter_responsible?: boolean;
   };
 };
-import { useState } from "react";
-import { PhaseCombobox } from "./PhaseCombobox";
 
 /** Defaults internos — não expostos fora deste módulo */
 const DEFAULT_VIEW_OPTIONS = {
@@ -81,7 +81,7 @@ const DEFAULT_VIEW_OPTIONS = {
   responsibles: false,
   priority: false,
 } satisfies Omit<
-  ViewOptions,
+  UViewOptions,
   | "instagram"
   | "showOptions"
   | "filter_category"
@@ -90,20 +90,21 @@ const DEFAULT_VIEW_OPTIONS = {
 >;
 
 /**
- * Hook que inicializa ViewOptions com defaults aplicados automaticamente.
+ * Hook que inicializa UViewOptions com defaults aplicados automaticamente.
  * Passe apenas o que difere do padrão — showOptions é obrigatório.
  */
-export function useViewOptions(
-  overrides: Partial<ViewOptions> & Pick<ViewOptions, "showOptions">,
+export function useUViewOptions(
+  overrides: Partial<UViewOptions> & Pick<UViewOptions, "showOptions">,
 ) {
-  return useState<ViewOptions>({
+  return useState<UViewOptions>({
     ...DEFAULT_VIEW_OPTIONS,
     ...overrides,
   });
 }
+
 type ViewMenuProps = {
-  viewOptions: ViewOptions;
-  setViewOptions: (viewOptions: ViewOptions) => void;
+  viewOptions: UViewOptions;
+  setViewOptions: (viewOptions: UViewOptions) => void;
 };
 
 function ViewMenuTrigger({
@@ -126,7 +127,7 @@ function ViewMenuTrigger({
  * Which "Visualizar" groups the screen allows right now. The menu button is
  * rendered only when at least one group is visible, so it never opens empty.
  */
-export function getVisualizeGroups(viewOptions: ViewOptions) {
+export function getVisualizeGroups(viewOptions: UViewOptions) {
   const { showOptions } = viewOptions;
   const isContent = viewOptions.variant === VARIANT.content;
   return {
@@ -352,19 +353,21 @@ function DisplayMenu({ viewOptions, setViewOptions }: ViewMenuProps) {
   );
 }
 
-export function ViewOptionsComponent({
+export interface UViewOptionsProps {
+  viewOptions: UViewOptions;
+  setViewOptions: (viewOptions: UViewOptions) => void;
+  startComponents?: React.ReactNode;
+  endComponents?: React.ReactNode;
+  className?: string;
+}
+
+export function UViewOptions({
   viewOptions,
   setViewOptions,
   startComponents,
   endComponents,
   className,
-}: {
-  viewOptions: ViewOptions;
-  setViewOptions: (viewOptions: ViewOptions) => void;
-  startComponents?: React.ReactNode;
-  endComponents?: React.ReactNode;
-  className?: string;
-}) {
+}: UViewOptionsProps) {
   viewOptions.variant ||= VARIANT.line;
   const { showOptions } = viewOptions;
   const menuProps = { viewOptions, setViewOptions };
@@ -400,7 +403,7 @@ export function ViewOptionsComponent({
         showOptions.filter_responsible) && (
         <div className="flex gap-1">
           {showOptions.filter_category && (
-            <CategoriesCombobox
+            <UCategoriesCombobox
               isMulti
               onSelect={({ categories }) => {
                 setViewOptions({
@@ -414,7 +417,7 @@ export function ViewOptionsComponent({
             />
           )}
           {showOptions.filter_phase && (
-            <PhaseCombobox
+            <UPhaseCombobox
               isMulti={true}
               onSelect={({ phases }) => {
                 setViewOptions({

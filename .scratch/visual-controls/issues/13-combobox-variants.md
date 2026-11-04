@@ -1,5 +1,9 @@
 # 13 — Comboboxes: variant/size do botão e conteúdo
 
+**Resumo:** Unifica variantes e tamanhos dos comboboxes com o botão Prism.
+
+**Commit de referência:** `b5b5f33` — entrega versionada no histórico local.
+
 ## Regra
 
 - Comboboxes e `ComboboxTrigger` recebem `variant`/`size` do botão Prism; padrão `ghost` + `sm`. Sem variantes próprias.

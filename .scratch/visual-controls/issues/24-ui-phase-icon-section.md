@@ -1,6 +1,10 @@
 # 24 — `/ui`: seção "PhaseIcon"
 
-Status: Concluído (100%) — aceite visual explícito do proprietário em 04/11/2026.
+**Resumo:** Demonstra fases, tamanhos e variantes do PhaseIcon, preservado por decisão do proprietário.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
+**Status:** Concluído (100%) — aceite registrado no índice da série em 04/11/2026.
 Escopo: criar na aba Componentes Uzzina a seção do `PhaseIcon` com playground. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)

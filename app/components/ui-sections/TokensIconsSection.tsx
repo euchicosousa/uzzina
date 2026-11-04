@@ -130,7 +130,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type * as React from "react";
-import { Icons } from "~/components/uzzina/UIcons";
+import { UIcons } from "~/components/uzzina/UIcons";
 import {
   GallerySection,
   GallerySectionContent,
@@ -842,8 +842,8 @@ function CustomIconGridItem({ slug, name, meaning }: CustomIconDef) {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center gap-3">
-        <Icons className="size-4 opacity-60" slug={slug} />
-        <Icons className="size-5 opacity-60" slug={slug} />
+        <UIcons className="size-4 opacity-60" slug={slug} />
+        <UIcons className="size-5 opacity-60" slug={slug} />
       </div>
       <span className="font-mono text-xs">{name}</span>
       <span className="text-xs text-muted-foreground">{meaning}</span>

@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import type { Action } from "~/types";
 import { useAppContext } from "~/contexts/AppContext";
 import { CATEGORIES, type CATEGORY_TYPE, type ORDER_BY } from "~/lib/CONSTANTS";
-import { createActionDraft, Icons } from "~/utils";
+import { createActionDraft, UIcons } from "~/utils";
 import { ActionContainer } from "../features/ActionContainer";
 import { PrismBadge, PrismButton } from "../prism";
 
@@ -68,7 +68,7 @@ function CategoryColumn({
               color: category.color,
             }}
           >
-            <Icons className="size-5" slug={category.slug} />
+            <UIcons className="size-5" slug={category.slug} />
           </div>
           <span className="truncate text-sm font-medium tracking-tight">
             {category.title}

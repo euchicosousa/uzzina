@@ -17,8 +17,8 @@ import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { searchActionsByTitle } from "~/models/actions";
 import { getFormattedDateTime } from "~/utils/date";
 import { UAvatar } from "../uzzina/UAvatar";
-import { PartnersCombobox } from "./PartnersCombobox";
-import { PhaseIcon } from "./PhaseIcon";
+import { UPartnersCombobox } from "~/components/uzzina/UPartnersCombobox";
+import { UPhaseIcon } from "~/components/uzzina/UPhaseIcon";
 import {
   ArchiveIcon,
   PlusIcon,
@@ -573,7 +573,7 @@ function GlobalSearchContent({
                     )}
                   </div>
                   <div className="absolute right-4">
-                    <PhaseIcon phase={phase} />
+                    <UPhaseIcon phase={phase} />
                   </div>
                 </PrismCommandItem>
               );
@@ -644,7 +644,7 @@ function GlobalSearchContent({
             aria-label="Filtrar ações por parceiros"
             className="max-w-full min-w-0"
           >
-            <PartnersCombobox
+            <UPartnersCombobox
               allowAll
               showText
               size="sm"

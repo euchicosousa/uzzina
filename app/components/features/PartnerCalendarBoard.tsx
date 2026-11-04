@@ -13,7 +13,7 @@ import { useParams } from "@tanstack/react-router";
 import invariant from "tiny-invariant";
 import { CalendarWithDnd } from "~/components/features/CalendarWithDnd";
 import { createActionDraft } from "~/utils";
-import type { ViewOptions } from "./ViewOptions";
+import type { UViewOptions } from "~/components/uzzina/UViewOptions";
 
 import { useAppContext } from "~/contexts/AppContext";
 
@@ -24,7 +24,7 @@ export function PartnerCalendarBoard({
 }: {
   currentDay?: Date;
   actions: Action[];
-  viewOptions: ViewOptions;
+  viewOptions: UViewOptions;
 }) {
   const calendarDays = eachDayOfInterval({
     start: startOfWeek(startOfMonth(currentDay)),

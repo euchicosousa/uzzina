@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { ActionFormFooter } from "~/components/features/action-drawer/ActionFormFooter";
-import { ComboboxTrigger } from "~/components/features/ComboboxTrigger";
+import { UComboboxTrigger } from "~/components/uzzina/UComboboxTrigger";
 import { AppContext } from "~/contexts/AppContext";
 import type { Action, Partner } from "~/types";
 import {
@@ -74,14 +74,14 @@ function Fixture() {
           <Footer name="primary" />
           {innerWidth >= 1600 && <Footer name="secondary" />}
         </div>
-        <ComboboxTrigger
+        <UComboboxTrigger
           variant="ghost"
           size="icon-lg"
           disabled
           onPress={() => setPresses((value) => value + 1)}
         >
           Disabled
-        </ComboboxTrigger>
+        </UComboboxTrigger>
         <output data-testid="disabled-presses">{presses}</output>
       </AppContext.Provider>
     </CalendarTestProviders>

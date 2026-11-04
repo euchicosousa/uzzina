@@ -1,5 +1,5 @@
-import type { Action } from "~/types";
-import type { ViewOptions } from "~/components/features/ViewOptions";
+import type { Action, Person } from "~/types";
+import type { UViewOptions } from "~/components/uzzina/UViewOptions";
 
 /**
  * Retorna as pessoas (people) que correspondem aos IDs fornecidos.
@@ -17,7 +17,7 @@ export function getPeople(
  */
 export function filterActions(
   actions: Action[],
-  options: ViewOptions,
+  options: UViewOptions,
   query?: string,
 ) {
   return actions.filter((action) => {

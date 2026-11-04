@@ -29,7 +29,7 @@ import {
 } from "~/components/prism";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { getAllCelebrations } from "~/models/celebrations";
-import { PartnerCelebrationsSelector } from "~/components/features/PartnerCelebrationsSelector";
+import { UPartnerCelebrationsSelector } from "~/components/uzzina/UPartnerCelebrationsSelector";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
@@ -627,7 +627,7 @@ function AdminPartnerEditPage() {
               </div>
               {savingFields.has("holidays") && <ULoader />}
             </div>
-            <PartnerCelebrationsSelector
+            <UPartnerCelebrationsSelector
               celebrations={celebrations}
               selectedIds={selectedHolidays}
               isLoading={isLoadingCelebrations}

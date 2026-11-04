@@ -1,10 +1,14 @@
 # 37 — Cores por parceiro, formatos e validação no seletor de cor
 
+**Resumo:** Unifica seleção de cor, paletas por parceiro, formatos HEX/RGB/HSL/HSB e validação no UColorPickerDropdown.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
 **What to build:** no ActionColorDropdown, identificar as paletas por parceiro e permitir editar a mesma cor como HEX, RGB, HSL ou HSB, com validação explícita e slider inferior sempre de hue.
 
 **Blocked by:** nenhum. Executor previsto Gemini.
 
-**Status:** concluído tecnicamente, aguarda aceite visual
+**Status:** Concluído (100%) — aceite registrado no índice da série em 04/11/2026.
 
 ## Entrega
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PartnerCelebrationsSelector } from "~/components/features/PartnerCelebrationsSelector";
+import { UPartnerCelebrationsSelector } from "~/components/uzzina/UPartnerCelebrationsSelector";
 import type { Celebration } from "~/types";
 import {
   GallerySection,
@@ -82,7 +82,7 @@ const PRESET_LABELS: Record<Preset, string> = {
   all: "Todas",
 };
 
-export function PartnerCelebrationsSelectorPlayground() {
+export function UPartnerCelebrationsSelectorPlayground() {
   const [preset, setPreset] = useState<Preset>("some");
   const [selectedIds, setSelectedIds] = useState<string[]>([
     "celebration-mock-02",
@@ -120,7 +120,7 @@ export function PartnerCelebrationsSelectorPlayground() {
       caption={`${selectedIds.length} selecionada(s)`}
       preview={
         <div className="w-full max-w-2xl">
-          <PartnerCelebrationsSelector
+          <UPartnerCelebrationsSelector
             celebrations={celebrations}
             isLoading={isLoading}
             onClear={handleClear}
@@ -176,7 +176,7 @@ export function UzzinaPartnerCelebrationsSelectorSection() {
         />
         <GallerySectionContent className="grid gap-12">
           <GalleryItem label="PartnerCelebrationsSelector">
-            <PartnerCelebrationsSelectorPlayground />
+            <UPartnerCelebrationsSelectorPlayground />
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>

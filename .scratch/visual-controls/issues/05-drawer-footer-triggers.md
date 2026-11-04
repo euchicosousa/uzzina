@@ -1,5 +1,9 @@
 # 05 — Gatilhos do rodapé da gaveta: anatomia única
 
+**Resumo:** Padroniza gatilhos, avatares, ícones e comandos do rodapé da gaveta.
+
+**Commit de referência:** `ce1230b` — entrega versionada no histórico local.
+
 Status: Aprovado pelo proprietário em 03/11/2026. Conclusão 100%.
 
 ## Aceite e regra vigente — 03/11/2026

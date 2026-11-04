@@ -31,7 +31,7 @@ const MONTHS = [
   { key: "12", name: "Dezembro", short: "Dez" },
 ];
 
-interface PartnerCelebrationsSelectorProps {
+export interface UPartnerCelebrationsSelectorProps {
   celebrations: Celebration[];
   selectedIds: string[];
   isLoading: boolean;
@@ -40,14 +40,14 @@ interface PartnerCelebrationsSelectorProps {
   saving?: boolean;
 }
 
-export function PartnerCelebrationsSelector({
+export function UPartnerCelebrationsSelector({
   celebrations,
   selectedIds,
   isLoading,
   onToggle,
   onClear,
   saving = false,
-}: PartnerCelebrationsSelectorProps) {
+}: UPartnerCelebrationsSelectorProps) {
   const [activeMonth, setActiveMonth] = useState("all");
   const [search, setSearch] = useState("");
 

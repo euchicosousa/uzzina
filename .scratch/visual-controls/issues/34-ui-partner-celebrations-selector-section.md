@@ -1,6 +1,10 @@
 # 34 — `/ui`: seção "PartnerCelebrationsSelector"
 
-Status: Implementado e verificado tecnicamente — aguarda aceite visual do proprietário (04/11/2026).
+**Resumo:** Demonstra a seleção de datas comemorativas da marca, revisada visualmente no V39.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
+**Status:** Concluído (100%) — aceite registrado no índice da série em 04/11/2026.
 Escopo: criar na aba Componentes Uzzina a seção do `PartnerCelebrationsSelector` com playground. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)

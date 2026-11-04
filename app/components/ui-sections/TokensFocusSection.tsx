@@ -41,7 +41,7 @@ import {
   PrismAccordionTrigger,
   PrismAccordionContent,
 } from "~/components/prism";
-import { ComboboxTrigger } from "~/components/features/ComboboxTrigger";
+import { UComboboxTrigger } from "~/components/uzzina/UComboboxTrigger";
 import { RichTextEditor } from "~/components/features/RichTextEditor";
 import {
   GallerySection,
@@ -321,13 +321,13 @@ export function TokensFocusSection() {
               label="Gatilho do rodapé (ComboboxTrigger ghost icon-lg)"
               source="App real (variant ghost, size icon-lg, anel padrão)"
             >
-              <ComboboxTrigger
+              <UComboboxTrigger
                 aria-label="Exemplo de gatilho do rodapé"
                 size="icon-lg"
                 variant="ghost"
               >
                 <CalendarIcon />
-              </ComboboxTrigger>
+              </UComboboxTrigger>
             </Example>
           </FocusFamily>
 

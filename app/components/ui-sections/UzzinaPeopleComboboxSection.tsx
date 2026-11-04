@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { UPeopleCombobox } from "~/components/uzzina/UPeopleCombobox";
-import { getTriggerAvatarSize } from "~/components/features/ComboboxTrigger";
+import { getTriggerAvatarSize } from "~/components/uzzina/UComboboxTrigger";
 import {
   GallerySection,
   GallerySectionHeader,

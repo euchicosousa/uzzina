@@ -114,7 +114,7 @@ export function SidebarAnchorLink({
   return (
     <a
       className={cn(
-        "flex items-center justify-between border-l py-2 pr-2 pl-4 text-muted-foreground transition-colors outline-none hover:bg-input/60 hover:text-foreground focus:ring-0 focus:outline-none focus-visible:bg-input focus-visible:ring-0 focus-visible:outline-none",
+        "flex w-full max-w-full min-w-0 items-center justify-between overflow-hidden border-l py-2 pr-2 pl-4 text-muted-foreground transition-colors outline-none hover:bg-input/60 hover:text-foreground focus:ring-0 focus:outline-none focus-visible:bg-input focus-visible:ring-0 focus-visible:outline-none",
         active
           ? "border-foreground font-medium text-foreground"
           : "border-border/40",
@@ -141,7 +141,9 @@ export function SidebarAnchorLink({
         }
       }}
     >
-      <span className="mr-2 min-w-0 truncate">{label}</span>
+      <span className="mr-2 min-w-0 flex-1 truncate" title={label}>
+        {label}
+      </span>
       {approved && (
         <span
           className="inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-approved text-approved-foreground shadow-2xs ring-1 ring-approved/60"
@@ -170,7 +172,7 @@ export function SidebarSubsectionLink({
   return (
     <a
       className={cn(
-        "flex items-center border-l py-1.5 pr-2 pl-7 text-xs font-normal transition-colors outline-none hover:bg-input/60 hover:text-foreground focus:ring-0 focus:outline-none focus-visible:bg-input focus-visible:ring-0 focus-visible:outline-none",
+        "flex w-full max-w-full min-w-0 items-center overflow-hidden border-l py-1.5 pr-2 pl-7 text-xs font-normal transition-colors outline-none hover:bg-input/60 hover:text-foreground focus:ring-0 focus:outline-none focus-visible:bg-input focus-visible:ring-0 focus-visible:outline-none",
         active
           ? "border-border/40 bg-input/30 text-foreground"
           : "border-border/40 text-muted-foreground",
@@ -197,7 +199,9 @@ export function SidebarSubsectionLink({
         }
       }}
     >
-      <span className="min-w-0 truncate">{label}</span>
+      <span className="min-w-0 flex-1 truncate" title={label}>
+        {label}
+      </span>
     </a>
   );
 }

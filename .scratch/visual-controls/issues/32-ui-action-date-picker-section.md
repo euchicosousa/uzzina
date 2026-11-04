@@ -1,6 +1,10 @@
 # 32 — `/ui`: seção "ActionDatePicker"
 
-Status: Concluído (100%) — aceite visual explícito do proprietário em 04/11/2026.
+**Resumo:** Demonstra escolha de data e hora da ação, formatos, tamanho e estado de atraso.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
+**Status:** Concluído (100%) — aceite registrado no índice da série em 04/11/2026.
 Escopo: criar na aba Componentes Uzzina a seção do `ActionDatePicker` (data e hora da ação na gaveta) com playground. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)

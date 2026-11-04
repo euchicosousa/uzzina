@@ -25,23 +25,13 @@ Sol = Sol 6.1. Terra = Terra 6.1. São os dois modelos pedidos disponíveis para
 | 15 | [F01 · Classificar feriados](../../.scratch/brand-holidays/issues/01-classify-holidays.md)                                             |       85% |      50% |        80% |       40% | Sol            | Campo confirmado em produção e UI local. Validar criar, reabrir e reconhecer o feriado na lista e no calendário.                                              |
 | 16 | [F02 · Selecionar feriados por marca](../../.scratch/brand-holidays/issues/02-partner-holidays.md)                                     |       70% |      70% |        55% |       70% | Terra          | Registros divergem sobre tabela e RPC remotas. Conferir catálogo em leitura antes de qualquer SQL. Validar isolamento entre marcas e retry.                   |
 | 17 | [IA01 · Consumo de IA em Minha Conta](../../.scratch/ai-usage/issues/01-ai-usage-visibility.md)                                        |       75% |      55% |        50% |       75% | Terra          | Visual aceito segundo CURRENT. Confirmar migration, permissões e agregação mensal com registro real controlado, inclusive duplicidade.                        |
-| 18 | [V25 · /ui: seção "ULoader"](../../.scratch/visual-controls/issues/25-ui-uloader-section.md)                                           | 90% |      20% |        75% |       90% | Gemini externo | Entrega presente. Pronto tecnicamente; aguarda aceite visual.|
-| 19 | [V26 · /ui: seção "UToggleInput"](../../.scratch/visual-controls/issues/26-ui-utoggle-input-section.md)                                | 90% |      20% |        75% |       90% | Gemini externo | Entrega presente. Pronto tecnicamente; aguarda aceite visual.|
-| 20 | [V31 · /ui: seção "ColorListEditor"](../../.scratch/visual-controls/issues/31-ui-color-list-editor-section.md)                         | 90% |      20% |        75% |       90% | Gemini externo | Entrega presente. Prettier aprovado; apto a seguir para aceite visual.|
-| 21 | [V33 · /ui: seção "ActionColorDropdown"](../../.scratch/visual-controls/issues/33-ui-action-color-dropdown-section.md)                 | 90% |      20% |        75% |       90% | Gemini externo | Entrega presente. Pronto tecnicamente; aguarda aceite visual.|
-| 22 | [V34 · /ui: seção "PartnerCelebrationsSelector"](../../.scratch/visual-controls/issues/34-ui-partner-celebrations-selector-section.md) | 85% |      20% |        75% |       90% | Gemini externo | Entrega presente. Formatação/overflow corrigidos; aguarda aceite visual.|
-| 23 | [V35 · Microseções no menu lateral da galeria](../../.scratch/visual-controls/issues/35-ui-sidebar-subsections.md) | 90% | 35% | 90% | 25% | Sol | Primeiro clique corrigido após reprodução no Comet e histórico real; aguarda aceite final. |
-| 24 | [V36 · Estudo dos wrappers de avatar](../../.scratch/visual-controls/issues/36-avatar-wrapper-comparison-study.md) | 0% | 25% | 75% | 90% | Sol | Comparar recursos, consumidores e responsabilidades. Entrega somente de estudo. |
-| 25 | [V37 · Seletor de cor e formatos](../../.scratch/visual-controls/issues/37-partner-color-picker-formats.md) | 0% | 60% | 45% | 85% | Gemini | Pronto. |
-| 26 | [V38 · UPaletteEditor](../../.scratch/visual-controls/issues/38-palette-editor-shared-color-picker.md) | 0% | 55% | 60% | 85% | Gemini | Depende de V37. |
-| 27 | [V40 · Unificar Sprint e Responsáveis](../../.scratch/visual-controls/issues/40-unify-people-combobox.md) | 0% | 40% | 55% | 85% | Gemini | Pronto — Gemini. |
-| 28 | [V41 · Padronizar nomes com prefixo U](../../.scratch/visual-controls/issues/41-standardize-uzzina-component-names.md) | 0% | 40% | 55% | 85% | Gemini | Gemini; depende de V38/V40/V43. |
-| 29 | [V42 · Padronizar loaders](../../.scratch/visual-controls/issues/42-standardize-loading-indicators.md) | 0% | 40% | 55% | 85% | Gemini | Pronto — Gemini. |
-| 30 | [V43 · UToggleInput para PrismToggle](../../.scratch/visual-controls/issues/43-replace-native-toggle-wrapper.md) | 0% | 40% | 55% | 85% | Gemini | Pronto — Gemini. |
+| 18 | [V35 · Microseções no menu lateral da galeria](../../.scratch/visual-controls/issues/35-ui-sidebar-subsections.md) | 90% | 35% | 90% | 25% | Sol | Primeiro clique corrigido após reprodução no Comet e histórico real; aguarda aceite final. |
+| 19 | [V36 · Estudo dos wrappers de avatar](../../.scratch/visual-controls/issues/36-avatar-wrapper-comparison-study.md) | 0% | 25% | 75% | 90% | Sol | Comparar recursos, consumidores e responsabilidades. Entrega somente de estudo. |
+| 20 | [V41 · Padronizar nomes com prefixo U](../../.scratch/visual-controls/issues/41-standardize-uzzina-component-names.md) | 0% | 40% | 55% | 85% | Gemini | Liberado: V38/V40/V43 concluídos em d7efe5f; renomeação ainda pendente. |
 
 ## Mudanças desde a primeira triagem
 
-A fila vigente tem **30 tickets abertos**. V05 foi encerrado com 100% após o aceite explícito do proprietário e a verificação desta rodada. V13 e V16 continuam concluídos. Foram acrescentados V17–V34, dos quais V17/V18 têm implementação local e aguardam aceite, enquanto V19–V34 constam a fazer. A contagem aumentou pela criação desses 18 tickets. [Índice da galeria](../../.scratch/visual-controls/README.md)
+A fila vigente tem **20 tickets abertos**. Na série visual, permanecem V12, V35 (aceite final), V36 (estudo) e V41 (renomeação). As entregas encerradas foram retiradas da fila acima. O [índice atualizado](../../.scratch/visual-controls/README.md) detalha finalidade, conclusão e commits; os registros das rodadas abaixo preservam o histórico.
 
 ## Verificação solicitada pelo proprietário — 03/11/2026
 
@@ -215,3 +205,7 @@ V39 aprovado pelo proprietário, retirado da fila aberta. V35 reforçado e testa
 ## V35 — conflito de rolagem identificado — 04/11/2026
 
 Falha reproduzida no Comet e no histórico real: rolagem automática de hash do roteador cancelava a rolagem do menu. Corrigido pela navegação com controle explícito de rolagem. Primeiro clique confirmado na página do proprietário; regressão permanente usa histórico real e mede deslocamento. Aceite final ainda pendente. Ensaios anteriores em memória não reproduziam esse conflito.
+
+## Consolidação de tickets e commits — 04/11/2026
+
+Rodada visual versionada em `d7efe5f`; entregas anteriores em `b5b5f33`/`ce1230b` e ajuste de direções do Sheet em `8d80249`. V19–V34 e V37–V40/V42/V43 concluídos conforme registros atuais da série. V35 corrigido e commitado, aguardando aceite final; V36 sem parecer entregue; V41 sem migração entregue, com dependências liberadas. V12 preservado pendente conforme seu ticket. Atualizados os resumos individuais e a coluna de commits no índice. A presença de um ticket no commit não comprova implementação. Nenhum push/deploy verificado nesta atualização documental.

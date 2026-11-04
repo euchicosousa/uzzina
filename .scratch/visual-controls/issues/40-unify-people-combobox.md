@@ -1,10 +1,14 @@
 # 40 — Unificar os seletores de responsáveis e Sprint
 
+**Resumo:** Consolida responsáveis e Sprint em UPeopleCombobox preservando suas regras de seleção.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
 **What to build:** um UPeopleCombobox com aparência consistente de Responsáveis e modos responsibles/sprint, reutilizando consulta, filtro, busca, lista e avatares.
 
 **Blocked by:** nenhum. Executor Gemini.
 
-**Status:** completed
+**Status:** Concluído (100%) — aceite registrado no índice da série em 04/11/2026.
 
 - [x] Consolidar os dois seletores com modo explícito e callbacks tipados para cada contrato. isSprint pode ser usado somente se conservar a clareza e segurança dos contratos.
 - [x] Preservar seleção múltipla, escopo por parceiros, cache por identidade, Shift e estados de carregamento/desabilitado. Não consultar pessoas fora do escopo atual.

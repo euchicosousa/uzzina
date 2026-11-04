@@ -13,14 +13,26 @@ import { useAppContext } from "~/contexts/AppContext";
 import { getFormattedPartnersName } from "~/utils";
 import { cn } from "cnfast";
 import type { Partner } from "~/types";
-import { UAvatar, UAvatarGroup } from "../uzzina/UAvatar";
+import { UAvatar, UAvatarGroup } from "./UAvatar";
 import {
-  ComboboxTrigger,
+  UComboboxTrigger,
   getTriggerAvatarPadding,
   getTriggerAvatarSize,
-  type ComboboxTriggerProps,
-} from "./ComboboxTrigger";
-export function PartnersCombobox({
+  type UComboboxTriggerProps,
+} from "./UComboboxTrigger";
+
+export interface UPartnersComboboxProps {
+  selectedPartners?: string[];
+  onSelect?: (partners: string[]) => void;
+  tabIndex?: number;
+  showText?: boolean;
+  variant?: UComboboxTriggerProps["variant"];
+  size?: UComboboxTriggerProps["size"];
+  disabled?: boolean;
+  allowAll?: boolean;
+}
+
+export function UPartnersCombobox({
   selectedPartners = [],
   onSelect,
   tabIndex,
@@ -29,16 +41,7 @@ export function PartnersCombobox({
   size,
   disabled = false,
   allowAll = false,
-}: {
-  selectedPartners?: string[];
-  onSelect?: (partners: string[]) => void;
-  tabIndex?: number;
-  showText?: boolean;
-  variant?: ComboboxTriggerProps["variant"];
-  size?: ComboboxTriggerProps["size"];
-  disabled?: boolean;
-  allowAll?: boolean;
-}) {
+}: UPartnersComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { partners } = useAppContext();
   const currentPartners = selectedPartners
@@ -64,7 +67,7 @@ export function PartnersCombobox({
       isOpen={isOpen && !disabled}
       onOpenChange={(open) => !disabled && setIsOpen(open)}
     >
-      <ComboboxTrigger
+      <UComboboxTrigger
         aria-label={getFormattedPartnersName(currentPartners) || emptyLabel}
         className={cn(
           allowAll &&
@@ -100,7 +103,7 @@ export function PartnersCombobox({
               : emptyLabel}
           </div>
         )}
-      </ComboboxTrigger>
+      </UComboboxTrigger>
 
       <PrismPopover className="overflow-hidden p-0" size="lg">
         <PrismCommand className="p-0">

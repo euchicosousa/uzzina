@@ -15,12 +15,12 @@ import {
   PrismPopoverTrigger,
 } from "~/components/prism";
 import {
-  ComboboxTrigger,
+  UComboboxTrigger,
   getTriggerAvatarPadding,
   getTriggerAvatarSize,
   getTriggerContentSizeClass,
-  type ComboboxTriggerProps,
-} from "../features/ComboboxTrigger";
+  type UComboboxTriggerProps,
+} from "./UComboboxTrigger";
 import { UAvatar, UAvatarGroup } from "./UAvatar";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { fetchPeople } from "~/lib/supabase.queries";
@@ -68,8 +68,8 @@ export interface UPeopleComboboxProps {
 
   disabled?: boolean;
   tabIndex?: number;
-  variant?: ComboboxTriggerProps["variant"];
-  size?: ComboboxTriggerProps["size"];
+  variant?: UComboboxTriggerProps["variant"];
+  size?: UComboboxTriggerProps["size"];
   className?: string;
   placement?: Parameters<typeof PrismPopover>[0]["placement"];
   placeholder?: string;
@@ -230,7 +230,7 @@ export function UPeopleCombobox({
       isOpen={isOpen && !disabled}
       onOpenChange={(open) => !disabled && setIsOpen(open)}
     >
-      <ComboboxTrigger
+      <UComboboxTrigger
         aria-label={ariaLabelProp ?? defaultLabel}
         className={cn(triggerPadding, className)}
         disabled={disabled}
@@ -280,7 +280,7 @@ export function UPeopleCombobox({
             )}
           </div>
         )}
-      </ComboboxTrigger>
+      </UComboboxTrigger>
 
       <PrismPopover
         className="overflow-hidden p-0"

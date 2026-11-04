@@ -3,9 +3,9 @@ import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   getVisualizeGroups,
-  ViewOptionsComponent,
-  type ViewOptions,
-} from "../app/components/features/ViewOptions";
+  UViewOptions,
+  type UViewOptions as ViewOptions,
+} from "../app/components/uzzina/UViewOptions";
 
 // The DOM test environment has no CSS.escape, which react-aria uses to focus menu items.
 if (!("CSS" in globalThis)) {
@@ -39,7 +39,7 @@ const base: ViewOptions = {
 function mount(overrides: Partial<ViewOptions> = {}) {
   const calls: ViewOptions[] = [];
   render(
-    <ViewOptionsComponent
+    <UViewOptions
       setViewOptions={(next) => calls.push(next)}
       viewOptions={{ ...base, ...overrides }}
     />,
@@ -208,7 +208,7 @@ describe("Visualizar groups for each screen that uses it", () => {
 
   it("offers Visualizar on the home calendar for its height limit", () => {
     render(
-      <ViewOptionsComponent
+      <UViewOptions
         setViewOptions={() => {}}
         viewOptions={{ ...base, showOptions: screens.calendar ?? {} }}
       />,

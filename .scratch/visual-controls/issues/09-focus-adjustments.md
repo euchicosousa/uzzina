@@ -1,5 +1,9 @@
 # Ajustes da seção Foco (09)
 
+**Resumo:** Reúne e ajusta exemplos de foco, incluindo o foco dos cartões de ação.
+
+**Commit de referência:** `b5b5f33` — entrega versionada no histórico local.
+
 Data: 03/11/2026. Seção `/ui` "Foco" (`app/components/ui-sections/TokensFocusSection.tsx`) revisada pelo proprietário; ajustes aplicados em componentes e réplicas atualizadas. Sem commit.
 
 Status (03/11): **Aprovado** por inteiro. O cartão `ActionItem` foi resolvido por decisão do proprietário (só anel, sem borda de foco). A2–A10 resolvidas ou aprovadas. Regra 03/11: eliminar personalizações; usar itens padrão do sistema.

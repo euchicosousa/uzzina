@@ -32,17 +32,14 @@ import {
   ZapIcon,
 } from "lucide-react";
 import { Theme } from "~/hooks/useAppTheme";
-export function Icons({
-  slug,
-  className,
-  style,
-  color,
-}: {
+export interface UIconsProps {
   slug?: string;
   className?: string;
   style?: React.CSSProperties;
   color?: string;
-}) {
+}
+
+export function UIcons({ slug, className, style, color }: UIconsProps) {
   style = style
     ? style
     : color

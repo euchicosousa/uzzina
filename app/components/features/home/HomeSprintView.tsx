@@ -24,9 +24,9 @@ import {
 } from "~/components/features/ActionItem";
 import { SortableItem } from "~/components/features/DnD";
 import {
-  useViewOptions,
-  ViewOptionsComponent,
-} from "~/components/features/ViewOptions";
+  UViewOptions,
+  useUViewOptions,
+} from "~/components/uzzina/UViewOptions";
 import { PrismButton, PrismSkeleton } from "~/components/prism";
 import { useAppContext } from "~/contexts/AppContext";
 import { useLoading } from "~/hooks/useLoading";
@@ -42,7 +42,7 @@ export function HomeSprintView({ actions }: { actions: Action[] }) {
   const [activeAction, setActiveAction] = useState<Action | undefined>(
     undefined,
   );
-  const [viewOptions, setViewOptions] = useViewOptions({
+  const [viewOptions, setViewOptions] = useUViewOptions({
     variant: VARIANT.block,
     showOptions: {
       variant: true,
@@ -90,7 +90,7 @@ export function HomeSprintView({ actions }: { actions: Action[] }) {
               Restaurar ordem
             </PrismButton>
           )}
-          <ViewOptionsComponent
+          <UViewOptions
             setViewOptions={setViewOptions}
             viewOptions={viewOptions}
           />

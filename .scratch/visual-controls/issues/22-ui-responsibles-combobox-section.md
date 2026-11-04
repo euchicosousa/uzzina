@@ -1,6 +1,10 @@
 # 22 — `/ui`: seção "ResponsiblesCombobox"
 
-Status: Concluído (100%) em 04/11/2026 — correções e validação autorizadas pelo proprietário, verificadas pelo coordenador.
+**Resumo:** Demonstra seleção de responsáveis; o componente foi consolidado no UPeopleCombobox pelo V40.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
+**Status:** Concluído (100%) — revisado e encerrado em 04/11/2026.
 Escopo: criar na aba Componentes Uzzina a seção do `ResponsiblesCombobox` com playground. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)

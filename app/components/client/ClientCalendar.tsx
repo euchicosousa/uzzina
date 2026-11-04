@@ -24,7 +24,7 @@ import { DATE_TIME_DISPLAY, PHASES, type PHASE } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
 import { getFormattedDateTime } from "~/utils/date";
 import { Content } from "../features/Content";
-import { PhaseIcon } from "../features/PhaseIcon";
+import { UPhaseIcon } from "~/components/uzzina/UPhaseIcon";
 type ClientCalendarProps<
   T extends Action | DashActionDto = Action | DashActionDto,
 > = {
@@ -200,7 +200,11 @@ export function ClientCalendar<
                         >
                           <Content action={action} showDate={false} />
                           <div className="mt-2 flex items-center justify-between gap-4">
-                            <PhaseIcon phase={phase} size="sm" variant="icon" />
+                            <UPhaseIcon
+                              phase={phase}
+                              size="sm"
+                              variant="icon"
+                            />
 
                             <div className="text-xs text-muted-foreground">
                               {getFormattedDateTime(

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import {
-  ViewOptionsComponent,
-  type ViewOptions,
-} from "~/components/features/ViewOptions";
+  UViewOptions,
+  type UViewOptions as UViewOptionsType,
+} from "~/components/uzzina/UViewOptions";
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 import {
   GalleryItem,
@@ -12,8 +12,8 @@ import {
 } from "./GalleryHelperComponents";
 import { PropsPlayground, PlaygroundBoolean } from "./PropsPlayground";
 
-function ViewOptionsPlayground() {
-  const [viewOptions, setViewOptions] = useState<ViewOptions>({
+export function UViewOptionsPlayground() {
+  const [viewOptions, setViewOptions] = useState<UViewOptionsType>({
     variant: VARIANT.content,
     columns: 4,
     order: ORDER_BY.date,
@@ -39,7 +39,7 @@ function ViewOptionsPlayground() {
   });
 
   const updateShowOption = (
-    key: keyof NonNullable<ViewOptions["showOptions"]>,
+    key: keyof NonNullable<UViewOptionsType["showOptions"]>,
     val: boolean,
   ) => {
     setViewOptions((prev) => ({
@@ -58,17 +58,16 @@ function ViewOptionsPlayground() {
       caption={`variant: ${viewOptions.variant} · columns: ${viewOptions.columns} · order: ${viewOptions.order} · ascending: ${viewOptions.ascending}`}
       preview={
         <div className="w-full">
-          <ViewOptionsComponent
+          <UViewOptions
             setViewOptions={setViewOptions}
             viewOptions={viewOptions}
           />
         </div>
       }
-      previewClassName="justify-start"
-      title="ViewOptionsComponent"
+      title="UViewOptions"
     >
       <PlaygroundBoolean
-        label="Modo"
+        label="Modo de exibição"
         onChange={(v) => updateShowOption("variant", v)}
         prop="showOptions.variant"
         value={show.variant ?? true}
@@ -86,13 +85,13 @@ function ViewOptionsPlayground() {
         value={show.limitHeight ?? true}
       />
       <PlaygroundBoolean
-        label="Ordenar por"
+        label="Critério de ordenação"
         onChange={(v) => updateShowOption("order", v)}
         prop="showOptions.order"
         value={show.order ?? true}
       />
       <PlaygroundBoolean
-        label="Direção"
+        label="Direção da ordenação"
         onChange={(v) => updateShowOption("ascending", v)}
         prop="showOptions.ascending"
         value={show.ascending ?? true}
@@ -137,18 +136,18 @@ function ViewOptionsPlayground() {
   );
 }
 
-export function ViewOptionsSection() {
+export function UzzinaViewOptionsSection() {
   return (
     <div id="uzzina-view-options">
       <GallerySection>
         <GallerySectionHeader
           approved
           description="Barra de opções de visualização em três menus: Visualizar (modo, limite de altura, colunas), Ordenar (critério e direção) e Exibir (metadados de cada ação). Cada grupo e cada menu só aparecem quando a tela permite; um menu sem opções não é exibido."
-          title="ViewOptionsComponent"
+          title="UViewOptions"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="ViewOptionsComponent">
-            <ViewOptionsPlayground />
+          <GalleryItem label="UViewOptions">
+            <UViewOptionsPlayground />
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>

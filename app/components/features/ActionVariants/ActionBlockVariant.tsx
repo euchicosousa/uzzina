@@ -1,9 +1,9 @@
 import { CalendarDaysIcon } from "lucide-react";
 import type { ActionVariantRendererProps } from "./types";
 import { ActionItemTitleInput } from "../ActionItemTitleInput";
-import { PhaseIcon } from "../PhaseIcon";
+import { UPhaseIcon } from "~/components/uzzina/UPhaseIcon";
 import { INTENT, SIZE } from "~/lib/CONSTANTS";
-import { getFormattedDateTime, Icons } from "~/utils";
+import { getFormattedDateTime, UIcons } from "~/utils";
 import { ActionItemPartners, ActionItemResponsibles } from "../ActionItem";
 
 export function ActionBlockVariant({
@@ -48,14 +48,14 @@ export function ActionBlockVariant({
           )}
 
           {showCategory && (
-            <Icons
+            <UIcons
               className="size-4 shrink-0"
               color={currentCategory.color}
               slug={currentCategory.slug}
             />
           )}
 
-          <PhaseIcon phase={currentPhase} size="sm" />
+          <UPhaseIcon phase={currentPhase} size="sm" />
 
           {showResponsibles && (
             <ActionItemResponsibles

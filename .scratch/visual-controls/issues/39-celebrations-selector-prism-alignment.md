@@ -1,10 +1,14 @@
 # 39 — Alinhar o seletor de datas comemorativas ao Prism
 
+**Resumo:** Alinha o seletor de datas ao Prism com Tabs, badges, cabeçalhos mensais e títulos truncados.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
 **What to build:** manter a organização do PartnerCelebrationsSelector e fazer textos, busca, meses, seleção e comandos seguirem os padrões visuais e de teclado da UZZINA.
 
 **Blocked by:** nenhum. Independente de V37/V38. Executor previsto Gemini.
 
-**Status:** concluído (100%) — aceite visual explícito do proprietário em 04/11/2026.
+**Status:** Concluído (100%) — aceite registrado no índice da série em 04/11/2026.
 
 ## Entrega
 

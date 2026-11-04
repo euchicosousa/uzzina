@@ -1,13 +1,11 @@
-import type { Action } from "~/types";
+import type { Action, Celebration } from "~/types";
 import type { ReactNode } from "react";
 import { eachDayOfInterval, endOfWeek, format, startOfWeek } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
-import type { ViewOptions } from "~/components/features/ViewOptions";
+import type { UViewOptions } from "~/components/uzzina/UViewOptions";
 import { cn } from "cnfast";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { CalendarDayCell } from "./CalendarDayCell";
-export { CalendarToolbar } from "./CalendarToolbar";
-export { CalendarToolbar as CalendarButtons } from "./CalendarToolbar";
 export type CalendarLayoutOptions = {
   showBorder?: boolean;
   highlightThisWeek?: boolean;
@@ -30,7 +28,7 @@ export function CalendarActions({
 }: {
   currentDay?: Date;
   calendar: CalendarActionsType[];
-  viewOptions: ViewOptions;
+  viewOptions: UViewOptions;
   onCreateAction?: (day: Date) => void;
   renderDayLabel?: (day: Date, label: ReactNode) => ReactNode;
   layoutOptions?: CalendarLayoutOptions;

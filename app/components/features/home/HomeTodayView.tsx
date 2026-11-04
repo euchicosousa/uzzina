@@ -4,7 +4,7 @@ import { useSelectionContext } from "~/hooks/useMultiSelection";
 import { format } from "date-fns";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { CalendarToolbar } from "~/components/features/CalendarToolbar";
+import { UCalendarToolbar } from "~/components/uzzina/UCalendarToolbar";
 import type { Action } from "~/types";
 import { HomeViewWrapper } from "./HomeViewWrapper";
 import {
@@ -60,7 +60,7 @@ export function HomeTodayView({
       }
       OptionsComponent={
         <div className="flex max-w-full flex-wrap items-center justify-end gap-2">
-          <CalendarToolbar
+          <UCalendarToolbar
             currentDay={currentDay}
             setCurrentDay={setCurrentDay}
           />

@@ -2,7 +2,7 @@ import { useAppContext } from "~/contexts/AppContext";
 import { getUserPreferences } from "~/lib/preferences";
 import { useFillScrollViewport } from "~/hooks/useFillScrollViewport";
 import { useRef, useState } from "react";
-import { CalendarToolbar } from "~/components/features/CalendarToolbar";
+import { UCalendarToolbar } from "~/components/uzzina/UCalendarToolbar";
 import {
   TODAY_VIEW_LABELS,
   TodayBoard,
@@ -61,7 +61,7 @@ export function TodayPageView({
           {TODAY_VIEW_LABELS[view]}
         </p>
         <div className="flex max-w-full shrink-0 flex-wrap items-center justify-end gap-2 self-end lg:self-auto">
-          <CalendarToolbar
+          <UCalendarToolbar
             currentDay={currentDay}
             setCurrentDay={onCurrentDayChange}
           />

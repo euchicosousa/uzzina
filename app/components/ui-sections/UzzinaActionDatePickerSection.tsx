@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ActionDatePicker } from "~/components/features/action-drawer/ActionDatePicker";
+import { UActionDatePicker } from "~/components/uzzina/UActionDatePicker";
 import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import {
   GallerySection,
@@ -42,7 +42,7 @@ export function ActionDatePickerPlayground() {
     <PropsPlayground
       caption={date.toLocaleString("pt-BR")}
       preview={
-        <ActionDatePicker
+        <UActionDatePicker
           date={date}
           dateTimeDisplay={DATE_TIME_DISPLAY[displayKey]}
           isLate={isLate}
@@ -50,7 +50,7 @@ export function ActionDatePickerPlayground() {
           size={size}
         />
       }
-      title="ActionDatePicker"
+      title="UActionDatePicker"
     >
       <PlaygroundRadio
         label="Tamanho"
@@ -83,10 +83,10 @@ export function UzzinaActionDatePickerSection() {
         <GallerySectionHeader
           approved
           description="Data e hora da ação na gaveta: gatilho em link e popover com calendário e horário."
-          title="ActionDatePicker"
+          title="UActionDatePicker"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="ActionDatePicker">
+          <GalleryItem label="UActionDatePicker">
             <ActionDatePickerPlayground />
           </GalleryItem>
         </GallerySectionContent>

@@ -15,18 +15,18 @@ import {
   PrismPopoverTrigger,
 } from "~/components/prism";
 
-export type CalendarToolbarVariant =
+export type UCalendarToolbarVariant =
   "default" | "ghost" | "outline" | "secondary";
 
-export type CalendarToolbarSize = "xs" | "sm" | "default" | "lg";
+export type UCalendarToolbarSize = "xs" | "sm" | "default" | "lg";
 
-export interface CalendarToolbarProps {
+export interface UCalendarToolbarProps {
   currentDay: Date;
   setCurrentDay: (day: Date) => void;
   days?: number;
   showDate?: boolean;
-  variant?: CalendarToolbarVariant;
-  size?: CalendarToolbarSize;
+  variant?: UCalendarToolbarVariant;
+  size?: UCalendarToolbarSize;
   className?: string;
 }
 
@@ -37,15 +37,15 @@ const SIDE_BUTTON_SIZES = {
   lg: "icon-lg",
 } as const;
 
-export function CalendarToolbar({
+export function UCalendarToolbar({
   currentDay,
   setCurrentDay,
   days = 1,
   showDate,
-  variant = "ghost",
+  variant = "secondary",
   size = "sm",
   className,
-}: CalendarToolbarProps) {
+}: UCalendarToolbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const sideButtonSize = SIDE_BUTTON_SIZES[size];
 

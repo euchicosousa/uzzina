@@ -1,5 +1,9 @@
 # 16 — `/ui`: matriz de `PartnersCombobox` (tamanho do avatar por tamanho de botão)
 
+**Resumo:** Demonstra tamanhos de avatares do PartnersCombobox para cada tamanho de botão.
+
+**Commit de referência:** `b5b5f33` — entrega versionada no histórico local.
+
 Status: Concluído (03/11)
 Escopo: criar UMA seção de vitrine nova na aba "Componentes Uzzina" do `/ui`, com o `PartnersCombobox` real em uma matriz de variantes × tamanhos × seleção, para o proprietário decidir o tamanho do avatar por tamanho de botão (decisão 1 do [ticket 13](13-combobox-variants.md)). **Não altere nenhum componente do app** (nem `PartnersCombobox`, `ComboboxTrigger`, `UAvatar`, Prism). Somente arquivos de galeria.
 

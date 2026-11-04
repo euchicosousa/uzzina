@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { TagIcon } from "lucide-react";
 import {
-  ComboboxTrigger,
+  UComboboxTrigger,
   getTriggerAvatarSize,
   getTriggerContentSizeClass,
   getTriggerAvatarPadding,
-} from "~/components/features/ComboboxTrigger";
+} from "~/components/uzzina/UComboboxTrigger";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { cn } from "~/lib/utils";
 import {
@@ -161,7 +161,7 @@ export function ComboboxTriggerPlayground() {
     <PropsPlayground
       caption={`${variant} / ${size} · avatar ${avatarPx}px · conteúdo ${contentPx}px · ${paddingDesc}`}
       preview={
-        <ComboboxTrigger
+        <UComboboxTrigger
           aria-label={text}
           className={paddingClass}
           disabled={disabled}
@@ -170,9 +170,9 @@ export function ComboboxTriggerPlayground() {
           variant={variant}
         >
           {contentNode}
-        </ComboboxTrigger>
+        </UComboboxTrigger>
       }
-      title="ComboboxTrigger"
+      title="UComboboxTrigger"
     >
       <PlaygroundSelect
         label="Variante"
@@ -219,10 +219,10 @@ export function UzzinaComboboxTriggerSection() {
         <GallerySectionHeader
           approved
           description="Gatilho comum dos comboboxes: usa variante e tamanho do botão Prism; avatares, ícones e amostras seguem os helpers de tamanho."
-          title="ComboboxTrigger"
+          title="UComboboxTrigger"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="ComboboxTrigger">
+          <GalleryItem label="UComboboxTrigger">
             <ComboboxTriggerPlayground />
           </GalleryItem>
         </GallerySectionContent>

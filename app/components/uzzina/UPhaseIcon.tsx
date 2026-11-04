@@ -1,16 +1,19 @@
 import { PHASES, type SIZE, type PHASE_TYPE } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
 import { CheckIcon } from "lucide-react";
-import { Icons } from "~/components/uzzina/UIcons";
-export function PhaseIcon({
-  phase,
-  size = "sm",
-  variant = "progress",
-}: {
+import { UIcons } from "~/components/uzzina/UIcons";
+
+export interface UPhaseIconProps {
   phase: PHASE_TYPE;
   size?: (typeof SIZE)[keyof typeof SIZE] | "dot";
   variant?: "progress" | "icon";
-}) {
+}
+
+export function UPhaseIcon({
+  phase,
+  size = "sm",
+  variant = "progress",
+}: UPhaseIconProps) {
   const sizeClasses = {
     xs: "size-3",
     sm: "size-4",
@@ -21,10 +24,10 @@ export function PhaseIcon({
     dot: "size-2",
   }[size];
 
-  // Se variant for "icon", retorna o ícone temático definido no UIIcons
+  // Se variant for "icon", retorna o ícone temático definido no UIcons
   if (variant === "icon") {
     return (
-      <Icons
+      <UIcons
         className={cn(sizeClasses, "transition-colors duration-500")}
         color={phase.color}
         slug={phase.slug}

@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { PartnersCombobox } from "~/components/features/PartnersCombobox";
+import { UPartnersCombobox } from "~/components/uzzina/UPartnersCombobox";
 import {
   getTriggerAvatarSize,
   getTriggerContentSizeClass,
-  type ComboboxTriggerProps,
-} from "~/components/features/ComboboxTrigger";
+  type UComboboxTriggerProps,
+} from "~/components/uzzina/UComboboxTrigger";
 import {
   GallerySection,
   GallerySectionHeader,
@@ -19,8 +19,8 @@ import {
   PlaygroundBoolean,
 } from "./PropsPlayground";
 
-type TriggerVariant = NonNullable<ComboboxTriggerProps["variant"]>;
-type TriggerSize = NonNullable<ComboboxTriggerProps["size"]>;
+type TriggerVariant = NonNullable<UComboboxTriggerProps["variant"]>;
+type TriggerSize = NonNullable<UComboboxTriggerProps["size"]>;
 
 const PARTNER_VARIANTS = [
   "ghost",
@@ -84,7 +84,7 @@ function PartnersComboboxPlayground() {
         caption={`${variant} / ${size} · avatar ${avatarMeasure}px · ícone ${iconMeasure}px`}
         preview={
           <div className="flex w-fit items-center justify-center p-4">
-            <PartnersCombobox
+            <UPartnersCombobox
               allowAll={allowAll}
               disabled={disabled}
               onSelect={setSelected}
@@ -95,7 +95,7 @@ function PartnersComboboxPlayground() {
             />
           </div>
         }
-        title="PartnersCombobox"
+        title="UPartnersCombobox"
       >
         <PlaygroundSelect
           label="Variante"
@@ -148,10 +148,10 @@ export function UzzinaPartnersComboboxSection() {
         <GallerySectionHeader
           approved
           description="Seletor de parceiros com dados fictícios. Ajuste variante, tamanho e seleção à direita; a legenda mostra o tamanho real do avatar e do ícone."
-          title="PartnersCombobox"
+          title="UPartnersCombobox"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="PartnersCombobox">
+          <GalleryItem label="UPartnersCombobox">
             <PartnersComboboxPlayground />
           </GalleryItem>
         </GallerySectionContent>

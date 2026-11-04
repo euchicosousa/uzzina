@@ -5,10 +5,10 @@ import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { AppContext } from "../app/contexts/AppContext";
-import { PartnersCombobox } from "../app/components/features/PartnersCombobox";
+import { UPartnersCombobox } from "../app/components/uzzina/UPartnersCombobox";
 import { UPeopleCombobox } from "../app/components/uzzina/UPeopleCombobox";
-import { PhaseCombobox } from "../app/components/features/PhaseCombobox";
-import { CategoriesCombobox } from "../app/components/features/CategoriesCombobox";
+import { UPhaseCombobox } from "../app/components/uzzina/UPhaseCombobox";
+import { UCategoriesCombobox } from "../app/components/uzzina/UCategoriesCombobox";
 import { QUERY_KEYS } from "../app/lib/query-keys";
 import type { Partner, Person } from "../app/types";
 
@@ -109,7 +109,7 @@ function Harness({ kind, initial }: { kind: Kind; initial: string[] }) {
   return (
     <>
       {kind === "partners" && (
-        <PartnersCombobox
+        <UPartnersCombobox
           selectedPartners={selection}
           onSelect={setSelection}
         />
@@ -135,14 +135,14 @@ function Harness({ kind, initial }: { kind: Kind; initial: string[] }) {
         />
       )}
       {kind === "phases" && (
-        <PhaseCombobox
+        <UPhaseCombobox
           isMulti
           selectedPhases={selection}
           onSelect={({ phases }) => setSelection(phases)}
         />
       )}
       {kind === "categories" && (
-        <CategoriesCombobox
+        <UCategoriesCombobox
           isMulti
           showInstagramGroup
           selectedCategories={selection}

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { I18nProvider } from "react-aria";
-import { CalendarToolbar } from "~/components/features/CalendarToolbar";
+import { UCalendarToolbar } from "~/components/uzzina/UCalendarToolbar";
 import "~/tailwind.css";
 
 function Fixture() {
@@ -15,7 +15,7 @@ function Fixture() {
         <output data-testid="date">
           {date.getFullYear()}-{date.getMonth() + 1}-{date.getDate()}
         </output>
-        <CalendarToolbar currentDay={date} setCurrentDay={setDate} />
+        <UCalendarToolbar currentDay={date} setCurrentDay={setDate} />
       </main>
     </I18nProvider>
   );

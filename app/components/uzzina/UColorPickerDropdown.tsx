@@ -17,10 +17,10 @@ import {
   PrismSeparator as Separator,
 } from "~/components/prism";
 import {
-  ComboboxTrigger,
+  UComboboxTrigger,
   getTriggerContentSizeClass,
-  type ComboboxTriggerProps,
-} from "~/components/features/ComboboxTrigger";
+  type UComboboxTriggerProps,
+} from "~/components/uzzina/UComboboxTrigger";
 import { safeColor } from "~/utils/uzzina-utils";
 import type { Partner } from "~/types";
 
@@ -42,10 +42,10 @@ export interface UColorPickerDropdownProps {
   groups?: ColorSwatchGroup[];
   /** Parceiros da ação (atalho de conveniência que gera os grupos automaticamente) */
   partners?: Partner[];
-  /** Trigger personalizado (se não informado, usa ComboboxTrigger) */
+  /** Trigger personalizado (se não informado, usa UComboboxTrigger) */
   trigger?: React.ReactNode;
-  variant?: ComboboxTriggerProps["variant"];
-  size?: ComboboxTriggerProps["size"];
+  variant?: UComboboxTriggerProps["variant"];
+  size?: UComboboxTriggerProps["size"];
   popoverSize?: "sm" | "default" | "lg";
   disabled?: boolean;
   tabIndex?: number;
@@ -193,7 +193,7 @@ export function UColorPickerDropdown({
       {trigger ? (
         trigger
       ) : (
-        <ComboboxTrigger
+        <UComboboxTrigger
           aria-label={ariaLabel}
           className={className}
           isDisabled={disabled}
@@ -227,7 +227,7 @@ export function UColorPickerDropdown({
               </span>
             </div>
           )}
-        </ComboboxTrigger>
+        </UComboboxTrigger>
       )}
 
       <PrismPopover className="p-2" size={popoverSize}>

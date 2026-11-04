@@ -8,7 +8,7 @@ import type { VariantProps } from "class-variance-authority";
 
 type ButtonStyleProps = VariantProps<typeof buttonVariants>;
 
-export interface ComboboxTriggerProps extends Omit<ButtonProps, "className"> {
+export interface UComboboxTriggerProps extends Omit<ButtonProps, "className"> {
   /** Prism button variant. Default: ghost. */
   variant?: ButtonStyleProps["variant"];
   /** Prism button size. Default: sm. Use icon-* sizes for icon-only triggers. */
@@ -19,7 +19,7 @@ export interface ComboboxTriggerProps extends Omit<ButtonProps, "className"> {
   disabled?: boolean;
   ref?: React.Ref<HTMLButtonElement>;
 }
-type TriggerSize = ComboboxTriggerProps["size"];
+type TriggerSize = UComboboxTriggerProps["size"];
 
 /** Avatar size for a trigger: sm buttons use xs, default uses sm, lg uses md. */
 export function getTriggerAvatarSize(size: TriggerSize) {
@@ -63,7 +63,7 @@ export function getTriggerAvatarPadding(size: TriggerSize) {
 }
 
 /** Thin wrapper over the Prism button style: pointer cursor, type=button and `disabled` alias. */
-export function ComboboxTrigger({
+export function UComboboxTrigger({
   variant = "ghost",
   size = "sm",
   className,
@@ -72,7 +72,7 @@ export function ComboboxTrigger({
   disabled,
   isDisabled,
   ...props
-}: ComboboxTriggerProps) {
+}: UComboboxTriggerProps) {
   return (
     <ButtonPrimitive
       className={cn(
@@ -84,8 +84,8 @@ export function ComboboxTrigger({
         size === "icon" ? "w-auto min-w-10 px-2" : "",
         size === "icon-lg" ? "w-auto min-w-12 px-2" : "",
       )}
-      type={type}
       isDisabled={disabled || isDisabled}
+      type={type}
       {...props}
     >
       {children}

@@ -1,14 +1,14 @@
 import type { Action } from "~/types";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import {
-  ViewOptionsComponent,
-  useViewOptions,
-} from "~/components/features/ViewOptions";
+  UViewOptions,
+  useUViewOptions,
+} from "~/components/uzzina/UViewOptions";
 import { HomeViewWrapper } from "./HomeViewWrapper";
 import { VARIANT } from "~/lib/CONSTANTS";
 
 export function HomeLateView({ actions }: { actions: Action[] }) {
-  const [viewOptions, setViewOptions] = useViewOptions({
+  const [viewOptions, setViewOptions] = useUViewOptions({
     partner: true,
     variant: VARIANT.block,
     showOptions: {
@@ -24,7 +24,7 @@ export function HomeLateView({ actions }: { actions: Action[] }) {
     <HomeViewWrapper
       title="Atrasadas"
       OptionsComponent={
-        <ViewOptionsComponent
+        <UViewOptions
           viewOptions={viewOptions}
           setViewOptions={setViewOptions}
         />

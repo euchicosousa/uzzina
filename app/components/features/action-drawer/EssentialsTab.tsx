@@ -33,7 +33,7 @@ import {
 } from "~/utils";
 import { cn } from "cnfast";
 import type { Action, Partner } from "~/types";
-import { ActionDatePicker } from "./ActionDatePicker";
+import { UActionDatePicker } from "~/components/uzzina/UActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { WorkFileThumbnail } from "~/components/features/media/WorkFileThumbnail";
@@ -179,7 +179,7 @@ export function EssentialsTab({
   const detailsId = useId();
   const isSocial = isSocialMediaContent(RawAction.category);
   const dateControl = (
-    <ActionDatePicker
+    <UActionDatePicker
       date={parseU(RawAction.date)}
       isLate={isLateAction(RawAction)}
       onSelect={async (date) => {

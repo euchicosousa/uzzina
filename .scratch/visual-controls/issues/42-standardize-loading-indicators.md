@@ -1,10 +1,14 @@
 # 42 — Padronizar indicadores de carregamento com ULoader
 
+**Resumo:** Substitui indicadores arbitrários pelo ULoader com escala, cor contextual e acessibilidade.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
 **What to build:** reutilizar ULoader nos spinners equivalentes do app, preservando tamanho, cor contextual e acessibilidade dos estados de carregamento.
 
 **Blocked by:** nenhum. Executor Gemini. Coordenar edição dos consumidores com V40/V43 e demais trabalhos do checkout.
 
-**Status:** done
+**Status:** Concluído (100%) — aceite registrado no índice da série em 04/11/2026.
 
 - [x] Confirmar inventário atual. Estudo encontrou 12 usos operacionais de ULoader e 16 spinners externos: oito de página e oito inline. Registrar candidatos e diferenças antes da migração.
 - [x] Ampliar o contrato de ULoader apenas no necessário para cor herdada e atributos acessíveis. Preservar o comportamento dos consumidores atuais que dependem de text-muted-foreground.

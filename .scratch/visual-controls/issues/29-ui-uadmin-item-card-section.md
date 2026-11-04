@@ -1,6 +1,10 @@
 # 29 — `/ui`: seção "UAdminItemCard"
 
-Status: Concluído (100%) — aceite visual do proprietário em 04/11/2026.
+**Resumo:** Demonstra o item administrativo com avatar, título, subtítulo e selo.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
+**Status:** Concluído (100%) — aceite registrado no índice da série em 04/11/2026.
 Escopo: criar na aba Componentes Uzzina a seção do `UAdminItemCard` com playground. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)

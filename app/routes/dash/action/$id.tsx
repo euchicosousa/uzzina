@@ -14,11 +14,11 @@ import { PrismButton, buttonVariants } from "~/components/prism";
 import { CommentInput } from "~/components/features/ActionComments/CommentInput";
 import { CommentList } from "~/components/features/ActionComments/CommentList";
 import { WorkFileThumbnail } from "~/components/features/media/WorkFileThumbnail";
-import { PhaseIcon } from "~/components/features/PhaseIcon";
+import { UPhaseIcon } from "~/components/uzzina/UPhaseIcon";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { InstagramPreview } from "~/components/features/media/InstagramPreview";
 import { CATEGORIES, PHASES, type CATEGORY, type PHASE } from "~/lib/CONSTANTS";
-import { Icons } from "~/utils";
+import { UIcons } from "~/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDashContext } from "~/contexts/DashContext";
 import { toast } from "sonner";
@@ -332,7 +332,7 @@ function DashActionDetail() {
                 Categoria
               </div>
               <div className="flex items-center gap-1 font-medium capitalize">
-                <Icons
+                <UIcons
                   className="size-4"
                   slug={currentCategory.slug}
                   style={{
@@ -347,7 +347,7 @@ function DashActionDetail() {
                 Fase
               </div>
               <div className="flex items-center gap-2">
-                <PhaseIcon phase={currentPhase} variant="icon" />
+                <UPhaseIcon phase={currentPhase} variant="icon" />
                 <span
                   className="shrink-0 rounded-full px-3 py-1 text-xs font-medium"
                   style={{

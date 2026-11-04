@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { CategoriesCombobox } from "~/components/features/CategoriesCombobox";
-import type { ComboboxTriggerProps } from "~/components/features/ComboboxTrigger";
+import { UCategoriesCombobox } from "~/components/uzzina/UCategoriesCombobox";
+import type { UComboboxTriggerProps } from "~/components/uzzina/UComboboxTrigger";
 import {
   GallerySection,
   GallerySectionHeader,
@@ -14,8 +14,8 @@ import {
   PlaygroundBoolean,
 } from "./PropsPlayground";
 
-type TriggerVariant = NonNullable<ComboboxTriggerProps["variant"]>;
-type TriggerSize = NonNullable<ComboboxTriggerProps["size"]>;
+type TriggerVariant = NonNullable<UComboboxTriggerProps["variant"]>;
+type TriggerSize = NonNullable<UComboboxTriggerProps["size"]>;
 
 const CATEGORY_VARIANTS = [
   "ghost",
@@ -59,7 +59,7 @@ function CategoriesComboboxPlayground() {
         key={String(isMulti)}
         preview={
           <div className="flex w-fit items-center justify-center p-4">
-            <CategoriesCombobox
+            <UCategoriesCombobox
               isMulti={isMulti}
               onSelect={({ category, categories }) => {
                 setSelected(isMulti ? categories : [category]);
@@ -72,7 +72,7 @@ function CategoriesComboboxPlayground() {
             />
           </div>
         }
-        title="CategoriesCombobox"
+        title="UCategoriesCombobox"
       >
         <PlaygroundSelect
           label="Variante"
@@ -118,10 +118,10 @@ export function UzzinaCategoriesComboboxSection() {
         <GallerySectionHeader
           approved
           description="Seletor de categorias da ação, com seleção única ou múltipla."
-          title="CategoriesCombobox"
+          title="UCategoriesCombobox"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="CategoriesCombobox">
+          <GalleryItem label="UCategoriesCombobox">
             <CategoriesComboboxPlayground />
           </GalleryItem>
         </GallerySectionContent>

@@ -1,10 +1,14 @@
 # 36 — Estudar sobreposição entre Avatar, Avatar Group e avatares Uzzina
 
+**Resumo:** Estuda sobreposição entre Avatar/AvatarGroup do Prism e UAvatar/UAvatarGroup, sem autorizar refatoração.
+
+**Commit de referência:** `d7efe5f` — somente o registro do ticket; implementação/estudo pendente.
+
 **What to build:** um parecer comparativo sobre os primitivos Avatar/Avatar Group e os componentes UAvatar/UAvatarGroup. Identificar quais personalizações atendem necessidades reais da UZZINA, quais repetem recursos dos primitivos e quanto seria possível simplificar preservando os comportamentos dos consumidores.
 
 **Blocked by:** nenhum. Usar a implementação vigente e registrar a base analisada, inclusive alterações locais.
 
-**Status:** ready-for-agent — somente estudo.
+**Status:** Pendente (0%) — somente estudo; ticket versionado, parecer ainda não entregue.
 
 ## Pergunta central
 

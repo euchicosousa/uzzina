@@ -2,10 +2,10 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import {
-  CalendarToolbar,
-  type CalendarToolbarSize,
-  type CalendarToolbarVariant,
-} from "~/components/features/CalendarToolbar";
+  UCalendarToolbar,
+  type UCalendarToolbarSize,
+  type UCalendarToolbarVariant,
+} from "~/components/uzzina/UCalendarToolbar";
 import {
   GallerySection,
   GallerySectionHeader,
@@ -21,14 +21,14 @@ import {
 const DAYS_OPTIONS = ["1", "3", "7"] as const;
 type DaysOption = (typeof DAYS_OPTIONS)[number];
 
-const VARIANT_OPTIONS: readonly CalendarToolbarVariant[] = [
+const VARIANT_OPTIONS: readonly UCalendarToolbarVariant[] = [
   "outline",
   "default",
   "ghost",
   "secondary",
 ] as const;
 
-const SIZE_OPTIONS: readonly CalendarToolbarSize[] = [
+const SIZE_OPTIONS: readonly UCalendarToolbarSize[] = [
   "xs",
   "sm",
   "default",
@@ -39,8 +39,8 @@ export function CalendarToolbarPlayground() {
   const [currentDay, setCurrentDay] = useState(() => new Date());
   const [daysOption, setDaysOption] = useState<DaysOption>("1");
   const [showDate, setShowDate] = useState(false);
-  const [variant, setVariant] = useState<CalendarToolbarVariant>("outline");
-  const [size, setSize] = useState<CalendarToolbarSize>("default");
+  const [variant, setVariant] = useState<UCalendarToolbarVariant>("outline");
+  const [size, setSize] = useState<UCalendarToolbarSize>("default");
 
   const daysCount = Number(daysOption);
 
@@ -48,7 +48,7 @@ export function CalendarToolbarPlayground() {
     <PropsPlayground
       caption={`${format(currentDay, "EEEE, dd/MM/yyyy", { locale: ptBR })} • variant="${variant}" • size="${size}"`}
       preview={
-        <CalendarToolbar
+        <UCalendarToolbar
           currentDay={currentDay}
           days={daysCount}
           setCurrentDay={setCurrentDay}
@@ -57,7 +57,7 @@ export function CalendarToolbarPlayground() {
           variant={variant}
         />
       }
-      title="CalendarToolbar"
+      title="UCalendarToolbar"
     >
       <PlaygroundRadio
         label="Passo (dias)"
@@ -97,10 +97,10 @@ export function UzzinaCalendarToolbarSection() {
         <GallerySectionHeader
           approved
           description="Navegação de datas da Home e de Hoje: anterior, próximo e calendário em popover."
-          title="CalendarToolbar"
+          title="UCalendarToolbar"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="CalendarToolbar">
+          <GalleryItem label="UCalendarToolbar">
             <CalendarToolbarPlayground />
           </GalleryItem>
         </GallerySectionContent>

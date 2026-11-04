@@ -11,7 +11,7 @@ import { ActionContentVariant } from "./ActionVariants/ActionContentVariant";
 import { ActionLineVariant } from "./ActionVariants/ActionLineVariant";
 import type { ActionVariantRendererProps } from "./ActionVariants/types";
 import { Draggable, SortableItem } from "./DnD";
-import { PhaseIcon } from "./PhaseIcon";
+import { UPhaseIcon } from "~/components/uzzina/UPhaseIcon";
 
 // Hooks
 import { useActionData } from "~/hooks/useActionData";
@@ -32,7 +32,7 @@ import {
 import {
   getFormattedDateTime,
   getFormattedPartnersName,
-  Icons,
+  UIcons,
   isSocialMediaContent,
   isSprint,
 } from "~/utils";
@@ -267,7 +267,7 @@ export function ActionItem({
           <div className="w-full overflow-hidden text-xs leading-none font-medium text-ellipsis whitespace-nowrap">
             {getFormattedPartnersName(currentPartners || [])}
           </div>
-          <PhaseIcon phase={currentPhase} />
+          <UPhaseIcon phase={currentPhase} />
           {/* <PhaseStationIcon phase={currentPhase} station={currentStation} /> */}
         </div>
       )}
@@ -418,7 +418,7 @@ export function ActionItemSprint({
 }) {
   const { person } = useAppContext();
   return isSprint(action, person) ? (
-    <Icons className={cn("size-4 shrink-0", className)} slug="sprint" />
+    <UIcons className={cn("size-4 shrink-0", className)} slug="sprint" />
   ) : null;
 }
 function ActionVariantRenderer(props: ActionVariantRendererProps) {

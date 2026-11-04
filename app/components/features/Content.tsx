@@ -2,7 +2,7 @@ import type { Action } from "~/types";
 import type { DashActionDto } from "~/services/dash-client";
 import Color from "color";
 import { type CATEGORIES, DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
-import { getFormattedDateTime, Icons, isSprint } from "~/utils";
+import { getFormattedDateTime, UIcons, isSprint } from "~/utils";
 import { cn } from "cnfast";
 import { UAvatarGroup } from "../uzzina/UAvatar";
 import { getPeople } from "~/utils/filter";
@@ -76,7 +76,7 @@ export function Content({
             {person &&
               "sprints" in action &&
               isSprint(action as Action, person) && (
-                <Icons
+                <UIcons
                   className="size-4"
                   color={foregroundColor}
                   slug="sprint"
@@ -93,7 +93,7 @@ export function Content({
         </div>
         <div className="flex items-center justify-between gap-2">
           {category && (
-            <Icons
+            <UIcons
               className="size-4"
               color={foregroundColor}
               slug={category.slug}

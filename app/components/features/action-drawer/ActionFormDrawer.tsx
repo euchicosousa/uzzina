@@ -7,7 +7,7 @@ import {
   SmartphoneIcon,
   XIcon,
 } from "lucide-react";
-import { Icons } from "~/components/uzzina/UIcons";
+import { UIcons } from "~/components/uzzina/UIcons";
 import {
   useCallback,
   useEffect,
@@ -980,7 +980,7 @@ export function ActionFormDrawer({
                   className="px-2 py-3 text-xs sm:p-4 sm:text-sm"
                 >
                   <span className="truncate">INSTAGRAM</span>
-                  <Icons className="size-4 shrink-0" slug="instagram" />
+                  <UIcons className="size-4 shrink-0" slug="instagram" />
                 </PrismTab>
               )}
               <PrismTab

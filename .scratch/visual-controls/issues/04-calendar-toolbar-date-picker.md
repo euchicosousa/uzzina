@@ -1,5 +1,9 @@
 # 04 — Seletor de data da barra de calendário (CalendarToolbar)
 
+**Resumo:** Ajusta o seletor de data do calendário usado pela barra de ferramentas.
+
+**Commit de referência:** `b5b5f33` — entrega versionada no histórico local.
+
 Status: Aprovado (proprietário, 03/11/2026). Sem commit.
 
 Implementado em 03/11/2026: `CalendarToolbar.tsx` usa `<PrismCalendar cellSize="sm" captionLayout="dropdown" className="max-w-full" />` e o popover mantém `w-auto max-w-[calc(100vw-16px)] p-[8px]`. A quebra de linha do cabeçalho agora é do `PrismCalendar` (linha de legenda com `min-h-(--cell-size)`; bloco mês/ano `min-w-0 flex-1 flex-wrap`; gatilhos mês/ano `h-auto min-h-(--cell-size)`), sem seletores de estrutura no consumidor. Observação: a célula é 32px fixos (não escala mais com `2em`); a 200% o texto cresce dentro de 32px.

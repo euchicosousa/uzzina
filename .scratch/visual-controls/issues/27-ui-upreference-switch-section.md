@@ -1,6 +1,10 @@
 # 27 — `/ui`: seção "UPreferenceSwitch"
 
-Status: Concluído (100%) — aceite visual do proprietário em 04/11/2026.
+**Resumo:** Demonstra preferências com rótulo, descrição e alternância de estado.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
+**Status:** Concluído (100%) — aceite registrado no índice da série em 04/11/2026.
 Escopo: criar na aba Componentes Uzzina a seção do `UPreferenceSwitch` com playground. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)

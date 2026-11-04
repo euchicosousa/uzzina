@@ -1,10 +1,10 @@
-import type { Action } from "~/types";
+import type { Action, Celebration } from "~/types";
 import { useMemo, type ReactNode } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { format, isSameDay, isSameMonth } from "date-fns";
 import { DATE_TIME_DISPLAY, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
-import type { ViewOptions } from "~/components/features/ViewOptions";
+import type { UViewOptions } from "~/components/uzzina/UViewOptions";
 import { ActionContainer } from "./ActionContainer";
 import { getInstagramFeedActions } from "~/utils/validation";
 import { PlusIcon } from "lucide-react";
@@ -23,7 +23,7 @@ export function CalendarDayCell({
   currentDay?: Date;
   day: Date;
   onCreateAction?: (day: Date) => void;
-  viewOptions: ViewOptions;
+  viewOptions: UViewOptions;
   actions: Action[];
   celebrations?: Celebration[];
   showBorder?: boolean;

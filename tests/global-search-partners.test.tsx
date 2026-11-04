@@ -29,7 +29,7 @@ import {
 import { useState } from "react";
 import { AppContext } from "~/contexts/AppContext";
 import { GlobalSearchCommand } from "~/components/features/GlobalSearchCommand";
-import { PartnersCombobox } from "~/components/features/PartnersCombobox";
+import { UPartnersCombobox } from "~/components/uzzina/UPartnersCombobox";
 import { searchActionsByTitle } from "~/models/actions";
 import type { Action, Partner, Celebration } from "~/types";
 import { calendarAction, calendarPerson } from "./fixtures/calendar-height";
@@ -324,7 +324,7 @@ function Harness({
     >
       {standalone ? (
         <>
-          <PartnersCombobox
+          <UPartnersCombobox
             selectedPartners={selected}
             onSelect={setSelected}
             allowAll={allowAll}

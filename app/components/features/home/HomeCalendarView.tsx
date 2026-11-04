@@ -13,9 +13,9 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { CalendarWithDnd } from "~/components/features/CalendarWithDnd";
 import {
-  ViewOptionsComponent,
-  useViewOptions,
-} from "~/components/features/ViewOptions";
+  UViewOptions,
+  useUViewOptions,
+} from "~/components/uzzina/UViewOptions";
 import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
 import { createActionDraft } from "~/utils";
 import { HomeViewWrapper } from "./HomeViewWrapper";
@@ -52,7 +52,7 @@ export function HomeCalendarView({
         ? endOfWeek(currentDate)
         : endOfWeek(endOfMonth(currentDate)),
   });
-  const [viewOptions, setViewOptions] = useViewOptions({
+  const [viewOptions, setViewOptions] = useUViewOptions({
     partner: true,
     showOptions: {
       limitHeight: true,
@@ -83,7 +83,7 @@ export function HomeCalendarView({
             </PrismToggleGroupItem>
             <PrismToggleGroupItem id="month">Mês</PrismToggleGroupItem>
           </PrismToggleGroup>
-          <ViewOptionsComponent
+          <UViewOptions
             setViewOptions={(next) => {
               setHeightLimits((previous) => ({
                 ...previous,

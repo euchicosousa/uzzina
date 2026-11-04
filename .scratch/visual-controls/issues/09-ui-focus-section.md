@@ -1,5 +1,9 @@
 # 09 — `/ui`: seção "Foco" (REFAZER contra o código atual)
 
+**Resumo:** Reúne e ajusta exemplos de foco, incluindo o foco dos cartões de ação.
+
+**Commit de referência:** `b5b5f33` — entrega versionada no histórico local.
+
 Status: Concluído — reescrito contra o código atual (aguarda validação visual)
 Escopo: SOMENTE reescrever a seção de vitrine `TokensFocusSection.tsx` em `/ui`. É um levantamento visual do foco **como o app está hoje**. **Não altere nenhum estilo de foco em nenhum componente.**
 

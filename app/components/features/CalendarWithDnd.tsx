@@ -12,7 +12,7 @@ import {
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { DATE_TIME_DISPLAY, INTENT } from "~/lib/CONSTANTS";
 import { DragStateContext } from "./DragStateContext";
-import type { ViewOptions } from "./ViewOptions";
+import type { UViewOptions } from "~/components/uzzina/UViewOptions";
 const DEFAULT_CELEBRATIONS: Celebration[] = [];
 const DEFAULT_LAYOUT_OPTIONS: CalendarLayoutOptions = {};
 export function CalendarWithDnd({
@@ -28,7 +28,7 @@ export function CalendarWithDnd({
   actions: Action[];
   calendarDays: Date[];
   celebrations?: Celebration[];
-  viewOptions: ViewOptions;
+  viewOptions: UViewOptions;
   currentDay?: Date;
   onCreateAction?: (day: Date) => void;
   renderDayLabel?: (day: Date, label: ReactNode) => ReactNode;

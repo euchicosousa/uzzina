@@ -1,11 +1,11 @@
 import { cn } from "cnfast";
 import { PHASES, type PHASE_TYPE } from "~/lib/CONSTANTS";
-import { PhaseIcon } from "./PhaseIcon";
+import { UPhaseIcon } from "~/components/uzzina/UPhaseIcon";
 import Color from "color";
 
 export function PhaseStationBadges({ phase }: { phase: PHASE_TYPE }) {
   return phase.slug === PHASES.finished.slug ? (
-    <PhaseIcon phase={phase} size="sm" />
+    <UPhaseIcon phase={phase} size="sm" />
   ) : (
     <div
       className={cn(

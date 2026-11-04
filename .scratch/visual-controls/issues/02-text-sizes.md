@@ -1,5 +1,9 @@
 # 02 — Tamanhos de texto por tamanho de controle
 
+**Resumo:** Alinha fonte e altura de linha à escala de tamanho de cada controle.
+
+**Commit de referência:** `b5b5f33` — entrega versionada no histórico local.
+
 Status: Aprovado (proprietário, 03/11/2026). Chips do ComboboxChips com 11/12/14px são intencionais; a regra de fonte do Calendar vale só para as células de dia (títulos ajustados pelo proprietário).
 
 ## Decisão (proprietário, 03/11/2026)

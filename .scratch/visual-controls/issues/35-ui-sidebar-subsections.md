@@ -1,10 +1,14 @@
 # 35 — `/ui`: navegação lateral por microseções
 
+**Resumo:** Revela microseções do item selecionado e navega no primeiro clique, sem disputa entre roteador e rolagem.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
 **What to build:** ao selecionar uma seção no menu esquerdo da galeria, revelar abaixo dela os links para todas as suas microseções. Cada link leva diretamente ao trecho correspondente do conteúdo, facilitando a navegação em seções extensas.
 
 **Blocked by:** nenhum.
 
-**Status:** primeiro clique corrigido após reprodução no Comet e no histórico real (04/11); aguarda aceite visual final.
+**Status:** Implementado e verificado (90%); commitado; aguarda aceite visual final do proprietário.
 
 ## Parte 1 — navegação funcional, sem animação
 
@@ -60,3 +64,7 @@ O ensaio isolado inicial já chegou ao destino, portanto não comprovou a reprod
 ## Causa do segundo clique confirmada — 04/11/2026
 
 Reproduzido no Comet do proprietário e em teste com histórico real: `window.history.replaceState` acionava a rolagem automática do TanStack Router, que cancelava a animação do menu. Testes anteriores com histórico em memória não cobriam esse caminho. Correção usa `useNavigate` com `resetScroll: false` e `hashScrollIntoView: false`, mantendo o posicionamento exclusivamente na galeria. Confirmado um clique ResponsiblesCombobox → pai UAvatar no Comet. Regressão permanente de posição em `scripts/check-ui-sidebar-browser.cjs`, com fixture de histórico real/StrictMode, sem acesso a dados de produção. Detalhes e evidências no [estudo](../../../docs/audits/2026-11-04-v35-selection-flicker-study.md). Aguardando aceite final; sem commit/deploy.
+
+## Situação consolidada após commit — 04/11/2026
+
+Correção e regressão de histórico real incluídas em `d7efe5f`. O índice anterior registrava aprovação, mas o último relato desta conversa mantém o aceite final pendente; o status atual não presume essa confirmação.

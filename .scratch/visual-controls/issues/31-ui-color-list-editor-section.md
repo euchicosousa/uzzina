@@ -1,6 +1,10 @@
 # 31 — `/ui`: seção "ColorListEditor"
 
-Status: Implementado e verificado tecnicamente — aguarda aceite visual do proprietário (04/11/2026).
+**Resumo:** Demonstra edição e reordenação de paletas, agora com UPaletteEditor do V38.
+
+**Commit de referência:** `d7efe5f` — entrega versionada no histórico local.
+
+**Status:** Concluído (100%) — aceite registrado no índice da série em 04/11/2026.
 Escopo: criar na aba Componentes Uzzina a seção do `ColorListEditor` com playground. **Não altere nenhum componente do app.**
 
 ## Contexto (verificado em 03/11)

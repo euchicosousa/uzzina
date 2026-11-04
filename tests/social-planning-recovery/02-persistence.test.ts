@@ -23,7 +23,10 @@ describe("T02 — Canonical Storage & Concurrency Model", () => {
         const chain = {
           select: (_cols?: string) => chain,
           eq: (field: string, value: unknown) => {
-            filters.push((row) => (row as unknown as Record<string, unknown>)[field] === value);
+            filters.push(
+              (row) =>
+                (row as unknown as Record<string, unknown>)[field] === value,
+            );
             return chain;
           },
           order: (field: string, opts?: { ascending?: boolean }) => {
@@ -33,14 +36,21 @@ describe("T02 — Canonical Storage & Concurrency Model", () => {
           },
           maybeSingle: async () => {
             const tableRows = mockDatabase[table] || [];
-            const filtered = tableRows.filter((r) => filters.every((f) => f(r)));
+            const filtered = tableRows.filter((r) =>
+              filters.every((f) => f(r)),
+            );
             return { data: filtered[0] || null, error: null };
           },
           single: async () => {
             const tableRows = mockDatabase[table] || [];
-            const filtered = tableRows.filter((r) => filters.every((f) => f(r)));
+            const filtered = tableRows.filter((r) =>
+              filters.every((f) => f(r)),
+            );
             if (filtered.length === 0) {
-              return { data: null, error: { message: "Row not found", code: "PGRST116" } };
+              return {
+                data: null,
+                error: { message: "Row not found", code: "PGRST116" },
+              };
             }
             return { data: filtered[0], error: null };
           },
@@ -90,18 +100,27 @@ describe("T02 — Canonical Storage & Concurrency Model", () => {
             eq: (field: string, value: unknown) => {
               if (mockDatabase[table]) {
                 mockDatabase[table] = mockDatabase[table].filter(
-                  (r) => (r as unknown as Record<string, unknown>)[field] !== value,
+                  (r) =>
+                    (r as unknown as Record<string, unknown>)[field] !== value,
                 );
               }
               return Promise.resolve({ error: null });
             },
           }),
-          then: (resolve: (val: { data: SocialPlan[]; error: null }) => void) => {
+          then: (
+            resolve: (val: { data: SocialPlan[]; error: null }) => void,
+          ) => {
             const tableRows = mockDatabase[table] || [];
-            const filtered = tableRows.filter((r) => filters.every((f) => f(r)));
+            const filtered = tableRows.filter((r) =>
+              filters.every((f) => f(r)),
+            );
             filtered.sort((a, b) => {
-              const valA = (a as unknown as Record<string, unknown>)[orderField];
-              const valB = (b as unknown as Record<string, unknown>)[orderField];
+              const valA = (a as unknown as Record<string, unknown>)[
+                orderField
+              ];
+              const valB = (b as unknown as Record<string, unknown>)[
+                orderField
+              ];
               if (orderAsc) return String(valA).localeCompare(String(valB));
               return String(valB).localeCompare(String(valA));
             });
@@ -112,7 +131,10 @@ describe("T02 — Canonical Storage & Concurrency Model", () => {
       },
       rpc: async (_fnName: string, _params: any) => {
         // Mock RPC returning error to exercise direct CAS fallback
-        return { data: null, error: { code: "FALLBACK_TO_DIRECT_CAS", message: "RPC fallback" } };
+        return {
+          data: null,
+          error: { code: "FALLBACK_TO_DIRECT_CAS", message: "RPC fallback" },
+        };
       },
     } as unknown as SupabaseClient;
   }
@@ -166,7 +188,9 @@ describe("T02 — Canonical Storage & Concurrency Model", () => {
     expect(acmePlans[0].partner_slug).toBe("acme");
 
     // Zero cross-partner leakage
-    const otherPlans = acmePlans.filter((p) => p.partner_slug === "other-brand");
+    const otherPlans = acmePlans.filter(
+      (p) => p.partner_slug === "other-brand",
+    );
     expect(otherPlans).toHaveLength(0);
   });
 
@@ -211,9 +235,14 @@ describe("T02 — Canonical Storage & Concurrency Model", () => {
 
     // 2. Reject update when expectedVersion is stale (concurrency conflict)
     // Client B tries to update version 1, but database is now on version 2
-    const staleResult = await updateSocialPlanClient(supabase, "plan-acme-1", 1, {
-      status: "draft",
-    });
+    const staleResult = await updateSocialPlanClient(
+      supabase,
+      "plan-acme-1",
+      1,
+      {
+        status: "draft",
+      },
+    );
 
     expect(staleResult.success).toBe(false);
     expect(staleResult.conflict).toBe(true);
@@ -234,4 +263,3 @@ describe("T02 — Canonical Storage & Concurrency Model", () => {
     expect(fetched).toBeNull();
   });
 });
-
