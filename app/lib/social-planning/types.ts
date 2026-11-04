@@ -14,12 +14,15 @@ export interface PlanSuggestion {
   status: PlanSuggestionStatus;
   is_commemorative?: boolean;
   celebration_title?: string;
+  created_action_id?: string;
 }
 
 export interface SocialPlan {
   id: string;
   partner_slug: string;
   partner_title?: string;
+  user_id?: string;
+  version?: number;
   mode: PlanMode;
   input: Record<string, unknown>;
   suggestions: PlanSuggestion[];

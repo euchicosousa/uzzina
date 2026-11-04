@@ -44,17 +44,19 @@ import { QUERY_KEYS } from "~/lib/query-keys";
 import { finalizeSocialPlan } from "~/lib/social-planning/finalizer";
 import { generateSocialPlan } from "~/lib/social-planning/generator";
 import {
-  calculatePeriodSlots,
   distributeFormats,
   mergeCommemorativeSlots,
+  validateFormatDistribution,
+  validatePeriodInput,
 } from "~/lib/social-planning/slot-calculator";
-import {
-  listSocialPlans,
-  saveSocialPlan,
-  updatePlanSuggestion,
-} from "~/lib/social-planning/storage";
 import type { PlanSuggestion, SocialPlan } from "~/lib/social-planning/types";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { fetchCelebrations } from "~/lib/supabase.queries";
+import {
+  createSocialPlanClient,
+  listSocialPlansByPartner,
+  updateSocialPlanClient,
+} from "~/models/social_plans";
 import { getMonthCalendarPeriod, parseU } from "~/utils";
 
 export const Route = createFileRoute("/app/planejamento")({
@@ -118,65 +120,168 @@ function PlanningPage() {
     staleTime: 30 * 60 * 1000,
   });
 
-  // Filter celebrations matching the selected month/period
-  const selectedMonth = useMemo(() => {
-    if (!startDate) return new Date().getMonth();
-    return parseU(startDate).getMonth();
-  }, [startDate]);
-
+  // Filter celebrations strictly within the selected civil period bounds (C03)
   const periodCelebrations = useMemo(() => {
-    if (!celebrations.length) return [];
-    const start = startDate ? parseU(startDate) : null;
-    const end = endDate ? parseU(endDate) : null;
-
+    if (!celebrations.length || !startDate || !endDate) return [];
     return celebrations
       .filter((c) => {
-        const cDate = parseU(c.date);
-        if (start && end && cDate >= start && cDate <= end) return true;
-        if (cDate.getMonth() === selectedMonth) return true;
-        return false;
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(c.date)) return false;
+        return c.date >= startDate && c.date <= endDate;
       })
-      .sort((a, b) => {
-        const dayA = parseU(a.date).getDate();
-        const dayB = parseU(b.date).getDate();
-        return dayA - dayB;
-      });
-  }, [celebrations, startDate, endDate, selectedMonth]);
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }, [celebrations, startDate, endDate]);
 
-  // Planejamento atual e lista de propostas
+  // Limpa IDs de celebrações fora do período ou quando a opção é desmarcada (C03)
+  useEffect(() => {
+    if (!considerHolidays) {
+      setSelectedCelebrationIds([]);
+      return;
+    }
+    const validIds = new Set(periodCelebrations.map((c) => c.id));
+    setSelectedCelebrationIds((prev) => prev.filter((id) => validIds.has(id)));
+  }, [periodCelebrations, considerHolidays]);
+
+  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+
+  // Planejamento atual e lista de propostas canônicas no banco (T02)
   const [currentPlan, setCurrentPlan] = useState<SocialPlan | null>(null);
-  const [savedPlans, setSavedPlans] = useState<SocialPlan[]>([]);
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
 
-  // Carrega propostas anteriores ao trocar parceiro
+  // Validação estrita do período (C02, T03)
+  const periodValidation = useMemo(() => {
+    return validatePeriodInput({
+      startDate,
+      endDate,
+      postsPerWeek,
+      selectedDays,
+    });
+  }, [startDate, endDate, postsPerWeek, selectedDays]);
+
+  // Validação estrita de formatos (C04, T03)
+  const formatValidation = useMemo(() => {
+    const regularTarget =
+      mode === "period" ? periodValidation.calculatedSlots.length : themeCount;
+    return validateFormatDistribution({
+      formatMode: formatMode as "auto" | "manual",
+      targetCount: regularTarget,
+      reelsCount,
+      staticCount,
+      carouselCount,
+    });
+  }, [
+    mode,
+    periodValidation.calculatedSlots.length,
+    themeCount,
+    formatMode,
+    reelsCount,
+    staticCount,
+    carouselCount,
+  ]);
+
+  const isFormInvalid =
+    mode === "period"
+      ? !periodValidation.isValid || !formatValidation.isValid
+      : !themeCount || themeCount <= 0 || !formatValidation.isValid;
+
+  // Propostas salvas no Supabase com autorização real por parceiro (T02)
+  const { data: savedPlans = [], refetch: refetchSavedPlans } = useQuery({
+    queryKey: QUERY_KEYS.socialPlans(
+      person.user_id,
+      selectedPartner?.slug || "",
+    ),
+    queryFn: async () => {
+      if (!selectedPartner?.slug) return [];
+      try {
+        return await listSocialPlansByPartner(supabase, selectedPartner.slug);
+      } catch (err) {
+        console.warn("Falha ao carregar propostas do banco:", err);
+        return [];
+      }
+    },
+    enabled: Boolean(selectedPartner?.slug),
+  });
+
+  // Limpa estado da proposta aberta ao trocar de parceiro (C06)
   useEffect(() => {
-    const plans = listSocialPlans(selectedPartner?.slug);
-    setSavedPlans(plans);
+    setCurrentPlan(null);
+    setFeedbackMessage(null);
   }, [selectedPartner?.slug]);
 
+  // Reabertura canônica de proposta anterior com restauração completa (C06)
+  const handleOpenPlan = (plan: SocialPlan) => {
+    if (!selectedPartner || plan.partner_slug !== selectedPartner.slug) {
+      setFeedbackMessage("Esta proposta não pertence ao parceiro selecionado.");
+      return;
+    }
+    setFeedbackMessage(null);
+    setCurrentPlan(plan);
+
+    if (plan.mode) setMode(plan.mode);
+    const input = plan.input || {};
+    if (typeof input.startDate === "string") setStartDate(input.startDate);
+    if (typeof input.endDate === "string") setEndDate(input.endDate);
+    if (typeof input.postsPerWeek === "number")
+      setPostsPerWeek(input.postsPerWeek);
+    if (Array.isArray(input.selectedDays))
+      setSelectedDays(input.selectedDays as string[]);
+    if (typeof input.periodDirection === "string")
+      setPeriodDirection(input.periodDirection);
+    if (typeof input.themeCount === "number") setThemeCount(input.themeCount);
+    if (typeof input.themeDirection === "string")
+      setThemeDirection(input.themeDirection);
+    if (typeof input.formatMode === "string") setFormatMode(input.formatMode);
+    if (typeof input.reelsCount === "number") setReelsCount(input.reelsCount);
+    if (typeof input.staticCount === "number")
+      setStaticCount(input.staticCount);
+    if (typeof input.carouselCount === "number")
+      setCarouselCount(input.carouselCount);
+    if (typeof input.considerHolidays === "boolean")
+      setConsiderHolidays(input.considerHolidays);
+    if (Array.isArray(input.selectedCelebrationIds))
+      setSelectedCelebrationIds(input.selectedCelebrationIds as string[]);
+  };
+
   // Manipulador de geração
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!selectedPartner) return;
-    setIsGenerating(true);
     setFeedbackMessage(null);
 
     try {
       if (mode === "period") {
-        const rawSlots = calculatePeriodSlots({
+        const validation = validatePeriodInput({
           startDate,
           endDate,
           postsPerWeek,
           selectedDays,
         });
 
+        if (!validation.isValid) {
+          setFeedbackMessage(
+            validation.error || "Configuração de período inválida.",
+          );
+          return;
+        }
+
+        if (!formatValidation.isValid) {
+          setFeedbackMessage(
+            formatValidation.error || "Distribuição de formatos inválida.",
+          );
+          return;
+        }
+
+        setIsGenerating(true);
+        const rawSlots = validation.calculatedSlots;
+
         const slots = considerHolidays
           ? mergeCommemorativeSlots({
               slots: rawSlots,
               celebrations: periodCelebrations,
               selectedCelebrationIds,
+              startDate,
+              endDate,
             })
           : rawSlots.map((d) => ({ date: d }));
 
@@ -188,30 +293,45 @@ function PlanningPage() {
           carouselCount,
         });
 
+        const inputPayload = {
+          startDate,
+          endDate,
+          postsPerWeek,
+          selectedDays,
+          periodDirection,
+          formatMode,
+          reelsCount,
+          staticCount,
+          carouselCount,
+          considerHolidays,
+          selectedCelebrationIds,
+        };
+
         const plan = generateSocialPlan({
           partner: {
             slug: selectedPartner.slug,
             title: selectedPartner.title,
-            context: (selectedPartner as unknown as { context?: string })
-              .context,
-            voice_tone: (selectedPartner as unknown as { voice_tone?: string })
-              .voice_tone,
+            context: selectedPartner.context ?? undefined,
+            voice: selectedPartner.voice ?? undefined,
           },
           mode: "period",
-          input: {
-            startDate,
-            endDate,
-            postsPerWeek,
-            selectedDays,
-            periodDirection,
-            formatMode,
-          },
+          input: inputPayload,
           slots,
           formats,
         });
 
-        setCurrentPlan(plan);
-        setSavedPlans(listSocialPlans(selectedPartner.slug));
+        // Persistência canônica via Supabase (T02)
+        const createdPlan = await createSocialPlanClient(supabase, {
+          partner_slug: selectedPartner.slug,
+          partner_title: selectedPartner.title,
+          mode: "period",
+          input: inputPayload,
+          suggestions: plan.suggestions,
+          user_id: person.user_id,
+        });
+
+        setCurrentPlan(createdPlan);
+        refetchSavedPlans();
       } else {
         const formats = distributeFormats({
           totalCount: themeCount,
@@ -221,64 +341,122 @@ function PlanningPage() {
           carouselCount,
         });
 
+        const inputPayload = {
+          themeCount,
+          themeDirection,
+          formatMode,
+          reelsCount,
+          staticCount,
+          carouselCount,
+        };
+
         const plan = generateSocialPlan({
           partner: {
             slug: selectedPartner.slug,
             title: selectedPartner.title,
-            context: (selectedPartner as unknown as { context?: string })
-              .context,
-            voice_tone: (selectedPartner as unknown as { voice_tone?: string })
-              .voice_tone,
+            context: selectedPartner.context ?? undefined,
+            voice: selectedPartner.voice ?? undefined,
           },
           mode: "theme",
-          input: {
-            themeCount,
-            themeDirection,
-            formatMode,
-          },
+          input: inputPayload,
           formats,
         });
 
-        setCurrentPlan(plan);
-        setSavedPlans(listSocialPlans(selectedPartner.slug));
+        // Persistência canônica via Supabase (T02)
+        const createdPlan = await createSocialPlanClient(supabase, {
+          partner_slug: selectedPartner.slug,
+          partner_title: selectedPartner.title,
+          mode: "theme",
+          input: inputPayload,
+          suggestions: plan.suggestions,
+          user_id: person.user_id,
+        });
+
+        setCurrentPlan(createdPlan);
+        refetchSavedPlans();
       }
     } catch (err) {
       console.error("Erro ao gerar planejamento:", err);
+      setFeedbackMessage(
+        err instanceof Error ? err.message : "Falha ao gerar planejamento.",
+      );
     } finally {
       setIsGenerating(false);
     }
   };
 
-  // Atualização de sugestão individual
-  const handleUpdateSuggestion = (
+  // Atualização de sugestão individual com Compare-And-Swap (T02)
+  const handleUpdateSuggestion = async (
     id: string,
     patch: Partial<PlanSuggestion>,
   ) => {
     if (!currentPlan) return;
-    const updated = updatePlanSuggestion(currentPlan.id, id, patch);
-    if (updated) {
-      setCurrentPlan(updated);
-      setSavedPlans(listSocialPlans(selectedPartner?.slug));
+    const updatedSuggestions = currentPlan.suggestions.map((s) =>
+      s.id === id ? { ...s, ...patch } : s,
+    );
+
+    try {
+      const res = await updateSocialPlanClient(
+        supabase,
+        currentPlan.id,
+        currentPlan.version || 1,
+        { suggestions: updatedSuggestions },
+      );
+
+      if (res.success && res.plan) {
+        setCurrentPlan(res.plan);
+        refetchSavedPlans();
+      } else if (res.conflict) {
+        setFeedbackMessage(
+          res.error || "Conflito de versão detectado. Recarregue a proposta.",
+        );
+        refetchSavedPlans();
+      } else {
+        setFeedbackMessage(
+          res.error || "Não foi possível atualizar a sugestão.",
+        );
+      }
+    } catch (err) {
+      setFeedbackMessage(
+        err instanceof Error ? err.message : "Erro ao atualizar sugestão.",
+      );
     }
   };
 
-  // Aprovar todas as pendentes
-  const handleApproveAllPending = () => {
+  // Aprovar todas as pendentes com Compare-And-Swap (T02)
+  const handleApproveAllPending = async () => {
     if (!currentPlan) return;
     const updatedSuggestions = currentPlan.suggestions.map((s) =>
       s.status === "pending" ? { ...s, status: "approved" as const } : s,
     );
-    const updatedPlan: SocialPlan = {
-      ...currentPlan,
-      suggestions: updatedSuggestions,
-      updated_at: new Date().toISOString(),
-    };
-    saveSocialPlan(updatedPlan);
-    setCurrentPlan(updatedPlan);
-    setSavedPlans(listSocialPlans(selectedPartner?.slug));
+
+    try {
+      const res = await updateSocialPlanClient(
+        supabase,
+        currentPlan.id,
+        currentPlan.version || 1,
+        { suggestions: updatedSuggestions },
+      );
+
+      if (res.success && res.plan) {
+        setCurrentPlan(res.plan);
+        refetchSavedPlans();
+      } else if (res.conflict) {
+        setFeedbackMessage(
+          res.error || "Conflito de versão ao salvar aprovações.",
+        );
+        refetchSavedPlans();
+      } else {
+        setFeedbackMessage(res.error || "Erro ao salvar aprovações.");
+      }
+    } catch (err) {
+      setFeedbackMessage(
+        err instanceof Error ? err.message : "Erro ao aprovar sugestões.",
+      );
+    }
   };
 
-  // Finalizar sugestões aprovadas em ações reais
+  // Finalizar sugestões aprovadas em ações reais (C09)
   const handleFinalize = async () => {
     if (!currentPlan) return;
     setIsFinalizing(true);
@@ -288,10 +466,18 @@ function PlanningPage() {
         plan: currentPlan,
         userId: person.user_id,
       });
-      setFeedbackMessage(
-        `${res.createdCount} ${res.createdCount === 1 ? "ação criada" : "ações criadas"} com sucesso no UZZINA!`,
-      );
-      setSavedPlans(listSocialPlans(selectedPartner?.slug));
+      if (res.alreadyFinalized) {
+        setFeedbackMessage("Esta proposta já foi finalizada anteriormente.");
+      } else if (res.errorCount > 0) {
+        setFeedbackMessage(
+          `${res.createdCount} ${res.createdCount === 1 ? "ação criada" : "ações criadas"}, mas ${res.errorCount} falharam. Erros: ${res.errors.join("; ")}`,
+        );
+      } else {
+        setFeedbackMessage(
+          `${res.createdCount} ${res.createdCount === 1 ? "ação criada" : "ações criadas"} com sucesso no UZZINA na fase de Ideia!`,
+        );
+      }
+      refetchSavedPlans();
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "Erro ao finalizar ações.";
@@ -329,7 +515,7 @@ function PlanningPage() {
             </PrismButton>
           )}
           <PrismButton
-            isDisabled={!selectedPartner || isGenerating}
+            isDisabled={!selectedPartner || isGenerating || isFormInvalid}
             onClick={handleGenerate}
           >
             <SparklesIcon className="size-4" />
@@ -426,7 +612,7 @@ function PlanningPage() {
 
                     {/* Slider Conteúdos por semana */}
                     <div className="grid gap-2.5">
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between gap-4">
                         <PrismLabel htmlFor="planning-frequency-slider">
                           Conteúdos por semana
                         </PrismLabel>
@@ -485,6 +671,22 @@ function PlanningPage() {
                           );
                         })}
                       </div>
+                      {/* Resumo de slots calculados / validação (C02) */}
+                      {periodValidation.isValid ? (
+                        <p className="text-xs text-muted-foreground">
+                          <strong className="font-semibold text-foreground">
+                            {periodValidation.calculatedSlots.length}{" "}
+                            {periodValidation.calculatedSlots.length === 1
+                              ? "publicação regular prevista"
+                              : "publicações regulares previstas"}
+                          </strong>{" "}
+                          no período selecionado.
+                        </p>
+                      ) : (
+                        <p className="text-xs font-medium text-destructive">
+                          {periodValidation.error}
+                        </p>
+                      )}
                     </div>
 
                     {/* Direcionamento explícito (período) */}
@@ -592,6 +794,11 @@ function PlanningPage() {
                     </Field>
                   </div>
                 )}
+                {formatMode === "manual" && !formatValidation.isValid && (
+                  <p className="text-xs font-medium text-destructive">
+                    {formatValidation.error}
+                  </p>
+                )}
               </div>
 
               {/* Datas e ocasiões */}
@@ -614,6 +821,28 @@ function PlanningPage() {
                         Selecione as datas comemorativas do mês que deseja
                         incluir:
                       </p>
+                      {/* Resumo de regulares + extras (C03) */}
+                      {selectedCelebrationIds.length > 0 && (
+                        <p className="text-xs text-muted-foreground">
+                          <strong className="font-medium text-foreground">
+                            {periodValidation.calculatedSlots.length} regulares
+                          </strong>{" "}
+                          +{" "}
+                          <strong className="font-medium text-foreground">
+                            {selectedCelebrationIds.length}{" "}
+                            {selectedCelebrationIds.length === 1
+                              ? "extra comemorativa"
+                              : "extras comemorativas"}
+                          </strong>{" "}
+                          ={" "}
+                          <strong className="font-semibold text-foreground">
+                            {periodValidation.calculatedSlots.length +
+                              selectedCelebrationIds.length}{" "}
+                            publicações totais
+                          </strong>
+                          .
+                        </p>
+                      )}
                       {periodCelebrations.length > 0 ? (
                         <div className="grid gap-2.5">
                           {periodCelebrations.map((celebration) => {
@@ -690,9 +919,9 @@ function PlanningPage() {
                   <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                     Visualização:
                   </span>
-                  <div className="flex items-center rounded-lg border border-border bg-muted/30 p-0.5">
+                  <div className="flex items-center rounded-lg border border-border bg-muted/30 p-0.5 squircle">
                     <button
-                      className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                      className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors squircle ${
                         viewMode === "list"
                           ? "bg-primary text-primary-foreground shadow-xs"
                           : "text-muted-foreground hover:text-foreground"
@@ -704,7 +933,7 @@ function PlanningPage() {
                       Lista
                     </button>
                     <button
-                      className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                      className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors squircle ${
                         viewMode === "calendar"
                           ? "bg-primary text-primary-foreground shadow-xs"
                           : "text-muted-foreground hover:text-foreground"
@@ -778,12 +1007,9 @@ function PlanningPage() {
                           <div className="mt-3 grid gap-2">
                             {savedPlans.slice(0, 5).map((plan) => (
                               <button
-                                className="flex items-center justify-between rounded-lg border border-border bg-card p-3 text-left transition-colors hover:border-primary/50 hover:bg-muted/30"
+                                className="flex items-center justify-between rounded-lg border border-border bg-card p-3 text-left transition-colors squircle hover:border-primary/50 hover:bg-muted/30"
                                 key={plan.id}
-                                onClick={() => {
-                                  setCurrentPlan(plan);
-                                  setFeedbackMessage(null);
-                                }}
+                                onClick={() => handleOpenPlan(plan)}
                                 type="button"
                               >
                                 <div>

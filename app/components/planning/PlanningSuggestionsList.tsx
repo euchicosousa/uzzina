@@ -104,7 +104,7 @@ export function PlanningSuggestionsList({
       {/* Filtros rápidos */}
       <div className="flex flex-wrap gap-2 text-sm">
         <button
-          className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${
+          className={`rounded-lg px-3 py-1.5 font-medium transition-colors squircle ${
             filter === "all"
               ? "bg-primary text-primary-foreground"
               : "bg-muted text-muted-foreground hover:text-foreground"
@@ -115,7 +115,7 @@ export function PlanningSuggestionsList({
           Todas ({stats.total})
         </button>
         <button
-          className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${
+          className={`rounded-lg px-3 py-1.5 font-medium transition-colors squircle ${
             filter === "pending"
               ? "bg-primary text-primary-foreground"
               : "bg-muted text-muted-foreground hover:text-foreground"
@@ -126,7 +126,7 @@ export function PlanningSuggestionsList({
           Pendentes ({stats.pending})
         </button>
         <button
-          className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${
+          className={`rounded-lg px-3 py-1.5 font-medium transition-colors squircle ${
             filter === "approved"
               ? "bg-emerald-600 text-white"
               : "bg-muted text-muted-foreground hover:text-foreground"
@@ -137,7 +137,7 @@ export function PlanningSuggestionsList({
           Aprovadas ({stats.approved})
         </button>
         <button
-          className={`rounded-lg px-3 py-1.5 font-medium transition-colors ${
+          className={`rounded-lg px-3 py-1.5 font-medium transition-colors squircle ${
             filter === "rejected"
               ? "text-destructive-foreground bg-destructive"
               : "bg-muted text-muted-foreground hover:text-foreground"
@@ -152,7 +152,7 @@ export function PlanningSuggestionsList({
       {/* Lista de cards */}
       <div className="grid gap-4">
         {filteredSuggestions.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+          <div className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground squircle">
             Nenhuma sugestão encontrada para o filtro selecionado.
           </div>
         ) : (
@@ -162,12 +162,8 @@ export function PlanningSuggestionsList({
 
             return (
               <div
-                className={`relative flex flex-col gap-3 rounded-xl border p-5 transition-all ${
-                  isApproved
-                    ? "border-emerald-500/40 bg-emerald-500/5 shadow-xs"
-                    : isRejected
-                      ? "border-destructive/30 bg-muted/40 opacity-60"
-                      : "border-border bg-card shadow-xs hover:border-border/80"
+                className={`relative flex flex-col gap-3 rounded-xl border border-border bg-card p-5 shadow-xs transition-all squircle hover:border-border/80 ${
+                  isRejected ? "opacity-60" : ""
                 }`}
                 key={suggestion.id}
               >
@@ -195,12 +191,6 @@ export function PlanningSuggestionsList({
 
                   {/* Status Badge */}
                   <div>
-                    {isApproved && (
-                      <PrismBadge variant="success">
-                        <CheckCircle2Icon className="mr-1 size-3" />
-                        Aprovada
-                      </PrismBadge>
-                    )}
                     {isRejected && (
                       <PrismBadge variant="destructive">
                         <XCircleIcon className="mr-1 size-3" />
@@ -269,18 +259,13 @@ export function PlanningSuggestionsList({
 
                     <PrismButton
                       aria-label="Aprovar sugestão"
-                      className={
-                        isApproved
-                          ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                          : ""
-                      }
                       onClick={() =>
                         onUpdateSuggestion(suggestion.id, {
                           status: isApproved ? "pending" : "approved",
                         })
                       }
                       size="sm"
-                      variant={isApproved ? "default" : "secondary"}
+                      variant={isApproved ? "success" : "secondary"}
                     >
                       <CheckIcon className="mr-1 size-4" />
                       {isApproved ? "Aprovada" : "Aprovar"}

@@ -16,29 +16,59 @@ function mapFormatToCategory(format: PlanFormat): string {
   }
 }
 
+export interface FinalizeResult {
+  createdCount: number;
+  errorCount: number;
+  alreadyFinalized?: boolean;
+  errors: string[];
+}
+
 export async function finalizeSocialPlan({
   plan,
   userId,
 }: {
   plan: SocialPlan;
   userId: string;
-}): Promise<{ createdCount: number; errorCount: number }> {
+}): Promise<FinalizeResult> {
+  if (plan.status === "finalized") {
+    return {
+      createdCount: 0,
+      errorCount: 0,
+      alreadyFinalized: true,
+      errors: [],
+    };
+  }
+
   const approvedSuggestions = plan.suggestions.filter(
     (suggestion) => suggestion.status === "approved",
   );
 
   if (approvedSuggestions.length === 0) {
-    throw new Error("Nenhuma sugestão aprovada para finalizar.");
+    throw new Error(
+      "Nenhuma sugestão aprovada para finalizar. Aprove ao menos uma sugestão antes de concluir.",
+    );
   }
 
   let createdCount = 0;
   let errorCount = 0;
+  const errors: string[] = [];
 
   for (const suggestion of approvedSuggestions) {
+    // Idempotency: skip suggestions that already have an associated action id
+    if (suggestion.created_action_id) {
+      continue;
+    }
+
+    if (!suggestion.scheduled_date) {
+      errorCount++;
+      errors.push(
+        `Sugestão "${suggestion.title}" não possui data prevista definida e não pôde ser convertida.`,
+      );
+      continue;
+    }
+
     try {
-      const scheduledDate = suggestion.scheduled_date
-        ? `${suggestion.scheduled_date} 10:00:00`
-        : new Date().toISOString().slice(0, 10);
+      const scheduledDate = suggestion.scheduled_date;
 
       const description = suggestion.objective
         ? `${suggestion.briefing}\n\nObjetivo: ${suggestion.objective}`
@@ -54,9 +84,11 @@ export async function finalizeSocialPlan({
         content_description: suggestion.briefing,
         phase: "idea",
         user_id: userId,
+        responsibles: [userId],
       };
 
-      await createActionClient(payload);
+      const createdAction = await createActionClient(payload);
+      suggestion.created_action_id = createdAction.id;
       createdCount++;
     } catch (error) {
       console.error(
@@ -64,11 +96,18 @@ export async function finalizeSocialPlan({
         error,
       );
       errorCount++;
+      errors.push(
+        `Falha ao criar ação para "${suggestion.title}": ${error instanceof Error ? error.message : "Erro desconhecido"}`,
+      );
     }
   }
 
-  plan.status = "finalized";
+  // Only mark whole plan as finalized if there were no errors
+  if (errorCount === 0) {
+    plan.status = "finalized";
+  }
+
   saveSocialPlan(plan);
 
-  return { createdCount, errorCount };
+  return { createdCount, errorCount, errors };
 }

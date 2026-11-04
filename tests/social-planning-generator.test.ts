@@ -1,13 +1,10 @@
 import { describe, expect, it } from "bun:test";
 import { generateSocialPlan } from "~/lib/social-planning/generator";
 import {
-  deleteSocialPlan,
   getSocialPlan,
-  listSocialPlans,
   saveSocialPlan,
   updatePlanSuggestion,
 } from "~/lib/social-planning/storage";
-import type { SocialPlan } from "~/lib/social-planning/types";
 
 describe("Social Planning Storage & Generator", () => {
   const dummyPartner = {
@@ -37,7 +34,8 @@ describe("Social Planning Storage & Generator", () => {
     expect(plan.suggestions[0].briefing).toBeDefined();
     expect(plan.suggestions[0].status).toBe("pending");
 
-    // Verify it is in storage
+    // Explicitly persist and verify
+    saveSocialPlan(plan);
     const loaded = getSocialPlan(plan.id);
     expect(loaded).not.toBeNull();
     expect(loaded?.id).toBe(plan.id);
@@ -82,6 +80,7 @@ describe("Social Planning Storage & Generator", () => {
       input: { themeCount: 2 },
     });
 
+    saveSocialPlan(plan);
     const suggestionId = plan.suggestions[0].id;
 
     const updatedPlan = updatePlanSuggestion(plan.id, suggestionId, {
@@ -98,12 +97,20 @@ describe("Social Planning Storage & Generator", () => {
     expect(reloaded?.suggestions[0].title).toBe("Título Editado");
   });
 
-  it("filters plans by partner slug", () => {
-    const plans = listSocialPlans("clinica-exemplo");
-    expect(plans.length).toBeGreaterThan(0);
-    expect(plans.every((p) => p.partner_slug === "clinica-exemplo")).toBe(true);
-
-    const nonExistent = listSocialPlans("outro-parceiro-qualquer");
-    expect(nonExistent).toHaveLength(0);
+  it("throws error in period mode when slots are missing or empty (Ticket C02)", () => {
+    expect(() => {
+      generateSocialPlan({
+        partner: dummyPartner,
+        mode: "period",
+        input: {
+          startDate: "2026-05-01",
+          endDate: "2026-05-31",
+          postsPerWeek: 3,
+        },
+        slots: [],
+      });
+    }).toThrow(
+      "Não é possível gerar planejamento no modo por período sem posições (slots) válidas.",
+    );
   });
 });

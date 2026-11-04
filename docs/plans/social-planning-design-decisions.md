@@ -85,3 +85,20 @@ Proprietário pediu delegar a um subagente mais leve apenas a criação da pági
 - A rota valida `partner` opcionalmente, resolve apenas `AppContext.partners` e atualiza a URL pela seleção Prism. Slug indisponível não seleciona outro parceiro; a interface permite escolher um disponível. O filtro de parceiros da busca não participa dessa atribuição.
 - O cabeçalho de `/dash` agora mantém avatar/identidade, seletor expansível e saída na mesma linha; em telas estreitas, saudação e texto de saída são visualmente compactados, mantendo nomes acessíveis. Sem mudança de sessão, query, seleção ou autenticação.
 - Isto implementa apenas navegação/seleção do shell e apresentação. Geração, IA, persistência, calendário e sugestões continuam pendentes; os campos e botão de geração ficam desativados.
+
+## Decisões do Contrato do Planejamento (D1 a D6) — 02/11/2026
+
+Decisões de produto aprovadas para a série de correções do Planejamento Social:
+
+- **D1 — Visibilidade e Compartilhamento:**
+  - Compartilhado entre os membros autorizados ao parceiro comercial (`partners.users_ids` e administradores da agência). Propostas são vinculadas ao `partner_slug` e criadas pelo `user_id`. Leitura permitida para membros com acesso ao parceiro. Edição permitida ao autor da proposta e aos administradores. RLS e armazenamento isolados por parceiro e usuário, evitando vazamento entre clientes ou contas externas.
+- **D2 — Frequência e Semanas:**
+  - Início da semana civil: Domingo (0) a Sábado (6). Semanas parciais no início ou fim do período selecionam apenas os dias da semana explicitamente ativos pelo usuário contidos no intervalo. A quantidade de dias por semana selecionados no controle deve equivaler à frequência indicada pelo usuário.
+- **D3 — Formatos:**
+  - No modo manual, a soma das quantidades manuais (`reels` + `static` + `carousel`) deve ser estritamente igual ao número de slots regulares calculados no período (`targetCount`), bloqueando a geração com aviso claro se divergir. No modo automático, a distribuição divide os formatos equilibradamente pelo pool. Formatos extras de datas comemorativas são alocados no formato de maior impacto (carrossel ou estático) sem consumir os regulares.
+- **D4 — Comemorações:**
+  - Ocorrências de datas comemorativas selecionadas no intervalo são tratadas como conteúdos extras contextuais (`isExtra: true`), não consumindo a cota regular dos dias da semana. Múltiplas comemorações na mesma data são combinadas no título do mesmo slot comemorativo para evitar sobrecarga de publicações. Apenas comemorações que caem no intervalo de datas do período (`startDate <= date <= endDate`) são selecionadas.
+- **D5 — Finalização:**
+  - Apenas sugestões aprovadas com data prevista válida são convertidas em ações reais. Sugestões pendentes permanecem no rascunho da proposta sem criar ações. Sugestões rejeitadas são ignoradas. O mapeamento define `phase: "idea"`, `partners: [partner_slug]`, `category: mapFormatToCategory(format)`, `responsibles: [userId]`, e `user_id: userId`. A finalização é atômica e idempotente: tentativas repetidas ou reaberturas após sucesso não duplicam ações criadas.
+- **D6 — Contrato Editorial Mínimo:**
+  - Entradas mínimas: parceiro com `title`, `context` (opcional) e `voice` (tom de voz), período ou quantidade de temas, direcionamento opcional. Saída estruturada de cada sugestão: `id`, `title`, `format` (`reels` | `static` | `carousel`), `objective`, `briefing`, `scheduled_date` (no modo período), `status` (`pending`), `is_commemorative` e `celebration_title` (se aplicável). Não há chat ou perguntas conversacionais.

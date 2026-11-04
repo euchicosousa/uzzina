@@ -1,4 +1,3 @@
-import { saveSocialPlan } from "./storage";
 import type {
   PlanFormat,
   PlanMode,
@@ -18,6 +17,7 @@ export interface GenerateSocialPlanParams {
     slug: string;
     title: string;
     context?: string;
+    voice?: string;
     voice_tone?: string;
   };
   mode: PlanMode;
@@ -301,25 +301,31 @@ export function generateSocialPlan({
       targetCount = input.count;
     }
   } else if (mode === "period") {
-    if (slots && slots.length > 0) {
-      targetCount = slots.length;
-    } else if (typeof input.postsPerWeek === "number") {
-      targetCount = Math.max(3, input.postsPerWeek * 2);
+    if (!slots || slots.length === 0) {
+      throw new Error(
+        "Não é possível gerar planejamento no modo por período sem posições (slots) válidas.",
+      );
     }
+    targetCount = slots.length;
   }
 
   const formatPool = buildFormatDistributionPool(input, targetCount, formats);
+  const effectiveVoice = partner.voice || partner.voice_tone;
   const suggestions: PlanSuggestion[] = [];
 
-  if (mode === "period" && slots && slots.length > 0) {
-    // Generate one suggestion per slot
-    slots.forEach((slot, index) => {
+  if (mode === "period") {
+    // Generate exactly one suggestion per validated slot
+    slots?.forEach((slot, index) => {
       const assignedFormat = formatPool[index] || "carousel";
 
       if (slot.isCommemorative && slot.celebrationTitle) {
         suggestions.push(
           buildCommemorativeSuggestion(
-            partner,
+            {
+              title: partner.title,
+              context: partner.context,
+              voice_tone: effectiveVoice,
+            },
             slot.celebrationTitle,
             slot.date,
             assignedFormat,
@@ -339,7 +345,7 @@ export function generateSocialPlan({
             topic,
             partner.title,
             partner.context,
-            partner.voice_tone,
+            effectiveVoice,
           ),
           scheduled_date: slot.date,
           status: "pending",
@@ -347,7 +353,7 @@ export function generateSocialPlan({
       }
     });
   } else {
-    // Theme mode or period mode without explicit slots
+    // Theme mode: exactly targetCount suggestions without scheduled_date
     for (let i = 0; i < targetCount; i++) {
       const assignedFormat = formatPool[i] || "carousel";
       const angle = EDITORIAL_ANGLES[i % EDITORIAL_ANGLES.length];
@@ -363,7 +369,7 @@ export function generateSocialPlan({
           topic,
           partner.title,
           partner.context,
-          partner.voice_tone,
+          effectiveVoice,
         ),
         status: "pending",
       });
@@ -383,6 +389,5 @@ export function generateSocialPlan({
     updated_at: now,
   };
 
-  saveSocialPlan(plan);
   return plan;
 }
