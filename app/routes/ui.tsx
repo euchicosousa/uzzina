@@ -529,7 +529,7 @@ function UIPage() {
   } | null>(null);
   const [activeSection, setActiveSection] = useState<
     "tokens" | "components" | "uzzina"
-  >("uzzina");
+  >("tokens");
   const [activeAnchor, setActiveAnchor] = useState<string>("colors");
   const [expandedItemId, setExpandedItemId] = useState<string>("colors");
   const [searchQuery, setSearchQuery] = useState<string>("");
