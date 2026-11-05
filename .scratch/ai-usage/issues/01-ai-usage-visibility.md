@@ -1,5 +1,11 @@
 # 01: Mostrar o uso de IA em Minha Conta
 
+## Modelos sugeridos
+
+- **OpenAI** — GPT-6.1 Sol, para rastrear o agregado e conferir o incremento após geração.
+- **Anthropic** — Claude Sonnet 5.5, para rastrear o agregado e conferir o incremento após geração.
+- **Google** — Gemini 4 Argon, para rastrear o agregado e conferir o incremento após geração. Disponibilidade depende do plano do Antigravity.
+
 **What to build:** oferecer uma visualização pequena e discreta do uso de IA dentro de Minha Conta, para entender quanto da referência disponível foi utilizado no período. Registrar consumo real das gerações e apresentar o percentual autorizado, sem expor preços ou custos do provedor. Basear o desenho na especificação existente de consumo por agência, sem presumir que o contador técnico atual já mede esse consumo.
 
 **Blocked by:** nenhuma dependência dos tickets de busca, datas comemorativas, Ajuda ou Notificações. Antes de implementar, resolver as definições de produto e verificar o vínculo autorizado de agência/membros descritos abaixo.
@@ -94,3 +100,7 @@ Publicar o backend/API/worker corrigidos e confirmar incremento com uma geraçã
 ## Commit autorizado — 05/11/2026
 
 Proprietário solicitou commit da correção e dos registros desta rodada. Código/schema/testes integram o commit desta atualização; SQL remoto já aplicado conforme evidência acima. Publicação de API/worker e confirmação de incremento continuam pendentes. Sem push/deploy.
+
+## Dependência de encerramento — 05/11/2026
+
+O fechamento depende de validar [IA-M01](../../ai-models/issues/01-model-catalog-selection-and-metering.md), [IA-M03](../../ai-models/issues/03-monthly-ai-allowance.md) e a contabilização após troca de modelo no [IA-M04](../../ai-models/issues/04-model-selection-by-command.md). A medição existente é a base de integração. Conferir tokens reais, custo por tarifa vigente, transição da política anterior, percentual da cota mensal e contagem de chamadas. Publicação da correção existente e aceite do novo cálculo são etapas distintas.

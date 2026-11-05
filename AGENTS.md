@@ -6,6 +6,10 @@ Comece por [CURRENT.md](docs/audits/CURRENT.md), depois leia somente os arquivos
 
 Antes de editar, confira o estado do Git e preserve mudanças externas. Um executor escreve no checkout por vez. Diferencie código preparado, SQL aplicado, teste local, staging e produção; um push não confirma deploy Ready.
 
+## Recomendações de agentes nos tickets
+
+Ao criar um ticket ou mudar seu escopo, inclua a seção `## Modelos sugeridos` com exatamente três opções de execução, uma por família: OpenAI (Codex), Anthropic (Claude) e Google (Gemini/Antigravity). Em cada linha, indique o modelo e o motivo ligado à tarefa. Prefira o modelo mais leve que cubra o risco e a complexidade. Confira a disponibilidade na ferramenta de execução quando possível e sinalize quando depender do plano. As três opções são alternativas para o responsável escolher. A recomendação por si só não autoriza disparar agentes nem altera os modelos usados pelo app.
+
 ## 1. Stack e estrutura
 
 UZZINA é a aplicação existente de gestão de ações da agência CNVT: React, TanStack Router em SPA, TanStack Query, Supabase, Tailwind CSS v4, Prism/React Aria, Tiptap, Cloudinary e OpenAI. Vercel executa o frontend e as APIs.

@@ -63,6 +63,7 @@ import {
   PrismDialogFooter,
   PrismDialogTitle,
 } from "~/components/prism";
+import { tabVariants } from "~/components/prism/tabs";
 const DEFAULT_PARTNER_FILTERS: string[] = [];
 const DEFAULT_PARTNERS: Partner[] = [];
 import { useAppContext } from "~/contexts/AppContext";
@@ -838,9 +839,9 @@ export function ActionFormDrawer({
           <div className="flex shrink-0 items-center justify-center gap-2 border-b bg-error-background p-2 text-sm font-medium text-error">
             <ArchiveIcon className="size-4" />
             Esta ação está arquivada.
-            <button
-              className="ml-2 underline hover:no-underline"
-              onClick={() => {
+            <PrismButton
+              className="ml-2"
+              onPress={() => {
                 setRawAction((prev) => ({
                   ...prev,
                   archived: false,
@@ -849,10 +850,11 @@ export function ActionFormDrawer({
                   archived: false,
                 });
               }}
-              type="button"
+              size="xs"
+              variant="link"
             >
               Desarquivar
-            </button>
+            </PrismButton>
           </div>
         )}
 
@@ -869,14 +871,14 @@ export function ActionFormDrawer({
               </span>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              <button
-                className="text-xs font-semibold underline hover:no-underline"
-                disabled={isComparing}
-                onClick={compareLatestForSave}
-                type="button"
+              <PrismButton
+                isDisabled={isComparing}
+                onPress={compareLatestForSave}
+                size="xs"
+                variant="link"
               >
                 Comparar e salvar
-              </button>
+              </PrismButton>
             </div>
           </div>
         )}
@@ -895,13 +897,14 @@ export function ActionFormDrawer({
                     : "Há uma versão mais recente desta ação."}
                 </span>
               </div>
-              <button
-                className="shrink-0 text-xs font-semibold underline hover:no-underline"
-                onClick={() => setComparison(coordinatorState.remoteVersion)}
-                type="button"
+              <PrismButton
+                className="shrink-0"
+                onPress={() => setComparison(coordinatorState.remoteVersion)}
+                size="xs"
+                variant="link"
               >
                 Comparar
-              </button>
+              </PrismButton>
             </div>
           )}
 
@@ -926,15 +929,16 @@ export function ActionFormDrawer({
                 {coordinatorState.errorMessage || "Erro ao salvar alterações."}
               </span>
             </div>
-            <button
-              className="shrink-0 text-xs font-semibold underline hover:no-underline"
-              onClick={() => {
+            <PrismButton
+              className="shrink-0"
+              onPress={() => {
                 handleSave();
               }}
-              type="button"
+              size="xs"
+              variant="link"
             >
               Tentar novamente
-            </button>
+            </PrismButton>
           </div>
         )}
 
@@ -992,16 +996,14 @@ export function ActionFormDrawer({
                 <MessageSquareIcon className="size-4 shrink-0" />
               </PrismTab>
             </PrismTabList>
-            <div className="flex shrink-0">
-              <button
-                aria-label="Fechar"
-                className="flex cursor-pointer items-center justify-center px-3 py-2 font-medium outline-none hover:bg-input focus-visible:bg-input"
-                onClick={handleSafeClose}
-                type="button"
-              >
-                <XIcon className="size-4" />
-              </button>
-            </div>
+            <PrismButton
+              aria-label="Fechar"
+              className={cn(tabVariants(), "h-10 w-10 flex-none px-0")}
+              onPress={handleSafeClose}
+              variant="unstyled"
+            >
+              <XIcon className="size-4" />
+            </PrismButton>
           </div>
 
           <div

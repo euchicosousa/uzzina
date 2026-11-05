@@ -1,5 +1,11 @@
 # T10: Confirmar, reconciliar e atualizar a Mesa após finalização
 
+## Modelos sugeridos
+
+- **OpenAI** — GPT-6.1 Sol, para reconciliar a finalização com o estado da Mesa.
+- **Anthropic** — Claude Sonnet 5.5, para reconciliar a finalização com o estado da Mesa.
+- **Google** — Gemini 4 Argon, para reconciliar a finalização com o estado da Mesa. Disponibilidade depende do plano do Antigravity.
+
 **Status:** ready-for-agent
 **Blocked by:** T04 e T09; T05 para guarda de edição.
 **Origem:** Conclusão de C09: resumo, falhas, sessão e cache.

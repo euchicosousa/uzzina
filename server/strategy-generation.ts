@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { lunaModel } from "./ai-model-catalog.js";
 import { aiResultSchema, type AIPayload } from "../app/lib/ai-contract.js";
 
 /** Shared editorial contract for browser-requested and durable strategy work. */
@@ -10,11 +11,10 @@ export async function generateStrategies(
     maxRetries: 0,
   }),
   onUsage?: (
-    usage: OpenAI.Completions.CompletionUsage | undefined,
+    response: OpenAI.Chat.Completions.ChatCompletion,
   ) => Promise<void> | void,
 ) {
   const { category, partner_name, partner_context, title, description } = input;
-  const model = "gpt-6-luna";
   const publisherIdentity = `A marca que publica este conteúdo é ${JSON.stringify(partner_name)}. Escreva na voz dessa marca, como autora da publicação. A agência operadora não é a autora por padrão. Preserve menções legítimas a outras marcas quando solicitadas nos insumos; não substitua nem apague essas menções.`;
   const categoryMap: Record<string, string> = {
     post: "Post Estático",
@@ -24,7 +24,8 @@ export async function generateStrategies(
   };
   const formattedCategory = categoryMap[category] || category || "Conteúdo";
   const response = await client.chat.completions.create({
-    model: model,
+    model: lunaModel.id,
+    service_tier: "default",
     response_format: {
       type: "json_object",
     },
@@ -79,7 +80,7 @@ Mantenha cada campo com no máximo 1800 caracteres, para permitir seu uso na pr�
   });
   if (onUsage) {
     try {
-      await onUsage(response.usage);
+      await onUsage(response);
     } catch (err) {
       console.error("Strategy onUsage error:", err);
     }

@@ -1,7 +1,7 @@
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CheckCircle2Icon, ClockIcon } from "lucide-react";
-import { PrismBadge } from "~/components/prism";
+import { PrismBadge, PrismButton } from "~/components/prism";
 import { cn } from "cnfast";
 interface LeadCardProps {
   lead: Lead;
@@ -16,14 +16,14 @@ export function LeadCard({ lead, isSelected, onClick }: LeadCardProps) {
       })
     : null;
   return (
-    <button
+    <PrismButton
       className={cn(
-        "flex w-full cursor-pointer flex-col gap-2 rounded-2xl p-4 text-left transition-all squircle",
+        "flex w-full cursor-pointer flex-col gap-2 rounded-2xl p-4 text-left font-normal transition-all outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30",
         isSelected ? "bg-primary text-background" : "hover:bg-secondary/50",
       )}
       data-lead-id={lead.id}
-      onClick={onClick}
-      type="button"
+      onPress={onClick}
+      variant="unstyled"
     >
       <div className="flex w-full items-start justify-between gap-2">
         <span className="min-w-0 truncate font-medium">{lead.name}</span>
@@ -50,6 +50,6 @@ export function LeadCard({ lead, isSelected, onClick }: LeadCardProps) {
           <span className="shrink-0 text-xs">{formattedTime}</span>
         )}
       </div>
-    </button>
+    </PrismButton>
   );
 }

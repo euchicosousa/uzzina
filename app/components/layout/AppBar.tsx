@@ -194,7 +194,6 @@ function PartnerFilterPopover({
     <PrismPopoverTrigger>
       <PrismButton
         aria-label="Selecionar parceiro"
-        className="sm"
         size={partnerFilters.length > 1 ? "default" : "icon"}
         variant={"ghost"}
       >
@@ -227,25 +226,26 @@ function PartnerFilterPopover({
       </PrismButton>
       <PrismPopover className="overflow-hidden p-0" size="lg">
         <PrismCommand className="p-0">
-          <div className="flex items-center">
-            <PrismCommandInput placeholder="Parceiro..." />
-            {isAtHome && (
-              <PrismToggle
-                aria-label="Filtrar ações por parceiro"
-                className={"mr-2"}
-                isSelected={isFilterMode}
-                onChange={(selected) => {
-                  setIsFilterMode(selected);
-                  if (!selected) {
-                    setPartnerFilters([]);
-                  }
-                }}
-                size={"sm"}
-              >
-                <FilterIcon className="size-4" />
-              </PrismToggle>
-            )}
-          </div>
+          <PrismCommandInput
+            placeholder="Parceiro..."
+            suffix={
+              isAtHome && (
+                <PrismToggle
+                  aria-label="Filtrar ações por parceiro"
+                  isSelected={isFilterMode}
+                  onChange={(selected) => {
+                    setIsFilterMode(selected);
+                    if (!selected) {
+                      setPartnerFilters([]);
+                    }
+                  }}
+                  size="icon-sm"
+                >
+                  <FilterIcon />
+                </PrismToggle>
+              )
+            }
+          />
           <PrismCommandList
             renderEmptyState={() => (
               <PrismCommandEmpty>Nenhum parceiro encontrado.</PrismCommandEmpty>

@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { lunaModel } from "./ai-model-catalog.js";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type AIUsageContext =
@@ -20,6 +21,7 @@ export async function recordAIUsage(
   context: AIUsageContext,
   usage: unknown,
   model: string,
+  response?: { id?: string; model?: string; service_tier?: string | null },
 ): Promise<boolean> {
   const values =
     typeof usage === "object" && usage !== null
@@ -33,15 +35,63 @@ export async function recordAIUsage(
       ? details.cached_tokens
       : undefined,
   );
+  const cacheWriteValue =
+    typeof details === "object" &&
+    details !== null &&
+    "cache_write_tokens" in details
+      ? details.cache_write_tokens
+      : undefined;
+  const cacheWriteTokens =
+    cacheWriteValue === undefined ? 0 : tokenCount(cacheWriteValue);
   const promptTokens = tokenCount(values.prompt_tokens);
   const completionTokens = tokenCount(values.completion_tokens);
   const totalTokens = tokenCount(values.total_tokens);
-  const eventId = "operationId" in context ? context.operationId : randomUUID();
+  const actualModel = response?.model ?? model;
+  const providerId = response?.id || null;
+  const tier = response?.service_tier ?? "default";
+  const tariff =
+    promptTokens === null
+      ? undefined
+      : lunaModel.tariffs.find((band) => promptTokens <= band.maxInputTokens);
+  const completionDetails = values.completion_tokens_details;
+  const reasoningTokens = tokenCount(
+    typeof completionDetails === "object" &&
+      completionDetails !== null &&
+      "reasoning_tokens" in completionDetails
+      ? completionDetails.reasoning_tokens
+      : undefined,
+  );
+  const costNanos =
+    actualModel === lunaModel.id &&
+    tier === "default" &&
+    promptTokens !== null &&
+    tariff !== undefined &&
+    completionTokens !== null &&
+    totalTokens === promptTokens + completionTokens &&
+    cachedTokens !== null &&
+    cacheWriteTokens !== null &&
+    cachedTokens + cacheWriteTokens <= promptTokens
+      ? (promptTokens - cachedTokens - cacheWriteTokens) * tariff.input +
+        cachedTokens * tariff.cacheRead +
+        cacheWriteTokens * tariff.cacheWrite +
+        completionTokens * tariff.output
+      : null;
+  const eventId = "leaseId" in context ? context.leaseId : randomUUID();
   const args = {
     p_event_id: eventId,
     p_user_id: "userId" in context ? context.userId : undefined,
     p_intent: context.intent,
-    p_model: model,
+    p_model: actualModel,
+    p_meter: {
+      provider: lunaModel.provider,
+      provider_id: providerId,
+      service_tier: tier,
+      cache_write_tokens:
+        cacheWriteValue === undefined ? null : cacheWriteTokens,
+      reasoning_tokens: reasoningTokens,
+      tariff: costNanos === null ? null : tariff,
+      cost_nanos: costNanos,
+    },
     p_prompt_tokens: promptTokens,
     p_completion_tokens: completionTokens,
     p_total_tokens: totalTokens,

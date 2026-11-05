@@ -1,5 +1,11 @@
 # T01: Rastrear decisões e fechar o contrato de aceite
 
+## Modelos sugeridos
+
+- **OpenAI** — GPT-6.1 Terra, para rastrear decisões existentes e consolidar o contrato de aceite.
+- **Anthropic** — Claude Haiku 5.5, para rastrear decisões existentes e consolidar o contrato de aceite.
+- **Google** — Gemini 3.8 Flash, para rastrear decisões existentes e consolidar o contrato de aceite.
+
 **Status:** ready-for-agent
 **Blocked by:** Nenhum.
 **Origem:** C00; decisões D1–D6 e evidência de aprovação.

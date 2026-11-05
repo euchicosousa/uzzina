@@ -453,13 +453,14 @@ export function Header({
             <div className="flex items-center justify-between border-b bg-muted/20 px-4 py-3">
               <h5 className="text-sm font-semibold">Notificações</h5>
               {unreadCount > 0 && (
-                <button
-                  className="text-xs text-primary transition-colors hover:underline"
-                  onClick={() => markAllAsRead()}
-                  type="button"
+                <PrismButton
+                  className="h-auto p-0 font-normal"
+                  onPress={() => markAllAsRead()}
+                  size="xs"
+                  variant="link"
                 >
                   Marcar todas como lidas
-                </button>
+                </PrismButton>
               )}
             </div>
             <div className="max-h-75 divide-y divide-border overflow-y-auto">
@@ -474,14 +475,14 @@ export function Header({
                     ? format(createdAtDate, "HH'h'mm 'de' dd/MM/yyyy")
                     : "";
                   return (
-                    <button
+                    <PrismButton
                       key={notif.id}
                       className={cn(
-                        "flex w-full flex-col gap-1 px-4 py-2 text-left transition hover:bg-card",
+                        "flex w-full flex-col items-start gap-1 px-4 py-2 text-left font-normal transition hover:bg-card focus-visible:bg-secondary/50",
                         !notif.read_at && "bg-card",
                       )}
-                      onClick={() => handleNotificationClick(notif)}
-                      type="button"
+                      onPress={() => handleNotificationClick(notif)}
+                      variant="unstyled"
                     >
                       <div className="flex w-full items-start justify-between gap-1">
                         <span className="text-sm tracking-tight text-foreground/80">
@@ -500,7 +501,7 @@ export function Header({
                       <p className="mt-1 line-clamp-2 border-l pl-2 text-sm text-foreground/60">
                         {notificationExcerptText(notif.comment_excerpt)}
                       </p>
-                    </button>
+                    </PrismButton>
                   );
                 })
               )}

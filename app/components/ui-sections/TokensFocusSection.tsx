@@ -309,7 +309,7 @@ export function TokensFocusSection() {
             </Example>
             <Example
               label="Campo de cor com erro"
-              source="Réplica de features/action-drawer/PartnerColorPicker.tsx"
+              source="Exemplo de foco do seletor de cores"
             >
               <PrismInput
                 aria-label="Campo de cor inválido"

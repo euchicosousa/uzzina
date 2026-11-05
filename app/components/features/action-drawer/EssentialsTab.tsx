@@ -21,7 +21,7 @@ const Tiptap = lazy(() =>
     default: module.Tiptap,
   })),
 );
-import { PrismButton, PrismButtonGroup } from "~/components/prism";
+import { PrismButton, PrismButtonGroup, PrismSkeleton } from "~/components/prism";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { INTENT } from "~/lib/CONSTANTS";
 import type { TextDraftField } from "~/components/features/action-drawer/ActionFormDrawer";
@@ -280,11 +280,11 @@ export function EssentialsTab({
 
             <PrismButton
               aria-label="Alternar exibição do ID da ação"
-              className="font-mono"
+              className={cn("font-mono", isIDVisible && "w-auto px-2")}
               onClick={() => {
                 setisIDVisible(!isIDVisible);
               }}
-              size="icon-sm"
+              size={isIDVisible ? "xs" : "icon-sm"}
               variant="ghost"
             >
               {isIDVisible ? RawAction.id : "ID"}
@@ -398,7 +398,7 @@ export function EssentialsTab({
       >
         <Suspense
           fallback={
-            <div className="h-full min-h-50 w-full animate-pulse rounded-2xl bg-muted squircle" />
+            <PrismSkeleton className="h-full min-h-50 w-full rounded-2xl" />
           }
         >
           <Tiptap

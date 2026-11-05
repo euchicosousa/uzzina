@@ -233,11 +233,14 @@ export function ActionItem({
         }
       }}
       role="button"
+      aria-pressed={isSelectionMode ? isSelected : undefined}
       tabIndex={0}
       title={`${action.title} • ${getFormattedPartnersName(currentPartners)}`}
     >
       {isSelectionMode && (
         <div
+          aria-hidden="true"
+          inert
           className={cn(
             "absolute z-20 flex items-center justify-center transition-all",
             variant !== VARIANT.content
@@ -250,9 +253,10 @@ export function ActionItem({
           )}
         >
           <PrismCheckbox
-            boxClassName="bg-background"
+            boxClassName={isSelected ? undefined : "bg-background"}
             className="pointer-events-none"
-            data-selected={isSelected}
+            isReadOnly
+            isSelected={isSelected}
             size="sm"
           />
         </div>

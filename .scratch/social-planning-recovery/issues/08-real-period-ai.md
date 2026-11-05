@@ -1,5 +1,11 @@
 # T08: Gerar período por IA respeitando slots e formatos confirmados
 
+## Modelos sugeridos
+
+- **OpenAI** — GPT-6 Astra, para validar geração por período e consistência de slots e formatos.
+- **Anthropic** — Claude Opus 5.5, para validar geração por período e consistência de slots e formatos.
+- **Google** — Gemini 4 Argon, para validar geração por período e consistência de slots e formatos. Disponibilidade depende do plano do Antigravity.
+
 **Status:** ready-for-agent
 **Blocked by:** T03 e T07.
 **Origem:** R3/R6; integração tema/período, regulares/extras.

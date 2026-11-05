@@ -1,5 +1,11 @@
 # T09: Converter aprovadas em uma transação idempotente real
 
+## Modelos sugeridos
+
+- **OpenAI** — GPT-6 Astra, para provar idempotência e atomicidade da conversão.
+- **Anthropic** — Claude Opus 5.5, para provar idempotência e atomicidade da conversão.
+- **Google** — Gemini 4 Argon, para provar idempotência e atomicidade da conversão. Disponibilidade depende do plano do Antigravity.
+
 **Status:** ready-for-agent
 **Blocked by:** T02 e T01/D5. Pode usar propostas canônicas controladas; não espera IA/calendário.
 **Origem:** R1/R2; núcleo C09.

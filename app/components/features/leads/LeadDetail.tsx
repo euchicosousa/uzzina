@@ -58,17 +58,11 @@ export function LeadDetail({ lead }: LeadDetailProps) {
             )}
 
             {lead.completed ? (
-              <PrismBadge
-                className="gap-1 border-success/20 bg-success/15 text-success"
-                variant="default"
-              >
+              <PrismBadge variant="success">
                 <CheckCircle2Icon className="size-3.5" /> Concluído
               </PrismBadge>
             ) : (
-              <PrismBadge
-                className="gap-1 border-warning/20 bg-warning/15 text-warning"
-                variant="default"
-              >
+              <PrismBadge variant="warning">
                 <ClockIcon className="size-3.5" /> Em andamento
               </PrismBadge>
             )}

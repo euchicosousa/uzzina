@@ -285,9 +285,17 @@ it("awaits generation, retains output, then finalizes independently of a browser
     "finish_strategy_operation",
   ]);
   expect(events[1]?.args).toMatchObject({
-    p_event_id: operationId,
     p_operation_id: operationId,
     p_prompt_tokens: 100,
+  });
+  const claimArgs = events[0]?.args;
+  expect(events[1]?.args).toMatchObject({
+    p_event_id:
+      typeof claimArgs === "object" &&
+      claimArgs !== null &&
+      "p_lease_id" in claimArgs
+        ? claimArgs.p_lease_id
+        : undefined,
   });
   expect(events[2]?.args).toMatchObject({ p_result: strategies });
   expect(providerCalls).toBe(1);

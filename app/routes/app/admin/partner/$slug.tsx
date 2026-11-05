@@ -22,6 +22,8 @@ const Tiptap = lazy(() =>
 import {
   PrismButton,
   PrismInput,
+  PrismLabel,
+  PrismSkeleton,
   PrismTextarea,
   PrismToggle,
   PrismToggleGroup,
@@ -416,18 +418,19 @@ function AdminPartnerEditPage() {
               Clique para fazer upload e recortar
             </div>
             {imageUrl && (
-              <button
-                className="mt-1 text-left text-xs text-muted-foreground underline hover:text-foreground"
-                onClick={() => {
+              <PrismButton
+                className="mt-1 h-auto p-0 text-left text-xs text-muted-foreground hover:text-foreground"
+                onPress={() => {
                   setImageUrl(null);
                   triggerAutoSave({
                     image: null,
                   });
                 }}
-                type="button"
+                size="xs"
+                variant="link"
               >
                 Remover imagem
-              </button>
+              </PrismButton>
             )}
           </div>
         </div>
@@ -435,9 +438,9 @@ function AdminPartnerEditPage() {
         <div className="grid gap-8">
           <div className="grid gap-4">
             <div className="flex items-center justify-between gap-2">
-              <label className="font-medium" htmlFor="title">
+              <PrismLabel htmlFor="title">
                 Nome
-              </label>
+              </PrismLabel>
               {savingFields.has("title") && <ULoader />}
             </div>
             <PrismInput
@@ -452,9 +455,9 @@ function AdminPartnerEditPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="grid gap-4">
               <div className="flex items-center justify-between gap-2">
-                <label className="font-medium" htmlFor="short">
+                <PrismLabel htmlFor="short">
                   Sigla (4 letras)
-                </label>
+                </PrismLabel>
                 {savingFields.has("short") && <ULoader />}
               </div>
               <PrismInput
@@ -468,9 +471,9 @@ function AdminPartnerEditPage() {
 
             <div className="grid gap-4">
               <div className="flex items-center justify-between gap-2">
-                <label className="font-medium" htmlFor="slug">
+                <PrismLabel htmlFor="slug">
                   Slug
-                </label>
+                </PrismLabel>
                 {savingFields.has("slug") && <ULoader />}
               </div>
               <PrismInput
@@ -486,21 +489,20 @@ function AdminPartnerEditPage() {
 
           <div className="grid gap-4">
             <div className="flex items-center justify-between gap-2">
-              <label
-                className="font-medium"
+              <PrismLabel
                 htmlFor="context"
                 id="context-label"
                 onClick={() => document.getElementById("context")?.focus()}
               >
                 Contexto
-              </label>
+              </PrismLabel>
               {savingFields.has("context") && <ULoader />}
             </div>
             <input name="context" type="hidden" value={contextValue} />
             <div className="min-h-25 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] duration-200 squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring/30 md:text-sm">
               <Suspense
                 fallback={
-                  <div className="h-full w-full animate-pulse bg-muted" />
+                  <PrismSkeleton className="h-full w-full" />
                 }
               >
                 <Tiptap
@@ -522,21 +524,20 @@ function AdminPartnerEditPage() {
 
           <div className="grid gap-4">
             <div className="flex items-center justify-between gap-2">
-              <label
-                className="font-medium"
+              <PrismLabel
                 htmlFor="voice"
                 id="voice-label"
                 onClick={() => document.getElementById("voice")?.focus()}
               >
                 Tom de Voz
-              </label>
+              </PrismLabel>
               {savingFields.has("voice") && <ULoader />}
             </div>
             <input name="voice" type="hidden" value={voiceValue} />
             <div className="min-h-25 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] duration-200 squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring/30 md:text-sm">
               <Suspense
                 fallback={
-                  <div className="h-full w-full animate-pulse bg-muted" />
+                  <PrismSkeleton className="h-full w-full" />
                 }
               >
                 <Tiptap
@@ -558,9 +559,9 @@ function AdminPartnerEditPage() {
 
           <div className="grid gap-4">
             <div className="flex items-center justify-between gap-2">
-              <label className="font-medium" htmlFor="instagram_caption_tail">
+              <PrismLabel htmlFor="instagram_caption_tail">
                 Assinatura do Instagram
-              </label>
+              </PrismLabel>
               {savingFields.has("instagram_caption_tail") && <ULoader />}
             </div>
             <PrismTextarea

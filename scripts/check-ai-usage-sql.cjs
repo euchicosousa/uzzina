@@ -29,6 +29,10 @@ const assert = require("node:assert/strict");
       "supabase/migrations/20261101230000_ai_agency_usage.sql",
       "utf8",
     );
+    const providerMigration = await fs.readFile(
+      "supabase/migrations/20261105120000_ai_provider_metering.sql",
+      "utf8",
+    );
     const setup = `
 create role anon; create role authenticated; create role service_role bypassrls;
 create schema auth; create table auth.users(id uuid primary key);
@@ -80,11 +84,26 @@ update ai_usage_metering set started_at=(date_trunc('month',clock_timestamp() at
 set role authenticated; select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
 select test_assert((get_agency_ai_usage()->>'total_generations')::integer=2 and (get_agency_ai_usage()->>'total_units')::numeric=0,'Fortaleza month excludes previous and next boundary');
 select test_assert(not (get_agency_ai_usage()->>'partial_period')::boolean,'full-period coverage after rollover');
+reset role;
+`;
+    const providerChecks = `
+select test_assert((select count(*)=4 from ai_generation_logs where provider_meter is null and provider_cost_usd is null),'historical weighted measurements preserved');
+set role service_role;
+select public.record_ai_generation('66666666-6666-4666-8666-666666666666','ai-strategy','gpt-6-luna',120,30,150,20,null,'55555555-5555-4555-8555-555555555555','66666666-6666-4666-8666-666666666666','{"provider":"openai","provider_id":"chatcmpl-1","cost_nanos":25200,"tariff":{"version":"standard-v1"}}');
+select public.record_ai_generation('99999999-9999-4999-8999-999999999999','ai-caption','gpt-6-luna',120,30,150,20,'11111111-1111-4111-8111-111111111111',p_meter=>'{"provider":"openai","provider_id":"chatcmpl-1","cost_nanos":25200}');
+select public.record_ai_generation('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','ai-caption','gpt-6-luna',p_user_id=>'11111111-1111-4111-8111-111111111111',p_meter=>'{"provider":"openai","provider_id":"chatcmpl-2","cost_nanos":null}');
+select test_assert((select count(*)=2 from ai_generation_logs where provider_meter is not null),'duplicate provider calls suppressed, distinct incomplete call retained');
+select test_assert((select provider_cost_usd=0.000025200 and provider_meter->'tariff'->>'version'='standard-v1' from ai_generation_logs where provider_call_id='chatcmpl-1'),'exact decimal and tariff snapshot retained');
+select test_assert((select provider_cost_usd is null from ai_generation_logs where provider_call_id='chatcmpl-2'),'missing cost stays pending');
+reset role; set role authenticated;
+do $$ begin begin perform public.record_ai_generation('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','ai-caption','gpt-6-luna',p_user_id=>'11111111-1111-4111-8111-111111111111',p_meter=>'{}'); raise exception 'client could write provider meter'; exception when insufficient_privilege then null; end; end $$;
+reset role;
 select 'AI_USAGE_SQL_PASS';
 `;
-    const flattened = `${setup}\n${migration}\n${checks}`
-      .replace(/--[^\n]*/g, "")
-      .replace(/\n/g, " ");
+    const flattened =
+      `${setup}\n${migration}\n${checks}\n${providerMigration}\n${providerChecks}`
+        .replace(/--[^\n]*/g, "")
+        .replace(/\n/g, " ");
     const input = `${flattened}\n`;
     const result = spawnSync(
       join(bin, "postgres"),

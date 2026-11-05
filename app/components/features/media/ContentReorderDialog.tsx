@@ -66,15 +66,6 @@ function SortableThumbnail({
       style={style}
       className="group relative aspect-square overflow-hidden rounded-lg border bg-muted squircle"
     >
-      {/* <button
-        type="button"
-        {...attributes}
-        {...listeners}
-        aria-label={`Reordenar arquivo ${index + 1}`}
-        className="absolute top-1 left-1 z-10 flex size-8 cursor-grab touch-none items-center justify-center rounded bg-black/70 text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30 active:cursor-grabbing"
-      >
-        <GripVerticalIcon className="size-4" />
-      </button> */}
       <PrismButton
         {...attributes}
         {...listeners}
@@ -88,21 +79,10 @@ function SortableThumbnail({
 
       {/* Número de ordem */}
       <PrismBadge className="absolute bottom-1 left-1 z-10">
-        {/* <div className="absolute bottom-1 left-1 z-10 rounded bg-black/70 px-1 text-xs font-bold text-white squircle"> */}
         {index + 1}
-        {/* </div> */}
       </PrismBadge>
 
       {/* Remover */}
-      {/* <button
-        ref={removeRef}
-        type="button"
-        aria-label={`Remover arquivo ${index + 1}`}
-        onClick={onRemove}
-        className="absolute top-1 right-1 z-10 flex size-8 items-center justify-center rounded bg-destructive text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30"
-      >
-        <XIcon className="size-4" />
-      </button> */}
       <PrismButton
         ref={removeRef}
         aria-label={`Remover arquivo ${index + 1}`}

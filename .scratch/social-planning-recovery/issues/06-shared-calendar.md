@@ -1,5 +1,11 @@
 # T06: Substituir grade paralela pelo calendário real com movimento seguro
 
+## Modelos sugeridos
+
+- **OpenAI** — GPT-6.1 Sol, para integrar calendário compartilhado e proteger movimentações.
+- **Anthropic** — Claude Sonnet 5.5, para integrar calendário compartilhado e proteger movimentações.
+- **Google** — Gemini 4 Argon, para integrar calendário compartilhado e proteger movimentações. Disponibilidade depende do plano do Antigravity.
+
 **Status:** ready-for-agent
 **Blocked by:** T02 e T04; T05 para usar editor com salvamento protegido.
 **Origem:** R7; C07.

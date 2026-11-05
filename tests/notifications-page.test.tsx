@@ -111,7 +111,8 @@ mock.module("~/lib/supabase.client", () => ({
   createSupabaseBrowserClient: () => ({ from: query }),
 }));
 
-const { NotificationsPage } = await import("~/routes/app/notifications");
+const { NotificationsPage } =
+  await import("~/components/features/NotificationsPage");
 
 if (!("ResizeObserver" in globalThis)) {
   Object.assign(globalThis, {

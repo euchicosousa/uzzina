@@ -56,9 +56,9 @@ export function UAvatarSelector({
             key={option.id}
             aria-pressed={isSelected}
             className={cn(
-              "relative flex flex-col items-center gap-2 overflow-hidden rounded-3xl border-t border-transparent p-4 ring-foreground/5 transition-all duration-500 squircle hover:bg-secondary",
+              "relative flex flex-col items-center gap-2 overflow-hidden rounded-3xl border-t border-transparent p-4 ring-foreground/5 transition-all duration-500 outline-none squircle hover:bg-secondary focus-visible:ring-3 focus-visible:ring-ring/30",
               isSelected
-                ? "border-white bg-action text-foreground shadow-xs ring hover:bg-action-hover hover:shadow-lg"
+                ? "border-border bg-action text-foreground shadow-xs ring hover:bg-action-hover hover:shadow-lg"
                 : "",
             )}
             onClick={() => toggleOption(option.id)}

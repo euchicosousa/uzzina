@@ -1,5 +1,11 @@
 # T05: Conservar edição até confirmação e garantir teclado do diálogo
 
+## Modelos sugeridos
+
+- **OpenAI** — GPT-6.1 Sol, para validar confirmação, retry e foco no diálogo.
+- **Anthropic** — Claude Sonnet 5.5, para validar confirmação, retry e foco no diálogo.
+- **Google** — Gemini 4 Argon, para validar confirmação, retry e foco no diálogo. Disponibilidade depende do plano do Antigravity.
+
 **Status:** ready-for-agent
 **Blocked by:** T02 e T04 para salvamento e guardas; foco pode ser preparado antes.
 **Origem:** R9; C08.

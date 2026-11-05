@@ -10,7 +10,7 @@ import { ptBR } from "date-fns/locale";
 import { ArrowLeftIcon, PlusIcon, AlertCircleIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { PrismButton, buttonVariants } from "~/components/prism";
+import { PrismBadge, PrismButton, buttonVariants } from "~/components/prism";
 import { CommentInput } from "~/components/features/ActionComments/CommentInput";
 import { CommentList } from "~/components/features/ActionComments/CommentList";
 import { WorkFileThumbnail } from "~/components/features/media/WorkFileThumbnail";
@@ -348,15 +348,15 @@ function DashActionDetail() {
               </div>
               <div className="flex items-center gap-2">
                 <UPhaseIcon phase={currentPhase} variant="icon" />
-                <span
-                  className="shrink-0 rounded-full px-3 py-1 text-xs font-medium"
+                <PrismBadge
                   style={{
                     backgroundColor: `${currentPhase?.color}22`,
                     color: currentPhase?.color,
                   }}
+                  variant="secondary"
                 >
                   {currentPhase?.title ?? action.phase}
-                </span>
+                </PrismBadge>
               </div>
             </div>
           </div>
@@ -407,14 +407,15 @@ function DashActionDetail() {
                 />
               ))}
               <CloudinaryUpload
-                className={`text-foreground/50 ${workFiles.length === 0 ? "text-md flex items-center gap-1.5 py-1.5 underline-offset-2 hover:underline" : "flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary transition squircle hover:bg-secondary/50"}`}
                 cloudName={cloudName}
                 folder="uzzina/work"
                 multiple
                 onUpload={handleUpload}
                 outputWidth={1200}
                 resourceType="auto"
+                size={workFiles.length === 0 ? "sm" : "icon-sm"}
                 uploadPreset={uploadPreset}
+                variant={workFiles.length === 0 ? "link" : "secondary"}
               >
                 {workFiles.length === 0 && <span>Adicionar arquivo</span>}
                 <PlusIcon className="size-4 shrink-0" />

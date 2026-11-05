@@ -89,7 +89,7 @@ export function ClientCalendar<
           <PrismButton
             aria-label={view === "week" ? "Semana anterior" : "Mês anterior"}
             onClick={onPrev}
-            size="icon"
+            size="icon-sm"
             variant="ghost"
           >
             <ChevronLeftIcon className="size-4" />
@@ -98,7 +98,7 @@ export function ClientCalendar<
           <PrismButton
             aria-label={view === "week" ? "Próxima semana" : "Próximo mês"}
             onClick={onNext}
-            size="icon"
+            size="icon-sm"
             variant="ghost"
           >
             <ChevronRightIcon className="size-4" />
@@ -188,15 +188,15 @@ export function ClientCalendar<
                       const phase = PHASES[(action.phase as PHASE) || "idea"];
                       const actionTime = parseU(action.date);
                       return (
-                        <button
+                        <PrismButton
                           key={action.id}
                           className={cn(
-                            "w-full rounded-md px-1.5 py-1 text-left transition-colors squircle hover:bg-muted/60",
+                            "w-full rounded-md px-1.5 py-1 text-left font-normal transition-colors squircle hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/30",
                             view === "week" &&
                               "rounded-lg px-2 py-1.5 squircle",
                           )}
-                          onClick={() => onActionClick(action)}
-                          type="button"
+                          onPress={() => onActionClick(action)}
+                          variant="unstyled"
                         >
                           <Content action={action} showDate={false} />
                           <div className="mt-2 flex items-center justify-between gap-4">
@@ -213,7 +213,7 @@ export function ClientCalendar<
                               )}
                             </div>
                           </div>
-                        </button>
+                        </PrismButton>
                       );
                     })}
                   </div>

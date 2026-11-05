@@ -8,7 +8,7 @@ import type { UViewOptions } from "~/components/uzzina/UViewOptions";
 import { ActionContainer } from "./ActionContainer";
 import { getInstagramFeedActions } from "~/utils/validation";
 import { PlusIcon } from "lucide-react";
-import { PrismSkeletonGroup } from "~/components/prism";
+import { PrismButton, PrismSkeletonGroup } from "~/components/prism";
 import { useLoading } from "~/hooks/useLoading";
 export function CalendarDayCell({
   currentDay,
@@ -78,16 +78,17 @@ export function CalendarDayCell({
           </div>
           {onCreateAction && (
             <div className="isolate opacity-0 transition duration-300 group-hover/column:opacity-100 focus-within:opacity-100">
-              <button
+              <PrismButton
                 aria-label={`Criar ação em ${format(day, "dd/MM/yyyy")}`}
-                className="grid size-6 cursor-pointer place-content-center rounded-full bg-primary text-primary-foreground"
-                onClick={() => {
+                className="rounded-full"
+                onPress={() => {
                   onCreateAction(day);
                 }}
-                type="button"
+                size="icon-xs"
+                variant="default"
               >
-                <PlusIcon className="size-4" />
-              </button>
+                <PlusIcon className="size-3.5" />
+              </PrismButton>
             </div>
           )}
         </div>

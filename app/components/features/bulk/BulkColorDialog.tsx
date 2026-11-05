@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { parseColor, type Color } from "react-aria-components";
-import { toHex } from "~/components/features/action-drawer/PartnerColorPicker";
+import { toHex } from "~/utils/uzzina-utils";
 import {
   PrismButton,
   PrismColorArea,

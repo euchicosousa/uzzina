@@ -6,6 +6,11 @@ import {
   PrismButton,
   PrismCheckbox,
   PrismInput,
+  PrismInputGroup,
+  PrismInputGroupAddon,
+  PrismInputGroupButton,
+  PrismInputGroupInput,
+  PrismLabel,
   PrismToggleGroup,
   PrismToggleGroupItem,
 } from "../prism";
@@ -33,6 +38,9 @@ export function AdminUserForm({
   const [showPassword, setShowPassword] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(
     person?.image || null,
+  );
+  const [selectedAreas, setSelectedAreas] = useState<string[]>(
+    person?.areas || [],
   );
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -68,13 +76,14 @@ export function AdminUserForm({
               Clique para fazer upload e recortar
             </p>
             {imageUrl && (
-              <button
-                className="mt-1 text-left text-xs text-muted-foreground underline hover:text-foreground"
-                onClick={() => setImageUrl(null)}
-                type="button"
+              <PrismButton
+                className="mt-1 h-auto p-0 text-left text-xs text-muted-foreground hover:text-foreground"
+                onPress={() => setImageUrl(null)}
+                size="xs"
+                variant="link"
               >
                 Remover imagem
-              </button>
+              </PrismButton>
             )}
           </div>
         </div>
@@ -82,9 +91,9 @@ export function AdminUserForm({
         {/* Nome e Sobrenome */}
         <div className="grid gap-4 md:grid-cols-2">
           <div className="grid gap-4">
-            <label className="font-medium" htmlFor="name">
+            <PrismLabel htmlFor="name">
               Nome
-            </label>
+            </PrismLabel>
             <PrismInput
               defaultValue={person?.name}
               id="name"
@@ -93,9 +102,9 @@ export function AdminUserForm({
             />
           </div>
           <div className="grid gap-4">
-            <label className="font-medium" htmlFor="surname">
+            <PrismLabel htmlFor="surname">
               Sobrenome
-            </label>
+            </PrismLabel>
             <PrismInput
               defaultValue={person?.surname}
               id="surname"
@@ -108,9 +117,9 @@ export function AdminUserForm({
         {/* Iniciais e Nome Curto */}
         <div className="grid gap-4 md:grid-cols-2">
           <div className="grid gap-4">
-            <label className="font-medium" htmlFor="initials">
+            <PrismLabel htmlFor="initials">
               Iniciais
-            </label>
+            </PrismLabel>
             <PrismInput
               defaultValue={person?.initials}
               id="initials"
@@ -121,9 +130,9 @@ export function AdminUserForm({
             />
           </div>
           <div className="grid gap-4">
-            <label className="font-medium" htmlFor="short">
+            <PrismLabel htmlFor="short">
               Nome Curto
-            </label>
+            </PrismLabel>
             <PrismInput
               defaultValue={person?.short || ""}
               id="short"
@@ -135,9 +144,9 @@ export function AdminUserForm({
 
         {/* Email */}
         <div className="grid gap-4">
-          <label className="font-medium" htmlFor="email">
+          <PrismLabel htmlFor="email">
             E-mail
-          </label>
+          </PrismLabel>
           <PrismInput
             defaultValue={person?.email || ""}
             id="email"
@@ -155,31 +164,31 @@ export function AdminUserForm({
         {/* Senha (apenas criação) */}
         {isNew && (
           <div className="grid gap-4">
-            <label className="font-medium" htmlFor="password">
+            <PrismLabel htmlFor="password">
               Senha Provisória
-            </label>
-            <div className="relative">
-              <PrismInput
-                className="pr-10"
+            </PrismLabel>
+            <PrismInputGroup>
+              <PrismInputGroupInput
                 id="password"
                 minLength={6}
                 name="password"
                 required
                 type={showPassword ? "text" : "password"}
               />
-              <button
-                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                onClick={() => setShowPassword(!showPassword)}
-                type="button"
-              >
-                {showPassword ? (
-                  <EyeOffIcon className="size-4" />
-                ) : (
-                  <EyeIcon className="size-4" />
-                )}
-              </button>
-            </div>
+              <PrismInputGroupAddon align="inline-end" className="pr-2 pl-1">
+                <PrismInputGroupButton
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  onClick={() => setShowPassword(!showPassword)}
+                  type="button"
+                >
+                  {showPassword ? (
+                    <EyeOffIcon className="size-4" />
+                  ) : (
+                    <EyeIcon className="size-4" />
+                  )}
+                </PrismInputGroupButton>
+              </PrismInputGroupAddon>
+            </PrismInputGroup>
           </div>
         )}
 
@@ -189,7 +198,10 @@ export function AdminUserForm({
             <span className="font-medium">Áreas</span>
             <PrismToggleGroup
               aria-label="Áreas de atuação"
-              defaultSelectedKeys={person?.areas || []}
+              selectedKeys={selectedAreas}
+              onSelectionChange={(keys) =>
+                setSelectedAreas(Array.from(keys) as string[])
+              }
               selectionMode="multiple"
             >
               {areas.map((area) => (
@@ -199,7 +211,7 @@ export function AdminUserForm({
               ))}
             </PrismToggleGroup>
             {/* Input oculto para submissão nativa do form com nome 'areas' */}
-            {(person?.areas || []).map((areaSlug) => (
+            {selectedAreas.map((areaSlug) => (
               <input
                 key={areaSlug}
                 name="areas"

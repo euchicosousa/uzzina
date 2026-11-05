@@ -13,7 +13,7 @@ import { ULoader } from "~/components/uzzina/ULoader";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { toHex } from "~/components/features/action-drawer/PartnerColorPicker";
+import { toHex } from "~/utils/uzzina-utils";
 import { toast } from "sonner";
 import {
   BulkArchiveDialog,

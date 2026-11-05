@@ -6,12 +6,67 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### IA-M01 — medição por tarifa do Luna preparada em 05/11
+
+API e worker registram tokens reportados pelo GPT-6 Luna, ID do provedor, faixa e tarifa Standard versionada e custo decimal em USD. Leitura e gravação de cache têm tarifas próprias e raciocínio permanece dentro da saída. Dados insuficientes ficam com custo pendente. Histórico ponderado e quota técnica preservados. Typecheck, testes controlados e SQL em PostgreSQL isolado verificaram cálculo, transição, deduplicação e permissões. Falta aplicar a migration, publicar API/worker e conciliar uma geração real. [IA-M01](../../.scratch/ai-models/issues/01-model-catalog-selection-and-metering.md)
+
+### V44 reavaliado após os primeiros lotes do DS01 — 05/11
+
+Reavaliado o [parecer V44](2026-11-05-v44-custom-components-prism-audit.md) e o [ticket 44](../../.scratch/visual-controls/issues/44-audit-custom-components-for-prism.md) frente às mudanças já aplicadas no checkout (`PhaseStationBadges` e `PartnerColorPicker` removidos com `toHex` em `uzzina-utils`, `LeadDetail`, `AppBar`, `BulkDateTimeDialog` em `PrismDialog xs`, banners e botão Fechar com `tabVariants` em `ActionFormDrawer`, `CommentItem` e `CommentInput`) e às ressalvas do [DS01](2026-11-05-ds01-visual-deviations.md) (18 arquivos `U*.tsx`, outline global em `tailwind.css` vs `outline-none`, e separação com `CAL01`, `DS03`, `DS04` e `T01–T11`). Consolidada a nova lista enxuta do que falta em quatro lotes (A: notificações e controles pontuais da gaveta/portal/calendário; B: `/app/help`, cartões e calendário do cliente; C: formulários Admin/Auth/Minha Conta; D: barra do `RichTextEditor`). Verificação documental e de diff; sem alteração em código de app.
+
+### Fechar na faixa de abas da gaveta — 05/11
+
+O botão Fechar reutiliza o estilo underline das abas via tabVariants e tem largura fixa de 40px. Conserva a semântica de botão e o fluxo de fechamento. Proprietário conferiu o botão e o fluxo de teclado da gaveta. Próximo recorte do DS01: notificações e controles pontuais da gaveta e do portal.
+
+### Diálogo Prism xs — 05/11
+
+Adicionada largura máxima de 20rem a partir de sm. Alterar Data e Hora usa xs. Formatação e diff conferidos. Proprietário confirmou o aceite visual do diálogo xs.
+
+### Seleção de ações, diálogo de lote e investigações — 05/11
+
+O indicador do item de ação agora recebe a seleção controlada do React Aria; a linha expõe o estado no modo de seleção. Diálogo Alterar Data e Hora usa calendário na largura disponível, sem divisórias internas e com botões padrão, preservando a transição. DS03 investiga interações das variantes de ação e DS04 investiga microinterações. Fila com 22 tickets. Conferência visual pendente.
+
+### Divisória do filtro de parceiros da AppBar — 05/11
+
+O botão passou para o sufixo do campo PrismCommandInput, com divisória contínua sob o cabeçalho do menu e tamanho icon-sm. Diff conferido. Conferência visual local pendente.
+
+### Padronização visual iniciada — 05/11
+
+DS01 concentra a execução dos achados verificados do V44. Primeiro lote local removeu componentes legados com preservação de `toHex`, padronizou badges de Leads e rótulos de checkboxes de lote e retirou classe residual da AppBar. [DS02](../../.scratch/design-system-audit/issues/02-route-coverage-and-visual-review.md) registra cobertura rota por rota, comparação e critérios para propor novos tokens. Fila com 20 tickets. Aceite visual pendente.
+
+### DS01: segundo lote de controles Prism — 05/11
+
+Botões dos banners e fechamento da gaveta, edição/exclusão de comentários e ações de audiência/cancelar/enviar migrados para primitivos Prism; itens de menção usam geometria padrão do `PrismCommandItem`. Formatação nos três arquivos e `bun run typecheck` passaram. Verificação estática/diff, sem ensaio de navegador: confirmar percurso de foco/teclado da gaveta e comentários e aparência em tela. Permanecem outros controles e formulários do V44; comparações visuais da busca e seletor de cor, recorte CAL01 e Planejamento seguem fora deste lote.
+
+### Recomendações de agentes nos tickets — 05/11
+
+O guia de agentes exige três alternativas de execução por ticket, uma por família. Claude e Gemini têm arquivos de entrada para a regra compartilhada. Os 19 tickets ativos têm recomendações revisadas por escopo. Verificados o diff e a presença das três opções em cada ticket. A disponibilidade depende da conta e da ferramenta de execução.
+
+### Revisão do V44 e inventário inicial do DS01 — 05/11
+
+[Revisão independente e inventário](2026-11-05-ds01-visual-deviations.md). Confirmados os legados sem montagem, com dois consumidores de `toHex`. Registradas correções sobre a contagem de módulos, foco global, fallback de cor e paridade visual dos badges. Encaminhada a apresentação de datas ao CAL01. DS01 registra desvios por padrão, com cobertura completa por rota e conferência visual pendentes. Inspeção estática e diff documental, sem alteração na aplicação.
+
+### V44: estudo de componentes personalizados e equivalentes Prism — 05/11
+
+Entregue [parecer V44](2026-11-05-v44-custom-components-prism-audit.md) (inspeção estática sobre `cf533cb`, sem navegador e sem alterar código do app). Avaliados os 16 módulos `app/components/uzzina/U*` (12 mantidos como composições legítimas de domínio sobre Prism; ajustes leves em `UAdminItemCard`/`UAvatarSelector`; decisão visual pendente em `UPreferenceSwitch`) e mapeados os desvios operacionais em `app/components/` e `app/routes/`. Identificados dois componentes legados sem uso operacional (`PhaseStationBadges.tsx` e `PartnerColorPicker.tsx`, restando apenas o helper `toHex` em dois diálogos de lote), três decisões visuais para o proprietário (`UPreferenceSwitch`/`CustomThemePanel` em Minha Conta, altura `h-10` na busca global e seletor de cor do tema) e seis lotes pequenos priorizados com roteiro curto de validação. Ticket V44 atualizado para revisão; fila permanece com 17 tickets. Verificação documental de referências e diff; sem testes de rotina, commit, push ou deploy.
+
+### Datas comemorativas e design system — 05/11
+
+Abertos [CAL01](../../.scratch/calendar-celebrations/issues/01-calendar-celebration-markers.md) e [DS01](../../.scratch/design-system-audit/issues/01-audit-visual-deviations.md), investigações independentes. A célula do calendário usa classes amber diretas para feriados. CAL01 compara as quatro combinações de feriado e vínculo com parceiro. DS01 inventaria desvios e propõe padronizações, em coordenação com V44. Fila com 17 tickets. Referências e diff conferidos. Implementação pendente de decisão visual.
+
+### Aviso de divisão de código em Notificações — 05/11
+
+Corrigido localmente: `NotificationsPage` e sua lógica foram movidas para `app/components/features/NotificationsPage.tsx`. A rota exporta somente `Route` e o teste importa o componente pelo novo caminho. Prettier e os 10 testes existentes passaram. Build local sem o aviso e com chunk de notificações de 4,21 kB (1,77 kB gzip). Sem validação visual ou publicação.
+
+### Seleção de modelos e unidades de IA — 05/11
+
+Planejamento atualizado em quatro tickets. [IA-M01](../../.scratch/ai-models/issues/01-model-catalog-selection-and-metering.md) mede uso real e custo pela tarifa vigente. [IA-M03](../../.scratch/ai-models/issues/03-monthly-ai-allowance.md) depende de IA-M01 e define a cota inicial de US$ 5 por pessoa por mês, percentual e chamadas. [IA-M04](../../.scratch/ai-models/issues/04-model-selection-by-command.md) integra a seleção após IA-M01 e depende de IA-M03 para liberar. [IA-M02](../../.scratch/ai-models/issues/02-profile-preferences-tabs.md) segue independente. IA01 permanece aberto até validar o novo cálculo e a troca de modelo. Fila atual com 19 tickets. Referências e diff conferidos.
+
 ### Quatro ajustes do proprietário e limpeza da worktree — 05/11
 
 Proprietário autorizou commit dos quatro arquivos antes preservados: ActionItemTitleInput (PrismButton unstyled e foco no título), PartnersBoard (foco/sublinhado), CelebrationDialog (composição aprovada sem rótulos visuais redundantes) e ContentReorderDialog (controles Prism e badge). Mantido o visual escolhido; corrigidos nomes acessíveis Título/Data com aria-label, removendo referência a label inexistente/import sem uso. Prettier/Biome/typecheck aprovados; sem teste visual adicional.
 
 Worktree não gerenciada pelo app em /Users/euchicosousa/.codex/worktrees/ai-partner-identity/uzzina estava limpa, sem untracked/ignored e sem commits exclusivos (HEAD 2c664185 ancestral de main). Removida com git worktree remove sem force. Git listou somente o checkout principal; Source Control do Antigravity também mostrou apenas main. Commit desta atualização inclui os quatro ajustes e esta continuidade. Backend IA permanece sem publicação; sem push/deploy.
-
 
 ### Commit autorizado da medição IA e controles aprovados — 05/11
 
@@ -19,20 +74,17 @@ Proprietário autorizou commit da rodada. Inclui correção de medição IA/API/
 
 Commit desta atualização não publica API/worker: consumo IA continua ativo no tracker até publicar e confirmar incremento em geração normal. Sem push/deploy.
 
-
 ### Consumo IA: código corrigido e banco instalado; publicação pendente — 05/11
 
 Subagente entregou logger comum API/worker, eventos idempotentes com ator da estratégia derivado da operação/lease, tokens reais/incompletos e convenção existente versionada; quota intacta. Profile valida agregado, diferencia erro/cobertura parcial e atualiza após uso; hook durável invalida por operação/estado sem novo polling e mantém onComplete só no sucesso. 144 testes focados + 9 endpoints serverless PASS, typecheck/Biome/Prettier PASS. Coordenador revisou e aplicou SQL preparado corrigido: versão remota 20261105035937_ai_agency_usage_metering; fonte local 20261101230000_ai_agency_usage.sql, SHA256 41c26f85c37ecb9a845ec0e777cb9c7863570b7b51376b61d01d1c6f489a9d03. Catálogo/grants/RLS e aggregate com role authenticated/identidade ativa verificados; guardas reais anônima/sem identidade/logger do cliente/tabela privada recusaram acesso. Zero logs fictícios inseridos; consulta retornou cobertura parcial desde 05/11 e 0 gerações. [Evidências e limites no ticket](../../.scratch/ai-usage/issues/01-ai-usage-visibility.md).
 
 SQL isolado não executou por runtime incompleto; não confundir catálogo/guardas com teste real de escrita/idempotência ou geração do provedor. API/worker corrigidos ainda não publicados; confirmar incremento após publicação. Ticket permanece ativo por essa pendência. V45 tecnicamente concluído no histórico; aceites de feriados/foco preservados, lista com 13 ativos. Sem novo commit/push/deploy.
 
-
 ### Aceites finais, V45 unstyled e execução do consumo de IA — 05/11
 
 Proprietário aprovou classificação/badge de feriado e foco de Hoje, e confirmou novamente seleção por marca/mídia; itens encerrados e ocultos da fila ativa. V45 executado: inventário encontrou cinco usos explícitos de unstyled; só Button ignorava CVA, LinkButton/helper ainda recebiam base. Bypass centralizado em buttonVariants, resets e tamanho unstyled removidos, dois size unstyled redundantes removidos de Header/parceiro. Preservadas as edições do proprietário em ActionItemTitleInput/PartnersBoard e demais arquivos externos. Três testes focados, typecheck/Biome/Prettier passaram; sem navegador por limitação já registrada. V45 concluído tecnicamente no histórico; V44 ainda estudo amplo.
 
 Consumo de IA autorizado para execução com subagente. Plano: helper de medição compartilhado, eventos idempotentes e cobertura explícita, callback no worker com ator derivado da operação/lease, tratar erros de RPC e estados do Profile. Convenção de unidades existente será preservada/versionada; quota diária intacta. Migration remota só após revisão concreta pelo coordenador. Fila com 13 ativos; 98 documentos consolidados (87 encerrados/aprovados + 11 C substituídos). Sem novo commit/push/deploy.
-
 
 ### Aceites, consumo de IA, feriados, foco e V44 — 05/11
 
@@ -42,11 +94,9 @@ Consumo IA: visual aprovado, funcional aberto. Catálogo real não contém ai_ge
 
 Criado V44 — investigar personalizações substituíveis por Prism, somente estudo. Fila geral com 15 ativos; 95 documentos consolidados (84 encerrados/aprovados + 11 C substituídos). Alterações externas em CelebrationDialog/ContentReorderDialog preservadas. Sem novo commit/push/deploy.
 
-
 ### Lista geral atualizada; V12 consolidado — 04/11
 
 Proprietário confirmou V12 finalizado; entrega/encerramento já em 156004c. Ticket retirado da fila e incorporado ao histórico. Série de controles visuais sem tickets abertos. [Lista geral](../../.scratch/README.md) e [central numerada](2026-11-03-ticket-dispatch.md) apresentam 20 registros ativos: Planejamento T01–T11 e nove de IA/feriados/mídia/mobile/foco. Próximos passos e dependências registrados; não houve nova auditoria funcional, SQL ou provedor. Referências originais/suspensas mantidas fora da fila para evitar duplicação e autorização indevida. Limpeza atual totaliza 89 documentos consolidados (78 encerrados/aprovados e 11 C substituídos). Documentação/links conferidos, sem testes de app, novo commit/push/deploy.
-
 
 ### V36 aprovado e encerrado — 04/11
 

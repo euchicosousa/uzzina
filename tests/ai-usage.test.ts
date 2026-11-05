@@ -18,7 +18,7 @@ const usage = {
   prompt_tokens_details: { cached_tokens: 20 },
 };
 
-it("records real provider tokens, including cache as a subset, without calculating client costs", async () => {
+it("records real provider tokens, including cache as a subset, and the exact server-side cost", async () => {
   const calls: Record<string, unknown>[] = [];
   const client = clientWithRPC(async (name, args) => {
     expect(name).toBe("record_ai_generation");
@@ -40,6 +40,7 @@ it("records real provider tokens, including cache as a subset, without calculati
     p_completion_tokens: 30,
     p_total_tokens: 150,
     p_cached_tokens: 20,
+    p_meter: { cost_nanos: 25200 },
   });
   expect(calls[0]).not.toHaveProperty("p_units_consumed");
 });
@@ -50,6 +51,7 @@ it("missing provider usage remains unknown rather than invented zero tokens", as
       p_completion_tokens: null,
       p_total_tokens: null,
       p_cached_tokens: null,
+      p_meter: { cost_nanos: null, tariff: null },
     });
     return { error: null };
   });
@@ -161,4 +163,43 @@ it("a valid empty measured period keeps explicit partial coverage metadata", asy
   };
   const client = clientWithRPC(async () => ({ data: aggregate, error: null }));
   expect(await getAgencyAIUsage(client)).toEqual(aggregate);
+});
+
+it("separates cache writes, preserves reasoning, and switches tariff above 272k", async () => {
+  const calls: unknown[] = [];
+  const client = clientWithRPC(async (_name, args) => {
+    calls.push(args?.p_meter);
+    return { error: null };
+  });
+  for (const input of [272000, 272001]) {
+    await recordAIUsage(
+      client,
+      { userId: "member", intent: "ai-caption" },
+      {
+        prompt_tokens: input,
+        completion_tokens: 30,
+        total_tokens: input + 30,
+        prompt_tokens_details: { cached_tokens: 20, cache_write_tokens: 10 },
+        completion_tokens_details: { reasoning_tokens: 15 },
+      },
+      "gpt-6-luna",
+      { id: `completion-${input}`, service_tier: "default" },
+    );
+  }
+  expect(calls).toMatchObject([
+    {
+      cost_nanos: 27213450,
+      reasoning_tokens: 15,
+      cache_write_tokens: 10,
+      provider_id: "completion-272000",
+      tariff: { maxInputTokens: 272000 },
+    },
+    {
+      cost_nanos: 54419600,
+      reasoning_tokens: 15,
+      cache_write_tokens: 10,
+      provider_id: "completion-272001",
+      tariff: { maxInputTokens: 1050000 },
+    },
+  ]);
 });

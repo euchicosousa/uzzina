@@ -302,8 +302,8 @@ export function UColorPickerDropdown({
           <PrismMenu>
             <PrismButton
               aria-label="Escolher formato de cor"
-              className="h-8 shrink-0 gap-0.5 px-2 text-xs font-semibold uppercase"
-              size="xs"
+              className="shrink-0 gap-0.5 px-2 text-xs font-semibold uppercase"
+              size="sm"
               variant="ghost"
             >
               {format}

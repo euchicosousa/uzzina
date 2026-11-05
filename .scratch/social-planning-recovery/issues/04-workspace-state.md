@@ -1,5 +1,11 @@
 # T04: Separar configuração nova da proposta aberta e proteger transições
 
+## Modelos sugeridos
+
+- **OpenAI** — GPT-6.1 Sol, para proteger transições entre configuração e proposta aberta.
+- **Anthropic** — Claude Sonnet 5.5, para proteger transições entre configuração e proposta aberta.
+- **Google** — Gemini 4 Argon, para proteger transições entre configuração e proposta aberta. Disponibilidade depende do plano do Antigravity.
+
 **Status:** ready-for-agent
 **Blocked by:** T02. T01/D6 para validar entrada persistida.
 **Origem:** R8; limpeza de contexto e respostas antigas.

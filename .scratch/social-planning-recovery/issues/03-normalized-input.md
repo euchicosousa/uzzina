@@ -1,5 +1,11 @@
 # T03: Unificar datas, frequência, formatos e extras sem divergências
 
+## Modelos sugeridos
+
+- **OpenAI** — GPT-6.1 Sol, para normalizar datas, frequência e formatos sem divergência.
+- **Anthropic** — Claude Sonnet 5.5, para normalizar datas, frequência e formatos sem divergência.
+- **Google** — Gemini 4 Argon, para normalizar datas, frequência e formatos sem divergência. Disponibilidade depende do plano do Antigravity.
+
 **Status:** ready-for-agent
 **Blocked by:** T01/D2–D4. Independente de T02 para cálculo puro.
 **Origem:** R6 e R10; C02–C04.

@@ -1,5 +1,11 @@
 # T11: Auditar a série por evidências e impedir conclusão falsa
 
+## Modelos sugeridos
+
+- **OpenAI** — GPT-6 Astra, para auditar evidências e critérios de aceite de toda a série.
+- **Anthropic** — Claude Opus 5.5, para auditar evidências e critérios de aceite de toda a série.
+- **Google** — Gemini 4 Argon, para auditar evidências e critérios de aceite de toda a série. Disponibilidade depende do plano do Antigravity.
+
 **Status:** ready-for-agent
 **Blocked by:** T02–T10 verificados e decisões usadas confirmadas em T01.
 **Origem:** C10; todos os achados R1–R11.

@@ -3,6 +3,7 @@ import { ptBR } from "date-fns/locale";
 import { Pencil, Trash, LockIcon } from "lucide-react";
 import { useState } from "react";
 import { UAvatar } from "~/components/uzzina/UAvatar";
+import { PrismButton } from "~/components/prism";
 import type { AugmentedComment } from "~/models/action_comments";
 import { CommentInput } from "./CommentInput";
 
@@ -104,25 +105,25 @@ export function CommentItem({
 
             {isOwn && (
               <div className="relative flex min-w-24 items-center justify-end gap-1 p-1 opacity-100 transition-opacity focus-within:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
-                <button
-                  type="button"
+                <PrismButton
+                  size="icon-xs"
+                  variant="ghost"
                   aria-label="Editar observação"
                   onClick={() => {
                     setOverrideContent(htmlToPlainText(comment.content));
                     setEditing(true);
                   }}
-                  className="rounded p-2 transition-colors squircle hover:bg-black/10 dark:hover:bg-white/10"
                 >
                   <Pencil className="size-3" />
-                </button>
-                <button
-                  type="button"
+                </PrismButton>
+                <PrismButton
+                  size="icon-xs"
+                  variant="ghost"
                   aria-label="Excluir observação"
                   onClick={onDelete}
-                  className="rounded p-2 transition-colors squircle hover:bg-black/10 dark:hover:bg-white/10"
                 >
                   <Trash className="size-3" />
-                </button>
+                </PrismButton>
               </div>
             )}
           </>

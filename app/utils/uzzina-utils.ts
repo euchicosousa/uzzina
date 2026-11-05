@@ -44,6 +44,14 @@ export const normalizeHexColor = (color: string) => {
  */
 export const DEFAULT_ACTION_COLOR = "#666666";
 
+export function toHex(raw: string): string {
+  try {
+    return Color(raw).hex();
+  } catch {
+    return raw;
+  }
+}
+
 /**
  * Normaliza e valida qualquer valor de cor bruto vindo do banco de dados.
  *

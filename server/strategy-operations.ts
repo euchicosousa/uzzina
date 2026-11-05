@@ -1,3 +1,4 @@
+import { lunaModel } from "./ai-model-catalog.js";
 import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Json } from "../types/database";
@@ -53,13 +54,17 @@ export async function runStrategyWorker(client: SupabaseClient, limit: number) {
   try {
     if (!resultRetained) {
       const payload = aiInputSchema.parse(claimed.payload);
-      const strategies = await generateStrategies(payload, undefined, (usage) =>
-        recordAIUsage(
-          client,
-          { operationId, leaseId, intent: "ai-strategy" },
-          usage,
-          "gpt-6-luna",
-        ).then(() => undefined),
+      const strategies = await generateStrategies(
+        payload,
+        undefined,
+        (response) =>
+          recordAIUsage(
+            client,
+            { operationId, leaseId, intent: "ai-strategy" },
+            response.usage,
+            lunaModel.id,
+            response,
+          ).then(() => undefined),
       );
       // This transaction commits the recoverable result before touching the action.
       await strategyRPC(client, "store_strategy_result", {

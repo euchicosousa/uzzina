@@ -7,6 +7,14 @@ import {
   type ReactNode,
 } from "react";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
+import {
+  PrismKbd,
+  PrismSelect,
+  PrismSelectContent,
+  PrismSelectItem,
+  PrismSelectTrigger,
+  PrismSelectValue,
+} from "~/components/prism";
 import { useAppContext } from "~/contexts/AppContext";
 import { useFillScrollViewport } from "~/hooks/useFillScrollViewport";
 import { cn } from "~/lib/utils";
@@ -24,9 +32,7 @@ function Keys({ keys }: { keys: string[] }) {
       {keys.map((key, index) => (
         <span className="inline-flex items-center gap-1" key={key}>
           {index > 0 && <span className="text-muted-foreground">+</span>}
-          <kbd className="rounded-md border bg-secondary/50 px-1.5 py-0.5 font-sans text-xs font-medium squircle">
-            {key}
-          </kbd>
+          <PrismKbd>{key}</PrismKbd>
         </span>
       ))}
     </span>
@@ -285,24 +291,28 @@ export function HelpPage() {
           Ajuda e documentação
         </h1>
         <div className="mt-4 lg:hidden">
-          <label className="sr-only" htmlFor="help-section">
-            Ir para a seção
-          </label>
-          <select
-            id="help-section"
-            className="w-full rounded-md border bg-input px-3 py-2 text-base outline-none squircle focus-visible:bg-secondary/50"
-            value={active}
-            onChange={(event) => {
-              setActive(event.target.value);
-              scrollToSection(contentRef.current, event.target.value);
+          <PrismSelect
+            aria-label="Ir para a seção"
+            selectedKey={active}
+            onSelectionChange={(key) => {
+              if (key) {
+                const sectionId = String(key);
+                setActive(sectionId);
+                scrollToSection(contentRef.current, sectionId);
+              }
             }}
           >
-            {sections.map((section) => (
-              <option key={section.id} value={section.id}>
-                {section.title}
-              </option>
-            ))}
-          </select>
+            <PrismSelectTrigger className="w-full">
+              <PrismSelectValue />
+            </PrismSelectTrigger>
+            <PrismSelectContent>
+              {sections.map((section) => (
+                <PrismSelectItem key={section.id} id={section.id}>
+                  {section.title}
+                </PrismSelectItem>
+              ))}
+            </PrismSelectContent>
+          </PrismSelect>
         </div>
       </div>
       <div className="flex min-h-0 flex-1">

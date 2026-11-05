@@ -1,5 +1,11 @@
 # T02: Salvar e editar propostas no banco com autorização e versão
 
+## Modelos sugeridos
+
+- **OpenAI** — GPT-6 Astra, para validar autorização, concorrência de versão e reabertura.
+- **Anthropic** — Claude Opus 5.5, para validar autorização, concorrência de versão e reabertura.
+- **Google** — Gemini 4 Argon, para validar autorização, concorrência de versão e reabertura. Disponibilidade depende do plano do Antigravity.
+
 **Status:** implemented-unverified (código, models e CAS testados localmente; SQL preparado em supabase/migrations/20261102120000_social_plans.sql aguarda aplicação remota; evidência em docs/audits/social-planning-recovery/T02-evidence.md)
 **Blocked by:** T01/D1 e D6 confirmadas. Pode inventariar catálogo antes.
 **Origem:** R4, R5 e R11; C01.
