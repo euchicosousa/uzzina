@@ -85,39 +85,72 @@ export type Database = {
         Update: { user_id?: string; usage_day?: string; attempts?: number };
         Relationships: [];
       };
+      ai_usage_metering: {
+        Row: {
+          singleton: boolean;
+          started_at: string;
+          reference_units: number;
+          policy_version: string;
+        };
+        Insert: {
+          singleton?: boolean;
+          started_at?: string;
+          reference_units?: number;
+          policy_version?: string;
+        };
+        Update: {
+          singleton?: boolean;
+          started_at?: string;
+          reference_units?: number;
+          policy_version?: string;
+        };
+        Relationships: [];
+      };
       ai_generation_logs: {
         Row: {
           id: string;
           created_at: string;
           user_id: string;
+          strategy_operation_id: string | null;
           intent: string;
           model: string;
-          prompt_tokens: number;
-          completion_tokens: number;
-          total_tokens: number;
-          units_consumed: number;
+          prompt_tokens: number | null;
+          completion_tokens: number | null;
+          total_tokens: number | null;
+          cached_tokens: number | null;
+          units_consumed: number | null;
+          policy_version: string;
+          measurement_status: string;
         };
         Insert: {
-          id?: string;
+          id: string;
           created_at?: string;
           user_id: string;
+          strategy_operation_id?: string | null;
           intent: string;
           model: string;
-          prompt_tokens?: number;
-          completion_tokens?: number;
-          total_tokens?: number;
-          units_consumed?: number;
+          prompt_tokens?: number | null;
+          completion_tokens?: number | null;
+          total_tokens?: number | null;
+          cached_tokens?: number | null;
+          units_consumed?: number | null;
+          policy_version: string;
+          measurement_status: string;
         };
         Update: {
           id?: string;
           created_at?: string;
           user_id?: string;
+          strategy_operation_id?: string | null;
           intent?: string;
           model?: string;
-          prompt_tokens?: number;
-          completion_tokens?: number;
-          total_tokens?: number;
-          units_consumed?: number;
+          prompt_tokens?: number | null;
+          completion_tokens?: number | null;
+          total_tokens?: number | null;
+          cached_tokens?: number | null;
+          units_consumed?: number | null;
+          policy_version?: string;
+          measurement_status?: string;
         };
         Relationships: [];
       };
@@ -657,15 +690,18 @@ export type Database = {
         Args: { p_user_id: string; p_limit: number };
         Returns: boolean;
       };
-      log_ai_generation: {
+      record_ai_generation: {
         Args: {
-          p_user_id: string;
+          p_event_id: string;
           p_intent: string;
           p_model: string;
-          p_prompt_tokens: number;
-          p_completion_tokens: number;
-          p_total_tokens: number;
-          p_units_consumed: number;
+          p_user_id?: string;
+          p_operation_id?: string;
+          p_lease_id?: string;
+          p_prompt_tokens?: number | null;
+          p_completion_tokens?: number | null;
+          p_total_tokens?: number | null;
+          p_cached_tokens?: number | null;
         };
         Returns: string;
       };

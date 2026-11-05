@@ -583,7 +583,6 @@ export const HeaderMenu = ({
         <PrismButton
           aria-label="Menu do perfil do usuário"
           className="relative cursor-pointer rounded-full"
-          size="unstyled"
           variant="unstyled"
         >
           <UAvatar

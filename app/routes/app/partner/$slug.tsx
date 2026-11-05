@@ -201,7 +201,6 @@ function PartnerPage() {
               <PrismPopoverTrigger>
                 <PrismButton
                   className="isolate -mt-4 -ml-4 cursor-pointer outline-none select-none"
-                  size="unstyled"
                   variant="unstyled"
                 >
                   <PrismBadge>{lateCount}</PrismBadge>

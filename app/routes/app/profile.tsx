@@ -146,10 +146,16 @@ function ProfilePage() {
   );
 
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
-  const { data: aiUsage, isLoading: isLoadingAIUsage } = useQuery({
+  const {
+    data: aiUsage,
+    isLoading: isLoadingAIUsage,
+    isError: isAIUsageError,
+    refetch: refetchAIUsage,
+  } = useQuery({
     queryKey: QUERY_KEYS.aiUsage(person.user_id),
     queryFn: () => getAgencyAIUsage(supabase),
-    staleTime: 60 * 1000,
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 
   // Aplica preview do tema na UI quando o usuário apenas seleciona
@@ -655,6 +661,20 @@ function ProfilePage() {
 
             {isLoadingAIUsage ? (
               <div className="h-20 w-full animate-pulse rounded-2xl bg-muted/40 squircle" />
+            ) : isAIUsageError ? (
+              <div
+                className="flex items-center justify-between gap-3 text-xs text-muted-foreground"
+                role="status"
+              >
+                <span>Não foi possível consultar o consumo de IA.</span>
+                <PrismButton
+                  size="xs"
+                  variant="ghost"
+                  onPress={() => void refetchAIUsage()}
+                >
+                  Tentar novamente
+                </PrismButton>
+              </div>
             ) : aiUsage ? (
               <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-muted/20 p-4 transition-colors squircle">
                 <div className="flex items-baseline justify-between gap-2">
@@ -695,6 +715,17 @@ function ProfilePage() {
                   </span>
                   <span>Referência compartilhada CNVT</span>
                 </div>
+                {(aiUsage.partial_period ||
+                  aiUsage.incomplete_generations > 0) && (
+                  <p className="text-xs text-muted-foreground" role="status">
+                    {aiUsage.partial_period
+                      ? `Medição iniciada em ${new Date(aiUsage.measurement_started_at).toLocaleDateString("pt-BR", { timeZone: "America/Fortaleza" })}. O uso anterior não está incluído.`
+                      : "Medição parcial neste mês."}
+                    {aiUsage.incomplete_generations > 0
+                      ? ` ${aiUsage.incomplete_generations} geração(ões) sem dados completos de consumo.`
+                      : ""}
+                  </p>
+                )}
               </div>
             ) : (
               <div className="rounded-2xl border border-border/40 bg-muted/10 p-4 text-xs text-muted-foreground squircle">

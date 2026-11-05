@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
 import { generateStrategies } from "../server/strategy-generation.js";
 import type { Database } from "../types/database";
+import { recordAIUsage } from "../server/ai-usage.js";
 // const model = "gpt-5.3-chat-latest";
 const model = "gpt-6-luna";
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -181,26 +182,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       intentName: string,
       modelName: string,
     ) => {
-      if (!usage || !user) return;
-      const promptTokens = usage.prompt_tokens ?? 0;
-      const completionTokens = usage.completion_tokens ?? 0;
-      const totalTokens = usage.total_tokens ?? promptTokens + completionTokens;
-      const units = Number(
-        ((promptTokens + completionTokens * 2) / 1000).toFixed(2),
+      // Development compatibility has no service role and must not write measurements.
+      if (localCompatibility) return;
+      await recordAIUsage(
+        supabase,
+        { userId: user.id, intent: intentName },
+        usage,
+        modelName,
       );
-      try {
-        await supabase.rpc("log_ai_generation", {
-          p_user_id: user.id,
-          p_intent: intentName,
-          p_model: modelName,
-          p_prompt_tokens: promptTokens,
-          p_completion_tokens: completionTokens,
-          p_total_tokens: totalTokens,
-          p_units_consumed: units,
-        });
-      } catch (err) {
-        console.error("Failed to log AI generation event", err);
-      }
     };
 
     // Vamos mapear os intents conforme definidos no app/lib/CONSTANTS.ts e no ai.ts original

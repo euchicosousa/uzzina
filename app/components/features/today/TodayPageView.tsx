@@ -85,6 +85,10 @@ export function TodayPageView({
           role="region"
           aria-label="Ações do dia"
           tabIndex={-1}
+          onFocus={(event) => {
+            if (event.target === event.currentTarget)
+              event.currentTarget.blur();
+          }}
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) event.preventDefault();
           }}

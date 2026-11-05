@@ -77,6 +77,11 @@ mock.module("openai", () => ({
           if (providerFails) throw new Error("private provider error");
           return {
             choices: [{ message: { content: JSON.stringify({ strategies }) } }],
+            usage: {
+              prompt_tokens: 100,
+              completion_tokens: 50,
+              total_tokens: 150,
+            },
           };
         },
       },
@@ -275,10 +280,16 @@ it("awaits generation, retains output, then finalizes independently of a browser
   expect(response.status).toBe(200);
   expect(events.map((event) => event.name)).toEqual([
     "claim_strategy_operation",
+    "record_ai_generation",
     "store_strategy_result",
     "finish_strategy_operation",
   ]);
-  expect(events[1]?.args).toMatchObject({ p_result: strategies });
+  expect(events[1]?.args).toMatchObject({
+    p_event_id: operationId,
+    p_operation_id: operationId,
+    p_prompt_tokens: 100,
+  });
+  expect(events[2]?.args).toMatchObject({ p_result: strategies });
   expect(providerCalls).toBe(1);
   expect(providerOptions).toMatchObject({ timeout: 90000, maxRetries: 0 });
 });
@@ -556,3 +567,30 @@ it.each(["leading-zero", "decimal", "exponent"])(
     expect(events).toHaveLength(0);
   },
 );
+
+it("accounting failure does not prevent retaining and applying a generated strategy result", async () => {
+  claim = {
+    id: operationId,
+    payload: {
+      intent: "ai-strategy",
+      category: "post",
+      partner_name: "Hospital",
+    },
+    result: null,
+  };
+  failRPC = "record_ai_generation";
+  const error = spyOn(console, "error").mockImplementation(() => {});
+  try {
+    expect((await signedWake()).status).toBe(200);
+    expect(events.map((event) => event.name)).toEqual([
+      "claim_strategy_operation",
+      "record_ai_generation",
+      "record_ai_generation",
+      "store_strategy_result",
+      "finish_strategy_operation",
+    ]);
+    expect(providerCalls).toBe(1);
+  } finally {
+    error.mockRestore();
+  }
+});

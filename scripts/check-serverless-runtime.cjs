@@ -68,6 +68,7 @@ const { FileFsRef } = require("@vercel/build-utils");
       "app/lib/ai-contract.ts",
       "app/lib/strategy-operation-contract.ts",
       "server/strategy-generation.ts",
+      "server/ai-usage.ts",
       "server/strategy-operations.ts",
       "server/dash-session.ts",
       "server/auth.ts",

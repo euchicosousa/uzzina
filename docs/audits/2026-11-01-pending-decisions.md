@@ -90,7 +90,7 @@ Owner accepted V1, V2, V3, V5, V6, V7 and V8 on 01/11 (see open tickets, "Closed
 | V1 | **Accepted by owner 01/11, closed.** Permanent09: generate on an action, let server acceptance finish, close and later reopen; all five saved strategies appear, without automatic selection/title replacement. Infrastructure already verified. | Closed | None |
 | V2 | Partner identity in AI: **accepted by owner 01/11, closed.** | Closed | None |
 | V3 | Local portal: **accepted by owner 01/11 after the address rule was removed (a714b2d); closed.** No normalization applies. | Closed | None |
-| V4 | Instagram03: portrait accepted. Landscape advisory threshold decided 01/11: where the Essencial tab starts scrolling (title + metadata + 200px description exceed the scroller height), landscape only; portrait with keyboard out of scope for now. Presentation/implementation not yet authorized. Accepted13/17/18 remain accepted. See [ticket 03](../../.scratch/safari-mobile/issues/03-mobile-instagram-editor.md). | Medium | Medium |
+| V4 | Instagram03: portrait accepted. Landscape advisory threshold decided 01/11: where the Essencial tab starts scrolling (title + metadata + 200px description exceed the scroller height), landscape only; portrait with keyboard out of scope for now. Presentation/implementation not yet authorized. Accepted13/17/18 remain accepted. See [ticket 03](../../.scratch/archive/resolved-tickets.md#safari-mobile-issues-03-mobile-instagram-editor). | Medium | Medium |
 | V5 | Media controls: **accepted by owner 01/11, closed.** | Closed | None |
 | V6 | Footer16: **accepted by owner 01/11, closed.** | Closed | None |
 | V7 | Today focus: **accepted by owner 01/11, closed.** | Closed | None |

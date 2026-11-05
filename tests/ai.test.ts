@@ -495,9 +495,9 @@ it("case 8: strict mode with quota available reserves quota before OpenAI call a
   expect(lastClientKey).toBe("fake-service");
   expect(lastClientOptions?.auth?.persistSession).toBe(false);
   expect(lastClientOptions?.auth?.autoRefreshToken).toBe(false);
-  expect(rpcCalls).toBe(1);
+  expect(rpcCalls).toBe(2);
   expect(calls).toBe(1);
-  expect(eventOrder).toEqual(["rpc", "openai"]);
+  expect(eventOrder).toEqual(["rpc", "openai", "rpc"]);
 });
 
 it("case 9: strict mode with quota store error returns 503 AI_QUOTA_UNAVAILABLE without OpenAI and does not enter compat mode", async () => {

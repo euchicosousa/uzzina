@@ -18,9 +18,8 @@ const buttonSizeClasses = {
   "icon-xs": "size-6 [&_svg:not([class*='size-'])]:size-4 rounded-2xl",
   "icon-sm": "size-8 [&_svg:not([class*='size-'])]:size-4",
   "icon-lg": "size-12 rounded-3xl",
-  unstyled: "h-auto p-0 gap-0",
 } as const;
-const buttonVariants = cva(
+const styledButtonVariants = cva(
   "group/button squircle inline-flex shrink-0 items-center justify-center rounded-2xl border bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
   {
     variants: {
@@ -40,8 +39,7 @@ const buttonVariants = cva(
         success:
           "bg-success-strong border-success-strong text-success-strong-foreground hover:bg-success-strong-hover focus-visible:border-success-strong focus-visible:ring-success-accent/30",
         link: "text-primary underline-offset-4 hover:underline border-transparent",
-        unstyled:
-          "bg-transparent border-0 ring-0 focus-visible:ring-0 active:translate-y-0",
+        unstyled: "",
       },
       size: buttonSizeClasses,
     },
@@ -51,6 +49,15 @@ const buttonVariants = cva(
     },
   },
 );
+// Unstyled controls keep React Aria behavior and only receive caller styles.
+function buttonVariants(
+  options: Parameters<typeof styledButtonVariants>[0] = {},
+) {
+  if (options?.variant === "unstyled")
+    return cn(options.class, options.className);
+  return styledButtonVariants(options);
+}
+
 function Button({
   className,
   variant = "default",

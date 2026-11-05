@@ -6,7 +6,7 @@ Diagnóstico solicitado pelo proprietário em29/10/2026. Somente investigação 
 
 | Caso | Resultado | Causa / encaminhamento |
 | --- | --- | --- |
-| Contorno em toda a região “Ações do dia” | Confirmado no DOM e no Chromium com CSS real | Wrapper com `tabIndex=0` e ring explícito. Manter o [ticket específico](../../.scratch/today-focus/issues/01-remove-wrapper-focus.md). |
+| Contorno em toda a região “Ações do dia” | Confirmado no DOM e no Chromium com CSS real | Wrapper com `tabIndex=0` e ring explícito. Manter o [ticket específico](../../.scratch/archive/resolved-tickets.md#today-focus-issues-01-remove-wrapper-focus). |
 | Botão “+” após o link do parceiro recebe foco e fica invisível | Confirmado novamente no Chromium | `opacity-0 group-hover/column:opacity-100`, sem revelação por foco. É o achado K01 do [inventário existente](2026-10-29-keyboard-focus-inventory.md#k01--p2--criação-invisível-quando-recebe-tab), não um defeito novo separado. |
 | Título do parceiro recebe foco, mas não navega; suspeita de link apenas no texto | Não reproduzido no ensaio controlado; estrutura suspeita descartada no código/DOM examinado | Um único link envolve avatar e nome. Enter, clique no avatar e clique no nome navegaram para o parceiro. Espaço não ativou o link, conforme comportamento nativo observado. Falha relatada no ambiente do proprietário permanece sem causa confirmada. |
 

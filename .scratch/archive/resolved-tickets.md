@@ -1,10 +1,20 @@
 # Histórico de tickets encerrados
 
-Consolidado em 04/11/2026. Esta é uma referência histórica; a fila vigente está na [lista ativa](../README.md). Reúne 77 documentos de tickets encerrados/aprovados e 11 da série C00–C10 substituída pela recuperação do Planejamento. Status antigos, pendências de publicação e limites de verificação foram preservados; a consolidação não certifica deploy nem valida novamente entregas.
+Consolidado em 04/11/2026. Esta é uma referência histórica; a fila vigente está na [lista ativa](../README.md). Reúne 87 documentos de tickets encerrados/aprovados e 11 da série C00–C10 substituída pela recuperação do Planejamento. Status antigos, pendências de publicação e limites de verificação foram preservados; a consolidação não certifica deploy nem valida novamente entregas.
 
 Os documentos completos abaixo substituem os antigos arquivos individuais. Nenhum conteúdo de ticket foi descartado. Os índices anteriores também foram preservados no final.
 
 ## Índice
+- [visual-controls · 45 — Modo unstyled dos botões Prism](#visual-controls-issues-45-clean-unstyled-button-mode)
+- [today-focus · 01-remove-wrapper-focus](#today-focus-issues-01-remove-wrapper-focus)
+- [brand-holidays · 01-classify-holidays](#brand-holidays-issues-01-classify-holidays)
+- [safari-mobile · 20-landscape-space-advisory](#safari-mobile-issues-20-landscape-space-advisory)
+- [safari-mobile · 16-unify-action-footer-buttons](#safari-mobile-issues-16-unify-action-footer-buttons)
+- [safari-mobile · 03-mobile-instagram-editor](#safari-mobile-issues-03-mobile-instagram-editor)
+- [media-controls · 01-always-visible-media-controls](#media-controls-issues-01-always-visible-media-controls)
+- [brand-holidays · 02-partner-holidays](#brand-holidays-issues-02-partner-holidays)
+- [ai-partner-identity · 01-use-current-partner-identity](#ai-partner-identity-issues-01-use-current-partner-identity)
+- [visual-controls · 12 — Filtros da busca global](#visual-controls-issues-12-global-search-filters)
 - [visual-controls · 36 — Estudo comparativo de avatares](#visual-controls-issues-36-avatar-wrapper-comparison-study)
 - [visual-controls · 35 — Navegação lateral por microseções](#visual-controls-issues-35-ui-sidebar-subsections)
 - [account-preferences · 01: Rolar Preferências independentemente e manter Salvar Alterações no rodapé](#account-preferences-issues-01-independent-preferences-scroll)
@@ -6916,7 +6926,7 @@ V35: o índice anterior indicava aprovação, mas a última devolutiva desta con
 | 09 | [`/ui`: seção "Foco" (todas as formas de foco lado a lado)](resolved-tickets.md#visual-controls-issues-09-ui-focus-section) | Reúne e ajusta exemplos de foco, incluindo o foco dos cartões de ação. | Aprovado (03/11); cartão de ação resolvido — ver [09-focus-adjustments.md](resolved-tickets.md#visual-controls-issues-09-focus-adjustments) | b5b5f33 |
 | 10 | Squircle em todo elemento arredondado (exceto `rounded-full`/`none`) | Aplica a geometria squircle aos elementos arredondados elegíveis. | Aprovado (03/11) | b5b5f33 |
 | 11 | Toggle alinhado ao Button + inset dos chips | Alinha Toggle ao Button e ajusta o espaçamento interno dos chips. | Aprovado (03/11) | b5b5f33 |
-| 12 | [Busca global: filtros como sufixo do campo](../visual-controls/issues/12-global-search-filters.md) | Prevê filtros de parceiros e ações arquivadas integrados ao campo da busca global. | A fazer — executor: Claude | b5b5f33 (ticket; entrega pendente) |
+| 12 | [Busca global: filtros como sufixo do campo](resolved-tickets.md#visual-controls-issues-12-global-search-filters) | Prevê filtros de parceiros e ações arquivadas integrados ao campo da busca global. | A fazer — executor: Claude | b5b5f33 (ticket; entrega pendente) |
 | 13 | [Variantes de `ComboboxTrigger` e conteúdo dos comboboxes fora do rodapé](resolved-tickets.md#visual-controls-issues-13-combobox-variants) | Unifica variantes e tamanhos dos comboboxes com o botão Prism. | Concluído (03/11) | b5b5f33 |
 | 14 | [`/ui`: seção "Ícones" (ícones usados no app, com significado)](resolved-tickets.md#visual-controls-issues-14-ui-icons-section) | Documenta os ícones usados pelo aplicativo, seus significados e tamanhos. | Aprovado pelo proprietário (03/11), 100% | ce1230b |
 | 15 | [Linhas de metadados da aba Essencial: tamanho único e recolher/expandir](resolved-tickets.md#visual-controls-issues-15-essentials-rows) | Uniformiza as linhas de metadados da aba Essencial e seu recolhimento. | Aprovado pelo proprietário (03/11), 100% | ce1230b |
@@ -6969,7 +6979,7 @@ Prepared 2026-10-29 from the owner's Safari feedback and subsequent approval. Ti
 | --- | --- | --- |
 | [01](resolved-tickets.md#safari-mobile-issues-01-visible-viewport-overlays) | 1 | Visible viewport, keyboard and overlay reachability |
 | [02](resolved-tickets.md#safari-mobile-issues-02-mobile-action-drawer) | 2 | Icon-only metadata summary and complete scrolling mobile footer |
-| [03](../safari-mobile/issues/03-mobile-instagram-editor.md) | 3 | Media states, adaptive writing space and compact toolbar |
+| [03](resolved-tickets.md#safari-mobile-issues-03-mobile-instagram-editor) | 3 | Media states, adaptive writing space and compact toolbar |
 | [04](resolved-tickets.md#safari-mobile-issues-04-notifications-navigation) | 4 | Notification dismissal and guarded page navigation |
 | [05](resolved-tickets.md#safari-mobile-issues-05-responsive-leads) | 6 | Mobile list/detail navigation for leads |
 | [06](resolved-tickets.md#safari-mobile-issues-06-today-responsive-heading) | 7 | Responsive selected-date heading |
@@ -6982,7 +6992,7 @@ Prepared 2026-10-29 from the owner's Safari feedback and subsequent approval. Ti
 | [13](resolved-tickets.md#safari-mobile-issues-13-drawer-scroll-and-landscape-writing) | 2026-10-30 follow-up | Reach landscape writing and prevent background scrolling |
 | [14](resolved-tickets.md#safari-mobile-issues-14-mobile-spacing-and-today-heading) | 2026-10-30 follow-up | Reduce mobile spacing and truncate the complete Today date |
 | [15](resolved-tickets.md#safari-mobile-issues-15-shared-tabs-and-profile-sections) | 2026-10-30 follow-up | Shared tabs distinct from preference pills |
-| [16](../safari-mobile/issues/16-unify-action-footer-buttons.md) | 2026-10-30 follow-up | Existing app button frames across the action footer |
+| [16](resolved-tickets.md#safari-mobile-issues-16-unify-action-footer-buttons) | 2026-10-30 follow-up | Existing app button frames across the action footer |
 | [17](resolved-tickets.md#safari-mobile-issues-17-compact-writing-toolbars) | 2026-10-30 follow-up | Single-row constrained writing toolbars across both editors |
 | [18](resolved-tickets.md#safari-mobile-issues-18-remove-redundant-media-type-badge) | 2026-10-30 follow-up | Remove the redundant detected-media-type badge |
 | [19](resolved-tickets.md#safari-mobile-issues-19-celebrations-responsive-scroll) | 2026-10-30 dates-page screenshot | Single mobile page scroll; independent columns only in side-by-side desktop |
@@ -7163,9 +7173,9 @@ Sol = Sol 6.1. Terra = Terra 6.1. São os dois modelos pedidos disponíveis para
 | 11 | [T11 · Aceite independente do Planejamento](../social-planning-recovery/issues/11-independent-acceptance.md)               |        0% |      85% |        35% |       70% | Terra          | Último. Revisor diferente do implementador reexecuta R1–R11 e separa prova de banco, provedor e visual.                                                       |
 | 12 | [P00 · Fidelidade da Mesa ao mockup](../social-planning/issues/00-align-page-with-approved-mockup.md)                      |       85% |      35% |        90% |       25% | Sol            | Residual da série original. Há aprovação parcial de layout. Conferir se o aceite visual integral já foi dado e anexar a T11.                                  |
 | 13 | [P08 · Instruções reutilizáveis por marca](../social-planning/issues/08-brand-planning-instructions.md)                    |       30% |      60% |        55% |       85% | Sol            | Coluna registrada em produção. Fechar leitura, edição autorizada, troca de marca e uso pelo gerador em coordenação com T07/T08.                               |
-| 14 | [V12 · Filtros no campo de busca global](../visual-controls/issues/12-global-search-filters.md)                            |       20% |      65% |        80% |       95% | Sol            | Decisões registradas. Implementar parceiros e arquivadas no sufixo, conferir teclado e escopo. Claude consta como executor. Confirmar posse antes de editar.  |
-| 15 | [F01 · Classificar feriados](../brand-holidays/issues/01-classify-holidays.md)                                             |       85% |      50% |        80% |       40% | Sol            | Campo confirmado em produção e UI local. Validar criar, reabrir e reconhecer o feriado na lista e no calendário.                                              |
-| 16 | [F02 · Selecionar feriados por marca](../brand-holidays/issues/02-partner-holidays.md)                                     |       70% |      70% |        55% |       70% | Terra          | Registros divergem sobre tabela e RPC remotas. Conferir catálogo em leitura antes de qualquer SQL. Validar isolamento entre marcas e retry.                   |
+| 14 | [V12 · Filtros no campo de busca global](resolved-tickets.md#visual-controls-issues-12-global-search-filters)                            |       20% |      65% |        80% |       95% | Sol            | Decisões registradas. Implementar parceiros e arquivadas no sufixo, conferir teclado e escopo. Claude consta como executor. Confirmar posse antes de editar.  |
+| 15 | [F01 · Classificar feriados](resolved-tickets.md#brand-holidays-issues-01-classify-holidays)                                             |       85% |      50% |        80% |       40% | Sol            | Campo confirmado em produção e UI local. Validar criar, reabrir e reconhecer o feriado na lista e no calendário.                                              |
+| 16 | [F02 · Selecionar feriados por marca](resolved-tickets.md#brand-holidays-issues-02-partner-holidays)                                     |       70% |      70% |        55% |       70% | Terra          | Registros divergem sobre tabela e RPC remotas. Conferir catálogo em leitura antes de qualquer SQL. Validar isolamento entre marcas e retry.                   |
 | 17 | [IA01 · Consumo de IA em Minha Conta](../ai-usage/issues/01-ai-usage-visibility.md)                                        |       75% |      55% |        50% |       75% | Terra          | Visual aceito segundo CURRENT. Confirmar migration, permissões e agregação mensal com registro real controlado, inclusive duplicidade.                        |
 | 18 | [V35 · Microseções no menu lateral da galeria](resolved-tickets.md#visual-controls-issues-35-ui-sidebar-subsections) | 90% | 35% | 90% | 25% | Sol | Primeiro clique corrigido após reprodução no Comet e histórico real; aguarda aceite final. |
 | 19 | [V36 · Estudo dos wrappers de avatar](resolved-tickets.md#visual-controls-issues-36-avatar-wrapper-comparison-study) | 0% | 25% | 75% | 90% | Sol | Comparar recursos, consumidores e responsabilidades. Entrega somente de estudo. |
@@ -7490,3 +7500,606 @@ Criado em 04/11/2026 a pedido do proprietário.
 [Comparação completa](../../docs/audits/2026-11-04-v36-avatar-comparison.md) entregue por subagente e revisada pelo coordenador. UAvatar já compõe os primitivos e concentra escala/formatação/cores; recomendação de mantê-lo. UAvatarGroup mantém regra de lista/clamp/+N ausente no Prism; composição interna é opcional, não uma substituição direta. Inventário: 23 usos operacionais diretos de UAvatar e 13 de UAvatarGroup. Nenhum código alterado. Inspeção de fontes sem navegador, com dimensões inferidas das classes e limites explícitos. Entrega somente documental; qualquer migração futura exige decisão posterior do proprietário.
 
 V36: aceite explícito do proprietário em 04/11/2026; estudo e encerramento versionados pelo commit que inclui este registro. Sem autorização de mudança funcional.
+
+---
+
+<a id="visual-controls-issues-12-global-search-filters"></a>
+
+## visual-controls · 12-global-search-filters
+
+Origem: `.scratch/visual-controls/issues/12-global-search-filters.md`. Classificação: entregue, aprovado e commitado em 156004c.
+
+# 12 — Busca global: filtros como sufixo do campo
+
+**Resumo:** Prevê filtros de parceiros e ações arquivadas integrados ao campo da busca global.
+
+**Commit de referência:** `156004c` — entrega e encerramento do V12; aprovação confirmada pelo proprietário em 04/11/2026.
+
+Status: Aprovado pelo proprietário em 04/11/2026 ("12 ok") e encerrado.
+
+## Entrega (04/11/2026)
+
+- `PrismCommandInput` ganhou `suffix` opcional. Com sufixo, um contêiner `command-input-group` leva a borda inferior e o sufixo fica **fora** do `SearchField` (dentro dele, o `ButtonContext` do botão de limpar do RAC seria herdado pelo gatilho de parceiros). Sem `suffix`, marcação e classes idênticas às anteriores. Inset direito `pr-1.5` (6px; `pr-0.5` em `size="sm"`).
+- Busca global: rodapé removido; sufixo `[UPartnersCombobox allowAll ghost icon-sm] [PrismToggle ghost icon-sm ArchiveIcon]` em `role="group" aria-label="Filtros da busca"`. Estado, consulta e `navigatingResultsRef` inalterados.
+- `UPartnersCombobox`: largura `w-40` do modo `allowAll` só quando `showText`; com `allowAll` sem texto, `aria-label` "Filtrar por parceiros: <seleção>" (`title` continua só a seleção). Outros consumidores inalterados.
+- `/ui` Command: opção de playground "Sufixo no campo" com toggle de exemplo.
+- Verificado no `/ui` (Chromium): botão 32×32, 6px da borda direita e do topo, altura do campo 45px (igual, com a borda), Tab do input chega ao toggle, Espaço alterna `aria-pressed` sem digitar no campo, sem erros de console. Prettier/Biome/typecheck limpos. A busca global real (logada) não foi ensaiada: fica no roteiro do proprietário.
+
+### Roteiro de validação
+
+1. Abrir a busca em `/app` e em `/app/partner/<slug>`: no fim do campo aparecem avatar (vazio = "P"/todos; na rota do parceiro, o avatar dele) e o ícone de arquivo; sem rodapé.
+2. Tab: campo → parceiros → arquivadas; foco com anel padrão, sem corte.
+3. Parceiros: seleção múltipla com popover aberto, Shift+clique exclusivo, "Todos os parceiros"; Escape fecha só o popover.
+4. Arquivadas: Espaço/clique liga (fundo secundário) e inclui arquivadas; fechar/reabrir volta desligado e a seleção da rota.
+5. Setas + Enter/Espaço nos resultados e Shift para a secundária continuam; Espaço digitado no campo segue texto.
+6. Telefone (375px): placeholder trunca, sem rolagem horizontal.
+   Escopo: refazer a posição e a anatomia dos dois filtros da busca global (parceiros e arquivadas), usando **somente** componentes e variantes padrão do Prism, sem customização.
+
+## Objetivo
+
+- O filtro de parceiros deixa de ficar no rodapé da busca e passa a ser **sufixo do campo de busca** (dentro do campo, no fim).
+- "Incluir arquivadas" deixa de ser checkbox com texto e vira **toggle só com ícone** (`PrismToggle`, variante padrão, sem texto = botão de ícone quadrado).
+- Regra do proprietário: eliminar o customizado; usar o padrão do sistema. Foco = anel padrão.
+
+## Contexto (estado atual)
+
+- `app/components/features/GlobalSearchCommand.tsx`
+  - Estado: `includeArchived` (:131), `selectedPartners` (:132, inicia com `initialPartnerSlug` se existir entre `partners`).
+  - Consulta com debounce: efeito em :140–179 (usa `selectedPartners`, `includeArchived`, descarta resposta antiga).
+  - Campo: `<PrismCommandInput placeholder="Faça sua busca..." />` (:484), dentro de `PrismCommand` controlado por `query` (:478).
+  - Rodapé: `div role="group" aria-label="Filtros da busca"` com `border-t px-3 py-2` (:~640): `PartnersCombobox allowAll showText variant="filter"` (:647) e `PrismCheckbox size="sm"` com classes próprias (`rounded-lg px-2 py-2 font-normal text-muted-foreground squircle data-[selected]:text-foreground`) "Incluir arquivadas" (:661). Ambos zeram `navigatingResultsRef.current` ao mudar.
+  - `onKeyDownCapture` no contêiner (:417): setas marcam `navigatingResultsRef`; Espaço só age em itens com `data-action-search-result`, `data-action-create-command`, `data-search-command` (ou no `aria-activedescendant` quando o alvo está no input e se navegava).
+- `app/components/prism/command.tsx` `CommandInput` (:129–158): `SearchField` com `className="flex w-full items-center border-b border-border px-3.5"`, ícone de lupa, `Input` com `h-11` (`h-9` em `size="sm"`). **Não há** prop de sufixo/addon. Props: `size?: "sm" | "default"`.
+- `app/components/prism/input-group.tsx`: `InputGroup` + addons (`data-align="inline-end"`) existem, mas o `CommandInput` não os usa (é uma barra com borda inferior, não um campo com fundo).
+- `app/components/prism/toggle.tsx`: `PrismToggle` (RAC `ToggleButton`); sem texto vira `icon-*` automaticamente (`ICON_SIZE`); `aria-pressed:bg-secondary`; foco `ring-3 ring-ring/30`.
+- `app/components/features/PartnersCombobox.tsx`: `allowAll`, `showText`, `variant` (`filter` | `form-footer`), `size`; `iconOnly={!showText}`. Seleção múltipla com popover aberto; Shift = exclusiva (fecha o popover) (:44–55). O popover tem seu próprio `PrismCommandInput` (:~100): **a prop nova de `CommandInput` precisa ser opcional** para não afetar esse uso e `CommandSection`/`TokensFocusSection`.
+- Atenção: `PartnersCombobox.tsx` está sendo editado por outro agente (rodapé da gaveta). Este ticket só deve começar depois que essa mudança for concluída/commitada.
+
+## Comportamento a preservar (AGENTS.md, "Busca global")
+
+- Filtro de parceiros pertence somente à abertura da busca; inicia com o parceiro da rota `/app/partner/$slug`, se disponível; nas outras páginas, vazio = todos os parceiros operacionais disponíveis. Fechar/reabrir reinicia consulta e seleção.
+- `PartnersCombobox.allowAll`: "Todos os parceiros" e seleção múltipla com popover aberto; Shift mantém seleção exclusiva. Consumidores sem `allowAll` não mudam.
+- `searchActionsByTitle` (`app/models/actions.ts`) intersecta `selectedPartnerSlugs` com os parceiros disponíveis e usa overlaps; escopo efetivo vazio não consulta.
+- "Incluir arquivadas" inicia **desligado em cada abertura**; sem ele, `archived=false`; com ele, omite a restrição, sempre dentro dos parceiros disponíveis/selecionados.
+- Respostas de consulta/abertura anterior são descartadas. O filtro não altera rota, calendário nem atribuição de parceiros a rascunhos.
+- Espaço digitado no campo continua texto antes de navegar pelos resultados (`navigatingResultsRef`); Shift+clique/Enter/Espaço em resultado abre a secundária.
+- Filtro e popover deste uso não acrescentam ring sobre borda; foco por teclado usa fundo (exceção hoje documentada). **Muda** com este ticket: ver "Foco" abaixo.
+
+## Proposta
+
+### 1. `CommandInput` ganha `suffix` (API mínima)
+
+Em `app/components/prism/command.tsx`:
+
+- Nova prop opcional `suffix?: React.ReactNode`, renderizada dentro do `SearchField`, **depois** do `Input`, em um `div` com `data-slot="command-input-suffix"` e `className="-mr-2 flex shrink-0 items-center gap-1"`. Sem `suffix`, a marcação atual permanece idêntica (os usos em `PartnersCombobox`, `CommandSection`, `TokensFocusSection` não mudam).
+- O `Input` continua `w-full`, então encolhe (`min-w-0` é adicionado se necessário para não estourar em telas estreitas).
+- Os botões do sufixo ficam **fora** do `Input` mas dentro do `SearchField` do RAC. Verificar que o botão de limpar do `SearchField` não é afetado (hoje o cancel nativo está oculto e não há botão de limpar) e que o RAC não captura cliques/foco dos botões (usar `Button`/`ToggleButton` RAC, que já são do Prism).
+- Altura: botões `size="icon-sm"` (32px) com `CommandInput` padrão (`h-11` = 44px) cabem sem alterar a altura do campo. Não aumentar a altura do campo.
+- **Respondido (03/11):** ambos os botões em `size="sm"`/`icon-sm` (32px).
+- **Espaçamento (respondido):** a distância da borda direita do campo até o botão mais à direita deve ser harmônica, igual ao inset vertical do botão dentro do campo: (44px − 32px) / 2 = **6px**. O padding horizontal do `SearchField` é `px-3.5` (14px); o wrapper do sufixo recebe margem negativa `-mr-2` (8px), resultando em 14px − 8px = 6px. Aplicar com classe utilitária de margem no próprio wrapper; não criar variante nova. Se `CommandInput` usar `size="sm"` (`h-9`), o inset vertical passa a 2px e a margem deve ser recalculada (`-mr-3.5` para 0px ou o valor equivalente que dê 2px).
+
+### 2. Filtro de parceiros no sufixo
+
+- `PartnersCombobox allowAll variant="filter" size="icon-sm"`? **Pergunta de implementação:** hoje `variant="filter"` com `showText` mostra avatares + nome (largo). Dentro do campo só cabe o modo ícone. Proposta: `showText={false}` (só `UAvatar`/`UAvatarGroup size="sm"`, que já existe e já alimenta o `title`/`aria-label` com os nomes selecionados ou "Todos os parceiros"), com `variant="filter"` (= ghost/sm do `buttonVariants`, sem variante nova). Se o gatilho `filter` sem texto não resultar quadrado/32px com a escala padrão, ajustar `ComboboxTrigger`/`PartnersCombobox` para compor `ghost` + `icon-sm` (padrão), nunca com classes avulsas.
+- O nome acessível continua sendo o texto dos parceiros selecionados ("Todos os parceiros" quando vazio); acrescentar ao rótulo o contexto "Filtrar por parceiros" (ex.: `aria-label="Filtrar por parceiros: <seleção>"`) é desejável, mas só se isso não mudar os outros consumidores — decidir na implementação com o outro ticket (05) concluído.
+- Remover o `div role="group" aria-label="Filtrar ações por parceiros"` do rodapé; os dois controles do sufixo ficam num `div role="group" aria-label="Filtros da busca"`.
+
+### 3. "Incluir arquivadas" como toggle de ícone
+
+- Substitui o `PrismCheckbox` por `<PrismToggle variant="ghost" size="icon-sm" isSelected={includeArchived} onChange={...} aria-label="Incluir arquivadas">` com o ícone Lucide `ArchiveIcon` (**confirmado**: é o ícone de arquivamento já usado no app em `ActionFormFooter.tsx` (ação arquivada/arquivar), `ActionFormDrawer.tsx:839` (banner "Esta ação está arquivada"), `BulkActionMenu.tsx:499` (Arquivar), `GlobalSearchCommand.tsx:567` (marca de resultado arquivado) e `routes/app/admin/partner/$slug.tsx:691`). Sem texto, o `PrismToggle` já resolve o tamanho de ícone; a variante `ghost` herda `aria-pressed:bg-secondary` (estado "ligado" visível sem cor customizada).
+- Sem tooltip (decisão do proprietário: nome acessível "Incluir arquivadas" via `aria-label`; `title` nativo opcional se o padrão do app usar, a confirmar).
+- Mantém `navigatingResultsRef.current = false` ao mudar.
+
+### 4. Posição do toggle (escolha do proprietário)
+
+- **Opção A (escolhida pelo proprietário em 03/11):** os dois no sufixo, ordem: `[parceiros] [arquivadas]` (parceiros primeiro porque é o filtro de escopo; arquivadas modifica o resultado dentro dele). O rodapé de filtros some por inteiro (menos altura, sem `border-t`).
+
+### 5. Teclado e foco
+
+- Ordem do Tab: Input de busca → parceiros → arquivadas → (lista de resultados continua navegável por setas a partir do input, como hoje; a lista não entra no Tab comum). Shift+Tab inverso. Verificar se a ordem do DOM (sufixo depois do input, antes da lista) já produz isso, sem `tabIndex` manual.
+- Setas ↑/↓ e Enter continuam valendo no Input (combobox/command do RAC); o `onKeyDownCapture` do contêiner não deve tratar Espaço/Enter vindos dos botões do sufixo como resultado (hoje só reage se `closest([data-...])` ou `aria-activedescendant`; o botão não tem `aria-activedescendant`, mas há o ramo `navigatingResultsRef.current ? activeItem` — testar: com `navigatingResultsRef` verdadeiro e foco no botão do sufixo, Espaço deve alternar o toggle, não abrir resultado). Se houver conflito, restringir o ramo ao `target` ser o `Input`.
+- Escape: no popover de parceiros aberto, fecha só o popover; no campo/toggle fecha a busca (diálogo), sem regressão.
+- Foco: **anel padrão** `ring-3 ring-ring/30` do `PrismToggle`/`buttonVariants` (já embutido). Como o botão está dentro do campo com `border-b`, não cortar o anel (o `SearchField` não tem `overflow-hidden`; confirmar no `CommandDialog` que o contêiner não recorta). Esta decisão substitui a exceção "foco por fundo" do gatilho `filter` neste uso: atualizar AGENTS (Busca global e §5 exceções, se citada).
+
+### 6. Largura / celular
+
+- Em ≤ 375px o campo com lupa + input + dois botões de 32px + gaps mantém o placeholder legível (input encolhe, `min-w-0`; placeholder pode truncar). Sem quebra de linha e sem scroll horizontal. Verificar com o teclado virtual aberto (o contêiner já encolhe: `flex min-h-0 flex-col`).
+- Alvos de toque: 32px é a escala padrão `icon-sm`; se o proprietário quiser 40px no celular, usar `icon` (40px) com `CommandInput` `size="default"` (44px) — apenas escolher entre escalas existentes, sem customização.
+
+## Critérios de aceite
+
+1. Rodapé de filtros removido; campo de busca mostra, no fim, o seletor de parceiros (ícone/avatar) e o toggle de arquivadas (ícone).
+2. Nenhuma classe própria nos dois controles além das props de variante/tamanho (sem `rounded-*`, `px-*`, cores avulsas); `PrismToggle` e `PartnersCombobox` nas variantes padrão.
+3. Todo o comportamento listado em "Comportamento a preservar" continua (parceiro da rota ao abrir, vazio = todos, Shift exclusivo, arquivadas desligado a cada abertura, respostas antigas descartadas, escopo vazio não consulta).
+4. Teclado: Tab percorre input → parceiros → arquivadas; setas/Enter/Espaço dos resultados e a secundária por Shift continuam; Espaço no botão do sufixo alterna o filtro; Escape fecha popover/busca sem regressão.
+5. Foco visível com o anel padrão e não cortado; sem foco por fundo nesses dois controles.
+6. `aria-label` "Incluir arquivadas" (pt-BR) no toggle, `aria-pressed` correto; nome acessível do seletor de parceiros reflete a seleção.
+7. Sem scroll horizontal e sem sobreposição a 375px; altura do campo inalterada.
+8. `CommandInput` sem `suffix` renderiza idêntico a hoje (popover de parceiros, `/ui`).
+9. Roteiro curto para o proprietário validar (conforme preferência de agilidade); sem testes novos por rotina.
+
+## Fora do escopo
+
+- Alterar a regra de dados de `searchActionsByTitle`, as chaves de cache ou a seleção inicial.
+- Mudar `PartnersCombobox` além de aceitar o modo ícone no sufixo (e nunca sem coordenar com o ticket 05/outro agente).
+- Redesenhar os comandos/itens da lista, o `CommandDialog` ou os popovers (ticket 03).
+- Tooltip, contador de filtros ativos ou persistência dos filtros.
+- Outros consumidores de `CommandInput` (sem `suffix`, ficam iguais).
+
+## Arquivos a alterar
+
+- `app/components/prism/command.tsx` (prop `suffix` em `CommandInput`).
+- `app/components/features/GlobalSearchCommand.tsx` (remover rodapé; passar sufixo; trocar checkbox por `PrismToggle`; ajustar import de `PrismCheckbox` se ficar sem uso).
+- `app/components/features/PartnersCombobox.tsx` / `ComboboxTrigger.tsx` somente se o modo ícone `filter` não ficar no padrão `ghost`/`icon-sm` (depois do outro agente).
+- `app/components/ui-sections/CommandSection.tsx` (exemplo com `suffix`).
+
+## Documentação a atualizar
+
+- AGENTS.md, parágrafo "Busca global": controles agora no sufixo do campo (não no rodapé), arquivadas como toggle de ícone, foco por anel padrão (remover "Filtro e popover deste uso não acrescentam ring... foco por teclado usa fundo").
+- `/ui` (`CommandSection`): exemplo de `PrismCommandInput` com `suffix`.
+- `docs/plans/visual-controls-where.md` (linha GlobalSearchCommand: remover checkbox `rounded-lg`) e `.scratch/visual-controls/README.md` (status).
+- `docs/audits/CURRENT.md` com resultado e pendências ao concluir.
+
+## Respostas do proprietário (03/11/2026)
+
+1. Arquivadas e parceiros ficam ambos no sufixo do campo, nesta ordem: `[parceiros] [arquivadas]`. O rodapé de filtros é removido. (Opção A.)
+2. Seletor de parceiros no campo só com avatar/ícone, sem nome visível. O nome segue no `aria-label`/`title`.
+3. Tamanho dos botões: 32px (`size="sm"`/`icon-sm`), com o espaçamento harmônico descrito na seção 1.
+4. Ícone de arquivadas: `ArchiveIcon`, o mesmo usado para ações arquivadas no app.
+
+## Consolidação no histórico — 04/11/2026
+
+Proprietário confirmou novamente que V12 está finalizado. Entrega e aceite já registrados em 156004c; retirado da fila ativa e consolidado no histórico. Nenhuma nova alteração funcional nesta atualização.
+
+---
+
+<a id="ai-partner-identity-issues-01-use-current-partner-identity"></a>
+
+## ai-partner-identity · 01-use-current-partner-identity
+
+Origem: `.scratch/ai-partner-identity/issues/01-use-current-partner-identity.md`. Atualização de encerramento em 05/11/2026.
+
+# 01: Gerar conteúdo de IA com a identidade do parceiro atual
+
+**Latest owner acceptance — 2026-11-01: approved and closed.** This supersedes historical pending-acceptance statements below. Separate media performance/carousel observations and Today design work remain in the [current queue](../../docs/audits/2026-11-01-open-tickets.md).
+
+**What to build:** ao gerar estratégias, aberturas, conteúdo ou legenda de uma ação, usar explicitamente a marca do parceiro atual como autora do conteúdo. Um hospital continua falando como hospital, inclusive após duplicar uma ação da agência, trocar o parceiro, salvar e reabrir dias depois. A identidade da agência que opera a UZZINA não deve ser imposta como marca publicadora pelos comandos de IA.
+
+**Blocked by:** None (can start immediately). Independente dos tickets de Safari, geração em segundo plano, Planejamento e uso de IA. Coordenar arquivos compartilhados com um executor por vez, sem criar dependência funcional artificial.
+
+**Status:** completed — aceite explícito do proprietário em 05/11/2026.
+
+## Origem e evidência
+
+O proprietário duplicou uma ação da agência, trocou o parceiro para Hospital Dr. Thomaz Corrêa e salvou na semana anterior. Em29/10 gerou uma legenda que dizia “A Agência CNVT reconhece e agradece”, embora cabeçalho e rodapé identificassem o hospital. Conferiu os insumos: nada mencionava a agência; o contexto apenas informava que o hospital tinha mais de70 anos.
+
+A investigação capturou os pedidos do handler real, com autenticação, quota e provedor simulados: os quatro comandos acrescentam Agência CNVT na mensagem de sistema mesmo com insumos exclusivamente hospitalares. O pedido não recebe o nome do parceiro explicitamente; depende do contexto livre. O rodapé é acrescentado separadamente pelo frontend, o que explica sua identidade correta sem garantir a do corpo gerado.
+
+Confirmado: identidade fixa da agência entra nos quatro pedidos. Não confirmado: requisição/resposta histórica e causalidade exata da frase do print. Preservação de descrições na duplicação existe, mas o proprietário descartou menções herdadas neste incidente. A correção não depende de alterar o ato de duplicar.
+
+## Critérios de aceite
+
+- [ ] Estratégias, aberturas, conteúdo e legenda recebem explicitamente a identidade do parceiro atual, mesmo quando seu contexto é breve, vazio ou não contém o nome da marca. Nome e contexto são informações distintas; não exigir que o usuário repita o nome no campo de contexto.
+- [ ] A mensagem de sistema dos quatro comandos define a marca do parceiro como autora e não impõe a CNVT como destinatária/autora de conteúdo de outras marcas. Remover a ambiguidade também nos papéis de estrategista e redator, preservando as orientações editoriais existentes.
+- [ ] A identidade corresponde ao parceiro atual da ação, sem reutilizar o parceiro original da duplicação ou dados de outra ação aberta. Preservar a regra atual de primeiro parceiro para geração e rodapé quando houver múltiplos; não inventar nova seleção ou combinar marcas silenciosamente.
+- [ ] Se a identidade do parceiro não puder ser resolvida, não assumir CNVT nem gerar como uma marca inventada. Apresentar falha acionável e preservar os textos existentes; não enviar uma geração sem identidade definida nem consumir quota nesse caso detectável antes do envio.
+- [ ] O cenário original funciona: duplicar agência → trocar para hospital → salvar → fechar/reabrir → gerar legenda. O pedido identifica o hospital, não impõe a agência, e o resultado aplicado/persistido conserva o rodapé hospitalar existente.
+- [ ] Uma ação nova do hospital, sem duplicação, usa a mesma identidade correta nos quatro comandos. As ações principal e secundária usam os próprios parceiros de forma independente.
+- [ ] CNVT continua permitida quando ela própria é o parceiro da ação ou quando uma menção legítima for solicitada no briefing. Não implementar proibição genérica da palavra, substituição automática de nomes na saída ou limpeza de textos já salvos.
+- [ ] Preservar título, descrições, estratégia selecionada, voz/contexto disponíveis, formato e direção de conversão do fluxo atual. Não apagar material herdado ao trocar parceiro, reescrever conteúdo manual silenciosamente ou refazer a arquitetura editorial.
+- [ ] O contrato de entrada valida os campos necessários de identidade de ponta a ponta, com limites coerentes e rejeição de tipos inválidos. Preservar autenticação, membro ativo, quota persistente, contratos de saída e tratamento de falhas; identidade editorial enviada não concede acesso a dados nem autoriza mutações.
+- [ ] A confirmação da geração continua aplicada e persistida pelo fluxo existente, preservando guardas de sessão e edição. Não incluir execução em segundo plano, nova política de concorrência de gerações ou novo cadastro de marca neste ticket.
+
+## Execução e verificação
+
+Uma entrega vertical: seleção atual do parceiro → identidade explícita no pedido validado → instruções coerentes ao provedor → resposta aplicada e salva na ação → testes. Eventual extração pequena para compartilhar a composição de identidade deve fazer parte desta entrega, sem refatoração ampla ou tickets separados por camada.
+
+- [ ] Preparar regressão no código real antes da correção: com contexto “O hospital tem mais de70 anos.” e textos sem agência, capturar o pedido do provedor e exigir identidade hospitalar explícita e ausência de autoria CNVT imposta pelo sistema. Deve falhar no comportamento atual e passar nos quatro comandos após a correção.
+- [ ] Testar seleção/troca de parceiro e reabertura com dados persistidos controlados, incluindo ação nova, duplicada, contexto vazio, múltiplos parceiros e CNVT como parceiro legítimo. Exercitar o fluxo real da gaveta; não copiar funções da implementação para o teste.
+- [ ] Testar separação das ações principal/secundária, preservação do rodapé, aplicação/persistência da resposta e rejeição de identidade ausente/inválida sem sobrescrever texto. Controlar banco e provedor na fronteira externa, sem fixtures de escrita em produção.
+- [ ] Separar evidência determinística do pedido de avaliação editorial da saída. Respostas simuladas não provam que um modelo real nunca mencionará marca alheia. Uma eventual geração real requer registro próprio de condições/resultado e não é necessária para testar a composição do prompt.
+- [ ] Executar testes pertinentes, format, lint, typecheck, build e verificação de runtime serverless exigida para alterações de API/contrato. Sem CI, conferir o pacote serverless antes de eventual push; registrar separadamente código preparado, testes locais e publicação Ready.
+
+## Limites
+
+Não alterar schema, permissões, dados existentes, política de duplicação ou estratégia editorial por proximidade. Não depende de novo fluxo para preencher contexto, de revisão de qualidade de todos os prompts ou de novos controles na interface. Preparar o ticket não inicia implementação, commit, push ou deploy.
+
+## Local implementation — 2026-10-31
+
+`partner_name` is required and bounded in the shared input contract. The real hook uses the first current partner in the existing action order, prevents custom strategy fields from replacing identity, and rejects missing/blank/oversized names before sending. The four API prompts identify that publisher explicitly instead of imposing agency authorship; legitimate CNVT publishing/mentions and existing editorial instructions remain. Name and caption tail are captured together for the request.
+
+Real hook/API/client regressions passed (75 tests/210 expectations) after a red run confirmed missing/overridden identity and rejection by the old schema. Validation covers short/empty context, four intents, changed partner/reopening, independent mounted actions, paired request/footer, legitimate CNVT and invalid identity before quota/provider. Full browser duplication→partner change→save→close→reopen was not exercised; hook rerender/reopening and API boundary tests are the evidence. See [report](../../docs/audits/2026-10-31-ai-partner-identity.md). Final format/lint/typecheck/build/serverless checks belong to the coordinator. No real Supabase/provider writes, paid generation, SQL, commit, push or deployment.
+
+## Encerramento — 05/11/2026
+
+Proprietário aprovou explicitamente este item da lista geral em 05/11/2026. Encerramento consolida o aceite do escopo existente, sem nova implementação, teste físico pelo coordenador ou publicação. Relatos de aceite pendente abaixo são históricos.
+
+---
+
+<a id="brand-holidays-issues-02-partner-holidays"></a>
+
+## brand-holidays · 02-partner-holidays
+
+Origem: `.scratch/brand-holidays/issues/02-partner-holidays.md`. Atualização de encerramento em 05/11/2026.
+
+# 02: Definir feriados da marca na gestão do parceiro
+
+**What to build:** administradores escolhem múltiplos feriados cadastrados na gestão existente do parceiro, removem/limpam associações e encontram a seleção persistida ao reabrir. Cada marca tem sua lista independente, vazia inicialmente.
+
+**Blocked by:** contrato de banco do #01 — atendido. A conclusão da interface do #01 não bloqueia este ticket. Aplicação do SQL deste ticket aguarda confirmação exigida pela ferramenta Supabase.
+
+**Status:** completed — salvamento relatado pelo proprietário e confirmado em leitura do banco em 05/11/2026.
+
+- [x] Preparar relação muitos-para-muitos por UUIDs reais de parceiro/data, PK composta sem duplicações, FKs com cascades e índice reverso. Não copiar nomes/slugs nem guardar array/JSON sem integridade.
+- [x] Preparar integridade nativa por referência composta e constante gerada: somente feriados podem ser associados; desclassificar data vinculada é recusado; exclusão do parceiro/data remove apenas vínculos correspondentes. Não preencher seleções automaticamente.
+- [x] Preparar RLS de leitura herdando escopo real do parceiro e escrita administrativa; invoker RPC atômica de substituição com lock por parceiro, validação de IDs, deduplicação, array vazio para limpar e retorno canônico. Sem regravar campos do parceiro ou abrir acesso anônimo/portal.
+- [x] Verificar migrations reais em PostgreSQL17 isolado: integridade, RLS, rollback inclusive após remoções, concorrência nas duas ordens e cascades;18 grupos PASS.
+- [x] Aplicar a migration preparada após concluir confirmação da ferramenta; confirmar catálogo/permissões/contrato remotos e registrar versão efetivamente aplicada. Não assumir que o SQL já existe em produção.
+- [x] Integrar tipos/models/leituras e cache por identidade/parceiro; respostas antigas de outra marca/sessão não alteram seleção atual. Mudanças no cadastro de feriados atualizam opções/associações.
+- [x] Criar seção “Feriados da marca” na gestão do parceiro, com Prism, busca por título, seleção múltipla e identificação por título/data, sem limitar ao mês atual. Permitir adicionar/remover/limpar e mostrar itens/quantidade escolhidos.
+- [x] Tratar carregamento, catálogo vazio, erro e retry; falha de leitura nunca vira seleção vazia gravada por cima da lista real. Controle rotulado, teclado e nomes longos utilizáveis em largura estreita; preservar AppBar/rolagem.
+- [x] Na edição, integrar autosave da seleção com feedback confirmado e retry, preservando escolha local na falha; serializar envios e impedir respostas antigas de sobrepor última escolha. Autosave de outros campos não apaga vínculos.
+- [x] Na criação, manter seleção local até haver ID real do parceiro; persistir vínculos e tratar falha parcial sem criar parceiro duplicado. Repetir somente etapa pendente e anunciar sucesso completo somente após confirmação durável.
+- [x] Validar marca A/B independentes, seleção/reabertura, remoção/limpeza, criação parcial/retry, falhas, edição de outro campo, teclado e largura estreita; documentação/checks proporcionais, build se publicar.
+
+O campo de classificação do #01 já está disponível. Ainda não há tabela de vínculos/RPC na produção: ambas as solicitações de confirmação da ferramenta expiraram sem aplicar. A mensagem da interface sobre desclassificação vinculada deverá orientar remover vínculos primeiro. Uso desses vínculos para filtrar calendários/gerar Planejamento/impedir agendamento fica fora deste ticket.
+
+## Encerramento — 05/11/2026
+
+Proprietário testou e relatou salvamento. Leitura no projeto de produção confirmou três vínculos persistidos para uma marca; tabela, PK composta, FKs com cascata, RLS, policies e RPC de substituição administrativa presentes. A RPC aceita datas comemorativas existentes, não apenas is_holiday=true, conforme contrato vigente. Nenhuma pendência funcional identificada para este escopo. A consulta foi somente leitura: não executou nova escrita, teste negativo de autorização nem migração. Relatos antigos de SQL ausente abaixo estão superados por esta confirmação de catálogo. Não inclui usar seleções no Planejamento ou em regras de agendamento.
+
+---
+
+<a id="media-controls-issues-01-always-visible-media-controls"></a>
+
+## media-controls · 01-always-visible-media-controls
+
+Origem: `.scratch/media-controls/issues/01-always-visible-media-controls.md`. Atualização de encerramento em 05/11/2026.
+
+# 01: Manter os controles de mídia sempre visíveis e operáveis
+
+**Latest owner acceptance — 2026-11-01: approved and closed.** This supersedes historical pending-acceptance statements below. Separate media performance/carousel observations and Today design work remain in the [current queue](../../docs/audits/2026-11-01-open-tickets.md).
+
+**What to build:** na janela Gerenciar conteúdo da UZZINA, mostrar permanentemente a remoção individual, a alça de reordenação e a posição de cada arquivo, no desktop e no celular. A pessoa consegue remover/reordenar com ponteiro, toque ou teclado sem depender de hover; miniaturas, ordem, retorno de foco e persistência existentes permanecem coerentes.
+
+**Blocked by:** None (can start immediately). Independente dos tickets de Safari, Planejamento e uso de IA. A entrega mobile de Instagram prepara a área que abre o gerenciador; esta tarefa atua nos controles internos. Coordenar alterações compartilhadas, com um executor por vez no checkout, sem inventar dependência funcional.
+
+**Status:** completed — proprietário confirmou ajustes conforme sua preferência em 05/11/2026.
+
+## Decisão e origem
+
+Achado K02 da revisão de teclado: os botões individuais de remover ficam com display:none fora de hover; as alças e números ficam com opacity0. No Tab, foi observada a sequência alça1 → alça2 → Adicionar → Limpar → Concluir, sem remoção individual. A existência de sensor de teclado não resolve um controle invisível ou fora do percurso.
+
+O proprietário esclareceu que ocultar não faz sentido e pediu preparar a correção. A fala contém “invisível sempre”, mas o contexto “exibir no mobile” e “não faz sentido ocultar” foi interpretado e comunicado como **sempre visível**. Esta é a direção deste ticket; não ocultar permanentemente os controles.
+
+O objeto é o gerenciador interno aberto pelo botão com a quantidade de arquivos na aba Instagram. O widget externo do Cloudinary, testes de VoiceOver e demais ajustes de Safari estão fora deste escopo. O diagnóstico anterior não comprovou defeito de touch; esta entrega deve verificar toque, sem pressupor a falha.
+
+## Critérios de aceite
+
+- [ ] Remover de cada item, alça e posição continuam visíveis com mouse fora da grade, sem hover, sem foco e sem mídia selecionada, em desktop e janela estreita. Não trocar a dependência de hover por outra dependência de foco.
+- [ ] Manter o estilo Prism e a legibilidade sobre miniaturas claras/escuras e arquivos sem preview. Controles não se sobrepõem entre si, não cobrem toda a miniatura e têm área acionável adequada ao toque; não manter remoção como alvo minúsculo de16px.
+- [ ] Botão individual de remover é nativo/Prism, tem nome em português que identifique posição ou arquivo e é alcançável por Tab/Shift+Tab. Enter/Espaço removem somente o item escolhido, sem enviar formulário, fechar modal, acionar Limpar ou iniciar arraste.
+- [ ] Após remover, foco vai para controle equivalente de um item vizinho; ao remover o último, retorna a Adicionar ou outro destino útil existente. Não cai no body ou na gaveta por trás.
+- [ ] Alça permanece focável, identificável e visualmente sinalizada. Preservar o sensor de teclado existente: iniciar reordenação, mover, confirmar/cancelar usando os comandos suportados sem disparar atalhos da ação ao fundo.
+- [ ] Ponteiro/toque na alça reordenam pelo comportamento existente; tocar no remover não começa drag. Verificar em aparelho real quando disponível; simulação de viewport/toque não certifica Safari físico.
+- [ ] Remoção e reordenação preservam identidades dos itens, ordem dos demais arquivos e sequência emitida ao formulário. Arquivos com a mesma URL não podem fazer a remoção atingir mais de uma ocorrência por engano.
+- [ ] Numeração e tipo detectado acompanham a lista resultante. Capa/vídeo principal seguem as regras atuais de posição; nenhuma mudança silenciosa de contrato de mídia.
+- [ ] Preservar Adicionar, Limpar, Concluir, limite atual de20 arquivos e integração de uploads múltiplos. A tarefa não muda o widget, preset, armazenamento, assinatura ou ciclo de eventos do provedor.
+- [ ] Preservar o momento atual de aplicar/persistir alterações. Concluir continua fechando o gerenciador; não introduzir fluxo novo de Aplicar/Cancelar nem confirmação obrigatória adicional.
+- [ ] Escape e fechamento respeitam a camada interna e retornam ao botão que abriu Gerenciar conteúdo. Principal/secundária conservam mídia e estado independentes; nenhuma operação altera a outra ação.
+- [ ] Não reabrir a correção de foco da gaveta, modificar captura global de Tab ou implementar itens K01/K03/K04/K05 desta auditoria por proximidade.
+
+## Etapas dentro da mesma entrega
+
+1. Reproduzir o defeito no componente real e preparar regressão de remoção individual por teclado/visibilidade sem hover.
+2. Ajustar somente controles da miniatura e a restauração local do foco necessária. Reutilizar sensores e contrato de mídia existentes.
+3. Verificar teclado, ponteiro e layout estreito, depois integração com a ação, salvamento e reabertura por HTTP controlado.
+
+São etapas de execução de uma única entrega demonstrável, não tickets separados por CSS, lógica e testes.
+
+## Verificação necessária
+
+- [ ] Regressão falha antes: botão individual indisponível por Tab ou controle oculto sem hover; passa depois no componente real. Teste que apenas compara strings de classe não comprova visibilidade de navegador.
+- [ ] Com dois/três arquivos, Tab alcança cada remoção/alça; remover o intermediário/último preserva ordem e foco; não afeta outros itens. Cobrir coleção vazia, item único e URL repetida.
+- [ ] Reordenar por teclado preserva a sequência e a aplicação no formulário; Escape cancela a operação interna antes de fechar o diálogo, quando consumido pelo sensor.
+- [ ] Navegador com estilos reais: desktop e390px, claro/escuro, ponteiro fora da grade e foco via teclado; controles visíveis e sem sobreposição. Tocar/remover com ensaio controlado quando suportado; registrar separadamente teste físico disponível e o que não foi executado.
+- [ ] Integração por HTTP controlado: remoção/reordenação confirmada, salvamento e reabertura da mesma ação; preservação da outra ação aberta e da sessão. Sem fixture de escrita em produção.
+- [ ] Executar testes pertinentes, format/lint/typecheck/build e requisitos serverless somente se o escopo real os acionar. Capturas temporárias ficam fora do checkout.
+
+## Entrega e limites
+
+Uma entrega vertical, de controle visível → operação por teclado/toque → atualização da mídia da ação → regressões. Sem schema, novo fluxo de upload, alteração de biblioteca, exclusão física do arquivo no Cloudinary ou ampliação de permissões. Remover da ação mantém a semântica existente, não significa apagar o recurso do provedor.
+
+Preparar este ticket não inicia implementação nem autoriza gravação real, commit, push, deploy ou trabalho no outro chat de Safari. Ler o estado vigente e preservar mudanças externas antes da execução. Atualizar os contratos/documentação pertinentes somente após a implementação e registrar verificação e limites reais.
+
+## Encerramento — 05/11/2026
+
+O item refere-se a Remover, alça de reordenação e posição de cada arquivo na janela Gerenciar conteúdo da aba Instagram. Havia aceite em 01/11 ignorado pela triagem posterior. Proprietário confirmou novos ajustes próprios em 05/11 e relatou botões desnecessários da implementação anterior. Encerrado preservando suas alterações atuais; nenhum botão foi acrescentado/removido pelo coordenador nesta rodada.
+
+---
+
+<a id="safari-mobile-issues-03-mobile-instagram-editor"></a>
+
+## safari-mobile · 03-mobile-instagram-editor
+
+Origem: `.scratch/safari-mobile/issues/03-mobile-instagram-editor.md`. Atualização de encerramento em 05/11/2026.
+
+# 03: Prioritize writing space in the mobile Instagram tab
+
+**Owner feedback — 2026-11-01:** portrait works normally. Landscape with the keyboard open remains unusable due to insufficient visible space. Remaining direction for evaluation: detect minimum usable space and show an advisory, suggesting portrait orientation when appropriate. **Threshold decided (2026-11-01):** the advisory triggers where the action drawer's Essencial tab starts scrolling (`data-essential-scroller` in `EssentialsTab.tsx`: title and metadata `shrink-0`, description `min-h-50` = 200px). Scrolling starts when title + metadata + 200px exceed the scroller height; it is not a fixed px value and depends on wrapping. Panel height comes from the visible viewport (`ActionDrawerPanel.tsx`). For now the advisory applies only in landscape; no orientation detection exists today (landscape is only inferred in `useShortWritingPanel`: width < 752 and height < 480, exit at 560). Natural measuring point: `useShortWritingPanel` (already observes the scroller with ResizeObserver): `scrollHeight > clientHeight`, also observing children. Owner concern: portrait with the keyboard open may also hit this limit; deliberately out of scope for now, and real-device testing may change the decision. Presentation and implementation are not yet authorized; no further layout workaround authorized.
+
+See [ticket 20](resolved-tickets.md#safari-mobile-issues-20-landscape-space-advisory) for the landscape advisory.
+
+**Status:** completed — aceite explícito do proprietário em 05/11/2026.
+**Original proposal:** item 3, refined by owner. **Priority:** high.
+**Blocked by:** none for implementation; final keyboard acceptance requires ticket 01. Coordinate layout with ticket 02.
+
+## Evidence and implementation entry points
+
+IMG_9844.PNG, IMG_9845.PNG and IMG_9846.PNG. Inspect InstagramTab, InstagramPreview, ContentFilesManager and RichTextEditor. Caption currently uses a textarea; preserve its literal text contract instead of converting it to rich HTML.
+
+## Acceptance
+
+- [ ] With no media, show only the existing “Adicionar conteúdo” control in the media area on mobile. No empty preview, placeholder icon/message, Gerenciar control or replacement empty-state button.
+- [ ] With media, show a height-limited preview plus Adicionar conteúdo and Gerenciar. Keep images/video, order and upload lifecycle unchanged.
+- [ ] Both content and caption receive a substantial writing region sized from usable space, with reachable controls in portrait and landscape.
+- [ ] Determine the editor size from available viewport/panel space after actual controls, not a fixed 600px or an unqualified 50vh. Constrain/reflow when the viewport is short; do not create an impossible minimum height that hides controls behind the keyboard.
+- [ ] Let the media section move out of the writing area through scrolling. Avoid competing small nested scroll regions. Keep the active caret/text visible during typing and preserve cursor/selection during resize.
+- [ ] Make the mobile rich-text toolbar compact: one row of basic commands and an icon to open additional commands. Choose the precise basic set after inspecting existing commands; every current command remains available.
+- [ ] Additional commands use the existing accessible Prism/React Aria approach. Opening/using the menu preserves the editor selection, command state and focus return. Toolbar arrow navigation, Tab to text, Alt+Shift+F10/F9 and nested Escape handling remain valid.
+- [ ] Desktop and side-by-side panels retain their container-query behavior. A narrow drawer on desktop must not depend only on window width for layout.
+- [ ] Preserve per-action identity, blur/manual save behavior, file order, literal caption, AI controls and unsaved edits.
+
+## Verification
+
+Cover no media, image, video, multiple files, long content and caption, both tabs, orientation change, keyboard open/closed and narrow/wide panels. Test real toolbar commands in the editor, including selection preservation through the additional menu, rather than a copied toolbar fixture. Follow ../README.md.
+
+## Owner feedback — 2026-10-30
+
+See the [acceptance and follow-up analysis](../../docs/audits/2026-10-30-mobile-owner-feedback.md). Acceptance applies to the scenarios the owner reported, not all potential device/database/provider cases. Earlier preparation-only wording describes the historical ticket-creation round; implementation results are recorded in CURRENT.
+
+## Encerramento — 05/11/2026
+
+Proprietário aprovou explicitamente este item da lista geral em 05/11/2026. Encerramento consolida o aceite do escopo existente, sem nova implementação, teste físico pelo coordenador ou publicação. Relatos de aceite pendente abaixo são históricos.
+
+---
+
+<a id="safari-mobile-issues-16-unify-action-footer-buttons"></a>
+
+## safari-mobile · 16-unify-action-footer-buttons
+
+Origem: `.scratch/safari-mobile/issues/16-unify-action-footer-buttons.md`. Atualização de encerramento em 05/11/2026.
+
+# 16: Use existing app button frames throughout the action footer
+
+**Latest owner acceptance — 2026-11-01: approved and closed.** This supersedes historical pending-acceptance statements below. Separate media performance/carousel observations and Today design work remain in the [current queue](../../docs/audits/2026-11-01-open-tickets.md).
+
+**Status:** completed — aceite explícito do proprietário em 05/11/2026.
+**Priority:** normal.
+**Blocked by:** none; coordinate ticket13 scroll behavior and the general style inventory.
+
+## Problem and delivery
+
+`UZZINA 3.png` shows custom left-hand selector frames beside standard secondary buttons. Partner form-footer uses px6/py5.5; form-inline uses p6; duplicate/archive use PrismButton ghost/icon. Replace this footer's bespoke trigger framing with existing app button geometry. Preserve meaningful avatar, phase, category and color contents, and primary save emphasis.
+
+## Acceptance
+
+- [ ] Align secondary trigger/button heights, widths, padding, icon footprint, radius and hover/pressed/focus/disabled states through existing PrismButton variants; do not add a new bespoke button family.
+- [ ] Preserve partner/phase/category/color/sprint values, accessible names, popovers and multi-selection/Shift behavior. Standardize frame/interaction rather than forcing every value into an identical glyph.
+- [ ] Preserve duplicate/archive confirmations/actions, canonical saves, pending states and existing save primary styling.
+- [ ] Keep all compact commands in one scrolling strip with correct edge fades, fixed icon-only save, keyboard-reveal and no command activation caused by dragging.
+- [ ] Verify desktop, portrait/landscape and two-panel layouts, and meaningful empty/selected/disabled states. No accidental tab-order or touch-target regression.
+- [ ] Audit shared ComboboxTrigger consumers before changing/removing variants; limit removal to proven unused variants. Update /ui examples if shared props/variants change.
+- [ ] Add regressions for changed real trigger/keyboard/strip behavior and run README checks. Record geometry/visual checks as such.
+
+## Boundary
+
+Follow-up to accepted ticket02 compact behavior, not its reopening. Do not redesign selector contents, persistence or every button in the app. General style analysis considers wider consolidation. No implementation, commit or publication in this registration.
+
+## Encerramento — 05/11/2026
+
+Proprietário aprovou explicitamente este item da lista geral em 05/11/2026. Encerramento consolida o aceite do escopo existente, sem nova implementação, teste físico pelo coordenador ou publicação. Relatos de aceite pendente abaixo são históricos.
+
+---
+
+<a id="safari-mobile-issues-20-landscape-space-advisory"></a>
+
+## safari-mobile · 20-landscape-space-advisory
+
+Origem: `.scratch/safari-mobile/issues/20-landscape-space-advisory.md`. Atualização de encerramento em 05/11/2026.
+
+# 20: Advise rotating to portrait when landscape leaves too little drawer space
+
+**Status:** completed — aceite explícito do proprietário em 05/11/2026.
+**Priority:** high.
+**Blocked by:** none; real-device keyboard validation relates to ticket 01. Origin: ticket 03.
+
+## Owner decision — 2026-11-01 (revised same day)
+
+When the phone is in landscape and the action drawer has less space than the Essencial tab needs without scrolling (title + metadata + 200px description `min-h-50` exceed the `data-essential-scroller` height), the whole action drawer is replaced by a blocking advisory: "Gire o telefone / A edição da ação precisa da tela na vertical.", with a "Fechar ação" button. Owner feedback: the first non-blocking strip was liked in content but not in presentation; it must be simple, hide everything and show only the advisory, on every tab. Landscape only; portrait with the keyboard open is deliberately out of scope.
+
+## Presentation
+
+Overlay `absolute inset-0` inside the form root (`ActionFormDrawer`), `role="status"`, shown only by the active form (so two mounted forms never show two). The form content sits in a `display: contents` wrapper with `inert`: it stays mounted (unsaved edits preserved) but unreachable; the focused element is blurred when the overlay appears (closes the keyboard). When the condition ends, the content returns as it was. Exit: rotate, or "Fechar ação" (the normal close path with its guards; needed in case orientation lock is on). Escape still closes via the existing handler.
+
+## Evidence and entry points
+
+- `EssentialsTab.tsx`: reports the needed height (title + metadata + description minimum).
+- `useLandscapeSpaceAdvisory.ts`: landscape + coarse pointer + content-area height vs. last reported Essencial need (24px exit margin hysteresis; 340px fallback until measured). The overlay does not change the measured area, so it cannot feed back into the measurement.
+- `ActionFormDrawer.tsx`: overlay, inert wrapper and blur.
+
+## Acceptance
+
+- [ ] Landscape phone with less height than Essencial needs: only the advisory is visible on Essencial, Instagram and Observações; nothing behind is reachable.
+- [ ] Rotate to portrait: the form returns intact, edits preserved.
+- [ ] Portrait (with or without keyboard), desktop and tablets with enough room: no overlay.
+- [ ] "Fechar ação" closes with the usual unsaved-changes guards.
+- [ ] Rotating or resizing near the limit does not flicker it.
+
+## Verification
+
+Owner checks on a real phone: type in a field in portrait, rotate to landscape (keyboard closes, advisory shows), rotate back (text intact). Code reasoning only; no automated test added.
+
+## Encerramento — 05/11/2026
+
+Proprietário aprovou explicitamente este item da lista geral em 05/11/2026. Encerramento consolida o aceite do escopo existente, sem nova implementação, teste físico pelo coordenador ou publicação. Relatos de aceite pendente abaixo são históricos.
+
+---
+
+<a id="brand-holidays-issues-01-classify-holidays"></a>
+
+## brand-holidays · 01-classify-holidays
+
+Origem: `.scratch/brand-holidays/issues/01-classify-holidays.md`. Encerrado por aceite em 05/11/2026.
+
+# 01: Marcar datas comemorativas como feriado
+
+**What to build:** administradores informam se uma data comemorativa é feriado ao criar/editar; a escolha persiste no Supabase e é indicada na lista e no calendário existente.
+
+**Blocked by:** None (can start immediately).
+
+**Status:** completed — aprovado explicitamente pelo proprietário em 05/11/2026.
+
+- [x] Campo `is_holiday` boolean obrigatório com default false aplicado em produção; registros antigos desmarcados sem inferir pelo título.
+- [x] Preservar dados, policies e grants existentes; catálogo/default/contagens/hash e leitura com identidades reais verificados. Escrita de fixtures e autorização negativa verificadas somente em PostgreSQL isolado.
+- [x] Propagar campo aos tipos, models e leituras do aplicativo, sem consultas diretas novas em componentes/rotas; preservar cache por identidade e dados canônicos.
+- [x] Oferecer checkbox Prism “É feriado” na criação administrativa, criação pela busca e edição. Novo cadastro desmarcado; edição carrega valor persistido e permite alternar.
+- [x] Preservar campos em falha, cancelamento sem escrita, guardas de sessão/montagem e bloqueio durante envio. Após salvar/reabrir, valor confirmado permanece.
+- [x] Indicar “Feriado” na lista e calendário compartilhado, com texto acessível mesmo quando truncado, sem depender de cor.
+- [x] Preservar título/data/exclusão/ordenação/layout/rolagem e teclado. Caso a relação do ticket02 já esteja aplicada, traduzir a recusa `23503` ao desclassificar feriado vinculado, orientando remover associações primeiro.
+- [x] Validar visualmente os dois pontos de criação, edição/reabertura, lista/calendário, teclado e largura estreita; checks proporcionais ao risco, build se publicar.
+- [x] Atualizar documentação/status após integrar e distinguir frontend local de deploy Ready.
+
+Não inclui calendário oficial, abrangência/localidade, recorrência, importação automática ou alterações na geração de Planejamento. O banco já está aplicado; não reaplicar o histórico de migrations para continuar a interface.
+
+## Esclarecimento e badge da lista — 05/11/2026
+
+Este ticket classifica uma data por meio de É feriado ao criar/editar em Datas comemorativas; é independente da seleção de datas da marca. O proprietário pediu a badge de feriado também nessa página. A lista usava span personalizado; substituído por PrismBadge variant warning, sem cores/tamanhos próprios. Texto Feriado aparece somente quando is_holiday=true, preservando truncamento do título e ações de edição/exclusão.
+
+Leitura do banco em 05/11: 110 datas cadastradas, nenhuma marcada is_holiday=true. Não foram inferidos feriados pelo título nem alterados dados. Para validar: editar uma data apropriada, marcar É feriado, salvar/reabrir e conferir Feriado na lista; desmarcar e conferir remoção do selo. Testes existentes de rolagem aprovados; sem nova inspeção visual por indisponibilidade da revisão automática de aprovação da ferramenta de navegador.
+
+## Aceite final — 05/11/2026
+
+Proprietário confirmou OK após a correção (badge de Feriado ou foco da área rolável de Hoje, conforme escopo deste ticket). Encerrado e retirado da lista ativa. Aceite não implica novo commit/push/deploy.
+
+---
+
+<a id="today-focus-issues-01-remove-wrapper-focus"></a>
+
+## today-focus · 01-remove-wrapper-focus
+
+Origem: `.scratch/today-focus/issues/01-remove-wrapper-focus.md`. Encerrado por aceite em 05/11/2026.
+
+# 01: Corrigir o foco de Hoje e investigar controles dependentes de hover e wrappers focáveis
+
+**Latest owner acceptance — 2026-11-01: approved and closed.** This supersedes historical pending-acceptance statements below. Separate media performance/carousel observations and Today design work remain in the [current queue](../../docs/audits/2026-11-01-open-tickets.md).
+
+**What to build:** em `/app/today`, retirar o wrapper “Ações do dia” do percurso de foco e eliminar seu contorno, além de revelar o botão “+” do parceiro quando receber foco pelo teclado. Complementar a revisão anterior com uma investigação dirigida nas telas/componentes existentes da UZZINA: controles cuja disponibilidade/visibilidade depende de hover e wrappers que recebem foco sem uma finalidade de interação. Entregar ocorrências verificadas, lacunas da revisão anterior e propostas delimitadas. Tab/Shift+Tab devem percorrer controles úteis, com indicação visual no controle efetivamente focado. Preservar rolagem, layout e abertura das ações.
+
+**Priority:** P2 — interação de teclado e indicação visual incorretas; sem evidência de perda de dados ou bloqueio total.
+
+**Status:** completed — aprovado explicitamente pelo proprietário em 05/11/2026.
+
+Escopo ampliado pelo proprietário em29/10: dois ajustes confirmados em Hoje e investigação complementar do mesmo padrão no app. Preparar este ticket não executa a investigação ampliada nem inicia implementação.
+
+**Blocked by:** None. Coordenar a escrita com o trabalho Safari/mobile em andamento: um executor escreve no checkout por vez.
+
+## Relato e localização
+
+O proprietário enviou uma captura com contorno envolvendo toda a área dos parceiros e pediu que eventual foco seja nos elementos internos, nunca no wrapper. Captura: `Captura de Tela 2026-10-29 às 15.58.55.png`, enviada em29/10/2026, com sexta-feira,30 de outubro selecionada.
+
+Embora o relato mencione Home/Today, o layout corresponde à página dedicada `/app/today`, implementada em [TodayPageView](../../app/components/features/today/TodayPageView.tsx). O bloco [HomeTodayView](../../app/components/features/home/HomeTodayView.tsx), dentro de `/app`, usa outro wrapper, sem esse `tabIndex` e sem esse ring explícito. Preservar essa separação; a Home entra como verificação de não regressão.
+
+## Diagnóstico confirmado e limites
+
+- `TodayPageView.tsx:81–97`: a região “Ações do dia” tem `tabIndex={0}` e `focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset`. Ela é um ponto de Tab explícito e desenha um contorno em toda a área rolável. As linhas86–87 vêm do commit `11e015ed`, de28/10/2026, conforme `git blame`.
+- O mesmo ramo atende Parceiros, Categorias e Feed. Kanban usa outro ramo e não monta esse wrapper.
+- Probe temporário montou o componente real com os providers e a fixture existentes de `tests/today-page-heading.test.tsx`, quadro vazio e data30/10. Focou o radio “Visão por Parceiros” e executou `userEvent.tab()`. Resultado: `document.activeElement` passou a ser o `DIV` “Ações do dia”, com `tabIndex:0`. A expectativa de que o wrapper não recebesse foco falhou: `Expected: false; Received: true` (`0 pass, 1 fail`).
+- O quadro vazio reproduz a parada extra sem nenhum card/parceiro interno: o defeito independe de dados reais, abertura da gaveta ou foco nos filhos. Não é necessário atribuí-lo a um modo novo da aplicação; há configuração explícita de foco no contêiner.
+- Comando executado: `bun test --preload /Users/euchicosousa/vercel/uzzina/tests/dom-setup.ts /private/tmp/uzzina-today-focus-UWn70s/focus.test.tsx`. O probe é temporário, fora do checkout; não é uma regressão permanente da suíte. Usou React Testing Library/user-event/JSDOM, sem servidor, rede ou banco.
+- O probe comprova transferência de foco no DOM; não renderiza Tailwind nem certifica a aparência no Safari. O contorno visual foi relatado pelo proprietário e é compatível com as classes encontradas. Não foi reproduzido o gesto original que levou ao estado da captura, nem confirmado navegador/versão.
+
+## Critérios de aceite
+
+Diagnóstico complementar solicitado pelo proprietário: [wrapper, botão “+” e link do parceiro](../../docs/audits/2026-10-29-today-focus-diagnosis.md). Chromium com CSS real confirmou também o ring do wrapper. O botão invisível no foco já é o achado K01 do inventário e sua correção integra agora este ticket. O proprietário confirmou depois que o link do parceiro funciona por Enter; sua dúvida era o uso de Espaço. Link de nome/avatar está correto e não é pendência de correção.
+
+- [ ] Na página Hoje, Parceiros/Categorias/Feed não oferecem a região inteira como parada de Tab/Shift+Tab. Não basta ocultar o ring enquanto o wrapper continua recebendo foco.
+- [ ] O wrapper não recebe foco ao clicar no espaço vazio nem quando um descendente ganha foco. Não criar redirecionamento global de foco, `focus-within` no quadro ou captura global de Tab.
+- [ ] Os controles internos existentes continuam acessíveis e com indicador de foco no próprio controle: navegação de data, seletor de visualização, links e ações que estiverem disponíveis. Não desativar outlines/rings globalmente nem aplicar `tabIndex=-1` aos filhos.
+- [ ] Após o link do parceiro, Tab revela o botão “+” e seu indicador de foco mesmo com o ponteiro fora da coluna. Shift+Tab também o revela. Manter o hover existente e nome acessível contextual, como “Criar ação para [parceiro]”. A política visual em repouso não muda automaticamente para sempre visível.
+- [ ] Enter/Espaço no “+” abrem somente o rascunho contextual do parceiro/data, sem INSERT ao abrir e sem navegar pelo link do parceiro. Preservar ativação por ponteiro e o link único de nome/avatar, ativado por Enter.
+- [ ] Tab após o seletor de visualização segue para o próximo controle útil existente. Quadro vazio/loading não cria parada artificial. Shift+Tab percorre o caminho inverso sem prender o usuário.
+- [ ] Conferir a política de foco nativa dos contêineres roláveis nos navegadores suportados: remover apenas `tabIndex=0` pode não bastar onde o navegador torna áreas roláveis focáveis automaticamente. Resolver localmente e comprovar o resultado, sem impor previamente uma solução por CSS.
+- [ ] Manter semântica de região/nome, cabeçalho fixo, área rolável, reset do scroll ao trocar dia/visualização e `AppBarSpacer`. Não trocar a rolagem interna pela da página inteira.
+- [ ] Com ações além da área visível, navegar para controles internos torna o controle focado visível e preserva acesso ao fim do conteúdo; testar também mouse/trackpad e toque quando disponível.
+- [ ] Trocar dia/visualização e abrir/fechar ação não transfere foco para o wrapper nem perde o comportamento de retorno de foco existente. Não alterar as guardas da gaveta.
+- [ ] Verificar a Home, que compartilha `PartnersBoard`, após ajustar o “+”. `KanbanPhasesBoard.tsx:174–177` também tem regiões focáveis por coluna: investigar sua finalidade na etapa complementar, sem aplicar uma remoção automática a todas as colunas/primitivos.
+
+## Investigação complementar requerida
+
+O [ticket03 de foco/teclado](resolved-tickets.md#keyboard-focus-issues-03-keyboard-stabilization) entregou uma revisão, não uma correção geral. O [inventário](../../docs/audits/2026-10-29-keyboard-focus-inventory.md) já identificou o “+” invisível como K01, mas não registrou o wrapper de Hoje como defeito. Usar esse material como ponto de partida e explicar o que foi registrado, o que foi corrigido e o que não foi coberto; não presumir que um checklist de revisão concluído significa que os problemas foram resolvidos.
+
+“Modo de foco”, neste relato, significa uso por teclado. Não criar uma preferência ou modo novo de aplicação. Hover e foco são estados diferentes: uma ação oferecida ao ponteiro precisa ser descobrível e operável pelo teclado quando aplicável.
+
+- [ ] Fazer busca dirigida por controles revelados apenas por `hover`/`group-hover`, opacidade zero, `hidden`/`display:none`/visibilidade e alternativas exibidas ao passar o mouse. Conferir os consumidores e componentes compostos; apenas ter ring no primitivo não comprova que o botão está visível.
+- [ ] Verificar dois tipos de falha: controles que recebem Tab invisíveis e controles que desaparecem do percurso por estarem ocultos, sem alternativa equivalente acessível pelo teclado. Não considerar corrigido somente porque hover funciona.
+- [ ] Investigar wrappers, cards, cabeçalhos, regiões de rolagem e contêineres com `tabIndex`, foco programático ou foco automático do navegador. Distinguir alvos sem ação/finalidade de controles compostos com teclado próprio e regiões que realmente precisem de acesso por teclado. Não remover foco de todos os elementos não nativos indiscriminadamente.
+- [ ] Começar por Hoje nos quatro modos, Home e consumidores dos componentes compartilhados; estender a busca dos mesmos padrões às demais telas existentes, reaproveitando a matriz do inventário. Registrar componentes/consumidores atingidos e limites reais, sem repetir toda a auditoria de teclado por rotina.
+- [ ] Para cada ocorrência candidata, reproduzir com ponteiro fora da área e Tab/Shift+Tab; conferir foco real, visibilidade computada, indicador, ativação pertinente, rolagem e retorno de foco. Comparar com hover. Busca textual é triagem, não confirmação de defeito.
+- [ ] Entregar tabela com tela/componente, comportamento no hover, comportamento no foco, finalidade do alvo, reprodução, impacto, cobertura anterior, ticket existente e encaminhamento. Separar confirmado, comportamento correto, inspeção estática e não testado. Não transformar ausência de cobertura em falha.
+- [ ] Propor regressão e correção local para achados novos. Não abrir tickets duplicados nem implementar automaticamente todos os resultados da investigação. Relacionar K01 a esta entrega e K02 ao [ticket de mídia existente](resolved-tickets.md#media-controls-issues-01-always-visible-media-controls), preservando os limites de cada trabalho.
+- [ ] Preservar contratos aprovados de gaveta, editores e overlays; sem captura global de Tab, remoção global de outlines ou migração de biblioteca. Widget Cloudinary e VoiceOver permanecem fora do escopo conforme decisão anterior.
+
+## Execução e verificação
+
+1. Executar a investigação complementar e registrar seus resultados, distinguindo-os dos dois defeitos já reproduzidos. Reutilizar as evidências anteriores, com novas reproduções somente onde forem necessárias.
+2. Na futura implementação, criar regressões permanentes no componente real para a transferência de foco ao wrapper e para a visibilidade/ativação do “+” por teclado; usar os providers/fixtures existentes. Cobrir Parceiros/Categorias/Feed e quadro vazio/com ações para o wrapper, além da Home para o botão compartilhado. Não testar somente strings de classes ou copiar a implementação para o teste. Corrigir localmente os dois comportamentos confirmados, preservando a estrutura de rolagem.
+3. Verificar no navegador com CSS real: Tab/Shift+Tab, clique no vazio, controle interno focado, conteúdo longo e troca de dia/modo, em desktop e viewport estreito. Usar HTTP/identidades controlados; não enviar fixtures para produção. Registrar separadamente Chromium, Safari real e o que não foi executado.
+4. Executar testes pertinentes, `bun run format`, `bun run lint`, `bun run typecheck` e build; requisitos serverless somente se o escopo real os acionar. Atualizar CURRENT e contratos pertinentes após implementação.
+
+## Fora do escopo e estado de entrega
+
+Preparação de um único ticket, sem implementação autorizada nesta rodada. A investigação complementar dos padrões de hover/foco e wrappers faz parte do trabalho a executar; demais achados geram diagnóstico e propostas, sem correção automática. Não ampliar para redesenho da Home, novos atalhos, mudanças no banco ou execução dos tickets Safari/mobile. Não há correção entregue, commit, push ou deploy deste ticket.
+
+## Pedido e ajuste de foco — 05/11/2026
+
+Proprietário pediu que a área rolável de Hoje não receba foco. Mantido tabIndex=-1 para excluir a parada automática por Tab de regiões roláveis; adicionado tratamento local que libera foco apenas se o alvo é o próprio contêiner. Foco dos controles descendentes é preservado; prevenção de foco pelo clique direto no fundo continua. Não foi removido foco de botões, editores ou listas compostas.
+
+Seis regressões no componente real (Parceiros/Categorias/Feed, vazio/com ações) falharam antes ao focar diretamente o contêiner e passaram após o ajuste. Suíte focada mais rolagem de datas: 21 PASS. Prettier/Biome/typecheck aprovados. Navegador isolado não executado: revisão automática de aprovação falhou por limite de uso; não houve contorno. Conferência do proprietário pendente: Tab/Shift+Tab e clique no fundo sem foco no contêiner; botões internos com foco normal; rolagem e troca de visualização preservadas.
+
+## Aceite final — 05/11/2026
+
+Proprietário confirmou OK após a correção (badge de Feriado ou foco da área rolável de Hoje, conforme escopo deste ticket). Encerrado e retirado da lista ativa. Aceite não implica novo commit/push/deploy.
+
+---
+
+<a id="visual-controls-issues-45-clean-unstyled-button-mode"></a>
+
+## visual-controls · 45-clean-unstyled-button-mode
+
+# 45 — Investigar e limpar o modo unstyled dos botões Prism
+
+**Resumo:** Uniformizar o contrato sem estilo entre Button, LinkButton e buttonVariants, preservando o foco no botão interno do título de ação definido pelo proprietário.
+
+**Blocked by:** nenhum.
+
+**Status:** Concluído tecnicamente em 05/11/2026; commit da rodada autorizado pelo proprietário e incluído nesta atualização.
+
+### Inventário e diferença encontrada
+
+O proprietário alterou ActionItemTitleInput para PrismButton unstyled com foco/sublinhado no botão interno. Essa edição foi preservada. Há cinco usos explícitos da variante no app: ActionItemTitleInput, menu do perfil no Header, badge de atrasadas na página do parceiro, upload de avatar de cliente (via CloudinaryUpload) e exemplo da galeria Foco. Não há consumidor atual de LinkButton unstyled.
+
+Antes desta limpeza, somente Button fazia bypass do CVA no modo unstyled. LinkButton e uso direto de buttonVariants ainda recebiam fonte/tamanho/borda/transição/foco de base. Logo o mesmo nome de variante tinha contratos diferentes. A variante também carregava resets visuais mortos, e o tamanho unstyled duplicava uma decisão que pertence à variante.
+
+### Entrega
+
+- [x] Centralizado o bypass em buttonVariants; Button, LinkButton e composições recebem somente classes do consumidor para variant unstyled. Sem estilo ou anel de foco global novo. React Aria mantém ativação, estado disabled e semântica.
+- [x] Removidos resets visuais redundantes da variante. Removido size unstyled da escala, junto dos dois usos redundantes em Header/página do parceiro. O tamanho é irrelevante quando não há estilo.
+- [x] Preservada a mudança do proprietário em ActionItemTitleInput e seu indicador de foco. Nenhuma remoção global de outline; foco visual em controles sem estilo continua responsabilidade do consumidor.
+- [x] Outros estilos/variantes/tamanhos continuam pelo CVA existente. Não foram convertidos outros componentes nem alterados fluxos de upload, menu ou edição da ação.
+
+### Verificação e limites
+
+Três testes focados passaram: contrato uniforme de Button/LinkButton/helper, ativação Enter/Espaço sem submissão de formulário, disabled fora de Tab e regressão do UComboboxTrigger. Typecheck, Biome e Prettier passaram. Inventário por código; navegador/medição visual não executados devido à indisponibilidade da revisão automática de aprovação registrada no CURRENT. A mudança do Button unstyled do proprietário já aplicava bypass; a limpeza centraliza esse comportamento e remove a discrepância nos outros caminhos, sem alegar um aceite visual novo.
+
+A investigação mais ampla de personalizações permanece no V44. Sem commit/push/deploy.

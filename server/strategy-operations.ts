@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Json } from "../types/database";
 import { aiInputSchema } from "../app/lib/ai-contract.js";
 import { generateStrategies } from "./strategy-generation.js";
+import { recordAIUsage } from "./ai-usage.js";
 
 export class StrategyStoreError extends Error {
   constructor(public readonly code: string) {
@@ -52,7 +53,14 @@ export async function runStrategyWorker(client: SupabaseClient, limit: number) {
   try {
     if (!resultRetained) {
       const payload = aiInputSchema.parse(claimed.payload);
-      const strategies = await generateStrategies(payload);
+      const strategies = await generateStrategies(payload, undefined, (usage) =>
+        recordAIUsage(
+          client,
+          { operationId, leaseId, intent: "ai-strategy" },
+          usage,
+          "gpt-6-luna",
+        ).then(() => undefined),
+      );
       // This transaction commits the recoverable result before touching the action.
       await strategyRPC(client, "store_strategy_result", {
         p_operation_id: operationId,

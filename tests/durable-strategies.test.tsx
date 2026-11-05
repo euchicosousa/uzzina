@@ -1,5 +1,5 @@
 import "./dom-setup";
-import { afterEach, beforeEach, expect, it, mock } from "bun:test";
+import { afterEach, beforeEach, expect, it, mock, spyOn } from "bun:test";
 import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import { QueryClient } from "@tanstack/react-query";
 import { resetQuerySession } from "~/lib/query-client";
@@ -392,3 +392,29 @@ it("uses the durable endpoint permanently without a frontend rollout switch", as
   expect(posts[0]).toMatchObject({ command: "accept", actionId });
   expect(legacyCalls).toBe(0);
 });
+
+it.each(["generated", "conflict", "failed", "uncertain"] as const)(
+  "refreshes usage once for a %s operation without reporting successful completion",
+  async (state) => {
+    serverOperation = { ...accepted, state, result: strategies };
+    const fixture = mount();
+    const invalidate = spyOn(fixture.client, "invalidateQueries");
+    try {
+      await waitFor(() =>
+        expect(fixture.result.current.operation?.state).toBe(state),
+      );
+      expect(invalidate).toHaveBeenCalledTimes(1);
+      expect(invalidate.mock.calls[0]?.[0]).toMatchObject({
+        queryKey: ["ai-usage"],
+      });
+      expect(fixture.completions()).toBe(0);
+      const before = fetches.length;
+      await act(async () => fixture.result.current.refresh());
+      await waitFor(() => expect(fetches.length).toBeGreaterThan(before));
+      expect(invalidate).toHaveBeenCalledTimes(1);
+      expect(fixture.completions()).toBe(0);
+    } finally {
+      invalidate.mockRestore();
+    }
+  },
+);

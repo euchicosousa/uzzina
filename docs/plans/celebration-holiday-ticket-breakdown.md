@@ -1,6 +1,6 @@
 # Datas comemorativas — indicação de feriado
 
-Preparado em01/11/2026 com To Tickets. Posteriormente o proprietário autorizou somente a etapa Supabase com subagentes: campo aplicado/verificado em produção; integração do aplicativo adiada. O [ticket individual](../../.scratch/brand-holidays/issues/01-classify-holidays.md) contém o checklist vigente; este documento preserva o detalhamento da proposta. [Execução e limites](../audits/2026-11-01-holiday-schema.md).
+Preparado em01/11/2026 com To Tickets. Posteriormente o proprietário autorizou somente a etapa Supabase com subagentes: campo aplicado/verificado em produção; integração do aplicativo adiada. O [ticket individual](../../.scratch/archive/resolved-tickets.md#brand-holidays-issues-01-classify-holidays) contém o checklist vigente; este documento preserva o detalhamento da proposta. [Execução e limites](../audits/2026-11-01-holiday-schema.md).
 
 ## 1. Marcar datas comemorativas como feriado no cadastro e nas visualizações
 

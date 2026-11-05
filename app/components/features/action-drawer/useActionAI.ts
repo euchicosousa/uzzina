@@ -210,6 +210,7 @@ export function useActionAI({
       );
     } finally {
       if (isCurrent()) {
+        void queryClient.invalidateQueries({ queryKey: ["ai-usage"] });
         aiProcessingRef.current = false;
         setIsAIProcessing(false);
         setActiveAIIntent(null);

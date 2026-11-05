@@ -1,6 +1,6 @@
 # Feriados associados à marca — ticket proposto
 
-Preparado em01/11/2026 com To Tickets. Posteriormente o proprietário autorizou somente a etapa Supabase com subagentes. SQL preparado e validado em PostgreSQL isolado; aplicação remota pendente porque a confirmação da ferramenta expirou duas vezes. Interface e integração adiadas. O [ticket individual](../../.scratch/brand-holidays/issues/02-partner-holidays.md) contém o checklist vigente; [relatório](../audits/2026-11-01-holiday-schema.md) distingue banco preparado/aplicado.
+Preparado em01/11/2026 com To Tickets. Posteriormente o proprietário autorizou somente a etapa Supabase com subagentes. SQL preparado e validado em PostgreSQL isolado; aplicação remota pendente porque a confirmação da ferramenta expirou duas vezes. Interface e integração adiadas. O [ticket individual](../../.scratch/archive/resolved-tickets.md#brand-holidays-issues-02-partner-holidays) contém o checklist vigente; [relatório](../audits/2026-11-01-holiday-schema.md) distingue banco preparado/aplicado.
 
 ## 1. Definir e persistir os feriados de cada parceiro na gestão da marca
 

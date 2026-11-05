@@ -19,6 +19,13 @@ const pendingStates = new Set<StrategyOperation["state"]>([
   "generating",
   "generated",
 ]);
+const usageObservableStates = new Set<StrategyOperation["state"]>([
+  "generated",
+  "succeeded",
+  "failed",
+  "conflict",
+  "uncertain",
+]);
 
 /** Server work survives this hook. The hook only observes the current action/session. */
 export function useDurableStrategies({
@@ -43,6 +50,7 @@ export function useDurableStrategies({
   const identity = useRef(0);
   const busy = useRef(false);
   const completed = useRef(new Set<string>());
+  const usageObserved = useRef(new Set<string>());
   const pendingRequest = useRef<{
     id: string;
     actionId: string;
@@ -67,20 +75,30 @@ export function useDurableStrategies({
       opening === identity.current &&
       session === getQuerySessionGeneration(queryClient);
   }, [queryClient]);
-  const observe = useCallback((next: StrategyOperation | null) => {
-    if (next && next.id === pendingRequest.current?.id) {
-      pendingRequest.current = null;
-      setReconciled(true);
-    }
-    if (next?.state === "generated" || next?.state === "succeeded")
-      setNeedsReview(false);
-    setOperation(next);
-    setError(next ? strategyOperationMessage(next) : null);
-    if (next?.state === "succeeded" && !completed.current.has(next.id)) {
-      completed.current.add(next.id);
-      callbacks.current.onComplete();
-    }
-  }, []);
+  const observe = useCallback(
+    (next: StrategyOperation | null) => {
+      if (next && next.id === pendingRequest.current?.id) {
+        pendingRequest.current = null;
+        setReconciled(true);
+      }
+      if (next?.state === "generated" || next?.state === "succeeded")
+        setNeedsReview(false);
+      setOperation(next);
+      setError(next ? strategyOperationMessage(next) : null);
+      if (next && usageObservableStates.has(next.state)) {
+        const usageKey = `${next.id}:${next.state}`;
+        if (!usageObserved.current.has(usageKey)) {
+          usageObserved.current.add(usageKey);
+          void queryClient.invalidateQueries({ queryKey: ["ai-usage"] });
+        }
+      }
+      if (next?.state === "succeeded" && !completed.current.has(next.id)) {
+        completed.current.add(next.id);
+        callbacks.current.onComplete();
+      }
+    },
+    [queryClient],
+  );
   useEffect(() => {
     if (!actionId || !isActive) return;
     const revision = refreshVersion;

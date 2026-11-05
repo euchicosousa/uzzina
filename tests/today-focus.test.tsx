@@ -180,3 +180,12 @@ it("category creation remains named, keyboard-operable and contextual", async ()
   expect(opened[0]?.category).toBe("post");
   expect(opened[0]?.id).toBeUndefined();
 });
+
+for (const view of ["partners", "categories", "feed"] as const)
+  for (const empty of [false, true])
+    it(`${view} ${empty ? "empty" : "populated"} cannot retain direct focus on the scrolling wrapper`, async () => {
+      await mount({ view, empty });
+      const region = screen.getByRole("region", { name: "Ações do dia" });
+      act(() => region.focus());
+      expect(document.activeElement === region).toBe(false);
+    });

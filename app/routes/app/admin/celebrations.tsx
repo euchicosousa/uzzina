@@ -11,6 +11,7 @@ import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { Celebration } from "~/types";
 import {
+  PrismBadge,
   PrismButton,
   PrismCalendar,
   PrismCheckbox,
@@ -255,9 +256,7 @@ export function CelebrationsList({
                         {celebration.title}
                       </span>
                       {celebration.is_holiday && (
-                        <span className="shrink-0 rounded-md border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600 squircle dark:text-amber-400">
-                          Feriado
-                        </span>
+                        <PrismBadge variant="warning">Feriado</PrismBadge>
                       )}
                     </div>
                     <div className="flex shrink-0 items-center gap-1 opacity-100 transition-opacity md:[@media(hover:hover)_and_(pointer:fine)]:opacity-0 md:[@media(hover:hover)_and_(pointer:fine)]:group-focus-within:opacity-100 md:[@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100">

@@ -4,7 +4,7 @@
 
 **Blocked by:** nenhuma dependência dos tickets de busca, datas comemorativas, Ajuda ou Notificações. Antes de implementar, resolver as definições de produto e verificar o vínculo autorizado de agência/membros descritos abaixo.
 
-**Status:** implemented locally (2026-11-01) — visualização e registro preparados; migração SQL preparada; 9 PASS serverless e tsc sem erros; aguarda validação do proprietário; sem commit, push ou deploy.
+**Status:** Código corrigido e banco aplicado em 05/11/2026; aguarda publicação da API/worker e validação de nova geração real. Visual já aprovado.
 
 ## Owner decisions — 2026-11-01
 
@@ -62,3 +62,35 @@ A primeira entrega cobre os fluxos de geração já existentes e modelos efetiva
 ## Verification and limits
 
 Ao executar, conferir a especificação e o estado atual da IA antes de escolher a menor entrega. Se as definições exigirem mais de uma entrega independente, propor a divisão antes de implementar. Preparar migrations e permissões somente após decisão de escopo, sem aplicação cega em produção. Testes com provedor real ou escrita de dados exigem ambiente e autorização apropriados; não gerar consumo real para validar este registro. Seguir verificações do repositório e atualizar CURRENT, contratos e KIs aplicáveis. Nenhum código, SQL, cota ou configuração foi alterado na criação deste ticket.
+
+## Diagnóstico do contador sem atualização — 05/11/2026
+
+Proprietário aprovou o visual e relatou uso real sem mudança no consumo. Leitura de catálogo no projeto de produção confirmou: public.ai_usage existe (reserva técnica), mas public.ai_generation_logs, public.log_ai_generation e public.get_agency_ai_usage não existem. A migration de medição está somente preparada. A interface chama get_agency_ai_usage e o model transforma o erro em null; por isso não mostra consumo mesmo após gerar.
+
+Há um segundo problema: o worker permanente em runStrategyWorker chama generateStrategies sem callback onUsage. Mesmo instalar a migration atual não mediria as estratégias desse fluxo. api/ai.ts possui log_ai_generation, mas não verifica o error retornado pelo RPC, apenas exceções lançadas, permitindo falha silenciosa. O fator de conversão interno também precisa de contrato rastreável, não deve ser deduzido da reserva de tentativas.
+
+Próximos passos: completar a medição durável/autorizada em todos os fluxos reais, confirmar contrato de unidades/modelos, aplicar somente o schema revisado, distinguir falha de consulta de mês sem uso e verificar uma geração autorizada sem duplicar consumo em retries. Não executar geração paga por rotina nem aplicar migrations cegamente. Sem SQL de escrita, nova geração ou alteração do fluxo de estratégias nesta investigação. Aceite visual não encerra o problema funcional.
+
+## Correção implementada e banco aplicado — 05/11/2026
+
+Subagente implementou medição compartilhada na API e worker, com tokens reais, ausência de usage como incompleto, evento UUID estável para retry, erro de RPC tratado sem invalidar geração e identidade da estratégia derivada da operação/lease no banco. Resultado retido não gera nem mede de novo. Mantida a convenção já existente `(entrada + 2 × saída) / 1000`, com versão weighted_tokens_v1 e referência mensal de 1000 unidades; não são preços do provedor nem nova quota. Quota diária continua inalterada.
+
+Minha Conta valida a resposta e distingue erro, período parcialmente medido e eventos incompletos; reconsulta ao abrir e invalida após uso. Estratégias invalidam o agregado em generated/succeeded/failed/conflict/uncertain uma vez por operação/estado; onComplete continua só em succeeded. Gerações anteriores ao início da medição não foram inventadas/reconstruídas.
+
+### Registro de aplicação e verificação
+
+- Fonte revisada: supabase/migrations/20261101230000_ai_agency_usage.sql; SHA256 `41c26f85c37ecb9a845ec0e777cb9c7863570b7b51376b61d01d1c6f489a9d03`. A migration antes somente preparada foi corrigida, sem reaplicar o histórico inteiro.
+- Aplicada pelo coordenador no projeto de produção em 05/11 como migration remota `20261105035937_ai_agency_usage_metering` (versão remota diferente do nome do arquivo local).
+- Catálogo confirmou ai_usage_metering/ai_generation_logs com RLS, record_ai_generation service-only e get_agency_ai_usage disponível ao autenticado. Leitura detalhada e execução do logger não são concedidas ao cliente; agregado não é concedido a anon.
+- Consulta REAL da RPC com role authenticated e identidade de membro ativo retornou Novembro de 2026, referência 1000, zero eventos registrados e partial_period=true; início real da medição 2026-11-05T03:59:37.342177Z. Não foi criada geração fictícia.
+- Guardas SQL reais passaram sem inserir logs: authenticated não lê tabela nem executa logger; consulta sem identidade recusada; anon não executa agregado; service_role com evento inválido recusado antes de escrita.
+- Advisors: alertas de [RLS sem policy](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy) nas tabelas service-only e de [agregado SECURITY DEFINER acessível ao autenticado](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable) são intencionais neste contrato, com auth.uid/people.visible, search_path vazio e grants conferidos. Não abrir permissões das tabelas para silenciar alertas. Avisos preexistentes não foram alterados.
+- Testes: 144 focados (API/worker, helper/model e hooks), 9 endpoints serverless; Prettier/Biome/typecheck aprovados. Script PostgreSQL isolado preparado, mas não executou por runtimes locais incompletos (postgres.bki/PGlite ausentes). Não declarar teste isolado de escrita/idempotência SQL: a evidência remota desta rodada é instalação, consulta autorizada e guardas sem fixtures.
+
+### Pendência real
+
+Publicar o backend/API/worker corrigidos e confirmar incremento com uma geração normal autorizada. Instalar SQL não publica código; o worker remoto anterior ainda não passa pelo logger novo. Nenhum push/deploy ou geração paga foi executado nesta rodada. Manter o ticket ativo até essa conferência; código e schema preparados não equivalem ao fluxo inteiro certificado em produção.
+
+## Commit autorizado — 05/11/2026
+
+Proprietário solicitou commit da correção e dos registros desta rodada. Código/schema/testes integram o commit desta atualização; SQL remoto já aplicado conforme evidência acima. Publicação de API/worker e confirmação de incremento continuam pendentes. Sem push/deploy.
