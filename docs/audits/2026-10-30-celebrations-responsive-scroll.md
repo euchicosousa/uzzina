@@ -1,6 +1,6 @@
 # Celebrations responsive scrolling — 2026-10-30
 
-[Ticket19](../../.scratch/safari-mobile/issues/19-celebrations-responsive-scroll.md) implements the owner's explicit correction following `UZZINA 8.png`: a single natural mobile page scroll; right/list independent scrolling belongs to desktop columns. Work is limited to the existing celebrations route, its regressions and contract documentation. Calendar picker12 and outside title/documentation changes are preserved.
+[Ticket19](../../.scratch/archive/resolved-tickets.md#safari-mobile-issues-19-celebrations-responsive-scroll) implements the owner's explicit correction following `UZZINA 8.png`: a single natural mobile page scroll; right/list independent scrolling belongs to desktop columns. Work is limited to the existing celebrations route, its regressions and contract documentation. Calendar picker12 and outside title/documentation changes are preserved.
 
 ## Reproduction and cause
 

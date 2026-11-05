@@ -12,7 +12,7 @@ Screenshots remain at the supplied Downloads paths, not copied into Git: `IMG_99
 
 ### 1. Calendar picker width — ticket12 prepared
 
-`IMG_9903.PNG` shows clipped rightmost column/controls and very large days. Owner reports internal scrolling. Scope is `CalendarToolbar`'s date picker, not the operational action grid. [Ticket12](../../.scratch/safari-mobile/issues/12-compact-date-picker-width.md) requires computed geometry and a real browser regression before selecting a correction. Source combines CalendarCell full width/aspect ratio with minimum cell and icon-button sizes; a sizing interaction is an investigation target, not a confirmed cause.
+`IMG_9903.PNG` shows clipped rightmost column/controls and very large days. Owner reports internal scrolling. Scope is `CalendarToolbar`'s date picker, not the operational action grid. [Ticket12](../../.scratch/archive/resolved-tickets.md#safari-mobile-issues-12-compact-date-picker-width) requires computed geometry and a real browser regression before selecting a correction. Source combines CalendarCell full width/aspect ratio with minimum cell and icon-button sizes; a sizing interaction is an investigation target, not a confirmed cause.
 
 ### 2. Mobile padding and Today heading — revise presentation, keep desktop
 

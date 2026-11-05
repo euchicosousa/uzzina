@@ -1,6 +1,6 @@
 # Calendar picker width — 2026-10-30
 
-Ticket: [12](../../.scratch/safari-mobile/issues/12-compact-date-picker-width.md). Result: implemented and verified locally, awaiting owner-device acceptance. The original screenshot's normal-text root cause was not reproduced; this does not prevent completing the demonstrated width/legibility correction. The normal and enlarged-text source behavior is verified with the real components and Today route. No physical Safari acceptance or publication is claimed.
+Ticket: [12](../../.scratch/archive/resolved-tickets.md#safari-mobile-issues-12-compact-date-picker-width). Result: implemented and verified locally, awaiting owner-device acceptance. The original screenshot's normal-text root cause was not reproduced; this does not prevent completing the demonstrated width/legibility correction. The normal and enlarged-text source behavior is verified with the real components and Today route. No physical Safari acceptance or publication is claimed.
 
 ## Evidence and diagnosis
 

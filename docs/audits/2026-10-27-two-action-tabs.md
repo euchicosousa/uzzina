@@ -1,6 +1,6 @@
 # Ticket02 — duas ações com alternância por abas
 
-Implementação local em27/10/2026, autorizada pelo proprietário junto à adoção dos termos Primary Action e Secondary Action. Fonte: [levantamento](../plans/action-tabs-and-search-scope.md), [roadmap](../plans/action-tabs-ticket-breakdown.md) e [ticket02](../../.scratch/action-tabs/issues/02-secondary-action-tabs.md). Ticket01 permanece no [registro anterior](2026-10-27-action-panel-parent.md).
+Implementação local em27/10/2026, autorizada pelo proprietário junto à adoção dos termos Primary Action e Secondary Action. Fonte: [levantamento](../plans/action-tabs-and-search-scope.md), [roadmap](../plans/action-tabs-ticket-breakdown.md) e [ticket02](../../.scratch/archive/resolved-tickets.md#action-tabs-issues-02-secondary-action-tabs). Ticket01 permanece no [registro anterior](2026-10-27-action-panel-parent.md).
 
 ## Resultado
 

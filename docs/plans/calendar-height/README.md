@@ -28,6 +28,6 @@ Não criar ticket separado de refatoração ou QA: a separação mínima entre a
 
 ## Aprovação e publicação
 
-A divisão foi aprovada pelo proprietário com “pode começar”. Foram publicados [01](../../../.scratch/calendar-height/issues/01-partner-calendar.md), [02](../../../.scratch/calendar-height/issues/02-home-calendar.md) e [03](../../../.scratch/calendar-height/issues/03-client-calendar-review.md), com suas dependências. Os arquivos numerados nesta pasta preservam o escopo aprovado; o rastreador local e CURRENT registram execução/verificação.
+A divisão foi aprovada pelo proprietário com “pode começar”. Foram publicados [01](../../../.scratch/archive/resolved-tickets.md#calendar-height-issues-01-partner-calendar), [02](../../../.scratch/archive/resolved-tickets.md#calendar-height-issues-02-home-calendar) e [03](../../../.scratch/archive/resolved-tickets.md#calendar-height-issues-03-client-calendar-review), com suas dependências. Os arquivos numerados nesta pasta preservam o escopo aprovado; o rastreador local e CURRENT registram execução/verificação.
 
 O teto implementado é o menor entre 384 px e 60% da altura dinâmica da janela. No modo limitado, cabeçalho do dia permanece fora da rolagem; comemorações acompanham as ações na mesma área rolável para que quantidades grandes não recortem a célula. A galeria existente mostra o novo controle.

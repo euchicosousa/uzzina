@@ -30,7 +30,7 @@ As colunas devem aproveitar a altura disponível abaixo do título e dos control
 
 Um único ticket completo, sem dependências. Reutilizar a estrutura existente; nenhuma refatoração ampla, mudança de banco, API, persistência ou redesenho dos outros modos faz parte deste recorte. Ajustes pontuais de passagem de altura devem ser exclusivos do Kanban da página dedicada.
 
-Ticket publicado e concluído em [.scratch/today-viewport/issues/01-today-kanban-height.md](../../.scratch/today-viewport/issues/01-today-kanban-height.md). O proprietário reforçou os dois usos: Home conserva colunas de30vh; página dedicada ativa explicitamente o preenchimento da altura útil. A proposta anterior não autoriza mudanças nos outros modos.
+Ticket publicado e concluído em [.scratch/today-viewport/issues/01-today-kanban-height.md](../../.scratch/archive/resolved-tickets.md#today-viewport-issues-01-today-kanban-height). O proprietário reforçou os dois usos: Home conserva colunas de30vh; página dedicada ativa explicitamente o preenchimento da altura útil. A proposta anterior não autoriza mudanças nos outros modos.
 
 ## Verificação desta revisão
 

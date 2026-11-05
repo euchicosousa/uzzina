@@ -49,8 +49,8 @@ Fonte de verdade: o código em `app/components/prism/`, `app/tailwind.css` e `ap
 
 ## 3. O que falta
 
-1. **Ticket 05 encerrado:** aceite visual registrado pelo proprietário em 03/11. [05](../../.scratch/visual-controls/issues/05-drawer-footer-triggers.md)
-2. **Tickets 14 e 15:** conferir visualmente a seção Ícones do `/ui` e as linhas da aba Essencial (proprietário). [14](../../.scratch/visual-controls/issues/14-ui-icons-section.md), [15](../../.scratch/visual-controls/issues/15-essentials-rows.md)
+1. **Ticket 05 encerrado:** aceite visual registrado pelo proprietário em 03/11. [05](../../.scratch/archive/resolved-tickets.md#visual-controls-issues-05-drawer-footer-triggers)
+2. **Tickets 14 e 15:** conferir visualmente a seção Ícones do `/ui` e as linhas da aba Essencial (proprietário). [14](../../.scratch/archive/resolved-tickets.md#visual-controls-issues-14-ui-icons-section), [15](../../.scratch/archive/resolved-tickets.md#visual-controls-issues-15-essentials-rows)
 3. **Ticket 12:** executar a busca global: filtro de parceiros como sufixo do `CommandInput` e "Incluir arquivadas" como `PrismToggle` só de ícone; hoje continuam no rodapé (executor: Claude). [12](../../.scratch/visual-controls/issues/12-global-search-filters.md)
 4. **Lista de componentes:** atualizar `visual-controls-where.md` e conferir visualmente os itens "Em ajuste" (proprietário). [where](visual-controls-where.md)
 5. **Limpeza:** remover o selo verde de aprovado (`approved`) do `/ui`.

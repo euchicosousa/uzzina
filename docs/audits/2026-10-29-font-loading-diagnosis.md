@@ -31,4 +31,4 @@ This does not certify the published HTML/assets, all glyphs/weights, Safari or t
 
 ## Follow-up
 
-[Ticket 10](../../.scratch/safari-mobile/issues/10-load-brand-font.md) covers loading, meaningful regression and cross-browser verification. Correct typography before final visual spacing acceptance for the mobile/profile work.
+[Ticket 10](../../.scratch/archive/resolved-tickets.md#safari-mobile-issues-10-load-brand-font) covers loading, meaningful regression and cross-browser verification. Correct typography before final visual spacing acceptance for the mobile/profile work.

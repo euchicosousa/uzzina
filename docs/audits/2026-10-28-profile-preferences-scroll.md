@@ -1,6 +1,6 @@
 # Minha Conta — rolagem de Preferências
 
-Em28/10/2026, o proprietário autorizou implementar somente o [ticket01](../../.scratch/account-preferences/issues/01-independent-preferences-scroll.md). Ticket02 de visualização inicial de Hoje permanece adiado.
+Em28/10/2026, o proprietário autorizou implementar somente o [ticket01](../../.scratch/archive/resolved-tickets.md#account-preferences-issues-01-independent-preferences-scroll). Ticket02 de visualização inicial de Hoje permanece adiado.
 
 ## Resultado
 

@@ -42,7 +42,7 @@ Expected current results are400 and403 respectively. These requests stop before 
 
 ## Handoff and limits
 
-[One correction ticket](../../.scratch/dash-local-auth/issues/01-canonical-local-origin.md) was created. Preferred bounded approach: normalize local document navigation to the configured canonical loopback origin before the form submits, within the local adapter, retaining strict API validation. The implementation must prove the navigation behavior and keep publication, unknown origins and other ports protected. The temporary immediate workaround is opening `http://127.0.0.1:5176/dash/login` to avoid this specific origin rejection.
+[One correction ticket](../../.scratch/archive/resolved-tickets.md#dash-local-auth-issues-01-canonical-local-origin) was created. Preferred bounded approach: normalize local document navigation to the configured canonical loopback origin before the form submits, within the local adapter, retaining strict API validation. The implementation must prove the navigation behavior and keep publication, unknown origins and other ports protected. The temporary immediate workaround is opening `http://127.0.0.1:5176/dash/login` to avoid this specific origin rejection.
 
 No application/config/env change, new server, cache cleanup, credentialed login, database query/mutation, provider call, paid generation, SQL, build, commit, push or deployment. Production account data was not inspected. Existing unrelated documentation edits were preserved. Temporary sanitized results: `/tmp/uzzina-dash-diagnosis/http-results.json` and `origin-matrix.json`. The diagnosis artifacts remain outside the checkout; the command pair above reproduces the result without them.
 

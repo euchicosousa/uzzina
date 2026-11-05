@@ -1,6 +1,6 @@
 # Criar data comemorativa pela busca
 
-Em28/10/2026, o proprietário pediu iniciar o primeiro item da fila revisada: [diferenciar criar e gerenciar datas comemorativas](../../.scratch/search-review/issues/02-create-celebration-dialog.md). Somente este ticket foi implementado.
+Em28/10/2026, o proprietário pediu iniciar o primeiro item da fila revisada: [diferenciar criar e gerenciar datas comemorativas](../../.scratch/archive/resolved-tickets.md#search-review-issues-02-create-celebration-dialog). Somente este ticket foi implementado.
 
 ## Comportamento
 

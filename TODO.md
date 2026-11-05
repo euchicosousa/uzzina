@@ -6,7 +6,7 @@
 
 Deploy de todas as entregas informado pelo proprietário em31/10; publicação deixa de ser pendência dessas entregas. Os aceites específicos continuam nos registros de CURRENT.
 
-- [x] [Acesso ao portal local](.scratch/dash-local-auth/issues/01-canonical-local-origin.md): aprovado pelo proprietário em01/11 após remoção da regra de endereço, commit `a714b2d`. Login também aprovado pelo proprietário em01/11; implementação `08a0006` (push feito, ainda não publicada em produção).
+- [x] [Acesso ao portal local](.scratch/archive/resolved-tickets.md#dash-local-auth-issues-01-canonical-local-origin): aprovado pelo proprietário em01/11 após remoção da regra de endereço, commit `a714b2d`. Login também aprovado pelo proprietário em01/11; implementação `08a0006` (push feito, ainda não publicada em produção).
 
 - [ ] Conferir durante a semana o app publicado: login/home, edição/data, preferências, IA, administração, portal/revisão, upload e Leads. Banco fase2 já conferido no catálogo; estado em [CURRENT](docs/audits/CURRENT.md).
 - [ ] Executar o [roteiro Safari/telefone](docs/audits/2026-10-29-owner-validation-guide.md) e trazer os resultados em outro chat, conforme decisão do proprietário.

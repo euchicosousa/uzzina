@@ -97,7 +97,7 @@ Todos os cinco tickets estão implementados localmente. Conta, temas, navegaçã
 
 **Entrega:** comando Criar ação na busca global, sem retirar o atalho atual, com ativação comum na principal e Shift na secundária. Permitir rascunho principal + ação existente secundária e ação existente principal + rascunho secundário, com o mesmo limite de duas entradas, guardas e estado independente.
 
-**Critérios de aceite:** comando disponível com busca vazia e pelo nome; fábrica/contexto de rascunho atuais; filtro da busca não atribui parceiros; nenhum INSERT apenas por abrir; confirmação mantém identidade/espaço e preserva a outra ação; testes reais de teclado, persistência, falha e fechamento. [Ticket completo](../../.scratch/action-tabs/issues/05-create-action-from-search.md).
+**Critérios de aceite:** comando disponível com busca vazia e pelo nome; fábrica/contexto de rascunho atuais; filtro da busca não atribui parceiros; nenhum INSERT apenas por abrir; confirmação mantém identidade/espaço e preserva a outra ação; testes reais de teclado, persistência, falha e fechamento. [Ticket completo](../../.scratch/archive/resolved-tickets.md#action-tabs-issues-05-create-action-from-search).
 
 ## Verificação e encerramento por ticket
 
@@ -131,7 +131,7 @@ Ticket05 implementado localmente em28/10: Criar ação com ativação comum/Shif
 
 ## Conferência do proprietário em28/10 — pendências posteriores
 
-Demais comandos aprovados. Relatados erros de import dinâmico ao criar parceiro/ação, duplicidade entre criar/gerenciar data comemorativa e ausência de Ajuda. Registrados [carregamento](../../.scratch/search-review/issues/01-fix-lazy-module-loading.md), [modal de data comemorativa](../../.scratch/search-review/issues/02-create-celebration-dialog.md) e [Ajuda](../../.scratch/search-review/issues/03-complete-help-page.md), sem iniciar correções. [Notificações](../../.scratch/notifications/issues/01-complete-notifications-page.md) já possui ticket próprio. Essas pendências substituem a declaração anterior de ausência de trabalho funcional restante, após nova conferência real do proprietário.
+Demais comandos aprovados. Relatados erros de import dinâmico ao criar parceiro/ação, duplicidade entre criar/gerenciar data comemorativa e ausência de Ajuda. Registrados [carregamento](../../.scratch/archive/resolved-tickets.md#search-review-issues-01-fix-lazy-module-loading), [modal de data comemorativa](../../.scratch/archive/resolved-tickets.md#search-review-issues-02-create-celebration-dialog) e [Ajuda](../../.scratch/archive/resolved-tickets.md#search-review-issues-03-complete-help-page), sem iniciar correções. [Notificações](../../.scratch/archive/resolved-tickets.md#notifications-issues-01-complete-notifications-page) já possui ticket próprio. Essas pendências substituem a declaração anterior de ausência de trabalho funcional restante, após nova conferência real do proprietário.
 
 Ticket de carregamento autorizado em28/10 e corrigido localmente: preflight de porta antes do Vite e cache por checkout, após regressão real de200→504 na inicialização duplicada. Navegador no servidor de desenvolvimento passou; avaliação do proprietário pendente. Modal de datas, Ajuda e Notificações continuam futuros. Ver [resultado](../audits/2026-10-28-local-lazy-imports.md).
 

@@ -24,7 +24,7 @@ Abertura secundária existe somente na busca. Cards, notificações, criação e
 
 O proprietário solicitou um comando Criar ação na busca global, mantendo o atalho de criação atual. No novo comando, ativação comum cria rascunho na principal e Shift cria na secundária; sem nenhuma aberta, Shift cria na principal. As demais entradas de criação continuam comuns. Assim, pode-se manter um rascunho enquanto se abre uma ação existente por Shift, ou manter a ação existente enquanto se cria um rascunho secundário. Limite, guardas, foco e preservação de estado são os mesmos dos dois espaços. A apresentação simultânea segue a largura da tela; alternância por abas funciona antes do ticket03.
 
-Rascunhos usam a fábrica/contexto atuais, sem herdar o filtro exclusivo de resultados da busca. Receber o ID ao criar não muda o espaço nem remonta a outra ação. Detalhes e critérios no [ticket05](../../.scratch/action-tabs/issues/05-create-action-from-search.md).
+Rascunhos usam a fábrica/contexto atuais, sem herdar o filtro exclusivo de resultados da busca. Receber o ID ao criar não muda o espaço nem remonta a outra ação. Detalhes e critérios no [ticket05](../../.scratch/archive/resolved-tickets.md#action-tabs-issues-05-create-action-from-search).
 
 ## 2. Componente pai e reutilização
 

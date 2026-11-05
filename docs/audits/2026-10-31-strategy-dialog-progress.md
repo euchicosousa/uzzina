@@ -1,6 +1,6 @@
 # Strategy generation dialog — ticket07
 
-Implemented locally on 31/10/2026 following authorization to execute items1–4 in order. [Ticket07](../../.scratch/safari-mobile/issues/07-strategy-dialog-progress.md) owns presentation; durable execution remains [ticket09](../../.scratch/safari-mobile/issues/09-durable-strategy-generation.md).
+Implemented locally on 31/10/2026 following authorization to execute items1–4 in order. [Ticket07](../../.scratch/archive/resolved-tickets.md#safari-mobile-issues-07-strategy-dialog-progress) owns presentation; durable execution remains [ticket09](../../.scratch/archive/resolved-tickets.md#safari-mobile-issues-09-durable-strategy-generation).
 
 ## Behavior
 

@@ -45,7 +45,7 @@ Diagnóstico complementar solicitado pelo proprietário: [wrapper, botão “+�
 
 ## Investigação complementar requerida
 
-O [ticket03 de foco/teclado](../../keyboard-focus/issues/03-keyboard-stabilization.md) entregou uma revisão, não uma correção geral. O [inventário](../../../docs/audits/2026-10-29-keyboard-focus-inventory.md) já identificou o “+” invisível como K01, mas não registrou o wrapper de Hoje como defeito. Usar esse material como ponto de partida e explicar o que foi registrado, o que foi corrigido e o que não foi coberto; não presumir que um checklist de revisão concluído significa que os problemas foram resolvidos.
+O [ticket03 de foco/teclado](../../archive/resolved-tickets.md#keyboard-focus-issues-03-keyboard-stabilization) entregou uma revisão, não uma correção geral. O [inventário](../../../docs/audits/2026-10-29-keyboard-focus-inventory.md) já identificou o “+” invisível como K01, mas não registrou o wrapper de Hoje como defeito. Usar esse material como ponto de partida e explicar o que foi registrado, o que foi corrigido e o que não foi coberto; não presumir que um checklist de revisão concluído significa que os problemas foram resolvidos.
 
 “Modo de foco”, neste relato, significa uso por teclado. Não criar uma preferência ou modo novo de aplicação. Hover e foco são estados diferentes: uma ação oferecida ao ponteiro precisa ser descobrível e operável pelo teclado quando aplicável.
 
