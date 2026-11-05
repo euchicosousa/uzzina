@@ -4,8 +4,25 @@
 
 **Commit de referência:** `b5b5f33` — somente o registro do ticket; implementação/estudo pendente.
 
-Status: Pronto para executar (respostas do proprietário em 03/11/2026, registradas abaixo; perguntas abertas removidas).
-Escopo: refazer a posição e a anatomia dos dois filtros da busca global (parceiros e arquivadas), usando **somente** componentes e variantes padrão do Prism, sem customização.
+Status: Aprovado pelo proprietário em 04/11/2026 ("12 ok") e encerrado.
+
+## Entrega (04/11/2026)
+
+- `PrismCommandInput` ganhou `suffix` opcional. Com sufixo, um contêiner `command-input-group` leva a borda inferior e o sufixo fica **fora** do `SearchField` (dentro dele, o `ButtonContext` do botão de limpar do RAC seria herdado pelo gatilho de parceiros). Sem `suffix`, marcação e classes idênticas às anteriores. Inset direito `pr-1.5` (6px; `pr-0.5` em `size="sm"`).
+- Busca global: rodapé removido; sufixo `[UPartnersCombobox allowAll ghost icon-sm] [PrismToggle ghost icon-sm ArchiveIcon]` em `role="group" aria-label="Filtros da busca"`. Estado, consulta e `navigatingResultsRef` inalterados.
+- `UPartnersCombobox`: largura `w-40` do modo `allowAll` só quando `showText`; com `allowAll` sem texto, `aria-label` "Filtrar por parceiros: <seleção>" (`title` continua só a seleção). Outros consumidores inalterados.
+- `/ui` Command: opção de playground "Sufixo no campo" com toggle de exemplo.
+- Verificado no `/ui` (Chromium): botão 32×32, 6px da borda direita e do topo, altura do campo 45px (igual, com a borda), Tab do input chega ao toggle, Espaço alterna `aria-pressed` sem digitar no campo, sem erros de console. Prettier/Biome/typecheck limpos. A busca global real (logada) não foi ensaiada: fica no roteiro do proprietário.
+
+### Roteiro de validação
+
+1. Abrir a busca em `/app` e em `/app/partner/<slug>`: no fim do campo aparecem avatar (vazio = "P"/todos; na rota do parceiro, o avatar dele) e o ícone de arquivo; sem rodapé.
+2. Tab: campo → parceiros → arquivadas; foco com anel padrão, sem corte.
+3. Parceiros: seleção múltipla com popover aberto, Shift+clique exclusivo, "Todos os parceiros"; Escape fecha só o popover.
+4. Arquivadas: Espaço/clique liga (fundo secundário) e inclui arquivadas; fechar/reabrir volta desligado e a seleção da rota.
+5. Setas + Enter/Espaço nos resultados e Shift para a secundária continuam; Espaço digitado no campo segue texto.
+6. Telefone (375px): placeholder trunca, sem rolagem horizontal.
+   Escopo: refazer a posição e a anatomia dos dois filtros da busca global (parceiros e arquivadas), usando **somente** componentes e variantes padrão do Prism, sem customização.
 
 ## Objetivo
 

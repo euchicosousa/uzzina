@@ -14,32 +14,33 @@ Proprietário aprovou o estudo e autorizou commit. Parecer e ticket consolidado 
 
 Subagente entregou [matriz e inventário](2026-11-04-v36-avatar-comparison.md), revisados pelo coordenador. UAvatar já compõe Prism e concentra escala/texto/cores; manter. UAvatarGroup fornece lista/clamp/+N que o Group/Count do Prism não calculam; manter API e avaliar composição interna só se autorizada, preservando tamanhos/overlap/anéis. Inventário observado: 23 usos operacionais diretos de UAvatar e 13 de UAvatarGroup. Estudo estático, sem navegador/teste de app ou mudança de código. V36 concluído e consolidado no histórico; fila com 21 tickets, série visual só V12 (entregue por executor paralelo, aguardando aceite). Trabalho externo em código/AGENTS/índices preservado; parecer registra variação do checkout. Sem novo commit/push/deploy.
 
+### Ticket 12 aprovado e encerrado — 04/11
 
+Proprietário confirmou "12 ok" e autorizou commit; entrega e registros no mesmo commit (feat(search) ticket 12). Sem push/deploy.
+
+### Ticket 12: filtros da busca global no sufixo do campo — 04/11
+
+Rodapé de filtros removido; parceiros (`UPartnersCombobox allowAll`, só avatar `ghost icon-sm`) e arquivadas (`PrismToggle ghost icon-sm` com `ArchiveIcon`) agora no novo `suffix` opcional de `PrismCommandInput`, renderizado fora do `SearchField` para não herdar o contexto do botão de limpar; sem sufixo, marcação idêntica. Estado/consulta/teclado da busca inalterados. Exemplo no `/ui` Command. Verificado no `/ui` (Chromium): 32px, inset 6px, altura do campo igual, Tab/Espaço no toggle, sem erros. Prettier/Biome/typecheck limpos. Busca logada não ensaiada: [roteiro no ticket](../../.scratch/visual-controls/issues/12-global-search-filters.md#roteiro-de-validação). Aceito (ver acima). Alterações externas em palettes.ts/ui.tsx preservadas.
 
 ### V35 aprovado; limpeza de tickets autorizada para commit — 04/11
 
 Proprietário confirmou "35 ok" e autorizou commit. V35 encerrado em 100% e incorporado ao histórico consolidado; entrega funcional já em d7efe5f. Tracker principal atualizado para 22 pendências; série visual mantém apenas V12/V36. Limpeza reúne 87 arquivos individuais: 76 encerrados/aprovados e 11 da série C substituída, com conteúdo integral e links redirecionados. Verificação documental de referências, âncoras e diff; sem testes de app por não haver alteração funcional. Commit desta rodada inclui limpeza, aceite e registros; código externo preservado. Sem push/deploy.
 
-
 ### Tracker limpo e histórico consolidado — 04/11
 
 A pedido do proprietário, a entrada principal passa a ser [Tickets abertos](../../.scratch/README.md), com 23 registros para execução/conferência/aceite. Consolidados 86 arquivos individuais em [um histórico](../../.scratch/archive/resolved-tickets.md): 75 encerrados/aprovados e 11 da série C00–C10 do Planejamento substituída pela recuperação (não tratada como aceite de produção). V12/V35/V36 permanecem abertos; V41 encerrado em de4b937. Outros 20 tickets originais/suspensos ficam somente como referências, preservando divergências sem fechamento automático. Índices visual/Safari e central de tickets agora mostram pendências, com histórico anterior acessível. Links dos documentos afetados redirecionados; alterações externas de código preservadas. Limpeza documental, sem testes de app, novo commit, push ou deploy.
-
 
 ### V41 aprovado e encerrado — 04/11
 
 Proprietário aprovou o V41 integralmente e autorizou commit. Migração em 57a7be3; restauração exata de UActionDatePicker e rótulos U da galeria integram o commit de encerramento com este registro. Ticket/índice/relatório/parecer atualizados. Igualdade com a base renomeada, Prettier/Biome/typecheck aprovados na rodada de correção; sem mudança posterior no código conferido. Alterações externas em palettes.ts/ui.tsx preservadas fora do commit. Sem push/deploy.
 
-
 ### V41: seletor restaurado e rótulos corrigidos — 04/11
 
 Autorizadas as correções da revisão. UActionDatePicker agora é integralmente igual ao ActionDatePicker em d7efe5f, exceto nome da função exportada; comparação integral confirmou. Rótulos dos playgrounds/cabeçalhos UPhaseIcon e UPartnerCelebrationsSelector corrigidos, preservando IDs/hashes. Prettier/Biome/typecheck aprovados; sem novo ensaio visual, por restauração exata à base aprovada. V41 concluído localmente; ticket/índice/fila/parecer atualizados. Migração commitada em 57a7be3; restauração e rótulos desta rodada ainda sem novo commit. Alterações externas em palettes.ts e ui.tsx preservadas. Sem push/deploy.
 
-
 ### V41 revisado por subagente econômico — 04/11
 
 Revisão da entrega `57a7be3` contra `d7efe5f`, com checkout inicialmente limpo. Nove renomes reais e Icons → UIcons confirmados; consumidores atualizados, sem arquivos de compatibilidade ou aliases antigos encontrados. Não encerrar: UActionDatePicker também mudou layout/defaults e permite criar data ao editar hora sem data, zerando segundos/ms; restaurar comportamento/visual anterior mantendo nomes U. Rótulos de PhaseIcon e PartnerCelebrationsSelector na galeria ainda sem U. Typecheck do coordenador passou; sem ensaio visual nem alteração de código nesta revisão. [Parecer](2026-11-04-v41-independent-review.md); ticket/índice/fila atualizados para revisão (90%), com commit correto. Sem novo commit/push/deploy.
-
 
 ### Padronização dos componentes próprios com prefixo U (Ticket V41) — 04/11
 
@@ -63,7 +64,6 @@ Revisão da entrega `57a7be3` contra `d7efe5f`, com checkout inicialmente limpo.
 ### Tickets visuais: situação e commits reconciliados — 04/11
 
 Checkout estava limpo em `d7efe5f`, que consolidou a rodada visual; não há código local pendente dessa rodada. Atualizados cabeçalhos individuais V01–V43 existentes com resumo e commit de referência, índice com uma linha por ticket e inclusão do V36 ausente. V19–V34 e V37–V40/V42/V43 concluídos segundo os registros da série. V35 corrigido/commitado, mas aceite final pendente nesta conversa (índice anterior dizia aprovado); V36 sem estudo entregue; V41 sem migração, agora liberado após V38/V40/V43; V12 mantido pendente. Fila central remove os itens encerrados e checklist atualizado preserva roteiros. Verificação documental de caminhos, commits e diff; sem testes de app por ser documentação. Esta atualização não confirma push/deploy nem cria novo commit.
-
 
 ### V35: causa do segundo clique reproduzida e corrigida — 04/11
 

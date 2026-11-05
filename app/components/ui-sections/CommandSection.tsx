@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { CalendarIcon, SettingsIcon, UserIcon, PlusIcon } from "lucide-react";
+import {
+  ArchiveIcon,
+  CalendarIcon,
+  SettingsIcon,
+  UserIcon,
+  PlusIcon,
+} from "lucide-react";
 import {
   PrismCommand,
   PrismCommandDialog,
@@ -14,6 +20,7 @@ import {
   PrismPopover,
   PrismButton,
   PrismKbd,
+  PrismToggle,
   toast,
 } from "~/components/prism";
 import {
@@ -40,12 +47,29 @@ function CommandPlayground() {
   const [showGroups, setShowGroups] = useState(true);
   const [showShortcuts, setShowShortcuts] = useState(true);
   const [showCloseButton, setShowCloseButton] = useState(false);
+  const [showSuffix, setShowSuffix] = useState(false);
+  const [includeArchived, setIncludeArchived] = useState(false);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
 
   const renderCommandContent = (onSelectClose: () => void) => (
     <PrismCommand inputValue={query} onInputChange={setQuery}>
-      <PrismCommandInput placeholder="Buscar ação ou atalho..." />
+      <PrismCommandInput
+        placeholder="Buscar ação ou atalho..."
+        suffix={
+          showSuffix ? (
+            <PrismToggle
+              aria-label="Incluir arquivadas"
+              isSelected={includeArchived}
+              onChange={setIncludeArchived}
+              size="icon-sm"
+              variant="ghost"
+            >
+              <ArchiveIcon />
+            </PrismToggle>
+          ) : undefined
+        }
+      />
       <PrismCommandList
         renderEmptyState={() => (
           <PrismCommandEmpty>Nenhum item foi encontrado.</PrismCommandEmpty>
@@ -221,6 +245,12 @@ function CommandPlayground() {
         onChange={setShowShortcuts}
         prop="PrismCommandShortcut"
         value={showShortcuts}
+      />
+      <PlaygroundBoolean
+        label="Sufixo no campo"
+        onChange={setShowSuffix}
+        prop="suffix"
+        value={showSuffix}
       />
       <PlaygroundBoolean
         isDisabled={container === "popover"}

@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import type { Action, Partner } from "~/types";
 import {
-  PrismCheckbox,
   PrismCommand,
   PrismCommandDialog,
   PrismCommandEmpty,
@@ -11,6 +10,7 @@ import {
   PrismCommandInput,
   PrismCommandItem,
   PrismCommandList,
+  PrismToggle,
 } from "~/components/prism";
 import { DATE_TIME_DISPLAY, PHASES, type PHASE } from "~/lib/CONSTANTS";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
@@ -481,7 +481,39 @@ function GlobalSearchContent({
           setQuery(value);
         }}
       >
-        <PrismCommandInput placeholder="Faça sua busca..." />
+        <PrismCommandInput
+          placeholder="Faça sua busca..."
+          suffix={
+            <div
+              role="group"
+              aria-label="Filtros da busca"
+              className="flex items-center gap-1"
+            >
+              <UPartnersCombobox
+                allowAll
+                size="icon-sm"
+                variant="ghost"
+                selectedPartners={selectedPartners}
+                onSelect={(value) => {
+                  navigatingResultsRef.current = false;
+                  setSelectedPartners(value);
+                }}
+              />
+              <PrismToggle
+                aria-label="Incluir arquivadas"
+                size="icon-sm"
+                variant="ghost"
+                isSelected={includeArchived}
+                onChange={(value) => {
+                  navigatingResultsRef.current = false;
+                  setIncludeArchived(value);
+                }}
+              >
+                <ArchiveIcon />
+              </PrismToggle>
+            </div>
+          }
+        />
         {commandError && (
           <div className="px-4 py-3 text-sm text-error" role="alert">
             Não foi possível executar o comando. Tente novamente.
@@ -634,40 +666,6 @@ function GlobalSearchContent({
             </PrismCommandGroup>
           )}
         </PrismCommandList>
-        <div
-          role="group"
-          aria-label="Filtros da busca"
-          className="flex flex-wrap items-center justify-between gap-2 border-t px-3 py-2"
-        >
-          <div
-            role="group"
-            aria-label="Filtrar ações por parceiros"
-            className="max-w-full min-w-0"
-          >
-            <UPartnersCombobox
-              allowAll
-              showText
-              size="sm"
-              variant="ghost"
-              selectedPartners={selectedPartners}
-              onSelect={(value) => {
-                navigatingResultsRef.current = false;
-                setSelectedPartners(value);
-              }}
-            />
-          </div>
-          <PrismCheckbox
-            size="sm"
-            className="shrink-0 rounded-lg px-2 py-2 font-normal text-muted-foreground squircle data-selected:text-foreground"
-            isSelected={includeArchived}
-            onChange={(value) => {
-              navigatingResultsRef.current = false;
-              setIncludeArchived(value);
-            }}
-          >
-            Incluir arquivadas
-          </PrismCheckbox>
-        </div>
       </PrismCommand>
     </div>
   );

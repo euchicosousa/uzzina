@@ -4,9 +4,9 @@ Atualizado em 04/11/2026. Apenas pendência: V12. V41 encerrado e commitado em `
 
 [Lista geral de pendências](../README.md) · [Histórico completo dos encerrados](../archive/resolved-tickets.md#visual-controls-index-before-cleanup)
 
-| # | Ticket | Sobre o que é | Status | Commit de referência |
-|---|---|---|---|---|
-| 12 | [Busca global: filtros como sufixo do campo](issues/12-global-search-filters.md) | Prevê filtros de parceiros e ações arquivadas integrados ao campo da busca global. | A fazer — executor: Claude | b5b5f33 (ticket; entrega pendente) |
+| #   | Ticket                                                                           | Sobre o que é                                                                      | Status                                          | Commit de referência                                |
+| --- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------------- | --------------------------------------------------- |
+| 12  | [Busca global: filtros como sufixo do campo](issues/12-global-search-filters.md) | Prevê filtros de parceiros e ações arquivadas integrados ao campo da busca global. | Aprovado e encerrado (04/11) — executor: Claude | b5b5f33 (ticket); entrega no commit de encerramento |
 
 V35 aprovado pelo proprietário em 04/11; encerramento registrado no [histórico](../archive/resolved-tickets.md#visual-controls-issues-35-ui-sidebar-subsections).
 

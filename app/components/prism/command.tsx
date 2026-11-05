@@ -128,13 +128,21 @@ function CommandDialog({
 function CommandInput({
   className,
   size = "default",
+  suffix,
   ...props
-}: Omit<InputProps, "size"> & { size?: "sm" | "default" }) {
-  return (
+}: Omit<InputProps, "size"> & {
+  size?: "sm" | "default";
+  /** Controls rendered at the end of the field (e.g. filters). */
+  suffix?: React.ReactNode;
+}) {
+  const field = (
     <SearchField
       aria-label={props.placeholder || "Search"}
       autoFocus
-      className="flex w-full items-center border-b border-border px-3.5"
+      className={cn(
+        "flex w-full items-center px-3.5",
+        suffix ? "min-w-0 flex-1" : "border-b border-border",
+      )}
       data-slot="command-input-wrapper"
     >
       <SearchIcon
@@ -148,11 +156,33 @@ function CommandInput({
         className={cn(
           "flex h-11 w-full bg-transparent text-sm outline-none placeholder:text-foreground/50 disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-search-cancel-button]:hidden",
           size === "sm" && "h-9",
+          suffix && "min-w-0 truncate",
           className,
         )}
         data-slot="command-input"
       />
     </SearchField>
+  );
+  if (!suffix) return field;
+  // The suffix sits outside SearchField so its buttons don't inherit the
+  // field's clear-button context. Right inset equals the vertical inset of a
+  // 32px control in the field: (44 - 32) / 2 = 6px, or (36 - 32) / 2 = 2px.
+  return (
+    <div
+      className="flex w-full items-center border-b border-border"
+      data-slot="command-input-group"
+    >
+      {field}
+      <div
+        className={cn(
+          "flex shrink-0 items-center gap-1",
+          size === "sm" ? "pr-0.5" : "pr-1.5",
+        )}
+        data-slot="command-input-suffix"
+      >
+        {suffix}
+      </div>
+    </div>
   );
 }
 function CommandList<T extends object>({ className, ...props }: MenuProps<T>) {

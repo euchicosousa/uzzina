@@ -50,6 +50,8 @@ export function UPartnersCombobox({
   const hasSelection = currentPartners.length > 0;
   const footerAvatarSize = getTriggerAvatarSize(size);
   const emptyLabel = allowAll ? "Todos os parceiros" : "Parceiros";
+  const selectionLabel =
+    getFormattedPartnersName(currentPartners) || emptyLabel;
   const handleSelect = (slug: string, isShiftPressed: boolean) => {
     let newPartners: string[];
     if (isShiftPressed) {
@@ -68,16 +70,21 @@ export function UPartnersCombobox({
       onOpenChange={(open) => !disabled && setIsOpen(open)}
     >
       <UComboboxTrigger
-        aria-label={getFormattedPartnersName(currentPartners) || emptyLabel}
+        aria-label={
+          allowAll && !showText
+            ? `Filtrar por parceiros: ${selectionLabel}`
+            : selectionLabel
+        }
         className={cn(
           allowAll &&
+            showText &&
             (variant ?? "ghost") === "ghost" &&
             "w-40 max-w-full min-w-0 shrink gap-3",
           getTriggerAvatarPadding(size),
         )}
         disabled={disabled}
         tabIndex={tabIndex}
-        title={getFormattedPartnersName(currentPartners) || emptyLabel}
+        title={selectionLabel}
         size={size}
         variant={variant}
       >
