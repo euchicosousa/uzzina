@@ -7,13 +7,18 @@ import {
 import { format } from "date-fns";
 import { parseU } from "~/utils/date";
 import { ptBR } from "date-fns/locale";
-import { ArrowLeftIcon, PlusIcon, AlertCircleIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  PlusIcon,
+  AlertCircleIcon,
+  SlidersHorizontalIcon,
+} from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { PrismBadge, PrismButton, buttonVariants } from "~/components/prism";
 import { CommentInput } from "~/components/features/ActionComments/CommentInput";
 import { CommentList } from "~/components/features/ActionComments/CommentList";
-import { WorkFileThumbnail } from "~/components/features/media/WorkFileThumbnail";
+import { ContentReorderDialog } from "~/components/features/media/ContentReorderDialog";
 import { UPhaseIcon } from "~/components/uzzina/UPhaseIcon";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { InstagramPreview } from "~/components/features/media/InstagramPreview";
@@ -34,10 +39,13 @@ import {
   type DashActionDto,
 } from "~/services/dash-client";
 export const Route = createFileRoute("/dash/action/$id")({
-  component: DashActionDetail,
+  component: DashActionRoute,
 });
-function DashActionDetail() {
-  const { id: actionId } = Route.useParams();
+function DashActionRoute() {
+  const { id } = Route.useParams();
+  return <DashActionDetail key={id} actionId={id} />;
+}
+function DashActionDetail({ actionId }: { actionId: string }) {
   const { clientId, cloudName, uploadPreset } = useDashContext();
   const queryClient = useQueryClient();
   const generation = useRef(getQuerySessionGeneration(queryClient)).current;
@@ -88,10 +96,11 @@ function DashActionDetail() {
     mutationFn: (files: string[]) => {
       if (!isCurrentSession())
         throw new Error("A sessão mudou. Entre novamente.");
-      return updateDashWorkFiles(actionId, files, action?.updated_at || "");
+      return updateDashWorkFiles(actionId, files, workFilesVersionRef.current);
     },
     onSuccess: ({ work_files: files, updated_at }, requested) => {
       if (!isCurrentSession()) return;
+      workFilesVersionRef.current = updated_at;
       confirmedWorkFilesRef.current = files;
       setWorkFiles(files);
       if (workFilesRef.current === requested) workFilesRef.current = files;
@@ -104,8 +113,11 @@ function DashActionDetail() {
     },
     onError: (error, requested) => {
       if (!isCurrentSession()) return;
-      if (workFilesRef.current === requested)
+      if (workFilesRef.current === requested) {
         workFilesRef.current = confirmedWorkFilesRef.current;
+        setWorkFiles(confirmedWorkFilesRef.current);
+        setWorkFilesResetVersion((version) => version + 1);
+      }
       console.error("Erro ao salvar arquivos:", error);
       if (error instanceof PortalHttpError && error.status === 409) {
         toast.error("Esta ação mudou. Recarregue antes de salvar.");
@@ -185,8 +197,11 @@ function DashActionDetail() {
   });
   const [newComment, setNewComment] = useState("");
   const [workFiles, setWorkFiles] = useState<string[]>([]);
+  const [workFilesOpen, setWorkFilesOpen] = useState(false);
+  const [workFilesResetVersion, setWorkFilesResetVersion] = useState(0);
 
   const workFilesRef = useRef<string[]>([]);
+  const workFilesVersionRef = useRef("");
   const confirmedWorkFilesRef = useRef<string[]>([]);
   const isSavingWorkFilesRef = useRef(false);
   isSavingWorkFilesRef.current = updateWorkFilesMutation.isPending;
@@ -194,8 +209,11 @@ function DashActionDetail() {
     const files = action?.work_files || [];
     confirmedWorkFilesRef.current = files;
     setWorkFiles(files);
-    if (!isSavingWorkFilesRef.current) workFilesRef.current = files;
-  }, [action?.work_files]);
+    if (!isSavingWorkFilesRef.current && !workFilesOpen) {
+      workFilesRef.current = files;
+      workFilesVersionRef.current = action?.updated_at ?? "";
+    }
+  }, [action?.work_files, action?.updated_at, workFilesOpen]);
   usePortalSessionError(commentsError);
   usePortalSessionError(createCommentMutation.error);
   usePortalSessionError(updateCommentMutation.error);
@@ -216,6 +234,7 @@ function DashActionDetail() {
       originalFilename?: string;
     },
   ) => {
+    if (workFilesRef.current.length >= 100) return;
     const now = Date.now();
     workFilesMetaRef.current[url] = {
       name: meta.originalFilename || url,
@@ -237,6 +256,10 @@ function DashActionDetail() {
       next = [...oldUrls, ...recentUrls];
     }
     workFilesRef.current = next;
+    if (workFilesOpen) {
+      setWorkFiles(next);
+      setWorkFilesResetVersion((version) => version + 1);
+    }
     updateWorkFilesMutation.mutate(next);
   };
   const currentPhase = useMemo(() => {
@@ -380,9 +403,15 @@ function DashActionDetail() {
             <div className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
               Legenda
             </div>
-            <div className="min-h-50 w-full resize-none whitespace-pre-wrap">
-              {action.instagram_caption}
-            </div>
+            {action.instagram_caption ? (
+              <div className="min-h-50 w-full resize-none whitespace-pre-wrap">
+                {action.instagram_caption}
+              </div>
+            ) : (
+              <div className="text-muted-foreground/50 italic">
+                Sem legenda criada
+              </div>
+            )}
           </div>
 
           {/* Anexos (Work Files) do Cliente */}
@@ -390,22 +419,7 @@ function DashActionDetail() {
             <div className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
               Seus Anexos e Materiais
             </div>
-            <div className="flex flex-wrap items-center gap-1.5 rounded-xl squircle">
-              {workFiles.map((url, i) => (
-                <WorkFileThumbnail
-                  key={url}
-                  onRemove={
-                    updateWorkFilesMutation.isPending
-                      ? undefined
-                      : () => {
-                          const next = workFiles.filter((_, idx) => idx !== i);
-                          workFilesRef.current = next;
-                          updateWorkFilesMutation.mutate(next);
-                        }
-                  }
-                  url={url}
-                />
-              ))}
+            <div className="flex flex-wrap items-center gap-2">
               <CloudinaryUpload
                 cloudName={cloudName}
                 folder="uzzina/work"
@@ -413,15 +427,42 @@ function DashActionDetail() {
                 onUpload={handleUpload}
                 outputWidth={1200}
                 resourceType="auto"
-                size={workFiles.length === 0 ? "sm" : "icon-sm"}
+                size="xs"
                 uploadPreset={uploadPreset}
-                variant={workFiles.length === 0 ? "link" : "secondary"}
+                variant="secondary"
               >
-                {workFiles.length === 0 && <span>Adicionar arquivo</span>}
-                <PlusIcon className="size-4 shrink-0" />
+                <PlusIcon aria-hidden="true" className="size-3.5 shrink-0" />
+                Adicionar arquivos
               </CloudinaryUpload>
+
+              {workFiles.length > 0 && (
+                <PrismButton
+                  isDisabled={updateWorkFilesMutation.isPending}
+                  onPress={() => setWorkFilesOpen(true)}
+                  size="xs"
+                  variant="ghost"
+                >
+                  <SlidersHorizontalIcon className="size-3.5" />
+                  {`${workFiles.length} arquivo${workFiles.length !== 1 ? "s" : ""}`}
+                </PrismButton>
+              )}
             </div>
           </div>
+
+          <ContentReorderDialog
+            cloudName={cloudName}
+            files={workFiles}
+            onChange={(next) => {
+              workFilesMetaRef.current = {};
+              workFilesRef.current = next;
+              updateWorkFilesMutation.mutate(next);
+            }}
+            onOpenChange={setWorkFilesOpen}
+            open={workFilesOpen}
+            resetVersion={workFilesResetVersion}
+            uploadPreset={uploadPreset}
+            workFiles
+          />
 
           {updateWorkFilesMutation.isPending && (
             <p role="status">Salvando anexos...</p>

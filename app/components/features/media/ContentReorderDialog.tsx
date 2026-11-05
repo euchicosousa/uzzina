@@ -40,11 +40,13 @@ function SortableThumbnail({
   index,
   onRemove,
   removeRef,
+  canOpen,
 }: {
   id: string;
   url: string;
   index: number;
   onRemove: () => void;
+  canOpen: boolean;
   removeRef: (element: HTMLButtonElement | null) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -59,6 +61,14 @@ function SortableThumbnail({
   const isImg = isImageUrl(url);
   const ext =
     url.split("?")[0].split("#")[0].split(".").pop()?.toUpperCase() ?? "FILE";
+
+  const preview = isImg ? (
+    <img src={url} alt="" className="h-full w-full object-cover" />
+  ) : (
+    <div className="flex h-full items-center justify-center text-[10px] font-bold uppercase opacity-60">
+      {ext.slice(0, 4)}
+    </div>
+  );
 
   return (
     <div
@@ -95,18 +105,24 @@ function SortableThumbnail({
       </PrismButton>
 
       {/* Preview */}
-      {isImg ? (
-        <img src={url} alt="" className="h-full w-full object-cover" />
+      {canOpen ? (
+        <a
+          aria-label={`Abrir arquivo ${index + 1}`}
+          className="block h-full w-full focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+          href={url}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          {preview}
+        </a>
       ) : (
-        <div className="flex h-full items-center justify-center text-[10px] font-bold uppercase opacity-60">
-          {ext.slice(0, 4)}
-        </div>
+        preview
       )}
     </div>
   );
 }
 
-const MAX_FILES = 20;
+const MAX_CONTENT_FILES = 20;
 
 interface ContentReorderDialogProps {
   open: boolean;
@@ -115,6 +131,8 @@ interface ContentReorderDialogProps {
   onChange: (files: string[]) => void;
   cloudName: string;
   uploadPreset: string;
+  workFiles?: boolean;
+  resetVersion?: number;
 }
 
 /**
@@ -128,7 +146,12 @@ export function ContentReorderDialog({
   onChange,
   cloudName,
   uploadPreset,
+  workFiles = false,
+  resetVersion,
 }: ContentReorderDialogProps) {
+  const maxFiles = workFiles ? 100 : MAX_CONTENT_FILES;
+  const lastResetVersion = useRef(resetVersion);
+
   // Estado interno com id único para o DnD
   const [items, setItems] = useState<
     { id: string; url: string; addedAt?: number; name?: string }[]
@@ -137,11 +160,13 @@ export function ContentReorderDialog({
   // Sincroniza quando `files` prop muda externamente apenas se o modal estiver fechado.
   // Isso previne que "stale props" sobrescrevam o estado local durante uploads múltiplos rápidos.
   useEffect(() => {
-    if (!open) {
+    if (!open || resetVersion !== lastResetVersion.current) {
+      lastResetVersion.current = resetVersion;
+      pendingFocus.current = null;
       setItems(files.map((url, i) => ({ id: `${url}-${i}`, url })));
       setDragging(false);
     }
-  }, [files, open]);
+  }, [files, open, resetVersion]);
 
   const itemsRef = useRef(items);
   itemsRef.current = items;
@@ -197,7 +222,7 @@ export function ContentReorderDialog({
     url: string,
     meta: { resourceType?: string; format?: string; originalFilename?: string },
   ) {
-    if (itemsRef.current.length >= MAX_FILES) return;
+    if (itemsRef.current.length >= maxFiles) return;
     const getNow = () => Date.now();
     const now = getNow();
     const newItem = {
@@ -237,33 +262,35 @@ export function ContentReorderDialog({
       <PrismDialogHeader className="border-b">
         <PrismDialogTitle className="flex items-center gap-2">
           <SlidersHorizontalIcon />
-          Gerenciar conteúdo
+          {workFiles ? "Gerenciar arquivos" : "Gerenciar conteúdo"}
         </PrismDialogTitle>
         <PrismDialogDescription className="sr-only">
-          Selecione, reordene ou remova os arquivos de mídia desta ação.
+          Selecione, reordene ou remova os arquivos desta ação.
         </PrismDialogDescription>
       </PrismDialogHeader>
 
       {/* InfoIcon do tipo detectado */}
       <div className="flex items-center justify-between px-5 pt-3 text-xs text-muted-foreground">
+        {!workFiles && (
+          <span>
+            Tipo detectado:{" "}
+            <strong className="text-foreground capitalize">
+              {postType === "empty"
+                ? "vazio"
+                : postType === "image"
+                  ? "imagem"
+                  : postType === "video"
+                    ? "vídeo"
+                    : "carrossel"}
+            </strong>
+          </span>
+        )}
         <span>
-          Tipo detectado:{" "}
-          <strong className="text-foreground capitalize">
-            {postType === "empty"
-              ? "vazio"
-              : postType === "image"
-                ? "imagem"
-                : postType === "video"
-                  ? "vídeo"
-                  : "carrossel"}
-          </strong>
-        </span>
-        <span>
-          {items.length}/{MAX_FILES} arquivo{items.length !== 1 ? "s" : ""}
+          {items.length}/{maxFiles} arquivo{items.length !== 1 ? "s" : ""}
         </span>
       </div>
 
-      {postType === "video" && (
+      {!workFiles && postType === "video" && (
         <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground squircle">
           <strong>Vídeo:</strong> 1º arquivo = vídeo principal. 2º arquivo
           (opcional) = capa/thumbnail que aparece antes do play.
@@ -291,6 +318,7 @@ export function ContentReorderDialog({
               {items.map((item, index) => (
                 <SortableThumbnail
                   key={item.id}
+                  canOpen={workFiles}
                   id={item.id}
                   url={item.url}
                   index={index}
@@ -312,7 +340,7 @@ export function ContentReorderDialog({
           <CloudinaryUpload
             cloudName={cloudName}
             uploadPreset={uploadPreset}
-            folder="uzzina/content"
+            folder={workFiles ? "uzzina/work" : "uzzina/content"}
             resourceType="auto"
             multiple
             onUpload={handleAdd}

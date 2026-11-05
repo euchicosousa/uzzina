@@ -2,8 +2,9 @@ import { parseU } from "~/utils/date";
 import {
   ChevronDownIcon,
   FileIcon,
-  FilePlus,
   ListIcon,
+  PlusIcon,
+  SlidersHorizontalIcon,
   SparkleIcon,
 } from "lucide-react";
 import { ULoader } from "~/components/uzzina/ULoader";
@@ -40,7 +41,7 @@ import type { Action, Partner } from "~/types";
 import { UActionDatePicker } from "~/components/uzzina/UActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
-import { WorkFileThumbnail } from "~/components/features/media/WorkFileThumbnail";
+import { ContentReorderDialog } from "~/components/features/media/ContentReorderDialog";
 import { useShortWritingPanel } from "./useWritingAreaHeight";
 interface EssentialsTabProps {
   /** Height Essencial needs without scrolling (title + metadata + description minimum). */
@@ -103,6 +104,7 @@ export function EssentialsTab({
   onDetailsExpandedChange,
   onNeededHeightChange,
 }: EssentialsTabProps) {
+  const [workFilesDialogOpen, setWorkFilesDialogOpen] = useState(false);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const shortPanel = useShortWritingPanel(scrollerRef);
   const neededHeightCallback = useRef(onNeededHeightChange);
@@ -345,25 +347,8 @@ export function EssentialsTab({
               })()}
           </div>
 
-          <div className="flex max-w-full items-center gap-2 overflow-hidden border-b py-1">
-            <div className="flex max-w-full flex-wrap items-center gap-1">
-              {workFiles.map((url, i) => (
-                <WorkFileThumbnail
-                  key={url}
-                  onRemove={async () => {
-                    const next = workFiles.filter((_, idx) => idx !== i);
-                    setWorkFiles(next);
-                    setRawAction((prev) => ({
-                      ...prev,
-                      work_files: next,
-                    }));
-                    await updateAction({
-                      work_files: next,
-                    });
-                  }}
-                  url={url}
-                />
-              ))}
+          <div className="flex max-w-full items-center justify-between gap-2 overflow-hidden border-b px-4 py-2">
+            <div className="flex items-center gap-2">
               <CloudinaryUpload
                 cloudName={cloudName}
                 folder="uzzina/work"
@@ -371,14 +356,26 @@ export function EssentialsTab({
                 onUpload={handleUpload}
                 outputWidth={1200}
                 resourceType="auto"
-                size={workFiles.length === 0 ? "sm" : "icon-sm"}
+                size="xs"
                 uploadPreset={uploadPreset}
-                variant={"link"}
+                variant="secondary"
               >
-                <FilePlus className="size-4" />
-                {workFiles.length === 0 && <span>Adicionar arquivo</span>}
+                <PlusIcon className="size-3.5" />
+                Adicionar arquivo
               </CloudinaryUpload>
             </div>
+
+            {workFiles.length > 0 && (
+              <PrismButton
+                onClick={() => setWorkFilesDialogOpen(true)}
+                size="xs"
+                type="button"
+                variant="ghost"
+              >
+                <SlidersHorizontalIcon />
+                {`${workFiles.length} arquivo${workFiles.length !== 1 ? "s" : ""}`}
+              </PrismButton>
+            )}
           </div>
         </div>
       </div>
@@ -424,6 +421,27 @@ export function EssentialsTab({
           />
         </Suspense>
       </div>
+
+      <ContentReorderDialog
+        cloudName={cloudName}
+        files={workFiles}
+        onChange={async (next) => {
+          workFilesMetaRef.current = {};
+          workFilesRef.current = next;
+          setWorkFiles(next);
+          setRawAction((prev) => ({
+            ...prev,
+            work_files: next,
+          }));
+          await updateAction({
+            work_files: next,
+          });
+        }}
+        onOpenChange={setWorkFilesDialogOpen}
+        open={workFilesDialogOpen}
+        uploadPreset={uploadPreset}
+        workFiles
+      />
     </div>
   );
 }

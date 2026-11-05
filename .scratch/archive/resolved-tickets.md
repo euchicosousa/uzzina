@@ -5,6 +5,7 @@ Consolidado em 04/11/2026. Esta é uma referência histórica; a fila vigente es
 Os documentos completos abaixo substituem os antigos arquivos individuais. Nenhum conteúdo de ticket foi descartado. Os índices anteriores também foram preservados no final.
 
 ## Índice
+
 - [visual-controls · 45 — Modo unstyled dos botões Prism](#visual-controls-issues-45-clean-unstyled-button-mode)
 - [today-focus · 01-remove-wrapper-focus](#today-focus-issues-01-remove-wrapper-focus)
 - [brand-holidays · 01-classify-holidays](#brand-holidays-issues-01-classify-holidays)
@@ -1416,7 +1417,6 @@ Use controlled HTTP/data and the existing font. Run pertinent tests, format/lint
 
 CalendarToolbar now bounds day/navigation squares to32px and reduces only its caption padding; shared PrismCalendar, unrelated buttons, range and approved36px celebration styles remain unchanged. WebKit red at320px/text125% (scroll306/client280) became green (scroll270/client270);30 geometry cases passed including five/six-week months, desktop and100/125% text. Keyboard date/month/year selection, Escape/focus return and short-height vertical scrolling passed. Normal100% screenshot behavior was not reproduced, including the full Today route with controlled HTTP; do not mark that original symptom resolved. Format/lint/typecheck/build passed. Detailed browser results and limits are in the report. No commit/push/deploy, SQL or production writes.
 
-
 ## Completed verification after owner request
 
 Owner requested verification/completion after accepting13/18/17. The final local CalendarToolbar correction uses bounded32–40px days matched to text size, width equal to seven cells,8px popover padding and a caption that wraps month/year with natural trigger height. A real200%-text failure (320px: scroll391/client256) went green (296/296), including numeric/caption text bounds; fonts are not reduced. Normal/125% remain green. Shared calendars/range/celebration36px are untouched.
@@ -1519,7 +1519,6 @@ The unchanged viewport-height hook produces two transient WebKit notifications (
 ## Subsequent owner feedback
 
 Owner accepted14/19 and requested their commit. The separate top-alignment follow-up from UZZINA9.png will be investigated after this accepted implementation and before15; it is not claimed fixed in this commit.
-
 
 ## Top alignment follow-up — clarified 2026-10-31
 
@@ -2378,7 +2377,6 @@ Origem: `.scratch/today-viewport/issues/01-today-kanban-height.md`. Classificaç
 - [x] Teste no componente real reproduz o limite inadequado antes da correção. Navegador com dados controlados verifica altura útil, ausência de overflow externo, rolagem da coluna e acesso à última ação, com poucas/muitas ações e janelas de alturas diferentes.
 - [x] Testes pertinentes, formatação, lint, typecheck e build passam; limites da verificação são registrados.
 
-
 Verificação local:443 testes, format/lint/typecheck/build e Chromium isolado em desktop/mobile, incluindo resize, listas curtas/vazias/longas, editor, arraste com HTTP controlado e comparação com o uso na Home. Sem push/deploy.
 
 ---
@@ -2457,66 +2455,72 @@ O proprietário quer todos os anéis de foco do app iguais ao do botão Prism: m
 ## Levantamento (arquivo:linha | classe atual | difere em quê | proposta)
 
 ### A. Já no padrão (10 + 2 equivalentes) — sem ação
+
 button:11, badge:4, color-field:10, combobox:259, date-range-picker:119, input-group:24, input:9, select:84, textarea:15, time-field:12 | `border-ring ring-3 ring-ring/30` | nada | manter
 prism/slider.tsx:79 | `ring-3 ring-ring/30` (sem border) | sem border-ring (thumb) | manter
 prism/toggle.tsx:9 | `ring-[3px] ring-ring/30` | só a grafia | trocar para `ring-3` (opcional)
 
 ### B. Prism primitivos fora do padrão (7)
-| arquivo:linha | classe atual | difere em quê | proposta |
-|---|---|---|---|
-| prism/calendar.tsx:292 | `group-data-[focused=true]/day:border-ring ring-[3px] ring-ring/50` | /50 | `ring-3 ring-ring/30` |
-| prism/checkbox.tsx:26 | `group-data-[focus-visible]:border-ring ring-[3px] ring-ring/50` | /50 | `ring-3 ring-ring/30` |
-| prism/radio-group.tsx:25 | `group-data-[focus-visible]/radio:border-ring ring-[3px] ring-ring/50` | /50 | `ring-3 ring-ring/30` |
-| prism/color-area.tsx:38 | `focus-visible:ring-2 ring-primary ring-offset-1` | largura 2, cor primary, offset | `ring-3 ring-ring/30` (+ border-ring se couber), sem offset |
-| prism/color-slider.tsx:50 | `focus-visible:ring-2 ring-primary ring-offset-1` | idem | idem |
-| prism/button.tsx:29 | `unstyled: focus-visible:ring-0` | sem anel | exceção: consumidores `unstyled` definem o foco próprio (conferir) |
-| prism/input-group.tsx:258,278 | `focus-visible:ring-0` | anel desligado no controle interno | manter: o anel está no grupo (input-group:24) |
+
+| arquivo:linha                 | classe atual                                                           | difere em quê                      | proposta                                                           |
+| ----------------------------- | ---------------------------------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------ |
+| prism/calendar.tsx:292        | `group-data-[focused=true]/day:border-ring ring-[3px] ring-ring/50`    | /50                                | `ring-3 ring-ring/30`                                              |
+| prism/checkbox.tsx:26         | `group-data-[focus-visible]:border-ring ring-[3px] ring-ring/50`       | /50                                | `ring-3 ring-ring/30`                                              |
+| prism/radio-group.tsx:25      | `group-data-[focus-visible]/radio:border-ring ring-[3px] ring-ring/50` | /50                                | `ring-3 ring-ring/30`                                              |
+| prism/color-area.tsx:38       | `focus-visible:ring-2 ring-primary ring-offset-1`                      | largura 2, cor primary, offset     | `ring-3 ring-ring/30` (+ border-ring se couber), sem offset        |
+| prism/color-slider.tsx:50     | `focus-visible:ring-2 ring-primary ring-offset-1`                      | idem                               | idem                                                               |
+| prism/button.tsx:29           | `unstyled: focus-visible:ring-0`                                       | sem anel                           | exceção: consumidores `unstyled` definem o foco próprio (conferir) |
+| prism/input-group.tsx:258,278 | `focus-visible:ring-0`                                                 | anel desligado no controle interno | manter: o anel está no grupo (input-group:24)                      |
 
 ### C. Componentes do app com ring fora do padrão (11)
-| arquivo:linha | classe atual | difere em quê | proposta |
-|---|---|---|---|
-| features/CalendarDayCell.tsx:97 | `ring-2 ring-ring/50 ring-inset` | ring-2, /50, inset | `ring-3 ring-ring/30` (confirmar inset, ver D) |
-| features/action-drawer/ActionFormDrawer.tsx:974 | `bg-input ring-2 ring-ring ring-inset` | ring-2, pleno, inset | `ring-3 ring-ring/30` (+ bg-input?) |
-| features/action-drawer/conflict-comparison.tsx:233 | `ring-2 ring-ring/50 ring-inset` | ring-2, /50, inset | padrão |
-| layout/KanbanPhasesBoard.tsx:177 | `ring-2 ring-ring/50 ring-inset` | ring-2, /50, inset | padrão |
-| routes/app/profile.tsx:316 | `ring-2 ring-ring/50 ring-inset` | ring-2, /50, inset | padrão |
-| routes/app/profile.tsx:432 | `ring-2 ring-ring/50 ring-inset` | idem | padrão |
-| routes/app/admin/partner/$slug.tsx:499 | `focus-within:border-ring ring-[3px] ring-ring/50` | /50 | `ring-3 ring-ring/30` |
-| routes/app/admin/partner/$slug.tsx:535 | idem | /50 | idem |
-| features/media/ContentReorderDialog.tsx:73 | `ring-2 ring-ring` | ring-2, pleno | padrão |
-| features/media/ContentReorderDialog.tsx:89 | `ring-2 ring-ring` | idem | padrão |
-| features/media/InstagramPreview.tsx:140 | `ring-2 ring-ring ring-inset` | ring-2, pleno, inset | padrão |
-| features/media/WorkFileThumbnail.tsx:55 | `ring-2 ring-ring` | ring-2, pleno | padrão |
+
+| arquivo:linha                                      | classe atual                                       | difere em quê        | proposta                                       |
+| -------------------------------------------------- | -------------------------------------------------- | -------------------- | ---------------------------------------------- |
+| features/CalendarDayCell.tsx:97                    | `ring-2 ring-ring/50 ring-inset`                   | ring-2, /50, inset   | `ring-3 ring-ring/30` (confirmar inset, ver D) |
+| features/action-drawer/ActionFormDrawer.tsx:974    | `bg-input ring-2 ring-ring ring-inset`             | ring-2, pleno, inset | `ring-3 ring-ring/30` (+ bg-input?)            |
+| features/action-drawer/conflict-comparison.tsx:233 | `ring-2 ring-ring/50 ring-inset`                   | ring-2, /50, inset   | padrão                                         |
+| layout/KanbanPhasesBoard.tsx:177                   | `ring-2 ring-ring/50 ring-inset`                   | ring-2, /50, inset   | padrão                                         |
+| routes/app/profile.tsx:316                         | `ring-2 ring-ring/50 ring-inset`                   | ring-2, /50, inset   | padrão                                         |
+| routes/app/profile.tsx:432                         | `ring-2 ring-ring/50 ring-inset`                   | idem                 | padrão                                         |
+| routes/app/admin/partner/$slug.tsx:499             | `focus-within:border-ring ring-[3px] ring-ring/50` | /50                  | `ring-3 ring-ring/30`                          |
+| routes/app/admin/partner/$slug.tsx:535             | idem                                               | /50                  | idem                                           |
+| features/media/ContentReorderDialog.tsx:73         | `ring-2 ring-ring`                                 | ring-2, pleno        | padrão                                         |
+| features/media/ContentReorderDialog.tsx:89         | `ring-2 ring-ring`                                 | idem                 | padrão                                         |
+| features/media/InstagramPreview.tsx:140            | `ring-2 ring-ring ring-inset`                      | ring-2, pleno, inset | padrão                                         |
+| features/media/WorkFileThumbnail.tsx:55            | `ring-2 ring-ring`                                 | ring-2, pleno        | padrão                                         |
 
 (Linhas = 12 ocorrências; contadas abaixo.)
 
 ### D. Foco por `outline-*` (3 + global)
-| arquivo:linha | classe atual | difere em quê | proposta |
-|---|---|---|---|
-| features/home/HomeCalendarView.tsx:115 | `outline-2 outline-offset-2 outline-ring` | outline, pleno, offset | trocar por ring padrão |
-| features/home/HomeTodayView.tsx:53 | `outline-2 outline-offset-4 outline-ring` | idem | idem |
-| features/media/WorkFileThumbnail.tsx:36 | `outline-2 -outline-offset-2 outline-ring` | outline interno | idem (ring padrão) |
-| tailwind.css:379 | `* { @apply border-border outline-ring/50 }` | outline global /50 | alterar para `outline-ring/30` (só afeta elementos sem `outline-none`) |
+
+| arquivo:linha                           | classe atual                                 | difere em quê          | proposta                                                               |
+| --------------------------------------- | -------------------------------------------- | ---------------------- | ---------------------------------------------------------------------- |
+| features/home/HomeCalendarView.tsx:115  | `outline-2 outline-offset-2 outline-ring`    | outline, pleno, offset | trocar por ring padrão                                                 |
+| features/home/HomeTodayView.tsx:53      | `outline-2 outline-offset-4 outline-ring`    | idem                   | idem                                                                   |
+| features/media/WorkFileThumbnail.tsx:36 | `outline-2 -outline-offset-2 outline-ring`   | outline interno        | idem (ring padrão)                                                     |
+| tailwind.css:379                        | `* { @apply border-border outline-ring/50 }` | outline global /50     | alterar para `outline-ring/30` (só afeta elementos sem `outline-none`) |
 
 ### E. Anel de estado "editando" (não é foco de teclado)
-| arquivo:linha | classe atual | proposta |
-|---|---|---|
+
+| arquivo:linha               | classe atual                                          | proposta                                                                                      |
+| --------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | features/ActionItem.tsx:174 | `ring-primary focus-within:ring-2` (cartão em edição) | confirmar com o proprietário; provável exceção (indica edição/seleção, como linhas 169 e 190) |
 
 ### F. Foco por fundo/borda, não por anel (exceções aprovadas ou a confirmar)
-| arquivo:linha | classe atual | situação |
-|---|---|---|
-| prism/tabs.tsx:34,36 | `data-[focus-visible]:bg-input` + `border-t-primary` | exceção aprovada (AGENTS: abas) |
-| features/ComboboxTrigger.tsx:33 | `data-[focus-visible]:bg-input` (variante form-footer) | exceção aprovada (rodapé) |
-| features/RichTextEditor.tsx:66 | `data-[focus-visible]:bg-input` | exceção aprovada (barra do editor) |
-| prism/dropdown-menu.tsx:94,96,98,163; select.tsx:207; combobox.tsx:176; command.tsx:249 | `focus:/data-focused:bg-secondary/50` | itens de lista: realce, não anel; exceção proposta |
-| features/ComboboxTrigger.tsx:47; layout/Header.tsx:725 | `focus:bg-secondary/50`, `focus:bg-destructive/10` | realce; exceção proposta |
-| features/HelpPage.tsx:293,322; routes/app/notifications.tsx:149; action-drawer/EssentialsTab.tsx:210,416 | `bg-foreground/5` | realce de linha/área; exceção proposta |
-| prism/time-field.tsx:57 | `focus:bg-primary` | segmento selecionado; exceção proposta |
-| features/ActionItemTitleInput.tsx:41 | `focus:bg-muted ring-0` | edição inline: sem anel de propósito |
-| features/ActionComments/CommentInput.tsx:71 | `focus:border-0 ring-0 outline-none` | campo sem moldura, foco sem anel |
-| features/PartnersCombobox.tsx:65 | `focus-visible:border-transparent ring-0` | decisão da busca (AGENTS: sem ring sobre borda) |
-| features/action-drawer/PartnerColorPicker.tsx:145 | `border-destructive ring-destructive/20` | estado de erro; alinhar para ring-3 se hoje for ring menor |
+
+| arquivo:linha                                                                                            | classe atual                                           | situação                                                   |
+| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------- |
+| prism/tabs.tsx:34,36                                                                                     | `data-[focus-visible]:bg-input` + `border-t-primary`   | exceção aprovada (AGENTS: abas)                            |
+| features/ComboboxTrigger.tsx:33                                                                          | `data-[focus-visible]:bg-input` (variante form-footer) | exceção aprovada (rodapé)                                  |
+| features/RichTextEditor.tsx:66                                                                           | `data-[focus-visible]:bg-input`                        | exceção aprovada (barra do editor)                         |
+| prism/dropdown-menu.tsx:94,96,98,163; select.tsx:207; combobox.tsx:176; command.tsx:249                  | `focus:/data-focused:bg-secondary/50`                  | itens de lista: realce, não anel; exceção proposta         |
+| features/ComboboxTrigger.tsx:47; layout/Header.tsx:725                                                   | `focus:bg-secondary/50`, `focus:bg-destructive/10`     | realce; exceção proposta                                   |
+| features/HelpPage.tsx:293,322; routes/app/notifications.tsx:149; action-drawer/EssentialsTab.tsx:210,416 | `bg-foreground/5`                                      | realce de linha/área; exceção proposta                     |
+| prism/time-field.tsx:57                                                                                  | `focus:bg-primary`                                     | segmento selecionado; exceção proposta                     |
+| features/ActionItemTitleInput.tsx:41                                                                     | `focus:bg-muted ring-0`                                | edição inline: sem anel de propósito                       |
+| features/ActionComments/CommentInput.tsx:71                                                              | `focus:border-0 ring-0 outline-none`                   | campo sem moldura, foco sem anel                           |
+| features/PartnersCombobox.tsx:65                                                                         | `focus-visible:border-transparent ring-0`              | decisão da busca (AGENTS: sem ring sobre borda)            |
+| features/action-drawer/PartnerColorPicker.tsx:145                                                        | `border-destructive ring-destructive/20`               | estado de erro; alinhar para ring-3 se hoje for ring menor |
 
 ## Contagens
 
@@ -3295,6 +3299,7 @@ Esqueleto: `GallerySectionContent className="flex flex-col divide-y"` contendo, 
 Antes de escrever cada `usedBy`, rode o grep indicado e **confirme que o arquivo ainda usa a classe**; remova da lista o que não aparecer. Não ponha números de linha em `usedBy` (derivam). Nas réplicas, o número de linha citado aqui serve só para você localizar a classe; copie a string exata do arquivo.
 
 ---
+
 ### 1. Anel externo (padrão)
 
 - `id="focus-outer"` · `title="Anel externo (padrão)"`
@@ -3309,12 +3314,18 @@ Antes de escrever cada `usedBy`, rode o grep indicado e **confirme que o arquivo
   - `"routes/app/admin/partner/$slug.tsx (editores de texto: focus-within)"`
 
 Exemplos, na ordem. **Reais** (Prism):
+
 1. `Botão` → `<PrismButton>Botão</PrismButton>`
 2. `Input` → `<PrismInput aria-label="Exemplo de input" className="w-56" placeholder="Digite aqui" />`
 3. `Textarea` → `<PrismTextarea aria-label="Exemplo de textarea" className="w-56" placeholder="Digite aqui" />`
 4. `Select` →
+
 ```tsx
-<PrismSelect aria-label="Exemplo de select" className="w-56" defaultSelectedKey="a">
+<PrismSelect
+  aria-label="Exemplo de select"
+  className="w-56"
+  defaultSelectedKey="a"
+>
   <PrismSelectTrigger>
     <PrismSelectValue />
   </PrismSelectTrigger>
@@ -3324,16 +3335,25 @@ Exemplos, na ordem. **Reais** (Prism):
   </PrismSelectContent>
 </PrismSelect>
 ```
+
 5. `Toggle` → `<PrismToggle variant="outline">Alternar</PrismToggle>`
 6. `Slider (thumb)` →
+
 ```tsx
-<PrismSlider aria-label="Exemplo de slider" className="w-56" defaultValue={3} maxValue={7} minValue={1}>
+<PrismSlider
+  aria-label="Exemplo de slider"
+  className="w-56"
+  defaultValue={3}
+  maxValue={7}
+  minValue={1}
+>
   <PrismSliderTrack>
     <PrismSliderFill />
     <PrismSliderThumb />
   </PrismSliderTrack>
 </PrismSlider>
 ```
+
 7. `Checkbox` → `<PrismCheckbox>Marcar</PrismCheckbox>`
 8. `Radio` → `<PrismRadioGroup aria-label="Exemplo de radio" defaultValue="a"><PrismRadio value="a">Opção A</PrismRadio><PrismRadio value="b">Opção B</PrismRadio></PrismRadioGroup>`
 9. `Calendário (dia)` → `<PrismCalendar aria-label="Exemplo de calendário" />` (se precisar de outro prop, copie de `CalendarSection.tsx`; sem estado controlado).
@@ -3342,40 +3362,76 @@ Exemplos, na ordem. **Reais** (Prism):
 12. `Campo de hora (focus-within)` → `<PrismTimeField aria-label="Exemplo de hora" />` (copie props mínimos de `InputSection.tsx`/`DateRangePickerSection.tsx` se necessário).
 13. `Combobox (focus-within)` → copie o uso de `ComboboxSection.tsx`, mantendo só 2 itens.
 
-**Réplicas** (copie a string de classe do arquivo-fonte; abaixo, o valor atual em 03/11/2026):
-14. `Link do dia (Home)` — `Réplica de features/home/HomeCalendarView.tsx`:
+**Réplicas** (copie a string de classe do arquivo-fonte; abaixo, o valor atual em 03/11/2026): 14. `Link do dia (Home)` — `Réplica de features/home/HomeCalendarView.tsx`:
+
 ```tsx
-<a className="block rounded-sm underline-offset-4 squircle hover:underline focus-visible:ring-3 focus-visible:ring-ring/30" href="#tokens-focus">Link do dia</a>
+<a
+  className="block rounded-sm underline-offset-4 squircle hover:underline focus-visible:ring-3 focus-visible:ring-ring/30"
+  href="#tokens-focus"
+>
+  Link do dia
+</a>
 ```
+
 15. `Alça de reordenar` — `Réplica de features/media/ContentReorderDialog.tsx`:
+
 ```tsx
-<button aria-label="Réplica da alça" className="flex size-8 cursor-grab touch-none items-center justify-center rounded bg-black/70 text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30 active:cursor-grabbing" type="button">⠿</button>
+<button
+  aria-label="Réplica da alça"
+  className="flex size-8 cursor-grab touch-none items-center justify-center rounded bg-black/70 text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30 active:cursor-grabbing"
+  type="button"
+>
+  ⠿
+</button>
 ```
+
 16. `Remover anexo` — `Réplica de features/media/ContentReorderDialog.tsx` (botão remover):
+
 ```tsx
-<button aria-label="Réplica remover" className="flex size-8 items-center justify-center rounded bg-destructive text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30" type="button">×</button>
+<button
+  aria-label="Réplica remover"
+  className="flex size-8 items-center justify-center rounded bg-destructive text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30"
+  type="button"
+>
+  ×
+</button>
 ```
+
 17. `Editor de texto (focus-within)` — `Réplica de routes/app/admin/partner/$slug.tsx`:
+
 ```tsx
 <div className="min-h-25 w-72 overflow-hidden rounded-2xl bg-input/50 text-base shadow-sm transition-[color,box-shadow] squircle focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/30 md:text-sm">
-  <textarea aria-label="Réplica do editor admin" className="h-full min-h-25 w-full resize-none bg-transparent p-3 outline-none" placeholder="Clique ou Tab aqui" />
+  <textarea
+    aria-label="Réplica do editor admin"
+    className="h-full min-h-25 w-full resize-none bg-transparent p-3 outline-none"
+    placeholder="Clique ou Tab aqui"
+  />
 </div>
 ```
+
 18. `Cartão em edição (focus-within)` — `Réplica de features/ActionItem.tsx` (estado `isEditing`; o foco é `ring-3 ring-ring/30`, NÃO o `ring-primary`):
+
 ```tsx
 <div className="w-72 rounded-2xl border bg-card p-3 text-sm focus-within:ring-3 focus-within:ring-ring/30">
-  <input aria-label="Réplica do cartão em edição" className="w-full bg-transparent outline-none" placeholder="Clique ou Tab aqui" />
+  <input
+    aria-label="Réplica do cartão em edição"
+    className="w-full bg-transparent outline-none"
+    placeholder="Clique ou Tab aqui"
+  />
 </div>
 ```
+
 19-22. **Estados** (mesmo anel, cor muda), todos reais/Prism:
-   - `Botão destrutivo` → `<PrismButton variant="destructive">Excluir</PrismButton>` (`focus-visible:ring-destructive/20`, `/40` no escuro)
-   - `Botão sucesso` → `<PrismButton variant="success">Confirmar</PrismButton>` (`focus-visible:ring-success-accent/30`)
-   - `Input inválido` → `<PrismInput aria-invalid aria-label="Input inválido" className="w-56" defaultValue="valor inválido" />` (`aria-invalid:ring-3 aria-invalid:ring-destructive/20`)
-   - `Campo de cor com erro` — `Réplica de features/action-drawer/PartnerColorPicker.tsx`: `<PrismInput aria-label="Campo de cor inválido" className="h-8 w-32 font-mono tracking-wider uppercase bg-destructive/5 text-destructive ring-destructive focus-visible:border-destructive focus-visible:ring-destructive/20" defaultValue="#ZZZZZZ" />` (string do `isInvalid &&` atual; ajuste a ordem das classes só se o Prettier exigir).
+
+- `Botão destrutivo` → `<PrismButton variant="destructive">Excluir</PrismButton>` (`focus-visible:ring-destructive/20`, `/40` no escuro)
+- `Botão sucesso` → `<PrismButton variant="success">Confirmar</PrismButton>` (`focus-visible:ring-success-accent/30`)
+- `Input inválido` → `<PrismInput aria-invalid aria-label="Input inválido" className="w-56" defaultValue="valor inválido" />` (`aria-invalid:ring-3 aria-invalid:ring-destructive/20`)
+- `Campo de cor com erro` — `Réplica de features/action-drawer/PartnerColorPicker.tsx`: `<PrismInput aria-label="Campo de cor inválido" className="h-8 w-32 font-mono tracking-wider uppercase bg-destructive/5 text-destructive ring-destructive focus-visible:border-destructive focus-visible:ring-destructive/20" defaultValue="#ZZZZZZ" />` (string do `isInvalid &&` atual; ajuste a ordem das classes só se o Prettier exigir).
 
 Agrupe os 19-22 sob um subtítulo de uma linha dentro da família (`<p className="w-full text-xs font-semibold text-muted-foreground uppercase">Estados: destrutivo, sucesso e erro</p>`) antes deles. Não crie uma sétima família.
 
 ---
+
 ### 2. Anel por dentro (`ring-inset`)
 
 - `id="focus-inset"` · `title="Anel por dentro (ring-inset)"`
@@ -3385,24 +3441,54 @@ Agrupe os 19-22 sob um subtítulo de uma linha dentro da família (`<p className
 - `usedBy`: `"features/CalendarDayCell.tsx (célula do dia)"`, `"layout/KanbanPhasesBoard.tsx (coluna de fase)"`, `"routes/app/profile.tsx (duas regiões roláveis)"`, `"features/action-drawer/conflict-comparison.tsx (coluna de campos)"`, `"features/action-drawer/ActionFormDrawer.tsx (botão Fechar: também bg-input)"`, `"features/media/WorkFileThumbnail.tsx (link da miniatura)"`, `"features/media/InstagramPreview.tsx (carrossel)"`
 
 Não há componente Prism com inset: todos são **réplicas** (os reais dependem de dados do app). Exemplos:
+
 1. `Região rolável` — `Réplica de layout/KanbanPhasesBoard.tsx`:
+
 ```tsx
-<div className="flex h-24 w-72 flex-col overflow-y-auto p-1 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:ring-inset" tabIndex={0}>Região rolável (coluna, célula, painel)</div>
+<div
+  className="flex h-24 w-72 flex-col overflow-y-auto p-1 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:ring-inset"
+  tabIndex={0}
+>
+  Região rolável (coluna, célula, painel)
+</div>
 ```
+
 2. `Botão Fechar da gaveta` — `Réplica de features/action-drawer/ActionFormDrawer.tsx` (anel inset + fundo):
+
 ```tsx
-<button aria-label="Réplica fechar" className="flex cursor-pointer items-center justify-center border-b px-3 py-3 text-sm font-medium outline-none focus-visible:bg-input focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:ring-inset sm:p-5" type="button">Fechar</button>
+<button
+  aria-label="Réplica fechar"
+  className="flex cursor-pointer items-center justify-center border-b px-3 py-3 text-sm font-medium outline-none focus-visible:bg-input focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:ring-inset sm:p-5"
+  type="button"
+>
+  Fechar
+</button>
 ```
+
 3. `Miniatura de anexo` — `Réplica de features/media/WorkFileThumbnail.tsx`:
+
 ```tsx
-<a className="block size-20 rounded-2xl bg-secondary outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:ring-inset" href="#tokens-focus">Arquivo</a>
+<a
+  className="block size-20 rounded-2xl bg-secondary outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:ring-inset"
+  href="#tokens-focus"
+>
+  Arquivo
+</a>
 ```
+
 4. `Carrossel` — `Réplica de features/media/InstagramPreview.tsx`:
+
 ```tsx
-<div className="flex h-24 w-72 touch-pan-x touch-pan-y snap-x snap-mandatory [scrollbar-width:none] items-center justify-center overflow-x-auto overscroll-x-contain outline-none focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:ring-inset [&::-webkit-scrollbar]:hidden" tabIndex={0}>Carrossel</div>
+<div
+  className="flex h-24 w-72 touch-pan-x touch-pan-y snap-x snap-mandatory items-center justify-center overflow-x-auto overscroll-x-contain outline-none [scrollbar-width:none] focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:ring-inset [&::-webkit-scrollbar]:hidden"
+  tabIndex={0}
+>
+  Carrossel
+</div>
 ```
 
 ---
+
 ### 3. Foco por fundo (sem anel)
 
 - `id="focus-background"` · `title="Foco por fundo"`
@@ -3412,12 +3498,14 @@ Não há componente Prism com inset: todos são **réplicas** (os reais dependem
 - `usedBy`: `"Prism: dropdown-menu, select, combobox, command (itens: secondary/50)"`, `"Prism: tabs (underline e drawer: bg-input)"`, `"Prism: time-field (segmento: bg-primary)"`, `"features/RichTextEditor.tsx (barra: bg-input)"`, `"features/ComboboxTrigger.tsx variante form-footer (ver nota)"`, `"layout/Header.tsx (Sair: bg-destructive/10)"`, `"features/HelpPage.tsx e routes/app/notifications.tsx (bg-foreground/5)"`
 
 Exemplos **reais** (prefira sempre):
+
 1. `Item de menu` → `PrismMenu` com `PrismButton` de gatilho e dois `PrismMenuItem` (estrutura de `MenuSection.tsx`, só 2 itens). `hint="Abra com Enter e use as setas"`.
 2. `Item destrutivo (Sair)` → igual ao 1, com um terceiro item `<PrismMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive">Sair</PrismMenuItem>` (classe copiada de `layout/Header.tsx`). Pode ser o mesmo menu do exemplo 1 (um só exemplo "Menu: item e item destrutivo") para não duplicar gatilho.
 3. `Item de select` → o mesmo `PrismSelect` da família 1, mas `hint="Abra com Enter e use as setas"` (o foco do item é `data-focused:bg-secondary/50`).
 4. `Item de combobox` → o mesmo `PrismCombobox` da família 1; `hint="Digite e use as setas"`.
 5. `Item de command` → `PrismCommand` com `PrismCommandInput` e `PrismCommandList`/`PrismCommandItem` (copie de `CommandSection.tsx`, 2 itens; se só funcionar dentro de popover, use a mesma estrutura de popover dela). `hint="Digite e use as setas"`.
 6. `Abas underline` →
+
 ```tsx
 <PrismTabs defaultSelectedKey="a" variant="underline">
   <PrismTabList aria-label="Abas underline">
@@ -3426,22 +3514,38 @@ Exemplos **reais** (prefira sempre):
   </PrismTabList>
 </PrismTabs>
 ```
+
 7. `Abas drawer` → igual, `variant="drawer"` e `aria-label="Abas drawer"`.
 8. `Segmento de hora` → o mesmo `PrismTimeField` da família 1 (segmento `focus:bg-primary`); só um exemplo extra com `hint="Tab entra nos segmentos"`. Se parecer duplicado, referencie-o na `rule` em vez de repetir.
 9. `Barra do editor` → `RichTextEditor` real (uso mínimo de `ui-sections/RichTextEditorSection.tsx`: `compactToolbar`, `content` em `useState("")`, `handleChange`). O foco é nos botões da barra (`data-[focus-visible]:bg-input`). `hint="Alt+Shift+F10 ou Tab até a barra"`. Se não montar sem dados, use a réplica:
+
 ```tsx
-<button aria-label="Réplica botão da barra" className="flex size-8 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all outline-none hover:bg-secondary hover:text-foreground data-[focus-visible]:bg-input data-[focus-visible]:text-foreground squircle" type="button">B</button>
+<button
+  aria-label="Réplica botão da barra"
+  className="flex size-8 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all outline-none squircle hover:bg-secondary hover:text-foreground data-[focus-visible]:bg-input data-[focus-visible]:text-foreground"
+  type="button"
+>
+  B
+</button>
 ```
+
 (`Réplica de features/RichTextEditor.tsx`; atenção: `data-[focus-visible]` só dispara em componente React Aria; numa réplica use `focus-visible:bg-input focus-visible:text-foreground` e anote isso no `source`.)
 
-**Réplicas** (só quando não há componente simples):
-10. `Linha de ajuda / notificação (foreground/5)` — `Réplica de features/HelpPage.tsx`:
+**Réplicas** (só quando não há componente simples): 10. `Linha de ajuda / notificação (foreground/5)` — `Réplica de features/HelpPage.tsx`:
+
 ```tsx
-<button className="w-56 rounded-md px-2 py-1.5 text-left text-sm outline-none squircle focus-visible:bg-foreground/5" type="button">Linha de lista</button>
+<button
+  className="w-56 rounded-md px-2 py-1.5 text-left text-sm outline-none squircle focus-visible:bg-foreground/5"
+  type="button"
+>
+  Linha de lista
+</button>
 ```
+
 11. `Gatilho form-footer (ComboboxTrigger)` → componente **real**: `<ComboboxTrigger aria-label="Exemplo de gatilho do rodapé" variant="form-footer">…</ComboboxTrigger>` com um ícone Lucide qualquer (`CalendarIcon`, sufixo Icon). **NOTA / DIVERGÊNCIA:** AGENTS.md e final-status listam `form-footer` como foco por fundo, mas o código atual (`ComboboxTrigger.tsx`) compõe `buttonVariants({ variant: "ghost", ... })`, que usa o **anel padrão** `ring-3 ring-ring/30` (não há `bg-input`). Mostre o componente real, **não invente a classe**, e escreva no relatório o que você viu de fato ao dar Tab. Coloque este exemplo na família 3 mesmo assim e anote no `source`: `App real (hoje usa o anel do ghost; ver relatório)`.
 
 ---
+
 ### 4. Sem anel de propósito
 
 - `id="focus-none"` · `title="Sem anel de propósito"`
@@ -3451,19 +3555,40 @@ Exemplos **reais** (prefira sempre):
 - `usedBy`: `"features/ActionItemTitleInput.tsx (título inline: fundo muda para bg-muted)"`, `"features/ActionComments/CommentInput.tsx (comentário)"`, `"features/action-drawer/ActionDatePicker.tsx (data: sublinhado)"`, `"Prism: accordion (gatilho sem classe de foco; só hover:underline)"`, `"Prism: button variante unstyled e input-group (o anel fica no grupo)"`
 
 Exemplos:
+
 1. `Título inline` — `Réplica de features/ActionItemTitleInput.tsx`:
+
 ```tsx
-<input aria-label="Réplica do título inline" className="w-56 rounded-md border-0 bg-muted/80 px-1.5 py-0.5 text-sm text-foreground ring-0 transition-colors outline-none squircle focus:bg-muted focus:ring-0 focus:outline-none" defaultValue="Título da ação" />
+<input
+  aria-label="Réplica do título inline"
+  className="w-56 rounded-md border-0 bg-muted/80 px-1.5 py-0.5 text-sm text-foreground ring-0 transition-colors outline-none squircle focus:bg-muted focus:ring-0 focus:outline-none"
+  defaultValue="Título da ação"
+/>
 ```
+
 2. `Comentário` (Prism com override, igual ao uso real em `ActionComments/CommentInput.tsx`):
+
 ```tsx
-<PrismTextarea aria-label="Exemplo de comentário" className="min-h-20 w-56 rounded-none border-0 p-0 text-sm shadow-none focus:border-0 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none" placeholder="Escreva um comentário" />
+<PrismTextarea
+  aria-label="Exemplo de comentário"
+  className="min-h-20 w-56 rounded-none border-0 p-0 text-sm shadow-none focus:border-0 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
+  placeholder="Escreva um comentário"
+/>
 ```
+
 3. `Data da gaveta (sublinhado)` — `Réplica de features/action-drawer/ActionDatePicker.tsx`:
+
 ```tsx
-<div className="w-fit cursor-pointer text-sm underline-offset-2 outline-none hover:underline focus-visible:underline" tabIndex={0}>12 de novembro</div>
+<div
+  className="w-fit cursor-pointer text-sm underline-offset-2 outline-none hover:underline focus-visible:underline"
+  tabIndex={0}
+>
+  12 de novembro
+</div>
 ```
+
 4. `Accordion` (Prism real):
+
 ```tsx
 <PrismAccordion className="w-72">
   <PrismAccordionItem id="a">
@@ -3472,11 +3597,13 @@ Exemplos:
   </PrismAccordionItem>
 </PrismAccordion>
 ```
+
 5. `Botão unstyled` (Prism real) → `<PrismButton variant="unstyled">Unstyled</PrismButton>`
 
 A "busca de parceiros" não aparece mais com override sem anel no código (grep de `focus-visible:border-transparent` não retorna nada). **Não a inclua**; reporte o que encontrar em `GlobalSearchCommand.tsx`/`PartnersCombobox.tsx`.
 
 ---
+
 ### 5. Não é foco: estados de seleção
 
 - `id="focus-selection"` · `title="Não é foco: estados de seleção"`
@@ -3486,11 +3613,13 @@ A "busca de parceiros" não aparece mais com override sem anel no código (grep 
 - `usedBy`: `"features/action-drawer/PartnerColorPicker.tsx (cor escolhida)"`, `"features/ColorListEditor.tsx (item arrastado)"`, `"features/ActionItem.tsx (selecionado / sprint)"`, `"planning/PlanningCalendarView.tsx (dia selecionado)"`
 
 Exemplos (todos **réplicas estáticas SEM `tabIndex`**, porque não recebem foco; legenda com `hint="Estado estático: não é foco"`):
+
 1. `Cor escolhida` — `Réplica de features/action-drawer/PartnerColorPicker.tsx`: `<div aria-hidden className="size-8 scale-105 rounded-full bg-primary ring-2 ring-primary ring-offset-1" />`
 2. `Cartão selecionado` — `Réplica de features/ActionItem.tsx`: `<div className="w-56 rounded-2xl border bg-card p-3 text-sm ring-2 ring-primary">Ação selecionada</div>`
 3. `Dia selecionado` — `Réplica de planning/PlanningCalendarView.tsx`: `<div className="w-24 rounded-2xl bg-primary/10 p-3 text-center text-sm ring-2 ring-primary ring-inset">12</div>`
 
 ---
+
 ### 6. Fallback global
 
 - `id="focus-global"` · `title="Fallback global (outline)"`
@@ -3889,25 +4018,25 @@ Escopo: as 3 linhas entre o título e a descrição em `app/components/features/
 
 Linhas do arquivo `EssentialsTab.tsx`. Padrão: xs 24 / sm 32 / default 40 / lg 48; conteúdo xs `size-3`, sm `size-4`, default/lg `size-5`; texto xs `text-xs`, sm/default `text-sm`.
 
-| Linha | Controle (arquivo:linha) | Componente / variante / tamanho | Altura | Ícone / conteúdo | Texto | Classificação |
-| --- | --- | --- | --- | --- | --- | --- |
-| Compacta (só <640px) — contêiner :240 | `py-1 pr-2 pl-4`, `gap-2`, `border-b` | div | 8 + 32 + 1 = 41px | | | custom (padding próprio) |
-| Compacta | Ícone de data :184 | `CalendarDaysIcon size-4` solto, `opacity-50` | ícone 16px | 16px | | custom (fora de botão, opacidade manual) |
-| Compacta e linha 2 | Data (`ActionDatePicker` :190, `ActionDatePicker.tsx:50-61`) | `div role=button` + `Pressable`, sublinhado no hover; sem `buttonVariants`; `className` com `opacity-50`/`text-destructive` | ~20px (altura de linha) | sem ícone próprio (o `size="sm"` com ícone 14px nem é usado aqui) | `text-sm` herdado | inconsistente (não é botão do sistema; alvo de toque 20px) |
-| Compacta | Ícone de arquivos :248 | `FileIcon size-4` em `span` `opacity-50` | 16px | 16px | | custom |
-| Compacta | Expandir :251 | `PrismButton ghost icon-sm` | 32px | `ChevronDownIcon size-4` | | OK (único já no padrão) |
-| 1 — contêiner :271 | `px-4 py-2`, `gap-2 sm:gap-4`, `flex-wrap` | div | 16 + conteúdo + 1 (hoje 49px) | | | inconsistente (py-2) |
-| 1 | Tempo (`ActionTimeDisplay` :273) | div de texto, `opacity-50` | ~20px | | `text-sm` herdado | custom (texto, não botão) |
-| 1 | Responsáveis (`ResponsiblesCombobox` :275, `ComboboxTrigger form-link`) | `buttonVariants link sm` + `overflow-hidden` | 32px | avatares `SIZE.sm` (24px?) em botão sm (16px); sem avatar: `User2Icon size-4` | `text-xs text-muted-foreground` (conteúdo) | inconsistente (avatar 24 > 16; `text-xs` em botão sm; muted manual). Vai a ghost/link `sm` (ticket 13) |
-| 1 | ID :290 | `PrismButton ghost` (default 40px) sobrescrito por `h-6 px-2 font-mono text-[10px]` | 24px | | 10px | custom (3 sobrescritas; `text-[10px]` fora da escala) |
-| 2 — contêiner :303 | `px-4 py-1.5`, `gap-2`, `justify-between` | div | 12 + 24 + 1 = 37px (33px sem estratégia) | | | inconsistente (py-1.5) |
-| 2 | Data no desktop (`dateControl` :306) | ver acima | ~20px | ícone 16px `opacity-50` | `text-sm` | inconsistente |
-| 2 | Ver estratégias :326 | `PrismButton secondary xs` dentro de `PrismButtonGroup` | 24px | `ListIcon` 12px | `text-xs` | OK |
-| 2 | Criar/Recriar estratégia :342 | `PrismButton secondary xs`, `truncate` | 24px | `SparkleIcon`/`LoaderIcon` 12px | `text-xs` maiúsculas | OK (tamanho); `min-w-0 shrink` aceitável |
-| 3 — contêiner :365 | `px-4 py-1`, `gap-2`, `overflow-hidden` | div | 8 + 32 + 1 = 41px | | | inconsistente (py-1) |
-| 3 | Miniaturas (`WorkFileThumbnail.tsx:20`) | `size-8` próprio, `rounded-2xl`/`rounded-lg` misturados; remover `size-4` | 32px | extensão `text-[8px]`; botão X `size-4` / ícone `size-2.5` | 8px | custom (tamanho = sm por acaso; X de 16px é alvo mínimo; `text-[8px]`) |
-| 3 | Adicionar arquivo, vazio :384 | `CloudinaryUpload unstyled sm` + `h-8 gap-1 p-0 text-muted-foreground underline` | 32px | `FilePlus size-4` | `text-sm` | custom (unstyled + 6 classes) |
-| 3 | Adicionar arquivo, com arquivos :384 | `CloudinaryUpload secondary icon-xs` | 24px | `FilePlus size-4` (>12px do xs; `icon-xs` força 16px) | | inconsistente (24px entre miniaturas de 32px) |
+| Linha                                 | Controle (arquivo:linha)                                                | Componente / variante / tamanho                                                                                             | Altura                                   | Ícone / conteúdo                                                              | Texto                                      | Classificação                                                                                          |
+| ------------------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| Compacta (só <640px) — contêiner :240 | `py-1 pr-2 pl-4`, `gap-2`, `border-b`                                   | div                                                                                                                         | 8 + 32 + 1 = 41px                        |                                                                               |                                            | custom (padding próprio)                                                                               |
+| Compacta                              | Ícone de data :184                                                      | `CalendarDaysIcon size-4` solto, `opacity-50`                                                                               | ícone 16px                               | 16px                                                                          |                                            | custom (fora de botão, opacidade manual)                                                               |
+| Compacta e linha 2                    | Data (`ActionDatePicker` :190, `ActionDatePicker.tsx:50-61`)            | `div role=button` + `Pressable`, sublinhado no hover; sem `buttonVariants`; `className` com `opacity-50`/`text-destructive` | ~20px (altura de linha)                  | sem ícone próprio (o `size="sm"` com ícone 14px nem é usado aqui)             | `text-sm` herdado                          | inconsistente (não é botão do sistema; alvo de toque 20px)                                             |
+| Compacta                              | Ícone de arquivos :248                                                  | `FileIcon size-4` em `span` `opacity-50`                                                                                    | 16px                                     | 16px                                                                          |                                            | custom                                                                                                 |
+| Compacta                              | Expandir :251                                                           | `PrismButton ghost icon-sm`                                                                                                 | 32px                                     | `ChevronDownIcon size-4`                                                      |                                            | OK (único já no padrão)                                                                                |
+| 1 — contêiner :271                    | `px-4 py-2`, `gap-2 sm:gap-4`, `flex-wrap`                              | div                                                                                                                         | 16 + conteúdo + 1 (hoje 49px)            |                                                                               |                                            | inconsistente (py-2)                                                                                   |
+| 1                                     | Tempo (`ActionTimeDisplay` :273)                                        | div de texto, `opacity-50`                                                                                                  | ~20px                                    |                                                                               | `text-sm` herdado                          | custom (texto, não botão)                                                                              |
+| 1                                     | Responsáveis (`ResponsiblesCombobox` :275, `ComboboxTrigger form-link`) | `buttonVariants link sm` + `overflow-hidden`                                                                                | 32px                                     | avatares `SIZE.sm` (24px?) em botão sm (16px); sem avatar: `User2Icon size-4` | `text-xs text-muted-foreground` (conteúdo) | inconsistente (avatar 24 > 16; `text-xs` em botão sm; muted manual). Vai a ghost/link `sm` (ticket 13) |
+| 1                                     | ID :290                                                                 | `PrismButton ghost` (default 40px) sobrescrito por `h-6 px-2 font-mono text-[10px]`                                         | 24px                                     |                                                                               | 10px                                       | custom (3 sobrescritas; `text-[10px]` fora da escala)                                                  |
+| 2 — contêiner :303                    | `px-4 py-1.5`, `gap-2`, `justify-between`                               | div                                                                                                                         | 12 + 24 + 1 = 37px (33px sem estratégia) |                                                                               |                                            | inconsistente (py-1.5)                                                                                 |
+| 2                                     | Data no desktop (`dateControl` :306)                                    | ver acima                                                                                                                   | ~20px                                    | ícone 16px `opacity-50`                                                       | `text-sm`                                  | inconsistente                                                                                          |
+| 2                                     | Ver estratégias :326                                                    | `PrismButton secondary xs` dentro de `PrismButtonGroup`                                                                     | 24px                                     | `ListIcon` 12px                                                               | `text-xs`                                  | OK                                                                                                     |
+| 2                                     | Criar/Recriar estratégia :342                                           | `PrismButton secondary xs`, `truncate`                                                                                      | 24px                                     | `SparkleIcon`/`LoaderIcon` 12px                                               | `text-xs` maiúsculas                       | OK (tamanho); `min-w-0 shrink` aceitável                                                               |
+| 3 — contêiner :365                    | `px-4 py-1`, `gap-2`, `overflow-hidden`                                 | div                                                                                                                         | 8 + 32 + 1 = 41px                        |                                                                               |                                            | inconsistente (py-1)                                                                                   |
+| 3                                     | Miniaturas (`WorkFileThumbnail.tsx:20`)                                 | `size-8` próprio, `rounded-2xl`/`rounded-lg` misturados; remover `size-4`                                                   | 32px                                     | extensão `text-[8px]`; botão X `size-4` / ícone `size-2.5`                    | 8px                                        | custom (tamanho = sm por acaso; X de 16px é alvo mínimo; `text-[8px]`)                                 |
+| 3                                     | Adicionar arquivo, vazio :384                                           | `CloudinaryUpload unstyled sm` + `h-8 gap-1 p-0 text-muted-foreground underline`                                            | 32px                                     | `FilePlus size-4`                                                             | `text-sm`                                  | custom (unstyled + 6 classes)                                                                          |
+| 3                                     | Adicionar arquivo, com arquivos :384                                    | `CloudinaryUpload secondary icon-xs`                                                                                        | 24px                                     | `FilePlus size-4` (>12px do xs; `icon-xs` força 16px)                         |                                            | inconsistente (24px entre miniaturas de 32px)                                                          |
 
 Resumo: alturas de controle 20 (data/tempo), 24 (ID, estratégia, upload com arquivos), 32 (responsáveis, expandir, miniaturas, upload vazio); três paddings verticais (8, 6, 4 por lado); três tamanhos de texto fora da escala (`10px`, `8px`, `text-xs` em sm); ícones 12/14/16; opacidade manual em 4 lugares.
 
@@ -3921,17 +4050,17 @@ Altura de linha: todas as linhas `py-1` + controles de 32px = 40px + 1px de bord
 
 ### Mudanças por controle
 
-| # | Controle | Mudança |
-| --- | --- | --- |
-| 1 | Contêineres das linhas :240, :271, :303, :365 | mesmo `px-4 py-1` e `gap-2`; mesma borda |
-| 2 | Data (`ActionDatePicker`) | virar botão do sistema: `PrismButton variant="ghost" size="sm"` (ou `link`) como gatilho do popover, com `CalendarDaysIcon` interno (herda `size-4`, 60%); remover o ícone solto :184, `opacity-50` e o ramo `size="sm"` com ícone 14px; atrasada: `text-destructive` no botão. Conferir `TokensFocusSection.tsx:511,536` (réplica do foco da data) |
-| 3 | Tempo (`ActionTimeDisplay`) | continua texto, mas em `h-8 flex items-center text-sm text-muted-foreground`; sem `opacity-50` |
-| 4 | Responsáveis | ticket 13 (ghost `sm`, avatares `size-4`, sem texto muted); aqui só garantir 32px |
-| 5 | ID | `PrismButton ghost size="sm"` com `font-mono`; remover `h-6 px-2 text-[10px]` |
-| 6 | Estratégia (2 botões) | `size="sm"`; ícones herdam `size-4` |
-| 7 | Miniaturas | manter `size-8`; `rounded-2xl squircle` em ambos os ramos (remover `rounded-lg`); extensão `text-[8px]` → `text-[10px]` ou ícone `FileIcon size-4` com extensão em `text-xs` |
-| 8 | Upload | vazio: `variant="ghost" size="sm"` com `FilePlus` + "Adicionar arquivo" (remover `unstyled`, sublinhado e `text-muted-foreground`); com arquivos: `icon-sm` (32px) em vez de `icon-xs` |
-| 9 | Ícone de arquivos compacto :248 | `FileIcon` dentro de `span h-8 w-8 flex items-center justify-center` (alinha a 32px); sem `opacity-50` manual (usa a opacidade de ícones do botão ou `text-muted-foreground`) |
+| #   | Controle                                      | Mudança                                                                                                                                                                                                                                                                                                                                             |
+| --- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Contêineres das linhas :240, :271, :303, :365 | mesmo `px-4 py-1` e `gap-2`; mesma borda                                                                                                                                                                                                                                                                                                            |
+| 2   | Data (`ActionDatePicker`)                     | virar botão do sistema: `PrismButton variant="ghost" size="sm"` (ou `link`) como gatilho do popover, com `CalendarDaysIcon` interno (herda `size-4`, 60%); remover o ícone solto :184, `opacity-50` e o ramo `size="sm"` com ícone 14px; atrasada: `text-destructive` no botão. Conferir `TokensFocusSection.tsx:511,536` (réplica do foco da data) |
+| 3   | Tempo (`ActionTimeDisplay`)                   | continua texto, mas em `h-8 flex items-center text-sm text-muted-foreground`; sem `opacity-50`                                                                                                                                                                                                                                                      |
+| 4   | Responsáveis                                  | ticket 13 (ghost `sm`, avatares `size-4`, sem texto muted); aqui só garantir 32px                                                                                                                                                                                                                                                                   |
+| 5   | ID                                            | `PrismButton ghost size="sm"` com `font-mono`; remover `h-6 px-2 text-[10px]`                                                                                                                                                                                                                                                                       |
+| 6   | Estratégia (2 botões)                         | `size="sm"`; ícones herdam `size-4`                                                                                                                                                                                                                                                                                                                 |
+| 7   | Miniaturas                                    | manter `size-8`; `rounded-2xl squircle` em ambos os ramos (remover `rounded-lg`); extensão `text-[8px]` → `text-[10px]` ou ícone `FileIcon size-4` com extensão em `text-xs`                                                                                                                                                                        |
+| 8   | Upload                                        | vazio: `variant="ghost" size="sm"` com `FilePlus` + "Adicionar arquivo" (remover `unstyled`, sublinhado e `text-muted-foreground`); com arquivos: `icon-sm` (32px) em vez de `icon-xs`                                                                                                                                                              |
+| 9   | Ícone de arquivos compacto :248               | `FileIcon` dentro de `span h-8 w-8 flex items-center justify-center` (alinha a 32px); sem `opacity-50` manual (usa a opacidade de ícones do botão ou `text-muted-foreground`)                                                                                                                                                                       |
 
 ### Padrão de recolher/expandir
 
@@ -3964,11 +4093,13 @@ Decisões a tomar (recomendação em negrito):
 ## Execução
 
 Simples, delegável a executor externo (Gemini), sem tocar foco nem compacto:
+
 - #1 paddings/gaps dos contêineres (apenas classes);
 - #5 ID; #6 botões de estratégia para `sm`; #7 miniaturas (`rounded`, texto); #8 upload (variantes/tamanhos);
 - #3 `ActionTimeDisplay` (classes).
 
 Exigem cuidado (Claude):
+
 - #2 data como botão: `Pressable`/`PrismPopoverTrigger`, foco por teclado, `TokensFocusSection` e o fluxo de salvar ao fechar o popover;
 - #9 e o item "padrão de recolher/expandir": estado em `ActionFormDrawer`, `hidden`/`id`, ordem de foco do FocusScope, medição de `ResizeObserver` (as 3 filhas diretas do scroller), modo compacto e `useShortWritingPanel`;
 - #4 depende do ticket 13.
@@ -5885,7 +6016,6 @@ Prévia: `<ULoader size={size} />`. `caption`: `` `${size} · ${SIZE_PX[size]}px
 - Prettier / `tsc`: 0 erros, Biome clean.
 - Navegador: testado, renderização conforme especificação sem bordas ou caixas extras.
 
-
 ## Revisão independente — 04/11/2026
 
 Entrega encontrada e montagem básica conferida. Pendência de Prettier. [Parecer e limites](../../docs/audits/2026-11-04-ui-tickets-25-34-review.md).
@@ -5958,7 +6088,6 @@ Prévia: `<UToggleInput checked={checked} disabled={disabled} id={id} name="gall
 - Navegador (incluindo foco por teclado): alternância visual funcional; com type="radio", comportamento nativo mantido. Foco por teclado alcança o input nativo.
 - Pendências: nenhuma.
 
-
 ## Revisão independente — 04/11/2026
 
 Entrega encontrada e montagem básica conferida. Pendência de Prettier. [Parecer e limites](../../docs/audits/2026-11-04-ui-tickets-25-34-review.md).
@@ -6029,7 +6158,6 @@ Prévia em `w-full max-w-md`: `<UPreferenceSwitch checked={checked} description=
 - Prettier / `tsc`: 0 erros, Biome clean.
 - Navegador: testado, alternância funcional.
 - Conflito com a regra de superfícies (observação): registrado conforme contexto do ticket — o componente possui caixa própria (`rounded-2xl border p-4`, `bg-card/25` / `bg-primary/5`). A galeria renderizou sem caixas adicionais em volta.
-
 
 ## Revisão independente — 04/11/2026
 
@@ -6108,7 +6236,6 @@ Escopo: criar na aba Componentes Uzzina a seção do `UAvatarSelector` com playg
 - Navegador: seleção e desseleção funcionam com feedback via toast e remount por chave de playground.
 - Pendências: nenhuma.
 
-
 ## Revisão independente — 04/11/2026
 
 Entrega encontrada e montagem básica conferida. Pendência de Prettier. [Parecer e limites](../../docs/audits/2026-11-04-ui-tickets-25-34-review.md).
@@ -6181,7 +6308,6 @@ Prévia em `w-full max-w-md`: `<UAdminItemCard to="/ui" … />` (sem `image`).
 - Navegador (incluindo foco): truncamento de texto, avatar e selo funcionam sem quebras.
 - Pendências: nenhuma.
 
-
 ## Revisão independente — 04/11/2026
 
 Entrega encontrada e montagem básica conferida. Pendência de Prettier. [Parecer e limites](../../docs/audits/2026-11-04-ui-tickets-25-34-review.md).
@@ -6250,7 +6376,6 @@ Escopo: criar na aba Componentes Uzzina a seção do `CalendarToolbar` com playg
 - Prettier / `tsc`: 0 erros, Biome clean.
 - Navegador: navegação de dias, popover com calendário e toggle de exibição de mês testados com sucesso.
 - Pendências: nenhuma.
-
 
 ## Revisão independente — 04/11/2026
 
@@ -6321,7 +6446,6 @@ Escopo: criar na aba Componentes Uzzina a seção do `ColorListEditor` com playg
 - Prettier / `tsc`: 0 erros, Biome clean.
 - Navegador (incluindo arraste por teclado): edição de hex, reordenação via drag-and-drop, adição e remoção funcionam perfeitamente.
 - Pendências: nenhuma.
-
 
 ## Revisão independente — 04/11/2026
 
@@ -6405,7 +6529,6 @@ const DISPLAY_KEYS = [
 - Prettier / `tsc`: 0 erros, Biome clean.
 - Navegador: formatos de exibição, seleção de dia e hora, e estado atrasado funcionam conforme especificado.
 - Pendências: nenhuma.
-
 
 ## Revisão independente — 04/11/2026
 
@@ -6511,7 +6634,6 @@ const MOCK_ACTION: Action = {
 - Navegador e Network: 0 requisições de rede ao Supabase (usa mocks locais e `MOCK_PARTNERS`). Paleta de cores, sliders e hex funcionam.
 - Campos do mock ajustados: `MOCK_ACTION` contém todos os campos do tipo `Action` (`Tables<"actions">`) sem asserções.
 
-
 ## Revisão independente — 04/11/2026
 
 Entrega encontrada e montagem básica conferida. Pendência de Prettier. [Parecer e limites](../../docs/audits/2026-11-04-ui-tickets-25-34-review.md).
@@ -6600,7 +6722,6 @@ Escopo: criar na aba Componentes Uzzina a seção do `PartnerCelebrationsSelecto
 - Prettier / `tsc`: 0 erros, Biome clean.
 - Navegador: filtro por mês, busca, seleção e desseleção com mocks locais sem chamadas de rede.
 - Pendências: nenhuma.
-
 
 ## Revisão independente — 04/11/2026
 
@@ -6913,51 +7034,51 @@ Regras oficiais em [visual-controls-final-status.md](../../docs/plans/visual-con
 
 V35: o índice anterior indicava aprovação, mas a última devolutiva desta conversa ainda aguarda aceite final. V41 aprovado pelo proprietário e encerrado; migração em `57a7be3`, correções finais no commit de encerramento que inclui este índice. V36 continua somente estudo e agora aparece neste índice.
 
-| # | Ticket | Sobre o que é | Status | Commit de referência |
-|---|---|---|---|---|
-| 01 | [Anéis de foco: todos em `/30`](resolved-tickets.md#visual-controls-issues-01-focus-rings) | Uniformiza os anéis de foco dos controles com opacidade /30. | Aprovado (03/11) | b5b5f33 |
-| 02 | [Tamanho de texto por tamanho de controle](resolved-tickets.md#visual-controls-issues-02-text-sizes) | Alinha fonte e altura de linha à escala de tamanho de cada controle. | Aprovado (03/11) | b5b5f33 |
-| 03 | [Popovers e containers](resolved-tickets.md#visual-controls-issues-03-popovers-and-containers) | Padroniza superfícies, espaçamento e dimensões dos popovers e containers. | Aprovado (03/11) | b5b5f33 |
-| 04 | [Calendário da barra de ferramentas](resolved-tickets.md#visual-controls-issues-04-calendar-toolbar-date-picker) | Ajusta o seletor de data do calendário usado pela barra de ferramentas. | Aprovado (03/11) | b5b5f33 |
-| 05 | [Rodapé da gaveta (gatilhos)](resolved-tickets.md#visual-controls-issues-05-drawer-footer-triggers) | Padroniza gatilhos, avatares, ícones e comandos do rodapé da gaveta. | Aprovado pelo proprietário (03/11), 100% | ce1230b |
-| 06 | Calendário com largura fluida (colunas mín. `--cell-size`, máx. flexível) | Distribui as colunas do calendário com largura fluida e mínimo pela célula. | Aprovado (03/11) | b5b5f33 |
-| 07 | `/ui`: rolagem única e altura acompanhando a janela | Adapta a galeria à altura da janela com rolagem independente do conteúdo. | Aprovado (03/11) | b5b5f33 |
-| 08 | Seção temporária "Teste — tamanhos de texto" no `/ui` | Remove a seção temporária usada para comparar tamanhos de texto. | Removida (03/11) | b5b5f33 |
-| 09 | [`/ui`: seção "Foco" (todas as formas de foco lado a lado)](resolved-tickets.md#visual-controls-issues-09-ui-focus-section) | Reúne e ajusta exemplos de foco, incluindo o foco dos cartões de ação. | Aprovado (03/11); cartão de ação resolvido — ver [09-focus-adjustments.md](resolved-tickets.md#visual-controls-issues-09-focus-adjustments) | b5b5f33 |
-| 10 | Squircle em todo elemento arredondado (exceto `rounded-full`/`none`) | Aplica a geometria squircle aos elementos arredondados elegíveis. | Aprovado (03/11) | b5b5f33 |
-| 11 | Toggle alinhado ao Button + inset dos chips | Alinha Toggle ao Button e ajusta o espaçamento interno dos chips. | Aprovado (03/11) | b5b5f33 |
-| 12 | [Busca global: filtros como sufixo do campo](resolved-tickets.md#visual-controls-issues-12-global-search-filters) | Prevê filtros de parceiros e ações arquivadas integrados ao campo da busca global. | A fazer — executor: Claude | b5b5f33 (ticket; entrega pendente) |
-| 13 | [Variantes de `ComboboxTrigger` e conteúdo dos comboboxes fora do rodapé](resolved-tickets.md#visual-controls-issues-13-combobox-variants) | Unifica variantes e tamanhos dos comboboxes com o botão Prism. | Concluído (03/11) | b5b5f33 |
-| 14 | [`/ui`: seção "Ícones" (ícones usados no app, com significado)](resolved-tickets.md#visual-controls-issues-14-ui-icons-section) | Documenta os ícones usados pelo aplicativo, seus significados e tamanhos. | Aprovado pelo proprietário (03/11), 100% | ce1230b |
-| 15 | [Linhas de metadados da aba Essencial: tamanho único e recolher/expandir](resolved-tickets.md#visual-controls-issues-15-essentials-rows) | Uniformiza as linhas de metadados da aba Essencial e seu recolhimento. | Aprovado pelo proprietário (03/11), 100% | ce1230b |
-| 16 | [`/ui`: matriz de `PartnersCombobox` (avatar por tamanho de botão)](resolved-tickets.md#visual-controls-issues-16-ui-partners-combobox-matrix) | Demonstra tamanhos de avatares do PartnersCombobox para cada tamanho de botão. | Concluído (03/11) | b5b5f33 |
-| 17 | [`/ui`: playground de propriedades — piloto no `PrismButton`](resolved-tickets.md#visual-controls-issues-17-ui-props-playground-pilot) | Introduz o playground interativo de propriedades usando Button como piloto. | Aprovado pelo proprietário (03/11), 100% | ce1230b |
-| 18 | [`/ui`: playground em todas as seções existentes (4 lotes)](resolved-tickets.md#visual-controls-issues-18-ui-props-playground-rollout) | Expande os playgrounds da galeria e corrige Alert, grupos, placeholders, chips, Tabs e Toaster. | Concluído (100%), encerramento autorizado | ce1230b |
-| 19 | [`/ui`: seção Avatar (`PrismAvatar`)](resolved-tickets.md#visual-controls-issues-19-ui-prism-avatar-section) | Demonstra Avatar e AvatarGroup do Prism com imagem, fallback, selo e agrupamento. | Concluído (100%), revisado em 04/11 | d7efe5f |
-| 20 | [`/ui`: seção Sheet (`PrismSheet`)](resolved-tickets.md#visual-controls-issues-20-ui-prism-sheet-section) | Demonstra Sheet com quatro direções, fechamento, foco e conteúdo longo. | Concluído (100%), revisado em 04/11 | ce1230b + 8d80249 + d7efe5f |
-| 21 | [`/ui`: seção `ComboboxTrigger`](resolved-tickets.md#visual-controls-issues-21-ui-combobox-trigger-section) | Demonstra variantes, tamanhos e tipos de conteúdo do ComboboxTrigger. | Aprovado visualmente (04/11), 100% | d7efe5f |
-| 22 | [`/ui`: seção `ResponsiblesCombobox`](resolved-tickets.md#visual-controls-issues-22-ui-responsibles-combobox-section) | Demonstra seleção de responsáveis; o componente foi consolidado no UPeopleCombobox pelo V40. | Concluído (100%), revisado em 04/11 | d7efe5f |
-| 23 | [`/ui`: seção `SprintCombobox`](resolved-tickets.md#visual-controls-issues-23-ui-sprint-combobox-section) | Demonstra seleção de Sprint; o componente foi consolidado no UPeopleCombobox pelo V40. | Concluído (100%), revisado em 04/11 | d7efe5f |
-| 24 | [`/ui`: seção `PhaseIcon`](resolved-tickets.md#visual-controls-issues-24-ui-phase-icon-section) | Demonstra fases, tamanhos e variantes do PhaseIcon, preservado por decisão do proprietário. | Aprovado visualmente (04/11), 100% | d7efe5f |
-| 25 | [`/ui`: seção `ULoader`](resolved-tickets.md#visual-controls-issues-25-ui-uloader-section) | Demonstra a escala e as cores do ULoader, com padronização operacional no V42. | Aprovado (04/11), 100% — padronizado com ULoader (Ticket 42) | d7efe5f |
-| 26 | [`/ui`: seção `UToggleInput`](resolved-tickets.md#visual-controls-issues-26-ui-utoggle-input-section) | Demonstra o controle de formulário antes UToggleInput, migrado para PrismToggle no V43. | Aprovado (04/11), 100% — migrado para PrismToggle (Ticket 43) | d7efe5f |
-| 27 | [`/ui`: seção `UPreferenceSwitch`](resolved-tickets.md#visual-controls-issues-27-ui-upreference-switch-section) | Demonstra preferências com rótulo, descrição e alternância de estado. | Aprovado visualmente, 100% (04/11) | d7efe5f |
-| 28 | [`/ui`: seção `UAvatarSelector`](resolved-tickets.md#visual-controls-issues-28-ui-uavatar-selector-section) | Demonstra seleção por avatares, presets, subtítulo e limite mínimo de seleção. | Aprovado visualmente, 100% (04/11) | d7efe5f |
-| 29 | [`/ui`: seção `UAdminItemCard`](resolved-tickets.md#visual-controls-issues-29-ui-uadmin-item-card-section) | Demonstra o item administrativo com avatar, título, subtítulo e selo. | Aprovado visualmente, 100% (04/11) | d7efe5f |
-| 30 | [`/ui`: seção `CalendarToolbar`](resolved-tickets.md#visual-controls-issues-30-ui-calendar-toolbar-section) | Demonstra navegação anterior/próxima, calendário e formatos do CalendarToolbar. | Aprovado visualmente (04/11), 100% | d7efe5f |
-| 31 | [`/ui`: seção `ColorListEditor`](resolved-tickets.md#visual-controls-issues-31-ui-color-list-editor-section) | Demonstra edição e reordenação de paletas, agora com UPaletteEditor do V38. | Aprovado (04/11), 100% — substituído por UPaletteEditor (Ticket 38) | d7efe5f |
-| 32 | [`/ui`: seção `ActionDatePicker`](resolved-tickets.md#visual-controls-issues-32-ui-action-date-picker-section) | Demonstra escolha de data e hora da ação, formatos, tamanho e estado de atraso. | Aprovado visualmente (04/11), 100% | d7efe5f |
-| 33 | [`/ui`: seção `ActionColorDropdown`](resolved-tickets.md#visual-controls-issues-33-ui-action-color-dropdown-section) | Demonstra o seletor de cor da ação, substituído pelo UColorPickerDropdown do V37. | Aprovado (04/11), 100% — substituído por UColorPickerDropdown (Ticket 37) | d7efe5f |
-| 34 | [`/ui`: seção `PartnerCelebrationsSelector`](resolved-tickets.md#visual-controls-issues-34-ui-partner-celebrations-selector-section) | Demonstra a seleção de datas comemorativas da marca, revisada visualmente no V39. | Aprovado pelo proprietário (04/11), 100% | d7efe5f |
-| 35 | [`/ui`: microseções na navegação lateral](resolved-tickets.md#visual-controls-issues-35-ui-sidebar-subsections) | Revela microseções do item selecionado e navega no primeiro clique, sem disputa entre roteador e rolagem. | Implementado e verificado; aceite final pendente; 90% | d7efe5f |
-| 36 | [Estudo dos wrappers de avatar](resolved-tickets.md#visual-controls-issues-36-avatar-wrapper-comparison-study) | Estuda sobreposição entre Avatar/AvatarGroup do Prism e UAvatar/UAvatarGroup, sem autorizar refatoração. | Pendente — somente estudo; 0% | d7efe5f (ticket; entrega pendente) |
-| 37 | [Seletor de cor por parceiro e formatos](resolved-tickets.md#visual-controls-issues-37-partner-color-picker-formats) | Unifica seleção de cor, paletas por parceiro, formatos HEX/RGB/HSL/HSB e validação no UColorPickerDropdown. | Aprovado pelo proprietário (04/11), 100% | d7efe5f |
-| 38 | [UPaletteEditor e seletor compartilhado](resolved-tickets.md#visual-controls-issues-38-palette-editor-shared-color-picker) | Substitui ColorListEditor por UPaletteEditor com seletor compartilhado, reordenação e exclusão discreta. | Aprovado pelo proprietário (04/11), 100% | d7efe5f |
-| 39 | [Seletor de datas alinhado ao Prism](resolved-tickets.md#visual-controls-issues-39-celebrations-selector-prism-alignment) | Alinha o seletor de datas ao Prism com Tabs, badges, cabeçalhos mensais e títulos truncados. | Aprovado pelo proprietário, 100% (04/11) | d7efe5f |
-| 40 | [Unificar Sprint e Responsáveis](resolved-tickets.md#visual-controls-issues-40-unify-people-combobox) | Consolida responsáveis e Sprint em UPeopleCombobox preservando suas regras de seleção. | Aprovado pelo proprietário (04/11), 100% — duplicatas eliminadas em favor de UPeopleCombobox | d7efe5f |
-| 41 | [Padronizar nomes com prefixo U](resolved-tickets.md#visual-controls-issues-41-standardize-uzzina-component-names) | Padroniza nomes, arquivos, exports e imports dos componentes próprios com prefixo U. | Aprovado e encerrado, 100% (04/11) | 57a7be3 + commit de encerramento deste registro |
-| 42 | [Padronizar loaders](resolved-tickets.md#visual-controls-issues-42-standardize-loading-indicators) | Substitui indicadores arbitrários pelo ULoader com escala, cor contextual e acessibilidade. | Aprovado (04/11), 100% | d7efe5f |
-| 43 | [UToggleInput para PrismToggle](resolved-tickets.md#visual-controls-issues-43-replace-native-toggle-wrapper) | Remove UToggleInput e usa PrismToggle preservando Arquivado e o contrato de FormData. | Aprovado (04/11), 100% | d7efe5f |
+| #   | Ticket                                                                                                                                         | Sobre o que é                                                                                               | Status                                                                                                                                      | Commit de referência                            |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| 01  | [Anéis de foco: todos em `/30`](resolved-tickets.md#visual-controls-issues-01-focus-rings)                                                     | Uniformiza os anéis de foco dos controles com opacidade /30.                                                | Aprovado (03/11)                                                                                                                            | b5b5f33                                         |
+| 02  | [Tamanho de texto por tamanho de controle](resolved-tickets.md#visual-controls-issues-02-text-sizes)                                           | Alinha fonte e altura de linha à escala de tamanho de cada controle.                                        | Aprovado (03/11)                                                                                                                            | b5b5f33                                         |
+| 03  | [Popovers e containers](resolved-tickets.md#visual-controls-issues-03-popovers-and-containers)                                                 | Padroniza superfícies, espaçamento e dimensões dos popovers e containers.                                   | Aprovado (03/11)                                                                                                                            | b5b5f33                                         |
+| 04  | [Calendário da barra de ferramentas](resolved-tickets.md#visual-controls-issues-04-calendar-toolbar-date-picker)                               | Ajusta o seletor de data do calendário usado pela barra de ferramentas.                                     | Aprovado (03/11)                                                                                                                            | b5b5f33                                         |
+| 05  | [Rodapé da gaveta (gatilhos)](resolved-tickets.md#visual-controls-issues-05-drawer-footer-triggers)                                            | Padroniza gatilhos, avatares, ícones e comandos do rodapé da gaveta.                                        | Aprovado pelo proprietário (03/11), 100%                                                                                                    | ce1230b                                         |
+| 06  | Calendário com largura fluida (colunas mín. `--cell-size`, máx. flexível)                                                                      | Distribui as colunas do calendário com largura fluida e mínimo pela célula.                                 | Aprovado (03/11)                                                                                                                            | b5b5f33                                         |
+| 07  | `/ui`: rolagem única e altura acompanhando a janela                                                                                            | Adapta a galeria à altura da janela com rolagem independente do conteúdo.                                   | Aprovado (03/11)                                                                                                                            | b5b5f33                                         |
+| 08  | Seção temporária "Teste — tamanhos de texto" no `/ui`                                                                                          | Remove a seção temporária usada para comparar tamanhos de texto.                                            | Removida (03/11)                                                                                                                            | b5b5f33                                         |
+| 09  | [`/ui`: seção "Foco" (todas as formas de foco lado a lado)](resolved-tickets.md#visual-controls-issues-09-ui-focus-section)                    | Reúne e ajusta exemplos de foco, incluindo o foco dos cartões de ação.                                      | Aprovado (03/11); cartão de ação resolvido — ver [09-focus-adjustments.md](resolved-tickets.md#visual-controls-issues-09-focus-adjustments) | b5b5f33                                         |
+| 10  | Squircle em todo elemento arredondado (exceto `rounded-full`/`none`)                                                                           | Aplica a geometria squircle aos elementos arredondados elegíveis.                                           | Aprovado (03/11)                                                                                                                            | b5b5f33                                         |
+| 11  | Toggle alinhado ao Button + inset dos chips                                                                                                    | Alinha Toggle ao Button e ajusta o espaçamento interno dos chips.                                           | Aprovado (03/11)                                                                                                                            | b5b5f33                                         |
+| 12  | [Busca global: filtros como sufixo do campo](resolved-tickets.md#visual-controls-issues-12-global-search-filters)                              | Prevê filtros de parceiros e ações arquivadas integrados ao campo da busca global.                          | A fazer — executor: Claude                                                                                                                  | b5b5f33 (ticket; entrega pendente)              |
+| 13  | [Variantes de `ComboboxTrigger` e conteúdo dos comboboxes fora do rodapé](resolved-tickets.md#visual-controls-issues-13-combobox-variants)     | Unifica variantes e tamanhos dos comboboxes com o botão Prism.                                              | Concluído (03/11)                                                                                                                           | b5b5f33                                         |
+| 14  | [`/ui`: seção "Ícones" (ícones usados no app, com significado)](resolved-tickets.md#visual-controls-issues-14-ui-icons-section)                | Documenta os ícones usados pelo aplicativo, seus significados e tamanhos.                                   | Aprovado pelo proprietário (03/11), 100%                                                                                                    | ce1230b                                         |
+| 15  | [Linhas de metadados da aba Essencial: tamanho único e recolher/expandir](resolved-tickets.md#visual-controls-issues-15-essentials-rows)       | Uniformiza as linhas de metadados da aba Essencial e seu recolhimento.                                      | Aprovado pelo proprietário (03/11), 100%                                                                                                    | ce1230b                                         |
+| 16  | [`/ui`: matriz de `PartnersCombobox` (avatar por tamanho de botão)](resolved-tickets.md#visual-controls-issues-16-ui-partners-combobox-matrix) | Demonstra tamanhos de avatares do PartnersCombobox para cada tamanho de botão.                              | Concluído (03/11)                                                                                                                           | b5b5f33                                         |
+| 17  | [`/ui`: playground de propriedades — piloto no `PrismButton`](resolved-tickets.md#visual-controls-issues-17-ui-props-playground-pilot)         | Introduz o playground interativo de propriedades usando Button como piloto.                                 | Aprovado pelo proprietário (03/11), 100%                                                                                                    | ce1230b                                         |
+| 18  | [`/ui`: playground em todas as seções existentes (4 lotes)](resolved-tickets.md#visual-controls-issues-18-ui-props-playground-rollout)         | Expande os playgrounds da galeria e corrige Alert, grupos, placeholders, chips, Tabs e Toaster.             | Concluído (100%), encerramento autorizado                                                                                                   | ce1230b                                         |
+| 19  | [`/ui`: seção Avatar (`PrismAvatar`)](resolved-tickets.md#visual-controls-issues-19-ui-prism-avatar-section)                                   | Demonstra Avatar e AvatarGroup do Prism com imagem, fallback, selo e agrupamento.                           | Concluído (100%), revisado em 04/11                                                                                                         | d7efe5f                                         |
+| 20  | [`/ui`: seção Sheet (`PrismSheet`)](resolved-tickets.md#visual-controls-issues-20-ui-prism-sheet-section)                                      | Demonstra Sheet com quatro direções, fechamento, foco e conteúdo longo.                                     | Concluído (100%), revisado em 04/11                                                                                                         | ce1230b + 8d80249 + d7efe5f                     |
+| 21  | [`/ui`: seção `ComboboxTrigger`](resolved-tickets.md#visual-controls-issues-21-ui-combobox-trigger-section)                                    | Demonstra variantes, tamanhos e tipos de conteúdo do ComboboxTrigger.                                       | Aprovado visualmente (04/11), 100%                                                                                                          | d7efe5f                                         |
+| 22  | [`/ui`: seção `ResponsiblesCombobox`](resolved-tickets.md#visual-controls-issues-22-ui-responsibles-combobox-section)                          | Demonstra seleção de responsáveis; o componente foi consolidado no UPeopleCombobox pelo V40.                | Concluído (100%), revisado em 04/11                                                                                                         | d7efe5f                                         |
+| 23  | [`/ui`: seção `SprintCombobox`](resolved-tickets.md#visual-controls-issues-23-ui-sprint-combobox-section)                                      | Demonstra seleção de Sprint; o componente foi consolidado no UPeopleCombobox pelo V40.                      | Concluído (100%), revisado em 04/11                                                                                                         | d7efe5f                                         |
+| 24  | [`/ui`: seção `PhaseIcon`](resolved-tickets.md#visual-controls-issues-24-ui-phase-icon-section)                                                | Demonstra fases, tamanhos e variantes do PhaseIcon, preservado por decisão do proprietário.                 | Aprovado visualmente (04/11), 100%                                                                                                          | d7efe5f                                         |
+| 25  | [`/ui`: seção `ULoader`](resolved-tickets.md#visual-controls-issues-25-ui-uloader-section)                                                     | Demonstra a escala e as cores do ULoader, com padronização operacional no V42.                              | Aprovado (04/11), 100% — padronizado com ULoader (Ticket 42)                                                                                | d7efe5f                                         |
+| 26  | [`/ui`: seção `UToggleInput`](resolved-tickets.md#visual-controls-issues-26-ui-utoggle-input-section)                                          | Demonstra o controle de formulário antes UToggleInput, migrado para PrismToggle no V43.                     | Aprovado (04/11), 100% — migrado para PrismToggle (Ticket 43)                                                                               | d7efe5f                                         |
+| 27  | [`/ui`: seção `UPreferenceSwitch`](resolved-tickets.md#visual-controls-issues-27-ui-upreference-switch-section)                                | Demonstra preferências com rótulo, descrição e alternância de estado.                                       | Aprovado visualmente, 100% (04/11)                                                                                                          | d7efe5f                                         |
+| 28  | [`/ui`: seção `UAvatarSelector`](resolved-tickets.md#visual-controls-issues-28-ui-uavatar-selector-section)                                    | Demonstra seleção por avatares, presets, subtítulo e limite mínimo de seleção.                              | Aprovado visualmente, 100% (04/11)                                                                                                          | d7efe5f                                         |
+| 29  | [`/ui`: seção `UAdminItemCard`](resolved-tickets.md#visual-controls-issues-29-ui-uadmin-item-card-section)                                     | Demonstra o item administrativo com avatar, título, subtítulo e selo.                                       | Aprovado visualmente, 100% (04/11)                                                                                                          | d7efe5f                                         |
+| 30  | [`/ui`: seção `CalendarToolbar`](resolved-tickets.md#visual-controls-issues-30-ui-calendar-toolbar-section)                                    | Demonstra navegação anterior/próxima, calendário e formatos do CalendarToolbar.                             | Aprovado visualmente (04/11), 100%                                                                                                          | d7efe5f                                         |
+| 31  | [`/ui`: seção `ColorListEditor`](resolved-tickets.md#visual-controls-issues-31-ui-color-list-editor-section)                                   | Demonstra edição e reordenação de paletas, agora com UPaletteEditor do V38.                                 | Aprovado (04/11), 100% — substituído por UPaletteEditor (Ticket 38)                                                                         | d7efe5f                                         |
+| 32  | [`/ui`: seção `ActionDatePicker`](resolved-tickets.md#visual-controls-issues-32-ui-action-date-picker-section)                                 | Demonstra escolha de data e hora da ação, formatos, tamanho e estado de atraso.                             | Aprovado visualmente (04/11), 100%                                                                                                          | d7efe5f                                         |
+| 33  | [`/ui`: seção `ActionColorDropdown`](resolved-tickets.md#visual-controls-issues-33-ui-action-color-dropdown-section)                           | Demonstra o seletor de cor da ação, substituído pelo UColorPickerDropdown do V37.                           | Aprovado (04/11), 100% — substituído por UColorPickerDropdown (Ticket 37)                                                                   | d7efe5f                                         |
+| 34  | [`/ui`: seção `PartnerCelebrationsSelector`](resolved-tickets.md#visual-controls-issues-34-ui-partner-celebrations-selector-section)           | Demonstra a seleção de datas comemorativas da marca, revisada visualmente no V39.                           | Aprovado pelo proprietário (04/11), 100%                                                                                                    | d7efe5f                                         |
+| 35  | [`/ui`: microseções na navegação lateral](resolved-tickets.md#visual-controls-issues-35-ui-sidebar-subsections)                                | Revela microseções do item selecionado e navega no primeiro clique, sem disputa entre roteador e rolagem.   | Implementado e verificado; aceite final pendente; 90%                                                                                       | d7efe5f                                         |
+| 36  | [Estudo dos wrappers de avatar](resolved-tickets.md#visual-controls-issues-36-avatar-wrapper-comparison-study)                                 | Estuda sobreposição entre Avatar/AvatarGroup do Prism e UAvatar/UAvatarGroup, sem autorizar refatoração.    | Pendente — somente estudo; 0%                                                                                                               | d7efe5f (ticket; entrega pendente)              |
+| 37  | [Seletor de cor por parceiro e formatos](resolved-tickets.md#visual-controls-issues-37-partner-color-picker-formats)                           | Unifica seleção de cor, paletas por parceiro, formatos HEX/RGB/HSL/HSB e validação no UColorPickerDropdown. | Aprovado pelo proprietário (04/11), 100%                                                                                                    | d7efe5f                                         |
+| 38  | [UPaletteEditor e seletor compartilhado](resolved-tickets.md#visual-controls-issues-38-palette-editor-shared-color-picker)                     | Substitui ColorListEditor por UPaletteEditor com seletor compartilhado, reordenação e exclusão discreta.    | Aprovado pelo proprietário (04/11), 100%                                                                                                    | d7efe5f                                         |
+| 39  | [Seletor de datas alinhado ao Prism](resolved-tickets.md#visual-controls-issues-39-celebrations-selector-prism-alignment)                      | Alinha o seletor de datas ao Prism com Tabs, badges, cabeçalhos mensais e títulos truncados.                | Aprovado pelo proprietário, 100% (04/11)                                                                                                    | d7efe5f                                         |
+| 40  | [Unificar Sprint e Responsáveis](resolved-tickets.md#visual-controls-issues-40-unify-people-combobox)                                          | Consolida responsáveis e Sprint em UPeopleCombobox preservando suas regras de seleção.                      | Aprovado pelo proprietário (04/11), 100% — duplicatas eliminadas em favor de UPeopleCombobox                                                | d7efe5f                                         |
+| 41  | [Padronizar nomes com prefixo U](resolved-tickets.md#visual-controls-issues-41-standardize-uzzina-component-names)                             | Padroniza nomes, arquivos, exports e imports dos componentes próprios com prefixo U.                        | Aprovado e encerrado, 100% (04/11)                                                                                                          | 57a7be3 + commit de encerramento deste registro |
+| 42  | [Padronizar loaders](resolved-tickets.md#visual-controls-issues-42-standardize-loading-indicators)                                             | Substitui indicadores arbitrários pelo ULoader com escala, cor contextual e acessibilidade.                 | Aprovado (04/11), 100%                                                                                                                      | d7efe5f                                         |
+| 43  | [UToggleInput para PrismToggle](resolved-tickets.md#visual-controls-issues-43-replace-native-toggle-wrapper)                                   | Remove UToggleInput e usa PrismToggle preservando Arquivado e o contrato de FormData.                       | Aprovado (04/11), 100%                                                                                                                      | d7efe5f                                         |
 
 ---
 
@@ -6975,27 +7096,27 @@ Prepared 2026-10-29 from the owner's Safari feedback and subsequent approval. Ti
 
 ## Approved ticket scope
 
-| Ticket | Original item | Delivery |
-| --- | --- | --- |
-| [01](resolved-tickets.md#safari-mobile-issues-01-visible-viewport-overlays) | 1 | Visible viewport, keyboard and overlay reachability |
-| [02](resolved-tickets.md#safari-mobile-issues-02-mobile-action-drawer) | 2 | Icon-only metadata summary and complete scrolling mobile footer |
-| [03](resolved-tickets.md#safari-mobile-issues-03-mobile-instagram-editor) | 3 | Media states, adaptive writing space and compact toolbar |
-| [04](resolved-tickets.md#safari-mobile-issues-04-notifications-navigation) | 4 | Notification dismissal and guarded page navigation |
-| [05](resolved-tickets.md#safari-mobile-issues-05-responsive-leads) | 6 | Mobile list/detail navigation for leads |
-| [06](resolved-tickets.md#safari-mobile-issues-06-today-responsive-heading) | 7 | Responsive selected-date heading |
-| [07](resolved-tickets.md#safari-mobile-issues-07-strategy-dialog-progress) | 9 | Immediate dialog, honest progress and modal dismissal |
-| [08](resolved-tickets.md#safari-mobile-issues-08-profile-swatches-spacing) | 8 | Profile palette swatches and balanced control spacing |
-| [09](resolved-tickets.md#safari-mobile-issues-09-durable-strategy-generation) | 9 extension | Server-owned generation and persistence independent of the drawer |
-| [10](resolved-tickets.md#safari-mobile-issues-10-load-brand-font) | New font report | Restore missing web-font loading and verify actual rendering |
-| [11](resolved-tickets.md#safari-mobile-issues-11-compare-version-on-reopen) | 5 | Immediately editable opening and explicit comparison of a newer version |
-| [12](resolved-tickets.md#safari-mobile-issues-12-compact-date-picker-width) | 2026-10-30 follow-up | Fit date-picker width and cells without unnecessary horizontal scrolling |
-| [13](resolved-tickets.md#safari-mobile-issues-13-drawer-scroll-and-landscape-writing) | 2026-10-30 follow-up | Reach landscape writing and prevent background scrolling |
-| [14](resolved-tickets.md#safari-mobile-issues-14-mobile-spacing-and-today-heading) | 2026-10-30 follow-up | Reduce mobile spacing and truncate the complete Today date |
-| [15](resolved-tickets.md#safari-mobile-issues-15-shared-tabs-and-profile-sections) | 2026-10-30 follow-up | Shared tabs distinct from preference pills |
-| [16](resolved-tickets.md#safari-mobile-issues-16-unify-action-footer-buttons) | 2026-10-30 follow-up | Existing app button frames across the action footer |
-| [17](resolved-tickets.md#safari-mobile-issues-17-compact-writing-toolbars) | 2026-10-30 follow-up | Single-row constrained writing toolbars across both editors |
-| [18](resolved-tickets.md#safari-mobile-issues-18-remove-redundant-media-type-badge) | 2026-10-30 follow-up | Remove the redundant detected-media-type badge |
-| [19](resolved-tickets.md#safari-mobile-issues-19-celebrations-responsive-scroll) | 2026-10-30 dates-page screenshot | Single mobile page scroll; independent columns only in side-by-side desktop |
+| Ticket                                                                                | Original item                    | Delivery                                                                    |
+| ------------------------------------------------------------------------------------- | -------------------------------- | --------------------------------------------------------------------------- |
+| [01](resolved-tickets.md#safari-mobile-issues-01-visible-viewport-overlays)           | 1                                | Visible viewport, keyboard and overlay reachability                         |
+| [02](resolved-tickets.md#safari-mobile-issues-02-mobile-action-drawer)                | 2                                | Icon-only metadata summary and complete scrolling mobile footer             |
+| [03](resolved-tickets.md#safari-mobile-issues-03-mobile-instagram-editor)             | 3                                | Media states, adaptive writing space and compact toolbar                    |
+| [04](resolved-tickets.md#safari-mobile-issues-04-notifications-navigation)            | 4                                | Notification dismissal and guarded page navigation                          |
+| [05](resolved-tickets.md#safari-mobile-issues-05-responsive-leads)                    | 6                                | Mobile list/detail navigation for leads                                     |
+| [06](resolved-tickets.md#safari-mobile-issues-06-today-responsive-heading)            | 7                                | Responsive selected-date heading                                            |
+| [07](resolved-tickets.md#safari-mobile-issues-07-strategy-dialog-progress)            | 9                                | Immediate dialog, honest progress and modal dismissal                       |
+| [08](resolved-tickets.md#safari-mobile-issues-08-profile-swatches-spacing)            | 8                                | Profile palette swatches and balanced control spacing                       |
+| [09](resolved-tickets.md#safari-mobile-issues-09-durable-strategy-generation)         | 9 extension                      | Server-owned generation and persistence independent of the drawer           |
+| [10](resolved-tickets.md#safari-mobile-issues-10-load-brand-font)                     | New font report                  | Restore missing web-font loading and verify actual rendering                |
+| [11](resolved-tickets.md#safari-mobile-issues-11-compare-version-on-reopen)           | 5                                | Immediately editable opening and explicit comparison of a newer version     |
+| [12](resolved-tickets.md#safari-mobile-issues-12-compact-date-picker-width)           | 2026-10-30 follow-up             | Fit date-picker width and cells without unnecessary horizontal scrolling    |
+| [13](resolved-tickets.md#safari-mobile-issues-13-drawer-scroll-and-landscape-writing) | 2026-10-30 follow-up             | Reach landscape writing and prevent background scrolling                    |
+| [14](resolved-tickets.md#safari-mobile-issues-14-mobile-spacing-and-today-heading)    | 2026-10-30 follow-up             | Reduce mobile spacing and truncate the complete Today date                  |
+| [15](resolved-tickets.md#safari-mobile-issues-15-shared-tabs-and-profile-sections)    | 2026-10-30 follow-up             | Shared tabs distinct from preference pills                                  |
+| [16](resolved-tickets.md#safari-mobile-issues-16-unify-action-footer-buttons)         | 2026-10-30 follow-up             | Existing app button frames across the action footer                         |
+| [17](resolved-tickets.md#safari-mobile-issues-17-compact-writing-toolbars)            | 2026-10-30 follow-up             | Single-row constrained writing toolbars across both editors                 |
+| [18](resolved-tickets.md#safari-mobile-issues-18-remove-redundant-media-type-badge)   | 2026-10-30 follow-up             | Remove the redundant detected-media-type badge                              |
+| [19](resolved-tickets.md#safari-mobile-issues-19-celebrations-responsive-scroll)      | 2026-10-30 dates-page screenshot | Single mobile page scroll; independent columns only in side-by-side desktop |
 
 ## Correction tickets registered — 2026-10-30
 
@@ -7102,19 +7223,19 @@ Série criada a pedido do proprietário para corrigir os achados da revisão do 
 
 ## Tickets e dependências
 
-| Ticket                                                                                                      | Entrega                                      | Bloqueios                                                                                                             |
-| ----------------------------------------------------------------------------------------------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Ticket                                                                                                                                                   | Entrega                                      | Bloqueios                                                                             |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------- |
 | [C00 — Fechar somente as decisões necessárias às correções](resolved-tickets.md#social-planning-corrections-issues-00-confirm-product-contract)          | Decisões pendentes sem invenção de políticas | `completed` (decisões D1–D6 registradas)                                              |
 | [C01 — Persistir propostas com autorização e erros recuperáveis](resolved-tickets.md#social-planning-corrections-issues-01-authorized-persistence)       | Dados autorizados e persistência canônica    | `completed` (isolamento de storage, versionamento e migration RLS)                    |
 | [C02 — Bloquear períodos inválidos e eliminar conteúdos sem slot](resolved-tickets.md#social-planning-corrections-issues-02-validate-period-slots)       | Slots válidos sem fallback                   | `completed` (entregue em 02/11)                                                       |
 | [C03 — Restringir comemorações ao período e separar extras](resolved-tickets.md#social-planning-corrections-issues-03-commemorative-date-bounds)         | Datas completas e extras                     | `completed` (entregue em 02/11)                                                       |
 | [C04 — Respeitar quantidades manuais de formatos sem ajustes ocultos](resolved-tickets.md#social-planning-corrections-issues-04-respect-format-counts)   | Composição respeitada                        | `completed` (entregue em 02/11)                                                       |
 | [C05 — Gerar propostas reais por IA com contexto e tom corretos](resolved-tickets.md#social-planning-corrections-issues-05-real-ai-generation)           | IA real com contexto/voz                     | `completed` (integração de voice/context do parceiro e tratamento de erros)           |
-| [C06 — Reabrir proposta com configuração e parceiro coerentes](resolved-tickets.md#social-planning-corrections-issues-06-reopen-plan-state)              | Entrada e visualização coerentes             | `completed` (restauração de inputs/período e fechamento ao trocar parceiro)          |
-| [C07 — Reutilizar calendário do app e mover somente sugestões](resolved-tickets.md#social-planning-corrections-issues-07-existing-calendar)              | Calendário real e movimento                  | `completed` (grade no padrão do app, dois eixos, drag-and-drop e 0 mutações de ações)|
+| [C06 — Reabrir proposta com configuração e parceiro coerentes](resolved-tickets.md#social-planning-corrections-issues-06-reopen-plan-state)              | Entrada e visualização coerentes             | `completed` (restauração de inputs/período e fechamento ao trocar parceiro)           |
+| [C07 — Reutilizar calendário do app e mover somente sugestões](resolved-tickets.md#social-planning-corrections-issues-07-existing-calendar)              | Calendário real e movimento                  | `completed` (grade no padrão do app, dois eixos, drag-and-drop e 0 mutações de ações) |
 | [C08 — Corrigir teclado, foco e salvamento do editor de sugestões](resolved-tickets.md#social-planning-corrections-issues-08-suggestion-editor)          | Diálogo e salvamento acessíveis              | `completed` (entregue em 02/11)                                                       |
 | [C09 — Finalizar aprovadas atomicamente sem duplicação e para membros](resolved-tickets.md#social-planning-corrections-issues-09-atomic-finalization)    | Conversão atômica e idempotente              | `completed` (idempotência, responsibles de membros e validação de data)               |
-| [C10 — Verificar integração e registrar aceite real do Planejamento](resolved-tickets.md#social-planning-corrections-issues-10-verify-correction-series) | Verificação integrada                        | `completed` (verificação completa: tsc, serverless, slots e storage unit tests)     |
+| [C10 — Verificar integração e registrar aceite real do Planejamento](resolved-tickets.md#social-planning-corrections-issues-10-verify-correction-series) | Verificação integrada                        | `completed` (verificação completa: tsc, serverless, slots e storage unit tests)       |
 
 ## Cobertura dos achados
 
@@ -7158,27 +7279,27 @@ As quatro notas são estimativas de triagem em porcentagem. Conclusão mede o av
 
 Sol = Sol 6.1. Terra = Terra 6.1. São os dois modelos pedidos disponíveis para disparo direto neste chat. Os demais nomes indicados pelo proprietário podem receber o mesmo ticket por um executor externo.
 
-|  Nº | ID e entrega                                                                                                                           | Conclusão | Urgência | Facilidade | Delegação | Agente direto  | Próximo passo e bloqueios                                                                                                                                     |
-| --: | -------------------------------------------------------------------------------------------------------------------------------------- | --------: | -------: | ---------: | --------: | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1 | [T01 · Rastrear decisões D1–D6](../social-planning-recovery/issues/01-confirm-decisions.md)                                |       35% |      95% |        80% |       85% | Sol            | Começar agora. Vincular cada decisão à aprovação do proprietário e marcar quais dependências estão liberadas.                                                 |
-| 2 | [T02 · Persistência por parceiro e conflito entre edições](../social-planning-recovery/issues/02-canonical-storage.md)     |       55% |      95% |        30% |       85% | Terra          | Após D1/D6. Modelo e rota usam Supabase. Executar em banco isolado com dois clientes, verificar RLS, conflito, reabertura e ausência de cópia local indevida. |
-| 3 | [T03 · Datas, frequência, formatos e extras](../social-planning-recovery/issues/03-normalized-input.md)                    |       30% |      80% |        60% |       90% | Sol            | Após D2–D4. Exercitar data impossível e soma manual com extras pelo formulário e pelo cálculo compartilhado.                                                  |
-| 4 | [T04 · Separar proposta aberta de configuração nova](../social-planning-recovery/issues/04-workspace-state.md)             |       25% |      75% |        55% |       90% | Terra          | Após T02/D6. Trocar marca e proposta com edição ou resposta em voo sem misturar estado.                                                                       |
-| 5 | [T05 · Preservar edição até confirmação](../social-planning-recovery/issues/05-editor-confirmation.md)                     |       30% |      70% |        65% |       85% | Sol            | Após T02/T04. Falhar ao salvar, manter o texto e recuperar foco e teclado do diálogo.                                                                         |
-| 6 | [T06 · Usar o calendário existente na revisão](../social-planning-recovery/issues/06-shared-calendar.md)                   |       15% |      60% |        40% |       75% | Terra          | Após T02/T04/T05. Substituir grade paralela e mover sugestão sem criar ação. Conferir rolagem no navegador.                                                   |
-| 7 | [T07 · Gerar por tema com IA e recuperar falhas](../social-planning-recovery/issues/07-real-theme-ai.md)                   |       10% |      80% |        25% |       80% | Terra          | Após T02/D6. Demonstrar handler, autorização, quota e persistência com provedor controlado e retry sem segunda geração.                                       |
-| 8 | [T08 · Gerar por período com IA](../social-planning-recovery/issues/08-real-period-ai.md)                                  |       15% |      65% |        40% |       85% | Terra          | Após T03/T07. Comparar slots, formatos e extras pedidos com os persistidos.                                                                                   |
-| 9 | [T09 · Finalizar aprovadas em uma transação](../social-planning-recovery/issues/09-transactional-finalization.md)          |       10% |      95% |        20% |       85% | Terra          | Após T02/D5. Forçar falha na segunda criação e repetir por duas conexões. Exigir zero criação parcial ou duplicada.                                           |
-| 10 | [T10 · Confirmar finalização e atualizar a Mesa](../social-planning-recovery/issues/10-finalization-ui.md)                 |       20% |      75% |        45% |       85% | Sol            | Após T04/T05/T09. Perder resposta após gravação, reabrir e reconciliar IDs, estado e lista.                                                                   |
-| 11 | [T11 · Aceite independente do Planejamento](../social-planning-recovery/issues/11-independent-acceptance.md)               |        0% |      85% |        35% |       70% | Terra          | Último. Revisor diferente do implementador reexecuta R1–R11 e separa prova de banco, provedor e visual.                                                       |
-| 12 | [P00 · Fidelidade da Mesa ao mockup](../social-planning/issues/00-align-page-with-approved-mockup.md)                      |       85% |      35% |        90% |       25% | Sol            | Residual da série original. Há aprovação parcial de layout. Conferir se o aceite visual integral já foi dado e anexar a T11.                                  |
-| 13 | [P08 · Instruções reutilizáveis por marca](../social-planning/issues/08-brand-planning-instructions.md)                    |       30% |      60% |        55% |       85% | Sol            | Coluna registrada em produção. Fechar leitura, edição autorizada, troca de marca e uso pelo gerador em coordenação com T07/T08.                               |
-| 14 | [V12 · Filtros no campo de busca global](resolved-tickets.md#visual-controls-issues-12-global-search-filters)                            |       20% |      65% |        80% |       95% | Sol            | Decisões registradas. Implementar parceiros e arquivadas no sufixo, conferir teclado e escopo. Claude consta como executor. Confirmar posse antes de editar.  |
-| 15 | [F01 · Classificar feriados](resolved-tickets.md#brand-holidays-issues-01-classify-holidays)                                             |       85% |      50% |        80% |       40% | Sol            | Campo confirmado em produção e UI local. Validar criar, reabrir e reconhecer o feriado na lista e no calendário.                                              |
-| 16 | [F02 · Selecionar feriados por marca](resolved-tickets.md#brand-holidays-issues-02-partner-holidays)                                     |       70% |      70% |        55% |       70% | Terra          | Registros divergem sobre tabela e RPC remotas. Conferir catálogo em leitura antes de qualquer SQL. Validar isolamento entre marcas e retry.                   |
-| 17 | [IA01 · Consumo de IA em Minha Conta](../ai-usage/issues/01-ai-usage-visibility.md)                                        |       75% |      55% |        50% |       75% | Terra          | Visual aceito segundo CURRENT. Confirmar migration, permissões e agregação mensal com registro real controlado, inclusive duplicidade.                        |
-| 18 | [V35 · Microseções no menu lateral da galeria](resolved-tickets.md#visual-controls-issues-35-ui-sidebar-subsections) | 90% | 35% | 90% | 25% | Sol | Primeiro clique corrigido após reprodução no Comet e histórico real; aguarda aceite final. |
-| 19 | [V36 · Estudo dos wrappers de avatar](resolved-tickets.md#visual-controls-issues-36-avatar-wrapper-comparison-study) | 0% | 25% | 75% | 90% | Sol | Comparar recursos, consumidores e responsabilidades. Entrega somente de estudo. |
+|  Nº | ID e entrega                                                                                                           | Conclusão | Urgência | Facilidade | Delegação | Agente direto | Próximo passo e bloqueios                                                                                                                                     |
+| --: | ---------------------------------------------------------------------------------------------------------------------- | --------: | -------: | ---------: | --------: | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|   1 | [T01 · Rastrear decisões D1–D6](../social-planning-recovery/issues/01-confirm-decisions.md)                            |       35% |      95% |        80% |       85% | Sol           | Começar agora. Vincular cada decisão à aprovação do proprietário e marcar quais dependências estão liberadas.                                                 |
+|   2 | [T02 · Persistência por parceiro e conflito entre edições](../social-planning-recovery/issues/02-canonical-storage.md) |       55% |      95% |        30% |       85% | Terra         | Após D1/D6. Modelo e rota usam Supabase. Executar em banco isolado com dois clientes, verificar RLS, conflito, reabertura e ausência de cópia local indevida. |
+|   3 | [T03 · Datas, frequência, formatos e extras](../social-planning-recovery/issues/03-normalized-input.md)                |       30% |      80% |        60% |       90% | Sol           | Após D2–D4. Exercitar data impossível e soma manual com extras pelo formulário e pelo cálculo compartilhado.                                                  |
+|   4 | [T04 · Separar proposta aberta de configuração nova](../social-planning-recovery/issues/04-workspace-state.md)         |       25% |      75% |        55% |       90% | Terra         | Após T02/D6. Trocar marca e proposta com edição ou resposta em voo sem misturar estado.                                                                       |
+|   5 | [T05 · Preservar edição até confirmação](../social-planning-recovery/issues/05-editor-confirmation.md)                 |       30% |      70% |        65% |       85% | Sol           | Após T02/T04. Falhar ao salvar, manter o texto e recuperar foco e teclado do diálogo.                                                                         |
+|   6 | [T06 · Usar o calendário existente na revisão](../social-planning-recovery/issues/06-shared-calendar.md)               |       15% |      60% |        40% |       75% | Terra         | Após T02/T04/T05. Substituir grade paralela e mover sugestão sem criar ação. Conferir rolagem no navegador.                                                   |
+|   7 | [T07 · Gerar por tema com IA e recuperar falhas](../social-planning-recovery/issues/07-real-theme-ai.md)               |       10% |      80% |        25% |       80% | Terra         | Após T02/D6. Demonstrar handler, autorização, quota e persistência com provedor controlado e retry sem segunda geração.                                       |
+|   8 | [T08 · Gerar por período com IA](../social-planning-recovery/issues/08-real-period-ai.md)                              |       15% |      65% |        40% |       85% | Terra         | Após T03/T07. Comparar slots, formatos e extras pedidos com os persistidos.                                                                                   |
+|   9 | [T09 · Finalizar aprovadas em uma transação](../social-planning-recovery/issues/09-transactional-finalization.md)      |       10% |      95% |        20% |       85% | Terra         | Após T02/D5. Forçar falha na segunda criação e repetir por duas conexões. Exigir zero criação parcial ou duplicada.                                           |
+|  10 | [T10 · Confirmar finalização e atualizar a Mesa](../social-planning-recovery/issues/10-finalization-ui.md)             |       20% |      75% |        45% |       85% | Sol           | Após T04/T05/T09. Perder resposta após gravação, reabrir e reconciliar IDs, estado e lista.                                                                   |
+|  11 | [T11 · Aceite independente do Planejamento](../social-planning-recovery/issues/11-independent-acceptance.md)           |        0% |      85% |        35% |       70% | Terra         | Último. Revisor diferente do implementador reexecuta R1–R11 e separa prova de banco, provedor e visual.                                                       |
+|  12 | [P00 · Fidelidade da Mesa ao mockup](../social-planning/issues/00-align-page-with-approved-mockup.md)                  |       85% |      35% |        90% |       25% | Sol           | Residual da série original. Há aprovação parcial de layout. Conferir se o aceite visual integral já foi dado e anexar a T11.                                  |
+|  13 | [P08 · Instruções reutilizáveis por marca](../social-planning/issues/08-brand-planning-instructions.md)                |       30% |      60% |        55% |       85% | Sol           | Coluna registrada em produção. Fechar leitura, edição autorizada, troca de marca e uso pelo gerador em coordenação com T07/T08.                               |
+|  14 | [V12 · Filtros no campo de busca global](resolved-tickets.md#visual-controls-issues-12-global-search-filters)          |       20% |      65% |        80% |       95% | Sol           | Decisões registradas. Implementar parceiros e arquivadas no sufixo, conferir teclado e escopo. Claude consta como executor. Confirmar posse antes de editar.  |
+|  15 | [F01 · Classificar feriados](resolved-tickets.md#brand-holidays-issues-01-classify-holidays)                           |       85% |      50% |        80% |       40% | Sol           | Campo confirmado em produção e UI local. Validar criar, reabrir e reconhecer o feriado na lista e no calendário.                                              |
+|  16 | [F02 · Selecionar feriados por marca](resolved-tickets.md#brand-holidays-issues-02-partner-holidays)                   |       70% |      70% |        55% |       70% | Terra         | Registros divergem sobre tabela e RPC remotas. Conferir catálogo em leitura antes de qualquer SQL. Validar isolamento entre marcas e retry.                   |
+|  17 | [IA01 · Consumo de IA em Minha Conta](../ai-usage/issues/01-ai-usage-visibility.md)                                    |       75% |      55% |        50% |       75% | Terra         | Visual aceito segundo CURRENT. Confirmar migration, permissões e agregação mensal com registro real controlado, inclusive duplicidade.                        |
+|  18 | [V35 · Microseções no menu lateral da galeria](resolved-tickets.md#visual-controls-issues-35-ui-sidebar-subsections)   |       90% |      35% |        90% |       25% | Sol           | Primeiro clique corrigido após reprodução no Comet e histórico real; aguarda aceite final.                                                                    |
+|  19 | [V36 · Estudo dos wrappers de avatar](resolved-tickets.md#visual-controls-issues-36-avatar-wrapper-comparison-study)   |        0% |      25% |        75% |       90% | Sol           | Comparar recursos, consumidores e responsabilidades. Entrega somente de estudo.                                                                               |
 
 ## Mudanças desde a primeira triagem
 
@@ -7418,7 +7539,6 @@ Reutilizar a organização de navegação e rolagem já existente na rota da gal
   - Seção sem microseções (ex: `spacing`, `Alert`, `Accordion`) não renderiza container vazio.
   - Seções com microseções (ex: `Button` com 2, `Input` com 5, `Foco` com 6) revelam sublinks aninhados imediatamente ao selecionar.
   - Links diretos com hash (ex: `/ui#focus-outer` ou `/ui#prism-input-timefield`) abrem a categoria correspondente e posicionam o viewport com offset de respiro.
-
 
 ## Decisão e estudo do glitch — 04/11/2026
 
@@ -8103,3 +8223,7 @@ Antes desta limpeza, somente Button fazia bypass do CVA no modo unstyled. LinkBu
 Três testes focados passaram: contrato uniforme de Button/LinkButton/helper, ativação Enter/Espaço sem submissão de formulário, disabled fora de Tab e regressão do UComboboxTrigger. Typecheck, Biome e Prettier passaram. Inventário por código; navegador/medição visual não executados devido à indisponibilidade da revisão automática de aprovação registrada no CURRENT. A mudança do Button unstyled do proprietário já aplicava bypass; a limpeza centraliza esse comportamento e remove a discrepância nos outros caminhos, sem alegar um aceite visual novo.
 
 A investigação mais ampla de personalizações permanece no V44. Sem commit/push/deploy.
+
+## V44 — Estudo de componentes personalizados e Prism
+
+Encerrado com aceite em 05/11/2026. [Estudo e histórico dos lotes](../visual-controls/issues/44-audit-custom-components-for-prism.md). A execução segue no [DS01](../design-system-audit/issues/01-audit-visual-deviations.md).

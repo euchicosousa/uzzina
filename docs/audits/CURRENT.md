@@ -6,6 +6,18 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### Anexos da ação: Portal e Gaveta Essencial unificados — 05/11
+
+Ajustada a exibição e o gerenciamento de anexos de trabalho (`work_files`):
+
+- **Portal do cliente (`dash/action/$id.tsx`):** corrigida a visibilidade do botão de upload, trocando `variant="link"` (que herdava `--primary` do parceiro com baixo contraste em fundos claros) por `variant="secondary" size="xs"` com `PlusIcon`. Mantido o botão lateral de sliders com contagem de arquivos para disparar `ContentReorderDialog`.
+- **Gaveta de ações da equipe (`EssentialsTab.tsx`):** removidas as miniaturas em linha (`WorkFileThumbnail`). Adicionado botão direto `CloudinaryUpload` (`variant="secondary" size="xs"`) para envio rápido, e botão `PrismButton ghost xs` exibindo o total de arquivos com ícone de sliders para abrir `ContentReorderDialog` (mesmo modal do Instagram, com reordenação por arraste, abertura em nova aba e exclusão individual).
+- **Verificação:** `npx tsc --noEmit` PASS (0 erros), testes de notificações PASS, formatação via Prettier.
+
+### V44 encerrado como estudo — 05/11
+
+Retirado da fila ativa com aceite do proprietário. No DS01, C aceito e formulário isolado por identidade; B com geometria xs/sm aceita. A usa o gerenciador do Instagram para anexos do portal e mantém botão + com nome acessível. Pendentes conferência visual do portal no DS02 e lote D no DS01; seletor de cor em lote segue como decisão separada. Código local.
+
 ### Próximo passo do V44 — 05/11
 
 Revisão estática de A–C com os ajustes do proprietário: ID no rodapé administrativo e reversão das molduras de Minha Conta até o redesign. O estudo V44 pode ser encerrado após aceite do parecer; DS01 concentra os retornos de implementação e o lote D, e DS02 concentra o aceite renderizado. Confirmados no checkout os retornos de identidade no formulário de pessoas e nome acessível do upload do portal. Conferir geometria do calendário de lote e decidir o destino do seletor de cor. Sem teste de navegador nesta revisão.

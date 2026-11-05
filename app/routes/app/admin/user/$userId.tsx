@@ -201,6 +201,7 @@ function AdminUserPage() {
       </div>
 
       <AdminUserForm
+        key={userId}
         person={person || null}
         areas={areas}
         cloudName={cloudName}

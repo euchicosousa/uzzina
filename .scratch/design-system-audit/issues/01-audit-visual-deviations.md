@@ -17,7 +17,6 @@
 - [ ] Classificar cada caso como substituição por equivalente existente, lacuna que merece proposta de padrão ou exceção justificada. Registrar prioridade e escopo da troca.
 - [ ] Propor tickets de implementação agrupados por mudança verificável, identificando quais achados cabem em tickets existentes e quais justificam novos tickets ou a substituição de um ticket sobreposto.
 
-
 ## Execução unificada com V44
 
 O V44 é a referência de controles e contratos. Este ticket executa as correções já identificadas e a [segunda etapa DS02](02-route-coverage-and-visual-review.md) cobre a matriz de rotas e o aceite visual.
@@ -32,9 +31,9 @@ O V44 é a referência de controles e contratos. Este ticket executa as correç�
 
 Base da revisão estática: `cf533cb` até o checkout local, incluindo o commit `3e648fe`. Cobertura de navegador permanece no DS02.
 
-- [ ] **C · Corrigir antes de fechar a revisão.** Vincular a instância de AdminUserForm ao usuário editado. `selectedAreas` inicializa uma vez e alimenta o envio. Ao trocar entre usuários com dados em cache, a mesma instância pode carregar áreas do usuário anterior. Validar troca entre duas identidades e entre edição e criação.
-- [ ] **A · Nome acessível.** No portal, o upload com anexos existentes mostra apenas o ícone +. Dar ao botão o nome “Adicionar arquivo” nos dois estados.
-- [ ] **B · Confirmar a geometria aprovada.** A versão local de Alterar Data e Hora usa células `sm` e padding padrão, diferente do recorte xs anteriormente aceito. Comparar as sete colunas e manter ou confirmar a variante.
+- [x] **C · Identidade do formulário.** Proprietário aceitou o lote. A instância agora usa a identidade da rota para reiniciar campos ao trocar de pessoa ou criar uma nova.
+- [x] **A · Anexos do portal.** Removidas as miniaturas externas. Sem anexos, botão Adicionar arquivos com +. Com anexos, Gerenciar arquivos abre o diálogo compartilhado com Instagram e o botão + mantém nome acessível. Conferência visual no DS02.
+- [x] **B · Geometria aceita.** Proprietário confirmou as colunas em xs e sm. Células lg requerem um diálogo que comporte o calendário.
 - [ ] **B · Dar destino ao seletor de cor em lote.** A mudança feita migra o import de `toHex`. Registrar se a composição atual permanece por contrato ou se cabe a troca pelo seletor Prism, preservando seleção e teclado.
 - [ ] **A–C · Aceite renderizado.** Conferir notificações no sino e na página, seletor mobile da Ajuda, calendário do portal, formulários Admin/Auth e Minha Conta. Incluir fluxo de teclado e estados com dados controlados.
 

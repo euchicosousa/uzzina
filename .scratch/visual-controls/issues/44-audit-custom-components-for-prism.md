@@ -12,7 +12,7 @@
 
 **Blocked by:** nenhum. Ler o estado atual e coordenar um escritor por checkout.
 
-**Status:** review — estudo concluído em 05/11/2026 ([parecer completo](../../../docs/audits/2026-11-05-v44-custom-components-prism-audit.md)), aguardando revisão do proprietário e autorização dos lotes propostos.
+**Status:** encerrado como estudo em 05/11/2026, com aceite do proprietário. A execução continua no DS01 e a conferência visual no DS02.
 
 - [x] Inventariar controles HTML manuais, wrappers, componentes próprios, cópias e overrides visuais que reproduzem primitivos Prism. Localizar usos operacionais, não apenas exemplos.
 - [x] Produzir matriz com componente atual, usos, personalização observada, equivalente Prism disponível, diferença funcional/acessível, risco e proposta concreta. Distinguir substituição direta de adaptação necessária.
