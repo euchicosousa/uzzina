@@ -6,6 +6,16 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### V36 aprovado e encerrado — 04/11
+
+Proprietário aprovou o estudo e autorizou commit. Parecer e ticket consolidado encerrados em 100%; recomendação de manter UAvatar e a API de UAvatarGroup, sem refatoração autorizada. Fila ativa com 21 tickets. Verificação documental de referências/diff; nenhum código alterado nesta entrega. Commit inclui apenas V36 e seus registros, preservando o trabalho paralelo de V12 e alterações externas. Sem push/deploy.
+
+### V36: estudo de avatares concluído — 04/11
+
+Subagente entregou [matriz e inventário](2026-11-04-v36-avatar-comparison.md), revisados pelo coordenador. UAvatar já compõe Prism e concentra escala/texto/cores; manter. UAvatarGroup fornece lista/clamp/+N que o Group/Count do Prism não calculam; manter API e avaliar composição interna só se autorizada, preservando tamanhos/overlap/anéis. Inventário observado: 23 usos operacionais diretos de UAvatar e 13 de UAvatarGroup. Estudo estático, sem navegador/teste de app ou mudança de código. V36 concluído e consolidado no histórico; fila com 21 tickets, série visual só V12 (entregue por executor paralelo, aguardando aceite). Trabalho externo em código/AGENTS/índices preservado; parecer registra variação do checkout. Sem novo commit/push/deploy.
+
+
+
 ### V35 aprovado; limpeza de tickets autorizada para commit — 04/11
 
 Proprietário confirmou "35 ok" e autorizou commit. V35 encerrado em 100% e incorporado ao histórico consolidado; entrega funcional já em d7efe5f. Tracker principal atualizado para 22 pendências; série visual mantém apenas V12/V36. Limpeza reúne 87 arquivos individuais: 76 encerrados/aprovados e 11 da série C substituída, com conteúdo integral e links redirecionados. Verificação documental de referências, âncoras e diff; sem testes de app por não haver alteração funcional. Commit desta rodada inclui limpeza, aceite e registros; código externo preservado. Sem push/deploy.

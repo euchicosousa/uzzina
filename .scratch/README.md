@@ -1,8 +1,8 @@
 # Tickets abertos da UZZINA
 
-Atualizado em 04/11/2026. **22 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
+Atualizado em 04/11/2026. **21 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
 
-[Histórico consolidado](archive/resolved-tickets.md): 76 documentos encerrados/aprovados e 11 da antiga série C do Planejamento, substituída pela recuperação. Os antigos arquivos individuais foram retirados e seus links redirecionados.
+[Histórico consolidado](archive/resolved-tickets.md): 77 documentos encerrados/aprovados e 11 da antiga série C do Planejamento, substituída pela recuperação. Os antigos arquivos individuais foram retirados e seus links redirecionados.
 
 | Série | Ticket | O que falta |
 |---|---|---|
@@ -27,7 +27,6 @@ Atualizado em 04/11/2026. **22 tickets mantidos para execução, conferência ou
 | Recuperação do Planejamento | [T11: Auditar a série por evidências e impedir conclusão falsa](social-planning-recovery/issues/11-independent-acceptance.md) | Pronto para agente; respeitar bloqueios do ticket. |
 | Foco em Hoje | [01: Corrigir o foco de Hoje e investigar controles dependentes de hover e wrappers focáveis](today-focus/issues/01-remove-wrapper-focus.md) | Implementado localmente; aceite final ainda não registrado. |
 | Controles visuais | [12 — Busca global: filtros como sufixo do campo](visual-controls/issues/12-global-search-filters.md) | Pronto para execução; entrega não encerrada no tracker. |
-| Controles visuais | [36 — Estudar sobreposição entre Avatar, Avatar Group e avatares Uzzina](visual-controls/issues/36-avatar-wrapper-comparison-study.md) | Estudo comparativo ainda não entregue. |
 
 ## Referências fora da fila de execução
 

@@ -1,10 +1,11 @@
 # Histórico de tickets encerrados
 
-Consolidado em 04/11/2026. Esta é uma referência histórica; a fila vigente está na [lista ativa](../README.md). Reúne 76 documentos de tickets encerrados/aprovados e 11 da série C00–C10 substituída pela recuperação do Planejamento. Status antigos, pendências de publicação e limites de verificação foram preservados; a consolidação não certifica deploy nem valida novamente entregas.
+Consolidado em 04/11/2026. Esta é uma referência histórica; a fila vigente está na [lista ativa](../README.md). Reúne 77 documentos de tickets encerrados/aprovados e 11 da série C00–C10 substituída pela recuperação do Planejamento. Status antigos, pendências de publicação e limites de verificação foram preservados; a consolidação não certifica deploy nem valida novamente entregas.
 
 Os documentos completos abaixo substituem os antigos arquivos individuais. Nenhum conteúdo de ticket foi descartado. Os índices anteriores também foram preservados no final.
 
 ## Índice
+- [visual-controls · 36 — Estudo comparativo de avatares](#visual-controls-issues-36-avatar-wrapper-comparison-study)
 - [visual-controls · 35 — Navegação lateral por microseções](#visual-controls-issues-35-ui-sidebar-subsections)
 - [account-preferences · 01: Rolar Preferências independentemente e manter Salvar Alterações no rodapé](#account-preferences-issues-01-independent-preferences-scroll)
 - [account-preferences · 02: Persistir a visualização inicial de Hoje para Home e página dedicada](#account-preferences-issues-02-default-today-view)
@@ -6939,7 +6940,7 @@ V35: o índice anterior indicava aprovação, mas a última devolutiva desta con
 | 33 | [`/ui`: seção `ActionColorDropdown`](resolved-tickets.md#visual-controls-issues-33-ui-action-color-dropdown-section) | Demonstra o seletor de cor da ação, substituído pelo UColorPickerDropdown do V37. | Aprovado (04/11), 100% — substituído por UColorPickerDropdown (Ticket 37) | d7efe5f |
 | 34 | [`/ui`: seção `PartnerCelebrationsSelector`](resolved-tickets.md#visual-controls-issues-34-ui-partner-celebrations-selector-section) | Demonstra a seleção de datas comemorativas da marca, revisada visualmente no V39. | Aprovado pelo proprietário (04/11), 100% | d7efe5f |
 | 35 | [`/ui`: microseções na navegação lateral](resolved-tickets.md#visual-controls-issues-35-ui-sidebar-subsections) | Revela microseções do item selecionado e navega no primeiro clique, sem disputa entre roteador e rolagem. | Implementado e verificado; aceite final pendente; 90% | d7efe5f |
-| 36 | [Estudo dos wrappers de avatar](../visual-controls/issues/36-avatar-wrapper-comparison-study.md) | Estuda sobreposição entre Avatar/AvatarGroup do Prism e UAvatar/UAvatarGroup, sem autorizar refatoração. | Pendente — somente estudo; 0% | d7efe5f (ticket; entrega pendente) |
+| 36 | [Estudo dos wrappers de avatar](resolved-tickets.md#visual-controls-issues-36-avatar-wrapper-comparison-study) | Estuda sobreposição entre Avatar/AvatarGroup do Prism e UAvatar/UAvatarGroup, sem autorizar refatoração. | Pendente — somente estudo; 0% | d7efe5f (ticket; entrega pendente) |
 | 37 | [Seletor de cor por parceiro e formatos](resolved-tickets.md#visual-controls-issues-37-partner-color-picker-formats) | Unifica seleção de cor, paletas por parceiro, formatos HEX/RGB/HSL/HSB e validação no UColorPickerDropdown. | Aprovado pelo proprietário (04/11), 100% | d7efe5f |
 | 38 | [UPaletteEditor e seletor compartilhado](resolved-tickets.md#visual-controls-issues-38-palette-editor-shared-color-picker) | Substitui ColorListEditor por UPaletteEditor com seletor compartilhado, reordenação e exclusão discreta. | Aprovado pelo proprietário (04/11), 100% | d7efe5f |
 | 39 | [Seletor de datas alinhado ao Prism](resolved-tickets.md#visual-controls-issues-39-celebrations-selector-prism-alignment) | Alinha o seletor de datas ao Prism com Tabs, badges, cabeçalhos mensais e títulos truncados. | Aprovado pelo proprietário, 100% (04/11) | d7efe5f |
@@ -7167,7 +7168,7 @@ Sol = Sol 6.1. Terra = Terra 6.1. São os dois modelos pedidos disponíveis para
 | 16 | [F02 · Selecionar feriados por marca](../brand-holidays/issues/02-partner-holidays.md)                                     |       70% |      70% |        55% |       70% | Terra          | Registros divergem sobre tabela e RPC remotas. Conferir catálogo em leitura antes de qualquer SQL. Validar isolamento entre marcas e retry.                   |
 | 17 | [IA01 · Consumo de IA em Minha Conta](../ai-usage/issues/01-ai-usage-visibility.md)                                        |       75% |      55% |        50% |       75% | Terra          | Visual aceito segundo CURRENT. Confirmar migration, permissões e agregação mensal com registro real controlado, inclusive duplicidade.                        |
 | 18 | [V35 · Microseções no menu lateral da galeria](resolved-tickets.md#visual-controls-issues-35-ui-sidebar-subsections) | 90% | 35% | 90% | 25% | Sol | Primeiro clique corrigido após reprodução no Comet e histórico real; aguarda aceite final. |
-| 19 | [V36 · Estudo dos wrappers de avatar](../visual-controls/issues/36-avatar-wrapper-comparison-study.md) | 0% | 25% | 75% | 90% | Sol | Comparar recursos, consumidores e responsabilidades. Entrega somente de estudo. |
+| 19 | [V36 · Estudo dos wrappers de avatar](resolved-tickets.md#visual-controls-issues-36-avatar-wrapper-comparison-study) | 0% | 25% | 75% | 90% | Sol | Comparar recursos, consumidores e responsabilidades. Entrega somente de estudo. |
 
 ## Mudanças desde a primeira triagem
 
@@ -7440,3 +7441,52 @@ Correção e regressão de histórico real incluídas em `d7efe5f`. O índice an
 ## Aceite e encerramento — 04/11/2026
 
 Proprietário confirmou "35 ok" e autorizou commit. Entrega e regressão em d7efe5f; encerramento e consolidação documental no commit que inclui este registro. Sem nova alteração funcional, push ou deploy.
+
+---
+
+<a id="visual-controls-issues-36-avatar-wrapper-comparison-study"></a>
+
+## visual-controls · 36-avatar-wrapper-comparison-study
+
+Origem: `.scratch/visual-controls/issues/36-avatar-wrapper-comparison-study.md`. Classificação: estudo concluído; não autoriza refatoração.
+
+# 36 — Estudar sobreposição entre Avatar, Avatar Group e avatares Uzzina
+
+**Resumo:** Estuda sobreposição entre Avatar/AvatarGroup do Prism e UAvatar/UAvatarGroup, sem autorizar refatoração.
+
+**Commit de referência:** `d7efe5f` — criação do ticket. Estudo entregue no checkout sobre a base `7659014`, sem novo commit.
+
+**What to build:** um parecer comparativo sobre os primitivos Avatar/Avatar Group e os componentes UAvatar/UAvatarGroup. Identificar quais personalizações atendem necessidades reais da UZZINA, quais repetem recursos dos primitivos e quanto seria possível simplificar preservando os comportamentos dos consumidores.
+
+**Blocked by:** nenhum. Usar a implementação vigente e registrar a base analisada, inclusive alterações locais.
+
+**Status:** Estudo concluído e aprovado pelo proprietário (100%) em 04/11/2026; encerramento/commit autorizados, sem refatoração.
+
+## Pergunta central
+
+UAvatar e UAvatarGroup justificam a camada adicional que mantêm? Quais responsabilidades podem ser atendidas diretamente por PrismAvatar, PrismAvatarGroup e seus componentes auxiliares? A conclusão deve resultar da comparação, sem presumir que os wrappers precisam ser removidos.
+
+## Escopo do estudo
+
+- [x] Inventariar contratos, propriedades, padrões e responsabilidades de Avatar, Image, Fallback, Group, GroupCount e Badge, comparando com UAvatar/UAvatarGroup.
+- [x] Mapear os consumidores reais do app e os comportamentos de que dependem, incluindo pessoas, parceiros, responsáveis e Sprint. Distinguir exemplo da galeria de uso operacional.
+- [x] Comparar tamanhos efetivos, escala e tipografia, sobreposição, limite de itens, indicador +N, imagem ausente ou com erro, iniciais, cores por marca, bordas, tema claro/escuro, nomes acessíveis, títulos, IDs e overrides.
+- [x] Para cada responsabilidade, registrar quem a implementa hoje, o recurso equivalente do primitivo, diferenças observáveis e dependências dos consumidores. Distinguir duplicação, adaptação de dados e regra própria do app.
+- [x] Verificar se a composição dos primitivos cobre os grupos sem repetir manualmente renderização, sobreposição ou contagem. Considerar ordenação, lista vazia, um item, vários itens, limite atingido e identidade dos itens.
+- [x] Explicar o custo de manter a camada atual e o custo real de simplificá-la. Uma função pequena que evita repetição nos consumidores pode continuar justificada.
+- [x] Apresentar alternativas concretas: manter, reduzir responsabilidades ou substituir por composição direta. Mostrar quais consumidores precisariam mudar e quais comportamentos exigiriam prova antes de migrar.
+- [x] Entregar uma recomendação fundamentada por componente, com referências ao código vigente e exemplos curtos que ilustrem as diferenças. Registrar o que foi inspecionado e o que foi observado no navegador.
+
+## Entrega e aceite
+
+Parecer no diretório de auditorias contendo matriz comparativa, inventário dos consumidores relevantes, responsabilidades redundantes e necessárias, recomendação e eventuais dúvidas para o proprietário. Atualizar o ticket e o relatório central com o resultado do estudo.
+
+A entrega deste ticket é o estudo. Refatoração, remoção de wrappers, alteração de tamanhos aprovados ou migração de consumidores dependem de decisão posterior do proprietário. Não criar uma implementação alternativa nem modificar a galeria para produzir a comparação. Verificações devem ser proporcionais à investigação e focadas em divergências concretas.
+
+Criado em 04/11/2026 a pedido do proprietário.
+
+## Entrega — 04/11/2026
+
+[Comparação completa](../../docs/audits/2026-11-04-v36-avatar-comparison.md) entregue por subagente e revisada pelo coordenador. UAvatar já compõe os primitivos e concentra escala/formatação/cores; recomendação de mantê-lo. UAvatarGroup mantém regra de lista/clamp/+N ausente no Prism; composição interna é opcional, não uma substituição direta. Inventário: 23 usos operacionais diretos de UAvatar e 13 de UAvatarGroup. Nenhum código alterado. Inspeção de fontes sem navegador, com dimensões inferidas das classes e limites explícitos. Entrega somente documental; qualquer migração futura exige decisão posterior do proprietário.
+
+V36: aceite explícito do proprietário em 04/11/2026; estudo e encerramento versionados pelo commit que inclui este registro. Sem autorização de mudança funcional.
