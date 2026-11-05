@@ -246,7 +246,10 @@ function PartnerCelebrations({
           <li key={id} className="max-w-full leading-none">
             <PrismBadge
               variant={linked ? "info" : "ghost"}
-              className="max-w-full whitespace-normal"
+              className={cn(
+                "max-w-full whitespace-normal",
+                !linked && "opacity-50",
+              )}
             >
               <span
                 aria-hidden="true"
