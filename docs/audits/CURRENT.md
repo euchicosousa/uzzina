@@ -6,6 +6,10 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### Próximo passo do V44 — 05/11
+
+Revisão estática de A–C com os ajustes do proprietário: ID no rodapé administrativo e reversão das molduras de Minha Conta até o redesign. O estudo V44 pode ser encerrado após aceite do parecer; DS01 concentra os retornos de implementação e o lote D, e DS02 concentra o aceite renderizado. Confirmados no checkout os retornos de identidade no formulário de pessoas e nome acessível do upload do portal. Conferir geometria do calendário de lote e decidir o destino do seletor de cor. Sem teste de navegador nesta revisão.
+
 ### IA-M01: direção para integrar Claude — 05/11
 
 Proprietário aceitou a implementação local. Conferido que API e worker usam `openai@6.45.0` com Chat Completions. O [IA-M01](../../.scratch/ai-models/issues/01-model-catalog-selection-and-metering.md) registra o AI SDK da Vercel com adaptadores diretos como próximo passo, primeiro com paridade do Luna. Pesquisa em documentação oficial e conferência do código. Pendentes a integração do SDK, a migration e publicação no ambiente autorizado e a conciliação de uma chamada real.
