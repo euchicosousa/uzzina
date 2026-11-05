@@ -7,19 +7,21 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
-import { TextField, Label } from "react-aria-components";
+import { TextField } from "react-aria-components";
 import { toast } from "sonner";
 import { UZZINALogo } from "~/components/logo";
 import { ULoader } from "~/components/uzzina/ULoader";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
+  PrismAlert,
+  PrismAlertDescription,
+  PrismAlertTitle,
   PrismButton,
   PrismInputGroup,
   PrismInputGroupAddon,
+  PrismInputGroupButton,
   PrismInputGroupInput,
-  PrismAlert,
-  PrismAlertTitle,
-  PrismAlertDescription,
+  PrismLabel,
 } from "~/components/prism";
 export const Route = createFileRoute("/reset-password")({
   component: ResetPassword,
@@ -179,9 +181,9 @@ function ResetPassword() {
                 onChange={setPassword}
                 value={password}
               >
-                <Label className="mb-1.5 block cursor-pointer font-medium text-foreground">
+                <PrismLabel className="mb-1.5 block cursor-pointer">
                   Nova Senha
-                </Label>
+                </PrismLabel>
                 <PrismInputGroup>
                   <PrismInputGroupAddon
                     align="inline-start"
@@ -198,21 +200,19 @@ function ResetPassword() {
                     align="inline-end"
                     className="pr-2 pl-1"
                   >
-                    <PrismButton
+                    <PrismInputGroupButton
                       aria-label={
                         showPassword ? "Ocultar senha" : "Mostrar senha"
                       }
-                      onPress={() => setShowPassword(!showPassword)}
-                      size="icon-sm"
+                      onClick={() => setShowPassword(!showPassword)}
                       type="button"
-                      variant="ghost"
                     >
                       {showPassword ? (
                         <EyeIcon className="size-4" />
                       ) : (
                         <EyeOffIcon className="size-4" />
                       )}
-                    </PrismButton>
+                    </PrismInputGroupButton>
                   </PrismInputGroupAddon>
                 </PrismInputGroup>
               </TextField>
@@ -224,9 +224,9 @@ function ResetPassword() {
                 onChange={setConfirmPassword}
                 value={confirmPassword}
               >
-                <Label className="mb-1.5 block cursor-pointer font-medium text-foreground">
+                <PrismLabel className="mb-1.5 block cursor-pointer">
                   Confirmar Nova Senha
-                </Label>
+                </PrismLabel>
                 <PrismInputGroup>
                   <PrismInputGroupAddon
                     align="inline-start"

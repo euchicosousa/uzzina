@@ -2,6 +2,7 @@ import type { Action, Partner } from "~/types";
 import {
   ArchiveIcon,
   ArchiveRestoreIcon,
+  CheckIcon,
   CloudUploadIcon,
   CopyIcon,
   PlusIcon,
@@ -14,6 +15,7 @@ import {
   type FocusEvent,
   type ReactNode,
 } from "react";
+import { toast } from "sonner";
 import { UColorPickerDropdown } from "~/components/uzzina/UColorPickerDropdown";
 import { ULoader } from "~/components/uzzina/ULoader";
 import { UCategoriesCombobox } from "~/components/uzzina/UCategoriesCombobox";
@@ -23,7 +25,14 @@ import { UPeopleCombobox } from "~/components/uzzina/UPeopleCombobox";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { INTENT } from "~/lib/CONSTANTS";
 import { isSocialMediaContent } from "~/utils";
-import { PrismButton } from "~/components/prism";
+import {
+  PrismButton,
+  PrismDialog,
+  PrismDialogHeader,
+  PrismDialogTitle,
+  PrismInput,
+} from "~/components/prism";
+import { useAppContext } from "~/contexts/AppContext";
 interface ActionFormFooterProps {
   /** Phone-width panel: one scrolling strip plus an icon-only save button. */
   compact?: boolean;
@@ -45,7 +54,25 @@ export function ActionFormFooter({
   handleSave,
   handleClose,
 }: ActionFormFooterProps) {
+  const { person } = useAppContext();
   const { handleAction } = useActionMutations();
+  const [isIdDialogOpen, setIsIdDialogOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyId = async () => {
+    if (!RawAction.id) return;
+    try {
+      await navigator.clipboard.writeText(RawAction.id);
+      setCopied(true);
+      toast.success("ID copiado com sucesso!");
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch {
+      toast.error("Não foi possível copiar o ID.");
+    }
+  };
+
   const saveLabel = RawAction.id
     ? isPending
       ? "Atualizando..."
@@ -55,6 +82,17 @@ export function ActionFormFooter({
       : "Criar";
   const actionCommands = RawAction.id && (
     <>
+      {person?.admin && (
+        <PrismButton
+          aria-label="Ver ID da ação"
+          onClick={() => setIsIdDialogOpen(true)}
+          size="icon-lg"
+          variant="ghost"
+          className="font-mono text-xs font-bold"
+        >
+          ID
+        </PrismButton>
+      )}
       <PrismButton
         aria-label="Duplicar ação (Shift+D)"
         onClick={() => {
@@ -66,6 +104,7 @@ export function ActionFormFooter({
       >
         <CopyIcon />
       </PrismButton>
+
       <PrismButton
         aria-label={RawAction.archived ? "Desarquivar ação" : "Arquivar ação"}
         onClick={async () => {
@@ -92,115 +131,146 @@ export function ActionFormFooter({
     </>
   );
   return (
-    <div
-      className="flex w-full shrink-0 items-center justify-between border-t"
-      data-drawer-focus="control"
-    >
-      <FooterStrip compact={compact}>
-        <UPartnersCombobox
-          // size={currentPartners.length > 1 ? "lg" : "icon-lg"}
-          size={"icon-lg"}
-          variant="ghost"
-          onSelect={async (selected) => {
-            const first = currentPartners.find((p) => p.slug === selected[0]);
-            let color = RawAction.color;
-            if (
-              !RawAction.id &&
-              first?.colors?.length &&
-              (!color || color === "#666666" || color === "#666")
-            ) {
-              color = first.colors[0];
-            }
-            setRawAction({ ...RawAction, partners: selected, color });
-            await updateAction({ partners: selected, color });
-          }}
-          selectedPartners={RawAction.partners}
-          showText={false}
-          tabIndex={0}
-        />
-        <UPhaseCombobox
-          size="icon-lg"
-          variant="ghost"
-          iconVariant="progress"
-          onSelect={async (selected) => {
-            const phase = (
-              typeof selected === "string" ? selected : selected.phase
-            ) as Action["phase"];
-            setRawAction({ ...RawAction, phase });
-            await updateAction({ phase });
-          }}
-          selectedPhase={RawAction.phase ?? "idea"}
-          showText={false}
-          tabIndex={0}
-        />
-        <UCategoriesCombobox
-          size="icon-lg"
-          variant="ghost"
-          onSelect={async ({ category }) => {
-            setRawAction({ ...RawAction, category });
-            await updateAction({ category });
-          }}
-          selectedCategories={[RawAction.category]}
-          showText={false}
-          tabIndex={0}
-        />
-        {isSocialMediaContent(RawAction.category) && (
-          <UColorPickerDropdown
-            size="icon-lg"
+    <>
+      <div
+        className="flex w-full shrink-0 items-center justify-between border-t"
+        data-drawer-focus="control"
+      >
+        <FooterStrip compact={compact}>
+          <UPartnersCombobox
+            // size={currentPartners.length > 1 ? "lg" : "icon-lg"}
+            size={"icon-lg"}
             variant="ghost"
-            value={RawAction.color}
-            onChange={async (color) => {
-              setRawAction({ ...RawAction, color });
-              await updateAction({ color });
+            onSelect={async (selected) => {
+              const first = currentPartners.find((p) => p.slug === selected[0]);
+              let color = RawAction.color;
+              if (
+                !RawAction.id &&
+                first?.colors?.length &&
+                (!color || color === "#666666" || color === "#666")
+              ) {
+                color = first.colors[0];
+              }
+              setRawAction({ ...RawAction, partners: selected, color });
+              await updateAction({ partners: selected, color });
             }}
-            partners={currentPartners}
+            selectedPartners={RawAction.partners}
+            showText={false}
             tabIndex={0}
           />
-        )}
-        {RawAction.id && (
-          <UPeopleCombobox
-            mode="sprint"
+          <UPhaseCombobox
             size="icon-lg"
             variant="ghost"
-            currentPartners={currentPartners}
-            onSelect={async (newSprints, responsibles = []) => {
-              const sprints = newSprints.length > 0 ? newSprints : null;
-              setRawAction({ ...RawAction, sprints, responsibles });
-              await updateAction({ sprints, responsibles });
+            iconVariant="progress"
+            onSelect={async (selected) => {
+              const phase = (
+                typeof selected === "string" ? selected : selected.phase
+              ) as Action["phase"];
+              setRawAction({ ...RawAction, phase });
+              await updateAction({ phase });
             }}
-            selectedResponsibles={RawAction.responsibles || []}
-            selectedSprints={RawAction.sprints || []}
+            selectedPhase={RawAction.phase ?? "idea"}
+            showText={false}
             tabIndex={0}
           />
-        )}
-        {compact && actionCommands}
-      </FooterStrip>
-      <div className="flex shrink-0 items-center gap-1 p-2">
-        {!compact && actionCommands}
-        <PrismButton
-          aria-label={compact ? saveLabel : undefined}
-          isDisabled={isPending}
-          onClick={async (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            const success = await handleSave();
-            if (success && event.shiftKey) {
-              handleClose();
-            }
-          }}
-          size={compact ? "icon-lg" : "lg"}
-        >
-          {!compact && saveLabel}
-          {isPending ? (
-            <ULoader size="default" inheritColor />
-          ) : RawAction.id ? (
-            <CloudUploadIcon />
-          ) : (
-            <PlusIcon />
+          <UCategoriesCombobox
+            size="icon-lg"
+            variant="ghost"
+            onSelect={async ({ category }) => {
+              setRawAction({ ...RawAction, category });
+              await updateAction({ category });
+            }}
+            selectedCategories={[RawAction.category]}
+            showText={false}
+            tabIndex={0}
+          />
+          {isSocialMediaContent(RawAction.category) && (
+            <UColorPickerDropdown
+              size="icon-lg"
+              variant="ghost"
+              value={RawAction.color}
+              onChange={async (color) => {
+                setRawAction({ ...RawAction, color });
+                await updateAction({ color });
+              }}
+              partners={currentPartners}
+              tabIndex={0}
+            />
           )}
-        </PrismButton>
+          {RawAction.id && (
+            <UPeopleCombobox
+              mode="sprint"
+              size="icon-lg"
+              variant="ghost"
+              currentPartners={currentPartners}
+              onSelect={async (newSprints, responsibles = []) => {
+                const sprints = newSprints.length > 0 ? newSprints : null;
+                setRawAction({ ...RawAction, sprints, responsibles });
+                await updateAction({ sprints, responsibles });
+              }}
+              selectedResponsibles={RawAction.responsibles || []}
+              selectedSprints={RawAction.sprints || []}
+              tabIndex={0}
+            />
+          )}
+          {compact && actionCommands}
+        </FooterStrip>
+        <div className="flex shrink-0 items-center gap-1 p-2">
+          {!compact && actionCommands}
+          <PrismButton
+            aria-label={compact ? saveLabel : undefined}
+            isDisabled={isPending}
+            onClick={async (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              const success = await handleSave();
+              if (success && event.shiftKey) {
+                handleClose();
+              }
+            }}
+            size={compact ? "icon-lg" : "lg"}
+          >
+            {!compact && saveLabel}
+            {isPending ? (
+              <ULoader size="default" inheritColor />
+            ) : RawAction.id ? (
+              <CloudUploadIcon />
+            ) : (
+              <PlusIcon />
+            )}
+          </PrismButton>
+        </div>
       </div>
-    </div>
+      <PrismDialog
+        isOpen={isIdDialogOpen}
+        onOpenChange={setIsIdDialogOpen}
+        size="sm"
+      >
+        <PrismDialogHeader className="border-b">
+          <PrismDialogTitle>ID da ação</PrismDialogTitle>
+        </PrismDialogHeader>
+        <div className="flex items-center gap-2 p-4">
+          <PrismInput
+            aria-label="ID da ação"
+            className="font-mono text-xs"
+            readOnly
+            value={RawAction.id || ""}
+          />
+          <PrismButton
+            aria-label="Copiar ID"
+            onClick={handleCopyId}
+            size="icon"
+            variant="outline"
+          >
+            {copied ? (
+              <CheckIcon className="size-4" />
+            ) : (
+              <CopyIcon className="size-4" />
+            )}
+          </PrismButton>
+        </div>
+      </PrismDialog>
+    </>
   );
 }
 

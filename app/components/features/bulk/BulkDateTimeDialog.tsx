@@ -78,41 +78,38 @@ export function BulkDateTimeDialog({
   if (!open) return null;
   return (
     <PrismDialog
-      size="sm"
+      size="xs"
       isDismissable
       isOpen={open}
       onOpenChange={handleOpenChange}
     >
-      <PrismDialogHeader className="border-b">
+      <PrismDialogHeader>
         <PrismDialogTitle>Alterar Data e Hora</PrismDialogTitle>
       </PrismDialogHeader>
 
       <div className="flex flex-col">
         {/* ── Seção: Mudar Data ────────────────────────────────────────── */}
 
-        <label
+        <PrismCheckbox
           className="flex cursor-pointer items-center gap-2.5 px-5 py-4 text-sm font-medium text-foreground select-none"
-          htmlFor="bulk-change-date"
+          isSelected={changeDate}
+          onChange={(v) => setChangeDate(v)}
         >
-          <PrismCheckbox
-            id="bulk-change-date"
-            isSelected={changeDate}
-            onChange={(v) => setChangeDate(v)}
-          />
-          <span>Mudar Data</span>
-        </label>
+          Mudar Data
+        </PrismCheckbox>
 
         <div
           inert={!changeDate}
           className={cn(
             "overflow-hidden transition-all duration-200",
             changeDate
-              ? "max-h-96 border-b py-4 opacity-100"
+              ? "max-h-96 px-4 py-4 opacity-100"
               : "pointer-events-none max-h-0 opacity-0",
           )}
         >
           <PrismCalendar
-            className="flex w-full justify-center p-0"
+            cellSize="sm"
+            className="w-full"
             onChange={(day) => {
               if (day) {
                 setPickedDate(new Date(day.year, day.month - 1, day.day));
@@ -132,24 +129,20 @@ export function BulkDateTimeDialog({
 
         {/* ── Seção: Mudar Hora ─────────────────────────────────────────── */}
 
-        <label
+        <PrismCheckbox
           className="flex cursor-pointer items-center gap-2.5 px-5 py-4 text-sm font-medium text-foreground select-none"
-          htmlFor="bulk-change-time"
+          isSelected={changeTime}
+          onChange={(v) => setChangeTime(v)}
         >
-          <PrismCheckbox
-            id="bulk-change-time"
-            isSelected={changeTime}
-            onChange={(v) => setChangeTime(v)}
-          />
-          <span>Mudar Hora</span>
-        </label>
+          Mudar Hora
+        </PrismCheckbox>
 
         <div
           inert={!changeTime}
           className={cn(
             "overflow-hidden transition-all duration-200",
             changeTime
-              ? "max-h-24 border-t p-4 opacity-100"
+              ? "max-h-24 p-4 opacity-100"
               : "pointer-events-none max-h-0 opacity-0",
           )}
         >
@@ -173,15 +166,11 @@ export function BulkDateTimeDialog({
         </div>
       </div>
 
-      <PrismDialogFooter className="border-t">
-        <PrismButton
-          onPress={() => onOpenChange(false)}
-          size="sm"
-          variant="ghost"
-        >
+      <PrismDialogFooter>
+        <PrismButton onPress={() => onOpenChange(false)} variant="ghost">
           Cancelar
         </PrismButton>
-        <PrismButton isDisabled={!canApply} onPress={handleApply} size="sm">
+        <PrismButton isDisabled={!canApply} onPress={handleApply}>
           Aplicar
         </PrismButton>
       </PrismDialogFooter>

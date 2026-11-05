@@ -5,12 +5,16 @@ import { ptBR } from "date-fns/locale/pt-BR";
 import type { UViewOptions } from "~/components/uzzina/UViewOptions";
 import { cn } from "cnfast";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
-import { CalendarDayCell } from "./CalendarDayCell";
+import {
+  CalendarDayCell,
+  type PartnerCelebrationDisplay,
+} from "./CalendarDayCell";
 export type CalendarLayoutOptions = {
   showBorder?: boolean;
   highlightThisWeek?: boolean;
   hideBorderOnLastRow?: boolean;
   reserveAppBarSpace?: boolean;
+  partnerCelebrations?: PartnerCelebrationDisplay;
 };
 export type CalendarActionsType = {
   date: Date;
@@ -51,6 +55,7 @@ export function CalendarActions({
                 key={format(day.date, "yyyy-MM-dd")}
                 actions={day.actions || []}
                 celebrations={day.celebrations}
+                partnerCelebrations={layoutOptions.partnerCelebrations}
                 currentDay={currentDay}
                 day={day.date}
                 highlightThisWeek={highlightThisWeek}

@@ -8,16 +8,18 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, createFileRoute } from "@tanstack/react-router";
-import { TextField, Label } from "react-aria-components";
+import { TextField } from "react-aria-components";
 import { UZZINALogo } from "~/components/logo";
 import {
+  PrismAlert,
+  PrismAlertDescription,
+  PrismAlertTitle,
   PrismButton,
   PrismInputGroup,
   PrismInputGroupAddon,
+  PrismInputGroupButton,
   PrismInputGroupInput,
-  PrismAlert,
-  PrismAlertTitle,
-  PrismAlertDescription,
+  PrismLabel,
 } from "~/components/prism";
 import { authenticateClient } from "~/models/clients";
 import { PortalHttpError } from "~/services/portal-http";
@@ -86,9 +88,9 @@ function DashLogin() {
             onChange={setEmail}
             value={email}
           >
-            <Label className="mb-1.5 block cursor-pointer font-medium text-foreground">
+            <PrismLabel className="mb-1.5 block cursor-pointer">
               E-mail
-            </Label>
+            </PrismLabel>
             <PrismInputGroup>
               <PrismInputGroupAddon
                 align="inline-start"
@@ -114,9 +116,7 @@ function DashLogin() {
             value={password}
           >
             <div className="mb-1.5 flex w-full items-center justify-between">
-              <Label className="block cursor-pointer font-medium text-foreground">
-                Senha
-              </Label>
+              <PrismLabel className="block cursor-pointer">Senha</PrismLabel>
             </div>
             <PrismInputGroup className="squircle">
               <PrismInputGroupAddon
@@ -132,19 +132,17 @@ function DashLogin() {
                 type={showPassword ? "text" : "password"}
               />
               <PrismInputGroupAddon align="inline-end" className="pr-2 pl-1">
-                <PrismButton
+                <PrismInputGroupButton
                   aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                  onPress={() => setShowPassword(!showPassword)}
-                  size="icon-sm"
+                  onClick={() => setShowPassword(!showPassword)}
                   type="button"
-                  variant="ghost"
                 >
                   {showPassword ? (
                     <EyeIcon className="size-4" />
                   ) : (
                     <EyeOffIcon className="size-4" />
                   )}
-                </PrismButton>
+                </PrismInputGroupButton>
               </PrismInputGroupAddon>
             </PrismInputGroup>
           </TextField>

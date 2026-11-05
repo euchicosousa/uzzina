@@ -8,6 +8,8 @@ import {
 } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
+import { createSupabaseBrowserClient } from "~/lib/supabase.client";
+import { getPartnerHolidayIds } from "~/models/partners";
 import { fetchCelebrations } from "~/lib/supabase.queries";
 import { useParams } from "@tanstack/react-router";
 import invariant from "tiny-invariant";
@@ -45,8 +47,17 @@ export function PartnerCalendarBoard({
     staleTime: 30 * 60 * 1000,
   });
 
-  const responsibles =
-    partners.filter((p) => p.slug === partnerSlug)[0]?.users_ids ?? [];
+  const partner = partners.find((p) => p.slug === partnerSlug);
+  const partnerId = partner?.id;
+  const holidayLinks = useQuery({
+    queryKey: ["partnerHolidayIds", person.user_id, partnerId],
+    queryFn: () => {
+      invariant(partnerId);
+      return getPartnerHolidayIds(createSupabaseBrowserClient(), partnerId);
+    },
+    enabled: !!partnerId,
+  });
+  const responsibles = partner?.users_ids ?? [];
 
   return (
     <CalendarWithDnd
@@ -60,6 +71,11 @@ export function PartnerCalendarBoard({
         showBorder: true,
         hideBorderOnLastRow: true,
         reserveAppBarSpace: true,
+        partnerCelebrations: {
+          linkedIds: holidayLinks.data,
+          status:
+            holidayLinks.isError || !partnerId ? "unavailable" : "loading",
+        },
       }}
       onCreateAction={(day) => {
         setPrimaryAction(

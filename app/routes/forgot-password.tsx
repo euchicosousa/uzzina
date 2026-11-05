@@ -6,17 +6,18 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { TextField, Label } from "react-aria-components";
+import { TextField } from "react-aria-components";
 import { UZZINALogo } from "~/components/logo";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import {
+  PrismAlert,
+  PrismAlertDescription,
+  PrismAlertTitle,
   PrismButton,
   PrismInputGroup,
   PrismInputGroupAddon,
   PrismInputGroupInput,
-  PrismAlert,
-  PrismAlertTitle,
-  PrismAlertDescription,
+  PrismLabel,
 } from "~/components/prism";
 export const Route = createFileRoute("/forgot-password")({
   component: ForgotPassword,
@@ -110,9 +111,9 @@ function ForgotPassword() {
                 onChange={setEmail}
                 value={email}
               >
-                <Label className="mb-1.5 block cursor-pointer font-medium text-foreground">
+                <PrismLabel className="mb-1.5 block cursor-pointer">
                   E-mail
-                </Label>
+                </PrismLabel>
                 <PrismInputGroup>
                   <PrismInputGroupAddon
                     align="inline-start"

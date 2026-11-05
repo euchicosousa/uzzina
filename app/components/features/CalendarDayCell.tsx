@@ -7,9 +7,18 @@ import { cn } from "cnfast";
 import type { UViewOptions } from "~/components/uzzina/UViewOptions";
 import { ActionContainer } from "./ActionContainer";
 import { getInstagramFeedActions } from "~/utils/validation";
-import { PlusIcon } from "lucide-react";
-import { PrismButton, PrismSkeletonGroup } from "~/components/prism";
+import { LinkIcon, PlusIcon } from "lucide-react";
+import {
+  PrismBadge,
+  PrismButton,
+  PrismSkeletonGroup,
+} from "~/components/prism";
 import { useLoading } from "~/hooks/useLoading";
+export type PartnerCelebrationDisplay = {
+  linkedIds?: readonly string[];
+  status: "unavailable" | "loading";
+};
+
 export function CalendarDayCell({
   currentDay,
   day,
@@ -17,6 +26,7 @@ export function CalendarDayCell({
   viewOptions,
   actions,
   celebrations,
+  partnerCelebrations,
   showBorder,
   renderDayLabel,
 }: {
@@ -26,6 +36,7 @@ export function CalendarDayCell({
   viewOptions: UViewOptions;
   actions: Action[];
   celebrations?: Celebration[];
+  partnerCelebrations?: PartnerCelebrationDisplay;
   showBorder?: boolean;
   highlightThisWeek?: boolean;
   renderDayLabel?: (day: Date, label: ReactNode) => ReactNode;
@@ -165,9 +176,16 @@ export function CalendarDayCell({
               variant={viewOptions.variant}
             />
           )}
-          {celebrations && celebrations.length > 0 && (
-            <CelebrationContainer celebrations={celebrations} />
-          )}
+          {celebrations &&
+            celebrations.length > 0 &&
+            (partnerCelebrations ? (
+              <PartnerCelebrations
+                celebrations={celebrations}
+                display={partnerCelebrations}
+              />
+            ) : (
+              <CelebrationContainer celebrations={celebrations} />
+            ))}
         </div>
       </div>
     </div>
@@ -210,5 +228,54 @@ function CelebrationContainer({
         </div>
       ))}
     </div>
+  );
+}
+
+function PartnerCelebrations({
+  celebrations,
+  display,
+}: {
+  celebrations: Celebration[];
+  display: PartnerCelebrationDisplay;
+}) {
+  return (
+    <ul className="flex min-w-0 flex-col items-start gap-px py-2">
+      {celebrations.map(({ id, title, is_holiday: isHoliday }) => {
+        const linked = display.linkedIds?.includes(id);
+        return (
+          <li key={id} className="max-w-full leading-none">
+            <PrismBadge
+              variant={linked ? "info" : "ghost"}
+              className="max-w-full whitespace-normal"
+            >
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "size-1.5 shrink-0 rounded-full border border-current",
+                  isHoliday && "bg-current",
+                )}
+              />
+              <span className="sr-only">
+                {isHoliday ? "Feriado. " : "Data comemorativa. "}
+              </span>
+              <span className="min-w-0 truncate wrap-anywhere">{title}</span>
+              {linked && (
+                <>
+                  <LinkIcon aria-hidden="true" />
+                  <span className="sr-only">Vinculada ao parceiro.</span>
+                </>
+              )}
+              {linked === undefined && (
+                <span className="sr-only">
+                  {display.status === "loading"
+                    ? "Consultando vínculo."
+                    : "Vínculo indisponível."}
+                </span>
+              )}
+            </PrismBadge>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

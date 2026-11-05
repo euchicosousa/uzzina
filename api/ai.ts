@@ -5,8 +5,9 @@ import OpenAI from "openai";
 import { generateStrategies } from "../server/strategy-generation.js";
 import type { Database } from "../types/database";
 import { recordAIUsage } from "../server/ai-usage.js";
-// const model = "gpt-5.3-chat-latest";
-const model = "gpt-6-luna";
+import { lunaModel } from "../server/ai-model-catalog.js";
+
+const model = lunaModel.id;
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   let failureStatus = 503;
   try {
@@ -175,20 +176,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     failureStatus = 502;
     const client = new OpenAI({
       apiKey,
+      maxRetries: 0,
     });
 
     const logUsage = async (
-      usage: OpenAI.Completions.CompletionUsage | undefined,
+      response: OpenAI.Chat.Completions.ChatCompletion,
       intentName: string,
-      modelName: string,
     ) => {
       // Development compatibility has no service role and must not write measurements.
       if (localCompatibility) return;
       await recordAIUsage(
         supabase,
         { userId: user.id, intent: intentName },
-        usage,
-        modelName,
+        response.usage,
+        model,
+        response,
       );
     };
 
@@ -197,8 +199,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const strategies = await generateStrategies(
         parsed.data,
         client,
-        async (usage) => {
-          await logUsage(usage, intent, "gpt-6-luna");
+        async (response) => {
+          await logUsage(response, intent);
         },
       );
       return res.status(200).json({ intent, output: { strategies } });
@@ -275,6 +277,7 @@ BRIEFING/INSTRUÇÕES: ${description}
 Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
       const response = await client.chat.completions.create({
         model: model,
+        service_tier: "default",
         messages: [
           {
             role: "system",
@@ -286,7 +289,7 @@ Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
           },
         ],
       });
-      await logUsage(response.usage, intent, model);
+      await logUsage(response, intent);
       const generatedHtml = response.choices[0]?.message.content ?? "";
       return res
         .status(200)
@@ -297,6 +300,7 @@ Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
     if (intent === "ai-hooks") {
       const response = await client.chat.completions.create({
         model,
+        service_tier: "default",
         response_format: {
           type: "json_object",
         },
@@ -317,7 +321,7 @@ Retorne somente JSON com "strategies": exatamente 5 objetos, cada um com apenas 
           },
         ],
       });
-      await logUsage(response.usage, intent, model);
+      await logUsage(response, intent);
       const output: unknown = JSON.parse(
         response.choices[0]?.message.content ?? "{}",
       );
@@ -326,6 +330,7 @@ Retorne somente JSON com "strategies": exatamente 5 objetos, cada um com apenas 
     if (intent === "ai-caption") {
       const response = await client.chat.completions.create({
         model: model,
+        service_tier: "default",
         response_format: {
           type: "json_object",
         },
@@ -340,7 +345,7 @@ Retorne somente JSON com "strategies": exatamente 5 objetos, cada um com apenas 
           },
         ],
       });
-      await logUsage(response.usage, intent, model);
+      await logUsage(response, intent);
       const output: unknown = JSON.parse(
         response.choices[0]?.message.content ?? "{}",
       );

@@ -91,9 +91,7 @@ export function AdminUserForm({
         {/* Nome e Sobrenome */}
         <div className="grid gap-4 md:grid-cols-2">
           <div className="grid gap-4">
-            <PrismLabel htmlFor="name">
-              Nome
-            </PrismLabel>
+            <PrismLabel htmlFor="name">Nome</PrismLabel>
             <PrismInput
               defaultValue={person?.name}
               id="name"
@@ -102,9 +100,7 @@ export function AdminUserForm({
             />
           </div>
           <div className="grid gap-4">
-            <PrismLabel htmlFor="surname">
-              Sobrenome
-            </PrismLabel>
+            <PrismLabel htmlFor="surname">Sobrenome</PrismLabel>
             <PrismInput
               defaultValue={person?.surname}
               id="surname"
@@ -117,9 +113,7 @@ export function AdminUserForm({
         {/* Iniciais e Nome Curto */}
         <div className="grid gap-4 md:grid-cols-2">
           <div className="grid gap-4">
-            <PrismLabel htmlFor="initials">
-              Iniciais
-            </PrismLabel>
+            <PrismLabel htmlFor="initials">Iniciais</PrismLabel>
             <PrismInput
               defaultValue={person?.initials}
               id="initials"
@@ -130,9 +124,7 @@ export function AdminUserForm({
             />
           </div>
           <div className="grid gap-4">
-            <PrismLabel htmlFor="short">
-              Nome Curto
-            </PrismLabel>
+            <PrismLabel htmlFor="short">Nome Curto</PrismLabel>
             <PrismInput
               defaultValue={person?.short || ""}
               id="short"
@@ -144,9 +136,7 @@ export function AdminUserForm({
 
         {/* Email */}
         <div className="grid gap-4">
-          <PrismLabel htmlFor="email">
-            E-mail
-          </PrismLabel>
+          <PrismLabel htmlFor="email">E-mail</PrismLabel>
           <PrismInput
             defaultValue={person?.email || ""}
             id="email"
@@ -164,9 +154,7 @@ export function AdminUserForm({
         {/* Senha (apenas criação) */}
         {isNew && (
           <div className="grid gap-4">
-            <PrismLabel htmlFor="password">
-              Senha Provisória
-            </PrismLabel>
+            <PrismLabel htmlFor="password">Senha Provisória</PrismLabel>
             <PrismInputGroup>
               <PrismInputGroupInput
                 id="password"

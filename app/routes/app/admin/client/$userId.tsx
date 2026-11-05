@@ -199,13 +199,14 @@ function AdminClientPage() {
               Clique para fazer upload e recortar
             </p>
             {imageUrl && (
-              <button
-                className="mt-1 text-left text-xs text-muted-foreground underline hover:text-foreground"
-                onClick={() => setImageUrl(null)}
-                type="button"
+              <PrismButton
+                className="mt-1 h-auto p-0 text-left text-xs text-muted-foreground hover:text-foreground"
+                onPress={() => setImageUrl(null)}
+                size="xs"
+                variant="link"
               >
                 Remover imagem
-              </button>
+              </PrismButton>
             )}
           </div>
         </div>

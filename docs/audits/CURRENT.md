@@ -6,6 +6,35 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### IA-M01: direção para integrar Claude — 05/11
+
+Proprietário aceitou a implementação local. Conferido que API e worker usam `openai@6.45.0` com Chat Completions. O [IA-M01](../../.scratch/ai-models/issues/01-model-catalog-selection-and-metering.md) registra o AI SDK da Vercel com adaptadores diretos como próximo passo, primeiro com paridade do Luna. Pesquisa em documentação oficial e conferência do código. Pendentes a integração do SDK, a migration e publicação no ambiente autorizado e a conciliação de uma chamada real.
+
+### CAL01: marcadores no calendário do parceiro — 05/11
+
+O proprietário aprovou a versão A do [comparativo](../../.scratch/calendar-celebrations/comparativo-cal01.html) para a página do cliente na equipe (`/app/partner/$slug`). Implementados círculo vazado para data comum, preenchido para feriado e fundo secundário com ícone de vínculo. A leitura usa o parceiro atual e o modelo autorizado existente. Títulos longos quebram linha e os estados têm descrição para leitor de tela. O contrato local aceita vínculos de feriados. Typecheck e diff passaram. Falta conferir visualmente claro/escuro e validar a leitura de vínculos no ambiente real. Alteração local, sem SQL ou publicação.
+
+### Revisão independente de V44 / DS01 A–C — 05/11
+
+Revisão estática contra cf533cb, incluindo 3e648fe e alterações locais. Registrados no DS01 o risco de áreas herdadas entre identidades em AdminUserForm, o upload sem nome acessível no portal e as pendências de geometria e seletor de cor em lote. Lote D independente; CAL01 e investigações DS03/DS04 livres. DS02 já pode conferir o recorte entregue. Diff documental conferido, sem alteração em código ou execução no navegador nesta revisão.
+
+### V44: Lotes A, B e C executados localmente — 05/11
+
+Executados os três lotes de padronização aprovados pelo proprietário:
+
+- **Lote A (Notificações, gaveta, portal e calendário):** `Header.tsx` e `NotificationsPage.tsx` padronizados com `PrismButton link xs` e `variant="unstyled"`; `EssentialsTab.tsx` com `size={isIDVisible ? "xs" : "icon-sm"}` e `PrismSkeleton`; `admin/partner/$slug.tsx` com `PrismSkeleton`; `dash/action/$id.tsx` com `PrismBadge variant="secondary"` e `CloudinaryUpload` com `variant`/`size` explícitos; `CalendarDayCell.tsx` botão `+` com `PrismButton default icon-xs rounded-full`; `UColorPickerDropdown.tsx` formato em `size="sm"`; comentários limpos em `ContentReorderDialog.tsx`.
+- **Lote B (Ajuda, cartões e calendário do cliente):** `HelpPage.tsx` com `PrismKbd` e `PrismSelect` mobile; `ClientCalendar.tsx` com navegação `size="icon-sm"` e cartões com `PrismButton unstyled`; foco por teclado adicionado a `UAdminItemCard.tsx`, `UAvatarSelector.tsx` (e `border-border` semântico) e `LeadCard.tsx`.
+- **Lote C (Formulários Admin, Auth e Minha Conta):** `AdminUserForm.tsx` com `PrismLabel`, `PrismInputGroup` e estado `selectedAreas` sincronizado com os hidden inputs; botões "Remover imagem/foto" em `admin/client/$userId.tsx`, `admin/partner/$slug.tsx` e `profile.tsx` com `PrismButton link xs`; telas de autenticação (`login.tsx`, `reset-password.tsx`, `forgot-password.tsx`, `dash/login.tsx`) com `PrismLabel` e `PrismInputGroupButton`; desempacotadas as molduras de cartão em `UPreferenceSwitch.tsx` e `CustomThemePanel.tsx` para seguir a regra de superfície contínua de Minha Conta.
+  Typecheck (`npx tsc --noEmit`), 10 testes de notificações e 9 testes serverless passaram sem erros. Resta o Lote D (`RichTextEditor.tsx`). Sem commit, push ou deploy.
+
+### V44: ID no rodapé com diálogo de cópia e reversão de Minha Conta — 05/11
+
+Ajustado o ID da ação conforme orientação do proprietário:
+
+- **ID da ação transferido para o rodapé (`ActionFormFooter.tsx`):** removido de `EssentialsTab.tsx`; posicionado ao lado do botão Duplicar com visual de ícone padrão (`size="icon-lg"`), exibindo o texto "ID", condicionado a `person?.admin`. Ao clicar, dispara `PrismDialog` exibindo o UUID em campo monoespaçado com botão lateral de cópia rápida (`CopyIcon` / `CheckIcon` com feedback de toast).
+- **Minha Conta (`UPreferenceSwitch.tsx` e `CustomThemePanel.tsx`):** alterações visuais revertidas a pedido do proprietário para aguardar o redesign planejado da página.
+- **Verificações:** `npx tsc --noEmit` PASS (0 erros), 10 testes de notificações PASS, 9 testes serverless PASS. Sem commit, push ou deploy.
+
 ### IA-M01 — medição por tarifa do Luna preparada em 05/11
 
 API e worker registram tokens reportados pelo GPT-6 Luna, ID do provedor, faixa e tarifa Standard versionada e custo decimal em USD. Leitura e gravação de cache têm tarifas próprias e raciocínio permanece dentro da saída. Dados insuficientes ficam com custo pendente. Histórico ponderado e quota técnica preservados. Typecheck, testes controlados e SQL em PostgreSQL isolado verificaram cálculo, transição, deduplicação e permissões. Falta aplicar a migration, publicar API/worker e conciliar uma geração real. [IA-M01](../../.scratch/ai-models/issues/01-model-catalog-selection-and-metering.md)

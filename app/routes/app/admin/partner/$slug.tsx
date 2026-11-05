@@ -438,9 +438,7 @@ function AdminPartnerEditPage() {
         <div className="grid gap-8">
           <div className="grid gap-4">
             <div className="flex items-center justify-between gap-2">
-              <PrismLabel htmlFor="title">
-                Nome
-              </PrismLabel>
+              <PrismLabel htmlFor="title">Nome</PrismLabel>
               {savingFields.has("title") && <ULoader />}
             </div>
             <PrismInput
@@ -455,9 +453,7 @@ function AdminPartnerEditPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="grid gap-4">
               <div className="flex items-center justify-between gap-2">
-                <PrismLabel htmlFor="short">
-                  Sigla (4 letras)
-                </PrismLabel>
+                <PrismLabel htmlFor="short">Sigla (4 letras)</PrismLabel>
                 {savingFields.has("short") && <ULoader />}
               </div>
               <PrismInput
@@ -471,9 +467,7 @@ function AdminPartnerEditPage() {
 
             <div className="grid gap-4">
               <div className="flex items-center justify-between gap-2">
-                <PrismLabel htmlFor="slug">
-                  Slug
-                </PrismLabel>
+                <PrismLabel htmlFor="slug">Slug</PrismLabel>
                 {savingFields.has("slug") && <ULoader />}
               </div>
               <PrismInput
@@ -500,11 +494,7 @@ function AdminPartnerEditPage() {
             </div>
             <input name="context" type="hidden" value={contextValue} />
             <div className="min-h-25 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] duration-200 squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring/30 md:text-sm">
-              <Suspense
-                fallback={
-                  <PrismSkeleton className="h-full w-full" />
-                }
-              >
+              <Suspense fallback={<PrismSkeleton className="h-full w-full" />}>
                 <Tiptap
                   aria-labelledby="context-label"
                   id="context"
@@ -535,11 +525,7 @@ function AdminPartnerEditPage() {
             </div>
             <input name="voice" type="hidden" value={voiceValue} />
             <div className="min-h-25 overflow-hidden rounded-2xl border border-transparent bg-input text-base transition-[color,box-shadow] duration-200 squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring/30 md:text-sm">
-              <Suspense
-                fallback={
-                  <PrismSkeleton className="h-full w-full" />
-                }
-              >
+              <Suspense fallback={<PrismSkeleton className="h-full w-full" />}>
                 <Tiptap
                   aria-labelledby="voice-label"
                   id="voice"

@@ -42,3 +42,17 @@ Fontes oficiais: [OpenAI modelos e preços base](https://developers.openai.com/a
 Código e migration preparados. O catálogo executável começa pelo GPT-6 Luna, único modelo dos comandos atuais. A tabela acima continua como referência para os demais modelos. Standard usa US$ 0,10 por milhão de tokens de entrada sem cache, US$ 0,01 de leitura, US$ 0,125 de gravação e US$ 0,50 de saída. Acima de 272 mil tokens de entrada, o dobro das tarifas de entrada e cache e 1,5× da saída se aplicam à chamada inteira. A versão e as tarifas ficam gravadas com cada custo calculado. A geração fixa o modo Standard, preserva a quota técnica e mantém o histórico ponderado. [Ficha oficial do GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna) · [Uso em Chat Completions](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/retrieve)
 
 Conferência controlada com testes do servidor e banco isolado. A migration preservou registros históricos existentes e os testes confirmaram precisão decimal, idempotência por chamada e custo pendente em uso incompleto. Falta aplicar a migration no ambiente autorizado, publicar API e worker e conferir uma geração do Luna por ID, tokens e tarifa. A validação real do provedor e a disponibilidade dos outros modelos na conta continuam pendentes.
+
+## Próximo passo após o aceite da implementação local — 05/11/2026
+
+A implementação local foi aceita. Hoje, a API e o worker usam o SDK oficial `openai@6.45.0` com Chat Completions e `OPENAI_API_KEY`. A integração direta atual cobre o Luna. Para o planejamento, interpretamos “cloud” como Claude e “OpenAI 2” como o pedido de uma biblioteca que atenda OpenAI e Anthropic.
+
+**Direção escolhida.** Usar o AI SDK da Vercel (`ai`), com os adaptadores diretos `@ai-sdk/openai` e `@ai-sdk/anthropic`. Para a primeira migração, selecionar explicitamente Chat Completions no adaptador OpenAI, preservando o contrato usado pelo Luna. O AI Gateway é uma opção de roteamento separada. Ele aceita o SDK atual em uma URL compatível, mas seu uso para medição dependeria de confirmar os campos de uso, o modelo atendido e a conciliação de custo nessa rota. [Adaptador OpenAI](https://ai-sdk.dev/providers/ai-sdk-providers/openai) · [Adaptador Anthropic](https://ai-sdk.dev/providers/ai-sdk-providers/anthropic) · [AI Gateway](https://vercel.com/docs/ai-gateway/sdks-and-apis)
+
+1. Adaptar a chamada compartilhada no servidor com o Luna como único modelo habilitado. Conferir a paridade na API e no worker, incluindo saída estruturada, ID da resposta, tokens, cache, faixa e modalidade de tarifa. Se a biblioteca não expuser algum campo necessário no uso normalizado, verificar os metadados ou o retorno bruto. Manter custo pendente quando os dados forem insuficientes. Conferir também a política de retries para contabilizar cada chamada efetiva.
+2. Após a paridade controlada, aplicar a migration no ambiente autorizado, publicar e conciliar uma geração real do Luna com o registro de uso e a tarifa. Esse é o aceite operacional do IA-M01.
+3. Na preparação do IA-M04, confirmar acesso a Claude na conta da agência e validar um modelo por chamada controlada. Conferir leitura e gravação de cache, faixa e tarifa antes de liberar a seleção, que continua condicionada ao IA-M03.
+
+Esta revisão atualiza o plano. A troca da biblioteca e as verificações com o provedor ficam para a próxima execução.
+
+[Pesquisa de SDKs e opções de roteamento](../../../docs/audits/2026-11-05-ai-provider-sdk.md)

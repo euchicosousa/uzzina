@@ -27,3 +27,15 @@ O V44 é a referência de controles e contratos. Este ticket executa as correç�
 - [x] Padronizar botões dos banners e fechamento da gaveta, controles de editar/excluir comentário e ações de audiência/cancelar/enviar; itens de menção usam geometria Prism padrão. Formatação e `bun run typecheck` passaram. Proprietário conferiu o botão Fechar e o percurso de teclado da gaveta.
 - [ ] Prosseguir pelos lotes de controles, formulários, gaveta e editor do V44, preservando contratos de foco e teclado. Tratar a apresentação de datas no CAL01 e coordenar o recorte de Planejamento com a série existente.
 - [ ] Encaminhar as diferenças renderizadas ao DS02. A padronização é o padrão de execução. Uma inadequação visual documentada pode fundamentar novo token, variante ou exceção.
+
+## Revisão dos lotes A–C antes do lote D — 05/11
+
+Base da revisão estática: `cf533cb` até o checkout local, incluindo o commit `3e648fe`. Cobertura de navegador permanece no DS02.
+
+- [ ] **C · Corrigir antes de fechar a revisão.** Vincular a instância de AdminUserForm ao usuário editado. `selectedAreas` inicializa uma vez e alimenta o envio. Ao trocar entre usuários com dados em cache, a mesma instância pode carregar áreas do usuário anterior. Validar troca entre duas identidades e entre edição e criação.
+- [ ] **A · Nome acessível.** No portal, o upload com anexos existentes mostra apenas o ícone +. Dar ao botão o nome “Adicionar arquivo” nos dois estados.
+- [ ] **B · Confirmar a geometria aprovada.** A versão local de Alterar Data e Hora usa células `sm` e padding padrão, diferente do recorte xs anteriormente aceito. Comparar as sete colunas e manter ou confirmar a variante.
+- [ ] **B · Dar destino ao seletor de cor em lote.** A mudança feita migra o import de `toHex`. Registrar se a composição atual permanece por contrato ou se cabe a troca pelo seletor Prism, preservando seleção e teclado.
+- [ ] **A–C · Aceite renderizado.** Conferir notificações no sino e na página, seletor mobile da Ajuda, calendário do portal, formulários Admin/Auth e Minha Conta. Incluir fluxo de teclado e estados com dados controlados.
+
+O lote D é isolado no editor e não depende dessas correções. Manter os achados A–C abertos até resolver e conferir.

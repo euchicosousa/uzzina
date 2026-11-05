@@ -353,13 +353,14 @@ function ProfilePage() {
                 Clique na imagem para enviar uma nova
               </span>
               {imageUrl && (
-                <button
-                  className="mt-0.5 text-left text-xs text-muted-foreground underline hover:text-foreground"
-                  onClick={() => setImageUrl(null)}
-                  type="button"
+                <PrismButton
+                  className="mt-0.5 h-auto p-0 text-left text-xs text-muted-foreground hover:text-foreground"
+                  onPress={() => setImageUrl(null)}
+                  size="xs"
+                  variant="link"
                 >
                   Remover foto
-                </button>
+                </PrismButton>
               )}
             </div>
           </div>

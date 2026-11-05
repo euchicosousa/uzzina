@@ -21,7 +21,11 @@ const Tiptap = lazy(() =>
     default: module.Tiptap,
   })),
 );
-import { PrismButton, PrismButtonGroup, PrismSkeleton } from "~/components/prism";
+import {
+  PrismButton,
+  PrismButtonGroup,
+  PrismSkeleton,
+} from "~/components/prism";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { INTENT } from "~/lib/CONSTANTS";
 import type { TextDraftField } from "~/components/features/action-drawer/ActionFormDrawer";
@@ -172,7 +176,6 @@ export function EssentialsTab({
       work_files: next,
     });
   };
-  const [isIDVisible, setisIDVisible] = useState(false);
   const handleTriggerAI = async () => {
     await triggerAIAction(INTENT.ai_strategy);
   };
@@ -277,18 +280,6 @@ export function EssentialsTab({
             />
 
             <ActionTimeDisplay action={RawAction} />
-
-            <PrismButton
-              aria-label="Alternar exibição do ID da ação"
-              className={cn("font-mono", isIDVisible && "w-auto px-2")}
-              onClick={() => {
-                setisIDVisible(!isIDVisible);
-              }}
-              size={isIDVisible ? "xs" : "icon-sm"}
-              variant="ghost"
-            >
-              {isIDVisible ? RawAction.id : "ID"}
-            </PrismButton>
           </div>
 
           <div
