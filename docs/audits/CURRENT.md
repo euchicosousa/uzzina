@@ -6,6 +6,21 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### V41 aprovado e encerrado — 04/11
+
+Proprietário aprovou o V41 integralmente e autorizou commit. Migração em 57a7be3; restauração exata de UActionDatePicker e rótulos U da galeria integram o commit de encerramento com este registro. Ticket/índice/relatório/parecer atualizados. Igualdade com a base renomeada, Prettier/Biome/typecheck aprovados na rodada de correção; sem mudança posterior no código conferido. Alterações externas em palettes.ts/ui.tsx preservadas fora do commit. Sem push/deploy.
+
+
+### V41: seletor restaurado e rótulos corrigidos — 04/11
+
+Autorizadas as correções da revisão. UActionDatePicker agora é integralmente igual ao ActionDatePicker em d7efe5f, exceto nome da função exportada; comparação integral confirmou. Rótulos dos playgrounds/cabeçalhos UPhaseIcon e UPartnerCelebrationsSelector corrigidos, preservando IDs/hashes. Prettier/Biome/typecheck aprovados; sem novo ensaio visual, por restauração exata à base aprovada. V41 concluído localmente; ticket/índice/fila/parecer atualizados. Migração commitada em 57a7be3; restauração e rótulos desta rodada ainda sem novo commit. Alterações externas em palettes.ts e ui.tsx preservadas. Sem push/deploy.
+
+
+### V41 revisado por subagente econômico — 04/11
+
+Revisão da entrega `57a7be3` contra `d7efe5f`, com checkout inicialmente limpo. Nove renomes reais e Icons → UIcons confirmados; consumidores atualizados, sem arquivos de compatibilidade ou aliases antigos encontrados. Não encerrar: UActionDatePicker também mudou layout/defaults e permite criar data ao editar hora sem data, zerando segundos/ms; restaurar comportamento/visual anterior mantendo nomes U. Rótulos de PhaseIcon e PartnerCelebrationsSelector na galeria ainda sem U. Typecheck do coordenador passou; sem ensaio visual nem alteração de código nesta revisão. [Parecer](2026-11-04-v41-independent-review.md); ticket/índice/fila atualizados para revisão (90%), com commit correto. Sem novo commit/push/deploy.
+
+
 ### Padronização dos componentes próprios com prefixo U (Ticket V41) — 04/11
 
 - **Migração canônica completa:** Todos os componentes compartilhados próprios foram movidos para `app/components/uzzina/U*` com nomes padronizados no prefixo `U*`:

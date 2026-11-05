@@ -1,10 +1,10 @@
 # Controles visuais — tickets
 
-Atualizado em 04/11/2026, base local `d7efe5f`. Cada linha resume a finalidade, o estado de conclusão e o commit de referência. Commitado significa registrado no Git local; não confirma push ou deploy. Nas pendências V12/V36/V41, o commit contém o ticket, sem comprovar a entrega.
+Atualizado em 04/11/2026, base local `57a7be3`. Cada linha resume a finalidade, o estado de conclusão e o commit de referência. Commitado significa registrado no Git local; não confirma push ou deploy. Nas pendências V12/V36, o commit contém o ticket, sem comprovar a entrega.
 
 Regras oficiais em [visual-controls-final-status.md](../../docs/plans/visual-controls-final-status.md); inventário em [visual-controls-where.md](../../docs/plans/visual-controls-where.md). Os relatórios antigos dentro dos tickets preservam o estado da época; os campos iniciais e este índice representam a situação consolidada.
 
-V35: o índice anterior indicava aprovação, mas a última devolutiva desta conversa ainda aguarda aceite final. V41 está liberado para execução porque V38/V40/V43 foram concluídos. V36 continua somente estudo e agora aparece neste índice.
+V35: o índice anterior indicava aprovação, mas a última devolutiva desta conversa ainda aguarda aceite final. V41 aprovado pelo proprietário e encerrado; migração em `57a7be3`, correções finais no commit de encerramento que inclui este índice. V36 continua somente estudo e agora aparece neste índice.
 
 | # | Ticket | Sobre o que é | Status | Commit de referência |
 |---|---|---|---|---|
@@ -48,6 +48,6 @@ V35: o índice anterior indicava aprovação, mas a última devolutiva desta con
 | 38 | [UPaletteEditor e seletor compartilhado](issues/38-palette-editor-shared-color-picker.md) | Substitui ColorListEditor por UPaletteEditor com seletor compartilhado, reordenação e exclusão discreta. | Aprovado pelo proprietário (04/11), 100% | d7efe5f |
 | 39 | [Seletor de datas alinhado ao Prism](issues/39-celebrations-selector-prism-alignment.md) | Alinha o seletor de datas ao Prism com Tabs, badges, cabeçalhos mensais e títulos truncados. | Aprovado pelo proprietário, 100% (04/11) | d7efe5f |
 | 40 | [Unificar Sprint e Responsáveis](issues/40-unify-people-combobox.md) | Consolida responsáveis e Sprint em UPeopleCombobox preservando suas regras de seleção. | Aprovado pelo proprietário (04/11), 100% — duplicatas eliminadas em favor de UPeopleCombobox | d7efe5f |
-| 41 | [Padronizar nomes com prefixo U](issues/41-standardize-uzzina-component-names.md) | Padroniza nomes, arquivos, exports e imports dos componentes próprios com prefixo U. | Concluído (04/11), 100% | Em preparação |
+| 41 | [Padronizar nomes com prefixo U](issues/41-standardize-uzzina-component-names.md) | Padroniza nomes, arquivos, exports e imports dos componentes próprios com prefixo U. | Aprovado e encerrado, 100% (04/11) | 57a7be3 + commit de encerramento deste registro |
 | 42 | [Padronizar loaders](issues/42-standardize-loading-indicators.md) | Substitui indicadores arbitrários pelo ULoader com escala, cor contextual e acessibilidade. | Aprovado (04/11), 100% | d7efe5f |
 | 43 | [UToggleInput para PrismToggle](issues/43-replace-native-toggle-wrapper.md) | Remove UToggleInput e usa PrismToggle preservando Arquivado e o contrato de FormData. | Aprovado (04/11), 100% | d7efe5f |

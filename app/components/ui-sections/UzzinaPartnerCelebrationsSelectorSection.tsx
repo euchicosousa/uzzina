@@ -131,7 +131,7 @@ export function UPartnerCelebrationsSelectorPlayground() {
         </div>
       }
       previewClassName="items-start"
-      title="PartnerCelebrationsSelector"
+      title="UPartnerCelebrationsSelector"
     >
       <PlaygroundRadio
         label="Selecionadas"
@@ -172,10 +172,10 @@ export function UzzinaPartnerCelebrationsSelectorSection() {
         <GallerySectionHeader
           approved
           description="Seleção das datas comemorativas da marca, com filtro por mês e busca."
-          title="PartnerCelebrationsSelector"
+          title="UPartnerCelebrationsSelector"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="PartnerCelebrationsSelector">
+          <GalleryItem label="UPartnerCelebrationsSelector">
             <UPartnerCelebrationsSelectorPlayground />
           </GalleryItem>
         </GallerySectionContent>

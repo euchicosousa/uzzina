@@ -12,15 +12,6 @@ import { DATE_TIME_DISPLAY } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
 import { getFormattedDateTime } from "~/utils/date";
 
-export interface UActionDatePickerProps {
-  onSelect?: (date: Date) => void;
-  date?: Date;
-  dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
-  className?: string;
-  size?: "sm" | "default" | "lg";
-  isLate?: boolean;
-}
-
 export function UActionDatePicker({
   onSelect,
   date,
@@ -28,7 +19,14 @@ export function UActionDatePicker({
   className,
   size = "sm",
   isLate,
-}: UActionDatePickerProps) {
+}: {
+  onSelect?: (date: Date) => void;
+  date?: Date;
+  dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
+  className?: string;
+  size?: "sm" | "default" | "lg";
+  isLate?: boolean;
+}) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(date);
   const handleCalendarSelect = (newDate: CalendarDate | null) => {
     if (newDate) {
@@ -58,13 +56,15 @@ export function UActionDatePicker({
       >
         <CalendarDaysIcon />
         <span>
-          {date ? getFormattedDateTime(date, dateTimeDisplay) : "Definir data"}
+          {date
+            ? getFormattedDateTime(date, dateTimeDisplay)
+            : "Escolha a data"}
         </span>
       </PrismButton>
-      <PrismPopover className="w-auto p-2" placement="bottom">
+
+      <PrismPopover className="w-auto p-2">
         <PrismCalendar
-          captionLayout="dropdown"
-          className="max-w-full"
+          cellSize="sm"
           onChange={handleCalendarSelect}
           value={
             selectedDate
@@ -73,31 +73,29 @@ export function UActionDatePicker({
                   selectedDate.getMonth() + 1,
                   selectedDate.getDate(),
                 )
-              : null
+              : undefined
           }
         />
-        <div className="flex w-full justify-center">
-          <PrismTimeField
-            aria-label="Horário da ação"
-            className="w-full justify-between"
-            granularity="minute"
-            hourCycle={24}
-            onChange={(time: Time | null) => {
-              if (time) {
-                const current = selectedDate
-                  ? new Date(selectedDate)
-                  : new Date();
-                current.setHours(time.hour, time.minute, 0, 0);
-                setSelectedDate(current);
-              }
-            }}
-            value={
-              selectedDate
-                ? new Time(selectedDate.getHours(), selectedDate.getMinutes())
-                : new Time(12, 0)
+
+        <hr className="-mx-2 -my-2" />
+
+        <PrismTimeField
+          className="flex items-center justify-between gap-2 pl-2"
+          label="Defina a hora"
+          onChange={(time) => {
+            if (selectedDate && time) {
+              const newDate = new Date(selectedDate);
+              newDate.setHours(time.hour, time.minute);
+              setSelectedDate(newDate);
             }
-          />
-        </div>
+          }}
+          size="sm"
+          value={
+            selectedDate
+              ? new Time(selectedDate.getHours(), selectedDate.getMinutes())
+              : undefined
+          }
+        />
       </PrismPopover>
     </PrismPopoverTrigger>
   );

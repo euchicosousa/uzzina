@@ -27,11 +27,10 @@ Sol = Sol 6.1. Terra = Terra 6.1. São os dois modelos pedidos disponíveis para
 | 17 | [IA01 · Consumo de IA em Minha Conta](../../.scratch/ai-usage/issues/01-ai-usage-visibility.md)                                        |       75% |      55% |        50% |       75% | Terra          | Visual aceito segundo CURRENT. Confirmar migration, permissões e agregação mensal com registro real controlado, inclusive duplicidade.                        |
 | 18 | [V35 · Microseções no menu lateral da galeria](../../.scratch/visual-controls/issues/35-ui-sidebar-subsections.md) | 90% | 35% | 90% | 25% | Sol | Primeiro clique corrigido após reprodução no Comet e histórico real; aguarda aceite final. |
 | 19 | [V36 · Estudo dos wrappers de avatar](../../.scratch/visual-controls/issues/36-avatar-wrapper-comparison-study.md) | 0% | 25% | 75% | 90% | Sol | Comparar recursos, consumidores e responsabilidades. Entrega somente de estudo. |
-| 20 | [V41 · Padronizar nomes com prefixo U](../../.scratch/visual-controls/issues/41-standardize-uzzina-component-names.md) | 0% | 40% | 55% | 85% | Gemini | Liberado: V38/V40/V43 concluídos em d7efe5f; renomeação ainda pendente. |
 
 ## Mudanças desde a primeira triagem
 
-A fila vigente tem **20 tickets abertos**. Na série visual, permanecem V12, V35 (aceite final), V36 (estudo) e V41 (renomeação). As entregas encerradas foram retiradas da fila acima. O [índice atualizado](../../.scratch/visual-controls/README.md) detalha finalidade, conclusão e commits; os registros das rodadas abaixo preservam o histórico.
+A fila vigente tem **19 tickets abertos**. Na série visual, permanecem V12, V35 (aceite final) e V36 (estudo). As entregas encerradas foram retiradas da fila acima. O [índice atualizado](../../.scratch/visual-controls/README.md) detalha finalidade, conclusão e commits; os registros das rodadas abaixo preservam o histórico.
 
 ## Verificação solicitada pelo proprietário — 03/11/2026
 
@@ -209,3 +208,11 @@ Falha reproduzida no Comet e no histórico real: rolagem automática de hash do 
 ## Consolidação de tickets e commits — 04/11/2026
 
 Rodada visual versionada em `d7efe5f`; entregas anteriores em `b5b5f33`/`ce1230b` e ajuste de direções do Sheet em `8d80249`. V19–V34 e V37–V40/V42/V43 concluídos conforme registros atuais da série. V35 corrigido e commitado, aguardando aceite final; V36 sem parecer entregue; V41 sem migração entregue, com dependências liberadas. V12 preservado pendente conforme seu ticket. Atualizados os resumos individuais e a coluna de commits no índice. A presença de um ticket no commit não comprova implementação. Nenhum push/deploy verificado nesta atualização documental.
+
+## V41 — correções encerradas localmente — 04/11/2026
+
+UActionDatePicker restaurado à base aprovada d7efe5f, mudando somente o nome exportado; rótulos UPhaseIcon/UPartnerCelebrationsSelector alinhados. Igualdade integral com a base renomeada, Prettier/Biome/typecheck aprovados. V41 concluído localmente e retirado da fila aberta. Registro de commits: migração em 57a7be3; correções finais ainda locais, sem novo commit/push/deploy.
+
+## V41 aprovado e encerrado — 04/11/2026
+
+Proprietário confirmou a correção integral e autorizou commit. V41 encerrado em 100%; migração em 57a7be3 e correções finais no commit de encerramento que inclui este registro. Igualdade com o seletor anterior renomeado, Prettier/Biome/typecheck aprovados na rodada de correção. Sem push/deploy.

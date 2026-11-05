@@ -65,7 +65,7 @@ export function PhaseIconPlayground() {
         preview={
           <UPhaseIcon phase={PHASES[phase]} size={size} variant={variant} />
         }
-        title="PhaseIcon"
+        title="UPhaseIcon"
       >
         <PlaygroundSelect
           label="Fase"
@@ -114,10 +114,10 @@ export function UzzinaPhaseIconSection() {
         <GallerySectionHeader
           approved
           description="Indicador de fase da ação: progresso ou ícone temático, nos tamanhos da escala Uzzina."
-          title="PhaseIcon"
+          title="UPhaseIcon"
         />
         <GallerySectionContent className="grid gap-12">
-          <GalleryItem label="PhaseIcon">
+          <GalleryItem label="UPhaseIcon">
             <PhaseIconPlayground />
           </GalleryItem>
         </GallerySectionContent>
