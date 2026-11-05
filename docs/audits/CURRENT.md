@@ -6,6 +6,13 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### Quatro ajustes do proprietário e limpeza da worktree — 05/11
+
+Proprietário autorizou commit dos quatro arquivos antes preservados: ActionItemTitleInput (PrismButton unstyled e foco no título), PartnersBoard (foco/sublinhado), CelebrationDialog (composição aprovada sem rótulos visuais redundantes) e ContentReorderDialog (controles Prism e badge). Mantido o visual escolhido; corrigidos nomes acessíveis Título/Data com aria-label, removendo referência a label inexistente/import sem uso. Prettier/Biome/typecheck aprovados; sem teste visual adicional.
+
+Worktree não gerenciada pelo app em /Users/euchicosousa/.codex/worktrees/ai-partner-identity/uzzina estava limpa, sem untracked/ignored e sem commits exclusivos (HEAD 2c664185 ancestral de main). Removida com git worktree remove sem force. Git listou somente o checkout principal; Source Control do Antigravity também mostrou apenas main. Commit desta atualização inclui os quatro ajustes e esta continuidade. Backend IA permanece sem publicação; sem push/deploy.
+
+
 ### Commit autorizado da medição IA e controles aprovados — 05/11
 
 Proprietário autorizou commit da rodada. Inclui correção de medição IA/API/worker/Profile, SQL já aplicado na versão remota 20261105035937, V45 unstyled, badge de feriado, foco de Hoje, regressões e tracker/histórico atualizados. Checks da implementação: 144 testes IA, 9 endpoints serverless, 3 controles de botão e 21 de Hoje/datas aprovados; sem alterações de código posteriores nesses recortes. Runtimes de SQL isolado/navegador permanecem com limites registrados. Código externo em ActionItemTitleInput, PartnersBoard, CelebrationDialog e ContentReorderDialog preservado fora deste commit.

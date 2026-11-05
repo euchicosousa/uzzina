@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
+  PrismBadge,
   PrismButton,
   PrismDialog,
   PrismDialogDescription,
@@ -65,7 +66,7 @@ function SortableThumbnail({
       style={style}
       className="group relative aspect-square overflow-hidden rounded-lg border bg-muted squircle"
     >
-      <button
+      {/* <button
         type="button"
         {...attributes}
         {...listeners}
@@ -73,15 +74,27 @@ function SortableThumbnail({
         className="absolute top-1 left-1 z-10 flex size-8 cursor-grab touch-none items-center justify-center rounded bg-black/70 text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30 active:cursor-grabbing"
       >
         <GripVerticalIcon className="size-4" />
-      </button>
+      </button> */}
+      <PrismButton
+        {...attributes}
+        {...listeners}
+        aria-label={`Reordenar arquivo ${index + 1}`}
+        className="absolute top-1 left-1 z-10 cursor-grab touch-none active:cursor-grabbing"
+        size={"icon-xs"}
+        variant={"link"}
+      >
+        <GripVerticalIcon />
+      </PrismButton>
 
       {/* Número de ordem */}
-      <div className="absolute bottom-1 left-1 z-10 rounded bg-black/70 px-1 text-xs font-bold text-white squircle">
+      <PrismBadge className="absolute bottom-1 left-1 z-10">
+        {/* <div className="absolute bottom-1 left-1 z-10 rounded bg-black/70 px-1 text-xs font-bold text-white squircle"> */}
         {index + 1}
-      </div>
+        {/* </div> */}
+      </PrismBadge>
 
       {/* Remover */}
-      <button
+      {/* <button
         ref={removeRef}
         type="button"
         aria-label={`Remover arquivo ${index + 1}`}
@@ -89,7 +102,17 @@ function SortableThumbnail({
         className="absolute top-1 right-1 z-10 flex size-8 items-center justify-center rounded bg-destructive text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30"
       >
         <XIcon className="size-4" />
-      </button>
+      </button> */}
+      <PrismButton
+        ref={removeRef}
+        aria-label={`Remover arquivo ${index + 1}`}
+        onClick={onRemove}
+        className="absolute top-1 right-1 z-10"
+        size={"icon-xs"}
+        variant={"ghost-destructive"}
+      >
+        <XIcon />
+      </PrismButton>
 
       {/* Preview */}
       {isImg ? (

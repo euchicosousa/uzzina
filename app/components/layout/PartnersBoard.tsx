@@ -71,7 +71,7 @@ function PartnerColumn({
       {/* Header do parceiro */}
       <div className="flex items-center justify-between gap-4 overflow-hidden p-2 pb-4">
         <Link
-          className="group flex items-center gap-2 overflow-hidden"
+          className="group flex items-center gap-2 overflow-hidden outline-none focus:underline"
           params={{
             slug: partner.slug,
           }}
@@ -92,7 +92,7 @@ function PartnerColumn({
 
         <PrismButton
           aria-label={`Criar ação para ${partner.title}`}
-          className="opacity-0 group-hover/column:opacity-100 data-[focused]:opacity-100"
+          className="opacity-0 group-hover/column:opacity-100 data-focused:opacity-100"
           onClick={() =>
             setPrimaryAction(
               createActionDraft({

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { cn } from "cnfast";
+import { PrismButton } from "../prism";
 export function ActionItemTitleInput({
   title,
   isDragging,
@@ -65,9 +66,10 @@ export function ActionItemTitleInput({
           value={localTitle}
         />
       ) : (
-        <button
+        <PrismButton
+          variant={"unstyled"}
           className={cn(
-            "w-full cursor-text overflow-hidden text-left text-ellipsis whitespace-nowrap",
+            "w-full cursor-text truncate text-left leading-[inherit] focus:underline",
             isDragging ? "cursor-grabbing" : "",
             InputButtonClassName,
           )}
@@ -76,10 +78,9 @@ export function ActionItemTitleInput({
             event.stopPropagation();
             setIsEditing(true);
           }}
-          type="button"
         >
           {localTitle}
-        </button>
+        </PrismButton>
       )}
     </div>
   );

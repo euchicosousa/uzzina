@@ -12,7 +12,6 @@ import {
   PrismDialogHeader,
   PrismDialogTitle,
   PrismInput,
-  PrismLabel,
 } from "~/components/prism";
 import { useAppContext } from "~/contexts/AppContext";
 import { getQuerySessionGeneration } from "~/lib/query-client";
@@ -31,7 +30,6 @@ export function CelebrationDialog({
   const { person } = useAppContext();
   const client = useQueryClient();
   const titleId = useId();
-  const dateLabelId = useId();
   const titleErrorId = useId();
   const formId = useId();
   const [title, setTitle] = useState(celebration?.title ?? "");
@@ -162,15 +160,15 @@ export function CelebrationDialog({
             hidden button without a type, which would otherwise become the
             default button and move the month when Enter submits. */}
         <div className="flex min-h-0 flex-1 flex-col">
-          <div className="grid min-h-0 flex-1 gap-4 overflow-y-auto px-5 pb-2">
+          <div className="grid min-h-0 flex-1 gap-4 overflow-y-auto px-5 py-1">
             <form
               id={formId}
               className="grid gap-2"
               noValidate
               onSubmit={submit}
             >
-              <PrismLabel htmlFor={titleId}>Título</PrismLabel>
               <PrismInput
+                aria-label="Título"
                 autoFocus
                 id={titleId}
                 name="title"
@@ -202,15 +200,8 @@ export function CelebrationDialog({
               >
                 <span className="text-sm font-medium">É feriado</span>
               </PrismCheckbox>
-              <p className="pl-6 text-xs text-muted-foreground">
-                Feriados podem ser selecionados pelas marcas como dias de folga
-                no planejamento.
-              </p>
             </div>
             <div className="grid gap-2">
-              <PrismLabel elementType="span" id={dateLabelId}>
-                Data
-              </PrismLabel>
               {/* The grid spans the dialog width while each day keeps a fixed
                   square, so the calendar fills the space without oversized
                   rows; today gets a dot so it stays distinct from the
@@ -218,9 +209,9 @@ export function CelebrationDialog({
                   are hidden while keeping their space. */}
               <I18nProvider locale="pt-BR">
                 <PrismCalendar
-                  aria-labelledby={dateLabelId}
+                  aria-label="Data"
                   captionLayout="dropdown"
-                  className="w-full bg-transparent [&_[data-outside-month]]:invisible [&_[data-today]>div]:after:absolute [&_[data-today]>div]:after:bottom-1 [&_[data-today]>div]:after:size-1 [&_[data-today]>div]:after:rounded-full [&_[data-today]>div]:after:bg-current [&_td>div]:aspect-auto [&_td>div>div]:mx-auto [&_td>div>div]:size-(--cell-size)"
+                  className="w-full bg-transparent **:data-outside-month:invisible [&_[data-today]>div]:after:absolute [&_[data-today]>div]:after:bottom-1 [&_[data-today]>div]:after:size-1 [&_[data-today]>div]:after:rounded-full [&_[data-today]>div]:after:bg-current [&_td>div]:aspect-auto [&_td>div>div]:mx-auto [&_td>div>div]:size-(--cell-size)"
                   value={date}
                   onChange={setDate}
                   isDisabled={pending}
