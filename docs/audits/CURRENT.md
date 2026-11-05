@@ -6,6 +6,10 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### DS01 lote D: barra do RichTextEditor — 05/11
+
+Barra principal, BubbleMenu e barra de tabela usam `PrismToggle ghost icon-sm` (estilos), `PrismButton ghost icon-sm` (comandos) e `PrismSeparator`; `toolbarButtonClass` removido. `AriaToolbar`, atalhos Alt+Shift+F10/F9 e Tab para o texto preservados. Typecheck e 14 testes de teclado do editor passaram; proprietário validou visualmente. `tests/drawer-component.test.tsx` tem falhas no painel estreito que já existiam sem esta mudança (verificadas em parte via stash), fora do escopo do lote.
+
 ### Anexos da ação: Portal e Gaveta Essencial unificados — 05/11
 
 Ajustada a exibição e o gerenciamento de anexos de trabalho (`work_files`):

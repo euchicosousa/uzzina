@@ -40,16 +40,16 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useMemo, useRef, useState, type ReactNode } from "react";
+import { Toolbar as AriaToolbar } from "react-aria-components";
 import {
-  Button as AriaButton,
-  Toolbar as AriaToolbar,
-} from "react-aria-components";
-import {
+  PrismButton,
   PrismMenuContent,
   PrismMenuGroup,
   PrismMenuItem,
   PrismMenuSeparator,
   PrismMenuTrigger,
+  PrismSeparator,
+  PrismToggle,
 } from "~/components/prism";
 
 // Commands kept in the single toolbar row of a compact editor; every other
@@ -62,8 +62,36 @@ const COMPACT_TOOLBAR_COMMANDS = new Set([
   "Lista Numerada",
 ]);
 
-const toolbarButtonClass =
-  "flex size-8 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all outline-none hover:bg-secondary hover:text-foreground data-[focus-visible]:bg-input data-[focus-visible]:text-foreground disabled:opacity-30 disabled:hover:bg-transparent squircle";
+/** Plain command button (no pressed state) using the standard Prism icon button. */
+function ToolbarCommandButton({
+  icon: Icon,
+  label,
+  onPress,
+  isDisabled,
+  className,
+}: {
+  icon: LucideIcon;
+  label: string;
+  onPress?: () => void;
+  isDisabled?: boolean;
+  className?: string;
+}) {
+  return (
+    <PrismButton
+      aria-label={label}
+      className={className}
+      isDisabled={isDisabled}
+      onPress={onPress}
+      size="icon-sm"
+      type="button"
+      variant="ghost"
+    >
+      <span className="contents" title={label}>
+        <Icon />
+      </span>
+    </PrismButton>
+  );
+}
 
 function EditorToolbar({
   children,
@@ -115,27 +143,29 @@ function ToolbarButton({
       editable: e.isEditable,
     }),
   });
+  if (!isToggle) {
+    return (
+      <ToolbarCommandButton
+        icon={Icon}
+        isDisabled={!state.editable}
+        label={label}
+        onPress={action}
+      />
+    );
+  }
   return (
-    <AriaButton
+    <PrismToggle
       aria-label={label}
-      aria-pressed={isToggle ? state.active : undefined}
-      className={cn(
-        toolbarButtonClass,
-        state.active
-          ? "border border-primary/20 bg-primary/10 text-primary"
-          : "border border-transparent text-muted-foreground hover:bg-secondary hover:text-foreground",
-      )}
       isDisabled={!state.editable}
-      onPress={action}
-      type="button"
+      isSelected={state.active}
+      onChange={() => action()}
+      size="icon-sm"
+      variant="ghost"
     >
-      <span
-        className="flex size-full items-center justify-center"
-        title={label}
-      >
+      <span className="contents" title={label}>
         <Icon className="size-4" />
       </span>
-    </AriaButton>
+    </PrismToggle>
   );
 }
 function MoreFormattingMenu({
@@ -163,19 +193,12 @@ function MoreFormattingMenu({
   // selection), so the menu only restores its trigger when dismissed.
   return (
     <PrismMenuTrigger>
-      <AriaButton
-        aria-label="Mais formatação"
-        className={cn(toolbarButtonClass, "ml-auto")}
+      <ToolbarCommandButton
+        className="ml-auto"
+        icon={Ellipsis}
         isDisabled={!state.editable}
-        type="button"
-      >
-        <span
-          className="flex size-full items-center justify-center"
-          title="Mais formatação"
-        >
-          <Ellipsis className="size-4" />
-        </span>
-      </AriaButton>
+        label="Mais formatação"
+      />
       <PrismMenuContent className="w-56" placement="bottom end">
         <PrismMenuGroup
           aria-label="Estilos"
@@ -389,37 +412,21 @@ function TiptapToolbar({ editor, isRounded, compact }: TiptapToolbarProps) {
         <ToolbarButton key={btn.label} {...btn} editor={editor} />
       ))}
 
-      <div className="mx-1 h-4 w-px shrink-0 bg-border" />
+      <PrismSeparator className="mx-1 h-4 self-center" orientation="vertical" />
 
-      <AriaButton
-        aria-label="Desfazer"
-        className={toolbarButtonClass}
+      <ToolbarCommandButton
+        icon={Undo2}
         isDisabled={!history?.undo}
+        label="Desfazer"
         onPress={() => editor.chain().focus().undo().run()}
-        type="button"
-      >
-        <span
-          className="flex size-full items-center justify-center"
-          title="Desfazer"
-        >
-          <Undo2 className="size-4" />
-        </span>
-      </AriaButton>
+      />
 
-      <AriaButton
-        aria-label="Refazer"
-        className={toolbarButtonClass}
+      <ToolbarCommandButton
+        icon={Redo2}
         isDisabled={!history?.redo}
+        label="Refazer"
         onPress={() => editor.chain().focus().redo().run()}
-        type="button"
-      >
-        <span
-          className="flex size-full items-center justify-center"
-          title="Refazer"
-        >
-          <Redo2 className="size-4" />
-        </span>
-      </AriaButton>
+      />
 
       {compact && (
         <MoreFormattingMenu commands={extraButtons} editor={editor} />
@@ -750,21 +757,13 @@ export function RichTextEditor({
             >
               {isSelectionInTable
                 ? tableButtons.map((btn) => (
-                    <AriaButton
+                    <ToolbarCommandButton
                       key={`table-control-${btn.label}`}
-                      aria-label={btn.label}
-                      className={toolbarButtonClass}
+                      icon={btn.icon}
                       isDisabled={!editor.isEditable}
+                      label={btn.label}
                       onPress={btn.action}
-                      type="button"
-                    >
-                      <span
-                        className="flex size-full items-center justify-center"
-                        title={btn.label}
-                      >
-                        <btn.icon className="size-4" />
-                      </span>
-                    </AriaButton>
+                    />
                   ))
                 : bubbleButtons.map((btn) => (
                     <ToolbarButton
