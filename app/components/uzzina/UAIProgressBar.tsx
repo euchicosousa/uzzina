@@ -158,7 +158,7 @@ export function UAIProgressBar({
     );
   }
 
-  // Linha ultra fina (h-px, bg-input, sem rounded)
+  // Linha ultra fina (h-0.5, bg-input, sem rounded)
   return (
     <div
       aria-hidden={!visible}
