@@ -246,7 +246,6 @@ export const INTENT = {
   delete_comment: "delete-comment",
   ai_caption: "ai-caption",
   ai_content: "ai-content",
-  ai_hooks: "ai-hooks",
   ai_strategy: "ai-strategy",
   ai_post: "ai-post",
   ai_carousel: "ai-carousel",

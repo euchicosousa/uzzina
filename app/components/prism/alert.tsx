@@ -10,14 +10,20 @@ const alertVariants = cva(
       variant: {
         default: "bg-card text-foreground border-border",
         error:
-          "text-error border-error/50 bg-error-background dark:bg-error-background/10",
+          "text-error-foreground border-error/50 bg-error-background dark:bg-error-background/10",
         success:
           "text-success border-success/50 bg-success-background dark:bg-success-background/10",
         warning:
-          "text-warning border-warning/50 bg-warning-background dark:bg-warning-background/10",
-        info: "text-info border-info/50 bg-info-background dark:bg-info-background/10",
+          "text-warning-foreground border-warning/50 bg-warning-background dark:bg-warning-background/10",
+        info: "text-info-foreground border-info/50 bg-info-background dark:bg-info-background/10",
       },
     },
+    compoundVariants: [
+      {
+        variant: ["error", "success", "warning", "info"],
+        className: "[&_[data-slot=alert-description]]:opacity-100",
+      },
+    ],
     defaultVariants: {
       variant: "default",
     },

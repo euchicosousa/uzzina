@@ -33,7 +33,7 @@ const SEMANTIC_FEEDBACK = [
     label: "Informação",
     status: "Atualização disponível",
     description: "Há uma nova versão para consultar.",
-    color: "text-info",
+    color: "text-info-foreground",
     icon: InfoIcon,
   },
   {
@@ -49,7 +49,7 @@ const SEMANTIC_FEEDBACK = [
     label: "Alerta",
     status: "Atenção necessária",
     description: "Revise os dados antes de continuar.",
-    color: "text-warning",
+    color: "text-warning-foreground",
     icon: TriangleAlertIcon,
   },
   {
@@ -57,7 +57,7 @@ const SEMANTIC_FEEDBACK = [
     label: "Erro",
     status: "Falha ao salvar",
     description: "Ocorreu um erro ao salvar as alterações.",
-    color: "text-error",
+    color: "text-error-foreground",
     icon: CircleXIcon,
   },
 ] as const;
@@ -136,7 +136,7 @@ const COLOR_SWATCHES = [
   {
     name: "Error",
     bg: "bg-error-background",
-    fg: "text-error",
+    fg: "text-error-foreground",
     group: "Status & Feedback",
   },
   {
@@ -148,13 +148,13 @@ const COLOR_SWATCHES = [
   {
     name: "Warning",
     bg: "bg-warning-background",
-    fg: "text-warning",
+    fg: "text-warning-foreground",
     group: "Status & Feedback",
   },
   {
     name: "Info",
     bg: "bg-info-background",
-    fg: "text-info",
+    fg: "text-info-foreground",
     group: "Status & Feedback",
   },
 ];

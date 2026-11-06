@@ -352,12 +352,7 @@ describe("Entrega 2 - S05: Escopo do Link de Revisão", () => {
 });
 
 describe("Entrega 2 - S03: Validação de Payload da API de IA", () => {
-  const ALLOWED_INTENTS = [
-    "ai-strategy",
-    "ai-content",
-    "ai-hooks",
-    "ai-caption",
-  ];
+  const ALLOWED_INTENTS = ["ai-strategy", "ai-content", "ai-caption"];
 
   function validateAIPayload(payload: {
     intent?: string;

@@ -9,7 +9,7 @@ export function UAIAllowanceMeter({
   children?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-muted/20 p-4 transition-colors squircle">
+    <div className="flex flex-col gap-3 transition-colors">
       <div className="flex items-baseline justify-between gap-2">
         <span className="text-sm font-semibold text-foreground">
           Franquia do Mês

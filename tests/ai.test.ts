@@ -224,7 +224,7 @@ it("returns 503 without leaking errors when Auth infrastructure throws", async (
   expect(calls).toBe(0);
 });
 
-it.each(["ai-strategy", "ai-hooks", "ai-content", "ai-caption"])(
+it.each(["ai-strategy", "ai-content", "ai-caption"])(
   "accepts the existing %s output contract",
   async (intent) => {
     const strategy = {
@@ -582,4 +582,11 @@ it("blocks provider dispatch when the monthly allowance cannot cover the reserva
   });
   expect(calls).toBe(0);
   expect(rpcCalls).toBe(2);
+});
+
+it("rejects the retired hooks command before spending quota or calling OpenAI", async () => {
+  const response = await request({ ...payload, intent: "ai-hooks" }, "valid");
+  expect(response.status).toBe(400);
+  expect(rpcCalls).toBe(0);
+  expect(calls).toBe(0);
 });
