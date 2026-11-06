@@ -23,7 +23,7 @@ export function UAIAllowanceMeter({
       </div>
 
       {/* Progress bar */}
-      <div className="h-2 w-full overflow-hidden rounded-full bg-muted/60">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-input">
         <div
           className={cn(
             "h-full rounded-full transition-all duration-500",

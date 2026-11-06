@@ -24,7 +24,14 @@ import {
   UploadIcon,
   SparklesIcon,
 } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import {
+  isValidElement,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { flushSync } from "react-dom";
 import { useFillScrollViewport } from "~/hooks/useFillScrollViewport";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -40,6 +47,7 @@ import {
   PrismTab,
   PrismTabPanel,
   PrismButton,
+  PrismBadge,
   PrismInput,
   PrismLabel,
   PrismToggleGroup,
@@ -66,6 +74,7 @@ import {
   type ThemeColorKey,
   type ThemeMode,
 } from "~/lib/custom-theme";
+import cn from "cnfast";
 export const Route = createFileRoute("/app/profile")({
   component: ProfilePage,
 });
@@ -121,6 +130,145 @@ function PaletteSwatch({
     />
   );
 }
+
+interface ProfileSettingProps {
+  title: ReactNode;
+  badge?: ReactNode;
+  description?: ReactNode;
+  children?: ReactNode;
+  className?: string;
+}
+
+function ProfileSetting({
+  title,
+  badge,
+  description,
+  children,
+  className,
+}: ProfileSettingProps) {
+  return (
+    <div className={cn("grid gap-4", className)}>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between gap-2">
+          {typeof title === "string" ? <h5>{title}</h5> : title}
+          {badge &&
+            (isValidElement(badge) ? badge : <PrismBadge>{badge}</PrismBadge>)}
+        </div>
+        {description && (
+          <span className="text-sm text-muted-foreground">{description}</span>
+        )}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function PartnerPageMockup({ showSidebar }: { showSidebar: boolean }) {
+  return (
+    <div
+      aria-hidden="true"
+      className="relative flex h-60 w-full flex-col overflow-hidden rounded-2xl border border-border bg-card/40 text-muted-foreground select-none"
+    >
+      {/* Top Header Bar */}
+      <div className="flex h-7 w-full shrink-0 items-center justify-between border-b border-border/50 px-3">
+        <div className="flex items-center gap-2">
+          <div className="size-2.5 rounded-xs border border-border/80" />
+          <div className="h-1.5 w-10 rounded-full border border-border/60" />
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="h-1 w-8 rounded-full border border-border/40" />
+          <div className="h-1 w-8 rounded-full border border-border/40" />
+        </div>
+        <div className="size-3 rounded-full border border-border/70" />
+      </div>
+
+      {/* Subheader / Partner & Filter Controls */}
+      <div className="flex h-7 w-full shrink-0 items-center justify-between border-b border-border/40 bg-muted/10 px-3">
+        <div className="flex items-center gap-1.5">
+          <div className="size-2.5 rounded-full border border-border/70" />
+          <div className="h-1.5 w-14 rounded-full border border-border/60" />
+        </div>
+        <div className="flex items-center gap-1 rounded-sm border border-border/40 px-1.5 py-0.5">
+          <div className="h-1 w-10 rounded-full border border-border/50" />
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="h-1.5 w-12 rounded-full border border-border/40" />
+          <div
+            className={cn(
+              "size-3 rounded-xs border transition-colors",
+              showSidebar ? "border-primary bg-primary/20" : "border-border/60",
+            )}
+          />
+        </div>
+      </div>
+
+      {/* Main Area: Calendar Grid + Animated Instagram Sidebar */}
+      <div className="relative flex min-h-0 flex-1">
+        {/* Calendar Grid */}
+        <div className="flex min-w-0 flex-1 flex-col">
+          {/* Days of Week Row */}
+          <div className="grid h-4 w-full grid-cols-7 border-b border-border/40">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-center border-r border-border/20 last:border-r-0"
+              >
+                <div className="h-1 w-3 rounded-full border border-border/40" />
+              </div>
+            ))}
+          </div>
+
+          {/* Calendar Grid Cells */}
+          <div className="grid flex-1 grid-cols-7 grid-rows-4">
+            {Array.from({ length: 28 }).map((_, i) => (
+              <div
+                key={i}
+                className="border-r border-b border-border/20 p-1 last:border-r-0"
+              >
+                {(i === 2 || i === 8 || i === 11 || i === 19 || i === 24) && (
+                  <div className="h-1.5 w-full rounded-xs border border-border/50" />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Instagram Sidebar (Animated) */}
+        <div
+          className={cn(
+            "flex h-full flex-col border-primary bg-primary/20 transition-all duration-300 ease-in-out",
+            showSidebar
+              ? "w-[40%] border-t border-l opacity-100"
+              : "pointer-events-none w-0 overflow-hidden border-l-0 opacity-0",
+          )}
+        >
+          {/* Sidebar Partner Header */}
+          <div className="flex h-6 w-full shrink-0 items-center gap-1.5 border-b border-primary/40 px-2">
+            <div className="size-2 rounded-full border border-primary/60" />
+            <div className="h-1.5 w-12 rounded-full border border-primary/60" />
+          </div>
+
+          {/* 3-Column Feed Grid */}
+          <div className="grid min-h-0 flex-1 grid-cols-3 gap-1 p-1.5">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="aspect-square rounded-xs border border-primary/50"
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Floating Bottom App Bar (+ Nova Ação) */}
+        <div className="pointer-events-none absolute bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-primary/60 bg-background/95 px-2.5 py-1 shadow-sm">
+          <div className="size-2 rounded-full border border-primary/60" />
+          <div className="h-1.5 w-10 rounded-full border border-primary/80" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ProfilePage() {
   const { person, cloudName, uploadPreset } = useAppContext();
   const pageRef = useRef<HTMLDivElement>(null);
@@ -143,6 +291,10 @@ function ProfilePage() {
     setCustomTheme,
   } = useAppThemeContext();
   const [imageUrl, setImageUrl] = useState<string | null>(person.image || null);
+  const [nameDraft, setNameDraft] = useState(person.name || "");
+  const [surnameDraft, setSurnameDraft] = useState(person.surname || "");
+  const [initialsDraft, setInitialsDraft] = useState(person.initials || "");
+  const [shortDraft, setShortDraft] = useState(person.short || "");
   const [selectedTheme, setSelectedTheme] = useState<
     "light" | "dark" | "system"
   >(preferences.theme);
@@ -163,6 +315,11 @@ function ProfilePage() {
 
   // Values loaded at mount; the submit sends only fields changed from these.
   const initialRef = useRef({
+    name: person.name || "",
+    surname: person.surname || "",
+    initials: person.initials || "",
+    short: person.short || "",
+    image: person.image || null,
     ...preferences,
     customThemeKey: JSON.stringify(
       createCustomThemeDraft(preferences.customTheme),
@@ -173,7 +330,57 @@ function ProfilePage() {
     createCustomThemeDraft(preferences.customTheme),
   );
 
+  const isPersonalDirty =
+    (imageUrl ?? null) !== (initialRef.current.image ?? null) ||
+    nameDraft !== initialRef.current.name ||
+    surnameDraft !== initialRef.current.surname ||
+    initialsDraft !== initialRef.current.initials ||
+    shortDraft !== initialRef.current.short;
+
+  const isAppearanceDirty =
+    selectedTheme !== initialRef.current.theme ||
+    selectedThemeColor !== initialRef.current.themeColorIndex ||
+    (selectedThemeColor === -1 &&
+      JSON.stringify(customThemeDraft) !== initialRef.current.customThemeKey) ||
+    selectedFollowPartnerColor !== initialRef.current.followPartnerColor;
+
+  const isBehaviorDirty =
+    selectedVariant !== initialRef.current.defaultViewVariant ||
+    selectedTodayView !== initialRef.current.defaultTodayView ||
+    showInstagramSidebar !== initialRef.current.showInstagramSidebar;
+
+  const isAIDirty =
+    (strategyModelDraft !== undefined &&
+      strategyModelDraft !==
+        (initialRef.current.defaultStrategyModel ?? lunaModelId)) ||
+    (contentModelDraft !== undefined &&
+      contentModelDraft !==
+        (initialRef.current.defaultContentModel ?? lunaModelId)) ||
+    (captionModelDraft !== undefined &&
+      captionModelDraft !==
+        (initialRef.current.defaultCaptionModel ?? lunaModelId));
+
+  const dirtyMap: Record<ProfileTab, boolean> = {
+    personal: isPersonalDirty,
+    appearance: isAppearanceDirty,
+    behavior: isBehaviorDirty,
+    ai: isAIDirty,
+  };
+
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+  const [authEmail, setAuthEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    void supabase.auth?.getSession?.().then(({ data }) => {
+      if (active && data?.session?.user?.email) {
+        setAuthEmail(data.session.user.email);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [supabase]);
   const {
     data: aiUsage,
     isLoading: isLoadingAIUsage,
@@ -283,13 +490,22 @@ function ProfilePage() {
         const merged = { ...preferenceRecord(person.preferences) };
         for (const key of sentKeys) merged[key] = savedPreferences[key];
         person.preferences = merged;
-        initialRef.current = {
-          ...initialRef.current,
-          ...getUserPreferences({ ...person, preferences: merged }),
-          customThemeKey: JSON.stringify(customThemeDraft),
-        };
       }
       if (!isCurrentSession()) return;
+      person.name = name;
+      person.surname = surname;
+      person.initials = initials;
+      person.short = short;
+      person.image = image;
+      initialRef.current = {
+        name,
+        surname,
+        initials,
+        short,
+        image,
+        ...getUserPreferences(person),
+        customThemeKey: JSON.stringify(customThemeDraft),
+      };
       setStrategyModelDraft(undefined);
       setContentModelDraft(undefined);
       setCaptionModelDraft(undefined);
@@ -326,14 +542,13 @@ function ProfilePage() {
       onSelectionChange={(key) => {
         if (isProfileTab(key)) setSection(key);
       }}
-      className="mx-auto flex min-h-0 w-full max-w-5xl flex-col overflow-hidden px-3 pt-3 lg:px-8 lg:pt-8"
+      className="mx-auto flex min-h-0 w-full flex-col overflow-hidden md:max-w-2xl"
     >
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b pb-3 lg:gap-8 lg:pb-6">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b p-4 md:px-0">
         <h1 className="p-0 text-2xl font-bold tracking-tight text-foreground">
           Minha Conta
         </h1>
         <PrismButton
-          className="h-auto min-h-11 max-w-full rounded-2xl px-3 py-2 squircle lg:h-10 lg:min-h-10 lg:px-5 lg:py-0"
           form="profile-form"
           isDisabled={isSubmitting}
           type="submit"
@@ -347,17 +562,29 @@ function ProfilePage() {
 
       <PrismTabList
         aria-label="Seção da conta"
-        className="shrink-0 [scrollbar-width:none] overflow-x-auto [&::-webkit-scrollbar]:hidden"
+        className="h-12 shrink-0 scrollbar-none overflow-x-auto [&::-webkit-scrollbar]:hidden"
       >
-        {PROFILE_TABS.map((tab) => (
-          <PrismTab
-            className="shrink-0 whitespace-nowrap"
-            id={tab.id}
-            key={tab.id}
-          >
-            {tab.label}
-          </PrismTab>
-        ))}
+        {PROFILE_TABS.map((tab) => {
+          const isDirty = dirtyMap[tab.id];
+          return (
+            <PrismTab
+              className="shrink-0 whitespace-nowrap"
+              data-dirty={isDirty ? "true" : undefined}
+              id={tab.id}
+              key={tab.id}
+            >
+              <span>{tab.label}</span>
+              {isDirty && (
+                <span
+                  aria-hidden="true"
+                  className="size-1.5 shrink-0 rounded-full bg-primary"
+                  data-slot="unsaved-indicator"
+                  title="Alterações não salvas"
+                />
+              )}
+            </PrismTab>
+          );
+        })}
       </PrismTabList>
       <form
         id="profile-form"
@@ -389,9 +616,9 @@ function ProfilePage() {
           id="personal"
           shouldForceMount
           data-tab-id="personal"
-          className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain py-3 lg:py-6"
+          className="grid gap-8 p-4 md:px-0"
         >
-          <div className="flex w-full max-w-2xl flex-col gap-4 lg:gap-6">
+          <div className="flex w-full flex-col gap-8">
             {/* Profile Avatar Upload */}
             <div className="flex items-center gap-4 pl-1">
               <CloudinaryUpload
@@ -417,14 +644,14 @@ function ProfilePage() {
                 </div>
               </CloudinaryUpload>
 
-              <div className="flex flex-col gap-1">
-                <span className="text-sm font-semibold">Foto de Perfil</span>
-                <span className="text-xs text-muted-foreground">
+              <div className="grid gap-1">
+                <h5>Foto de Perfil</h5>
+                <span className="text-sm text-muted-foreground">
                   Clique na imagem para enviar uma nova
                 </span>
                 {imageUrl && (
                   <PrismButton
-                    className="mt-0.5 h-auto p-0 text-left text-xs text-muted-foreground hover:text-foreground"
+                    className="mr-auto p-0"
                     onPress={() => setImageUrl(null)}
                     size="xs"
                     variant="link"
@@ -440,9 +667,10 @@ function ProfilePage() {
               <div className="grid gap-2">
                 <PrismLabel htmlFor="name">Nome</PrismLabel>
                 <PrismInput
-                  defaultValue={person.name}
                   id="name"
                   name="name"
+                  value={nameDraft}
+                  onChange={(e) => setNameDraft(e.target.value)}
                   required
                 />
               </div>
@@ -450,9 +678,10 @@ function ProfilePage() {
               <div className="grid gap-2">
                 <PrismLabel htmlFor="surname">Sobrenome</PrismLabel>
                 <PrismInput
-                  defaultValue={person.surname}
                   id="surname"
                   name="surname"
+                  value={surnameDraft}
+                  onChange={(e) => setSurnameDraft(e.target.value)}
                   required
                 />
               </div>
@@ -461,11 +690,12 @@ function ProfilePage() {
                 <div className="grid gap-2">
                   <PrismLabel htmlFor="initials">Iniciais</PrismLabel>
                   <PrismInput
-                    defaultValue={person.initials}
                     id="initials"
                     maxLength={2}
                     name="initials"
                     placeholder="AB"
+                    value={initialsDraft}
+                    onChange={(e) => setInitialsDraft(e.target.value)}
                     required
                   />
                 </div>
@@ -473,27 +703,24 @@ function ProfilePage() {
                 <div className="grid gap-2">
                   <PrismLabel htmlFor="short">Nome Curto</PrismLabel>
                   <PrismInput
-                    defaultValue={person.short}
                     id="short"
                     name="short"
                     placeholder="Nome de exibição preferido"
+                    value={shortDraft}
+                    onChange={(e) => setShortDraft(e.target.value)}
                   />
                 </div>
               </div>
-
-              <div className="grid gap-2 border-t pt-4">
-                <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                  E-mail da Conta
-                </span>
-                <span className="text-sm font-medium text-foreground/80">
-                  {person.email || "Nenhum e-mail associado"}
-                </span>
-                <span className="text-[10px] text-muted-foreground">
-                  Nota: O endereço de e-mail é gerenciado pelo administrador do
-                  espaço de trabalho.
-                </span>
-              </div>
             </div>
+
+            <ProfileSetting
+              title="E-mail da Conta"
+              description="Nota: O endereço de e-mail é gerenciado pelo administrador do espaço de trabalho."
+            >
+              <span className="text-sm font-medium text-foreground/80">
+                {authEmail || person.email || "Nenhum e-mail associado"}
+              </span>
+            </ProfileSetting>
             <AppBarSpacer />
           </div>
         </PrismTabPanel>
@@ -502,364 +729,372 @@ function ProfilePage() {
           id="appearance"
           shouldForceMount
           data-tab-id="appearance"
-          className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain py-3 lg:py-6"
+          className="grid gap-8 p-4 md:px-0"
         >
-          <div className="flex w-full max-w-2xl flex-col gap-4 lg:gap-6">
-            {/* Theme Preference Selection */}
-            <div className="grid gap-3">
-              <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                Tema do App
-              </span>
-              <PrismToggleGroup
-                className="max-w-full flex-wrap"
-                aria-label="Tema do App"
-                selectedKeys={[selectedTheme]}
-                onSelectionChange={(keys) => {
-                  const val = Array.from(keys)[0] as
-                    "light" | "dark" | "system";
-                  if (val) handleThemeChange(val);
-                }}
+          {/* Theme Preference Selection */}
+          <ProfileSetting title="Tema do App">
+            <PrismToggleGroup
+              fullWidth
+              attached
+              aria-label="Tema do App"
+              selectedKeys={[selectedTheme]}
+              variant={"outline"}
+              onSelectionChange={(keys) => {
+                const val = Array.from(keys)[0] as "light" | "dark" | "system";
+                if (val) handleThemeChange(val);
+              }}
+            >
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="light"
               >
-                <PrismToggleGroupItem
-                  className={PROFILE_CHOICE_CLASS_NAME}
-                  id="light"
-                >
-                  <SunIcon />
-                  Claro
-                </PrismToggleGroupItem>
-                <PrismToggleGroupItem
-                  className={PROFILE_CHOICE_CLASS_NAME}
-                  id="dark"
-                >
-                  <MoonIcon />
-                  Escuro
-                </PrismToggleGroupItem>
-                <PrismToggleGroupItem
-                  className={PROFILE_CHOICE_CLASS_NAME}
-                  id="system"
-                >
-                  <LaptopIcon />
-                  Sistema
-                </PrismToggleGroupItem>
-              </PrismToggleGroup>
-            </div>
-
-            {/* Accent Theme Color Selection */}
-            <div className="grid gap-3">
-              <div className="flex flex-col gap-0.5">
-                <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                  Cor de Destaque
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  Selecione a paleta de cores primárias para a interface do
-                  aplicativo.
-                </span>
-              </div>
-              <PrismToggleGroup
-                aria-label="Cor de Destaque"
-                className="max-w-full flex-wrap"
-                selectedKeys={[String(selectedThemeColor)]}
-                onSelectionChange={(keys) => {
-                  const val = Array.from(keys)[0];
-                  if (val !== undefined) handleColorChange(Number(val));
-                }}
+                <SunIcon />
+                Claro
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="dark"
               >
-                {PALLETE.map((palette, idx) => (
-                  <PrismToggleGroupItem
-                    className={PROFILE_CHOICE_CLASS_NAME}
-                    id={String(idx)}
-                    key={palette.id}
-                  >
-                    <PaletteSwatch
-                      color={
-                        theme === Theme.DARK
-                          ? palette.dark.primary
-                          : palette.light.primary
-                      }
-                      isDark={theme === Theme.DARK}
-                    />
-                    {palette.label}
-                  </PrismToggleGroupItem>
-                ))}
+                <MoonIcon />
+                Escuro
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="system"
+              >
+                <LaptopIcon />
+                Sistema
+              </PrismToggleGroupItem>
+            </PrismToggleGroup>
+          </ProfileSetting>
+
+          {/* Accent Theme Color Selection */}
+          <ProfileSetting
+            title="Cor de Destaque"
+            description="Selecione a paleta de cores primárias para a interface do
+                  aplicativo."
+          >
+            <PrismToggleGroup
+              aria-label="Cor de Destaque"
+              className="grid w-full grid-cols-2 md:grid-cols-3"
+              selectedKeys={[String(selectedThemeColor)]}
+              onSelectionChange={(keys) => {
+                const val = Array.from(keys)[0];
+                if (val !== undefined) handleColorChange(Number(val));
+              }}
+            >
+              {PALLETE.map((palette, idx) => (
                 <PrismToggleGroupItem
-                  className={PROFILE_CHOICE_CLASS_NAME}
-                  id="-1"
+                  className={cn(PROFILE_CHOICE_CLASS_NAME, "justify-start")}
+                  id={String(idx)}
+                  key={palette.id}
                 >
-                  <PaletteSwatch isDark={theme === Theme.DARK} />
-                  Personalizado
+                  <PaletteSwatch
+                    color={
+                      theme === Theme.DARK
+                        ? palette.dark.primary
+                        : palette.light.primary
+                    }
+                    isDark={theme === Theme.DARK}
+                  />
+                  {palette.label}
                 </PrismToggleGroupItem>
-              </PrismToggleGroup>
-            </div>
+              ))}
+              {selectedThemeColor === -1 && (
+                <CustomThemePanel
+                  onChange={handleCustomThemeChange}
+                  theme={customThemeDraft}
+                />
+              )}
+              <PrismToggleGroupItem
+                className={cn(PROFILE_CHOICE_CLASS_NAME, "justify-start")}
+                id="-1"
+              >
+                <PaletteSwatch isDark={theme === Theme.DARK} />
+                Personalizado
+              </PrismToggleGroupItem>
+            </PrismToggleGroup>
+          </ProfileSetting>
 
-            {selectedThemeColor === -1 && (
-              <CustomThemePanel
-                onChange={handleCustomThemeChange}
-                theme={customThemeDraft}
-              />
-            )}
-
-            {/* Follow Partner Color Toggle */}
-            <UPreferenceSwitch
-              className="max-lg:flex-wrap max-lg:gap-3 max-lg:[&>div]:min-w-0 max-lg:[&>div]:flex-1 max-lg:[&>div]:basis-40"
-              checked={selectedFollowPartnerColor}
-              description="Substitui as cores do tema do aplicativo pelas cores da marca do cliente ativo."
-              id="followPartnerColor"
-              label="Usar Cores dos Clientes"
-              onCheckedChange={setSelectedFollowPartnerColor}
-            />
-            <AppBarSpacer />
-          </div>
+          {/* Follow Partner Color Toggle */}
+          <UPreferenceSwitch
+            className="max-lg:flex-wrap max-lg:gap-3 max-lg:[&>div]:min-w-0 max-lg:[&>div]:flex-1 max-lg:[&>div]:basis-40"
+            checked={selectedFollowPartnerColor}
+            description="Substitui as cores do tema do aplicativo pelas cores da marca do cliente ativo."
+            id="followPartnerColor"
+            label="Usar Cores dos Clientes"
+            onCheckedChange={setSelectedFollowPartnerColor}
+          />
+          <AppBarSpacer />
         </PrismTabPanel>
 
         <PrismTabPanel
           id="behavior"
           shouldForceMount
           data-tab-id="behavior"
-          className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain py-3 lg:py-6"
+          className="grid gap-8 p-4 md:px-0"
         >
-          <div className="flex w-full max-w-2xl flex-col gap-4 lg:gap-6">
-            {/* Default View Selection */}
-            <div className="grid gap-3">
-              <div className="flex flex-col gap-0.5">
-                <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                  Layout Padrão
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  Escolha o layout de visualização inicial especificamente para
-                  os painéis de clientes.
-                </span>
-              </div>
+          {/* Default View Selection */}
+          <ProfileSetting
+            title="Layout Padrão"
+            description="Escolha o layout de visualização inicial especificamente para os painéis de clientes."
+          >
+            <PrismToggleGroup
+              fullWidth
+              attached
+              variant={"outline"}
+              aria-label="Layout padrão"
+              selectedKeys={[selectedVariant]}
+              onSelectionChange={(keys) => {
+                const val = Array.from(keys)[0] as "line" | "block" | "content";
+                if (val) setSelectedVariant(val);
+              }}
+            >
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="line"
+              >
+                <ListIcon />
+                Linha
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="block"
+              >
+                <LayoutGridIcon />
+                Bloco
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="content"
+              >
+                <ImageIcon />
+                Conteúdo
+              </PrismToggleGroupItem>
+            </PrismToggleGroup>
+          </ProfileSetting>
+
+          <ProfileSetting
+            title="Visualização inicial do Hoje"
+            description="Escolha como abrir o Hoje na Home e na página Hoje. As trocas de visualização durante o uso continuam temporárias."
+          >
+            <PrismToggleGroup
+              aria-label="Visualização inicial do Hoje"
+              fullWidth
+              attached
+              variant={"outline"}
+              selectedKeys={[selectedTodayView]}
+              onSelectionChange={(keys) => {
+                const value = Array.from(keys)[0];
+                if (isTodayViewMode(value)) setSelectedTodayView(value);
+              }}
+            >
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="kanban"
+              >
+                <KanbanIcon />
+                Kanban
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="categories"
+              >
+                <Grid3x3Icon />
+                <div className="truncate">Categorias</div>
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="feed"
+              >
+                <BlocksIcon />
+                Feed
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="partners"
+              >
+                <HeartHandshakeIcon />
+                <div className="truncate">Parceiros</div>
+              </PrismToggleGroupItem>
+            </PrismToggleGroup>
+          </ProfileSetting>
+
+          {/* Show Instagram Sidebar by Default Toggle */}
+          <ProfileSetting
+            title="Sidebar do Instagram por Padrão"
+            description="Decida se o painel do feed do Instagram inicia aberto nas páginas dos clientes."
+          >
+            <div className="flex flex-col gap-4">
               <PrismToggleGroup
-                className="max-w-full flex-wrap"
-                aria-label="Layout padrão"
-                selectedKeys={[selectedVariant]}
+                aria-label="Sidebar do Instagram por padrão"
+                fullWidth
+                attached
+                variant="outline"
+                selectedKeys={[showInstagramSidebar ? "show" : "hide"]}
                 onSelectionChange={(keys) => {
-                  const val = Array.from(keys)[0] as
-                    "line" | "block" | "content";
-                  if (val) setSelectedVariant(val);
+                  const val = Array.from(keys)[0];
+                  if (val !== undefined)
+                    setShowInstagramSidebar(val === "show");
                 }}
               >
                 <PrismToggleGroupItem
                   className={PROFILE_CHOICE_CLASS_NAME}
-                  id="line"
+                  id="hide"
                 >
-                  <ListIcon />
-                  Linha
+                  Não mostrar sidebar do Instagram
                 </PrismToggleGroupItem>
                 <PrismToggleGroupItem
                   className={PROFILE_CHOICE_CLASS_NAME}
-                  id="block"
+                  id="show"
                 >
-                  <LayoutGridIcon />
-                  Bloco
-                </PrismToggleGroupItem>
-                <PrismToggleGroupItem
-                  className={PROFILE_CHOICE_CLASS_NAME}
-                  id="content"
-                >
-                  <ImageIcon />
-                  Conteúdo
+                  Mostrar sidebar do Instagram
                 </PrismToggleGroupItem>
               </PrismToggleGroup>
-            </div>
 
-            <div className="grid gap-3 border-t pt-4">
-              <div className="flex flex-col gap-0.5">
-                <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                  Visualização inicial do Hoje
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  Escolha como abrir o Hoje na Home e na página Hoje. As trocas
-                  de visualização durante o uso continuam temporárias.
-                </span>
-              </div>
-              <PrismToggleGroup
-                aria-label="Visualização inicial do Hoje"
-                className="max-w-full flex-wrap"
-                selectedKeys={[selectedTodayView]}
-                onSelectionChange={(keys) => {
-                  const value = Array.from(keys)[0];
-                  if (isTodayViewMode(value)) setSelectedTodayView(value);
-                }}
-              >
-                <PrismToggleGroupItem
-                  className={PROFILE_CHOICE_CLASS_NAME}
-                  id="kanban"
-                >
-                  <KanbanIcon />
-                  Kanban
-                </PrismToggleGroupItem>
-                <PrismToggleGroupItem
-                  className={PROFILE_CHOICE_CLASS_NAME}
-                  id="categories"
-                >
-                  <Grid3x3Icon />
-                  Categorias
-                </PrismToggleGroupItem>
-                <PrismToggleGroupItem
-                  className={PROFILE_CHOICE_CLASS_NAME}
-                  id="feed"
-                >
-                  <BlocksIcon />
-                  Feed
-                </PrismToggleGroupItem>
-                <PrismToggleGroupItem
-                  className={PROFILE_CHOICE_CLASS_NAME}
-                  id="partners"
-                >
-                  <HeartHandshakeIcon />
-                  Parceiros
-                </PrismToggleGroupItem>
-              </PrismToggleGroup>
+              <PartnerPageMockup showSidebar={showInstagramSidebar} />
             </div>
-
-            {/* Show Instagram Sidebar by Default Toggle */}
-            <UPreferenceSwitch
-              className="max-lg:flex-wrap max-lg:gap-3 max-lg:[&>div]:min-w-0 max-lg:[&>div]:flex-1 max-lg:[&>div]:basis-40"
-              checked={showInstagramSidebar}
-              description="Decida se o painel do feed do Instagram inicia aberto nas páginas dos clientes."
-              id="showInstagramSidebar"
-              label="Sidebar do Instagram por Padrão"
-              onCheckedChange={setShowInstagramSidebar}
-            />
-            <AppBarSpacer />
-          </div>
+          </ProfileSetting>
+          <AppBarSpacer />
         </PrismTabPanel>
 
         <PrismTabPanel
           id="ai"
           shouldForceMount
           data-tab-id="ai"
-          className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain py-3 lg:py-6"
+          className="grid gap-8 p-4 md:px-0"
         >
-          <div className="flex w-full max-w-2xl flex-col gap-4 lg:gap-6">
+          <div className="flex w-full flex-col gap-4 md:max-w-2xl lg:gap-6">
             <h2 className="sr-only">Uso de IA</h2>
             {/* Personal monthly AI allowance */}
-            <div className="grid gap-3 pt-2">
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                  <SparklesIcon className="size-3.5 text-primary" />
-                  Meu uso de IA
-                </span>
-                {aiUsage?.period && (
-                  <span className="text-xs font-medium text-muted-foreground">
-                    {aiUsage.period}
-                  </span>
+            <ProfileSetting
+              title="Meu uso de IA"
+              badge={aiUsage?.period ? aiUsage.period : null}
+              description="O seu uso individual faz parte da franquia mensal de IA
+                  compartilhada pela agência."
+            >
+              <div className="grid gap-3 pt-2">
+                {isLoadingAIUsage ? (
+                  <div className="h-20 w-full animate-pulse rounded-2xl bg-muted/40 squircle" />
+                ) : isAIUsageError ? (
+                  <div
+                    className="flex items-center justify-between gap-3 text-xs text-muted-foreground"
+                    role="status"
+                  >
+                    <span>Não foi possível consultar o consumo de IA.</span>
+                    <PrismButton
+                      size="xs"
+                      variant="ghost"
+                      onPress={() => void refetchAIUsage()}
+                    >
+                      Tentar novamente
+                    </PrismButton>
+                  </div>
+                ) : aiUsage ? (
+                  <UAIAllowanceMeter percentage={aiUsage.percentage}>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>
+                        {aiUsage.total_generations}{" "}
+                        {aiUsage.total_generations === 1
+                          ? "geração registrada"
+                          : "gerações registradas"}
+                      </span>
+                      <span>Renova às 00h UTC no dia 1</span>
+                    </div>
+                    {aiUsage.has_pending && (
+                      <p
+                        className="text-xs text-muted-foreground"
+                        role="status"
+                      >
+                        Há gerações com saldo reservado aguardando conciliação.
+                      </p>
+                    )}
+                    {aiUsage.incomplete_generations > 0 && (
+                      <p
+                        className="text-xs text-muted-foreground"
+                        role="status"
+                      >
+                        {aiUsage.incomplete_generations} geração(ões) sem dados
+                        completos de consumo.
+                      </p>
+                    )}
+                  </UAIAllowanceMeter>
+                ) : (
+                  <div className="rounded-2xl border border-border/40 bg-muted/10 p-4 text-xs text-muted-foreground squircle">
+                    Consumo de IA ainda não medido neste mês.
+                  </div>
                 )}
               </div>
+            </ProfileSetting>
 
-              {isLoadingAIUsage ? (
-                <div className="h-20 w-full animate-pulse rounded-2xl bg-muted/40 squircle" />
-              ) : isAIUsageError ? (
-                <div
-                  className="flex items-center justify-between gap-3 text-xs text-muted-foreground"
-                  role="status"
-                >
-                  <span>Não foi possível consultar o consumo de IA.</span>
-                  <PrismButton
-                    size="xs"
-                    variant="ghost"
-                    onPress={() => void refetchAIUsage()}
+            <ProfileSetting title="Modelos padrão de IA">
+              <div className="grid gap-3">
+                {(
+                  [
+                    {
+                      label: "Criar estratégia",
+                      name: "estratégia",
+                      value:
+                        strategyModelDraft ??
+                        preferences.defaultStrategyModel ??
+                        lunaModelId,
+                      setDraft: setStrategyModelDraft,
+                    },
+                    {
+                      label: "Gerar conteúdo",
+                      name: "conteúdo",
+                      value:
+                        contentModelDraft ??
+                        preferences.defaultContentModel ??
+                        lunaModelId,
+                      setDraft: setContentModelDraft,
+                    },
+                    {
+                      label: "Gerar legenda",
+                      name: "legenda",
+                      value:
+                        captionModelDraft ??
+                        preferences.defaultCaptionModel ??
+                        lunaModelId,
+                      setDraft: setCaptionModelDraft,
+                    },
+                  ] as const
+                ).map((row) => (
+                  <div
+                    key={row.label}
+                    className="flex flex-wrap items-center justify-between gap-2"
                   >
-                    Tentar novamente
-                  </PrismButton>
-                </div>
-              ) : aiUsage ? (
-                <UAIAllowanceMeter percentage={aiUsage.percentage}>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>
-                      {aiUsage.total_generations}{" "}
-                      {aiUsage.total_generations === 1
-                        ? "geração registrada"
-                        : "gerações registradas"}
-                    </span>
-                    <span>Renova às 00h UTC no dia 1</span>
-                  </div>
-                  {aiUsage.has_pending && (
-                    <p className="text-xs text-muted-foreground" role="status">
-                      Há gerações com saldo reservado aguardando conciliação.
-                    </p>
-                  )}
-                  {aiUsage.incomplete_generations > 0 && (
-                    <p className="text-xs text-muted-foreground" role="status">
-                      {aiUsage.incomplete_generations} geração(ões) sem dados
-                      completos de consumo.
-                    </p>
-                  )}
-                </UAIAllowanceMeter>
-              ) : (
-                <div className="rounded-2xl border border-border/40 bg-muted/10 p-4 text-xs text-muted-foreground squircle">
-                  Consumo de IA ainda não medido neste mês.
-                </div>
-              )}
-            </div>
-
-            <div className="grid gap-3">
-              <h3 className="text-sm font-medium">Modelos padrão de IA</h3>
-              {(
-                [
-                  {
-                    label: "Criar estratégia",
-                    name: "estratégia",
-                    value:
-                      strategyModelDraft ??
-                      preferences.defaultStrategyModel ??
-                      lunaModelId,
-                    setDraft: setStrategyModelDraft,
-                  },
-                  {
-                    label: "Gerar conteúdo",
-                    name: "conteúdo",
-                    value:
-                      contentModelDraft ??
-                      preferences.defaultContentModel ??
-                      lunaModelId,
-                    setDraft: setContentModelDraft,
-                  },
-                  {
-                    label: "Gerar legenda",
-                    name: "legenda",
-                    value:
-                      captionModelDraft ??
-                      preferences.defaultCaptionModel ??
-                      lunaModelId,
-                    setDraft: setCaptionModelDraft,
-                  },
-                ] as const
-              ).map((row) => (
-                <div
-                  key={row.label}
-                  className="flex flex-wrap items-center justify-between gap-2"
-                >
-                  <span className="text-sm">{row.label}</span>
-                  <div className="flex items-center gap-1">
-                    {row.value !== lunaModelId && (
-                      <PrismButton
-                        aria-label={`Voltar ao modelo padrão de ${row.name}`}
-                        variant="ghost"
-                        size="icon-sm"
+                    <span className="text-sm">{row.label}</span>
+                    <div className="flex items-center gap-1">
+                      {row.value !== lunaModelId && (
+                        <PrismButton
+                          aria-label={`Voltar ao modelo padrão de ${row.name}`}
+                          variant="ghost"
+                          size="icon-sm"
+                          isDisabled={isSubmitting}
+                          onClick={() => row.setDraft(lunaModelId)}
+                        >
+                          <RefreshCwIcon />
+                        </PrismButton>
+                      )}
+                      <UAIModelSelect
+                        ariaLabel={`Modelo padrão para ${row.label.toLowerCase()}`}
+                        models={actionAIModels}
+                        value={row.value}
+                        onChange={(id) => {
+                          if (isActionAIModelId(id)) row.setDraft(id);
+                        }}
+                        showText
+                        size="sm"
+                        variant="secondary"
                         isDisabled={isSubmitting}
-                        onClick={() => row.setDraft(lunaModelId)}
-                      >
-                        <RefreshCwIcon />
-                      </PrismButton>
-                    )}
-                    <UAIModelSelect
-                      ariaLabel={`Modelo padrão para ${row.label.toLowerCase()}`}
-                      models={actionAIModels}
-                      value={row.value}
-                      onChange={(id) => {
-                        if (isActionAIModelId(id)) row.setDraft(id);
-                      }}
-                      showText
-                      size="sm"
-                      variant="secondary"
-                      isDisabled={isSubmitting}
-                    />
+                      />
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </ProfileSetting>
+
             <AppBarSpacer />
           </div>
         </PrismTabPanel>

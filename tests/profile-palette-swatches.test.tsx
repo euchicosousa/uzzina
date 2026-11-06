@@ -152,3 +152,57 @@ it("uses four section tabs, keeps drafts mounted across tabs and never writes be
   expect(name.value).toBe("Draft preserved");
   expect(writes).toBe(0);
 });
+
+it("shows an unsaved changes indicator on modified tabs and explains the shared agency allowance", async () => {
+  const mounted = renderProfile();
+  const tabs = screen.getByRole("tablist", { name: "Seção da conta" });
+  const tab = (name: string) => within(tabs).getByRole("tab", { name });
+  const personal = tab("Informações pessoais");
+  const appearance = tab("Aparência");
+  const ai = tab("Uso de IA");
+
+  // No tabs are dirty initially
+  expect(personal.getAttribute("data-dirty")).toBeNull();
+  expect(appearance.getAttribute("data-dirty")).toBeNull();
+  expect(ai.getAttribute("data-dirty")).toBeNull();
+
+  const user = userEvent.setup();
+  const nameInput =
+    mounted.container.querySelector<HTMLInputElement>('input[name="name"]');
+  if (!nameInput) throw new Error("Missing name input");
+
+  // Edit personal info -> personal tab shows unsaved indicator
+  await user.type(nameInput, " Modified");
+  expect(personal.getAttribute("data-dirty")).toBe("true");
+  expect(
+    personal.querySelector('[data-slot="unsaved-indicator"]'),
+  ).not.toBeNull();
+  expect(appearance.getAttribute("data-dirty")).toBeNull();
+
+  // Navigate to Appearance and change theme -> appearance tab becomes dirty
+  await user.click(appearance);
+  const darkRadio = screen.getByRole("radio", { name: "Escuro" });
+  await user.click(darkRadio);
+  expect(appearance.getAttribute("data-dirty")).toBe("true");
+  expect(
+    appearance.querySelector('[data-slot="unsaved-indicator"]'),
+  ).not.toBeNull();
+
+  // Navigate to AI tab -> check agency allowance text
+  await user.click(ai);
+  expect(
+    screen.getByText(
+      /O seu uso individual faz parte da franquia mensal de IA compartilhada pela agência/i,
+    ),
+  ).toBeTruthy();
+  expect(ai.getAttribute("data-dirty")).toBeNull();
+
+  // Reverting name back to initial -> personal tab is no longer dirty
+  await user.click(personal);
+  await user.clear(nameInput);
+  await user.type(nameInput, person.name);
+  expect(personal.getAttribute("data-dirty")).toBeNull();
+  expect(personal.querySelector('[data-slot="unsaved-indicator"]')).toBeNull();
+
+  expect(writes).toBe(0);
+});
