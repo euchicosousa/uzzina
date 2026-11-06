@@ -59,3 +59,32 @@ Comando: `bun test tests/social-planning-recovery/02-persistence.test.ts`
 | **TypeScript / Build** | `tsc --noEmit` limpo (0 erros). `check-serverless-runtime.cjs` (9 PASS). |
 | **Status do Ticket T02** | `implemented-unverified` (aguarda aplicação do SQL no banco para validação remota de ponta a ponta). |
 
+
+---
+
+## Verificação isolada — 06/11/2026
+
+**Resultado: não executada. Nenhum PostgreSQL local disponível.** Nenhum teste P01–P10 foi rodado; nada foi instalado, nenhum remoto foi acessado e `.env.production.local` não foi lido.
+
+**Ambiente inspecionado (macOS, Darwin 25.6.0):** `which postgres initdb pg_ctl psql docker supabase` sem resultado; `find /opt/homebrew /usr/local -maxdepth 4 -name initdb -o -name pg_ctl` sem resultado; `/opt/homebrew/Cellar` contém apenas `libpq` (cliente, sem servidor); sem `@electric-sql/pglite` nem `embedded-postgres` em `node_modules`.
+
+**Teste de integração:** `tests/social-planning-recovery/02-persistence.integration.test.ts` **não existe**. Só existe `02-persistence.test.ts`, que usa dublê do cliente Supabase e por isso não certifica RLS nem CAS (README: mock não substitui banco isolado).
+
+| ID | Resultado real | Depende de D1 (provisório) |
+| --- | --- | --- |
+| P01 | não executado | não |
+| P02 | não executado | sim (quem lê) |
+| P03 | não executado | sim |
+| P04 | não executado | sim |
+| P05 | não executado | parcialmente (autoria/parceiro imutáveis) |
+| P06 | não executado | não (CAS), mas quem pode escrever depende de D1 |
+| P07 | não executado | não |
+| P08 | não executado | não |
+| P09 | não executado | não |
+| P10 | não executado | sim (leitura/edição por não autor) |
+
+D1 não está confirmada pelo proprietário; P02–P05 e P10 permanecem provisórios mesmo após execução.
+
+**Para reproduzir:** fornecer um PostgreSQL 17 local (binários ou contêiner) e criar `02-persistence.integration.test.ts` com conexões independentes por papel, schema mínimo (roles `anon`/`authenticated`, `auth.uid()` via `request.jwt.claims`, `people`, `partners`, funções `is_active_admin`/`is_active_member`) e a migration real `20261102120000_social_plans.sql`, falhando com mensagem de configuração se `T02_TEST_DATABASE_URL` faltar ou apontar para `supabase.co`.
+
+**Status:** permanece `implemented-unverified`.

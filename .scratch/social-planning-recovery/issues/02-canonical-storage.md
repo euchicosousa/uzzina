@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Opus 5.5, para validar autorização, concorrência de versão e reabertura.
 - **Google** — Gemini 4 Argon, para validar autorização, concorrência de versão e reabertura. Disponibilidade depende do plano do Antigravity.
 
-**Status:** implemented-unverified (código, models e CAS testados localmente; SQL preparado em supabase/migrations/20261102120000_social_plans.sql aguarda aplicação remota; evidência em docs/audits/social-planning-recovery/T02-evidence.md)
+**Status:** implemented-unverified (verificação isolada de 06/11 não executada: sem PostgreSQL local; P01–P10 sem resultado; D1 não confirmada, testes de acesso provisórios; código, models e CAS testados localmente com dublê; SQL preparado em supabase/migrations/20261102120000_social_plans.sql aguarda aplicação remota; evidência em docs/audits/social-planning-recovery/T02-evidence.md)
 **Blocked by:** T01/D1 e D6 confirmadas. Pode inventariar catálogo antes.
 **Origem:** R4, R5 e R11; C01.
 **Prioridade:** P1
