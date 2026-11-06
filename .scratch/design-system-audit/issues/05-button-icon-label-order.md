@@ -60,3 +60,9 @@ Convenção aplicada: ícone antes do texto; sem `mr-*`/`ml-*` no ícone (o `gap
 ## Branch conferido no app real — 06/11/2026
 
 `proposal/ds05-save-icon-first` (`4f76198`) servido localmente com a sessão do proprietário, em 1280px, numa ação existente. O botão mostra o ícone de nuvem antes de "Atualizar". A gaveta foi fechada sem salvar.
+
+## Decisão do proprietário — 06/11/2026
+
+O proprietário discorda da convenção proposta, mas ainda não tem uma posição formada. Os ajustes já feitos na `main` ficam como estão, e o branch `proposal/ds05-save-icon-first` também. A convenção **não** está adotada e não deve ser aplicada em novos lugares.
+
+**Status:** em aberto para estudo futuro.

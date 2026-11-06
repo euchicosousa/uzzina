@@ -2,9 +2,27 @@
 
 Atualizado em 06/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-Produção Ready em 06/11 a partir do push de `main` até `9e25ad7`, no domínio `uzzina.cnvt.com.br`, conforme o painel da Vercel. O deploy inclui a interface do IA-M04 (seletor e três padrões pessoais), EST-01/02 e a correção de Gerar conteúdo. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
+Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 e o ticket 01 de uso de IA. O domínio `uzzina.cnvt.com.br` está Ready no deploy `dpl_EhqbZf5ia5zwyztWJmoybStqjrma`. A `main` local tem os commits da rodada de 06/11 sem push (`git log origin/main..main`). Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
 
 ## Pendências reais
+
+### Rodada de tickets de 06/11 — estado para os próximos agentes
+
+IA-M05, IA-M02, DS03, DS04 e DS05 eram **tickets de estudo**. O executor implementou código sem autorização, e o proprietário não concordou. Regra registrada no AGENTS.md: investigação entrega só relatório. Nada da rodada foi publicado. Relatório completo para o proprietário: https://claude.ai/artifact/VTxfCon2znKybzaSr6Xkg2.
+
+Decisões do proprietário em 06/11, após ler o relatório:
+
+- **IA-M05:** a demora é normal (modelo barato é rápido, caro demora). O objetivo é contornar a espera, sem streaming. Reestudo: [contornar a espera](2026-11-06-ia-m05-contornar-espera.md). Recomenda liberar a pessoa durante legenda e conteúdo, aviso de conclusão e expectativa de tempo no seletor. Os logs de tempo de `8a9f035` não ajudam nisso; a reversão está recomendada e pendente de decisão.
+- **IA-M02:** a aba Uso de IA mostra o uso pessoal, parte da franquia compartilhada pela agência. Abas no mobile e no desktop. Envio só dos campos alterados: sim. Indicador de não salvo: sim. O branch `proposal/ia-m02-profile-tabs` (`7345909`) cobre os três primeiros itens; faltam o indicador e a autorização do merge.
+- **DS03:** "tudo ok". A, B, D e F ficam na `main`. C e E seguem nos branches `proposal/ds03-c-title-drag` e `proposal/ds03-e-touch-scroll`, sem merge.
+- **DS05:** o proprietário discorda da convenção, sem posição formada. Ajustes atuais mantidos; convenção não adotada; em aberto para estudo futuro. O branch `proposal/ds05-save-icon-first` também segue sem merge.
+- **O resto fica como foi deixado:** DS04 (tokens, Nova Hora e overlays animados), lotes do DS01, correção do Tab da gaveta, testes atualizados, seletor Semana, `UPreferenceSwitch` sem caixa e `launch.json`.
+
+Pendências reais: merges dos 4 branches de proposta, só com autorização; recortes do IA-M05 (A, B, C); decisão sobre os logs do IA-M05; decisões D1–D6 do Planejamento (T01); T02 sem PostgreSQL local, por decisão do proprietário; push da `main`, não autorizado.
+
+### Conferência de progresso e conciliação IA-M04 — 06/11
+
+Domínio de produção confirmado Ready no deploy `dpl_EhqbZf5ia5zwyztWJmoybStqjrma`. No recorte de 06/11 UTC iniciado às 03h, 22 chamadas tiveram reserva e custo conciliado (4 legendas, 12 conteúdos, 6 estratégias salvas). Evidência em seis dos sete modelos, sem Sol no recorte e sem certificação da matriz inteira. Aceite do proprietário do IA-M04 permanece registrado. Main local limpa e 27 commits à frente de origin/main conforme a referência local. T02 continua sem ensaio P01–P10; foi localizado o runtime PostgreSQL temporário já usado no IA-M04, sem instalação ou execução adicional nesta conferência.
 
 ### T01: rastreamento das decisões do Planejamento — 06/11
 
@@ -13,6 +31,7 @@ Produção Ready em 06/11 a partir do push de `main` até `9e25ad7`, no domínio
 ### Branches de proposta: IA-M02 e DS03-E — 06/11
 
 Os dois estão fora da `main`, rebaseados sobre `e86f34a` e sem push.
+
 - `proposal/ia-m02-profile-tabs` (`f940af3`): Minha Conta em quatro abas PrismTabs, com um único Salvar no cabeçalho e `shouldForceMount`. Um campo inválido abre a própria aba. O envio manda só os campos alterados, comparando com os valores do carregamento, que se atualizam a cada envio. Isso preserva o que o menu e a busca gravaram. Também corrige `themeColorIndex`, que era lido de um campo inexistente. Typecheck passou e os testes deram 24/0.
 - `proposal/ds03-e-touch-scroll` (`7206203`): MouseSensor (distância de 8) mais TouchSensor (espera de 250 ms, tolerância de 5), e `touch-action: manipulation` fora do arraste. Assim dá para rolar com o dedo, e o arraste começa ao segurar o item. Testes 16/0. Precisa de teste num celular.
 

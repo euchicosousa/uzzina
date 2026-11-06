@@ -83,3 +83,9 @@ Com login do proprietário em `127.0.0.1:5176`, só lendo, sem salvar nada:
 - **DS04:** o menu do perfil abre com `overlay-pop-in` de 0,2 s e fecha com `overlay-pop-out` de 0,15 s, e a busca tem fundo `overlay-fade-in`. Nova Hora abre de 7 para 72 px em 0,2 s.
 - **Busca:** itens de 32 px. **AppBar:** "+" antes de "Ação".
 - **Limite da automação:** o painel gera cliques "virtuais", que o checkbox do React Aria ignora no rótulo, então "Mudar Hora" só pôde ser marcado pelo teclado. Um teste com clique real (`userEvent`) marca a caixa normalmente. Não é defeito do app.
+
+## Decisão do proprietário — 06/11/2026
+
+"Tudo ok". DS03-A, B, D e F ficam na `main` como estão. C (arraste pelo título) e E (toque) continuam nos branches `proposal/ds03-c-title-drag` e `proposal/ds03-e-touch-scroll`, sem merge, como foram deixados.
+
+**Status:** aceito pelo proprietário. Só restam os merges opcionais de C e E.

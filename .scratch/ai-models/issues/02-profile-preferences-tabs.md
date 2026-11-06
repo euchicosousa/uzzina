@@ -34,3 +34,15 @@ Servido a partir de `proposal/ia-m02-profile-tabs` (`7345909`), em `127.0.0.1:51
 - Aparência mostra tema, cor de destaque e Usar Cores dos Clientes. Funcionamento mostra layout padrão, visualização inicial do Hoje e sidebar do Instagram. Uso de IA mostra a franquia de novembro (4,64%, 27 gerações) e os três padrões no GPT-6 Luna, com o botão de voltar oculto.
 - Não verificado: envio parcial e revelação de campo inválido, que exigiriam apertar Salvar com dados reais. Fica para o roteiro do proprietário.
 - Já existia antes do branch: os blocos "Usar Cores dos Clientes" e "Sidebar do Instagram" ficam em caixa com borda (`UPreferenceSwitch`, pendente no DS01).
+
+## Decisões do proprietário — 06/11/2026
+
+Respostas às perguntas da proposta, nas palavras do proprietário:
+1. Aba Uso de IA: "o uso pessoal é compartilhado pela agência". A aba mostra o uso pessoal, que é parte da franquia compartilhada pela agência.
+2. "As abas funcionam em mobile e desktop": abas em todos os tamanhos.
+3. Enviar só os campos alterados: **sim**.
+4. Indicador de alterações não salvas nas abas: **sim**.
+
+Estado: o branch `proposal/ia-m02-profile-tabs` (`7345909`) já cobre 1, 2 e 3 e foi conferido no app. Falta o item 4 e a aprovação para juntar na `main`. O texto da aba de IA deve deixar claro que a franquia é da agência.
+
+**Status:** decisões registradas; implementação no branch pendente do item 4 e do merge autorizado.

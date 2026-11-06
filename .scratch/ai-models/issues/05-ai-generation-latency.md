@@ -1,16 +1,16 @@
-# IA-M05 — Investigar a demora na geração com IA
+# IA-M05 — Contornar a espera da geração com IA
 
 ## Modelos sugeridos
 
-- **OpenAI** — GPT-6.1 Sol, para rastrear a espera entre interface, API e worker.
-- **Anthropic** — Claude Sonnet 5.5, para comparar gargalos e alternativas com base nas medições.
-- **Google** — Gemini 4 Argon, para analisar os tempos por etapa e estimar o esforço das opções. Disponibilidade depende do plano.
+- **OpenAI** — GPT-6.1 Terra, para desenhar fluxos de interface que liberem a pessoa durante a geração sem violar o controle de versão.
+- **Anthropic** — Claude Sonnet 5.5, para especificar a guarda de saída, o aviso de conclusão e a expectativa no seletor.
+- **Google** — Gemini 4 Argon, para revisar a experiência proposta e estimar o esforço de cada recorte. Disponibilidade depende do plano.
 
-**Entrega.** Um diagnóstico com tempos por etapa e uma recomendação para reduzir a espera real ou melhorar a experiência enquanto o resultado fica pronto. O proprietário relatou espera perceptível com Luna e bem maior com Astra. Já existem indicadores de carregamento nos comandos.
+**Escopo corrigido pelo proprietário em 06/11/2026.** A demora é normal: modelos baratos são mais rápidos e os caros demoram. Não é para reduzir a latência, é para contornar a espera. Sem streaming. **Entrega:** opções de experiência para que a espera atrapalhe menos, com uma recomendação. O proprietário relatou espera perceptível com Luna e bem maior com Astra. Já existem indicadores de carregamento nos comandos.
 
 **Bloqueado por.** Nenhum ticket. Usar as chamadas e registros disponíveis no IA-M04. Novas chamadas reais, se necessárias, devem ter escopo autorizado.
 
-**Status.** Investigação de código entregue; medição real pendente da instrumentação proposta.
+**Status.** Reestudo entregue em 06/11/2026 ([contornar a espera](../../../docs/audits/2026-11-06-ia-m05-contornar-espera.md)), aguardando a escolha dos recortes pelo proprietário. Estudo apenas: nada implementado. Os logs de tempo de `8a9f035` têm recomendação de reverter, que também depende do proprietário.
 
 ## Critérios de aceite
 
