@@ -189,8 +189,8 @@ function AdminClientPage() {
               image={imageUrl}
               size="2xl"
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
-              <UploadIcon className="size-6 text-white" />
+            <div className="absolute inset-0 flex items-center justify-center bg-foreground/40 opacity-0 transition group-hover:opacity-100">
+              <UploadIcon className="size-6 text-background" />
             </div>
           </CloudinaryUpload>
 

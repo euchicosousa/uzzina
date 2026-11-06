@@ -38,3 +38,38 @@ Base da revisão estática: `cf533cb` até o checkout local, incluindo o commit 
 - [ ] **A–C · Aceite renderizado.** Conferir notificações no sino e na página, seletor mobile da Ajuda, calendário do portal, formulários Admin/Auth e Minha Conta. Incluir fluxo de teclado e estados com dados controlados.
 
 - [x] **D · Barra do editor.** Padronização concluída, com aceite visual e 14 testes de teclado aprovados.
+
+## Lote: usos diretos nas rotas — 06/11/2026
+
+Seção 4 de `docs/plans/visual-controls-where.md`. Excluídos: `profile.tsx` e `planejamento.tsx`.
+
+**Corrigidos agora**
+
+- `app/routes/dash.tsx:243`: `PrismSelectTrigger` `rounded-xl border-none ... squircle` → override de raio/borda removido (raio do primitivo).
+- `app/routes/login.tsx:117`: `PrismInputGroup className="squircle"` → removido (o primitivo já aplica `squircle`).
+- `app/routes/app/admin/partner/$slug.tsx:409-410` e `app/routes/app/admin/client/$userId.tsx:192-193`: overlay de upload `bg-black/40` + `text-white` → `bg-foreground/40` + `text-background`.
+- `app/routes/dash/review.$slug.tsx:211`: selo de categoria `rounded-md ... squircle` → `rounded-full` (pílula, como o Badge).
+- `app/routes/dash/review.$slug.tsx:256`: destaque `mark` `yellow-200/60` + `dark:yellow-700/40` → `bg-warning-background`.
+
+**Já corrigidos antes**
+
+- `notifications.tsx:148-149`: arquivo agora é só redirecionamento (6 linhas).
+- `celebrations.tsx:250/260`: linha `rounded-xl squircle` (item interno, conforme regra); selo feriado sem `amber`.
+- `partner/$slug.tsx:385/418` e `client/$userId.tsx:176/202`: o gatilho usa `CloudinaryUpload` (Prism); `no-squircle` + `rounded-full` é exceção permitida.
+- `partner/$slug.tsx:499/535`: moldura do editor já `rounded-2xl ... squircle`.
+- `dash/action/$id.tsx:351/368`: pílula e selo já usam `PrismBadge`.
+- Spinners `size-12 rounded-full border-4`: não restam em rotas (só comentário em `app.tsx:263`); usam `ULoader`.
+
+**Deixados**
+
+- `dash/action/$id.tsx:392`: `rounded-xl border bg-card p-4 squircle` ao redor da descrição renderizada. É conteúdo de leitura, não bloco de formulário, e não há primitivo equivalente; decidir se vira texto direto sobre o fundo.
+- Seção `profile.tsx` (linhas 86/96/263/297/302/351/661/682/702) e `planejamento.tsx`: fora do escopo do lote.
+
+**Roteiro de conferência visual (pt-BR)**
+
+- `/login`: campo de senha com cantos arredondados normais, foco com anel.
+- `/dash`: seletor de parceiro no cabeçalho com raio igual aos outros campos e fundo `bg-input`.
+- `/app/admin/partner/<slug>` e `/app/admin/client/<id>`: passar o mouse sobre o avatar; o véu escuro e o ícone de upload devem ficar legíveis no tema claro e escuro.
+- `/dash/review/<slug>?r=token`: selo da categoria em pílula; texto destacado (mark) em tom de aviso legível nos dois temas.
+
+Verificação: Prettier, `tsc --noEmit` e `tests/icon-control-names.test.tsx` (11 pass).

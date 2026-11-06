@@ -114,7 +114,7 @@ function Login() {
                 Esqueceu sua senha?
               </Link>
             </div>
-            <PrismInputGroup className="squircle">
+            <PrismInputGroup>
               <PrismInputGroupAddon
                 align="inline-start"
                 className="pr-1 pl-4 [&_svg]:text-foreground/40"
