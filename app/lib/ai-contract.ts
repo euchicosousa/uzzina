@@ -42,3 +42,22 @@ export const aiResultSchema = z.discriminatedUnion("intent", [
 ]);
 export type AIPayload = z.input<typeof aiInputSchema>;
 export type AIResult = z.infer<typeof aiResultSchema>;
+
+// Matches a block that is only the word "Legenda" (optionally bold and/or
+// followed by a colon), such as <h4>Legenda</h4> or <p><strong>Legenda:</strong></p>.
+const CAPTION_HEADING =
+  /<(h[1-6]|p)\b[^>]*>\s*(?:<(?:strong|b|em)>\s*)*legenda\s*:?\s*(?:<\/(?:strong|b|em)>\s*)*<\/\1>/i;
+const NEXT_HEADING = /<h[1-6]\b/i;
+
+// Content generation must never carry a ready-made caption. Drops a block
+// titled "Legenda" and everything under it up to the next heading (or the end).
+// Anything else, and a result that would end up empty, is returned unchanged.
+export function stripCaptionSection(html: string): string {
+  const match = CAPTION_HEADING.exec(html);
+  if (!match) return html;
+  const afterHeading = match.index + match[0].length;
+  const next = NEXT_HEADING.exec(html.slice(afterHeading));
+  const rest = next ? html.slice(afterHeading + next.index) : "";
+  const result = (html.slice(0, match.index) + rest).trim();
+  return result || html;
+}

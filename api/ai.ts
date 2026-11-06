@@ -1,4 +1,8 @@
-import { aiInputSchema, aiResultSchema } from "../app/lib/ai-contract.js";
+import {
+  aiInputSchema,
+  aiResultSchema,
+  stripCaptionSection,
+} from "../app/lib/ai-contract.js";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
 import { generateAI, type AIGeneration } from "../server/ai-generation.js";
@@ -251,6 +255,10 @@ REGRAS DE FORMATAÇÃO:
 - Retorne APENAS o HTML (sem JSON, sem blocos de código markdown \`\`\`html, sem tags <html>, <head>, <body>).
 - Use apenas tags limpas como: <h4>, <h5>, <p>, <ul>, <ol>, <li>, <strong>, <em>, <br>.
 
+ESCOPO: SOMENTE O CONTEÚDO
+- Entregue apenas o conteúdo da peça (por exemplo, frase na arte e direção visual, slides, roteiro ou Stories).
+- Nunca escreva a legenda do Instagram, nem uma seção, título ou rascunho chamado "Legenda". A legenda é gerada depois, em outro comando, a partir do conteúdo revisado. Mesmo que o briefing mencione a legenda, ignore esse pedido aqui.
+
 CONTEXTO DA MARCA E TOM DE VOZ:
 ${partner_context}
 
@@ -278,8 +286,7 @@ REALIDADE E VOZ:
         case "post":
           content = `Crie um post estático de acordo com o briefing e a estratégia selecionada.
 Use uma ideia central e pouco texto na arte. Apresente a frase principal e uma direção visual concreta; imagem e frase devem se completar. Se a imagem carregar a abertura, o texto apenas ancora o sentido.
-Escolha contraste, reconhecimento, desejo, demonstração, utilidade ou posicionamento conforme a tese. O impacto deve vir da clareza e da especificidade, sem obrigar uma fórmula de oposição ou uma narrativa de problema.
-Quando a legenda fizer parte do pedido, use-a para desenvolver a ideia sem repetir a arte.`;
+Escolha contraste, reconhecimento, desejo, demonstração, utilidade ou posicionamento conforme a tese. O impacto deve vir da clareza e da especificidade, sem obrigar uma fórmula de oposição ou uma narrativa de problema.`;
           break;
         case "carousel":
           content = `Crie um carrossel de acordo com o briefing e a estratégia selecionada.
@@ -326,7 +333,7 @@ Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
         { intent, model },
       );
       await logUsage(response, intent);
-      const generatedHtml = response.text;
+      const generatedHtml = stripCaptionSection(response.text);
       return res
         .status(200)
         .json(
