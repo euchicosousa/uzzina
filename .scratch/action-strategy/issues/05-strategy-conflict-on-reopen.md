@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Opus 5.5, para investigar o coordenador de salvamento e as alternativas ao modal.
 - **Google** — Gemini 4 Argon, para reproduzir a sequência e revisar cache, versões e guardas. Disponibilidade depende do plano.
 
-**Status.** Encerrado em 06/11/2026 a pedido do proprietário. Causa, correção (`45e58a9`) e roteiro de aceite em [docs/audits/2026-11-06-est-05-strategy-conflict-on-reopen.md](../../../docs/audits/2026-11-06-est-05-strategy-conflict-on-reopen.md). Aceite visual no app pendente.
+**Status.** Encerrado em 06/11/2026 a pedido do proprietário. Causa, correção (`45e58a9`) e roteiro de aceite em [docs/audits/2026-11-06-est-05-strategy-conflict-on-reopen.md](../../../docs/audits/2026-11-06-est-05-strategy-conflict-on-reopen.md). Aceite confirmado pelo proprietário em 06/11/2026: o passo 1 do roteiro foi testado no app e funcionou normalmente.
 
 **Entrega.** Relatório de causa, passos de reprodução e recomendação. Escopo de investigação. Mudanças de código dependem de autorização.
 

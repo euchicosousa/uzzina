@@ -8249,11 +8249,9 @@ O proprietário confirmou o aceite em produção destes tickets. Os arquivos con
 
 Encerrado em 06/11/2026 com aceite integral do proprietário. [Registro dos lotes](../design-system-audit/issues/01-audit-visual-deviations.md).
 
-
 ## IA-M02 — Minha Conta em abas
 
 Encerramento registrado no branch `proposal/ia-m02-profile-tabs` em `7e09a6d`, com implementação em `88630f5`. Inclui quatro abas, indicador de alterações não salvas e envio parcial de preferências. O branch registra typecheck e 4 testes passando. Merge local em 06/11. Publicação confirmada pelo proprietário.
-
 
 ## DS04 — Microinterações
 
@@ -8261,4 +8259,8 @@ Encerrado com aceite do proprietário em 06/11. [Registro](../design-system-audi
 
 ## EST-05 — Bloqueio de estratégias ao reabrir a ação
 
-Encerrado em 06/11/2026 a pedido do proprietário, com a alternativa A implementada. Causa: a gaveta reabria com a linha da lista, anterior às estratégias gravadas pelo worker com a gaveta fechada; a leitura da abertura abria a comparação sem alterações locais e travava as estratégias. Agora a abertura adota a versão atual quando o formulário está limpo, e o modal de conflito real oferece "Usar versão atual" e "Usar minha versão". [Relatório, causa e roteiro de aceite](../../docs/audits/2026-11-06-est-05-strategy-conflict-on-reopen.md). Aceite visual no app pendente.
+Encerrado em 06/11/2026 a pedido do proprietário, com a alternativa A implementada. Causa: a gaveta reabria com a linha da lista, anterior às estratégias gravadas pelo worker com a gaveta fechada; a leitura da abertura abria a comparação sem alterações locais e travava as estratégias. Agora a abertura adota a versão atual quando o formulário está limpo, e o modal de conflito real oferece "Usar versão atual" e "Usar minha versão". [Relatório, causa e roteiro de aceite](../../docs/audits/2026-11-06-est-05-strategy-conflict-on-reopen.md). Aceite confirmado pelo proprietário em 06/11: o passo 1 do roteiro foi testado no app e funcionou normalmente.
+
+## IA-M05 — Indicador de progresso simulado
+
+Encerrado com aceite do proprietário em 06/11 (segunda aprovação): componente de progresso, linha das abas e barra. [Ticket](../ai-models/issues/05-ai-generation-latency.md).
