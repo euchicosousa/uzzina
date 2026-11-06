@@ -56,3 +56,7 @@ Convenção aplicada: ícone antes do texto; sem `mr-*`/`ml-*` no ícone (o `gap
 ## Nome do seletor de data — 06/11/2026
 
 `UCalendarToolbar.tsx:68` mostra "outubro/26" a partir de `md` e "10/26" abaixo disso. O nome acessível é sempre "Escolher data, outubro/26". No desktop ele contém o texto visível, como pede a WCAG 2.5.3. No celular a diferença afeta só o controle por voz falando "10/26", e o leitor de tela recebe o mês por extenso, que é mais claro. Recomendação: manter como **exceção justificada**, porque um `aria-label` não muda por breakpoint e a alternativa seria tirar o formato curto do celular. O teste `icon-control-names.test.tsx:191` protege esse nome. Se o proprietário preferir, troca-se o formato curto por "out/26".
+
+## Branch conferido no app real — 06/11/2026
+
+`proposal/ds05-save-icon-first` (`4f76198`) servido localmente com a sessão do proprietário, em 1280px, numa ação existente. O botão mostra o ícone de nuvem antes de "Atualizar". A gaveta foi fechada sem salvar.
