@@ -211,8 +211,8 @@ export function UPaletteEditor({
         size="sm"
         variant="outline"
       >
-        <PlusIcon className="size-4" />
         Adicionar Cor
+        <PlusIcon className="size-4" />
       </PrismButton>
     </div>
   );

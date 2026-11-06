@@ -80,8 +80,8 @@ export function PlanningSuggestionsList({
               size="sm"
               variant="outline"
             >
-              <CheckIcon className="size-4" />
               Aprovar todas as pendentes
+              <CheckIcon className="size-4" />
             </PrismButton>
           )}
 
@@ -92,10 +92,10 @@ export function PlanningSuggestionsList({
               size="sm"
               variant="default"
             >
-              <CheckCircle2Icon className="size-4" />
               {isFinalizing
                 ? "Criando ações..."
                 : `Finalizar ${stats.approved} ${stats.approved === 1 ? "ação" : "ações"}`}
+              <CheckCircle2Icon className="size-4" />
             </PrismButton>
           )}
         </div>
@@ -235,8 +235,8 @@ export function PlanningSuggestionsList({
                     size="sm"
                     variant="ghost"
                   >
-                    <PencilIcon className="size-3.5" />
                     Editar
+                    <PencilIcon className="size-3.5" />
                   </PrismButton>
 
                   <div className="flex items-center gap-2">
@@ -252,8 +252,8 @@ export function PlanningSuggestionsList({
                       size="sm"
                       variant="ghost"
                     >
-                      <XIcon className="size-4" />
                       {isRejected ? "Desfazer descarte" : "Descartar"}
+                      <XIcon className="size-4" />
                     </PrismButton>
 
                     <PrismButton
@@ -265,8 +265,8 @@ export function PlanningSuggestionsList({
                       size="sm"
                       variant={isApproved ? "success" : "secondary"}
                     >
-                      <CheckIcon className="size-4" />
                       {isApproved ? "Aprovada" : "Aprovar"}
+                      <CheckIcon className="size-4" />
                     </PrismButton>
                   </div>
                 </div>

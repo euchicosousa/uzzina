@@ -431,8 +431,8 @@ function DashActionDetail({ actionId }: { actionId: string }) {
                 uploadPreset={uploadPreset}
                 variant="secondary"
               >
-                <PlusIcon aria-hidden="true" className="size-3.5 shrink-0" />
                 Adicionar arquivos
+                <PlusIcon aria-hidden="true" className="size-3.5 shrink-0" />
               </CloudinaryUpload>
 
               {workFiles.length > 0 && (
@@ -443,8 +443,8 @@ function DashActionDetail({ actionId }: { actionId: string }) {
                   size="xs"
                   variant="ghost"
                 >
-                  <SlidersHorizontalIcon className="size-3.5" />
                   {`${workFiles.length} arquivo${workFiles.length !== 1 ? "s" : ""}`}
+                  <SlidersHorizontalIcon className="size-3.5" />
                 </PrismButton>
               )}
             </div>

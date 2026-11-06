@@ -70,7 +70,6 @@ export function UCalendarToolbar({
           size={showDate ? size : sideButtonSize}
           variant={variant}
         >
-          <CalendarDaysIcon />
           {showDate && (
             <>
               <span className="hidden capitalize md:block">
@@ -85,6 +84,7 @@ export function UCalendarToolbar({
               </span>
             </>
           )}
+          <CalendarDaysIcon />
         </PrismButton>
         <PrismPopover className="w-auto p-2" placement="bottom">
           <PrismCalendar

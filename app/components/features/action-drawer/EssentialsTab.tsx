@@ -386,8 +386,8 @@ export function EssentialsTab({
                 uploadPreset={uploadPreset}
                 variant="secondary"
               >
-                <PlusIcon className="size-3.5" />
                 Adicionar arquivo
+                <PlusIcon className="size-3.5" />
               </CloudinaryUpload>
             </div>
 
@@ -398,8 +398,8 @@ export function EssentialsTab({
                 type="button"
                 variant="ghost"
               >
-                <SlidersHorizontalIcon />
                 {`${workFiles.length} arquivo${workFiles.length !== 1 ? "s" : ""}`}
+                <SlidersHorizontalIcon />
               </PrismButton>
             )}
           </div>

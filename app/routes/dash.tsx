@@ -262,8 +262,8 @@ function DashLayout() {
             size="sm"
             variant="ghost"
           >
-            <LogOutIcon aria-hidden="true" className="size-4" />
             <span className="sr-only sm:not-sr-only">Sair</span>
+            <LogOutIcon aria-hidden="true" className="size-4" />
           </PrismButton>
         </header>
         {logoutError && (

@@ -95,8 +95,8 @@ export function ContentFilesManager({
             resourceType="auto"
             uploadPreset={uploadPreset}
           >
-            <PlusIcon className="size-3.5" />
             Adicionar conteúdo
+            <PlusIcon className="size-3.5" />
           </CloudinaryUpload>
         </div>
 
@@ -108,10 +108,10 @@ export function ContentFilesManager({
             onClick={() => setDialogOpen(true)}
             type="button"
           >
-            <SlidersHorizontalIcon />
             {compact || files.length === 0
               ? "Gerenciar"
               : `${files.length} arquivo${files.length !== 1 ? "s" : ""}`}
+            <SlidersHorizontalIcon />
           </PrismButton>
         )}
       </div>

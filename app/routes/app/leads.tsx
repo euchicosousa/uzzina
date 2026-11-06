@@ -319,8 +319,8 @@ function AppLeads() {
                 size="sm"
                 variant="ghost"
               >
-                <ChevronLeftIcon />
                 Voltar para leads
+                <ChevronLeftIcon />
               </PrismButton>
             </div>
           )}

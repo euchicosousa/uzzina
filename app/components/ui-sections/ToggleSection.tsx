@@ -47,7 +47,7 @@ type ToggleContent = (typeof TOGGLE_CONTENTS)[number];
 const TOGGLE_CONTENT_LABELS: Record<ToggleContent, string> = {
   icon: "Ícone",
   text: "Texto",
-  "icon-text": "Ícone + texto",
+  "icon-text": "Texto + ícone",
 };
 
 const SELECTION_MODES = ["single", "multiple"] as const;
@@ -76,8 +76,8 @@ function TogglePlayground() {
   } else {
     childrenNode = (
       <>
-        <BoldIcon />
         <span>Negrito</span>
+        <BoldIcon />
       </>
     );
   }
@@ -195,8 +195,8 @@ function ToggleGroupPlayground() {
             } else {
               itemChildren = (
                 <>
-                  <Icon />
                   <span>{item.label}</span>
+                  <Icon />
                 </>
               );
             }

@@ -553,10 +553,10 @@ function ProfilePage() {
           isDisabled={isSubmitting}
           type="submit"
         >
-          <CloudIcon />
           <span className="min-w-0 whitespace-normal">
             {isSubmitting ? "Salvando..." : "Salvar Alterações"}
           </span>
+          <CloudIcon />
         </PrismButton>
       </div>
 

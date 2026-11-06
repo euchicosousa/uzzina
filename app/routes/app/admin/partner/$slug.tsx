@@ -677,12 +677,12 @@ function AdminPartnerEditPage() {
             }}
             variant="outline"
           >
+            {isArchived ? "Arquivado" : "Visível"}
             {savingFields.has("archived") ? (
               <ULoader className="size-4" />
             ) : (
               <ArchiveIcon className="size-4" />
             )}
-            {isArchived ? "Arquivado" : "Visível"}
           </PrismToggle>
 
           <PrismButton
@@ -694,7 +694,7 @@ function AdminPartnerEditPage() {
               "Salvando..."
             ) : (
               <>
-                <CloudIcon /> Salvar Tudo
+                Salvar Tudo <CloudIcon />
               </>
             )}
           </PrismButton>

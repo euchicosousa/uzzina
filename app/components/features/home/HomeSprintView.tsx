@@ -90,8 +90,8 @@ export function HomeSprintView({ actions }: { actions: Action[] }) {
         <div className="flex items-center gap-2">
           {hasCustomOrder && (
             <PrismButton onClick={clearOrder} size="sm" variant="destructive">
-              <RotateCcwIcon className="size-3.5" />
               Restaurar ordem
+              <RotateCcwIcon className="size-3.5" />
             </PrismButton>
           )}
           <UViewOptions

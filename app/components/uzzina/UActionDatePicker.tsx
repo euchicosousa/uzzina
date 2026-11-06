@@ -54,12 +54,12 @@ export function UActionDatePicker({
         size={size}
         variant="link"
       >
-        <CalendarDaysIcon />
         <span>
           {date
             ? getFormattedDateTime(date, dateTimeDisplay)
             : "Escolha a data"}
         </span>
+        <CalendarDaysIcon />
       </PrismButton>
 
       <PrismPopover className="w-auto p-2">
