@@ -1189,7 +1189,7 @@ export function ActionFormDrawer({
             </PrismTabList>
             <PrismButton
               aria-label="Fechar"
-              className={cn(tabVariants(), "h-10 w-10 flex-none px-0")}
+              className={cn(tabVariants(), "size-16 flex-none px-0")}
               onPress={handleSafeClose}
               variant="unstyled"
             >
