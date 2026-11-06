@@ -6,6 +6,10 @@ Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 
 
 ## Pendências reais
 
+### EST-03 e EST-04 implementados, aguardando aceite — 06/11
+
+EST-04: o conteúdo gerado não deve trazer a legenda pronta. A causa estava na instrução enviada à IA (o modelo de post convidava a falar da legenda e nenhuma regra proibia). A instrução agora manda entregar só o conteúdo, e o servidor corta um bloco intitulado "Legenda" se ele vier; uma legenda sem título ou com outro nome não é pega. "Gerar legenda" já usava o conteúdo atualizado e preenchia só o campo da legenda. EST-03: o diálogo "5 Estratégias Sugeridas" ganhou o botão "Recriar estratégias", que usa a mesma geração do botão da aba Essencial. As sugestões antigas ficam visíveis durante a espera e se falhar; o botão fica desativado enquanto gera, salva ou há conflito; o novo conjunto substitui os cinco e a seleção anterior não é mantida. Verificação: typecheck, build, drawer-component 109/0, durable-strategies 17/0, action-reopen-version 34/0, drawer-save 11/0, ai 55/0, `test:serverless` 9 PASS. Nenhuma chamada real à IA e nada visto no navegador. Aceite pendente do proprietário, depois de conferir no app.
+
 ### DS03 encerrado — 06/11
 
 O proprietário testou no app: arrastar pelo título funciona, e o visual do arraste (origem esmaecida, cursor de mão fechada, sem sublinhado) foi aprovado. Todos os itens do DS03 estão aceitos e o ticket saiu da fila. Restam fora do Planejamento apenas o EST-03 (botão de recriar estratégias dentro do diálogo) e o EST-04 (Gerar conteúdo não deve trazer a legenda pronta).
