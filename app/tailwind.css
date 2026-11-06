@@ -406,6 +406,11 @@
   --color-favorite: var(--favorite);
 }
 
+html[data-dragging-item],
+html[data-dragging-item] * {
+  cursor: grabbing !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/30;

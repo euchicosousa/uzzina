@@ -60,7 +60,8 @@ export function Draggable({
       {...pointerAttributes}
       {...listeners}
       style={isDragging ? { touchAction: "none" } : style}
-      // className={cn(isDragging && "opacity-20")}
+      // The moving copy is the DragOverlay; dim the original like SortableItem does.
+      className={cn(isDragging && "opacity-20")}
     >
       {React.cloneElement(child, {
         [isDOMElement ? "data-dragging" : "isDragging"]: isDragging,

@@ -1,3 +1,4 @@
+import { useDragCursor } from "~/components/features/DragStateContext";
 import { useSelectionActions } from "~/hooks/useMultiSelection";
 import {
   closestCenter,
@@ -43,6 +44,7 @@ export function HomeSprintView({ actions }: { actions: Action[] }) {
   const [activeAction, setActiveAction] = useState<Action | undefined>(
     undefined,
   );
+  useDragCursor(!!activeAction);
   const [viewOptions, setViewOptions] = useUViewOptions({
     variant: VARIANT.block,
     showOptions: {

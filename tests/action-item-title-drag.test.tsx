@@ -56,3 +56,10 @@ it("while editing, pressing inside the field does not start a drag", () => {
   fireEvent.touchStart(field);
   expect(seen).toEqual([]);
 });
+
+it("a mouse press on the title does not focus it, so the item left behind shows no focus mark", () => {
+  render(<Harness seen={[]} />);
+  const title = screen.getByRole("button", { name: "My action" });
+  // fireEvent returns false when the event's default was prevented.
+  expect(fireEvent.mouseDown(title)).toBe(false);
+});

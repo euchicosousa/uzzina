@@ -1,3 +1,4 @@
+import { useDragCursor } from "~/components/features/DragStateContext";
 import { ActionConflictError } from "~/lib/supabase.mutations";
 import { getActionRevision } from "~/utils/date";
 import { useMemo, useState, useRef } from "react";
@@ -24,6 +25,7 @@ export function useKanbanDnd<T extends string | null>({
 }) {
   const dragSession = useRef(0);
   const [activeAction, setActiveAction] = useState<Action | undefined>();
+  useDragCursor(!!activeAction);
   const [overrides, setOverrides] = useState<
     Record<string, { operationId: number; value: T }>
   >({});

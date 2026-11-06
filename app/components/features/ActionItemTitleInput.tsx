@@ -90,10 +90,13 @@ export function ActionItemTitleInput({
         <button
           type="button"
           className={cn(
-            "w-full cursor-text truncate text-left leading-[inherit] focus:underline",
+            "w-full cursor-text truncate text-left leading-[inherit] focus-visible:underline",
             isDragging ? "cursor-grabbing" : "",
             InputButtonClassName,
           )}
+          // A mouse press must not focus the title (underline and focus ring on
+          // the item that stays behind during a drag); the click still edits.
+          onMouseDown={(event) => event.preventDefault()}
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
