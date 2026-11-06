@@ -6,6 +6,10 @@ Produção Ready em 06/11 a partir do push de `main` até `9e25ad7`, no domínio
 
 ## Pendências reais
 
+### DS01 por lotes e instrumentação do IA-M05 — 06/11
+
+Commits locais: `d2ff5b0` (usos diretos nas rotas: seletor do portal sem override, login, véus de upload, revisão pública), `ee1851e` (véu do avatar no admin, navegação da Ajuda, raios do calendário do portal) e `8a9f035` (IA-M05). O IA-M05 emite uma linha JSON por pedido (`ai_timing`) e por operação do worker (`strategy_worker_timing`), só com duração por etapa, sem texto nem dados pessoais. O `test:serverless` passou em 9 de 9. A fila (`queue_wait`) continua dependendo da consulta SQL do relatório. Vários itens do inventário `visual-controls-where.md` já estavam corrigidos, e alguns caminhos do inventário estão desatualizados. Ficam para o proprietário a borda branca do ActionItem e o `min-w-375` do calendário do portal. Nada foi conferido no navegador.
+
 ### DS03-A/B, DS05 e DS04: primeiras correções — 06/11
 
 Commit `2422abe`, local. O título do item de ação seleciona em vez de editar no modo seleção. Durante a edição, teclas e ponteiro não chegam mais ao arraste do dnd-kit. Os botões de criação, a AppBar e a redefinição de senha agora põem o ícone antes do texto, sem margens manuais. Os botões de sugestão do Planejamento usam o texto visível como nome acessível. Foram criados os tokens `duration-motion-*`/`ease-motion-*`; no Tailwind 4.3 a duração usa o namespace `--transition-duration-*`. Alterar Data e Hora expande por `grid-rows` com `motion-reduce`. Typecheck e `icon-control-names` passaram. Falta conferir no navegador, seguindo os roteiros nos tickets DS03, DS04 e DS05.
