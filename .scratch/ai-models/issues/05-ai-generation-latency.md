@@ -29,3 +29,51 @@ Relatório: [2026-11-06-ia-m05-ai-latency.md](../../../docs/audits/2026-11-06-ia
 - Estratégias têm espera fixa por construção: cron de 30 s (média 15 s) mais quatro requisições de preflight e polling de 2 s.
 - Menor ajuste proposto: esforço de raciocínio por modelo/comando no catálogo; depois acordar o worker na aceitação. Streaming só para conteúdo, se ainda necessário.
 - Medição: consulta somente leitura (`ai_generation_logs` x `strategy_operations`) e logs por etapa propostos no relatório; nada aplicado.
+
+## Instrumentação — 06/11/2026
+
+Código preparado (sem mudança de comportamento; não publicado, nenhuma geração executada). Uma linha JSON por requisição, sem texto, tokens, chaves, e-mails nem ID de usuário.
+
+**Síncrono (`api/ai.ts`)**, evento `ai_timing`, emitido ao terminar a resposta (inclui erros):
+
+```json
+{
+  "event": "ai_timing",
+  "command": "ai-caption",
+  "model": "...",
+  "ms": { "auth": 0, "quota": 0, "provider": 0, "usage": 0, "total": 0 },
+  "status": 200,
+  "ok": true
+}
+```
+
+- `auth`: `getUser` + `people`; `quota`: `consume_ai_usage` + `reserve_ai_monthly`; `provider`: chamada ao modelo (em falha, até o fim da resposta); `usage`: registro do uso (`null` em falha do provedor e no modo local); `total`: requisição inteira.
+- Estratégias pelo caminho síncrono também usam `ai_timing` (`command: "ai-strategy"`).
+
+**Worker (`server/strategy-operations.ts`)**, evento `strategy_worker_timing`, uma linha por operação processada:
+
+```json
+{
+  "event": "strategy_worker_timing",
+  "operationId": "...",
+  "model": "...",
+  "ms": {
+    "claim": 0,
+    "claim_to_provider": 0,
+    "provider": 0,
+    "usage": 0,
+    "store": 0,
+    "finish": 0,
+    "total": 0,
+    "queue_wait": null
+  },
+  "outcome": "succeeded",
+  "resumed": false
+}
+```
+
+- `queue_wait` fica `null`: o claim não devolve `created_at` e não foi adicionada leitura extra. A fila continua medida pela consulta SQL da seção 7.1 do relatório (aceitação até registro).
+
+**Onde ler:** Vercel > projeto > Logs (funções `/api/ai` e `/api/strategy-worker`), filtrando por `ai_timing` ou `strategy_worker_timing`.
+
+**O que coletar nas próximas gerações do proprietário (Luna e Astra):** mesma ação, mesmo texto e mesmo comando, 3 execuções por modelo, em horários próximos. Para cada uma, anotar a linha do log (`ms.provider`, `ms.auth`, `ms.quota`, `ms.total`) e, na tabela `ai_generation_logs`, `prompt_tokens`, `completion_tokens`, `provider_meter.reasoning_tokens` e `cached_tokens`. Em estratégias, anotar também o horário em que clicou e o horário em que o resultado apareceu, para separar fila e polling do provedor. Comparar as medianas de `provider` entre Luna e Astra.
