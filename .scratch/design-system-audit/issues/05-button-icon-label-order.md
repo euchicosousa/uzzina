@@ -52,3 +52,7 @@ Convenção aplicada: ícone antes do texto; sem `mr-*`/`ml-*` no ícone (o `gap
 3. /reset-password (com link de recuperação): botão com a chave antes de "Redefinir Senha e Entrar".
 4. Gaveta, aba Observações: botão Enviar com ícone e espaço normal. Admin, usuário: botão Salvar Usuário idem.
 5. /app/planejamento com sugestões: Editar, Descartar e Aprovar sem espaço extra; alternar descartar/aprovar e ver o rótulo mudar.
+
+## Nome do seletor de data — 06/11/2026
+
+`UCalendarToolbar.tsx:68` mostra "outubro/26" a partir de `md` e "10/26" abaixo disso. O nome acessível é sempre "Escolher data, outubro/26". No desktop ele contém o texto visível, como pede a WCAG 2.5.3. No celular a diferença afeta só o controle por voz falando "10/26", e o leitor de tela recebe o mês por extenso, que é mais claro. Recomendação: manter como **exceção justificada**, porque um `aria-label` não muda por breakpoint e a alternativa seria tirar o formato curto do celular. O teste `icon-control-names.test.tsx:191` protege esse nome. Se o proprietário preferir, troca-se o formato curto por "out/26".
