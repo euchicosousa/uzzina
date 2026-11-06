@@ -1539,6 +1539,28 @@ export function ActionFormDrawer({
               </PrismButton>
             </div>
           )}
+          {canonicalStrategies.length > 0 && (
+            <div className="flex justify-end">
+              <PrismButton
+                isDisabled={
+                  strategyControlsBlocked ||
+                  isPending ||
+                  isRetryingStrategy ||
+                  strategyStatus === "unsaved"
+                }
+                onPress={() => {
+                  void triggerAIAction(INTENT.ai_strategy, {
+                    model: strategyModel,
+                  });
+                }}
+                size="sm"
+                variant="secondary"
+              >
+                Recriar estratégias
+                {isGenerating ? <ULoader size="sm" inheritColor /> : null}
+              </PrismButton>
+            </div>
+          )}
           <PrismAccordion
             className={cn(
               "border-none transition-opacity",

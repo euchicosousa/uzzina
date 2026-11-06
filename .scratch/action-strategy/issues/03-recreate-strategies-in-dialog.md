@@ -12,7 +12,9 @@
 
 ## Aceite
 
-- [ ] Conferir o comportamento atual antes de editar. Propor recriar o conjunto de cinco, com substituição individual sujeita a decisão explícita.
-- [ ] Conservar as sugestões anteriores durante a espera e em caso de falha. Evitar disparos duplicados e preservar as guardas de versão e autorização.
-- [ ] Após confirmação do salvamento, conferir os campos de estratégia no diálogo, na ação e ao reabrir. Verificar seleção anterior, campos da estratégia expandida e contexto usado em Gerar conteúdo. Preservar título, descrição, legenda, mídia e demais edições da ação.
-- [ ] Cobrir ação sem seleção, com seleção e com geração em voo. Em caso de conflito, aplicar a revisão prevista pelo fluxo existente.
+- [x] Conferir o comportamento atual antes de editar. Propor recriar o conjunto de cinco, com substituição individual sujeita a decisão explícita.
+- [x] Conservar as sugestões anteriores durante a espera e em caso de falha. Evitar disparos duplicados e preservar as guardas de versão e autorização.
+- [x] Após confirmação do salvamento, conferir os campos de estratégia no diálogo, na ação e ao reabrir. Verificar seleção anterior, campos da estratégia expandida e contexto usado em Gerar conteúdo. Preservar título, descrição, legenda, mídia e demais edições da ação.
+- [x] Cobrir ação sem seleção, com seleção e com geração em voo. Em caso de conflito, aplicar a revisão prevista pelo fluxo existente.
+
+**Implementação (06/11/2026, aguardando aceite).** Botão "Recriar estratégias" no diálogo (`ActionFormDrawer.tsx`), visível quando há estratégias salvas, com o mesmo gatilho e modelo do Essencial. Novo conjunto substitui o anterior, incluindo a seleção. Testes em `tests/drawer-component.test.tsx`.

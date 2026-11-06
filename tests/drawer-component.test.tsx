@@ -3214,3 +3214,51 @@ it("EST-02: handles conflict when saving selection and offers recovery action", 
     ).toBeTruthy();
   });
 });
+
+it("EST-03: recreates the five strategies from inside the dialog keeping the previous ones visible", async () => {
+  const durable = durableFixture(durableOperation("succeeded", false));
+  mount(draft({ category: "post", strategies: generatedStrategies }));
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Ver estratégias geradas" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  const recreate = within(dialog).getByRole("button", {
+    name: "Recriar estratégias",
+  });
+  expect((recreate as HTMLButtonElement).disabled).toBe(false);
+  fireEvent.click(recreate);
+  await waitFor(() => expect(durable.requests).toHaveLength(1));
+  await waitFor(() =>
+    expect(within(dialog).getByRole("status").textContent).toContain(
+      "Recriando estratégias",
+    ),
+  );
+  expect(
+    (
+      within(dialog).getByRole("button", {
+        name: "Recriar estratégias",
+      }) as HTMLButtonElement
+    ).disabled,
+  ).toBe(true);
+  expect(
+    within(dialog).getAllByRole("checkbox", { name: "Selecionar estratégia" }),
+  ).toHaveLength(5);
+  expect(aiCalls).toBe(0);
+});
+it("EST-03: the dialog button stays disabled while a durable operation is pending", async () => {
+  const durable = durableFixture(durableOperation("generating"));
+  mount(draft({ category: "post", strategies: generatedStrategies }));
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Ver progresso das estratégias",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  const recreate = within(dialog).getByRole("button", {
+    name: "Recriar estratégias",
+  });
+  expect((recreate as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(recreate);
+  expect(durable.requests).toHaveLength(0);
+  expect(within(dialog).getAllByRole("checkbox")).toHaveLength(5);
+});
