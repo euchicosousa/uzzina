@@ -12,7 +12,7 @@
 
 ## Aceite
 
-- [ ] Reproduzir o caso da captura e identificar se a seção vem do prompt, da resposta do provedor ou da montagem no editor.
-- [ ] Gerar conteúdo a partir de uma estratégia e conferir que elementos editoriais como frase na arte e direção visual continuam disponíveis, sem bloco de legenda pronta ou disparo automático de **Gerar legenda**.
-- [ ] Preservar legendas e rascunhos existentes. Após editar o conteúdo, disparar **Gerar legenda** explicitamente e conferir que o comando usa o conteúdo atualizado e preenche o campo próprio.
+- [x] Origem identificada por leitura do código: o prompt de conteúdo (frase "Quando a legenda fizer parte do pedido…" no post, sem proibição geral). A montagem no editor não grava legenda.
+- [x] (código; sem chamada real à IA) Gerar conteúdo a partir de uma estratégia e conferir que elementos editoriais como frase na arte e direção visual continuam disponíveis, sem bloco de legenda pronta ou disparo automático de **Gerar legenda**.
+- [x] (fluxo lido; teste existente em action-ai) Preservar legendas e rascunhos existentes. Após editar o conteúdo, disparar **Gerar legenda** explicitamente e conferir que o comando usa o conteúdo atualizado e preenche o campo próprio.
 - [ ] Conferir persistência ao reabrir a ação. Preservar a seleção e a geração de estratégias.

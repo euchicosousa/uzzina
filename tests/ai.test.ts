@@ -590,3 +590,21 @@ it("rejects the retired hooks command before spending quota or calling OpenAI", 
   expect(rpcCalls).toBe(0);
   expect(calls).toBe(0);
 });
+
+it("content prompt forbids a caption and drops a caption section the provider adds", async () => {
+  output =
+    "<h4>Frase na arte</h4><p>Cuide hoje</p><h5>Direção visual</h5><p>Luz suave</p><h4>Legenda</h4><p>Texto pronto #tag</p>";
+  const response = await request({
+    ...payload,
+    intent: "ai-content",
+    partner_context: "Hospital.",
+  });
+  expect(response.status).toBe(200);
+  const system = providerMessages.find((m) => m.role === "system");
+  expect(system?.content).toContain("Nunca escreva a legenda");
+  const content = (response.result as { output: { content: string } }).output
+    .content;
+  expect(content).toContain("Direção visual");
+  expect(content).not.toContain("Legenda");
+  expect(content).not.toContain("#tag");
+});
