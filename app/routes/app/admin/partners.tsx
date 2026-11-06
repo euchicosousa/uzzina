@@ -87,7 +87,8 @@ function AdminPartnersPage() {
           }}
           to="/app/admin/partner/$slug"
         >
-          Novo Parceiro <FolderPlusIcon />
+          <FolderPlusIcon />
+          Novo Parceiro
         </Link>
       </div>
 

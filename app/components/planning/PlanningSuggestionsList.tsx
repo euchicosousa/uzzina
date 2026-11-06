@@ -235,13 +235,12 @@ export function PlanningSuggestionsList({
                     size="sm"
                     variant="ghost"
                   >
-                    <PencilIcon className="mr-1 size-3.5" />
+                    <PencilIcon className="size-3.5" />
                     Editar
                   </PrismButton>
 
                   <div className="flex items-center gap-2">
                     <PrismButton
-                      aria-label="Descartar sugestão"
                       className={
                         isRejected ? "bg-destructive/20 text-destructive" : ""
                       }
@@ -253,12 +252,11 @@ export function PlanningSuggestionsList({
                       size="sm"
                       variant="ghost"
                     >
-                      <XIcon className="mr-1 size-4" />
+                      <XIcon className="size-4" />
                       {isRejected ? "Desfazer descarte" : "Descartar"}
                     </PrismButton>
 
                     <PrismButton
-                      aria-label="Aprovar sugestão"
                       onClick={() =>
                         onUpdateSuggestion(suggestion.id, {
                           status: isApproved ? "pending" : "approved",
@@ -267,7 +265,7 @@ export function PlanningSuggestionsList({
                       size="sm"
                       variant={isApproved ? "success" : "secondary"}
                     >
-                      <CheckIcon className="mr-1 size-4" />
+                      <CheckIcon className="size-4" />
                       {isApproved ? "Aprovada" : "Aprovar"}
                     </PrismButton>
                   </div>

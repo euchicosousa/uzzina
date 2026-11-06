@@ -249,8 +249,8 @@ function ResetPassword() {
                 type="submit"
                 variant="default"
               >
+                {!loading && <KeyIcon className="size-3.5" />}
                 {loading ? "Salvando..." : "Redefinir Senha e Entrar"}
-                {!loading && <KeyIcon className="ml-2 size-3.5" />}
               </PrismButton>
             </div>
           </form>

@@ -27,3 +27,28 @@ Relatório: [2026-11-06-ds05-button-icon-label-order.md](../../../docs/audits/20
 - Padrão atual da UZZINA: ícone antes em cerca de 30 de 38 botões; 9 desvios T-I, a maioria sem motivo semântico.
 - Proposta: ícone antes por padrão; depois apenas para disclosure, avanço e link externo; `gap` em vez de margem manual.
 - 12 sítios e 1 ajuste de sistema (regras `data-icon` não acionadas no app) listados para decisão; nenhum código foi alterado. Apple, Material e Fluent não puderam ser verificados.
+
+## Ajustes aplicados — 06/11/2026
+
+Convenção aplicada: ícone antes do texto; sem `mr-*`/`ml-*` no ícone (o `gap` do botão cuida do espaço); nome acessível contém o texto visível.
+
+- `app/components/layout/AppBar.tsx:127-130`: `PlusIcon` movido antes dos spans "Nova Ação"/"Ação".
+- `app/routes/app/admin/users.tsx:56`, `clients.tsx:44`, `partners.tsx:90`: ícone (UserPlus/UserPlus/FolderPlus) antes do texto.
+- `app/routes/reset-password.tsx:251-254`: `KeyIcon` antes do texto, sem `ml-2`. Tratado como ícone decorativo (não é avanço), seguindo a seção 6 do relatório.
+- `app/components/features/ActionComments/CommentInput.tsx:209`: removido `mr-1.5`.
+- `app/components/features/AdminUserForm.tsx:241`: removido `mr-2`.
+- `app/components/planning/PlanningSuggestionsList.tsx:238,255,270`: removidos os `mr-1` (Editar, Descartar, Aprovar).
+- `PlanningSuggestionsList.tsx` (botões Descartar/Aprovar): removidos `aria-label="Descartar sugestão"` e `"Aprovar sugestão"`; o nome acessível agora é o texto visível ("Desfazer descarte", "Aprovada" etc.).
+
+### Deixado para o proprietário
+- `action-drawer/ActionFormFooter.tsx` (Salvar/Atualizar): decisão do proprietário, não tocado.
+- `UCalendarToolbar.tsx:67` (nome `MMMM/yy` x visível `MM/yy` no celular): não alterado. `tests/icon-control-names.test.tsx:191` fixa o nome "Escolher data, outubro/26" de propósito; baixa prioridade.
+- S1 (regras `data-icon` mortas em `prism/button.tsx`): fora do escopo.
+- `Fazer Login` e demais exceções do relatório: mantidos.
+
+### Roteiro de conferência visual
+1. Barra superior: "Nova Ação" mostra o + antes do texto; em tela estreita aparece "+ Ação". Espaço entre ícone e texto igual ao dos outros botões.
+2. /app/admin/users, clients e partners: botão com ícone antes ("Novo Usuário", "Novo Cliente", "Novo Parceiro").
+3. /reset-password (com link de recuperação): botão com a chave antes de "Redefinir Senha e Entrar".
+4. Gaveta, aba Observações: botão Enviar com ícone e espaço normal. Admin, usuário: botão Salvar Usuário idem.
+5. /app/planejamento com sugestões: Editar, Descartar e Aprovar sem espaço extra; alternar descartar/aprovar e ver o rótulo mudar.

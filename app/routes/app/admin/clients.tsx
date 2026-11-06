@@ -41,7 +41,8 @@ function AdminClientsPage() {
             }}
             to="/app/admin/client/$userId"
           >
-            Novo Cliente <UserPlusIcon />
+            <UserPlusIcon />
+            Novo Cliente
           </Link>
         </div>
 

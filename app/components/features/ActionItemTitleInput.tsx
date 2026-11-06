@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { cn } from "cnfast";
+import { useMultiSelection } from "~/hooks/useMultiSelection";
 import { PrismButton } from "../prism";
 export function ActionItemTitleInput({
   title,
@@ -21,6 +22,7 @@ export function ActionItemTitleInput({
   const [overrideTitle, setOverrideTitle] = useState<string | null>(null);
   const localTitle = overrideTitle !== null ? overrideTitle : title;
   const inputRef = useRef<HTMLInputElement>(null);
+  const { isSelectionMode } = useMultiSelection();
   useEffect(() => {
     if (isEditing) {
       inputRef.current?.focus();
@@ -50,7 +52,11 @@ export function ActionItemTitleInput({
             setIsEditing(false);
           }}
           onChange={(e) => setOverrideTitle(e.target.value)}
+          // Keep typing and text selection away from dnd-kit's sortable
+          // keyboard/pointer activators on the wrapper.
+          onPointerDown={(e) => e.stopPropagation()}
           onKeyDown={(e) => {
+            e.stopPropagation();
             if (e.key === "Enter") {
               if (onBlur) {
                 onBlur(localTitle);
@@ -73,7 +79,10 @@ export function ActionItemTitleInput({
             isDragging ? "cursor-grabbing" : "",
             InputButtonClassName,
           )}
+          // In selection mode the click bubbles to the card, which toggles.
+          excludeFromTabOrder={isSelectionMode}
           onClick={(event) => {
+            if (isSelectionMode) return;
             event.preventDefault();
             event.stopPropagation();
             setIsEditing(true);

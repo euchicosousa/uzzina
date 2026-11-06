@@ -53,7 +53,8 @@ function AdminUsersPage() {
           }}
           to="/app/admin/user/$userId"
         >
-          Novo Usuário <UserPlusIcon />
+          <UserPlusIcon />
+          Novo Usuário
         </Link>
       </div>
 

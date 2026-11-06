@@ -22,9 +22,9 @@ Ao criar um ticket ou mudar seu escopo, inclua as três opções da seção `Mod
 | Minha Conta                 | [IA-M02 — Planejar organização em abas](ai-models/issues/02-profile-preferences-tabs.md)                                          | Proposta entregue: 4 abas e salvamento por patch parcial. Decidir as perguntas abertas antes de implementar. |
 | Design system               | [DS01 — Corrigir desvios visuais já inventariados](design-system-audit/issues/01-audit-visual-deviations.md)                      | Executar correções verificadas usando o V44.                                        |
 | Modelos de IA               | [IA-M05 — Investigar demora na geração](ai-models/issues/05-ai-generation-latency.md) | Análise de código entregue. Medir pela consulta proposta; testar esforço de raciocínio do Astra e acordar o worker na aceitação. |
-| Design system               | [DS03 — Interações dos itens de ação](design-system-audit/issues/03-action-item-interactions.md)                                  | Investigação entregue: 6 conflitos, entre eles título no modo seleção e arraste na Sprint. Decidir os tickets DS03-A a F. |
-| Design system               | [DS04 — Microinterações](design-system-audit/issues/04-microinteractions.md)                                                      | Inventário entregue: overlays sem animação real, sem tokens de movimento. Decidir os tokens e o primeiro recorte (Nova Hora). |
-| Design system               | [DS05 — Ordem de ícone e texto nos botões](design-system-audit/issues/05-button-icon-label-order.md)                              | Convenção proposta: ícone antes do texto, com exceções. Decidir e liberar os 12 ajustes. |
+| Design system               | [DS03 — Interações dos itens de ação](design-system-audit/issues/03-action-item-interactions.md)                                  | DS03-A/B corrigidos (título no modo seleção, arraste a partir do título): conferir no app. Decidir DS03-C a F. |
+| Design system               | [DS04 — Microinterações](design-system-audit/issues/04-microinteractions.md)                                                      | Tokens de movimento e Nova Hora aplicados: conferir no app. Decidir animação dos overlays (exige plugin). |
+| Design system               | [DS05 — Ordem de ícone e texto nos botões](design-system-audit/issues/05-button-icon-label-order.md)                              | Convenção aplicada em 11 usos: conferir no app. Pendentes: Salvar da gaveta e nome do UCalendarToolbar. |
 
 ## Referências fora da fila de execução
 

@@ -206,7 +206,7 @@ export function CommentInput({
             isDisabled={isSubmitting || !value.trim()}
             onClick={handleSend}
           >
-            <SendIcon className="mr-1.5 size-3.5" />
+            <SendIcon className="size-3.5" />
             {submitLabel || "Enviar"}
           </PrismButton>
         </div>

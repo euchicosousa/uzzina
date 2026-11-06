@@ -319,6 +319,13 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
+  /* Motion tokens: duration-motion-* and ease-motion-* utilities. */
+  --transition-duration-motion-fast: 150ms;
+  --transition-duration-motion-base: 200ms;
+  --transition-duration-motion-slow: 300ms;
+  --ease-motion-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-motion-exit: cubic-bezier(0.4, 0, 1, 1);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 

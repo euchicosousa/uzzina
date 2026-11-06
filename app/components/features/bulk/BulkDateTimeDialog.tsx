@@ -101,30 +101,34 @@ export function BulkDateTimeDialog({
         <div
           inert={!changeDate}
           className={cn(
-            "overflow-hidden transition-all duration-200",
+            "grid transition-[grid-template-rows,opacity] motion-reduce:transition-none",
             changeDate
-              ? "max-h-96 px-4 py-4 opacity-100"
-              : "pointer-events-none max-h-0 opacity-0",
+              ? "grid-rows-[1fr] opacity-100 duration-motion-base ease-motion-standard"
+              : "pointer-events-none grid-rows-[0fr] opacity-0 duration-motion-fast ease-motion-exit",
           )}
         >
-          <PrismCalendar
-            cellSize="sm"
-            className="w-full"
-            onChange={(day) => {
-              if (day) {
-                setPickedDate(new Date(day.year, day.month - 1, day.day));
-              }
-            }}
-            value={
-              pickedDate
-                ? new CalendarDate(
-                    pickedDate.getFullYear(),
-                    pickedDate.getMonth() + 1,
-                    pickedDate.getDate(),
-                  )
-                : undefined
-            }
-          />
+          <div className="min-h-0 overflow-hidden">
+            <div className="px-4 py-4">
+              <PrismCalendar
+                cellSize="sm"
+                className="w-full"
+                onChange={(day) => {
+                  if (day) {
+                    setPickedDate(new Date(day.year, day.month - 1, day.day));
+                  }
+                }}
+                value={
+                  pickedDate
+                    ? new CalendarDate(
+                        pickedDate.getFullYear(),
+                        pickedDate.getMonth() + 1,
+                        pickedDate.getDate(),
+                      )
+                    : undefined
+                }
+              />
+            </div>
+          </div>
         </div>
 
         {/* ── Seção: Mudar Hora ─────────────────────────────────────────── */}
@@ -140,28 +144,30 @@ export function BulkDateTimeDialog({
         <div
           inert={!changeTime}
           className={cn(
-            "overflow-hidden transition-all duration-200",
+            "grid transition-[grid-template-rows,opacity] motion-reduce:transition-none",
             changeTime
-              ? "max-h-24 p-4 opacity-100"
-              : "pointer-events-none max-h-0 opacity-0",
+              ? "grid-rows-[1fr] opacity-100 duration-motion-base ease-motion-standard"
+              : "pointer-events-none grid-rows-[0fr] opacity-0 duration-motion-fast ease-motion-exit",
           )}
         >
-          <div className="flex items-center justify-between gap-3">
-            <span className="shrink-0 text-xs font-semibold text-muted-foreground uppercase">
-              Nova hora
-            </span>
-            <PrismTimeField
-              aria-label="Nova hora"
-              onChange={(val) => {
-                setTimeValue(val);
-                if (val) {
-                  const hh = String(val.hour).padStart(2, "0");
-                  const mm = String(val.minute).padStart(2, "0");
-                  setPickedTime(`${hh}:${mm}`);
-                }
-              }}
-              value={timeValue}
-            />
+          <div className="min-h-0 overflow-hidden">
+            <div className="flex items-center justify-between gap-3 p-4">
+              <span className="shrink-0 text-xs font-semibold text-muted-foreground uppercase">
+                Nova hora
+              </span>
+              <PrismTimeField
+                aria-label="Nova hora"
+                onChange={(val) => {
+                  setTimeValue(val);
+                  if (val) {
+                    const hh = String(val.hour).padStart(2, "0");
+                    const mm = String(val.minute).padStart(2, "0");
+                    setPickedTime(`${hh}:${mm}`);
+                  }
+                }}
+                value={timeValue}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -238,7 +238,7 @@ export function AdminUserForm({
           isDisabled={isSubmitting}
           type="submit"
         >
-          <SaveIcon className="mr-2 size-4" />
+          <SaveIcon className="size-4" />
           {isSubmitting ? "Salvando..." : "Salvar Usuário"}
         </PrismButton>
       </div>
