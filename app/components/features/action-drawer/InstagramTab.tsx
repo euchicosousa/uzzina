@@ -97,23 +97,6 @@ function CaptionTextarea({
     />
   );
 }
-function AIProcessingMessage({
-  isAIProcessing,
-  activeAIIntent,
-}: {
-  isAIProcessing: boolean;
-  activeAIIntent?: string | null;
-}) {
-  if (!isAIProcessing || activeAIIntent !== INTENT.ai_caption) return null;
-  return (
-    <div className="flex w-full items-center justify-center gap-2 border-b py-4 text-xs font-medium">
-      <div className="relative flex items-center justify-center">
-        <ULoader size="sm" className="opacity-50" />
-      </div>
-      <span className="animate-pulse">Gerando legenda com IA...</span>
-    </div>
-  );
-}
 export function InstagramTab({
   RawAction,
   setRawAction,
@@ -235,9 +218,7 @@ export function InstagramTab({
               {(() => {
                 const strategies = parseStrategies(RawAction.strategies);
                 const selectedStrat = strategies.find((s) => s.selected);
-                const stratTitle = selectedStrat
-                  ? selectedStrat.headline
-                  : "Selecione a estratégia";
+
                 return (
                   strategies.length > 0 &&
                   onOpenStrategyModal && (
@@ -276,9 +257,9 @@ export function InstagramTab({
                       >
                         <span
                           className="block min-w-0 truncate"
-                          title={stratTitle}
+                          title={"Selecione a estratégia"}
                         >
-                          {stratTitle}
+                          {"Selecione a estratégia"}
                         </span>
                         {isAIProcessing &&
                         activeAIIntent === INTENT.ai_content ? (

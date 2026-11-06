@@ -309,14 +309,14 @@ export function EssentialsTab({
                   parseStrategies(RawAction.strategies).length > 0;
                 const buttonLabel =
                   strategyStatus === "saving"
-                    ? "SALVANDO ESTRATÉGIAS..."
+                    ? "Salvando estratégias..."
                     : strategyStatus === "generating"
                       ? hasStrategies
-                        ? "RECRIANDO ESTRATÉGIAS..."
-                        : "CRIANDO ESTRATÉGIA..."
+                        ? "Recriando estratégias..."
+                        : "Criando estratégias..."
                       : hasStrategies
-                        ? "RECRIAR ESTRATÉGIAS"
-                        : "CRIAR ESTRATÉGIA";
+                        ? "Recriar estratégias"
+                        : "Criar estratégia";
                 return (
                   <PrismButtonGroup className="min-w-0 shrink">
                     {(hasStrategies || hasStrategyActivity) &&
