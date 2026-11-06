@@ -48,3 +48,7 @@ export * from "./UzzinaPaletteEditorSection";
 export * from "./UzzinaActionDatePickerSection";
 export * from "./UzzinaColorPickerDropdownSection";
 export * from "./UzzinaPartnerCelebrationsSelectorSection";
+export * from "./UzzinaAIProgressBarSection";
+export * from "./UzzinaAIModelSelectSection";
+export * from "./UzzinaAIAllowanceMeterSection";
+

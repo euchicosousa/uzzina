@@ -1,5 +1,3 @@
-import { UzzinaAIModelSelectSection } from "~/components/ui-sections/UzzinaAIModelSelectSection";
-import { UzzinaAIAllowanceMeterSection } from "~/components/ui-sections/UzzinaAIAllowanceMeterSection";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { SearchIcon, XIcon } from "lucide-react";
@@ -56,6 +54,9 @@ import {
   UzzinaAdminItemCardSection,
   UzzinaAvatarSelectorSection,
   UzzinaLoaderSection,
+  UzzinaAIProgressBarSection,
+  UzzinaAIModelSelectSection,
+  UzzinaAIAllowanceMeterSection,
   UzzinaPreferenceSwitchSection,
   UzzinaToggleInputSection,
   SelectSection,
@@ -284,6 +285,13 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     label: "UAIAllowanceMeter",
     section: "uzzina",
     keywords: ["franquia", "consumo", "medição"],
+  },
+  {
+    id: "uzzina-ai-progress-bar",
+    approved: true,
+    label: "UAIProgressBar",
+    section: "uzzina",
+    keywords: ["progresso", "ia", "barra", "loading", "simulado", "progress"],
   },
   {
     id: "uzzina-loader",
@@ -1082,6 +1090,7 @@ function UIPage() {
               <UzzinaColorPickerDropdownSection />
               <UzzinaAIModelSelectSection />
               <UzzinaAIAllowanceMeterSection />
+              <UzzinaAIProgressBarSection />
               <UzzinaLoaderSection />
               <UzzinaPaletteEditorSection />
               <UzzinaPreferenceSwitchSection />

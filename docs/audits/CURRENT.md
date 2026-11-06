@@ -6,6 +6,10 @@ Produção Ready em 06/11 a partir do push de `main` até `9e25ad7`, no domínio
 
 ## Pendências reais
 
+### IA-M05: componente de progresso de IA aprovado — 06/11
+
+O proprietário aprovou o componente `UAIProgressBar`, registrado e marcado na galeria `/ui`. O componente opera com avanço contínuo em tempo real (sem CSS transition concorrente no loop de RAF), curva suave até 90% ao longo de 30 segundos, seguido por incremento gradual de 1% a cada 1 segundo até 99% (cobrindo até 40s de operação sem congelamento visual), e salto instantâneo para 100% no retorno real. Suporta variante linha (`h-px`, sem rounded, trilho em `bg-input`, preenchimento em `bg-primary`) e círculo SVG. Integrado no modal de estratégias do `ActionFormDrawer`, com toast de sucesso na conclusão da geração ("Estratégias criadas com sucesso!" ou "Estratégias recriadas com sucesso!"). Testes automatizados 4/4 e typecheck limpos.
+
 ### T01: rastreamento das decisões do Planejamento — 06/11
 
 [Evidência](social-planning-recovery/T01-evidence.md). Nenhuma decisão D1–D6 está confirmada com fonte. O bloco D1–D6 de `social-planning-design-decisions.md` foi escrito pelo executor da série C, sem citar fonte, e por isso foi tratado como proposta. As decisões confirmadas pelo proprietário estão em `social-planning-ticket-breakdown.md:12-26` e cobrem parte de D3–D6. As perguntas mínimas de cada ponto estão na seção 4 da evidência. D1 libera o T02, que pode precisar de revisão. D2–D4 liberam T03 e T08, D5 libera T09 e T10, e D6 libera T07 e T08. Status do T01: `needs-product-decision (D1–D6)`.

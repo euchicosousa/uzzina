@@ -10,7 +10,7 @@
 
 **Bloqueado por.** Nenhum ticket. Usar as chamadas e registros disponíveis no IA-M04. Novas chamadas reais, se necessárias, devem ter escopo autorizado.
 
-**Status.** Investigação de código entregue; medição real pendente da instrumentação proposta.
+**Status.** Concluído e aprovado pelo proprietário em 06/11/2026. Componente `UAIProgressBar` criado com curva base de 30s (até 90%) e incremento de 1%/s até 99%, salto para 100% no retorno real com transição suave, variantes linha (`h-px`, `bg-input`, sem rounded) e círculo, integrado no modal de estratégias com toast de conclusão, playground e testes automatizados 4/4.
 
 ## Critérios de aceite
 
