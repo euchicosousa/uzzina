@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protótipo do seletor de modelos · UZZINA</title>
+<style>
+  :root { color-scheme: light dark; font: 15px/1.5 system-ui, sans-serif; }
+  body { margin: 0; background: light-dark(#f8fafc,#15171b); color: light-dark(#18212b,#e8ebf0); }
+  main { max-width: 640px; margin: 0 auto; padding: clamp(18px,5vw,48px); }
+  h1 { font-size: 1.65rem; margin: .3em 0; }
+  p { margin: .5em 0 1em; }
+  small { opacity: .8; }
+  button { font: inherit; cursor: pointer; padding: .5rem .75rem; color: inherit; background: transparent; border: 1px solid light-dark(#a6b2c1,#586373); border-radius: 9px; }
+  button:focus-visible { outline: 2px solid #428aff; outline-offset: 3px; }
+  .group { display: flex; align-items: center; gap: .4rem; margin-block: 1.5rem .75rem; }
+  #generate { background: light-dark(#1e293b,#e2e8f0); color: light-dark(white,#111827); }
+  #trigger { display: flex; align-items: center; justify-content: center; width: 48px; height: 44px; }
+  #options { width: min(100%,340px); }
+  #options h2 { font-size: .8rem; margin: .7em 0 .2em; }
+  .option { display: flex; width: 100%; align-items: center; gap: .7em; text-align: left; border-color: transparent; }
+  .option[aria-pressed="true"] { background: light-dark(#e8edf5,#282f39); }
+  .option small { margin-left: auto; }
+  .icon { width: 28px; height: 28px; display: inline-grid; place-items: center; position: relative; flex: none; }
+  .icon svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+  .icon img { width: 12px; height: 12px; }
+  .dark .openai { filter: invert(1); }
+  @media (prefers-color-scheme: dark) { :root:not(.light) .openai { filter: invert(1); } }
+  .variant { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1rem; }
+  .variant [aria-pressed="true"] { border-color: #428aff; }
+</style>
+<main>
+  <small>UZZINA / Protótipo IA‑M04</small>
+  <h1>Escolher modelo para gerar legenda</h1>
+  <p>Teste a identificação do provedor e da faixa num botão compacto.</p>
+  <div class="variant" role="group" aria-label="Estilo do indicador">
+    <button type="button" data-variant="arc" aria-pressed="true">Arco por nível</button>
+    <button type="button" data-variant="ring" aria-pressed="false">Anel inteiro</button>
+  </div>
+  <div class="group">
+    <button id="generate" type="button">Gerar legenda</button>
+    <button id="trigger" type="button" aria-controls="options" aria-expanded="false"></button>
+  </div>
+  <div id="options" hidden></div>
+  <p id="current" role="status"></p>
+  <small>Simulação. Os níveis representam faixas editoriais do catálogo.</small>
+</main>
+<script>
+const models = [
+  ['OpenAI','GPT-6 Luna',1], ['OpenAI','GPT-6.1 Terra',2],
+  ['OpenAI','GPT-6.1 Sol',3], ['OpenAI','GPT-6 Astra',5],
+  ['Anthropic','Claude Haiku 5.5',1], ['Anthropic','Claude Sonnet 5.5',3],
+  ['Anthropic','Claude Opus 5.5',4],
+];
+const colors = ['#3985ee','#b98a12','#df7625','#dd505c','#a570ed'];
+const trigger = document.querySelector('#trigger');
+const options = document.querySelector('#options');
+const current = document.querySelector('#current');
+let selected = models[0];
+let variant = 'arc';
+
+function icon([provider, , level]) {
+  const source = provider === 'OpenAI' ? 'openai.svg' : 'claude-color.svg';
+  const length = variant === 'arc' ? level * 20 : 100;
+  return `<span class="icon" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none">
+    <circle cx="14" cy="14" r="12" stroke="currentColor" stroke-opacity=".17" stroke-width="2"/>
+    <circle cx="14" cy="14" r="12" pathLength="100" stroke="${colors[level-1]}" stroke-width="2"
+      stroke-linecap="round" stroke-dasharray="${length} 100"/></svg>
+    <img class="${provider === 'OpenAI' ? 'openai' : ''}" src="assets/${source}" alt=""></span>`;
+}
+function render() {
+  trigger.innerHTML = icon(selected);
+  const label = `Modelo atual: ${selected[1]}, nível ${selected[2]} de 5`;
+  trigger.setAttribute('aria-label', label + '. Escolher modelo.');
+  trigger.title = label;
+  current.textContent = label;
+  options.innerHTML = '';
+  for (const provider of ['OpenAI','Anthropic']) {
+    const heading = document.createElement('h2');
+    heading.textContent = provider;
+    options.append(heading);
+    for (const model of models.filter(row => row[0] === provider)) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'option';
+      button.setAttribute('aria-pressed', String(model === selected));
+      button.innerHTML = icon(model) + model[1] + `<small>Nível ${model[2]}</small>`;
+      button.onclick = () => { selected = model; toggle(false); render(); trigger.focus(); };
+      options.append(button);
+    }
+  }
+}
+function toggle(open) {
+  options.hidden = !open;
+  trigger.setAttribute('aria-expanded', String(open));
+}
+trigger.onclick = () => toggle(options.hidden);
+options.onkeydown = event => {
+  if (event.key === 'Escape') { toggle(false); trigger.focus(); }
+};
+document.querySelectorAll('[data-variant]').forEach(button => {
+  button.onclick = () => {
+    variant = button.dataset.variant;
+    document.querySelectorAll('[data-variant]').forEach(item =>
+      item.setAttribute('aria-pressed', String(item === button)));
+    render();
+  };
+});
+document.querySelector('#generate').onclick = () => {
+  current.textContent = `Simulação de geração com ${selected[1]}.`;
+};
+render();
+</script>
+</html>

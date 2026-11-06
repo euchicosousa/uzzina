@@ -6,6 +6,115 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### IA-M04: migração dos três padrões aplicada — 06/11
+
+Supabase de produção recebeu `20261106044334_ai_model_preferences`. As três chaves foram verificadas sob papel autenticado em transação revertida. Execução anônima segue bloqueada. O checkout já continha as três preferências no momento da aplicação. Sem publicação da interface nesta rodada.
+
+### IA-M04: decisão sobre três padrões independentes — 06/11
+
+Proprietário pediu somente registrar. Estratégia, Conteúdo e Legenda terão padrões pessoais separados, com Luna inicial. Trocar no próprio comando salva o padrão correspondente e Minha Conta oferece os mesmos três ajustes. O checkout ainda contém a implementação anterior de dois padrões e escolha temporária para conteúdo. [IA-M04](../../.scratch/ai-models/issues/04-model-selection-by-command.md). Diff documental conferido.
+
+### IA-M04: padrões pessoais de estratégia e legenda — 06/11
+
+UI aprovada pelo proprietário. Minha Conta oferece dois padrões, Luna inicialmente; mudanças na gaveta salvam no fluxo autenticado, e no perfil usam Salvar Alterações. Conteúdo herda estratégia e permite escolha temporária compartilhada com o diálogo. Migration verificada em PostgreSQL isolado, typecheck e 52 testes focados passaram. Pendente SQL em produção, aceite autenticado, publicação da interface e snapshot de tarifa na fila.
+
+### IA-M05: investigação de latência da IA — 06/11
+
+[Ticket](../../.scratch/ai-models/issues/05-ai-generation-latency.md) aberto após relato de espera com Luna e Astra. Medir API, fila, provedor, gravação e atualização na interface. Streaming fica como opção a comparar. Referências e diff conferidos. Sem mudança funcional.
+
+### IA-M04: Terra, Sol e Astra publicados no backend — 06/11
+
+Migration `20261106041724` aplicada e reserva restrita ao servidor. Build, typecheck e nove serverless passaram. Deploy `dpl_55Gfq8H6ism92KJqCxgusxxMtvCP` Ready no domínio e heartbeat confirmado às 01h18min29s. Seletor e correção do editor seguem locais. Pendentes chamadas reais para conciliar modelo, reserva e custo.
+
+### Conteúdo gerado no editor e catálogo OpenAI — 06/11
+
+Gerar conteúdo atualiza o editor da subaba aberta e aguarda gravação. Regressão reproduzida e corrigida em teste focado. Terra, Sol e Astra preparados com tarifas Standard versionadas e reserva por modelo. Catálogo OpenAI acessível para os três; PostgreSQL isolado confirmou estratégia Astra. Falta aplicar migration, publicar API/worker e conciliar chamadas reais; correção visual segue local.
+
+### Estratégias: seleção após regeneração — 06/11
+
+Corrigido bloqueio no diálogo aberto após a fila salvar novas estratégias. O diálogo sinaliza a leitura e adota apenas a lista confirmada quando ela corresponde ao resultado e nenhum outro campo remoto mudou. Divergências e patches pendentes mantêm a revisão de versão. Regressão reproduzida e confirmada com dois testes focados; typecheck e diff conferidos. Validação visual local pendente.
+
+### IA-M04: backend de estratégias por modelo publicado — 06/11
+
+Migration `20261106035709` aplicada, com funções de aceitação/claim por modelo restritas ao servidor. Deploy isolado `dpl_F5u3NfEMsZQ2W5CsSAcYcXwTwmc9` Ready no domínio, após build, typecheck e nove serverless. Heartbeat confirmado às 00h58min27s. Seletor da gaveta segue local; pendente repetir Sonnet e conciliar geração real.
+
+### EST-01 e EST-02: diálogo de estratégias integrado e verificado — 06/11
+
+Implementadas as melhorias do diálogo de estratégias em `ActionFormDrawer.tsx` e `EssentialsTab.tsx`:
+
+- **EST-01 (Progresso e rolagem única):** Exibição reativa de `ULoader` e status textual ("Criando estratégias…", "Recriando estratégias…", "Salvando estratégias…"), com badge "Resultado anterior" durante recriação. Instrução de seleção exibida apenas quando há opções utilizáveis prontas. Removidos os botões artificiais "Conferir andamento" e "Conferir estratégias salvas", tornando a atualização do diálogo 100% automática. Rolagem consolidada exclusivamente no diálogo, eliminando overflow aninhado concorrente.
+- **EST-02 (Troca de estratégia e persistência de seleção):** Seleção exclusiva com sincronização de título e persistência imediata no banco via `updateAction`. Indicador de salvamento de seleção (`ULoader` com "Salvando seleção…") no diálogo e overlay no checkbox/botão. Reabilitação imediata de todas as opções após confirmação sem exigir fechar o modal. Tratamento robusto de conflito concorrente e falhas com botões de recuperação contextualizados.
+- **Formalização dos tickets:** Criados [01-strategy-dialog-progress.md](../../.scratch/action-strategy/issues/01-strategy-dialog-progress.md) e [02-strategy-selection-switch.md](../../.scratch/action-strategy/issues/02-strategy-selection-switch.md), e tabela de tickets em [.scratch/README.md](../../.scratch/README.md) atualizada (23 tickets ativos).
+- **Verificação:** `npx tsc --noEmit` PASS (0 erros), 81 testes de IA/estratégia PASS, 24 testes da gaveta PASS, 9 verificações serverless PASS.
+
+### IA-M04: Claude preparado em conteúdo e estratégia — 06/11
+
+Seletor oferece Luna, Haiku, Sonnet e Opus nos três comandos. Estratégia grava o modelo na aceitação, reserva pela tarifa correspondente e o worker legado só obtém Luna. PostgreSQL isolado confirmou reserva, idempotência e claim; 118 testes, typecheck e nove serverless passaram. Aguardam migration e publicação de API/worker para teste com fila real. Snapshot de tarifa e padrões pessoais pendentes.
+
+### IA-M04: rótulos do seletor — 06/11
+
+Removidos os números de nível do menu e do rótulo acessível do UAIModelSelect; arco e indicação de indisponibilidade preservados. O checkout oferece Claude em Instagram → Legenda; Conteúdo e Estratégias ainda aceitam Luna. Typecheck e diff conferidos.
+
+### IA-M04: grupos de IA na gaveta e aceite visual na galeria — 06/11
+
+Proprietário aprovou UAIModelSelect e UAIAllowanceMeter; ambos marcados na galeria. Criar/recriar estratégia, conteúdo e legenda usam grupos Prism sm/secondary, com símbolo do modelo e loader sem estrela. Claude permanece habilitado para legenda e aparece indisponível nos outros comandos enquanto faltar aceite do backend de conteúdo e modelo congelado na fila. Typecheck e diff conferidos.
+
+### IA-M04: tamanho do seletor segue PrismButton — 06/11
+
+UAIModelSelect aceita a escala de PrismButton e mantém icon como padrão. A legenda usa sm nos dois botões. O playground permite trocar size e ajusta a altura do botão de geração junto. A prop showText controla o nome independentemente de size, inicia desligada no componente e fica explícita nos grupos da gaveta e disponível no playground. Em largura apertada, o nome pode truncar e conserva o rótulo completo. Typecheck e diff passaram. Conferência visual na galeria pendente.
+
+### IA-M04: seletor ligado à legenda local — 06/11
+
+O grupo da aba Instagram → Legenda envia o modelo escolhido para a API. Luna inicia selecionado, com Haiku, Sonnet e Opus disponíveis. A escolha dura durante a montagem da ação e os dois controles ficam bloqueados durante geração. Typecheck e 15 testes do fluxo passaram. Pendente conferir a tela e conciliar uma chamada por Claude a partir da sessão autenticada do proprietário. Sem publicação do seletor.
+
+### IA-M04: API de legenda publicada — 06/11
+
+Migration de reserva por modelo aplicada como `20261106031549`, com Luna padrão e execução restrita ao servidor. Chave Anthropic presente em Production. Build, typecheck e nove verificações serverless passaram no pacote isolado, com retirada de hooks incluída. Deploy `dpl_CudSy81SynGE1ACxuai6Nb4rUVhx` Ready no domínio de produção. Pendente legenda real por modelo Claude, seletor na gaveta, preferências e modelo congelado em estratégias.
+
+### IA-M04: migration verificada em banco isolado — 06/11
+
+PostgreSQL nativo isolado confirmou a migration IA-M04: Luna com quatro argumentos, trigger de estratégias, valores de reserva dos três Claude, recusa de modelo inválido, permissão de reserva restrita ao servidor e disputa de saldo com duas conexões. Produção ainda depende de autorização da migration, segredo na Vercel, publicação e conciliação de legendas reais.
+
+### DS02 encerrado como revisão — 06/11
+
+[Relatório final](2026-11-05-ds02-route-review.md) cataloga 24 rotas e separa evidência renderizada de inspeção e aceites. Quatro listas administrativas distinguem carregamento, falha com nova tentativa e vazio legítimo, com 16 sequências em claro/escuro a 390 e 1440 px. Placeholder do PrismInput corrigido e medido nos quatro formulários. Perfil, portal, revisão e rotas centrais da equipe conferidos em ambos os temas. Planejamento segue no T03. Auditoria retirada da fila ativa; cobertura exaustiva e provedores reais não certificados.
+
+### DS02: listas, temas e rotas da equipe — 06/11
+
+Listas de Usuários e Parceiros corrigidas no celular, com 16 cenários administrativos conferidos. Texto de feedback semântico separado das cores de preenchimento, com contraste aproximado mínimo de 5,00:1 nos exemplos da galeria. Home, Hoje, Parceiro e Leads renderizados com dados fictícios; erro de Planejamento com celebrações pendentes encaminhado ao T03. [Cobertura e limites](2026-11-05-ds02-route-review.md).
+
+### IA-M04: adaptador Claude para legenda — 06/11
+
+Preparado localmente: catálogo com Haiku, Sonnet e Opus 5.5, adaptador Anthropic, medição por modelo e `model` opcional validado na API (só legenda; Luna segue padrão). Reserva mensal ciente do modelo na migration local `20261106120000_ai_model_aware_reservation.sql`, **não aplicada**; a API só a usa fora do modelo padrão. Acesso aos três modelos confirmado com a chave da agência. Typecheck, 127 testes focados, nove serverless e ensaio HTTP controlado passaram. Sem publicação nem chamada paga. Pendente: autorização para aplicar a migration, `ANTHROPIC_API_KEY` na Vercel, chamada real por modelo, SQL em PostgreSQL isolado e seletor/preferências. [IA-M04](../../.scratch/ai-models/issues/04-model-selection-by-command.md)
+
+### IA-M04: seletor pesquisável na galeria — 05/11
+
+UAIModelSelect em /ui, seção UZZINA, mostra dois símbolos em currentColor, arco por nível e opções agrupadas por provedor. Playground com PrismButtonGroup, Gerar legenda e props na lateral. Typecheck e diff passaram. Conferência visual e de teclado pendente. Geração simulada na galeria.
+
+### DS02: uploads administrativos por teclado — 05/11
+
+Doze cenários no Chromium (criação e edição com foto fictícia de Pessoa, Cliente e Parceiro em 390 e 1440 px) confirmaram nome acessível, foco via Tab e abertura via Enter com widget simulado. Sem upload real. [Relatório](2026-11-05-ds02-route-review.md).
+
+### DS02: recorte renderizado com dados controlados — 05/11
+
+[Relatório](2026-11-05-ds02-route-review.md) registra Hoje vazio, franquia carregando/falha/retry, foco e nomes em Perfil e Portal, e respostas de revisão válida, expirada e revogada. Chromium local com HTTP interceptado, sem gravações reais. Recorte concluído; matriz ampla permanece parcial.
+
+### IA-M04: primeiro recorte do seletor — 05/11
+
+[Protótipo](../../.scratch/ai-models/prototype/model-picker.html) compara arco e anel com símbolos OpenAI e Claude e cinco níveis editoriais editáveis, separados de tarifas. SVGs de referência Lobe Icons; conferir ativos oficiais antes de incorporar. Próximo recorte funcional é validar um Claude com legenda, reserva e medição antes de ligar o seletor. Sem alteração do fluxo de geração nesta rodada.
+
+### IA-M03: aceite funcional e retirada de hooks — 05/11
+
+Os três comandos disponíveis foram conciliados em produção. Em PostgreSQL nativo isolado, duas conexões disputaram saldo para uma única geração: a segunda aguardou e foi recusada após o commit da primeira. O comando legado hooks foi removido da API e dos contratos localmente a pedido do proprietário. 165 testes focados, nove verificações serverless e typecheck passaram. Falta publicar a retirada; próximo ticket de IA é IA-M04.
+
+### DS02: nomes acessíveis e cenários controlados — 05/11
+
+Rótulos explícitos nos quatro uploads de avatar e no gerenciador do portal. 41 testes existentes de Hoje, Leads, Notificações e API de revisão passaram, além de typecheck e diff. O [relatório](2026-11-05-ds02-route-review.md) distingue cobertura automatizada de verificação renderizada ainda pendente.
+
+### DS02: revisão por rota — 05/11
+
+[Relatório](2026-11-05-ds02-route-review.md) registra seis rotas públicas observadas em 390 e 1440px, controles de senha conferidos e revisão de código das áreas com sessão e revisão pública. Achados de nome acessível no upload de avatar e no gerenciador de arquivos do portal. Faltam cenários renderizados com sessões e tokens controlados. Diff documental conferido.
+
 ### IA-M03: conciliação real e triagem de estratégias — 05/11
 
 Confirmadas quatro chamadas do proprietário em produção após o deploy, todas reservadas e conciliadas: uma legenda, um conteúdo e duas estratégias, ambas salvas. Total US$ 0,002966545. Hooks não apareceu no recorte e teste concorrente continua pendente. [Proposta de dois tickets para o diálogo](2026-11-05-strategy-dialog-triage.md), separada do aceite de IA. Nenhum código do diálogo foi alterado.

@@ -33,3 +33,9 @@ Build isolado de `d65e912` mais o delta IA-M01/IA-M03 e seu medidor. Typecheck, 
 ### Conciliação do ensaio real — 05/11/2026
 
 Para o mesmo membro do IA-M01, o banco registrou quatro chamadas após a promoção, todas com reserva mensal e custo conciliado: uma legenda, um conteúdo e duas estratégias. As duas operações de estratégias terminaram em succeeded. Total US$ 0,002966545. Máximos observados de saída: legenda 377, conteúdo 421 e estratégia 2.156. Não apareceu registro de hooks nesse recorte. Falta observar hooks e executar o cenário concorrente com sessões independentes. A [triagem do diálogo](../../../docs/audits/2026-11-05-strategy-dialog-triage.md) segue separada.
+
+### Verificação concorrente e retirada de hooks — 05/11/2026
+
+O proprietário confirmou que hooks era um comando antigo e pediu sua remoção. Os três comandos acessíveis (legenda, conteúdo e estratégia) já foram observados em produção. O contrato e a API rejeitam hooks antes de reservar quota ou chamar o provedor. Os registros históricos são preservados.
+
+PostgreSQL nativo isolado, com duas conexões independentes: a primeira reservou em transação aberta; a segunda aguardou a trava consultiva e, após o commit da primeira, foi recusada por saldo insuficiente. O banco confirmou uma única reserva. Passaram também 165 testes focados, nove verificações serverless e typecheck. Aceite funcional do IA-M03 concluído; a retirada de hooks está pronta localmente e ainda depende de publicação.

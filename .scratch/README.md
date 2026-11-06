@@ -1,6 +1,6 @@
 # Tickets abertos da UZZINA
 
-Atualizado em 05/11/2026. **22 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
+Atualizado em 06/11/2026. **23 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
 
 [Histórico consolidado](archive/resolved-tickets.md): 87 documentos encerrados/aprovados e 11 da antiga série C do Planejamento, substituída pela recuperação. Os antigos arquivos individuais foram retirados e seus links redirecionados.
 
@@ -26,10 +26,14 @@ Ao criar um ticket ou mudar seu escopo, inclua as três opções da seção `Mod
 | Design system               | [DS01 — Corrigir desvios visuais já inventariados](design-system-audit/issues/01-audit-visual-deviations.md)                      | Executar correções verificadas usando o V44.                                        |
 | Consumo de IA               | [IA-M03 — Cota mensal de IA](ai-models/issues/03-monthly-ai-allowance.md)                                                         | Aplicar cota e mostrar percentual e chamadas após IA-M01.                           |
 | Modelos de IA               | [IA-M04 — Seleção e padrões por comando](ai-models/issues/04-model-selection-by-command.md)                                       | Integrar após IA-M01 e liberar após IA-M03.                                         |
-| Design system               | [DS02 — Conferir rota por rota](design-system-audit/issues/02-route-coverage-and-visual-review.md)                                | Cobertura exaustiva e aceite visual após o primeiro lote.                           |
+| Modelos de IA               | [IA-M05 — Investigar demora na geração](ai-models/issues/05-ai-generation-latency.md) | Medir a espera por etapa e avaliar opções antes de decidir sobre streaming. |
 | Design system               | [DS03 — Interações dos itens de ação](design-system-audit/issues/03-action-item-interactions.md)                                  | Investigar seleção, edição, foco e arraste em todas as variantes.                   |
 | Design system               | [DS04 — Microinterações](design-system-audit/issues/04-microinteractions.md)                                                      | Inventariar movimento e propor padrões graduais.                                    |
-| Design system | [DS05 — Ordem de ícone e texto nos botões](design-system-audit/issues/05-button-icon-label-order.md) | Pesquisa, inventário e proposta para aceite. |
+| Design system               | [DS05 — Ordem de ícone e texto nos botões](design-system-audit/issues/05-button-icon-label-order.md)                              | Pesquisa, inventário e proposta para aceite.                                        |
+| Estratégias na gaveta       | [EST-01 — Progresso e resultado no diálogo](action-strategy/issues/01-strategy-dialog-progress.md)                                | Unificar rolagem, alinhar loader e remover botões manuais.                          |
+| Estratégias na gaveta       | [EST-02 — Troca de estratégia após salvar](action-strategy/issues/02-strategy-selection-switch.md)                                | Destravar controles após salvar e indicar progresso da escolha.                     |
+| Estratégias na gaveta | [EST-01 — Progresso e resultado no diálogo](action-strategy/issues/01-strategy-dialog-progress.md) | Unificar rolagem, alinhar loader e remover botões manuais. |
+| Estratégias na gaveta | [EST-02 — Troca de estratégia após salvar](action-strategy/issues/02-strategy-selection-switch.md) | Destravar controles após salvar e indicar progresso da escolha. |
 
 ## Referências fora da fila de execução
 
