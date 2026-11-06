@@ -1960,7 +1960,7 @@ describe("phone-width action panel", () => {
     // collapsible details, and opens a dialog instead of toggling inline.
     const idCommand = screen.getByRole("button", { name: "Ver ID da ação" });
     expect(details.contains(idCommand)).toBe(false);
-    expect(screen.getByRole("button", { name: /ESTRATÉGIA/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /estratégia/i })).toBeTruthy();
     expect(
       screen.getByRole("button", { name: /Adicionar arquivo/ }),
     ).toBeTruthy();
@@ -2554,7 +2554,7 @@ it("opens permanent strategy progress before acceptance and preserves dismissal 
   const durable = durableFixture(null, gate);
   mount(draft({ category: "post" }));
   fireEvent.click(
-    await screen.findByRole("button", { name: "CRIAR ESTRATÉGIA" }),
+    await screen.findByRole("button", { name: "Criar estratégia" }),
   );
   const dialog = await screen.findByRole("dialog");
   expect(within(dialog).getByRole("status").textContent).toContain(
@@ -2761,7 +2761,7 @@ it("creates no orphan durable work for an incomplete draft and saves it before e
   const durable = durableFixture(null);
   mount(draft({ id: undefined, category: "post", title: "X" }));
   fireEvent.click(
-    await screen.findByRole("button", { name: "CRIAR ESTRATÉGIA" }),
+    await screen.findByRole("button", { name: "Criar estratégia" }),
   );
   const dialog = await screen.findByRole("dialog");
   expect(await within(dialog).findByRole("alert")).toHaveProperty(
@@ -2963,7 +2963,7 @@ it("durable accepted work releases the drawer leave guard without browser persis
   const durable = durableFixture(null);
   const fixture = mount(draft({ category: "post" }));
   fireEvent.click(
-    await screen.findByRole("button", { name: "CRIAR ESTRATÉGIA" }),
+    await screen.findByRole("button", { name: "Criar estratégia" }),
   );
   const dialog = await screen.findByRole("dialog");
   await waitFor(() => expect(durable.requests).toHaveLength(1));
@@ -2980,7 +2980,7 @@ it("durable acceptance preserves the leave guard for unrelated unsaved edits", a
   const durable = durableFixture(null);
   const fixture = mount(draft({ category: "post" }));
   fireEvent.click(
-    await screen.findByRole("button", { name: "CRIAR ESTRATÉGIA" }),
+    await screen.findByRole("button", { name: "Criar estratégia" }),
   );
   const dialog = await screen.findByRole("dialog");
   await waitFor(() => expect(durable.requests).toHaveLength(1));

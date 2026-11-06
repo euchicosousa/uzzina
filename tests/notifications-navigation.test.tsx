@@ -660,13 +660,13 @@ it("AI processing blocks leaving and keeps the action and route", async () => {
   const router = renderApp();
   await screen.findByText("Home page");
   await openFromNotification(action);
-  await user.click(screen.getByRole("button", { name: /CRIAR ESTRATÉGIA/ }));
+  await user.click(screen.getByRole("button", { name: /Criar estratégia/i }));
   // Starting a strategy opens its progress dialog, which makes the rest of
   // the page inert. Closing it does not cancel the generation.
   const progress = await screen.findByRole("dialog");
   await user.click(within(progress).getByRole("button", { name: "Close" }));
   await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-  await screen.findByRole("button", { name: /CRIANDO ESTRATÉGIA/ });
+  await screen.findByRole("button", { name: /Criando estratégias/i });
   await seeAllNotifications();
   await screen.findByText(
     "Aguarde a geração terminar antes de trocar ou fechar a ação.",
