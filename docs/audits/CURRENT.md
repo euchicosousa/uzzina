@@ -13,7 +13,7 @@ Produção Ready em 06/11 a partir do push de `main` até `9e25ad7`, no domínio
 ### Branches de proposta: IA-M02 e DS03-E — 06/11
 
 Os dois estão fora da `main`, rebaseados sobre `e86f34a` e sem push.
-- `proposal/ia-m02-profile-tabs` (`f940af3`): Minha Conta em quatro abas PrismTabs, com um único Salvar no cabeçalho e `shouldForceMount`. Um campo inválido abre a própria aba. O envio manda só os campos alterados, comparando com os valores do carregamento, que se atualizam a cada envio. Isso preserva o que o menu e a busca gravaram. Também corrige `themeColorIndex`, que era lido de um campo inexistente. Typecheck passou e os testes deram 24/0.
+- `proposal/ia-m02-profile-tabs`: encerrado a pedido do proprietário. Minha Conta em 4 abas PrismTabs (`personal`, `appearance`, `behavior`, `ai`), salvamento parcial apenas de campos modificados, indicador de alterações não salvas por aba, componente `ProfileSetting` com badge alinhada à direita, seletor de sidebar do Instagram com mockup animado em linhas/grades, e e-mail da conta resolvido a partir da sessão de auth. Testes 4/4 e typecheck limpos.
 - `proposal/ds03-e-touch-scroll` (`7206203`): MouseSensor (distância de 8) mais TouchSensor (espera de 250 ms, tolerância de 5), e `touch-action: manipulation` fora do arraste. Assim dá para rolar com o dedo, e o arraste começa ao segurar o item. Testes 16/0. Precisa de teste num celular.
 
 - `proposal/ds05-save-icon-first` (`46c692b`): o botão Salvar da gaveta mostra o ícone antes do texto. Gaveta e nomes de controle deram 118/0.
