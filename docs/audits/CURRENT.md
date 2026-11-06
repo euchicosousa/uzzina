@@ -6,6 +6,10 @@ Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 
 
 ## Pendências reais
 
+### Merge IA-M02 e atualização da fila — 06/11
+
+IA-M02 (abas de Minha Conta) integrado à main local. Publicação informada pelo proprietário. DS04 encerrado com aceite das animações, IA-M05 em execução com Gemini e EST-03 aberto para recriar estratégias no diálogo e conferir atualização dos campos. Fila com 15 tickets. Checkout de origem do Gemini permanece separado. Testes focados de perfil: 4 passaram.
+
 ### Novo levantamento — 06/11
 
 Tracker e central atualizados para 15 tickets ativos. IA-M02 encerrado no branch `proposal/ia-m02-profile-tabs` em `7e09a6d`; implementação em `88630f5`. O branch registra typecheck e 4 testes passando. Merge e publicação pendentes. DS01 permanece encerrado com aceite. IA-M05, DS03, DS04, DS05 e T01–T11 seguem na fila. Conferência documental e de referências, sem reexecutar testes.

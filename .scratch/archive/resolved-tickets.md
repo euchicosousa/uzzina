@@ -8252,7 +8252,7 @@ Encerrado em 06/11/2026 com aceite integral do proprietário. [Registro dos lote
 
 ## IA-M02 — Minha Conta em abas
 
-Encerramento registrado no branch `proposal/ia-m02-profile-tabs` em `7e09a6d`, com implementação em `88630f5`. Inclui quatro abas, indicador de alterações não salvas e envio parcial de preferências. O branch registra typecheck e 4 testes passando. Merge e publicação pendentes.
+Encerramento registrado no branch `proposal/ia-m02-profile-tabs` em `7e09a6d`, com implementação em `88630f5`. Inclui quatro abas, indicador de alterações não salvas e envio parcial de preferências. O branch registra typecheck e 4 testes passando. Merge local em 06/11. Publicação confirmada pelo proprietário.
 
 
 ## DS04 — Microinterações

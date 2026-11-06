@@ -6,7 +6,7 @@ Atualizado em 06/11/2026. **15 tickets mantidos para execução, conferência ou
 
 Ao criar um ticket ou mudar seu escopo, inclua as três opções da seção `Modelos sugeridos` conforme o [guia de agentes](../AGENTS.md#recomendações-de-agentes-nos-tickets).
 
-**Integração pendente fora da fila de execução.** IA-M02 foi encerrado no branch de proposta em `7e09a6d`; merge na main e publicação ainda pendentes.
+**IA-M02 encerrado.** Abas de Minha Conta publicadas conforme confirmação do proprietário e integradas à main local em 06/11.
 
 | Série                       | Ticket                                                                                                                            | O que falta                                                                                                                                                                                |
 | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

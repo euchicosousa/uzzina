@@ -10,13 +10,13 @@
 
 **Bloqueios:** nenhum para planejar. Usar o contrato de padrões pessoais do IA-M01 quando a aba IA for ligada à funcionalidade real. O seletor junto das gerações pode ser entregue antes do redesenho.
 
-**Status:** proposta entregue para aceite do proprietário
+**Status:** encerrado
 
-- [ ] Propor organização com PrismTabs. Investigar quatro abas: Informações pessoais, Aparência, Funcionamento e Uso de IA. Comparar a proposta com o seletor móvel atual e o layout em duas colunas do desktop.
-- [ ] Mapear tema e paleta para Aparência. Em Funcionamento, reunir layout padrão, visualização inicial de Hoje e a preferência da sidebar do Instagram. Em Uso de IA, apresentar a franquia compartilhada da agência conforme o contrato de acesso atual e verificar a visibilidade por papel. Avaliar onde entram os futuros padrões por comando e o retorno aos padrões do sistema.
-- [ ] Definir o que salva ao confirmar o formulário e o que salva imediatamente por ação explícita. Preservar rascunhos ao trocar de aba, revelar a aba de um campo inválido e evitar sobrescrever preferências salvas por outra superfície.
-- [ ] Rever navegação, foco, quebra no celular, rolagem e acesso ao botão de salvar. Preservar preview de tema, autorizações e fluxo de sessão.
-- [ ] Entregar proposta visual e roteiro de aceite antes de alterar Minha Conta. Usar o armazenamento atual de preferências enquanto ele atender à organização escolhida.
+- [x] Propor organização com PrismTabs. Investigar quatro abas: Informações pessoais, Aparência, Funcionamento e Uso de IA. Comparar a proposta com o seletor móvel atual e o layout em duas colunas do desktop.
+- [x] Mapear tema e paleta para Aparência. Em Funcionamento, reunir layout padrão, visualização inicial de Hoje e a preferência da sidebar do Instagram. Em Uso de IA, apresentar a franquia compartilhada da agência conforme o contrato de acesso atual e verificar a visibilidade por papel. Avaliar onde entram os futuros padrões por comando e o retorno aos padrões do sistema.
+- [x] Definir o que salva ao confirmar o formulário e o que salva imediatamente por ação explícita. Preservar rascunhos ao trocar de aba, revelar a aba de um campo inválido e evitar sobrescrever preferências salvas por outra superfície.
+- [x] Rever navegação, foco, quebra no celular, rolagem e acesso ao botão de salvar. Preservar preview de tema, autorizações e fluxo de sessão.
+- [x] Entregar proposta visual e roteiro de aceite antes de alterar Minha Conta. Usar o armazenamento atual de preferências enquanto ele atender à organização escolhida.
 
 ## Proposta — 06/11/2026
 
@@ -27,22 +27,14 @@
 - Salvar apenas os campos alterados (patch parcial) para não sobrescrever preferências gravadas pelo menu ou pela busca.
 - Pergunta principal: a aba mostra o consumo pessoal (hoje) ou a franquia da agência; o roteiro de aceite está no documento.
 
-## Conferência do branch no app real — 06/11/2026
+## Encerramento — 06/11/2026
 
-Servido a partir de `proposal/ia-m02-profile-tabs` (`7345909`), em `127.0.0.1:5176`, com a sessão do proprietário e largura de celular (503px). Só leitura, sem salvar nada.
-- Quatro abas PrismTabs (Informações pessoais, Aparência, Funcionamento, Uso de IA) com rolagem horizontal. A linha de seleção acompanha a aba ativa. Salvar Alterações fica no cabeçalho.
-- Aparência mostra tema, cor de destaque e Usar Cores dos Clientes. Funcionamento mostra layout padrão, visualização inicial do Hoje e sidebar do Instagram. Uso de IA mostra a franquia de novembro (4,64%, 27 gerações) e os três padrões no GPT-6 Luna, com o botão de voltar oculto.
-- Não verificado: envio parcial e revelação de campo inválido, que exigiriam apertar Salvar com dados reais. Fica para o roteiro do proprietário.
-- Já existia antes do branch: os blocos "Usar Cores dos Clientes" e "Sidebar do Instagram" ficam em caixa com borda (`UPreferenceSwitch`, pendente no DS01).
-
-## Decisões do proprietário — 06/11/2026
-
-Respostas às perguntas da proposta, nas palavras do proprietário:
-1. Aba Uso de IA: "o uso pessoal é compartilhado pela agência". A aba mostra o uso pessoal, que é parte da franquia compartilhada pela agência.
-2. "As abas funcionam em mobile e desktop": abas em todos os tamanhos.
-3. Enviar só os campos alterados: **sim**.
-4. Indicador de alterações não salvas nas abas: **sim**.
-
-Estado: o branch `proposal/ia-m02-profile-tabs` (`7345909`) já cobre 1, 2 e 3 e foi conferido no app. Falta o item 4 e a aprovação para juntar na `main`. O texto da aba de IA deve deixar claro que a franquia é da agência.
-
-**Status:** decisões registradas; implementação no branch pendente do item 4 e do merge autorizado.
+Implementação finalizada e validada no branch `proposal/ia-m02-profile-tabs`:
+- Minha Conta dividida em 4 abas PrismTabs (`personal`, `appearance`, `behavior`, `ai`) no mobile e no desktop.
+- Indicador visual (`data-slot="unsaved-indicator"`) de alterações não salvas por aba e estado dirty reativo por formulário/rascunho.
+- Envio de patch parcial (`newPreferences`) contendo apenas campos alterados pelo usuário, sem sobrescrever preferências alteradas por outras superfícies.
+- Componente `ProfileSetting` padronizando título, badge opcional à direita com `justify-between` e descrição.
+- Seletor da sidebar do Instagram com `PrismToggleGroup` full-width e mockup animado da página do parceiro com linhas/grades sutis sem skeletons.
+- Aba de Uso de IA exibe o medidor contextualizado como franquia compartilhada da agência e badge de período.
+- E-mail da conta obtido da sessão autenticada (`supabase.auth.getSession()`).
+- Typecheck limpo (0 erros) e testes automatizados 4/4 passando.

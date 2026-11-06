@@ -2,7 +2,7 @@
 
 Atualizado em 06/11/2026. **15 tickets ativos.** A fila abaixo espelha o tracker principal. Produção registrada em `a6a056c`. A rodada posterior está na main local e nos branches de proposta. Encerramentos com aceite e a revisão por rota do DS02 estão no histórico.
 
-**Integração pendente fora da fila de execução.** IA-M02 foi encerrado no branch de proposta em `7e09a6d`; merge na main e publicação ainda pendentes.
+**IA-M02 encerrado.** Abas de Minha Conta publicadas conforme confirmação do proprietário e integradas à main local em 06/11.
 
 | Nº | Série | Ticket | Próximo passo |
 | --- | --- | --- | --- |

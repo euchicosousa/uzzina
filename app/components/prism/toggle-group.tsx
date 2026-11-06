@@ -12,6 +12,7 @@ interface ToggleGroupContextValue extends VariantProps<typeof toggleVariants> {
   spacing?: number;
   orientation?: "horizontal" | "vertical";
   attached?: boolean;
+  fullWidth?: boolean;
 }
 
 const ToggleGroupContext = createContext<ToggleGroupContextValue>({
@@ -20,6 +21,7 @@ const ToggleGroupContext = createContext<ToggleGroupContextValue>({
   spacing: 2,
   orientation: "horizontal",
   attached: false,
+  fullWidth: false,
 });
 
 export interface ToggleGroupProps
@@ -28,6 +30,7 @@ export interface ToggleGroupProps
     VariantProps<typeof toggleVariants> {
   spacing?: number;
   orientation?: "horizontal" | "vertical";
+  fullWidth?: boolean;
   attached?: boolean;
   children?: React.ReactNode;
 }
@@ -40,12 +43,14 @@ function ToggleGroup({
   orientation = "horizontal",
   attached = false,
   children,
+  fullWidth = false,
   ...props
 }: ToggleGroupProps) {
   return (
     <ToggleGroupPrimitive
       className={cn(
-        "group/toggle-group flex w-fit max-w-full",
+        "group/toggle-group flex max-w-full",
+        fullWidth && "w-full",
         orientation === "vertical"
           ? "flex-col items-stretch data-vertical:flex-col data-vertical:items-stretch"
           : "flex-row items-center",
@@ -75,6 +80,7 @@ function ToggleGroup({
           spacing: attached ? 0 : spacing,
           orientation,
           attached,
+          fullWidth,
         }}
       >
         {children}
@@ -86,6 +92,7 @@ function ToggleGroup({
 export interface ToggleGroupItemProps
   extends ToggleButtonProps, VariantProps<typeof toggleVariants> {
   attached?: boolean;
+  fullWidth?: boolean;
 }
 
 function ToggleGroupItem({
@@ -94,12 +101,14 @@ function ToggleGroupItem({
   variant,
   size,
   attached,
+  fullWidth,
   ...props
 }: ToggleGroupItemProps) {
   const context = useContext(ToggleGroupContext);
   const effectiveVariant = variant ?? context.variant ?? "default";
   const effectiveSize = size ?? context.size ?? "default";
   const isAttached = attached ?? context.attached ?? false;
+  const isFullWidth = fullWidth ?? context.fullWidth ?? false;
   const isVertical = context.orientation === "vertical";
 
   const isSm =
@@ -138,12 +147,14 @@ function ToggleGroupItem({
   return (
     <PrismToggle
       className={cn(
-        !hasCustomFlex && "shrink-0",
+        !hasCustomFlex && (isFullWidth ? "flex-1" : "shrink-0"),
+        isFullWidth && "w-full",
         "min-w-0",
         attachedClasses,
         className,
       )}
       data-attached={isAttached ? "true" : undefined}
+      data-full-width={isFullWidth ? "true" : undefined}
       data-size={effectiveSize}
       data-slot="toggle-group-item"
       data-spacing={isAttached ? 0 : context.spacing}
