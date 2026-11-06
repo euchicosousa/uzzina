@@ -57,3 +57,7 @@
 - Relatório T03-evidence.md no formato do README, com cada ID de teste e evidência.
 - Alterações formatadas e verificações pertinentes, sem escrever “concluído” com critério pendente.
 - CURRENT atualizado apenas com fatos observados. Não alterar status de outros tickets, SQL remoto ou deploy por inferência.
+
+## Evidência do DS02 — 06/11
+
+Em Chromium local com HTTP controlado, abrir Planejamento com e sem parceiro em 390 e 1440 px, atrasando uma resposta válida de celebrações em 1,2 s, reproduziu `Maximum update depth exceeded`. Conferir a referência vazia recriada durante a consulta e o efeito que atualiza a seleção mesmo vazia. Reproduzir com resposta pendente e confirmar que o formulário continua utilizável após a chegada da resposta. [Relatório DS02](../../../docs/audits/2026-11-05-ds02-route-review.md).

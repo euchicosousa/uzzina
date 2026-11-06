@@ -43,7 +43,13 @@ function AdminCelebrationsPage() {
   const queryClient = useQueryClient();
   const [editingCelebration, setEditingCelebration] =
     useState<Celebration | null>(null);
-  const { data: celebrations = [] } = useQuery({
+  const {
+    data: celebrations = [],
+    isLoading,
+    isError,
+    isSuccess,
+    refetch,
+  } = useQuery({
     queryKey: ["celebrations", "team", person.user_id],
     queryFn: () => getAllCelebrations(supabase),
   });
@@ -159,12 +165,33 @@ function AdminCelebrationsPage() {
         <AppBarSpacer className="hidden md:block" />
       </div>
 
-      <CelebrationsList
-        celebrations={celebrations}
-        isSubmitting={isSubmitting}
-        onDelete={(id) => deleteMutation.mutate(id)}
-        onEdit={setEditingCelebration}
-      />
+      {isLoading ? (
+        <p
+          className="p-8 text-center text-sm text-muted-foreground"
+          role="status"
+        >
+          Carregando datas comemorativas…
+        </p>
+      ) : isError ? (
+        <div
+          className="flex w-full flex-col items-center justify-center gap-3 p-8"
+          role="alert"
+        >
+          <p className="text-sm text-error-foreground">
+            Não foi possível carregar as datas comemorativas.
+          </p>
+          <PrismButton onPress={() => void refetch()} size="sm">
+            Tentar novamente
+          </PrismButton>
+        </div>
+      ) : isSuccess ? (
+        <CelebrationsList
+          celebrations={celebrations}
+          isSubmitting={isSubmitting}
+          onDelete={(id) => deleteMutation.mutate(id)}
+          onEdit={setEditingCelebration}
+        />
+      ) : null}
       {editingCelebration && (
         <CelebrationDialog
           key={editingCelebration.id}

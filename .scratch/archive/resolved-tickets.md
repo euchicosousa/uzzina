@@ -8227,3 +8227,7 @@ A investigação mais ampla de personalizações permanece no V44. Sem commit/pu
 ## V44 — Estudo de componentes personalizados e Prism
 
 Encerrado com aceite em 05/11/2026. [Estudo e histórico dos lotes](../visual-controls/issues/44-audit-custom-components-for-prism.md). A execução segue no [DS01](../design-system-audit/issues/01-audit-visual-deviations.md).
+
+## DS02 — Revisão por rota do design system
+
+Encerrado como revisão em 06/11/2026. [Relatório, correções e limites](../../docs/audits/2026-11-05-ds02-route-review.md). Falha de Planejamento encaminhada ao [T03](../social-planning-recovery/issues/03-normalized-input.md).

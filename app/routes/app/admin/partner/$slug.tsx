@@ -385,6 +385,7 @@ function AdminPartnerEditPage() {
         {/* Avatar / UploadIcon Widget */}
         <div className="flex items-center gap-6">
           <CloudinaryUpload
+            aria-label="Alterar imagem do parceiro"
             variant="ghost"
             className="group relative -ml-1 size-24 shrink-0 overflow-hidden rounded-full transition no-squircle hover:opacity-90"
             cloudName={appData.cloudName}

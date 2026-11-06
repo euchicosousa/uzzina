@@ -61,6 +61,7 @@ interface CloudinaryUploadProps {
     },
   ) => void;
   children: React.ReactNode;
+  "aria-label"?: string;
   className?: string;
   variant?: NonNullable<PrismButtonVariantProps["variant"]>;
   size?: NonNullable<PrismButtonVariantProps["size"]>;
@@ -75,6 +76,7 @@ export function CloudinaryUpload({
   outputWidth = 800,
   onUpload,
   children,
+  "aria-label": ariaLabel,
   className,
   variant = "secondary",
   size = "xs",
@@ -242,6 +244,7 @@ export function CloudinaryUpload({
   }
   return (
     <PrismButton
+      aria-label={ariaLabel}
       className={className}
       onClick={openWidget}
       size={size}

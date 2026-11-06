@@ -11,6 +11,7 @@ import type { Partner } from "~/types";
 import { buttonVariants } from "~/components/prism/button";
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { AdminGuard } from "~/components/features/AdminGuard";
+import { PrismButton } from "~/components/prism";
 export const Route = createFileRoute("/app/admin/partners")({
   component: AdminPartnersPageWrapper,
 });
@@ -25,17 +26,41 @@ function AdminPartnersPageWrapper() {
 function AdminPartnersPage() {
   const { person } = useAppContext();
   const supabase = createSupabaseBrowserClient();
-  const { data: partners = [], isLoading } = useQuery({
+  const {
+    data: partners = [],
+    isLoading,
+    isError,
+    isSuccess,
+    refetch,
+  } = useQuery({
     queryKey: QUERY_KEYS.adminPartners(person.user_id),
     queryFn: () => getAllPartners(supabase),
   });
   if (isLoading) {
     return (
-      <div className="flex h-full min-h-75 w-full items-center justify-center gap-4 bg-background p-8">
+      <div
+        className="flex h-full min-h-75 w-full items-center justify-center gap-4 bg-background p-8"
+        role="status"
+      >
         <ULoader size="2xl" className="text-primary" />
         <p className="animate-pulse text-sm font-medium text-muted-foreground">
           Carregando parceiros...
         </p>
+      </div>
+    );
+  }
+  if (isError) {
+    return (
+      <div
+        className="flex h-full min-h-75 w-full flex-col items-center justify-center gap-3 bg-background p-8"
+        role="alert"
+      >
+        <p className="text-sm text-error-foreground">
+          Não foi possível carregar os parceiros.
+        </p>
+        <PrismButton onPress={() => void refetch()} size="sm">
+          Tentar novamente
+        </PrismButton>
       </div>
     );
   }
@@ -66,7 +91,11 @@ function AdminPartnersPage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+      {isSuccess && partners.length === 0 && (
+        <p className="text-muted-foreground">Nenhum parceiro cadastrado.</p>
+      )}
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {activePartners.map((partner) => (
           <UAdminItemCard
             key={partner.id}
@@ -90,7 +119,7 @@ function AdminPartnersPage() {
           <div>
             <h2 className="mt-8 text-2xl font-bold">Parceiros Arquivados</h2>
           </div>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {archivedPartners.map((partner) => (
               <UAdminItemCard
                 key={partner.id}

@@ -1,4 +1,5 @@
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
+import { PrismButton } from "~/components/prism";
 import { useAppContext } from "~/contexts/AppContext";
 import { UserPlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -19,7 +20,13 @@ function AdminUsersPageWrapper() {
 }
 function AdminUsersPage() {
   const { person } = useAppContext();
-  const { data: people = [] } = useQuery({
+  const {
+    data: people = [],
+    isLoading,
+    isError,
+    isSuccess,
+    refetch,
+  } = useQuery({
     queryKey: QUERY_KEYS.peopleAdmin(person.user_id),
     queryFn: fetchAllPeople,
   });
@@ -50,18 +57,43 @@ function AdminUsersPage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-        {activePeople.map((person) => (
-          <UserItem key={person.id} person={person} />
-        ))}
-      </div>
+      {isLoading ? (
+        <p
+          className="p-8 text-center text-sm text-muted-foreground"
+          role="status"
+        >
+          Carregando usuários…
+        </p>
+      ) : isError ? (
+        <div className="flex flex-col items-center gap-3 p-8" role="alert">
+          <p className="text-sm text-error-foreground">
+            Não foi possível carregar os usuários.
+          </p>
+          <PrismButton onPress={() => void refetch()} size="sm">
+            Tentar novamente
+          </PrismButton>
+        </div>
+      ) : (
+        isSuccess &&
+        people.length === 0 && (
+          <p className="text-muted-foreground">Nenhum usuário cadastrado.</p>
+        )
+      )}
 
-      {archivedPeople.length > 0 && (
+      {!isLoading && !isError && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {activePeople.map((person) => (
+            <UserItem key={person.id} person={person} />
+          ))}
+        </div>
+      )}
+
+      {!isLoading && !isError && archivedPeople.length > 0 && (
         <>
           <div>
             <h2 className="mt-8 text-2xl font-bold">Usuários Arquivados</h2>
           </div>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {archivedPeople.map((person) => (
               <UserItem key={person.id} person={person} />
             ))}

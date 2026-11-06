@@ -437,6 +437,7 @@ function DashActionDetail({ actionId }: { actionId: string }) {
 
               {workFiles.length > 0 && (
                 <PrismButton
+                  aria-label={`Gerenciar arquivos, ${workFiles.length} arquivo${workFiles.length !== 1 ? "s" : ""}`}
                   isDisabled={updateWorkFilesMutation.isPending}
                   onPress={() => setWorkFilesOpen(true)}
                   size="xs"
