@@ -96,10 +96,12 @@ describe("brand web font in the production build", () => {
     }
   });
 
-  test("system sans fallback stays after the brand family", () => {
+  // Since ad0c0ed (01/11) the brand family is commented out on purpose so the
+  // app uses the system sans stack; index.html also keeps its stylesheet off.
+  test("font stack uses the system sans while the brand family is disabled", () => {
     const css = readFileSync(join(process.cwd(), "app/tailwind.css"), "utf8");
     expect(css).toMatch(
-      /--font-sans:\s*"PP Object Sans",\s*ui-sans-serif,\s*system-ui,\s*sans-serif/,
+      /--font-sans:\s*\/\*\s*"PP Object Sans",\s*\*\/\s*ui-sans-serif,\s*system-ui,\s*sans-serif/,
     );
   });
 });

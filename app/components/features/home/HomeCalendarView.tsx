@@ -77,7 +77,7 @@ export function HomeCalendarView({
             selectionMode="single"
             size="sm"
           >
-            <PrismToggleGroupItem id="week">
+            <PrismToggleGroupItem id="week" aria-label="Semana">
               <span className="hidden md:block">Semana</span>
               <span className="md:hidden">Sem</span>
             </PrismToggleGroupItem>
