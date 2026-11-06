@@ -4,8 +4,9 @@
     {
       "name": "uzzina-dev",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["node_modules/vite/bin/vite.js", "--mode", "staging", "--port", "5173", "--strictPort"],
-      "port": 5173
+      "runtimeArgs": ["scripts/dev-server.cjs"],
+      "port": 5176,
+      "url": "http://127.0.0.1:5176"
     },
     {
       "name": "uzzina-staging-check",
