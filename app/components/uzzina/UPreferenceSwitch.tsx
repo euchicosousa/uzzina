@@ -18,13 +18,9 @@ export function UPreferenceSwitch({
 }: PreferenceSwitchProps) {
   return (
     <div
-      className={cn(
-        "flex items-center justify-between rounded-2xl border p-4 transition-all duration-200 squircle",
-        checked
-          ? "border-primary bg-primary/5 text-foreground"
-          : "border-border bg-card/25 text-muted-foreground",
-        className,
-      )}
+      // Flows on the page background (no card box), per the surfaces rule;
+      // the toggle carries the on/off state.
+      className={cn("flex items-center justify-between gap-4", className)}
     >
       <div className="flex flex-col gap-0.5">
         <PrismLabel

@@ -113,3 +113,7 @@ Roteiro: abrir a busca e conferir a altura dos itens e o Shift+Enter; olhar o si
 - **Testes:** gaveta, IA, estratégias e nomes de controle deram 138 pass e 14 fail, com e sem a mudança. As 14 falhas são as já conhecidas do `drawer-component`.
 
 O rodapé, os combobox e o RichTextEditor ficaram de fora por dependerem de decisão do proprietário.
+
+## UPreferenceSwitch sem caixa — 06/11/2026
+
+`UPreferenceSwitch` perdeu a moldura (`rounded-2xl border p-4` e fundo por estado), conforme a regra de superfícies; o estado fica só no botão Ativo/Inativo. Conferido em Minha Conta no app real. Typecheck passou e os testes de perfil e Hoje deram 16/0.
