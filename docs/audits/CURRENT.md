@@ -6,6 +6,10 @@ Produção Ready em 06/11 a partir do push de `main` até `9e25ad7`, no domínio
 
 ## Pendências reais
 
+### DS03-A/B, DS05 e DS04: primeiras correções — 06/11
+
+Commit `2422abe`, local. O título do item de ação seleciona em vez de editar no modo seleção. Durante a edição, teclas e ponteiro não chegam mais ao arraste do dnd-kit. Os botões de criação, a AppBar e a redefinição de senha agora põem o ícone antes do texto, sem margens manuais. Os botões de sugestão do Planejamento usam o texto visível como nome acessível. Foram criados os tokens `duration-motion-*`/`ease-motion-*`; no Tailwind 4.3 a duração usa o namespace `--transition-duration-*`. Alterar Data e Hora expande por `grid-rows` com `motion-reduce`. Typecheck e `icon-control-names` passaram. Falta conferir no navegador, seguindo os roteiros nos tickets DS03, DS04 e DS05.
+
 ### Investigações IA-M02, IA-M05, DS03, DS04 e DS05 — 06/11
 
 Cinco subagentes (Sonnet; Haiku no DS04) entregaram relatórios só por leitura de código. Não houve navegador, banco nem geração. Os achados principais foram conferidos no código. Nada de código mudou e tudo aguarda decisão do proprietário.
