@@ -42,3 +42,11 @@ Roteiro manual para o proprietário:
 1. Abra o diálogo Alterar Data e Hora a partir da seleção em lote.
 2. Marque e desmarque Mudar Data e depois Mudar Hora. Cada bloco deve abrir um pouco mais devagar que fechar, sem cortar conteúdo nem pular. Com o bloco fechado, Tab não deve entrar nele.
 3. No macOS, ative Ajustes > Acessibilidade > Monitor > Reduzir movimento e repita o passo 2. A troca deve ser imediata, sem animação, e terminar no mesmo estado.
+
+## Overlays animados — 06/11/2026
+
+As classes `animate-in`, `zoom-in-95` e `fade-*` do Prism não faziam nada, porque o plugin nunca existiu. Foram trocadas por animações CSS próprias, sem dependência nova, ligadas a `data-entering`/`data-exiting` do React Aria: `animate-overlay-pop-in/out` (fade e escala a partir de 0,96) no popover, select, combobox, menu e conteúdo do diálogo, e `animate-overlay-fade-in/out` no fundo do diálogo. A entrada leva 200 ms com a curva padrão e a saída 150 ms com a curva de saída; em todos os casos vale `motion-reduce:animate-none`. Saíram as regras `[data-state]` de `tailwind.css` (1000/500 ms), que o React Aria nunca ativa. O deslize conforme a posição também saiu: agora é só fade e escala.
+
+Verificação: 105 pass e 0 fail em 8 arquivos de overlays. No navegador local, em `/ui`, o popover abriu com `overlay-pop-in` 0,2 s e fechou com `overlay-pop-out` 0,15 s. O diálogo animou o fundo e o conteúdo e desmontou depois da saída, sem erros de console.
+
+Roteiro: abrir e fechar o seletor de parceiros, o menu do perfil, a busca e um diálogo; depois ativar "Reduzir movimento" no sistema e conferir que nada anima.

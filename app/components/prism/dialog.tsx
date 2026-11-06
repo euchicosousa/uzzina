@@ -46,7 +46,7 @@ function DialogOverlay({
   return (
     <ModalOverlayPrimitive
       className={cn(
-        "data-entering:animate-in data-entering:fade-in-0 data-exiting:animate-out data-exiting:fade-out-0 fixed inset-0 isolate z-50 bg-black/30 duration-100 supports-backdrop-filter:backdrop-blur-sm",
+        "fixed inset-0 isolate z-50 bg-black/30 data-entering:animate-overlay-fade-in data-exiting:animate-overlay-fade-out supports-backdrop-filter:backdrop-blur-sm motion-reduce:animate-none",
         className,
       )}
       data-slot="dialog-overlay"
@@ -122,7 +122,7 @@ function DialogFrame({
     >
       <ModalPrimitive
         className={cn(
-          "data-entering:animate-in data-entering:fade-in-0 data-entering:zoom-in-95 data-exiting:animate-out data-exiting:fade-out-0 data-exiting:zoom-out-95 pointer-events-auto relative z-50 grid max-h-full w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-2xl border border-foreground/5 bg-popover text-sm text-popover-foreground shadow-lg duration-100 outline-none squircle sm:w-full dark:border-foreground/10",
+          "pointer-events-auto relative z-50 grid max-h-full w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-2xl border border-foreground/5 bg-popover text-sm text-popover-foreground shadow-lg outline-none squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out motion-reduce:animate-none sm:w-full dark:border-foreground/10",
           dialogWidths[size],
           className,
         )}
