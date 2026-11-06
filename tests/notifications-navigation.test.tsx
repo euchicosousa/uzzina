@@ -6,6 +6,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
@@ -660,6 +661,11 @@ it("AI processing blocks leaving and keeps the action and route", async () => {
   await screen.findByText("Home page");
   await openFromNotification(action);
   await user.click(screen.getByRole("button", { name: /CRIAR ESTRATÉGIA/ }));
+  // Starting a strategy opens its progress dialog, which makes the rest of
+  // the page inert. Closing it does not cancel the generation.
+  const progress = await screen.findByRole("dialog");
+  await user.click(within(progress).getByRole("button", { name: "Close" }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   await screen.findByRole("button", { name: /CRIANDO ESTRATÉGIA/ });
   await seeAllNotifications();
   await screen.findByText(

@@ -473,7 +473,7 @@ it("social actions include color before save and skip sprint and destructive com
   for (let step = 0; step < 5; step++) await user.tab();
   expect(
     document.activeElement ===
-      screen.getByRole("button", { name: "Abrir seletor de cores" }),
+      screen.getByRole("button", { name: "Seletor de cor" }),
   ).toBe(true);
   await user.tab();
   expect(
@@ -483,7 +483,7 @@ it("social actions include color before save and skip sprint and destructive com
   await user.tab({ shift: true });
   expect(
     document.activeElement ===
-      screen.getByRole("button", { name: "Abrir seletor de cores" }),
+      screen.getByRole("button", { name: "Seletor de cor" }),
   ).toBe(true);
 });
 
@@ -534,14 +534,17 @@ it("Alt+F10 keeps every auxiliary control reachable with ordinary Tab", async ()
   expect(document.activeElement === responsibles).toBe(true);
   expect(responsibles.textContent).toContain("Responsáveis");
   expect(responsibles.hasAttribute("data-focus-visible")).toBe(true);
-  await user.tab();
-  expect(
-    document.activeElement ===
-      screen.getByRole("button", { name: "Alternar exibição do ID da ação" }),
-  ).toBe(true);
   await user.keyboard("{Alt>}{F10}{/Alt}");
   await user.tab();
   expect(document.activeElement === editor).toBe(true);
+  // The admin ID command moved to the footer; all-controls mode still reaches it.
+  await user.keyboard("{Alt>}{F10}{/Alt}");
+  const idCommand = screen.getByRole("button", { name: "Ver ID da ação" });
+  for (let step = 0; step < 15; step++) {
+    if (document.activeElement === idCommand) break;
+    await user.tab();
+  }
+  expect(document.activeElement === idCommand).toBe(true);
 });
 
 it("a draft keeps title autofocus and reaches Create without a color field", async () => {
@@ -583,7 +586,7 @@ it("the date calendar and time segments keep their own Tab navigation", async ()
   let closed = 0;
   mount(draft({ description: "<p></p>" }), () => closed++);
   await descriptionEditor();
-  const trigger = screen.getByRole("button", { name: /outubro às 10h/ });
+  const trigger = screen.getByRole("button", { name: "Data e hora da ação" });
   const user = userEvent.setup();
   await user.click(trigger);
   const popup = await waitFor(() => {
@@ -855,9 +858,12 @@ it("replacing an action uses its real leave guard before mounting the next one",
 it("the panel owns width changes without remounting the form", async () => {
   mount(draft({ category: "post", partners: [] }));
   const form = screen.getByRole("region", { name: "Edição da ação" });
-  fireEvent.change(screen.getByRole("textbox", { name: "Título da ação" }), {
+  const title = screen.getByRole("textbox", { name: "Título da ação" });
+  fireEvent.change(title, {
     target: { value: "Title retained across views" },
   });
+  // Typing stays local to the field until blur; pressing a tab blurs it.
+  fireEvent.blur(title);
   const panel = document.querySelector("[data-action-panel]");
   expect(panel?.className).toContain("lg:w-2xl");
   fireEvent.click(screen.getByRole("tab", { name: "INSTAGRAM" }));
@@ -932,9 +938,10 @@ it("edits made during INSERT survive its response and reach UPDATE", async () =>
   );
   fireEvent.click(screen.getByRole("button", { name: "Criar" }));
   await waitFor(() => expect(writes.length).toBe(1));
-  fireEvent.change(screen.getByRole("textbox", { name: "Título da ação" }), {
-    target: { value: "Latest title" },
-  });
+  const title = screen.getByRole("textbox", { name: "Título da ação" });
+  fireEvent.change(title, { target: { value: "Latest title" } });
+  // Plain text enters the action on blur; the edit lands while INSERT is open.
+  fireEvent.blur(title);
   delay = false;
   await act(async () => {
     resolveWrite?.({ data: { ...action, title: "First title" }, error: null });
@@ -1753,7 +1760,27 @@ describe("phone-width action panel", () => {
   // Visible area of the Instagram tab's scroll region, when a test lays it out.
   let instagramScrollerRect: DOMRect | null = null;
   let essentialScrollerRect: DOMRect | null = null;
+  // jsdom's style objects inherit maskImage from cssstyle, so wrap it on the
+  // nearest prototype and delegate to the inherited accessor.
+  const stylePrototype = Object.getPrototypeOf(
+    window.document.createElement("div").style,
+  );
+  const inheritedMask = Object.getOwnPropertyDescriptor(
+    Object.getPrototypeOf(stylePrototype),
+    "maskImage",
+  );
+  const assignedMasks = new WeakMap<object, string>();
   beforeEach(() => {
+    Object.defineProperty(stylePrototype, "maskImage", {
+      configurable: true,
+      get() {
+        return inheritedMask?.get?.call(this);
+      },
+      set(this: object, value: string) {
+        assignedMasks.set(this, value);
+        inheritedMask?.set?.call(this, value);
+      },
+    });
     panelWidth = 390;
     instagramScrollerRect = null;
     essentialScrollerRect = null;
@@ -1790,6 +1817,7 @@ describe("phone-width action panel", () => {
     });
   });
   afterEach(() => {
+    Reflect.deleteProperty(stylePrototype, "maskImage");
     if (previousRect)
       Object.defineProperty(
         elementPrototype,
@@ -1847,16 +1875,21 @@ describe("phone-width action panel", () => {
       },
     });
   }
+  // The strip fades a side with a CSS mask (no overlay elements): a
+  // transparent stop at an end marks hidden content on that side. jsdom's
+  // cssstyle rejects gradients with calc(), so the raw assigned value is
+  // captured by the beforeEach wrapper instead of read back from style.
   function fades(strip: HTMLElement) {
-    const overlays = strip.parentElement?.querySelectorAll(
-      ":scope > [data-strip-fade]",
-    );
-    return [...(overlays ?? [])].map((overlay) => {
-      // Decorative only: hidden from assistive tech and never holds controls.
-      expect(overlay.getAttribute("aria-hidden")).toBe("true");
-      expect(overlay.childElementCount).toBe(0);
-      return overlay.getAttribute("data-strip-fade");
-    });
+    const mask = assignedMasks.get(strip.style) ?? "";
+    if (!mask) return [];
+    const stops = mask
+      .replace(/^linear-gradient\(to right,\s*/, "")
+      .split(",")
+      .map((stop) => stop.trim());
+    const sides: string[] = [];
+    if (stops[0] === "transparent") sides.push("start");
+    if (stops.at(-1)?.startsWith("transparent")) sides.push("end");
+    return sides;
   }
 
   it("collapses metadata to the date and an expand control without visible labels", async () => {
@@ -1864,7 +1897,8 @@ describe("phone-width action panel", () => {
     await descriptionEditor();
     const expand = screen.getByRole("button", { name: "Detalhes da ação" });
     expect(expand.getAttribute("aria-expanded")).toBe("false");
-    const date = screen.getByRole("button", { name: /outubro às 10h/ });
+    const date = screen.getByRole("button", { name: "Data e hora da ação" });
+    expect(date.textContent).toMatch(/outubro às 10h/);
     const summary = expand.parentElement;
     if (!summary) throw new Error("Summary did not render");
     expect(summary.contains(date)).toBe(true);
@@ -1873,9 +1907,6 @@ describe("phone-width action panel", () => {
     expect(screen.queryByText(/Mais detalhes/)).toBeNull();
     expect(screen.queryByRole("img", { name: /arquivos/ })).toBeNull();
     expect(screen.queryByRole("button", { name: "Responsáveis" })).toBeNull();
-    expect(
-      screen.queryByRole("button", { name: "Alternar exibição do ID da ação" }),
-    ).toBeNull();
     expect(writes).toEqual([]);
   });
 
@@ -1896,7 +1927,7 @@ describe("phone-width action panel", () => {
     expect(summary?.contains(indicator)).toBe(true);
     // No file count or label next to the date.
     expect(summary?.textContent).toBe(
-      screen.getByRole("button", { name: /outubro às 10h/ }).textContent,
+      screen.getByRole("button", { name: "Data e hora da ação" }).textContent,
     );
   });
 
@@ -1929,29 +1960,27 @@ describe("phone-width action panel", () => {
     await user.click(expand);
     expect(expand.getAttribute("aria-expanded")).toBe("true");
     const responsibles = screen.getByRole("button", { name: "Responsáveis" });
-    const idToggle = screen.getByRole("button", {
-      name: "Alternar exibição do ID da ação",
-    });
+    // The ID command now lives in the footer strip (admin only), not in the
+    // collapsible details, and opens a dialog instead of toggling inline.
+    const idCommand = screen.getByRole("button", { name: "Ver ID da ação" });
+    expect(details.contains(idCommand)).toBe(false);
     expect(screen.getByRole("button", { name: /ESTRATÉGIA/ })).toBeTruthy();
     expect(
       screen.getByRole("button", { name: /Adicionar arquivo/ }),
     ).toBeTruthy();
     const expanded = await visitUntilEditor();
     expect(expanded.includes(responsibles)).toBe(true);
-    expect(expanded.includes(idToggle)).toBe(true);
 
-    // Collapsing keeps the same mounted controls and their local state.
-    await user.click(idToggle);
-    expect(idToggle.textContent).toBe(action.id);
+    // Collapsing keeps the same mounted controls.
     await user.click(expand);
     expect(screen.queryByRole("button", { name: "Responsáveis" })).toBeNull();
     await user.click(expand);
     expect(
-      screen.getByRole("button", {
-        name: "Alternar exibição do ID da ação",
-      }) === idToggle,
+      screen.getByRole("button", { name: "Responsáveis" }) === responsibles,
     ).toBe(true);
-    expect(idToggle.textContent).toBe(action.id);
+    expect(
+      screen.getByRole("button", { name: "Ver ID da ação" }) === idCommand,
+    ).toBe(true);
     expect(writes).toEqual([]);
   });
 
@@ -1992,8 +2021,9 @@ describe("phone-width action panel", () => {
       screen.getByRole("button", { name: "Agency" }),
       screen.getByRole("button", { name: /^Fase:/ }),
       screen.getByRole("button", { name: /^Categoria:/ }),
-      screen.getByRole("button", { name: "Abrir seletor de cores" }),
+      screen.getByRole("button", { name: "Seletor de cor" }),
       screen.getByRole("button", { name: "Sprints" }),
+      screen.getByRole("button", { name: "Ver ID da ação" }),
       screen.getByRole("button", { name: "Duplicar ação (Shift+D)" }),
       screen.getByRole("button", { name: "Arquivar ação" }),
     ]);
@@ -2008,7 +2038,7 @@ describe("phone-width action panel", () => {
     expectSameElements(
       within(footerStrip().strip).getAllByRole("button").slice(-3),
       [
-        screen.getByRole("button", { name: "Sprints" }),
+        screen.getByRole("button", { name: "Ver ID da ação" }),
         screen.getByRole("button", { name: "Duplicar ação (Shift+D)" }),
         screen.getByRole("button", { name: "Desarquivar ação" }),
       ],
@@ -2113,7 +2143,7 @@ describe("phone-width action panel", () => {
       screen.getByRole("button", { name: "Agency" }),
       screen.getByRole("button", { name: /^Fase:/ }),
       screen.getByRole("button", { name: /^Categoria:/ }),
-      screen.getByRole("button", { name: "Abrir seletor de cores" }),
+      screen.getByRole("button", { name: "Seletor de cor" }),
       screen.getByRole("button", { name: "Atualizar" }),
     ];
     for (const target of sequence.slice(1)) {

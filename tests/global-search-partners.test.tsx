@@ -405,8 +405,13 @@ async function mount(
     );
   return { user, router, queryClient };
 }
-const filter = () =>
-  screen.getByRole("group", { name: "Filtrar ações por parceiros" });
+const filter = () => screen.getByRole("group", { name: "Filtros da busca" });
+const partnerFilter = (label?: string) =>
+  within(filter()).getByRole("button", {
+    name: label ? `Filtrar por parceiros: ${label}` : /^Filtrar por parceiros/,
+  });
+const archivedToggle = () =>
+  within(filter()).getByRole("button", { name: "Incluir arquivadas" });
 const search = () =>
   screen.getByRole("searchbox", { name: "Faça sua busca..." });
 async function choose(
@@ -415,7 +420,7 @@ async function choose(
   shift = false,
 ) {
   if (!screen.queryByRole("searchbox", { name: "Procurar parceiro..." }))
-    await user.click(within(filter()).getByRole("button"));
+    await user.click(partnerFilter());
   if (shift) await user.keyboard("{Shift>}");
   await user.click(
     screen.getByRole("menuitem", { name: new RegExp(`${name}$`) }),
@@ -425,7 +430,7 @@ async function choose(
 
 it("partner page starts scoped and selecting all removes the hidden route restriction", async () => {
   const { user, router } = await mount("/app/partner/alpha");
-  expect(within(filter()).getByRole("button", { name: "Alpha" })).toBeTruthy();
+  expect(partnerFilter("Alpha")).toBeTruthy();
   await user.type(search(), "Campaign");
   await screen.findByRole("menuitem", { name: /Campaign Alpha/ });
   expect(screen.queryByRole("menuitem", { name: /Campaign Beta/ })).toBeNull();
@@ -468,9 +473,7 @@ it("model intersects requested partners with available partners and never querie
 
 it("outside a partner page starts in all, supports multiple partners and returns to all when cleared", async () => {
   const { user } = await mount();
-  expect(
-    within(filter()).getByRole("button", { name: "Todos os parceiros" }),
-  ).toBeTruthy();
+  expect(partnerFilter("Todos os parceiros")).toBeTruthy();
   await user.type(search(), "Campaign");
   await screen.findByRole("menuitem", { name: /Campaign Alpha/ });
   await choose("Beta", user);
@@ -485,9 +488,7 @@ it("outside a partner page starts in all, supports multiple partners and returns
   await choose("Beta", user);
   await user.keyboard("{Escape}");
   await screen.findByRole("menuitem", { name: /Campaign Alpha/ });
-  expect(
-    within(filter()).getByRole("button", { name: "Todos os parceiros" }),
-  ).toBeTruthy();
+  expect(partnerFilter("Todos os parceiros")).toBeTruthy();
   expect(requests.at(-1)?.searchParams.getAll("partners")).toEqual([
     "ov.{alpha,beta,gamma}",
   ]);
@@ -508,9 +509,7 @@ for (const path of ["/app", "/app/partner/alpha"]) {
     await user.click(screen.getByRole("button", { name: "Abrir busca" }));
     expect(search().getAttribute("value")).toBe("");
     expect(
-      within(filter()).getByRole("button", {
-        name: path.includes("partner") ? "Alpha" : "Todos os parceiros",
-      }),
+      partnerFilter(path.includes("partner") ? "Alpha" : "Todos os parceiros"),
     ).toBeTruthy();
     await user.type(search(), "Campaign");
     await screen.findByRole("menuitem", { name: /Campaign Alpha/ });
@@ -557,7 +556,7 @@ it("closing a pending search prevents its response from entering the next openin
 
 it("Shift in the picker is exclusive while Shift on a result opens the secondary action", async () => {
   const { user } = await mount();
-  await user.click(within(filter()).getByRole("button"));
+  await user.click(partnerFilter());
   const partnerSearch = screen.getByRole("searchbox", {
     name: "Procurar parceiro...",
   });
@@ -566,7 +565,7 @@ it("Shift in the picker is exclusive while Shift on a result opens the secondary
   expect(
     screen.queryByRole("searchbox", { name: "Procurar parceiro..." }),
   ).toBeNull();
-  expect(within(filter()).getByRole("button", { name: "Beta" })).toBeTruthy();
+  expect(partnerFilter("Beta")).toBeTruthy();
   expect(openSecondary).not.toHaveBeenCalled();
   await user.type(search(), "Campaign");
   const result = await screen.findByRole("menuitem", { name: /Campaign Beta/ });
@@ -606,20 +605,16 @@ it("the optional all choice clears multiple selections and shows its empty label
   expect(screen.queryByRole("searchbox")).toBeNull();
 });
 
-it("search filters sit after results without an extra visible label", async () => {
+it("search filters sit in the input suffix before results without an extra visible label", async () => {
   await mount();
   expect(screen.queryByText("Ações de")).toBeNull();
   const menu = screen.getByRole("menu");
   expect(
     Boolean(
-      filter().compareDocumentPosition(menu) & Node.DOCUMENT_POSITION_PRECEDING,
+      filter().compareDocumentPosition(menu) & Node.DOCUMENT_POSITION_FOLLOWING,
     ),
   ).toBe(true);
-  expect(
-    screen.getByRole<HTMLInputElement>("checkbox", {
-      name: "Incluir arquivadas",
-    }).checked,
-  ).toBe(false);
+  expect(archivedToggle().getAttribute("aria-pressed")).toBe("false");
 });
 
 it("archived actions are opt-in within the chosen partners and reset on reopening", async () => {
@@ -630,9 +625,7 @@ it("archived actions are opt-in within the chosen partners and reset on reopenin
   expect(
     screen.queryByRole("menuitem", { name: /Campaign Retired/ }),
   ).toBeNull();
-  await user.click(
-    screen.getByRole("checkbox", { name: "Incluir arquivadas" }),
-  );
+  await user.click(archivedToggle());
   await screen.findByRole("menuitem", { name: /Campaign Retired/ });
   expect(requests.at(-1)?.searchParams.getAll("partners")).toEqual([
     "ov.{beta}",
@@ -641,11 +634,7 @@ it("archived actions are opt-in within the chosen partners and reset on reopenin
   expect(screen.queryByRole("menuitem", { name: /Campaign Alpha/ })).toBeNull();
   await user.keyboard("{Escape}");
   await user.click(screen.getByRole("button", { name: "Abrir busca" }));
-  expect(
-    screen.getByRole<HTMLInputElement>("checkbox", {
-      name: "Incluir arquivadas",
-    }).checked,
-  ).toBe(false);
+  expect(archivedToggle().getAttribute("aria-pressed")).toBe("false");
   await user.type(search(), "Campaign");
   await screen.findByRole("menuitem", { name: /Campaign Alpha/ });
   expect(

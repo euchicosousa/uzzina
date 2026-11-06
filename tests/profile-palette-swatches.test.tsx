@@ -30,7 +30,9 @@ mock.module("~/lib/supabase.client", () => ({
       writes += 1;
       throw new Error("profile must not write before explicit save");
     },
-    rpc: async () => {
+    rpc: async (name: string) => {
+      // The monthly allowance meter (IA-M03) reads on mount; reads are allowed.
+      if (name === "get_my_ai_allowance") return { data: null, error: null };
       writes += 1;
       throw new Error("profile must not write before explicit save");
     },
