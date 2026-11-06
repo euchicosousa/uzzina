@@ -132,70 +132,77 @@ export function ActionFormFooter({
   );
   return (
     <>
-      <div
-        className="flex w-full shrink-0 items-center justify-between border-t"
-        data-drawer-focus="control"
-      >
+      <div className="flex w-full shrink-0 items-center justify-between border-t">
         <FooterStrip compact={compact}>
-          <UPartnersCombobox
-            // size={currentPartners.length > 1 ? "lg" : "icon-lg"}
-            size={"icon-lg"}
-            variant="ghost"
-            onSelect={async (selected) => {
-              const first = currentPartners.find((p) => p.slug === selected[0]);
-              let color = RawAction.color;
-              if (
-                !RawAction.id &&
-                first?.colors?.length &&
-                (!color || color === "#666666" || color === "#666")
-              ) {
-                color = first.colors[0];
-              }
-              setRawAction({ ...RawAction, partners: selected, color });
-              await updateAction({ partners: selected, color });
-            }}
-            selectedPartners={RawAction.partners}
-            showText={false}
-            tabIndex={0}
-          />
-          <UPhaseCombobox
-            size="icon-lg"
-            variant="ghost"
-            iconVariant="progress"
-            onSelect={async (selected) => {
-              const phase = (
-                typeof selected === "string" ? selected : selected.phase
-              ) as Action["phase"];
-              setRawAction({ ...RawAction, phase });
-              await updateAction({ phase });
-            }}
-            selectedPhase={RawAction.phase ?? "idea"}
-            showText={false}
-            tabIndex={0}
-          />
-          <UCategoriesCombobox
-            size="icon-lg"
-            variant="ghost"
-            onSelect={async ({ category }) => {
-              setRawAction({ ...RawAction, category });
-              await updateAction({ category });
-            }}
-            selectedCategories={[RawAction.category]}
-            showText={false}
-            tabIndex={0}
-          />
-          {isSocialMediaContent(RawAction.category) && (
-            <UColorPickerDropdown
-              size="icon-lg"
+          <div className="contents" data-drawer-focus="control">
+            <UPartnersCombobox
+              // size={currentPartners.length > 1 ? "lg" : "icon-lg"}
+              size={"icon-lg"}
               variant="ghost"
-              value={RawAction.color}
-              onChange={async (color) => {
-                setRawAction({ ...RawAction, color });
-                await updateAction({ color });
+              onSelect={async (selected) => {
+                const first = currentPartners.find(
+                  (p) => p.slug === selected[0],
+                );
+                let color = RawAction.color;
+                if (
+                  !RawAction.id &&
+                  first?.colors?.length &&
+                  (!color || color === "#666666" || color === "#666")
+                ) {
+                  color = first.colors[0];
+                }
+                setRawAction({ ...RawAction, partners: selected, color });
+                await updateAction({ partners: selected, color });
               }}
-              partners={currentPartners}
+              selectedPartners={RawAction.partners}
+              showText={false}
               tabIndex={0}
             />
+          </div>
+          <div className="contents" data-drawer-focus="control">
+            <UPhaseCombobox
+              size="icon-lg"
+              variant="ghost"
+              iconVariant="progress"
+              onSelect={async (selected) => {
+                const phase = (
+                  typeof selected === "string" ? selected : selected.phase
+                ) as Action["phase"];
+                setRawAction({ ...RawAction, phase });
+                await updateAction({ phase });
+              }}
+              selectedPhase={RawAction.phase ?? "idea"}
+              showText={false}
+              tabIndex={0}
+            />
+          </div>
+          <div className="contents" data-drawer-focus="control">
+            <UCategoriesCombobox
+              size="icon-lg"
+              variant="ghost"
+              onSelect={async ({ category }) => {
+                setRawAction({ ...RawAction, category });
+                await updateAction({ category });
+              }}
+              selectedCategories={[RawAction.category]}
+              showText={false}
+              tabIndex={0}
+            />
+          </div>
+          {isSocialMediaContent(RawAction.category) && (
+            <div className="contents" data-drawer-focus="control">
+              <UColorPickerDropdown
+                size="icon-lg"
+                variant="ghost"
+                value={RawAction.color}
+                onChange={async (color) => {
+                  setRawAction({ ...RawAction, color });
+                  await updateAction({ color });
+                }}
+                partners={currentPartners}
+                tabIndex={0}
+              />
+            </div>
           )}
           {RawAction.id && (
             <UPeopleCombobox
@@ -217,28 +224,30 @@ export function ActionFormFooter({
         </FooterStrip>
         <div className="flex shrink-0 items-center gap-1 p-2">
           {!compact && actionCommands}
-          <PrismButton
-            aria-label={compact ? saveLabel : undefined}
-            isDisabled={isPending}
-            onClick={async (event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              const success = await handleSave();
-              if (success && event.shiftKey) {
-                handleClose();
-              }
-            }}
-            size={compact ? "icon-lg" : "lg"}
-          >
-            {!compact && saveLabel}
-            {isPending ? (
-              <ULoader size="default" inheritColor />
-            ) : RawAction.id ? (
-              <CloudUploadIcon />
-            ) : (
-              <PlusIcon />
-            )}
-          </PrismButton>
+          <div className="contents" data-drawer-focus="control">
+            <PrismButton
+              aria-label={compact ? saveLabel : undefined}
+              isDisabled={isPending}
+              onClick={async (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const success = await handleSave();
+                if (success && event.shiftKey) {
+                  handleClose();
+                }
+              }}
+              size={compact ? "icon-lg" : "lg"}
+            >
+              {!compact && saveLabel}
+              {isPending ? (
+                <ULoader size="default" inheritColor />
+              ) : RawAction.id ? (
+                <CloudUploadIcon />
+              ) : (
+                <PlusIcon />
+              )}
+            </PrismButton>
+          </div>
         </div>
       </div>
       <PrismDialog
