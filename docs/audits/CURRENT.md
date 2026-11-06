@@ -14,7 +14,7 @@ Os dois estão fora da `main`, rebaseados sobre `e86f34a` e sem push.
 
 - `proposal/ds05-save-icon-first` (`46c692b`): o botão Salvar da gaveta mostra o ícone antes do texto. Gaveta e nomes de controle deram 118/0.
 
-O DS03-C não virou branch: o arraste pelo título é bloqueado pelo `usePress` do `PrismButton` unstyled, que foi uma escolha do proprietário, então liberá-lo exige trocar esse botão.
+- `proposal/ds03-c-title-drag`: o título também passa a servir de alça de arraste. O `PrismButton` continua; o `onPressStart` chama `continuePropagation()`, e um clique sem passar dos 8 px continua editando. Testes 36/0.
 
 O `.claude/launch.json` agora usa `scripts/dev-server.cjs` na porta 5176 (`e86f34a`); a versão antiga usava o modo staging, que não tem mais variáveis.
 
