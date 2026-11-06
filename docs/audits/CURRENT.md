@@ -6,6 +6,10 @@ Produção Ready em 06/11 a partir do push de `main` até `9e25ad7`, no domínio
 
 ## Pendências reais
 
+### DS04 overlays e DS03-D — 06/11
+
+`7433842`: popover, select, combobox, menu e diálogo do Prism ganharam animação real de entrada (200 ms) e saída (150 ms), feita em CSS próprio sobre `data-entering`/`data-exiting`, com `motion-reduce`. As regras `[data-state]` inativas saíram. Conferido em `/ui` no navegador local: os overlays animam e desmontam, sem erros. `b33a8ee`: no calendário e no Kanban, cada item tem uma parada de Tab a menos, sem `role="button"` aninhado; a Sprint mantém o arraste por teclado. Os testes focados passam. Falta conferir no app.
+
 ### Percurso de Tab da gaveta e testes atualizados — 06/11
 
 Bug real corrigido em `1ea70e7`. O commit `b5b5f33` tinha colocado `data-drawer-focus="control"` no rodapé inteiro, e o Tab a partir de Categoria ou Cor passava por Sprints, ID, Duplicar e Arquivar antes de Criar/Atualizar. Parceiros, Fase, Categoria, Cor e Salvar voltaram a ter marcadores próprios (`display: contents`), sem mudar o layout. Em `7a6983d`, os testes foram atualizados aos contratos vigentes: filtros da busca como sufixo, nomes de Data, Cor e ID, rascunhos de texto até o blur, máscara de bordas, diálogo de progresso das estratégias e leitura da franquia ao abrir Minha Conta. Resultados: `drawer-component` 107/0, busca, notificações, IA e estratégias 119/0, e perfil 3/0. Falta conferir o percurso no app: Título → Descrição → Parceiros → Fase → Categoria → Cor → Criar/Atualizar.
