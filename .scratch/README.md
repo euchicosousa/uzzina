@@ -1,6 +1,6 @@
 # Tickets abertos da UZZINA
 
-Atualizado em 06/11/2026. **15 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
+Atualizado em 06/11/2026. **16 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
 
 [Histórico consolidado](archive/resolved-tickets.md): 87 documentos encerrados/aprovados e 11 da antiga série C do Planejamento, substituída pela recuperação. Os antigos arquivos individuais foram retirados e seus links redirecionados.
 
@@ -25,6 +25,7 @@ Ao criar um ticket ou mudar seu escopo, inclua as três opções da seção `Mod
 | Design system               | [DS03 — Interações dos itens de ação](design-system-audit/issues/03-action-item-interactions.md)                                  | A, B, D e F aceitos e na main local. C e E seguem em branches de proposta, com merge sujeito a autorização. |
 | Design system               | [DS05 — Ordem de ícone e texto nos botões](design-system-audit/issues/05-button-icon-label-order.md)                              | Ícone à direita. Inventariar divergências em botões e abas. |
 | Estratégias | [EST-03 — Recriar estratégias no diálogo](action-strategy/issues/03-recreate-strategies-in-dialog.md) | Adicionar ação no diálogo e validar atualização dos campos após salvar. |
+| Estratégias | [EST-04 — Separar conteúdo e legenda](action-strategy/issues/04-separate-content-and-caption-generation.md) | Investigar o bloco de legenda e manter a geração de legenda como comando separado. |
 
 ## Referências fora da fila de execução
 

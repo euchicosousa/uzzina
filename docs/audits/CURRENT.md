@@ -8,7 +8,19 @@ Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 
 
 ### EST-05: estratégias ao reabrir a ação — 06/11
 
-Encerrado a pedido do proprietário. A comparação ao reabrir vinha da própria geração: a lista guardava uma linha anterior às estratégias gravadas pelo worker com a gaveta fechada. A leitura da abertura agora adota a versão atual sem modal quando o formulário está limpo. Com alterações locais, o modal continua, com os botões "Usar versão atual" e "Usar minha versão". `adoptGeneratedStrategies` aceita a mesma linha já registrada. [Relatório](2026-11-06-est-05-strategy-conflict-on-reopen.md). Branch `fix/est-05-strategy-reopen`, sem push. Verificação: typecheck limpo, `action-reopen-version` 34/0, `drawer-component` 107/0, `drawer-save` 11/0, e 77/0 nos testes de conflito e estratégias. Os testes de reabertura passaram a esperar a adoção sem modal com o formulário limpo. O arquivo `action-reopen-version` às vezes estoura o tempo na primeira execução e as falhas seguem em cascata; nas reexecuções passou. Falta o aceite no app pelo roteiro do relatório. O arquivo do ticket e a linha da fila estão na worktree `ticket-updates`, ainda não versionados.
+Encerrado a pedido do proprietário. A comparação ao reabrir vinha da própria geração: a lista guardava uma linha anterior às estratégias gravadas pelo worker com a gaveta fechada. A leitura da abertura agora adota a versão atual sem modal quando o formulário está limpo. Com alterações locais, o modal continua, com os botões "Usar versão atual" e "Usar minha versão". `adoptGeneratedStrategies` aceita a mesma linha já registrada. [Relatório](2026-11-06-est-05-strategy-conflict-on-reopen.md). Na `main` local em `45e58a9` (avanço direto a partir de `fix/est-05-strategy-reopen`), sem push. Verificação: typecheck limpo, `action-reopen-version` 34/0, `drawer-component` 107/0, `drawer-save` 11/0, e 77/0 nos testes de conflito e estratégias. Os testes de reabertura passaram a esperar a adoção sem modal com o formulário limpo. O arquivo `action-reopen-version` às vezes estoura o tempo na primeira execução e as falhas seguem em cascata; nas reexecuções passou. Falta o aceite no app pelo roteiro do relatório. O EST-05 saiu da fila e o arquivo do ticket foi versionado com o EST-04.
+
+### Levantamento de arquivos soltos — 06/11
+
+A fila mantém 16 tickets após o encerramento do EST-05. A main local está em `45e58a9` (EST-05), um commit à frente de origin/main. IA-M05 tem o commit `a1d0049` no branch de proposta, incluindo integração na gaveta e toast além da galeria. Na árvore original, cinco arquivos de interface seguiam soltos e foram commitados no branch de proposta. A correção do EST-05 foi integrada à main e a worktree auxiliar foi removida. Há mudanças independentes em ActionFormDrawer nas duas árvores. Diferenças inspecionadas e git diff --check executado nas três árvores. A verificação automatizada da correção EST-05 não está confirmada neste levantamento.
+
+### Bloqueio de estratégias ao reabrir a ação — 06/11
+
+Aberto [EST-05](../../.scratch/action-strategy/issues/05-strategy-conflict-on-reopen.md) como investigação da comparação disparada após fechar e reabrir a ação durante uma geração. Inclui o aviso após Cancelar e o bloqueio ao usar estratégias. Fila com 17 tickets. Referências e diff conferidos.
+
+### Separação de conteúdo e legenda — 06/11
+
+Aberto [EST-04](../../.scratch/action-strategy/issues/04-separate-content-and-caption-generation.md) para investigar e corrigir a legenda inserida por Gerar conteúdo. A legenda será gerada por ação explícita após revisão do conteúdo. Fila com 16 tickets. Referências e diff conferidos.
 
 ### Merge IA-M02 e atualização da fila — 06/11
 

@@ -1,6 +1,6 @@
 # Central de tickets da UZZINA
 
-Atualizado em 06/11/2026. **15 tickets ativos.** A fila abaixo espelha o tracker principal. Produção registrada em `a6a056c`. A rodada posterior está na main local e nos branches de proposta. Encerramentos com aceite e a revisão por rota do DS02 estão no histórico.
+Atualizado em 06/11/2026. **16 tickets ativos.** A fila abaixo espelha o tracker principal. Produção registrada em `a6a056c`. A rodada posterior está na main local e nos branches de proposta. Encerramentos com aceite e a revisão por rota do DS02 estão no histórico.
 
 **IA-M02 encerrado.** Abas de Minha Conta publicadas conforme confirmação do proprietário e integradas à main local em 06/11.
 
@@ -21,5 +21,6 @@ Atualizado em 06/11/2026. **15 tickets ativos.** A fila abaixo espelha o tracker
 | 13 | Design system               | [DS03 — Interações dos itens de ação](../../.scratch/design-system-audit/issues/03-action-item-interactions.md)                                  | A, B, D e F aceitos e na main local. C e E seguem em branches de proposta, com merge sujeito a autorização. |
 | 14 | Design system               | [DS05 — Ordem de ícone e texto nos botões](../../.scratch/design-system-audit/issues/05-button-icon-label-order.md)                              | Ícone à direita. Inventariar divergências em botões e abas. |
 | 15 | Estratégias | [EST-03 — Recriar estratégias no diálogo](../../.scratch/action-strategy/issues/03-recreate-strategies-in-dialog.md) | Adicionar ação no diálogo e validar atualização dos campos após salvar. |
+| 16 | Estratégias | [EST-04 — Separar conteúdo e legenda](../../.scratch/action-strategy/issues/04-separate-content-and-caption-generation.md) | Investigar o bloco de legenda e manter a geração de legenda como comando separado. |
 
 [Tracker principal](../../.scratch/README.md) · [Histórico consolidado](../../.scratch/archive/resolved-tickets.md). A numeração é posicional. Use o ID da série ao disparar agentes.
