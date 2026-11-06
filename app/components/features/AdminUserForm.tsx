@@ -67,8 +67,8 @@ export function AdminUserForm({
               image={imageUrl}
               size="2xl"
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
-              <UploadIcon className="size-6 text-white" />
+            <div className="absolute inset-0 flex items-center justify-center bg-foreground/40 opacity-0 transition group-hover:opacity-100">
+              <UploadIcon className="size-6 text-background" />
             </div>
           </CloudinaryUpload>
 
@@ -233,11 +233,7 @@ export function AdminUserForm({
       </div>
 
       <div className="flex justify-end gap-4 pb-8">
-        <PrismButton
-          className="rounded-2xl squircle"
-          isDisabled={isSubmitting}
-          type="submit"
-        >
+        <PrismButton isDisabled={isSubmitting} type="submit">
           <SaveIcon className="size-4" />
           {isSubmitting ? "Salvando..." : "Salvar Usuário"}
         </PrismButton>

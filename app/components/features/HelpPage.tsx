@@ -334,7 +334,7 @@ export function HelpPage() {
               href={`#${section.id}`}
               aria-current={active === section.id ? "location" : undefined}
               className={cn(
-                "rounded-md px-2 py-1.5 text-sm outline-none squircle hover:bg-secondary/50 focus-visible:bg-secondary/50",
+                "rounded-xl px-2 py-1.5 text-sm outline-none squircle hover:bg-secondary/50 focus-visible:bg-secondary/50",
                 active === section.id
                   ? "bg-secondary/50 font-semibold"
                   : "text-muted-foreground",

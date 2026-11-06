@@ -73,3 +73,19 @@ Seção 4 de `docs/plans/visual-controls-where.md`. Excluídos: `profile.tsx` e 
 - `/dash/review/<slug>?r=token`: selo da categoria em pílula; texto destacado (mark) em tom de aviso legível nos dois temas.
 
 Verificação: Prettier, `tsc --noEmit` e `tests/icon-control-names.test.tsx` (11 pass).
+
+## Lote: componentes de calendário, Home, admin, Ajuda e portal — 06/11/2026
+
+Os caminhos em `visual-controls-where.md` estão desatualizados: CalendarToolbar e ViewOptions viraram `uzzina/UCalendarToolbar.tsx` e `uzzina/UViewOptions.tsx`, PartnerCelebrationsSelector virou `uzzina/UPartnerCelebrationsSelector.tsx`, e ColorListEditor não existe mais.
+
+- **Já corrigidos antes:** UCalendarToolbar, CalendarDayCell (botão + é `PrismButton icon-xs rounded-full`, feriado usa `PrismBadge`), UViewOptions (`w-56` é a largura padrão do menu), TodayViewParts e o `rounded-xl squircle` do ActionItem.
+- **Corrigidos agora:**
+  - AdminUserForm: o véu do avatar passa a usar `bg-foreground/40 text-background`, igual aos uploads de parceiro e cliente, e o botão de enviar perde o raio redundante.
+  - HelpPage: o link lateral usa `rounded-md` → `rounded-xl squircle`.
+  - ClientCalendar: os itens usam `rounded-md`/`rounded-lg` → `rounded-xl squircle`.
+- **Lacunas para o proprietário:**
+  - `border-white` / `dark:border-white/10` no topo do ActionItem: não existe token de realce.
+  - `min-w-375` em `ClientCalendar.tsx:129`: no Tailwind 4 isso equivale a cerca de 1500px. Conferir se é intencional no portal.
+- **Verificação:** typecheck, `icon-control-names` e `view-options` (21 pass). Nada foi conferido no navegador.
+
+Roteiro: passar o mouse no avatar em `/app/admin/user/novo` e nos logos de parceiro e cliente; abrir a navegação lateral de `/app/help`; olhar os cartões das visões semana e mês em `/dash`.
