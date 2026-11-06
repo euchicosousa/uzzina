@@ -4,7 +4,7 @@
 
 **Bloqueios** — Nenhum.
 
-**Status** — A, B, D, E e F aceitos; E integrado à main em 06/11. Falta o item C (arrastar pelo título), aguardando teste de arraste do proprietário.
+**Status:** encerrado com aceite do proprietário em 06/11/2026. Todos os itens (A a F) foram aceitos; o arraste pelo título, a edição ao clicar no título e a rolagem por toque funcionam no app.
 
 ## Modelos sugeridos
 

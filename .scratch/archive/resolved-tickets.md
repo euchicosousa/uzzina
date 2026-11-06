@@ -8268,3 +8268,7 @@ Encerrado com aceite do proprietário em 06/11 (segunda aprovação): componente
 ## DS05 — Ordem de ícone e texto nos botões
 
 Encerrado com aceite do proprietário em 06/11/2026: todo ícone fica à direita do texto. [Ticket](../design-system-audit/issues/05-button-icon-label-order.md).
+
+## DS03 — Interações dos itens de ação
+
+Encerrado com aceite do proprietário em 06/11/2026: arrastar por qualquer ponto do item (inclusive o título), clique no título edita ali mesmo, clique fora abre a ação, e rolagem por toque no celular. [Ticket](../design-system-audit/issues/03-action-item-interactions.md).
