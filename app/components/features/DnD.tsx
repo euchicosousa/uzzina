@@ -39,7 +39,8 @@ export function Draggable({
     });
   const style = {
     transform: CSS.Transform.toString(transform),
-    touchAction: "none",
+    // Let the page scroll with a finger; long-press (TouchSensor) starts drag.
+    touchAction: "manipulation",
   };
   const child = React.Children.only(children);
   const isDOMElement = typeof child.type === "string";
@@ -99,7 +100,8 @@ export function SortableItem({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-  };
+    touchAction: isDragging ? "none" : "manipulation",
+  } as const;
 
   const child = React.Children.only(children);
   const isDOMElement = typeof child.type === "string";

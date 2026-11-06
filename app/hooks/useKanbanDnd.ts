@@ -2,7 +2,8 @@ import { ActionConflictError } from "~/lib/supabase.mutations";
 import { getActionRevision } from "~/utils/date";
 import { useMemo, useState, useRef } from "react";
 import {
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -31,7 +32,10 @@ export function useKanbanDnd<T extends string | null>({
   const writes = useRef(new Map<string, Promise<Action>>());
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 250, tolerance: 5 },
+    }),
   );
 
   const handleDragStart = (event: DragStartEvent) => {

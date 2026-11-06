@@ -4,7 +4,7 @@
 
 **Bloqueios:** Nenhum. Coordenar a cobertura com DS02.
 
-**Status:** proposta entregue para decisão do proprietário
+**Status:** decisão do proprietário em 06/11/2026: todos os ícones à direita do texto. A decisão anterior (ícone à esquerda) está superada. Implementação em andamento no branch fix/ds05-icons-right; ticket segue aberto.
 
 ## Modelos sugeridos
 
@@ -41,12 +41,14 @@ Convenção aplicada: ícone antes do texto; sem `mr-*`/`ml-*` no ícone (o `gap
 - `PlanningSuggestionsList.tsx` (botões Descartar/Aprovar): removidos `aria-label="Descartar sugestão"` e `"Aprovar sugestão"`; o nome acessível agora é o texto visível ("Desfazer descarte", "Aprovada" etc.).
 
 ### Deixado para o proprietário
+
 - `action-drawer/ActionFormFooter.tsx` (Salvar/Atualizar): decisão do proprietário, não tocado.
 - `UCalendarToolbar.tsx:67` (nome `MMMM/yy` x visível `MM/yy` no celular): não alterado. `tests/icon-control-names.test.tsx:191` fixa o nome "Escolher data, outubro/26" de propósito; baixa prioridade.
 - S1 (regras `data-icon` mortas em `prism/button.tsx`): fora do escopo.
 - `Fazer Login` e demais exceções do relatório: mantidos.
 
 ### Roteiro de conferência visual
+
 1. Barra superior: "Nova Ação" mostra o + antes do texto; em tela estreita aparece "+ Ação". Espaço entre ícone e texto igual ao dos outros botões.
 2. /app/admin/users, clients e partners: botão com ícone antes ("Novo Usuário", "Novo Cliente", "Novo Parceiro").
 3. /reset-password (com link de recuperação): botão com a chave antes de "Redefinir Senha e Entrar".

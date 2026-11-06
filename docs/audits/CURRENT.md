@@ -6,6 +6,17 @@ Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 
 
 ## Pendências reais
 
+### Decisões do proprietário e fechamentos — 06/11
+
+- **DS03:** o item E (rolagem com o dedo e arraste com toque longo) foi aceito como comportamento esperado e integrado à main. O ticket segue aberto só para o item C: arrastar um item de ação pelo título. Pela explicação do proprietário, o arraste vale em qualquer parte do item; clicar no título transforma o título em campo de texto; clicar em outra parte abre a gaveta da ação. A implementação está no branch `proposal/ds03-c-title-drag` e aguarda o teste de arraste do proprietário.
+- **EST-05:** no app, o proprietário testou o passo 1 do roteiro e o funcionamento foi normal. Ticket encerrado. Também no checkout do proprietário, ainda sem commit, ele trocou o texto do botão de estratégias (sem caixa alta) e removeu a exibição do nome da estratégia selecionada, pois não estava claro que o botão significava recriar. Essas edições são do proprietário/Gemini para commitar; não foram tocadas nesta rodada.
+- **DS04:** aprovado integralmente pela terceira vez. Encerrado.
+- **IA-M05:** componente de progresso, linha das abas e barra aprovados pela segunda vez. Encerrado.
+- **DS05:** decisão do proprietário: todos os ícones ficam à direita do texto. A decisão anterior (ícone à esquerda) e o branch `proposal/ds05-save-icon-first` estão superados. A implementação está em andamento no branch `fix/ds05-icons-right`. O ticket segue aberto.
+- **Planejamento (T01–T11):** adiado pelo proprietário. T02 segue aberto. O proprietário informou que PostgreSQL local não é necessário; a conexão com o Supabase será discutida depois.
+- **DS01 e EST-03:** sem menção do proprietário; mantidos como estão.
+- Fila ativa: 15 tickets.
+
 ### Abas underline 1px: contrato atualizado — 06/11
 
 Decisão do proprietário em 06/11: a variante `underline` de `PrismTabs` é padronizada com seleção por linha inferior de 1px primary (`border-b border-b-primary`), sem a borda inferior do `TabList`. A especificação antiga de 2px foi superada e os contratos em `AGENTS.md` e `visual-controls-final-status.md` foram alinhados a esse desenho.

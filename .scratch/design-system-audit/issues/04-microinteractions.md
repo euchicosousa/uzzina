@@ -4,7 +4,7 @@
 
 **Bloqueios** — Nenhum.
 
-**Status** — inventário e proposta entregues para decisão do proprietário
+**Status** — aprovado pelo proprietário em 06/11/2026 (terceira aprovação). Encerrado.
 
 ## Modelos sugeridos
 
@@ -60,7 +60,6 @@ Roteiro: abrir e fechar o seletor de parceiros, o menu do perfil, a busca e um d
 ## Aceite — 06/11
 
 Passos 1 e 3 aprovados. Para o passo 2, abra uma ação existente, entre em Essencial e use Parceiros e Categoria na fileira do rodapé, à esquerda de Atualizar. Em /ui → Componentes de UI, abra e feche os exemplos Popover, Select, Combobox, Menu e Dialog. Confira entrada, saída e retorno do foco ao fechar por Escape.
-
 
 ## Encerramento — 06/11
 

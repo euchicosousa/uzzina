@@ -4,7 +4,7 @@
 
 **Bloqueios** — Nenhum.
 
-**Status** — investigação entregue; correções propostas para decisão do proprietário
+**Status** — A, B, D, E e F aceitos; E integrado à main em 06/11. Falta o item C (arrastar pelo título), aguardando teste de arraste do proprietário.
 
 ## Modelos sugeridos
 
@@ -78,6 +78,7 @@ Roteiro: aperte Tab no calendário do parceiro e no Kanban de Hoje (sem parada a
 ## Conferência no app real — 06/11/2026
 
 Com login do proprietário em `127.0.0.1:5176`, só lendo, sem salvar nada:
+
 - **DS03-A corrigido de novo:** a primeira correção não selecionava, porque o `usePress` do `PrismButton` também engolia o clique, e o cartão, que alterna a seleção, nunca o recebia. Os testes passavam porque o jsdom não reproduz isso. Agora, no modo seleção, o título é um `<span>` simples. Conferido: clicar no título seleciona a ação ("1 Selecionada"), sem editar nem abrir a gaveta.
 - **Tab da gaveta:** Título → Descrição → Parceiros → Fase → Categoria → Atualizar → Essencial → Observações, numa ação de Design, sem Cor nem Instagram. Correto.
 - **DS04:** o menu do perfil abre com `overlay-pop-in` de 0,2 s e fecha com `overlay-pop-out` de 0,15 s, e a busca tem fundo `overlay-fade-in`. Nova Hora abre de 7 para 72 px em 0,2 s.
