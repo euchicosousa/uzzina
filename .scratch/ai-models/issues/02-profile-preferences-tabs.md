@@ -26,3 +26,11 @@
 - Um único formulário e o botão Salvar no cabeçalho; rascunhos preservados com `shouldForceMount`; campo inválido revela sua aba.
 - Salvar apenas os campos alterados (patch parcial) para não sobrescrever preferências gravadas pelo menu ou pela busca.
 - Pergunta principal: a aba mostra o consumo pessoal (hoje) ou a franquia da agência; o roteiro de aceite está no documento.
+
+## Conferência do branch no app real — 06/11/2026
+
+Servido a partir de `proposal/ia-m02-profile-tabs` (`7345909`), em `127.0.0.1:5176`, com a sessão do proprietário e largura de celular (503px). Só leitura, sem salvar nada.
+- Quatro abas PrismTabs (Informações pessoais, Aparência, Funcionamento, Uso de IA) com rolagem horizontal. A linha de seleção acompanha a aba ativa. Salvar Alterações fica no cabeçalho.
+- Aparência mostra tema, cor de destaque e Usar Cores dos Clientes. Funcionamento mostra layout padrão, visualização inicial do Hoje e sidebar do Instagram. Uso de IA mostra a franquia de novembro (4,64%, 27 gerações) e os três padrões no GPT-6 Luna, com o botão de voltar oculto.
+- Não verificado: envio parcial e revelação de campo inválido, que exigiriam apertar Salvar com dados reais. Fica para o roteiro do proprietário.
+- Já existia antes do branch: os blocos "Usar Cores dos Clientes" e "Sidebar do Instagram" ficam em caixa com borda (`UPreferenceSwitch`, pendente no DS01).
