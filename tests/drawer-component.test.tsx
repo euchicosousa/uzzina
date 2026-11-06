@@ -198,11 +198,14 @@ const generatedStrategies = Array.from({ length: 5 }, (_, i) => ({
   direcionamento: "Direction",
   selected: false,
 }));
+let aiContentHtml: string | null = null;
 mock.module("~/services/ai-client", () => ({
   callAI: async (payload: { intent: string }) => {
     aiCalls++;
     await aiGate;
     if (aiFailure) throw new Error("Generation unavailable");
+    if (payload.intent === "ai-content" && aiContentHtml)
+      return { intent: payload.intent, output: { content: aiContentHtml } };
     return { intent: payload.intent, output: generatedStrategies };
   },
 }));
@@ -247,6 +250,7 @@ beforeEach(() => {
   durableFixture(null);
   aiGate = undefined;
   aiFailure = false;
+  aiContentHtml = null;
   aiCalls = 0;
   viewportWidth = 1440;
   mediaChanges.clear();
@@ -2141,6 +2145,21 @@ describe("phone-width action panel", () => {
     return editor;
   }
 
+  it("generating content replaces the text already in the mounted editor", async () => {
+    const scroller = await openInstagram({
+      content_description: "<p>Antigo</p>",
+      strategies: generatedStrategies,
+    });
+    expect(instagramEditor(scroller).textContent).toContain("Antigo");
+    aiContentHtml = "<p>Novo</p>";
+    fireEvent.click(
+      within(scroller).getByRole("button", { name: "Selecione a estratégia" }),
+    );
+    await waitFor(() =>
+      expect(instagramEditor(scroller).textContent).toBe("Novo"),
+    );
+  });
+
   it("without media the compact media area holds only Adicionar conteúdo", async () => {
     const scroller = await openInstagram();
     const media = within(scroller);
@@ -2535,6 +2554,15 @@ it("shows durable saving separately from canonical success without a browser wri
   expect(within(dialog).getByRole("status").textContent).toContain(
     "Salvando estratégias",
   );
+  expect(dialog.querySelector(".animate-spin")).toBeTruthy();
+  expect(
+    within(dialog).queryByRole("button", { name: "Conferir andamento" }),
+  ).toBeNull();
+  expect(
+    within(dialog).queryByRole("button", {
+      name: "Conferir estratégias salvas",
+    }),
+  ).toBeNull();
   expect(
     within(dialog)
       .getAllByRole<HTMLInputElement>("checkbox", {
@@ -2543,16 +2571,83 @@ it("shows durable saving separately from canonical success without a browser wri
       .every((input) => input.disabled),
   ).toBe(true);
   durable.setOperation(durableOperation("succeeded"));
-  fireEvent.click(
-    within(dialog).getByRole("button", { name: "Conferir andamento" }),
-  );
+  document.dispatchEvent(new Event("visibilitychange"));
   await waitFor(() =>
     expect(within(dialog).getByRole("status").textContent).toContain(
       "Estratégias salvas",
     ),
   );
+  expect(
+    within(dialog).queryByRole("button", { name: "Conferir andamento" }),
+  ).toBeNull();
+  expect(
+    within(dialog).queryByRole("button", {
+      name: "Conferir estratégias salvas",
+    }),
+  ).toBeNull();
   expect(writes).toHaveLength(0);
   expect(aiCalls).toBe(0);
+});
+it("shows recreation progress with ULoader, status and distinguishes prior results", async () => {
+  durableFixture(durableOperation("generating"));
+  mount(
+    draft({
+      category: "post",
+      strategies: generatedStrategies,
+    }),
+  );
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Ver progresso das estratégias",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  expect(within(dialog).getByRole("status").textContent).toContain(
+    "Recriando estratégias",
+  );
+  expect(dialog.querySelector(".animate-spin")).toBeTruthy();
+  expect(within(dialog).getByText("Resultado anterior")).toBeTruthy();
+  expect(
+    within(dialog)
+      .getAllByRole<HTMLInputElement>("checkbox", {
+        name: "Selecionar estratégia",
+      })
+      .every((input) => input.disabled),
+  ).toBe(true);
+  expect(
+    within(dialog).getByText(
+      "Uma nova geração de estratégias está em andamento.",
+    ),
+  ).toBeTruthy();
+  // Single scroll area: dialog has no nested scroll inside
+  expect(dialog.querySelector(".overflow-y-auto")).toBeNull();
+  expect(
+    dialog
+      .closest('[data-slot="dialog-content"]')
+      ?.classList.contains("overflow-y-auto"),
+  ).toBe(true);
+});
+it("reserves choice instruction for usable options and shows neutral description during initial creation", async () => {
+  durableFixture(durableOperation("generating"));
+  mount(draft({ category: "post", strategies: [] }));
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Ver progresso das estratégias",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  expect(within(dialog).getByRole("status").textContent).toContain(
+    "Criando estratégias",
+  );
+  expect(dialog.querySelector(".animate-spin")).toBeTruthy();
+  expect(
+    within(dialog).queryByText(
+      "Escolha uma das 5 estratégias criativas abaixo para gerar o conteúdo da ação.",
+    ),
+  ).toBeNull();
+  expect(
+    within(dialog).getByText("Aguarde a criação das opções para esta ação."),
+  ).toBeTruthy();
 });
 it("retries a retained durable result without browser generation or local persistence", async () => {
   const durable = durableFixture({
@@ -2719,6 +2814,36 @@ function durableOperation(
     updatedAt: "2026-10-31T12:00:00Z",
   };
 }
+it("enables selection in the open dialog after reading the saved generated strategies", async () => {
+  durableFixture(durableOperation("succeeded"));
+  const base = draft({
+    category: "post",
+    strategies: generatedStrategies.map((strategy) => ({
+      ...strategy,
+      headline: `Old ${strategy.headline}`,
+    })),
+  });
+  mount(base);
+  const open = await screen.findByRole("button", {
+    name: "Ver estratégias geradas",
+  });
+  databaseActions.set(action.id, {
+    ...base,
+    strategies: generatedStrategies,
+    updated_at: "2026-10-06T10:03:00Z",
+  });
+  fireEvent.click(open);
+  const dialog = await screen.findByRole("dialog");
+  const first = within(dialog).getAllByRole<HTMLInputElement>("checkbox", {
+    name: "Selecionar estratégia",
+  })[0];
+  await waitFor(() => expect(first?.disabled).toBe(false));
+  fireEvent.click(first as HTMLElement);
+  await waitFor(() =>
+    expect(writes.at(-1)?.title).toBe("Generated strategy 1"),
+  );
+});
+
 it("durable strategy preview cannot select stale raw options; explicit canonical review enables the correct headline", async () => {
   durableFixture(durableOperation("succeeded"));
   mount(
@@ -2735,11 +2860,9 @@ it("durable strategy preview cannot select stale raw options; explicit canonical
   );
   const dialog = await screen.findByRole("dialog");
   await waitFor(() =>
-    expect(
-      within(dialog).getByRole("button", {
-        name: "Conferir estratégias salvas",
-      }),
-    ).toBeTruthy(),
+    expect(within(dialog).getByRole("status").textContent).toContain(
+      "Estratégias salvas",
+    ),
   );
   const boxes = within(dialog).getAllByRole<HTMLInputElement>("checkbox", {
     name: "Selecionar estratégia",
@@ -2755,9 +2878,7 @@ it("durable strategy preview cannot select stale raw options; explicit canonical
       updated_at: "2026-10-06T10:03:00Z",
     }),
   );
-  fireEvent.click(
-    within(dialog).getByRole("button", { name: "Conferir estratégias salvas" }),
-  );
+  fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
   const comparison = await screen.findByRole("dialog");
   fireEvent.click(
     await within(comparison).findByRole("button", {
@@ -2845,4 +2966,221 @@ it("durable acceptance preserves the leave guard for unrelated unsaved edits", a
   expect(closed).toBe(false);
   expect(editor.textContent).toContain("Unsaved edit while server generates");
   expect(aiCalls).toBe(0);
+});
+
+it("EST-02: allows selecting a strategy, persists to DB, and switching to another option with exclusive selection and title update", async () => {
+  durableFixture(durableOperation("succeeded", false));
+  mount(
+    draft({
+      category: "post",
+      strategies: generatedStrategies,
+    }),
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Ver estratégias geradas" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  const boxes = within(dialog).getAllByRole<HTMLInputElement>("checkbox", {
+    name: "Selecionar estratégia",
+  });
+  expect(boxes).toHaveLength(5);
+  expect(boxes[0]?.disabled).toBe(false);
+
+  // 1. Select the first strategy
+  fireEvent.click(boxes[0] as HTMLElement);
+
+  await waitFor(() =>
+    expect(writes.some((write) => write.title === "Generated strategy 1")).toBe(
+      true,
+    ),
+  );
+  expect(writes.at(-1)?.strategies).toEqual(
+    generatedStrategies.map((strategy, index) => ({
+      ...strategy,
+      selected: index === 0,
+    })),
+  );
+
+  // 2. Options are re-enabled after save completes
+  await waitFor(() => {
+    expect(boxes[1]?.disabled).toBe(false);
+  });
+
+  // 3. Switch to the second strategy without closing the dialog
+  fireEvent.click(boxes[1] as HTMLElement);
+
+  await waitFor(() =>
+    expect(writes.some((write) => write.title === "Generated strategy 2")).toBe(
+      true,
+    ),
+  );
+  expect(writes.at(-1)?.strategies).toEqual(
+    generatedStrategies.map((strategy, index) => ({
+      ...strategy,
+      selected: index === 1,
+    })),
+  );
+  // Exclusive selection: only strategy index 1 is selected
+  const lastStrategies = writes.at(-1)
+    ?.strategies as typeof generatedStrategies;
+  expect(lastStrategies[0]?.selected).toBe(false);
+  expect(lastStrategies[1]?.selected).toBe(true);
+});
+
+it("EST-02: shows visible saving progress while selection is persisting and re-enables controls", async () => {
+  durableFixture(durableOperation("succeeded", false));
+  delay = true;
+  mount(
+    draft({
+      category: "post",
+      strategies: generatedStrategies,
+    }),
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Ver estratégias geradas" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  const boxes = within(dialog).getAllByRole<HTMLInputElement>("checkbox", {
+    name: "Selecionar estratégia",
+  });
+
+  // Click first box while delayed
+  fireEvent.click(boxes[0] as HTMLElement);
+
+  // Check progress indicator in dialog
+  await waitFor(() => {
+    expect(within(dialog).getByText("Salvando seleção…")).toBeTruthy();
+    expect(boxes[0]?.disabled).toBe(true);
+    expect(boxes[1]?.disabled).toBe(true);
+  });
+
+  // Resolve write
+  expect(resolveWrite).not.toBeNull();
+  const stored = draft({
+    category: "post",
+    title: "Generated strategy 1",
+    strategies: generatedStrategies.map((s, idx) => ({
+      ...s,
+      selected: idx === 0,
+    })),
+    updated_at: "2026-10-06T10:02:00Z",
+  });
+  act(() => {
+    resolveWrite?.({ data: stored, error: null });
+  });
+
+  // Once resolved, controls are re-enabled and status says "Seleção salva."
+  await waitFor(() => {
+    expect(within(dialog).getByText("Seleção salva.")).toBeTruthy();
+    expect(boxes[0]?.disabled).toBe(false);
+    expect(boxes[1]?.disabled).toBe(false);
+  });
+});
+
+it("EST-02: 'USAR ESTA ESTRATÉGIA' button confirms the strategy and triggers AI content", async () => {
+  durableFixture(durableOperation("succeeded", false));
+  mount(
+    draft({
+      category: "post",
+      strategies: generatedStrategies,
+    }),
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Ver estratégias geradas" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+
+  // Expand the first accordion item
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Generated strategy 1" }),
+  );
+  const useButton = await within(dialog).findByRole("button", {
+    name: "USAR ESTA ESTRATÉGIA",
+  });
+
+  // Click on the strategy's button
+  fireEvent.click(useButton);
+
+  await waitFor(() => {
+    expect(writes.some((write) => write.title === "Generated strategy 1")).toBe(
+      true,
+    );
+    expect(aiCalls).toBe(1);
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+  expect(writes.at(-1)?.strategies).toEqual(
+    generatedStrategies.map((strategy, index) => ({
+      ...strategy,
+      selected: index === 0,
+    })),
+  );
+});
+
+it("EST-02: displays clear error message and recovery when saving selection fails", async () => {
+  durableFixture(durableOperation("succeeded", false));
+  mount(
+    draft({
+      category: "post",
+      strategies: generatedStrategies,
+    }),
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Ver estratégias geradas" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  const boxes = within(dialog).getAllByRole<HTMLInputElement>("checkbox", {
+    name: "Selecionar estratégia",
+  });
+
+  fail = true;
+  fireEvent.click(boxes[0] as HTMLElement);
+
+  await waitFor(() => {
+    expect(within(dialog).getByRole("alert")).toBeTruthy();
+    expect(
+      within(dialog).getByRole("button", { name: "Tentar salvar novamente" }),
+    ).toBeTruthy();
+  });
+
+  fail = false;
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Tentar salvar novamente" }),
+  );
+
+  await waitFor(() => {
+    expect(writes.some((write) => write.title === "Generated strategy 1")).toBe(
+      true,
+    );
+  });
+});
+
+it("EST-02: handles conflict when saving selection and offers recovery action", async () => {
+  durableFixture(durableOperation("succeeded", false));
+  mount(
+    draft({
+      category: "post",
+      strategies: generatedStrategies,
+    }),
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Ver estratégias geradas" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  const boxes = within(dialog).getAllByRole<HTMLInputElement>("checkbox", {
+    name: "Selecionar estratégia",
+  });
+
+  conflict = true;
+  fireEvent.click(boxes[0] as HTMLElement);
+
+  await waitFor(() => {
+    expect(
+      within(dialog).getByText(
+        "Conflito ao salvar a seleção: a ação foi alterada em outra sessão.",
+      ),
+    ).toBeTruthy();
+    expect(
+      within(dialog).getByRole("button", { name: "Revisar conflito" }),
+    ).toBeTruthy();
+  });
 });

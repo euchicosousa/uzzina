@@ -261,6 +261,37 @@ export class ActionSaveCoordinator {
     this.unavailable = unavailable;
     this.emit();
   }
+  /** A completed generation may advance only the confirmed strategy fields. */
+  adoptGeneratedStrategies(remote: Action) {
+    const base = this.confirmedAction;
+    if (
+      !base ||
+      this.isDirty() ||
+      this.remoteVersion ||
+      compareActionVersions(remote.updated_at, base.updated_at) !== 1
+    )
+      return false;
+    const {
+      strategies: _oldStrategies,
+      updated_at: _oldVersion,
+      ...oldFields
+    } = base;
+    const {
+      strategies: _newStrategies,
+      updated_at: _newVersion,
+      ...newFields
+    } = remote;
+    const keys = Object.keys({ ...oldFields, ...newFields });
+    if (
+      keys.some(
+        (key) =>
+          !same(Reflect.get(oldFields, key), Reflect.get(newFields, key)),
+      )
+    )
+      return false;
+    return this.adoptRemoteVersion(remote);
+  }
+
   /** Explicitly replaces the base and discards local values with the reviewed server version. */
   adoptRemoteVersion(remote: Action) {
     const base = this.confirmedAction;

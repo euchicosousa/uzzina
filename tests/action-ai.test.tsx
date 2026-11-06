@@ -60,6 +60,7 @@ function setup(
   calls = [];
   strategyCalls = 0;
   notifications.mockClear();
+  let contentVersion = 0;
   const updates: Record<string, unknown>[] = [];
   const modalChanges: boolean[] = [];
   const queryClient = new QueryClient();
@@ -82,6 +83,9 @@ function setup(
         },
         setIsStrategyModalOpen: (open) => modalChanges.push(open),
         setDescriptionVersion: () => {},
+        setContentVersion: (update: (version: number) => number) => {
+          contentVersion = update(contentVersion);
+        },
         startDurableStrategy: async () => {
           strategyCalls++;
           await responseGate;
@@ -95,6 +99,7 @@ function setup(
   );
   return {
     result,
+    getContentVersion: () => contentVersion,
     updates,
     raws,
     rerender,
@@ -105,14 +110,17 @@ function setup(
 }
 
 describe("useActionAI", () => {
-  it("sends the action context and persists the caption with the partner tail", async () => {
+  it("sends the selected model and action context and persists the caption with the partner tail", async () => {
     nextOutput = { caption: "Legenda gerada" };
     const { result, updates } = setup();
     await act(async () => {
-      await result.current.triggerAIAction("ai-caption");
+      await result.current.triggerAIAction("ai-caption", {
+        model: "claude-haiku-5-5",
+      });
     });
     expect(calls[0]).toMatchObject({
       intent: "ai-caption",
+      model: "claude-haiku-5-5",
       title: "Título",
       category: "post",
       partner_name: "Hospital Dr. Thomaz Corrêa",
@@ -123,7 +131,32 @@ describe("useActionAI", () => {
     expect(result.current.activeAIIntent).toBeNull();
   });
 
-  it.each(["ai-hooks", "ai-content", "ai-caption"])(
+  it("does not feed the current content back into content generation", async () => {
+    nextOutput = { content: "<p>Novo</p>", caption: "Legenda" };
+    const { result } = setup();
+    await act(async () => {
+      await result.current.triggerAIAction("ai-content");
+      await result.current.triggerAIAction("ai-caption");
+    });
+    expect(
+      String((calls[0] as { description?: string }).description),
+    ).not.toContain("DESCRIÇÃO DO CONTEÚDO");
+    expect(
+      String((calls[1] as { description?: string }).description),
+    ).toContain("DESCRIÇÃO DO CONTEÚDO");
+  });
+
+  it("refreshes the mounted content editor when generation completes", async () => {
+    nextOutput = { content: "<p>Conteúdo novo</p>" };
+    const { result, getContentVersion, updates } = setup();
+    await act(async () => {
+      await result.current.triggerAIAction("ai-content");
+    });
+    expect(getContentVersion()).toBe(1);
+    expect(updates).toEqual([{ content_description: "<p>Conteúdo novo</p>" }]);
+  });
+
+  it.each(["ai-content", "ai-caption"])(
     "sends the first current partner identity for %s, even without context",
     async (intent) => {
       nextOutput = { content: "<p>Texto</p>", caption: "Legenda" };

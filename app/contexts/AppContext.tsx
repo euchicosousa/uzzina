@@ -1,8 +1,10 @@
 import { createContext, useContext } from "react";
+import type { PreferencePatch } from "~/lib/preference-persistence";
 import type { Partner, Person, Action } from "~/types";
 
 export interface AppContextType {
   person: Person;
+  queueAIPreference?: (patch: PreferencePatch) => void;
   partners: Partner[];
   cloudName: string;
   uploadPreset: string;

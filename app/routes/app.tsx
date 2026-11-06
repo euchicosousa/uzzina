@@ -13,6 +13,7 @@ import {
   useState,
 } from "react";
 import type { Session } from "@supabase/supabase-js";
+import { usePreferencePersistence } from "~/hooks/usePreferencePersistence";
 import { useActionPanels } from "~/hooks/useActionPanels";
 import { useActionDrawerScrollLock } from "~/hooks/useActionDrawerScrollLock";
 import { resetQuerySession } from "~/lib/query-client";
@@ -41,6 +42,8 @@ const uploadPreset =
   "bussola_unsigned";
 function Dashboard() {
   const [person, setPerson] = useState<Person | null>(null);
+  const { queuePreference: queueAIPreference } =
+    usePreferencePersistence(person);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const actionPanels = useActionPanels();
@@ -236,6 +239,7 @@ function Dashboard() {
       person
         ? {
             person,
+            queueAIPreference,
             partners: visiblePartners,
             cloudName,
             uploadPreset,
@@ -244,7 +248,13 @@ function Dashboard() {
             setPartnerFilters,
           }
         : null,
-    [person, visiblePartners, setPrimaryAction, partnerFilters],
+    [
+      person,
+      queueAIPreference,
+      visiblePartners,
+      setPrimaryAction,
+      partnerFilters,
+    ],
   );
   if (loading || !person || !appContextValue) {
     return (

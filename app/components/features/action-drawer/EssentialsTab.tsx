@@ -1,3 +1,5 @@
+import { UAIModelSelect } from "~/components/uzzina/UAIModelSelect";
+import { actionAIModels } from "~/lib/action-ai-models";
 import { parseU } from "~/utils/date";
 import {
   ChevronDownIcon,
@@ -5,7 +7,6 @@ import {
   ListIcon,
   PlusIcon,
   SlidersHorizontalIcon,
-  SparkleIcon,
 } from "lucide-react";
 import { ULoader } from "~/components/uzzina/ULoader";
 import {
@@ -25,6 +26,7 @@ const Tiptap = lazy(() =>
 import {
   PrismButton,
   PrismButtonGroup,
+  PrismButtonGroupSeparator,
   PrismSkeleton,
 } from "~/components/prism";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
@@ -59,7 +61,14 @@ interface EssentialsTabProps {
   uploadPreset: string;
   isAIProcessing: boolean;
   strategyStatus?:
-    "generating" | "saving" | "unsaved" | "error" | "saved" | null;
+    | "generating"
+    | "saving"
+    | "saving-selection"
+    | "unsaved"
+    | "error"
+    | "conflict"
+    | "saved"
+    | null;
   hasStrategyActivity?: boolean;
   autoFocus?: boolean;
   /** Phone-width panel: metadata collapses behind a date summary. */
@@ -74,6 +83,8 @@ interface EssentialsTabProps {
   /** Commits the typed title to the form on blur. */
   onTextCommit?: (field: TextDraftField, value: string) => void;
   descriptionVersion?: number;
+  strategyModel: string;
+  onStrategyModelChange: (id: string) => void;
   triggerAIAction: (
     intent: string,
     customPayload?: Record<string, string | string[] | null>,
@@ -91,6 +102,8 @@ export function EssentialsTab({
   strategyStatus,
   hasStrategyActivity = false,
   onOpenStrategyModal,
+  strategyModel,
+  onStrategyModelChange,
   triggerAIAction,
   uploadPreset,
   onDescriptionChange,
@@ -179,7 +192,7 @@ export function EssentialsTab({
     });
   };
   const handleTriggerAI = async () => {
-    await triggerAIAction(INTENT.ai_strategy);
+    await triggerAIAction(INTENT.ai_strategy, { model: strategyModel });
   };
   const detailsId = useId();
   const isSocial = isSocialMediaContent(RawAction.category);
@@ -308,22 +321,26 @@ export function EssentialsTab({
                   <PrismButtonGroup className="min-w-0 shrink">
                     {(hasStrategies || hasStrategyActivity) &&
                       onOpenStrategyModal && (
-                        <PrismButton
-                          aria-label={
-                            hasStrategies &&
-                            !["generating", "saving"].includes(
-                              strategyStatus || "",
-                            )
-                              ? "Ver estratégias geradas"
-                              : "Ver progresso das estratégias"
-                          }
-                          onClick={onOpenStrategyModal}
-                          size="sm"
-                          variant="secondary"
-                        >
-                          <ListIcon />
-                        </PrismButton>
+                        <>
+                          <PrismButton
+                            aria-label={
+                              hasStrategies &&
+                              !["generating", "saving"].includes(
+                                strategyStatus || "",
+                              )
+                                ? "Ver estratégias geradas"
+                                : "Ver progresso das estratégias"
+                            }
+                            onClick={onOpenStrategyModal}
+                            size="sm"
+                            variant="secondary"
+                          >
+                            <ListIcon />
+                          </PrismButton>
+                          <PrismButtonGroupSeparator className="bg-background" />
+                        </>
                       )}
+
                     <PrismButton
                       className="min-w-0 shrink"
                       isDisabled={
@@ -338,10 +355,19 @@ export function EssentialsTab({
                       </span>
                       {isAIProcessing ? (
                         <ULoader size="sm" inheritColor />
-                      ) : (
-                        <SparkleIcon />
-                      )}
+                      ) : null}
                     </PrismButton>
+                    <PrismButtonGroupSeparator className="bg-background" />
+                    <UAIModelSelect
+                      models={actionAIModels}
+                      value={strategyModel}
+                      onChange={onStrategyModelChange}
+                      isDisabled={
+                        isAIProcessing || strategyStatus === "unsaved"
+                      }
+                      size="sm"
+                      variant="secondary"
+                    />
                   </PrismButtonGroup>
                 );
               })()}

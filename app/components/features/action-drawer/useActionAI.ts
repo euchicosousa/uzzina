@@ -36,6 +36,7 @@ export function useActionAI({
   updateAction,
   setIsStrategyModalOpen,
   setDescriptionVersion,
+  setContentVersion,
   startDurableStrategy,
 }: {
   action: Action;
@@ -47,8 +48,9 @@ export function useActionAI({
   setRawAction: SetRawAction;
   updateAction: UpdateAction;
   setIsStrategyModalOpen: (open: boolean) => void;
+  setContentVersion: (update: (version: number) => number) => void;
   setDescriptionVersion: (update: (version: number) => number) => void;
-  startDurableStrategy: () => Promise<boolean>;
+  startDurableStrategy: (model?: string) => Promise<boolean>;
 }) {
   const mounted = useRef(false);
   const opening = useRef(0);
@@ -62,6 +64,7 @@ export function useActionAI({
   const [strategyGeneration, setStrategyGeneration] =
     useState<StrategyGeneration>({ phase: "idle", error: null });
   const [isAIProcessing, setIsAIProcessing] = useState(false);
+  const strategyModelRef = useRef<string | undefined>(undefined);
   const aiProcessingRef = useRef(false);
   const [activeAIIntent, setActiveAIIntent] = useState<string | null>(null);
 
@@ -87,7 +90,9 @@ export function useActionAI({
     setActiveAIIntent(intent);
     try {
       if (isStrategy) {
-        await startDurableStrategy();
+        if (typeof customPayload?.model === "string")
+          strategyModelRef.current = customPayload.model;
+        await startDurableStrategy(strategyModelRef.current);
         if (isCurrent()) setStrategyGeneration({ phase: "idle", error: null });
         return;
       }
@@ -103,7 +108,13 @@ export function useActionAI({
       const aiPayload: AIPayload = {
         intent,
         title: action.title || "",
-        description: `DESCRIÇÃO: ${descriptionRef.current} DESCRIÇÃO DO CONTEÚDO: ${contentDescriptionRef.current}`,
+        // Content is rewritten from the briefing and the strategy. Sending the
+        // current content as input made the model reproduce it instead of
+        // following the new direction; the caption does build on it.
+        description:
+          intent === INTENT.ai_content
+            ? `DESCRIÇÃO: ${descriptionRef.current}`
+            : `DESCRIÇÃO: ${descriptionRef.current} DESCRIÇÃO DO CONTEÚDO: ${contentDescriptionRef.current}`,
         partner_name: partnerName,
         partner_context: `${partner.context || ""} — ${action.category || ""}`,
         category: action.category || "",
@@ -132,7 +143,8 @@ export function useActionAI({
               ...prev,
               content_description: newContent,
             }));
-            updateAction({
+            setContentVersion((version) => version + 1);
+            await updateAction({
               content_description: newContent,
             });
           }

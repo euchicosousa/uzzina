@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { Person } from "~/types";
@@ -11,7 +11,7 @@ import {
   type PreferencePatch,
 } from "~/lib/preference-persistence";
 
-export function usePreferencePersistence(person: Person) {
+export function usePreferencePersistence(person: Person | null) {
   const queryClient = useQueryClient();
   const controller = useRef<ReturnType<
     typeof createPreferencePersistence
@@ -21,13 +21,14 @@ export function usePreferencePersistence(person: Person) {
   const [hasError, setHasError] = useState(false);
   useEffect(() => {
     const owner = initialPerson.current;
-    const userId = person.user_id;
+    if (!owner) return;
+    const userId = owner.user_id;
     const generation = getQuerySessionGeneration(queryClient);
     setHasError(false);
     const persistence = createPreferencePersistence({
       initial: preferenceRecord(owner.preferences),
       isCurrent: () =>
-        initialPerson.current.user_id === userId &&
+        initialPerson.current?.user_id === userId &&
         getQuerySessionGeneration(queryClient) === generation,
       save: async (patch) => {
         return preferenceRecord(
@@ -37,6 +38,7 @@ export function usePreferencePersistence(person: Person) {
       onChange: (preferences, changedKeys) => {
         // A delayed response must not replace fields saved by another owner.
         const current = initialPerson.current;
+        if (!current) return;
         const merged = preferenceRecord(current.preferences);
         for (const key of changedKeys) merged[key] = preferences[key];
         current.preferences = merged;
@@ -46,9 +48,12 @@ export function usePreferencePersistence(person: Person) {
       },
       onError: () => {
         setHasError(true);
-        toast.error(
-          "Não foi possível salvar suas preferências. Tente novamente.",
-        );
+        toast.error("Não foi possível salvar suas preferências.", {
+          action: {
+            label: "Tentar novamente",
+            onClick: () => persistence.retry(),
+          },
+        });
       },
     });
     controller.current = persistence;
@@ -56,10 +61,13 @@ export function usePreferencePersistence(person: Person) {
       persistence.dispose();
       controller.current = null;
     };
-  }, [person.user_id, queryClient]);
+  }, [person?.user_id, queryClient]);
+  const queuePreference = useCallback(
+    (patch: PreferencePatch) => controller.current?.queue(patch),
+    [],
+  );
   return {
-    queuePreference: (patch: PreferencePatch) =>
-      controller.current?.queue(patch),
+    queuePreference,
     retry: () => controller.current?.retry(),
     hasError,
   };

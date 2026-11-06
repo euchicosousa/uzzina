@@ -1,3 +1,9 @@
+import {
+  isActionAIModelId,
+  lunaModelId,
+  type ActionAIModelId,
+} from "./action-ai-models";
+
 export type TodayViewMode = "kanban" | "feed" | "categories" | "partners";
 
 export function isTodayViewMode(value: unknown): value is TodayViewMode {
@@ -29,6 +35,9 @@ export type UserPreferences = {
   defaultTodayView: TodayViewMode;
   showInstagramSidebar: boolean;
   customTheme: CustomTheme | null;
+  defaultStrategyModel?: ActionAIModelId;
+  defaultContentModel?: ActionAIModelId;
+  defaultCaptionModel?: ActionAIModelId;
 };
 
 const DEFAULT_PREFERENCES: UserPreferences = {
@@ -48,6 +57,9 @@ export type SerializedPreferences = {
   defaultViewVariant?: string;
   defaultTodayView?: unknown;
   showInstagramSidebar?: boolean;
+  defaultStrategyModel?: unknown;
+  defaultContentModel?: unknown;
+  defaultCaptionModel?: unknown;
   customTheme?: {
     light?: {
       primaryHex?: string;
@@ -135,6 +147,15 @@ export function getUserPreferences(person?: {
       typeof prefs.showInstagramSidebar === "boolean"
         ? prefs.showInstagramSidebar
         : DEFAULT_PREFERENCES.showInstagramSidebar,
+    defaultStrategyModel: isActionAIModelId(prefs.defaultStrategyModel)
+      ? prefs.defaultStrategyModel
+      : lunaModelId,
+    defaultContentModel: isActionAIModelId(prefs.defaultContentModel)
+      ? prefs.defaultContentModel
+      : lunaModelId,
+    defaultCaptionModel: isActionAIModelId(prefs.defaultCaptionModel)
+      ? prefs.defaultCaptionModel
+      : lunaModelId,
     customTheme,
   };
 }

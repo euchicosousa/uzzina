@@ -1,3 +1,4 @@
+import { UzzinaAIModelSelectSection } from "~/components/ui-sections/UzzinaAIModelSelectSection";
 import { UzzinaAIAllowanceMeterSection } from "~/components/ui-sections/UzzinaAIAllowanceMeterSection";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo } from "react";
@@ -271,7 +272,15 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     ],
   },
   {
+    id: "uzzina-ai-model-select",
+    approved: true,
+    label: "UAIModelSelect",
+    section: "uzzina",
+    keywords: ["modelo", "ia", "openai", "claude", "anthropic"],
+  },
+  {
     id: "uzzina-ai-allowance-meter",
+    approved: true,
     label: "UAIAllowanceMeter",
     section: "uzzina",
     keywords: ["franquia", "consumo", "medição"],
@@ -1071,6 +1080,7 @@ function UIPage() {
               <UzzinaAvatarSection />
               <UzzinaAvatarSelectorSection />
               <UzzinaColorPickerDropdownSection />
+              <UzzinaAIModelSelectSection />
               <UzzinaAIAllowanceMeterSection />
               <UzzinaLoaderSection />
               <UzzinaPaletteEditorSection />

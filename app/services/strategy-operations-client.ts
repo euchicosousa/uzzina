@@ -60,10 +60,12 @@ export async function acceptStrategyOperation(
   actionId: string,
   operationId: string,
   expectedVersion: string,
+  model?: string,
 ) {
   return responseSchema.parse(
     await request("", {
       command: "accept",
+      model,
       actionId,
       operationId,
       expectedVersion,

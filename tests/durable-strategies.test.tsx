@@ -283,6 +283,7 @@ it("the real AI hook releases its leave guard after acceptance and never calls t
       updateAction: async () => action,
       setIsStrategyModalOpen: (open) => modal.push(open),
       setDescriptionVersion() {},
+      setContentVersion() {},
       startDurableStrategy: durable.start,
     });
     return { ai, durable };

@@ -1,3 +1,10 @@
+import { UAIModelSelect } from "~/components/uzzina/UAIModelSelect";
+import {
+  actionAIModels,
+  isActionAIModelId,
+  lunaModelId,
+} from "~/lib/action-ai-models";
+import { getUserPreferences } from "~/lib/preferences";
 import type { Action, Partner, StrategyItem } from "~/types";
 import {
   ArchiveIcon,
@@ -8,6 +15,7 @@ import {
   XIcon,
 } from "lucide-react";
 import { UIcons } from "~/components/uzzina/UIcons";
+import { ULoader } from "~/components/uzzina/ULoader";
 import {
   useCallback,
   useEffect,
@@ -56,6 +64,7 @@ import {
   PrismAccordionTrigger,
   PrismBadge,
   PrismButton,
+  PrismButtonGroup,
   PrismCheckbox,
   PrismDialog,
   PrismDialogDescription,
@@ -92,7 +101,38 @@ export function ActionFormDrawer({
   const [comparison, setComparison] = useState<Action | null>(null);
   const [isComparing, setIsComparing] = useState(false);
   const [isResolvingConflict, setIsResolvingConflict] = useState(false);
-  const { partners: routePartners, cloudName, uploadPreset } = useAppContext();
+  const {
+    partners: routePartners,
+    cloudName,
+    uploadPreset,
+    person,
+    queueAIPreference,
+  } = useAppContext();
+  const preferences = getUserPreferences(person);
+  const [strategyModel, setStrategyModel] = useState(
+    preferences.defaultStrategyModel ?? lunaModelId,
+  );
+  const [captionModel, setCaptionModel] = useState(
+    preferences.defaultCaptionModel ?? lunaModelId,
+  );
+  const [contentModel, setContentModel] = useState(
+    preferences.defaultContentModel ?? lunaModelId,
+  );
+  const changeStrategyModel = (id: string) => {
+    if (!isActionAIModelId(id)) return;
+    setStrategyModel(id);
+    queueAIPreference?.({ defaultStrategyModel: id });
+  };
+  const changeContentModel = (id: string) => {
+    if (!isActionAIModelId(id)) return;
+    setContentModel(id);
+    queueAIPreference?.({ defaultContentModel: id });
+  };
+  const changeCaptionModel = (id: string) => {
+    if (!isActionAIModelId(id)) return;
+    setCaptionModel(id);
+    queueAIPreference?.({ defaultCaptionModel: id });
+  };
   const partners = routePartners ?? DEFAULT_PARTNERS;
   const queryClient = useQueryClient();
   const {
@@ -380,26 +420,59 @@ export function ActionFormDrawer({
     handleSaveRef.current = handleSave;
   }, [handleSave]);
   const [isStrategyModalOpen, setIsStrategyModalOpen] = useState(false);
+  const [savingSelectionIndex, setSavingSelectionIndex] = useState<
+    number | null
+  >(null);
+  const [strategySelectionError, setStrategySelectionError] = useState<
+    string | null
+  >(null);
+
   // Selecting a strategy also adopts its headline as the action title.
+  // The selection is strictly exclusive (only one strategy can be selected: true).
   const selectStrategy = async (index: number, isSelected: boolean) => {
     if (strategyControlsBlocked) return false;
-    const strategies = parseStrategies(rawActionRef.current.strategies);
-    const updated = strategies.map((s, idx) => ({
-      ...s,
-      selected: idx === index ? isSelected : false,
-    }));
-    const headline = strategies[index]?.headline.trim() ?? "";
-    const title = isSelected && headline.length >= 2 ? headline : null;
-    setRawAction((prev) => ({
-      ...prev,
-      strategies: updated,
-      ...(title ? { title } : {}),
-    }));
-    return !!(await updateAction({
-      strategies: updated,
-      ...(title ? { title } : {}),
-    }));
+    setSavingSelectionIndex(index);
+    setStrategySelectionError(null);
+    try {
+      const baseStrategies =
+        parseStrategies(rawActionRef.current.strategies).length > 0
+          ? parseStrategies(rawActionRef.current.strategies)
+          : strategyOptions;
+      const updated = baseStrategies.map((s, idx) => ({
+        ...s,
+        selected: idx === index ? isSelected : false,
+      }));
+      const headline = baseStrategies[index]?.headline.trim() ?? "";
+      const title = isSelected && headline.length >= 2 ? headline : null;
+      setRawAction((prev) => ({
+        ...prev,
+        strategies: updated,
+        ...(title ? { title } : {}),
+      }));
+      const saved = await updateAction({
+        strategies: updated,
+        ...(title ? { title } : {}),
+      });
+      if (!saved) {
+        if (coordinatorRef.current?.getState().status !== "conflict") {
+          setStrategySelectionError(
+            coordinatorRef.current?.getState().errorMessage ||
+              "Não foi possível salvar a seleção.",
+          );
+        }
+        return false;
+      }
+      return true;
+    } catch (err) {
+      setStrategySelectionError(
+        err instanceof Error ? err.message : "Erro ao salvar a seleção.",
+      );
+      return false;
+    } finally {
+      setSavingSelectionIndex(null);
+    }
   };
+  const [contentVersion, setContentVersion] = useState(0);
   const [descriptionVersion, setDescriptionVersion] = useState(0);
   const currentPartners = useMemo(() => {
     return RawAction.partners
@@ -445,41 +518,53 @@ export function ActionFormDrawer({
     updateAction,
     setIsStrategyModalOpen,
     setDescriptionVersion,
+    setContentVersion,
     startDurableStrategy: durableStrategies.start,
   });
+  const strategiesPending = Object.hasOwn(
+    coordinatorState.pendingPatch,
+    "strategies",
+  );
+  const isSavingSelection =
+    savingSelectionIndex !== null ||
+    (strategiesPending &&
+      (coordinatorState.status === "saving" ||
+        coordinatorState.status === "creating"));
   const isPending =
     isMutationLoading ||
     isAIProcessing ||
     coordinatorState.status === "creating" ||
     coordinatorState.status === "saving";
-  const strategiesPending = Object.hasOwn(
-    coordinatorState.pendingPatch,
-    "strategies",
-  );
   const strategyStatus =
     strategyGeneration.phase === "generating"
       ? "generating"
       : !durableStrategies.reconciled &&
           strategyGeneration.phase === "generation-error"
         ? "error"
-        : durableStrategies.operation
-          ? durableStrategies.pending
-            ? durableStrategies.operation.state === "generated"
-              ? "saving"
-              : "generating"
-            : durableStrategies.operation.state === "succeeded"
-              ? "saved"
-              : durableStrategies.operation.result
-                ? "unsaved"
-                : "error"
-          : strategiesPending
-            ? coordinatorState.status === "saving" ||
-              coordinatorState.status === "creating"
-              ? "saving"
-              : "unsaved"
-            : strategyGeneration.phase === "generation-error"
-              ? "error"
-              : null;
+        : durableStrategies.pending
+          ? durableStrategies.operation?.state === "generated"
+            ? "saving"
+            : "generating"
+          : isSavingSelection
+            ? "saving-selection"
+            : coordinatorState.status === "conflict"
+              ? "conflict"
+              : coordinatorState.status === "error" || strategySelectionError
+                ? "error"
+                : durableStrategies.operation
+                  ? durableStrategies.operation.state === "succeeded"
+                    ? "saved"
+                    : durableStrategies.operation.result
+                      ? "unsaved"
+                      : "error"
+                  : strategiesPending
+                    ? coordinatorState.status === "saving" ||
+                      coordinatorState.status === "creating"
+                      ? "saving-selection"
+                      : "unsaved"
+                    : strategyGeneration.phase === "generation-error"
+                      ? "error"
+                      : null;
   const canonicalStrategies = parseStrategies(RawAction.strategies);
   const generatedOptions = durableStrategies.operation?.result;
   const isDurablePreview =
@@ -491,44 +576,58 @@ export function ActionFormDrawer({
         ),
       ));
   const strategyControlsBlocked =
-    isPending ||
-    strategiesPending ||
+    isSavingSelection ||
     durableStrategies.pending ||
+    coordinatorState.status === "conflict" ||
     !!coordinatorState.remoteVersion ||
-    isDurablePreview;
+    isDurablePreview ||
+    strategyStatus === "generating" ||
+    strategyStatus === "saving";
   const strategyOptions: StrategyItem[] =
     isDurablePreview && generatedOptions
       ? generatedOptions
       : canonicalStrategies;
   const hasStrategyActivity = strategyStatus !== null;
+  const isGenerating =
+    strategyStatus === "generating" || strategyStatus === "saving";
+  const hasPriorStrategies = canonicalStrategies.length > 0;
+  const isInitialGenerating = isGenerating && !hasPriorStrategies;
+  const isRecreating = isGenerating && hasPriorStrategies;
+
+  const [isRetryingStrategy, setIsRetryingStrategy] = useState(false);
   const retryStrategySave = async () => {
-    if (isPending || isComparing) return;
-    if (durableStrategies.operation?.result) {
-      const changed =
-        durableStrategies.operation.state === "conflict" ||
-        durableStrategies.needsReview;
-      if (
-        changed &&
-        !window.confirm(
-          "Aplicar estas cinco estratégias preservadas à versão atual? Elas foram geradas antes das alterações e substituirão as estratégias atuais.",
+    if (isPending || isComparing || isRetryingStrategy) return;
+    setIsRetryingStrategy(true);
+    try {
+      if (durableStrategies.operation?.result) {
+        const changed =
+          durableStrategies.operation.state === "conflict" ||
+          durableStrategies.needsReview;
+        if (
+          changed &&
+          !window.confirm(
+            "Aplicar estas cinco estratégias preservadas à versão atual? Elas foram geradas antes das alterações e substituirão as estratégias atuais.",
+          )
         )
-      )
+          return;
+        await durableStrategies.retry(changed);
         return;
-      await durableStrategies.retry(changed);
-      return;
-    }
-    if (
-      coordinatorState.status === "conflict" ||
-      coordinatorState.remoteVersion
-    ) {
-      await compareLatestForSave();
-      return;
-    }
-    await handleSave();
-    const remote = coordinatorRef.current?.getState().remoteVersion;
-    if (remote && mountedRef.current) {
-      setIsStrategyModalOpen(false);
-      setComparison(remote);
+      }
+      if (
+        coordinatorState.status === "conflict" ||
+        coordinatorState.remoteVersion
+      ) {
+        await compareLatestForSave();
+        return;
+      }
+      await handleSave();
+      const remote = coordinatorRef.current?.getState().remoteVersion;
+      if (remote && mountedRef.current) {
+        setIsStrategyModalOpen(false);
+        setComparison(remote);
+      }
+    } finally {
+      if (mountedRef.current) setIsRetryingStrategy(false);
     }
   };
   const [workFiles, setWorkFiles] = useState<string[]>(
@@ -555,7 +654,6 @@ export function ActionFormDrawer({
     [updateAction, setRawAction],
   );
   // Editors read their content only when mounted; a new key reloads them.
-  const [contentVersion, setContentVersion] = useState(0);
   // Applies a base the user explicitly chose to the form, including state kept
   // outside RawAction (editors and media), except fields still being changed.
   // RawAction is committed here so remounted editors read the new content.
@@ -592,46 +690,103 @@ export function ActionFormDrawer({
   // editable meanwhile; a newer row is only offered for comparison.
   const isCheckingRef = useRef(false);
   const checkRemoteVersionRef = useRef<() => Promise<void>>(async () => {});
-  const checkRemoteVersion = useCallback(async () => {
-    const coordinator = coordinatorRef.current;
-    const id = coordinator?.getState().confirmedAction?.id;
-    if (!coordinator || !id || !mountedRef.current || isCheckingRef.current)
-      return;
-    isCheckingRef.current = true;
-    const generation = coordinator.getGeneration();
-    const session = getQuerySessionGeneration(queryClient);
-    const isCurrent = () =>
-      mountedRef.current &&
-      generation === coordinator.getGeneration() &&
-      session === getQuerySessionGeneration(queryClient);
-    try {
-      const remote = await readActionClient(id);
-      if (!isCurrent()) return;
-      coordinator.setUnavailable(false);
-      const result = await coordinator.receiveRemoteVersion(remote, generation);
-      if (result !== "newer" || !isCurrent()) return;
-      // Lists may show the canonical row; the form keeps its base until the user decides.
-      applyCanonicalActionRef.current(remote);
-      setComparison((current) => current ?? remote);
-    } catch (error) {
-      if (!isCurrent()) return;
-      if (error instanceof ActionUnavailableError)
-        coordinator.setUnavailable(true);
-      else
-        toast.error(
-          "Não foi possível verificar se esta ação mudou em outra sessão. Você pode continuar editando; o salvamento confere a versão.",
-          {
-            action: {
-              label: "Tentar novamente",
-              onClick: () => void checkRemoteVersionRef.current(),
-            },
-          },
+  const [isSyncingStrategies, setIsSyncingStrategies] = useState(false);
+  const checkRemoteVersion = useCallback(
+    async (expectedStrategies?: StrategyItem[]) => {
+      const coordinator = coordinatorRef.current;
+      const id = coordinator?.getState().confirmedAction?.id;
+      if (
+        !coordinator ||
+        !id ||
+        !mountedRef.current ||
+        (!expectedStrategies && isCheckingRef.current)
+      )
+        return;
+      if (expectedStrategies) setIsSyncingStrategies(true);
+      else isCheckingRef.current = true;
+      const generation = coordinator.getGeneration();
+      const session = getQuerySessionGeneration(queryClient);
+      const isCurrent = () =>
+        mountedRef.current &&
+        generation === coordinator.getGeneration() &&
+        session === getQuerySessionGeneration(queryClient);
+      try {
+        const remote = await readActionClient(id);
+        if (!isCurrent()) return;
+        coordinator.setUnavailable(false);
+        const savedStrategies =
+          expectedStrategies && parseStrategies(remote.strategies);
+        if (
+          expectedStrategies &&
+          savedStrategies &&
+          savedStrategies.length === expectedStrategies.length &&
+          expectedStrategies.every((strategy, index) =>
+            (
+              ["headline", "angulo", "racional", "direcionamento"] as const
+            ).every(
+              (field) => strategy[field] === savedStrategies[index]?.[field],
+            ),
+          ) &&
+          coordinator.adoptGeneratedStrategies(remote)
+        ) {
+          setRawAction((current) => ({
+            ...current,
+            strategies: remote.strategies,
+            updated_at: remote.updated_at,
+          }));
+          applyCanonicalActionRef.current(remote);
+          return;
+        }
+        const result = await coordinator.receiveRemoteVersion(
+          remote,
+          generation,
         );
-    } finally {
-      isCheckingRef.current = false;
-    }
-  }, [queryClient]);
+        if (result !== "newer" || !isCurrent()) return;
+        // Lists may show the canonical row; the form keeps its base until the user decides.
+        applyCanonicalActionRef.current(remote);
+        setComparison((current) => current ?? remote);
+      } catch (error) {
+        if (!isCurrent()) return;
+        if (error instanceof ActionUnavailableError)
+          coordinator.setUnavailable(true);
+        else
+          toast.error(
+            "Não foi possível verificar se esta ação mudou em outra sessão. Você pode continuar editando; o salvamento confere a versão.",
+            {
+              action: {
+                label: "Tentar novamente",
+                onClick: () => void checkRemoteVersionRef.current(),
+              },
+            },
+          );
+      } finally {
+        if (expectedStrategies) {
+          if (isCurrent()) setIsSyncingStrategies(false);
+        } else isCheckingRef.current = false;
+      }
+    },
+    [queryClient],
+  );
   checkRemoteVersionRef.current = checkRemoteVersion;
+  const completedStrategies =
+    durableStrategies.operation?.state === "succeeded"
+      ? generatedOptions
+      : null;
+  useEffect(() => {
+    if (
+      isActive &&
+      isStrategyModalOpen &&
+      isDurablePreview &&
+      completedStrategies
+    )
+      void checkRemoteVersion(completedStrategies);
+  }, [
+    isActive,
+    isStrategyModalOpen,
+    isDurablePreview,
+    completedStrategies,
+    checkRemoteVersion,
+  ]);
   // Drafts and refocusing an already open action do not start a new check.
   const checkedOpeningRef = useRef(false);
   useEffect(() => {
@@ -1026,6 +1181,8 @@ export function ActionFormDrawer({
                   )}
                 >
                   <EssentialsTab
+                    strategyModel={strategyModel}
+                    onStrategyModelChange={changeStrategyModel}
                     autoFocus={isActive}
                     cloudName={cloudName}
                     compact={compact}
@@ -1059,6 +1216,10 @@ export function ActionFormDrawer({
                   className={cn("w-full", "h-full")}
                 >
                   <InstagramTab
+                    captionModel={captionModel}
+                    onCaptionModelChange={changeCaptionModel}
+                    contentModel={contentModel}
+                    onContentModelChange={changeContentModel}
                     activeAIIntent={activeAIIntent}
                     cloudName={cloudName}
                     compact={compact}
@@ -1187,97 +1348,192 @@ export function ActionFormDrawer({
         className="flex flex-col"
         size="xl"
         isOpen={isActive && isStrategyModalOpen}
-        onOpenChange={setIsStrategyModalOpen}
+        onOpenChange={(open) => {
+          setIsStrategyModalOpen(open);
+          if (!open && strategyStatus === "saved") {
+            void checkRemoteVersionRef.current();
+          }
+        }}
       >
-        <PrismDialogHeader className="shrink-0 px-10 pt-8">
+        <PrismDialogHeader className="shrink-0 px-6 pt-6 sm:px-8 sm:pt-8">
           <PrismDialogTitle className="text-2xl">
             5 Estratégias Sugeridas
           </PrismDialogTitle>
-          <PrismDialogDescription>
-            Escolha uma das 5 estratégias criativas abaixo para gerar o conteúdo
-            da ação.
-          </PrismDialogDescription>
+          {strategyOptions.length > 0 && !isGenerating ? (
+            <PrismDialogDescription>
+              Escolha uma das 5 estratégias criativas abaixo para gerar o
+              conteúdo da ação.
+            </PrismDialogDescription>
+          ) : isInitialGenerating ? (
+            <PrismDialogDescription className="text-muted-foreground">
+              Aguarde a criação das opções para esta ação.
+            </PrismDialogDescription>
+          ) : isRecreating ? (
+            <PrismDialogDescription className="text-muted-foreground">
+              Uma nova geração de estratégias está em andamento.
+            </PrismDialogDescription>
+          ) : null}
         </PrismDialogHeader>
-        <div className="max-h-[70vh] min-h-0 overflow-y-auto px-5 pb-6">
-          {(strategyStatus === "generating" ||
-            strategyStatus === "saving" ||
-            strategyStatus === "saved") && (
-            <p className="px-2 py-3" role="status" aria-live="polite">
-              {strategyStatus === "generating"
-                ? parseStrategies(RawAction.strategies).length
-                  ? "Recriando estratégias…"
-                  : "Criando estratégias…"
-                : strategyStatus === "saving"
-                  ? "Salvando estratégias…"
+        <div className="flex flex-col gap-4 px-6 pb-6 sm:px-8 sm:pb-8">
+          {isSavingSelection && (
+            <div
+              className="flex items-center gap-2 py-2 text-sm text-muted-foreground"
+              role="status"
+              aria-live="polite"
+            >
+              <ULoader size="sm" />
+              <span>Salvando seleção…</span>
+            </div>
+          )}
+          {isGenerating && (
+            <div
+              className="flex items-center justify-between gap-3 py-2 text-sm text-muted-foreground"
+              role="status"
+              aria-live="polite"
+            >
+              <div className="flex items-center gap-2">
+                <ULoader size="sm" />
+                <span>
+                  {strategyStatus === "saving"
+                    ? "Salvando estratégias…"
+                    : isRecreating
+                      ? "Recriando estratégias…"
+                      : "Criando estratégias…"}
+                </span>
+              </div>
+              {isRecreating && (
+                <PrismBadge variant="outline" className="text-muted-foreground">
+                  Resultado anterior
+                </PrismBadge>
+              )}
+            </div>
+          )}
+          {strategyStatus === "saved" && (
+            <p
+              className="py-2 text-sm text-muted-foreground"
+              role="status"
+              aria-live="polite"
+            >
+              {isSyncingStrategies
+                ? "Carregando estratégias salvas…"
+                : canonicalStrategies.some((s) => s.selected)
+                  ? "Seleção salva."
                   : "Estratégias salvas."}
             </p>
           )}
           {strategyStatus === "error" && (
-            <div className="space-y-3 px-2 py-3">
-              <p role="alert">
-                {durableStrategies.error || strategyGeneration.error}
+            <div className="space-y-3 py-2">
+              <p role="alert" className="text-sm text-destructive">
+                {strategySelectionError ||
+                  coordinatorState.errorMessage ||
+                  durableStrategies.error ||
+                  strategyGeneration.error ||
+                  "Não foi possível salvar a seleção."}
               </p>
               <PrismButton
                 isDisabled={isPending}
-                onPress={() => triggerAIAction(INTENT.ai_strategy)}
+                onPress={() => {
+                  if (strategySelectionError) {
+                    const currentStrategies = parseStrategies(
+                      rawActionRef.current.strategies,
+                    );
+                    const selectedIdx = currentStrategies.findIndex(
+                      (s) => s.selected,
+                    );
+                    if (selectedIdx >= 0) {
+                      void selectStrategy(selectedIdx, true);
+                    } else {
+                      void coordinatorRef.current?.scheduleUpdate();
+                    }
+                  } else {
+                    void triggerAIAction(INTENT.ai_strategy);
+                  }
+                }}
               >
-                Tentar gerar novamente
+                {strategySelectionError
+                  ? "Tentar salvar novamente"
+                  : "Tentar gerar novamente"}
+              </PrismButton>
+            </div>
+          )}
+          {(strategyStatus === "conflict" ||
+            coordinatorState.status === "conflict") && (
+            <div className="space-y-3 py-2" role="alert">
+              <p className="text-sm text-destructive">
+                Conflito ao salvar a seleção: a ação foi alterada em outra
+                sessão.
+              </p>
+              <PrismButton
+                isDisabled={isPending}
+                onPress={() => {
+                  if (coordinatorState.remoteVersion) {
+                    setComparison(coordinatorState.remoteVersion);
+                  }
+                }}
+              >
+                Revisar conflito
               </PrismButton>
             </div>
           )}
           {strategyStatus === "unsaved" && (
-            <div className="space-y-3 px-2 py-3">
-              <p role="alert">
+            <div className="space-y-3 py-2">
+              <p role="alert" className="text-sm text-destructive">
                 As estratégias ainda não foram salvas.{" "}
                 {durableStrategies.error ||
                   coordinatorState.errorMessage ||
                   "Use o salvamento da ação para confirmar as alterações."}
               </p>
-              <PrismButton isDisabled={isPending} onPress={retryStrategySave}>
-                {coordinatorState.remoteVersion ||
-                coordinatorState.status === "conflict"
-                  ? "Revisar conflito"
-                  : durableStrategies.operation?.result
-                    ? durableStrategies.needsReview ||
-                      durableStrategies.operation.state === "conflict"
-                      ? "Revisar e aplicar resultado preservado"
-                      : "Aplicar resultado preservado"
-                    : "Tentar salvar estratégias"}
+              <PrismButton
+                isDisabled={
+                  isPending || isRetryingStrategy || durableStrategies.pending
+                }
+                onPress={retryStrategySave}
+              >
+                {isRetryingStrategy
+                  ? "Aplicando…"
+                  : coordinatorState.remoteVersion ||
+                      coordinatorState.status === "conflict"
+                    ? "Revisar conflito"
+                    : durableStrategies.operation?.result
+                      ? durableStrategies.needsReview ||
+                        durableStrategies.operation.state === "conflict"
+                        ? "Revisar e aplicar resultado preservado"
+                        : "Aplicar resultado preservado"
+                      : "Tentar salvar estratégias"}
               </PrismButton>
             </div>
           )}
-          {strategyStatus === "saved" && (
-            <PrismButton
-              onPress={() => {
-                setIsStrategyModalOpen(false);
-                void checkRemoteVersionRef.current();
-              }}
-            >
-              Conferir estratégias salvas
-            </PrismButton>
-          )}
-          {
-            <PrismButton variant="ghost" onPress={durableStrategies.refresh}>
-              Conferir andamento
-            </PrismButton>
-          }
-          <PrismAccordion className={"border-none"}>
+          <PrismAccordion
+            className={cn(
+              "border-none transition-opacity",
+              isRecreating && "opacity-75",
+            )}
+          >
             {strategyOptions.map((strat, i) => (
               <PrismAccordionItem
                 key={strat.headline || i}
                 defaultExpanded={i === 0}
                 id={String(i)}
               >
-                <div className="flex w-full items-start gap-3 px-2">
-                  <PrismCheckbox
-                    aria-label="Selecionar estratégia"
-                    className="mt-5 shrink-0"
-                    isSelected={!!strat.selected}
-                    isDisabled={strategyControlsBlocked}
-                    onChange={(isSelected) => {
-                      void selectStrategy(i, isSelected);
-                    }}
-                  />
+                <div className="flex w-full items-start gap-3">
+                  <div className="relative mt-5 flex shrink-0 items-center justify-center">
+                    <PrismCheckbox
+                      aria-label="Selecionar estratégia"
+                      isSelected={!!strat.selected}
+                      isDisabled={strategyControlsBlocked}
+                      onChange={(isSelected) => {
+                        void selectStrategy(i, isSelected);
+                      }}
+                    />
+                    {savingSelectionIndex === i && (
+                      <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background/80"
+                      >
+                        <ULoader size="xs" className="text-primary" />
+                      </span>
+                    )}
+                  </div>
                   <PrismAccordionTrigger className="min-w-0 flex-1 px-2">
                     <div
                       className="min-w-0 flex-1 truncate text-lg font-normal tracking-tight group-aria-expanded/accordion-trigger:whitespace-normal"
@@ -1300,23 +1556,44 @@ export function ActionFormDrawer({
                       </strong>{" "}
                       {strat.direcionamento}
                     </p>
-                    <PrismButton
-                      className="self-end"
-                      isDisabled={strategyControlsBlocked}
-                      onClick={async () => {
-                        if (!(await selectStrategy(i, true))) return;
-                        triggerAIAction(INTENT.ai_content, {
-                          headline: strat.headline,
-                          racional: strat.racional,
-                          direcionamento: strat.direcionamento,
-                        });
-                        setIsStrategyModalOpen(false);
-                      }}
+                    <PrismButtonGroup
+                      className="max-w-full self-end"
                       size="sm"
-                      variant="secondary"
+                      aria-label="Geração de conteúdo"
                     >
-                      USAR ESTA ESTRATÉGIA
-                    </PrismButton>
+                      <PrismButton
+                        isDisabled={strategyControlsBlocked || isAIProcessing}
+                        onClick={async () => {
+                          if (!(await selectStrategy(i, true))) return;
+                          void triggerAIAction(INTENT.ai_content, {
+                            model: contentModel,
+                            headline: strat.headline,
+                            racional: strat.racional,
+                            direcionamento: strat.direcionamento,
+                          });
+                          setIsStrategyModalOpen(false);
+                          setView("instagram");
+                        }}
+                        size="sm"
+                        variant="secondary"
+                      >
+                        {savingSelectionIndex === i ? (
+                          <span className="flex items-center gap-2">
+                            <ULoader size="xs" inheritColor /> Salvando...
+                          </span>
+                        ) : (
+                          "USAR ESTA ESTRATÉGIA"
+                        )}
+                      </PrismButton>
+                      <UAIModelSelect
+                        models={actionAIModels}
+                        value={contentModel}
+                        onChange={changeContentModel}
+                        size="sm"
+                        variant="secondary"
+                        isDisabled={strategyControlsBlocked || isAIProcessing}
+                      />
+                    </PrismButtonGroup>
                   </div>
                 </PrismAccordionContent>
               </PrismAccordionItem>

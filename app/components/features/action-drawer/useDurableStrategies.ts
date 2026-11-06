@@ -55,6 +55,7 @@ export function useDurableStrategies({
     id: string;
     actionId: string;
     version: string;
+    model?: string;
   } | null>(null);
   const callbacks = useRef({ prepareAction, onComplete });
   callbacks.current = { prepareAction, onComplete };
@@ -146,7 +147,7 @@ export function useDurableStrategies({
     };
   }, [actionId, isActive, refreshVersion, capture, observe]);
 
-  const start = async (): Promise<boolean> => {
+  const start = async (model?: string): Promise<boolean> => {
     if (busy.current) return true;
     const isCurrent = capture();
     busy.current = true;
@@ -178,6 +179,7 @@ export function useDurableStrategies({
         id: crypto.randomUUID(),
         actionId: saved.id,
         version: saved.updated_at,
+        model,
       };
       request.version = saved.updated_at;
       pendingRequest.current = request;
@@ -185,6 +187,7 @@ export function useDurableStrategies({
         request.actionId,
         request.id,
         request.version,
+        request.model,
       );
       if (!isCurrent()) return true;
       if (!accepted)

@@ -1,3 +1,10 @@
+import { UAIModelSelect } from "~/components/uzzina/UAIModelSelect";
+import {
+  actionAIModels,
+  isActionAIModelId,
+  lunaModelId,
+  type ActionAIModelId,
+} from "~/lib/action-ai-models";
 import { UAIAllowanceMeter } from "~/components/uzzina/UAIAllowanceMeter";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { createFileRoute } from "@tanstack/react-router";
@@ -116,6 +123,10 @@ function ProfilePage() {
   const isCurrentSession = () =>
     getQuerySessionGeneration(queryClient) === generation;
   const preferences = getUserPreferences(person);
+  const [strategyModelDraft, setStrategyModelDraft] =
+    useState<ActionAIModelId>();
+  const [contentModelDraft, setContentModelDraft] = useState<ActionAIModelId>();
+  const [captionModelDraft, setCaptionModelDraft] = useState<ActionAIModelId>();
   const {
     theme,
     setTheme,
@@ -211,6 +222,15 @@ function ProfilePage() {
           ? { defaultTodayView: selectedTodayView }
           : {}),
         showInstagramSidebar,
+        ...(strategyModelDraft
+          ? { defaultStrategyModel: strategyModelDraft }
+          : {}),
+        ...(contentModelDraft
+          ? { defaultContentModel: contentModelDraft }
+          : {}),
+        ...(captionModelDraft
+          ? { defaultCaptionModel: captionModelDraft }
+          : {}),
         customTheme: customThemeToSave,
       };
       const supabase = createSupabaseBrowserClient();
@@ -229,6 +249,9 @@ function ProfilePage() {
       );
       if (!isCurrentSession()) return;
       person.preferences = savedPreferences;
+      setStrategyModelDraft(undefined);
+      setContentModelDraft(undefined);
+      setCaptionModelDraft(undefined);
 
       // Sync local preferences to storage / context
       localStorage.setItem(
@@ -280,7 +303,7 @@ function ProfilePage() {
       </div>
 
       <PrismTabList aria-label="Seção da conta" className="shrink-0 lg:hidden">
-        <PrismTab id="personal" className="[overflow-wrap:anywhere]">
+        <PrismTab id="personal" className="wrap-anywhere">
           Informações pessoais
         </PrismTab>
         <PrismTab id="preferences">Preferências</PrismTab>
@@ -328,6 +351,7 @@ function ProfilePage() {
           {/* Profile Avatar Upload */}
           <div className="flex items-center gap-4 pl-1">
             <CloudinaryUpload
+              aria-label="Alterar foto"
               variant="ghost"
               className="group relative size-20 shrink-0 cursor-pointer overflow-hidden rounded-full p-0 transition no-squircle! hover:opacity-90"
               cloudName={cloudName}
@@ -647,6 +671,67 @@ function ProfilePage() {
             label="Sidebar do Instagram por Padrão"
             onCheckedChange={setShowInstagramSidebar}
           />
+
+          <div className="grid gap-3">
+            <h3 className="text-sm font-medium">Modelos padrão de IA</h3>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-sm">Criar estratégia</span>
+              <UAIModelSelect
+                ariaLabel="Modelo padrão para criar estratégia"
+                models={actionAIModels}
+                value={
+                  strategyModelDraft ??
+                  preferences.defaultStrategyModel ??
+                  lunaModelId
+                }
+                onChange={(id) => {
+                  if (isActionAIModelId(id)) setStrategyModelDraft(id);
+                }}
+                showText
+                size="sm"
+                variant="secondary"
+                isDisabled={isSubmitting}
+              />
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-sm">Gerar conteúdo</span>
+              <UAIModelSelect
+                ariaLabel="Modelo padrão para gerar conteúdo"
+                models={actionAIModels}
+                value={
+                  contentModelDraft ??
+                  preferences.defaultContentModel ??
+                  lunaModelId
+                }
+                onChange={(id) => {
+                  if (isActionAIModelId(id)) setContentModelDraft(id);
+                }}
+                showText
+                size="sm"
+                variant="secondary"
+                isDisabled={isSubmitting}
+              />
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-sm">Gerar legenda</span>
+              <UAIModelSelect
+                ariaLabel="Modelo padrão para gerar legenda"
+                models={actionAIModels}
+                value={
+                  captionModelDraft ??
+                  preferences.defaultCaptionModel ??
+                  lunaModelId
+                }
+                onChange={(id) => {
+                  if (isActionAIModelId(id)) setCaptionModelDraft(id);
+                }}
+                showText
+                size="sm"
+                variant="secondary"
+                isDisabled={isSubmitting}
+              />
+            </div>
+          </div>
 
           {/* Personal monthly AI allowance */}
           <div className="grid gap-3 pt-2">

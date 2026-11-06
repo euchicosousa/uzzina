@@ -1,4 +1,6 @@
-import { ListIcon, SparkleIcon } from "lucide-react";
+import { ListIcon } from "lucide-react";
+import { UAIModelSelect } from "~/components/uzzina/UAIModelSelect";
+import { actionAIModels } from "~/lib/action-ai-models";
 import { ULoader } from "~/components/uzzina/ULoader";
 import { useRef, useState } from "react";
 import { ContentFilesManager } from "~/components/features/media/InstagramContent";
@@ -12,6 +14,7 @@ import {
   PrismTabPanel,
   PrismButton,
   PrismButtonGroup,
+  PrismButtonGroupSeparator,
 } from "~/components/prism";
 import { INTENT } from "~/lib/CONSTANTS";
 import { getFormattedPartnersLinks, parseStrategies } from "~/utils/format";
@@ -34,6 +37,10 @@ interface InstagramTabProps {
   isAIProcessing: boolean;
   strategiesBlocked?: boolean;
   activeAIIntent?: string | null;
+  captionModel: string;
+  onCaptionModelChange: (id: string) => void;
+  contentModel: string;
+  onContentModelChange: (id: string) => void;
   triggerAIAction: (
     intent: string,
     customPayload?: Record<string, string | string[] | null>,
@@ -89,7 +96,7 @@ function CaptionTextarea({
     />
   );
 }
-function AiProcessingMessage({
+function AIProcessingMessage({
   isAIProcessing,
   activeAIIntent,
 }: {
@@ -118,6 +125,10 @@ export function InstagramTab({
   isAIProcessing,
   strategiesBlocked = false,
   activeAIIntent,
+  captionModel,
+  onCaptionModelChange,
+  contentModel,
+  onContentModelChange,
   triggerAIAction,
   contentDescription,
   contentVersion,
@@ -233,11 +244,13 @@ export function InstagramTab({
                       <PrismButton
                         aria-label="Ver estratégias"
                         onClick={onOpenStrategyModal}
-                        size="xs"
                         variant="secondary"
+                        size="sm"
                       >
                         <ListIcon />
                       </PrismButton>
+
+                      <PrismButtonGroupSeparator className="bg-background" />
 
                       <PrismButton
                         className="min-w-0 flex-1 shrink truncate"
@@ -246,16 +259,19 @@ export function InstagramTab({
                           const stratToUse = selectedStrat || strategies[0];
                           if (stratToUse) {
                             triggerAIAction(INTENT.ai_content, {
+                              model: contentModel,
                               headline: stratToUse.headline,
                               racional: stratToUse.racional,
                               direcionamento: stratToUse.direcionamento,
                             });
                           } else {
-                            triggerAIAction(INTENT.ai_content);
+                            triggerAIAction(INTENT.ai_content, {
+                              model: contentModel,
+                            });
                           }
                         }}
-                        size="xs"
                         variant="secondary"
+                        size="sm"
                       >
                         <span
                           className="block min-w-0 truncate"
@@ -266,10 +282,17 @@ export function InstagramTab({
                         {isAIProcessing &&
                         activeAIIntent === INTENT.ai_content ? (
                           <ULoader size="sm" inheritColor />
-                        ) : (
-                          <SparkleIcon className="shrink-0" />
-                        )}
+                        ) : null}
                       </PrismButton>
+                      <PrismButtonGroupSeparator className="bg-background" />
+                      <UAIModelSelect
+                        models={actionAIModels}
+                        value={contentModel}
+                        onChange={onContentModelChange}
+                        isDisabled={isAIProcessing || strategiesBlocked}
+                        variant="secondary"
+                        size="sm"
+                      />
                     </PrismButtonGroup>
                   )
                 );
@@ -306,7 +329,7 @@ export function InstagramTab({
           >
             <div
               className={cn(
-                "flex items-center justify-between border-b px-4 py-4 @[47rem]/action:pl-0",
+                "flex flex-wrap items-center justify-between gap-2 border-b px-4 py-4 @[47rem]/action:pl-0",
                 writingLayout && "shrink-0",
               )}
               data-writing-controls
@@ -324,19 +347,35 @@ export function InstagramTab({
                   {getFormattedPartnersLinks(currentPartners)}
                 </div>
               </div>
-              <PrismButton
-                isDisabled={isAIProcessing}
-                onClick={() => triggerAIAction(INTENT.ai_caption)}
-                size="xs"
-                variant={"secondary"}
+              <PrismButtonGroup
+                aria-label="Geração de legenda"
+                className="max-w-full"
               >
-                Gerar legenda
-                {isAIProcessing && activeAIIntent === INTENT.ai_caption ? (
-                  <ULoader size="xs" inheritColor />
-                ) : (
-                  <SparkleIcon />
-                )}
-              </PrismButton>
+                <PrismButton
+                  isDisabled={isAIProcessing}
+                  onPress={() =>
+                    void triggerAIAction(INTENT.ai_caption, {
+                      model: captionModel,
+                    })
+                  }
+                  variant="secondary"
+                  size="sm"
+                >
+                  Gerar legenda
+                  {isAIProcessing && activeAIIntent === INTENT.ai_caption && (
+                    <ULoader size="xs" inheritColor />
+                  )}
+                </PrismButton>
+                <PrismButtonGroupSeparator className="bg-background" />
+                <UAIModelSelect
+                  models={actionAIModels}
+                  value={captionModel}
+                  onChange={onCaptionModelChange}
+                  isDisabled={isAIProcessing}
+                  variant="secondary"
+                  size="sm"
+                />
+              </PrismButtonGroup>
             </div>
             <div
               className={cn(
@@ -344,7 +383,7 @@ export function InstagramTab({
                 writingLayout ? "min-h-0 flex-1" : "h-full",
               )}
             >
-              <AiProcessingMessage
+              <AIProcessingMessage
                 activeAIIntent={activeAIIntent}
                 isAIProcessing={isAIProcessing}
               />

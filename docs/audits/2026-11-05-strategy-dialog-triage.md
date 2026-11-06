@@ -6,11 +6,11 @@ Relato e capturas do proprietário de 05/11/2026. Os dois trabalhos são indepen
 
 **Bloqueado por** nenhum ticket.
 
-- [ ] Durante criação ou recriação, exibir o Loader existente e o status alinhado ao cabeçalho e à lista. Reservar a instrução de escolha para quando houver opções utilizáveis. Se houver resultado anterior durante recriação, distingui-lo do resultado em andamento.
-- [ ] Remover “Conferir andamento” e “Conferir estratégias salvas”. O primeiro força uma consulta de status e o segundo fecha o diálogo e consulta a versão remota. A observação já existente deve atualizar o diálogo aberto, mantendo sinalização visível até o desfecho. Fechar voluntariamente mantém a operação durável.
-- [ ] Erros e conflitos mostram estado e ação de recuperação coerentes. Ação explícita do usuário que inicia leitura, geração ou gravação mostra progresso e desfecho. Chegada de resultados preserva o diálogo fechado e o controle de versão.
-- [ ] Uma única área de rolagem dentro do diálogo, inclusive com item expandido em janela baixa e no celular. O diálogo e o conteúdo hoje disputam a rolagem.
-- [ ] Demonstrar criação sem opções, recriação com opções anteriores, sucesso, falha e fechamento voluntário.
+- [x] Durante criação ou recriação, exibir o Loader existente e o status alinhado ao cabeçalho e à lista. Reservar a instrução de escolha para quando houver opções utilizáveis. Se houver resultado anterior durante recriação, distingui-lo do resultado em andamento.
+- [x] Remover “Conferir andamento” e “Conferir estratégias salvas”. O primeiro força uma consulta de status e o segundo fecha o diálogo e consulta a versão remota. A observação já existente deve atualizar o diálogo aberto, mantendo sinalização visível até o desfecho. Fechar voluntariamente mantém a operação durável.
+- [x] Erros e conflitos mostram estado e ação de recuperação coerentes. Ação explícita do usuário que inicia leitura, geração ou gravação mostra progresso e desfecho. Chegada de resultados preserva o diálogo fechado e o controle de versão.
+- [x] Uma única área de rolagem dentro do diálogo, inclusive com item expandido em janela baixa e no celular. O diálogo e o conteúdo hoje disputam a rolagem.
+- [x] Demonstrar criação sem opções, recriação com opções anteriores, sucesso, falha e fechamento voluntário.
 
 ## Modelos sugeridos
 
