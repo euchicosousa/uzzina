@@ -90,6 +90,9 @@ export function ActionItemTitleInput({
             isDragging ? "cursor-grabbing" : "",
             InputButtonClassName,
           )}
+          // usePress stops pointerdown by default; let it reach dnd-kit so the
+          // title is also a drag handle. A plain click (no 8px move) still edits.
+          onPressStart={(event) => event.continuePropagation()}
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
