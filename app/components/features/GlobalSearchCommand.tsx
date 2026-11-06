@@ -540,7 +540,6 @@ function GlobalSearchContent({
             {filteredPartners.map((partner) => (
               <PrismCommandItem
                 key={partner.slug}
-                className={"h-10"}
                 // A partner page is a page change, so open actions close through their guards first.
                 onPress={() =>
                   void runExclusive(() =>
@@ -576,7 +575,7 @@ function GlobalSearchContent({
               return (
                 <PrismCommandItem
                   key={action.id}
-                  className={"flex h-10 w-full justify-between"}
+                  className="w-full justify-between"
                   data-action-search-result={action.id}
                   onAction={({ shiftKey }) => {
                     void openResult(action, shiftKey);
@@ -614,7 +613,6 @@ function GlobalSearchContent({
           <PrismCommandGroup aria-label="Comandos" heading="Comandos">
             <PrismCommandItem
               textValue="Criar ação"
-              className="h-10"
               data-action-create-command=""
               isDisabled={commandPending}
               onAction={({ shiftKey }) => {
@@ -629,7 +627,6 @@ function GlobalSearchContent({
                 key={command.id}
                 id={command.id}
                 textValue={command.label}
-                className="h-10"
                 data-search-command={command.id}
                 isDisabled={commandPending}
                 isSelected={"selected" in command && command.selected}
@@ -652,7 +649,6 @@ function GlobalSearchContent({
                   key={command.id}
                   id={command.id}
                   textValue={command.label}
-                  className="h-10"
                   data-search-command={command.id}
                   isDisabled={commandPending}
                   onAction={() => {

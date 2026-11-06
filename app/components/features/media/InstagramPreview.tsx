@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { PrismButton } from "~/components/prism";
 import { detectPostType } from "./InstagramHelpers";
 import { ChevronLeftIcon, ChevronRightIcon, ImageIcon } from "lucide-react";
 
@@ -51,8 +52,8 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
   // On a compact panel the height is fixed and the width follows the ratio, so
   // the preview leaves room for writing without cropping the post.
   const frameClass = compact
-    ? "relative mx-auto h-[min(18rem,45svh)] w-auto max-w-full overflow-hidden rounded-xl bg-black/5 border squircle"
-    : "relative w-full overflow-hidden rounded-xl bg-black/5 border squircle";
+    ? "relative mx-auto h-[min(18rem,45svh)] w-auto max-w-full overflow-hidden rounded-xl border bg-muted squircle"
+    : "relative w-full overflow-hidden rounded-xl border bg-muted squircle";
   const aspectClass = "aspect-[4/5]";
 
   if (!files || files.length === 0) {
@@ -151,35 +152,37 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
 
       {/* Setas de navegação */}
       {canPrev && (
-        <button
-          type="button"
+        <PrismButton
+          size="icon-xs"
+          variant="ghost"
           onClick={() => scrollToSlide(carouselIndex - 1)}
-          className="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
+          className="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
           aria-label="Imagem anterior"
         >
-          <ChevronLeftIcon className="size-4" />
-        </button>
+          <ChevronLeftIcon className="size-4 opacity-100" />
+        </PrismButton>
       )}
       {canNext && (
-        <button
-          type="button"
+        <PrismButton
+          size="icon-xs"
+          variant="ghost"
           onClick={() => scrollToSlide(carouselIndex + 1)}
-          className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
+          className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
           aria-label="Próxima imagem"
         >
-          <ChevronRightIcon className="size-4" />
-        </button>
+          <ChevronRightIcon className="size-4 opacity-100" />
+        </PrismButton>
       )}
 
       {/* Indicador de pontos */}
       <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1">
         {files.map((url, i) => (
-          <button
+          <PrismButton
             key={`${i}-${url}`}
-            type="button"
+            variant="unstyled"
             onClick={() => scrollToSlide(i)}
             aria-label={`Ir para o slide ${i + 1}`}
-            className={`size-1.5 rounded-full transition ${
+            className={`size-1.5 rounded-full transition outline-none focus-visible:ring-3 focus-visible:ring-ring/30 ${
               i === carouselIndex ? "bg-white" : "bg-white/40"
             }`}
           />

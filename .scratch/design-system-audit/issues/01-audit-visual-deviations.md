@@ -89,3 +89,15 @@ Os caminhos em `visual-controls-where.md` estão desatualizados: CalendarToolbar
 - **Verificação:** typecheck, `icon-control-names` e `view-options` (21 pass). Nada foi conferido no navegador.
 
 Roteiro: passar o mouse no avatar em `/app/admin/user/novo` e nos logos de parceiro e cliente; abrir a navegação lateral de `/app/help`; olhar os cartões das visões semana e mês em `/dash`.
+
+## Lote: cabeçalho, busca, observações e mídia — 06/11/2026
+
+- **GlobalSearchCommand:** os cinco grupos de itens (parceiros, ações, Criar ação, comandos e admin) perderam o `h-10` forçado e voltam aos 32px do `PrismCommandItem`.
+- **Header:** o sino perdeu o `rounded-full` e segue o raio de `icon-sm`. Ficam como estão o avatar do perfil, que é redondo de propósito, e as amostras de paleta (`rounded-[9px]`, sem token equivalente).
+- **AppBar** e **CommentInput:** já estavam corrigidos.
+- **CommentItem:** o balão passa de `rounded-lg ring-black/5` para `rounded-2xl` com a borda padrão de container.
+- **ContentReorderDialog:** a miniatura e o aviso vão para `rounded-xl`. A alça e o X ganham `bg-background/80` para ficarem legíveis sobre fotos.
+- **InstagramPreview:** o fundo `bg-black/5` vira `bg-muted`. As setas viram `PrismButton icon-xs` e os pontos viram `PrismButton unstyled`, os dois com anel de foco. Os véus pretos e brancos ficam como exceção justificada, porque imitam o Instagram sobre qualquer foto. Lacuna: os pontos têm 6px e não existe primitivo de indicador.
+- **Testes:** typecheck limpo; `icon-control-names` e `field-accessible-names` passam. `global-search-partners` tem 9 falhas e há mais 1 em navegação ("AI processing blocks leaving…"), que já existiam antes deste lote e não foram investigadas. Nada foi conferido no navegador.
+
+Roteiro: abrir a busca e conferir a altura dos itens e o Shift+Enter; olhar o sino; abrir as Observações; abrir Gerenciar conteúdo com fotos claras e escuras; navegar com Tab nas setas e nos pontos do carrossel do Instagram.

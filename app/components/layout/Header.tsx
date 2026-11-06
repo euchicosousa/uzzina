@@ -438,7 +438,7 @@ export function Header({
                 ? `Notificações (${unreadCount} não lidas)`
                 : "Notificações"
             }
-            className="relative rounded-full"
+            className="relative"
             size="icon-sm"
             variant="ghost"
           >

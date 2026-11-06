@@ -74,13 +74,13 @@ function SortableThumbnail({
     <div
       ref={setNodeRef}
       style={style}
-      className="group relative aspect-square overflow-hidden rounded-lg border bg-muted squircle"
+      className="group relative aspect-square overflow-hidden rounded-xl border bg-muted squircle"
     >
       <PrismButton
         {...attributes}
         {...listeners}
         aria-label={`Reordenar arquivo ${index + 1}`}
-        className="absolute top-1 left-1 z-10 cursor-grab touch-none active:cursor-grabbing"
+        className="absolute top-1 left-1 z-10 cursor-grab touch-none bg-background/80 active:cursor-grabbing"
         size={"icon-xs"}
         variant={"link"}
       >
@@ -97,7 +97,7 @@ function SortableThumbnail({
         ref={removeRef}
         aria-label={`Remover arquivo ${index + 1}`}
         onClick={onRemove}
-        className="absolute top-1 right-1 z-10"
+        className="absolute top-1 right-1 z-10 bg-background/80"
         size={"icon-xs"}
         variant={"ghost-destructive"}
       >
@@ -291,7 +291,7 @@ export function ContentReorderDialog({
       </div>
 
       {!workFiles && postType === "video" && (
-        <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground squircle">
+        <p className="rounded-xl bg-muted px-3 py-2 text-xs text-muted-foreground squircle">
           <strong>Vídeo:</strong> 1º arquivo = vídeo principal. 2º arquivo
           (opcional) = capa/thumbnail que aparece antes do play.
         </p>
