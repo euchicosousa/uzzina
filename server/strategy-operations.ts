@@ -56,7 +56,6 @@ export async function runStrategyWorker(client: SupabaseClient, limit: number) {
       const payload = aiInputSchema.parse(claimed.payload);
       const strategies = await generateStrategies(
         payload,
-        undefined,
         (response) =>
           recordAIUsage(
             client,
@@ -65,6 +64,7 @@ export async function runStrategyWorker(client: SupabaseClient, limit: number) {
             lunaModel.id,
             response,
           ).then(() => undefined),
+        90_000,
       );
       // This transaction commits the recoverable result before touching the action.
       await strategyRPC(client, "store_strategy_result", {

@@ -1,11 +1,12 @@
 import { aiInputSchema, aiResultSchema } from "../app/lib/ai-contract.js";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
-import OpenAI from "openai";
+import { generateAI, type AIGeneration } from "../server/ai-generation.js";
 import { generateStrategies } from "../server/strategy-generation.js";
 import type { Database } from "../types/database";
 import { recordAIUsage } from "../server/ai-usage.js";
-import { lunaModel } from "../server/ai-model-catalog.js";
+import { randomUUID } from "node:crypto";
+import { aiOutputLimits, lunaModel } from "../server/ai-model-catalog.js";
 
 const model = lunaModel.id;
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -173,21 +174,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
     }
+    const reservationId = randomUUID();
+    if (!localCompatibility) {
+      const inputBytes = Buffer.byteLength(JSON.stringify(parsed.data), "utf8");
+      if (inputBytes > 65536)
+        return res.status(413).json({ error: "A solicitação excede 64 KB." });
+      const { data: allowed, error: reservationError } = await supabase.rpc(
+        "reserve_ai_monthly",
+        {
+          p_user_id: user.id,
+          p_id: reservationId,
+          p_input_bytes: inputBytes,
+          p_output_limit: aiOutputLimits[intent],
+        },
+      );
+      if (reservationError || typeof allowed !== "boolean")
+        return res.status(503).json({
+          code: "AI_QUOTA_UNAVAILABLE",
+          error: "Não foi possível verificar a franquia mensal de IA.",
+        });
+      if (!allowed)
+        return res.status(429).json({
+          code: "AI_MONTHLY_ALLOWANCE_EXCEEDED",
+          error: "Sua franquia mensal de IA não tem saldo para esta geração.",
+        });
+    }
     failureStatus = 502;
-    const client = new OpenAI({
-      apiKey,
-      maxRetries: 0,
-    });
-
-    const logUsage = async (
-      response: OpenAI.Chat.Completions.ChatCompletion,
-      intentName: string,
-    ) => {
+    const logUsage = async (response: AIGeneration, intentName: string) => {
       // Development compatibility has no service role and must not write measurements.
       if (localCompatibility) return;
       await recordAIUsage(
         supabase,
-        { userId: user.id, intent: intentName },
+        { userId: user.id, intent: intentName, reservationId },
         response.usage,
         model,
         response,
@@ -198,7 +216,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (intent === "ai-strategy") {
       const strategies = await generateStrategies(
         parsed.data,
-        client,
         async (response) => {
           await logUsage(response, intent);
         },
@@ -275,10 +292,8 @@ ${direcionamento ? `DIRECIONAMENTO PRÁTICO: ${direcionamento}` : ""}
 BRIEFING/INSTRUÇÕES: ${description}
 
 Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
-      const response = await client.chat.completions.create({
-        model: model,
-        service_tier: "default",
-        messages: [
+      const response = await generateAI(
+        [
           {
             role: "system",
             content: systemPrompt,
@@ -288,9 +303,10 @@ Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
             content: userPrompt,
           },
         ],
-      });
+        { intent },
+      );
       await logUsage(response, intent);
-      const generatedHtml = response.choices[0]?.message.content ?? "";
+      const generatedHtml = response.text;
       return res
         .status(200)
         .json(
@@ -298,13 +314,8 @@ Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
         );
     }
     if (intent === "ai-hooks") {
-      const response = await client.chat.completions.create({
-        model,
-        service_tier: "default",
-        response_format: {
-          type: "json_object",
-        },
-        messages: [
+      const response = await generateAI(
+        [
           {
             role: "system",
             content: `Você cria hooks para a marca informada. ${publisherIdentity}
@@ -320,21 +331,15 @@ Retorne somente JSON com "strategies": exatamente 5 objetos, cada um com apenas 
             content: `CONTEXTO DA MARCA E TOM DE VOZ:\n${partner_context}\n\nTEMA GERAL:\n${title}\n\nINSUMO:\n${description}\n\nFORMATO:\n${category}\n\nESTRATÉGIA DISPONÍVEL:\n${headline}\n${racional}\n${direcionamento}\n\nGere as 5 aberturas em JSON com a propriedade "strategies".`,
           },
         ],
-      });
-      await logUsage(response, intent);
-      const output: unknown = JSON.parse(
-        response.choices[0]?.message.content ?? "{}",
+        { intent, json: true },
       );
+      await logUsage(response, intent);
+      const output: unknown = JSON.parse(response.text || "{}");
       return res.status(200).json(aiResultSchema.parse({ output, intent }));
     }
     if (intent === "ai-caption") {
-      const response = await client.chat.completions.create({
-        model: model,
-        service_tier: "default",
-        response_format: {
-          type: "json_object",
-        },
-        messages: [
+      const response = await generateAI(
+        [
           {
             role: "system",
             content: `Você escreve legendas para a marca informada. ${publisherIdentity} Preserve o pedido, a tese, a abertura e a direção do conteúdo fornecido, na voz da marca e em português brasileiro natural. A primeira linha deve dar um motivo específico para continuar; o restante desenvolve a ideia sem repetir mecanicamente o conteúdo. Não invente fatos, dados, depoimentos, hábitos do público ou condições comerciais. Respeite a conversão indicada: OFF sem oferta; ASSISTIDA com a ponte prevista; DIRETA com a oferta fornecida. Sem indicação de venda, não acrescente chamada comercial. Retorne somente JSON com a propriedade 'caption', contendo o texto final não vazio da legenda, sem diagnóstico nem comentários externos.`,
@@ -344,11 +349,10 @@ Retorne somente JSON com "strategies": exatamente 5 objetos, cada um com apenas 
             content: `CONTEXTO DA MARCA:\n${partner_context}\n\nTÍTULO:\n${title}\n\nDIREÇÃO:\n${description}\n\nGere a Legenda em JSON contendo a propriedade "caption".`,
           },
         ],
-      });
-      await logUsage(response, intent);
-      const output: unknown = JSON.parse(
-        response.choices[0]?.message.content ?? "{}",
+        { intent, json: true },
       );
+      await logUsage(response, intent);
+      const output: unknown = JSON.parse(response.text || "{}");
       return res.status(200).json(aiResultSchema.parse({ output, intent }));
     }
     return res.status(400).json({

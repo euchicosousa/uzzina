@@ -12,8 +12,8 @@
 
 **Status:** planejamento registrado em 05/11/2026.
 
-- [ ] Propor organização com PrismTabs. Usar Conta, Aparência e IA como ponto de partida. Mapear as preferências atuais para as abas e avaliar se outras categorias se justificam.
-- [ ] Desenhar na aba IA os padrões por comando, o retorno aos padrões do sistema e o consumo compartilhado. Usar os mesmos nomes e opções do seletor junto à geração.
+- [ ] Propor organização com PrismTabs. Investigar quatro abas: Informações pessoais, Aparência, Funcionamento e Uso de IA. Comparar a proposta com o seletor móvel atual e o layout em duas colunas do desktop.
+- [ ] Mapear tema e paleta para Aparência. Em Funcionamento, reunir layout padrão, visualização inicial de Hoje e a preferência da sidebar do Instagram. Em Uso de IA, apresentar a franquia compartilhada da agência conforme o contrato de acesso atual e verificar a visibilidade por papel. Avaliar onde entram os futuros padrões por comando e o retorno aos padrões do sistema.
 - [ ] Definir o que salva ao confirmar o formulário e o que salva imediatamente por ação explícita. Preservar rascunhos ao trocar de aba, revelar a aba de um campo inválido e evitar sobrescrever preferências salvas por outra superfície.
 - [ ] Rever navegação, foco, quebra no celular, rolagem e acesso ao botão de salvar. Preservar preview de tema, autorizações e fluxo de sessão.
 - [ ] Entregar proposta visual e roteiro de aceite antes de alterar Minha Conta. Usar o armazenamento atual de preferências enquanto ele atender à organização escolhida.

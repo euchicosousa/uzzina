@@ -27,3 +27,10 @@ export const lunaModel = {
     },
   ],
 } as const;
+
+export const aiOutputLimits = {
+  "ai-strategy": 8192,
+  "ai-content": 8192,
+  "ai-hooks": 4096,
+  "ai-caption": 2048,
+} as const;

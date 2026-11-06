@@ -104,12 +104,16 @@
   --late-hover: oklch(from var(--late) calc(l + var(--late-l-delta)) c h);
   --late-foreground: oklch(0.6 0.3 var(--error-hue));
 
-  --color-error: oklch(var(--luminosity) var(--chroma) var(--error-hue));
+  --color-error: oklch(
+    calc(var(--luminosity) * 1.2305) var(--chroma) var(--error-hue)
+  );
   --color-error-background: oklch(
     var(--luminosity-background) var(--chroma-background) var(--error-hue)
   );
 
-  --color-warning: oklch(var(--luminosity) var(--chroma) var(--warning-hue));
+  --color-warning: oklch(
+    calc(var(--luminosity) * 1.56) var(--chroma) var(--warning-hue)
+  );
   --color-warning-background: oklch(
     var(--luminosity-background) var(--chroma-background) var(--warning-hue)
   );
@@ -119,7 +123,9 @@
     var(--luminosity-background) var(--chroma-background) var(--success-hue)
   );
 
-  --color-info: oklch(var(--luminosity) var(--chroma) var(--info-hue));
+  --color-info: oklch(
+    calc(var(--luminosity) * 1.2) var(--chroma) var(--info-hue)
+  );
   --color-info-background: oklch(
     var(--luminosity-background) var(--chroma-background) var(--info-hue)
   );
@@ -193,7 +199,9 @@
   );
   --accent-foreground: var(--foreground);
 
-  --destructive: oklch(var(--luminosity) var(--chroma) var(--error-hue));
+  --destructive: oklch(
+    calc(var(--luminosity) * 1.15) var(--chroma) var(--error-hue)
+  );
 
   --dark-border-l-delta: 0.2;
   --border: oklch(
@@ -245,12 +253,16 @@
   --chroma: 0.2;
   --chroma-background: 0.1;
 
-  --color-error: oklch(var(--luminosity) var(--chroma) var(--error-hue));
+  --color-error: oklch(
+    calc(var(--luminosity) * 1.2305) var(--chroma) var(--error-hue)
+  );
   --color-error-background: oklch(
     var(--luminosity-background) var(--chroma-background) var(--error-hue)
   );
 
-  --color-warning: oklch(var(--luminosity) var(--chroma) var(--warning-hue));
+  --color-warning: oklch(
+    calc(var(--luminosity) * 1.56) var(--chroma) var(--warning-hue)
+  );
   --color-warning-background: oklch(
     var(--luminosity-background) var(--chroma-background) var(--warning-hue)
   );
@@ -260,7 +272,9 @@
     var(--luminosity-background) var(--chroma-background) var(--success-hue)
   );
 
-  --color-info: oklch(var(--luminosity) var(--chroma) var(--info-hue));
+  --color-info: oklch(
+    calc(var(--luminosity) * 1.2) var(--chroma) var(--info-hue)
+  );
   --color-info-background: oklch(
     var(--luminosity-background) var(--chroma-background) var(--info-hue)
   );
@@ -288,7 +302,9 @@
     var(--luminosity-background) var(--chroma-background) var(--error-hue)
   );
   --late-hover: oklch(from var(--late) calc(l + var(--dark-late-l-delta)) c h);
-  --late-foreground: oklch(var(--luminosity) var(--chroma) var(--error-hue));
+  --late-foreground: oklch(
+    calc(var(--luminosity) * 1.15) var(--chroma) var(--error-hue)
+  );
 }
 
 @theme inline {

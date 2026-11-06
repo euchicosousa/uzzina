@@ -3,7 +3,7 @@ import { lunaModel } from "./ai-model-catalog.js";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type AIUsageContext =
-  | { userId: string; intent: string }
+  | { userId: string; intent: string; reservationId?: string }
   | { operationId: string; leaseId: string; intent: "ai-strategy" };
 
 function tokenCount(value: unknown): number | null {
@@ -76,7 +76,10 @@ export async function recordAIUsage(
         cacheWriteTokens * tariff.cacheWrite +
         completionTokens * tariff.output
       : null;
-  const eventId = "leaseId" in context ? context.leaseId : randomUUID();
+  const eventId =
+    "leaseId" in context
+      ? context.leaseId
+      : (context.reservationId ?? randomUUID());
   const args = {
     p_event_id: eventId,
     p_user_id: "userId" in context ? context.userId : undefined,

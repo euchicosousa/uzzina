@@ -176,72 +176,32 @@ export function CalendarDayCell({
               variant={viewOptions.variant}
             />
           )}
-          {celebrations &&
-            celebrations.length > 0 &&
-            (partnerCelebrations ? (
-              <PartnerCelebrations
-                celebrations={celebrations}
-                display={partnerCelebrations}
-              />
-            ) : (
-              <CelebrationContainer celebrations={celebrations} />
-            ))}
+          {celebrations && celebrations.length > 0 && (
+            <CelebrationList
+              celebrations={celebrations}
+              display={partnerCelebrations}
+            />
+          )}
         </div>
       </div>
     </div>
   );
 }
-function CelebrationContainer({
-  celebrations,
-}: {
-  celebrations: Celebration[];
-}) {
-  return (
-    <div className="flex shrink-0 flex-col gap-1 px-2 py-4 text-xs">
-      {celebrations.map((celebration) => (
-        <div
-          key={celebration.id}
-          title={
-            celebration.is_holiday
-              ? `Feriado: ${celebration.title}`
-              : celebration.title
-          }
-        >
-          <div className="flex items-center gap-1.5">
-            <div
-              className={cn(
-                "size-1.5 shrink-0 rounded-full",
-                celebration.is_holiday ? "bg-amber-500" : "bg-primary",
-              )}
-            />
-            <div
-              className={cn(
-                "truncate",
-                celebration.is_holiday
-                  ? "font-medium text-amber-600 opacity-90 dark:text-amber-400"
-                  : "opacity-50",
-              )}
-            >
-              {celebration.title}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function PartnerCelebrations({
+/**
+ * Same markup everywhere. Only the partner calendar passes `display`, which
+ * highlights the dates linked to the partner with the info badge.
+ */
+function CelebrationList({
   celebrations,
   display,
 }: {
   celebrations: Celebration[];
-  display: PartnerCelebrationDisplay;
+  display?: PartnerCelebrationDisplay;
 }) {
   return (
     <ul className="flex min-w-0 flex-col items-start gap-px py-2">
       {celebrations.map(({ id, title, is_holiday: isHoliday }) => {
-        const linked = display.linkedIds?.includes(id);
+        const linked = display?.linkedIds?.includes(id);
         return (
           <li key={id} className="max-w-full leading-none">
             <PrismBadge
@@ -268,7 +228,7 @@ function PartnerCelebrations({
                   <span className="sr-only">Vinculada ao parceiro.</span>
                 </>
               )}
-              {linked === undefined && (
+              {display && linked === undefined && (
                 <span className="sr-only">
                   {display.status === "loading"
                     ? "Consultando vínculo."

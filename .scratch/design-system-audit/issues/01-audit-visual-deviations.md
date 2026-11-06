@@ -32,9 +32,9 @@ O V44 é a referência de controles e contratos. Este ticket executa as correç�
 Base da revisão estática: `cf533cb` até o checkout local, incluindo o commit `3e648fe`. Cobertura de navegador permanece no DS02.
 
 - [x] **C · Identidade do formulário.** Proprietário aceitou o lote. A instância agora usa a identidade da rota para reiniciar campos ao trocar de pessoa ou criar uma nova.
-- [x] **A · Anexos do portal.** Removidas as miniaturas externas. Sem anexos, botão Adicionar arquivos com +. Com anexos, Gerenciar arquivos abre o diálogo compartilhado com Instagram e o botão + mantém nome acessível. Conferência visual no DS02.
+- [x] **A · Anexos do portal.** Removidas as miniaturas externas. Sem anexos, botão Adicionar arquivos com +. Com anexos, Gerenciar arquivos abre o diálogo compartilhado com Instagram e o botão + mantém nome acessível. Proprietário conferiu e aprovou.
 - [x] **B · Geometria aceita.** Proprietário confirmou as colunas em xs e sm. Células lg requerem um diálogo que comporte o calendário.
-- [ ] **B · Dar destino ao seletor de cor em lote.** A mudança feita migra o import de `toHex`. Registrar se a composição atual permanece por contrato ou se cabe a troca pelo seletor Prism, preservando seleção e teclado.
+- [x] **B · Seletor de cor em lote.** Proprietário conferiu e aprovou a composição atual.
 - [ ] **A–C · Aceite renderizado.** Conferir notificações no sino e na página, seletor mobile da Ajuda, calendário do portal, formulários Admin/Auth e Minha Conta. Incluir fluxo de teclado e estados com dados controlados.
 
-O lote D é isolado no editor e não depende dessas correções. Manter os achados A–C abertos até resolver e conferir.
+- [x] **D · Barra do editor.** Padronização concluída, com aceite visual e 14 testes de teclado aprovados.

@@ -1,4 +1,4 @@
-import { beforeEach, afterEach, expect, it, mock } from "bun:test";
+import { beforeEach, afterEach, expect, it, mock, spyOn } from "bun:test";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import handler from "../api/ai";
 
@@ -18,6 +18,7 @@ let output = '{"caption":"Legenda válida"}';
 let failUpstream = false;
 let storeError = false;
 let quota = true;
+let monthlyQuota = true;
 let active = true;
 let authThrows = false;
 
@@ -75,11 +76,11 @@ mock.module("@supabase/supabase-js", () => ({
           }),
         }),
       }),
-      rpc: async (_fn: string, _args: unknown) => {
+      rpc: async (fn: string, _args: unknown) => {
         rpcCalls++;
         eventOrder.push("rpc");
         return {
-          data: quota,
+          data: fn === "reserve_ai_monthly" ? monthlyQuota : quota,
           error: storeError ? { message: "private SQL failure" } : null,
         };
       },
@@ -87,25 +88,49 @@ mock.module("@supabase/supabase-js", () => ({
   },
 }));
 
-mock.module("openai", () => ({
-  default: class {
-    chat = {
-      completions: {
-        create: async (request: {
-          messages: { role: string; content: string }[];
-        }) => {
-          providerMessages = request.messages;
-          calls++;
-          eventOrder.push("openai");
-          if (failUpstream) throw new Error("secret provider failure");
-          return { choices: [{ message: { content: output } }] };
-        },
-      },
-    };
-  },
-}));
+let providerFetch: ReturnType<typeof spyOn<typeof globalThis, "fetch">>;
+let providerRequest: unknown;
 
 beforeEach(() => {
+  providerFetch = spyOn(globalThis, "fetch").mockImplementation(
+    Object.assign(
+      async (...[input, init]: Parameters<typeof fetch>) => {
+        expect(String(input)).toBe(
+          "https://api.openai.com/v1/chat/completions",
+        );
+        expect(new Headers(init?.headers).get("authorization")).toBe(
+          "Bearer fake-key",
+        );
+        const request = JSON.parse(String(init?.body));
+        providerRequest = request;
+        providerMessages = request.messages;
+        calls++;
+        eventOrder.push("openai");
+        if (failUpstream)
+          return Response.json(
+            {
+              error: {
+                message: "private provider failure",
+                type: "server_error",
+              },
+            },
+            { status: 500 },
+          );
+        return Response.json({
+          id: "chatcmpl-test",
+          model: "gpt-6-luna",
+          choices: [
+            {
+              message: { role: "assistant", content: output },
+              finish_reason: "stop",
+              index: 0,
+            },
+          ],
+        });
+      },
+      { preconnect: globalThis.fetch.preconnect },
+    ),
+  );
   calls = 0;
   providerMessages = [];
   rpcCalls = 0;
@@ -117,6 +142,7 @@ beforeEach(() => {
   failUpstream = false;
   storeError = false;
   quota = true;
+  monthlyQuota = true;
   active = true;
   authThrows = false;
 
@@ -133,6 +159,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  providerFetch?.mockRestore();
   for (const key of envKeysToRestore) {
     if (savedEnv[key] === undefined) {
       delete process.env[key];
@@ -348,6 +375,7 @@ it.each(["not-json", "{}", '{"caption":42}', '{"caption":" "}'])(
     output = value;
     expect((await request()).status).toBe(502);
     expect(calls).toBe(1);
+    expect(eventOrder).toEqual(["rpc", "rpc", "openai", "rpc"]);
   },
 );
 
@@ -355,7 +383,10 @@ it("does not expose upstream errors", async () => {
   failUpstream = true;
   const response = await request();
   expect(response.status).toBe(502);
-  expect(JSON.stringify(response.result)).not.toContain("secret");
+  expect(JSON.stringify(response.result)).not.toContain(
+    "private provider failure",
+  );
+  expect(calls).toBe(1);
 });
 
 // --- Casos 1 a 10 de docs/audits/2026-10-07-correcao-ia-gemini.md ---
@@ -487,6 +518,7 @@ it("case 8: strict mode with quota available reserves quota before OpenAI call a
   process.env.OPENAI_API_KEY = "fake-key";
   process.env.SUPABASE_URL = "https://fake.test";
   quota = true;
+  monthlyQuota = true;
   active = true;
 
   const response = await request(payload, "valid");
@@ -495,9 +527,15 @@ it("case 8: strict mode with quota available reserves quota before OpenAI call a
   expect(lastClientKey).toBe("fake-service");
   expect(lastClientOptions?.auth?.persistSession).toBe(false);
   expect(lastClientOptions?.auth?.autoRefreshToken).toBe(false);
-  expect(rpcCalls).toBe(2);
+  expect(rpcCalls).toBe(3);
   expect(calls).toBe(1);
-  expect(eventOrder).toEqual(["rpc", "openai", "rpc"]);
+  expect(eventOrder).toEqual(["rpc", "rpc", "openai", "rpc"]);
+  expect(providerRequest).toMatchObject({
+    model: "gpt-6-luna",
+    service_tier: "default",
+    response_format: { type: "json_object" },
+    max_completion_tokens: 2048,
+  });
 });
 
 it("case 9: strict mode with quota store error returns 503 AI_QUOTA_UNAVAILABLE without OpenAI and does not enter compat mode", async () => {
@@ -530,4 +568,18 @@ it("case 10: strict mode with exhausted quota returns 429 and Retry-After withou
   expect(Number(response.headers["Retry-After"])).toBeGreaterThan(0);
   expect(rpcCalls).toBe(1);
   expect(calls).toBe(0);
+});
+
+it("blocks provider dispatch when the monthly allowance cannot cover the reservation", async () => {
+  process.env.NODE_ENV = "production";
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "fake-service";
+  monthlyQuota = false;
+
+  const response = await request(payload, "valid");
+  expect(response.status).toBe(429);
+  expect(response.result).toMatchObject({
+    code: "AI_MONTHLY_ALLOWANCE_EXCEEDED",
+  });
+  expect(calls).toBe(0);
+  expect(rpcCalls).toBe(2);
 });

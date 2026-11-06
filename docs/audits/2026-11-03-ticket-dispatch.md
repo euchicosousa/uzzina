@@ -1,6 +1,6 @@
 # Central de tickets da UZZINA
 
-Atualizado em 05/11/2026. **21 tickets ativos.** Badge de feriado e foco de Hoje aprovados e retirados da fila; seleção por marca e mídia confirmadas novamente. Consumo de IA com código corrigido e banco instalado; falta publicar o backend e conferir uma geração real. V45 investigado/limpo tecnicamente, registrado no histórico; V44 é referência para a execução do DS01.
+Atualizado em 05/11/2026. **22 tickets ativos.** Badge de feriado e foco de Hoje aprovados e retirados da fila; seleção por marca e mídia confirmadas novamente. Consumo de IA com código corrigido e banco instalado; falta publicar o backend e conferir uma geração real. V45 investigado/limpo tecnicamente, registrado no histórico; V44 é referência para a execução do DS01.
 
 | Nº  | Série                       | Ticket                                                                                                                                           | Próximo passo                                                                                                                                            |
 | --- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -26,5 +26,6 @@ Atualizado em 05/11/2026. **21 tickets ativos.** Badge de feriado e foco de Hoje
 | 19 | Design system | [DS02 — Conferir rota por rota](../../.scratch/design-system-audit/issues/02-route-coverage-and-visual-review.md) | Cobertura exaustiva e aceite visual após o primeiro lote. |
 | 20 | Design system | [DS03 — Interações dos itens de ação](../../.scratch/design-system-audit/issues/03-action-item-interactions.md) | Investigar seleção, edição, foco e arraste em todas as variantes. |
 | 21 | Design system | [DS04 — Microinterações](../../.scratch/design-system-audit/issues/04-microinteractions.md) | Inventariar movimento e propor padrões graduais. |
+| 22 | Design system | [DS05 — Ordem de ícone e texto nos botões](../../.scratch/design-system-audit/issues/05-button-icon-label-order.md) | Pesquisa, inventário e proposta para aceite. |
 
 [Tracker principal](../../.scratch/README.md) · [Histórico consolidado](../../.scratch/archive/resolved-tickets.md). A numeração é posicional; usar o ID da série ao disparar agentes. Registros originais/suspensos permanecem fora da fila. Sem novo commit/push/deploy nesta atualização.

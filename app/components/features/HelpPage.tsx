@@ -293,6 +293,7 @@ export function HelpPage() {
         <div className="mt-4 lg:hidden">
           <PrismSelect
             aria-label="Ir para a seção"
+            className="w-full"
             selectedKey={active}
             onSelectionChange={(key) => {
               if (key) {
@@ -302,12 +303,16 @@ export function HelpPage() {
               }
             }}
           >
-            <PrismSelectTrigger className="w-full">
-              <PrismSelectValue />
+            <PrismSelectTrigger className="data-[size=default]:h-auto data-[size=default]:min-h-10 *:data-[slot=select-value]:line-clamp-none">
+              <PrismSelectValue className="min-w-0 wrap-anywhere whitespace-normal" />
             </PrismSelectTrigger>
             <PrismSelectContent>
               {sections.map((section) => (
-                <PrismSelectItem key={section.id} id={section.id}>
+                <PrismSelectItem
+                  key={section.id}
+                  className="pr-8 [&>span:first-child]:min-w-0 [&>span:first-child]:shrink [&>span:first-child]:wrap-anywhere [&>span:first-child]:whitespace-normal"
+                  id={section.id}
+                >
                   {section.title}
                 </PrismSelectItem>
               ))}

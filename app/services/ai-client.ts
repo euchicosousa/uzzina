@@ -29,8 +29,10 @@ export class AIRequestError extends Error {
       AI_QUOTA_UNAVAILABLE:
         "Não foi possível verificar o limite de uso da IA. Peça ao administrador para conferir o serviço; seu texto foi mantido.",
     };
+    serviceMessages.AI_MONTHLY_ALLOWANCE_EXCEEDED =
+      "Sua franquia mensal de IA não tem saldo para esta geração. Ela renova no primeiro dia do mês, às 00h UTC.";
     super(
-      (status === 503 && code ? serviceMessages[code] : undefined) ||
+      (code ? serviceMessages[code] : undefined) ||
         messages[status] ||
         "Não foi possível gerar conteúdo com IA. Seu texto foi mantido.",
     );

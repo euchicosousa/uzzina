@@ -2,7 +2,7 @@
 
 **Bloqueios** — Primeiro lote do [DS01](01-audit-visual-deviations.md) disponível para conferência. O levantamento de rotas pode começar em paralelo.
 
-**Status** — Planejado.
+**Status** — Em investigação. [Matriz inicial e achados estáticos](../../../docs/audits/2026-11-05-ds02-route-review.md). Comparação no navegador pendente.
 
 ## Modelos sugeridos
 
@@ -20,3 +20,9 @@ Disponibilidade conforme conta e ferramenta de execução.
 - [ ] Inventariar ocorrências novas de cores, tipografia, dimensões, espaçamento, bordas, raios, sombras e movimento. Agrupar pela origem compartilhada e indicar as rotas afetadas.
 - [ ] Aplicar o equivalente existente quando a semântica e os estados forem adequados. Quando a comparação mostrar uma lacuna, registrar a evidência, a proposta de token ou variante, seus consumidores e critérios de aceite. Registrar exceções justificadas. Cruzar datas comemorativas com CAL01.
 - [ ] Fechar a matriz com cobertura, resultados, pendências reais e links para os ajustes. Usar dados controlados para estados que exigem gravação.
+
+## Aceite do proprietário — 05/11
+
+- [x] Cores semânticas e medidor de franquia.
+- [x] Notificações e calendário do portal.
+- [x] Ajuda no celular. Ajuste de largura e quebra dos rótulos aprovado pelo proprietário.

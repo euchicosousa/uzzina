@@ -1,3 +1,4 @@
+import { UAIAllowanceMeter } from "~/components/uzzina/UAIAllowanceMeter";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { createFileRoute } from "@tanstack/react-router";
 import {
@@ -25,7 +26,7 @@ import { preferenceRecord } from "~/lib/preference-persistence";
 import { toast } from "sonner";
 import { Theme, useAppThemeContext } from "~/hooks/useAppTheme";
 import { QUERY_KEYS } from "~/lib/query-keys";
-import { getAgencyAIUsage } from "~/models/ai-usage";
+import { getMyAIAllowance } from "~/models/ai-usage";
 import {
   PrismTabs,
   PrismTabList,
@@ -153,7 +154,7 @@ function ProfilePage() {
     refetch: refetchAIUsage,
   } = useQuery({
     queryKey: QUERY_KEYS.aiUsage(person.user_id),
-    queryFn: () => getAgencyAIUsage(supabase),
+    queryFn: () => getMyAIAllowance(supabase),
     staleTime: 0,
     refetchOnMount: "always",
   });
@@ -325,8 +326,9 @@ function ProfilePage() {
           <h2 className="text-lg font-bold">Informações Pessoais</h2>
 
           {/* Profile Avatar Upload */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 pl-1">
             <CloudinaryUpload
+              variant="ghost"
               className="group relative size-20 shrink-0 cursor-pointer overflow-hidden rounded-full p-0 transition no-squircle! hover:opacity-90"
               cloudName={cloudName}
               folder="uzzina/people"
@@ -646,12 +648,12 @@ function ProfilePage() {
             onCheckedChange={setShowInstagramSidebar}
           />
 
-          {/* AI Consumption (Agency Monthly Usage) */}
+          {/* Personal monthly AI allowance */}
           <div className="grid gap-3 pt-2">
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                 <SparklesIcon className="size-3.5 text-primary" />
-                Uso de IA da Agência
+                Meu uso de IA
               </span>
               {aiUsage?.period && (
                 <span className="text-xs font-medium text-muted-foreground">
@@ -677,36 +679,7 @@ function ProfilePage() {
                 </PrismButton>
               </div>
             ) : aiUsage ? (
-              <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-muted/20 p-4 transition-colors squircle">
-                <div className="flex items-baseline justify-between gap-2">
-                  <span className="text-sm font-semibold text-foreground">
-                    Franquia do Mês
-                  </span>
-                  <span className="text-sm font-bold tracking-tight text-foreground">
-                    {aiUsage.percentage}%{" "}
-                    <span className="text-xs font-normal text-muted-foreground">
-                      utilizado
-                    </span>
-                  </span>
-                </div>
-
-                {/* Progress bar */}
-                <div className="h-2 w-full overflow-hidden rounded-full bg-muted/60">
-                  <div
-                    className={cn(
-                      "h-full rounded-full transition-all duration-500",
-                      aiUsage.percentage > 90
-                        ? "bg-rose-500"
-                        : aiUsage.percentage > 75
-                          ? "bg-amber-500"
-                          : "bg-primary",
-                    )}
-                    style={{
-                      width: `${Math.min(100, Math.max(0, aiUsage.percentage))}%`,
-                    }}
-                  />
-                </div>
-
+              <UAIAllowanceMeter percentage={aiUsage.percentage}>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>
                     {aiUsage.total_generations}{" "}
@@ -714,20 +687,20 @@ function ProfilePage() {
                       ? "geração registrada"
                       : "gerações registradas"}
                   </span>
-                  <span>Referência compartilhada CNVT</span>
+                  <span>Renova às 00h UTC no dia 1</span>
                 </div>
-                {(aiUsage.partial_period ||
-                  aiUsage.incomplete_generations > 0) && (
+                {aiUsage.has_pending && (
                   <p className="text-xs text-muted-foreground" role="status">
-                    {aiUsage.partial_period
-                      ? `Medição iniciada em ${new Date(aiUsage.measurement_started_at).toLocaleDateString("pt-BR", { timeZone: "America/Fortaleza" })}. O uso anterior não está incluído.`
-                      : "Medição parcial neste mês."}
-                    {aiUsage.incomplete_generations > 0
-                      ? ` ${aiUsage.incomplete_generations} geração(ões) sem dados completos de consumo.`
-                      : ""}
+                    Há gerações com saldo reservado aguardando conciliação.
                   </p>
                 )}
-              </div>
+                {aiUsage.incomplete_generations > 0 && (
+                  <p className="text-xs text-muted-foreground" role="status">
+                    {aiUsage.incomplete_generations} geração(ões) sem dados
+                    completos de consumo.
+                  </p>
+                )}
+              </UAIAllowanceMeter>
             ) : (
               <div className="rounded-2xl border border-border/40 bg-muted/10 p-4 text-xs text-muted-foreground squircle">
                 Consumo de IA ainda não medido neste mês.

@@ -56,3 +56,15 @@ A implementação local foi aceita. Hoje, a API e o worker usam o SDK oficial `o
 Esta revisão atualiza o plano. A troca da biblioteca e as verificações com o provedor ficam para a próxima execução.
 
 [Pesquisa de SDKs e opções de roteamento](../../../docs/audits/2026-11-05-ai-provider-sdk.md)
+
+## Migração do SDK verificada localmente — 05/11/2026
+
+A API e o worker passaram a usar `ai@7.0.163` com `@ai-sdk/openai@4.0.109` e Chat Completions direto, com o Luna como único modelo. A chamada mantém a tarifa Standard, modo JSON quando solicitado, zero retries automáticos e timeout de 90 s no worker. O registro usa ID, modelo, modalidade e tokens da resposta original. A medição ocorre antes da validação do texto, inclusive quando o JSON não atende ao contrato. O adaptador de Claude entra na etapa de integração do IA-M04. [Adaptador OpenAI](https://ai-sdk.dev/providers/ai-sdk-providers/openai)
+
+Passaram 112 testes focados com respostas HTTP controladas e os nove builds/imports serverless em Node 22. A conferência cobre os quatro comandos, registro do worker, uso ausente, leitura e gravação de cache, custo e deduplicação nos retries. O SDK requer Node 22 ou superior. Próximo passo no ambiente autorizado: confirmar o runtime, aplicar a migration da medição, publicar API e worker e conciliar uma chamada real do Luna. Nesta etapa não houve escrita em banco hospedado, publicação nem geração paga.
+
+## Publicação em produção — 05/11/2026
+
+Migration aplicada como `20261105223825_ai_provider_metering`. Catálogo confirmou custo decimal e execução do logger apenas para o servidor. Deploy `dpl_EnJmFPKNAsBSixGuxnHDL1Tp8yQ7` Ready e promovido para `uzzina.cnvt.com.br` com Node 24. Build isolado de `d65e912` com o delta local de SDK, excluindo alterações locais dos outros tickets. Nove verificações serverless passaram. Home retornou 200, API e worker 405 em GET, e operações 401 sem sessão.
+
+Geração real de legenda conciliada em produção às 19h42 (Fortaleza). O GPT-6 Luna registrou uma única linha pelo ID da chamada, com 2.060 tokens de entrada (2.057 de gravação em cache, zero de leitura) e 204 de saída (113 de raciocínio já incluídos). A tarifa Standard base versionada produziu US$ 0,000359425, valor recalculado por categoria e igual ao gravado. Aceite operacional do IA-M01 confirmado para o comando de legenda. IA-M03 e IA-M04 seguem separados.

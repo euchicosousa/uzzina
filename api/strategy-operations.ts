@@ -124,6 +124,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (error instanceof SyntaxError)
       return res.status(400).json({ error: "JSON inválido." });
     const code = error instanceof StrategyStoreError ? error.code : null;
+    if (code === "P0003")
+      return res.status(429).json({
+        code: "AI_MONTHLY_ALLOWANCE_EXCEEDED",
+        error: "Sua franquia mensal de IA não tem saldo para esta geração.",
+      });
     if (code === "42501")
       return res
         .status(403)

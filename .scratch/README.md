@@ -1,6 +1,6 @@
 # Tickets abertos da UZZINA
 
-Atualizado em 05/11/2026. **21 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
+Atualizado em 05/11/2026. **22 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
 
 [Histórico consolidado](archive/resolved-tickets.md): 87 documentos encerrados/aprovados e 11 da antiga série C do Planejamento, substituída pela recuperação. Os antigos arquivos individuais foram retirados e seus links redirecionados.
 
@@ -29,6 +29,7 @@ Ao criar um ticket ou mudar seu escopo, inclua as três opções da seção `Mod
 | Design system               | [DS02 — Conferir rota por rota](design-system-audit/issues/02-route-coverage-and-visual-review.md)                                | Cobertura exaustiva e aceite visual após o primeiro lote.                           |
 | Design system               | [DS03 — Interações dos itens de ação](design-system-audit/issues/03-action-item-interactions.md)                                  | Investigar seleção, edição, foco e arraste em todas as variantes.                   |
 | Design system               | [DS04 — Microinterações](design-system-audit/issues/04-microinteractions.md)                                                      | Inventariar movimento e propor padrões graduais.                                    |
+| Design system | [DS05 — Ordem de ícone e texto nos botões](design-system-audit/issues/05-button-icon-label-order.md) | Pesquisa, inventário e proposta para aceite. |
 
 ## Referências fora da fila de execução
 

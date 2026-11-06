@@ -1,3 +1,4 @@
+import { UzzinaAIAllowanceMeterSection } from "~/components/ui-sections/UzzinaAIAllowanceMeterSection";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { SearchIcon, XIcon } from "lucide-react";
@@ -95,6 +96,7 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
       { id: "tokens-colors-palettes", label: "Paletas de Marca" },
       { id: "tokens-colors-semantics", label: "Camadas Semânticas" },
       { id: "tokens-colors-real-world", label: "Aplicação no Mundo Real" },
+      { id: "tokens-colors-feedback", label: "Feedbacks Semânticos" },
     ],
   },
   {
@@ -267,6 +269,12 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
       "dropdown",
       "actioncolordropdown",
     ],
+  },
+  {
+    id: "uzzina-ai-allowance-meter",
+    label: "UAIAllowanceMeter",
+    section: "uzzina",
+    keywords: ["franquia", "consumo", "medição"],
   },
   {
     id: "uzzina-loader",
@@ -1063,6 +1071,7 @@ function UIPage() {
               <UzzinaAvatarSection />
               <UzzinaAvatarSelectorSection />
               <UzzinaColorPickerDropdownSection />
+              <UzzinaAIAllowanceMeterSection />
               <UzzinaLoaderSection />
               <UzzinaPaletteEditorSection />
               <UzzinaPreferenceSwitchSection />

@@ -28,7 +28,8 @@ let failRPC: string | null = null;
 let claim: unknown = null;
 let providerCalls = 0;
 let providerFails = false;
-let providerOptions: unknown;
+let providerFetch: ReturnType<typeof spyOn<typeof globalThis, "fetch">>;
+let providerRequest: unknown;
 const events: { name: string; args: unknown }[] = [];
 const originalEnv = { ...process.env };
 mock.module("@supabase/supabase-js", () => ({
@@ -65,30 +66,51 @@ mock.module("@supabase/supabase-js", () => ({
     },
   }),
 }));
-mock.module("openai", () => ({
-  default: class {
-    constructor(options: unknown) {
-      providerOptions = options;
-    }
-    chat = {
-      completions: {
-        create: async () => {
-          providerCalls++;
-          if (providerFails) throw new Error("private provider error");
-          return {
-            choices: [{ message: { content: JSON.stringify({ strategies }) } }],
-            usage: {
-              prompt_tokens: 100,
-              completion_tokens: 50,
-              total_tokens: 150,
-            },
-          };
-        },
-      },
-    };
-  },
-}));
 beforeEach(() => {
+  providerFetch = spyOn(globalThis, "fetch").mockImplementation(
+    Object.assign(
+      async (...[input, init]: Parameters<typeof fetch>) => {
+        expect(String(input)).toBe(
+          "https://api.openai.com/v1/chat/completions",
+        );
+        expect(init?.signal).toBeInstanceOf(AbortSignal);
+        providerRequest = JSON.parse(String(init?.body));
+        providerCalls++;
+        if (providerFails)
+          return Response.json(
+            {
+              error: {
+                message: "private provider error",
+                type: "server_error",
+              },
+            },
+            { status: 500 },
+          );
+        return Response.json({
+          id: "chatcmpl-worker",
+          model: "gpt-6-luna",
+          service_tier: "default",
+          choices: [
+            {
+              message: {
+                role: "assistant",
+                content: JSON.stringify({ strategies }),
+              },
+              finish_reason: "stop",
+              index: 0,
+            },
+          ],
+          usage: {
+            prompt_tokens: 100,
+            completion_tokens: 50,
+            total_tokens: 150,
+            prompt_tokens_details: { cached_tokens: 20, cache_write_tokens: 5 },
+          },
+        });
+      },
+      { preconnect: globalThis.fetch.preconnect },
+    ),
+  );
   Object.assign(process.env, {
     UZZINA_STRATEGY_ACCEPTING: "true",
     STRATEGY_WORKER_SECRET: "s".repeat(40),
@@ -106,6 +128,7 @@ beforeEach(() => {
   events.length = 0;
 });
 afterEach(() => {
+  providerFetch?.mockRestore();
   for (const key of [
     "UZZINA_DURABLE_STRATEGIES",
     "UZZINA_STRATEGY_ACCEPTING",
@@ -287,6 +310,13 @@ it("awaits generation, retains output, then finalizes independently of a browser
   expect(events[1]?.args).toMatchObject({
     p_operation_id: operationId,
     p_prompt_tokens: 100,
+    p_cached_tokens: 20,
+    p_meter: {
+      provider_id: "chatcmpl-worker",
+      service_tier: "default",
+      cache_write_tokens: 5,
+      cost_nanos: 33_325,
+    },
   });
   const claimArgs = events[0]?.args;
   expect(events[1]?.args).toMatchObject({
@@ -299,7 +329,11 @@ it("awaits generation, retains output, then finalizes independently of a browser
   });
   expect(events[2]?.args).toMatchObject({ p_result: strategies });
   expect(providerCalls).toBe(1);
-  expect(providerOptions).toMatchObject({ timeout: 90000, maxRetries: 0 });
+  expect(providerRequest).toMatchObject({
+    model: "gpt-6-luna",
+    service_tier: "default",
+    response_format: { type: "json_object" },
+  });
 });
 it("reuses a retained result on worker retry without model or quota calls", async () => {
   claim = { id: operationId, payload: {}, result: strategies };

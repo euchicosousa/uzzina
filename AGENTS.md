@@ -73,6 +73,8 @@ UZZINA é a aplicação existente de gestão de ações da agência CNVT: React,
 
 ### Preferências e visual
 
+- Galeria `/ui`: use `UzzinaLoaderSection` como referência para exemplos UZZINA. O componente fica em `app/components/uzzina/` e começa com `U`; use seu nome exato no menu e no título. Monte exemplos interativos com `GallerySection`, `GalleryItem` e `PropsPlayground`: o componente vai em `preview` e os controles de props vão no painel lateral.
+
 - Superfícies e caixas de formulário (regra de design): nunca empacotar seções de formulários, seletores, listas ou blocos de campos em caixas/cartões externos com borda arredondada e fundo (padrão card/caixa com `rounded`, `border`, `bg-card` ou `bg-surface`). Os elementos, seletores e listas fluem diretamente sobre o fundo da página e da área rolável, mantendo a composição limpa e integrada, sem molduras de cartão ao redor de blocos de configuração.
 
 - Planejamento (`/app/planejamento`) herda Header/AppBar; busca, menu comum e botão da página operacional navegam com guardas de saída. `?partner=slug` só seleciona parceiro disponível em `AppContext`; sem parceiro, oferece escolha, sem seleção automática. Campos/geração seguem desativados e a prévia continua vazia, sem IA, consulta nova ou calendário funcional. Duas colunas rolam separadamente com `AppBarSpacer`; abaixo de `lg`, aviso simples. Portal `/dash` mantém identidade, seletor flexível e saída em uma linha, com saudação e texto de sair compactados visualmente no telefone. Regras futuras em [decisões do Planejamento](docs/plans/social-planning-design-decisions.md).

@@ -6,11 +6,61 @@ Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`
 
 ## Pendências reais
 
+### IA-M03: conciliação real e triagem de estratégias — 05/11
+
+Confirmadas quatro chamadas do proprietário em produção após o deploy, todas reservadas e conciliadas: uma legenda, um conteúdo e duas estratégias, ambas salvas. Total US$ 0,002966545. Hooks não apareceu no recorte e teste concorrente continua pendente. [Proposta de dois tickets para o diálogo](2026-11-05-strategy-dialog-triage.md), separada do aceite de IA. Nenhum código do diálogo foi alterado.
+
+### DS02: aceites e Ajuda no celular — 05/11
+
+Proprietário aprovou as cores semânticas e a franquia, as notificações e o calendário do portal. Ajuda no celular ficou aberta: captura mostra opções longas cortadas no seletor. Ajuste local em HelpPage usa a largura disponível e permite quebra nos rótulos selecionado e das opções. Formatação e diff conferidos. Proprietário conferiu e aprovou a Ajuda no celular. O recorte de aceite está concluído; a cobertura ampla do DS02 segue aberta.
+
+### IA-M03: franquia individual publicada — 05/11
+
+O erro de consulta vinha da RPC ausente. Com autorização explícita e fila sem estratégias ativas, a migration `ai_monthly_allowance` foi aplicada como `20261105231859`. A RPC sob papel autenticado retornou 0,01% e uma chamada em novembro para o membro da legenda do IA-M01. Leitura anônima e reserva pelo navegador bloqueadas. Deploy isolado `dpl_DxUDfqvXePspjJxFCx6NEjoYHEYU` Ready no domínio de produção após build, typecheck e nove serverless. Perfil HTTP 200, API/worker 405 em GET e operações 401 sem sessão. Pendente aceite visual, conciliar a primeira geração após a reserva mensal, teste concorrente e validar os tetos dos demais comandos.
+
+### Galeria: feedbacks semânticos — 05/11
+
+A seção de cores de /ui ganhou exemplos de informação, sucesso, alerta e erro em badge, alerta e estado com ícone. Formatação e diff conferidos.
+
+### IA-M03: franquia individual preparada — 05/11
+
+Franquia inicial de US$ 5 por pessoa em mês UTC, reserva antes da geração e na aceitação de estratégias, conciliação por competência e medidor individual em Minha Conta. Histórico ponderado preservado fora da escala USD. Passaram 113 testes focados, nove serverless, typecheck e ensaio sequencial em PostgreSQL isolado. Pendente ensaio concorrente com sessões independentes, calibrar os tetos com saídas reais dos quatro comandos, conferir a tela e publicar com a fila drenada. SQL e código preparados localmente. [IA-M03](../../.scratch/ai-models/issues/03-monthly-ai-allowance.md)
+
+### DS02: simulador da franquia — 05/11
+
+Proprietário aprovou os ajustes dos avatares. A galeria /ui, seção UZZINA, usa UAIAllowanceMeter de Minha Conta com percentual simulado de 0 a 100. Luminosidade OKLCH dos tokens base info, warning e error aumentada em 20%, 30% e 15%, respectivamente, nos dois temas. Playground segue a galeria UZZINA: nome UAIAllowanceMeter no menu e no título, slider no painel de props. Convenção registrada no AGENTS. Ajuste adicional sobre a luminosidade anterior: warning +20% e error +7%, em claro e escuro. Validação visual das faixas pendente.
+
+### IA-M01: publicação em produção — 05/11
+
+Migration `ai_provider_metering` aplicada no Supabase como `20261105223825`; catálogo confirmou custo decimal e execução do logger restrita ao servidor. Vercel Node 24, build isolado de `d65e912` com o delta local de SDK, nove verificações serverless e deploy `dpl_EnJmFPKNAsBSixGuxnHDL1Tp8yQ7` Ready no domínio de produção. Home 200; API e worker 405 em GET; operações 401 sem sessão. As demais alterações locais ficaram fora do deploy. Geração real de legenda conciliada em produção às 19h42 (Fortaleza). O GPT-6 Luna registrou uma única linha pelo ID da chamada, com 2.060 tokens de entrada (2.057 de gravação em cache, zero de leitura) e 204 de saída (113 de raciocínio já incluídos). A tarifa Standard base versionada produziu US$ 0,000359425, valor recalculado por categoria e igual ao gravado. Aceite operacional do IA-M01 confirmado para o comando de legenda. IA-M03 e IA-M04 seguem separados.
+
+### DS02: contorno duplo do avatar — 05/11
+
+Em Minha Conta, o gatilho CloudinaryUpload usa PrismButton secondary com borda e contém UAvatar, cujo PrismAvatar desenha outro contorno em after. Mesma composição candidata nos formulários administrativos. Gatilhos de avatar em Minha Conta, Pessoas e Parceiros usam ghost; Clientes mantém unstyled, já aprovado. Pessoas e Parceiros adotam no-squircle como Clientes. Na franquia, o mês permanece no cabeçalho e o aviso de início foi removido. Conferência visual pendente.
+
+### Minha Conta: franquia e proposta de abas — 05/11
+
+Barra de franquia local usa info abaixo de 75%, warning a partir de 75% e error a partir de 90%. IA-M02 refinado com Informações pessoais, Aparência, Funcionamento e Uso de IA. Avatar de Minha Conta mantém pl-1; os três formulários administrativos usam margem negativa sem o mesmo contêiner rolável imediato. Conferência de recorte, foco, toque e upload pendente no DS02. Diff conferido; sem validação renderizada.
+
+### IA-M01: migração local para o AI SDK — 05/11
+
+API e worker usam o adaptador OpenAI direto do AI SDK da Vercel com Chat Completions e Luna. Mantidos Standard, modo JSON por comando, zero retries automáticos e timeout do worker. A medição usa os dados originais do provedor. 112 testes focados, nove verificações serverless em Node 22 e typecheck passaram. No ambiente autorizado, falta confirmar o runtime, aplicar a migration, publicar a API e o worker e conciliar uma geração real. [IA-M01](../../.scratch/ai-models/issues/01-model-catalog-selection-and-metering.md)
+
+### DS02: matriz inicial por rota — 05/11
+
+[Levantamento estático com subagente](2026-11-05-ds02-route-review.md) registra destinos, papéis, estados e aceites existentes. Pontos para conferir: upload de avatar, cores de franquia e controles de Planejamento. Comparação renderizada e evidências em claro/escuro e larguras ampla/compacta pendentes. Diff documental conferido.
+
+### Aceites do DS01 e abertura do DS05 — 05/11
+
+Proprietário aprovou os anexos do portal e o seletor de cor em lote. Ambos encerrados no DS01; D já conferido. A cobertura por rota e a comparação visual ampla seguem no DS02. Aberto [DS05](../../.scratch/design-system-audit/issues/05-button-icon-label-order.md) para pesquisa e inventário da ordem de ícone e texto, com proposta para aceite. Atualização documental, sem iniciar a investigação.
+
 ### CAL01: contraste dos marcadores — 05/11
 
 Na página do cliente, badges de datas sem vínculo confirmado usam opacidade de 50%. A badge azul de vínculo mantém a opacidade original. Formatação e diff conferidos. Proprietário confirmou o aceite visual local em 05/11. Publicação pendente.
 
 ### DS01 lote D: barra do RichTextEditor — 05/11
+
+Conferência de c270f7c: diff limpo, typecheck e 14 testes focados de teclado reexecutados com sucesso. Aceite visual já registrado; lote D conferido.
 
 Barra principal, BubbleMenu e barra de tabela usam `PrismToggle ghost icon-sm` (estilos), `PrismButton ghost icon-sm` (comandos) e `PrismSeparator`; `toolbarButtonClass` removido. `AriaToolbar`, atalhos Alt+Shift+F10/F9 e Tab para o texto preservados. Typecheck e 14 testes de teclado do editor passaram; proprietário validou visualmente. `tests/drawer-component.test.tsx` tem falhas no painel estreito que já existiam sem esta mudança (verificadas em parte via stash), fora do escopo do lote.
 

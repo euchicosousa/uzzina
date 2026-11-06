@@ -1,4 +1,12 @@
-import { SunIcon, MoonIcon, CheckIcon } from "lucide-react";
+import {
+  SunIcon,
+  MoonIcon,
+  CheckIcon,
+  CircleCheckIcon,
+  CircleXIcon,
+  InfoIcon,
+  TriangleAlertIcon,
+} from "lucide-react";
 import { useAppThemeContext, Theme } from "~/hooks/useAppTheme";
 import { PALLETE } from "~/lib/palettes";
 import {
@@ -18,6 +26,41 @@ import {
   GallerySectionContent,
 } from "./GalleryHelperComponents";
 import { cn } from "cnfast";
+
+const SEMANTIC_FEEDBACK = [
+  {
+    variant: "info",
+    label: "Informação",
+    status: "Atualização disponível",
+    description: "Há uma nova versão para consultar.",
+    color: "text-info",
+    icon: InfoIcon,
+  },
+  {
+    variant: "success",
+    label: "Sucesso",
+    status: "Alterações salvas",
+    description: "As alterações foram salvas com sucesso.",
+    color: "text-success",
+    icon: CircleCheckIcon,
+  },
+  {
+    variant: "warning",
+    label: "Alerta",
+    status: "Atenção necessária",
+    description: "Revise os dados antes de continuar.",
+    color: "text-warning",
+    icon: TriangleAlertIcon,
+  },
+  {
+    variant: "error",
+    label: "Erro",
+    status: "Falha ao salvar",
+    description: "Ocorreu um erro ao salvar as alterações.",
+    color: "text-error",
+    icon: CircleXIcon,
+  },
+] as const;
 
 // 1. Definição das Camadas Semânticas de Cores do Sistema
 const COLOR_SWATCHES = [
@@ -227,7 +270,7 @@ export function TokensColorsSection() {
 
           {/* Container simulando a superfície da página (bg-background) */}
 
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2">
             {/* Bloco 1: Estruturas de Superfície (bg-card sobre bg-background) */}
             <div className="space-y-4 rounded-2xl border bg-card p-6 squircle">
               <div className="flex items-center justify-between">
@@ -279,26 +322,37 @@ export function TokensColorsSection() {
                 </span>
               </div>
             </div>
-
-            {/* Bloco 3: Feedback Semântico */}
-            <div className="space-y-3 rounded-2xl border bg-card p-6 shadow-sm squircle">
-              <span className="text-xs font-bold text-muted-foreground uppercase">
-                Feedbacks Semânticos
-              </span>
-              <PrismAlert variant="success">
-                <PrismAlertTitle>Sucesso</PrismAlertTitle>
-                <PrismAlertDescription>
-                  Operação concluída com sucesso.
-                </PrismAlertDescription>
-              </PrismAlert>
-              <PrismAlert variant="error">
-                <PrismAlertTitle>Erro detectado</PrismAlertTitle>
-                <PrismAlertDescription>
-                  Falha na comunicação com a API.
-                </PrismAlertDescription>
-              </PrismAlert>
-            </div>
           </div>
+        </div>
+        <div className="space-y-6 pt-10" id="tokens-colors-feedback">
+          <h4 className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
+            Feedbacks semânticos
+          </h4>
+          <GallerySectionContent className="grid gap-6 md:grid-cols-2">
+            {SEMANTIC_FEEDBACK.map(
+              ({ variant, label, status, description, color, icon: Icon }) => (
+                <div key={variant} className="space-y-3">
+                  <h5 className="text-xs font-bold text-muted-foreground uppercase">
+                    {label}
+                  </h5>
+                  <PrismBadge variant={variant}>{label}</PrismBadge>
+                  <PrismAlert variant={variant} role="group" aria-label={label}>
+                    <PrismAlertTitle>{status}</PrismAlertTitle>
+                    <PrismAlertDescription>{description}</PrismAlertDescription>
+                  </PrismAlert>
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 text-sm font-medium",
+                      color,
+                    )}
+                  >
+                    <Icon aria-hidden="true" className="size-4 shrink-0" />
+                    {status}
+                  </div>
+                </div>
+              ),
+            )}
+          </GallerySectionContent>
         </div>
       </GallerySection>
     </div>

@@ -40,7 +40,7 @@ const toggleVariants = cva(
         default: "aria-expanded:bg-secondary aria-expanded:text-foreground",
         ghost: "aria-expanded:bg-secondary aria-expanded:text-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] data-selected:bg-primary data-selected:text-primary-foreground aria-pressed:bg-primary aria-pressed:text-primary-foreground",
+          "bg-secondary text-secondary-foreground hover:border-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] data-selected:bg-primary data-selected:text-primary-foreground data-selected:hover:border-primary data-selected:hover:bg-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:hover:border-primary aria-pressed:hover:bg-primary",
         outline: "border border-border bg-transparent",
       },
       // Same names and classes as PrismButton (single source of truth).

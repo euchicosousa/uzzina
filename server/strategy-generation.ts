@@ -1,18 +1,11 @@
-import OpenAI from "openai";
-import { lunaModel } from "./ai-model-catalog.js";
+import { generateAI, type AIGeneration } from "./ai-generation.js";
 import { aiResultSchema, type AIPayload } from "../app/lib/ai-contract.js";
 
 /** Shared editorial contract for browser-requested and durable strategy work. */
 export async function generateStrategies(
   input: AIPayload,
-  client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-    timeout: 90000,
-    maxRetries: 0,
-  }),
-  onUsage?: (
-    response: OpenAI.Chat.Completions.ChatCompletion,
-  ) => Promise<void> | void,
+  onUsage?: (response: AIGeneration) => Promise<void> | void,
+  timeout?: number,
 ) {
   const { category, partner_name, partner_context, title, description } = input;
   const publisherIdentity = `A marca que publica este conteúdo é ${JSON.stringify(partner_name)}. Escreva na voz dessa marca, como autora da publicação. A agência operadora não é a autora por padrão. Preserve menções legítimas a outras marcas quando solicitadas nos insumos; não substitua nem apague essas menções.`;
@@ -23,13 +16,8 @@ export async function generateStrategies(
     stories: "Stories (Sequência)",
   };
   const formattedCategory = categoryMap[category] || category || "Conteúdo";
-  const response = await client.chat.completions.create({
-    model: lunaModel.id,
-    service_tier: "default",
-    response_format: {
-      type: "json_object",
-    },
-    messages: [
+  const response = await generateAI(
+    [
       {
         role: "system",
         content: `Você é o Estrategista de Conteúdo da marca informada.
@@ -77,7 +65,8 @@ Mantenha cada campo com no máximo 1800 caracteres, para permitir seu uso na pr�
         content: `CONTEXTO DA MARCA E TOM DE VOZ:\n${partner_context}\n\nTÍTULO DA AÇÃO:\n${title}\n\nFORMATO DA AÇÃO:\n${formattedCategory}\n\nINSTRUÇÕES / INSUMO DO USUÁRIO (Siga se houver direcionamento específico):\n${description}\n\nGere a resposta em JSON com a propriedade "strategies".`,
       },
     ],
-  });
+    { intent: "ai-strategy", json: true, timeout },
+  );
   if (onUsage) {
     try {
       await onUsage(response);
@@ -85,9 +74,7 @@ Mantenha cada campo com no máximo 1800 caracteres, para permitir seu uso na pr�
       console.error("Strategy onUsage error:", err);
     }
   }
-  const output: unknown = JSON.parse(
-    response.choices[0]?.message.content ?? "{}",
-  );
+  const output: unknown = JSON.parse(response.text || "{}");
   const parsed = aiResultSchema.parse({ output, intent: "ai-strategy" });
   if (parsed.intent !== "ai-strategy")
     throw new Error("Invalid strategy output");

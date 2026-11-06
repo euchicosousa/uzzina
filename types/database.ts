@@ -705,6 +705,19 @@ export type Database = {
         };
         Returns: string;
       };
+      reserve_ai_monthly: {
+        Args: {
+          p_user_id: string;
+          p_id: string;
+          p_input_bytes: number;
+          p_output_limit: number;
+        };
+        Returns: boolean;
+      };
+      get_my_ai_allowance: {
+        Args: Record<string, never>;
+        Returns: Json;
+      };
       get_agency_ai_usage: {
         Args: Record<string, never>;
         Returns: Json;
