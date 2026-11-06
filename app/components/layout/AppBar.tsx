@@ -82,7 +82,7 @@ export function AppBar({
     : null;
   return (
     <div className="fixed bottom-4 left-1/2 z-20 flex -translate-x-1/2 justify-center">
-      <div className="flex items-center gap-2 rounded-2xl border border-foreground/5 bg-popover/95 p-1 shadow-lg backdrop-blur-md squircle dark:border-foreground/10">
+      <div className="flex items-center gap-2 rounded-2xl border border-foreground/10 bg-popover/90 p-2 shadow-lg backdrop-blur-md squircle">
         {/* Home */}
         <Link
           aria-label="Início"
@@ -93,7 +93,7 @@ export function AppBar({
           title="Home"
           to="/app"
         >
-          <HomeIcon className="size-5" />
+          <HomeIcon />
         </Link>
         <PartnerFilterPopover
           activePartners={activePartners}

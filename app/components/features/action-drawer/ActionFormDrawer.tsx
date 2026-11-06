@@ -1129,7 +1129,7 @@ export function ActionFormDrawer({
         >
           {/* Tabs */}
           <div
-            className="flex w-full shrink-0 border-b"
+            className="flex w-full shrink-0"
             data-drawer-navigation
             onKeyDownCapture={(event) => {
               // These view tabs keep the drawer's existing full Tab sequence;
@@ -1139,7 +1139,7 @@ export function ActionFormDrawer({
           >
             <PrismTabList
               aria-label="Seções da ação"
-              className="min-w-0 flex-1 border-b-0"
+              className="h-16 min-w-0 flex-1"
             >
               <PrismTab
                 id="essential"

@@ -31,7 +31,7 @@ export const tabVariants = cva(
     variants: {
       variant: {
         underline:
-          "-mb-px border-b-2 border-b-transparent text-muted-foreground transition-colors data-[hovered]:text-foreground data-[pressed]:text-foreground data-[selected]:border-b-primary data-[selected]:text-foreground",
+          "-mb-px border-b text-muted-foreground transition-colors data-[hovered]:text-foreground data-[pressed]:text-foreground data-[selected]:border-b-primary data-[selected]:text-foreground",
         drawer:
           "border-t-2 border-t-transparent border-x border-x-transparent border-b border-b-border bg-transparent text-muted-foreground transition-colors data-[hovered]:text-foreground data-[selected]:border-t-primary data-[selected]:border-x-border data-[selected]:border-b-transparent data-[selected]:bg-popover data-[selected]:text-foreground data-[focus-visible]:border-t-primary data-[selected]:data-[focus-visible]:bg-input",
       },
@@ -73,11 +73,7 @@ export function PrismTabList<T extends object>({
   const variant = useContext(TabsVariantContext);
   return (
     <TabList
-      className={cn(
-        "flex h-10 min-w-0 shrink-0",
-        variant === "underline" && "border-b border-border",
-        className,
-      )}
+      className={cn("flex h-10 min-w-0 shrink-0", className)}
       data-slot="tab-list"
       {...props}
     />
