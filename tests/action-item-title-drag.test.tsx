@@ -15,8 +15,13 @@ function Harness({ seen }: { seen: string[] }) {
   // The wrapper stands in for dnd-kit's activators (mouse, pointer and touch).
   return (
     <div
-      onMouseDown={() => seen.push("mousedown")}
-      onPointerDown={() => seen.push("pointerdown")}
+      onMouseDown={(e) =>
+        // dnd-kit skips a press whose default was prevented.
+        seen.push(e.nativeEvent.defaultPrevented ? "prevented" : "mousedown")
+      }
+      onPointerDown={(e) =>
+        seen.push(e.nativeEvent.defaultPrevented ? "prevented" : "pointerdown")
+      }
       onTouchStart={() => seen.push("touchstart")}
     >
       <ActionItemTitleInput
@@ -57,9 +62,10 @@ it("while editing, pressing inside the field does not start a drag", () => {
   expect(seen).toEqual([]);
 });
 
-it("a mouse press on the title does not focus it, so the item left behind shows no focus mark", () => {
+it("pressing the title leaves the press untouched for dnd-kit", () => {
   render(<Harness seen={[]} />);
   const title = screen.getByRole("button", { name: "My action" });
   // fireEvent returns false when the event's default was prevented.
-  expect(fireEvent.mouseDown(title)).toBe(false);
+  expect(fireEvent.mouseDown(title)).toBe(true);
+  expect(fireEvent.pointerDown(title)).toBe(true);
 });

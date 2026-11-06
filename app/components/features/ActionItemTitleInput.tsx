@@ -94,9 +94,18 @@ export function ActionItemTitleInput({
             isDragging ? "cursor-grabbing" : "",
             InputButtonClassName,
           )}
-          // A mouse press must not focus the title (underline and focus ring on
-          // the item that stays behind during a drag); the click still edits.
-          onMouseDown={(event) => event.preventDefault()}
+          // dnd-kit ignores a press whose default was prevented, so the press
+          // itself must stay untouched. Instead, a focus that comes from the
+          // mouse is dropped right away: no underline or focus mark on the item
+          // left behind during a drag. Keyboard focus is kept.
+          onFocus={(event) => {
+            try {
+              if (!event.currentTarget.matches(":focus-visible"))
+                event.currentTarget.blur();
+            } catch {
+              // Selector unsupported: keep the focus.
+            }
+          }}
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
