@@ -6,6 +6,10 @@ Produção Ready em 06/11 a partir do push de `main` até `9e25ad7`, no domínio
 
 ## Pendências reais
 
+### Percurso de Tab da gaveta e testes atualizados — 06/11
+
+Bug real corrigido em `1ea70e7`. O commit `b5b5f33` tinha colocado `data-drawer-focus="control"` no rodapé inteiro, e o Tab a partir de Categoria ou Cor passava por Sprints, ID, Duplicar e Arquivar antes de Criar/Atualizar. Parceiros, Fase, Categoria, Cor e Salvar voltaram a ter marcadores próprios (`display: contents`), sem mudar o layout. Em `7a6983d`, os testes foram atualizados aos contratos vigentes: filtros da busca como sufixo, nomes de Data, Cor e ID, rascunhos de texto até o blur, máscara de bordas, diálogo de progresso das estratégias e leitura da franquia ao abrir Minha Conta. Resultados: `drawer-component` 107/0, busca, notificações, IA e estratégias 119/0, e perfil 3/0. Falta conferir o percurso no app: Título → Descrição → Parceiros → Fase → Categoria → Cor → Criar/Atualizar.
+
 ### DS01 por lotes e instrumentação do IA-M05 — 06/11
 
 Commits locais: `d2ff5b0` (usos diretos nas rotas: seletor do portal sem override, login, véus de upload, revisão pública), `ee1851e` (véu do avatar no admin, navegação da Ajuda, raios do calendário do portal) e `8a9f035` (IA-M05). O IA-M05 emite uma linha JSON por pedido (`ai_timing`) e por operação do worker (`strategy_worker_timing`), só com duração por etapa, sem texto nem dados pessoais. O `test:serverless` passou em 9 de 9. A fila (`queue_wait`) continua dependendo da consulta SQL do relatório. Vários itens do inventário `visual-controls-where.md` já estavam corrigidos, e alguns caminhos do inventário estão desatualizados. Ficam para o proprietário a borda branca do ActionItem e o `min-w-375` do calendário do portal. Nada foi conferido no navegador.
