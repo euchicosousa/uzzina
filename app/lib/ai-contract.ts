@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const aiInputSchema = z
   .object({
-    intent: z.enum(["ai-strategy", "ai-content", "ai-hooks", "ai-caption"]),
+    intent: z.enum(["ai-strategy", "ai-content", "ai-caption"]),
     category: z.string().trim().min(1).max(100),
     title: z.string().max(500).default(""),
     description: z.string().max(10000).default(""),
@@ -11,6 +11,8 @@ export const aiInputSchema = z
     racional: z.string().max(2000).default(""),
     headline: z.string().max(2000).default(""),
     direcionamento: z.string().max(2000).default(""),
+    // Optional model for this generation; the server validates it per command.
+    model: z.string().trim().min(1).max(100).optional(),
   })
   .strict();
 
@@ -29,7 +31,6 @@ const strategies = z.object({
 });
 export const aiResultSchema = z.discriminatedUnion("intent", [
   z.object({ intent: z.literal("ai-strategy"), output: strategies }),
-  z.object({ intent: z.literal("ai-hooks"), output: strategies }),
   z.object({
     intent: z.literal("ai-content"),
     output: z.object({ content: text }),

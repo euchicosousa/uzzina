@@ -14,8 +14,9 @@ export class StrategyStoreError extends Error {
 type StrategyRPC =
   | "strategy_ready"
   | "accept_strategy_operation"
+  | "accept_strategy_operation_with_model"
   | "read_strategy_operation"
-  | "claim_strategy_operation"
+  | "claim_strategy_operation_with_model"
   | "store_strategy_result"
   | "finish_strategy_operation"
   | "fail_strategy_operation"
@@ -35,7 +36,7 @@ export async function runStrategyWorker(client: SupabaseClient, limit: number) {
   const leaseId = randomUUID();
   const claimed: unknown = await strategyRPC(
     client,
-    "claim_strategy_operation",
+    "claim_strategy_operation_with_model",
     { p_lease_id: leaseId, p_limit: limit },
   );
   if (claimed === null) return { processed: false };
@@ -61,7 +62,7 @@ export async function runStrategyWorker(client: SupabaseClient, limit: number) {
             client,
             { operationId, leaseId, intent: "ai-strategy" },
             response.usage,
-            lunaModel.id,
+            payload.model ?? lunaModel.id,
             response,
           ).then(() => undefined),
         90_000,

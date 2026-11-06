@@ -711,6 +711,7 @@ export type Database = {
           p_id: string;
           p_input_bytes: number;
           p_output_limit: number;
+          p_model?: string;
         };
         Returns: boolean;
       };

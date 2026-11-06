@@ -65,7 +65,7 @@ Mantenha cada campo com no máximo 1800 caracteres, para permitir seu uso na pr�
         content: `CONTEXTO DA MARCA E TOM DE VOZ:\n${partner_context}\n\nTÍTULO DA AÇÃO:\n${title}\n\nFORMATO DA AÇÃO:\n${formattedCategory}\n\nINSTRUÇÕES / INSUMO DO USUÁRIO (Siga se houver direcionamento específico):\n${description}\n\nGere a resposta em JSON com a propriedade "strategies".`,
       },
     ],
-    { intent: "ai-strategy", json: true, timeout },
+    { intent: "ai-strategy", json: true, timeout, model: input.model },
   );
   if (onUsage) {
     try {

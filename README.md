@@ -34,14 +34,11 @@ Por decisão do proprietário em27/10/2026, `bun run dev` usa **o banco de produ
 | Arquivo privado | Finalidade |
 |---|---|
 | .env.production.local | Configuração ativa de desenvolvimento/build local, com banco/chaves de produção |
-| .env.vercel-production.local | Cópia das variáveis de publicação na Vercel UZZINA/Production |
-| .env.staging.local | Configuração histórica de staging, preservada para scripts explicitamente destinados a esse projeto; não carregada pelo dev padrão |
-| .env.staging-users.local | Contas fictícias históricas dos scripts de staging; não usadas para login no localhost nem importadas na Vercel |
 | .env.backup.local | Conexão privada para backup/operações PostgreSQL; não importar na Vercel |
 
-O build local (`bun run build`) também carrega `.env.production.local`. A Vercel usa suas próprias variáveis. Todos esses arquivos ficam fora do Git. O arquivo de produção da pasta lead pertence a outro projeto Vercel. Mantenha os envs específicos por modo: um `.env` genérico pode ser pré-carregado pelo Bun e sobrepor valores antes do Vite.
+O build local (`bun run build`) também carrega `.env.production.local`. A Vercel usa suas próprias variáveis, mantidas no painel do projeto (não há mais cópia local). Os envs históricos de staging foram movidos para fora do projeto, em `~/uzzina-env-arquivo/`; os scripts de staging só funcionam se eles voltarem à raiz. Todos esses arquivos ficam fora do Git. O arquivo de produção da pasta lead pertence a outro projeto Vercel. Mantenha os envs específicos por modo: um `.env` genérico pode ser pré-carregado pelo Bun e sobrepor valores antes do Vite.
 
-As dez variáveis do arquivo de publicação são:
+As variáveis de publicação configuradas na Vercel são:
 
 | Variável | Uso |
 |---|---|
@@ -50,6 +47,7 @@ As dez variáveis do arquivo de publicação são:
 | SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY | APIs; mesmos valores das correspondentes públicas, exigidos diretamente por create-user |
 | SUPABASE_SERVICE_ROLE_KEY | Acesso privilegiado somente no servidor; aceita a secret key moderna configurada |
 | OPENAI_API_KEY | Geração de IA somente no servidor |
+| ANTHROPIC_API_KEY | Modelos Claude, somente no servidor. Opcional enquanto só o Luna estiver em uso; sem ela, a API recusa os modelos Claude com 503 antes de reservar quota |
 | APP_ORIGIN | Legado sem uso no portal; não restringe login, logout ou mutações |
 | AI_DAILY_LIMIT | Limite técnico opcional, padrão100 tentativas por usuário/dia UTC |
 

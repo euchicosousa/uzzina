@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { lunaModel } from "./ai-model-catalog.js";
+import { findAIModel, lunaModel } from "./ai-model-catalog.js";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type AIUsageContext =
@@ -49,10 +49,14 @@ export async function recordAIUsage(
   const actualModel = response?.model ?? model;
   const providerId = response?.id || null;
   const tier = response?.service_tier ?? "default";
+  // Price by the model that actually answered; an unknown model stays pending.
+  const priced = findAIModel(actualModel);
+  const provider =
+    (priced ?? findAIModel(model))?.provider ?? lunaModel.provider;
   const tariff =
-    promptTokens === null
+    promptTokens === null || priced === undefined
       ? undefined
-      : lunaModel.tariffs.find((band) => promptTokens <= band.maxInputTokens);
+      : priced.tariffs.find((band) => promptTokens <= band.maxInputTokens);
   const completionDetails = values.completion_tokens_details;
   const reasoningTokens = tokenCount(
     typeof completionDetails === "object" &&
@@ -62,7 +66,7 @@ export async function recordAIUsage(
       : undefined,
   );
   const costNanos =
-    actualModel === lunaModel.id &&
+    priced !== undefined &&
     tier === "default" &&
     promptTokens !== null &&
     tariff !== undefined &&
@@ -86,7 +90,7 @@ export async function recordAIUsage(
     p_intent: context.intent,
     p_model: actualModel,
     p_meter: {
-      provider: lunaModel.provider,
+      provider,
       provider_id: providerId,
       service_tier: tier,
       cache_write_tokens:

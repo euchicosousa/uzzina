@@ -55,7 +55,7 @@ mock.module("@supabase/supabase-js", () => ({
         data:
           name === "strategy_ready"
             ? true
-            : name === "claim_strategy_operation"
+            : name === "claim_strategy_operation_with_model"
               ? claim
               : name === "store_strategy_result" ||
                   name === "fail_strategy_operation"
@@ -302,7 +302,7 @@ it("awaits generation, retains output, then finalizes independently of a browser
   const response = await signedWake();
   expect(response.status).toBe(200);
   expect(events.map((event) => event.name)).toEqual([
-    "claim_strategy_operation",
+    "claim_strategy_operation_with_model",
     "record_ai_generation",
     "store_strategy_result",
     "finish_strategy_operation",
@@ -339,7 +339,7 @@ it("reuses a retained result on worker retry without model or quota calls", asyn
   claim = { id: operationId, payload: {}, result: strategies };
   expect((await signedWake()).status).toBe(200);
   expect(events.map((event) => event.name)).toEqual([
-    "claim_strategy_operation",
+    "claim_strategy_operation_with_model",
     "finish_strategy_operation",
   ]);
   expect(providerCalls).toBe(0);
@@ -415,7 +415,7 @@ it("accepts permanent strategy work with real configuration and no rollout flag"
 it("runs the configured permanent worker with a signed wake and no rollout flag", async () => {
   delete process.env.UZZINA_DURABLE_STRATEGIES;
   expect((await signedWake()).status).toBe(200);
-  expect(events[0]?.name).toBe("claim_strategy_operation");
+  expect(events[0]?.name).toBe("claim_strategy_operation_with_model");
 });
 
 function signedWakeHeaders(
@@ -441,7 +441,7 @@ const signedWake = () =>
 it("accepts a fresh correctly signed worker wake without sending the raw worker key", async () => {
   const response = await signedWake();
   expect(response.status).toBe(200);
-  expect(events[0]?.name).toBe("claim_strategy_operation");
+  expect(events[0]?.name).toBe("claim_strategy_operation_with_model");
 });
 it("rejects the legacy raw worker bearer even when its key is valid", async () => {
   expect(
@@ -561,8 +561,8 @@ it("permits a still-valid signed wake to be delivered again while persisted oper
     (await request(worker, { method: "POST", token: null, headers })).status,
   ).toBe(200);
   expect(events.map((event) => event.name)).toEqual([
-    "claim_strategy_operation",
-    "claim_strategy_operation",
+    "claim_strategy_operation_with_model",
+    "claim_strategy_operation_with_model",
   ]);
   expect(providerCalls).toBe(0);
 });
@@ -625,7 +625,7 @@ it("accounting failure does not prevent retaining and applying a generated strat
   try {
     expect((await signedWake()).status).toBe(200);
     expect(events.map((event) => event.name)).toEqual([
-      "claim_strategy_operation",
+      "claim_strategy_operation_with_model",
       "record_ai_generation",
       "record_ai_generation",
       "store_strategy_result",

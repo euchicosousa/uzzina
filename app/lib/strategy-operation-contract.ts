@@ -23,6 +23,7 @@ export const strategyCommandSchema = z.discriminatedUnion("command", [
   z
     .object({
       command: z.literal("accept"),
+      model: z.string().trim().min(1).max(100).optional(),
       actionId: z.uuid(),
       operationId: z.uuid(),
       expectedVersion: z.string().min(19).max(35),

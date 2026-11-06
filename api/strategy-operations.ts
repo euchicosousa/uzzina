@@ -4,6 +4,7 @@ import {
   strategyCommandSchema,
   strategyOperationSchema,
 } from "../app/lib/strategy-operation-contract.js";
+import { defaultAIModelId, findAIModel } from "../server/ai-model-catalog.js";
 import { extractBearerToken } from "../server/auth.js";
 import {
   createServiceClient,
@@ -103,14 +104,40 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res
         .status(409)
         .json({ error: "A operação mudou. Reabra a ação para conferir." });
+    const model =
+      command.command === "accept"
+        ? findAIModel(command.model ?? defaultAIModelId)
+        : undefined;
+    if (command.command === "accept" && !model?.intents.includes("ai-strategy"))
+      return res
+        .status(400)
+        .json({
+          error: "O modelo escolhido não está disponível para estratégias.",
+        });
+    if (model?.provider === "anthropic" && !process.env.ANTHROPIC_API_KEY)
+      return res
+        .status(503)
+        .json({
+          error: "O modelo escolhido não está configurado neste ambiente.",
+        });
+    const selectedModel = model?.id ?? defaultAIModelId;
     const operation =
       command.command === "accept"
-        ? await strategyRPC(client, "accept_strategy_operation", {
-            p_user_id: user.id,
-            p_action_id: command.actionId,
-            p_operation_id: command.operationId,
-            p_expected_version: command.expectedVersion,
-          })
+        ? await strategyRPC(
+            client,
+            selectedModel === defaultAIModelId
+              ? "accept_strategy_operation"
+              : "accept_strategy_operation_with_model",
+            {
+              ...(selectedModel === defaultAIModelId
+                ? {}
+                : { p_model: selectedModel }),
+              p_user_id: user.id,
+              p_action_id: command.actionId,
+              p_operation_id: command.operationId,
+              p_expected_version: command.expectedVersion,
+            },
+          )
         : await strategyRPC(client, "retry_strategy_result", {
             p_user_id: user.id,
             p_operation_id: command.operationId,

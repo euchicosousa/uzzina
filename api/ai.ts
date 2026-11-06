@@ -6,9 +6,12 @@ import { generateStrategies } from "../server/strategy-generation.js";
 import type { Database } from "../types/database";
 import { recordAIUsage } from "../server/ai-usage.js";
 import { randomUUID } from "node:crypto";
-import { aiOutputLimits, lunaModel } from "../server/ai-model-catalog.js";
+import {
+  aiOutputLimits,
+  defaultAIModelId,
+  findAIModel,
+} from "../server/ai-model-catalog.js";
 
-const model = lunaModel.id;
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   let failureStatus = 503;
   try {
@@ -103,6 +106,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       headline,
       direcionamento,
     } = parsed.data;
+    // Resolve provider and model before any quota is reserved. An unknown or
+    // unvalidated model never falls back silently to another one.
+    const model = parsed.data.model ?? defaultAIModelId;
+    const modelEntry = findAIModel(model);
+    if (!modelEntry || !modelEntry.intents.includes(intent))
+      return res.status(400).json({
+        code: "AI_MODEL_UNAVAILABLE",
+        error: "O modelo escolhido não está disponível para este comando.",
+      });
+    if (modelEntry.provider === "anthropic" && !process.env.ANTHROPIC_API_KEY)
+      return res.status(503).json({
+        code: "AI_CONFIGURATION_MISSING",
+        error: "O modelo escolhido não está configurado neste ambiente.",
+      });
     const publisherIdentity = `A marca que publica este conteúdo é ${JSON.stringify(partner_name)}. Escreva na voz dessa marca, como autora da publicação. A agência operadora não é a autora por padrão. Preserve menções legítimas a outras marcas quando solicitadas nos insumos; não substitua nem apague essas menções.`;
 
     const clientKey = localCompatibility
@@ -186,6 +203,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           p_id: reservationId,
           p_input_bytes: inputBytes,
           p_output_limit: aiOutputLimits[intent],
+          // The default model keeps the original call shape, so an API deploy
+          // does not depend on the model-aware reservation migration.
+          ...(model === defaultAIModelId ? {} : { p_model: model }),
         },
       );
       if (reservationError || typeof allowed !== "boolean")
@@ -303,7 +323,7 @@ Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
             content: userPrompt,
           },
         ],
-        { intent },
+        { intent, model },
       );
       await logUsage(response, intent);
       const generatedHtml = response.text;
@@ -312,30 +332,6 @@ Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
         .json(
           aiResultSchema.parse({ output: { content: generatedHtml }, intent }),
         );
-    }
-    if (intent === "ai-hooks") {
-      const response = await generateAI(
-        [
-          {
-            role: "system",
-            content: `Você cria hooks para a marca informada. ${publisherIdentity}
-Gere exatamente 5 aberturas para a direção recebida, em 2 ou 3 rotas de atenção. Preserve a estratégia e o pedido; não escreva a peça completa.
-Escolha os mecanismos pelo que a pessoa precisa perceber: reconhecimento, curiosidade, contraste, consequência, utilidade específica, identidade ou prova/demonstração. Use a rota principal sugerida pelo briefing e alternativas fundamentadas. As opções devem variar em mecanismo ou construção, não ser paráfrases; use no máximo duas da mesma família de construção.
-Cada abertura deve ser clara de primeira, específica deste público e natural na voz da marca. A promessa deve caber na entrega planejada ou no corpo fornecido. Não invente comportamentos, fatos, estatísticas, casos, resultados ou tendências. Sem corpo pronto, não alegue ter conferido uma entrega que ainda não existe.
-Adapte ao formato informado: Reel combina fala, texto de tela e primeira imagem sem repetição; carrossel combina capa e visual legíveis em miniatura; estático relaciona frase e imagem; Stories abre a sequência com uma cena ou unidade clara. Sem formato definido, não presuma um.
-Respeite restrições e conversão do briefing. Sem indicação de venda, use OFF. Descarte internamente promessas sem sustentação, aberturas obscuras e bordões genéricos. Entre as opções válidas, recomende a mais forte para o objetivo e justifique em uma frase.
-Retorne somente JSON com "strategies": exatamente 5 objetos, cada um com apenas headline, angulo, racional e direcionamento, todos textos não vazios e com no máximo 1800 caracteres por campo. "headline" contém a abertura pronta; "angulo" identifica a rota e o mecanismo; "racional" explica por que funciona neste caso; "direcionamento" descreve a execução visual ou oral e a entrega que sustenta a promessa. Inclua "Recomendado: " e a justificativa no racional de exatamente uma opção, sem adicionar campos ao JSON.`,
-          },
-          {
-            role: "user",
-            content: `CONTEXTO DA MARCA E TOM DE VOZ:\n${partner_context}\n\nTEMA GERAL:\n${title}\n\nINSUMO:\n${description}\n\nFORMATO:\n${category}\n\nESTRATÉGIA DISPONÍVEL:\n${headline}\n${racional}\n${direcionamento}\n\nGere as 5 aberturas em JSON com a propriedade "strategies".`,
-          },
-        ],
-        { intent, json: true },
-      );
-      await logUsage(response, intent);
-      const output: unknown = JSON.parse(response.text || "{}");
-      return res.status(200).json(aiResultSchema.parse({ output, intent }));
     }
     if (intent === "ai-caption") {
       const response = await generateAI(
@@ -349,7 +345,7 @@ Retorne somente JSON com "strategies": exatamente 5 objetos, cada um com apenas 
             content: `CONTEXTO DA MARCA:\n${partner_context}\n\nTÍTULO:\n${title}\n\nDIREÇÃO:\n${description}\n\nGere a Legenda em JSON contendo a propriedade "caption".`,
           },
         ],
-        { intent, json: true },
+        { intent, json: true, model },
       );
       await logUsage(response, intent);
       const output: unknown = JSON.parse(response.text || "{}");
