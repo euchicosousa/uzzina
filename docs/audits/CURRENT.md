@@ -1,10 +1,14 @@
 # UZZINA — estado atual
 
-Atualizado em 03/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
+Atualizado em 06/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-Produção confirmada Ready em01/11 no deploy `dpl_Fe9vmb1gTokKiPGEeP2qAXDK33rz`, domínio `uzzina.cnvt.com.br`, código `a714b2d`: regra de endereço do portal removida a pedido do proprietário. GitHub sincronizado com main até `7f53e85` (a4eac79..7f53e85); produção continua em `a714b2d`. Estratégias09 permanecem permanentes/ativas. [Remoção](2026-11-01-remove-portal-origin-rule.md), [rollout de estratégias](2026-11-01-strategy-permanent-rollout.md). Verificações anteriores permanecem no histórico.
+Produção Ready em 06/11 a partir do push de `main` até `9e25ad7`, no domínio `uzzina.cnvt.com.br`, conforme o painel da Vercel. O deploy inclui a interface do IA-M04 (seletor e três padrões pessoais), EST-01/02 e a correção de Gerar conteúdo. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
 
 ## Pendências reais
+
+### Publicação de 06/11: commits e deploy
+
+O trabalho local foi organizado em cinco commits (`da5bad2..9e25ad7`). As quatro migrations de 06/11 já aplicadas passaram a ser versionadas. O proprietário fez o push e a Vercel mostrou Ready para `9e25ad7`. `bun run test:serverless` passou em 9 de 9 após a publicação, mas não antes dela. Os testes da gaveta não foram rodados nesta rodada; `drawer-component` tem 14 falhas conhecidas de painel estreito e foco. As worktrees dos subagentes EST foram removidas e preservadas nas tags `backup/est-01`, `backup/est-02` e `backup/est-0N-worktree`. Pendente: aceite visual em produção do seletor de modelo, dos padrões em Minha Conta e do diálogo de estratégias, e uma geração real em ação que já tem conteúdo.
 
 ### IA-M04: migração dos três padrões aplicada — 06/11
 
