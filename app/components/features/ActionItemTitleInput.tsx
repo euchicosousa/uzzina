@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { cn } from "cnfast";
 import { useMultiSelection } from "~/hooks/useMultiSelection";
-import { PrismButton } from "../prism";
 export function ActionItemTitleInput({
   title,
   isDragging,
@@ -55,6 +54,8 @@ export function ActionItemTitleInput({
           // Keep typing and text selection away from dnd-kit's sortable
           // keyboard/pointer activators on the wrapper.
           onPointerDown={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
           onKeyDown={(e) => {
             e.stopPropagation();
             if (e.key === "Enter") {
@@ -83,16 +84,16 @@ export function ActionItemTitleInput({
           {localTitle}
         </span>
       ) : (
-        <PrismButton
-          variant={"unstyled"}
+        // A native button, not PrismButton: react-aria's usePress stops the
+        // mousedown/touch events, which would keep dnd-kit's mouse and touch
+        // sensors from starting a drag on the title. A plain click still edits.
+        <button
+          type="button"
           className={cn(
             "w-full cursor-text truncate text-left leading-[inherit] focus:underline",
             isDragging ? "cursor-grabbing" : "",
             InputButtonClassName,
           )}
-          // usePress stops pointerdown by default; let it reach dnd-kit so the
-          // title is also a drag handle. A plain click (no 8px move) still edits.
-          onPressStart={(event) => event.continuePropagation()}
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -100,7 +101,7 @@ export function ActionItemTitleInput({
           }}
         >
           {localTitle}
-        </PrismButton>
+        </button>
       )}
     </div>
   );

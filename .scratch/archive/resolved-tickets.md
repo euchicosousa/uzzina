@@ -8264,3 +8264,7 @@ Encerrado em 06/11/2026 a pedido do proprietário, com a alternativa A implement
 ## IA-M05 — Indicador de progresso simulado
 
 Encerrado com aceite do proprietário em 06/11 (segunda aprovação): componente de progresso, linha das abas e barra. [Ticket](../ai-models/issues/05-ai-generation-latency.md).
+
+## DS05 — Ordem de ícone e texto nos botões
+
+Encerrado com aceite do proprietário em 06/11/2026: todo ícone fica à direita do texto. [Ticket](../design-system-audit/issues/05-button-icon-label-order.md).

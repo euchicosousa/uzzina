@@ -6,6 +6,10 @@ Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 
 
 ## Pendências reais
 
+### Ícones à direita aceitos; arrastar pelo título corrigido; Planejamento em espera — 06/11
+
+O proprietário aceitou o DS05 (todo ícone à direita do texto), que saiu da fila. O teste de arrastar pelo título falhou na `main`: a correção de toque (DS03-E) trocou o sensor de ponteiro pelo de mouse, e o botão do título (react-aria) interrompe o evento de mouse, então o arraste não começava. O título agora é um botão nativo, que deixa arrastar de qualquer ponto; clicar nele continua abrindo a edição no lugar, e dentro do campo de edição não arrasta. Falta o proprietário testar no app. Planejamento (T01 a T11, inclusive o T02 do banco) fica em espera, junto com os demais tickets dessa sessão. A migration de reserva por modelo está aplicada em produção (conferida por leitura no projeto `bussola`).
+
 ### Decisões do proprietário e fechamentos — 06/11
 
 - **DS03:** o item E (rolagem com o dedo e arraste com toque longo) foi aceito como comportamento esperado e integrado à main. O ticket segue aberto só para o item C: arrastar um item de ação pelo título. Pela explicação do proprietário, o arraste vale em qualquer parte do item; clicar no título transforma o título em campo de texto; clicar em outra parte abre a gaveta da ação. A implementação está no branch `proposal/ds03-c-title-drag` e aguarda o teste de arraste do proprietário.

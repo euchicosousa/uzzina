@@ -4,7 +4,7 @@
 
 **Bloqueios:** Nenhum. Coordenar a cobertura com DS02.
 
-**Status:** decisão do proprietário em 06/11/2026: todos os ícones à direita do texto. A decisão anterior (ícone à esquerda) está superada. Implementação em andamento no branch fix/ds05-icons-right; ticket segue aberto.
+**Status:** encerrado com aceite do proprietário em 06/11/2026. Regra: todo ícone fica à direita do texto (botões só com ícone não contam). Implementado em 27 arquivos e conferido pelo proprietário no app. Ficaram como estavam, por decisão dele: gatilhos de seleção com o ícone do valor escolhido, o botão de notificar responsáveis e os links de texto "Voltar".
 
 ## Modelos sugeridos
 
