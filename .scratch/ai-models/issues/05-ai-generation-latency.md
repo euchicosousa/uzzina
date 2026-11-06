@@ -10,7 +10,7 @@
 
 **Bloqueado por.** Nenhum ticket. Usar as chamadas e registros disponíveis no IA-M04. Novas chamadas reais, se necessárias, devem ter escopo autorizado.
 
-**Status.** Pronto para investigação.
+**Status.** Investigação de código entregue; medição real pendente da instrumentação proposta.
 
 ## Critérios de aceite
 
@@ -20,3 +20,12 @@
 - [ ] Recomendar o menor ajuste que ataque o gargalo medido. Explicitar impacto em qualidade, custo, complexidade, salvamento, controle de versão e proteção contra chamadas duplicadas. Registrar qual hipótese testar primeiro e como medir o resultado.
 
 O escopo desta entrega é diagnóstico e decisão. Mudanças no fluxo de geração ficam para uma execução posterior.
+
+## Investigação — 06/11/2026
+
+Relatório: [2026-11-06-ia-m05-ai-latency.md](../../../docs/audits/2026-11-06-ia-m05-ai-latency.md). Análise somente de código; nenhuma medição real.
+
+- Nenhum `reasoningEffort` é definido; a diferença Luna x Astra é provavelmente tempo de provedor (inferido). Fila, preflight e polling não dependem do modelo.
+- Estratégias têm espera fixa por construção: cron de 30 s (média 15 s) mais quatro requisições de preflight e polling de 2 s.
+- Menor ajuste proposto: esforço de raciocínio por modelo/comando no catálogo; depois acordar o worker na aceitação. Streaming só para conteúdo, se ainda necessário.
+- Medição: consulta somente leitura (`ai_generation_logs` x `strategy_operations`) e logs por etapa propostos no relatório; nada aplicado.

@@ -6,6 +6,16 @@ Produção Ready em 06/11 a partir do push de `main` até `9e25ad7`, no domínio
 
 ## Pendências reais
 
+### Investigações IA-M02, IA-M05, DS03, DS04 e DS05 — 06/11
+
+Cinco subagentes (Sonnet; Haiku no DS04) entregaram relatórios só por leitura de código. Não houve navegador, banco nem geração. Os achados principais foram conferidos no código. Nada de código mudou e tudo aguarda decisão do proprietário.
+
+- [IA-M02](2026-11-06-ia-m02-profile-tabs-proposal.md): quatro abas e um único Salvar. Propõe enviar só os campos alterados, porque hoje o envio sempre manda tema, cor, layout e sidebar. Ficam perguntas abertas: uso pessoal ou franquia da agência, e abas também no desktop.
+- [IA-M05](2026-11-06-ia-m05-ai-latency.md): nenhum `reasoningEffort` configurado, então o provável gargalo do Astra é o raciocínio no provedor. As estratégias esperam o `pg_cron` de 30 s, porque nada acorda o worker na aceitação. A medição real depende da consulta e da instrumentação propostas.
+- [DS03](2026-11-06-ds03-action-item-interactions.md): o título sempre entra em edição e interrompe o evento, mesmo no modo seleção (`ActionItemTitleInput.tsx:76`). Também há arraste por teclado na Sprint a partir do campo de título, três paradas de Tab por item e `touch-action: none` em todos os itens. Propõe os tickets DS03-A a F.
+- [DS04](2026-11-06-ds04-microinteractions.md): `animate-in`/`zoom-in-95` dos overlays do Prism não têm definição, porque não há plugin de animação. Não existem tokens de movimento, e "Nova Hora" anima `max-height` com `transition-all`. Propõe tokens de duração e curva.
+- [DS05](2026-11-06-ds05-button-icon-label-order.md): ícone antes do texto, com exceções para chevrons de expandir, avançar e links externos. Lista 12 usos a ajustar. `data-icon` só aparece na galeria.
+
 ### Encerramentos com aceite do proprietário — 06/11
 
 O proprietário confirmou o aceite em produção de CAL01, EST-01, EST-02, IA-M01, IA-M03, IA-M04, do ticket 01 de uso de IA em Minha Conta e da correção de Gerar conteúdo. Todos já estavam publicados e não há commit pendente de código. Os tickets saíram da [lista ativa](../../.scratch/README.md), que agora tem 17, e estão registrados no [histórico](../../.scratch/archive/resolved-tickets.md). Os aceites pendentes da entrada de publicação abaixo ficam resolvidos por essa confirmação.
