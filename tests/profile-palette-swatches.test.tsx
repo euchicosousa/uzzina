@@ -92,8 +92,9 @@ function renderProfile() {
   );
 }
 
-it("each named palette option shows a decorative swatch from the shared palette data", () => {
+it("each named palette option shows a decorative swatch from the shared palette data", async () => {
   renderProfile();
+  await userEvent.setup().click(screen.getByRole("tab", { name: "Aparência" }));
   const group = screen.getByRole("radiogroup", { name: "Cor de Destaque" });
   for (const palette of PALLETE) {
     const option = within(group).getByRole("radio", { name: palette.label });
@@ -113,37 +114,41 @@ it("each named palette option shows a decorative swatch from the shared palette 
 
 it("selecting a palette previews it without writing until the manual save", async () => {
   renderProfile();
+  const user = userEvent.setup();
+  await user.click(screen.getByRole("tab", { name: "Aparência" }));
   const group = screen.getByRole("radiogroup", { name: "Cor de Destaque" });
   const target = PALLETE[1];
   const option = within(group).getByRole("radio", { name: target.label });
-  await userEvent.setup().click(option);
+  await user.click(option);
   expect(option.getAttribute("aria-checked")).toBe("true");
   expect(writes).toBe(0);
 });
 
-it("uses real mobile section tabs while preference choices remain radios", async () => {
+it("uses four section tabs, keeps drafts mounted across tabs and never writes before save", async () => {
   const mounted = renderProfile();
   const tabs = screen.getByRole("tablist", { name: "Seção da conta" });
-  const personal = within(tabs).getByRole("tab", {
-    name: "Informações pessoais",
-  });
-  const preferences = within(tabs).getByRole("tab", { name: "Preferências" });
-  expect(preferences.getAttribute("aria-selected")).toBe("true");
+  const tab = (name: string) => within(tabs).getByRole("tab", { name });
+  expect(within(tabs).getAllByRole("tab").length).toBe(4);
+  const personal = tab("Informações pessoais");
+  const appearance = tab("Aparência");
+  const ai = tab("Uso de IA");
+  tab("Funcionamento");
+  expect(personal.getAttribute("aria-selected")).toBe("true");
   const name =
     mounted.container.querySelector<HTMLInputElement>('input[name="name"]');
   if (!name) throw new Error("Personal section must stay mounted");
   const original = name;
   const user = userEvent.setup();
-  act(() => preferences.focus());
-  await user.keyboard("{ArrowLeft}");
-  expect(personal.getAttribute("aria-selected")).toBe("true");
   await user.clear(name);
   await user.type(name, "Draft preserved");
   act(() => personal.focus());
   await user.keyboard("{ArrowRight}");
-  expect(preferences.getAttribute("aria-selected")).toBe("true");
+  expect(appearance.getAttribute("aria-selected")).toBe("true");
+  expect(screen.getByRole("radiogroup", { name: "Tema do App" })).toBeTruthy();
+  await user.click(ai);
+  expect(ai.getAttribute("aria-selected")).toBe("true");
+  await user.click(personal);
   expect(mounted.container.querySelector('input[name="name"]')).toBe(original);
   expect(name.value).toBe("Draft preserved");
-  expect(screen.getByRole("radiogroup", { name: "Tema do App" })).toBeTruthy();
   expect(writes).toBe(0);
 });

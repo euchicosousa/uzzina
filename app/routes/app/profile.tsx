@@ -26,7 +26,6 @@ import {
 } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import { useIsDesktop } from "~/hooks/useIsDesktop";
 import { useFillScrollViewport } from "~/hooks/useFillScrollViewport";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getQuerySessionGeneration } from "~/lib/query-client";
@@ -58,7 +57,6 @@ import {
 } from "~/lib/preferences";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { updateMyPreferences, updateOwnProfile } from "~/models/people";
-import { cn } from "cnfast";
 import { CloudIcon } from "lucide-react";
 import { CustomThemePanel } from "~/components/features/profile/CustomThemePanel";
 import {
@@ -72,6 +70,16 @@ export const Route = createFileRoute("/app/profile")({
   component: ProfilePage,
 });
 export const runtime = "edge";
+
+const PROFILE_TABS = [
+  { id: "personal", label: "Informações pessoais" },
+  { id: "appearance", label: "Aparência" },
+  { id: "behavior", label: "Funcionamento" },
+  { id: "ai", label: "Uso de IA" },
+] as const;
+type ProfileTab = (typeof PROFILE_TABS)[number]["id"];
+const isProfileTab = (value: unknown): value is ProfileTab =>
+  PROFILE_TABS.some((tab) => tab.id === value);
 
 // Text-labelled choices need more horizontal room than the icon-sized Prism toggle default.
 const PROFILE_CHOICE_CLASS_NAME =
@@ -117,8 +125,7 @@ function ProfilePage() {
   const { person, cloudName, uploadPreset } = useAppContext();
   const pageRef = useRef<HTMLDivElement>(null);
   useFillScrollViewport(pageRef);
-  const isDesktop = useIsDesktop();
-  const [mobileSection, setMobileSection] = useState("preferences");
+  const [section, setSection] = useState<ProfileTab>("personal");
   const queryClient = useQueryClient();
   const generation = useRef(getQuerySessionGeneration(queryClient)).current;
   const isCurrentSession = () =>
@@ -153,6 +160,14 @@ function ProfilePage() {
   const [showInstagramSidebar, setShowInstagramSidebar] = useState<boolean>(
     preferences.showInstagramSidebar,
   );
+
+  // Values loaded at mount; the submit sends only fields changed from these.
+  const initialRef = useRef({
+    ...preferences,
+    customThemeKey: JSON.stringify(
+      createCustomThemeDraft(preferences.customTheme),
+    ),
+  });
 
   const [customThemeDraft, setCustomThemeDraft] = useState(() =>
     createCustomThemeDraft(preferences.customTheme),
@@ -208,21 +223,25 @@ function ProfilePage() {
       const initials = formData.get("initials") as string;
       const short = formData.get("short") as string;
       const image = (formData.get("image") as string) || null;
-      const themeColorIndexVal = Number(formData.get("themeColorIndex"));
-      const customThemeToSave =
-        themeColorIndexVal === -1 && isCompleteCustomTheme(customThemeDraft)
-          ? customThemeDraft
-          : null;
-      const newPreferences = {
-        theme: selectedTheme,
-        themeColorIndex: themeColorIndexVal,
-        followPartnerColor: selectedFollowPartnerColor,
-        defaultViewVariant: selectedVariant,
-        ...(selectedTodayView !== preferences.defaultTodayView ||
-        Object.hasOwn(preferenceRecord(person.preferences), "defaultTodayView")
+      const initial = initialRef.current;
+      const colorChanged = selectedThemeColor !== initial.themeColorIndex;
+      const customChanged =
+        JSON.stringify(customThemeDraft) !== initial.customThemeKey;
+      const newPreferences: Record<string, unknown> = {
+        ...(selectedTheme !== initial.theme ? { theme: selectedTheme } : {}),
+        ...(colorChanged ? { themeColorIndex: selectedThemeColor } : {}),
+        ...(selectedFollowPartnerColor !== initial.followPartnerColor
+          ? { followPartnerColor: selectedFollowPartnerColor }
+          : {}),
+        ...(selectedVariant !== initial.defaultViewVariant
+          ? { defaultViewVariant: selectedVariant }
+          : {}),
+        ...(selectedTodayView !== initial.defaultTodayView
           ? { defaultTodayView: selectedTodayView }
           : {}),
-        showInstagramSidebar,
+        ...(showInstagramSidebar !== initial.showInstagramSidebar
+          ? { showInstagramSidebar }
+          : {}),
         ...(strategyModelDraft
           ? { defaultStrategyModel: strategyModelDraft }
           : {}),
@@ -232,7 +251,16 @@ function ProfilePage() {
         ...(captionModelDraft
           ? { defaultCaptionModel: captionModelDraft }
           : {}),
-        customTheme: customThemeToSave,
+        ...(selectedThemeColor !== -1
+          ? colorChanged
+            ? { customTheme: null }
+            : {}
+          : (colorChanged || customChanged) &&
+              isCompleteCustomTheme(customThemeDraft)
+            ? { customTheme: customThemeDraft }
+            : colorChanged
+              ? { customTheme: null }
+              : {}),
       };
       const supabase = createSupabaseBrowserClient();
       await updateOwnProfile(supabase, person.user_id, {
@@ -244,28 +272,42 @@ function ProfilePage() {
       });
 
       if (!isCurrentSession()) return;
-      const savedPreferences = await updateMyPreferences(
-        supabase,
-        newPreferences,
-      );
+      const sentKeys = Object.keys(newPreferences);
+      if (sentKeys.length > 0) {
+        const savedPreferences = await updateMyPreferences(
+          supabase,
+          newPreferences,
+        );
+        if (!isCurrentSession()) return;
+        // Merge only the fields sent, keeping values saved by other surfaces.
+        const merged = { ...preferenceRecord(person.preferences) };
+        for (const key of sentKeys) merged[key] = savedPreferences[key];
+        person.preferences = merged;
+        initialRef.current = {
+          ...initialRef.current,
+          ...getUserPreferences({ ...person, preferences: merged }),
+          customThemeKey: JSON.stringify(customThemeDraft),
+        };
+      }
       if (!isCurrentSession()) return;
-      person.preferences = savedPreferences;
       setStrategyModelDraft(undefined);
       setContentModelDraft(undefined);
       setCaptionModelDraft(undefined);
 
       // Sync local preferences to storage / context
-      localStorage.setItem(
-        "uzzina-accent-color-index",
-        String(themeColorIndexVal),
-      );
-      localStorage.setItem(
-        "uzzina-follow-partner-color",
-        String(selectedFollowPartnerColor),
-      );
-      if (themeColorIndexVal === -1) {
-        setCustomTheme(customThemeDraft);
+      if ("themeColorIndex" in newPreferences) {
+        localStorage.setItem(
+          "uzzina-accent-color-index",
+          String(selectedThemeColor),
+        );
       }
+      if ("followPartnerColor" in newPreferences) {
+        localStorage.setItem(
+          "uzzina-follow-partner-color",
+          String(selectedFollowPartnerColor),
+        );
+      }
+      if (newPreferences.customTheme) setCustomTheme(customThemeDraft);
       window.dispatchEvent(new Event("uzzina-storage-update"));
       toast.success("Perfil e preferências salvos com sucesso!");
     } catch (err) {
@@ -280,9 +322,9 @@ function ProfilePage() {
   return (
     <PrismTabs
       ref={pageRef}
-      selectedKey={mobileSection}
+      selectedKey={section}
       onSelectionChange={(key) => {
-        if (key === "personal" || key === "preferences") setMobileSection(key);
+        if (isProfileTab(key)) setSection(key);
       }}
       className="mx-auto flex min-h-0 w-full max-w-5xl flex-col overflow-hidden px-3 pt-3 lg:px-8 lg:pt-8"
     >
@@ -303,24 +345,31 @@ function ProfilePage() {
         </PrismButton>
       </div>
 
-      <PrismTabList aria-label="Seção da conta" className="shrink-0 lg:hidden">
-        <PrismTab id="personal" className="wrap-anywhere">
-          Informações pessoais
-        </PrismTab>
-        <PrismTab id="preferences">Preferências</PrismTab>
+      <PrismTabList
+        aria-label="Seção da conta"
+        className="shrink-0 [scrollbar-width:none] overflow-x-auto [&::-webkit-scrollbar]:hidden"
+      >
+        {PROFILE_TABS.map((tab) => (
+          <PrismTab
+            className="shrink-0 whitespace-nowrap"
+            id={tab.id}
+            key={tab.id}
+          >
+            {tab.label}
+          </PrismTab>
+        ))}
       </PrismTabList>
       <form
         id="profile-form"
-        className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)] gap-x-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1.8fr)]"
+        className="flex min-h-0 flex-1 flex-col"
         onSubmit={handleSubmit}
         onInvalidCapture={(event) => {
-          // Reveal invalid personal fields before native validation moves focus.
-          if (
-            event.target instanceof HTMLElement &&
-            event.target.closest('[aria-label="Informações pessoais"]')
-          ) {
-            flushSync(() => setMobileSection("personal"));
-          }
+          // Reveal the tab of an invalid field before native validation moves focus.
+          if (!(event.target instanceof HTMLElement)) return;
+          const id = event.target
+            .closest("[data-tab-id]")
+            ?.getAttribute("data-tab-id");
+          if (isProfileTab(id)) flushSync(() => setSection(id));
         }}
       >
         {/* Hidden inputs to capture state changes */}
@@ -336,470 +385,483 @@ function ProfilePage() {
           value={String(showInstagramSidebar)}
         />
 
-        {/* Left Column: Personal Info */}
         <PrismTabPanel
           id="personal"
           shouldForceMount
-          isAlwaysVisible={isDesktop}
-          aria-label="Informações pessoais"
-          className={cn(
-            "min-h-0 flex-col gap-4 overflow-y-auto overscroll-contain py-3 lg:flex lg:gap-6 lg:py-6",
-            "flex",
-          )}
+          data-tab-id="personal"
+          className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain py-3 lg:py-6"
         >
-          <h2 className="text-lg font-bold">Informações Pessoais</h2>
+          <div className="flex w-full max-w-2xl flex-col gap-4 lg:gap-6">
+            {/* Profile Avatar Upload */}
+            <div className="flex items-center gap-4 pl-1">
+              <CloudinaryUpload
+                aria-label="Alterar foto"
+                variant="ghost"
+                className="group relative size-20 shrink-0 cursor-pointer overflow-hidden rounded-full p-0 transition no-squircle! hover:opacity-90"
+                cloudName={cloudName}
+                folder="uzzina/people"
+                onUpload={(url) => setImageUrl(url)}
+                outputWidth={400}
+                square
+                uploadPreset={uploadPreset}
+              >
+                <UAvatar
+                  key={imageUrl ?? "empty"}
+                  className="size-full"
+                  fallback={person.initials || "?"}
+                  image={imageUrl}
+                  size="xl"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
+                  <UploadIcon className="size-5 text-white" />
+                </div>
+              </CloudinaryUpload>
 
-          {/* Profile Avatar Upload */}
-          <div className="flex items-center gap-4 pl-1">
-            <CloudinaryUpload
-              aria-label="Alterar foto"
-              variant="ghost"
-              className="group relative size-20 shrink-0 cursor-pointer overflow-hidden rounded-full p-0 transition no-squircle! hover:opacity-90"
-              cloudName={cloudName}
-              folder="uzzina/people"
-              onUpload={(url) => setImageUrl(url)}
-              outputWidth={400}
-              square
-              uploadPreset={uploadPreset}
-            >
-              <UAvatar
-                key={imageUrl ?? "empty"}
-                className="size-full"
-                fallback={person.initials || "?"}
-                image={imageUrl}
-                size="xl"
-              />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
-                <UploadIcon className="size-5 text-white" />
+              <div className="flex flex-col gap-1">
+                <span className="text-sm font-semibold">Foto de Perfil</span>
+                <span className="text-xs text-muted-foreground">
+                  Clique na imagem para enviar uma nova
+                </span>
+                {imageUrl && (
+                  <PrismButton
+                    className="mt-0.5 h-auto p-0 text-left text-xs text-muted-foreground hover:text-foreground"
+                    onPress={() => setImageUrl(null)}
+                    size="xs"
+                    variant="link"
+                  >
+                    Remover foto
+                  </PrismButton>
+                )}
               </div>
-            </CloudinaryUpload>
-
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold">Foto de Perfil</span>
-              <span className="text-xs text-muted-foreground">
-                Clique na imagem para enviar uma nova
-              </span>
-              {imageUrl && (
-                <PrismButton
-                  className="mt-0.5 h-auto p-0 text-left text-xs text-muted-foreground hover:text-foreground"
-                  onPress={() => setImageUrl(null)}
-                  size="xs"
-                  variant="link"
-                >
-                  Remover foto
-                </PrismButton>
-              )}
-            </div>
-          </div>
-
-          {/* Fields */}
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <PrismLabel htmlFor="name">Nome</PrismLabel>
-              <PrismInput
-                defaultValue={person.name}
-                id="name"
-                name="name"
-                required
-              />
             </div>
 
-            <div className="grid gap-2">
-              <PrismLabel htmlFor="surname">Sobrenome</PrismLabel>
-              <PrismInput
-                defaultValue={person.surname}
-                id="surname"
-                name="surname"
-                required
-              />
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
+            {/* Fields */}
+            <div className="grid gap-4">
               <div className="grid gap-2">
-                <PrismLabel htmlFor="initials">Iniciais</PrismLabel>
+                <PrismLabel htmlFor="name">Nome</PrismLabel>
                 <PrismInput
-                  defaultValue={person.initials}
-                  id="initials"
-                  maxLength={2}
-                  name="initials"
-                  placeholder="AB"
+                  defaultValue={person.name}
+                  id="name"
+                  name="name"
                   required
                 />
               </div>
 
               <div className="grid gap-2">
-                <PrismLabel htmlFor="short">Nome Curto</PrismLabel>
+                <PrismLabel htmlFor="surname">Sobrenome</PrismLabel>
                 <PrismInput
-                  defaultValue={person.short}
-                  id="short"
-                  name="short"
-                  placeholder="Nome de exibição preferido"
+                  defaultValue={person.surname}
+                  id="surname"
+                  name="surname"
+                  required
                 />
               </div>
-            </div>
 
-            <div className="grid gap-2 border-t pt-4">
-              <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                E-mail da Conta
-              </span>
-              <span className="text-sm font-medium text-foreground/80">
-                {person.email || "Nenhum e-mail associado"}
-              </span>
-              <span className="text-[10px] text-muted-foreground">
-                Nota: O endereço de e-mail é gerenciado pelo administrador do
-                espaço de trabalho.
-              </span>
-            </div>
-          </div>
-          <AppBarSpacer />
-        </PrismTabPanel>
-
-        {/* Right Column: Preferences */}
-        <PrismTabPanel
-          id="preferences"
-          shouldForceMount
-          isAlwaysVisible={isDesktop}
-          aria-label="Preferências"
-          className={cn(
-            "min-h-0 flex-col gap-4 overflow-y-auto overscroll-contain py-3 lg:col-start-2 lg:row-start-1 lg:flex lg:gap-6 lg:py-6",
-            "flex",
-          )}
-        >
-          <h2 className="text-lg font-bold">Preferências</h2>
-
-          {/* Theme Preference Selection */}
-          <div className="grid gap-3">
-            <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-              Tema do App
-            </span>
-            <PrismToggleGroup
-              className="max-w-full flex-wrap"
-              aria-label="Tema do App"
-              selectedKeys={[selectedTheme]}
-              onSelectionChange={(keys) => {
-                const val = Array.from(keys)[0] as "light" | "dark" | "system";
-                if (val) handleThemeChange(val);
-              }}
-            >
-              <PrismToggleGroupItem
-                className={PROFILE_CHOICE_CLASS_NAME}
-                id="light"
-              >
-                <SunIcon />
-                Claro
-              </PrismToggleGroupItem>
-              <PrismToggleGroupItem
-                className={PROFILE_CHOICE_CLASS_NAME}
-                id="dark"
-              >
-                <MoonIcon />
-                Escuro
-              </PrismToggleGroupItem>
-              <PrismToggleGroupItem
-                className={PROFILE_CHOICE_CLASS_NAME}
-                id="system"
-              >
-                <LaptopIcon />
-                Sistema
-              </PrismToggleGroupItem>
-            </PrismToggleGroup>
-          </div>
-
-          {/* Accent Theme Color Selection */}
-          <div className="grid gap-3">
-            <div className="flex flex-col gap-0.5">
-              <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                Cor de Destaque
-              </span>
-              <span className="text-xs text-muted-foreground">
-                Selecione a paleta de cores primárias para a interface do
-                aplicativo.
-              </span>
-            </div>
-            <PrismToggleGroup
-              aria-label="Cor de Destaque"
-              className="max-w-full flex-wrap"
-              selectedKeys={[String(selectedThemeColor)]}
-              onSelectionChange={(keys) => {
-                const val = Array.from(keys)[0];
-                if (val !== undefined) handleColorChange(Number(val));
-              }}
-            >
-              {PALLETE.map((palette, idx) => (
-                <PrismToggleGroupItem
-                  className={PROFILE_CHOICE_CLASS_NAME}
-                  id={String(idx)}
-                  key={palette.id}
-                >
-                  <PaletteSwatch
-                    color={
-                      theme === Theme.DARK
-                        ? palette.dark.primary
-                        : palette.light.primary
-                    }
-                    isDark={theme === Theme.DARK}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-2">
+                  <PrismLabel htmlFor="initials">Iniciais</PrismLabel>
+                  <PrismInput
+                    defaultValue={person.initials}
+                    id="initials"
+                    maxLength={2}
+                    name="initials"
+                    placeholder="AB"
+                    required
                   />
-                  {palette.label}
-                </PrismToggleGroupItem>
-              ))}
-              <PrismToggleGroupItem
-                className={PROFILE_CHOICE_CLASS_NAME}
-                id="-1"
-              >
-                <PaletteSwatch isDark={theme === Theme.DARK} />
-                Personalizado
-              </PrismToggleGroupItem>
-            </PrismToggleGroup>
-          </div>
+                </div>
 
-          {selectedThemeColor === -1 && (
-            <CustomThemePanel
-              onChange={handleCustomThemeChange}
-              theme={customThemeDraft}
-            />
-          )}
-
-          {/* Follow Partner Color Toggle */}
-          <UPreferenceSwitch
-            className="max-lg:flex-wrap max-lg:gap-3 max-lg:[&>div]:min-w-0 max-lg:[&>div]:flex-1 max-lg:[&>div]:basis-40"
-            checked={selectedFollowPartnerColor}
-            description="Substitui as cores do tema do aplicativo pelas cores da marca do cliente ativo."
-            id="followPartnerColor"
-            label="Usar Cores dos Clientes"
-            onCheckedChange={setSelectedFollowPartnerColor}
-          />
-
-          {/* Default View Selection */}
-          <div className="grid gap-3 border-t pt-4">
-            <div className="flex flex-col gap-0.5">
-              <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                Layout Padrão
-              </span>
-              <span className="text-xs text-muted-foreground">
-                Escolha o layout de visualização inicial especificamente para os
-                painéis de clientes.
-              </span>
-            </div>
-            <PrismToggleGroup
-              className="max-w-full flex-wrap"
-              aria-label="Layout padrão"
-              selectedKeys={[selectedVariant]}
-              onSelectionChange={(keys) => {
-                const val = Array.from(keys)[0] as "line" | "block" | "content";
-                if (val) setSelectedVariant(val);
-              }}
-            >
-              <PrismToggleGroupItem
-                className={PROFILE_CHOICE_CLASS_NAME}
-                id="line"
-              >
-                <ListIcon />
-                Linha
-              </PrismToggleGroupItem>
-              <PrismToggleGroupItem
-                className={PROFILE_CHOICE_CLASS_NAME}
-                id="block"
-              >
-                <LayoutGridIcon />
-                Bloco
-              </PrismToggleGroupItem>
-              <PrismToggleGroupItem
-                className={PROFILE_CHOICE_CLASS_NAME}
-                id="content"
-              >
-                <ImageIcon />
-                Conteúdo
-              </PrismToggleGroupItem>
-            </PrismToggleGroup>
-          </div>
-
-          <div className="grid gap-3 border-t pt-4">
-            <div className="flex flex-col gap-0.5">
-              <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                Visualização inicial do Hoje
-              </span>
-              <span className="text-xs text-muted-foreground">
-                Escolha como abrir o Hoje na Home e na página Hoje. As trocas de
-                visualização durante o uso continuam temporárias.
-              </span>
-            </div>
-            <PrismToggleGroup
-              aria-label="Visualização inicial do Hoje"
-              className="max-w-full flex-wrap"
-              selectedKeys={[selectedTodayView]}
-              onSelectionChange={(keys) => {
-                const value = Array.from(keys)[0];
-                if (isTodayViewMode(value)) setSelectedTodayView(value);
-              }}
-            >
-              <PrismToggleGroupItem
-                className={PROFILE_CHOICE_CLASS_NAME}
-                id="kanban"
-              >
-                <KanbanIcon />
-                Kanban
-              </PrismToggleGroupItem>
-              <PrismToggleGroupItem
-                className={PROFILE_CHOICE_CLASS_NAME}
-                id="categories"
-              >
-                <Grid3x3Icon />
-                Categorias
-              </PrismToggleGroupItem>
-              <PrismToggleGroupItem
-                className={PROFILE_CHOICE_CLASS_NAME}
-                id="feed"
-              >
-                <BlocksIcon />
-                Feed
-              </PrismToggleGroupItem>
-              <PrismToggleGroupItem
-                className={PROFILE_CHOICE_CLASS_NAME}
-                id="partners"
-              >
-                <HeartHandshakeIcon />
-                Parceiros
-              </PrismToggleGroupItem>
-            </PrismToggleGroup>
-          </div>
-
-          {/* Show Instagram Sidebar by Default Toggle */}
-          <UPreferenceSwitch
-            className="max-lg:flex-wrap max-lg:gap-3 max-lg:[&>div]:min-w-0 max-lg:[&>div]:flex-1 max-lg:[&>div]:basis-40"
-            checked={showInstagramSidebar}
-            description="Decida se o painel do feed do Instagram inicia aberto nas páginas dos clientes."
-            id="showInstagramSidebar"
-            label="Sidebar do Instagram por Padrão"
-            onCheckedChange={setShowInstagramSidebar}
-          />
-
-          <div className="grid gap-3">
-            <h3 className="text-sm font-medium">Modelos padrão de IA</h3>
-            {(
-              [
-                {
-                  label: "Criar estratégia",
-                  name: "estratégia",
-                  value:
-                    strategyModelDraft ??
-                    preferences.defaultStrategyModel ??
-                    lunaModelId,
-                  setDraft: setStrategyModelDraft,
-                },
-                {
-                  label: "Gerar conteúdo",
-                  name: "conteúdo",
-                  value:
-                    contentModelDraft ??
-                    preferences.defaultContentModel ??
-                    lunaModelId,
-                  setDraft: setContentModelDraft,
-                },
-                {
-                  label: "Gerar legenda",
-                  name: "legenda",
-                  value:
-                    captionModelDraft ??
-                    preferences.defaultCaptionModel ??
-                    lunaModelId,
-                  setDraft: setCaptionModelDraft,
-                },
-              ] as const
-            ).map((row) => (
-              <div
-                key={row.label}
-                className="flex flex-wrap items-center justify-between gap-2"
-              >
-                <span className="text-sm">{row.label}</span>
-                <div className="flex items-center gap-1">
-                  {row.value !== lunaModelId && (
-                    <PrismButton
-                      aria-label={`Voltar ao modelo padrão de ${row.name}`}
-                      variant="ghost"
-                      size="icon-sm"
-                      isDisabled={isSubmitting}
-                      onClick={() => row.setDraft(lunaModelId)}
-                    >
-                      <RefreshCwIcon />
-                    </PrismButton>
-                  )}
-                  <UAIModelSelect
-                    ariaLabel={`Modelo padrão para ${row.label.toLowerCase()}`}
-                    models={actionAIModels}
-                    value={row.value}
-                    onChange={(id) => {
-                      if (isActionAIModelId(id)) row.setDraft(id);
-                    }}
-                    showText
-                    size="sm"
-                    variant="secondary"
-                    isDisabled={isSubmitting}
+                <div className="grid gap-2">
+                  <PrismLabel htmlFor="short">Nome Curto</PrismLabel>
+                  <PrismInput
+                    defaultValue={person.short}
+                    id="short"
+                    name="short"
+                    placeholder="Nome de exibição preferido"
                   />
                 </div>
               </div>
-            ))}
-          </div>
 
-          {/* Personal monthly AI allowance */}
-          <div className="grid gap-3 pt-2">
-            <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                <SparklesIcon className="size-3.5 text-primary" />
-                Meu uso de IA
-              </span>
-              {aiUsage?.period && (
-                <span className="text-xs font-medium text-muted-foreground">
-                  {aiUsage.period}
+              <div className="grid gap-2 border-t pt-4">
+                <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                  E-mail da Conta
                 </span>
+                <span className="text-sm font-medium text-foreground/80">
+                  {person.email || "Nenhum e-mail associado"}
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  Nota: O endereço de e-mail é gerenciado pelo administrador do
+                  espaço de trabalho.
+                </span>
+              </div>
+            </div>
+            <AppBarSpacer />
+          </div>
+        </PrismTabPanel>
+
+        <PrismTabPanel
+          id="appearance"
+          shouldForceMount
+          data-tab-id="appearance"
+          className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain py-3 lg:py-6"
+        >
+          <div className="flex w-full max-w-2xl flex-col gap-4 lg:gap-6">
+            {/* Theme Preference Selection */}
+            <div className="grid gap-3">
+              <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                Tema do App
+              </span>
+              <PrismToggleGroup
+                className="max-w-full flex-wrap"
+                aria-label="Tema do App"
+                selectedKeys={[selectedTheme]}
+                onSelectionChange={(keys) => {
+                  const val = Array.from(keys)[0] as
+                    "light" | "dark" | "system";
+                  if (val) handleThemeChange(val);
+                }}
+              >
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_CLASS_NAME}
+                  id="light"
+                >
+                  <SunIcon />
+                  Claro
+                </PrismToggleGroupItem>
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_CLASS_NAME}
+                  id="dark"
+                >
+                  <MoonIcon />
+                  Escuro
+                </PrismToggleGroupItem>
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_CLASS_NAME}
+                  id="system"
+                >
+                  <LaptopIcon />
+                  Sistema
+                </PrismToggleGroupItem>
+              </PrismToggleGroup>
+            </div>
+
+            {/* Accent Theme Color Selection */}
+            <div className="grid gap-3">
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                  Cor de Destaque
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Selecione a paleta de cores primárias para a interface do
+                  aplicativo.
+                </span>
+              </div>
+              <PrismToggleGroup
+                aria-label="Cor de Destaque"
+                className="max-w-full flex-wrap"
+                selectedKeys={[String(selectedThemeColor)]}
+                onSelectionChange={(keys) => {
+                  const val = Array.from(keys)[0];
+                  if (val !== undefined) handleColorChange(Number(val));
+                }}
+              >
+                {PALLETE.map((palette, idx) => (
+                  <PrismToggleGroupItem
+                    className={PROFILE_CHOICE_CLASS_NAME}
+                    id={String(idx)}
+                    key={palette.id}
+                  >
+                    <PaletteSwatch
+                      color={
+                        theme === Theme.DARK
+                          ? palette.dark.primary
+                          : palette.light.primary
+                      }
+                      isDark={theme === Theme.DARK}
+                    />
+                    {palette.label}
+                  </PrismToggleGroupItem>
+                ))}
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_CLASS_NAME}
+                  id="-1"
+                >
+                  <PaletteSwatch isDark={theme === Theme.DARK} />
+                  Personalizado
+                </PrismToggleGroupItem>
+              </PrismToggleGroup>
+            </div>
+
+            {selectedThemeColor === -1 && (
+              <CustomThemePanel
+                onChange={handleCustomThemeChange}
+                theme={customThemeDraft}
+              />
+            )}
+
+            {/* Follow Partner Color Toggle */}
+            <UPreferenceSwitch
+              className="max-lg:flex-wrap max-lg:gap-3 max-lg:[&>div]:min-w-0 max-lg:[&>div]:flex-1 max-lg:[&>div]:basis-40"
+              checked={selectedFollowPartnerColor}
+              description="Substitui as cores do tema do aplicativo pelas cores da marca do cliente ativo."
+              id="followPartnerColor"
+              label="Usar Cores dos Clientes"
+              onCheckedChange={setSelectedFollowPartnerColor}
+            />
+            <AppBarSpacer />
+          </div>
+        </PrismTabPanel>
+
+        <PrismTabPanel
+          id="behavior"
+          shouldForceMount
+          data-tab-id="behavior"
+          className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain py-3 lg:py-6"
+        >
+          <div className="flex w-full max-w-2xl flex-col gap-4 lg:gap-6">
+            {/* Default View Selection */}
+            <div className="grid gap-3">
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                  Layout Padrão
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Escolha o layout de visualização inicial especificamente para
+                  os painéis de clientes.
+                </span>
+              </div>
+              <PrismToggleGroup
+                className="max-w-full flex-wrap"
+                aria-label="Layout padrão"
+                selectedKeys={[selectedVariant]}
+                onSelectionChange={(keys) => {
+                  const val = Array.from(keys)[0] as
+                    "line" | "block" | "content";
+                  if (val) setSelectedVariant(val);
+                }}
+              >
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_CLASS_NAME}
+                  id="line"
+                >
+                  <ListIcon />
+                  Linha
+                </PrismToggleGroupItem>
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_CLASS_NAME}
+                  id="block"
+                >
+                  <LayoutGridIcon />
+                  Bloco
+                </PrismToggleGroupItem>
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_CLASS_NAME}
+                  id="content"
+                >
+                  <ImageIcon />
+                  Conteúdo
+                </PrismToggleGroupItem>
+              </PrismToggleGroup>
+            </div>
+
+            <div className="grid gap-3 border-t pt-4">
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                  Visualização inicial do Hoje
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Escolha como abrir o Hoje na Home e na página Hoje. As trocas
+                  de visualização durante o uso continuam temporárias.
+                </span>
+              </div>
+              <PrismToggleGroup
+                aria-label="Visualização inicial do Hoje"
+                className="max-w-full flex-wrap"
+                selectedKeys={[selectedTodayView]}
+                onSelectionChange={(keys) => {
+                  const value = Array.from(keys)[0];
+                  if (isTodayViewMode(value)) setSelectedTodayView(value);
+                }}
+              >
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_CLASS_NAME}
+                  id="kanban"
+                >
+                  <KanbanIcon />
+                  Kanban
+                </PrismToggleGroupItem>
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_CLASS_NAME}
+                  id="categories"
+                >
+                  <Grid3x3Icon />
+                  Categorias
+                </PrismToggleGroupItem>
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_CLASS_NAME}
+                  id="feed"
+                >
+                  <BlocksIcon />
+                  Feed
+                </PrismToggleGroupItem>
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_CLASS_NAME}
+                  id="partners"
+                >
+                  <HeartHandshakeIcon />
+                  Parceiros
+                </PrismToggleGroupItem>
+              </PrismToggleGroup>
+            </div>
+
+            {/* Show Instagram Sidebar by Default Toggle */}
+            <UPreferenceSwitch
+              className="max-lg:flex-wrap max-lg:gap-3 max-lg:[&>div]:min-w-0 max-lg:[&>div]:flex-1 max-lg:[&>div]:basis-40"
+              checked={showInstagramSidebar}
+              description="Decida se o painel do feed do Instagram inicia aberto nas páginas dos clientes."
+              id="showInstagramSidebar"
+              label="Sidebar do Instagram por Padrão"
+              onCheckedChange={setShowInstagramSidebar}
+            />
+            <AppBarSpacer />
+          </div>
+        </PrismTabPanel>
+
+        <PrismTabPanel
+          id="ai"
+          shouldForceMount
+          data-tab-id="ai"
+          className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain py-3 lg:py-6"
+        >
+          <div className="flex w-full max-w-2xl flex-col gap-4 lg:gap-6">
+            <h2 className="sr-only">Uso de IA</h2>
+            {/* Personal monthly AI allowance */}
+            <div className="grid gap-3 pt-2">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                  <SparklesIcon className="size-3.5 text-primary" />
+                  Meu uso de IA
+                </span>
+                {aiUsage?.period && (
+                  <span className="text-xs font-medium text-muted-foreground">
+                    {aiUsage.period}
+                  </span>
+                )}
+              </div>
+
+              {isLoadingAIUsage ? (
+                <div className="h-20 w-full animate-pulse rounded-2xl bg-muted/40 squircle" />
+              ) : isAIUsageError ? (
+                <div
+                  className="flex items-center justify-between gap-3 text-xs text-muted-foreground"
+                  role="status"
+                >
+                  <span>Não foi possível consultar o consumo de IA.</span>
+                  <PrismButton
+                    size="xs"
+                    variant="ghost"
+                    onPress={() => void refetchAIUsage()}
+                  >
+                    Tentar novamente
+                  </PrismButton>
+                </div>
+              ) : aiUsage ? (
+                <UAIAllowanceMeter percentage={aiUsage.percentage}>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>
+                      {aiUsage.total_generations}{" "}
+                      {aiUsage.total_generations === 1
+                        ? "geração registrada"
+                        : "gerações registradas"}
+                    </span>
+                    <span>Renova às 00h UTC no dia 1</span>
+                  </div>
+                  {aiUsage.has_pending && (
+                    <p className="text-xs text-muted-foreground" role="status">
+                      Há gerações com saldo reservado aguardando conciliação.
+                    </p>
+                  )}
+                  {aiUsage.incomplete_generations > 0 && (
+                    <p className="text-xs text-muted-foreground" role="status">
+                      {aiUsage.incomplete_generations} geração(ões) sem dados
+                      completos de consumo.
+                    </p>
+                  )}
+                </UAIAllowanceMeter>
+              ) : (
+                <div className="rounded-2xl border border-border/40 bg-muted/10 p-4 text-xs text-muted-foreground squircle">
+                  Consumo de IA ainda não medido neste mês.
+                </div>
               )}
             </div>
 
-            {isLoadingAIUsage ? (
-              <div className="h-20 w-full animate-pulse rounded-2xl bg-muted/40 squircle" />
-            ) : isAIUsageError ? (
-              <div
-                className="flex items-center justify-between gap-3 text-xs text-muted-foreground"
-                role="status"
-              >
-                <span>Não foi possível consultar o consumo de IA.</span>
-                <PrismButton
-                  size="xs"
-                  variant="ghost"
-                  onPress={() => void refetchAIUsage()}
+            <div className="grid gap-3">
+              <h3 className="text-sm font-medium">Modelos padrão de IA</h3>
+              {(
+                [
+                  {
+                    label: "Criar estratégia",
+                    name: "estratégia",
+                    value:
+                      strategyModelDraft ??
+                      preferences.defaultStrategyModel ??
+                      lunaModelId,
+                    setDraft: setStrategyModelDraft,
+                  },
+                  {
+                    label: "Gerar conteúdo",
+                    name: "conteúdo",
+                    value:
+                      contentModelDraft ??
+                      preferences.defaultContentModel ??
+                      lunaModelId,
+                    setDraft: setContentModelDraft,
+                  },
+                  {
+                    label: "Gerar legenda",
+                    name: "legenda",
+                    value:
+                      captionModelDraft ??
+                      preferences.defaultCaptionModel ??
+                      lunaModelId,
+                    setDraft: setCaptionModelDraft,
+                  },
+                ] as const
+              ).map((row) => (
+                <div
+                  key={row.label}
+                  className="flex flex-wrap items-center justify-between gap-2"
                 >
-                  Tentar novamente
-                </PrismButton>
-              </div>
-            ) : aiUsage ? (
-              <UAIAllowanceMeter percentage={aiUsage.percentage}>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>
-                    {aiUsage.total_generations}{" "}
-                    {aiUsage.total_generations === 1
-                      ? "geração registrada"
-                      : "gerações registradas"}
-                  </span>
-                  <span>Renova às 00h UTC no dia 1</span>
+                  <span className="text-sm">{row.label}</span>
+                  <div className="flex items-center gap-1">
+                    {row.value !== lunaModelId && (
+                      <PrismButton
+                        aria-label={`Voltar ao modelo padrão de ${row.name}`}
+                        variant="ghost"
+                        size="icon-sm"
+                        isDisabled={isSubmitting}
+                        onClick={() => row.setDraft(lunaModelId)}
+                      >
+                        <RefreshCwIcon />
+                      </PrismButton>
+                    )}
+                    <UAIModelSelect
+                      ariaLabel={`Modelo padrão para ${row.label.toLowerCase()}`}
+                      models={actionAIModels}
+                      value={row.value}
+                      onChange={(id) => {
+                        if (isActionAIModelId(id)) row.setDraft(id);
+                      }}
+                      showText
+                      size="sm"
+                      variant="secondary"
+                      isDisabled={isSubmitting}
+                    />
+                  </div>
                 </div>
-                {aiUsage.has_pending && (
-                  <p className="text-xs text-muted-foreground" role="status">
-                    Há gerações com saldo reservado aguardando conciliação.
-                  </p>
-                )}
-                {aiUsage.incomplete_generations > 0 && (
-                  <p className="text-xs text-muted-foreground" role="status">
-                    {aiUsage.incomplete_generations} geração(ões) sem dados
-                    completos de consumo.
-                  </p>
-                )}
-              </UAIAllowanceMeter>
-            ) : (
-              <div className="rounded-2xl border border-border/40 bg-muted/10 p-4 text-xs text-muted-foreground squircle">
-                Consumo de IA ainda não medido neste mês.
-              </div>
-            )}
+              ))}
+            </div>
+            <AppBarSpacer />
           </div>
-          <AppBarSpacer />
         </PrismTabPanel>
       </form>
     </PrismTabs>
