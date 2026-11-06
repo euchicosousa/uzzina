@@ -88,3 +88,5 @@ D1 não está confirmada pelo proprietário; P02–P05 e P10 permanecem provisó
 **Para reproduzir:** fornecer um PostgreSQL 17 local (binários ou contêiner) e criar `02-persistence.integration.test.ts` com conexões independentes por papel, schema mínimo (roles `anon`/`authenticated`, `auth.uid()` via `request.jwt.claims`, `people`, `partners`, funções `is_active_admin`/`is_active_member`) e a migration real `20261102120000_social_plans.sql`, falhando com mensagem de configuração se `T02_TEST_DATABASE_URL` faltar ou apontar para `supabase.co`.
 
 **Status:** permanece `implemented-unverified`.
+
+Decisão do proprietário em 06/11/2026: não instalar PostgreSQL local nesta máquina. A verificação P01–P10 continua pendente de outro ambiente isolado.
