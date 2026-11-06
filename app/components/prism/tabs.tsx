@@ -73,11 +73,7 @@ export function PrismTabList<T extends object>({
   const variant = useContext(TabsVariantContext);
   return (
     <TabList
-      className={cn(
-        "flex h-10 min-w-0 shrink-0",
-        variant === "underline" && "border-b border-border",
-        className,
-      )}
+      className={cn("flex h-10 min-w-0 shrink-0", className)}
       data-slot="tab-list"
       {...props}
     />

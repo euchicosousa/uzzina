@@ -76,6 +76,7 @@ import { tabVariants } from "~/components/prism/tabs";
 const DEFAULT_PARTNER_FILTERS: string[] = [];
 const DEFAULT_PARTNERS: Partner[] = [];
 import { useAppContext } from "~/contexts/AppContext";
+import { UAIProgressBar } from "~/components/uzzina/UAIProgressBar";
 export type ActionDrawerView = "essential" | "instagram" | "observations";
 export type TextDraftField = "title" | "instagram_caption";
 export function ActionFormDrawer({
@@ -593,6 +594,22 @@ export function ActionFormDrawer({
   const hasPriorStrategies = canonicalStrategies.length > 0;
   const isInitialGenerating = isGenerating && !hasPriorStrategies;
   const isRecreating = isGenerating && hasPriorStrategies;
+
+  const prevGeneratingRef = useRef(false);
+  useEffect(() => {
+    if (
+      prevGeneratingRef.current &&
+      !isGenerating &&
+      strategyStatus === "saved"
+    ) {
+      toast.success(
+        hasPriorStrategies
+          ? "Estratégias recriadas com sucesso!"
+          : "Estratégias criadas com sucesso!",
+      );
+    }
+    prevGeneratingRef.current = isGenerating;
+  }, [isGenerating, strategyStatus, hasPriorStrategies]);
 
   const [isRetryingStrategy, setIsRetryingStrategy] = useState(false);
   const retryStrategySave = async () => {
@@ -1131,7 +1148,7 @@ export function ActionFormDrawer({
         >
           {/* Tabs */}
           <div
-            className="flex w-full shrink-0 border-b"
+            className="flex w-full shrink-0"
             data-drawer-navigation
             onKeyDownCapture={(event) => {
               // These view tabs keep the drawer's existing full Tab sequence;
@@ -1141,7 +1158,7 @@ export function ActionFormDrawer({
           >
             <PrismTabList
               aria-label="Seções da ação"
-              className="min-w-0 flex-1 border-b-0"
+              className="h-16 min-w-0 flex-1"
             >
               <PrismTab
                 id="essential"
@@ -1376,6 +1393,7 @@ export function ActionFormDrawer({
           <PrismDialogTitle className="text-2xl">
             5 Estratégias Sugeridas
           </PrismDialogTitle>
+
           {strategyOptions.length > 0 && !isGenerating ? (
             <PrismDialogDescription>
               Escolha uma das 5 estratégias criativas abaixo para gerar o
@@ -1391,6 +1409,7 @@ export function ActionFormDrawer({
             </PrismDialogDescription>
           ) : null}
         </PrismDialogHeader>
+        <UAIProgressBar isGenerating={isGenerating} />
         <div className="flex flex-col gap-4 px-6 pb-6 sm:px-8 sm:pb-8">
           {isSavingSelection && (
             <div

@@ -125,7 +125,7 @@ function Calendar<
     <AriaCalendar
       {...restProps}
       className={cn(
-        "group/calendar w-fit bg-background text-sm in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
+        "group/calendar w-fit text-sm in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
         cellSizeConfig[resolvedCellSize].container,
         props.className,
       )}

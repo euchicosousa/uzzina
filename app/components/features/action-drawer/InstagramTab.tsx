@@ -25,6 +25,7 @@ import {
   useShortWritingPanel,
   useWritingAreaHeight,
 } from "./useWritingAreaHeight";
+import { UAIProgressBar } from "~/components/uzzina/UAIProgressBar";
 interface InstagramTabProps {
   RawAction: Action;
   setRawAction: (action: Action | ((prev: Action) => Action)) => void;
@@ -215,7 +216,7 @@ export function InstagramTab({
             )}
           >
             <div
-              className="flex min-w-0 shrink-0 items-center justify-between gap-3 border-b px-4 py-4 @[47rem]/action:pl-0"
+              className="relative flex min-w-0 shrink-0 items-center justify-between gap-3 border-b px-4 py-4 @[47rem]/action:pl-0"
               data-writing-controls
             >
               <div className="flex min-w-0 shrink items-center gap-2">
@@ -297,6 +298,12 @@ export function InstagramTab({
                   )
                 );
               })()}
+              <UAIProgressBar
+                isGenerating={isAIProcessing}
+                variant="line"
+                durationMs={30000}
+                className="absolute right-0 -bottom-px left-0"
+              />
             </div>
             <RichTextEditor
               key={contentVersion}
@@ -304,7 +311,7 @@ export function InstagramTab({
                 "flex-1 overflow-y-auto",
                 writingLayout && "min-h-0",
               )}
-              compactToolbar={writingLayout}
+              compactToolbar
               content={contentDescription}
               handleBlur={(html) => {
                 onContentDescriptionChange(html);
@@ -329,7 +336,7 @@ export function InstagramTab({
           >
             <div
               className={cn(
-                "flex flex-wrap items-center justify-between gap-2 border-b px-4 py-4 @[47rem]/action:pl-0",
+                "relative flex flex-wrap items-center justify-between gap-2 border-b px-4 py-4 @[47rem]/action:pl-0",
                 writingLayout && "shrink-0",
               )}
               data-writing-controls
@@ -376,6 +383,13 @@ export function InstagramTab({
                   size="sm"
                 />
               </PrismButtonGroup>
+
+              <UAIProgressBar
+                isGenerating={isAIProcessing}
+                variant="line"
+                durationMs={30000}
+                className="absolute right-0 -bottom-px left-0"
+              />
             </div>
             <div
               className={cn(
@@ -383,10 +397,6 @@ export function InstagramTab({
                 writingLayout ? "min-h-0 flex-1" : "h-full",
               )}
             >
-              <AIProcessingMessage
-                activeAIIntent={activeAIIntent}
-                isAIProcessing={isAIProcessing}
-              />
               <CaptionTextarea
                 caption={RawAction.instagram_caption}
                 className={cn(

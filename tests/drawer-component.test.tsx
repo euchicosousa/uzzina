@@ -2379,16 +2379,16 @@ describe("phone-width action panel", () => {
     expect(toolbar.contains(document.activeElement)).toBe(true);
     await user.tab();
     expect(document.activeElement === editor).toBe(true);
-    // A wide panel keeps the full toolbar on the same editor instance.
+    // The Instagram content toolbar stays compact in a wide panel too.
     resizePanel(768);
     const wideToolbar = within(scroller).getByRole("toolbar", {
       name: "Formatação do texto",
     });
     expect(
-      within(wideToolbar).getByRole("button", { name: "Título 1" }),
+      within(wideToolbar).getByRole("button", { name: "Mais formatação" }),
     ).toBeTruthy();
     expect(
-      within(wideToolbar).queryByRole("button", { name: "Mais formatação" }),
+      within(wideToolbar).queryByRole("button", { name: "Título 1" }),
     ).toBeNull();
     expect(instagramEditor(scroller) === editor).toBe(true);
     expect(within(scroller).getByText("Nenhum conteúdo")).toBeTruthy();
@@ -2525,17 +2525,20 @@ describe("phone-width action panel", () => {
       ).toBeTruthy();
       instagramScrollerRect = new window.DOMRect(0, 120, 672, 600);
       resizePanel(672);
-      expect(toolbar().getByRole("button", { name: "Título 1" })).toBeTruthy();
+      // The toolbar stays compact; only the media/writing layout switches.
       expect(
-        toolbar().queryByRole("button", { name: "Mais formatação" }),
-      ).toBeNull();
+        toolbar().getByRole("button", { name: "Mais formatação" }),
+      ).toBeTruthy();
+      expect(toolbar().queryByRole("button", { name: "Título 1" })).toBeNull();
       expect(media.getByText("Nenhum conteúdo")).toBeTruthy();
       expect(column.style.height).toBe("");
       expect(instagramEditor(scroller) === editor).toBe(true);
       // Short desktop windows keep the side-by-side container-query layout.
       instagramScrollerRect = new window.DOMRect(0, 120, 800, 220);
       resizePanel(800);
-      expect(toolbar().getByRole("button", { name: "Título 1" })).toBeTruthy();
+      expect(
+        toolbar().getByRole("button", { name: "Mais formatação" }),
+      ).toBeTruthy();
       expect(column.style.height).toBe("");
     } finally {
       viewport.restore();
