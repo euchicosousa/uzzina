@@ -117,3 +117,7 @@ O rodapé, os combobox e o RichTextEditor ficaram de fora por dependerem de deci
 ## UPreferenceSwitch sem caixa — 06/11/2026
 
 `UPreferenceSwitch` perdeu a moldura (`rounded-2xl border p-4` e fundo por estado), conforme a regra de superfícies; o estado fica só no botão Ativo/Inativo. Conferido em Minha Conta no app real. Typecheck passou e os testes de perfil e Hoje deram 16/0.
+
+## Medição do rodapé da gaveta no app real — 06/11/2026
+
+Ação de rede social ("Drink", PARK Sobral), em largura de celular, só leitura. Os 9 controles do rodapé (parceiros, fase, categoria, cor, sprints, ID, duplicar, arquivar e atualizar) medem 48px de altura com raio de 22,88px, o `rounded-3xl` do tamanho `lg`. Ícones têm 20px, o avatar do parceiro 32px e a amostra de cor 20px. Batem com o contrato do AGENTS.md (`ghost` + `icon-lg`, `size-5`, avatar de 32px no rodapé). Isso confirma a geometria; o aceite visual continua com o proprietário.
