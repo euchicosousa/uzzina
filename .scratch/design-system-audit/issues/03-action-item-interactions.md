@@ -68,3 +68,9 @@ Escopo: apenas itens de baixo risco de 3.9 (código morto e custo do contexto). 
 - Semântica de arraste em modo seleção (3.8) e `touch-action` condicional (3.5).
 - Unificação de `isDragging`/`data-dragging` e opacidade do original em `Draggable` (3.7). A prop `isDragging` morta de `ActionItemTitleInput` permanece, pois o arquivo não foi tocado.
 - Atalhos globais de fase em modo seleção (`useActionShortcut.tsx`), tecla Escape para sair do modo seleção e custo de `setViews` por célula de calendário (3.9, impacto não medido).
+
+## Correção DS03-D — 06/11/2026
+
+`Draggable` (`app/components/features/DnD.tsx`), usado só no calendário e no Kanban, que têm apenas PointerSensor, deixou de repassar `tabIndex`, `role`, `aria-roledescription` e `aria-describedby` do dnd-kit. Com isso, cada item tem 2 paradas de Tab (cartão e título) em vez de 3, e acabou o `role="button"` aninhado. A Sprint (`SortableItem`, com KeyboardSensor) não mudou: o arraste por teclado precisa do wrapper focável. Testes: 45 pass e 0 fail em drag, seleção, calendários, foco de Hoje e nomes de controle.
+
+Roteiro: aperte Tab no calendário do parceiro e no Kanban de Hoje (sem parada antes do cartão); arraste com o mouse; na Sprint, use Tab, Espaço, setas e Espaço para reordenar.

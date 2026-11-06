@@ -43,10 +43,20 @@ export function Draggable({
   };
   const child = React.Children.only(children);
   const isDOMElement = typeof child.type === "string";
+  // Draggable is only used under pointer-only DndContexts (calendar, Kanban),
+  // so the keyboard attributes (tabIndex, role, roleDescription, describedby)
+  // would add a dead tab stop and a nested role="button".
+  const {
+    tabIndex: _tabIndex,
+    role: _role,
+    "aria-roledescription": _roleDescription,
+    "aria-describedby": _describedBy,
+    ...pointerAttributes
+  } = attributes;
   return (
     <div
       ref={setNodeRef}
-      {...attributes}
+      {...pointerAttributes}
       {...listeners}
       style={isDragging ? { touchAction: "none" } : style}
       // className={cn(isDragging && "opacity-20")}
