@@ -6,6 +6,10 @@ Produção Ready em 06/11 a partir do push de `main` até `9e25ad7`, no domínio
 
 ## Pendências reais
 
+### IA-M04: encerrado — 06/11
+
+Três padrões pessoais independentes (estratégia, conteúdo, legenda), aceitos pelo proprietário. Trocar o modelo na gaveta salva o padrão do comando; o seletor do diálogo "Usar esta estratégia" altera só o de conteúdo. Minha Conta tem, antes de cada seletor, um botão ghost de atualizar que volta o rascunho ao Luna (vale ao Salvar Alterações) e fica oculto quando o modelo já é o Luna. Gerar conteúdo deixou de enviar o texto atual do campo no pedido, o que fazia o resultado repetir o conteúdo anterior. Reset, teclado, layout estreito, atualização de percentual e chamadas foram testados pelo proprietário. Decisões: teto de legenda de 2048 para todos os modelos; o cache do Claude não é solicitado pelo app, então seus campos vêm zerados sem afetar o custo; a versão da tarifa não será congelada por operação, porque uma mudança de preço se resolve atualizando o catálogo. Typecheck passou. Pendente fora do escopo: conciliação real por modelo além do Luna e da legenda. [IA-M04](../../.scratch/ai-models/issues/04-model-selection-by-command.md).
+
 ### Publicação de 06/11: commits e deploy
 
 O trabalho local foi organizado em cinco commits (`da5bad2..9e25ad7`). As quatro migrations de 06/11 já aplicadas passaram a ser versionadas. O proprietário fez o push e a Vercel mostrou Ready para `9e25ad7`. `bun run test:serverless` passou em 9 de 9 após a publicação, mas não antes dela. Os testes da gaveta não foram rodados nesta rodada; `drawer-component` tem 14 falhas conhecidas de painel estreito e foco. As worktrees dos subagentes EST foram removidas e preservadas nas tags `backup/est-01`, `backup/est-02` e `backup/est-0N-worktree`. Pendente: aceite visual em produção do seletor de modelo, dos padrões em Minha Conta e do diálogo de estratégias, e uma geração real em ação que já tem conteúdo.
@@ -16,11 +20,11 @@ Supabase de produção recebeu `20261106044334_ai_model_preferences`. As três c
 
 ### IA-M04: decisão sobre três padrões independentes — 06/11
 
-Proprietário pediu somente registrar. Estratégia, Conteúdo e Legenda terão padrões pessoais separados, com Luna inicial. Trocar no próprio comando salva o padrão correspondente e Minha Conta oferece os mesmos três ajustes. O checkout ainda contém a implementação anterior de dois padrões e escolha temporária para conteúdo. [IA-M04](../../.scratch/ai-models/issues/04-model-selection-by-command.md). Diff documental conferido.
+Proprietário pediu somente registrar. Estratégia, Conteúdo e Legenda terão padrões pessoais separados, com Luna inicial. Trocar no próprio comando salva o padrão correspondente e Minha Conta oferece os mesmos três ajustes. (Implementada; ver a entrada de estado de 06/11.) [IA-M04](../../.scratch/ai-models/issues/04-model-selection-by-command.md). Diff documental conferido.
 
 ### IA-M04: padrões pessoais de estratégia e legenda — 06/11
 
-UI aprovada pelo proprietário. Minha Conta oferece dois padrões, Luna inicialmente; mudanças na gaveta salvam no fluxo autenticado, e no perfil usam Salvar Alterações. Conteúdo herda estratégia e permite escolha temporária compartilhada com o diálogo. Migration verificada em PostgreSQL isolado, typecheck e 52 testes focados passaram. Pendente SQL em produção, aceite autenticado, publicação da interface e snapshot de tarifa na fila.
+UI aprovada pelo proprietário. Minha Conta oferece dois padrões, Luna inicialmente; mudanças na gaveta salvam no fluxo autenticado, e no perfil usam Salvar Alterações. Conteúdo herdava a estratégia; isso foi substituído por um padrão próprio. Migration verificada em PostgreSQL isolado, typecheck e 52 testes focados passaram. Pendente SQL em produção, aceite autenticado, publicação da interface e snapshot de tarifa na fila.
 
 ### IA-M05: investigação de latência da IA — 06/11
 

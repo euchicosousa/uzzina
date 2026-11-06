@@ -19,6 +19,7 @@ import {
   ListIcon,
   MoonIcon,
   PipetteIcon,
+  RefreshCwIcon,
   SunIcon,
   UploadIcon,
   SparklesIcon,
@@ -674,63 +675,69 @@ function ProfilePage() {
 
           <div className="grid gap-3">
             <h3 className="text-sm font-medium">Modelos padrão de IA</h3>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-sm">Criar estratégia</span>
-              <UAIModelSelect
-                ariaLabel="Modelo padrão para criar estratégia"
-                models={actionAIModels}
-                value={
-                  strategyModelDraft ??
-                  preferences.defaultStrategyModel ??
-                  lunaModelId
-                }
-                onChange={(id) => {
-                  if (isActionAIModelId(id)) setStrategyModelDraft(id);
-                }}
-                showText
-                size="sm"
-                variant="secondary"
-                isDisabled={isSubmitting}
-              />
-            </div>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-sm">Gerar conteúdo</span>
-              <UAIModelSelect
-                ariaLabel="Modelo padrão para gerar conteúdo"
-                models={actionAIModels}
-                value={
-                  contentModelDraft ??
-                  preferences.defaultContentModel ??
-                  lunaModelId
-                }
-                onChange={(id) => {
-                  if (isActionAIModelId(id)) setContentModelDraft(id);
-                }}
-                showText
-                size="sm"
-                variant="secondary"
-                isDisabled={isSubmitting}
-              />
-            </div>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-sm">Gerar legenda</span>
-              <UAIModelSelect
-                ariaLabel="Modelo padrão para gerar legenda"
-                models={actionAIModels}
-                value={
-                  captionModelDraft ??
-                  preferences.defaultCaptionModel ??
-                  lunaModelId
-                }
-                onChange={(id) => {
-                  if (isActionAIModelId(id)) setCaptionModelDraft(id);
-                }}
-                showText
-                size="sm"
-                variant="secondary"
-                isDisabled={isSubmitting}
-              />
-            </div>
+            {(
+              [
+                {
+                  label: "Criar estratégia",
+                  name: "estratégia",
+                  value:
+                    strategyModelDraft ??
+                    preferences.defaultStrategyModel ??
+                    lunaModelId,
+                  setDraft: setStrategyModelDraft,
+                },
+                {
+                  label: "Gerar conteúdo",
+                  name: "conteúdo",
+                  value:
+                    contentModelDraft ??
+                    preferences.defaultContentModel ??
+                    lunaModelId,
+                  setDraft: setContentModelDraft,
+                },
+                {
+                  label: "Gerar legenda",
+                  name: "legenda",
+                  value:
+                    captionModelDraft ??
+                    preferences.defaultCaptionModel ??
+                    lunaModelId,
+                  setDraft: setCaptionModelDraft,
+                },
+              ] as const
+            ).map((row) => (
+              <div
+                key={row.label}
+                className="flex flex-wrap items-center justify-between gap-2"
+              >
+                <span className="text-sm">{row.label}</span>
+                <div className="flex items-center gap-1">
+                  {row.value !== lunaModelId && (
+                    <PrismButton
+                      aria-label={`Voltar ao modelo padrão de ${row.name}`}
+                      variant="ghost"
+                      size="icon-sm"
+                      isDisabled={isSubmitting}
+                      onClick={() => row.setDraft(lunaModelId)}
+                    >
+                      <RefreshCwIcon />
+                    </PrismButton>
+                  )}
+                  <UAIModelSelect
+                    ariaLabel={`Modelo padrão para ${row.label.toLowerCase()}`}
+                    models={actionAIModels}
+                    value={row.value}
+                    onChange={(id) => {
+                      if (isActionAIModelId(id)) row.setDraft(id);
+                    }}
+                    showText
+                    size="sm"
+                    variant="secondary"
+                    isDisabled={isSubmitting}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* Personal monthly AI allowance */}
