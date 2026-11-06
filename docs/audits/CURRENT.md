@@ -6,6 +6,10 @@ Produção Ready em 06/11 a partir do push de `main` até `9e25ad7`, no domínio
 
 ## Pendências reais
 
+### T01: rastreamento das decisões do Planejamento — 06/11
+
+[Evidência](social-planning-recovery/T01-evidence.md). Nenhuma decisão D1–D6 está confirmada com fonte. O bloco D1–D6 de `social-planning-design-decisions.md` foi escrito pelo executor da série C, sem citar fonte, e por isso foi tratado como proposta. As decisões confirmadas pelo proprietário estão em `social-planning-ticket-breakdown.md:12-26` e cobrem parte de D3–D6. As perguntas mínimas de cada ponto estão na seção 4 da evidência. D1 libera o T02, que pode precisar de revisão. D2–D4 liberam T03 e T08, D5 libera T09 e T10, e D6 libera T07 e T08. Status do T01: `needs-product-decision (D1–D6)`.
+
 ### Branches de proposta: IA-M02 e DS03-E — 06/11
 
 Os dois estão fora da `main`, rebaseados sobre `e86f34a` e sem push.

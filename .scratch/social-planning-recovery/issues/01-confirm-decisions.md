@@ -6,7 +6,7 @@
 - **Anthropic** — Claude Haiku 5.5, para rastrear decisões existentes e consolidar o contrato de aceite.
 - **Google** — Gemini 3.8 Flash, para rastrear decisões existentes e consolidar o contrato de aceite.
 
-**Status:** ready-for-agent
+**Status:** needs-product-decision (D1, D2, D3, D4, D5, D6; perguntas em [T01-evidence](../../../docs/audits/social-planning-recovery/T01-evidence.md#4-perguntas-mínimas-ao-proprietário))
 **Blocked by:** Nenhum.
 **Origem:** C00; decisões D1–D6 e evidência de aprovação.
 **Prioridade:** P2
@@ -45,3 +45,14 @@
 - Relatório T01-evidence.md no formato do README, com cada ID de teste e evidência.
 - Alterações formatadas e verificações pertinentes, sem escrever “concluído” com critério pendente.
 - CURRENT atualizado apenas com fatos observados. Não alterar status de outros tickets, SQL remoto ou deploy por inferência.
+
+## Execução — 06/11/2026
+
+Rastreamento feito sobre `ea8b47b`, somente documental. Relatório: [T01-evidence](../../../docs/audits/social-planning-recovery/T01-evidence.md).
+
+- O bloco D1–D6 de `social-planning-design-decisions.md` foi escrito pelo agente que executou a série C00–C10 sob o pedido genérico "siga todos os tickets" (CURRENT.md, entrada de 02/11). Nenhum item cita fonte; tratado como proposta técnica. Chat de origem inacessível: confirmação não verificada.
+- Nenhum de D1–D6 está confirmado por fonte. Todos permanecem abertos; D2–D4 e D6 têm pontos parcialmente confirmados pelo proprietário (BD "Decisões confirmadas"), listados no relatório.
+- Perguntas mínimas ao proprietário no relatório, seção 4. Bloqueios individuais: D1 libera T02; D2–D4 liberam T03 e T08; D5 libera T09/T10; D6 libera T07/T08.
+- D01 e D04 atendidos; D03 atendido como diagnóstico (D1 mistura compartilhamento e isolamento por usuário); D02 não atendido integralmente (exemplos dependem de D2–D5). Passos 5–6 (publicar a matriz e ligar aos testes) pendentes das respostas.
+- Alerta: T02 (implemented-unverified) foi construído sobre D1/D6 não confirmadas.
+- Nenhum código, SQL, teste, servidor ou commit.
