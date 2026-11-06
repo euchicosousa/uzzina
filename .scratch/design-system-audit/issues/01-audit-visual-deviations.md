@@ -101,3 +101,15 @@ Roteiro: passar o mouse no avatar em `/app/admin/user/novo` e nos logos de parce
 - **Testes:** typecheck limpo; `icon-control-names` e `field-accessible-names` passam. `global-search-partners` tem 9 falhas e há mais 1 em navegação ("AI processing blocks leaving…"), que já existiam antes deste lote e não foram investigadas. Nada foi conferido no navegador.
 
 Roteiro: abrir a busca e conferir a altura dos itens e o Shift+Enter; olhar o sino; abrir as Observações; abrir Gerenciar conteúdo com fotos claras e escuras; navegar com Tab nas setas e nos pontos do carrossel do Instagram.
+
+## Lote: componentes internos da gaveta — 06/11/2026
+
+- **EssentialsTab:** o esqueleto da descrição perdeu o `rounded-2xl` redundante, porque `PrismSkeleton` já aplica raio e squircle.
+- **ActionFormDrawer:** não restam botões nativos. O `#666666` encontrado é um dado de cor usado na lógica, não estilo.
+- **Mantidos de propósito:**
+  - InstagramTab: `<textarea>` nativa sem equivalente Prism, com foco de exceção aprovada.
+  - ConflictComparison: a coluna é um item interno `rounded-xl squircle`, e a exceção de `tabIndex` foi preservada.
+- **Fora do escopo:** UActionDatePicker, em `uzzina/`, não estava entre os arquivos permitidos.
+- **Testes:** gaveta, IA, estratégias e nomes de controle deram 138 pass e 14 fail, com e sem a mudança. As 14 falhas são as já conhecidas do `drawer-component`.
+
+O rodapé, os combobox e o RichTextEditor ficaram de fora por dependerem de decisão do proprietário.

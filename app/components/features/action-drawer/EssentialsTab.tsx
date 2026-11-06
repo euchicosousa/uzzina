@@ -411,9 +411,7 @@ export function EssentialsTab({
         data-drawer-focus="description"
       >
         <Suspense
-          fallback={
-            <PrismSkeleton className="h-full min-h-50 w-full rounded-2xl" />
-          }
+          fallback={<PrismSkeleton className="h-full min-h-50 w-full" />}
         >
           <Tiptap
             key={descriptionVersion}
