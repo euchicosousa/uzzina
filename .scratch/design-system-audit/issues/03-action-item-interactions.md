@@ -74,3 +74,12 @@ Escopo: apenas itens de baixo risco de 3.9 (código morto e custo do contexto). 
 `Draggable` (`app/components/features/DnD.tsx`), usado só no calendário e no Kanban, que têm apenas PointerSensor, deixou de repassar `tabIndex`, `role`, `aria-roledescription` e `aria-describedby` do dnd-kit. Com isso, cada item tem 2 paradas de Tab (cartão e título) em vez de 3, e acabou o `role="button"` aninhado. A Sprint (`SortableItem`, com KeyboardSensor) não mudou: o arraste por teclado precisa do wrapper focável. Testes: 45 pass e 0 fail em drag, seleção, calendários, foco de Hoje e nomes de controle.
 
 Roteiro: aperte Tab no calendário do parceiro e no Kanban de Hoje (sem parada antes do cartão); arraste com o mouse; na Sprint, use Tab, Espaço, setas e Espaço para reordenar.
+
+## Conferência no app real — 06/11/2026
+
+Com login do proprietário em `127.0.0.1:5176`, só lendo, sem salvar nada:
+- **DS03-A corrigido de novo:** a primeira correção não selecionava, porque o `usePress` do `PrismButton` também engolia o clique, e o cartão, que alterna a seleção, nunca o recebia. Os testes passavam porque o jsdom não reproduz isso. Agora, no modo seleção, o título é um `<span>` simples. Conferido: clicar no título seleciona a ação ("1 Selecionada"), sem editar nem abrir a gaveta.
+- **Tab da gaveta:** Título → Descrição → Parceiros → Fase → Categoria → Atualizar → Essencial → Observações, numa ação de Design, sem Cor nem Instagram. Correto.
+- **DS04:** o menu do perfil abre com `overlay-pop-in` de 0,2 s e fecha com `overlay-pop-out` de 0,15 s, e a busca tem fundo `overlay-fade-in`. Nova Hora abre de 7 para 72 px em 0,2 s.
+- **Busca:** itens de 32 px. **AppBar:** "+" antes de "Ação".
+- **Limite da automação:** o painel gera cliques "virtuais", que o checkbox do React Aria ignora no rótulo, então "Mudar Hora" só pôde ser marcado pelo teclado. Um teste com clique real (`userEvent`) marca a caixa normalmente. Não é defeito do app.

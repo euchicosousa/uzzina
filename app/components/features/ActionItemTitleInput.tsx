@@ -71,6 +71,17 @@ export function ActionItemTitleInput({
           type="text"
           value={localTitle}
         />
+      ) : isSelectionMode ? (
+        // Plain text in selection mode: PrismButton's usePress would swallow
+        // the click, so the card (which toggles selection) never received it.
+        <span
+          className={cn(
+            "block w-full truncate text-left leading-[inherit]",
+            InputButtonClassName,
+          )}
+        >
+          {localTitle}
+        </span>
       ) : (
         <PrismButton
           variant={"unstyled"}
@@ -79,10 +90,7 @@ export function ActionItemTitleInput({
             isDragging ? "cursor-grabbing" : "",
             InputButtonClassName,
           )}
-          // In selection mode the click bubbles to the card, which toggles.
-          excludeFromTabOrder={isSelectionMode}
           onClick={(event) => {
-            if (isSelectionMode) return;
             event.preventDefault();
             event.stopPropagation();
             setIsEditing(true);
