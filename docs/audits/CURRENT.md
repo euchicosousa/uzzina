@@ -6,6 +6,14 @@ Produção Ready em 06/11 a partir do push de `main` até `9e25ad7`, no domínio
 
 ## Pendências reais
 
+### Branches de proposta: IA-M02 e DS03-E — 06/11
+
+Os dois estão fora da `main`, rebaseados sobre `e86f34a` e sem push.
+- `proposal/ia-m02-profile-tabs` (`f940af3`): Minha Conta em quatro abas PrismTabs, com um único Salvar no cabeçalho e `shouldForceMount`. Um campo inválido abre a própria aba. O envio manda só os campos alterados, comparando com os valores do carregamento, que se atualizam a cada envio. Isso preserva o que o menu e a busca gravaram. Também corrige `themeColorIndex`, que era lido de um campo inexistente. Typecheck passou e os testes deram 24/0.
+- `proposal/ds03-e-touch-scroll` (`7206203`): MouseSensor (distância de 8) mais TouchSensor (espera de 250 ms, tolerância de 5), e `touch-action: manipulation` fora do arraste. Assim dá para rolar com o dedo, e o arraste começa ao segurar o item. Testes 16/0. Precisa de teste num celular.
+
+O `.claude/launch.json` agora usa `scripts/dev-server.cjs` na porta 5176 (`e86f34a`); a versão antiga usava o modo staging, que não tem mais variáveis.
+
 ### DS04 overlays e DS03-D — 06/11
 
 `7433842`: popover, select, combobox, menu e diálogo do Prism ganharam animação real de entrada (200 ms) e saída (150 ms), feita em CSS próprio sobre `data-entering`/`data-exiting`, com `motion-reduce`. As regras `[data-state]` inativas saíram. Conferido em `/ui` no navegador local: os overlays animam e desmontam, sem erros. `b33a8ee`: no calendário e no Kanban, cada item tem uma parada de Tab a menos, sem `role="button"` aninhado; a Sprint mantém o arraste por teclado. Os testes focados passam. Falta conferir no app.
