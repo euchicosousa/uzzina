@@ -17,7 +17,6 @@ type ActionContainerProps = {
   ascending?: boolean;
   scrollable?: boolean;
   isDraggable?: boolean;
-  isSortable?: boolean;
   onClick?: (action: Action) => void;
 };
 const DEFAULT_DISPLAY_FLAGS: ActionDisplayFlags = {};
@@ -31,15 +30,9 @@ export function ActionContainer({
   ascending,
   scrollable = true,
   isDraggable,
-  isSortable,
   onClick,
 }: ActionContainerProps) {
-  // Quando isSortable está ativo, o array chega pré-ordenado pelo hook useSprintOrder.
-  // Chamar sortActions aqui sobrescreveria a ordem customizada do usuário.
-  const sortedActions = isSortable
-    ? actions
-    : sortActions(actions, orderBy, ascending);
-  const renderedActions = sortedActions;
+  const renderedActions = sortActions(actions, orderBy, ascending);
   useSelectionActions(renderedActions);
   const containerRef = useRef<HTMLDivElement>(null);
   const [showTopMask, setShowTopMask] = useState(false);
@@ -140,7 +133,6 @@ export function ActionContainer({
             dateTimeDisplay={dateTimeDisplay}
             displayFlags={displayFlags}
             isDraggable={isDraggable}
-            isSortable={isSortable}
             onClick={onClick}
             variant={variant}
           />

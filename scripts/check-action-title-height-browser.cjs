@@ -29,7 +29,7 @@ await import('/tests/fixtures/action-title-height-browser.tsx');
       return route.continue();
     });
     const failures = [];
-    for (const variant of ["line", "hair", "block", "content"]) {
+    for (const variant of ["line", "block", "content"]) {
       for (const scenario of ["short", "long"]) {
         if (variant === "content" && scenario === "long") continue;
         for (const width of [1193, 390, 768, 1440]) {

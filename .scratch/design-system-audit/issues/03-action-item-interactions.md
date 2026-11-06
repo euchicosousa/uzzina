@@ -42,3 +42,29 @@ Relatório: [2026-11-06-ds03-action-item-interactions](../../../docs/audits/2026
 1. Ative a seleção de ações no AppBar, clique no texto do título de um item (linha e bloco): ele deve marcar/desmarcar, sem virar campo de edição. Tab deve parar no cartão e Enter/Espaço alternar.
 2. Desative a seleção e, na Sprint, clique no título para editar, digite espaços e aperte Enter: o espaço entra no texto e Enter confirma, sem iniciar arraste.
 3. Ainda na Sprint, edite um título e arraste o mouse sobre o texto para selecioná-lo: o cartão não deve se mover.
+
+## Limpeza DS03-F — 06/11/2026
+
+Escopo: apenas itens de baixo risco de 3.9 (código morto e custo do contexto). Sem mudança visual ou de comportamento.
+
+**Removido**
+
+- `isSortable` em `ActionContainer` e `ActionItem` (prop, tipo, desestruturação e ramo `SortableItem`). Nenhum consumidor passava a prop; `ActionContainer` agora chama `sortActions` sempre, que é o caminho que já executava. `SortableItem` continua em `DnD.tsx`, usado por `HomeSprintView`.
+- `VARIANT.hair` em `app/lib/CONSTANTS.ts`. Não havia consumidor de `VARIANT.hair` no app; a menção no comentário do `ActionItem` foi corrigida.
+- Ramo `"hair"` em `tests/fixtures/action-title-height-browser.tsx` e `"hair"` na lista de variantes de `scripts/check-action-title-height-browser.cjs`. Como `hair` não tinha renderização própria, esses casos eram duplicatas de `line`.
+
+**Memoizado**
+
+- `effectiveIds` em `app/hooks/useMultiSelection.tsx` agora usa `useMemo` sobre `[selectedIds, eligibleIds]`. O valor do contexto manteve a mesma API e deixa de ser recriado a cada render do provider.
+
+**Verificação**
+
+- Prettier nos arquivos alterados; `npx tsc --noEmit` sem erros; `bun test tests/multi-selection.test.tsx` com 5 PASS.
+- Não executado: `check-action-title-height-browser` (exige navegador/servidor, não iniciado).
+
+**Mantido para decisão do proprietário (não alterado)**
+
+- Diferença visual entre anel de seleção e anel de sprint.
+- Semântica de arraste em modo seleção (3.8) e `touch-action` condicional (3.5).
+- Unificação de `isDragging`/`data-dragging` e opacidade do original em `Draggable` (3.7). A prop `isDragging` morta de `ActionItemTitleInput` permanece, pois o arquivo não foi tocado.
+- Atalhos globais de fase em modo seleção (`useActionShortcut.tsx`), tecla Escape para sair do modo seleção e custo de `setViews` por célula de calendário (3.9, impacto não medido).

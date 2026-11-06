@@ -6,9 +6,7 @@ import "~/tailwind.css";
 const params = new URLSearchParams(location.search);
 const requestedVariant = params.get("variant");
 const variant =
-  requestedVariant === "block" ||
-  requestedVariant === "hair" ||
-  requestedVariant === "content"
+  requestedVariant === "block" || requestedVariant === "content"
     ? requestedVariant
     : "line";
 const title =

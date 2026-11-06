@@ -10,7 +10,7 @@ import { ActionBlockVariant } from "./ActionVariants/ActionBlockVariant";
 import { ActionContentVariant } from "./ActionVariants/ActionContentVariant";
 import { ActionLineVariant } from "./ActionVariants/ActionLineVariant";
 import type { ActionVariantRendererProps } from "./ActionVariants/types";
-import { Draggable, SortableItem } from "./DnD";
+import { Draggable } from "./DnD";
 import { UPhaseIcon } from "~/components/uzzina/UPhaseIcon";
 
 // Hooks
@@ -66,8 +66,6 @@ type ActionItemProps = {
   isDragging?: boolean;
   /** Whether the item is draggable */
   isDraggable?: boolean;
-  /** Whether the item is sortable */
-  isSortable?: boolean;
   /** Configuration object for showing various details/badges */
   displayFlags?: ActionDisplayFlags;
   /** Format pattern for displaying dates and times */
@@ -79,7 +77,7 @@ type ActionItemProps = {
 /**
  * ActionItem Component
  *
- * Renders a single Action card/item in various layouts (line, block, hour, content, hair).
+ * Renders a single Action card/item in various layouts (line, block, content).
  * Integrates drag-and-drop capability, selection mode, inline title editing, and action shortcuts.
  */
 const DEFAULT_DISPLAY_FLAGS: ActionDisplayFlags = {};
@@ -89,7 +87,6 @@ export function ActionItem({
   className,
   isDragging,
   isDraggable,
-  isSortable,
   displayFlags = DEFAULT_DISPLAY_FLAGS,
   dateTimeDisplay,
   onClick,
@@ -294,9 +291,6 @@ export function ActionItem({
       />
     </div>
   );
-  if (isSortable) {
-    return <SortableItem id={action.id}>{content}</SortableItem>;
-  }
   return isDraggable ? (
     <Draggable id={action.id}>{content}</Draggable>
   ) : (

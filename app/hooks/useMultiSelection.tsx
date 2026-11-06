@@ -62,7 +62,10 @@ export function MultiSelectionProvider({
     () => new Set(eligibleActions.map((action) => action.id)),
     [eligibleActions],
   );
-  const effectiveIds = selectedIds.filter((id) => eligibleIds.has(id));
+  const effectiveIds = useMemo(
+    () => selectedIds.filter((id) => eligibleIds.has(id)),
+    [selectedIds, eligibleIds],
+  );
   useEffect(() => {
     setSelectedIds((previous) => {
       const next = previous.filter((id) => eligibleIds.has(id));

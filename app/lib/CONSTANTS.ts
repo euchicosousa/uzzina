@@ -231,7 +231,6 @@ export const VARIANT = {
   line: "line",
   block: "block",
   content: "content",
-  hair: "hair",
 } as const;
 export const INTENT = {
   create_action: "create-action",
