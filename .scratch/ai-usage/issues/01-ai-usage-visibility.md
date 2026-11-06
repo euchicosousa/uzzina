@@ -10,7 +10,7 @@
 
 **Blocked by:** nenhuma dependência dos tickets de busca, datas comemorativas, Ajuda ou Notificações. Antes de implementar, resolver as definições de produto e verificar o vínculo autorizado de agência/membros descritos abaixo.
 
-**Status:** Código corrigido e banco aplicado em 05/11/2026; aguarda publicação da API/worker e validação de nova geração real. Visual já aprovado.
+**Status:** Encerrado em 06/11/2026 com aceite do proprietário em produção. Histórico abaixo preservado. Registro anterior: Código corrigido e banco aplicado em 05/11/2026; aguarda publicação da API/worker e validação de nova geração real. Visual já aprovado.
 
 ## Owner decisions — 2026-11-01
 

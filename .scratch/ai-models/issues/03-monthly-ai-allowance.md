@@ -1,5 +1,7 @@
 # IA-M03 — Aplicar cota mensal e mostrar consumo em Minha Conta
 
+**Status:** Encerrado em 06/11/2026 com aceite do proprietário em produção. Histórico abaixo preservado.
+
 ## Modelos sugeridos
 
 - **OpenAI** — GPT-6 Astra, para validar reserva concorrente, teto mensal e reconciliação.

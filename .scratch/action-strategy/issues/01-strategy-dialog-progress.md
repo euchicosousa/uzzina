@@ -1,5 +1,7 @@
 # EST-01 — Progresso e resultado no diálogo aberto de estratégias
 
+**Status:** Encerrado em 06/11/2026 com aceite do proprietário em produção. Histórico abaixo preservado.
+
 **Bloqueado por:** nenhum ticket.
 
 ## Contexto e diagnóstico

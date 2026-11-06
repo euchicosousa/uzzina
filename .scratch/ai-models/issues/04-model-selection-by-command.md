@@ -1,5 +1,7 @@
 # IA-M04 — Escolher modelos por comando e salvar padrões pessoais
 
+**Status:** Encerrado em 06/11/2026 com aceite do proprietário em produção. Histórico abaixo preservado.
+
 ## Modelos sugeridos
 
 - **OpenAI** — GPT-6.1 Sol, para integrar dois provedores, seleção e padrões por comando.

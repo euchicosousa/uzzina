@@ -6,6 +6,10 @@ Produção Ready em 06/11 a partir do push de `main` até `9e25ad7`, no domínio
 
 ## Pendências reais
 
+### Encerramentos com aceite do proprietário — 06/11
+
+O proprietário confirmou o aceite em produção de CAL01, EST-01, EST-02, IA-M01, IA-M03, IA-M04, do ticket 01 de uso de IA em Minha Conta e da correção de Gerar conteúdo. Todos já estavam publicados e não há commit pendente de código. Os tickets saíram da [lista ativa](../../.scratch/README.md), que agora tem 17, e estão registrados no [histórico](../../.scratch/archive/resolved-tickets.md). Os aceites pendentes da entrada de publicação abaixo ficam resolvidos por essa confirmação.
+
 ### IA-M04: encerrado — 06/11
 
 Três padrões pessoais independentes (estratégia, conteúdo, legenda), aceitos pelo proprietário. Trocar o modelo na gaveta salva o padrão do comando; o seletor do diálogo "Usar esta estratégia" altera só o de conteúdo. Minha Conta tem, antes de cada seletor, um botão ghost de atualizar que volta o rascunho ao Luna (vale ao Salvar Alterações) e fica oculto quando o modelo já é o Luna. Gerar conteúdo deixou de enviar o texto atual do campo no pedido, o que fazia o resultado repetir o conteúdo anterior. Reset, teclado, layout estreito, atualização de percentual e chamadas foram testados pelo proprietário. Decisões: teto de legenda de 2048 para todos os modelos; o cache do Claude não é solicitado pelo app, então seus campos vêm zerados sem afetar o custo; a versão da tarifa não será congelada por operação, porque uma mudança de preço se resolve atualizando o catálogo. Typecheck passou. Pendente fora do escopo: conciliação real por modelo além do Luna e da legenda. [IA-M04](../../.scratch/ai-models/issues/04-model-selection-by-command.md).

@@ -1,5 +1,7 @@
 # EST-02 — Permitir trocar a estratégia selecionada após salvar
 
+**Status:** Encerrado em 06/11/2026 com aceite do proprietário em produção. Histórico abaixo preservado.
+
 **Bloqueado por:** nenhum ticket (coordenar edição com EST-01 pois ambos atuam no modal da gaveta).
 
 ## Contexto e diagnóstico

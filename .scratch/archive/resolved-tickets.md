@@ -8231,3 +8231,16 @@ Encerrado com aceite em 05/11/2026. [Estudo e histórico dos lotes](../visual-co
 ## DS02 — Revisão por rota do design system
 
 Encerrado como revisão em 06/11/2026. [Relatório, correções e limites](../../docs/audits/2026-11-05-ds02-route-review.md). Falha de Planejamento encaminhada ao [T03](../social-planning-recovery/issues/03-normalized-input.md).
+
+## Encerramentos de 06/11/2026
+
+O proprietário confirmou o aceite em produção destes tickets. Os arquivos continuam no lugar, com o status atualizado e o histórico completo.
+
+- [CAL01 — Datas comemorativas no calendário](../calendar-celebrations/issues/01-calendar-celebration-markers.md): versão A publicada.
+- [EST-01 — Progresso e resultado no diálogo de estratégias](../action-strategy/issues/01-strategy-dialog-progress.md).
+- [EST-02 — Troca de estratégia após salvar](../action-strategy/issues/02-strategy-selection-switch.md).
+- [IA-M01 — Medição com tokens reais e tarifas por modelo](../ai-models/issues/01-model-catalog-selection-and-metering.md).
+- [IA-M03 — Cota mensal de IA](../ai-models/issues/03-monthly-ai-allowance.md).
+- [IA-M04 — Seleção e padrões por comando](../ai-models/issues/04-model-selection-by-command.md): três padrões pessoais e botão de voltar ao Luna (`da2788a`).
+- [01 — Uso de IA em Minha Conta](../ai-usage/issues/01-ai-usage-visibility.md).
+- Correção de Gerar conteúdo (sem ticket próprio): o prompt não reenvia o conteúdo atual.

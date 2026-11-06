@@ -10,7 +10,7 @@
 
 **Bloqueios** — Nenhum.
 
-**Status** — versão A aprovada e implementada localmente no calendário de `/app/partner/$slug`. Aceite visual local confirmado pelo proprietário em 05/11. Publicação pendente. [Estudo](../../../docs/audits/2026-11-05-cal01-calendar-celebrations.md) · [Comparativo local](../comparativo-cal01.html). Data comum vinculada é hipótese visual: o contrato SQL local aceita apenas feriados vinculados.
+**Status:** Encerrado em 06/11/2026 com aceite do proprietário em produção. Histórico abaixo preservado. Registro anterior: versão A aprovada e implementada localmente no calendário de `/app/partner/$slug`. Aceite visual local confirmado pelo proprietário em 05/11. Publicação pendente. [Estudo](../../../docs/audits/2026-11-05-cal01-calendar-celebrations.md) · [Comparativo local](../comparativo-cal01.html). Data comum vinculada é hipótese visual: o contrato SQL local aceita apenas feriados vinculados.
 
 - [ ] Mostrar lado a lado as quatro combinações: data comum geral, feriado geral, data comum vinculada ao parceiro e feriado vinculado ao parceiro.
 - [ ] Comparar dois caminhos para feriado: círculo vazado para data comum e preenchido para feriado, ou título sem bolinha e com sublinhado apenas para feriado.

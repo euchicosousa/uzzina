@@ -1,5 +1,7 @@
 # IA-M01 — Medir gerações com tokens reais e tarifas por modelo
 
+**Status:** Encerrado em 06/11/2026 com aceite do proprietário em produção. Histórico abaixo preservado.
+
 ## Modelos sugeridos
 
 - **OpenAI** — GPT-6.1 Sol, para conferir cálculo por categoria e conciliação com o uso reportado.
