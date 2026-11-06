@@ -617,7 +617,7 @@ describe("reopening an existing action", () => {
     expect(reads).toEqual([ID_A]);
   });
 
-  it("newer version with a clean form opens the comparison without adopting it", async () => {
+  it("newer version with a clean form is adopted without a comparison", async () => {
     holdReads = true;
     await open(
       baseAction({
@@ -627,13 +627,7 @@ describe("reopening an existing action", () => {
     );
     const remote = remoteEdit(ID_A, {
       title: "Remote title",
-      date: "2026-11-01T15:30:00",
-      partners: ["agency", "studio"],
-      responsibles: [],
       phase: "doing",
-      category: "post",
-      color: "#ff0000",
-      archived: true,
       strategies: [
         {
           headline: "Remote strategy",
@@ -642,82 +636,47 @@ describe("reopening an existing action", () => {
           direcionamento: "D",
         },
       ],
-      // Media removed and reordered by the other session.
+      // Media removed by the other session (or a stale list row).
       work_files: [],
-      content_files: ["https://files.test/b.png"],
+      content_files: [],
     });
     await releaseReads();
-    const shown = await findDialog();
-    // The modal hides the form from the accessibility tree; it is still the opened version.
-    expect(
-      screen.getByRole<HTMLTextAreaElement>("textbox", {
-        name: "Título da ação",
-        hidden: true,
-      }).value,
-    ).toBe("Opened title");
-    expect(writes).toEqual([]);
-    const server = fieldNotes("Versão atual");
-    expect(server).toEqual([
-      "Título · Mudou no servidor",
-      "Data · Mudou no servidor",
-      "Parceiros · Mudou no servidor",
-      "Responsáveis · Mudou no servidor",
-      "Estado · Mudou no servidor",
-      "Tipo · Mudou no servidor",
-      "Estratégias · Mudou no servidor",
-      "Arquivos do conteúdo · Mudou no servidor",
-      "Arquivos de trabalho · Mudou no servidor",
-      "Cor · Mudou no servidor",
-      "Arquivamento · Mudou no servidor",
-    ]);
-    expect(
-      fieldNotes("Versão aberta").every((note) =>
-        note?.endsWith("Sem alteração sua"),
-      ),
-    ).toBe(true);
-    const current = within(shown).getByRole("region", { name: "Versão atual" });
-    const opened = within(shown).getByRole("region", { name: "Versão aberta" });
-    expect(within(current).getByText("01/11/2026 às 15h30")).toBeTruthy();
-    expect(within(current).getByText("Fazendo")).toBeTruthy();
-    expect(within(current).getByText(/Agency\s+Studio/)).toBeTruthy();
-    expect(within(opened).getByText(/a\.png\s+b\.png/)).toBeTruthy();
-    expect(within(current).getByText("b.png")).toBeTruthy();
-    // Without local changes there is nothing of the user's to save.
-    expect(
-      within(shown).queryByRole("button", { name: "Salvar minhas alterações" }),
-    ).toBeNull();
-    fireEvent.click(
-      within(shown).getByRole("button", { name: "Usar versão atual" }),
-    );
-    await waitFor(() => expect(dialog()).toBeNull());
-    expect(title().value).toBe("Remote title");
+    await waitFor(() => expect(title().value).toBe("Remote title"));
+    expect(dialog()).toBeNull();
+    expect(screen.queryByTestId("drawer-remote-version-banner")).toBeNull();
+    expect(screen.getByRole("button", { name: "Fase: Fazendo" })).toBeTruthy();
     expect(screen.queryAllByRole("link", { name: "Abrir anexo" })).toHaveLength(
       0,
     );
     expect(writes).toEqual([]);
-    // The accepted version is the new write base; untouched fields are not resent.
-    typeTitle("After accepting");
+    // The adopted version is the new write base; untouched fields are not resent.
+    typeTitle("After adopting");
     fireEvent.click(screen.getByRole("button", { name: "Atualizar" }));
     await settle();
     expect(writes).toEqual([
       {
         id: ID_A,
-        patch: { title: "After accepting" },
+        patch: { title: "After adopting" },
         expected: remote.updated_at,
       },
     ]);
   });
 
-  it("only technical version metadata changed: says so without inventing content", async () => {
+  it("only technical version metadata changed: a clean form adopts it silently", async () => {
     holdReads = true;
     await open(baseAction());
-    remoteEdit(ID_A, {});
+    const remote = remoteEdit(ID_A, {});
     await releaseReads();
-    const shown = await findDialog();
-    expect(within(shown).getByRole("status").textContent).toContain(
-      "Nenhum campo do conteúdo mudou",
-    );
-    expect(within(shown).queryByTestId("conflict-comparison")).toBeNull();
+    await settle();
+    expect(dialog()).toBeNull();
+    typeTitle("After metadata");
+    fireEvent.click(screen.getByRole("button", { name: "Atualizar" }));
+    await settle();
+    expect(writes.at(-1)).toEqual({
+      id: ID_A,
+      patch: { title: "After metadata" },
+      expected: remote.updated_at,
+    });
   });
 
   it("same field edited locally and remotely while the read is pending", async () => {
@@ -741,7 +700,7 @@ describe("reopening an existing action", () => {
     ).toBeTruthy();
     expect(
       within(shown).getByRole("button", {
-        name: "Descartar minhas alterações e usar a atual",
+        name: "Usar versão atual",
       }),
     ).toBeTruthy();
     expect(writes).toEqual([]);
@@ -768,7 +727,7 @@ describe("reopening an existing action", () => {
       "Estado · Sem alteração sua",
     ]);
     fireEvent.click(
-      within(shown).getByRole("button", { name: "Salvar minhas alterações" }),
+      within(shown).getByRole("button", { name: "Usar minha versão" }),
     );
     await waitFor(() => expect(dialog()).toBeNull());
     expect(writes).toEqual([
@@ -907,7 +866,7 @@ describe("reopening an existing action", () => {
     const shown = await findDialog();
     fireEvent.click(
       within(shown).getByRole("button", {
-        name: "Descartar minhas alterações e usar a atual",
+        name: "Usar versão atual",
       }),
     );
     await waitFor(() => expect(dialog()).toBeNull());
@@ -985,7 +944,7 @@ describe("reopening an existing action", () => {
     // Yet another change lands while the user is reviewing.
     remoteEdit(ID_A, { phase: "review" });
     fireEvent.click(
-      within(shown).getByRole("button", { name: "Salvar minhas alterações" }),
+      within(shown).getByRole("button", { name: "Usar minha versão" }),
     );
     await screen.findByTestId("drawer-conflict-banner");
     expect(writes).toEqual([
@@ -1014,7 +973,13 @@ describe("reopening an existing action", () => {
     fireEvent.click(screen.getByRole("button", { name: "Tentar novamente" }));
     await settle();
     await releaseReads();
-    await findDialog();
+    // Nothing local is pending, so the retried read is adopted directly.
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Fase: Fazendo" }),
+      ).toBeTruthy(),
+    );
+    expect(dialog()).toBeNull();
   });
 
   it("revoked access shows the inaccessible notice instead of trusting the cache", async () => {
@@ -1074,7 +1039,7 @@ describe("reopening an existing action", () => {
     expect(title().value).toBe("Second action");
   });
 
-  it("two actions keep their own comparison and identity", async () => {
+  it("two actions keep their own version and identity", async () => {
     holdReads = true;
     const view = await open(baseAction());
     const second = baseAction({ id: ID_B, title: "Second action" });
@@ -1084,18 +1049,16 @@ describe("reopening an existing action", () => {
     });
     remoteEdit(ID_A, { title: "Primary changed elsewhere" });
     await releaseReads();
-    // The secondary is active and current; the primary waits for its turn.
+    // Each clean form adopts only its own row, without a comparison.
     expect(dialog()).toBeNull();
     const tabs = screen.getByRole("tablist", { name: "Ações abertas" });
-    fireEvent.click(within(tabs).getByRole("tab", { name: /Opened title/ }));
-    const shown = await findDialog();
-    expect(
-      within(
-        within(shown).getByRole("region", { name: "Versão atual" }),
-      ).getByText("Primary changed elsewhere"),
-    ).toBeTruthy();
-    fireEvent.click(within(shown).getByRole("button", { name: "Cancelar" }));
-    await waitFor(() => expect(dialog()).toBeNull());
+    const primaryTab = await waitFor(() =>
+      within(tabs).getByRole("tab", { name: /Primary changed elsewhere/ }),
+    );
+    fireEvent.click(primaryTab);
+    await settle();
+    expect(dialog()).toBeNull();
+    expect(title().value).toBe("Primary changed elsewhere");
     fireEvent.click(within(tabs).getByRole("tab", { name: /Second action/ }));
     expect(dialog()).toBeNull();
     expect(title().value).toBe("Second action");
@@ -1158,22 +1121,17 @@ describe("reopening an existing action", () => {
     expect(writes).toHaveLength(1);
   });
 
-  it("stored HTML the editors reformat is not a local change when the dialog takes focus", async () => {
+  it("stored HTML the editors reformat is not a local change when a newer row arrives", async () => {
     holdReads = true;
     await open(baseAction({ description: "<p>a</p>\n<hr />" }));
     tiptap(await editorNode()).commands.focus("end");
     remoteEdit(ID_A, { title: "Their title" });
     await releaseReads();
-    const shown = await findDialog();
+    // Reformatted HTML is not a local edit, so the newer row is adopted.
+    await waitFor(() => expect(title().value).toBe("Their title"));
+    expect(dialog()).toBeNull();
     fireEvent.blur(await editorNode());
     await settle();
-    expect(fieldNotes("Versão aberta")).toEqual(["Título · Sem alteração sua"]);
-    expect(
-      within(shown).queryByRole("button", { name: "Salvar minhas alterações" }),
-    ).toBeNull();
-    expect(
-      within(shown).getByRole("button", { name: "Usar versão atual" }),
-    ).toBeTruthy();
     expect(writes).toEqual([]);
   });
 
@@ -1187,13 +1145,11 @@ describe("reopening an existing action", () => {
     tiptap(node).commands.focus("end");
     remoteEdit(ID_A, { title: "Their title" });
     await releaseReads();
-    const shown = await findDialog();
+    await waitFor(() => expect(dialog()).toBeNull());
+    await settle();
+    expect(dialog()).toBeNull();
     fireEvent.blur(node);
     await settle();
-    expect(fieldNotes("Versão aberta")).toEqual(["Título · Sem alteração sua"]);
-    expect(
-      within(shown).queryByRole("button", { name: "Salvar minhas alterações" }),
-    ).toBeNull();
     expect(writes).toEqual([]);
   });
 
@@ -1208,9 +1164,7 @@ describe("reopening an existing action", () => {
     await findDialog();
     const newer = remoteEdit(ID_A, { category: "post" });
     await releaseRead(0);
-    fireEvent.click(
-      screen.getByRole("button", { name: "Salvar minhas alterações" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Usar minha versão" }));
     await settle();
     // Nothing is written over the newer version; its comparison is shown.
     expect(writes).toHaveLength(1);
@@ -1218,9 +1172,7 @@ describe("reopening an existing action", () => {
       "Título · Sem mudança no servidor",
       "Tipo · Mudou no servidor",
     ]);
-    fireEvent.click(
-      screen.getByRole("button", { name: "Salvar minhas alterações" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Usar minha versão" }));
     await waitFor(() => expect(dialog()).toBeNull());
     expect(writes.at(-1)).toEqual({
       id: ID_A,
@@ -1241,7 +1193,7 @@ describe("reopening an existing action", () => {
     await releaseRead(0);
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Descartar minhas alterações e usar a atual",
+        name: "Usar versão atual",
       }),
     );
     await settle();
@@ -1269,7 +1221,7 @@ describe("reopening an existing action", () => {
     view.client.setQueryData(unknown, [baseAction()]);
     remoteEdit(ID_A, { title: "Changed elsewhere" });
     await releaseReads();
-    await findDialog();
+    await waitFor(() => expect(title().value).toBe("Changed elsewhere"));
     expect(
       view.client.getQueryData<Action[]>(scoped)?.map((row) => row.title),
     ).toEqual(["Changed elsewhere"]);
@@ -1281,6 +1233,8 @@ describe("reopening an existing action", () => {
     holdReads = true;
     await open(baseAction());
     tiptap(await editorNode()).commands.focus("end");
+    // A pending local edit keeps the comparison open instead of adopting.
+    typeTitle("Mine");
     remoteEdit(ID_A, { description: "<p>Server text</p>" });
     await releaseReads();
     const shown = await findDialog();
@@ -1294,5 +1248,25 @@ describe("reopening an existing action", () => {
       expect(active?.isConnected).toBe(true);
       expect(active?.textContent).toBe("Server text");
     });
+  });
+
+  it("silent adoption keeps focus inside the form", async () => {
+    holdReads = true;
+    await open(baseAction());
+    tiptap(await editorNode()).commands.focus("end");
+    remoteEdit(ID_A, { description: "<p>Server text</p>" });
+    await releaseReads();
+    await waitFor(() =>
+      expect(document.querySelector(".tiptap")?.textContent).toBe(
+        "Server text",
+      ),
+    );
+    expect(dialog()).toBeNull();
+    await waitFor(() => {
+      const active = document.activeElement;
+      expect(active && active !== document.body).toBe(true);
+      expect(active?.isConnected).toBe(true);
+    });
+    expect(writes).toEqual([]);
   });
 });

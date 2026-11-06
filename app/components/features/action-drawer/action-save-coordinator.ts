@@ -267,8 +267,16 @@ export class ActionSaveCoordinator {
     if (
       !base ||
       this.isDirty() ||
-      this.remoteVersion ||
       compareActionVersions(remote.updated_at, base.updated_at) !== 1
+    )
+      return false;
+    // A known newer row is acceptable only when it is exactly this version.
+    if (
+      this.remoteVersion &&
+      compareActionVersions(
+        remote.updated_at,
+        this.remoteVersion.updated_at,
+      ) !== 0
     )
       return false;
     const {

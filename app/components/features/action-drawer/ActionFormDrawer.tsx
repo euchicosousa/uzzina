@@ -744,6 +744,25 @@ export function ActionFormDrawer({
         if (result !== "newer" || !isCurrent()) return;
         // Lists may show the canonical row; the form keeps its base until the user decides.
         applyCanonicalActionRef.current(remote);
+        // A clean form has nothing to compare: adopt the server version silently.
+        const base = coordinator.getState().confirmedAction;
+        const normalize = (value: string | null | undefined) => value ?? "";
+        const isClean =
+          !!base &&
+          !coordinator.getState().isDirty &&
+          (Object.keys(textDraftsRef.current) as TextDraftField[]).every(
+            (field) =>
+              normalize(textDraftsRef.current[field]) ===
+              normalize(base[field]),
+          ) &&
+          normalize(descriptionRef.current) === normalize(base.description) &&
+          normalize(contentDescriptionRef.current) ===
+            normalize(base.content_description);
+        if (isClean && coordinator.adoptRemoteVersion(remote)) {
+          syncFieldsFromBase(remote, {});
+          setFocusRestoreRequest((request) => request + 1);
+          return;
+        }
         setComparison((current) => current ?? remote);
       } catch (error) {
         if (!isCurrent()) return;
@@ -765,7 +784,7 @@ export function ActionFormDrawer({
         } else isCheckingRef.current = false;
       }
     },
-    [queryClient],
+    [queryClient, syncFieldsFromBase],
   );
   checkRemoteVersionRef.current = checkRemoteVersion;
   const completedStrategies =
@@ -1329,16 +1348,14 @@ export function ActionFormDrawer({
             variant={coordinatorState.isDirty ? "destructive" : "default"}
             onPress={acceptServerVersion}
           >
-            {coordinatorState.isDirty
-              ? "Descartar minhas alterações e usar a atual"
-              : "Usar versão atual"}
+            Usar versão atual
           </PrismButton>
           {coordinatorState.isDirty && (
             <PrismButton
               isDisabled={isResolvingConflict || isPending}
               onPress={keepLocalChanges}
             >
-              {isResolvingConflict ? "Salvando…" : "Salvar minhas alterações"}
+              {isResolvingConflict ? "Salvando…" : "Usar minha versão"}
             </PrismButton>
           )}
         </PrismDialogFooter>

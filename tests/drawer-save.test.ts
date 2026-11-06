@@ -379,3 +379,41 @@ it("A to B to A ignores an earlier generation without clearing the current save"
   await currentSave;
   expect(coordinator.getState().savedTitle).toBe("Current A");
 });
+
+describe("adoptGeneratedStrategies with a known remote version", () => {
+  it("accepts the generated strategies when the known newer row is the same version", async () => {
+    const coordinator = new ActionSaveCoordinator({
+      key: "act-1",
+      initialAction: makeFakeAction(),
+      writeFn: async () => makeFakeAction(),
+    });
+    const remote = makeFakeAction({
+      strategies: [{ headline: "x" }] as unknown as Action["strategies"],
+      updated_at: "2026-10-06T11:00:00Z",
+    });
+    expect(
+      await coordinator.receiveRemoteVersion(
+        remote,
+        coordinator.getGeneration(),
+      ),
+    ).toBe("newer");
+    expect(coordinator.getState().remoteVersion).toBe(remote);
+    expect(coordinator.adoptGeneratedStrategies(remote)).toBe(true);
+    expect(coordinator.getState().remoteVersion).toBeNull();
+    expect(coordinator.getState().confirmedAction?.updated_at).toBe(
+      remote.updated_at,
+    );
+  });
+
+  it("refuses when the known remote version differs from the generated row", async () => {
+    const coordinator = new ActionSaveCoordinator({
+      key: "act-1",
+      initialAction: makeFakeAction(),
+      writeFn: async () => makeFakeAction(),
+    });
+    const known = makeFakeAction({ updated_at: "2026-10-06T12:00:00Z" });
+    await coordinator.receiveRemoteVersion(known, coordinator.getGeneration());
+    const generated = makeFakeAction({ updated_at: "2026-10-06T11:00:00Z" });
+    expect(coordinator.adoptGeneratedStrategies(generated)).toBe(false);
+  });
+});

@@ -8258,3 +8258,7 @@ Encerramento registrado no branch `proposal/ia-m02-profile-tabs` em `7e09a6d`, c
 ## DS04 — Microinterações
 
 Encerrado com aceite do proprietário em 06/11. [Registro](../design-system-audit/issues/04-microinteractions.md).
+
+## EST-05 — Bloqueio de estratégias ao reabrir a ação
+
+Encerrado em 06/11/2026 a pedido do proprietário, com a alternativa A implementada. Causa: a gaveta reabria com a linha da lista, anterior às estratégias gravadas pelo worker com a gaveta fechada; a leitura da abertura abria a comparação sem alterações locais e travava as estratégias. Agora a abertura adota a versão atual quando o formulário está limpo, e o modal de conflito real oferece "Usar versão atual" e "Usar minha versão". [Relatório, causa e roteiro de aceite](../../docs/audits/2026-11-06-est-05-strategy-conflict-on-reopen.md). Aceite visual no app pendente.

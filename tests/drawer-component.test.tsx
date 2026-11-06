@@ -1019,9 +1019,7 @@ it("drawer compares a conflict in an app dialog; cancel preserves edits and conf
   fireEvent.click(screen.getByRole("button", { name: "Comparar e salvar" }));
   await screen.findByRole("dialog", { name: "Comparar alterações" });
   conflict = true;
-  fireEvent.click(
-    screen.getByRole("button", { name: "Salvar minhas alterações" }),
-  );
+  fireEvent.click(screen.getByRole("button", { name: "Usar minha versão" }));
   await waitFor(() =>
     expect(
       screen.queryByRole("dialog", { name: "Comparar alterações" }),
@@ -1039,9 +1037,7 @@ it("drawer compares a conflict in an app dialog; cancel preserves edits and conf
   const retryCount = writes.length;
   fireEvent.click(screen.getByRole("button", { name: "Comparar e salvar" }));
   await screen.findByRole("dialog", { name: "Comparar alterações" });
-  fireEvent.click(
-    screen.getByRole("button", { name: "Salvar minhas alterações" }),
-  );
+  fireEvent.click(screen.getByRole("button", { name: "Usar minha versão" }));
   await waitFor(() => expect(writes.length).toBe(retryCount + 1));
   expect(writes[retryCount]?.title).toBe("My pending title");
   await waitFor(() =>
@@ -2874,7 +2870,7 @@ it("enables selection in the open dialog after reading the saved generated strat
   );
 });
 
-it("durable strategy preview cannot select stale raw options; explicit canonical review enables the correct headline", async () => {
+it("durable strategy preview cannot select stale raw options; adopting the canonical row enables the correct headline", async () => {
   durableFixture(durableOperation("succeeded"));
   mount(
     draft({
@@ -2909,21 +2905,22 @@ it("durable strategy preview cannot select stale raw options; explicit canonical
     }),
   );
   fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
-  const comparison = await screen.findByRole("dialog");
-  fireEvent.click(
-    await within(comparison).findByRole("button", {
-      name: "Usar versão atual",
-    }),
-  );
+  // With nothing pending locally, the canonical row is adopted without a comparison.
   await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  await waitFor(() =>
+    expect(screen.queryByTestId("drawer-remote-version-banner")).toBeNull(),
+  );
   fireEvent.click(
     screen.getByRole("button", { name: "Ver estratégias geradas" }),
   );
   const reviewed = await screen.findByRole("dialog");
-  const first = within(reviewed).getAllByRole<HTMLInputElement>("checkbox", {
-    name: "Selecionar estratégia",
-  })[0];
-  expect(first?.disabled).toBe(false);
+  const first = await waitFor(() => {
+    const box = within(reviewed).getAllByRole<HTMLInputElement>("checkbox", {
+      name: "Selecionar estratégia",
+    })[0];
+    expect(box?.disabled).toBe(false);
+    return box;
+  });
   fireEvent.click(first as HTMLElement);
   await waitFor(() =>
     expect(writes.some((write) => write.title === "Generated strategy 1")).toBe(

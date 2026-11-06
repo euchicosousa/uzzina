@@ -6,6 +6,10 @@ Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 
 
 ## Pendências reais
 
+### EST-05: estratégias ao reabrir a ação — 06/11
+
+Encerrado a pedido do proprietário. A comparação ao reabrir vinha da própria geração: a lista guardava uma linha anterior às estratégias gravadas pelo worker com a gaveta fechada. A leitura da abertura agora adota a versão atual sem modal quando o formulário está limpo. Com alterações locais, o modal continua, com os botões "Usar versão atual" e "Usar minha versão". `adoptGeneratedStrategies` aceita a mesma linha já registrada. [Relatório](2026-11-06-est-05-strategy-conflict-on-reopen.md). Branch `fix/est-05-strategy-reopen`, sem push. Verificação: typecheck limpo, `action-reopen-version` 34/0, `drawer-component` 107/0, `drawer-save` 11/0, e 77/0 nos testes de conflito e estratégias. Os testes de reabertura passaram a esperar a adoção sem modal com o formulário limpo. O arquivo `action-reopen-version` às vezes estoura o tempo na primeira execução e as falhas seguem em cascata; nas reexecuções passou. Falta o aceite no app pelo roteiro do relatório. O arquivo do ticket e a linha da fila estão na worktree `ticket-updates`, ainda não versionados.
+
 ### Merge IA-M02 e atualização da fila — 06/11
 
 IA-M02 (abas de Minha Conta) integrado à main local. Publicação informada pelo proprietário. DS04 encerrado com aceite das animações, IA-M05 em execução com Gemini e EST-03 aberto para recriar estratégias no diálogo e conferir atualização dos campos. Fila com 15 tickets. Checkout de origem do Gemini permanece separado. Testes focados de perfil: 4 passaram.
