@@ -79,8 +79,8 @@ export function LeadDetail({ lead }: LeadDetailProps) {
           rel="noopener noreferrer"
           target="_blank"
         >
-          <PhoneIcon className="size-4" />
           <span className="min-w-0 truncate">{lead.whatsapp}</span>
+          <PhoneIcon className="size-4" />
         </a>
       </div>
 

@@ -42,7 +42,7 @@ const BUTTON_SIZES = [
   "icon-lg",
 ] as const;
 
-const BUTTON_CONTENTS = ["text", "icon-start", "icon-end"] as const;
+const BUTTON_CONTENTS = ["text", "icon-end"] as const;
 
 type GalleryButtonVariant = (typeof BUTTON_VARIANTS)[number];
 type GalleryButtonSize = (typeof BUTTON_SIZES)[number];
@@ -61,7 +61,6 @@ const SIZE_METRICS: Record<GalleryButtonSize, string> = {
 
 const BUTTON_CONTENT_LABELS: Record<GalleryButtonContent, string> = {
   text: "Texto",
-  "icon-start": "Ícone + texto",
   "icon-end": "Texto + ícone",
 };
 
@@ -108,13 +107,6 @@ function ButtonPlayground() {
         variant={variant}
       >
         <PlusIcon />
-      </PrismButton>
-    );
-  } else if (content === "icon-start") {
-    previewButton = (
-      <PrismButton isDisabled={isDisabled} size={size} variant={variant}>
-        <PlusIcon data-icon="inline-start" />
-        {text}
       </PrismButton>
     );
   } else if (content === "icon-end") {

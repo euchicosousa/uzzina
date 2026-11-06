@@ -345,8 +345,8 @@ export function ContentReorderDialog({
             multiple
             onUpload={handleAdd}
           >
-            <PlusIcon />
             Adicionar
+            <PlusIcon />
           </CloudinaryUpload>
 
           {items.length > 0 && (

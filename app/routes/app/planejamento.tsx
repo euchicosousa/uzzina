@@ -510,16 +510,16 @@ function PlanningPage() {
               size="sm"
               variant="outline"
             >
-              <RotateCcwIcon className="size-4" />
               Novo / Trocar proposta
+              <RotateCcwIcon className="size-4" />
             </PrismButton>
           )}
           <PrismButton
             isDisabled={!selectedPartner || isGenerating || isFormInvalid}
             onClick={handleGenerate}
           >
-            <SparklesIcon className="size-4" />
             {isGenerating ? "Gerando sugestões..." : "Gerar planejamento"}
+            <SparklesIcon className="size-4" />
           </PrismButton>
         </div>
       </header>
@@ -929,8 +929,8 @@ function PlanningPage() {
                       onClick={() => setViewMode("list")}
                       type="button"
                     >
-                      <ListIcon className="size-3.5" />
                       Lista
+                      <ListIcon className="size-3.5" />
                     </button>
                     <button
                       className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors squircle ${
@@ -941,8 +941,8 @@ function PlanningPage() {
                       onClick={() => setViewMode("calendar")}
                       type="button"
                     >
-                      <CalendarIcon className="size-3.5" />
                       Calendário
+                      <CalendarIcon className="size-3.5" />
                     </button>
                   </div>
                 </div>

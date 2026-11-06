@@ -93,13 +93,13 @@ export function CommentInput({
             >
               {isInternal ? (
                 <>
-                  <LockIcon className="size-3 opacity-60" />
                   <span>Nota interna</span>
+                  <LockIcon className="size-3 opacity-60" />
                 </>
               ) : (
                 <>
-                  <GlobeIcon className="size-3 text-primary" />
                   <span>Mensagem ao parceiro</span>
+                  <GlobeIcon className="size-3 text-primary" />
                 </>
               )}
             </PrismButton>
@@ -206,8 +206,8 @@ export function CommentInput({
             isDisabled={isSubmitting || !value.trim()}
             onClick={handleSend}
           >
-            <SendIcon className="size-3.5" />
             {submitLabel || "Enviar"}
+            <SendIcon className="size-3.5" />
           </PrismButton>
         </div>
       </div>

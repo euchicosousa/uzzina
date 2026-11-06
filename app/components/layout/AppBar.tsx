@@ -124,9 +124,9 @@ export function AppBar({
                 );
               }}
             >
-              <PlusIcon />
               <span className="max-sm:hidden">Nova Ação</span>
               <span className="sm:hidden">Ação</span>
+              <PlusIcon />
             </PrismButton>
           )}
         </div>

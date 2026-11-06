@@ -234,8 +234,8 @@ export function AdminUserForm({
 
       <div className="flex justify-end gap-4 pb-8">
         <PrismButton isDisabled={isSubmitting} type="submit">
-          <SaveIcon className="size-4" />
           {isSubmitting ? "Salvando..." : "Salvar Usuário"}
+          <SaveIcon className="size-4" />
         </PrismButton>
       </div>
     </form>

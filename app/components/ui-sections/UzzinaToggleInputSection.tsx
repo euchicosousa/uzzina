@@ -41,8 +41,8 @@ export function ToggleInputPlayground() {
             onChange={setIsSelected}
             variant={variant}
           >
-            {showIcon && <ArchiveIcon className="size-4" />}
             {text}
+            {showIcon && <ArchiveIcon className="size-4" />}
           </PrismToggle>
           <span className="font-mono text-xs text-muted-foreground">
             {isSelected ? 'FormData: { archived: "on" }' : "FormData: {}"}
