@@ -6,6 +6,10 @@ Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 
 
 ## Pendências reais
 
+### Abas underline 1px: contrato atualizado — 06/11
+
+Decisão do proprietário em 06/11: a variante `underline` de `PrismTabs` é padronizada com seleção por linha inferior de 1px primary (`border-b border-b-primary`), sem a borda inferior do `TabList`. A especificação antiga de 2px foi superada e os contratos em `AGENTS.md` e `visual-controls-final-status.md` foram alinhados a esse desenho.
+
 ### IA-M05: componente de progresso de IA aprovado — 06/11
 
 O proprietário aprovou o componente `UAIProgressBar`, registrado e marcado na galeria `/ui`. O componente opera com avanço contínuo em tempo real (sem CSS transition concorrente no loop de RAF), curva suave até 90% ao longo de 30 segundos, seguido por incremento gradual de 1% a cada 1 segundo até 99% (cobrindo até 40s de operação sem congelamento visual), e salto instantâneo para 100% no retorno real. Suporta variante linha (`h-px`, sem rounded, trilho em `bg-input`, preenchimento em `bg-primary`) e círculo SVG. Integrado no modal de estratégias do `ActionFormDrawer`, com toast de sucesso na conclusão da geração ("Estratégias criadas com sucesso!" ou "Estratégias recriadas com sucesso!"). Testes automatizados 4/4 e typecheck limpos.
