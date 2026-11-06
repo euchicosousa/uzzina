@@ -5,7 +5,6 @@ import type { Json } from "../types/database";
 import { aiInputSchema } from "../app/lib/ai-contract.js";
 import { generateStrategies } from "./strategy-generation.js";
 import { recordAIUsage } from "./ai-usage.js";
-import { elapsedMs, logTiming, nowMs } from "./ai-timing.js";
 
 export class StrategyStoreError extends Error {
   constructor(public readonly code: string) {
@@ -35,13 +34,11 @@ export async function strategyRPC(
 /** One awaited lease per request; the persisted queue, not this process, owns recovery. */
 export async function runStrategyWorker(client: SupabaseClient, limit: number) {
   const leaseId = randomUUID();
-  const t0 = nowMs();
   const claimed: unknown = await strategyRPC(
     client,
     "claim_strategy_operation_with_model",
     { p_lease_id: leaseId, p_limit: limit },
   );
-  const tClaimed = nowMs();
   if (claimed === null) return { processed: false };
   if (
     typeof claimed !== "object" ||
@@ -55,37 +52,19 @@ export async function runStrategyWorker(client: SupabaseClient, limit: number) {
   const operationId = claimed.id;
   let resultRetained = claimed.result !== null;
   let code = "PROVIDER_UNCERTAIN";
-  // Timing marks only; one line per processed operation, emitted in finally.
-  const marks: {
-    providerStart?: number;
-    providerEnd?: number;
-    usageEnd?: number;
-    storeEnd?: number;
-    finishEnd?: number;
-  } = {};
-  let outcome = "error";
-  let model: string | null = null;
   try {
     if (!resultRetained) {
       const payload = aiInputSchema.parse(claimed.payload);
-      model = payload.model ?? lunaModel.id;
-      marks.providerStart = nowMs();
       const strategies = await generateStrategies(
         payload,
-        (response) => {
-          marks.providerEnd = nowMs();
-          return recordAIUsage(
+        (response) =>
+          recordAIUsage(
             client,
             { operationId, leaseId, intent: "ai-strategy" },
             response.usage,
             payload.model ?? lunaModel.id,
             response,
-          )
-            .then(() => undefined)
-            .finally(() => {
-              marks.usageEnd = nowMs();
-            });
-        },
+          ).then(() => undefined),
         90_000,
       );
       // This transaction commits the recoverable result before touching the action.
@@ -94,7 +73,6 @@ export async function runStrategyWorker(client: SupabaseClient, limit: number) {
         p_lease_id: leaseId,
         p_result: strategies,
       });
-      marks.storeEnd = nowMs();
       resultRetained = true;
     }
     code = "SAVE_FAILED";
@@ -102,8 +80,6 @@ export async function runStrategyWorker(client: SupabaseClient, limit: number) {
       p_operation_id: operationId,
       p_lease_id: leaseId,
     });
-    marks.finishEnd = nowMs();
-    outcome = "succeeded";
     return { processed: true };
   } catch (error) {
     if (resultRetained) code = "SAVE_FAILED";
@@ -114,35 +90,6 @@ export async function runStrategyWorker(client: SupabaseClient, limit: number) {
       p_lease_id: leaseId,
       p_code: code,
     });
-    outcome = code;
     return { processed: true, recovery: code };
-  } finally {
-    try {
-      const end = nowMs();
-      logTiming({
-        event: "strategy_worker_timing",
-        operationId,
-        model,
-        ms: {
-          claim: elapsedMs(t0, tClaimed),
-          // Claim to provider start: payload validation only.
-          claim_to_provider: elapsedMs(tClaimed, marks.providerStart),
-          provider: elapsedMs(
-            marks.providerStart,
-            marks.providerEnd ?? (marks.storeEnd ? undefined : end),
-          ),
-          usage: elapsedMs(marks.providerEnd, marks.usageEnd),
-          store: elapsedMs(marks.usageEnd ?? marks.providerEnd, marks.storeEnd),
-          finish: elapsedMs(marks.storeEnd ?? tClaimed, marks.finishEnd),
-          total: elapsedMs(t0, end),
-          // Not derivable: the claim returns no created_at and no extra read is added.
-          queue_wait: null,
-        },
-        outcome,
-        resumed: claimed.result !== null,
-      });
-    } catch {
-      // Instrumentation must never affect the worker.
-    }
   }
 }

@@ -6,7 +6,6 @@ import { generateStrategies } from "../server/strategy-generation.js";
 import type { Database } from "../types/database";
 import { recordAIUsage } from "../server/ai-usage.js";
 import { randomUUID } from "node:crypto";
-import { elapsedMs, logTiming, nowMs } from "../server/ai-timing.js";
 import {
   aiOutputLimits,
   defaultAIModelId,
@@ -15,47 +14,6 @@ import {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   let failureStatus = 503;
-  // Timing marks only; emitted once on response finish (see ai-timing.ts).
-  const timing: {
-    t0: number;
-    command?: string;
-    model?: string;
-    authStart?: number;
-    authEnd?: number;
-    quotaEnd?: number;
-    providerStart?: number;
-    providerEnd?: number;
-    usageEnd?: number;
-  } = { t0: nowMs() };
-  try {
-    res.once("finish", () => {
-      try {
-        if (!timing.command) return;
-        const end = nowMs();
-        logTiming({
-          event: "ai_timing",
-          command: timing.command,
-          model: timing.model ?? null,
-          ms: {
-            auth: elapsedMs(timing.authStart, timing.authEnd),
-            quota: elapsedMs(timing.authEnd, timing.quotaEnd),
-            provider: elapsedMs(
-              timing.providerStart,
-              timing.providerEnd ?? end,
-            ),
-            usage: elapsedMs(timing.providerEnd, timing.usageEnd),
-            total: elapsedMs(timing.t0, end),
-          },
-          status: res.statusCode,
-          ok: res.statusCode < 400,
-        });
-      } catch {
-        // Instrumentation must never affect a response.
-      }
-    });
-  } catch {
-    // Instrumentation must never affect a response.
-  }
   try {
     if (req.method !== "POST") {
       res.setHeader("Allow", "POST");
@@ -162,8 +120,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         code: "AI_CONFIGURATION_MISSING",
         error: "O modelo escolhido não está configurado neste ambiente.",
       });
-    timing.command = intent;
-    timing.model = model;
     const publisherIdentity = `A marca que publica este conteúdo é ${JSON.stringify(partner_name)}. Escreva na voz dessa marca, como autora da publicação. A agência operadora não é a autora por padrão. Preserve menções legítimas a outras marcas quando solicitadas nos insumos; não substitua nem apague essas menções.`;
 
     const clientKey = localCompatibility
@@ -186,7 +142,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       clientKey,
       clientOptions,
     );
-    timing.authStart = nowMs();
     const {
       data: { user },
       error: userError,
@@ -209,7 +164,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         error: "Seu acesso à IA está desativado. Fale com o administrador.",
       });
 
-    timing.authEnd = nowMs();
     if (!localCompatibility) {
       const { data: allowed, error: usageError } = await supabase.rpc(
         "consume_ai_usage",
@@ -266,23 +220,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
     }
     failureStatus = 502;
-    timing.quotaEnd = nowMs();
-    timing.providerStart = timing.quotaEnd;
     const logUsage = async (response: AIGeneration, intentName: string) => {
-      timing.providerEnd = nowMs();
       // Development compatibility has no service role and must not write measurements.
       if (localCompatibility) return;
-      try {
-        await recordAIUsage(
-          supabase,
-          { userId: user.id, intent: intentName, reservationId },
-          response.usage,
-          model,
-          response,
-        );
-      } finally {
-        timing.usageEnd = nowMs();
-      }
+      await recordAIUsage(
+        supabase,
+        { userId: user.id, intent: intentName, reservationId },
+        response.usage,
+        model,
+        response,
+      );
     };
 
     // Vamos mapear os intents conforme definidos no app/lib/CONSTANTS.ts e no ai.ts original

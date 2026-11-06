@@ -12,13 +12,13 @@ IA-M05, IA-M02, DS03, DS04 e DS05 eram **tickets de estudo**. O executor impleme
 
 Decisões do proprietário em 06/11, após ler o relatório:
 
-- **IA-M05:** a demora é normal (modelo barato é rápido, caro demora). O objetivo é contornar a espera, sem streaming. Reestudo: [contornar a espera](2026-11-06-ia-m05-contornar-espera.md). Recomenda liberar a pessoa durante legenda e conteúdo, aviso de conclusão e expectativa de tempo no seletor. Os logs de tempo de `8a9f035` não ajudam nisso; a reversão está recomendada e pendente de decisão.
+- **IA-M05:** a demora é normal (modelo barato é rápido, caro demora). O objetivo é contornar a espera, sem streaming. Reestudo: [contornar a espera](2026-11-06-ia-m05-contornar-espera.md). Recomenda liberar a pessoa durante legenda e conteúdo, aviso de conclusão e expectativa de tempo no seletor. Os logs de tempo de `8a9f035` foram revertidos a pedido do proprietário: typecheck limpo, testes de IA 103/0 e `test:serverless` com 9 PASS.
 - **IA-M02:** a aba Uso de IA mostra o uso pessoal, parte da franquia compartilhada pela agência. Abas no mobile e no desktop. Envio só dos campos alterados: sim. Indicador de não salvo: sim. O branch `proposal/ia-m02-profile-tabs` (`7345909`) cobre os três primeiros itens; faltam o indicador e a autorização do merge.
 - **DS03:** "tudo ok". A, B, D e F ficam na `main`. C e E seguem nos branches `proposal/ds03-c-title-drag` e `proposal/ds03-e-touch-scroll`, sem merge.
 - **DS05:** o proprietário discorda da convenção, sem posição formada. Ajustes atuais mantidos; convenção não adotada; em aberto para estudo futuro. O branch `proposal/ds05-save-icon-first` também segue sem merge.
 - **O resto fica como foi deixado:** DS04 (tokens, Nova Hora e overlays animados), lotes do DS01, correção do Tab da gaveta, testes atualizados, seletor Semana, `UPreferenceSwitch` sem caixa e `launch.json`.
 
-Pendências reais: merges dos 4 branches de proposta, só com autorização; recortes do IA-M05 (A, B, C); decisão sobre os logs do IA-M05; decisões D1–D6 do Planejamento (T01); T02 sem PostgreSQL local, por decisão do proprietário; push da `main`, não autorizado.
+Pendências reais: merges dos 4 branches de proposta, só com autorização; recortes do IA-M05 (A, B, C); decisões D1–D6 do Planejamento (T01); T02 sem PostgreSQL local, por decisão do proprietário; push da `main`, não autorizado.
 
 ### Conferência de progresso e conciliação IA-M04 — 06/11
 

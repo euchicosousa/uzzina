@@ -10,7 +10,7 @@
 
 **Bloqueado por.** Nenhum ticket. Usar as chamadas e registros disponíveis no IA-M04. Novas chamadas reais, se necessárias, devem ter escopo autorizado.
 
-**Status.** Reestudo entregue em 06/11/2026 ([contornar a espera](../../../docs/audits/2026-11-06-ia-m05-contornar-espera.md)), aguardando a escolha dos recortes pelo proprietário. Estudo apenas: nada implementado. Os logs de tempo de `8a9f035` têm recomendação de reverter, que também depende do proprietário.
+**Status.** Reestudo entregue em 06/11/2026 ([contornar a espera](../../../docs/audits/2026-11-06-ia-m05-contornar-espera.md)), aguardando a escolha dos recortes pelo proprietário. Estudo apenas: nada implementado. Os logs de tempo de `8a9f035` foram revertidos a pedido do proprietário em 06/11/2026.
 
 ## Critérios de aceite
 
@@ -77,3 +77,8 @@ Código preparado (sem mudança de comportamento; não publicado, nenhuma geraç
 **Onde ler:** Vercel > projeto > Logs (funções `/api/ai` e `/api/strategy-worker`), filtrando por `ai_timing` ou `strategy_worker_timing`.
 
 **O que coletar nas próximas gerações do proprietário (Luna e Astra):** mesma ação, mesmo texto e mesmo comando, 3 execuções por modelo, em horários próximos. Para cada uma, anotar a linha do log (`ms.provider`, `ms.auth`, `ms.quota`, `ms.total`) e, na tabela `ai_generation_logs`, `prompt_tokens`, `completion_tokens`, `provider_meter.reasoning_tokens` e `cached_tokens`. Em estratégias, anotar também o horário em que clicou e o horário em que o resultado apareceu, para separar fila e polling do provedor. Comparar as medianas de `provider` entre Luna e Astra.
+
+
+## Reversão dos logs — 06/11/2026
+
+A pedido do proprietário, `8a9f035` foi revertido: saíram `server/ai-timing.ts` e as linhas `ai_timing`/`strategy_worker_timing` de `api/ai.ts` e `server/strategy-operations.ts`, além do item no `check-serverless-runtime.cjs`. A seção "Instrumentação" acima é histórica. Verificação: typecheck limpo, `ai` + `strategy-operations` com 103/0 e `test:serverless` com 9 PASS.
