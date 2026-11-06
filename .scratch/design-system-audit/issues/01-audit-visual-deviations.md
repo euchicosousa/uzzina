@@ -121,3 +121,10 @@ O rodapé, os combobox e o RichTextEditor ficaram de fora por dependerem de deci
 ## Medição do rodapé da gaveta no app real — 06/11/2026
 
 Ação de rede social ("Drink", PARK Sobral), em largura de celular, só leitura. Os 9 controles do rodapé (parceiros, fase, categoria, cor, sprints, ID, duplicar, arquivar e atualizar) medem 48px de altura com raio de 22,88px, o `rounded-3xl` do tamanho `lg`. Ícones têm 20px, o avatar do parceiro 32px e a amostra de cor 20px. Batem com o contrato do AGENTS.md (`ghost` + `icon-lg`, `size-5`, avatar de 32px no rodapé). Isso confirma a geometria; o aceite visual continua com o proprietário.
+
+## Checklist consolidado de aceite — 06/11
+
+- [ ] Lotes locais: busca e sino, Observações, Gerenciar conteúdo e carrossel, Ajuda, login/revisão do portal e uploads do Admin. Conferir aparência, foco e legibilidade sobre mídia. O fechamento da gaveta, o diálogo xs e a geometria medida do rodapé já têm registros próprios.
+- [ ] Decidir se existe ajuste de rodapé/comboboxes além da geometria Prism já conferida. Validar o RichTextEditor e decidir se a barra entra em lote próprio.
+- [ ] Confirmar a intenção da borda branca do ActionItem e da largura mínima do calendário do portal.
+- [ ] Coordenar Minha Conta com IA-M02 e Planejamento com T01–T11. UPreferenceSwitch sem caixa já foi conferido. Itens antigos do V44 exigem conferência de vigência antes de virar novo trabalho.

@@ -6,6 +6,14 @@ Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 
 
 ## Pendências reais
 
+### Decisões e roteiros de aceite — 06/11
+
+IA-M05 passa a estudar barra de avanço simulado até cerca de 97%, com espera até retorno real e sem streaming. DS05 adota ícone à esquerda em botões e abas. Indicadores de navegação e abertura ainda precisam de decisão. DS01 e DS04 ganharam checklists de conferência. IA-M02 pode ser encaminhado em recorte focado no branch de proposta. Só documentação. Referências e diff conferidos.
+
+### Conciliação do tracker após a madrugada — 06/11
+
+[Tracker principal](../../.scratch/README.md) e [central numerada](2026-11-03-ticket-dispatch.md) sincronizados com 17 pendências. Main local em `0cbe014`, 34 commits à frente da referência local `origin/main` em `a6a056c` antes desta atualização documental. Conferidos os quatro branches de proposta e os encerramentos já registrados no histórico. T02 segue sem evidência P01–P10, DS01 tem lotes locais com aceite visual pendente e IA-M02/DS03/DS05 têm propostas fora da main. Referências e diff conferidos.
+
 ### Rodada de tickets de 06/11 — estado para os próximos agentes
 
 IA-M05, IA-M02, DS03, DS04 e DS05 eram **tickets de estudo**. O executor implementou código sem autorização, e o proprietário não concordou. Regra registrada no AGENTS.md: investigação entrega só relatório. Nada da rodada foi publicado. Relatório completo para o proprietário: https://claude.ai/artifact/VTxfCon2znKybzaSr6Xkg2.

@@ -50,3 +50,9 @@ As classes `animate-in`, `zoom-in-95` e `fade-*` do Prism não faziam nada, porq
 Verificação: 105 pass e 0 fail em 8 arquivos de overlays. No navegador local, em `/ui`, o popover abriu com `overlay-pop-in` 0,2 s e fechou com `overlay-pop-out` 0,15 s. O diálogo animou o fundo e o conteúdo e desmontou depois da saída, sem erros de console.
 
 Roteiro: abrir e fechar o seletor de parceiros, o menu do perfil, a busca e um diálogo; depois ativar "Reduzir movimento" no sistema e conferir que nada anima.
+
+## Checklist de aceite no app — 06/11
+
+- [ ] Alterar Data e Hora em lote: marcar/desmarcar Mudar Data e Mudar Hora. Conferir abertura e fechamento sem saltos ou cortes, e Tab pulando campos recolhidos.
+- [ ] Abrir e fechar seletor de parceiros, um combobox (Categoria), menu do perfil, busca e diálogo de lote. Conferir entrada/saída suave, Escape e retorno de foco sem camada invisível bloqueando cliques.
+- [ ] Ativar Reduzir movimento no sistema e repetir ambos os passos. Os mesmos controles devem funcionar sem animação.

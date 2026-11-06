@@ -63,6 +63,13 @@ Convenção aplicada: ícone antes do texto; sem `mr-*`/`ml-*` no ícone (o `gap
 
 ## Decisão do proprietário — 06/11/2026
 
-O proprietário discorda da convenção proposta, mas ainda não tem uma posição formada. Os ajustes já feitos na `main` ficam como estão, e o branch `proposal/ds05-save-icon-first` também. A convenção **não** está adotada e não deve ser aplicada em novos lugares.
+Ícones ficam à esquerda do rótulo em botões e abas. Inventário inicial por inspeção e pelo relatório existente. Implementação depende de autorização.
 
-**Status:** em aberto para estudo futuro.
+| Entra na regra | Situação |
+| --- | --- |
+| Nova Ação, ações de criar no Admin, Redefinir Senha | Ordem já ajustada na main local. |
+| Salvar/Atualizar da gaveta | Proposta pronta em `proposal/ds05-save-icon-first`. Validar na largura em que aparece texto. |
+| Fazer Login na equipe e no portal | Ícone de entrada aparece após o texto. Entra na regra aprovada. |
+| Abas e demais botões com ícone e rótulo | Conferir consumidores reais e registrar os casos em que a ordem ainda diverge. |
+
+**Decisões abertas.** Chevrons que indicam abrir um menu ou seletor (Visualizar/Ordenar/Exibir e seletor de cor), indicadores de avanço e de link externo. Confirmar se são indicadores separados do ícone do rótulo. Controles somente com ícone, como setas do calendário, não têm ordem de ícone e rótulo. Regras de padding via `data-icon` são um tema separado.
