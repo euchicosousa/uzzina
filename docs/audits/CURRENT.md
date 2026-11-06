@@ -6,6 +6,14 @@ Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 
 
 ## Pendências reais
 
+### Novo levantamento — 06/11
+
+Tracker e central atualizados para 15 tickets ativos. IA-M02 encerrado no branch `proposal/ia-m02-profile-tabs` em `7e09a6d`; implementação em `88630f5`. O branch registra typecheck e 4 testes passando. Merge e publicação pendentes. DS01 permanece encerrado com aceite. IA-M05, DS03, DS04, DS05 e T01–T11 seguem na fila. Conferência documental e de referências, sem reexecutar testes.
+
+### Aceites e escopos — 06/11
+
+DS01 encerrado. Fila com 16 tickets. DS04 tem passos 1 e 3 aprovados. DS05 adota ícone à direita. IA-M05 autoriza o componente e a galeria, com integração para decisão posterior. Documentação atualizada em checkout separado do IA-M02. Diff conferido.
+
 ### Decisões e roteiros de aceite — 06/11
 
 IA-M05 passa a estudar barra de avanço simulado até cerca de 97%, com espera até retorno real e sem streaming. DS05 adota ícone à esquerda em botões e abas. Indicadores de navegação e abertura ainda precisam de decisão. DS01 e DS04 ganharam checklists de conferência. IA-M02 pode ser encaminhado em recorte focado no branch de proposta. Só documentação. Referências e diff conferidos.

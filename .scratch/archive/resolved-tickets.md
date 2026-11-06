@@ -8244,3 +8244,17 @@ O proprietário confirmou o aceite em produção destes tickets. Os arquivos con
 - [IA-M04 — Seleção e padrões por comando](../ai-models/issues/04-model-selection-by-command.md): três padrões pessoais e botão de voltar ao Luna (`da2788a`).
 - [01 — Uso de IA em Minha Conta](../ai-usage/issues/01-ai-usage-visibility.md).
 - Correção de Gerar conteúdo (sem ticket próprio): o prompt não reenvia o conteúdo atual.
+
+## DS01 — Padronização visual com Prism
+
+Encerrado em 06/11/2026 com aceite integral do proprietário. [Registro dos lotes](../design-system-audit/issues/01-audit-visual-deviations.md).
+
+
+## IA-M02 — Minha Conta em abas
+
+Encerramento registrado no branch `proposal/ia-m02-profile-tabs` em `7e09a6d`, com implementação em `88630f5`. Inclui quatro abas, indicador de alterações não salvas e envio parcial de preferências. O branch registra typecheck e 4 testes passando. Merge e publicação pendentes.
+
+
+## DS04 — Microinterações
+
+Encerrado com aceite do proprietário em 06/11. [Registro](../design-system-audit/issues/04-microinteractions.md).

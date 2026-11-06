@@ -128,3 +128,7 @@ Ação de rede social ("Drink", PARK Sobral), em largura de celular, só leitura
 - [ ] Decidir se existe ajuste de rodapé/comboboxes além da geometria Prism já conferida. Validar o RichTextEditor e decidir se a barra entra em lote próprio.
 - [ ] Confirmar a intenção da borda branca do ActionItem e da largura mínima do calendário do portal.
 - [ ] Coordenar Minha Conta com IA-M02 e Planejamento com T01–T11. UPreferenceSwitch sem caixa já foi conferido. Itens antigos do V44 exigem conferência de vigência antes de virar novo trabalho.
+
+## Encerramento — 06/11
+
+Conclusão integral confirmada pelo proprietário. O checklist anterior fica como histórico.

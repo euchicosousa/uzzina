@@ -56,3 +56,12 @@ Roteiro: abrir e fechar o seletor de parceiros, o menu do perfil, a busca e um d
 - [ ] Alterar Data e Hora em lote: marcar/desmarcar Mudar Data e Mudar Hora. Conferir abertura e fechamento sem saltos ou cortes, e Tab pulando campos recolhidos.
 - [ ] Abrir e fechar seletor de parceiros, um combobox (Categoria), menu do perfil, busca e diálogo de lote. Conferir entrada/saída suave, Escape e retorno de foco sem camada invisível bloqueando cliques.
 - [ ] Ativar Reduzir movimento no sistema e repetir ambos os passos. Os mesmos controles devem funcionar sem animação.
+
+## Aceite — 06/11
+
+Passos 1 e 3 aprovados. Para o passo 2, abra uma ação existente, entre em Essencial e use Parceiros e Categoria na fileira do rodapé, à esquerda de Atualizar. Em /ui → Componentes de UI, abra e feche os exemplos Popover, Select, Combobox, Menu e Dialog. Confira entrada, saída e retorno do foco ao fechar por Escape.
+
+
+## Encerramento — 06/11
+
+Proprietário conferiu as animações e aprovou. Recorte entregue encerrado.

@@ -1,10 +1,12 @@
 # Tickets abertos da UZZINA
 
-Atualizado em 06/11/2026. **17 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
+Atualizado em 06/11/2026. **15 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
 
 [Histórico consolidado](archive/resolved-tickets.md): 87 documentos encerrados/aprovados e 11 da antiga série C do Planejamento, substituída pela recuperação. Os antigos arquivos individuais foram retirados e seus links redirecionados.
 
 Ao criar um ticket ou mudar seu escopo, inclua as três opções da seção `Modelos sugeridos` conforme o [guia de agentes](../AGENTS.md#recomendações-de-agentes-nos-tickets).
+
+**Integração pendente fora da fila de execução.** IA-M02 foi encerrado no branch de proposta em `7e09a6d`; merge na main e publicação ainda pendentes.
 
 | Série                       | Ticket                                                                                                                            | O que falta                                                                                                                                                                                |
 | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -19,12 +21,10 @@ Ao criar um ticket ou mudar seu escopo, inclua as três opções da seção `Mod
 | Recuperação do Planejamento | [T09: Converter aprovadas em uma transação idempotente real](social-planning-recovery/issues/09-transactional-finalization.md)    | Provar transação e idempotência reais após T02/D5.                                                                                                                                         |
 | Recuperação do Planejamento | [T10: Confirmar, reconciliar e atualizar a Mesa após finalização](social-planning-recovery/issues/10-finalization-ui.md)          | Conferir confirmação/reconciliação e atualização da Mesa após T04/T09/T05.                                                                                                                 |
 | Recuperação do Planejamento | [T11: Auditar a série por evidências e impedir conclusão falsa](social-planning-recovery/issues/11-independent-acceptance.md)     | Revisão independente final com evidências, depois de T02–T10.                                                                                                                              |
-| Minha Conta                 | [IA-M02 — Planejar organização em abas](ai-models/issues/02-profile-preferences-tabs.md)                                          | Decisões registradas. Branch `proposal/ia-m02-profile-tabs` cobre 1–3; falta o indicador de não salvo e a autorização do merge.                                                            |
-| Design system               | [DS01 — Corrigir desvios visuais já inventariados](design-system-audit/issues/01-audit-visual-deviations.md)                      | Checklist de aceite consolidado no ticket. Conferir lotes locais e decidir ajustes restantes. |
-| Modelos de IA               | [IA-M05 — Dar feedback visual durante a geração](ai-models/issues/05-ai-generation-latency.md)                                            | Estudar barra simulada até cerca de 97%, conclusão no retorno real e sem streaming. |
+| Modelos de IA               | [IA-M05 — Criar indicador de progresso simulado](ai-models/issues/05-ai-generation-latency.md)                                            | Em execução com Gemini. Integração aguarda decisão. |
 | Design system               | [DS03 — Interações dos itens de ação](design-system-audit/issues/03-action-item-interactions.md)                                  | A, B, D e F aceitos e na main local. C e E seguem em branches de proposta, com merge sujeito a autorização. |
-| Design system               | [DS04 — Microinterações](design-system-audit/issues/04-microinteractions.md)                                                      | Validar diálogo de lote, overlays e Reduzir movimento pelo checklist do ticket. |
-| Design system               | [DS05 — Ordem de ícone e texto nos botões](design-system-audit/issues/05-button-icon-label-order.md)                              | Ícone à esquerda aprovado. Inventariar abas e botões, decidir indicadores de abertura, avanço e link externo. |
+| Design system               | [DS05 — Ordem de ícone e texto nos botões](design-system-audit/issues/05-button-icon-label-order.md)                              | Ícone à direita. Inventariar divergências em botões e abas. |
+| Estratégias | [EST-03 — Recriar estratégias no diálogo](action-strategy/issues/03-recreate-strategies-in-dialog.md) | Adicionar ação no diálogo e validar atualização dos campos após salvar. |
 
 ## Referências fora da fila de execução
 

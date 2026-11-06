@@ -61,15 +61,6 @@ Convenção aplicada: ícone antes do texto; sem `mr-*`/`ml-*` no ícone (o `gap
 
 `proposal/ds05-save-icon-first` (`4f76198`) servido localmente com a sessão do proprietário, em 1280px, numa ação existente. O botão mostra o ícone de nuvem antes de "Atualizar". A gaveta foi fechada sem salvar.
 
-## Decisão do proprietário — 06/11/2026
+## Decisão do proprietário — 06/11
 
-Ícones ficam à esquerda do rótulo em botões e abas. Inventário inicial por inspeção e pelo relatório existente. Implementação depende de autorização.
-
-| Entra na regra | Situação |
-| --- | --- |
-| Nova Ação, ações de criar no Admin, Redefinir Senha | Ordem já ajustada na main local. |
-| Salvar/Atualizar da gaveta | Proposta pronta em `proposal/ds05-save-icon-first`. Validar na largura em que aparece texto. |
-| Fazer Login na equipe e no portal | Ícone de entrada aparece após o texto. Entra na regra aprovada. |
-| Abas e demais botões com ícone e rótulo | Conferir consumidores reais e registrar os casos em que a ordem ainda diverge. |
-
-**Decisões abertas.** Chevrons que indicam abrir um menu ou seletor (Visualizar/Ordenar/Exibir e seletor de cor), indicadores de avanço e de link externo. Confirmar se são indicadores separados do ícone do rótulo. Controles somente com ícone, como setas do calendário, não têm ordem de ícone e rótulo. Regras de padding via `data-icon` são um tema separado.
+Em botões e abas com ícone e texto, o ícone fica sempre à direita. Fazer Login já segue a ordem. Inventariar divergências, começando por Nova Ação, criação no Admin, Redefinir Senha, Salvar/Atualizar e abas. Controles só com ícone não têm ordem de rótulo. A proposta `proposal/ds05-save-icon-first` foi superada. Aplicação depende de autorização.
