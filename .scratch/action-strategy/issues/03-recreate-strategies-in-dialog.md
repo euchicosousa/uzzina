@@ -6,6 +6,8 @@
 - **Anthropic** — Claude Sonnet 5.5, para conferir seleção, persistência e conflitos.
 - **Google** — Gemini 4 Argon, para implementar e conferir o fluxo completo. Disponibilidade depende do plano.
 
+**Status.** EST-03 encerrado com aceite do proprietário em 06/11/2026: o diálogo "5 Estratégias Sugeridas" tem o botão "Recriar estratégias". As sugestões antigas ficam visíveis enquanto gera; o novo conjunto substitui os cinco e a seleção anterior não é mantida.
+
 **Entrega.** Adicionar o botão Recriar estratégias ao diálogo “5 Estratégias Sugeridas”, junto ao estado das estratégias salvas. Reutilizar a geração durável atual. Sem streaming.
 
 **Bloqueado por.** Nenhum ticket. EST-01 e EST-02 já foram aceitos.

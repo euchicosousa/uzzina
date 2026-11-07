@@ -8272,3 +8272,11 @@ Encerrado com aceite do proprietário em 06/11/2026: todo ícone fica à direita
 ## DS03 — Interações dos itens de ação
 
 Encerrado com aceite do proprietário em 06/11/2026: arrastar por qualquer ponto do item (inclusive o título), clique no título edita ali mesmo, clique fora abre a ação, e rolagem por toque no celular. [Ticket](../design-system-audit/issues/03-action-item-interactions.md).
+
+## EST-03 — Recriar estratégias dentro do diálogo
+
+Encerrado com aceite do proprietário em 06/11/2026. [Ticket](../action-strategy/issues/03-recreate-strategies-in-dialog.md).
+
+## EST-04 — Conteúdo sem legenda pronta
+
+Encerrado com aceite do proprietário em 06/11/2026. [Ticket](../action-strategy/issues/04-separate-content-and-caption-generation.md).
