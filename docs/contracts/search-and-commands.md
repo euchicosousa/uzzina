@@ -1,0 +1,21 @@
+# Contratos: busca global, comandos e datas comemorativas
+
+> Movido de `AGENTS.md` em 07/11/2026 (ticket DOC-01), sem reescrever as regras. O `AGENTS.md` aponta para este documento. Ao mudar um contrato desta área, atualize-o aqui.
+
+Leia antes de mexer na busca global (filtros, resultados, comandos), em `PrismCommandItem` ou no diálogo de data comemorativa.
+
+## Busca global
+
+- Busca global: filtros ficam no sufixo do campo (`PrismCommandInput suffix`, fora do `SearchField` para não herdar o contexto do botão de limpar), na ordem parceiros (`UPartnersCombobox allowAll` só avatar, `ghost` + `icon-sm`, nome acessível "Filtrar por parceiros: …") e arquivadas (`PrismToggle ghost icon-sm` com `ArchiveIcon`, `aria-label` "Incluir arquivadas"), com inset harmônico de6px; sem rodapé de filtros nem rótulo visual adicional. Filtro de parceiros pertence somente à abertura da busca. Inicia com o parceiro da rota `/app/partner/$slug`, se disponível; nas outras páginas, vazio representa todos os parceiros operacionais disponíveis. Fechar/reabrir reinicia consulta e seleção. `PartnersCombobox.allowAll` habilita Todos os parceiros e seleção múltipla com popover aberto; Shift mantém seleção exclusiva. Consumidores sem allowAll preservam comportamento anterior. `searchActionsByTitle` em `app/models/actions.ts` intersecta selectedPartnerSlugs com partnerSlugs disponíveis e usa overlaps (qualquer selecionado), sem contains adicional da rota; escopo efetivo vazio não consulta. Incluir arquivadas inicia desligado em cada abertura: searchActionsByTitle aplica archived=false por padrão e omite essa restrição somente com includeArchived=true, sempre dentro dos parceiros disponíveis/selecionados. Filtro e popover deste uso usam o foco padrão do Prism. Respostas de consulta anterior/abertura anterior são descartadas. Esse filtro não altera rota, calendário nem atribuição de parceiros a rascunhos.
+
+## Itens de comando
+
+`PrismCommandItem` fornece `{ shiftKey }` ao `onAction`, capturado pelo `PrismCommand` antes da ativação React Aria. Parceiros, responsáveis, sprint e filtros múltiplos de fase/categoria usam esse modificador para seleção exclusiva com Shift+clique/Shift+Enter; não usar `window.event` para essa decisão.
+
+## Comandos da busca
+
+Comandos da busca: conta, light/dark/system, início/Hoje/notificações/leads/ajuda e Sair ficam abaixo dos resultados. Administração somente para person.admin, usando cadastros/listas existentes. Navegação por comando e Sair validam closeAllActions; bloqueio mantém busca/ações. Persistência de tema pertence ao wrapper montado e usa usePreferencePersistence com retry, sem alterar paleta.
+
+## Criar data comemorativa pela busca
+
+Criar data comemorativa na busca abre `CelebrationDialog` (também usado para editar na página de administração), exclusivo para `person.admin`, com título e calendário Prism em pt-BR, sem navegar/fechar ações nem usar Shift para secundária. Gerenciar datas comemorativas mantém `/app/admin/celebrations`. A busca fecha e restaura foco antes de montar o modal no próximo frame; Cancelar/Escape retornam ao controle anterior. Envio pendente bloqueia duplicação/dismissal; falha preserva campos; sucesso usa `createCelebration`, atualiza o cache canônico existente e invalida somente `QUERY_KEYS.celebrations(userId)`. Identidade/geração/montagem validam antes de enviar e antes de aplicar confirmação; chamadas já enviadas não são desfeitas pelo reset. Preservar a autorização administrativa existente no banco. Não adicionar regras de criação à rota nem acessar `.from()` pelo componente. O form envolve só o título e o botão de envio se liga pelo atributo `form`: o calendário React Aria renderiza um botão oculto sem type que viraria o botão padrão e mudaria o mês ao apertar Enter; não colocar o calendário dentro do form. Título vazio mostra erro no campo (`noValidate`), sem balão do navegador; sem descrição no cabeçalho. Layout aprovado: rótulo Data sem repetir a data escrita, dias de outros meses ocultos, calendário sem borda na largura do modal com dias no `cellSize` padrão do `PrismCalendar` (40px; escala dos botões sem `xs`: sm/default/lg = 32/40/48px), sem tamanho próprio e ponto em hoje; seletores de mês/ano do `PrismCalendar` sem fundo, só texto e seta, na altura das setas; anterior/próximo ficam na linha do título do mês para o Tab seguir a ordem visual.
