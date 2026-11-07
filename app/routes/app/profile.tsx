@@ -1,6 +1,10 @@
-import { UAIModelSelect } from "~/components/uzzina/UAIModelSelect";
+import {
+  AIModelIcon,
+  UAIModelSelect,
+} from "~/components/uzzina/UAIModelSelect";
 import {
   actionAIModels,
+  getAvailableAIModels,
   isActionAIModelId,
   lunaModelId,
   type ActionAIModelId,
@@ -21,7 +25,6 @@ import {
   PipetteIcon,
   RefreshCwIcon,
   SunIcon,
-  SparklesIcon,
 } from "lucide-react";
 import {
   isValidElement,
@@ -47,6 +50,11 @@ import {
   PrismTabPanel,
   PrismButton,
   PrismBadge,
+  PrismSelect,
+  PrismSelectContent,
+  PrismSelectItem,
+  PrismSelectTrigger,
+  PrismSelectValue,
   PrismInput,
   PrismLabel,
   PrismToggleGroup,
@@ -281,6 +289,12 @@ function ProfilePage() {
     useState<ActionAIModelId>();
   const [contentModelDraft, setContentModelDraft] = useState<ActionAIModelId>();
   const [captionModelDraft, setCaptionModelDraft] = useState<ActionAIModelId>();
+  const [strategyModelsDraft, setStrategyModelsDraft] =
+    useState<ActionAIModelId[]>();
+  const [contentModelsDraft, setContentModelsDraft] =
+    useState<ActionAIModelId[]>();
+  const [captionModelsDraft, setCaptionModelsDraft] =
+    useState<ActionAIModelId[]>();
   const {
     theme,
     setTheme,
@@ -356,7 +370,16 @@ function ProfilePage() {
         (initialRef.current.defaultContentModel ?? lunaModelId)) ||
     (captionModelDraft !== undefined &&
       captionModelDraft !==
-        (initialRef.current.defaultCaptionModel ?? lunaModelId));
+        (initialRef.current.defaultCaptionModel ?? lunaModelId)) ||
+    (strategyModelsDraft !== undefined &&
+      JSON.stringify(strategyModelsDraft) !==
+        JSON.stringify(initialRef.current.strategyModels)) ||
+    (contentModelsDraft !== undefined &&
+      JSON.stringify(contentModelsDraft) !==
+        JSON.stringify(initialRef.current.contentModels)) ||
+    (captionModelsDraft !== undefined &&
+      JSON.stringify(captionModelsDraft) !==
+        JSON.stringify(initialRef.current.captionModels));
 
   const dirtyMap: Record<ProfileTab, boolean> = {
     personal: isPersonalDirty,
@@ -447,13 +470,31 @@ function ProfilePage() {
         ...(showInstagramSidebar !== initial.showInstagramSidebar
           ? { showInstagramSidebar }
           : {}),
-        ...(strategyModelDraft
+        ...(strategyModelsDraft !== undefined &&
+        JSON.stringify(strategyModelsDraft) !==
+          JSON.stringify(initial.strategyModels)
+          ? { strategyModels: strategyModelsDraft }
+          : {}),
+        ...(contentModelsDraft !== undefined &&
+        JSON.stringify(contentModelsDraft) !==
+          JSON.stringify(initial.contentModels)
+          ? { contentModels: contentModelsDraft }
+          : {}),
+        ...(captionModelsDraft !== undefined &&
+        JSON.stringify(captionModelsDraft) !==
+          JSON.stringify(initial.captionModels)
+          ? { captionModels: captionModelsDraft }
+          : {}),
+        ...(strategyModelDraft !== undefined &&
+        strategyModelDraft !== (initial.defaultStrategyModel ?? lunaModelId)
           ? { defaultStrategyModel: strategyModelDraft }
           : {}),
-        ...(contentModelDraft
+        ...(contentModelDraft !== undefined &&
+        contentModelDraft !== (initial.defaultContentModel ?? lunaModelId)
           ? { defaultContentModel: contentModelDraft }
           : {}),
-        ...(captionModelDraft
+        ...(captionModelDraft !== undefined &&
+        captionModelDraft !== (initial.defaultCaptionModel ?? lunaModelId)
           ? { defaultCaptionModel: captionModelDraft }
           : {}),
         ...(selectedThemeColor !== -1
@@ -507,6 +548,9 @@ function ProfilePage() {
       setStrategyModelDraft(undefined);
       setContentModelDraft(undefined);
       setCaptionModelDraft(undefined);
+      setStrategyModelsDraft(undefined);
+      setContentModelsDraft(undefined);
+      setCaptionModelsDraft(undefined);
 
       // Sync local preferences to storage / context
       if ("themeColorIndex" in newPreferences) {
@@ -530,6 +574,105 @@ function ProfilePage() {
       toast.error("Erro ao salvar configurações.");
     } finally {
       if (isCurrentSession()) setIsSubmitting(false);
+    }
+  };
+
+  const handleToggleTaskModel = (
+    taskId: "strategy" | "content" | "caption",
+    modelId: ActionAIModelId,
+    checked: boolean,
+  ) => {
+    const currentList =
+      taskId === "strategy"
+        ? (strategyModelsDraft ?? preferences.strategyModels)
+        : taskId === "content"
+          ? (contentModelsDraft ?? preferences.contentModels)
+          : (captionModelsDraft ?? preferences.captionModels);
+
+    let nextList: ActionAIModelId[];
+    if (checked) {
+      nextList = currentList.includes(modelId)
+        ? currentList
+        : [...currentList, modelId];
+    } else {
+      nextList = currentList.filter((id) => id !== modelId);
+      if (nextList.length === 0) {
+        nextList = [lunaModelId];
+      }
+    }
+
+    const currentDefault =
+      taskId === "strategy"
+        ? (strategyModelDraft ??
+          preferences.defaultStrategyModel ??
+          lunaModelId)
+        : taskId === "content"
+          ? (contentModelDraft ??
+            preferences.defaultContentModel ??
+            lunaModelId)
+          : (captionModelDraft ??
+            preferences.defaultCaptionModel ??
+            lunaModelId);
+
+    let nextDefault = currentDefault;
+    if (!nextList.includes(currentDefault)) {
+      nextDefault = nextList.includes(lunaModelId)
+        ? lunaModelId
+        : (nextList[0] ?? lunaModelId);
+    }
+
+    if (taskId === "strategy") {
+      setStrategyModelsDraft(nextList);
+      if (nextDefault !== currentDefault) {
+        setStrategyModelDraft(nextDefault);
+      }
+    } else if (taskId === "content") {
+      setContentModelsDraft(nextList);
+      if (nextDefault !== currentDefault) {
+        setContentModelDraft(nextDefault);
+      }
+    } else {
+      setCaptionModelsDraft(nextList);
+      if (nextDefault !== currentDefault) {
+        setCaptionModelDraft(nextDefault);
+      }
+    }
+  };
+
+  const handleResetTaskDefault = (
+    taskId: "strategy" | "content" | "caption",
+  ) => {
+    if (taskId === "strategy") {
+      setStrategyModelDraft(lunaModelId);
+      const current = strategyModelsDraft ?? preferences.strategyModels;
+      if (!current.includes(lunaModelId)) {
+        setStrategyModelsDraft([...current, lunaModelId]);
+      }
+    } else if (taskId === "content") {
+      setContentModelDraft(lunaModelId);
+      const current = contentModelsDraft ?? preferences.contentModels;
+      if (!current.includes(lunaModelId)) {
+        setContentModelsDraft([...current, lunaModelId]);
+      }
+    } else {
+      setCaptionModelDraft(lunaModelId);
+      const current = captionModelsDraft ?? preferences.captionModels;
+      if (!current.includes(lunaModelId)) {
+        setCaptionModelsDraft([...current, lunaModelId]);
+      }
+    }
+  };
+
+  const handleSelectTaskDefault = (
+    taskId: "strategy" | "content" | "caption",
+    id: ActionAIModelId,
+  ) => {
+    if (taskId === "strategy") {
+      setStrategyModelDraft(id);
+    } else if (taskId === "content") {
+      setContentModelDraft(id);
+    } else {
+      setCaptionModelDraft(id);
     }
   };
 
@@ -1011,71 +1154,193 @@ function ProfilePage() {
               </div>
             </ProfileSetting>
 
-            <ProfileSetting title="Modelos padrão de IA">
-              <div className="grid gap-3">
+            <ProfileSetting
+              title="Modelos de IA por tarefa"
+              description="Defina quais modelos ficam disponíveis para cada tarefa e escolha o modelo padrão. Na gaveta da ação, somente os modelos selecionados aparecerão."
+            >
+              <div className="grid gap-4">
+                <div
+                  aria-hidden="true"
+                  className="hidden text-xs font-medium text-muted-foreground lg:grid lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)] lg:gap-3"
+                >
+                  <span>Função</span>
+                  <span>Modelos disponíveis</span>
+                  <span>Modelo padrão</span>
+                </div>
                 {(
                   [
                     {
+                      id: "strategy" as const,
                       label: "Criar estratégia",
                       name: "estratégia",
+                      models: strategyModelsDraft ?? preferences.strategyModels,
                       value:
                         strategyModelDraft ??
                         preferences.defaultStrategyModel ??
                         lunaModelId,
-                      setDraft: setStrategyModelDraft,
                     },
                     {
+                      id: "content" as const,
                       label: "Gerar conteúdo",
                       name: "conteúdo",
+                      models: contentModelsDraft ?? preferences.contentModels,
                       value:
                         contentModelDraft ??
                         preferences.defaultContentModel ??
                         lunaModelId,
-                      setDraft: setContentModelDraft,
                     },
                     {
+                      id: "caption" as const,
                       label: "Gerar legenda",
                       name: "legenda",
+                      models: captionModelsDraft ?? preferences.captionModels,
                       value:
                         captionModelDraft ??
                         preferences.defaultCaptionModel ??
                         lunaModelId,
-                      setDraft: setCaptionModelDraft,
                     },
                   ] as const
-                ).map((row) => (
-                  <div
-                    key={row.label}
-                    className="flex flex-wrap items-center justify-between gap-2"
-                  >
-                    <span className="text-sm">{row.label}</span>
-                    <div className="flex items-center gap-1">
-                      {row.value !== lunaModelId && (
-                        <PrismButton
-                          aria-label={`Voltar ao modelo padrão de ${row.name}`}
-                          variant="ghost"
-                          size="icon-sm"
-                          isDisabled={isSubmitting}
-                          onClick={() => row.setDraft(lunaModelId)}
-                        >
-                          <RefreshCwIcon />
-                        </PrismButton>
-                      )}
-                      <UAIModelSelect
-                        ariaLabel={`Modelo padrão para ${row.label.toLowerCase()}`}
-                        models={actionAIModels}
-                        value={row.value}
-                        onChange={(id) => {
-                          if (isActionAIModelId(id)) row.setDraft(id);
-                        }}
-                        showText
-                        size="sm"
-                        variant="secondary"
+                ).map((task) => {
+                  const availableOptions = getAvailableAIModels(task.models);
+                  const selectedOptions = actionAIModels.filter((model) =>
+                    task.models.includes(model.id),
+                  );
+                  return (
+                    <div
+                      key={task.id}
+                      className="grid gap-2 lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:gap-3"
+                    >
+                      <span className="text-sm font-medium text-foreground">
+                        {task.label}
+                      </span>
+                      <PrismSelect<(typeof actionAIModels)[number], "multiple">
+                        aria-label={`Modelos disponíveis para ${task.name}`}
+                        className="w-full min-w-0"
+                        selectionMode="multiple"
+                        value={task.models}
                         isDisabled={isSubmitting}
-                      />
+                        onChange={(keys) => {
+                          const next = new Set(keys.map(String));
+                          for (const model of actionAIModels) {
+                            const was = task.models.includes(model.id);
+                            const now = next.has(model.id);
+                            if (was !== now) {
+                              handleToggleTaskModel(task.id, model.id, now);
+                            }
+                          }
+                        }}
+                      >
+                        <PrismSelectTrigger size="sm" className="bg-secondary">
+                          <PrismSelectValue>
+                            {() => (
+                              <span
+                                className="flex min-w-0 items-center gap-2"
+                                title={selectedOptions
+                                  .map((model) => model.name)
+                                  .join(", ")}
+                              >
+                                <span className="flex shrink-0 -space-x-1.5">
+                                  {selectedOptions.slice(0, 3).map((model) => (
+                                    <span
+                                      key={model.id}
+                                      className="rounded-full bg-secondary"
+                                    >
+                                      <AIModelIcon model={model} compact />
+                                    </span>
+                                  ))}
+                                </span>
+                                <span className="truncate">
+                                  {selectedOptions.length === 1
+                                    ? selectedOptions[0]?.name
+                                    : `${selectedOptions.length} modelos`}
+                                </span>
+                              </span>
+                            )}
+                          </PrismSelectValue>
+                        </PrismSelectTrigger>
+                        <PrismSelectContent>
+                          {actionAIModels.map((model) => (
+                            <PrismSelectItem
+                              key={model.id}
+                              id={model.id}
+                              textValue={model.name}
+                            >
+                              <AIModelIcon model={model} compact />
+                              <span>{model.name}</span>
+                            </PrismSelectItem>
+                          ))}
+                        </PrismSelectContent>
+                      </PrismSelect>
+                      <div className="flex min-w-0 items-center gap-1">
+                        <UAIModelSelect
+                          ariaLabel={`Modelo padrão para ${task.label.toLowerCase()}`}
+                          models={availableOptions}
+                          value={task.value}
+                          onChange={(id) => {
+                            if (isActionAIModelId(id)) {
+                              handleSelectTaskDefault(task.id, id);
+                            }
+                          }}
+                          showText
+                          size="sm"
+                          variant="secondary"
+                          className="min-w-0 flex-1 justify-start"
+                          isDisabled={isSubmitting}
+                        />
+                        {task.value !== lunaModelId && (
+                          <PrismButton
+                            aria-label={`Voltar ao modelo padrão de ${task.name}`}
+                            variant="ghost"
+                            size="icon-sm"
+                            isDisabled={isSubmitting}
+                            onClick={() => handleResetTaskDefault(task.id)}
+                          >
+                            <RefreshCwIcon />
+                          </PrismButton>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
+                <div className="grid gap-2 lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:gap-3">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Planejamento
+                  </span>
+                  <PrismSelect<(typeof actionAIModels)[number], "multiple">
+                    aria-label="Modelos disponíveis para planejamento (em breve)"
+                    className="w-full min-w-0"
+                    selectionMode="multiple"
+                    value={[]}
+                    isDisabled
+                  >
+                    <PrismSelectTrigger size="sm" className="bg-secondary">
+                      <PrismSelectValue>{() => "Em breve"}</PrismSelectValue>
+                    </PrismSelectTrigger>
+                    <PrismSelectContent>
+                      {actionAIModels.map((model) => (
+                        <PrismSelectItem
+                          key={model.id}
+                          id={model.id}
+                          textValue={model.name}
+                        >
+                          <AIModelIcon model={model} compact />
+                          <span>{model.name}</span>
+                        </PrismSelectItem>
+                      ))}
+                    </PrismSelectContent>
+                  </PrismSelect>
+                  <UAIModelSelect
+                    ariaLabel="Modelo padrão para planejamento (em breve)"
+                    models={actionAIModels}
+                    value={lunaModelId}
+                    onChange={() => {}}
+                    showText
+                    size="sm"
+                    variant="secondary"
+                    className="min-w-0 justify-start"
+                    isDisabled
+                  />
+                </div>
               </div>
             </ProfileSetting>
 

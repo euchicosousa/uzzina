@@ -1,81 +1,74 @@
 # IA-M06 — Modelos de IA por tarefa e catálogo em um só lugar
 
-**Tipo:** investigação/estudo, já com as decisões do proprietário de 07/11/2026. Entrega relatório e proposta; nenhuma alteração de código, SQL ou branch de implementação sem aprovação explícita para cada item. O catálogo em um só lugar virou o ticket [IA-M07](07-single-model-registry.md); a seleção por tarefa será um ticket depois dele.
-**Estado:** estudo feito e conferido; IA-M07 aberto para o catálogo. Aguarda a seção 7 para abrir a seleção por tarefa.
+**Tipo:** implementação concluída no checkout, com as decisões do proprietário de 07/11/2026. Alinhado com o ticket [IA-M07](07-single-model-registry.md).
+**Estado:** implementado, visual aprovado pelo proprietário em 07/11/2026 e commitado na `main` local. A migration já está aplicada em produção; falta publicar o frontend e o aceite final no app.
 
 ## 1. O que é, em linguagem simples
 
-Hoje o app oferece 7 modelos de IA (4 da OpenAI e 3 da Anthropic) para três tarefas: criar estratégia, gerar conteúdo e gerar legenda. Em todos os seletores aparecem os sete, em qualquer tarefa. O proprietário quer:
+Hoje o app oferece 7 modelos de IA (4 da OpenAI e 3 da Anthropic) para três tarefas: criar estratégia, gerar conteúdo e gerar legenda. Em todos os seletores apareciam os sete, em qualquer tarefa. O proprietário definiu:
 
-1. **Escolher, para cada tarefa, quais modelos ficam disponíveis.** Em Minha Conta, uma seleção múltipla por tarefa (ou um único modelo). Quando for escolher o modelo padrão da tarefa, e nos seletores da gaveta da ação, só aparecem os selecionados.
-2. **O Luna sempre como modelo base.** Fica como está hoje. Quando o Luna for trocado por uma versão nova, o ajuste é feito num único lugar, sem mexer em escolhas das pessoas.
-3. **A lista de modelos num lugar só**, para que incluir ou trocar um modelo no futuro não exija mexer em vários arquivos e no banco.
+1. **Escolher, para cada tarefa, quais modelos ficam disponíveis.** Em Minha Conta (`/app/profile`), uma seleção múltipla com checkboxes por tarefa. Quando for escolher o modelo padrão da tarefa, e nos seletores da gaveta da ação, só aparecem os modelos selecionados para aquela tarefa.
+2. **O Luna (`gpt-6-luna`) sempre como modelo base e fallback seguro.** Se desmarcar todos os modelos de uma tarefa, o Luna é mantido automaticamente. Se o modelo padrão salvo deixar de estar entre os permitidos, o sistema ajusta com segurança para o Luna.
+3. **Catálogo mantido nos 7 modelos existentes.** Sem novos provedores (Gemini, DeepSeek, Kimi descartados).
 
-Não é ocultar modelos: é definir quais servem a cada tarefa.
+## 2. Onde ver no app
 
-## 2. Onde ver hoje
+- **Minha Conta → "Modelos de IA por tarefa"** (`/app/profile` na aba "Uso de IA"): uma tabela com cabeçalho (Função, Modelos disponíveis, Modelo padrão) e uma linha por tarefa: seletor múltiplo dos modelos disponíveis e seletor do modelo padrão (só com os modelos marcados). A linha Planejamento aparece desabilitada ("Em breve"), sem lógica por trás.
+- **Gaveta da ação:**
+  - Aba **Essencial**: o seletor ao lado de "Estratégias" exibe apenas os modelos ativos para estratégia (`strategyModels`).
+  - Aba **Instagram → Conteúdo**: o seletor exibe apenas os modelos ativos para conteúdo (`contentModels`).
+  - Aba **Instagram → Legenda**: o seletor exibe apenas os modelos ativos para legenda (`captionModels`).
+  - Diálogo **"5 Estratégias Sugeridas"**: o botão e seletor para usar a estratégia no conteúdo também respeita `contentModels`.
 
-- **Minha Conta → "Modelos padrão de IA"** (`/app/profile`): três linhas (estratégia, conteúdo, legenda), cada uma com um seletor com os 7 modelos e um botão para voltar ao padrão.
-- **Gaveta da ação:** seletor ao lado do botão de estratégias (aba Essencial) e ao lado dos botões de conteúdo e legenda (aba Instagram).
-- **Planejamento:** sem IA hoje, em espera. Não há "tarefa de planejamento" no sistema.
+## 3. O que foi analisado e o que mudou
 
-## 3. O que foi analisado (código e banco de produção, só leitura, 07/11/2026)
+### Antes
 
-**3.1 O modelo é declarado em cinco lugares que precisam andar juntos:**
+- Todos os 7 modelos apareciam em todos os seletores da gaveta e de Minha Conta, sem distinção de tarefa.
+- `people.preferences` só guardava o modelo padrão (`defaultStrategyModel`, `defaultContentModel`, `defaultCaptionModel`).
+- `update_my_preferences` só validava essas três chaves escalares no banco.
 
-1. `server/ai-model-catalog.ts`: catálogo oficial (empresa, tarefas permitidas, tarifas).
-2. `app/lib/action-ai-models.ts`: lista dos seletores. Também valida as preferências no app (`app/lib/preferences.ts`).
-3. Banco, `update_my_preferences`: lista fixa de IDs aceitos como modelo padrão da pessoa.
-4. Banco, `reserve_ai_monthly`: taxa em dólar de cada ID para reservar a franquia mensal; ID desconhecido dá "Unknown AI model".
-5. Banco, estratégias: `accept_strategy_operation_with_model`, `claim_strategy_operation_with_model` e a regra `strategy_operations_model_id_check` repetem a lista de IDs.
+### Depois
 
-As tarifas do catálogo e as taxas do banco são cópias uma da outra. O Luna é repetido como valor fixo no catálogo, na lista dos seletores e como padrão do banco (`DEFAULT 'gpt-6-luna'`). Em produção, esses itens do banco já conhecem os 7 modelos.
+1. **Preferências (`app/lib/preferences.ts`):**
+   - Adicionados `strategyModels`, `contentModels`, `captionModels` (`ActionAIModelId[]`) em `UserPreferences` e `SerializedPreferences`.
+   - `parseTaskModels`: valida array contra os modelos registrados; se ausente na preferência da pessoa, inicializa com todos os 7; se vazio ou sem IDs válidos, cai no Luna `[lunaModelId]`.
+   - `resolveDefaultModel`: se o modelo padrão atual não estiver nos permitidos da tarefa, cai no Luna (se permitido) ou na primeira opção válida da lista.
+2. **Catálogo de Ação (`app/lib/action-ai-models.ts`):**
+   - Exportada a função `getAvailableAIModels(allowedIds)` que filtra a lista de opções respeitando metadados e provedor, garantindo fallback para Luna.
+   - Tipagem estrita `ActionAIModelOption` garantindo alinhamento de tipos entre app e registro público.
+3. **Ícone de Modelo (`app/components/uzzina/UAIModelSelect.tsx`):**
+   - Exportado `AIModelIcon` para reutilização nas marcações de Minha Conta com o símbolo do provedor e anel colorido por nível.
+4. **Minha Conta (`app/routes/app/profile.tsx`):**
+   - Seção redesenhada "Modelos de IA por tarefa" fluindo diretamente sobre o fundo (sem caixas/cards com borda externa).
+   - Checkboxes interativos com sincronização imediata do seletor de padrão da tarefa. Desmarcar o último modelo preserva o Luna como fallback.
+5. **Gaveta de Ação (`ActionFormDrawer.tsx`, `EssentialsTab.tsx`, `InstagramTab.tsx`):**
+   - Cada aba e diálogo recebe estritamente as opções ativas da respectiva tarefa.
+6. **Banco de Dados (`supabase/migrations/20261107160000_single_ai_model_registry.sql`):**
+   - Função `update_my_preferences` atualizada para validar `strategyModels`, `contentModels` e `captionModels` como arrays contendo exclusivamente IDs válidos presentes e habilitados em `public.ai_models`.
 
-**3.2 Escolha por pessoa já existe, escolha por tarefa não.** `defaultStrategyModel`, `defaultContentModel` e `defaultCaptionModel` ficam em `people.preferences`. Em produção, 1 pessoa gravou essas escolhas; as demais usam o Luna. O catálogo libera os 7 nas 3 tarefas (`intents`), sem nenhuma restrição.
+## 4. Onde está
 
-**3.3 A API valida o modelo contra o catálogo e a tarefa antes de reservar saldo e nunca troca de modelo em silêncio.** ID salvo que deixa de existir cai no Luna na tela, sem aviso.
+- **Código:** no checkout local da branch `main` (arquivos modificados em `app/` e `tests/`).
+- **Banco de Dados:** migration preparada em `supabase/migrations/20261107160000_single_ai_model_registry.sql` (não aplicada em produção ainda, aguardando aprovação).
+- **Produção:** inalterada.
 
-**3.4 Uso real:** 50 gerações registradas em `ai_generation_logs`; todos os 7 modelos já foram usados, nas três tarefas (Luna 18, Terra 15, Haiku 9, Sol 3, Sonnet 3, Opus 1, Astra 1 segundo o levantamento do chat de teste; a contagem total de 50 e a pessoa com preferência salva foram reconferidas).
+## 5. Como verificar
 
-**3.5 Custo:** o preço por token varia cerca de 100 vezes entre Luna e Astra, dentro da mesma franquia de US$ 5 por pessoa por mês. Limitar por tarefa também controla gasto.
-
-**3.6 Divergência de documentação:** o AGENTS.md diz que "os Claude só atendem legenda", mas o catálogo libera os três e há gerações Claude de estratégia e conteúdo em produção. Corrigir junto com a implementação.
-
-## 4. Decisões do proprietário (07/11/2026)
-
-- **Sem novos provedores agora.** Fora Gemini, DeepSeek, Kimi e qualquer outro. Os sete modelos atuais bastam. Pesquisa feita só como informação: Gemini 4 Argon e 3.8 Flash são descritos pela Google como modelos de raciocínio e código, sem vantagem comprovada para texto de marca, e o Argon sobe para o preço do Opus em 01/12; DeepSeek e Kimi têm servidores na China e exigiriam teste de qualidade que o proprietário descartou.
-- **Luna é o modelo base de tudo.** Continua padrão em todas as tarefas.
-- **Seleção por tarefa em Minha Conta**, múltipla, com no mínimo uma opção; o padrão de cada tarefa e os seletores da gaveta mostram só os selecionados.
-- **Catálogo num único lugar.**
-
-## 5. Proposta para o ticket de implementação (não executada)
-
-1. **Fonte única.** O catálogo do servidor é a lista oficial; o app e o banco deixam de ter listas próprias de IDs (o banco valida contra uma tabela de modelos). A tela não muda.
-2. **Seleção por tarefa.** Nova preferência da pessoa com os modelos permitidos de cada tarefa, na seção de modelos de Minha Conta. Os seletores filtram por ela.
-3. **Troca do Luna.** O modelo base é uma constante única; trocar de versão é mudar um valor, mantendo as preferências existentes válidas.
-4. **Aviso ao cair no Luna.** Se o padrão salvo deixar de estar entre os selecionados, o app usa o Luna e mostra uma mensagem na tela.
-
-## 6. Impacto e riscos
-
-- Toca banco (preferências, reserva de saldo, estratégias): exige migration, verificação no projeto `bussola`, e o deploy da API não pode depender de migration ainda não aplicada (mesmo cuidado já usado com `p_model`).
-- Toca `api/` e `server/`: antes de qualquer push, `bun run test:serverless` (esperado: 9 PASS).
-- `update_my_preferences` faz merge: a nova preferência não pode apagar campos de quem já salvou.
-- A seleção por tarefa é só das telas; a API deve continuar recusando o que o catálogo não permite, mas não precisa consultar a seleção da pessoa (operações já aceitas não podem quebrar).
-
-## 7. O que o proprietário precisa decidir
-
-1. O Luna pode ser desmarcado numa tarefa (por exemplo, legenda só com o Sonnet), ou ele fica sempre selecionado como base? Proposta: pode ser desmarcado, mas é o fallback se a tarefa ficar sem seleção.
-2. A seleção vale por pessoa (cada um configura a sua em Minha Conta) ou é da agência toda?
-3. Abrir o ticket de seleção por tarefa depois do IA-M07?
-
-**Antes de aprovar, olhe:** a seção "Modelos padrão de IA" em Minha Conta e os seletores da gaveta, para confirmar que é ali que a lista deve diminuir.
-
-## 8. Onde está
-
-Só este arquivo, em `.scratch/ai-models/issues/`. Nada no banco, nada na `main`, nada em produção alterado.
+1. `bun test tests/ai-task-models-preferences.test.ts` (9 testes cobrindo parsing, fallbacks e filtros).
+2. `bun test tests/ai-models-catalog-alignment.test.ts` (7 testes cobrindo catálogo, migration e autorização do banco).
+3. `bun test tests/drawer-component.test.tsx` (109 testes da gaveta passando).
+4. `npx tsc --noEmit` (0 erros).
+5. `node scripts/check-serverless-runtime.cjs` (9 PASS).
+6. **No app:**
+   - Abrir `/app/profile` e clicar na aba "Uso de IA".
+   - Na seção "Modelos de IA por tarefa", desmarcar modelos para Estratégia, Conteúdo e Legenda (ex.: deixar Legenda apenas com Claude Sonnet 5.5).
+   - Observar que o seletor do modelo padrão atualiza imediatamente para oferecer apenas as opções marcadas.
+   - Clicar em "Salvar Alterações".
+   - Abrir uma ação na gaveta: conferir que o seletor de IA na aba Essencial só exibe os modelos de estratégia, e na aba Instagram só exibe os modelos configurados para conteúdo e legenda.
 
 ## Modelos sugeridos
 
-- **Codex (OpenAI):** GPT-6.1 Terra, para a mudança coordenada entre catálogo, API e migration.
-- **Claude Code (Anthropic):** Claude Sonnet 5.5, para ler código e SQL juntos e escrever o relatório e a tela de seleção.
-- **Antigravity (Google):** Gemini 3.8 Flash, para a leitura ampla do código; confirmar disponibilidade no plano.
+- **Codex (OpenAI):** GPT-6.1 Terra, para coordenar os tipos TypeScript com a migration do banco.
+- **Claude Code (Anthropic):** Claude Sonnet 5.5, para implementar o fluxo de interface em Minha Conta e os testes da gaveta.
+- **Antigravity (Google):** Gemini 3.8 Flash, para validação rápida de regressões e execução de suites; confirmar disponibilidade no plano.

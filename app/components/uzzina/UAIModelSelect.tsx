@@ -38,7 +38,7 @@ export type AIModelOption = {
   isDisabled?: boolean;
 };
 
-function ModelIcon({
+export function AIModelIcon({
   model,
   compact = false,
 }: {
@@ -89,6 +89,8 @@ function ModelIcon({
     </span>
   );
 }
+
+const ModelIcon = AIModelIcon;
 
 export function UAIModelSelect({
   models,

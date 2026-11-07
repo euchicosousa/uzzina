@@ -1,5 +1,8 @@
 import { ListIcon } from "lucide-react";
-import { UAIModelSelect } from "~/components/uzzina/UAIModelSelect";
+import {
+  UAIModelSelect,
+  type AIModelOption,
+} from "~/components/uzzina/UAIModelSelect";
 import { actionAIModels } from "~/lib/action-ai-models";
 import { ULoader } from "~/components/uzzina/ULoader";
 import { useRef, useState } from "react";
@@ -43,8 +46,10 @@ interface InstagramTabProps {
   strategiesBlocked?: boolean;
   activeAIIntent?: string | null;
   captionModel: string;
+  captionModels?: readonly AIModelOption[];
   onCaptionModelChange: (id: string) => void;
   contentModel: string;
+  contentModels?: readonly AIModelOption[];
   onContentModelChange: (id: string) => void;
   triggerAIAction: (
     intent: string,
@@ -114,8 +119,10 @@ export function InstagramTab({
   strategiesBlocked = false,
   activeAIIntent,
   captionModel,
+  captionModels,
   onCaptionModelChange,
   contentModel,
+  contentModels,
   onContentModelChange,
   triggerAIAction,
   contentDescription,
@@ -275,7 +282,7 @@ export function InstagramTab({
                       </PrismButton>
                       <PrismButtonGroupSeparator className="bg-background" />
                       <UAIModelSelect
-                        models={actionAIModels}
+                        models={contentModels ?? actionAIModels}
                         value={contentModel}
                         onChange={onContentModelChange}
                         isDisabled={isAIProcessing || strategiesBlocked}
@@ -369,7 +376,7 @@ export function InstagramTab({
                 </PrismButton>
                 <PrismButtonGroupSeparator className="bg-background" />
                 <UAIModelSelect
-                  models={actionAIModels}
+                  models={captionModels ?? actionAIModels}
                   value={captionModel}
                   onChange={onCaptionModelChange}
                   isDisabled={isAIProcessing}

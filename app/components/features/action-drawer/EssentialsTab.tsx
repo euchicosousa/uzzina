@@ -1,4 +1,7 @@
-import { UAIModelSelect } from "~/components/uzzina/UAIModelSelect";
+import {
+  UAIModelSelect,
+  type AIModelOption,
+} from "~/components/uzzina/UAIModelSelect";
 import { actionAIModels } from "~/lib/action-ai-models";
 import { parseU } from "~/utils/date";
 import {
@@ -84,6 +87,7 @@ interface EssentialsTabProps {
   onTextCommit?: (field: TextDraftField, value: string) => void;
   descriptionVersion?: number;
   strategyModel: string;
+  strategyModels?: readonly AIModelOption[];
   onStrategyModelChange: (id: string) => void;
   triggerAIAction: (
     intent: string,
@@ -103,6 +107,7 @@ export function EssentialsTab({
   hasStrategyActivity = false,
   onOpenStrategyModal,
   strategyModel,
+  strategyModels,
   onStrategyModelChange,
   triggerAIAction,
   uploadPreset,
@@ -359,7 +364,7 @@ export function EssentialsTab({
                     </PrismButton>
                     <PrismButtonGroupSeparator className="bg-background" />
                     <UAIModelSelect
-                      models={actionAIModels}
+                      models={strategyModels ?? actionAIModels}
                       value={strategyModel}
                       onChange={onStrategyModelChange}
                       isDisabled={

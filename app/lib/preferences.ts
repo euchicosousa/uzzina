@@ -3,6 +3,7 @@ import {
   lunaModelId,
   type ActionAIModelId,
 } from "./action-ai-models";
+import { publicAIModels } from "./ai-model-registry";
 
 export type TodayViewMode = "kanban" | "feed" | "categories" | "partners";
 
@@ -27,6 +28,31 @@ export type CustomTheme = {
   dark: CustomThemeColors;
 };
 
+export const DEFAULT_TASK_AI_MODELS: readonly ActionAIModelId[] =
+  publicAIModels.map((m) => m.id);
+
+export function parseTaskModels(value: unknown): ActionAIModelId[] {
+  if (!Array.isArray(value)) {
+    return [...DEFAULT_TASK_AI_MODELS];
+  }
+  const filtered = value.filter(isActionAIModelId);
+  const unique = Array.from(new Set(filtered));
+  return unique.length > 0 ? unique : [lunaModelId];
+}
+
+function resolveDefaultModel(
+  rawCandidate: unknown,
+  allowedModels: readonly ActionAIModelId[],
+): ActionAIModelId {
+  if (isActionAIModelId(rawCandidate) && allowedModels.includes(rawCandidate)) {
+    return rawCandidate;
+  }
+  if (allowedModels.includes(lunaModelId)) {
+    return lunaModelId;
+  }
+  return allowedModels[0] ?? lunaModelId;
+}
+
 export type UserPreferences = {
   theme: "light" | "dark" | "system";
   themeColorIndex: number;
@@ -38,6 +64,9 @@ export type UserPreferences = {
   defaultStrategyModel?: ActionAIModelId;
   defaultContentModel?: ActionAIModelId;
   defaultCaptionModel?: ActionAIModelId;
+  strategyModels: ActionAIModelId[];
+  contentModels: ActionAIModelId[];
+  captionModels: ActionAIModelId[];
 };
 
 const DEFAULT_PREFERENCES: UserPreferences = {
@@ -48,6 +77,12 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   defaultTodayView: "partners",
   showInstagramSidebar: true,
   customTheme: null,
+  strategyModels: [...DEFAULT_TASK_AI_MODELS],
+  contentModels: [...DEFAULT_TASK_AI_MODELS],
+  captionModels: [...DEFAULT_TASK_AI_MODELS],
+  defaultStrategyModel: lunaModelId,
+  defaultContentModel: lunaModelId,
+  defaultCaptionModel: lunaModelId,
 };
 
 export type SerializedPreferences = {
@@ -60,6 +95,9 @@ export type SerializedPreferences = {
   defaultStrategyModel?: unknown;
   defaultContentModel?: unknown;
   defaultCaptionModel?: unknown;
+  strategyModels?: unknown;
+  contentModels?: unknown;
+  captionModels?: unknown;
   customTheme?: {
     light?: {
       primaryHex?: string;
@@ -119,6 +157,10 @@ export function getUserPreferences(person?: {
     }
   }
 
+  const strategyModels = parseTaskModels(prefs.strategyModels);
+  const contentModels = parseTaskModels(prefs.contentModels);
+  const captionModels = parseTaskModels(prefs.captionModels);
+
   return {
     theme:
       prefs.theme === "light" ||
@@ -147,15 +189,21 @@ export function getUserPreferences(person?: {
       typeof prefs.showInstagramSidebar === "boolean"
         ? prefs.showInstagramSidebar
         : DEFAULT_PREFERENCES.showInstagramSidebar,
-    defaultStrategyModel: isActionAIModelId(prefs.defaultStrategyModel)
-      ? prefs.defaultStrategyModel
-      : lunaModelId,
-    defaultContentModel: isActionAIModelId(prefs.defaultContentModel)
-      ? prefs.defaultContentModel
-      : lunaModelId,
-    defaultCaptionModel: isActionAIModelId(prefs.defaultCaptionModel)
-      ? prefs.defaultCaptionModel
-      : lunaModelId,
+    strategyModels,
+    contentModels,
+    captionModels,
+    defaultStrategyModel: resolveDefaultModel(
+      prefs.defaultStrategyModel,
+      strategyModels,
+    ),
+    defaultContentModel: resolveDefaultModel(
+      prefs.defaultContentModel,
+      contentModels,
+    ),
+    defaultCaptionModel: resolveDefaultModel(
+      prefs.defaultCaptionModel,
+      captionModels,
+    ),
     customTheme,
   };
 }

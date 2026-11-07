@@ -1,6 +1,6 @@
 import { UAIModelSelect } from "~/components/uzzina/UAIModelSelect";
 import {
-  actionAIModels,
+  getAvailableAIModels,
   isActionAIModelId,
   lunaModelId,
 } from "~/lib/action-ai-models";
@@ -110,6 +110,18 @@ export function ActionFormDrawer({
     queueAIPreference,
   } = useAppContext();
   const preferences = getUserPreferences(person);
+  const strategyAIModels = useMemo(
+    () => getAvailableAIModels(preferences.strategyModels),
+    [preferences.strategyModels],
+  );
+  const contentAIModels = useMemo(
+    () => getAvailableAIModels(preferences.contentModels),
+    [preferences.contentModels],
+  );
+  const captionAIModels = useMemo(
+    () => getAvailableAIModels(preferences.captionModels),
+    [preferences.captionModels],
+  );
   const [strategyModel, setStrategyModel] = useState(
     preferences.defaultStrategyModel ?? lunaModelId,
   );
@@ -119,18 +131,33 @@ export function ActionFormDrawer({
   const [contentModel, setContentModel] = useState(
     preferences.defaultContentModel ?? lunaModelId,
   );
+  const activeStrategyModel = strategyAIModels.some(
+    (m) => m.id === strategyModel,
+  )
+    ? strategyModel
+    : (strategyAIModels[0]?.id ?? lunaModelId);
+  const activeContentModel = contentAIModels.some((m) => m.id === contentModel)
+    ? contentModel
+    : (contentAIModels[0]?.id ?? lunaModelId);
+  const activeCaptionModel = captionAIModels.some((m) => m.id === captionModel)
+    ? captionModel
+    : (captionAIModels[0]?.id ?? lunaModelId);
+
   const changeStrategyModel = (id: string) => {
     if (!isActionAIModelId(id)) return;
+    if (!strategyAIModels.some((m) => m.id === id)) return;
     setStrategyModel(id);
     queueAIPreference?.({ defaultStrategyModel: id });
   };
   const changeContentModel = (id: string) => {
     if (!isActionAIModelId(id)) return;
+    if (!contentAIModels.some((m) => m.id === id)) return;
     setContentModel(id);
     queueAIPreference?.({ defaultContentModel: id });
   };
   const changeCaptionModel = (id: string) => {
     if (!isActionAIModelId(id)) return;
+    if (!captionAIModels.some((m) => m.id === id)) return;
     setCaptionModel(id);
     queueAIPreference?.({ defaultCaptionModel: id });
   };
@@ -1217,7 +1244,8 @@ export function ActionFormDrawer({
                   )}
                 >
                   <EssentialsTab
-                    strategyModel={strategyModel}
+                    strategyModel={activeStrategyModel}
+                    strategyModels={strategyAIModels}
                     onStrategyModelChange={changeStrategyModel}
                     autoFocus={isActive}
                     cloudName={cloudName}
@@ -1252,9 +1280,11 @@ export function ActionFormDrawer({
                   className={cn("w-full", "h-full")}
                 >
                   <InstagramTab
-                    captionModel={captionModel}
+                    captionModel={activeCaptionModel}
+                    captionModels={captionAIModels}
                     onCaptionModelChange={changeCaptionModel}
-                    contentModel={contentModel}
+                    contentModel={activeContentModel}
+                    contentModels={contentAIModels}
                     onContentModelChange={changeContentModel}
                     activeAIIntent={activeAIIntent}
                     cloudName={cloudName}
@@ -1550,7 +1580,7 @@ export function ActionFormDrawer({
                 }
                 onPress={() => {
                   void triggerAIAction(INTENT.ai_strategy, {
-                    model: strategyModel,
+                    model: activeStrategyModel,
                   });
                 }}
                 size="sm"
@@ -1644,8 +1674,8 @@ export function ActionFormDrawer({
                         )}
                       </PrismButton>
                       <UAIModelSelect
-                        models={actionAIModels}
-                        value={contentModel}
+                        models={contentAIModels}
+                        value={activeContentModel}
                         onChange={changeContentModel}
                         size="sm"
                         variant="secondary"

@@ -234,6 +234,20 @@ BEGIN
         ) THEN
           RAISE EXCEPTION 'Invalid AI model preference' USING ERRCODE = '22023';
         END IF;
+      WHEN 'strategyModels', 'contentModels', 'captionModels' THEN
+        IF jsonb_typeof(v_value) <> 'array' THEN
+          RAISE EXCEPTION 'Invalid AI task models preference' USING ERRCODE = '22023';
+        END IF;
+        IF EXISTS (
+          SELECT 1
+          FROM jsonb_array_elements(v_value) AS item
+          WHERE jsonb_typeof(item) <> 'string'
+             OR NOT EXISTS (
+               SELECT 1 FROM public.ai_models WHERE id = (item #>> '{}') AND enabled
+             )
+        ) THEN
+          RAISE EXCEPTION 'Invalid AI model in task models preference' USING ERRCODE = '22023';
+        END IF;
       WHEN 'customTheme' THEN
         IF v_value <> 'null'::jsonb THEN
           IF jsonb_typeof(v_value) <> 'object' THEN RAISE EXCEPTION 'Invalid custom theme' USING ERRCODE = '22023'; END IF;

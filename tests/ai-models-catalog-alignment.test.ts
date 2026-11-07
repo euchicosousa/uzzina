@@ -141,6 +141,11 @@ describe("IA-M07: registro único de modelos de IA", () => {
     expect(body).toContain(
       "public.ai_models WHERE id = (v_value #>> '{}') AND enabled",
     );
+    expect(body).toContain(
+      "WHEN 'strategyModels', 'contentModels', 'captionModels' THEN",
+    );
+    expect(body).toContain("Invalid AI task models preference");
+    expect(body).toContain("Invalid AI model in task models preference");
   });
 
   test("ai_models fica fechada ao navegador (só service_role lê)", () => {
