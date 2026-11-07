@@ -1,10 +1,39 @@
 # UZZINA — estado atual
 
-Atualizado em 06/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
+Atualizado em 07/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
 Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 e o ticket 01 de uso de IA. O domínio `uzzina.cnvt.com.br` está Ready no deploy `dpl_EhqbZf5ia5zwyztWJmoybStqjrma`. A `main` local tem os commits da rodada de 06/11 sem push (`git log origin/main..main`). Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
 
 ## Pendências reais
+
+### DOC-01: AGENTS.md reduzido, aceito — 07/11
+
+Executado e aceito pelo proprietário. O [AGENTS](../../AGENTS.md) passou de 52.017 para cerca de 18.700 caracteres; o detalhe por área foi movido, sem reescrever, para sete documentos em `docs/contracts/` (gaveta e cache, busca e comandos, páginas e preferências, Prism em detalhe, IA, banco e implantação, portal). Verificado por script: toda linha do original existe literalmente (links ajustados) no AGENTS ou nos documentos, e todos os links apontam para arquivos existentes; não houve testes nem build (documentação isolada). Nada foi tirado por duplicação com o README: as repetições foram só movidas. Pendências: o proprietário abre o AGENTS e o documento da gaveta (etapa 1); frases possivelmente desatualizadas, como a etiqueta "IA-M04, em integração" e datas de aplicação em produção, seguem como estavam.
+
+### Organização do catálogo de IA — 07/11
+
+Aberto [IA-M06](../../.scratch/ai-models/issues/06-expand-model-catalog-and-visibility.md) para investigar novos modelos, visibilidade pessoal e elegibilidade por função. Planejamento entra na análise e segue em espera. Fila com 14 tickets: T01–T12 do Planejamento (em espera), IA-M06 e IA-M07. V46–V49 e DOC-01 encerrados com aceite em 07/11. Referências e diff conferidos.
+
+### Novos tickets — 06/11
+
+Fila com 16 tickets. V46–V49 cobrem o botão de enviar foto/logotipo (quatro telas), aba Instagram, âncora de /ui e referências de UToggleInput. T12 registra a redistribuição automática de formatos e fica em espera com o Planejamento. Capturas indisponíveis nesta sessão.
+
+### IA-M06: estudo e decisões — 07/11
+
+Estudo conferido no código e no banco de produção (somente leitura) e decisões do proprietário registradas no ticket: sem novos provedores agora (Gemini, DeepSeek e Kimi ficam fora), Luna como modelo base de tudo, seleção de modelos por tarefa em Minha Conta e catálogo em um só lugar (hoje são cinco). Nenhuma alteração de código; o catálogo em um só lugar foi aberto como [IA-M07](../../.scratch/ai-models/issues/07-single-model-registry.md); a seleção por tarefa aguarda duas respostas do proprietário. A regra das "três famílias" foi removida de `## Recomendações de agentes nos tickets` no AGENTS. [Ticket](../../.scratch/ai-models/issues/06-expand-model-catalog-and-visibility.md).
+
+### V48 e V49 encerrados — 07/11
+
+- **V48 (sincronizar âncora ao trocar de aba em /ui):** Ao trocar entre Design Tokens, Componentes de UI e Componentes Uzzina, a URL agora recebe a âncora do primeiro item da aba destino, eliminando a âncora defasada da aba anterior. Recarregar (F5) preserva a aba ativa e o item correspondente. Implementado suporte a histórico e botões Voltar/Avançar via listener de `hashchange`.
+- **V49 (remover referências restantes a UToggleInput):** Confirmada a ausência de implementações ou consumidores legados no app. O exemplo de formulário com FormData nativo foi movido para `ToggleSection.tsx` sob o id `prism-toggle-form` na seção do `PrismToggle`. `UzzinaToggleInputSection.tsx` e o item obsoleto foram removidos da barra e do índice. Links antigos com `#uzzina-toggle-input` redirecionam automaticamente para `#prism-toggle-form`. Typecheck limpo. [Tickets](../../.scratch/visual-controls/issues/48-ui-tab-stale-hash.md) e [V49](../../.scratch/visual-controls/issues/49-remove-legacy-toggle-gallery-reference.md).
+
+### V47 encerrado — 07/11
+
+Aprovado pelo proprietário e commitado em `04e50e7`. Ajustado o layout da barra da aba Instagram (`InstagramTab.tsx`): barra da Legenda em linha única (`flex-nowrap`), truncamento com tooltip nativo (`title`) nos parceiros em Conteúdo e Legenda, e truncamento suave no botão "Gerar legenda" preservando o seletor de IA e a barra de progresso em painéis curtos/estreitos. Typecheck limpo. [Ticket](../../.scratch/visual-controls/issues/47-instagram-toolbar-long-labels.md).
+
+### V46 aceito — 07/11
+
+O proprietário confirmou o círculo do botão de enviar foto/logotipo (`UAvatarUpload`). O quadrado arredondado vinha do `squircle` fixo na base do `PrismButton`; agora o botão tem a prop `isRounded` (círculo sem squircle), com controle "Circular" no playground do botão em `/ui`. A classe `no-squircle` de `app/tailwind.css` ficou sem uso. Ainda sem commit. [Ticket](../../.scratch/visual-controls/issues/46-partner-edit-button.md).
 
 ### EST-03 e EST-04 encerrados — 06/11
 

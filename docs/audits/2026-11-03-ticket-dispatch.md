@@ -1,6 +1,6 @@
 # Central de tickets da UZZINA
 
-Atualizado em 06/11/2026. **11 tickets ativos.** A fila abaixo espelha o tracker principal. Produção registrada em `a6a056c`. A rodada posterior está na main local e nos branches de proposta. Encerramentos com aceite e a revisão por rota do DS02 estão no histórico.
+Atualizado em 07/11/2026. **14 tickets ativos.** A fila abaixo espelha o tracker principal. Produção registrada em `a6a056c`. A rodada posterior está na main local e nos branches de proposta. Encerramentos com aceite e a revisão por rota do DS02 estão no histórico.
 
 **IA-M02 encerrado.** Abas de Minha Conta publicadas conforme confirmação do proprietário e integradas à main local em 06/11.
 
@@ -17,5 +17,8 @@ Atualizado em 06/11/2026. **11 tickets ativos.** A fila abaixo espelha o tracker
 | 9   | Recuperação do Planejamento | [T09: Converter aprovadas em uma transação idempotente real](../../.scratch/social-planning-recovery/issues/09-transactional-finalization.md)    | Provar transação e idempotência reais após T02/D5.                                                                           |
 | 10  | Recuperação do Planejamento | [T10: Confirmar, reconciliar e atualizar a Mesa após finalização](../../.scratch/social-planning-recovery/issues/10-finalization-ui.md)          | Conferir confirmação/reconciliação e atualização da Mesa após T04/T09/T05.                                                   |
 | 11  | Recuperação do Planejamento | [T11: Auditar a série por evidências e impedir conclusão falsa](../../.scratch/social-planning-recovery/issues/11-independent-acceptance.md)     | Revisão independente final com evidências, depois de T02–T10.                                                                |
+| 12  | Planejamento                | [T12 — Redistribuir formatos de posts automaticamente](../../.scratch/social-planning-recovery/issues/12-auto-balance-post-formats.md)           | Em espera com o Planejamento.                                                                                                |
+| 13  | Modelos de IA               | [IA-M06 — Modelos de IA por tarefa e catálogo em um só lugar](../../.scratch/ai-models/issues/06-expand-model-catalog-and-visibility.md)         | Estudo feito; aguarda duas respostas do proprietário.                                                                        |
+| 14  | Modelos de IA               | [IA-M07 — Modelos de IA declarados em um só lugar](../../.scratch/ai-models/issues/07-single-model-registry.md)                                  | Pronto para execução.                                                                                                        |
 
 [Tracker principal](../../.scratch/README.md) · [Histórico consolidado](../../.scratch/archive/resolved-tickets.md). A numeração é posicional. Use o ID da série ao disparar agentes.
