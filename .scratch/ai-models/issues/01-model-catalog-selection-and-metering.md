@@ -16,15 +16,15 @@
 
 Preços públicos em USD por milhão de tokens, consultados em 05/11/2026. A tabela usa processamento padrão e contexto na faixa base.
 
-| Modelo            | ID da API direta  | Entrada | Saída |
-| ----------------- | ----------------- | ------: | ----: |
-| GPT-6 Luna        | gpt-6-luna        |    0,10 |  0,50 |
-| GPT-6.1 Terra     | gpt-6.1-terra     |    1,00 |  5,00 |
-| GPT-6.1 Sol       | gpt-6.1-sol       |    2,00 | 10,00 |
-| GPT-6 Astra       | gpt-6-astra       |   10,00 | 50,00 |
-| Claude Haiku 5.5  | claude-haiku-5-5  |    0,10 |  0,50 |
-| Claude Sonnet 5.5 | claude-sonnet-5-5 |    2,00 | 10,00 |
-| Claude Opus 5.5   | claude-opus-5-5   |    4,00 | 20,00 |
+| Modelo | ID da API direta | Entrada | Saída |
+|---|---|---:|---:|
+| GPT-6 Luna | gpt-6-luna | 0,10 | 0,50 |
+| GPT-6.1 Terra | gpt-6.1-terra | 1,00 | 5,00 |
+| GPT-6.1 Sol | gpt-6.1-sol | 2,00 | 10,00 |
+| GPT-6 Astra | gpt-6-astra | 10,00 | 50,00 |
+| Claude Haiku 5.5 | claude-haiku-5-5 | 0,10 | 0,50 |
+| Claude Sonnet 5.5 | claude-sonnet-5-5 | 2,00 | 10,00 |
+| Claude Opus 5.5 | claude-opus-5-5 | 4,00 | 20,00 |
 
 Haiku 5.5 usa US$ 0,50 de entrada e US$ 2,50 de saída quando o prompt ultrapassa 100 mil tokens. Cada provedor tem tarifas próprias de cache, contexto e modo de execução. Começar com Standard e limites de entrada dentro da faixa base, ou cadastrar e validar a faixa superior antes de aceitá-la. A disponibilidade no catálogo público precisa ser confirmada com a conta da agência antes de habilitar um modelo.
 
@@ -37,6 +37,7 @@ Fontes oficiais: [OpenAI modelos e preços base](https://developers.openai.com/a
 - Persistir com precisão decimal adequada o uso reportado, o custo calculado, a versão da tarifa, o modelo, o comando e a identidade da chamada. Arredondar na apresentação após agregar. Uso ausente fica pendente de conciliação e nunca vira custo zero por padrão.
 - Contar chamadas de geração distintas ao provedor uma vez por execução. Repetir apenas a gravação não duplica consumo. Nova chamada que efetivamente consome tokens entra no total, inclusive quando a resposta é incompleta.
 - Preservar o histórico da política antiga. Só converter registros com modelo, tokens e tarifa recuperáveis. Validar uma geração do Luna de ponta a ponta e conferir cache, tarifa por faixa, uso incompleto e reprocessamento com dados controlados.
+
 
 ## Execução de 05/11/2026
 

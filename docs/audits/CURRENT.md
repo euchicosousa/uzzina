@@ -2,7 +2,7 @@
 
 Atualizado em 07/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 e o ticket 01 de uso de IA. O domínio `uzzina.cnvt.com.br` está Ready no deploy `dpl_EhqbZf5ia5zwyztWJmoybStqjrma`. A `main` local tem os commits da rodada de 06/11 sem push (`git log origin/main..main`). Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
+Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 e o ticket 01 de uso de IA. O domínio `uzzina.cnvt.com.br` está Ready no deploy `dpl_EhqbZf5ia5zwyztWJmoybStqjrma`. Depois disso, o proprietário enviou ao GitHub a rodada de 06/11 e 07/11 (EST-03/04, V46–V49, DOC-01, IA-M06 e IA-M07); o deploy Ready dessa versão não foi conferido aqui. Fila atual: 12 tickets, todos do Planejamento, em espera; IA-M06 e IA-M07 foram encerrados com aceite em 07/11. Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
 
 ## Pendências reais
 
@@ -12,7 +12,7 @@ Executado e aceito pelo proprietário. O [AGENTS](../../AGENTS.md) passou de 52.
 
 ### Organização do catálogo de IA — 07/11
 
-Aberto [IA-M06](../../.scratch/ai-models/issues/06-expand-model-catalog-and-visibility.md) para investigar novos modelos, visibilidade pessoal e elegibilidade por função. Planejamento entra na análise e segue em espera. Fila com 12 tickets: T01–T12 do Planejamento, em espera. IA-M06 e IA-M07 encerrados com aceite em 07/11. V46–V49 e DOC-01 encerrados com aceite em 07/11. Referências e diff conferidos.
+Aberto [IA-M06](../../.scratch/ai-models/issues/06-expand-model-catalog-and-visibility.md) para investigar novos modelos, visibilidade pessoal e elegibilidade por função. Planejamento entra na análise e segue em espera. Fila com 17 tickets. Referências e diff conferidos.V46–V49 e DOC-01 encerrados com aceite em 07/11. Referências e diff conferidos.
 
 ### Novos tickets — 06/11
 
