@@ -39,9 +39,9 @@ export * from "./UzzinaComboboxTriggerSection";
 export * from "./UzzinaPeopleComboboxSection";
 export * from "./UzzinaPhaseIconSection";
 export * from "./UzzinaLoaderSection";
-export * from "./UzzinaToggleInputSection";
 export * from "./UzzinaPreferenceSwitchSection";
 export * from "./UzzinaAvatarSelectorSection";
+export * from "./UzzinaAvatarUploadSection";
 export * from "./UzzinaAdminItemCardSection";
 export * from "./UzzinaCalendarToolbarSection";
 export * from "./UzzinaPaletteEditorSection";
@@ -51,4 +51,3 @@ export * from "./UzzinaPartnerCelebrationsSelectorSection";
 export * from "./UzzinaAIProgressBarSection";
 export * from "./UzzinaAIModelSelectSection";
 export * from "./UzzinaAIAllowanceMeterSection";
-

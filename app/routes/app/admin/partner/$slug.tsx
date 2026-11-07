@@ -8,7 +8,6 @@ import {
   MailCheckIcon,
   MegaphoneIcon,
   PrinterIcon,
-  UploadIcon,
 } from "lucide-react";
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -32,8 +31,7 @@ import {
 import { QUERY_KEYS } from "~/lib/query-keys";
 import { getAllCelebrations } from "~/models/celebrations";
 import { UPartnerCelebrationsSelector } from "~/components/uzzina/UPartnerCelebrationsSelector";
-import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
-import { UAvatar } from "~/components/uzzina/UAvatar";
+import { UAvatarUpload } from "~/components/uzzina/UAvatarUpload";
 import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
 import { ULoader } from "~/components/uzzina/ULoader";
 import { useAppContext } from "~/contexts/AppContext";
@@ -384,32 +382,20 @@ function AdminPartnerEditPage() {
 
         {/* Avatar / UploadIcon Widget */}
         <div className="flex items-center gap-6">
-          <CloudinaryUpload
+          <UAvatarUpload
             aria-label="Alterar imagem do parceiro"
-            variant="ghost"
-            className="group relative -ml-1 size-24 shrink-0 overflow-hidden rounded-full transition no-squircle hover:opacity-90"
             cloudName={appData.cloudName}
+            fallback={partner?.short || "?"}
             folder="uzzina/partners"
-            onUpload={(url: string) => {
+            image={imageUrl}
+            onUpload={(url) => {
               setImageUrl(url);
               triggerAutoSave({
                 image: url,
               });
             }}
-            outputWidth={400}
-            square
             uploadPreset={appData.uploadPreset}
-          >
-            <UAvatar
-              key={imageUrl ?? "empty"}
-              fallback={partner?.short || "?"}
-              image={imageUrl}
-              size="2xl"
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-foreground/40 opacity-0 transition group-hover:opacity-100">
-              <UploadIcon className="size-6 text-background" />
-            </div>
-          </CloudinaryUpload>
+          />
 
           <div className="flex flex-1 flex-col gap-1">
             <div className="flex items-center justify-between gap-2 font-medium">
@@ -421,7 +407,6 @@ function AdminPartnerEditPage() {
             </div>
             {imageUrl && (
               <PrismButton
-                className="mt-1 h-auto p-0 text-left text-xs text-muted-foreground hover:text-foreground"
                 onPress={() => {
                   setImageUrl(null);
                   triggerAutoSave({

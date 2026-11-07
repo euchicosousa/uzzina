@@ -93,6 +93,7 @@ function ButtonPlayground() {
   const [size, setSize] = useState<GalleryButtonSize>("default");
   const [content, setContent] = useState<GalleryButtonContent>("text");
   const [isDisabled, setIsDisabled] = useState(false);
+  const [isRounded, setIsRounded] = useState(false);
   const [text, setText] = useState("Botão");
 
   const isIconOnly = size.startsWith("icon");
@@ -103,6 +104,7 @@ function ButtonPlayground() {
       <PrismButton
         aria-label={text}
         isDisabled={isDisabled}
+        isRounded={isRounded}
         size={size}
         variant={variant}
       >
@@ -111,14 +113,24 @@ function ButtonPlayground() {
     );
   } else if (content === "icon-end") {
     previewButton = (
-      <PrismButton isDisabled={isDisabled} size={size} variant={variant}>
+      <PrismButton
+        isDisabled={isDisabled}
+        isRounded={isRounded}
+        size={size}
+        variant={variant}
+      >
         {text}
         <ChevronDownIcon data-icon="inline-end" />
       </PrismButton>
     );
   } else {
     previewButton = (
-      <PrismButton isDisabled={isDisabled} size={size} variant={variant}>
+      <PrismButton
+        isDisabled={isDisabled}
+        isRounded={isRounded}
+        size={size}
+        variant={variant}
+      >
         {text}
       </PrismButton>
     );
@@ -152,6 +164,12 @@ function ButtonPlayground() {
         options={BUTTON_CONTENTS}
         prop="children"
         value={content}
+      />
+      <PlaygroundBoolean
+        label="Circular"
+        onChange={setIsRounded}
+        prop="isRounded"
+        value={isRounded}
       />
       <PlaygroundBoolean
         label="Desabilitado"

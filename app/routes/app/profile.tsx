@@ -21,7 +21,6 @@ import {
   PipetteIcon,
   RefreshCwIcon,
   SunIcon,
-  UploadIcon,
   SparklesIcon,
 } from "lucide-react";
 import {
@@ -53,9 +52,8 @@ import {
   PrismToggleGroup,
   PrismToggleGroupItem,
 } from "~/components/prism";
-import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
 import { UPreferenceSwitch } from "~/components/uzzina/UPreferenceSwitch";
-import { UAvatar } from "~/components/uzzina/UAvatar";
+import { UAvatarUpload } from "~/components/uzzina/UAvatarUpload";
 import { useAppContext } from "~/contexts/AppContext";
 import { PALLETE } from "~/lib/palettes";
 import {
@@ -621,28 +619,15 @@ function ProfilePage() {
           <div className="flex w-full flex-col gap-8">
             {/* Profile Avatar Upload */}
             <div className="flex items-center gap-4 pl-1">
-              <CloudinaryUpload
+              <UAvatarUpload
                 aria-label="Alterar foto"
-                variant="ghost"
-                className="group relative size-20 shrink-0 cursor-pointer overflow-hidden rounded-full p-0 transition no-squircle! hover:opacity-90"
                 cloudName={cloudName}
+                fallback={person.initials || "?"}
                 folder="uzzina/people"
-                onUpload={(url) => setImageUrl(url)}
-                outputWidth={400}
-                square
+                image={imageUrl}
+                onUpload={setImageUrl}
                 uploadPreset={uploadPreset}
-              >
-                <UAvatar
-                  key={imageUrl ?? "empty"}
-                  className="size-full"
-                  fallback={person.initials || "?"}
-                  image={imageUrl}
-                  size="xl"
-                />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
-                  <UploadIcon className="size-5 text-white" />
-                </div>
-              </CloudinaryUpload>
+              />
 
               <div className="grid gap-1">
                 <h5>Foto de Perfil</h5>
@@ -651,7 +636,6 @@ function ProfilePage() {
                 </span>
                 {imageUrl && (
                   <PrismButton
-                    className="mr-auto p-0"
                     onPress={() => setImageUrl(null)}
                     size="xs"
                     variant="link"

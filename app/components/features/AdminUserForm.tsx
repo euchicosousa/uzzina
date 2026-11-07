@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
-import { UAvatar } from "~/components/uzzina/UAvatar";
-import { EyeIcon, EyeOffIcon, SaveIcon, UploadIcon } from "lucide-react";
+import { UAvatarUpload } from "~/components/uzzina/UAvatarUpload";
+import { EyeIcon, EyeOffIcon, SaveIcon } from "lucide-react";
 import {
   PrismButton,
   PrismCheckbox,
@@ -50,27 +49,15 @@ export function AdminUserForm({
       <div className="grid gap-8">
         {/* Avatar / UploadIcon Widget */}
         <div className="flex items-center gap-6">
-          <CloudinaryUpload
+          <UAvatarUpload
             aria-label="Alterar foto"
-            variant="ghost"
-            className="group relative -ml-1 size-24 shrink-0 overflow-hidden rounded-full transition no-squircle hover:opacity-90"
             cloudName={cloudName}
+            fallback={person?.initials || "?"}
             folder="uzzina/people"
-            onUpload={(url) => setImageUrl(url)}
-            outputWidth={400}
-            square
+            image={imageUrl}
+            onUpload={setImageUrl}
             uploadPreset={uploadPreset}
-          >
-            <UAvatar
-              key={imageUrl ?? "empty"}
-              fallback={person?.initials || "?"}
-              image={imageUrl}
-              size="2xl"
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-foreground/40 opacity-0 transition group-hover:opacity-100">
-              <UploadIcon className="size-6 text-background" />
-            </div>
-          </CloudinaryUpload>
+          />
 
           <div className="grid gap-1">
             <p className="font-medium">Foto de Perfil</p>
@@ -79,7 +66,6 @@ export function AdminUserForm({
             </p>
             {imageUrl && (
               <PrismButton
-                className="mt-1 h-auto p-0 text-left text-xs text-muted-foreground hover:text-foreground"
                 onPress={() => setImageUrl(null)}
                 size="xs"
                 variant="link"

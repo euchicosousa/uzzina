@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import {
-  AlignLeftIcon,
   AlignCenterIcon,
-  AlignRightIcon,
   AlignJustifyIcon,
+  AlignLeftIcon,
+  AlignRightIcon,
+  ArchiveIcon,
   BoldIcon,
 } from "lucide-react";
 import {
@@ -23,6 +24,7 @@ import {
   PlaygroundRadio,
   PlaygroundBoolean,
   PlaygroundNumber,
+  PlaygroundText,
 } from "./PropsPlayground";
 
 const TOGGLE_VARIANTS = ["default", "ghost", "secondary", "outline"] as const;
@@ -287,6 +289,75 @@ function ToggleGroupPlayground() {
   );
 }
 
+function ToggleFormPlayground() {
+  const [variant, setVariant] = useState<ToggleVariant>("outline");
+  const [isSelected, setIsSelected] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [showIcon, setShowIcon] = useState(true);
+  const [text, setText] = useState("Arquivado");
+  const id = useId();
+
+  return (
+    <PropsPlayground
+      caption={`PrismToggle · variant="${variant}" · ${isSelected ? "marcado (FormData: archived=on)" : "desmarcado (FormData: vazio)"}${isDisabled ? " · desabilitado" : ""}`}
+      preview={
+        <form
+          className="flex flex-col items-center gap-2"
+          onSubmit={(e) => e.preventDefault()}
+        >
+          {isSelected && <input name="archived" type="hidden" value="on" />}
+          <PrismToggle
+            id={id}
+            isDisabled={isDisabled}
+            isSelected={isSelected}
+            onChange={setIsSelected}
+            variant={variant}
+          >
+            {text}
+            {showIcon && <ArchiveIcon className="size-4" />}
+          </PrismToggle>
+          <span className="font-mono text-xs text-muted-foreground">
+            {isSelected ? 'FormData: { archived: "on" }' : "FormData: {}"}
+          </span>
+        </form>
+      }
+      title="PrismToggle (Formulário)"
+    >
+      <PlaygroundRadio
+        label="Variante"
+        onChange={setVariant}
+        options={TOGGLE_VARIANTS}
+        prop="variant"
+        value={variant}
+      />
+      <PlaygroundBoolean
+        label="Marcado"
+        onChange={setIsSelected}
+        prop="isSelected"
+        value={isSelected}
+      />
+      <PlaygroundBoolean
+        label="Desabilitado"
+        onChange={setIsDisabled}
+        prop="isDisabled"
+        value={isDisabled}
+      />
+      <PlaygroundBoolean
+        label="Ícone"
+        onChange={setShowIcon}
+        prop="children"
+        value={showIcon}
+      />
+      <PlaygroundText
+        label="Texto"
+        onChange={setText}
+        prop="children"
+        value={text}
+      />
+    </PropsPlayground>
+  );
+}
+
 export function ToggleSection() {
   return (
     <div id="prism-toggle">
@@ -302,6 +373,9 @@ export function ToggleSection() {
           </GalleryItem>
           <GalleryItem id="prism-toggle-group" label="ToggleGroup">
             <ToggleGroupPlayground />
+          </GalleryItem>
+          <GalleryItem id="prism-toggle-form" label="Integração com Formulário (FormData)">
+            <ToggleFormPlayground />
           </GalleryItem>
         </GallerySectionContent>
       </GallerySection>

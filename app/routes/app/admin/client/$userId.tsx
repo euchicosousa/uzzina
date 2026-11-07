@@ -1,7 +1,7 @@
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { getQuerySessionGeneration } from "~/lib/query-client";
 import { useRef } from "react";
-import { UploadIcon, EyeIcon, EyeOffIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import {
@@ -13,8 +13,7 @@ import {
   PrismInputGroupInput,
   PrismLabel,
 } from "~/components/prism";
-import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
-import { UAvatar } from "~/components/uzzina/UAvatar";
+import { UAvatarUpload } from "~/components/uzzina/UAvatarUpload";
 import { UAvatarSelector } from "~/components/uzzina/UAvatarSelector";
 import {
   archiveClient,
@@ -172,27 +171,15 @@ function AdminClientPage() {
 
         {/* Avatar / UploadIcon Widget */}
         <div className="flex items-center gap-6">
-          <CloudinaryUpload
+          <UAvatarUpload
             aria-label="Alterar foto"
-            className="group relative -ml-1 size-24 shrink-0 overflow-hidden rounded-full transition no-squircle hover:opacity-90"
             cloudName={appData.cloudName}
+            fallback={client?.name || "?"}
             folder="uzzina/clients"
-            onUpload={(url: string) => setImageUrl(url)}
-            outputWidth={400}
-            square
+            image={imageUrl}
+            onUpload={setImageUrl}
             uploadPreset={appData.uploadPreset}
-            variant="unstyled"
-          >
-            <UAvatar
-              key={imageUrl ?? "empty"}
-              fallback={client?.name || "?"}
-              image={imageUrl}
-              size="2xl"
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-foreground/40 opacity-0 transition group-hover:opacity-100">
-              <UploadIcon className="size-6 text-background" />
-            </div>
-          </CloudinaryUpload>
+          />
 
           <div className="grid gap-1">
             <p className="font-medium">Foto de Perfil</p>
@@ -201,7 +188,6 @@ function AdminClientPage() {
             </p>
             {imageUrl && (
               <PrismButton
-                className="mt-1 h-auto p-0 text-left text-xs text-muted-foreground hover:text-foreground"
                 onPress={() => setImageUrl(null)}
                 size="xs"
                 variant="link"

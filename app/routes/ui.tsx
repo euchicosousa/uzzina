@@ -53,12 +53,12 @@ import {
   UzzinaPartnerCelebrationsSelectorSection,
   UzzinaAdminItemCardSection,
   UzzinaAvatarSelectorSection,
+  UzzinaAvatarUploadSection,
   UzzinaLoaderSection,
   UzzinaAIProgressBarSection,
   UzzinaAIModelSelectSection,
   UzzinaAIAllowanceMeterSection,
   UzzinaPreferenceSwitchSection,
-  UzzinaToggleInputSection,
   SelectSection,
   CalendarSection,
   AccordionSection,
@@ -257,6 +257,12 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     keywords: ["avatar", "selecao", "pessoas", "parceiros", "grade"],
   },
   {
+    id: "uzzina-avatar-upload",
+    label: "UAvatarUpload",
+    section: "uzzina",
+    keywords: ["avatar", "upload", "foto", "logotipo", "cloudinary", "imagem"],
+  },
+  {
     id: "uzzina-color-picker-dropdown",
     approved: true,
     label: "UColorPickerDropdown",
@@ -322,13 +328,6 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     label: "UPreferenceSwitch",
     section: "uzzina",
     keywords: ["preferencia", "switch", "alternar", "ativo", "inativo"],
-  },
-  {
-    id: "uzzina-toggle-input",
-    approved: true,
-    label: "UToggleInput",
-    section: "uzzina",
-    keywords: ["toggle", "checkbox", "arquivado", "formulario", "input"],
   },
   {
     id: "uzzina-view-options",
@@ -532,10 +531,18 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     label: "Toggle & ToggleGroup",
     section: "components",
     approved: true,
-    keywords: ["switch", "alternador", "toggle group"],
+    keywords: [
+      "switch",
+      "alternador",
+      "toggle group",
+      "formulario",
+      "formdata",
+      "arquivado",
+    ],
     subsections: [
       { id: "prism-toggle-single", label: "Toggle" },
       { id: "prism-toggle-group", label: "ToggleGroup" },
+      { id: "prism-toggle-form", label: "Formulário (FormData)" },
     ],
   },
 ];
@@ -568,9 +575,9 @@ function UIPage() {
     navigationRef.current = null;
     setActiveSection(section);
     const firstItem = SIDEBAR_ITEMS.find((item) => item.section === section);
-    const firstId = firstItem ? firstItem.id : "";
-    setActiveAnchor(firstId);
-    setExpandedItemId(firstId);
+    const targetId = firstItem?.subsections?.[0]?.id ?? firstItem?.id ?? "";
+    setActiveAnchor(targetId);
+    setExpandedItemId(firstItem?.id ?? "");
     setSearchQuery("");
     mainRef.current?.scrollTo({
       top: 0,
@@ -578,6 +585,15 @@ function UIPage() {
         ? "instant"
         : "smooth",
     });
+
+    if (targetId) {
+      void navigate({
+        hash: targetId,
+        replace: false,
+        resetScroll: false,
+        hashScrollIntoView: false,
+      });
+    }
   };
 
   const isSearching = searchQuery.trim().length > 0;
@@ -664,7 +680,7 @@ function UIPage() {
     // The gallery owns scrolling; router hash scrolling would cancel it.
     void navigate({
       hash: targetId,
-      replace: true,
+      replace: false,
       resetScroll: false,
       hashScrollIntoView: false,
     });
@@ -689,7 +705,7 @@ function UIPage() {
     // The gallery owns scrolling; router hash scrolling would cancel it.
     void navigate({
       hash: sub.id,
-      replace: true,
+      replace: false,
       resetScroll: false,
       hashScrollIntoView: false,
     });
@@ -705,66 +721,94 @@ function UIPage() {
   };
 
   useEffect(() => {
-    const initialHash =
-      typeof window !== "undefined"
-        ? window.location.hash.replace(/^#/, "")
-        : "";
-    const rawHash =
-      initialHash === "uzzina-color-list-editor"
-        ? "uzzina-palette-editor"
-        : initialHash === "uzzina-action-color-dropdown"
-          ? "uzzina-color-picker-dropdown"
-          : initialHash === "uzzina-responsibles-combobox"
-            ? "uzzina-people-responsibles"
-            : initialHash === "uzzina-sprint-combobox"
-              ? "uzzina-people-sprint"
-              : initialHash;
-    if (!rawHash) return;
-
-    for (const item of SIDEBAR_ITEMS) {
-      if (item.id === rawHash) {
-        setActiveSection(item.section);
-        setExpandedItemId(item.id);
-        const targetId = item.subsections?.[0]?.id ?? item.id;
-        setActiveAnchor(targetId);
-        void navigate({
-          hash: targetId,
-          replace: true,
-          resetScroll: false,
-          hashScrollIntoView: false,
-        });
-        const request = {
-          id: targetId,
-          section: item.section,
-          offset: 64,
-        };
-        navigationRef.current = request;
-        setNavigationRequest(request);
+    const parseAndApplyHash = (hashString: string, isInitial = false) => {
+      const rawHash =
+        hashString === "uzzina-toggle-input"
+          ? "prism-toggle-form"
+          : hashString === "uzzina-color-list-editor"
+            ? "uzzina-palette-editor"
+            : hashString === "uzzina-action-color-dropdown"
+              ? "uzzina-color-picker-dropdown"
+              : hashString === "uzzina-responsibles-combobox"
+                ? "uzzina-people-responsibles"
+                : hashString === "uzzina-sprint-combobox"
+                  ? "uzzina-people-sprint"
+                  : hashString;
+      if (!rawHash) {
+        if (!isInitial) {
+          setActiveSection("tokens");
+          setActiveAnchor("colors");
+          setExpandedItemId("colors");
+          mainRef.current?.scrollTo({ top: 0, behavior: "instant" });
+        }
         return;
       }
-      if (item.subsections) {
-        const sub = item.subsections.find((s) => s.id === rawHash);
-        if (sub) {
+
+      for (const item of SIDEBAR_ITEMS) {
+        if (item.id === rawHash) {
           setActiveSection(item.section);
           setExpandedItemId(item.id);
-          setActiveAnchor(sub.id);
-          void navigate({
-            hash: sub.id,
-            replace: true,
-            resetScroll: false,
-            hashScrollIntoView: false,
-          });
+          const targetId = item.subsections?.[0]?.id ?? item.id;
+          setActiveAnchor(targetId);
+          if (isInitial && rawHash !== hashString) {
+            void navigate({
+              hash: targetId,
+              replace: true,
+              resetScroll: false,
+              hashScrollIntoView: false,
+            });
+          }
           const request = {
-            id: sub.id,
+            id: targetId,
             section: item.section,
-            offset: 72,
+            offset: 64,
           };
           navigationRef.current = request;
           setNavigationRequest(request);
           return;
         }
+        if (item.subsections) {
+          const sub = item.subsections.find((s) => s.id === rawHash);
+          if (sub) {
+            setActiveSection(item.section);
+            setExpandedItemId(item.id);
+            setActiveAnchor(sub.id);
+            if (isInitial && rawHash !== hashString) {
+              void navigate({
+                hash: sub.id,
+                replace: true,
+                resetScroll: false,
+                hashScrollIntoView: false,
+              });
+            }
+            const request = {
+              id: sub.id,
+              section: item.section,
+              offset: 72,
+            };
+            navigationRef.current = request;
+            setNavigationRequest(request);
+            return;
+          }
+        }
       }
+    };
+
+    const initial =
+      typeof window !== "undefined"
+        ? window.location.hash.replace(/^#/, "")
+        : "";
+    if (initial) {
+      parseAndApplyHash(initial, true);
     }
+
+    const onHashChange = () => {
+      const current = window.location.hash.replace(/^#/, "");
+      parseAndApplyHash(current, false);
+    };
+
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
   }, [navigate]);
 
   useEffect(() => {
@@ -1087,6 +1131,7 @@ function UIPage() {
               <UzzinaAdminItemCardSection />
               <UzzinaAvatarSection />
               <UzzinaAvatarSelectorSection />
+              <UzzinaAvatarUploadSection />
               <UzzinaColorPickerDropdownSection />
               <UzzinaAIModelSelectSection />
               <UzzinaAIAllowanceMeterSection />
@@ -1094,7 +1139,6 @@ function UIPage() {
               <UzzinaLoaderSection />
               <UzzinaPaletteEditorSection />
               <UzzinaPreferenceSwitchSection />
-              <UzzinaToggleInputSection />
               <UzzinaViewOptionsSection />
             </div>
           ) : (

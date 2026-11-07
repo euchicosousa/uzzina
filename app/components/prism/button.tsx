@@ -20,7 +20,7 @@ const buttonSizeClasses = {
   "icon-lg": "size-12 rounded-3xl",
 } as const;
 const styledButtonVariants = cva(
-  "group/button squircle inline-flex shrink-0 items-center justify-center rounded-2xl border bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-2xl border bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
   {
     variants: {
       variant: {
@@ -42,10 +42,17 @@ const styledButtonVariants = cva(
         unstyled: "",
       },
       size: buttonSizeClasses,
+      // Declared after size so a circle wins over the size radius; the
+      // squircle corner shape is applied only when the button is not round.
+      isRounded: {
+        true: "rounded-full",
+        false: "squircle",
+      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+      isRounded: false,
     },
   },
 );
@@ -62,6 +69,7 @@ function Button({
   className,
   variant = "default",
   size = "default",
+  isRounded = false,
   ...props
 }: Omit<ButtonPrimitiveProps, "className"> &
   React.RefAttributes<HTMLButtonElement> &
@@ -74,6 +82,7 @@ function Button({
         buttonVariants({
           variant,
           size,
+          isRounded,
           className,
         }),
       )}
@@ -88,6 +97,7 @@ function LinkButton({
   className,
   variant = "default",
   size = "default",
+  isRounded = false,
   ...props
 }: Omit<LinkPrimitiveProps, "className"> &
   VariantProps<typeof buttonVariants> & {
@@ -99,6 +109,7 @@ function LinkButton({
         buttonVariants({
           variant,
           size,
+          isRounded,
           className,
         }),
       )}

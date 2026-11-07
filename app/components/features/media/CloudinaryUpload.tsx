@@ -65,6 +65,7 @@ interface CloudinaryUploadProps {
   className?: string;
   variant?: NonNullable<PrismButtonVariantProps["variant"]>;
   size?: NonNullable<PrismButtonVariantProps["size"]>;
+  isRounded?: boolean;
 }
 export function CloudinaryUpload({
   cloudName,
@@ -80,6 +81,7 @@ export function CloudinaryUpload({
   className,
   variant = "secondary",
   size = "xs",
+  isRounded = false,
 }: CloudinaryUploadProps) {
   const widgetRef = useRef<{
     open: () => void;
@@ -246,6 +248,7 @@ export function CloudinaryUpload({
     <PrismButton
       aria-label={ariaLabel}
       className={className}
+      isRounded={isRounded}
       onClick={openWidget}
       size={size}
       type="button"
