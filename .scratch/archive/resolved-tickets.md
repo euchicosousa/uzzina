@@ -5481,3 +5481,11 @@ Encerrado com aceite do proprietário em 07/11/2026. [Ticket](../visual-controls
 ## V49 — Referências a UToggleInput removidas da galeria
 
 Encerrado com aceite do proprietário em 07/11/2026. [Ticket](../visual-controls/issues/49-remove-legacy-toggle-gallery-reference.md).
+
+## IA-M06 — Modelos de IA por tarefa
+
+Encerrado com aceite do proprietário em 07/11/2026: tabela por tarefa em Minha Conta (modelos disponíveis e padrão), seletores da gaveta filtrados, linha Planejamento desabilitada. [Ticket](../ai-models/issues/06-expand-model-catalog-and-visibility.md).
+
+## IA-M07 — Modelos de IA declarados em um só lugar
+
+Encerrado com aceite do proprietário em 07/11/2026: registro público em `app/lib`, catálogo do servidor e tabela `ai_models` (migration aplicada em produção). [Ticket](../ai-models/issues/07-single-model-registry.md).

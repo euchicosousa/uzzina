@@ -1,6 +1,6 @@
 # Central de tickets da UZZINA
 
-Atualizado em 07/11/2026. **14 tickets ativos.** A fila abaixo espelha o tracker principal. Produção registrada em `a6a056c`. A rodada posterior está na main local e nos branches de proposta. Encerramentos com aceite e a revisão por rota do DS02 estão no histórico.
+Atualizado em 07/11/2026. **12 tickets ativos.** A fila abaixo espelha o tracker principal. Produção registrada em `a6a056c`. A rodada posterior está na main local e nos branches de proposta. Encerramentos com aceite e a revisão por rota do DS02 estão no histórico.
 
 **IA-M02 encerrado.** Abas de Minha Conta publicadas conforme confirmação do proprietário e integradas à main local em 06/11.
 

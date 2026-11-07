@@ -30,6 +30,7 @@
 ## Encerramento — 06/11/2026
 
 Implementação finalizada e validada no branch `proposal/ia-m02-profile-tabs`:
+
 - Minha Conta dividida em 4 abas PrismTabs (`personal`, `appearance`, `behavior`, `ai`) no mobile e no desktop.
 - Indicador visual (`data-slot="unsaved-indicator"`) de alterações não salvas por aba e estado dirty reativo por formulário/rascunho.
 - Envio de patch parcial (`newPreferences`) contendo apenas campos alterados pelo usuário, sem sobrescrever preferências alteradas por outras superfícies.

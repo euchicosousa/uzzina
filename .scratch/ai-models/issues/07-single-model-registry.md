@@ -53,7 +53,7 @@ Em Minha Conta, abrir "Modelos padrão de IA" e ver que continuam os 7 modelos e
 
 Implementado só no checkout local, sem commit. A migration `supabase/migrations/20261107160000_single_ai_model_registry.sql` está **preparada e NÃO aplicada** no banco; nada em produção mudou.
 
-## Status: implementado, aguarda validação do proprietário
+## Status: encerrado com aceite do proprietário em 07/11/2026
 
 - `app/lib/ai-model-registry.ts` (novo) declara uma única vez id, nome, provedor, nível e modelo padrão. Não tem tarifas nem taxas, então pode ir ao navegador. `app/lib/action-ai-models.ts` (seletores e preferências) deriva dele e não importa nada de `server/`.
 - `server/ai-model-catalog.ts` reutiliza esse registro e acrescenta só o que é do servidor: tarefas permitidas, tarifas e taxas de reserva. Um erro é lançado ao carregar se as duas listas divergirem. Conferido com `bun run build`: as tarifas e taxas não estão mais no pacote do navegador.

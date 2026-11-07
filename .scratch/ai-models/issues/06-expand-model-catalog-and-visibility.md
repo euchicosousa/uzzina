@@ -1,7 +1,7 @@
 # IA-M06 — Modelos de IA por tarefa e catálogo em um só lugar
 
 **Tipo:** implementação concluída no checkout, com as decisões do proprietário de 07/11/2026. Alinhado com o ticket [IA-M07](07-single-model-registry.md).
-**Estado:** implementado, visual aprovado pelo proprietário em 07/11/2026 e commitado na `main` local. A migration já está aplicada em produção; falta publicar o frontend e o aceite final no app.
+**Estado:** encerrado com aceite do proprietário em 07/11/2026. Migration aplicada em produção e código publicado.
 
 ## 1. O que é, em linguagem simples
 
