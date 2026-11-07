@@ -51,4 +51,13 @@ Em Minha Conta, abrir "Modelos padrão de IA" e ver que continuam os 7 modelos e
 
 ## Onde está
 
-Só este arquivo. Nada no banco, nada na `main`, nada em produção alterado.
+Implementado só no checkout local, sem commit. A migration `supabase/migrations/20261107160000_single_ai_model_registry.sql` está **preparada e NÃO aplicada** no banco; nada em produção mudou.
+
+## Status: implementado, aguarda validação do proprietário
+
+- `app/lib/ai-model-registry.ts` (novo) declara uma única vez id, nome, provedor, nível e modelo padrão. Não tem tarifas nem taxas, então pode ir ao navegador. `app/lib/action-ai-models.ts` (seletores e preferências) deriva dele e não importa nada de `server/`.
+- `server/ai-model-catalog.ts` reutiliza esse registro e acrescenta só o que é do servidor: tarefas permitidas, tarifas e taxas de reserva. Um erro é lançado ao carregar se as duas listas divergirem. Conferido com `bun run build`: as tarifas e taxas não estão mais no pacote do navegador.
+- Migration: cria `public.ai_models` (leitura só pela service role, RLS ligada, sem acesso de `anon`/`authenticated`), troca o CHECK de `strategy_operations` por chave estrangeira e troca a lista fixa de IDs por consulta a `ai_models` em `accept_strategy_operation_with_model`, `reserve_ai_monthly` (taxas) e `update_my_preferences` (só o ramo dos modelos; o resto idêntico à produção, conferido em 07/11 por consulta somente leitura). `claim_strategy_operation_with_model` não tinha lista em produção e foi reposta idêntica.
+- Teste `tests/ai-models-catalog-alignment.test.ts`: compara, por modelo, o INSERT da migration com o catálogo (id, nome, provedor, nível, taxas, padrão e conjunto de IDs), garante que o registro público não tem tarifas e que `update_my_preferences` mantém `visible = true` e "Active member required".
+- Limite: incluir um modelo exige **dois lugares** (registro público + catálogo do servidor, em TypeScript; e uma migration nova com INSERT em `ai_models`). O teste avisa se esquecerem um. O banco continua sem leitura automática do TypeScript.
+- Falta: o proprietário validar e autorizar a aplicação do SQL; depois conferir Minha Conta → "Modelos padrão de IA", salvar uma preferência e gerar uma estratégia.

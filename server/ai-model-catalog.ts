@@ -1,5 +1,13 @@
 // Nano-USD per token keeps the per-call calculation exact before aggregation.
-export type AIProvider = "openai" | "anthropic";
+// Id, name, provider, level and default flag live once in the public registry
+// (`app/lib/ai-model-registry.ts`); this catalog adds server-only data.
+import {
+  findPublicAIModel,
+  publicAIModels,
+  type PublicAIModel,
+} from "../app/lib/ai-model-registry.js";
+
+export type { AIProvider } from "../app/lib/ai-model-registry.js";
 export type AIIntent = "ai-strategy" | "ai-content" | "ai-caption";
 
 export type AITariff = {
@@ -13,23 +21,23 @@ export type AITariff = {
   readonly output: number;
 };
 
-export type AIModel = {
-  readonly id: string;
-  readonly name: string;
-  readonly provider: AIProvider;
+export type AIModel = PublicAIModel & {
   readonly capabilities: readonly string[];
   // Commands this model may serve. Models enter other commands only after
   // their output has been validated for that command.
   readonly intents: readonly AIIntent[];
   readonly tariffs: readonly AITariff[];
+  readonly reservationRates: {
+    readonly input: number;
+    readonly output: number;
+  };
 };
 
 export const lunaModel = {
-  id: "gpt-6-luna",
-  name: "GPT-6 Luna",
-  provider: "openai",
+  ...findPublicAIModel("gpt-6-luna"),
   capabilities: ["chat-completions", "text", "json", "reasoning"],
   intents: ["ai-strategy", "ai-content", "ai-caption"],
+  reservationRates: { input: 250, output: 750 },
   tariffs: [
     {
       version: "openai-luna-standard-short-2026-11-05",
@@ -55,11 +63,10 @@ export const lunaModel = {
 } as const satisfies AIModel;
 
 const terraModel = {
-  id: "gpt-6.1-terra",
-  name: "GPT-6.1 Terra",
-  provider: "openai",
+  ...findPublicAIModel("gpt-6.1-terra"),
   capabilities: ["chat-completions", "text", "json", "reasoning"],
   intents: ["ai-strategy", "ai-content", "ai-caption"],
+  reservationRates: { input: 2500, output: 7500 },
   tariffs: [
     {
       version: "openai-gpt-6.1-terra-standard-short-2026-11-06",
@@ -85,11 +92,10 @@ const terraModel = {
 } as const satisfies AIModel;
 
 const solModel = {
-  id: "gpt-6.1-sol",
-  name: "GPT-6.1 Sol",
-  provider: "openai",
+  ...findPublicAIModel("gpt-6.1-sol"),
   capabilities: ["chat-completions", "text", "json", "reasoning"],
   intents: ["ai-strategy", "ai-content", "ai-caption"],
+  reservationRates: { input: 5000, output: 15000 },
   tariffs: [
     {
       version: "openai-gpt-6.1-sol-standard-short-2026-11-06",
@@ -115,11 +121,10 @@ const solModel = {
 } as const satisfies AIModel;
 
 const astraModel = {
-  id: "gpt-6-astra",
-  name: "GPT-6 Astra",
-  provider: "openai",
+  ...findPublicAIModel("gpt-6-astra"),
   capabilities: ["chat-completions", "text", "json", "reasoning"],
   intents: ["ai-strategy", "ai-content", "ai-caption"],
+  reservationRates: { input: 25000, output: 75000 },
   tariffs: [
     {
       version: "openai-gpt-6-astra-standard-short-2026-11-06",
@@ -151,11 +156,10 @@ const claudePricing =
 // caching). Haiku 5.5 reprices the whole request when the prompt, including
 // cache reads and writes, exceeds 100,000 tokens.
 export const claudeHaikuModel = {
-  id: "claude-haiku-5-5",
-  name: "Claude Haiku 5.5",
-  provider: "anthropic",
+  ...findPublicAIModel("claude-haiku-5-5"),
   capabilities: ["messages", "text"],
   intents: ["ai-strategy", "ai-content", "ai-caption"],
+  reservationRates: { input: 625, output: 2500 },
   tariffs: [
     {
       version: "anthropic-haiku-5-5-standard-short-2026-11-06",
@@ -181,11 +185,10 @@ export const claudeHaikuModel = {
 } as const satisfies AIModel;
 
 export const claudeSonnetModel = {
-  id: "claude-sonnet-5-5",
-  name: "Claude Sonnet 5.5",
-  provider: "anthropic",
+  ...findPublicAIModel("claude-sonnet-5-5"),
   capabilities: ["messages", "text"],
   intents: ["ai-strategy", "ai-content", "ai-caption"],
+  reservationRates: { input: 2500, output: 10000 },
   tariffs: [
     {
       version: "anthropic-sonnet-5-5-standard-2026-11-06",
@@ -201,11 +204,10 @@ export const claudeSonnetModel = {
 } as const satisfies AIModel;
 
 export const claudeOpusModel = {
-  id: "claude-opus-5-5",
-  name: "Claude Opus 5.5",
-  provider: "anthropic",
+  ...findPublicAIModel("claude-opus-5-5"),
   capabilities: ["messages", "text"],
   intents: ["ai-strategy", "ai-content", "ai-caption"],
+  reservationRates: { input: 5000, output: 20000 },
   tariffs: [
     {
       version: "anthropic-opus-5-5-standard-2026-11-06",
@@ -230,7 +232,17 @@ export const aiModels: readonly AIModel[] = [
   claudeOpusModel,
 ];
 
+// Every public model needs server data and vice versa; fail loudly at load time.
+if (
+  aiModels.length !== publicAIModels.length ||
+  publicAIModels.some((model, index) => aiModels[index]?.id !== model.id)
+) {
+  throw new Error("AI model catalog is out of sync with the public registry");
+}
+
+export const defaultAIModel = lunaModel;
 export const defaultAIModelId = lunaModel.id;
+export const lunaModelId = defaultAIModelId;
 
 export function findAIModel(id: string): AIModel | undefined {
   return aiModels.find((model) => model.id === id);
