@@ -17,7 +17,11 @@ import {
   PrismButtonGroupSeparator,
 } from "~/components/prism";
 import { INTENT } from "~/lib/CONSTANTS";
-import { getFormattedPartnersLinks, parseStrategies } from "~/utils/format";
+import {
+  getFormattedPartnersLinks,
+  getFormattedPartnersName,
+  parseStrategies,
+} from "~/utils/format";
 import type { Action, Partner } from "~/types";
 import type { TextDraftField } from "~/components/features/action-drawer/ActionFormDrawer";
 import { cn } from "cnfast";
@@ -211,7 +215,10 @@ export function InstagramTab({
                     image: partner.image,
                   }))}
                 />
-                <div className="truncate text-sm font-medium">
+                <div
+                  className="truncate text-sm font-medium"
+                  title={getFormattedPartnersName(currentPartners)}
+                >
                   {getFormattedPartnersLinks(currentPartners)}
                 </div>
               </div>
@@ -316,13 +323,10 @@ export function InstagramTab({
             )}
           >
             <div
-              className={cn(
-                "relative flex flex-wrap items-center justify-between gap-2 border-b px-4 py-4 @[47rem]/action:pl-0",
-                writingLayout && "shrink-0",
-              )}
+              className="relative flex min-w-0 shrink-0 items-center justify-between gap-3 border-b px-4 py-4 @[47rem]/action:pl-0"
               data-writing-controls
             >
-              <div className="flex items-center gap-2">
+              <div className="flex min-w-0 shrink items-center gap-2">
                 <UAvatarGroup
                   avatars={currentPartners.map((partner) => ({
                     fallback: partner.short,
@@ -331,15 +335,19 @@ export function InstagramTab({
                     image: partner.image,
                   }))}
                 />
-                <div className="text-sm font-medium">
+                <div
+                  className="truncate text-sm font-medium"
+                  title={getFormattedPartnersName(currentPartners)}
+                >
                   {getFormattedPartnersLinks(currentPartners)}
                 </div>
               </div>
               <PrismButtonGroup
                 aria-label="Geração de legenda"
-                className="max-w-full"
+                className="min-w-0 shrink"
               >
                 <PrismButton
+                  className="min-w-0 shrink truncate"
                   isDisabled={isAIProcessing}
                   onPress={() =>
                     void triggerAIAction(INTENT.ai_caption, {
@@ -349,7 +357,12 @@ export function InstagramTab({
                   variant="secondary"
                   size="sm"
                 >
-                  Gerar legenda
+                  <span
+                    className="block min-w-0 truncate"
+                    title="Gerar legenda"
+                  >
+                    Gerar legenda
+                  </span>
                   {isAIProcessing && activeAIIntent === INTENT.ai_caption && (
                     <ULoader size="xs" inheritColor />
                   )}
