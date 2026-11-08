@@ -125,7 +125,7 @@ export function HomeSprintView({ actions }: { actions: Action[] }) {
             sensors={sensors}
           >
             <SortableContext items={actionIds} strategy={rectSortingStrategy}>
-              <div className={`${gridClasses} gap-2 p-1`}>
+              <div className={`${gridClasses} gap-2 px-2 pt-1 pb-6`}>
                 {orderedActions.map((action) => (
                   <SortableItem key={action.id} id={action.id}>
                     <ActionItem

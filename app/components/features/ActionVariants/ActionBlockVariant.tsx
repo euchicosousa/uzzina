@@ -4,7 +4,11 @@ import { ActionItemTitleInput } from "../ActionItemTitleInput";
 import { UPhaseIcon } from "~/components/uzzina/UPhaseIcon";
 import { INTENT, SIZE } from "~/lib/CONSTANTS";
 import { getFormattedDateTime, UIcons } from "~/utils";
-import { ActionItemPartners, ActionItemResponsibles } from "../ActionItem";
+import {
+  ActionItemPartners,
+  ActionItemResponsibles,
+  ActionItemSprint,
+} from "../ActionItem";
 
 export function ActionBlockVariant({
   action,
@@ -39,6 +43,7 @@ export function ActionBlockVariant({
 
       <div className="flex items-center justify-between gap-4 overflow-hidden">
         <div className="flex items-center gap-2 overflow-hidden">
+          <ActionItemSprint action={action} />
           {showPartner && (
             <ActionItemPartners
               action={action}

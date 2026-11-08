@@ -173,7 +173,7 @@ const KanbanColumn = ({
             <div
               role="region"
               aria-label={`Ações em ${phase.title}`}
-              className="flex min-h-0 flex-1 flex-col overflow-y-auto p-1"
+              className="flex min-h-0 flex-1 flex-col overflow-y-auto px-2 pt-1 pb-6"
             >
               <div className="flex flex-col gap-1">
                 {actions.map((action) => (

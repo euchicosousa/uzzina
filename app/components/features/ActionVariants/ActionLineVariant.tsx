@@ -38,7 +38,7 @@ export function ActionLineVariant({
             <UPhaseIcon phase={currentPhase} size="dot" />
           )}
         </div>
-        {isLateAction(action) && <ActionItemSprint action={action} />}
+        <ActionItemSprint action={action} />
         <ActionItemTitleInput
           className="w-full lg:text-sm xl:text-base"
           isEditing={isEditing}

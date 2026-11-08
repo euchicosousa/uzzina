@@ -133,24 +133,23 @@ export function ActionItem({
         return "flex-col gap-2 px-4 py-3";
       // case VARIANT.line:
       default:
-        return "rounded-xl px-3 py-1 transition-colors @xs:p-1 squircle";
+        return "rounded-xl px-3 py-1 @xs:p-1";
     }
   }, [variant]);
   const bgClasses = useMemo(() => {
     let baseStyles = `
     text-foreground
     bg-action
-    transition-all
+    transition-[color,background-color,border-color,box-shadow,padding]
     duration-500
+    motion-reduce:transition-none
     shadow-action
     border-t
     border-action-top-border
     z-0
     ring ring-action-ring
-    focus-within:outline-1
-    focus-within:outline-ring/45
-    focus-within:ring-4
-    focus-within:ring-ring/30
+    focus-within:outline-3
+    focus-within:outline-ring/30
     hover:z-10
     hover:shadow-action-hover
     hover:bg-action-hover
@@ -181,10 +180,7 @@ export function ActionItem({
         bgClasses,
         className,
         isDragging && "cursor-grabbing",
-        isSelectionMode &&
-          (variant !== VARIANT.content
-            ? "pl-8 transition-all"
-            : "transition-all"),
+        isSelectionMode && variant !== VARIANT.content && "pl-8",
         isSelectionMode && isSelected && "ring-2 ring-primary",
       )}
       data-action-id={action.id}

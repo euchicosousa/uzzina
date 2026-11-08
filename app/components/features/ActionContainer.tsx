@@ -119,8 +119,7 @@ export function ActionContainer({
       ref={containerRef}
       className={cn(
         "relative transition-all duration-300",
-        scrollable ? "h-full overflow-y-auto" : "",
-        "p-1 pb-6",
+        scrollable ? "h-full overflow-y-auto px-2 pt-1 pb-6" : "p-1 pb-6",
       )}
       onScroll={handleScroll}
       style={maskStyle}
