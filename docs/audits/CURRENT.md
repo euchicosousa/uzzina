@@ -6,9 +6,15 @@ Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 
 
 ## Pendências reais
 
+### Revisão do DS06 e ordem do Planejamento — 08/11
+
+Revisados os commits 852928e e ce3e70f. Os estilos planos, a borda superior transparente e as cores de paleta são decisões registradas. O CSS compilado mostrou que o valor none aplicado à sombra plana invalida a lista de box-shadow que inclui o anel do Tailwind. Isso explica o anel ausente em Carbono e pode afetar Cobalto, foco e seleção. Correção aplicada no DS06: sombra transparente de dimensão zero em repouso e hover, preservando a composição dos anéis. Falta conferir os estados no navegador. O raio tem regra separada e preexistente, a revisar no DS10. Teste de variáveis de paleta passou 4/4 após a correção.
+
+Planejamento segue em espera. Ao retomar: T01 primeiro; T02 e T03 por dependências próprias; T04, T07 e T09 após o banco e suas decisões; T05 depois de T04; T06 e T10 após as guardas do editor, com T10 dependendo também de T09; T08 após T03 e T07; T12 após T03/D3–D4; T11 por último. Se os sliders forem parte do primeiro aceite, encaixar T12 antes da integração do T08.
+
 ### Foco e estrutura do ActionItem — 08/11
 
-Aberto [DS10](../../.scratch/design-system-audit/issues/10-action-item-focus-and-structure.md) para reproduzir a mudança aparente do anel na variante Linha, revisar as demais variantes e propor correção. O estudo também cobre a ação atrasada com raio e sem anel de Sprint, além das ações em Sprint sem nenhum dos indicadores. Inclui o recorte lateral de sombras em Hoje, com comparação do ActionContainer e do grid da Sprint. Fila com 16 tickets. Índices, links e diff conferidos.
+Aberto [DS10](../../.scratch/design-system-audit/issues/10-action-item-focus-and-structure.md) para reproduzir a mudança aparente do anel na variante Linha, revisar as demais variantes e propor correção. O estudo também cobre a ação atrasada com raio e sem anel de Sprint, além das ações em Sprint sem nenhum dos indicadores. A ausência do indicador foi observada na paleta Carbono e será comparada com outra paleta. Inclui o recorte lateral de sombras em Hoje, com comparação do ActionContainer e do grid da Sprint. Fila com 16 tickets. Índices, links e diff conferidos.
 
 ### Busca de paletas e tema personalizado — 08/11
 

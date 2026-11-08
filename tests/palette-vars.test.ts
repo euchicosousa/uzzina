@@ -36,7 +36,7 @@ it("removes overrides that the next palette does not define", () => {
   expect(root.getPropertyValue("--primary-foreground-override")).toBe("");
 });
 
-it("applies transparent borders and none shadows when relief is false, and cleans up when relief is restored", () => {
+it("applies transparent borders and zero shadows that compose with rings when relief is false, and cleans up when relief is restored", () => {
   const carbon = PALLETE.find((p) => p.id === "carbon");
   expect(carbon).toBeDefined();
   expect(carbon?.relief).toBe(false);
@@ -49,8 +49,8 @@ it("applies transparent borders and none shadows when relief is false, and clean
   expect(root.getPropertyValue("--late-top-border-override")).toBe(
     "transparent",
   );
-  expect(root.getPropertyValue("--action-shadow-override")).toBe("none");
-  expect(root.getPropertyValue("--action-hover-shadow-override")).toBe("none");
+  expect(root.getPropertyValue("--action-shadow-override")).toBe("0 0 #0000");
+  expect(root.getPropertyValue("--action-hover-shadow-override")).toBe("0 0 #0000");
 
   const onix = PALLETE[0];
   expect(onix.relief).toBe(true);

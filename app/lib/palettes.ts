@@ -328,7 +328,7 @@ export const PALLETE = [
       primary: {
         h: 120,
         c: 0.15,
-        l: 0.97,
+        l: 0.94,
       },
       primaryFg: {
         h: 0,

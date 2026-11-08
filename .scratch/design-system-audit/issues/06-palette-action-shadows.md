@@ -196,7 +196,7 @@ Nem todas as sombras do sistema representam relevo de cartão; a maioria desempe
 2. **Propriedade na paleta e caso Carbono (`carbon`):**
    Adicionar a propriedade `relief?: boolean` no tipo de paleta (`app/lib/palettes.ts`). A paleta **Carbono (`carbon`)** é definida como **`relief: false`** (estilo plano, sem sombra e com borda superior transparente), enquanto **Ônix** e as demais mantêm `relief: true` (relevo clássico ativado).
 3. **Propagação centralizada em `palette-vars.ts`:**
-   Ao trocar de paleta ou visualizar temas, se `relief === false`, as variáveis assumem `transparent` e `none`; caso contrário, removem as sobrescritas restaurando os valores de relevo.
+   Ao trocar de paleta ou visualizar temas, se `relief === false`, as variáveis assumem `transparent` para a borda e `0 0 #0000` para a sombra; caso contrário, removem as sobrescritas restaurando os valores de relevo.
 4. **Preservação de superfícies flutuantes:**
    Diálogos (`PrismDialog`), popovers (`PrismPopover`), menus (`PrismDropdownMenu`), seletores (`PrismSelect`, `PrismCombobox`) e a barra inferior (`AppBar`) mantêm suas sombras funcionais (`shadow-lg`) intactas, garantindo a separação no eixo Z.
 
@@ -228,7 +228,7 @@ Para qualquer agente que precise consultar, criar paletas ou modificar o visual 
 #### 1. Propriedades disponíveis no contrato da paleta (`app/lib/palettes.ts`):
 - **`relief?: boolean` (padrão: `true`)**:
   - `true` (ou omitido): Ativa o relevo clássico da UZZINA (linha de brilho superior no cartão + sombra suave embaixo).
-  - `false`: Ativa o modo plano (*flat* moderno, ex.: **Carbono** e **Cobalto**). A linha superior vira `1px transparent` (preservando rigorosamente a espessura física para evitar desalinhamento/layout shift) e as sombras viram `none`.
+  - `false`: Ativa o modo plano (*flat* moderno, ex.: **Carbono** e **Cobalto**). A linha superior vira `1px transparent` (preservando rigorosamente a espessura física para evitar desalinhamento/layout shift) e as sombras usam `0 0 #0000`, o equivalente do Tailwind a sombra visualmente ausente, compatível com os anéis.
 - **`shadowColor?: string` (opcional, padrão: `#000000`)**:
   - Define a **cor base** usada exclusivamente para gerar as **sombras** e o **anel de contorno** (`ring-action-ring`) do cartão.
   - Pode ser declarada na raiz da paleta (para claro e escuro) ou separada dentro de `light` e `dark`.
@@ -259,3 +259,7 @@ Em qualquer cartão similar a `ActionItem` ou `UAdminItemCard`:
 - `bun test tests/palette-vars.test.ts` (4 pass).
 - `bun run test:serverless` (9 pass).
 - `bun run build` concluído com sucesso.
+
+### Correção do estilo plano
+
+A sombra de repouso e de hover usa um valor transparente de dimensão zero, que compõe com a lista de sombras do Tailwind. A borda superior mantém sua espessura e fica transparente. A composição de anéis permanece disponível para foco, atraso, seleção e Sprint.

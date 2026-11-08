@@ -190,8 +190,9 @@ export function applyPaletteVars(palette: PaletteVars) {
   if (palette.relief === false) {
     root.style.setProperty("--action-top-border-override", "transparent");
     root.style.setProperty("--late-top-border-override", "transparent");
-    root.style.setProperty("--action-shadow-override", "none");
-    root.style.setProperty("--action-hover-shadow-override", "none");
+    // Keep Tailwind's box-shadow list valid so state rings remain visible.
+    root.style.setProperty("--action-shadow-override", "0 0 #0000");
+    root.style.setProperty("--action-hover-shadow-override", "0 0 #0000");
     root.style.removeProperty("--action-shadow-color-override");
     root.style.removeProperty("--dark-action-shadow-color-override");
     root.style.removeProperty("--dark-action-top-border-override");
