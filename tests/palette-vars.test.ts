@@ -61,3 +61,34 @@ it("applies transparent borders and none shadows when relief is false, and clean
   expect(root.getPropertyValue("--action-shadow-override")).toBe("");
   expect(root.getPropertyValue("--action-hover-shadow-override")).toBe("");
 });
+
+it("applies shadowColor and topBorderColor and cleans up", () => {
+  const magenta = PALLETE.find((p) => p.id === "magenta");
+  expect(magenta).toBeDefined();
+  expect(magenta?.shadowColor).toBe("oklch(0.25 0.15 350)");
+
+  applyPaletteVars(magenta!);
+  const root = document.documentElement.style;
+  expect(root.getPropertyValue("--action-shadow-color-override")).toBe(
+    "oklch(0.25 0.15 350)",
+  );
+  expect(root.getPropertyValue("--dark-action-shadow-color-override")).toBe(
+    "oklch(0.25 0.15 350)",
+  );
+  // A borda superior da action em magenta permanece no padrão branco (sem override)
+  expect(root.getPropertyValue("--action-top-border-override")).toBe("");
+
+  const withCustomBorder = {
+    ...PALLETE[0],
+    topBorderColor: "#ff0000",
+  };
+  applyPaletteVars(withCustomBorder);
+  expect(root.getPropertyValue("--action-top-border-override")).toBe("#ff0000");
+
+  const onix = PALLETE[0];
+  applyPaletteVars(onix);
+
+  expect(root.getPropertyValue("--action-shadow-color-override")).toBe("");
+  expect(root.getPropertyValue("--dark-action-shadow-color-override")).toBe("");
+  expect(root.getPropertyValue("--action-top-border-override")).toBe("");
+});

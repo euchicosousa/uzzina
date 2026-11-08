@@ -146,7 +146,7 @@ export function ActionItem({
     border-t
     border-action-top-border
     z-0
-    ring ring-foreground/3
+    ring ring-action-ring
     focus-within:outline-1
     focus-within:outline-ring/45
     focus-within:ring-4

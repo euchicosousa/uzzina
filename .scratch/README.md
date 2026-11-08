@@ -1,6 +1,6 @@
 # Tickets abertos da UZZINA
 
-Atualizado em 08/11/2026. **12 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
+Atualizado em 08/11/2026. **16 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
 
 [Histórico consolidado](archive/resolved-tickets.md): 88 documentos encerrados/aprovados e 11 da antiga série C do Planejamento, substituída pela recuperação. Os antigos arquivos individuais foram retirados e seus links redirecionados.
 
@@ -22,6 +22,10 @@ Ao criar um ticket ou mudar seu escopo, inclua as três opções da seção `Mod
 | Recuperação do Planejamento | [T10: Confirmar, reconciliar e atualizar a Mesa após finalização](social-planning-recovery/issues/10-finalization-ui.md)          | Conferir confirmação/reconciliação e atualização da Mesa após T04/T09/T05.                                                   |
 | Recuperação do Planejamento | [T11: Auditar a série por evidências e impedir conclusão falsa](social-planning-recovery/issues/11-independent-acceptance.md)     | Revisão independente final com evidências, depois de T02–T10.                                                                |
 | Planejamento                | [T12 — Redistribuir formatos de posts automaticamente](social-planning-recovery/issues/12-auto-balance-post-formats.md)           | Em espera com o Planejamento.                                                                                                |
+| Design system | [DS07 — Paleta padrão do portal e da página inicial](design-system-audit/issues/07-public-palette.md) | Isolar as cores públicas da preferência visual da equipe. |
+| Design system | [DS08 — Página inicial institucional da UZZINA](design-system-audit/issues/08-uzzina-landing-page.md) | Apresentar UZZINA, serviço de links e agência. Aceite após DS07. |
+| Design system | [DS09 — Buscar paletas e acessar o tema personalizado](design-system-audit/issues/09-palette-search-and-custom-theme.md) | Buscar paletas, abrir Personalizado em Minha Conta e incorporar as opções do DS06. |
+| Design system | [DS10 — Investigar foco, Sprint e estrutura do ActionItem](design-system-audit/issues/10-action-item-focus-and-structure.md) | Investigar foco, sinais de Sprint e recorte lateral de sombras em Hoje. |
 
 ## Referências fora da fila de execução
 

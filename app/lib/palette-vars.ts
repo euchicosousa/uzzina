@@ -14,10 +14,14 @@ type PaletteModeVars = {
   mutedLDelta?: number;
   cardLDelta?: number;
   mutedForegroundLDelta?: number;
+  shadowColor?: string;
+  topBorderColor?: string;
 };
 
 export type PaletteVars = {
   relief?: boolean;
+  shadowColor?: string;
+  topBorderColor?: string;
   light: PaletteModeVars;
   dark: PaletteModeVars;
 };
@@ -182,16 +186,57 @@ export function applyPaletteVars(palette: PaletteVars) {
     root.style.removeProperty("--dark-muted-foreground-l-delta");
   }
 
-  // 4. Relevo de ações e cartões (border-t e sombras)
+  // 4. Relevo de ações e cartões (border-t, ring e sombras)
   if (palette.relief === false) {
     root.style.setProperty("--action-top-border-override", "transparent");
     root.style.setProperty("--late-top-border-override", "transparent");
     root.style.setProperty("--action-shadow-override", "none");
     root.style.setProperty("--action-hover-shadow-override", "none");
+    root.style.removeProperty("--action-shadow-color-override");
+    root.style.removeProperty("--dark-action-shadow-color-override");
+    root.style.removeProperty("--dark-action-top-border-override");
   } else {
-    root.style.removeProperty("--action-top-border-override");
     root.style.removeProperty("--late-top-border-override");
     root.style.removeProperty("--action-shadow-override");
     root.style.removeProperty("--action-hover-shadow-override");
+
+    // Sombra e ring/borda
+    const lightShadowColor = light.shadowColor || palette.shadowColor;
+    if (lightShadowColor) {
+      root.style.setProperty(
+        "--action-shadow-color-override",
+        lightShadowColor,
+      );
+    } else {
+      root.style.removeProperty("--action-shadow-color-override");
+    }
+
+    const darkShadowColor = dark.shadowColor || palette.shadowColor;
+    if (darkShadowColor) {
+      root.style.setProperty(
+        "--dark-action-shadow-color-override",
+        darkShadowColor,
+      );
+    } else {
+      root.style.removeProperty("--dark-action-shadow-color-override");
+    }
+
+    // Borda superior da action (padrão branco; pode ser customizada)
+    const lightTopBorder = light.topBorderColor || palette.topBorderColor;
+    if (lightTopBorder) {
+      root.style.setProperty("--action-top-border-override", lightTopBorder);
+    } else {
+      root.style.removeProperty("--action-top-border-override");
+    }
+
+    const darkTopBorder = dark.topBorderColor || palette.topBorderColor;
+    if (darkTopBorder) {
+      root.style.setProperty(
+        "--dark-action-top-border-override",
+        darkTopBorder,
+      );
+    } else {
+      root.style.removeProperty("--dark-action-top-border-override");
+    }
   }
 }

@@ -2,13 +2,25 @@
 
 Atualizado em 08/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 e o ticket 01 de uso de IA. O domínio `uzzina.cnvt.com.br` está Ready no deploy `dpl_EhqbZf5ia5zwyztWJmoybStqjrma`. Depois disso, o proprietário enviou ao GitHub a rodada de 06/11 e 07/11 (EST-03/04, V46–V49, DOC-01, IA-M06 e IA-M07); o deploy Ready dessa versão não foi conferido aqui. Fila atual: 12 tickets, todos do Planejamento, em espera; DS06 encerrado com aceite em 08/11. Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
+Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 e o ticket 01 de uso de IA. O domínio `uzzina.cnvt.com.br` está Ready no deploy `dpl_EhqbZf5ia5zwyztWJmoybStqjrma`. Depois disso, o proprietário enviou ao GitHub a rodada de 06/11 e 07/11 (EST-03/04, V46–V49, DOC-01, IA-M06 e IA-M07); o deploy Ready dessa versão não foi conferido aqui. Fila atual: 12 tickets do Planejamento em espera e quatro de design system; DS06 encerrado com aceite em 08/11. Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
 
 ## Pendências reais
 
+### Foco e estrutura do ActionItem — 08/11
+
+Aberto [DS10](../../.scratch/design-system-audit/issues/10-action-item-focus-and-structure.md) para reproduzir a mudança aparente do anel na variante Linha, revisar as demais variantes e propor correção. O estudo também cobre a ação atrasada com raio e sem anel de Sprint, além das ações em Sprint sem nenhum dos indicadores. Inclui o recorte lateral de sombras em Hoje, com comparação do ActionContainer e do grid da Sprint. Fila com 16 tickets. Índices, links e diff conferidos.
+
+### Busca de paletas e tema personalizado — 08/11
+
+Aberto [DS09](../../.scratch/design-system-audit/issues/09-palette-search-and-custom-theme.md). Busca por nome, atalho do menu superior para Minha Conta e controles do DS06 no editor personalizado. Fila com 15 tickets. Referências e diff conferidos.
+
+### Identidade pública e página inicial — 08/11
+
+Abertos [DS07](../../.scratch/design-system-audit/issues/07-public-palette.md) para isolar a paleta do portal e da página inicial e [DS08](../../.scratch/design-system-audit/issues/08-uzzina-landing-page.md) para a apresentação institucional. DS08 depende de DS07 para integração visual. Fila com 14 tickets. Índices, links e diff conferidos.
+
 ### DS06 encerrado com aceite — 08/11
 
-Encerrado com aceite do proprietário em 08/11. Adicionada a propriedade `relief?: boolean` no tipo e lista de paletas (`app/lib/palettes.ts`), com a paleta **Carbono (`carbon`)** definida como `relief: false` (estilo plano moderno) e **Ônix (`default`)** como `relief: true`. Criadas as variáveis CSS centrais `--action-top-border`, `--late-top-border`, `--action-shadow` e `--action-hover-shadow` em `app/tailwind.css` e manipuladas em `app/lib/palette-vars.ts` via `applyPaletteVars`. Cartões de ação (`ActionItem.tsx`), cartões administrativos (`UAdminItemCard.tsx`) e a réplica do design system (`TokensFocusSection.tsx`) foram unificados para usar as novas classes de design token (`border-action-top-border`, `shadow-action`, `hover:shadow-action-hover`). Elementos flutuantes (menus, diálogos, popovers e AppBar) preservam suas sombras funcionais intactas. Verificação: `tsc --noEmit` limpo, `tests/palette-vars.test.ts` (3/3 PASS), `test:serverless` (9 PASS) e build de produção Vite concluído com sucesso. [Ticket](../../.scratch/design-system-audit/issues/06-palette-action-shadows.md).
+Encerrado com aceite do proprietário em 08/11. Adicionada a propriedade `relief?: boolean` no tipo e lista de paletas (`app/lib/palettes.ts`), com as paletas **Carbono (`carbon`)** e **Cobalto (`blue`)** definidas como `relief: false` (estilo plano moderno) e **Ônix (`default`)** como `relief: true`. Criadas as variáveis CSS centrais `--action-shadow-color`, `--action-ring`, `--action-top-border`, `--late-top-border`, `--shadow-action` e `--shadow-action-hover` em `app/tailwind.css` e manipuladas em `app/lib/palette-vars.ts` via `applyPaletteVars`, suportando `shadowColor` (como em **Fúcsia / `magenta`**) para sombras e anel temáticos e `topBorderColor` (padrão branco). Cartões de ação (`ActionItem.tsx`), cartões administrativos (`UAdminItemCard.tsx`) e a réplica do design system (`TokensFocusSection.tsx`) foram unificados para usar as novas classes de design token (`border-t border-action-top-border`, `shadow-action`, `hover:shadow-action-hover`, `ring ring-action-ring`). Elementos flutuantes (menus, diálogos, popovers e AppBar) preservam suas sombras funcionais intactas. Verificação: `tsc --noEmit` limpo, `tests/palette-vars.test.ts` (4/4 PASS), `test:serverless` (9 PASS) e build de produção Vite concluído com sucesso. [Ticket](../../.scratch/design-system-audit/issues/06-palette-action-shadows.md).
 
 ### DOC-01: AGENTS.md reduzido, aceito — 07/11
 

@@ -205,23 +205,57 @@ Nem todas as sombras do sistema representam relevo de cartão; a maioria desempe
 ### 7. Execução — 08/11/2026
 
 **Arquivos alterados:**
-- `app/lib/palettes.ts`: adicionado `relief: true` em `default` (Ônix) e `relief: false` em `carbon` (Carbono).
-- `app/lib/palette-vars.ts`: tipagem `PaletteVars` com `relief?: boolean` e aplicação das sobrescritas `--action-top-border-override`, `--late-top-border-override`, `--action-shadow-override` e `--action-hover-shadow-override` em `applyPaletteVars`.
-- `app/tailwind.css`: criação dos tokens CSS e registro no `@theme` (`--color-action-top-border`, `--color-late-top-border`, `--shadow-action`, `--shadow-action-hover`).
-- `app/components/features/ActionItem.tsx`: unificação para `border-action-top-border`, `shadow-action`, `hover:shadow-action-hover` e `border-t-late-top-border`.
-- `app/components/uzzina/UAdminItemCard.tsx`: unificação para `border-action-top-border`, `shadow-action` e `hover:shadow-action-hover`.
-- `app/components/ui-sections/TokensFocusSection.tsx`: réplica de `ActionItem` atualizada para as classes unificadas.
-- `tests/palette-vars.test.ts`: testes adicionados para comutação de `relief` entre Carbono e Ônix (3 PASS).
+- `app/lib/palettes.ts`: adicionado `relief: true` em `default` (Ônix), `relief: false` em `carbon` (Carbono) e `blue` (Cobalto), e `shadowColor: "oklch(0.25 0.15 350)"` em `magenta` (Fúcsia).
+- `app/lib/palette-vars.ts`: tipagem `PaletteVars` e `PaletteModeVars` com `relief?: boolean`, `shadowColor?: string` e `topBorderColor?: string`. Aplicação das variáveis e sobrescritas em `applyPaletteVars`.
+- `app/tailwind.css`: criação dos tokens CSS e registro no `@theme`:
+  - `--action-shadow-color` (base para sombras e anel)
+  - `--action-ring` (anel de contorno do cartão)
+  - `--action-top-border` (borda superior de brilho, padrão branco)
+  - `--late-top-border` (borda superior de ações atrasadas)
+  - `--shadow-action` e `--shadow-action-hover` (sombras calculadas via `color-mix` sobre a cor base)
+  - Classes `@theme`: `--color-action-top-border`, `--color-late-top-border`, `--color-action-ring`, `--shadow-action`, `--shadow-action-hover`.
+- `app/components/features/ActionItem.tsx`: unificação para `border-t border-action-top-border`, `shadow-action`, `hover:shadow-action-hover`, `ring ring-action-ring` e `border-t-late-top-border`.
+- `app/components/uzzina/UAdminItemCard.tsx`: unificação para `border-t border-action-top-border`, `shadow-action`, `hover:shadow-action-hover` e `ring ring-action-ring`.
+- `app/components/ui-sections/TokensFocusSection.tsx`: réplica do design system atualizada para as classes unificadas.
+- `tests/palette-vars.test.ts`: testes para `relief`, `shadowColor`, `topBorderColor` e limpeza ao trocar de paleta (4 PASS).
 
-**Verificação:**
-- `tsc --noEmit` sem erros.
-- `bun test tests/palette-vars.test.ts` (3 pass).
+---
+
+### 8. Guia para o Agente Comandante: Como interpretar o contrato de relevo e cores dos cartões
+
+Para qualquer agente que precise consultar, criar paletas ou modificar o visual dos cartões no futuro:
+
+#### 1. Propriedades disponíveis no contrato da paleta (`app/lib/palettes.ts`):
+- **`relief?: boolean` (padrão: `true`)**:
+  - `true` (ou omitido): Ativa o relevo clássico da UZZINA (linha de brilho superior no cartão + sombra suave embaixo).
+  - `false`: Ativa o modo plano (*flat* moderno, ex.: **Carbono** e **Cobalto**). A linha superior vira `1px transparent` (preservando rigorosamente a espessura física para evitar desalinhamento/layout shift) e as sombras viram `none`.
+- **`shadowColor?: string` (opcional, padrão: `#000000`)**:
+  - Define a **cor base** usada exclusivamente para gerar as **sombras** e o **anel de contorno** (`ring-action-ring`) do cartão.
+  - Pode ser declarada na raiz da paleta (para claro e escuro) ou separada dentro de `light` e `dark`.
+  - Exemplo: na paleta **Fúcsia (`magenta`)**, `shadowColor: "oklch(0.25 0.15 350)"` gera uma atmosfera de sombras e contorno em magenta escuro profundo em vez de preto genérico.
+  - O CSS calcula as opacidades automaticamente via `color-mix(in srgb, var(--action-shadow-color) <X>%, transparent)`:
+    - Modo claro: anel a `5%`, repouso a `14%`, hover a `18%`.
+    - Modo escuro: anel a `20%`, repouso a `35%`, hover a `50%`.
+- **`topBorderColor?: string` (opcional)**:
+  - Define a cor da borda superior de brilho do cartão (`border-action-top-border`).
+  - **Padrão:** Tom **branco** puro (`#ffffff` no modo claro, `rgba(255, 255, 255, 0.1)` no modo escuro).
+  - Pode ser configurada se uma paleta futura precisar de um tom específico de brilho superior; caso contrário, não declarar para manter o padrão branco.
+
+#### 2. Classes de design tokens a usar em componentes de cartão de entidade:
+Em qualquer cartão similar a `ActionItem` ou `UAdminItemCard`:
+- Borda superior: `border-t border-action-top-border`
+- Sombra de repouso: `shadow-action`
+- Sombra ao passar o mouse: `hover:shadow-action-hover`
+- Anel de contorno: `ring ring-action-ring`
+- Borda de ação atrasada: `border-t-late-top-border`
+
+#### 3. Regra de proteção de camadas flutuantes:
+- **NUNCA** aplicar `--shadow-action` ou remover sombras de `PrismDialog`, `PrismPopover`, `PrismDropdownMenu`, `PrismSelect`, `PrismCombobox`, `PrismSheet` ou `AppBar`. Esses elementos flutuam no eixo Z e exigem `shadow-lg` fixa para contraste de sobreposição.
+
+---
+
+**Verificação da execução:**
+- `tsc --noEmit` limpo.
+- `bun test tests/palette-vars.test.ts` (4 pass).
 - `bun run test:serverless` (9 pass).
 - `bun run build` concluído com sucesso.
-
-**Roteiro de validação para o proprietário:**
-1. Abra o app em `http://localhost:5173/app` e observe os cartões de ação (ex.: no Calendário, Kanban ou Hoje): com o tema padrão (Ônix), o cartão exibe a linha branca de 1px no topo e a sombra suave embaixo.
-2. Abra o menu de Minha Conta (`/app/profile`) ou o seletor de paletas no cabeçalho e selecione a paleta **Carbono**:
-   - Os cartões de ação e os cartões de administração (em Clientes/Parceiros/Usuários) ficam no estilo plano: a linha do topo fica transparente e as sombras de repouso e hover somem, mantendo a geometria intacta.
-3. Abra um diálogo (ex.: modal de filtro ou nova ação), um menu ou clique em um seletor: observe que a sombra de elevação da janela flutuante continua presente e destacada.
-4. Volte para a paleta **Ônix**: o relevo clássico (brilho superior + sombra) é restaurado imediatamente.

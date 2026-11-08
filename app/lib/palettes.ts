@@ -94,7 +94,7 @@ export const PALLETE = [
       mutedLDelta: -0.02,
       borderLDelta: -0.04,
       inputLDelta: -0.02,
-      actionLDelta: -0.03,
+      actionLDelta: -0.04,
       actionHoverLDelta: -0.015,
       popoverLDelta: 0.1,
     },
@@ -516,6 +516,7 @@ export const PALLETE = [
   {
     id: "blue",
     label: "Cobalto",
+    relief: false,
     light: {
       primary: {
         h: 264,
@@ -542,8 +543,8 @@ export const PALLETE = [
       mutedLDelta: -0.02,
       borderLDelta: -0.05,
       inputLDelta: -0.02,
-      actionLDelta: -0.02,
-      actionHoverLDelta: 0.04,
+      actionLDelta: -0.03,
+      actionHoverLDelta: -0.015,
       popoverLDelta: 0.1,
     },
     dark: {
@@ -644,6 +645,7 @@ export const PALLETE = [
   {
     id: "magenta",
     label: "Fúcsia",
+    shadowColor: "oklch(0.25 0.15 350)",
     light: {
       primary: {
         h: 350,
@@ -665,6 +667,7 @@ export const PALLETE = [
         c: 0,
         l: 0,
       },
+
       cardLDelta: -0.02,
       secondaryLDelta: -0.04,
       mutedLDelta: -0.02,

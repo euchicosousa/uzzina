@@ -87,23 +87,20 @@
   --action-hover: oklch(
     from var(--background) calc(l + var(--action-hover-l-delta)) c h
   );
+  --action-shadow-color: var(--action-shadow-color-override, #000000);
+  --action-ring: color-mix(in srgb, var(--action-shadow-color) 5%, transparent);
   --action-top-border: var(--action-top-border-override, #ffffff);
   --late-top-border: var(--late-top-border-override, rgba(255, 255, 255, 0.5));
   --action-shadow: var(
     --action-shadow-override,
-    0 1px 2px 0 rgba(0, 0, 0, 0.1)
+    0 1px 2px 0 color-mix(in srgb, var(--action-shadow-color) 14%, transparent)
   );
   --action-hover-shadow: var(
     --action-hover-shadow-override,
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -4px rgba(0, 0, 0, 0.1)
-  );
-  --action-top-border: var(--action-top-border-override, #ffffff);
-  --late-top-border: var(--late-top-border-override, rgba(255, 255, 255, 0.5));
-  --action-shadow: var(--action-shadow-override, 0 1px 2px 0 rgba(0, 0, 0, 0.1));
-  --action-hover-shadow: var(
-    --action-hover-shadow-override,
-    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)
+    0 10px 15px -3px
+      color-mix(in srgb, var(--action-shadow-color) 18%, transparent),
+    0 4px 6px -4px
+      color-mix(in srgb, var(--action-shadow-color) 18%, transparent)
   );
 
   --error-hue: 16.339;
@@ -334,21 +331,37 @@
     0 10px 15px -3px rgba(0, 0, 0, 0.3),
     0 4px 6px -4px rgba(0, 0, 0, 0.3)
   );
+  --action-shadow-color: var(
+    --dark-action-shadow-color-override,
+    var(--action-shadow-color-override, #000000)
+  );
+  --action-ring: color-mix(
+    in srgb,
+    var(--action-shadow-color) 20%,
+    transparent
+  );
   --action-top-border: var(
-    --action-top-border-override,
-    rgba(255, 255, 255, 0.1)
+    --dark-action-top-border-override,
+    var(--action-top-border-override, rgba(255, 255, 255, 0.1))
   );
-  --late-top-border: var(
-    --late-top-border-override,
-    rgba(255, 255, 255, 0.25)
-  );
+  --late-top-border: var(--late-top-border-override, rgba(255, 255, 255, 0.25));
   --action-shadow: var(
-    --action-shadow-override,
-    0 1px 2px 0 rgba(0, 0, 0, 0.2)
+    --dark-action-shadow-override,
+    var(
+      --action-shadow-override,
+      0 1px 2px 0
+        color-mix(in srgb, var(--action-shadow-color) 35%, transparent)
+    )
   );
   --action-hover-shadow: var(
-    --action-hover-shadow-override,
-    0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3)
+    --dark-action-hover-shadow-override,
+    var(
+      --action-hover-shadow-override,
+      0 10px 15px -3px
+        color-mix(in srgb, var(--action-shadow-color) 50%, transparent),
+      0 4px 6px -4px
+        color-mix(in srgb, var(--action-shadow-color) 50%, transparent)
+    )
   );
 
   --dark-late-l-delta: 0.08;
@@ -430,6 +443,7 @@
   --color-action-hover: var(--action-hover);
   --color-action-top-border: var(--action-top-border);
   --color-late-top-border: var(--late-top-border);
+  --color-action-ring: var(--action-ring);
   --shadow-action: var(--action-shadow);
   --shadow-action-hover: var(--action-hover-shadow);
 

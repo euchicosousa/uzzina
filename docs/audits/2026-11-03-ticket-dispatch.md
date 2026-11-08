@@ -1,6 +1,6 @@
 # Central de tickets da UZZINA
 
-Atualizado em 08/11/2026. **12 tickets ativos.** A fila abaixo espelha o tracker principal. Produção registrada em `a6a056c`. A rodada posterior está na main local e nos branches de proposta. Encerramentos com aceite e a revisão por rota do DS02 estão no histórico.
+Atualizado em 08/11/2026. **16 tickets ativos.** A fila abaixo espelha o tracker principal. Produção registrada em `a6a056c`. A rodada posterior está na main local e nos branches de proposta. Encerramentos com aceite e a revisão por rota do DS02 estão no histórico.
 
 **IA-M02 encerrado.** Abas de Minha Conta publicadas conforme confirmação do proprietário e integradas à main local em 06/11.
 
@@ -18,5 +18,9 @@ Atualizado em 08/11/2026. **12 tickets ativos.** A fila abaixo espelha o tracker
 | 10  | Recuperação do Planejamento | [T10: Confirmar, reconciliar e atualizar a Mesa após finalização](../../.scratch/social-planning-recovery/issues/10-finalization-ui.md)          | Conferir confirmação/reconciliação e atualização da Mesa após T04/T09/T05.                                                   |
 | 11  | Recuperação do Planejamento | [T11: Auditar a série por evidências e impedir conclusão falsa](../../.scratch/social-planning-recovery/issues/11-independent-acceptance.md)     | Revisão independente final com evidências, depois de T02–T10.                                                                |
 | 12  | Planejamento                | [T12 — Redistribuir formatos de posts automaticamente](../../.scratch/social-planning-recovery/issues/12-auto-balance-post-formats.md)           | Em espera com o Planejamento.                                                                                                |
+| 13 | Design system | [DS07 — Paleta padrão do portal e da página inicial](../../.scratch/design-system-audit/issues/07-public-palette.md) | Isolar as cores públicas da preferência visual da equipe. |
+| 14 | Design system | [DS08 — Página inicial institucional da UZZINA](../../.scratch/design-system-audit/issues/08-uzzina-landing-page.md) | Apresentar UZZINA, serviço de links e agência. Aceite após DS07. |
+| 15 | Design system | [DS09 — Buscar paletas e acessar o tema personalizado](../../.scratch/design-system-audit/issues/09-palette-search-and-custom-theme.md) | Buscar paletas, abrir Personalizado em Minha Conta e incorporar as opções do DS06. |
+| 16 | Design system | [DS10 — Investigar foco, Sprint e estrutura do ActionItem](../../.scratch/design-system-audit/issues/10-action-item-focus-and-structure.md) | Investigar foco, sinais de Sprint e recorte lateral de sombras em Hoje. |
 
 [Tracker principal](../../.scratch/README.md) · [Histórico consolidado](../../.scratch/archive/resolved-tickets.md). A numeração é posicional. Use o ID da série ao disparar agentes.
