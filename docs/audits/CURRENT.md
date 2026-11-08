@@ -6,15 +6,29 @@ Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 
 
 ## Pendências reais
 
+### IG01 encerrado: seguir com o Meta Business Suite — 08/11
+
+Decisão do proprietário: não integrar a API da Meta, porque depender da aprovação do app (verificação e revisão) trava tudo e ele não quer submeter o app. O agendamento continua pelo Meta Business Suite. Nenhuma pendência; nada a implementar.
+
+### IG01 entregue: relatório de publicação no Instagram — 08/11
+
+[Relatório](../../.scratch/instagram-publishing/issues/01-report.md) escrito, sem código nem contato com a Meta. Conclusão: viável tecnicamente (Instagram Login, fila e executor no padrão das estratégias), mas contas de clientes exigem verificação da empresa e revisão do app pela Meta; com horas de desenvolvimento valoradas, a integração própria dificilmente se paga frente a R$ 300/mês. Recomenda adiar e medir horas poupadas e mix de formatos. A aba Instagram não guarda a mídia final (só texto e legenda). Lacunas: documentação da Meta lida em parte, preços de terceiros não confirmados, elegibilidade da CNVT. Pendente: decisão do proprietário sobre seguir, adiar ou piloto.
+
+Histórico da abertura: o [estudo para publicar ou agendar pela aba Instagram da gaveta de ação](../../.scratch/instagram-publishing/issues/01-instagram-publishing-feasibility.md). A coleção oficial da Meta confirma o fluxo de preparar mídia e publicar. O estudo ainda precisa confirmar acesso para contas de clientes, cobertura dos formatos usados pela CNVT, operação do agendamento pela UZZINA e custo total frente à referência de R$ 300 por mês. Registro documental na `main` local, com referências e diff conferidos. Implementação e piloto dependem de decisão posterior do proprietário.
+
 ### Revisão do DS06 e ordem do Planejamento — 08/11
 
 Revisados os commits 852928e e ce3e70f. Os estilos planos, a borda superior transparente e as cores de paleta são decisões registradas. O CSS compilado mostrou que o valor none aplicado à sombra plana invalida a lista de box-shadow que inclui o anel do Tailwind. Isso explica o anel ausente em Carbono e pode afetar Cobalto, foco e seleção. Correção aplicada no DS06: sombra transparente de dimensão zero em repouso e hover, preservando a composição dos anéis. Falta conferir os estados no navegador. O raio tem regra separada e preexistente, a revisar no DS10. Teste de variáveis de paleta passou 4/4 após a correção.
 
 Planejamento segue em espera. Ao retomar: T01 primeiro; T02 e T03 por dependências próprias; T04, T07 e T09 após o banco e suas decisões; T05 depois de T04; T06 e T10 após as guardas do editor, com T10 dependendo também de T09; T08 após T03 e T07; T12 após T03/D3–D4; T11 por último. Se os sliders forem parte do primeiro aceite, encaixar T12 antes da integração do T08.
 
-### Foco e estrutura do ActionItem — 08/11
+### Correção de animação dos cartões — 08/11
 
-Aberto [DS10](../../.scratch/design-system-audit/issues/10-action-item-focus-and-structure.md) para reproduzir a mudança aparente do anel na variante Linha, revisar as demais variantes e propor correção. O estudo também cobre a ação atrasada com raio e sem anel de Sprint, além das ações em Sprint sem nenhum dos indicadores. A ausência do indicador foi observada na paleta Carbono e será comparada com outra paleta. Inclui o recorte lateral de sombras em Hoje, com comparação do ActionContainer e do grid da Sprint. Fila com 16 tickets. Índices, links e diff conferidos.
+Ajustado o DS10 localmente para restaurar a transição da sombra no hover e separar o contorno de foco de 3 px do anel de estado. Removido o blur no clique e mantida a transição de padding na seleção. Typecheck, build e 31 testes focados passaram. Falta o aceite visual em Hoje → Parceiros.
+
+### Foco e estrutura do ActionItem (DS10) — 08/11
+
+Implementado no checkout local ([DS10](../../.scratch/design-system-audit/issues/10-action-item-focus-and-structure.md)), preservando a correção anterior do DS06 em `314c2a9` (`--action-shadow-override: 0 0 #0000` para manter a lista de `box-shadow` dos anéis válida em paletas planas) e o ajuste pessoal do proprietário em `app/lib/palettes.ts` (`carbon.dark.primary.l: 0.4`). Alterações aplicadas: (1) em `ActionItem.tsx`, substituído `transition-all duration-500` por `transition-colors duration-200` (evitando que o valor inicial CSS `outline-width: medium` de `3px` e o `box-shadow` do `ring` interpolassem espessura por 500ms ao focar/clicar), removidos o `transition-colors` redundante e o segundo `squircle` duplicado da variante Linha, e adicionada guarda `onFocus` no `<div role="button" tabIndex={0}>` para descartar foco de clique de mouse no corpo do cartão mantendo foco por teclado (`:focus-visible`) e edição de título (`<input>`); (2) em `ActionLineVariant.tsx`, removida a trava `isLateAction(action) &&` que ocultava `<ActionItemSprint>` nas ações em Sprint no prazo, e em `ActionBlockVariant.tsx`, incluído `<ActionItemSprint action={action} />` na barra de metadados; (3) em `ActionContainer.tsx` (quando `scrollable = true`), `KanbanPhasesBoard.tsx` e `HomeSprintView.tsx`, unificado o padding interno para `px-2 pt-1 pb-6` (`8px` laterais), eliminando o recorte lateral das sombras e anéis nas colunas com `overflow-y-auto` e mantendo `p-1 pb-6` nas células compactas do Calendário (`scrollable={false}`). Verificação: `tsc --noEmit` limpo e `tests/action-item-title-drag.test.tsx` (4/4 PASS). Falta validação visual do proprietário.
 
 ### Busca de paletas e tema personalizado — 08/11
 
