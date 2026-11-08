@@ -29,6 +29,7 @@ import {
 } from "~/components/uzzina/UViewOptions";
 import { UCalendarToolbar } from "~/components/uzzina/UCalendarToolbar";
 import {
+  buttonVariants,
   PrismBadge,
   PrismButton,
   PrismInputGroup,
@@ -232,7 +233,7 @@ function PartnerPage() {
                   search: { partner: partner.slug },
                 });
               }}
-              size="sm"
+              size="icon-sm"
               variant="ghost"
             >
               <CalendarRangeIcon />
@@ -242,6 +243,7 @@ function PartnerPage() {
                 slug: partner.slug,
               }}
               to="/app/admin/partner/$slug"
+              className={buttonVariants({ variant: "ghost", size: "icon-sm" })}
             >
               {person.admin && <SettingsIcon className="size-5" />}
             </Link>

@@ -53,7 +53,6 @@ export function UCalendarToolbar({
     <PrismButtonGroup className={className} size={size}>
       <PrismButton
         aria-label={days === 1 ? "Dia anterior" : `Voltar ${days} dias`}
-        className="hidden md:flex"
         onClick={() => {
           setCurrentDay(addDays(currentDay, -days));
         }}
@@ -70,7 +69,7 @@ export function UCalendarToolbar({
           size={showDate ? size : sideButtonSize}
           variant={variant}
         >
-          {showDate && (
+          {showDate ? (
             <>
               <span className="hidden capitalize md:block">
                 {format(currentDay, "MMMM/yy", {
@@ -83,8 +82,9 @@ export function UCalendarToolbar({
                 })}
               </span>
             </>
+          ) : (
+            <CalendarDaysIcon />
           )}
-          <CalendarDaysIcon />
         </PrismButton>
         <PrismPopover className="w-auto p-2" placement="bottom">
           <PrismCalendar
@@ -109,7 +109,6 @@ export function UCalendarToolbar({
 
       <PrismButton
         aria-label={days === 1 ? "Próximo dia" : `Avançar ${days} dias`}
-        className="hidden md:flex"
         onClick={() => {
           setCurrentDay(addDays(currentDay, days));
         }}
