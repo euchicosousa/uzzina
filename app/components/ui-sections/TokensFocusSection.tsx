@@ -280,7 +280,7 @@ export function TokensFocusSection() {
               label="Cartão de ação (focus-within)"
               source="Réplica de features/ActionItem.tsx"
             >
-              <div className="w-72 rounded-2xl border-t border-white bg-card p-3 text-sm ring ring-foreground/3 focus-within:ring-4 focus-within:ring-ring/30 focus-within:outline-1 focus-within:outline-ring/45 dark:border-white/10">
+              <div className="w-72 rounded-2xl border-t border-action-top-border bg-card p-3 text-sm shadow-action ring ring-foreground/3 focus-within:ring-4 focus-within:ring-ring/30 focus-within:outline-1 focus-within:outline-ring/45 hover:shadow-action-hover">
                 <input
                   aria-label="Réplica do cartão de ação"
                   className="w-full bg-transparent outline-none"

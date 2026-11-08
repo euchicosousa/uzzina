@@ -1,6 +1,6 @@
 # Tickets abertos da UZZINA
 
-Atualizado em 07/11/2026. **12 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
+Atualizado em 08/11/2026. **12 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
 
 [Histórico consolidado](archive/resolved-tickets.md): 88 documentos encerrados/aprovados e 11 da antiga série C do Planejamento, substituída pela recuperação. Os antigos arquivos individuais foram retirados e seus links redirecionados.
 

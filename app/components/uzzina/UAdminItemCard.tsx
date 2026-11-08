@@ -26,9 +26,9 @@ export function UAdminItemCard({
   return (
     <Link
       className={cn(
-        "flex items-center gap-4 rounded-3xl border bg-action p-4 shadow-xs squircle hover:shadow-black/20",
-        "z-0 border-t border-white ring ring-black/5 transition duration-500 hover:z-10 hover:bg-action-hover hover:shadow-lg",
-        "min-w-0 flex-1 outline-none focus-visible:ring-3 focus-visible:ring-ring/30 dark:border-white/20 dark:shadow-black/80",
+        "flex items-center gap-4 rounded-3xl border-t border-action-top-border bg-action p-4 shadow-action squircle",
+        "z-0 ring ring-black/5 transition duration-500 hover:z-10 hover:bg-action-hover hover:shadow-action-hover",
+        "min-w-0 flex-1 outline-none focus-visible:ring-3 focus-visible:ring-ring/30",
         className,
       )}
       to={to}

@@ -142,10 +142,9 @@ export function ActionItem({
     bg-action
     transition-all
     duration-500
-    shadow-sm
-    shadow-black/10
+    shadow-action
     border-t
-    border-white
+    border-action-top-border
     z-0
     ring ring-foreground/3
     focus-within:outline-1
@@ -153,17 +152,15 @@ export function ActionItem({
     focus-within:ring-4
     focus-within:ring-ring/30
     hover:z-10
-    hover:shadow-lg
+    hover:shadow-action-hover
     hover:bg-action-hover
-    dark:border-white/10
-    dark:shadow-black/20
     `;
 
     // 1. Determine base background/text colors based on priority states
     if (showLate && isLate) {
       baseStyles = cn(
         baseStyles,
-        "bg-late text-late-foreground hover:bg-late-hover border-t-white/50 ring ring-late-foreground",
+        "bg-late text-late-foreground hover:bg-late-hover border-t-late-top-border ring ring-late-foreground",
       );
     }
     if (showSprint && person && isSprint(action, person)) {

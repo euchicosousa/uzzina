@@ -87,6 +87,24 @@
   --action-hover: oklch(
     from var(--background) calc(l + var(--action-hover-l-delta)) c h
   );
+  --action-top-border: var(--action-top-border-override, #ffffff);
+  --late-top-border: var(--late-top-border-override, rgba(255, 255, 255, 0.5));
+  --action-shadow: var(
+    --action-shadow-override,
+    0 1px 2px 0 rgba(0, 0, 0, 0.1)
+  );
+  --action-hover-shadow: var(
+    --action-hover-shadow-override,
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1)
+  );
+  --action-top-border: var(--action-top-border-override, #ffffff);
+  --late-top-border: var(--late-top-border-override, rgba(255, 255, 255, 0.5));
+  --action-shadow: var(--action-shadow-override, 0 1px 2px 0 rgba(0, 0, 0, 0.1));
+  --action-hover-shadow: var(
+    --action-hover-shadow-override,
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)
+  );
 
   --error-hue: 16.339;
   --success-hue: 130;
@@ -302,6 +320,36 @@
   --action-hover: oklch(
     from var(--background) calc(l + var(--dark-action-hover-l-delta)) c h
   );
+  --action-top-border: var(
+    --action-top-border-override,
+    rgba(255, 255, 255, 0.1)
+  );
+  --late-top-border: var(--late-top-border-override, rgba(255, 255, 255, 0.25));
+  --action-shadow: var(
+    --action-shadow-override,
+    0 1px 2px 0 rgba(0, 0, 0, 0.2)
+  );
+  --action-hover-shadow: var(
+    --action-hover-shadow-override,
+    0 10px 15px -3px rgba(0, 0, 0, 0.3),
+    0 4px 6px -4px rgba(0, 0, 0, 0.3)
+  );
+  --action-top-border: var(
+    --action-top-border-override,
+    rgba(255, 255, 255, 0.1)
+  );
+  --late-top-border: var(
+    --late-top-border-override,
+    rgba(255, 255, 255, 0.25)
+  );
+  --action-shadow: var(
+    --action-shadow-override,
+    0 1px 2px 0 rgba(0, 0, 0, 0.2)
+  );
+  --action-hover-shadow: var(
+    --action-hover-shadow-override,
+    0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3)
+  );
 
   --dark-late-l-delta: 0.08;
   --late: oklch(
@@ -380,6 +428,10 @@
 
   --color-action: var(--action);
   --color-action-hover: var(--action-hover);
+  --color-action-top-border: var(--action-top-border);
+  --color-late-top-border: var(--late-top-border);
+  --shadow-action: var(--action-shadow);
+  --shadow-action-hover: var(--action-hover-shadow);
 
   --color-late: var(--late);
   --color-late-hover: var(--late-hover);

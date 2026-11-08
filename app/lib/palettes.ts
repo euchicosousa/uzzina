@@ -2,6 +2,7 @@ export const PALLETE = [
   {
     id: "default",
     label: "Ônix",
+    relief: true,
     light: {
       primary: {
         h: 0,
@@ -66,6 +67,7 @@ export const PALLETE = [
   {
     id: "carbon",
     label: "Carbono",
+    relief: false,
     light: {
       primary: {
         h: 240,
@@ -87,13 +89,13 @@ export const PALLETE = [
         c: 0,
         l: 0,
       },
-      cardLDelta: -0.02,
+      cardLDelta: -0.04,
       secondaryLDelta: -0.04,
       mutedLDelta: -0.02,
       borderLDelta: -0.04,
       inputLDelta: -0.02,
-      actionLDelta: -0.02,
-      actionHoverLDelta: 0.04,
+      actionLDelta: -0.03,
+      actionHoverLDelta: -0.015,
       popoverLDelta: 0.1,
     },
     dark: {
@@ -335,15 +337,15 @@ export const PALLETE = [
       },
       bg: {
         h: 240,
-        c: 0.002,
-        l: 0.98,
+        c: 0.004,
+        l: 0.96,
       },
       fg: {
         h: 0,
         c: 0,
         l: 0,
       },
-      cardLDelta: -0.02,
+      cardLDelta: -0.03,
       secondaryLDelta: -0.04,
       mutedLDelta: -0.02,
       borderLDelta: -0.05,
@@ -703,133 +705,4 @@ export const PALLETE = [
       popoverLDelta: -0.03,
     },
   },
-  // {
-  //   id: "light-blue",
-  //   label: "Azul Claro",
-  //   light: {
-  //     primary: {
-  //       h: 260,
-  //       c: 0.22,
-  //       l: 0.7,
-  //     },
-  //     primaryFg: {
-  //       h: 0,
-  //       c: 0,
-  //       l: 1,
-  //     },
-  //     bg: {
-  //       h: 0,
-  //       c: 0,
-  //       l: 0.98,
-  //     },
-  //     fg: {
-  //       h: 0,
-  //       c: 0,
-  //       l: 0,
-  //     },
-  //     cardLDelta: -0.02,
-  //     secondaryLDelta: -0.04,
-  //     mutedLDelta: -0.02,
-  //     borderLDelta: -0.05,
-  //     inputLDelta: -0.02,
-  //     actionLDelta: 0.02,
-  //     actionHoverLDelta: 0.04,
-  //     popoverLDelta: 0,
-  //   },
-  //   dark: {
-  //     primary: {
-  //       h: 240,
-  //       c: 0.22,
-  //       l: 0.65,
-  //     },
-  //     primaryFg: {
-  //       h: 0,
-  //       c: 0,
-  //       l: 0,
-  //     },
-  //     bg: {
-  //       h: 285,
-  //       c: 0.005,
-  //       l: 0.141,
-  //     },
-  //     fg: {
-  //       h: 0,
-  //       c: 0,
-  //       l: 1,
-  //     },
-  //     cardLDelta: 0.05,
-  //     secondaryLDelta: 0.06,
-  //     mutedLDelta: 0.03,
-  //     borderLDelta: 0.2,
-  //     inputLDelta: 0.02,
-  //     actionLDelta: 0.1,
-  //     actionHoverLDelta: 0.2,
-  //     popoverLDelta: -0.03,
-  //   },
-  // },
-  // Fora da paleta (corte sugerido): Azul Marinho / Oceano
-  // {
-  //   id: "navy",
-  //   label: "Oceano",
-  //   light: {
-  //     primary: {
-  //       h: 250,
-  //       c: 0.12,
-  //       l: 0.5,
-  //     },
-  //     primaryFg: {
-  //       h: 0,
-  //       c: 0,
-  //       l: 1,
-  //     },
-  //     bg: {
-  //       h: 90,
-  //       c: 0.005,
-  //       l: 0.99,
-  //     },
-  //     fg: {
-  //       h: 0,
-  //       c: 0,
-  //       l: 0,
-  //     },
-  //     cardLDelta: -0.02,
-  //     secondaryLDelta: -0.04,
-  //     mutedLDelta: -0.02,
-  //     borderLDelta: -0.05,
-  //     inputLDelta: -0.02,
-  //     actionLDelta: 0.02,
-  //     actionHoverLDelta: 0.04,
-  //     popoverLDelta: 0,
-  //   },
-  //   dark: {
-  //     primary: {
-  //       h: 250,
-  //       c: 0.12,
-  //       l: 0.6,
-  //     },
-  //     primaryFg: {
-  //       h: 0,
-  //       c: 0,
-  //       l: 1,
-  //     },
-  //     bg: {
-  //       h: 285,
-  //       c: 0.005,
-  //       l: 0.141,
-  //     },
-  //     fg: {
-  //       h: 0,
-  //       c: 0,
-  //       l: 1,
-  //     },
-  //     cardLDelta: 0.05,
-  //     secondaryLDelta: 0.06,
-  //     mutedLDelta: 0.03,
-  //     borderLDelta: 0.2,
-  //     inputLDelta: 0.02,
-  //     actionLDelta: 0.1,
-  //     actionHoverLDelta: 0.2,
-  //     popoverLDelta: -0.03,
-  //   },
-  // },
 ];

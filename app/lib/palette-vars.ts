@@ -16,7 +16,11 @@ type PaletteModeVars = {
   mutedForegroundLDelta?: number;
 };
 
-export type PaletteVars = { light: PaletteModeVars; dark: PaletteModeVars };
+export type PaletteVars = {
+  relief?: boolean;
+  light: PaletteModeVars;
+  dark: PaletteModeVars;
+};
 
 /** Writes the palette as CSS custom properties on the document root. */
 export function applyPaletteVars(palette: PaletteVars) {
@@ -176,5 +180,18 @@ export function applyPaletteVars(palette: PaletteVars) {
     );
   } else {
     root.style.removeProperty("--dark-muted-foreground-l-delta");
+  }
+
+  // 4. Relevo de ações e cartões (border-t e sombras)
+  if (palette.relief === false) {
+    root.style.setProperty("--action-top-border-override", "transparent");
+    root.style.setProperty("--late-top-border-override", "transparent");
+    root.style.setProperty("--action-shadow-override", "none");
+    root.style.setProperty("--action-hover-shadow-override", "none");
+  } else {
+    root.style.removeProperty("--action-top-border-override");
+    root.style.removeProperty("--late-top-border-override");
+    root.style.removeProperty("--action-shadow-override");
+    root.style.removeProperty("--action-hover-shadow-override");
   }
 }
