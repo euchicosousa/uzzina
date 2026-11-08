@@ -18,7 +18,6 @@ import {
   PrismSelectValue,
 } from "~/components/prism";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
-import { useAppTheme } from "~/hooks/useAppTheme";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { PortalHttpError } from "~/services/portal-http";
@@ -118,14 +117,6 @@ function DashLayout() {
   const currentPartnerSlug = partners.some((p) => p.slug === preferredPartner)
     ? preferredPartner
     : partners[0]?.slug;
-  const currentPartner =
-    partners.find((p) => p.slug === currentPartnerSlug) || partners[0];
-  const { applyPartnerColors } = useAppTheme();
-  useEffect(() => {
-    if (currentPartner?.colors && currentPartner.colors.length >= 2) {
-      applyPartnerColors(currentPartner.colors[0], currentPartner.colors[1]);
-    }
-  }, [currentPartner, applyPartnerColors]);
   const handleLogout = async () => {
     try {
       await logoutDashSession();

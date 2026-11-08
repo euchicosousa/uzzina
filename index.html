@@ -39,6 +39,36 @@
           }
           document.documentElement.className = theme;
 
+          // Public surfaces start with the same neutral palette before React paints.
+          const path = window.location.pathname;
+          if (path === "/" || path === "/dash" || path.startsWith("/dash/")) {
+            const publicVars = {
+              "--background-override": "oklch(0.96 0.002 200)",
+              "--foreground-override": "oklch(0 0 0)",
+              "--dark-background-override": "oklch(0.2 0.01 250)",
+              "--dark-foreground-override": "oklch(1 0 0)",
+              "--accent-h": "0",
+              "--accent-c": "0",
+              "--accent-l": "0",
+              "--dark-accent-h": "0",
+              "--dark-accent-c": "0",
+              "--dark-accent-l": "1",
+              "--primary-foreground-override": "oklch(1 0 0)",
+              "--dark-primary-foreground-override": "oklch(0 0 0)",
+              "--border-l-delta": "-0.07",
+              "--input-l-delta": "-0.04",
+              "--action-hover-l-delta": "0.1",
+              "--popover-l-delta": "0.02",
+              "--dark-border-l-delta": "0.1",
+              "--dark-input-l-delta": "0.02",
+              "--dark-action-l-delta": "0.1",
+              "--dark-action-hover-l-delta": "0.2",
+            };
+            for (const [name, value] of Object.entries(publicVars)) {
+              document.documentElement.style.setProperty(name, value);
+            }
+          }
+
           // 2. Recupera o índice de cor (Acentuação OKLCH)
           const idx = localStorage.getItem("uzzina-accent-color-index");
           const n = idx !== null && idx !== "" ? parseInt(idx, 10) : 0;

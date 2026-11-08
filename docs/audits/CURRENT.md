@@ -6,6 +6,10 @@ Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 
 
 ## Pendências reais
 
+### Paleta pública da página inicial e do portal — 08/11
+
+Implementação local do [DS07](../../.scratch/design-system-audit/issues/07-public-palette.md): `/` e `/dash` usam provisoriamente a paleta neutra Ônix em claro e escuro, sem mudar a preferência salva da equipe; ao voltar para as demais rotas, a paleta pessoal é reaplicada. A cor do parceiro deixou de substituir globalmente os controles do portal; elementos que recebem suas cores diretamente continuam com elas. A inicialização pública começa antes do React e a troca interna aplica a paleta antes da pintura. Typecheck e testes de variáveis de paleta (4/4) passaram; diff conferido. Falta conferir visual, contraste, acesso direto, recarga, transições, login e navegação do portal; escolha visual depende de aceite. Sem publicação.
+
 ### IG01 encerrado: seguir com o Meta Business Suite — 08/11
 
 Decisão do proprietário: não integrar a API da Meta, porque depender da aprovação do app (verificação e revisão) trava tudo e ele não quer submeter o app. O agendamento continua pelo Meta Business Suite. Nenhuma pendência; nada a implementar.

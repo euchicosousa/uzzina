@@ -1,6 +1,7 @@
 import React, {
   useState,
   useEffect,
+  useLayoutEffect,
   useMemo,
   createContext,
   useContext,
@@ -105,7 +106,7 @@ function getSystemPrefersDark(): boolean {
 /**
  * Hook para gerenciar as cores da marca e o modo de tema (Light/Dark) do aplicativo.
  */
-export function useAppTheme() {
+export function useAppTheme(isPublic = false) {
   const [themePreference, setThemePreferenceState] = useState<ThemePreference>(
     getStoredThemePreference,
   );
@@ -116,12 +117,15 @@ export function useAppTheme() {
       ? systemPrefersDark
       : themePreference === Theme.DARK;
   const theme: Theme = isDark ? Theme.DARK : Theme.LIGHT;
-  const [primaryColorIndex, setPrimaryColorIndexState] = useState<number>(0);
+  const [primaryColorIndex, setPrimaryColorIndexState] =
+    useState<number>(getStoredIndex);
   const [followPartnerColor, setFollowPartnerColorState] =
     useState<boolean>(false);
   const [backgroundColor, setBackgroundColorState] =
     useState<string>("#FFFFFF");
-  const [customTheme, setCustomThemeState] = useState<CustomTheme | null>(null);
+  const [customTheme, setCustomThemeState] = useState<CustomTheme | null>(
+    getStoredCustomTheme,
+  );
 
   // Lê o localStorage só no cliente, após a hidratação
   useEffect(() => {
@@ -239,18 +243,18 @@ export function useAppTheme() {
   }, [primaryColorIndex, customTheme]);
 
   // Aplica as variáveis CSS
-  useEffect(() => {
+  useLayoutEffect(() => {
     const root = document.documentElement;
 
-    if (selectedPalette) {
-      applyPaletteVars(selectedPalette);
+    if (isPublic || selectedPalette) {
+      applyPaletteVars(isPublic ? PALLETE[0] : selectedPalette);
     }
 
     // 3. Override Manual de Background (Caso exista algum uso externo)
     if (!selectedPalette && backgroundColor) {
       root.style.setProperty("--background-override", backgroundColor);
     }
-  }, [selectedPalette, backgroundColor]);
+  }, [selectedPalette, backgroundColor, isPublic]);
 
   const setPrimaryColorIndex = (index: number) => {
     localStorage.setItem(STORAGE_KEY, String(index));
@@ -390,8 +394,14 @@ const AppThemeContext = createContext<
   ReturnType<typeof useAppTheme> | undefined
 >(undefined);
 
-export function AppThemeProvider({ children }: { children: React.ReactNode }) {
-  const appTheme = useAppTheme();
+export function AppThemeProvider({
+  children,
+  isPublic = false,
+}: {
+  children: React.ReactNode;
+  isPublic?: boolean;
+}) {
+  const appTheme = useAppTheme(isPublic);
   return React.createElement(
     AppThemeContext.Provider,
     { value: appTheme },

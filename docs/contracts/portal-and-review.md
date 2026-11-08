@@ -17,3 +17,5 @@ Leia antes de mexer no portal `/dash`, em `/dash/review`, em `/api/dash-*`, `/ap
 ## Login do portal
 
 Login do portal usa o mesmo layout/estilo do login principal: frame de28rem, logo, campos com ícones, espaçamento, alerta e botão à direita. Não acrescentar mensagem introdutória ou margens próprias ao portal. A autenticação do portal continua no seu serviço existente.
+
+O portal e suas rotas filhas usam a paleta pública neutra, inclusive login e revisão; cores próprias do parceiro continuam nos elementos que as recebem diretamente. A escolha visual está pendente de aceite.
