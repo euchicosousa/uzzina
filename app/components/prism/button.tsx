@@ -38,7 +38,7 @@ const styledButtonVariants = cva(
           "bg-destructive/10 text-destructive hover:bg-destructive/20 border-destructive/40 focus-visible:border-destructive/60 focus-visible:ring-destructive/30 dark:bg-destructive/20 dark:hover:bg-destructive/30",
         success:
           "bg-success-strong border-success-strong text-success-strong-foreground hover:bg-success-strong-hover focus-visible:border-success-strong focus-visible:ring-success-accent/30",
-        link: "text-primary underline-offset-4 hover:underline border-transparent",
+        link: "text-foreground underline-offset-4 hover:underline border-transparent",
         unstyled: "",
       },
       size: buttonSizeClasses,
