@@ -1,6 +1,6 @@
 # Central de tickets da UZZINA
 
-Atualizado em 08/11/2026. **16 tickets ativos.** A fila abaixo espelha o tracker principal. Produção registrada em `a6a056c`. A rodada posterior está na main local e nos branches de proposta. Encerramentos com aceite e a revisão por rota do DS02 estão no histórico.
+Atualizado em 08/11/2026. **18 tickets ativos.** A fila abaixo espelha o tracker principal. Último deploy com sucesso reportado pela Vercel em `ce36df0`. Encerramentos com aceite e a revisão por rota do DS02 estão no histórico.
 
 **IA-M02 encerrado.** Abas de Minha Conta publicadas conforme confirmação do proprietário e integradas à main local em 06/11.
 
@@ -22,5 +22,7 @@ Atualizado em 08/11/2026. **16 tickets ativos.** A fila abaixo espelha o tracker
 | 14 | Design system | [DS08 — Página inicial institucional da UZZINA](../../.scratch/design-system-audit/issues/08-uzzina-landing-page.md) | Apresentar UZZINA, serviço de links e agência. Aceite após DS07. |
 | 15 | Design system | [DS09 — Buscar paletas e acessar o tema personalizado](../../.scratch/design-system-audit/issues/09-palette-search-and-custom-theme.md) | Buscar paletas, abrir Personalizado em Minha Conta e incorporar as opções do DS06. |
 | 16 | Design system | [DS10 — Investigar foco, Sprint e estrutura do ActionItem](../../.scratch/design-system-audit/issues/10-action-item-focus-and-structure.md) | Investigar foco, sinais de Sprint e recorte lateral de sombras em Hoje. |
+| 17 | Design system | [DS11 — Estudar a cor de fundo das ações por fase](../../.scratch/design-system-audit/issues/11-action-background-by-phase.md) | Entregar comparativos de cor e hover, preservando o relevo, e propor a preferência em Minha Conta e na busca global. |
+| 18 | Arquitetura | [ARQ-01 — Auditar a estrutura da UZZINA e propor simplificações](../../.scratch/structural-audit/issues/01-app-structure-and-simplification.md) | Entregar mapa de responsabilidades, evidências de módulos sem uso e propostas priorizadas para revisão. |
 
 [Tracker principal](../../.scratch/README.md) · [Histórico consolidado](../../.scratch/archive/resolved-tickets.md). A numeração é posicional. Use o ID da série ao disparar agentes.

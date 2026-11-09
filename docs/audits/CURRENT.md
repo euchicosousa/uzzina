@@ -2,9 +2,13 @@
 
 Atualizado em 08/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 e o ticket 01 de uso de IA. O domínio `uzzina.cnvt.com.br` está Ready no deploy `dpl_EhqbZf5ia5zwyztWJmoybStqjrma`. Depois disso, o proprietário enviou ao GitHub a rodada de 06/11 e 07/11 (EST-03/04, V46–V49, DOC-01, IA-M06 e IA-M07); o deploy Ready dessa versão não foi conferido aqui. Fila atual: 12 tickets do Planejamento em espera e quatro de design system; DS06 encerrado com aceite em 08/11. Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
+O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, cinco de design system e um de arquitetura. Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
 
 ## Pendências reais
+
+### Data e anexos na gaveta — 08/11
+
+Na aba Essencial, o botão “Adicionar arquivo” usa o estilo link e a linha de anexos tem 4 px de margem interna de cada lado para o anel de foco. O seletor de data mostra só o texto, e a inicial maiúscula vale nas telas que usam o formatador compartilhado, inclusive cartões, busca, conteúdo e calendário do portal. Alterações na main local. Falta conferir o foco dos botões e o visual na gaveta.
 
 ### Aparência personalizada: corte e salvamento — 08/11
 
@@ -12,11 +16,23 @@ No [DS09](../../.scratch/design-system-audit/issues/09-palette-search-and-custom
 
 Após as capturas do proprietário, a aba passou a conter os campos de cor ocultos que estendiam a página e ganhou margem interna para a sombra do cartão de prévia. Verificado em Chromium a 1440×760 e 390×700, com sessão e respostas HTTP fictícias: somente a aba rolou, o cabeçalho ficou fixo, o conteúdo chegou ao fim e não houve transbordamento horizontal. Falta aceite visual no navegador do proprietário e validar o salvamento completo.
 
-Na busca global, “Usar paleta” agora mostra à esquerda a cor primária da própria paleta no modo ativo. Typecheck passou. O proprietário autorizou o envio à main em 08/11. Build de produção e verificação serverless (9/9) passaram. A confirmação do deploy Ready e o salvamento completo pelo app ficam pendentes.
+Na busca global, “Usar paleta” agora mostra à esquerda a cor primária da própria paleta no modo ativo. Typecheck passou. O proprietário autorizou o envio à main em 08/11. Build de produção e verificação serverless (9/9) passaram. A Vercel reportou sucesso para `ce36df0`. O salvamento completo pelo app fica pendente.
 
 ### Paleta pública da página inicial e do portal — 08/11
 
-Implementação local do [DS07](../../.scratch/design-system-audit/issues/07-public-palette.md): `/` e `/dash` usam provisoriamente a paleta neutra Ônix em claro e escuro, sem mudar a preferência salva da equipe; ao voltar para as demais rotas, a paleta pessoal é reaplicada. A cor do parceiro deixou de substituir globalmente os controles do portal; elementos que recebem suas cores diretamente continuam com elas. A inicialização pública começa antes do React e a troca interna aplica a paleta antes da pintura. Typecheck e testes de variáveis de paleta (4/4) passaram; diff conferido. Falta conferir visual, contraste, acesso direto, recarga, transições, login e navegação do portal; escolha visual depende de aceite. Sem publicação.
+Implementação enviada ao GitHub em `31de929` do [DS07](../../.scratch/design-system-audit/issues/07-public-palette.md): `/` e `/dash` usam provisoriamente a paleta neutra Ônix em claro e escuro, sem mudar a preferência salva da equipe; ao voltar para as demais rotas, a paleta pessoal é reaplicada. A cor do parceiro deixou de substituir globalmente os controles do portal; elementos que recebem suas cores diretamente continuam com elas. A inicialização pública começa antes do React e a troca interna aplica a paleta antes da pintura. Typecheck e testes de variáveis de paleta (4/4) passaram; diff conferido. Falta conferir visual, contraste, acesso direto, recarga, transições, login e navegação do portal; escolha visual depende de aceite. A Vercel reportou sucesso para `ce36df0`, que inclui esse commit.
+
+### Conferência da fila de tickets — 08/11
+
+O [tracker](../../.scratch/README.md) e a [central](2026-11-03-ticket-dispatch.md) listam os mesmos 18 tickets, todos com arquivo existente: 12 do Planejamento em espera, cinco de design system e um de arquitetura. A correção de foco, Sprint e sombras dos cartões está na `main` e aguarda aceite visual. Os estudos de fundo por fase e de estrutura do app estão registrados na main local. A conferência foi documental.
+
+### Auditoria da estrutura do app — 08/11
+
+Aberto [ARQ-01 — Auditar a estrutura da UZZINA e propor simplificações](../../.scratch/structural-audit/issues/01-app-structure-and-simplification.md) na `main` local. Escopo do app inteiro, das telas da equipe e do portal até APIs, banco e deploy. A investigação deve demonstrar onde há módulos sem uso, regras espalhadas ou caminhos duplicados e priorizar o que vale retirar, simplificar ou manter. Ticket e índices registrados, referências e diff conferidos. Falta executar o estudo e apresentar o relatório para o proprietário decidir quais propostas autorizar.
+
+### Estudo de fundo das ações por fase — 08/11
+
+Aberto [DS11 — Cor de fundo das ações por fase](../../.scratch/design-system-audit/issues/11-action-background-by-phase.md) na `main` local. Em Hoje e nas telas do parceiro, os cartões hoje usam o fundo da paleta, com destaque próprio para atraso. O estudo vai comparar o fundo por fase e o hover, mantendo o relevo, e propor uma preferência pessoal em Minha Conta → Aparência e nos comandos da busca global. O levantamento inicial localizou a cor de fase, a exceção de atraso e a cor própria da capa de Conteúdo. Ticket e índices registrados, referências e diff conferidos. Falta produzir o relatório com prévias e decidir fundo, hover e convivência com atraso antes de autorizar implementação.
 
 ### IG01 encerrado: seguir com o Meta Business Suite — 08/11
 
@@ -42,9 +58,10 @@ Ajustado o DS10 localmente para restaurar a transição da sombra no hover e sep
 
 Implementado no checkout local ([DS10](../../.scratch/design-system-audit/issues/10-action-item-focus-and-structure.md)), preservando a correção anterior do DS06 em `314c2a9` (`--action-shadow-override: 0 0 #0000` para manter a lista de `box-shadow` dos anéis válida em paletas planas) e o ajuste pessoal do proprietário em `app/lib/palettes.ts` (`carbon.dark.primary.l: 0.4`). Alterações aplicadas: (1) em `ActionItem.tsx`, substituído `transition-all duration-500` por `transition-colors duration-200` (evitando que o valor inicial CSS `outline-width: medium` de `3px` e o `box-shadow` do `ring` interpolassem espessura por 500ms ao focar/clicar), removidos o `transition-colors` redundante e o segundo `squircle` duplicado da variante Linha, e adicionada guarda `onFocus` no `<div role="button" tabIndex={0}>` para descartar foco de clique de mouse no corpo do cartão mantendo foco por teclado (`:focus-visible`) e edição de título (`<input>`); (2) em `ActionLineVariant.tsx`, removida a trava `isLateAction(action) &&` que ocultava `<ActionItemSprint>` nas ações em Sprint no prazo, e em `ActionBlockVariant.tsx`, incluído `<ActionItemSprint action={action} />` na barra de metadados; (3) em `ActionContainer.tsx` (quando `scrollable = true`), `KanbanPhasesBoard.tsx` e `HomeSprintView.tsx`, unificado o padding interno para `px-2 pt-1 pb-6` (`8px` laterais), eliminando o recorte lateral das sombras e anéis nas colunas com `overflow-y-auto` e mantendo `p-1 pb-6` nas células compactas do Calendário (`scrollable={false}`). Verificação: `tsc --noEmit` limpo e `tests/action-item-title-drag.test.tsx` (4/4 PASS). Falta validação visual do proprietário.
 
-### Busca de paletas e tema personalizado — 08/11
 
-Aberto [DS09](../../.scratch/design-system-audit/issues/09-palette-search-and-custom-theme.md). Busca por nome, atalho do menu superior para Minha Conta e controles do DS06 no editor personalizado. Fila com 15 tickets. Referências e diff conferidos.
+### Busca de paletas e tema personalizado (DS09) — 08/11
+
+Enviado ao GitHub em `ce36df0` ([DS09](../../.scratch/design-system-audit/issues/09-palette-search-and-custom-theme.md)). Entregas concluídas: (1) busca global (`GlobalSearchCommand.tsx`) gera comandos a partir de todas as paletas registradas com `label: "Usar paleta " + palette.label`, busca por nome, teclado e persistência; (2) menu de usuário (`Header.tsx`) preenche a 12ª vaga na grade 2x6 de paletas com o atalho "Personalizado", abrindo `/app/profile?tab=appearance` com guardas de saída da gaveta respeitadas e sem alternar a paleta ao navegar; (3) tipos de tema personalizado (`preferences.ts`, `custom-theme.ts` e `useAppTheme.ts`) estendidos com `relief?: boolean`, `shadowColor?: string` e `topBorderColor?: string` do DS06, propagando as variáveis CSS na prévia em tempo real e na paleta ativa; (4) painel de tema personalizado (`CustomThemePanel.tsx`) remodelado conforme a regra de superfícies (sem card externo), com switch para relevo de cartões (sombra de profundidade e brilho de topo em conjunto vs estilo plano transparente), seletores para sombra base e realce superior com botões de restauração, e cartão de ação em tempo real com classes do design system. Verificação: `tsc --noEmit` limpo, `tests/custom-theme-ds09.test.tsx` (5/5 PASS), `tests/global-search-partners.test.tsx` (54/54 PASS), `tests/profile-palette-swatches.test.tsx` (4/4 PASS), `tests/header-menu.test.tsx` (4/4 PASS), `tests/palette-vars.test.ts` (4/4 PASS) e serverless (9 PASS). Falta validação visual do proprietário.
 
 ### Identidade pública e página inicial — 08/11
 

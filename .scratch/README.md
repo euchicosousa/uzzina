@@ -1,6 +1,6 @@
 # Tickets abertos da UZZINA
 
-Atualizado em 08/11/2026. **16 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
+Atualizado em 08/11/2026. **18 tickets mantidos para execução, conferência ou aceite.** Esta é a entrada principal do tracker local. O inventário segue os registros atuais: implementação local não equivale a aceite, banco aplicado ou deploy. Não foram encerradas pendências somente pela limpeza documental.
 
 [Histórico consolidado](archive/resolved-tickets.md): 88 documentos encerrados/aprovados e 11 da antiga série C do Planejamento, substituída pela recuperação. Os antigos arquivos individuais foram retirados e seus links redirecionados.
 
@@ -26,6 +26,8 @@ Ao criar um ticket ou mudar seu escopo, inclua as três opções da seção `Mod
 | Design system | [DS08 — Página inicial institucional da UZZINA](design-system-audit/issues/08-uzzina-landing-page.md) | Apresentar UZZINA, serviço de links e agência. Aceite após DS07. |
 | Design system | [DS09 — Buscar paletas e acessar o tema personalizado](design-system-audit/issues/09-palette-search-and-custom-theme.md) | Buscar paletas, abrir Personalizado em Minha Conta e incorporar as opções do DS06. |
 | Design system | [DS10 — Investigar foco, Sprint e estrutura do ActionItem](design-system-audit/issues/10-action-item-focus-and-structure.md) | Investigar foco, sinais de Sprint e recorte lateral de sombras em Hoje. |
+| Design system | [DS11 — Estudar a cor de fundo das ações por fase](design-system-audit/issues/11-action-background-by-phase.md) | Comparar fundo, hover e sinais dos cartões em Hoje e nas telas do parceiro, com a mesma preferência em Minha Conta e na busca global. |
+| Arquitetura | [ARQ-01 — Auditar a estrutura da UZZINA e propor simplificações](structural-audit/issues/01-app-structure-and-simplification.md) | Mapear o app inteiro, verificar candidatos sem uso e priorizar simplificações em relatório para decisão do proprietário. |
 
 ## Referências fora da fila de execução
 
