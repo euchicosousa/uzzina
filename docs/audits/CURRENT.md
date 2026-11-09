@@ -6,6 +6,12 @@ O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso pa
 
 ## Pendências reais
 
+### Barra completa do editor de texto — 08/11
+
+O proprietário aprovou a barra completa com rolagem horizontal invisível em Instagram → Conteúdo e pediu a retirada do modo compacto. O editor agora usa uma linha com todos os comandos, inclusive na aba Essencial e na galeria. O foco revela o comando inteiro sem rolar o texto. O menu de seleção volta ao posicionamento padrão do Tiptap, e os atalhos continuam no atributo acessível para evitar a dica nativa sobre o menu. A medição da área de escrita continua no Instagram para organizar mídia e texto.
+
+Typecheck, lint e 14 testes focados passaram. Chromium a 390×950 e 1440×950 confirmou a barra, o foco e o menu de seleção em Essencial e Instagram, com dados fictícios. O roteiro amplo de rolagem parou antes de abrir a gaveta porque a ação fictícia não apareceu na busca. Mudança na main local.
+
 ### Data e anexos na gaveta — 08/11
 
 Na aba Essencial, o botão “Adicionar arquivo” usa o estilo link e a linha de anexos tem 4 px de margem interna de cada lado para o anel de foco. O seletor de data mostra só o texto, e a inicial maiúscula vale nas telas que usam o formatador compartilhado, inclusive cartões, busca, conteúdo e calendário do portal. Alterações na main local. Falta conferir o foco dos botões e o visual na gaveta.

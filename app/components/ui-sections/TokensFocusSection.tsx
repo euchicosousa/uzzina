@@ -112,7 +112,6 @@ function RichTextEditorFocusExample() {
   return (
     <div className="w-80 max-w-full">
       <RichTextEditor
-        compactToolbar
         content={content}
         handleChange={setContent}
         placeholder="Escreva algo..."

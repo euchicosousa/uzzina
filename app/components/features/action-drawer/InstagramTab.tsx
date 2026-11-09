@@ -306,7 +306,6 @@ export function InstagramTab({
                 "flex-1 overflow-y-auto",
                 writingLayout && "min-h-0",
               )}
-              compactToolbar
               content={contentDescription}
               handleBlur={(html) => {
                 onContentDescriptionChange(html);

@@ -23,11 +23,7 @@ afterEach(cleanup);
 
 async function mountEditor(disabled = false) {
   const mounted = render(
-    <RichTextEditor
-      compactToolbar={false}
-      content="<p>Hello</p>"
-      disabled={disabled}
-    />,
+    <RichTextEditor content="<p>Hello</p>" disabled={disabled} />,
   );
   await screen.findByRole("toolbar", { name: "Formatação do texto" });
   const editor = mounted.container.querySelector<HTMLElement>(".tiptap");
@@ -177,7 +173,7 @@ it("table commands remain keyboard accessible in their contextual toolbar", asyn
   await waitFor(() => expect(document.activeElement === editor).toBe(true));
 });
 
-describe("compact toolbar", () => {
+describe("formatting toolbar", () => {
   const ALL_COMMANDS = [
     "Título 1",
     "Título 2",
@@ -195,15 +191,6 @@ describe("compact toolbar", () => {
     "Desfazer",
     "Refazer",
   ];
-  async function mountCompact() {
-    const mounted = render(<RichTextEditor content="<p>Hello</p>" />);
-    const toolbar = await screen.findByRole("toolbar", {
-      name: "Formatação do texto",
-    });
-    const editor = mounted.container.querySelector<HTMLElement>(".tiptap");
-    if (!editor) throw new Error("Editor did not mount");
-    return { editor, toolbar, user: userEvent.setup() };
-  }
   const names = (elements: HTMLElement[]) =>
     elements.map(
       (element) =>
@@ -212,116 +199,9 @@ describe("compact toolbar", () => {
 
   it("the full editor keeps every command in its toolbar and no extra menu", async () => {
     const { toolbar } = await mountEditor();
-    expect(names(within(toolbar).getAllByRole("button"))).toEqual(
-      ALL_COMMANDS.slice(0, 13).concat(["Desfazer", "Refazer"]),
-    );
+    expect(names(within(toolbar).getAllByRole("button"))).toEqual(ALL_COMMANDS);
     expect(
       within(toolbar).queryByRole("button", { name: "Mais formatação" }),
     ).toBeNull();
-  });
-
-  it("shows one row of basic commands and reaches every other one in the menu", async () => {
-    const { toolbar, user } = await mountCompact();
-    const visible = names(within(toolbar).getAllByRole("button"));
-    expect(visible).toEqual([
-      "Título 2",
-      "Negrito",
-      "Itálico",
-      "Lista com Marcadores",
-      "Lista Numerada",
-      "Desfazer",
-      "Refazer",
-      "Mais formatação",
-    ]);
-    await user.click(
-      within(toolbar).getByRole("button", { name: "Mais formatação" }),
-    );
-    const menu = await screen.findByRole("menu");
-    const items = [
-      ...menu.querySelectorAll<HTMLElement>('[role^="menuitem"]'),
-    ].map((item) => item.textContent ?? "");
-    expect(items).toEqual([
-      "Título 1",
-      "Título 3",
-      "Tachado",
-      "Citação",
-      "Link",
-      "Linha Divisória",
-      "Tabela",
-      "Remover Formatação",
-    ]);
-    expect([...visible.slice(0, -1), ...items].sort()).toEqual(
-      [...ALL_COMMANDS].sort(),
-    );
-  });
-
-  it("a menu command formats the previously selected text and returns focus to it", async () => {
-    const { editor, toolbar, user } = await mountCompact();
-    act(() => editor.focus());
-    await user.keyboard("{Control>}a{/Control}");
-    await user.keyboard("{Alt>}{Shift>}{F10}{/Shift}{/Alt}");
-    expect(toolbar.contains(document.activeElement)).toBe(true);
-    const more = within(toolbar).getByRole("button", {
-      name: "Mais formatação",
-    });
-    for (let step = 0; step < 10 && document.activeElement !== more; step++)
-      await user.keyboard("{ArrowRight}");
-    expect(document.activeElement === more).toBe(true);
-    await user.keyboard("{Enter}");
-    const menu = await screen.findByRole("menu");
-    const strike = within(menu).getByRole("menuitemcheckbox", {
-      name: "Tachado",
-    });
-    expect(strike.getAttribute("aria-checked")).toBe("false");
-    for (let step = 0; step < 10 && document.activeElement !== strike; step++)
-      await user.keyboard("{ArrowDown}");
-    expect(document.activeElement === strike).toBe(true);
-    await user.keyboard("{Enter}");
-    await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
-    await waitFor(() => expect(document.activeElement === editor).toBe(true));
-    expect(editor.querySelector("s")?.textContent).toBe("Hello");
-    // The command state follows the selection the command was applied to.
-    await user.click(more);
-    const reopened = await screen.findByRole("menu");
-    expect(
-      within(reopened)
-        .getByRole("menuitemcheckbox", { name: "Tachado" })
-        .getAttribute("aria-checked"),
-    ).toBe("true");
-  });
-
-  it("Escape closes only the menu, restores its trigger and Tab returns to the text", async () => {
-    const { editor, toolbar, user } = await mountCompact();
-    const before = editor.innerHTML;
-    const more = within(toolbar).getByRole("button", {
-      name: "Mais formatação",
-    });
-    await user.click(more);
-    await screen.findByRole("menu");
-    let escapeReachedPage = false;
-    const listener = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !event.defaultPrevented)
-        escapeReachedPage = true;
-    };
-    document.addEventListener("keydown", listener);
-    await user.keyboard("{Escape}");
-    document.removeEventListener("keydown", listener);
-    expect(escapeReachedPage).toBe(false);
-    await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
-    await waitFor(() => expect(document.activeElement === more).toBe(true));
-    await user.tab();
-    expect(document.activeElement === editor).toBe(true);
-    expect(editor.innerHTML).toBe(before);
-  });
-
-  it("the contextual toolbar still answers Alt+Shift+F9 in a compact editor", async () => {
-    const { editor, user } = await mountCompact();
-    act(() => editor.focus());
-    await user.keyboard("{Control>}a{/Control}");
-    const context = await screen.findByRole("toolbar", {
-      name: "Formatação da seleção",
-    });
-    await user.keyboard("{Alt>}{Shift>}{F9}{/Shift}{/Alt}");
-    expect(context.contains(document.activeElement)).toBe(true);
   });
 });

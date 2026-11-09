@@ -31,7 +31,6 @@ const PRESETS: Record<PresetKey, string> = {
 export function RichTextEditorPlayground() {
   const [preset, setPreset] = useState<PresetKey>("short");
   const [content, setContent] = useState<string>(PRESETS.short);
-  const [compactToolbar, setCompactToolbar] = useState(false);
   const [isRounded, setIsRounded] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [placeholder, setPlaceholder] = useState("Escreva algo...");
@@ -48,7 +47,6 @@ export function RichTextEditorPlayground() {
         <div className="w-full max-w-2xl">
           <RichTextEditor
             key={`${preset}-${disabled}-${placeholder}`}
-            compactToolbar={compactToolbar}
             content={content}
             disabled={disabled}
             handleChange={setContent}
@@ -67,12 +65,6 @@ export function RichTextEditorPlayground() {
         options={PRESET_OPTIONS}
         prop="content"
         value={preset}
-      />
-      <PlaygroundBoolean
-        label="Barra compacta"
-        onChange={setCompactToolbar}
-        prop="compactToolbar"
-        value={compactToolbar}
       />
       <PlaygroundBoolean
         label="Arredondado"
@@ -103,7 +95,7 @@ export function RichTextEditorSection() {
       <GallerySection>
         <GallerySectionHeader
           approved
-          description="Editor de texto rico baseado em Tiptap e React Aria Toolbar, com comandos essenciais, atalhos de teclado e modo compacto."
+          description="Editor de texto rico baseado em Tiptap e React Aria Toolbar, com atalhos de teclado e uma barra completa com rolagem horizontal."
           title="RichTextEditor"
         />
         <GallerySectionContent>

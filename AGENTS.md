@@ -70,7 +70,7 @@ Decisões do proprietário que valem sempre, com o detalhe no documento da área
 - `bun run dev` usa o banco e as contas reais de produção (27/10/2026); ao verificar no navegador, só leia.
 - Rodapé da gaveta sem customização, só variantes e tamanhos padrão do botão Prism (03/11/2026).
 - Regiões de rolagem (Hoje, Kanban, Perfil, células de calendário, carrossel do Instagram) não são paradas de foco (03/11/2026).
-- Editor de conteúdo do Instagram usa sempre `RichTextEditor compactToolbar` (06/11/2026).
+- O `RichTextEditor` usa a barra completa em uma linha, com rolagem horizontal invisível (08/11/2026).
 
 ### Regras estruturais
 

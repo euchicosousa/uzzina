@@ -19,7 +19,6 @@ import {
   ChevronDown,
   ChevronRight,
   Columns,
-  Ellipsis,
   Heading1,
   Heading2,
   Heading3,
@@ -41,26 +40,7 @@ import {
 } from "lucide-react";
 import { useMemo, useRef, useState, type ReactNode } from "react";
 import { Toolbar as AriaToolbar } from "react-aria-components";
-import {
-  PrismButton,
-  PrismMenuContent,
-  PrismMenuGroup,
-  PrismMenuItem,
-  PrismMenuSeparator,
-  PrismMenuTrigger,
-  PrismSeparator,
-  PrismToggle,
-} from "~/components/prism";
-
-// Commands kept in the single toolbar row of a compact editor; every other
-// formatting command moves to the "Mais formatação" menu.
-const COMPACT_TOOLBAR_COMMANDS = new Set([
-  "Título 2",
-  "Negrito",
-  "Itálico",
-  "Lista com Marcadores",
-  "Lista Numerada",
-]);
+import { PrismButton, PrismSeparator, PrismToggle } from "~/components/prism";
 
 /** Plain command button (no pressed state) using the standard Prism icon button. */
 function ToolbarCommandButton({
@@ -117,7 +97,6 @@ function EditorToolbar({
 interface TiptapToolbarProps {
   editor: Editor | null;
   isRounded?: boolean;
-  compact?: boolean;
 }
 interface ToolbarButtonDef {
   icon: LucideIcon;
@@ -168,75 +147,7 @@ function ToolbarButton({
     </PrismToggle>
   );
 }
-function MoreFormattingMenu({
-  editor,
-  commands,
-}: {
-  editor: Editor;
-  commands: ToolbarButtonDef[];
-}) {
-  const toggles = commands.filter((command) => command.isToggle !== false);
-  const inserts = commands.filter((command) => command.isToggle === false);
-  const state = useEditorState({
-    editor,
-    selector: ({ editor: e }) => ({
-      editable: e.isEditable,
-      // A string keeps the default equality check cheap and stable.
-      active: toggles
-        .filter((command) => command.selector(e))
-        .map((command) => command.label)
-        .join("\n"),
-    }),
-  });
-  const activeKeys = state.active ? state.active.split("\n") : [];
-  // Commands focus the editor themselves (Tiptap restores the stored
-  // selection), so the menu only restores its trigger when dismissed.
-  return (
-    <PrismMenuTrigger>
-      <ToolbarCommandButton
-        className="ml-auto"
-        icon={Ellipsis}
-        isDisabled={!state.editable}
-        label="Mais formatação"
-      />
-      <PrismMenuContent className="w-56" placement="bottom end">
-        <PrismMenuGroup
-          aria-label="Estilos"
-          selectedKeys={activeKeys}
-          selectionMode="multiple"
-          shouldCloseOnSelect
-        >
-          {toggles.map((command) => (
-            <PrismMenuItem
-              id={command.label}
-              key={command.label}
-              onAction={command.action}
-              textValue={command.label}
-            >
-              <command.icon />
-              {command.label}
-            </PrismMenuItem>
-          ))}
-        </PrismMenuGroup>
-        <PrismMenuSeparator />
-        <PrismMenuGroup aria-label="Inserir e limpar">
-          {inserts.map((command) => (
-            <PrismMenuItem
-              id={command.label}
-              key={command.label}
-              onAction={command.action}
-              textValue={command.label}
-            >
-              <command.icon />
-              {command.label}
-            </PrismMenuItem>
-          ))}
-        </PrismMenuGroup>
-      </PrismMenuContent>
-    </PrismMenuTrigger>
-  );
-}
-function TiptapToolbar({ editor, isRounded, compact }: TiptapToolbarProps) {
+function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
   const history = useEditorState({
     editor,
     selector: ({ editor: e }) =>
@@ -392,23 +303,15 @@ function TiptapToolbar({ editor, isRounded, compact }: TiptapToolbarProps) {
       selector: () => false,
     },
   ];
-  const visibleButtons = compact
-    ? buttons.filter((btn) => COMPACT_TOOLBAR_COMMANDS.has(btn.label))
-    : buttons;
-  const extraButtons = compact
-    ? buttons.filter((btn) => !COMPACT_TOOLBAR_COMMANDS.has(btn.label))
-    : [];
   return (
     <EditorToolbar
       label="Formatação do texto"
       className={cn(
-        "flex max-w-full shrink-0 items-center gap-1 overflow-hidden border-b bg-popover p-1.5",
-        // Compact: one row that stays visible above long text in its scroller.
-        compact ? "sticky top-0 z-10 flex-nowrap" : "flex-wrap",
+        "flex max-w-full shrink-0 scrollbar-none flex-nowrap items-center gap-1 overflow-x-auto overscroll-x-contain border-b bg-popover p-1.5 [&::-webkit-scrollbar]:hidden [&>*]:shrink-0",
         isRounded && "rounded-t-2xl squircle",
       )}
     >
-      {visibleButtons.map((btn) => (
+      {buttons.map((btn) => (
         <ToolbarButton key={btn.label} {...btn} editor={editor} />
       ))}
 
@@ -427,10 +330,6 @@ function TiptapToolbar({ editor, isRounded, compact }: TiptapToolbarProps) {
         label="Refazer"
         onPress={() => editor.chain().focus().redo().run()}
       />
-
-      {compact && (
-        <MoreFormattingMenu commands={extraButtons} editor={editor} />
-      )}
     </EditorToolbar>
   );
 }
@@ -445,7 +344,6 @@ export function RichTextEditor({
   disabled,
   placeholder,
   isRounded,
-  compactToolbar = true,
 }: {
   id?: string;
   "aria-labelledby"?: string;
@@ -457,12 +355,6 @@ export function RichTextEditor({
   disabled?: boolean;
   placeholder?: string;
   isRounded?: boolean;
-  /**
-   * Defaults to one row of basic commands plus a "Mais formatação" menu.
-   * Pass false to show the full toolbar. Responsive callers can choose from
-   * their container width and available writing height.
-   */
-  compactToolbar?: boolean;
 }) {
   const editorRoot = useRef<HTMLDivElement>(null);
   const [extensions] = useState(() => {
@@ -678,6 +570,20 @@ export function RichTextEditor({
           "flex h-full w-full flex-col transition-all duration-200",
           className,
         )}
+        onFocusCapture={(event) => {
+          const control = event.target;
+          const toolbar = control.closest<HTMLElement>('[role="toolbar"]');
+          if (!toolbar || toolbar.scrollWidth <= toolbar.clientWidth) return;
+
+          // Reveal the focused command without scrolling the writing area.
+          const frame = toolbar.getBoundingClientRect();
+          const button = control.getBoundingClientRect();
+          if (button.left < frame.left) {
+            toolbar.scrollLeft -= frame.left - button.left;
+          } else if (button.right > frame.right) {
+            toolbar.scrollLeft += button.right - frame.right;
+          }
+        }}
         onKeyDownCapture={(event) => {
           const root = editorRoot.current;
           const target = event.target;
@@ -732,13 +638,9 @@ export function RichTextEditor({
           }
         }}
         ref={editorRoot}
-        title="Alt+Shift+F10: formatação · Alt+Shift+F9: seleção ou tabela"
+        aria-keyshortcuts="Alt+Shift+F10 Alt+Shift+F9"
       >
-        <TiptapToolbar
-          compact={compactToolbar}
-          editor={editor}
-          isRounded={isRounded}
-        />
+        <TiptapToolbar editor={editor} isRounded={isRounded} />
         {editor && (
           <BubbleMenuComponent
             className="flex items-center gap-0.5 rounded-2xl border border-foreground/5 bg-popover/95 p-1 shadow-lg backdrop-blur-md squircle dark:border-foreground/10"

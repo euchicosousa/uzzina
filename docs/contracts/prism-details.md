@@ -26,6 +26,8 @@ Anel de foco padrão (`border-ring/60 ring-3 ring-ring/30`, como `PrismButton`):
 
 Controles de ícone recebem nomes em português nos consumidores, conforme ação/estado. `RichTextEditor` encaminha `id`/`aria-labelledby` opcionais ao contenteditable real; rótulos de Contexto/Tom focam esse editor, sem IDs duplicados nos inputs ocultos. Contato de Lead usa um único link estilizado por `buttonVariants`, sem botão interativo aninhado.
 
+A barra do `RichTextEditor` mostra todos os comandos em uma linha com rolagem horizontal invisível. As setas levam aos comandos fora da área visível, e Tab volta ao texto.
+
 ## Abas
 
 `PrismTabs`/`PrismTabList`/`PrismTab`/`PrismTabPanel` unificam navegação entre painéis: abas `h-10`, `px-4`, sem raio. Variante `underline` (padrão): linha inferior de 1px em cada aba (cor de borda; `primary` quando selecionada), sem borda na lista, hover só no texto, foco por teclado com fundo `bg-input`. Variante `drawer` (hoje só no `/ui`): aba selecionada conectada ao painel por borda superior de2px primary, bordas laterais e `bg-popover`; foco por teclado acrescenta `bg-input`. Preferências de valor continuam em ToggleGroup. Perfil mobile mantém ambos os painéis montados; desktop os expõe como regiões simultâneas. Gaveta, texto do Instagram e abas mobile do portal reutilizam o mesmo padrão. `shouldForceMount` preserva conteúdo oculto/inert; `isAlwaysVisible` mantém regiões lado a lado interativas. Contextos de abas são isolados dentro do painel para permitir abas aninhadas. A navegação Essencial/Instagram/Observações preserva todos os Tab stops do percurso local da gaveta, além das setas; menus do rodapé ficam fora da coleção de abas. Exemplo em `/ui`.

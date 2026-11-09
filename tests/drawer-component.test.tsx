@@ -2303,7 +2303,7 @@ describe("phone-width action panel", () => {
     }
   });
 
-  it("Essential uses the existing compact toolbar on a phone-width panel", async () => {
+  it("Essential keeps the full toolbar reachable on a phone-width panel", async () => {
     mount(draft({ description: "<p>Essential text</p>" }));
     const text = await screen.findByText("Essential text");
     const editor = text.closest<HTMLElement>('[contenteditable="true"]');
@@ -2312,11 +2312,11 @@ describe("phone-width action panel", () => {
       name: "Formatação do texto",
     });
     expect(
-      within(toolbar).getByRole("button", { name: "Mais formatação" }),
+      within(toolbar).getByRole("button", { name: "Remover Formatação" }),
     ).toBeTruthy();
     expect(
-      within(toolbar).queryByRole("button", { name: "Título 1" }),
-    ).toBeNull();
+      within(toolbar).getByRole("button", { name: "Título 1" }),
+    ).toBeTruthy();
     const user = userEvent.setup();
     act(() => editor.focus());
     await user.keyboard("{Alt>}{Shift>}{F10}{/Shift}{/Alt}");
@@ -2334,23 +2334,20 @@ describe("phone-width action panel", () => {
     const toolbar = () =>
       within(screen.getByRole("toolbar", { name: "Formatação do texto" }));
     expect(
-      toolbar().getByRole("button", { name: "Mais formatação" }),
+      toolbar().getByRole("button", { name: "Remover Formatação" }),
     ).toBeTruthy();
     essentialScrollerRect = new window.DOMRect(0, 120, 672, 500);
     resizePanel(672);
     expect(
-      toolbar().getByRole("button", { name: "Mais formatação" }),
+      toolbar().getByRole("button", { name: "Remover Formatação" }),
     ).toBeTruthy();
     essentialScrollerRect = new window.DOMRect(0, 120, 672, 600);
     resizePanel(672);
-    expect(
-      toolbar().queryByRole("button", { name: "Mais formatação" }),
-    ).toBeNull();
     expect(toolbar().getByRole("button", { name: "Título 1" })).toBeTruthy();
     essentialScrollerRect = new window.DOMRect(0, 120, 672, 180);
     resizePanel(672);
     expect(
-      toolbar().getByRole("button", { name: "Mais formatação" }),
+      toolbar().getByRole("button", { name: "Remover Formatação" }),
     ).toBeTruthy();
     expect(
       screen
@@ -2359,7 +2356,7 @@ describe("phone-width action panel", () => {
     ).toBe(editor);
   });
 
-  it("the compact content editor has one toolbar row and a menu for the other commands", async () => {
+  it("the content editor keeps the full toolbar across panel widths", async () => {
     const scroller = await openInstagram({
       content_description: "<p>Slide</p>",
     });
@@ -2368,28 +2365,28 @@ describe("phone-width action panel", () => {
       name: "Formatação do texto",
     });
     expect(
-      within(toolbar).getByRole("button", { name: "Mais formatação" }),
+      within(toolbar).getByRole("button", { name: "Remover Formatação" }),
     ).toBeTruthy();
     expect(
-      within(toolbar).queryByRole("button", { name: "Título 1" }),
-    ).toBeNull();
+      within(toolbar).getByRole("button", { name: "Título 1" }),
+    ).toBeTruthy();
     const user = userEvent.setup();
     act(() => editor.focus());
     await user.keyboard("{Alt>}{Shift>}{F10}{/Shift}{/Alt}");
     expect(toolbar.contains(document.activeElement)).toBe(true);
     await user.tab();
     expect(document.activeElement === editor).toBe(true);
-    // The Instagram content toolbar stays compact in a wide panel too.
+    // The same commands are available in a wide panel.
     resizePanel(768);
     const wideToolbar = within(scroller).getByRole("toolbar", {
       name: "Formatação do texto",
     });
     expect(
-      within(wideToolbar).getByRole("button", { name: "Mais formatação" }),
+      within(wideToolbar).getByRole("button", { name: "Remover Formatação" }),
     ).toBeTruthy();
     expect(
-      within(wideToolbar).queryByRole("button", { name: "Título 1" }),
-    ).toBeNull();
+      within(wideToolbar).getByRole("button", { name: "Título 1" }),
+    ).toBeTruthy();
     expect(instagramEditor(scroller) === editor).toBe(true);
     expect(within(scroller).getByText("Nenhum conteúdo")).toBeTruthy();
     expect(
@@ -2501,15 +2498,15 @@ describe("phone-width action panel", () => {
       const toolbar = () =>
         within(media.getByRole("toolbar", { name: "Formatação do texto" }));
       expect(
-        toolbar().getByRole("button", { name: "Mais formatação" }),
+        toolbar().getByRole("button", { name: "Remover Formatação" }),
       ).toBeTruthy();
-      expect(toolbar().queryByRole("button", { name: "Título 1" })).toBeNull();
+      expect(toolbar().getByRole("button", { name: "Título 1" })).toBeTruthy();
       expect(column.style.height).toBe("220px");
       // The keyboard shrinks only the visual viewport: same layout, smaller
       // column (kept at the minimum) and room to scroll it above the keyboard.
       viewport.set({ height: 250 });
       expect(
-        toolbar().getByRole("button", { name: "Mais formatação" }),
+        toolbar().getByRole("button", { name: "Remover Formatação" }),
       ).toBeTruthy();
       expect(column.style.height).toBe("144px");
       expect(
@@ -2521,15 +2518,15 @@ describe("phone-width action panel", () => {
       instagramScrollerRect = new window.DOMRect(0, 120, 672, 500);
       resizePanel(672);
       expect(
-        toolbar().getByRole("button", { name: "Mais formatação" }),
+        toolbar().getByRole("button", { name: "Remover Formatação" }),
       ).toBeTruthy();
       instagramScrollerRect = new window.DOMRect(0, 120, 672, 600);
       resizePanel(672);
-      // The toolbar stays compact; only the media/writing layout switches.
+      // Only the media and writing layout changes.
       expect(
-        toolbar().getByRole("button", { name: "Mais formatação" }),
+        toolbar().getByRole("button", { name: "Remover Formatação" }),
       ).toBeTruthy();
-      expect(toolbar().queryByRole("button", { name: "Título 1" })).toBeNull();
+      expect(toolbar().getByRole("button", { name: "Título 1" })).toBeTruthy();
       expect(media.getByText("Nenhum conteúdo")).toBeTruthy();
       expect(column.style.height).toBe("");
       expect(instagramEditor(scroller) === editor).toBe(true);
@@ -2537,7 +2534,7 @@ describe("phone-width action panel", () => {
       instagramScrollerRect = new window.DOMRect(0, 120, 800, 220);
       resizePanel(800);
       expect(
-        toolbar().getByRole("button", { name: "Mais formatação" }),
+        toolbar().getByRole("button", { name: "Remover Formatação" }),
       ).toBeTruthy();
       expect(column.style.height).toBe("");
     } finally {

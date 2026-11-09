@@ -47,7 +47,6 @@ import { UActionDatePicker } from "~/components/uzzina/UActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
 import { ActionTitleInput } from "./ActionTitleInput";
 import { ContentReorderDialog } from "~/components/features/media/ContentReorderDialog";
-import { useShortWritingPanel } from "./useWritingAreaHeight";
 interface EssentialsTabProps {
   /** Height Essencial needs without scrolling (title + metadata + description minimum). */
   onNeededHeightChange?: (height: number) => void;
@@ -124,7 +123,6 @@ export function EssentialsTab({
 }: EssentialsTabProps) {
   const [workFilesDialogOpen, setWorkFilesDialogOpen] = useState(false);
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const shortPanel = useShortWritingPanel(scrollerRef);
   const neededHeightCallback = useRef(onNeededHeightChange);
   neededHeightCallback.current = onNeededHeightChange;
   useLayoutEffect(() => {
@@ -420,7 +418,6 @@ export function EssentialsTab({
         >
           <Tiptap
             key={descriptionVersion}
-            compactToolbar={compact || shortPanel}
             className={cn(
               "h-full min-h-50 w-full bg-popover [&_.tiptap]:transition-colors [&_.tiptap:focus]:bg-input",
               isAIProcessing && "opacity-40",
