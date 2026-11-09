@@ -20,11 +20,11 @@ import {
   PrismToggleGroup,
   PrismToggleGroupItem,
 } from "~/components/prism";
-import { DATE_TIME_DISPLAY, PHASES, type PHASE } from "~/lib/CONSTANTS";
+import { CATEGORIES, DATE_TIME_DISPLAY, type CATEGORY } from "~/lib/CONSTANTS";
 import { cn } from "cnfast";
 import { getFormattedDateTime } from "~/utils/date";
 import { Content } from "../features/Content";
-import { UPhaseIcon } from "~/components/uzzina/UPhaseIcon";
+import { UIcons } from "~/components/uzzina/UIcons";
 type ClientCalendarProps<
   T extends Action | DashActionDto = Action | DashActionDto,
 > = {
@@ -185,7 +185,12 @@ export function ClientCalendar<
                   {/* Ações do dia */}
                   <div className="flex flex-col gap-px p-1">
                     {dayActions.map((action) => {
-                      const phase = PHASES[(action.phase as PHASE) || "idea"];
+                      const category = Object.hasOwn(
+                        CATEGORIES,
+                        action.category,
+                      )
+                        ? CATEGORIES[action.category as CATEGORY]
+                        : undefined;
                       const actionTime = parseU(action.date);
                       return (
                         <PrismButton
@@ -199,11 +204,19 @@ export function ClientCalendar<
                         >
                           <Content action={action} showDate={false} />
                           <div className="mt-2 flex items-center justify-between gap-4">
-                            <UPhaseIcon
-                              phase={phase}
-                              size="sm"
-                              variant="icon"
-                            />
+                            <span
+                              className="size-4"
+                              aria-label={category?.title}
+                              role={category ? "img" : undefined}
+                            >
+                              {category && (
+                                <UIcons
+                                  className="size-full"
+                                  color={category.color}
+                                  slug={category.slug}
+                                />
+                              )}
+                            </span>
 
                             <div className="text-xs text-muted-foreground">
                               {getFormattedDateTime(

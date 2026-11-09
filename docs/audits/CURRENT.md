@@ -12,6 +12,10 @@ O proprietário aprovou a barra completa com rolagem horizontal invisível em In
 
 Typecheck, lint e 14 testes focados passaram. Chromium a 390×950 e 1440×950 confirmou a barra, o foco e o menu de seleção em Essencial e Instagram, com dados fictícios. O roteiro amplo de rolagem parou antes de abrir a gaveta porque a ação fictícia não apareceu na busca. Mudança na main local.
 
+### Ícone da categoria no calendário do portal — 08/11
+
+No calendário de `/dash`, o ícone laranja de play representava a fase Fazer e podia ser confundido com Reels. A linha abaixo da capa agora mostra o ícone da categoria da ação ao lado da hora. Chromium com HTTP controlado confirmou Carrossel, Reels e Post Estático na mesma fase, cada um com seu próprio ícone. Código local, sem alteração no banco.
+
 ### Data e anexos na gaveta — 08/11
 
 Na aba Essencial, o botão “Adicionar arquivo” usa o estilo link e a linha de anexos tem 4 px de margem interna de cada lado para o anel de foco. O seletor de data mostra só o texto, e a inicial maiúscula vale nas telas que usam o formatador compartilhado, inclusive cartões, busca, conteúdo e calendário do portal. Alterações na main local. Falta conferir o foco dos botões e o visual na gaveta.

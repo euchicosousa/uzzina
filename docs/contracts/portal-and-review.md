@@ -14,6 +14,8 @@ Leia antes de mexer no portal `/dash`, em `/dash/review`, em `/api/dash-*`, `/ap
 
 - `Content` é compartilhado com portal/revisão: renderize sem providers privados; monte consultas da equipe somente quando o campo e a identidade precisarem delas.
 
+- No calendário de `/dash`, o ícone abaixo da capa identifica a categoria da ação e fica ao lado da hora.
+
 ## Login do portal
 
 Login do portal usa o mesmo layout/estilo do login principal: frame de28rem, logo, campos com ícones, espaçamento, alerta e botão à direita. Não acrescentar mensagem introdutória ou margens próprias ao portal. A autenticação do portal continua no seu serviço existente.
