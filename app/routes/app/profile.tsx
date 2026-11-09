@@ -35,9 +35,9 @@ import {
   type ReactNode,
 } from "react";
 import { flushSync } from "react-dom";
-import { useFillScrollViewport } from "~/hooks/useFillScrollViewport";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getQuerySessionGeneration } from "~/lib/query-client";
+import { useFillScrollViewport } from "~/hooks/useFillScrollViewport";
 import { preferenceRecord } from "~/lib/preference-persistence";
 import { toast } from "sonner";
 import { Theme, useAppThemeContext } from "~/hooks/useAppTheme";
@@ -67,6 +67,7 @@ import { PALLETE } from "~/lib/palettes";
 import {
   getUserPreferences,
   isTodayViewMode,
+  type CustomTheme,
   type TodayViewMode,
 } from "~/lib/preferences";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
@@ -75,13 +76,22 @@ import { CloudIcon } from "lucide-react";
 import { CustomThemePanel } from "~/components/features/profile/CustomThemePanel";
 import {
   applyCustomThemeChange,
+  applyCustomThemeOption,
   createCustomThemeDraft,
   isCompleteCustomTheme,
+  type CustomThemeOptionKey,
   type ThemeColorKey,
   type ThemeMode,
 } from "~/lib/custom-theme";
+import { z } from "zod";
 import cn from "cnfast";
+
+const profileSearchSchema = z.object({
+  tab: z.enum(["personal", "appearance", "behavior", "ai"]).optional(),
+});
+
 export const Route = createFileRoute("/app/profile")({
+  validateSearch: profileSearchSchema,
   component: ProfilePage,
 });
 export const runtime = "edge";
@@ -99,6 +109,9 @@ const isProfileTab = (value: unknown): value is ProfileTab =>
 // Text-labelled choices need more horizontal room than the icon-sized Prism toggle default.
 const PROFILE_CHOICE_CLASS_NAME =
   "max-w-full px-4 whitespace-normal [overflow-wrap:anywhere]";
+// Contain visually hidden color inputs and leave room for focus rings and shadows.
+const PROFILE_PANEL_CLASS_NAME =
+  "relative grid min-h-0 flex-1 content-start gap-8 overflow-y-auto overscroll-y-contain p-4 md:px-2";
 
 /**
  * Decorative accent sample. Colors come from the same PALLETE data as the
@@ -275,11 +288,26 @@ function PartnerPageMockup({ showSidebar }: { showSidebar: boolean }) {
   );
 }
 
+function getInitialProfileTab(): ProfileTab {
+  const tab = new URLSearchParams(window.location.search).get("tab");
+  return isProfileTab(tab) ? tab : "personal";
+}
+
 function ProfilePage() {
   const { person, cloudName, uploadPreset } = useAppContext();
   const pageRef = useRef<HTMLDivElement>(null);
   useFillScrollViewport(pageRef);
-  const [section, setSection] = useState<ProfileTab>("personal");
+  const [section, setSection] = useState<ProfileTab>(getInitialProfileTab);
+
+  useEffect(() => {
+    const syncTab = () => setSection(getInitialProfileTab());
+    window.addEventListener("popstate", syncTab);
+    window.addEventListener("uzzina-profile-tab", syncTab);
+    return () => {
+      window.removeEventListener("popstate", syncTab);
+      window.removeEventListener("uzzina-profile-tab", syncTab);
+    };
+  }, []);
   const queryClient = useQueryClient();
   const generation = useRef(getQuerySessionGeneration(queryClient)).current;
   const isCurrentSession = () =>
@@ -435,6 +463,14 @@ function ProfilePage() {
     value: string,
   ) => {
     const next = applyCustomThemeChange(customThemeDraft, mode, key, value);
+    setCustomThemeDraft(next);
+    previewCustomTheme(next);
+  };
+  const handleCustomThemeOptionChange = <K extends CustomThemeOptionKey>(
+    key: K,
+    value: CustomTheme[K],
+  ) => {
+    const next = applyCustomThemeOption(customThemeDraft, key, value);
     setCustomThemeDraft(next);
     previewCustomTheme(next);
   };
@@ -685,7 +721,7 @@ function ProfilePage() {
       }}
       className="mx-auto flex min-h-0 w-full flex-col overflow-hidden md:max-w-2xl"
     >
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b p-4 md:px-0">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b p-4 md:px-2">
         <h1 className="p-0 text-2xl font-bold tracking-tight text-foreground">
           Minha Conta
         </h1>
@@ -757,7 +793,7 @@ function ProfilePage() {
           id="personal"
           shouldForceMount
           data-tab-id="personal"
-          className="grid gap-8 p-4 md:px-0"
+          className={PROFILE_PANEL_CLASS_NAME}
         >
           <div className="flex w-full flex-col gap-8">
             {/* Profile Avatar Upload */}
@@ -856,7 +892,7 @@ function ProfilePage() {
           id="appearance"
           shouldForceMount
           data-tab-id="appearance"
-          className="grid gap-8 p-4 md:px-0"
+          className={PROFILE_PANEL_CLASS_NAME}
         >
           {/* Theme Preference Selection */}
           <ProfileSetting title="Tema do App">
@@ -927,12 +963,6 @@ function ProfilePage() {
                   {palette.label}
                 </PrismToggleGroupItem>
               ))}
-              {selectedThemeColor === -1 && (
-                <CustomThemePanel
-                  onChange={handleCustomThemeChange}
-                  theme={customThemeDraft}
-                />
-              )}
               <PrismToggleGroupItem
                 className={cn(PROFILE_CHOICE_CLASS_NAME, "justify-start")}
                 id="-1"
@@ -941,6 +971,13 @@ function ProfilePage() {
                 Personalizado
               </PrismToggleGroupItem>
             </PrismToggleGroup>
+            {selectedThemeColor === -1 && (
+              <CustomThemePanel
+                onChange={handleCustomThemeChange}
+                onOptionChange={handleCustomThemeOptionChange}
+                theme={customThemeDraft}
+              />
+            )}
           </ProfileSetting>
 
           {/* Follow Partner Color Toggle */}
@@ -959,7 +996,7 @@ function ProfilePage() {
           id="behavior"
           shouldForceMount
           data-tab-id="behavior"
-          className="grid gap-8 p-4 md:px-0"
+          className={PROFILE_PANEL_CLASS_NAME}
         >
           {/* Default View Selection */}
           <ProfileSetting
@@ -1089,7 +1126,7 @@ function ProfilePage() {
           id="ai"
           shouldForceMount
           data-tab-id="ai"
-          className="grid gap-8 p-4 md:px-0"
+          className={PROFILE_PANEL_CLASS_NAME}
         >
           <div className="flex w-full flex-col gap-4 md:max-w-2xl lg:gap-6">
             <h2 className="sr-only">Uso de IA</h2>

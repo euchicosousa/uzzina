@@ -26,6 +26,9 @@ export type CustomThemeColors = {
 export type CustomTheme = {
   light: CustomThemeColors;
   dark: CustomThemeColors;
+  relief?: boolean;
+  shadowColor?: string;
+  topBorderColor?: string;
 };
 
 export const DEFAULT_TASK_AI_MODELS: readonly ActionAIModelId[] =
@@ -111,6 +114,9 @@ export type SerializedPreferences = {
       bgHex?: string;
       fgHex?: string;
     };
+    relief?: boolean;
+    shadowColor?: string;
+    topBorderColor?: string;
   } | null;
 };
 
@@ -153,6 +159,20 @@ export function getUserPreferences(person?: {
           bgHex: dark.bgHex,
           fgHex: dark.fgHex,
         },
+        relief:
+          typeof prefs.customTheme.relief === "boolean"
+            ? prefs.customTheme.relief
+            : true,
+        shadowColor:
+          typeof prefs.customTheme.shadowColor === "string" &&
+          prefs.customTheme.shadowColor.trim().length > 0
+            ? prefs.customTheme.shadowColor
+            : undefined,
+        topBorderColor:
+          typeof prefs.customTheme.topBorderColor === "string" &&
+          prefs.customTheme.topBorderColor.trim().length > 0
+            ? prefs.customTheme.topBorderColor
+            : undefined,
       };
     }
   }

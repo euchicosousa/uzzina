@@ -6,6 +6,14 @@ Produção e GitHub em `a6a056c`, que encerrou CAL01, EST-01/02, IA-M01/M03/M04 
 
 ## Pendências reais
 
+### Aparência personalizada: corte e salvamento — 08/11
+
+No [DS09](../../.scratch/design-system-audit/issues/09-palette-search-and-custom-theme.md), a tela Minha Conta → Aparência cortava os campos inferiores porque as abas não tinham rolagem interna. As quatro abas passaram a rolar no código local; o atalho Personalizado usa o parâmetro de navegação e o tema acompanha as novas opções entre abas do navegador. Typecheck, 4 testes do perfil, 4 do menu e 5 do tema passaram. Falta conferir o corte e o atalho visualmente. A função `update_my_preferences` em produção foi atualizada para aceitar as opções de relevo e cores com validação restrita; opções antigas e valores inválidos foram conferidos com dados fictícios por consulta, e a leitura posterior confirmou a função e as permissões existentes (anon sem acesso, authenticated com acesso). SQL versionado em `supabase/migrations/20261109001014_custom_theme_relief_preferences.sql`. Não foi salva uma preferência real; falta validar o fluxo completo e o visual no app.
+
+Após as capturas do proprietário, a aba passou a conter os campos de cor ocultos que estendiam a página e ganhou margem interna para a sombra do cartão de prévia. Verificado em Chromium a 1440×760 e 390×700, com sessão e respostas HTTP fictícias: somente a aba rolou, o cabeçalho ficou fixo, o conteúdo chegou ao fim e não houve transbordamento horizontal. Falta aceite visual no navegador do proprietário e validar o salvamento completo.
+
+Na busca global, “Usar paleta” agora mostra à esquerda a cor primária da própria paleta no modo ativo. Typecheck passou. O proprietário autorizou o envio à main em 08/11. Build de produção e verificação serverless (9/9) passaram. A confirmação do deploy Ready e o salvamento completo pelo app ficam pendentes.
+
 ### Paleta pública da página inicial e do portal — 08/11
 
 Implementação local do [DS07](../../.scratch/design-system-audit/issues/07-public-palette.md): `/` e `/dash` usam provisoriamente a paleta neutra Ônix em claro e escuro, sem mudar a preferência salva da equipe; ao voltar para as demais rotas, a paleta pessoal é reaplicada. A cor do parceiro deixou de substituir globalmente os controles do portal; elementos que recebem suas cores diretamente continuam com elas. A inicialização pública começa antes do React e a troca interna aplica a paleta antes da pintura. Typecheck e testes de variáveis de paleta (4/4) passaram; diff conferido. Falta conferir visual, contraste, acesso direto, recarga, transições, login e navegação do portal; escolha visual depende de aceite. Sem publicação.

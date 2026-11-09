@@ -24,6 +24,9 @@ const CUSTOM_DARK_PRIMARY_KEY = "uzzina-custom-dark-primary";
 const CUSTOM_DARK_PRIMARY_FG_KEY = "uzzina-custom-dark-primary-fg";
 const CUSTOM_DARK_BG_KEY = "uzzina-custom-dark-bg";
 const CUSTOM_DARK_FG_KEY = "uzzina-custom-dark-fg";
+const CUSTOM_RELIEF_KEY = "uzzina-custom-relief";
+const CUSTOM_SHADOW_COLOR_KEY = "uzzina-custom-shadow-color";
+const CUSTOM_TOP_BORDER_COLOR_KEY = "uzzina-custom-top-border-color";
 
 function getStoredIndex(): number {
   if (typeof window === "undefined") return 0;
@@ -53,11 +56,20 @@ function getStoredCustomTheme(): CustomTheme | null {
   const dpfg = localStorage.getItem(CUSTOM_DARK_PRIMARY_FG_KEY) || "#FFFFFF";
   const dbg = localStorage.getItem(CUSTOM_DARK_BG_KEY);
   const dfg = localStorage.getItem(CUSTOM_DARK_FG_KEY);
+  const reliefStr = localStorage.getItem(CUSTOM_RELIEF_KEY);
+  const relief = reliefStr === null ? true : reliefStr !== "false";
+  const shadowColor =
+    localStorage.getItem(CUSTOM_SHADOW_COLOR_KEY) || undefined;
+  const topBorderColor =
+    localStorage.getItem(CUSTOM_TOP_BORDER_COLOR_KEY) || undefined;
 
   if (lp && lbg && lfg && dp && dbg && dfg) {
     return {
       light: { primaryHex: lp, primaryFgHex: lpfg, bgHex: lbg, fgHex: lfg },
       dark: { primaryHex: dp, primaryFgHex: dpfg, bgHex: dbg, fgHex: dfg },
+      relief,
+      shadowColor,
+      topBorderColor,
     };
   }
   return null;
@@ -177,7 +189,10 @@ export function useAppTheme(isPublic = false) {
         key === CUSTOM_DARK_PRIMARY_KEY ||
         key === CUSTOM_DARK_PRIMARY_FG_KEY ||
         key === CUSTOM_DARK_BG_KEY ||
-        key === CUSTOM_DARK_FG_KEY
+        key === CUSTOM_DARK_FG_KEY ||
+        key === CUSTOM_RELIEF_KEY ||
+        key === CUSTOM_SHADOW_COLOR_KEY ||
+        key === CUSTOM_TOP_BORDER_COLOR_KEY
       ) {
         setCustomThemeState(getStoredCustomTheme());
       }
@@ -225,6 +240,9 @@ export function useAppTheme(isPublic = false) {
 
       return {
         label: "Personalizado",
+        relief: customTheme.relief,
+        shadowColor: customTheme.shadowColor,
+        topBorderColor: customTheme.topBorderColor,
         light: {
           primary: lightP,
           primaryFg: lightPfg,
@@ -299,6 +317,22 @@ export function useAppTheme(isPublic = false) {
     localStorage.setItem(CUSTOM_DARK_BG_KEY, theme.dark.bgHex);
     localStorage.setItem(CUSTOM_DARK_FG_KEY, theme.dark.fgHex);
 
+    if (theme.relief !== undefined) {
+      localStorage.setItem(CUSTOM_RELIEF_KEY, String(theme.relief));
+    } else {
+      localStorage.removeItem(CUSTOM_RELIEF_KEY);
+    }
+    if (theme.shadowColor) {
+      localStorage.setItem(CUSTOM_SHADOW_COLOR_KEY, theme.shadowColor);
+    } else {
+      localStorage.removeItem(CUSTOM_SHADOW_COLOR_KEY);
+    }
+    if (theme.topBorderColor) {
+      localStorage.setItem(CUSTOM_TOP_BORDER_COLOR_KEY, theme.topBorderColor);
+    } else {
+      localStorage.removeItem(CUSTOM_TOP_BORDER_COLOR_KEY);
+    }
+
     // Salva pré-convertido em OKLCH para o script inline do root.tsx
     const lp = hexToOklch(theme.light.primaryHex);
     const lpfg = hexToOklch(theme.light.primaryFgHex);
@@ -357,6 +391,9 @@ export function useAppTheme(isPublic = false) {
     const darkFg = hexToOklch(theme.dark.fgHex);
 
     applyPaletteVars({
+      relief: theme.relief,
+      shadowColor: theme.shadowColor,
+      topBorderColor: theme.topBorderColor,
       light: { primary: lightP, primaryFg: lightPfg, bg: lightBg, fg: lightFg },
       dark: { primary: darkP, primaryFg: darkPfg, bg: darkBg, fg: darkFg },
     });

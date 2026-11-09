@@ -171,7 +171,13 @@ export function Header({
           return;
         if (latest.kind === "page") {
           const [pathname, queryString] = latest.to.split("?", 2);
-          if (pathname === "/app/planejamento" && queryString) {
+          if (pathname === "/app/profile" && queryString) {
+            const tab = new URLSearchParams(queryString).get("tab");
+            if (tab === "appearance") {
+              await navigate({ to: "/app/profile", search: { tab } });
+              window.dispatchEvent(new Event("uzzina-profile-tab"));
+            }
+          } else if (pathname === "/app/planejamento" && queryString) {
             const partner = new URLSearchParams(queryString).get("partner");
             await navigate({
               to: "/app/planejamento",
@@ -684,6 +690,26 @@ export const HeaderMenu = ({
               </PrismMenuItem>
             );
           })}
+          <PrismMenuItem
+            aria-label="Personalizado"
+            className={cn(
+              "mx-auto size-7 min-w-0 rounded-2xl p-1 transition-opacity squircle",
+              followPartnerColor && "opacity-30 focus:opacity-100",
+            )}
+            onAction={() => onNavigate("/app/profile?tab=appearance")}
+            textValue="Personalizado"
+          >
+            <div
+              className={cn(
+                "flex size-5 items-center justify-center rounded-[9px] border squircle",
+                primaryColorIndex === -1
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-muted/60 text-muted-foreground",
+              )}
+            >
+              <PaletteIcon className="size-3" />
+            </div>
+          </PrismMenuItem>
         </PrismMenuGroup>
 
         <PrismMenuSeparator />

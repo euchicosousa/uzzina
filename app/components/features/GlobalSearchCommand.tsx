@@ -38,7 +38,12 @@ import {
   SettingsIcon,
   RotateCcwIcon,
 } from "lucide-react";
-import { useAppThemeContext, type ThemePreference } from "~/hooks/useAppTheme";
+import { PALLETE } from "~/lib/palettes";
+import {
+  Theme,
+  useAppThemeContext,
+  type ThemePreference,
+} from "~/hooks/useAppTheme";
 import { usePreferencePersistence } from "~/hooks/usePreferencePersistence";
 import { useAppContext } from "~/contexts/AppContext";
 import { createActionDraft, resolveDraftPartners } from "~/utils/factory";
@@ -65,7 +70,14 @@ export function GlobalSearchCommand({
     const frame = requestAnimationFrame(() => setCreatingCelebration("open"));
     return () => cancelAnimationFrame(frame);
   }, [creatingCelebration, open]);
-  const { setTheme, themePreference } = useAppThemeContext();
+  const {
+    setTheme,
+    themePreference,
+    primaryColorIndex,
+    setPrimaryColorIndex,
+    followPartnerColor,
+    setFollowPartnerColor,
+  } = useAppThemeContext();
   // Keep the persistence owner mounted when a command closes the search.
   const { queuePreference, hasError, retry } = usePreferencePersistence(person);
   const initialPartnerSlug =
@@ -82,6 +94,19 @@ export function GlobalSearchCommand({
             onThemeChange={(theme) => {
               setTheme(theme);
               queuePreference({ theme });
+            }}
+            paletteIndex={primaryColorIndex}
+            onPaletteChange={(index) => {
+              setPrimaryColorIndex(index);
+              if (followPartnerColor) {
+                setFollowPartnerColor(false);
+                queuePreference({
+                  themeColorIndex: index,
+                  followPartnerColor: false,
+                });
+              } else {
+                queuePreference({ themeColorIndex: index });
+              }
             }}
             preferenceError={hasError}
             retryPreferences={retry}
@@ -108,6 +133,8 @@ function GlobalSearchContent({
   onBeforeLeave,
   themePreference,
   onThemeChange,
+  paletteIndex,
+  onPaletteChange,
   preferenceError,
   retryPreferences,
 }: Omit<GlobalSearchCommandProps, "open"> & {
@@ -115,12 +142,15 @@ function GlobalSearchContent({
   onCreateCelebration: () => void;
   themePreference: ThemePreference;
   onThemeChange: (theme: ThemePreference) => void;
+  paletteIndex?: number;
+  onPaletteChange?: (index: number) => void;
   preferenceError: boolean;
   retryPreferences: () => void;
 }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { person, partnerFilters } = useAppContext();
+  const { theme } = useAppThemeContext();
   const navigatingResultsRef = useRef(false);
   const [searchResults, setSearchResults] = useState<{
     actions: Action[];
@@ -263,6 +293,22 @@ function GlobalSearchContent({
         return true;
       },
     })),
+    ...PALLETE.map((palette, idx) => {
+      const { l, c, h } = (theme === Theme.DARK ? palette.dark : palette.light)
+        .primary;
+      return {
+        id: `palette-${palette.id}`,
+        label: `Usar paleta ${palette.label}`,
+        primaryColor: `oklch(${l} ${c} ${h})`,
+        selected: paletteIndex === idx,
+        run: () => {
+          if (onPaletteChange) {
+            onPaletteChange(idx);
+          }
+          return true;
+        },
+      };
+    }),
     {
       id: "home",
       label: "Ir para início",
@@ -634,7 +680,15 @@ function GlobalSearchContent({
                   void runCommand(command.id);
                 }}
               >
-                <command.Icon className="size-4" />
+                {"primaryColor" in command ? (
+                  <span
+                    aria-hidden="true"
+                    className="size-4 shrink-0 rounded-lg border border-foreground/10 squircle"
+                    style={{ backgroundColor: command.primaryColor }}
+                  />
+                ) : (
+                  <command.Icon className="size-4" />
+                )}
                 <span>{command.label}</span>
               </PrismCommandItem>
             ))}

@@ -8,6 +8,7 @@ import type { CustomTheme, CustomThemeColors } from "./preferences";
 
 export type ThemeMode = "light" | "dark";
 export type ThemeColorKey = keyof CustomThemeColors;
+export type CustomThemeOptionKey = "relief" | "shadowColor" | "topBorderColor";
 
 const DEFAULT_CUSTOM_THEME: CustomTheme = {
   light: {
@@ -22,6 +23,7 @@ const DEFAULT_CUSTOM_THEME: CustomTheme = {
     bgHex: "#141414",
     fgHex: "#FFFFFF",
   },
+  relief: true,
 };
 
 /** Starts the profile editor from the saved custom theme or the defaults. */
@@ -43,6 +45,9 @@ export function createCustomThemeDraft(saved: CustomTheme | null): CustomTheme {
       bgHex: saved?.dark.bgHex || DEFAULT_CUSTOM_THEME.dark.bgHex,
       fgHex: saved?.dark.fgHex || DEFAULT_CUSTOM_THEME.dark.fgHex,
     },
+    relief: saved?.relief ?? DEFAULT_CUSTOM_THEME.relief ?? true,
+    shadowColor: saved?.shadowColor,
+    topBorderColor: saved?.topBorderColor,
   };
 }
 
@@ -75,7 +80,18 @@ export function applyCustomThemeChange(
       dark.primaryFgHex = deriveAccentFg(value);
     }
   }
-  return { light, dark };
+  return { ...draft, light, dark };
+}
+
+export function applyCustomThemeOption<K extends CustomThemeOptionKey>(
+  draft: CustomTheme,
+  key: K,
+  value: CustomTheme[K],
+): CustomTheme {
+  return {
+    ...draft,
+    [key]: value,
+  };
 }
 
 export function isCompleteCustomTheme(theme: CustomTheme): boolean {
