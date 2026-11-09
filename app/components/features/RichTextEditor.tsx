@@ -307,7 +307,7 @@ function TiptapToolbar({ editor, isRounded }: TiptapToolbarProps) {
     <EditorToolbar
       label="Formatação do texto"
       className={cn(
-        "flex max-w-full shrink-0 scrollbar-none flex-nowrap items-center gap-1 overflow-x-auto overscroll-x-contain border-b bg-popover p-1.5 [&::-webkit-scrollbar]:hidden [&>*]:shrink-0",
+        "flex max-w-full shrink-0 scrollbar-none flex-nowrap items-center gap-1 overflow-x-auto overscroll-x-contain border-b bg-popover p-1.5 *:shrink-0 [&::-webkit-scrollbar]:hidden",
         isRounded && "rounded-t-2xl squircle",
       )}
     >
