@@ -36,6 +36,8 @@ Implementação enviada ao GitHub em `31de929` do [DS07](../../.scratch/design-s
 
 O [tracker](../../.scratch/README.md) e a [central](2026-11-03-ticket-dispatch.md) listam os mesmos 18 tickets, todos com arquivo existente: 12 do Planejamento em espera, cinco de design system e um de arquitetura. A correção de foco, Sprint e sombras dos cartões está na `main` e aguarda aceite visual. Os estudos de fundo por fase e de estrutura do app estão registrados na main local. A conferência foi documental.
 
+Na lista solicitada fora do Planejamento, os dois índices coincidem em seis tickets. Paleta pública, personalização de tema e cartões aguardam validação no app. Os três ajustes estão no commit com deploy bem-sucedido registrado acima. A página institucional segue pendente e os dois estudos estão registrados na `main` em `02d1d9e`.
+
 ### Auditoria da estrutura do app — 08/11
 
 Aberto [ARQ-01 — Auditar a estrutura da UZZINA e propor simplificações](../../.scratch/structural-audit/issues/01-app-structure-and-simplification.md) na `main` local. Escopo do app inteiro, das telas da equipe e do portal até APIs, banco e deploy. A investigação deve demonstrar onde há módulos sem uso, regras espalhadas ou caminhos duplicados e priorizar o que vale retirar, simplificar ou manter. Ticket e índices registrados, referências e diff conferidos. Falta executar o estudo e apresentar o relatório para o proprietário decidir quais propostas autorizar.
@@ -43,6 +45,8 @@ Aberto [ARQ-01 — Auditar a estrutura da UZZINA e propor simplificações](../.
 ### Estudo de fundo das ações por fase — 08/11
 
 Aberto [DS11 — Cor de fundo das ações por fase](../../.scratch/design-system-audit/issues/11-action-background-by-phase.md) na `main` local. Em Hoje e nas telas do parceiro, os cartões hoje usam o fundo da paleta, com destaque próprio para atraso. O estudo vai comparar o fundo por fase e o hover, mantendo o relevo, e propor uma preferência pessoal em Minha Conta → Aparência e nos comandos da busca global. O levantamento inicial localizou a cor de fase, a exceção de atraso e a cor própria da capa de Conteúdo. Ticket e índices registrados, referências e diff conferidos. Falta produzir o relatório com prévias e decidir fundo, hover e convivência com atraso antes de autorizar implementação.
+
+A [maquete comparativa](../../.scratch/design-system-audit/comparativo-ds11.html) usa dados fictícios para comparar tema, relevo, cor de fundo, hover e precedência de atraso. O script inicializou e os controles atualizaram as comparações no ensaio isolado. A maquete faz parte do estudo. O relatório e a escolha do tratamento visual continuam pendentes.
 
 ### IG01 encerrado: seguir com o Meta Business Suite — 08/11
 

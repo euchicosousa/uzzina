@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DS11 — Comparativo: Cor de fundo das ações por fase</title>
+    <style>
+      :root {
+        --bg: oklch(0.96 0.002 200);
+        --fg: oklch(0 0 0);
+        --muted-fg: oklch(0.45 0 0);
+        --border: oklch(0.89 0.002 200);
+        --primary: oklch(0 0 0);
+        --primary-fg: oklch(1 0 0);
+        --ring: oklch(0 0 0);
+        --action: oklch(0.98 0.002 200);
+        --action-hover: oklch(1 0 0);
+        --action-top-border: #ffffff;
+        --late-top-border: rgba(255, 255, 255, 0.5);
+        --action-ring: rgba(0, 0, 0, 0.05);
+        --action-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.14);
+        --action-hover-shadow:
+          0 10px 15px -3px rgba(0, 0, 0, 0.18),
+          0 4px 6px -4px rgba(0, 0, 0, 0.18);
+        --late: oklch(0.96 0.02 16.339);
+        --late-hover: oklch(0.98 0.02 16.339);
+        --late-fg: oklch(0.6 0.3 16.339);
+
+        /* Tonal phase surfaces (Light) */
+        --phase-idea-bg: oklch(0.955 0.038 84.4);
+        --phase-idea-hover-h1: oklch(0.915 0.052 84.4);
+        --phase-idea-hover-h2: color-mix(
+          in oklab,
+          var(--phase-idea-bg),
+          var(--fg) 6%
+        );
+
+        --phase-do-bg: oklch(0.95 0.036 47.6);
+        --phase-do-hover-h1: oklch(0.91 0.05 47.6);
+        --phase-do-hover-h2: color-mix(
+          in oklab,
+          var(--phase-do-bg),
+          var(--fg) 6%
+        );
+
+        --phase-doing-bg: oklch(0.95 0.036 354.3);
+        --phase-doing-hover-h1: oklch(0.91 0.05 354.3);
+        --phase-doing-hover-h2: color-mix(
+          in oklab,
+          var(--phase-doing-bg),
+          var(--fg) 6%
+        );
+
+        --phase-review-bg: oklch(0.95 0.036 303.9);
+        --phase-review-hover-h1: oklch(0.91 0.05 303.9);
+        --phase-review-hover-h2: color-mix(
+          in oklab,
+          var(--phase-review-bg),
+          var(--fg) 6%
+        );
+
+        --phase-done-bg: oklch(0.95 0.034 232.7);
+        --phase-done-hover-h1: oklch(0.91 0.048 232.7);
+        --phase-done-hover-h2: color-mix(
+          in oklab,
+          var(--phase-done-bg),
+          var(--fg) 6%
+        );
+
+        --phase-finished-bg: oklch(0.95 0.036 151.7);
+        --phase-finished-hover-h1: oklch(0.91 0.05 151.7);
+        --phase-finished-hover-h2: color-mix(
+          in oklab,
+          var(--phase-finished-bg),
+          var(--fg) 6%
+        );
+      }
+
+      body.dark {
+        --bg: oklch(0.2 0.01 250);
+        --fg: oklch(1 0 0);
+        --muted-fg: oklch(0.72 0 0);
+        --border: oklch(0.3 0.01 250);
+        --primary: oklch(1 0 0);
+        --primary-fg: oklch(0 0 0);
+        --ring: oklch(1 0 0);
+        --action: oklch(0.22 0.01 250);
+        --action-hover: oklch(0.3 0.01 250);
+        --action-top-border: rgba(255, 255, 255, 0.1);
+        --late-top-border: rgba(255, 255, 255, 0.25);
+        --action-ring: rgba(0, 0, 0, 0.2);
+        --action-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.35);
+        --action-hover-shadow:
+          0 10px 15px -3px rgba(0, 0, 0, 0.5),
+          0 4px 6px -4px rgba(0, 0, 0, 0.5);
+        --late: oklch(0.3 0.1 16.339);
+        --late-hover: oklch(0.38 0.1 16.339);
+        --late-fg: oklch(0.805 0.2 16.339);
+
+        /* Tonal phase surfaces (Dark) */
+        --phase-idea-bg: oklch(0.27 0.055 84.4);
+        --phase-idea-hover-h1: oklch(0.33 0.068 84.4);
+        --phase-idea-hover-h2: color-mix(
+          in oklab,
+          var(--phase-idea-bg),
+          var(--fg) 8%
+        );
+
+        --phase-do-bg: oklch(0.27 0.055 47.6);
+        --phase-do-hover-h1: oklch(0.33 0.068 47.6);
+        --phase-do-hover-h2: color-mix(
+          in oklab,
+          var(--phase-do-bg),
+          var(--fg) 8%
+        );
+
+        --phase-doing-bg: oklch(0.27 0.055 354.3);
+        --phase-doing-hover-h1: oklch(0.33 0.068 354.3);
+        --phase-doing-hover-h2: color-mix(
+          in oklab,
+          var(--phase-doing-bg),
+          var(--fg) 8%
+        );
+
+        --phase-review-bg: oklch(0.27 0.055 303.9);
+        --phase-review-hover-h1: oklch(0.33 0.068 303.9);
+        --phase-review-hover-h2: color-mix(
+          in oklab,
+          var(--phase-review-bg),
+          var(--fg) 8%
+        );
+
+        --phase-done-bg: oklch(0.27 0.052 232.7);
+        --phase-done-hover-h1: oklch(0.33 0.065 232.7);
+        --phase-done-hover-h2: color-mix(
+          in oklab,
+          var(--phase-done-bg),
+          var(--fg) 8%
+        );
+
+        --phase-finished-bg: oklch(0.27 0.055 151.7);
+        --phase-finished-hover-h1: oklch(0.33 0.068 151.7);
+        --phase-finished-hover-h2: color-mix(
+          in oklab,
+          var(--phase-finished-bg),
+          var(--fg) 8%
+        );
+      }
+
+      body.flat {
+        --action-top-border: transparent;
+        --late-top-border: transparent;
+        --action-shadow: 0 0 #0000;
+        --action-hover-shadow: 0 0 #0000;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 24px;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          sans-serif;
+        font-size: 14px;
+        background: var(--bg);
+        color: var(--fg);
+        line-height: 1.45;
+      }
+      h1 {
+        font-size: 22px;
+        margin: 0 0 8px;
+      }
+      h2 {
+        font-size: 16px;
+        margin: 28px 0 10px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 6px;
+      }
+      h3 {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted-fg);
+        margin: 16px 0 8px;
+      }
+      p.lead {
+        max-width: 920px;
+        color: var(--muted-fg);
+        margin: 0 0 16px;
+      }
+      .toolbar {
+        position: sticky;
+        top: 8px;
+        z-index: 50;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px;
+        border-radius: 16px;
+        background: color-mix(in srgb, var(--bg) 88%, transparent);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border);
+        margin-bottom: 20px;
+      }
+      .toolbar-group {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding-right: 10px;
+        border-right: 1px solid var(--border);
+      }
+      .toolbar-group:last-child {
+        border-right: none;
+      }
+      .toolbar-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted-fg);
+        margin-right: 4px;
+      }
+      button.ctrl {
+        font: inherit;
+        font-size: 12px;
+        padding: 5px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--action);
+        color: var(--fg);
+        cursor: pointer;
+      }
+      button.ctrl[aria-pressed="true"] {
+        background: var(--primary);
+        color: var(--primary-fg);
+        border-color: var(--primary);
+        font-weight: 600;
+      }
+      .grid-6 {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(195px, 1fr));
+        gap: 12px;
+        overflow-x: auto;
+        padding: 6px 4px 14px;
+      }
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 14px;
+        padding: 6px 4px 14px;
+      }
+      .col-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 4px solid;
+        padding: 8px 4px;
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 4px;
+      }
+      /* ActionItem simulation matching app/components/features/ActionItem.tsx */
+      .action-card {
+        position: relative;
+        border-radius: 16px;
+        background: var(--card-bg, var(--action));
+        color: var(--card-fg, var(--fg));
+        border-top: 1px solid var(--card-top-border, var(--action-top-border));
+        box-shadow:
+          0 0 0 var(--ring-w, 1px) var(--ring-c, var(--action-ring)),
+          var(--action-shadow);
+        transition:
+          color 500ms,
+          background-color 500ms,
+          border-color 500ms,
+          box-shadow 500ms,
+          padding 500ms;
+        cursor: pointer;
+      }
+      .action-card:hover,
+      .action-card.force-hover {
+        background: var(--card-hover-bg, var(--action-hover));
+        box-shadow:
+          0 0 0 var(--ring-w, 1px) var(--ring-c, var(--action-ring)),
+          var(--action-hover-shadow);
+      }
+      .action-card:focus-within,
+      .action-card.force-focus {
+        outline: 3px solid color-mix(in srgb, var(--ring) 30%, transparent);
+      }
+      .action-line {
+        border-radius: 12px;
+        padding: 6px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .action-block {
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .action-content {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        overflow: hidden;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .finished-dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: inline-grid;
+        place-content: center;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .meta {
+        font-size: 11px;
+        opacity: 0.55;
+        white-space: nowrap;
+      }
+      .avatar {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        font-size: 9px;
+        font-weight: 700;
+        display: inline-grid;
+        place-content: center;
+        background: #2640a0;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .sprint-bolt {
+        font-size: 12px;
+        line-height: 1;
+      }
+      .content-cover {
+        aspect-ratio: 4 / 4.2;
+        display: grid;
+        place-content: center;
+        padding: 12px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .state-tag {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--muted-fg);
+        margin-bottom: 2px;
+      }
+      .note-box {
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        font-size: 12px;
+        margin-top: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>DS11 · Estudo de Cor de Fundo das Ações por Fase</h1>
+    <p class="lead">
+      Maquete comparativa estática com dados fictícios. Use a barra acima para
+      alternar tema (Claro/Escuro), paleta (Ônix com relevo vs Carbono plana),
+      modo de aplicação da cor (Padrão, Tonal OKLCH recomendado ou Cor direta da
+      fase), fórmula de hover (ΔL+ΔC vs Sobreposição neutra) e precedência de
+      atraso.
+    </p>
+
+    <div class="toolbar" role="region" aria-label="Controles de simulação">
+      <div class="toolbar-group">
+        <span class="toolbar-label">Tema:</span>
+        <button class="ctrl" id="btn-light" aria-pressed="true">Claro</button>
+        <button class="ctrl" id="btn-dark" aria-pressed="false">Escuro</button>
+      </div>
+      <div class="toolbar-group">
+        <span class="toolbar-label">Paleta:</span>
+        <button class="ctrl" id="btn-relief" aria-pressed="true">
+          Ônix (Com relevo)
+        </button>
+        <button class="ctrl" id="btn-flat" aria-pressed="false">
+          Carbono (Plana)
+        </button>
+      </div>
+      <div class="toolbar-group">
+        <span class="toolbar-label">Fundo:</span>
+        <button class="ctrl" id="btn-mode-default" aria-pressed="false">
+          Padrão
+        </button>
+        <button class="ctrl" id="btn-mode-tonal" aria-pressed="true">
+          Por fase · Tonal (Proposto)
+        </button>
+        <button class="ctrl" id="btn-mode-direct" aria-pressed="false">
+          Por fase · Cor direta
+        </button>
+      </div>
+      <div class="toolbar-group">
+        <span class="toolbar-label">Hover:</span>
+        <button class="ctrl" id="btn-hover-h1" aria-pressed="true">
+          H1: ΔL + ΔC OKLCH
+        </button>
+        <button class="ctrl" id="btn-hover-h2" aria-pressed="false">
+          H2: Mix neutro 6%
+        </button>
+      </div>
+      <div class="toolbar-group">
+        <span class="toolbar-label">Atraso:</span>
+        <button class="ctrl" id="btn-late-bg" aria-pressed="true">
+          Atraso ganha fundo (bg-late)
+        </button>
+        <button class="ctrl" id="btn-late-ring" aria-pressed="false">
+          Fase ganha fundo (anel de atraso)
+        </button>
+      </div>
+    </div>
+
+    <h2>
+      1. As seis fases lado a lado — Repouso, Hover e Foco (Linha, Bloco e
+      Conteúdo)
+    </h2>
+    <div id="phases-board" class="grid-6"></div>
+
+    <h2>
+      2. Estados combinados: Atraso, Sprint, Seleção, Foco e Fallback de Fase
+      Desconhecida
+    </h2>
+    <div id="states-board" class="grid-4"></div>
+
+    <div class="note-box">
+      <strong>Nota metodológica:</strong> Esta maquete reproduz os tokens OKLCH,
+      bordas de topo (<code>border-action-top-border</code>), sombras
+      (<code>shadow-action</code>), anéis (<code>ring-action-ring</code>,
+      <code>ring-2 ring-primary</code>) e contorno de foco
+      (<code>outline-3 outline-ring/30</code>) do <code>ActionItem</code>, sem
+      alterar o código de produção da aplicação.
+    </div>
+
+    <script>
+      const PHASES = [
+        { slug: "idea", title: "Ideia", color: "#fbbf24", time: "09:00" },
+        { slug: "do", title: "Fazer", color: "#f97316", time: "10:30" },
+        { slug: "doing", title: "Fazendo", color: "#ec4899", time: "14:00" },
+        { slug: "review", title: "Análise", color: "#a855f7", time: "15:30" },
+        { slug: "done", title: "Feito", color: "#38bdf8", time: "17:00" },
+        {
+          slug: "finished",
+          title: "Concluído",
+          color: "#4ade80",
+          time: "18:00",
+        },
+      ];
+
+      const state = {
+        dark: false,
+        flat: false,
+        mode: "tonal", // 'default' | 'tonal' | 'direct'
+        hover: "h1", // 'h1' | 'h2'
+        lateWinsBg: true,
+      };
+
+      function getPhaseVars(slug) {
+        if (state.mode === "default" || !slug || slug === "unknown") {
+          return {
+            bg: "var(--action)",
+            hover: "var(--action-hover)",
+            fg: "var(--fg)",
+          };
+        }
+        const phase = PHASES.find((p) => p.slug === slug);
+        if (!phase) {
+          return {
+            bg: "var(--action)",
+            hover: "var(--action-hover)",
+            fg: "var(--fg)",
+          };
+        }
+        if (state.mode === "direct") {
+          return {
+            bg: phase.color,
+            hover: `color-mix(in oklab, ${phase.color}, black 10%)`,
+            fg: "#111111",
+          };
+        }
+        return {
+          bg: `var(--phase-${slug}-bg)`,
+          hover:
+            state.hover === "h1"
+              ? `var(--phase-${slug}-hover-h1)`
+              : `var(--phase-${slug}-hover-h2)`,
+          fg: "var(--fg)",
+        };
+      }
+
+      function renderPhaseIcon(phase, size = "dot") {
+        if (phase.slug === "finished" && size !== "dot") {
+          return `<span class="finished-dot" style="background:${phase.color}">✓</span>`;
+        }
+        return `<span class="dot" style="background:${phase.color}"></span>`;
+      }
+
+      function renderBoards() {
+        document.body.classList.toggle("dark", state.dark);
+        document.body.classList.toggle("flat", state.flat);
+
+        const phasesHtml = PHASES.map((phase) => {
+          const vars = getPhaseVars(phase.slug);
+          const styleStr = `--card-bg:${vars.bg};--card-hover-bg:${vars.hover};--card-fg:${vars.fg};`;
+          return `
+            <div>
+              <div class="col-header" style="border-top-color:${phase.color}">
+                <span>${phase.title}</span>
+                <span class="meta">${phase.color}</span>
+              </div>
+
+              <div class="state-tag">Linha · Repouso (passe o mouse)</div>
+              <div class="action-card action-line" tabindex="0" style="${styleStr}">
+                <div style="display:flex;align-items:center;gap:6px;min-width:0">
+                  ${renderPhaseIcon(phase, "dot")}
+                  <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500">Campanha Institucional</span>
+                </div>
+                <span class="meta">${phase.time}</span>
+              </div>
+
+              <div class="state-tag" style="margin-top:8px">Linha · Hover fixo (${state.hover.toUpperCase()})</div>
+              <div class="action-card action-line force-hover" style="${styleStr}">
+                <div style="display:flex;align-items:center;gap:6px;min-width:0">
+                  ${renderPhaseIcon(phase, "dot")}
+                  <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500">Campanha Institucional</span>
+                </div>
+                <span class="meta">${phase.time}</span>
+              </div>
+
+              <div class="state-tag" style="margin-top:8px">Linha · Foco por teclado</div>
+              <div class="action-card action-line force-focus" style="${styleStr}">
+                <div style="display:flex;align-items:center;gap:6px;min-width:0">
+                  ${renderPhaseIcon(phase, "dot")}
+                  <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500">Campanha Institucional</span>
+                </div>
+                <span class="meta">${phase.time}</span>
+              </div>
+
+              <div class="state-tag" style="margin-top:10px">Bloco · Repouso</div>
+              <div class="action-card action-block" tabindex="0" style="${styleStr}">
+                <div style="font-size:16px;font-weight:500;line-height:1.25">Roteiro de Reels Lançamento</div>
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <div style="display:flex;align-items:center;gap:6px">
+                    <span class="sprint-bolt">⚡</span>
+                    <span class="avatar">CN</span>
+                    ${renderPhaseIcon(phase, "sm")}
+                  </div>
+                  <span class="meta">08/11 · ${phase.time}</span>
+                </div>
+              </div>
+
+              <div class="state-tag" style="margin-top:10px">Conteúdo · Cabeçalho na cor da fase + Capa própria</div>
+              <div class="action-card action-content" tabindex="0" style="${styleStr}">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px">
+                  <div style="display:flex;align-items:center;gap:6px">
+                    <span class="avatar">UZ</span>
+                    <span style="font-size:12px;font-weight:600">Uzzina</span>
+                  </div>
+                  ${renderPhaseIcon(phase, "sm")}
+                </div>
+                <div class="content-cover" style="background:#1e293b;color:#f8fafc">
+                  Capa da ação (action.color preservada)
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+        document.getElementById("phases-board").innerHTML = phasesHtml;
+
+        // States board
+        const doingVars = getPhaseVars("doing");
+        const lateStyle = state.lateWinsBg
+          ? `--card-bg:var(--late);--card-hover-bg:var(--late-hover);--card-fg:var(--late-fg);--card-top-border:var(--late-top-border);--ring-c:var(--late-fg);`
+          : `--card-bg:${doingVars.bg};--card-hover-bg:${doingVars.hover};--card-fg:${doingVars.fg};--ring-w:2px;--ring-c:var(--late-fg);`;
+
+        const lateSprintSelectedStyle = state.lateWinsBg
+          ? `--card-bg:var(--late);--card-hover-bg:var(--late-hover);--card-fg:var(--late-fg);--card-top-border:var(--late-top-border);--ring-w:2px;--ring-c:var(--primary);`
+          : `--card-bg:${doingVars.bg};--card-hover-bg:${doingVars.hover};--card-fg:${doingVars.fg};--ring-w:2px;--ring-c:var(--primary);`;
+
+        const unknownVars = getPhaseVars("unknown");
+
+        document.getElementById("states-board").innerHTML = `
+          <div>
+            <h3>A. Ação Atrasada (Fase: Fazendo)</h3>
+            <div class="action-card action-block" tabindex="0" style="${lateStyle}">
+              <div style="font-size:16px;font-weight:500">Entrega em atraso (Ontem 18:00)</div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span title="Atrasada">⚠️</span>
+                  <span class="dot" style="background:#ec4899" title="Fase: Fazendo"></span>
+                  <span style="font-size:11px;font-weight:600">Fazendo</span>
+                </div>
+                <span class="meta">07/11 · 18:00</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3>B. Atrasada + Sprint + Selecionada (Sem foco)</h3>
+            <div class="action-card action-block" tabindex="0" style="${lateSprintSelectedStyle};padding-left:34px">
+              <input type="checkbox" checked readonly style="position:absolute;left:10px;top:16px;pointer-events:none" />
+              <div style="font-size:16px;font-weight:500">Post Carrossel Black Friday</div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span>⚠️</span>
+                  <span class="sprint-bolt">⚡</span>
+                  <span class="dot" style="background:#ec4899"></span>
+                  <span style="font-size:11px;font-weight:600">Fazendo</span>
+                </div>
+                <span class="meta">07/11 · 16:00</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3>C. Atrasada + Sprint + Selecionada (Com foco)</h3>
+            <div class="action-card action-block force-focus" tabindex="0" style="${lateSprintSelectedStyle};padding-left:34px">
+              <input type="checkbox" checked readonly style="position:absolute;left:10px;top:16px;pointer-events:none" />
+              <div style="font-size:16px;font-weight:500">Post Carrossel Black Friday</div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span>⚠️</span>
+                  <span class="sprint-bolt">⚡</span>
+                  <span class="dot" style="background:#ec4899"></span>
+                  <span style="font-size:11px;font-weight:600">Fazendo</span>
+                </div>
+                <span class="meta">07/11 · 16:00</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3>D. Fallback: Fase ausente/desconhecida</h3>
+            <div class="action-card action-block" tabindex="0" style="--card-bg:${unknownVars.bg};--card-hover-bg:${unknownVars.hover};--card-fg:${unknownVars.fg}">
+              <div style="font-size:16px;font-weight:500">Ação legada sem fase válida</div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span class="dot" style="background:#fbbf24"></span>
+                  <span style="font-size:11px;opacity:0.75">Fallback: Ideia / Superfície padrão</span>
+                </div>
+                <span class="meta">08/11 · 12:00</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function bindBtn(id, fn) {
+        document.getElementById(id).addEventListener("click", () => {
+          fn();
+          renderBoards();
+        });
+      }
+      function updatePressed(ids, activeId) {
+        ids.forEach((id) =>
+          document
+            .getElementById(id)
+            .setAttribute("aria-pressed", String(id === activeId)),
+        );
+      }
+
+      bindBtn("btn-light", () => {
+        state.dark = false;
+        updatePressed(["btn-light", "btn-dark"], "btn-light");
+      });
+      bindBtn("btn-dark", () => {
+        state.dark = true;
+        updatePressed(["btn-light", "btn-dark"], "btn-dark");
+      });
+      bindBtn("btn-relief", () => {
+        state.flat = false;
+        updatePressed(["btn-relief", "btn-flat"], "btn-relief");
+      });
+      bindBtn("btn-flat", () => {
+        state.flat = true;
+        updatePressed(["btn-relief", "btn-flat"], "btn-flat");
+      });
+      bindBtn("btn-mode-default", () => {
+        state.mode = "default";
+        updatePressed(
+          ["btn-mode-default", "btn-mode-tonal", "btn-mode-direct"],
+          "btn-mode-default",
+        );
+      });
+      bindBtn("btn-mode-tonal", () => {
+        state.mode = "tonal";
+        updatePressed(
+          ["btn-mode-default", "btn-mode-tonal", "btn-mode-direct"],
+          "btn-mode-tonal",
+        );
+      });
+      bindBtn("btn-mode-direct", () => {
+        state.mode = "direct";
+        updatePressed(
+          ["btn-mode-default", "btn-mode-tonal", "btn-mode-direct"],
+          "btn-mode-direct",
+        );
+      });
+      bindBtn("btn-hover-h1", () => {
+        state.hover = "h1";
+        updatePressed(["btn-hover-h1", "btn-hover-h2"], "btn-hover-h1");
+      });
+      bindBtn("btn-hover-h2", () => {
+        state.hover = "h2";
+        updatePressed(["btn-hover-h1", "btn-hover-h2"], "btn-hover-h2");
+      });
+      bindBtn("btn-late-bg", () => {
+        state.lateWinsBg = true;
+        updatePressed(["btn-late-bg", "btn-late-ring"], "btn-late-bg");
+      });
+      bindBtn("btn-late-ring", () => {
+        state.lateWinsBg = false;
+        updatePressed(["btn-late-bg", "btn-late-ring"], "btn-late-ring");
+      });
+
+      renderBoards();
+    </script>
+  </body>
+</html>
