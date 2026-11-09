@@ -1,4 +1,3 @@
-import { CalendarDaysIcon } from "lucide-react";
 import { useState } from "react";
 import { CalendarDate, Time } from "@internationalized/date";
 import {
@@ -54,12 +53,7 @@ export function UActionDatePicker({
         size={size}
         variant="link"
       >
-        <span>
-          {date
-            ? getFormattedDateTime(date, dateTimeDisplay)
-            : "Escolha a data"}
-        </span>
-        <CalendarDaysIcon />
+        {date ? getFormattedDateTime(date, dateTimeDisplay) : "Escolha a data"}
       </PrismButton>
 
       <PrismPopover className="w-auto p-2">

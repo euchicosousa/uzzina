@@ -81,7 +81,8 @@ export function getFormattedDateTime(
       break;
   }
 
-  return format(date, formatString, { locale: ptBR });
+  const formatted = format(date, formatString, { locale: ptBR });
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }
 
 export const getNewDateForAction = (_action: Action, newDateInput: Date) => {

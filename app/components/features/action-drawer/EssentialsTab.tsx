@@ -285,6 +285,7 @@ export function EssentialsTab({
               mode="responsibles"
               size="sm"
               variant="link"
+
               currentPartners={currentPartners}
               onSelect={async (responsibles) => {
                 setRawAction({
@@ -298,7 +299,6 @@ export function EssentialsTab({
               }}
               selectedResponsibles={RawAction.responsibles}
             />
-
             <ActionTimeDisplay action={RawAction} />
           </div>
 
@@ -378,7 +378,7 @@ export function EssentialsTab({
               })()}
           </div>
 
-          <div className="flex max-w-full items-center justify-between gap-2 overflow-hidden border-b px-4 py-2">
+          <div className="flex max-w-full items-center justify-between gap-2 overflow-hidden border-b px-1 py-1">
             <div className="flex items-center gap-2">
               <CloudinaryUpload
                 cloudName={cloudName}
@@ -387,9 +387,9 @@ export function EssentialsTab({
                 onUpload={handleUpload}
                 outputWidth={1200}
                 resourceType="auto"
-                size="xs"
+                size="sm"
                 uploadPreset={uploadPreset}
-                variant="secondary"
+                variant="link"
               >
                 Adicionar arquivo
                 <PlusIcon className="size-3.5" />
