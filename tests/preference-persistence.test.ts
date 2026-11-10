@@ -72,7 +72,7 @@ it("failed write retains newer same-field choice and requires explicit retry", a
   const test = setup();
   test.controller.queue({ themeColorIndex: 1 });
   await debounce();
-  test.controller.queue({ themeColorIndex: 3, followPartnerColor: true });
+  test.controller.queue({ themeColorIndex: 3, showInstagramSidebar: false });
   test.requests[0]?.reject(new Error("Offline"));
   await Promise.resolve();
   expect(test.errors()).toBe(1);
@@ -82,11 +82,11 @@ it("failed write retains newer same-field choice and requires explicit retry", a
   test.controller.retry();
   expect(test.requests[1]?.patch).toEqual({
     themeColorIndex: 3,
-    followPartnerColor: true,
+    showInstagramSidebar: false,
   });
   test.requests[1]?.resolve({
     themeColorIndex: 3,
-    followPartnerColor: true,
+    showInstagramSidebar: false,
     futureKey: "preserve",
   });
   await Promise.resolve();

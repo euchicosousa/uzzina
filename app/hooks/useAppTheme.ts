@@ -12,7 +12,6 @@ import { hexToOklch } from "~/utils/color";
 import type { CustomTheme } from "~/lib/preferences";
 
 const STORAGE_KEY = "uzzina-accent-color-index";
-const FOLLOW_PARTNER_KEY = "uzzina-follow-partner-color";
 const BACKGROUND_STORAGE_KEY = "uzzina-background-color";
 
 // Chaves para o tema personalizado
@@ -34,11 +33,6 @@ function getStoredIndex(): number {
   if (saved === null || saved === "") return 0;
   const n = Number(saved);
   return Number.isNaN(n) ? 0 : n;
-}
-
-function getStoredFollowPartner(): boolean {
-  if (typeof window === "undefined") return false;
-  return localStorage.getItem(FOLLOW_PARTNER_KEY) === "true";
 }
 
 function getStoredBackground(): string {
@@ -74,20 +68,6 @@ function getStoredCustomTheme(): CustomTheme | null {
   }
   return null;
 }
-
-const applyPartnerColors = (bg: string, fg: string) => {
-  const root = document.documentElement;
-  root.style.setProperty("--primary", bg);
-  root.style.setProperty("--primary-foreground", fg);
-  root.style.setProperty("--ring", bg);
-};
-
-const restoreThemeColors = () => {
-  const root = document.documentElement;
-  root.style.removeProperty("--primary");
-  root.style.removeProperty("--primary-foreground");
-  root.style.removeProperty("--ring");
-};
 
 export enum Theme {
   LIGHT = "light",
@@ -131,8 +111,6 @@ export function useAppTheme(isPublic = false) {
   const theme: Theme = isDark ? Theme.DARK : Theme.LIGHT;
   const [primaryColorIndex, setPrimaryColorIndexState] =
     useState<number>(getStoredIndex);
-  const [followPartnerColor, setFollowPartnerColorState] =
-    useState<boolean>(false);
   const [backgroundColor, setBackgroundColorState] =
     useState<string>("#FFFFFF");
   const [customTheme, setCustomThemeState] = useState<CustomTheme | null>(
@@ -143,7 +121,6 @@ export function useAppTheme(isPublic = false) {
   useEffect(() => {
     setThemePreferenceState(getStoredThemePreference());
     setPrimaryColorIndexState(getStoredIndex());
-    setFollowPartnerColorState(getStoredFollowPartner());
     setBackgroundColorState(getStoredBackground());
     setCustomThemeState(getStoredCustomTheme());
   }, []);
@@ -177,8 +154,6 @@ export function useAppTheme(isPublic = false) {
         setPrimaryColorIndexState(
           newValue === null || newValue === "" ? 0 : Number(newValue),
         );
-      } else if (key === FOLLOW_PARTNER_KEY && newValue !== null) {
-        setFollowPartnerColorState(newValue === "true");
       } else if (key === BACKGROUND_STORAGE_KEY && newValue !== null) {
         setBackgroundColorState(newValue);
       } else if (
@@ -201,7 +176,6 @@ export function useAppTheme(isPublic = false) {
     const handleLocalUpdate = () => {
       setThemePreferenceState(getStoredThemePreference());
       setPrimaryColorIndexState(getStoredIndex());
-      setFollowPartnerColorState(getStoredFollowPartner());
       setBackgroundColorState(getStoredBackground());
       setCustomThemeState(getStoredCustomTheme());
     };
@@ -292,12 +266,6 @@ export function useAppTheme(isPublic = false) {
   const resetPrimaryColor = () => {
     localStorage.setItem(STORAGE_KEY, "0");
     setPrimaryColorIndexState(0);
-    window.dispatchEvent(new Event("uzzina-storage-update"));
-  };
-
-  const setFollowPartnerColor = (value: boolean) => {
-    localStorage.setItem(FOLLOW_PARTNER_KEY, String(value));
-    setFollowPartnerColorState(value);
     window.dispatchEvent(new Event("uzzina-storage-update"));
   };
 
@@ -411,19 +379,14 @@ export function useAppTheme(isPublic = false) {
     setPrimaryColorIndex,
     previewColorIndex,
     resetPrimaryColor,
-    followPartnerColor,
-    setFollowPartnerColor,
     backgroundColor,
     setBackgroundColor,
-    applyPartnerColors,
-    restoreThemeColors,
     customTheme,
     setCustomTheme,
     previewCustomTheme,
     // Aliases para manter compatibilidade
     colorIndex: primaryColorIndex,
     setColorIndex: setPrimaryColorIndex,
-    restoreAccentColors: restoreThemeColors,
   };
 }
 

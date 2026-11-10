@@ -341,8 +341,6 @@ function ProfilePage() {
   const [selectedThemeColor, setSelectedThemeColor] = useState<number>(
     preferences.themeColorIndex,
   );
-  const [selectedFollowPartnerColor, setSelectedFollowPartnerColor] =
-    useState<boolean>(preferences.followPartnerColor);
   const [selectedVariant, setSelectedVariant] = useState<
     "line" | "block" | "content"
   >(preferences.defaultViewVariant);
@@ -381,8 +379,7 @@ function ProfilePage() {
     selectedTheme !== initialRef.current.theme ||
     selectedThemeColor !== initialRef.current.themeColorIndex ||
     (selectedThemeColor === -1 &&
-      JSON.stringify(customThemeDraft) !== initialRef.current.customThemeKey) ||
-    selectedFollowPartnerColor !== initialRef.current.followPartnerColor;
+      JSON.stringify(customThemeDraft) !== initialRef.current.customThemeKey);
 
   const isBehaviorDirty =
     selectedVariant !== initialRef.current.defaultViewVariant ||
@@ -494,9 +491,6 @@ function ProfilePage() {
       const newPreferences: Record<string, unknown> = {
         ...(selectedTheme !== initial.theme ? { theme: selectedTheme } : {}),
         ...(colorChanged ? { themeColorIndex: selectedThemeColor } : {}),
-        ...(selectedFollowPartnerColor !== initial.followPartnerColor
-          ? { followPartnerColor: selectedFollowPartnerColor }
-          : {}),
         ...(selectedVariant !== initial.defaultViewVariant
           ? { defaultViewVariant: selectedVariant }
           : {}),
@@ -593,12 +587,6 @@ function ProfilePage() {
         localStorage.setItem(
           "uzzina-accent-color-index",
           String(selectedThemeColor),
-        );
-      }
-      if ("followPartnerColor" in newPreferences) {
-        localStorage.setItem(
-          "uzzina-follow-partner-color",
-          String(selectedFollowPartnerColor),
         );
       }
       if (newPreferences.customTheme) setCustomTheme(customThemeDraft);
@@ -778,11 +766,6 @@ function ProfilePage() {
       >
         {/* Hidden inputs to capture state changes */}
         <input name="image" type="hidden" value={imageUrl || ""} />
-        <input
-          name="followPartnerColor"
-          type="hidden"
-          value={String(selectedFollowPartnerColor)}
-        />
         <input
           name="showInstagramSidebar"
           type="hidden"
@@ -979,16 +962,6 @@ function ProfilePage() {
               />
             )}
           </ProfileSetting>
-
-          {/* Follow Partner Color Toggle */}
-          <UPreferenceSwitch
-            className="max-lg:flex-wrap max-lg:gap-3 max-lg:[&>div]:min-w-0 max-lg:[&>div]:flex-1 max-lg:[&>div]:basis-40"
-            checked={selectedFollowPartnerColor}
-            description="Substitui as cores do tema do aplicativo pelas cores da marca do cliente ativo."
-            id="followPartnerColor"
-            label="Usar Cores dos Clientes"
-            onCheckedChange={setSelectedFollowPartnerColor}
-          />
           <AppBarSpacer />
         </PrismTabPanel>
 

@@ -70,42 +70,17 @@ async function openMenu() {
   );
 }
 
-const source = (name: string) => screen.getByRole("menuitemradio", { name });
-
-it("partner colors and the palette are exclusive choices that keep the menu open", async () => {
-  localStorage.setItem("uzzina-follow-partner-color", "true");
+it("palette swatches can be selected and persist the color index", async () => {
   await openMenu();
-  await waitFor(() =>
-    expect(source("Do parceiro").getAttribute("aria-checked")).toBe("true"),
-  );
-  expect(source("Escolher cor").getAttribute("aria-checked")).toBe("false");
-
-  await user.click(source("Escolher cor"));
-
-  expect(source("Escolher cor").getAttribute("aria-checked")).toBe("true");
-  expect(source("Do parceiro").getAttribute("aria-checked")).toBe("false");
-  await waitFor(() =>
-    expect(savedPatches).toEqual([{ followPartnerColor: false }]),
-  );
-});
-
-it("picking a swatch while partner colors are active switches to that color", async () => {
-  localStorage.setItem("uzzina-follow-partner-color", "true");
-  await openMenu();
-  await waitFor(() =>
-    expect(source("Do parceiro").getAttribute("aria-checked")).toBe("true"),
-  );
+  expect(
+    screen.queryByRole("menuitemradio", { name: "Do parceiro" }),
+  ).toBeNull();
   const third = PALLETE[2];
   if (!third) throw new Error("Palette has fewer than three colors");
 
   await user.click(screen.getByRole("menuitem", { name: third.label }));
 
-  expect(source("Escolher cor").getAttribute("aria-checked")).toBe("true");
-  await waitFor(() =>
-    expect(savedPatches).toEqual([
-      { themeColorIndex: 2, followPartnerColor: false },
-    ]),
-  );
+  await waitFor(() => expect(savedPatches).toEqual([{ themeColorIndex: 2 }]));
 });
 
 it("page items request a guarded client navigation instead of a document link", async () => {

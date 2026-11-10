@@ -70,14 +70,8 @@ export function GlobalSearchCommand({
     const frame = requestAnimationFrame(() => setCreatingCelebration("open"));
     return () => cancelAnimationFrame(frame);
   }, [creatingCelebration, open]);
-  const {
-    setTheme,
-    themePreference,
-    primaryColorIndex,
-    setPrimaryColorIndex,
-    followPartnerColor,
-    setFollowPartnerColor,
-  } = useAppThemeContext();
+  const { setTheme, themePreference, primaryColorIndex, setPrimaryColorIndex } =
+    useAppThemeContext();
   // Keep the persistence owner mounted when a command closes the search.
   const { queuePreference, hasError, retry } = usePreferencePersistence(person);
   const initialPartnerSlug =
@@ -98,15 +92,7 @@ export function GlobalSearchCommand({
             paletteIndex={primaryColorIndex}
             onPaletteChange={(index) => {
               setPrimaryColorIndex(index);
-              if (followPartnerColor) {
-                setFollowPartnerColor(false);
-                queuePreference({
-                  themeColorIndex: index,
-                  followPartnerColor: false,
-                });
-              } else {
-                queuePreference({ themeColorIndex: index });
-              }
+              queuePreference({ themeColorIndex: index });
             }}
             preferenceError={hasError}
             retryPreferences={retry}

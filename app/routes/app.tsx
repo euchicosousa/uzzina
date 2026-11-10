@@ -114,10 +114,7 @@ function Dashboard() {
         "uzzina-accent-color-index",
         String(prefs.themeColorIndex),
       );
-      localStorage.setItem(
-        "uzzina-follow-partner-color",
-        String(prefs.followPartnerColor),
-      );
+      localStorage.removeItem("uzzina-follow-partner-color");
       window.dispatchEvent(new Event("uzzina-storage-update"));
     }
   }, [person]);

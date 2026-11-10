@@ -40,7 +40,6 @@ import {
   PrismToggle,
 } from "~/components/prism";
 import { UAvatar } from "~/components/uzzina/UAvatar";
-import { useAppThemeContext } from "~/hooks/useAppTheme";
 import { PHASES, SIZE } from "~/lib/CONSTANTS";
 import { filterActions, getInstagramFeedActions } from "~/utils";
 import { getUserPreferences } from "~/lib/preferences";
@@ -126,27 +125,6 @@ function PartnerPage() {
   const { setPrimaryAction } = useAppContext();
   const currentDay = parseU(dateParam);
   const [query, setQuery] = useState("");
-  const { followPartnerColor, applyPartnerColors, restoreThemeColors } =
-    useAppThemeContext();
-
-  // Aplica as cores do parceiro quando a flag está ativa
-  useEffect(() => {
-    if (followPartnerColor && partnerColors.length >= 2) {
-      applyPartnerColors(partnerColors[0], partnerColors[1]);
-    } else {
-      restoreThemeColors();
-    }
-    return () => {
-      // Restaura ao desmontar a página
-      restoreThemeColors();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    followPartnerColor,
-    partnerColors,
-    restoreThemeColors,
-    applyPartnerColors,
-  ]);
   const preferences = getUserPreferences(person);
   const [viewOptions, setViewOptions] = useUViewOptions({
     sprint: true,

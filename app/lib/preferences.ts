@@ -59,7 +59,6 @@ function resolveDefaultModel(
 export type UserPreferences = {
   theme: "light" | "dark" | "system";
   themeColorIndex: number;
-  followPartnerColor: boolean;
   defaultViewVariant: "line" | "block" | "content";
   defaultTodayView: TodayViewMode;
   showInstagramSidebar: boolean;
@@ -75,7 +74,6 @@ export type UserPreferences = {
 const DEFAULT_PREFERENCES: UserPreferences = {
   theme: "system",
   themeColorIndex: 0,
-  followPartnerColor: false,
   defaultViewVariant: "line",
   defaultTodayView: "partners",
   showInstagramSidebar: true,
@@ -91,7 +89,6 @@ const DEFAULT_PREFERENCES: UserPreferences = {
 export type SerializedPreferences = {
   theme?: string;
   themeColorIndex?: number;
-  followPartnerColor?: boolean;
   defaultViewVariant?: string;
   defaultTodayView?: unknown;
   showInstagramSidebar?: boolean;
@@ -192,10 +189,6 @@ export function getUserPreferences(person?: {
       typeof prefs.themeColorIndex === "number" && prefs.themeColorIndex >= -1
         ? prefs.themeColorIndex
         : DEFAULT_PREFERENCES.themeColorIndex,
-    followPartnerColor:
-      typeof prefs.followPartnerColor === "boolean"
-        ? prefs.followPartnerColor
-        : DEFAULT_PREFERENCES.followPartnerColor,
     defaultViewVariant:
       prefs.defaultViewVariant === "line" ||
       prefs.defaultViewVariant === "block" ||

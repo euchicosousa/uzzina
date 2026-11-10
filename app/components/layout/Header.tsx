@@ -562,27 +562,15 @@ export const HeaderMenu = ({
     setTheme,
     setPrimaryColorIndex,
     primaryColorIndex,
-    followPartnerColor,
-    setFollowPartnerColor,
   } = useAppThemeContext();
   const { queuePreference, retry, hasError } = usePreferencePersistence(person);
   const changeTheme = (newTheme: ThemePreference) => {
     setTheme(newTheme);
     queuePreference({ theme: newTheme });
   };
-  // Picking a swatch while partner colors are active also switches to the chosen color.
   const changeColorIndex = (index: number) => {
     setPrimaryColorIndex(index);
-    if (followPartnerColor) {
-      setFollowPartnerColor(false);
-      queuePreference({ themeColorIndex: index, followPartnerColor: false });
-    } else {
-      queuePreference({ themeColorIndex: index });
-    }
-  };
-  const changeFollowPartner = (value: boolean) => {
-    setFollowPartnerColor(value);
-    queuePreference({ followPartnerColor: value });
+    queuePreference({ themeColorIndex: index });
   };
   return (
     <PrismMenu>
@@ -627,35 +615,6 @@ export const HeaderMenu = ({
         <PrismMenuSeparator />
 
         <PrismMenuGroup
-          className="p-1"
-          aria-label="Origem das cores"
-          disallowEmptySelection
-          onSelectionChange={(keys) => {
-            const selected = Array.from(keys)[0];
-            if (selected === "partner" || selected === "palette")
-              changeFollowPartner(selected === "partner");
-          }}
-          selectedKeys={new Set([followPartnerColor ? "partner" : "palette"])}
-          selectionMode="single"
-        >
-          <PrismMenuLabel>Cores</PrismMenuLabel>
-          <PrismMenuItem
-            id="partner"
-            shouldCloseOnSelect={false}
-            textValue="Do parceiro"
-          >
-            <BriefcaseIcon /> Do parceiro
-          </PrismMenuItem>
-          <PrismMenuItem
-            id="palette"
-            shouldCloseOnSelect={false}
-            textValue="Escolher cor"
-          >
-            <PaletteIcon /> Escolher cor
-          </PrismMenuItem>
-        </PrismMenuGroup>
-
-        <PrismMenuGroup
           aria-label="Paleta de cores"
           className="grid grid-cols-6 gap-1 px-2 py-1"
         >
@@ -667,10 +626,7 @@ export const HeaderMenu = ({
               <PrismMenuItem
                 key={paletteConfig.id}
                 aria-label={paletteConfig.label}
-                className={cn(
-                  "mx-auto size-7 min-w-0 rounded-2xl p-1 transition-opacity squircle",
-                  followPartnerColor && "opacity-30 focus:opacity-100",
-                )}
+                className="mx-auto size-7 min-w-0 rounded-2xl p-1 transition-opacity squircle"
                 onAction={() => changeColorIndex(i)}
                 shouldCloseOnSelect={false}
                 style={{
@@ -693,10 +649,7 @@ export const HeaderMenu = ({
           })}
           <PrismMenuItem
             aria-label="Personalizado"
-            className={cn(
-              "mx-auto size-7 min-w-0 rounded-2xl p-1 transition-opacity squircle",
-              followPartnerColor && "opacity-30 focus:opacity-100",
-            )}
+            className="mx-auto size-7 min-w-0 rounded-2xl p-1 transition-opacity squircle"
             onAction={() => onNavigate("/app/profile?tab=appearance")}
             textValue="Personalizado"
           >
