@@ -199,7 +199,8 @@ function CelebrationList({
   display?: PartnerCelebrationDisplay;
 }) {
   return (
-    <ul className="flex min-w-0 flex-col items-start gap-px py-2">
+    // Keep screen-reader text inside the day cell's scroll area.
+    <ul className="relative flex min-w-0 flex-col items-start gap-px py-2">
       {celebrations.map(({ id, title, is_holiday: isHoliday }) => {
         const linked = display?.linkedIds?.includes(id);
         return (

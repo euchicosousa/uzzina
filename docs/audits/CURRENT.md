@@ -6,6 +6,12 @@ O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso pa
 
 ## Pendências reais
 
+### Espaço após o rodapé da Home — 10/11
+
+O vão após Atrasadas na Home (`/app`) foi reproduzido no Comet local. Num dia lotado do calendário semanal, o texto oculto da data comemorativa escapava da área rolável da célula e prolongava a rolagem da página. A lista passou a conter esses textos. A pedido do proprietário, a Home termina no rodapé, sem `AppBarSpacer`.
+
+O cenário com dados fictícios reproduziu 895 a 1071 px de rolagem indevida no Chromium. Chromium e WebKit confirmaram a contenção do texto e a rolagem interna da célula em três larguras na rodada anterior, que ainda incluía a reserva de 98 px. Após retirar a reserva, o build de produção, o lint focado e o diff passaram. Falta conferir o fim da Home no Comet do proprietário.
+
 ### Barra completa do editor de texto — 08/11
 
 O proprietário aprovou a barra completa com rolagem horizontal invisível em Instagram → Conteúdo e pediu a retirada do modo compacto. O editor agora usa uma linha com todos os comandos, inclusive na aba Essencial e na galeria. O foco revela o comando inteiro sem rolar o texto. O menu de seleção volta ao posicionamento padrão do Tiptap, e os atalhos continuam no atributo acessível para evitar a dica nativa sobre o menu. A medição da área de escrita continua no Instagram para organizar mídia e texto.
