@@ -599,8 +599,8 @@ export const HeaderMenu = ({
           />
         </PrismButton>
       </PrismMenuTrigger>
-      <PrismMenuContent className="w-64" placement="bottom end">
-        <PrismMenuGroup>
+      <PrismMenuContent className="w-64 p-0" placement="bottom end">
+        <PrismMenuGroup className="p-1">
           {hasError && (
             <PrismMenuItem
               onAction={retry}
@@ -627,6 +627,7 @@ export const HeaderMenu = ({
         <PrismMenuSeparator />
 
         <PrismMenuGroup
+          className="p-1"
           aria-label="Origem das cores"
           disallowEmptySelection
           onSelectionChange={(keys) => {
@@ -656,7 +657,7 @@ export const HeaderMenu = ({
 
         <PrismMenuGroup
           aria-label="Paleta de cores"
-          className="grid grid-cols-6 gap-1 pt-1 pb-1"
+          className="grid grid-cols-6 gap-1 px-2 py-1"
         >
           {PALLETE.map((paletteConfig, i) => {
             const { light, dark } = paletteConfig;
@@ -714,7 +715,7 @@ export const HeaderMenu = ({
 
         <PrismMenuSeparator />
 
-        <PrismMenuGroup>
+        <PrismMenuGroup className="p-1">
           <PrismMenuItem
             onAction={() => onNavigate("/app/leads")}
             textValue="Leads"
@@ -761,7 +762,7 @@ export const HeaderMenu = ({
         {person.admin && (
           <>
             <PrismMenuSeparator />
-            <PrismMenuGroup className="-mt-2 bg-secondary/20 px-2 pb-2">
+            <PrismMenuGroup className="relative -mt-2 bg-muted/50 p-1">
               <PrismMenuLabel>Admin</PrismMenuLabel>
               <PrismMenuItem
                 onAction={() => onNavigate("/app/admin/partners")}

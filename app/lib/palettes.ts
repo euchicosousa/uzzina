@@ -94,15 +94,15 @@ export const PALLETE = [
       mutedLDelta: -0.02,
       borderLDelta: -0.04,
       inputLDelta: -0.02,
-      actionLDelta: -0.04,
-      actionHoverLDelta: -0.015,
+      actionLDelta: -0.02,
+      actionHoverLDelta: -0.005,
       popoverLDelta: 0.1,
     },
     dark: {
       primary: {
         h: 240,
         c: 0.01,
-        l: 0.8,
+        l: 0.99,
       },
       primaryFg: {
         h: 240,
@@ -111,8 +111,8 @@ export const PALLETE = [
       },
       bg: {
         h: 240,
-        c: 0.01,
-        l: 0.2,
+        c: 0.015,
+        l: 0.25,
       },
       fg: {
         h: 0,
