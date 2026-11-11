@@ -77,8 +77,8 @@
   --error-foreground: oklch(0.6 calc(var(--chroma) * 1.1) var(--error-hue));
   --color-error-background: color-mix(
     in srgb,
-    var(--color-error) 10%,
-    transparent
+    var(--color-error) 7%,
+    var(--card)
   );
 
   --color-warning: oklch(
@@ -87,8 +87,8 @@
   --warning-foreground: oklch(0.5 var(--chroma) var(--warning-hue));
   --color-warning-background: color-mix(
     in srgb,
-    var(--color-warning) 10%,
-    transparent
+    var(--color-warning) 7%,
+    var(--card)
   );
 
   /* Success unificado na família Emerald de success-strong */
@@ -96,8 +96,8 @@
   --color-success-foreground: oklch(0.42 0.14 163);
   --color-success-background: color-mix(
     in srgb,
-    var(--color-success) 10%,
-    transparent
+    var(--color-success) 7%,
+    var(--card)
   );
 
   --color-info: oklch(
@@ -106,8 +106,8 @@
   --info-foreground: oklch(0.5 var(--chroma) var(--info-hue));
   --color-info-background: color-mix(
     in srgb,
-    var(--color-info) 10%,
-    transparent
+    var(--color-info) 7%,
+    var(--card)
   );
 
   /* Fixed-palette semantic tokens: same value in light and dark themes. */
@@ -188,8 +188,8 @@
   --error-foreground: var(--color-error);
   --color-error-background: color-mix(
     in srgb,
-    var(--color-error) 10%,
-    transparent
+    var(--color-error) 14%,
+    var(--card)
   );
 
   --color-warning: oklch(
@@ -198,8 +198,8 @@
   --warning-foreground: var(--color-warning);
   --color-warning-background: color-mix(
     in srgb,
-    var(--color-warning) 10%,
-    transparent
+    var(--color-warning) 14%,
+    var(--card)
   );
 
   /* Success unificado na família Emerald de success-strong */
@@ -207,8 +207,8 @@
   --color-success-foreground: var(--color-success);
   --color-success-background: color-mix(
     in srgb,
-    var(--color-success) 10%,
-    transparent
+    var(--color-success) 14%,
+    var(--card)
   );
 
   --color-info: oklch(
@@ -217,8 +217,8 @@
   --info-foreground: var(--color-info);
   --color-info-background: color-mix(
     in srgb,
-    var(--color-info) 10%,
-    transparent
+    var(--color-info) 14%,
+    var(--card)
   );
 
   /* Fixed-palette semantic tokens: same value in light and dark themes. */
