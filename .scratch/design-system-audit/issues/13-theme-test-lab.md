@@ -1,6 +1,6 @@
 # DS13 — Laboratório interativo de testes visuais: todos os temas, superfícies e componentes em tempo real
 
-**Status.** Aberto para implementação. Entrega obrigatória em página HTML interativa autocontida (`.scratch/design-system-audit/comparativo-ds12.html` ou ferramenta de bancada visual) cobrindo **todas as paletas do app**, **todas as superfícies de fundo** e **todos os componentes interativos**, em **Light Mode** e **Dark Mode**, com testes visuais reais para aprovação do proprietário antes de qualquer alteração de código.
+**Status.** Concluído e aprovado pelo proprietário em 11/11/2026. O inventário de cores e superfícies ficou em [`estudo-cores-superficies.html`](../estudo-cores-superficies.html); a bancada completa de estados sobre todas as superfícies não foi construída e deixou de ser necessária depois da aprovação geral das cores.
 
 **Bloqueado por.** Nenhum ticket. Dependência direta para a aprovação das migrações do DS14 e DS15.
 

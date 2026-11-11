@@ -1,7 +1,7 @@
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { ULoader } from "~/components/uzzina/ULoader";
 import { useAppContext } from "~/contexts/AppContext";
-import { FolderPlusIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { UAdminItemCard } from "~/components/uzzina/UAdminItemCard";
 import { useQuery } from "@tanstack/react-query";
@@ -79,16 +79,14 @@ function AdminPartnersPage() {
         <h1 className="pb-0 text-2xl font-bold">Parceiros</h1>
 
         <Link
-          className={buttonVariants({
-            variant: "ghost",
-          })}
+          className={buttonVariants()}
           params={{
             slug: "new",
           }}
           to="/app/admin/partner/$slug"
         >
-          <FolderPlusIcon />
           Novo Parceiro
+          <PlusIcon />
         </Link>
       </div>
 

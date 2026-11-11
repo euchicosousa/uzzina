@@ -4,13 +4,16 @@
 
 **Bloqueios:** Nenhum. Coordenar a cobertura com DS02.
 
-**Status:** CONCLUÍDO e validado pelo proprietário em 11/11/2026. A taxonomia por função semântica foi implementada no código e registrada nos contratos:
-- **Gatilhos Mistos (`UViewOptions`):** Ícone de contexto à esquerda + Rótulo + Chevron à direita (`[⊞ Visualizar ⌄]`, `[⑂ Ordenar ⌄]`, `[👁 Exibir ⌄]`).
-- **Ação & Disparo:** Ícone à direita (`[Nova Ação +]`, `[Salvar ☁️]`, `[Publicar agora ✈️]`, `[Concluir ✓✓]`, `[Gerar proposta ✨]`, `[WhatsApp 📞]`, `[Excluir 🗑]`).
-- **Contexto & Entidade:** Ícone à esquerda (`[👤+ Novo Usuário]`, `[🏢 Novo Parceiro]`, `[🎨 Cor da marca]`, `[👥 Pessoas]`).
-- **Navegação Direcional:** Sentido físico do fluxo (`[← Voltar para leads]` à esquerda / `[Avançar →]` à direita / `[Link ↗]` à direita).
-- **Abas:** Padrão de texto puro mantido.
-- **Calendário:** Badge de datas comemorativas limpo com ponto colorido (`[🟢 Dia de finados]`), sem ícone redundante competindo na célula.
+**Status:** CONCLUÍDO e validado pelo proprietário em 11/11/2026. A taxonomia por função semântica está no código e nos contratos ([prism-details](../../../docs/contracts/prism-details.md)). Nada foi publicado ainda (push pendente).
+
+- **Menus com abertura (`UViewOptions`):** ícone de contexto + texto + seta (`[⊞ Visualizar ⌄]`, `[⑂ Ordenar ⌄]`, `[👁 Exibir ⌄]`). Texto e seta aparecem só em telas maiores; em telas menores fica só o ícone. O botão tem nome acessível único: "Visualizar ações", "Ordenar ações", "Exibir campos" (a prop opcional `context` acrescenta " (contexto)" se houver dois na mesma página).
+- **Ação e disparo:** ícone à direita (`[Nova Ação +]`, `[Salvar ☁️]`, `[Publicar agora ✈️]`, `[Concluir ✓✓]`, `[Gerar proposta ✨]`, `[WhatsApp 📞]`).
+- **Criar, adicionar, novo: sempre o "+" à direita do texto.** Decisão de 11/11: `[Novo Usuário +]`, `[Novo Cliente +]` e `[Novo Parceiro +]` no Admin agora são botão padrão (não ghost) com o "+" à direita.
+- **Contexto e entidade:** ícone à esquerda (por exemplo tipo de visualização, ordenação, pessoas).
+- **Itens de menu e de comando** (Header, busca global) mantêm o ícone à esquerda: são itens de lista, não botões.
+- **Navegação direcional:** sentido físico (`[← Voltar para leads]` à esquerda; `[Avançar →]` e `[Link ↗]` à direita).
+- **Abas:** texto puro; se houver ícone especial, fica à esquerda.
+- **Calendário:** o selo de data comemorativa mostra só o ponto colorido. O ícone de corrente foi retirado de propósito (pequeno demais); a vinculação ao parceiro aparece pelo fundo azul do selo (as não vinculadas ficam apagadas) e por texto oculto para leitor de tela.
 
 Laboratório interativo: `.scratch/design-system-audit/estudo-ordem-icones.html`.
 
@@ -22,10 +25,10 @@ Laboratório interativo: `.scratch/design-system-audit/estudo-ordem-icones.html`
 
 ## Critérios de aceite
 
-- [ ] Pesquisar documentação primária de design systems e acessibilidade. Citar links diretos e distinguir requisitos de acessibilidade, convenções e escolhas de produto. Indicar onde as fontes divergem ou não prescrevem uma ordem.
-- [ ] Varrer os botões com texto e ícone nas rotas reais da equipe e do portal, incluindo controles de navegação e wrappers de upload. Registrar rota, componente, ordem renderizada, significado do ícone e classes ou propriedades responsáveis. Separar exemplos da galeria e controles que exibem só ícone por largura ou estado.
-- [ ] Comparar casos de ação, direção, menu e estado. Conferir amostras renderizadas, incluindo versões compactas, e distinguir ordem visual da ordem no DOM e do nome acessível.
-- [ ] Propor uma convenção com exemplos reais, exceções justificadas e lista de usos que valeria ajustar. Entregar o parecer para decisão antes de qualquer mudança na interface.
+- [x] Pesquisar documentação primária de design systems e acessibilidade. Citar links diretos e distinguir requisitos de acessibilidade, convenções e escolhas de produto. Indicar onde as fontes divergem ou não prescrevem uma ordem.
+- [x] Varrer os botões com texto e ícone nas rotas reais da equipe e do portal, incluindo controles de navegação e wrappers de upload. Registrar rota, componente, ordem renderizada, significado do ícone e classes ou propriedades responsáveis. Separar exemplos da galeria e controles que exibem só ícone por largura ou estado.
+- [x] Comparar casos de ação, direção, menu e estado. Conferir amostras renderizadas, incluindo versões compactas, e distinguir ordem visual da ordem no DOM e do nome acessível.
+- [x] Propor uma convenção com exemplos reais, exceções justificadas e lista de usos que valeria ajustar. Entregar o parecer para decisão antes de qualquer mudança na interface.
 
 ## Execução — 06/11/2026
 
@@ -71,16 +74,20 @@ Convenção aplicada: ícone antes do texto; sem `mr-*`/`ml-*` no ícone (o `gap
 
 `proposal/ds05-save-icon-first` (`4f76198`) servido localmente com a sessão do proprietário, em 1280px, numa ação existente. O botão mostra o ícone de nuvem antes de "Atualizar". A gaveta foi fechada sem salvar.
 
-## Decisão do proprietário — 06/11
+## Decisão do proprietário — 06/11 (superada)
 
-Em botões e abas com ícone e texto, o ícone fica sempre à direita. Fazer Login já segue a ordem. Inventariar divergências, começando por Nova Ação, criação no Admin, Redefinir Senha, Salvar/Atualizar e abas. Controles só com ícone não têm ordem de rótulo. A proposta `proposal/ds05-save-icon-first` foi superada. Aplicação depende de autorização.
+Em 06/11 o proprietário decidiu "ícone sempre à direita" em botões e abas. A proposta `proposal/ds05-save-icon-first` e a regra "ícone antes do texto" da seção "Ajustes aplicados" ficaram superadas pela decisão de 11/11 abaixo.
 
 ---
 
-## Reabertura pelo Proprietário — 11/11/2026
+## Reabertura e decisão final — 11/11/2026
 
-O proprietário identificou equívocos na aplicação da regra "ícone à direita" (ex.: gatilhos de menu `UViewOptions` onde o ícone de categoria ficou espremido entre o rótulo e o chevron, badges de datas comemorativas, etc.).
+O proprietário reabriu o ticket porque a regra "ícone sempre à direita" produzia equívocos (gatilhos de menu com o ícone espremido entre o rótulo e a seta, selos de datas comemorativas). O laboratório interativo [`estudo-ordem-icones.html`](../estudo-ordem-icones.html) serviu para comparar lado a lado e decidir. Resultado: a taxonomia por função semântica descrita no Status, aprovada pelo proprietário.
 
-**Ações em andamento:**
-1. Criação do laboratório interativo [`estudo-ordem-icones.html`](../estudo-ordem-icones.html) catalogando todos os componentes com ícones do sistema para comparação lado a lado (Ícone à Esquerda vs. Ícone à Direita vs. Casos Mistos).
-2. Validação interativa de cada grupo de componentes com o proprietário antes de qualquer alteração no código de produção.
+Decisões de 11/11 registradas:
+
+- Todo botão "novo/criar/adicionar" usa o "+" à direita (Admin: `app/routes/app/admin/users.tsx`, `clients.tsx`, `partners.tsx`).
+- Visualizar/Ordenar/Exibir mostram ícone + texto + seta só em telas maiores, com nome acessível único.
+- Datas comemorativas sem ícone de corrente.
+
+Não verificado: aparência no navegador dos botões do Admin e comportamento com leitor de tela. Verificação feita: `tsc` passou; `tests/view-options.test.tsx` 10/10 e `tests/home-calendar-height.test.tsx` 2/2.

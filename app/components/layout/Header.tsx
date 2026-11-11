@@ -32,7 +32,6 @@ import {
   PlusIcon,
   SunIcon,
   UserIcon,
-  UserPlusIcon,
   UsersIcon,
 } from "lucide-react";
 import {
@@ -743,7 +742,7 @@ export const HeaderMenu = ({
                 onAction={() => onNavigate("/app/admin/user/new")}
                 textValue="Novo Usuário"
               >
-                <UserPlusIcon className="size-4" />
+                <PlusIcon className="size-4" />
                 Novo Usuário
               </PrismMenuItem>
               <PrismMenuSeparator />

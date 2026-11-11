@@ -242,7 +242,7 @@ const assert = require("node:assert/strict");
       "1",
     );
     fail = true;
-    await choose("Cores do parceiro");
+    await choose("Tema claro");
     await page
       .getByText(
         "Não foi possível salvar suas preferências. Tente novamente.",
@@ -251,9 +251,9 @@ const assert = require("node:assert/strict");
       .waitFor();
     assert.equal(
       await page.evaluate(() =>
-        localStorage.getItem("uzzina-follow-partner-color"),
+        document.documentElement.classList.contains("dark"),
       ),
-      "true",
+      false,
     );
     fail = false;
     await activate(
@@ -266,7 +266,7 @@ const assert = require("node:assert/strict");
       }),
     );
     await page.waitForTimeout(350);
-    assert.equal(person.preferences.followPartnerColor, true);
+    assert.equal(person.preferences.theme, "light");
     await page.goto(`${base}/app/profile`);
     await activate(
       page.getByRole("button", { name: "Salvar Alterações", exact: true }),

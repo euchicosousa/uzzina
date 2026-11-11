@@ -3250,11 +3250,11 @@ function FocusFamily({
     <div className="flex flex-col gap-6 py-8 first:pt-0 last:pb-0" id={id}>
       <div className="flex flex-col gap-2">
         <h4 className="text-base font-semibold">{title}</h4>
-        <p className="text-sm text-muted-foreground">{rule}</p>
-        <code className="block text-xs break-words text-muted-foreground">
+        <p className="text-muted-foreground text-sm">{rule}</p>
+        <code className="text-muted-foreground block text-xs break-words">
           {classes}
         </code>
-        <ul className="list-disc pl-5 text-xs text-muted-foreground">
+        <ul className="text-muted-foreground list-disc pl-5 text-xs">
           {usedBy.map((item) => (
             <li key={item}>{item}</li>
           ))}
@@ -3280,11 +3280,11 @@ function Example({
 }) {
   return (
     <div className="flex max-w-full min-w-0 flex-col gap-2">
-      <span className="text-xs font-semibold text-muted-foreground uppercase">
+      <span className="text-muted-foreground text-xs font-semibold uppercase">
         {label} · {source}
       </span>
       {children}
-      <span className="text-xs text-muted-foreground">{hint}</span>
+      <span className="text-muted-foreground text-xs">{hint}</span>
     </div>
   );
 }
@@ -3390,7 +3390,7 @@ Exemplos, na ordem. **Reais** (Prism):
 ```tsx
 <button
   aria-label="Réplica remover"
-  className="flex size-8 items-center justify-center rounded bg-destructive text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30"
+  className="bg-destructive flex size-8 items-center justify-center rounded text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30"
   type="button"
 >
   ×
@@ -3522,7 +3522,7 @@ Exemplos **reais** (prefira sempre):
 ```tsx
 <button
   aria-label="Réplica botão da barra"
-  className="flex size-8 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-all outline-none squircle hover:bg-secondary hover:text-foreground data-[focus-visible]:bg-input data-[focus-visible]:text-foreground"
+  className="text-muted-foreground flex size-8 items-center justify-center rounded-lg border border-transparent transition-all outline-none squircle hover:bg-secondary hover:text-foreground data-[focus-visible]:bg-input data-[focus-visible]:text-foreground"
   type="button"
 >
   B
@@ -3561,7 +3561,7 @@ Exemplos:
 ```tsx
 <input
   aria-label="Réplica do título inline"
-  className="w-56 rounded-md border-0 bg-muted/80 px-1.5 py-0.5 text-sm text-foreground ring-0 transition-colors outline-none squircle focus:bg-muted focus:ring-0 focus:outline-none"
+  className="bg-muted/80 focus:bg-muted w-56 rounded-md border-0 px-1.5 py-0.5 text-sm text-foreground ring-0 transition-colors outline-none squircle focus:ring-0 focus:outline-none"
   defaultValue="Título da ação"
 />
 ```
@@ -4368,7 +4368,7 @@ export function PropsPlayground({
           {preview}
         </div>
         {caption && (
-          <p className="text-center font-mono text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-center font-mono text-xs">
             {caption}
           </p>
         )}
@@ -4396,7 +4396,7 @@ function ControlLabel({
   return (
     <div className="flex items-baseline justify-between gap-2" id={id}>
       <span className="text-sm font-medium">{label}</span>
-      <span className="font-mono text-xs text-muted-foreground">{prop}</span>
+      <span className="text-muted-foreground font-mono text-xs">{prop}</span>
     </div>
   );
 }
@@ -4518,7 +4518,7 @@ export function PlaygroundBoolean({
     >
       <span className="flex flex-1 items-baseline justify-between gap-2">
         <span className="text-sm font-medium">{label}</span>
-        <span className="font-mono text-xs font-normal text-muted-foreground">
+        <span className="text-muted-foreground font-mono text-xs font-normal">
           {prop}
         </span>
       </span>
@@ -5497,3 +5497,15 @@ Encerrado com aceite do proprietário em 10/11/2026. A página inicial e o porta
 ## DS09 — Busca de paletas e tema personalizado
 
 Encerrado por confirmação do proprietário em 10/11/2026. A busca global passou a encontrar paletas pelo nome, o menu ganhou um atalho para Minha Conta → Aparência e o editor ganhou controles de relevo e cor. O deploy de `ce36df0` e a atualização das preferências no banco de produção já estavam registrados. [Ticket](../design-system-audit/issues/09-palette-search-and-custom-theme.md)
+
+## DS05 — Ordem de ícone e texto nos botões e controles
+
+Encerrado com aceite do proprietário em 11/11/2026. Regra por função: contexto à esquerda, ação à direita, criar/adicionar sempre com "+" à direita (Novo Usuário, Novo Cliente e Novo Parceiro no Admin), direção pelo sentido físico, abas só texto. Menus Visualizar/Ordenar/Exibir ganharam nome acessível único. [Ticket](../design-system-audit/issues/05-button-icon-label-order.md)
+
+## DS12, DS13, DS15 — Cores semânticas e superfícies do Prism
+
+Encerrados com aceite do proprietário em 11/11/2026. Texto secundário a 65%; fundo neutro `secondary` a 5% no claro e 10% no escuro; botões `error`/`ghost-error`; fundos de erro, sucesso, aviso e informação opacos sobre `--card` (12% claro, 14% escuro). O critério de foco distinguível em itens selecionados (DS15) foi aceito na aprovação geral. Tickets: [DS12](../design-system-audit/issues/12-interactive-item-surface-opacity.md), [DS13](../design-system-audit/issues/13-theme-test-lab.md), [DS15](../design-system-audit/issues/15-interactive-surface-opacity-rollout.md).
+
+## DS16 — Retirada da cor do parceiro
+
+Encerrado com aceite do proprietário em 11/11/2026. A opção "usar cor do parceiro" saiu do menu, de Minha Conta e do código; a página do parceiro usa sempre a paleta pessoal. [Ticket](../design-system-audit/issues/16-remove-partner-color-preference.md)

@@ -1,5 +1,5 @@
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
-import { UserPlusIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { UAvatarGroup } from "~/components/uzzina/UAvatar";
 import { getAllClients } from "~/models/clients";
@@ -33,16 +33,14 @@ function AdminClientsPage() {
         <div className="mb-4 flex items-center justify-between">
           <h1 className="pb-0 text-2xl font-bold">Clientes</h1>
           <Link
-            className={buttonVariants({
-              variant: "ghost",
-            })}
+            className={buttonVariants()}
             params={{
               userId: "new",
             }}
             to="/app/admin/client/$userId"
           >
             Novo Cliente
-            <UserPlusIcon />
+            <PlusIcon />
           </Link>
         </div>
 
@@ -65,7 +63,9 @@ function AdminClientsPage() {
         ) : (
           isSuccess &&
           clients.length === 0 && (
-            <p className="text-secondary-foreground">Nenhum cliente cadastrado.</p>
+            <p className="text-secondary-foreground">
+              Nenhum cliente cadastrado.
+            </p>
           )
         )}
 

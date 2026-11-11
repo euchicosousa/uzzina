@@ -1,6 +1,6 @@
 # DS15 — Migração gradual de itens interativos para o fundo neutro compartilhado
 
-**Status.** Os controles da `main` local usam `bg-secondary`, derivado do texto principal a 5% no claro e 10% no escuro. O piloto de menu integra a migração. A conferência de estados compostos e a publicação seguem pendentes.
+**Status.** Concluído e aprovado pelo proprietário em 11/11/2026. Os controles da `main` local usam `bg-secondary`, derivado do texto principal a 5% no claro e 10% no escuro. A publicação (push) está pendente.
 
 **Bloqueado por.** [DS13 — Laboratório interativo de testes visuais](13-theme-test-lab.md) (para verificação prévia de cada grupo).
 
@@ -39,7 +39,7 @@ A migração é dividida em 4 lotes autônomos para permitir conferência visual
   - _Lote 2:_ `PrismButton` (`ghost` e `outline`), `PrismToggle` e `PrismToggleGroupItem` (com distinção de `data-selected` / `aria-pressed`);
   - _Lote 3:_ `PrismTab` (`underline` e `drawer`), `PrismAccordion` (`data-open`);
   - _Lote 4:_ Linhas de notificações do cabeçalho e página, grupo Admin, índice de Ajuda (`HelpPage`), células e gatilho de mês de `PrismCalendar`, `ClientCalendar` e botões de `PlanningCalendarView`.
-- **O que será mudado:** Conferência do proprietário no app, especialmente em itens selecionados sob foco.
+- **O que será mudado:** nada além da publicação; a conferência do proprietário, inclusive de itens selecionados sob foco, foi feita em 11/11/2026.
 
 ## Onde está
 
@@ -56,7 +56,7 @@ Código na `main` local, cobrindo `app/components/prism/` (`select.tsx`, `combob
 - [x] Lote 2 migrado e testado (Button ghost/outline, Toggle).
 - [x] Lote 3 migrado e testado (Tabs, Accordion).
 - [x] Lote 4 migrado e testado (Header, Notificações, Ajuda, Calendários).
-- [ ] Conferir se o foco permanece distinguível em itens selecionados nos quatro lotes.
+- [x] Conferir se o foco permanece distinguível em itens selecionados nos quatro lotes (aceito na aprovação geral do proprietário em 11/11/2026).
 
 ## Modelos sugeridos
 

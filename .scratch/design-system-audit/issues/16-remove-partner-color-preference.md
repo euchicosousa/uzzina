@@ -1,6 +1,6 @@
 # DS16 — Remoção completa da opção legada "Usar cor do parceiro" (`followPartnerColor`)
 
-**Status.** Concluído na `main` local em 10/11/2026. Verificado com `tsc --noEmit` (0 erros), `bun test tests/header-menu.test.tsx tests/preference-persistence.test.ts` (9/9 pass) e `node scripts/check-serverless-runtime.cjs` (9/9 pass). Aguarda validação visual do proprietário no app.
+**Status.** Concluído e aprovado pelo proprietário em 11/11/2026. Verificado com `tsc --noEmit` (0 erros), `bun test tests/header-menu.test.tsx tests/preference-persistence.test.ts` (9/9 pass) e `node scripts/check-serverless-runtime.cjs` (9/9 pass). As sobras de lint foram removidas em 11/11/2026. A página do parceiro passa a usar sempre a paleta pessoal do usuário. A publicação (push) está pendente.
 
 **Bloqueado por.** Nenhum ticket. Tarefa independente de limpeza e simplificação.
 

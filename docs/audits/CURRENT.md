@@ -2,9 +2,13 @@
 
 Atualizado em 11/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, nove de design system e um de arquitetura (22 no total). Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
+O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, quatro de design system (DS08, DS10, DS11 e DS14) e um de arquitetura (17 no total, conforme o tracker em `.scratch/README.md`). Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
 
 ## Pendências reais
+
+- **Publicação (push) dos commits locais** na `main`: nada do DS05, DS12, DS13, DS15 e DS16 está publicado. Antes de qualquer push que toque `api/`, `server/` ou `package.json`, rodar `bun run test:serverless`. Depois do push, confirmar que a nova versão ficou Ready na Vercel.
+- **Sombra do tema (ticket 14, DS14)** segue aberta, aguardando decisão do proprietário (detalhe logo abaixo).
+- **Não verificado ainda:** aparência no navegador dos botões do Admin (Novo Usuário, Novo Cliente, Novo Parceiro) e comportamento dos menus Visualizar/Ordenar/Exibir com leitor de tela.
 
 ### Revisão da proposta de sombra do tema — 11/11
 
@@ -12,9 +16,23 @@ O ticket foi ajustado para encaminhamento. A primeira entrega é o inventário e
 
 O [ticket de sombra do tema](../../.scratch/design-system-audit/issues/14-global-theme-shadow.md) descreve como concluída uma implementação ausente da `main` local em `19c3585` e do diff do checkout. A revisão documental confirmou que menus, diálogos e outras superfícies listadas ainda usam as sombras atuais. A proposta é coerente como direção. Antes de executar, falta corrigir o status e a sequência de aprovação, delimitar elevações e exceções, separar a cor global da opção de relevo dos cartões e definir o comportamento do tema Personalizado. A bancada anuncia 11 paletas e define seis, com retorno para Ônix nas demais, e mantém sombras neutras nas amostras. O aceite precisa comparar sombras antes e depois em componentes reais, com as duas intensidades propostas e cobertura dos estados e temas relevantes. Referências e diff conferidos em revisão de código e documentação.
 
-### Revisão do complemento da retirada da cor do parceiro — 11/11
+## Registro recente
 
-O diff local sobre `19c3585` retira apenas os dois imports e a variável sem uso das páginas de parceiro e de Minha Conta. O lint focado nessas duas regras e o diff passaram. O [ticket da cor do parceiro](../../.scratch/design-system-audit/issues/16-remove-partner-color-preference.md) ainda descreve a implementação no futuro e o aceite como pendente, embora o aceite já esteja registrado abaixo. Falta alinhar o ticket ao estado de entrega, registrar a paleta pessoal nas páginas de parceiro no contrato de temas e atualizar o roteiro de navegador que ainda aciona o controle retirado. A implementação está na `main` local e a limpeza de lint segue sem commit. A revisão foi local e documental.
+### DS05 final, DS16 e DS12 fechados — 11/11
+
+O proprietário aprovou em 11/11: a ordem do ícone nos botões (DS05, em linguagem simples: onde fica o desenho em relação ao texto), a retirada da cor do parceiro (DS16) e a unificação de cores e superfícies (DS12, DS13 e DS15). Os cinco tickets saíram da fila e estão em [`.scratch/archive/resolved-tickets.md`](../../.scratch/archive/resolved-tickets.md). O critério do DS15 "foco distinguível em itens selecionados" foi aceito na aprovação geral.
+
+O que mudou:
+
+- **Botões do Admin:** "Novo Usuário", "Novo Cliente" e "Novo Parceiro" (`/app/admin/users`, `clients`, `partners`) agora são botão padrão (não ghost) com o "+" à direita. Todo botão de criar usa o "+" à direita; itens de menu e de busca global mantêm o ícone à esquerda.
+- **Menus Visualizar, Ordenar e Exibir (`UViewOptions`):** ícone + texto + seta, com texto e seta só em telas maiores; em telas menores fica só o ícone. Nome acessível único: "Visualizar ações", "Ordenar ações", "Exibir campos" (prop opcional `context` acrescenta " (contexto)").
+- **Datas comemorativas:** o ícone de corrente saiu de propósito; a vinculação ao parceiro aparece pelo fundo azul do selo e por texto oculto para leitor de tela.
+- **Cor do parceiro (DS16):** a página do parceiro usa sempre a paleta pessoal; as sobras de lint já foram removidas. O roteiro `scripts/check-preferences-browser.cjs` deixou de acionar o controle retirado (a falha e a nova tentativa de salvar passaram a usar "Tema claro"; não executado, pois usa navegador). Contrato de temas atualizado.
+- **Cores (DS12):** texto secundário a 65%; fundo neutro `secondary` a 5% no claro e 10% no escuro; fundos de erro, sucesso, aviso e informação opacos sobre `--card` (7% claro, 14% escuro); botões `error` e `ghost-error`.
+- **Trocas de cor que entraram no commit `1009a5f` (DS05) mas pertencem ao DS12:** Leads (texto muted para secundário e contador com `bg-secondary`), tela de ação do portal `/dash` (muted para secundário; ícone de erro com `bg-error-background`/`text-error`), botão X de cancelar seleção da barra inferior (destructive para `error`) e hover da célula do dia no calendário (`bg-input` para `bg-secondary`).
+- **Documentação alinhada:** AGENTS.md (seção Design system), `docs/contracts/prism-details.md` (bloco "Ordem de ícone e texto"), `docs/contracts/pages-today-profile-planning.md`, tickets e tracker.
+
+Verificação: `tsc` passou; `tests/view-options.test.tsx` 10/10 e `tests/home-calendar-height.test.tsx` 2/2 passaram (executor anterior); `node --check` do script de preferências passou. Não verificado: aparência no navegador dos botões do Admin e leitor de tela. Nada publicado.
 
 ### Retirada da cor do parceiro (DS16) — 10/11
 
@@ -39,12 +57,14 @@ Os dois índices coincidem em 23 tickets e todos os arquivos existem. Fora do Pl
 
 ### Cores e superfícies do Prism (DS12) — Complemento de 11/11
 
-O proprietário conferiu visualmente a primeira entrega e aprovou os ajustes de 11/11 para menus, gaveta, calendários, alertas e cartões atrasados. Na `main` local, o texto secundário agora deriva do texto principal a 65% no claro e no escuro. Os fundos de erro, sucesso, aviso e informação usam 10% nos dois modos, sem a redução extra em alertas. O filtro Descartadas em Planejamento conserva contraste no escuro. Atrasadas usa o fundo de erro e sobe a 15% sob o mouse. O contorno de foco dos cartões fica em 2 px na Primária por decisão do proprietário. O cabeçalho da página do parceiro conserva a mudança feita pelo proprietário.
+O proprietário conferiu visualmente a primeira entrega e aprovou os ajustes de 11/11 para menus, gaveta, calendários, alertas e cartões atrasados. Na `main` local, o texto secundário agora deriva do texto principal a 65% no claro e no escuro. Os fundos de erro, sucesso, aviso e informação são opacos, misturados sobre a superfície sólida `--card` a 7% no claro e 14% no escuro (valores vigentes em `app/tailwind.css`). O filtro Descartadas em Planejamento conserva contraste no escuro. Atrasadas usa o fundo de erro e sobe a 15% sob o mouse. O contorno de foco dos cartões fica em 2 px na Primária por decisão do proprietário. O cabeçalho da página do parceiro conserva a mudança feita pelo proprietário.
 
 Padronização de campos de formulário e placeholders:
+
 - Placeholders de todos os inputs, textareas, selects, comboboxes, campos de cor e tempo unificados em `placeholder:text-foreground/40` (e `data-placeholder:text-foreground/40`), eliminando duplicidades de classes `dark:`.
 - Erros em controles (`aria-invalid`) consolidados no padrão de 4 partes: `aria-invalid:bg-error-background aria-invalid:text-error-foreground aria-invalid:border-error aria-invalid:ring-error-background`. Opacidades arbitrárias (`ring-error/20`, `/30`, `/40`) foram substituídas pelo token nativo `ring-error-background` em todos os componentes Prism (`Input`, `Textarea`, `ColorField`, `TimeField`, `Select`, `Combobox`, `InputGroup`, `Button`, `Badge`, `Toggle`).
 - Faxina de cores semânticas residuais: `PrismBadge` limpo de repetições `dark:bg-*-background` e opacidades de hover fracionadas; tela de recuperação de senha migrada para `border-success`; e módulo de Planejamento (`planejamento.tsx`, `PlanningSuggestionsList.tsx`, `PlanningCalendarView.tsx`) migrado de classes manuais do Tailwind (`emerald`/`amber` com frações de opacidade) para os tokens semânticos nativos `bg-success-background`, `text-success`, `bg-success-strong`, `border-success` e `text-warning-foreground`. Teste `action-late-transition.test.tsx` atualizado para validar `hover:bg-error-background`.
+- Fundos semânticos 100% opacos (Opção 2): `--color-*-background` (error, warning, success, info) em `app/tailwind.css` migrados de mistura com `transparent` (que gerava 90% de transparência e vazamento de texto subjacente em toasts e alertas) para mistura direta sobre a superfície sólida `var(--card)` (7% no modo claro e 14% no modo escuro), eliminando qualquer transparência e mantendo bloqueio visual total e fidelidade à paleta ativa. Em 11/11 o proprietário aprovou o modo escuro (14%) e achou o claro forte demais: o claro passou de 12% para 7%, ainda opaco.
 
 A cor de marca usa Primária. O novo Accent é reservado para uso futuro e deriva dela em OKLCH: −0,15 no claro e +0,10 no escuro, com limite entre 0 e 1. A abertura de `/` e `/dash` usa Ônix e a chave legada de paleta segue aceita. As variantes destrutivas vigentes são `error` e `ghost-error`. Contratos, tracker, central, galeria e laboratório atualizados. [Ticket e roteiro de conferência](../../.scratch/design-system-audit/issues/12-interactive-item-surface-opacity.md).
 
@@ -1387,21 +1407,15 @@ Limite da checagem geral desta rodada: typecheck encontrou import de UToggle nã
 - **Navegação `/ui` (V35)**: Truncamento de rótulos longos com `min-w-0 truncate` impedindo sobreposição de badges; foco strictly por fundo (`focus-visible:bg-input`); linha indicadora ativa mantida no alinhamento da categoria pai; fonte do subitem alinhada (`font-normal`).
 - **Verificação**: `npx tsc --noEmit` aprovado (0 erros), Biome lint aprovado (0 erros), 49 testes unitários passando.
 
-## Reabertura e Reestruturação do Ticket DS05 — Taxonomia de Ícones por Função (11/11/2026)
+## DS05 — Ordem de ícone e texto: estado final (11/11/2026)
 
-- **Motivo da Reabertura**: O proprietário identificou equívocos na aplicação rígida da regra "todo ícone à direita" (ex.: gatilhos de menu com chevron como `Visualizar ⊞ ⌄` em `UViewOptions`, badges de datas comemorativas no calendário `🟢 Dia de finados 🖼`, e perda da distinção entre ação e contexto).
-- **Nova Taxonomia Definida pelo Proprietário**:
-  - **Ícones de Contexto & Entidade (à ESQUERDA):** Representam substantivos, entidades ou perspectiva (`Visualizar`, `Ordenar`, `Exibir`, `Novo Usuário`, `Cor da marca`, `Pessoas`).
-  - **Ícones de Ação & Disparo (à DIREITA):** Representam verbos, envio ou acionamento imediato (`Nova ação +`, `Salvar ☁️`, `Publicar ✈️`, `Concluir ✓✓`, `Gerar proposta ✨`, `WhatsApp 📞`, Chevrons de menu `⌄`).
-  - **Gatilhos Mistos:** Contexto à esquerda + Seta à direita (`[⊞ Visualizar ⌄]`, `[⑂ Ordenar ⌄]`, `[👁 Exibir ⌄]`).
-  - **Navegação Direcional:** Respeita o vetor físico (`← Voltar` à esquerda / `Avançar →` à direita / `Link ↗` à direita).
-  - **Abas:** Padrão limpo sem ícones (texto puro); se houver ícone especial, fica à esquerda.
-  - **Badges de Calendário:** Apenas ponto colorido (`🟢 Dia de finados`), eliminando ícone redundante.
-- **Implementação e Conclusão (11/11/2026)**:
-  - `UViewOptions.tsx`: `{icon}` posicionado antes do `{label}` e antes do `ChevronDownIcon`, renderizando o formato canônico `[⊞ Visualizar ⌄]`.
-  - `admin/users.tsx`: `<UserPlusIcon />` posicionado à esquerda de `Novo Usuário` (contexto de entidade).
-  - `admin/partners.tsx`: `<FolderPlusIcon />` posicionado à esquerda de `Novo Parceiro` (contexto de entidade).
-  - `leads.tsx`: `<ChevronLeftIcon />` posicionado à esquerda de `Voltar para leads` (vetor direcional para o passado).
-  - `CalendarDayCell.tsx`: Removido o `<LinkIcon />` redundante à direita das datas comemorativas, mantendo o badge limpo com o ponto colorido de status à esquerda (`🟢 Dia de finados`).
-  - `AGENTS.md` e `docs/contracts/prism-details.md`: Regra oficial atualizada com a nova taxonomia semântica.
-  - Verificação: `tsc --noEmit` aprovado (0 erros), testes unitários e testes serverless 100% aprovados. Ticket DS05 concluído.
+Reaberto e decidido pelo proprietário em 11/11; concluído e aprovado no mesmo dia. Regras vigentes (detalhe em `docs/contracts/prism-details.md`, "Ordem de ícone e texto"):
+
+- Contexto ou entidade: ícone à esquerda. Ação ou disparo: ícone à direita.
+- Criar, adicionar ou novo: sempre o "+" à direita (Nova Ação; Novo Usuário, Novo Cliente e Novo Parceiro no Admin).
+- Menus com abertura: contexto à esquerda e seta à direita. Itens de menu e de comando mantêm o ícone à esquerda.
+- Navegação direcional pelo sentido físico (Voltar à esquerda; Avançar e links externos à direita). Abas só texto.
+- Selo de data comemorativa só com o ponto colorido.
+- Botão cujo texto some em tela pequena tem nome acessível com o texto visível.
+
+Arquivos: `app/components/uzzina/UViewOptions.tsx`, `app/routes/app/admin/users.tsx`, `clients.tsx`, `partners.tsx`. Ticket arquivado: [DS05](../../.scratch/design-system-audit/issues/05-button-icon-label-order.md). Verificação e limites no registro "DS05 final, DS16 e DS12 fechados" acima.

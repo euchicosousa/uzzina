@@ -1,7 +1,7 @@
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { PrismButton } from "~/components/prism";
 import { useAppContext } from "~/contexts/AppContext";
-import { UserPlusIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
@@ -45,16 +45,14 @@ function AdminUsersPage() {
         <h1 className="pb-0 text-2xl font-bold">Usuários</h1>
 
         <Link
-          className={buttonVariants({
-            variant: "ghost",
-          })}
+          className={buttonVariants()}
           params={{
             userId: "new",
           }}
           to="/app/admin/user/$userId"
         >
-          <UserPlusIcon />
           Novo Usuário
+          <PlusIcon />
         </Link>
       </div>
 
@@ -77,7 +75,9 @@ function AdminUsersPage() {
       ) : (
         isSuccess &&
         people.length === 0 && (
-          <p className="text-secondary-foreground">Nenhum usuário cadastrado.</p>
+          <p className="text-secondary-foreground">
+            Nenhum usuário cadastrado.
+          </p>
         )
       )}
 

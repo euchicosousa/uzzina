@@ -105,17 +105,26 @@ export function useUViewOptions(
 type ViewMenuProps = {
   viewOptions: UViewOptions;
   setViewOptions: (viewOptions: UViewOptions) => void;
+  /** Optional context that keeps the accessible names unique on the page. */
+  context?: string;
 };
+
+function withContext(base: string, context?: string) {
+  return context ? `${base} (${context})` : base;
+}
 
 function ViewMenuTrigger({
   icon,
   label,
+  accessibleName,
 }: {
   icon: React.ReactNode;
   label: string;
+  /** Stable accessible name; must contain the visible label (WCAG 2.5.3). */
+  accessibleName: string;
 }) {
   return (
-    <PrismButton size="sm" variant="ghost">
+    <PrismButton aria-label={accessibleName} size="sm" variant="ghost">
       {icon}
       <span className="hidden md:block lg:hidden xl:block">{label}</span>
       <ChevronDownIcon className="hidden md:block lg:hidden xl:block" />
@@ -138,12 +147,20 @@ export function getVisualizeGroups(viewOptions: UViewOptions) {
 }
 
 /** "Visualizar": layout variant, height limit and number of columns. */
-function VisualizeMenu({ viewOptions, setViewOptions }: ViewMenuProps) {
+function VisualizeMenu({
+  viewOptions,
+  setViewOptions,
+  context,
+}: ViewMenuProps) {
   const groups = getVisualizeGroups(viewOptions);
   return (
     <PrismMenu>
       <PrismMenuTrigger>
-        <ViewMenuTrigger icon={<LayoutListIcon />} label="Visualizar" />
+        <ViewMenuTrigger
+          icon={<LayoutListIcon />}
+          label="Visualizar"
+          accessibleName={withContext("Visualizar ações", context)}
+        />
       </PrismMenuTrigger>
       <PrismMenuContent className="w-56">
         {groups.variant && (
@@ -231,12 +248,16 @@ function VisualizeMenu({ viewOptions, setViewOptions }: ViewMenuProps) {
 }
 
 /** "Ordenar": criterion (date or phase) and direction. */
-function SortMenu({ viewOptions, setViewOptions }: ViewMenuProps) {
+function SortMenu({ viewOptions, setViewOptions, context }: ViewMenuProps) {
   const { showOptions } = viewOptions;
   return (
     <PrismMenu>
       <PrismMenuTrigger>
-        <ViewMenuTrigger icon={<ListOrderedIcon />} label="Ordenar" />
+        <ViewMenuTrigger
+          icon={<ListOrderedIcon />}
+          label="Ordenar"
+          accessibleName={withContext("Ordenar ações", context)}
+        />
       </PrismMenuTrigger>
       <PrismMenuContent className="w-56">
         {showOptions.order && (
@@ -294,12 +315,16 @@ function SortMenu({ viewOptions, setViewOptions }: ViewMenuProps) {
 }
 
 /** "Exibir": which metadata fields each action shows. */
-function DisplayMenu({ viewOptions, setViewOptions }: ViewMenuProps) {
+function DisplayMenu({ viewOptions, setViewOptions, context }: ViewMenuProps) {
   const { showOptions } = viewOptions;
   return (
     <PrismMenu>
       <PrismMenuTrigger>
-        <ViewMenuTrigger icon={<EyeIcon />} label="Exibir" />
+        <ViewMenuTrigger
+          icon={<EyeIcon />}
+          label="Exibir"
+          accessibleName={withContext("Exibir campos", context)}
+        />
       </PrismMenuTrigger>
       <PrismMenuContent className="w-56">
         <PrismMenuGroup
@@ -359,6 +384,8 @@ export interface UViewOptionsProps {
   startComponents?: React.ReactNode;
   endComponents?: React.ReactNode;
   className?: string;
+  /** Distinguishes menu names when more than one UViewOptions is on a page. */
+  context?: string;
 }
 
 export function UViewOptions({
@@ -367,10 +394,11 @@ export function UViewOptions({
   startComponents,
   endComponents,
   className,
+  context,
 }: UViewOptionsProps) {
   viewOptions.variant ||= VARIANT.line;
   const { showOptions } = viewOptions;
-  const menuProps = { viewOptions, setViewOptions };
+  const menuProps = { viewOptions, setViewOptions, context };
   const showVisualize = Object.values(getVisualizeGroups(viewOptions)).some(
     Boolean,
   );

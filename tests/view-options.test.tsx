@@ -50,7 +50,9 @@ function mount(overrides: Partial<ViewOptions> = {}) {
 const user = userEvent.setup();
 
 async function openMenu(menu: string) {
-  await user.click(screen.getByRole("button", { name: menu }));
+  await user.click(
+    screen.getByRole("button", { name: new RegExp(`^${menu}`) }),
+  );
 }
 
 async function choose(
@@ -65,7 +67,11 @@ async function choose(
 describe("ViewOptionsComponent", () => {
   it("replaces the icon-only row with three labelled menus", () => {
     mount();
-    for (const label of ["Visualizar", "Ordenar", "Exibir"]) {
+    for (const label of [
+      "Visualizar ações",
+      "Ordenar ações",
+      "Exibir campos",
+    ]) {
       expect(screen.getByRole("button", { name: label })).toBeTruthy();
     }
     expect(
@@ -111,10 +117,14 @@ describe("ViewOptionsComponent", () => {
 
   it("never renders Visualizar without options inside", () => {
     mount({ variant: "content", showOptions: {} });
-    expect(screen.queryByRole("button", { name: "Visualizar" })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Visualizar ações" }),
+    ).toBeNull();
     cleanup();
     mount({ variant: "line", showOptions: { columns: true } });
-    expect(screen.queryByRole("button", { name: "Visualizar" })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Visualizar ações" }),
+    ).toBeNull();
   });
 
   it("offers the height limit in content mode too", async () => {
@@ -213,7 +223,9 @@ describe("Visualizar groups for each screen that uses it", () => {
         viewOptions={{ ...base, showOptions: screens.calendar ?? {} }}
       />,
     );
-    expect(screen.queryByRole("button", { name: "Visualizar" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Ordenar" })).toBeTruthy();
+    expect(
+      screen.queryByRole("button", { name: "Visualizar ações" }),
+    ).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Ordenar ações" })).toBeTruthy();
   });
 });

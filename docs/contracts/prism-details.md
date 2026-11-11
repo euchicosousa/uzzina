@@ -19,8 +19,25 @@ Movimento: tokens em `@theme` de `app/tailwind.css` — `duration-motion-fast/ba
 Use estados React Aria data-[hovered], data-[pressed], data-[focused] e data-[disabled]. Ícones Lucide novos seguem sufixo Icon; botões definem tamanho padrão e focus ring. PrismInput aplica foco/erro ao Group que inclui prefixo/sufixo. PrismAlert reúne ícone, título e descrição por variante. Componente composto precisa de verificação própria de foco/teclado, além das garantias dos primitivos.
 
 Padrão oficial de campos de entrada (`PrismInput`, `Textarea`, `PrismColorField`, `PrismTimeField`, `Select`, `Combobox`, `InputGroup`):
+
 - **Placeholder:** padronizado em `placeholder:text-foreground/40` (e `data-placeholder:text-foreground/40`), único em claro e escuro, sem duplicidade de regras dark.
 - **Estado de Erro (`aria-invalid`):** padronizado em `aria-invalid:bg-error-background aria-invalid:text-error-foreground aria-invalid:border-error aria-invalid:ring-error-background`. Em botões e alternadores sem fundo de erro, aplica `aria-invalid:border-error aria-invalid:ring-error-background`. Substitui todas as opacidades manuais antigas (`ring-error/20`, `/30` ou `/40`) pelo token semântico nativo `ring-error-background`.
+- **Fundos semânticos 100% opacos:** tokens `--color-*-background` (error, warning, success, info) são gerados por `color-mix` sobre a superfície sólida `var(--card)` (7% no modo claro e 14% no modo escuro), garantindo superfícies sólidas e opacas que impedem o vazamento visual de elementos subjacentes em toasts (`sonner`), alertas (`PrismAlert`) e badges.
+
+## Ordem de ícone e texto
+
+Regra do proprietário (DS05, decisão final de 11/11/2026): a posição do ícone segue a função do controle.
+
+- **Contexto ou entidade (substantivo): ícone à esquerda.** Exemplos: tipo de visualização, ordenação, pessoas.
+- **Ação ou disparo (verbo): ícone à direita.** Exemplos: Salvar, Publicar, Concluir, Gerar proposta com IA, WhatsApp.
+- **Criar, adicionar ou novo: sempre o "+" (`PlusIcon`) à direita do texto.** Vale para Nova Ação e para Novo Usuário, Novo Cliente e Novo Parceiro no Admin, que são botões padrão (não ghost).
+- **Menus com abertura:** contexto à esquerda e seta à direita (`[⊞ Visualizar ⌄]`).
+- **Navegação direcional:** pelo sentido físico. Voltar ← à esquerda; Avançar → e links externos ↗ à direita.
+- **Abas:** texto puro; se houver um ícone especial, fica à esquerda.
+- **Itens de menu e de comando** (Header, busca global) mantêm o ícone à esquerda: são itens de lista, não botões. Itens de menu de criação também usam "+".
+- **Selo de data comemorativa no calendário:** só o ponto colorido; o ícone de corrente foi retirado de propósito (pequeno demais). A vinculação ao parceiro aparece pelo fundo azul do selo (as não vinculadas ficam apagadas) e por texto oculto para leitor de tela.
+- **Texto escondido em tela pequena** (ex.: Visualizar, Ordenar, Exibir em `UViewOptions`): o botão precisa de `aria-label` que contenha o texto visível ("Visualizar ações", "Ordenar ações", "Exibir campos"). A prop opcional `context` acrescenta " (contexto)" se houver dois no mesmo ecrã.
+- O espaçamento vem do `gap` do botão, sem margens manuais no ícone.
 
 ## Anel de foco e exceções
 

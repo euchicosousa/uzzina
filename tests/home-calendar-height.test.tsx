@@ -33,9 +33,9 @@ function renderHomeCalendar() {
 it("starts the week limited and month automatic, preserving each user choice", async () => {
   const user = userEvent.setup();
   renderHomeCalendar();
-  await screen.findByRole("button", { name: "Visualizar" });
+  await screen.findByRole("button", { name: "Visualizar ações" });
   async function option() {
-    await user.click(screen.getByRole("button", { name: "Visualizar" }));
+    await user.click(screen.getByRole("button", { name: "Visualizar ações" }));
     return await screen.findByRole("menuitemcheckbox", {
       name: "Limitar altura dos dias",
     });
