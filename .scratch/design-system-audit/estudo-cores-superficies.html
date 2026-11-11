@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UZZINA — Roteiro de Execução Passo a Passo: Cores e Prism CNVT (DS12)</title>
+<style>
+  :root { --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; --font-mono: ui-monospace, Menlo, Consolas, monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); background: var(--background); color: var(--foreground); line-height: 1.5; padding: 2rem; font-size: 14px; }
+  code { font-family: var(--font-mono); font-size: .85em; background: var(--t-secondary-new); padding: .08rem .4rem; border-radius: .35rem; }
+  .dim { color: color-mix(in srgb, var(--foreground) 65%, transparent); }
+  header, main, .bar { max-width: 1050px; margin: 0 auto; }
+  header { padding-bottom: 1.25rem; border-bottom: 1px solid var(--t-border); margin-bottom: 1.25rem; }
+  h1 { font-size: 1.85rem; font-weight: 700; margin-bottom: .35rem; }
+  h2 { font-size: 1.35rem; font-weight: 700; margin-bottom: .35rem; }
+  h3 { font-size: 1.05rem; font-weight: 650; margin-bottom: .35rem; }
+  
+  .bar { position: sticky; top: .75rem; z-index: 50; background: var(--t-popover); border: 1px solid var(--t-border); border-radius: 1rem; padding: .75rem 1.25rem; display: flex; gap: 1.25rem; flex-wrap: wrap; align-items: center; margin-bottom: 2.5rem; box-shadow: 0 10px 25px -8px rgba(0,0,0,.15); }
+  .bar label { font-size: .75rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; margin-right: .4rem; }
+  select, button { font: inherit; padding: .4rem .85rem; border-radius: .6rem; border: 1px solid var(--t-border); background: var(--background); color: var(--foreground); cursor: pointer; }
+  
+  main { display: flex; flex-direction: column; gap: 2rem; }
+  
+  /* Cartão de Passo */
+  .step-card {
+    border: 1px solid var(--t-border);
+    border-radius: 1rem;
+    padding: 1.35rem 1.5rem;
+    background: var(--t-popover);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+    transition: border-color .15s;
+  }
+  .step-card:hover { border-color: var(--primary); }
+  .step-card.done { border-left: 5px solid oklch(.65 .2 145); opacity: .85; }
+  .step-card.active { border-left: 5px solid var(--primary); box-shadow: 0 8px 24px -8px rgba(0,0,0,.12); }
+  .step-card.pending { border-left: 5px solid var(--t-border); }
+
+  .step-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .75rem;
+  }
+  .step-title {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: var(--foreground);
+    color: var(--background);
+    font-size: .85rem;
+    font-weight: 700;
+  }
+  .done .step-num { background: oklch(.65 .2 145); color: #fff; }
+
+  .badge {
+    display: inline-block;
+    font-size: .72rem;
+    font-weight: 700;
+    padding: .2rem .6rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .badge-done { background: oklch(.9 .08 145); color: oklch(.32 .1 145); }
+  .badge-ready { background: var(--primary); color: var(--primary-foreground); }
+  .badge-waiting { background: var(--t-secondary-new); color: var(--foreground); }
+  .dark .badge-done { background: oklch(.35 .08 145); color: oklch(.92 .08 145); }
+
+  .step-body {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 1.5rem;
+  }
+  @media (max-width: 800px) {
+    .step-body { grid-template-columns: 1fr; }
+  }
+
+  .step-details {
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    font-size: .88rem;
+  }
+  .step-details strong { color: var(--foreground); }
+
+  .step-verify {
+    border: 1px solid var(--t-border);
+    border-radius: .8rem;
+    padding: 1rem;
+    background: var(--background);
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+  }
+  .step-verify h4 { font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--primary); }
+  .step-verify ul { margin-left: 1.2rem; font-size: .83rem; display: flex; flex-direction: column; gap: .35rem; }
+
+  .preview-box {
+    margin-top: .5rem;
+    padding: .85rem;
+    border-radius: .6rem;
+    border: 1px solid var(--t-border);
+    background: var(--background);
+    display: flex;
+    gap: .75rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .btn-demo {
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    padding: .45rem .9rem; font-size: .82rem; font-weight: 600; border-radius: .6rem;
+    cursor: pointer; transition: all .15s ease; border: 1px solid transparent;
+  }
+
+  /* Tabela de inventário de tokens */
+  .tokens-section {
+    margin-top: 3.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--t-border);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .tokens-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .filter-pills {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+  }
+  .filter-pill {
+    padding: .35rem .75rem;
+    font-size: .78rem;
+    font-weight: 600;
+    border-radius: 999px;
+    border: 1px solid var(--t-border);
+    background: transparent;
+    cursor: pointer;
+    transition: all .15s ease;
+    color: var(--foreground);
+  }
+  .filter-pill.active {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--primary);
+  }
+  .search-input {
+    padding: .4rem .85rem;
+    font-size: .82rem;
+    border-radius: .6rem;
+    border: 1px solid var(--t-border);
+    background: var(--background);
+    color: var(--foreground);
+    min-width: 220px;
+  }
+  .tokens-table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--t-border);
+    border-radius: 1rem;
+    background: var(--t-popover);
+    box-shadow: 0 4px 20px -8px rgba(0,0,0,.08);
+  }
+  .tokens-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .83rem;
+    text-align: left;
+  }
+  .tokens-table th {
+    padding: .85rem 1rem;
+    background: var(--t-secondary-new);
+    font-weight: 700;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    border-bottom: 1px solid var(--t-border);
+  }
+  .tokens-table td {
+    padding: .75rem 1rem;
+    border-bottom: 1px solid var(--t-border);
+    vertical-align: top;
+  }
+  .tokens-table tr:last-child td { border-bottom: none; }
+  .tokens-table tr:hover td { background: var(--t-secondary-new); }
+  
+  .badge-verdict {
+    display: inline-block;
+    padding: .2rem .55rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .badge-verdict-remove { background: oklch(.65 .22 25 / .18); color: oklch(.7 .22 25); }
+  .badge-verdict-merge { background: oklch(.75 .18 55 / .18); color: oklch(.75 .18 55); }
+  .badge-verdict-transform { background: oklch(.7 .18 240 / .18); color: oklch(.7 .18 240); }
+  .badge-verdict-keep { background: oklch(.68 .18 145 / .18); color: oklch(.68 .18 145); }
+  .swatch, .state-sample { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .6rem; border-radius: .6rem; }
+  .swatch::before { content: ""; width: 1rem; height: 1rem; border: 1px solid var(--t-border); border-radius: 50%; background: var(--sample); }
+  .focus-sample:focus-visible { outline: 3px solid color-mix(in srgb, var(--t-ring) 30%, transparent); }
+</style>
+</head>
+<body>
+<header>
+  <h1>UZZINA — Roteiro de Execução Passo a Passo (Prism CNVT)</h1>
+  <p class="dim">As amostras reproduzem as fórmulas da entrega. Confira os estados reais na galeria /ui e nas telas indicadas.</p>
+</header>
+
+<div class="bar">
+  <div><label for="pal">Paleta</label><select id="pal"></select></div>
+  <div><label>Luz</label><button id="mode">🌙 Escuro</button></div>
+  <span class="dim" style="font-size:.78rem">Alterne paletas e modo de luz para inspecionar os componentes de cada passo.</span>
+</div>
+
+<main>
+  <section id="passos"></section>
+
+  <section class="tokens-section">
+    <div>
+      <h2>Inventário Completo de Cores & Decisões de Tokens</h2>
+      <p class="dim">Mapeamento detalhado de todos os 54 tokens: o que foi mantido, removido, fundido ou transformado no sistema.</p>
+    </div>
+
+    <div class="tokens-toolbar">
+      <div class="filter-pills" id="filters">
+        <button class="filter-pill active" data-v="all">Todos (55)</button>
+        <button class="filter-pill" data-v="remove">Removidos (21)</button>
+        <button class="filter-pill" data-v="merge">Fundidos (4)</button>
+        <button class="filter-pill" data-v="transform">Transformados (8)</button>
+        <button class="filter-pill" data-v="keep">Mantidos (22)</button>
+      </div>
+      <input type="search" id="token-search" class="search-input" placeholder="Buscar token, grupo ou motivo..." />
+    </div>
+
+    <div class="tokens-table-wrapper">
+      <table class="tokens-table">
+        <thead>
+          <tr>
+            <th style="width: 170px;">Token</th>
+            <th style="width: 140px;">Grupo</th>
+            <th style="width: 130px;">Veredito</th>
+            <th style="width: 220px;">Destino / Nova Fórmula</th>
+            <th>Motivo / Decisão</th>
+            <th style="width: 90px; text-align: right;">Referências em app/</th>
+          </tr>
+        </thead>
+        <tbody id="tokens-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script>
+const DATA = {"tokens":[{"name":"background","group":"Base","util":"bg-background","kind":"bg","def":"Cor da paleta (override por tema)","verdict":"keep","dest":"—","why":"Fundo da página e origem de todas as superfícies derivadas.","app":59},{"name":"foreground","group":"Base","util":"text-foreground","kind":"fg","def":"Cor da paleta (override por tema)","verdict":"keep","dest":"—","why":"Texto principal. Origem das superfícies secundárias e do texto secundário.","app":221},{"name":"card","group":"Superfícies","util":"bg-card","kind":"bg","def":"background ± delta (−0.02 claro / +0.05 escuro)","verdict":"keep","dest":"—","why":"20 usos no app (planejamento, Header, Sonner, Badge). Mantido como superfície de elevação.","app":30},{"name":"card-foreground","group":"Clones de foreground","util":"text-card-foreground","kind":"fg","def":"var(--foreground)","verdict":"remove","dest":"text-foreground (ou herdar)","why":"Cópia exata de foreground. 3 usos.","app":0},{"name":"surface","group":"Superfícies","util":"bg-surface","kind":"bg","def":"var(--card)","verdict":"remove","dest":"bg-card","why":"Alias de card. 0 usos no app e na galeria.","app":0},{"name":"surface-foreground","group":"Clones de foreground","util":"text-surface-foreground","kind":"fg","def":"var(--card-foreground)","verdict":"remove","dest":"text-foreground","why":"Cópia de cópia. 0 usos.","app":0},{"name":"popover","group":"Superfícies","util":"bg-popover","kind":"bg","def":"background ± delta (+0.02 claro / −0.03 escuro)","verdict":"keep","dest":"—","why":"Containers flutuantes (menus, selects, dialogs, AppBar). 16 usos.","app":20},{"name":"popover-foreground","group":"Clones de foreground","util":"text-popover-foreground","kind":"fg","def":"var(--foreground)","verdict":"remove","dest":"text-foreground","why":"Cópia exata. 8 usos nos primitivos Prism.","app":0},{"name":"primary","group":"Marca","util":"bg-primary","kind":"bg","def":"oklch(--primary-l/c/h)","verdict":"keep","dest":"—","why":"Cor de marca/tema. 85 usos.","app":105},{"name":"primary-foreground","group":"Marca","util":"text-primary-foreground","kind":"fg","def":"Contraste sobre primary (override por tema)","verdict":"keep","dest":"—","why":"Inverso com alto contraste sobre o primary (23 usos).","app":27},{"name":"secondary","group":"Superfícies","util":"bg-secondary","kind":"bg","def":"foreground 5% (claro) / 10% (escuro)","verdict":"transform","dest":"foreground a 5% no claro / 10% no escuro","why":"Superfícies neutras, fundos de hover e foco.","app":129},{"name":"secondary-foreground","group":"Texto Prism CNVT","util":"text-secondary-foreground","kind":"fg","def":"color-mix(foreground 60%, transparent)","verdict":"transform","dest":"foreground a 65% nos dois modos","why":"Metadados e textos secundários. Rótulos principais dos controles usam foreground.","app":278},{"name":"muted","group":"Superfícies","util":"bg-muted","kind":"bg","def":"background ± delta","verdict":"remove","dest":"bg-secondary","why":"APROVADO & CONCLUÍDO: eliminado de 100% do app e apagado do CSS. Todos os 38 usos migrados para bg-secondary. mutedLDelta limpo das paletas.","app":0},{"name":"muted-foreground","group":"Texto","util":"text-muted-foreground","kind":"fg","def":"foreground ± delta L","verdict":"remove","dest":"text-secondary-foreground","why":"APROVADO & CONCLUÍDO: nome extinto. 263 usos substituídos por text-secondary-foreground (60% translúcido). Apagado do CSS.","app":0},{"name":"destructive","group":"Status","util":"bg-destructive · text-destructive · border-destructive","kind":"bg","def":"oklch(0.7 chroma hue-erro)","verdict":"remove","dest":"error (bg/borda/ring) · error-foreground (texto)","why":"APROVADO & CONCLUÍDO: token herdado do shadcn 100% extinto do CSS e dos 35 componentes do app. O sistema usa unicamente error e error-foreground.","app":0},{"name":"border","group":"Superfícies","util":"border-border · bg-border · divide-border","kind":"line","def":"background ± delta (−0.07 claro / +0.1 escuro)","verdict":"keep","dest":"—","why":"78 usos. Linhas e divisores estruturais.","app":98},{"name":"input","group":"Superfícies","util":"bg-input · border-input","kind":"bg","def":"background ± delta","verdict":"keep","dest":"Fundo de controles de formulário","why":"Trilhos de IA e o estado vazio de Parceiros usam secondary.","app":24},{"name":"ring","group":"Foco","util":"ring-ring · border-ring · outline-ring","kind":"line","def":"Paleta (ring explícito em light e dark)","verdict":"keep","dest":"ring da paleta, com fallback na Primária","why":"Cor dos anéis de foco. Cartões de ação usam contorno primário de 2 px.","app":63},{"name":"accent","group":"Marca & Destaque","util":"bg-accent","kind":"bg","def":"Paleta (15% mais escuro no Light, 10% mais clara no Dark)","verdict":"transform","dest":"Primária −0,15 no claro / +0,10 no escuro","why":"Derivado da Primária em OKLCH, reservado para uso futuro.","app":1},{"name":"chart-1","group":"Sem uso (herdado do shadcn)","util":"bg-chart-1","kind":"bg","def":"azul fixo","verdict":"remove","dest":"—","why":"APROVADO: 0 usos. Eliminado.","app":0},{"name":"chart-2","group":"Sem uso (herdado do shadcn)","util":"bg-chart-2","kind":"bg","def":"azul fixo","verdict":"remove","dest":"—","why":"APROVADO: 0 usos. Eliminado.","app":0},{"name":"chart-3","group":"Sem uso (herdado do shadcn)","util":"bg-chart-3","kind":"bg","def":"azul fixo","verdict":"remove","dest":"—","why":"APROVADO: 0 usos. Eliminado.","app":0},{"name":"chart-4","group":"Sem uso (herdado do shadcn)","util":"bg-chart-4","kind":"bg","def":"azul fixo","verdict":"remove","dest":"—","why":"APROVADO: 0 usos. Eliminado.","app":0},{"name":"chart-5","group":"Sem uso (herdado do shadcn)","util":"bg-chart-5","kind":"bg","def":"azul fixo","verdict":"remove","dest":"—","why":"APROVADO: 0 usos. Eliminado.","app":0},{"name":"sidebar","group":"Sem uso (herdado do shadcn)","util":"bg-sidebar","kind":"bg","def":"background ± delta","verdict":"remove","dest":"—","why":"APROVADO: 0 usos. Eliminado.","app":0},{"name":"sidebar-foreground","group":"Sem uso (herdado do shadcn)","util":"text-sidebar-foreground","kind":"fg","def":"var(--foreground)","verdict":"remove","dest":"—","why":"APROVADO: 0 usos. Eliminado.","app":0},{"name":"sidebar-primary","group":"Sem uso (herdado do shadcn)","util":"bg-sidebar-primary","kind":"bg","def":"= primary","verdict":"remove","dest":"—","why":"APROVADO: 0 usos. Eliminado.","app":0},{"name":"sidebar-primary-foreground","group":"Sem uso (herdado do shadcn)","util":"text-sidebar-primary-foreground","kind":"fg","def":"contraste sobre primary","verdict":"remove","dest":"—","why":"APROVADO: 0 usos. Eliminado.","app":0},{"name":"sidebar-border","group":"Sem uso (herdado do shadcn)","util":"border-sidebar-border","kind":"line","def":"= border","verdict":"remove","dest":"—","why":"APROVADO: 0 usos. Eliminado.","app":0},{"name":"sidebar-ring","group":"Sem uso (herdado do shadcn)","util":"ring-sidebar-ring","kind":"line","def":"= ring","verdict":"remove","dest":"—","why":"APROVADO: 0 usos. Eliminado.","app":0},{"name":"action","group":"Cartão de ação","util":"bg-action","kind":"bg","def":"background ± delta (+0.02 claro / +0.1 escuro)","verdict":"keep","dest":"—","why":"Cartão da ação (ActionItem), UAdminItemCard, UAvatarSelector. Relevo DS06/DS09.","app":12},{"name":"action-hover","group":"Cartão de ação","util":"bg-action-hover","kind":"bg","def":"background ± delta (+0.1 / +0.2)","verdict":"keep","dest":"—","why":"Hover do cartão de ação. 3 usos.","app":8},{"name":"action-top-border","group":"Cartão de ação","util":"border-action-top-border","kind":"line","def":"#fff / rgba(255,255,255,.1)","verdict":"keep","dest":"—","why":"Brilho superior do cartão (relevo). Controlado por tema.","app":6},{"name":"action-ring","group":"Cartão de ação","util":"ring-action-ring","kind":"shadow","def":"cor da sombra 5% (claro) / 20% (escuro)","verdict":"keep","dest":"—","why":"Anel sutil do cartão (relevo). Controlado por tema.","app":5},{"name":"late-top-border","group":"Atrasado","util":"border-t-late-top-border","kind":"line","def":"rgba(255,255,255,.5) / .25","verdict":"merge","dest":"action-top-border","why":"APROVADO: unificado com action-top-border no ActionItem.","app":0},{"name":"late","group":"Atrasado","util":"bg-late","kind":"bg","def":"oklch(lum-bg chroma-bg hue-erro)","verdict":"merge","dest":"error-background","why":"APROVADO: ActionItem autorizado a migrar para error-background.","app":0},{"name":"late-hover","group":"Atrasado","util":"hover:bg-late-hover","kind":"bg","def":"late + delta","verdict":"merge","dest":"error a 15%","why":"O fundo de atraso aumenta de 10% em repouso para 15% sob o mouse.","app":0},{"name":"late-foreground","group":"Atrasado","util":"text-late-foreground · ring-late-foreground","kind":"fg","def":"oklch(0.6 0.3 hue)","verdict":"merge","dest":"error-foreground","why":"APROVADO: ActionItem autorizado a migrar para error-foreground (contraste 5,80:1 no claro).","app":0},{"name":"error","group":"Status","util":"text-error · border-error · bg-error/10","kind":"bg","def":"oklch(L·1.23 .2 hue 16)","verdict":"keep","dest":"—","why":"Cor forte de erro (borda, anel, ícone e base de botões). Destino de destructive.","app":114},{"name":"error-foreground","group":"Status","util":"text-error-foreground","kind":"fg","def":"claro: L .5 / escuro: = error","verdict":"keep","dest":"—","why":"Texto com contraste garantido sobre fundo claro (5,80:1).","app":20},{"name":"error-background","group":"Status","util":"bg-error-background","kind":"bg","def":"color-mix(var(--color-error) 10%, transparent)","verdict":"transform","dest":"error a 10% nos dois modos","why":"O alerta usa essa opacidade diretamente.","app":21},{"name":"warning","group":"Status","util":"text-warning · border-warning","kind":"bg","def":"oklch(L·1.56 .2 hue 90)","verdict":"keep","dest":"—","why":"Cor forte de aviso (borda, ícone).","app":8},{"name":"warning-foreground","group":"Status","util":"text-warning-foreground","kind":"fg","def":"claro: L .5 / escuro: = warning","verdict":"keep","dest":"—","why":"Texto com contraste garantido no claro (5,19:1).","app":4},{"name":"warning-background","group":"Status","util":"bg-warning-background","kind":"bg","def":"color-mix(var(--color-warning) 10%, transparent)","verdict":"transform","dest":"warning a 10% nos dois modos","why":"O alerta usa essa opacidade diretamente.","app":9},{"name":"success","group":"Status","util":"text-success · border-success","kind":"bg","def":"Família Emerald (unificado com success-strong)","verdict":"transform","dest":"Emerald (unificado com success-strong)","why":"APROVADO: unificado na família Emerald de success-strong, abandonando o verde amarelado antigo!","app":11},{"name":"success-background","group":"Status","util":"bg-success-background","kind":"bg","def":"color-mix(var(--color-success) 10%, transparent)","verdict":"transform","dest":"success a 10% nos dois modos","why":"O alerta usa essa opacidade diretamente.","app":7},{"name":"info","group":"Status","util":"text-info · border-info","kind":"bg","def":"oklch(L·1.2 .2 hue 250)","verdict":"keep","dest":"—","why":"Cor forte de informação (borda, ícone).","app":7},{"name":"info-foreground","group":"Status","util":"text-info-foreground","kind":"fg","def":"claro: L .5 / escuro: = info","verdict":"keep","dest":"—","why":"Texto com contraste garantido no claro (5,05:1).","app":4},{"name":"info-background","group":"Status","util":"bg-info-background","kind":"bg","def":"color-mix(var(--color-info) 10%, transparent)","verdict":"transform","dest":"info a 10% nos dois modos","why":"O alerta usa essa opacidade diretamente.","app":6},{"name":"success-strong","group":"Paleta fixa","util":"bg-success-strong","kind":"bg","def":"emerald-600 (fixo)","verdict":"keep","dest":"—","why":"Botão de aprovação forte do Prism.","app":9},{"name":"success-strong-hover","group":"Paleta fixa","util":"hover:bg-success-strong-hover","kind":"bg","def":"emerald-700 (fixo)","verdict":"keep","dest":"—","why":"Hover do botão de aprovação forte.","app":1},{"name":"success-strong-foreground","group":"Paleta fixa","util":"text-success-strong-foreground","kind":"fg","def":"white (fixo)","verdict":"keep","dest":"—","why":"Texto branco sobre botão de aprovação forte.","app":4},{"name":"approved","group":"Sem uso no app","util":"bg-approved","kind":"bg","def":"green-400 (fixo)","verdict":"remove","dest":"success-strong","why":"APROVADO: removido (só existia em bolinhas da galeria /ui).","app":0},{"name":"approved-foreground","group":"Sem uso no app","util":"text-approved-foreground","kind":"fg","def":"green-950 (fixo)","verdict":"remove","dest":"success-strong-foreground","why":"APROVADO: removido.","app":0},{"name":"favorite","group":"Sem uso no app","util":"text-favorite","kind":"fg","def":"amber-500 (fixo)","verdict":"remove","dest":"—","why":"APROVADO: 0 usos. Eliminado.","app":0}],"checklist":{"muted":[],"secondaryOpacity":[{"file":"app/components/prism/badge.tsx","line":11,"cls":"[a]:hover:bg-secondary/80"}],"input":[{"file":"app/components/layout/PartnersBoard.tsx","line":36,"cls":"bg-input/20"},{"file":"app/components/prism/date-range-picker.tsx","line":119,"cls":"bg-input"},{"file":"app/components/prism/input-group.tsx","line":24,"cls":"bg-input"},{"file":"app/components/prism/time-field.tsx","line":14,"cls":"bg-input"},{"file":"app/components/prism/combobox.tsx","line":141,"cls":"*:data-[slot=input-group]:border-input/30"},{"file":"app/components/prism/combobox.tsx","line":141,"cls":"*:data-[slot=input-group]:bg-input"},{"file":"app/components/prism/combobox.tsx","line":265,"cls":"border-input"},{"file":"app/components/prism/combobox.tsx","line":265,"cls":"bg-input/40"},{"file":"app/components/prism/radio-group.tsx","line":25,"cls":"border-input"},{"file":"app/components/prism/checkbox.tsx","line":26,"cls":"border-input"},{"file":"app/components/prism/select.tsx","line":84,"cls":"bg-input"},{"file":"app/components/prism/textarea.tsx","line":15,"cls":"bg-input"},{"file":"app/components/prism/input.tsx","line":9,"cls":"bg-input"},{"file":"app/components/prism/color-field.tsx","line":10,"cls":"bg-input"},{"file":"app/components/features/ActionComments/CommentInput.tsx","line":68,"cls":"bg-input"},{"file":"app/components/features/ActionComments/CommentInput.tsx","line":68,"cls":"dark:bg-input/30"},{"file":"app/components/features/action-drawer/EssentialsTab.tsx","line":227,"cls":"focus-within:bg-input"},{"file":"app/components/features/action-drawer/EssentialsTab.tsx","line":422,"cls":"[&_.tiptap:focus]:bg-input"},{"file":"app/components/uzzina/UAIAllowanceMeter.tsx","line":26,"cls":"bg-input"},{"file":"app/components/uzzina/UAIProgressBar.tsx","line":131,"cls":"text-input"},{"file":"app/components/uzzina/UAIProgressBar.tsx","line":161,"cls":"bg-input"},{"file":"app/components/uzzina/UAIProgressBar.tsx","line":170,"cls":"bg-input"},{"file":"app/routes/app/admin/partner/$slug.tsx","line":483,"cls":"bg-input"},{"file":"app/routes/app/admin/partner/$slug.tsx","line":514,"cls":"bg-input"},{"file":"app/routes/app/partner/$slug.tsx","line":243,"cls":"bg-input"}],"clones":[{"file":"app/components/layout/PartnersBoard.tsx","line":36,"cls":"text-secondary-foreground"},{"file":"app/components/layout/Header.tsx","line":474,"cls":"text-secondary-foreground"},{"file":"app/components/layout/Header.tsx","line":661,"cls":"text-secondary-foreground"},{"file":"app/components/prism/date-range-picker.tsx","line":132,"cls":"text-secondary-foreground"},{"file":"app/components/prism/tabs.tsx","line":34,"cls":"text-secondary-foreground"},{"file":"app/components/prism/tabs.tsx","line":36,"cls":"text-secondary-foreground"},{"file":"app/components/prism/button-group.tsx","line":61,"cls":"text-secondary-foreground"},{"file":"app/components/prism/button-group.tsx","line":71,"cls":"text-secondary-foreground"},{"file":"app/components/prism/input-group.tsx","line":72,"cls":"text-secondary-foreground"},{"file":"app/components/prism/input-group.tsx","line":236,"cls":"text-secondary-foreground"},{"file":"app/components/prism/popover.tsx","line":115,"cls":"text-secondary-foreground"},{"file":"app/components/prism/sheet.tsx","line":163,"cls":"text-secondary-foreground"},{"file":"app/components/prism/time-field.tsx","line":64,"cls":"data-[type=literal]:text-secondary-foreground"},{"file":"app/components/prism/combobox.tsx","line":211,"cls":"text-secondary-foreground"},{"file":"app/components/prism/combobox.tsx","line":221,"cls":"text-secondary-foreground"},{"file":"app/components/prism/calendar.tsx","line":88,"cls":"text-secondary-foreground"},{"file":"app/components/prism/calendar.tsx","line":91,"cls":"text-secondary-foreground"},{"file":"app/components/prism/calendar.tsx","line":94,"cls":"text-secondary-foreground"},{"file":"app/components/prism/calendar.tsx","line":94,"cls":"aria-selected:text-secondary-foreground"},{"file":"app/components/prism/calendar.tsx","line":276,"cls":"text-secondary-foreground"},{"file":"app/components/prism/command.tsx","line":221,"cls":"**:[[cmdk-group-heading]]:text-secondary-foreground"},{"file":"app/components/prism/command.tsx","line":302,"cls":"text-secondary-foreground"},{"file":"app/components/prism/avatar.tsx","line":46,"cls":"text-secondary-foreground"},{"file":"app/components/prism/avatar.tsx","line":88,"cls":"text-secondary-foreground"},{"file":"app/components/prism/kbd.tsx","line":10,"cls":"text-secondary-foreground"},{"file":"app/components/prism/dialog.tsx","line":236,"cls":"text-secondary-foreground"},{"file":"app/components/prism/badge.tsx","line":11,"cls":"text-secondary-foreground"},{"file":"app/components/prism/badge.tsx","line":20,"cls":"[a]:hover:text-secondary-foreground"},{"file":"app/components/prism/badge.tsx","line":22,"cls":"hover:text-secondary-foreground"},{"file":"app/components/prism/button.tsx","line":32,"cls":"text-secondary-foreground"},{"file":"app/components/prism/button.tsx","line":32,"cls":"aria-expanded:text-secondary-foreground"},{"file":"app/components/prism/button.tsx","line":36,"cls":"text-secondary-foreground"},{"file":"app/components/prism/toggle.tsx","line":43,"cls":"text-secondary-foreground"},{"file":"app/components/prism/dropdown-menu.tsx","line":80,"cls":"text-secondary-foreground"},{"file":"app/components/prism/dropdown-menu.tsx","line":94,"cls":"focus:text-secondary-foreground"},{"file":"app/components/prism/dropdown-menu.tsx","line":94,"cls":"focus:**:text-secondary-foreground"},{"file":"app/components/prism/dropdown-menu.tsx","line":96,"cls":"focus:text-secondary-foreground"},{"file":"app/components/prism/dropdown-menu.tsx","line":96,"cls":"focus:**:text-secondary-foreground"},{"file":"app/components/prism/dropdown-menu.tsx","line":98,"cls":"focus:text-secondary-foreground"},{"file":"app/components/prism/dropdown-menu.tsx","line":98,"cls":"focus:**:text-secondary-foreground"},{"file":"app/components/prism/dropdown-menu.tsx","line":163,"cls":"focus:text-secondary-foreground"},{"file":"app/components/prism/dropdown-menu.tsx","line":163,"cls":"not-data-[variant=error]:focus:**:text-secondary-foreground"},{"file":"app/components/prism/dropdown-menu.tsx","line":163,"cls":"data-open:text-secondary-foreground"},{"file":"app/components/prism/dropdown-menu.tsx","line":219,"cls":"text-secondary-foreground"},{"file":"app/components/prism/dropdown-menu.tsx","line":219,"cls":"dropdown-menu-item:text-secondary-foreground"},{"file":"app/components/prism/select.tsx","line":193,"cls":"text-secondary-foreground"},{"file":"app/components/prism/select.tsx","line":245,"cls":"text-secondary-foreground"},{"file":"app/components/features/bulk/BulkColorDialog.tsx","line":115,"cls":"text-secondary-foreground"},{"file":"app/components/features/bulk/BulkColorDialog.tsx","line":128,"cls":"text-secondary-foreground"},{"file":"app/components/features/bulk/BulkDateTimeDialog.tsx","line":155,"cls":"text-secondary-foreground"},{"file":"app/components/features/Content.tsx","line":62,"cls":"text-secondary-foreground"},{"file":"app/components/features/AdminGuard.tsx","line":26,"cls":"text-secondary-foreground"},{"file":"app/components/features/leads/LeadDetail.tsx","line":96,"cls":"text-secondary-foreground"},{"file":"app/components/features/leads/LeadDetail.tsx","line":114,"cls":"text-secondary-foreground"},{"file":"app/components/features/NotificationsPage.tsx","line":102,"cls":"text-secondary-foreground"},{"file":"app/components/features/NotificationsPage.tsx","line":117,"cls":"text-secondary-foreground"},{"file":"app/components/features/NotificationsPage.tsx","line":163,"cls":"text-secondary-foreground"},{"file":"app/components/features/HelpPage.tsx","line":34,"cls":"text-secondary-foreground"},{"file":"app/components/features/HelpPage.tsx","line":52,"cls":"text-secondary-foreground"},{"file":"app/components/features/HelpPage.tsx","line":78,"cls":"marker:text-secondary-foreground"},{"file":"app/components/features/HelpPage.tsx","line":328,"cls":"text-secondary-foreground"},{"file":"app/components/features/HelpPage.tsx","line":340,"cls":"text-secondary-foreground"},{"file":"app/components/features/InstagramFeedSection.tsx","line":39,"cls":"text-secondary-foreground"},{"file":"app/components/features/profile/CustomThemePanel.tsx","line":49,"cls":"text-secondary-foreground"},{"file":"app/components/features/profile/CustomThemePanel.tsx","line":55,"cls":"text-secondary-foreground"},{"file":"app/components/features/profile/CustomThemePanel.tsx","line":69,"cls":"text-secondary-foreground"},{"file":"app/components/features/profile/CustomThemePanel.tsx","line":109,"cls":"text-secondary-foreground"},{"file":"app/components/features/profile/CustomThemePanel.tsx","line":119,"cls":"text-secondary-foreground"},{"file":"app/components/features/profile/CustomThemePanel.tsx","line":142,"cls":"text-secondary-foreground"},{"file":"app/components/features/profile/CustomThemePanel.tsx","line":157,"cls":"text-secondary-foreground"},{"file":"app/components/features/profile/CustomThemePanel.tsx","line":167,"cls":"text-secondary-foreground"},{"file":"app/components/features/profile/CustomThemePanel.tsx","line":189,"cls":"text-secondary-foreground"},{"file":"app/components/features/profile/CustomThemePanel.tsx","line":200,"cls":"text-secondary-foreground"},{"file":"app/components/features/profile/CustomThemePanel.tsx","line":213,"cls":"text-secondary-foreground"},{"file":"app/components/features/profile/CustomThemePanel.tsx","line":228,"cls":"text-secondary-foreground"},{"file":"app/components/features/ActionComments/CommentInput.tsx","line":89,"cls":"text-secondary-foreground"},{"file":"app/components/features/ActionComments/CommentInput.tsx","line":191,"cls":"text-secondary-foreground"},{"file":"app/components/features/ActionComments/CommentList.tsx","line":31,"cls":"text-secondary-foreground"},{"file":"app/components/features/AdminUserForm.tsx","line":64,"cls":"text-secondary-foreground"},{"file":"app/components/features/AdminUserForm.tsx","line":136,"cls":"text-secondary-foreground"},{"file":"app/components/features/action-drawer/conflict-comparison.tsx","line":194,"cls":"text-secondary-foreground"},{"file":"app/components/features/action-drawer/conflict-comparison.tsx","line":246,"cls":"text-secondary-foreground"},{"file":"app/components/features/action-drawer/ActionDrawerPanel.tsx","line":142,"cls":"text-secondary-foreground"},{"file":"app/components/features/action-drawer/ActionFormDrawer.tsx","line":1346,"cls":"text-secondary-foreground"},{"file":"app/components/features/action-drawer/ActionFormDrawer.tsx","line":1351,"cls":"text-secondary-foreground"},{"file":"app/components/features/action-drawer/ActionFormDrawer.tsx","line":1433,"cls":"text-secondary-foreground"},{"file":"app/components/features/action-drawer/ActionFormDrawer.tsx","line":1437,"cls":"text-secondary-foreground"},{"file":"app/components/features/action-drawer/ActionFormDrawer.tsx","line":1446,"cls":"text-secondary-foreground"},{"file":"app/components/features/action-drawer/ActionFormDrawer.tsx","line":1456,"cls":"text-secondary-foreground"},{"file":"app/components/features/action-drawer/ActionFormDrawer.tsx","line":1471,"cls":"text-secondary-foreground"},{"file":"app/components/features/action-drawer/ActionFormDrawer.tsx","line":1479,"cls":"text-secondary-foreground"},{"file":"app/components/features/action-drawer/ActionTimeDisplay.tsx","line":20,"cls":"text-secondary-foreground"},{"file":"app/components/features/action-drawer/EssentialsTab.tsx","line":255,"cls":"text-secondary-foreground"},{"file":"app/components/features/media/ContentReorderDialog.tsx","line":273,"cls":"text-secondary-foreground"},{"file":"app/components/features/media/ContentReorderDialog.tsx","line":294,"cls":"text-secondary-foreground"},{"file":"app/components/features/media/ContentReorderDialog.tsx","line":302,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningSuggestionsList.tsx","line":63,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningSuggestionsList.tsx","line":110,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningSuggestionsList.tsx","line":121,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningSuggestionsList.tsx","line":132,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningSuggestionsList.tsx","line":143,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningSuggestionsList.tsx","line":155,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningSuggestionsList.tsx","line":210,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningSuggestionsList.tsx","line":219,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningCalendarView.tsx","line":70,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningCalendarView.tsx","line":81,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningCalendarView.tsx","line":140,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningCalendarView.tsx","line":146,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningCalendarView.tsx","line":178,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningCalendarView.tsx","line":179,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningCalendarView.tsx","line":189,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningCalendarView.tsx","line":207,"cls":"text-secondary-foreground"},{"file":"app/components/planning/PlanningCalendarView.tsx","line":267,"cls":"text-secondary-foreground"},{"file":"app/components/client/ClientCalendar.tsx","line":139,"cls":"text-secondary-foreground"},{"file":"app/components/client/ClientCalendar.tsx","line":166,"cls":"text-secondary-foreground"},{"file":"app/components/client/ClientCalendar.tsx","line":177,"cls":"text-secondary-foreground"},{"file":"app/components/client/ClientCalendar.tsx","line":221,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UPreferenceSwitch.tsx","line":32,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UColorPickerDropdown.tsx","line":352,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UColorPickerDropdown.tsx","line":366,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UColorPickerDropdown.tsx","line":380,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UColorPickerDropdown.tsx","line":400,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UColorPickerDropdown.tsx","line":414,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UColorPickerDropdown.tsx","line":428,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UColorPickerDropdown.tsx","line":448,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UColorPickerDropdown.tsx","line":462,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UColorPickerDropdown.tsx","line":476,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UAvatar.tsx","line":142,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UAvatarSelector.tsx","line":80,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/ULoader.tsx","line":45,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UPartnerCelebrationsSelector.tsx","line":88,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UPartnerCelebrationsSelector.tsx","line":96,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UPartnerCelebrationsSelector.tsx","line":113,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UPartnerCelebrationsSelector.tsx","line":188,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UPartnerCelebrationsSelector.tsx","line":213,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UAIAllowanceMeter.tsx","line":19,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UAIModelSelect.tsx","line":186,"cls":"text-secondary-foreground"},{"file":"app/components/uzzina/UPaletteEditor.tsx","line":176,"cls":"text-secondary-foreground"},{"file":"app/routes/app.tsx","line":265,"cls":"text-secondary-foreground"},{"file":"app/routes/dash.tsx","line":152,"cls":"text-secondary-foreground"},{"file":"app/routes/dash.tsx","line":168,"cls":"text-secondary-foreground"},{"file":"app/routes/dash.tsx","line":208,"cls":"text-secondary-foreground"},{"file":"app/routes/app/admin/celebrations.tsx","line":108,"cls":"text-secondary-foreground"},{"file":"app/routes/app/admin/celebrations.tsx","line":170,"cls":"text-secondary-foreground"},{"file":"app/routes/app/admin/celebrations.tsx","line":244,"cls":"text-secondary-foreground"},{"file":"app/routes/app/admin/celebrations.tsx","line":279,"cls":"text-secondary-foreground"},{"file":"app/routes/app/admin/partners.tsx","line":46,"cls":"text-secondary-foreground"},{"file":"app/routes/app/admin/partners.tsx","line":96,"cls":"text-secondary-foreground"},{"file":"app/routes/app/admin/user/$userId.tsx","line":185,"cls":"text-secondary-foreground"},{"file":"app/routes/app/admin/partner/$slug.tsx","line":344,"cls":"text-secondary-foreground"},{"file":"app/routes/app/admin/partner/$slug.tsx","line":405,"cls":"text-secondary-foreground"},{"file":"app/routes/app/admin/partner/$slug.tsx","line":597,"cls":"text-secondary-foreground"},{"file":"app/routes/app/admin/users.tsx","line":63,"cls":"text-secondary-foreground"},{"file":"app/routes/app/admin/users.tsx","line":80,"cls":"text-secondary-foreground"},{"file":"app/routes/app/admin/clients.tsx","line":51,"cls":"text-secondary-foreground"},{"file":"app/routes/app/admin/clients.tsx","line":68,"cls":"text-secondary-foreground"},{"file":"app/routes/app/admin/client/$userId.tsx","line":186,"cls":"text-secondary-foreground"},{"file":"app/routes/app/partner/$slug.tsx","line":159,"cls":"text-secondary-foreground"},{"file":"app/routes/app/profile.tsx","line":176,"cls":"text-secondary-foreground"},{"file":"app/routes/app/profile.tsx","line":188,"cls":"text-secondary-foreground"},{"file":"app/routes/app/profile.tsx","line":799,"cls":"text-secondary-foreground"},{"file":"app/routes/app/profile.tsx","line":1121,"cls":"text-secondary-foreground"},{"file":"app/routes/app/profile.tsx","line":1135,"cls":"text-secondary-foreground"},{"file":"app/routes/app/profile.tsx","line":1146,"cls":"text-secondary-foreground"},{"file":"app/routes/app/profile.tsx","line":1154,"cls":"text-secondary-foreground"},{"file":"app/routes/app/profile.tsx","line":1163,"cls":"text-secondary-foreground"},{"file":"app/routes/app/profile.tsx","line":1177,"cls":"text-secondary-foreground"},{"file":"app/routes/app/profile.tsx","line":1319,"cls":"text-secondary-foreground"},{"file":"app/routes/app/leads.tsx","line":54,"cls":"text-secondary-foreground"},{"file":"app/routes/app/leads.tsx","line":246,"cls":"text-secondary-foreground"},{"file":"app/routes/app/leads.tsx","line":275,"cls":"text-secondary-foreground"},{"file":"app/routes/app/leads.tsx","line":282,"cls":"text-secondary-foreground"},{"file":"app/routes/app/leads.tsx","line":291,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":528,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":571,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":676,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":820,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":826,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":873,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":881,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":887,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":893,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":901,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":919,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":927,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":939,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":950,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":993,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":1004,"cls":"text-secondary-foreground"},{"file":"app/routes/app/planejamento.tsx","line":1028,"cls":"text-secondary-foreground"},{"file":"app/routes/login.tsx","line":111,"cls":"text-secondary-foreground"},{"file":"app/routes/reset-password.tsx","line":163,"cls":"text-secondary-foreground"},{"file":"app/routes/reset-password.tsx","line":171,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/index.tsx","line":133,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/action/$id.tsx","line":277,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/action/$id.tsx","line":291,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/action/$id.tsx","line":312,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/action/$id.tsx","line":328,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/action/$id.tsx","line":343,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/action/$id.tsx","line":354,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/action/$id.tsx","line":369,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/action/$id.tsx","line":388,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/action/$id.tsx","line":403,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/action/$id.tsx","line":411,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/action/$id.tsx","line":419,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/action/$id.tsx","line":480,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/review.$slug.tsx","line":66,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/review.$slug.tsx","line":83,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/review.$slug.tsx","line":97,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/review.$slug.tsx","line":111,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/review.$slug.tsx","line":126,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/review.$slug.tsx","line":150,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/review.$slug.tsx","line":160,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/review.$slug.tsx","line":202,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/review.$slug.tsx","line":221,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/review.$slug.tsx","line":237,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/review.$slug.tsx","line":249,"cls":"[&_blockquote]:text-secondary-foreground"},{"file":"app/routes/dash/review.$slug.tsx","line":270,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/review.$slug.tsx","line":281,"cls":"text-secondary-foreground"},{"file":"app/routes/dash/review.$slug.tsx","line":292,"cls":"text-secondary-foreground"},{"file":"app/routes/forgot-password.tsx","line":67,"cls":"text-secondary-foreground"},{"file":"app/routes/forgot-password.tsx","line":91,"cls":"text-secondary-foreground"},{"file":"app/routes/forgot-password.tsx","line":100,"cls":"text-secondary-foreground"}],"late":[],"approved":[],"deadClass":[]},"contrast":[{"id":"default","label":"Ônix","mode":"light","cur":8.928910678862158,"byAlpha":{"50":3.787037938087076,"55":4.480571945579567,"60":5.332081934625204,"65":6.3725879260435265,"70":7.6280716656887195,"75":9.105871178050196,"80":10.772158235854057},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"default","label":"Ônix","mode":"dark","cur":5.491351336900238,"byAlpha":{"50":4.626838842222075,"55":5.261808118249239,"60":5.952288870756643,"65":6.699587792720372,"70":7.504967955569682,"75":8.369652491434483,"80":9.294827795173996},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"carbon","label":"Carbono","mode":"light","cur":10.064452220726782,"byAlpha":{"50":3.885812326461265,"55":4.624784691275682,"60":5.543201527786748,"65":6.681994504623547,"70":8.080108659702068,"75":9.759138704365679,"80":11.694728417086804},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"carbon","label":"Carbono","mode":"dark","cur":4.54407410198869,"byAlpha":{"50":4.143355474255849,"55":4.661537346708908,"60":5.220770517591122,"65":5.8219358595436645,"70":6.465887295887396,"75":7.153453895452265,"80":7.885441714740344},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"red","label":"Rubi","mode":"light","cur":9.559156565519329,"byAlpha":{"50":3.8439629362036505,"55":4.563495296061547,"60":5.453140320552413,"65":6.549405997267222,"70":7.885352877550316,"75":9.475927666848388,"80":11.292024020289956},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"red","label":"Rubi","mode":"dark","cur":6.431086853921627,"byAlpha":{"50":5.022115524829094,"55":5.771697493760965,"60":6.593021357483508,"65":7.487925560152865,"70":8.458182063962983,"75":9.505502401337273,"80":10.631542879300136},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"orange","label":"Coral","mode":"light","cur":8.781531335697734,"byAlpha":{"50":3.772901846335583,"55":4.460057347816056,"60":5.302270591121927,"65":6.329287262255389,"70":7.56548269301139,"75":9.01653350938785,"80":10.647703257234074},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"orange","label":"Coral","mode":"dark","cur":4.034613766086033,"byAlpha":{"50":3.8882316288034717,"55":4.3638704813157,"60":4.877120040817118,"65":5.428785532398336,"70":6.01964760995058,"75":6.650464260648481,"80":7.321972480441741},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"yellow","label":"Damasco","mode":"light","cur":9.559156565519329,"byAlpha":{"50":3.8439629362036505,"55":4.563495296061547,"60":5.453140320552413,"65":6.549405997267222,"70":7.885352877550316,"75":9.475927666848388,"80":11.292024020289956},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"yellow","label":"Damasco","mode":"dark","cur":6.431086853921627,"byAlpha":{"50":5.022115524829094,"55":5.771697493760965,"60":6.593021357483508,"65":7.487925560152865,"70":8.458182063962983,"75":9.505502401337273,"80":10.631542879300136},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"energy","label":"Elétrico","mode":"light","cur":9.0250592424632,"byAlpha":{"50":3.7960954112629763,"55":4.493731270401557,"60":5.351231434617979,"65":6.400449540905292,"70":7.6684257287612345,"75":9.163605905780427,"80":10.852792985625833},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"energy","label":"Elétrico","mode":"dark","cur":5.491351336900238,"byAlpha":{"50":4.626838842222075,"55":5.261808118249239,"60":5.952288870756643,"65":6.699587792720372,"70":7.504967955569682,"75":8.369652491434483,"80":9.294827795173996},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"green","label":"Folha","mode":"light","cur":9.559156565519329,"byAlpha":{"50":3.8439629362036505,"55":4.563495296061547,"60":5.453140320552413,"65":6.549405997267222,"70":7.885352877550316,"75":9.475927666848388,"80":11.292024020289956},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"green","label":"Folha","mode":"dark","cur":6.431086853921627,"byAlpha":{"50":5.022115524829094,"55":5.771697493760965,"60":6.593021357483508,"65":7.487925560152865,"70":8.458182063962983,"75":9.505502401337273,"80":10.631542879300136},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"cyan","label":"Turquesa","mode":"light","cur":9.019548513935511,"byAlpha":{"50":3.7955737786951897,"55":4.492973786990702,"60":5.35012966159116,"65":6.398847199668783,"70":7.666105810779609,"75":9.160287876751411,"80":10.848160309475384},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"cyan","label":"Turquesa","mode":"dark","cur":6.431086853921627,"byAlpha":{"50":5.022115524829094,"55":5.771697493760965,"60":6.593021357483508,"65":7.487925560152865,"70":8.458182063962983,"75":9.505502401337273,"80":10.631542879300136},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"blue","label":"Cobalto","mode":"light","cur":10.121188769782275,"byAlpha":{"50":3.8903197651267702,"55":4.631402476235271,"60":5.552955843196038,"65":6.696408598550355,"70":8.101376338480188,"75":9.790228280562534,"80":11.7391935509221},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"blue","label":"Cobalto","mode":"dark","cur":6.431086853921627,"byAlpha":{"50":5.022115524829094,"55":5.771697493760965,"60":6.593021357483508,"65":7.487925560152865,"70":8.458182063962983,"75":9.505502401337273,"80":10.631542879300136},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"purple","label":"Violeta","mode":"light","cur":10.121188769782275,"byAlpha":{"50":3.8903197651267702,"55":4.631402476235271,"60":5.552955843196038,"65":6.696408598550355,"70":8.101376338480188,"75":9.790228280562534,"80":11.7391935509221},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"purple","label":"Violeta","mode":"dark","cur":6.431086853921627,"byAlpha":{"50":5.022115524829094,"55":5.771697493760965,"60":6.593021357483508,"65":7.487925560152865,"70":8.458182063962983,"75":9.505502401337273,"80":10.631542879300136},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"magenta","label":"Fúcsia","mode":"light","cur":9.4874711504298,"byAlpha":{"50":3.837847365039573,"55":4.554552431527155,"60":5.440025819779325,"65":6.530149540502345,"70":7.857161519047194,"75":9.435096798130726,"80":11.23422934647344},"surfaces":["background","card","popover","input","action","secondary"]},{"id":"magenta","label":"Fúcsia","mode":"dark","cur":3.9198720118959356,"byAlpha":{"50":3.6916096944809516,"55":4.1313643909722915,"60":4.605557906432918,"65":5.114941271081713,"70":5.660241757668494,"75":6.242164810333795,"80":6.8613957291333385},"surfaces":["background","card","popover","input","action","secondary"]}],"alphas":[50,55,60,65,70,75,80],"palettes":[{"id":"default","label":"Ônix","relief":true,"light":{"primary":{"h":0,"c":0,"l":0},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":200,"c":0.002,"l":0.96},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.07,"inputLDelta":-0.04,"actionLDelta":0.02,"actionHoverLDelta":0.1,"popoverLDelta":0.02,"ring":{"h":0,"c":0,"l":0}},"dark":{"primary":{"h":0,"c":0,"l":1},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":250,"c":0.01,"l":0.2},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.1,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":0,"c":0,"l":1}}},{"id":"carbon","label":"Carbono","relief":false,"light":{"primary":{"h":240,"c":0.02,"l":0.3},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":1},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.04,"borderLDelta":-0.04,"inputLDelta":-0.02,"actionLDelta":-0.02,"actionHoverLDelta":-0.005,"popoverLDelta":0.1,"ring":{"h":240,"c":0.02,"l":0.3}},"dark":{"primary":{"h":240,"c":0.01,"l":0.99},"primaryFg":{"h":240,"c":0.02,"l":0.3},"bg":{"h":240,"c":0.015,"l":0.25},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.1,"inputLDelta":0.04,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":240,"c":0.01,"l":0.99}}},{"id":"red","label":"Rubi","light":{"primary":{"h":20,"c":0.25,"l":0.62},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":0.98},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.04,"actionHoverLDelta":0.06,"popoverLDelta":0.06,"ring":{"h":20,"c":0.25,"l":0.62}},"dark":{"primary":{"h":20,"c":0.25,"l":0.68},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":20,"c":0.25,"l":0.68}}},{"id":"orange","label":"Coral","light":{"primary":{"h":25,"c":0.18,"l":0.65},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":130,"c":0.01,"l":0.95},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":1,"popoverLDelta":0.03,"ring":{"h":25,"c":0.18,"l":0.65}},"dark":{"primary":{"h":25,"c":0.18,"l":0.65},"primaryFg":{"h":130,"c":0.02,"l":0.9},"bg":{"h":190,"c":0.01,"l":0.25},"fg":{"h":130,"c":0.01,"l":0.95},"cardLDelta":0.05,"borderLDelta":0.1,"inputLDelta":-0.02,"actionLDelta":0.07,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":25,"c":0.18,"l":0.65}}},{"id":"yellow","label":"Damasco","light":{"primary":{"h":100,"c":0.5,"l":0.8},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":0,"c":0,"l":0.98},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":100,"c":0.5,"l":0.8}},"dark":{"primary":{"h":100,"c":0.4,"l":0.8},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":100,"c":0.4,"l":0.8}}},{"id":"energy","label":"Elétrico","light":{"primary":{"h":120,"c":0.15,"l":0.94},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":240,"c":0.004,"l":0.96},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.03,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":120,"c":0.15,"l":0.94}},"dark":{"primary":{"h":120,"c":0.18,"l":0.9},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":250,"c":0.01,"l":0.2},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":120,"c":0.18,"l":0.9}}},{"id":"green","label":"Folha","light":{"primary":{"h":130,"c":0.2,"l":0.7},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":0.98},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":130,"c":0.2,"l":0.7}},"dark":{"primary":{"h":130,"c":0.2,"l":0.65},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":130,"c":0.2,"l":0.65}}},{"id":"cyan","label":"Turquesa","light":{"primary":{"h":200,"c":0.2,"l":0.7},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":0.96},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":200,"c":0.2,"l":0.7}},"dark":{"primary":{"h":200,"c":0.2,"l":0.65},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":200,"c":0.2,"l":0.65}}},{"id":"blue","label":"Cobalto","relief":false,"light":{"primary":{"h":264,"c":0.31,"l":0.45},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":1},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":-0.03,"actionHoverLDelta":-0.015,"popoverLDelta":0.1,"ring":{"h":264,"c":0.31,"l":0.45}},"dark":{"primary":{"h":264,"c":0.31,"l":0.58},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":264,"c":0.31,"l":0.58}}},{"id":"purple","label":"Violeta","light":{"primary":{"h":290,"c":0.28,"l":0.54},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":1},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.1,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":290,"c":0.28,"l":0.54}},"dark":{"primary":{"h":290,"c":0.28,"l":0.68},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":290,"c":0.28,"l":0.68}}},{"id":"magenta","label":"Fúcsia","shadowColor":"oklch(0.25 0.15 350)","light":{"primary":{"h":350,"c":0.4,"l":0.9},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":320,"c":0.02,"l":0.98},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":350,"c":0.4,"l":0.9}},"dark":{"primary":{"h":350,"c":0.4,"l":0.8},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":340,"c":0.1,"l":0.3},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":350,"c":0.4,"l":0.8}}}]};
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let palIdx = 0, dark = false;
+
+DATA.palettes.forEach((p, i) => $("#pal").insertAdjacentHTML("beforeend", `<option value="${i}">${p.label}</option>`));
+$("#pal").onchange = (e) => { palIdx = +e.target.value; applyTheme(); };
+$("#mode").onclick = () => { dark = !dark; applyTheme(); };
+
+function applyTheme() {
+  const p = DATA.palettes[palIdx], m = dark ? p.dark : p.light, r = document.documentElement.style;
+  document.body.classList.toggle("dark", dark);
+  $("#mode").textContent = dark ? "☀️ Claro" : "🌙 Escuro";
+  
+  const o = (x) => `oklch(${x.l} ${x.c} ${x.h})`;
+  const rel = (v, d) => `oklch(from var(${v}) calc(l + ${d}) c h)`;
+  const lum = 0.7, c = 0.2;
+  const error = dark ? "oklch(0.86135 0.2 16.339)" : "oklch(0.8 0.22 16.339)";
+  const accent = { ...m.primary, l: Math.max(0, Math.min(1, m.primary.l + (dark ? 0.10 : -0.15))) };
+  const hue = { warning: dark ? 90 : 70, info: 250 };
+  const emeraldColor = dark ? "oklch(0.65 0.16 163)" : "oklch(0.508 0.14 163)";
+  const emeraldStrong = "oklch(0.596 0.145 163.225)";
+
+  r.setProperty("--background", o(m.bg));
+  r.setProperty("--foreground", o(m.fg));
+  r.setProperty("--primary", o(m.primary));
+  r.setProperty("--primary-foreground", o(m.primaryFg));
+
+  const T = {
+    background: "var(--background)", foreground: "var(--foreground)",
+    card: rel("--background", m.cardLDelta),
+    popover: rel("--background", m.popoverLDelta),
+    primary: "var(--primary)",
+    "primary-foreground": "var(--primary-foreground)",
+    "secondary-new": `color-mix(in srgb, var(--foreground) ${dark ? 10 : 5}%, transparent)`,
+    "secondary-foreground": `color-mix(in srgb, var(--foreground) 65%, transparent)`,
+    border: rel("--background", m.borderLDelta),
+    input: rel("--background", m.inputLDelta),
+    ring: o(m.ring ?? m.primary),
+    accent: o(accent),
+    error,
+    "error-foreground": dark ? error : "oklch(0.6 0.22 16.339)",
+    "error-background": `color-mix(in srgb, ${error} 10%, transparent)`,
+    warning: `oklch(${lum * 1.56} ${c} ${hue.warning})`,
+    "warning-foreground": dark ? `oklch(${lum * 1.56} ${c} ${hue.warning})` : `oklch(0.5 ${c} ${hue.warning})`,
+    "warning-background": `color-mix(in srgb, oklch(${lum * 1.56} ${c} ${hue.warning}) 10%, transparent)`,
+    success: emeraldColor,
+    "success-foreground": dark ? emeraldColor : "oklch(0.42 0.14 163)",
+    "success-background": `color-mix(in srgb, ${emeraldColor} 10%, transparent)`,
+    info: `oklch(${lum * 1.2} ${c} ${hue.info})`,
+    "info-foreground": dark ? `oklch(${lum * 1.2} ${c} ${hue.info})` : `oklch(0.5 ${c} ${hue.info})`,
+    "info-background": `color-mix(in srgb, oklch(${lum * 1.2} ${c} ${hue.info}) 10%, transparent)`,
+    "success-strong": emeraldStrong,
+  };
+  Object.entries(T).forEach(([k, v]) => r.setProperty("--t-" + k, v));
+}
+
+const PASSOS = [
+  {
+    num: 1,
+    title: "Primária e novo Accent",
+    status: "done",
+    badge: "Concluído",
+    desc: "A cor de marca usa o nome primary. O novo Accent deriva da luminosidade da Primária e fica disponível para uso futuro.",
+    files: "app/tailwind.css, app/lib/palette-vars.ts, app/lib/custom-theme.ts, app/components/features/profile/CustomThemePanel.tsx",
+    verify: ["Comparar Primária e Accent em uma paleta cromática no claro e no escuro.", "Conferir a amostra de anel de foco da paleta."],
+    preview: `<span class="swatch" style="--sample:var(--t-primary)">Primária</span> <span class="swatch" style="--sample:var(--t-accent)">Accent</span> <button type="button" class="focus-sample">Amostra de foco</button>`
+  },
+  {
+    num: 2,
+    title: "Remoção de Tokens Sem Uso e Código Morto",
+    status: "done",
+    badge: "Concluído",
+    desc: "Excluir do CSS e do app os 16 tokens sem uso nenhum (chart-1..5, sidebar x6, surface, surface-foreground, favorite, approved x2) e a classe inexistente text-action-foreground.",
+    files: "app/tailwind.css, app/components/features/profile/CustomThemePanel.tsx, app/components/ui-sections/GalleryHelperComponents.tsx, app/lib/palette-vars.ts",
+    verify: [
+      "Sem impacto visual em nenhuma tela operacional.",
+      "Galeria /ui abre normalmente.",
+      "Zero erros de TypeScript no build."
+    ],
+    preview: `<span style="color:oklch(.65 .2 145); font-weight:700;">✔ Passo 2 concluído: 16 tokens e classe morta removidos sem nenhum impacto visual.</span>`
+  },
+  {
+    num: 3,
+    title: "Remoção dos Clones Redundantes de Foreground",
+    status: "done",
+    badge: "Concluído",
+    desc: "Substituir os tokens clones (card-foreground, popover-foreground) por text-foreground nos primitivos do Prism, eliminando mais 2 variáveis do CSS.",
+    files: "app/components/prism/ (combobox, command, dialog, dropdown-menu, popover, select, sheet, sonner, badge) e app/tailwind.css",
+    verify: [
+      "Abrir menus suspensos (Header, Ações) e diálogos.",
+      "O texto principal continua com contraste pleno (100%), herdando text-foreground normalmente."
+    ],
+    preview: `<span style="color:oklch(.65 .2 145); font-weight:700;">✔ Passo 3 concluído: clones card-foreground e popover-foreground eliminados dos primitivos do Prism e do CSS.</span>`
+  },
+  {
+    num: 4,
+    title: "Implantação do Secondary Dinâmico (5% / 10%)",
+    status: "done",
+    badge: "Concluído",
+    desc: "Mudar a fórmula de --secondary no tailwind.css para color-mix(in srgb, var(--foreground) 5% claro / 10% escuro, transparent). Limpar os 21 usos de secondary/50 nos botões e menus para secondary puro.",
+    files: "app/tailwind.css, app/components/prism/button.tsx, app/components/prism/dropdown-menu.tsx, app/components/prism/combobox.tsx, app/components/prism/command.tsx, app/components/prism/select.tsx",
+    verify: [
+      "Ir em /ui e passar o mouse nos botões Ghost, Outline e Secondary.",
+      "Alternar para Modo Escuro e verificar a transição automática de 5% para 10%.",
+      "Conferir menus suspensos no Header (/app)."
+    ],
+    preview: `<span style="color:oklch(.65 .2 145); font-weight:700;">✔ Passo 4 concluído: --secondary agora é dinâmico (5% claro / 10% escuro) e botões/menus limpos para secondary puro.</span>`
+  },
+  {
+    num: 5,
+    title: "Eliminação Total de Muted → Migração para Secondary",
+    status: "done",
+    badge: "Concluído",
+    desc: "Trocar todos os 38 usos de bg-muted por bg-secondary (cabeçalhos de calendário, acordeões, avatar sem foto, miniatura vazia, etc.) e apagar --muted e mutedLDelta das 11 paletas.",
+    files: "app/components/client/ClientCalendar.tsx, app/components/planning/, app/components/prism/avatar.tsx, app/components/features/media/, app/lib/palettes.ts, app/tailwind.css",
+    verify: [
+      "Ver o cabeçalho dos dias da semana (DOM, SEG, TER) no Calendário (/app).",
+      "Conferir os filtros da lista de sugestões em Planejamento (/app/planejamento).",
+      "Ver avatar sem foto ('CS') no Header e gaveta.",
+      "Verificar miniatura de mídia sem post carregado."
+    ],
+    preview: `<span style="color:oklch(.65 .2 145); font-weight:700;">✔ Passo 5 concluído: bg-muted totalmente eliminado do app e migrado para bg-secondary.</span>`
+  },
+  {
+    num: 6,
+    title: "Restrição de Input a Formulários (Correção das Abas e Botões)",
+    status: "done",
+    badge: "Concluído",
+    desc: "Substituir os 17 usos indevidos de bg-input fora de formulários (hover das abas da gaveta, hover da coluna do calendário, hover do botão outline escuro) por bg-secondary.",
+    files: "app/components/prism/tabs.tsx, app/components/prism/button.tsx, app/components/features/CalendarDayCell.tsx",
+    verify: [
+      "Abrir a gaveta de ação em /app e passar o mouse nas abas Essencial, Instagram quando disponível e Observações. Conferir também Fechar.",
+      "Passar o mouse sobre a coluna de um dia inteiro no calendário.",
+      "No modo escuro, passar o mouse no botão Outline."
+    ],
+    preview: `<span style="color:oklch(.65 .2 145); font-weight:700;">✔ Passo 6 concluído: bg-input restrito a formulários; abas, hovers de dia e botões agora usam bg-secondary.</span>`
+  },
+  {
+    num: 7,
+    title: "Unificação da Família Late em Error no ActionItem",
+    status: "done",
+    badge: "Concluído",
+    desc: "Substituir no ActionItem.tsx e ActionLineVariant.tsx as classes bg-late, text-late-foreground e late-top-border por error-background, error-foreground e action-top-border.",
+    files: "app/components/features/ActionItem.tsx, app/components/features/ActionVariants/ActionLineVariant.tsx, app/tailwind.css",
+    verify: [
+      "Abrir a visualização de ações no Calendário ou Hoje (/app).",
+      "Localizar uma ação atrasada e conferir o visual integrado ao fundo sem o vermelho isolado antigo."
+    ],
+    preview: `<span style="color:oklch(.65 .2 145); font-weight:700;">✔ Passo 7 concluído: ações atrasadas agora usam error-background translúcido e ring-error.</span>`
+  },
+  {
+    num: 8,
+    title: "Fundos de Status Translúcidos (10%) e Verde Emerald",
+    status: "done",
+    badge: "Concluído",
+    desc: "Atualizar error-background, warning-background, success-background e info-background para derivarem da cor forte a 10% no claro e no escuro. Unificar success na paleta Emerald.",
+    files: "app/tailwind.css, app/components/prism/alert.tsx, app/components/prism/badge.tsx",
+    verify: [
+      "Conferir selos e alertas em /ui. No app, avisos de erro aparecem nos fluxos de login e senha e em Hoje quando falha o carregamento.",
+      "Verificar a harmonia do novo verde Emerald com o botão success-strong."
+    ],
+    preview: `<span class="state-sample" style="background:var(--t-error-background);color:var(--t-error-foreground)">Erro</span>
+<span class="state-sample" style="background:var(--t-success-background);color:var(--t-success-foreground)">Sucesso</span>
+<span class="state-sample" style="background:var(--t-warning-background);color:var(--t-warning-foreground)">Aviso</span>
+<span class="state-sample" style="background:var(--t-info-background);color:var(--t-info-foreground)">Informação</span>`
+  },
+  {
+    num: 9,
+    title: "Novo Texto Secundário Prism: text-secondary-foreground",
+    status: "done",
+    badge: "Concluído",
+    desc: "Configurar --secondary-foreground como color-mix(in srgb, var(--foreground) 65%, transparent). Migrar a tipografia secundária e preservar a cor integral nos rótulos principais dos controles.",
+    files: "app/tailwind.css e componentes com tipografia secundária",
+    verify: [
+      "Conferir subtítulos de páginas, datas, atalhos de teclado (⌘K) e metadados de ação.",
+      "Conferir a legibilidade em ambos os modos, sobre cada fundo usado no app."
+    ],
+    preview: `<span style="color:oklch(.65 .2 145); font-weight:700;">✔ Passo 9 concluído: text-secondary-foreground a 65% no claro e no escuro e termo 'muted' definitivamente aposentado.</span>`
+  },
+  {
+    num: 10,
+    title: "Padronização do Botão Prism: variant='error'",
+    status: "done",
+    badge: "Concluído",
+    desc: "Renomear a variante de botão de variant='destructive' para variant='error' no PrismButton (com remoção dos nomes antigos), alinhando com Alert e Badge.",
+    files: "app/components/prism/button.tsx e chamadas de botões de exclusão",
+    verify: [
+      "Diálogos de confirmação de exclusão em /app.",
+      "Seção de botões na galeria /ui."
+    ],
+    preview: `<span style="color:oklch(.65 .2 145); font-weight:700;">✔ Passo 10 concluído: variantes 'error' e 'ghost-error' adicionadas ao PrismButton.</span>`
+  }
+];
+
+function renderPassos() {
+  $("#passos").innerHTML = PASSOS.map((p) => `
+    <div class="step-card ${p.status}">
+      <div class="step-header">
+        <div class="step-title">
+          <span class="step-num">${p.num}</span>
+          <span>Passo ${p.num}: ${esc(p.title)}</span>
+        </div>
+        <span class="badge badge-${p.status === "done" ? "done" : p.status === "active" ? "ready" : "waiting"}">${p.badge}</span>
+      </div>
+
+      <div class="step-body">
+        <div class="step-details">
+          <p>${esc(p.desc)}</p>
+          <div style="font-size:.8rem;" class="dim">
+            <strong>Arquivos tocados:</strong> <code>${esc(p.files)}</code>
+          </div>
+          <div class="preview-box">
+            ${p.preview}
+          </div>
+        </div>
+
+        <div class="step-verify">
+          <h4>O que você confere para aprovar:</h4>
+          <ul>
+            ${p.verify.map((v) => `<li>${esc(v)}</li>`).join("")}
+          </ul>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+applyTheme();
+renderPassos();
+
+let currentFilter = "all";
+let searchTerm = "";
+
+function verdictLabel(v) {
+  switch (v) {
+    case "remove": return "Removido";
+    case "merge": return "Fundido";
+    case "transform": return "Transformado";
+    case "keep": return "Mantido";
+    default: return v;
+  }
+}
+
+function renderTokensTable() {
+  const filtered = DATA.tokens.filter((t) => {
+    if (currentFilter !== "all" && t.verdict !== currentFilter) return false;
+    if (searchTerm) {
+      const q = searchTerm.toLowerCase();
+      return (
+        t.name.toLowerCase().includes(q) ||
+        t.group.toLowerCase().includes(q) ||
+        t.why.toLowerCase().includes(q) ||
+        t.dest.toLowerCase().includes(q)
+      );
+    }
+    return true;
+  });
+
+  const tbody = $("#tokens-tbody");
+  if (!tbody) return;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem;" class="dim">Nenhum token encontrado com esse filtro/busca.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((t) => `
+    <tr>
+      <td><code>--${esc(t.name)}</code></td>
+      <td><span class="dim">${esc(t.group)}</span></td>
+      <td><span class="badge-verdict badge-verdict-${t.verdict}">${verdictLabel(t.verdict)}</span></td>
+      <td><code>${esc(t.dest)}</code></td>
+      <td>${esc(t.why)}</td>
+      <td style="text-align:right; font-weight:600;">${t.app}</td>
+    </tr>
+  `).join("");
+}
+
+renderTokensTable();
+
+document.querySelectorAll(".filter-pill").forEach((btn) => {
+  btn.onclick = () => {
+    document.querySelectorAll(".filter-pill").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilter = btn.dataset.v;
+    renderTokensTable();
+  };
+});
+
+$("#token-search").oninput = (e) => {
+  searchTerm = e.target.value.trim();
+  renderTokensTable();
+};
+</script>
+</body>
+</html>

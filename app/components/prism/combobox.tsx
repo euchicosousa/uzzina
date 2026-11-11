@@ -138,7 +138,7 @@ function ComboboxContent({
   return (
     <PopoverPrimitive
       className={cn(
-        "relative isolate z-50 max-h-72 w-(--trigger-width) min-w-36 origin-(--trigger-anchor-point) overflow-hidden rounded-2xl border border-foreground/5 bg-popover text-popover-foreground shadow-lg squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:bg-input *:data-[slot=input-group]:shadow-none motion-reduce:animate-none dark:border-foreground/10",
+        "relative isolate z-50 max-h-72 w-(--trigger-width) min-w-36 origin-(--trigger-anchor-point) overflow-hidden rounded-2xl border border-foreground/5 bg-popover text-foreground shadow-lg squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:bg-input *:data-[slot=input-group]:shadow-none motion-reduce:animate-none dark:border-foreground/10",
         className,
       )}
       crossOffset={crossOffset}
@@ -173,7 +173,7 @@ function ComboboxItem<T extends object>({
   return (
     <ListBoxItemPrimitive
       className={cn(
-        "relative flex min-h-7 w-full cursor-default items-center gap-2 rounded-xl py-1.5 pr-8 pl-2 text-sm outline-hidden select-none squircle data-disabled:pointer-events-none data-disabled:opacity-50 data-focused:bg-secondary/50 data-focused:text-foreground data-highlighted:bg-secondary/50 data-highlighted:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex min-h-7 w-full cursor-default items-center gap-2 rounded-xl py-1.5 pr-8 pl-2 text-sm outline-hidden select-none squircle data-disabled:pointer-events-none data-disabled:opacity-50 data-focused:bg-secondary data-focused:text-foreground data-highlighted:bg-secondary data-highlighted:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       data-slot="combobox-item"
@@ -208,7 +208,7 @@ function ComboboxGroup<T extends object>({
 function ComboboxLabel({ className, ...props }: HeaderProps) {
   return (
     <HeaderPrimitive
-      className={cn("px-2 py-1.5 text-xs text-muted-foreground", className)}
+      className={cn("px-2 py-1.5 text-xs text-secondary-foreground", className)}
       data-slot="combobox-label"
       {...props}
     />
@@ -218,7 +218,7 @@ function ComboboxEmpty({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "hidden w-full justify-center py-2 text-center text-sm text-muted-foreground group-data-empty/combobox-content:flex",
+        "hidden w-full justify-center py-2 text-center text-sm text-secondary-foreground group-data-empty/combobox-content:flex",
         className,
       )}
       data-slot="combobox-empty"
@@ -262,7 +262,7 @@ function ComboboxChips({
   return (
     <Group
       className={cn(
-        "flex flex-wrap items-center rounded-2xl border border-input bg-input/40 bg-clip-padding text-sm transition-[color,box-shadow] duration-200 squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring/30 has-aria-invalid:border-destructive has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:border-destructive/50 dark:has-aria-invalid:ring-destructive/40",
+        "flex flex-wrap items-center rounded-2xl border border-input bg-input/40 bg-clip-padding text-sm transition-[color,box-shadow] duration-200 squircle focus-within:border-ring/60 focus-within:ring-3 focus-within:ring-ring/30 has-aria-invalid:border-error has-aria-invalid:bg-error-background has-aria-invalid:ring-error-background",
         chipsContainerSizes[size],
         className,
       )}
@@ -326,7 +326,7 @@ function ComboboxChip({
       {showRemove && (
         <Button
           className={cn(
-            "rounded-full p-0 hover:bg-foreground/15 hover:text-foreground aria-disabled:pointer-events-none",
+            "rounded-full p-0 hover:bg-foreground/15 aria-disabled:pointer-events-none",
             size === "sm" ? "size-3.5" : size === "lg" ? "size-4.5" : "size-4",
           )}
           data-slot="combobox-chip-remove"
@@ -354,7 +354,7 @@ function ComboboxChipsInput({ className, ...props }: InputProps) {
   return (
     <InputPrimitive
       className={cn(
-        "min-w-16 flex-1 bg-transparent outline-none placeholder:text-foreground/50",
+        "min-w-16 flex-1 bg-transparent outline-none placeholder:text-foreground/40",
         className,
       )}
       data-slot="combobox-chip-input"

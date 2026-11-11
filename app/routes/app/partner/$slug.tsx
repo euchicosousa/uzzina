@@ -18,7 +18,7 @@ import {
   SearchIcon,
   SettingsIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, createFileRoute } from "@tanstack/react-router";
 import { PartnerCalendarBoard } from "~/components/features/PartnerCalendarBoard";
 import { ActionContainer } from "~/components/features/ActionContainer";
@@ -68,7 +68,6 @@ function PartnerPage() {
   const partnerSlugs = partners.map((p) => p.slug).sort();
   const partner = partners.find((p: Partner) => p.slug === slug);
   const partnerSlug = partner?.slug || "";
-  const partnerColors = partner?.colors || [];
   const searchParams = Route.useSearch();
   let dateParam = searchParams.date;
   const skipActions = searchParams.skip_actions === "true";
@@ -157,7 +156,7 @@ function PartnerPage() {
   useSelectionContext(JSON.stringify([viewOptions, query, view]));
   if (!partner) {
     return (
-      <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+      <div className="flex h-full w-full items-center justify-center bg-secondary text-secondary-foreground">
         Parceiro não encontrado ou acesso não autorizado.
       </div>
     );
@@ -165,9 +164,9 @@ function PartnerPage() {
   return (
     <div className="page-height flex min-h-0 flex-col overflow-hidden">
       {/* Header */}
-      <div className="flex shrink-0 flex-wrap items-center justify-between border-b 2xl:flex-nowrap 2xl:gap-4 2xl:p-2">
+      <div className="flex shrink-0 flex-wrap items-center justify-between border-b lg:flex-nowrap lg:gap-4 lg:p-2">
         {/* Mobile Top */}
-        <div className="order-1 flex w-full shrink-0 items-center justify-between gap-4 overflow-hidden border-b p-2 2xl:contents">
+        <div className="order-1 flex w-full shrink-0 items-center justify-between gap-4 overflow-hidden border-b p-2 lg:contents">
           <div className="flex shrink-0 items-center justify-between gap-2 overflow-hidden">
             <UAvatar
               backgroundColor={partner.colors[0]}
@@ -253,10 +252,10 @@ function PartnerPage() {
           </PrismInputGroup>
         </div>
         {/* Mobile Bottom */}
-        <div className="order-3 w-full overflow-hidden p-2 2xl:contents">
+        <div className="order-3 w-full overflow-hidden p-2 lg:contents">
           {/* Organização */}
           <UViewOptions
-            className="2xl:contents"
+            className="lg:contents"
             endComponents={
               <PrismToggle
                 aria-label="Alternar Visão Feed"

@@ -48,7 +48,7 @@ function AdminClientsPage() {
 
         {isLoading ? (
           <p
-            className="p-8 text-center text-sm text-muted-foreground"
+            className="p-8 text-center text-sm text-secondary-foreground"
             role="status"
           >
             Carregando clientes…
@@ -65,7 +65,7 @@ function AdminClientsPage() {
         ) : (
           isSuccess &&
           clients.length === 0 && (
-            <p className="text-muted-foreground">Nenhum cliente cadastrado.</p>
+            <p className="text-secondary-foreground">Nenhum cliente cadastrado.</p>
           )
         )}
 

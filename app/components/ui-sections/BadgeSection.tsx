@@ -19,7 +19,6 @@ const BADGE_VARIANTS = [
   "secondary",
   "outline",
   "ghost",
-  "destructive",
   "success",
   "warning",
   "error",

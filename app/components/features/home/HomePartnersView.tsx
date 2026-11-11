@@ -61,13 +61,7 @@ export function HomePartnersView({ actions }: { actions: Action[] }) {
 
               {partner.lateActionsLength > 0 && (
                 <div className="absolute -top-2 -right-6 flex">
-                  <PrismBadge
-                    variant={
-                      partner.lateActionsLength > 3 ? "error" : "warning"
-                    }
-                  >
-                    {partner.lateActionsLength}
-                  </PrismBadge>
+                  <PrismBadge>{partner.lateActionsLength}</PrismBadge>
                 </div>
               )}
             </div>

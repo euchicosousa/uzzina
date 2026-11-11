@@ -52,16 +52,18 @@ let baseStyles = `
 ```
 
 #### Elementos do relevo:
+
 1. **Luz superior (realce zenital):** `border-t border-white` (Light) e `dark:border-white/10` (Dark). Simula o reflexo de luz na aresta chanfrada superior do cartão.
 2. **Sombra de profundidade (elevação de repouso):** `shadow-sm shadow-black/10` (Light) e `dark:shadow-black/20` (Dark).
 3. **Sombra de interação (hover):** `hover:shadow-lg` combinado com elevação de camada `hover:z-10` e clareamento `hover:bg-action-hover`.
 
 #### Variações por variante, estado e contexto:
+
 - **Variantes de visualização:**
   - `block` (blocos padrão usados no Kanban, Feed e grade do Calendário)
   - `line` (linhas compactas da lista de Sprint na Home e Calendário)
   - `content` (cartões com pré-visualização de imagem/Instagram)
-  *Todas compartilham exatamente a mesma base de relevo de `ActionItem.tsx`.*
+    _Todas compartilham exatamente a mesma base de relevo de `ActionItem.tsx`._
 - **Estado de Atraso (`isLate`):**
   - O realce superior muda para `border-t-white/50`, sobre fundo de erro sutil (`bg-late text-late-foreground hover:bg-late-hover`) com anel `ring ring-late-foreground`.
 - **Estado de Sprint (`isSprint`):**
@@ -79,6 +81,7 @@ let baseStyles = `
 ### 2. Proposta de arquitetura de tokens e propagação na paleta
 
 #### A. Onde declarar a opção na paleta
+
 A opção de relevo é modelada como uma propriedade booleana de estilo de superfície na definição da paleta (`app/lib/palettes.ts`):
 
 ```ts
@@ -96,6 +99,7 @@ export type Palette = {
 - **Demais paletas existentes:** mantêm `relief: true` por padrão para retrocompatibilidade visual.
 
 #### B. Propagação via variáveis CSS unificadas (`app/lib/palette-vars.ts` e `app/tailwind.css`)
+
 Em vez de condicionar classes utilitárias no JSX em múltiplos componentes, a propagação ocorre de forma unificada no CSS:
 
 ```css
@@ -103,13 +107,15 @@ Em vez de condicionar classes utilitárias no JSX em múltiplos componentes, a p
 :root {
   --action-top-border: rgba(255, 255, 255, 1);
   --action-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
-  --action-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --action-hover-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
 }
 
 .dark {
   --action-top-border: rgba(255, 255, 255, 0.1);
   --action-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
-  --action-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --action-hover-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
 }
 
 @theme {
@@ -120,6 +126,7 @@ Em vez de condicionar classes utilitárias no JSX em múltiplos componentes, a p
 ```
 
 Na função `applyPaletteVars` (`app/lib/palette-vars.ts`):
+
 ```ts
 if (palette.relief === false) {
   root.style.setProperty("--action-top-border", "transparent");
@@ -133,7 +140,9 @@ if (palette.relief === false) {
 ```
 
 #### C. Unificação de `ActionItem.tsx` e `UAdminItemCard.tsx`
+
 Tanto `ActionItem.tsx` quanto `UAdminItemCard.tsx` (e a réplica do design system em `TokensFocusSection.tsx`) passam a compartilhar exatamente as mesmas classes unificadas:
+
 - Borda superior: `border-t border-action-top-border`
 - Sombra de repouso: `shadow-action`
 - Sombra de hover: `hover:shadow-action-hover`
@@ -141,7 +150,8 @@ Tanto `ActionItem.tsx` quanto `UAdminItemCard.tsx` (e a réplica do design syste
 Elimina-se a divergência atual onde `UAdminItemCard` usava `dark:border-white/20 dark:shadow-black/80` enquanto `ActionItem` usava `dark:border-white/10 dark:shadow-black/20`. Ambos passam a ser controlados de forma centralizada pelo tema.
 
 #### D. Preservação milimétrica da geometria
-- O ticket exige expressamente: *"Ao desligar o efeito, remover a sombra e deixar a borda superior transparente, preservando sua espessura e a geometria do cartão."*
+
+- O ticket exige expressamente: _"Ao desligar o efeito, remover a sombra e deixar a borda superior transparente, preservando sua espessura e a geometria do cartão."_
 - Ao manter `border-t border-action-top-border` (com `--action-top-border: transparent` no tema plano), o contêiner preserva exatamente a sua espessura física de 1px. Não ocorre **nenhum salto de layout (layout shift)** e a altura do cartão no grid do calendário, colunas do Kanban e listas verticais se mantém 100% inalterada entre paletas com relevo e paletas planas.
 
 ---
@@ -150,12 +160,12 @@ Elimina-se a divergência atual onde `UAdminItemCard` usava `dark:border-white/2
 
 Nem todas as sombras do sistema representam relevo de cartão; a maioria desempenha papel semântico de elevação de camadas.
 
-| Categoria | Componentes | Comportamento na paleta plana | Motivo da decisão |
-| :--- | :--- | :--- | :--- |
-| **A. Cartões de Ação e Entidades** | `ActionItem.tsx`, `UAdminItemCard.tsx`, réplica `/ui` | **Desligar sombra e tornar borda superior transparente** | São superfícies de conteúdo no plano de trabalho; desligar o relevo atende ao estilo plano desejado. |
-| **B. Camadas Flutuantes (Overlays)** | `PrismDialog`, `PrismPopover`, `PrismDropdownMenu`, `PrismSelect`, `PrismCombobox`, `PrismSheet`, `AppBar`, Tiptap `BubbleMenu` | **CONSERVAR sombra (`shadow-lg`)** | Separação no eixo Z. Popovers e Diálogos precisam da sombra de projeção para se destacar do conteúdo da página, garantindo contraste e hierarquia visual. |
-| **C. Notificações Flutuantes** | `PrismSonner` (Toaster) | **CONSERVAR sombra** | Toasts flutuam no canto da viewport e dependem da sombra para legibilidade imediata sobre qualquer cor de tela. |
-| **D. Controles Micro-mecânicos** | Thumbs de `PrismColorArea`, `PrismColorSlider`, `PrismSlider` | **CONSERVAR sombra pontual** | Indicadores interativos arrastáveis que precisam de contraste pontual ao sobrepor gradientes de cores arbitrários. |
+| Categoria                            | Componentes                                                                                                                     | Comportamento na paleta plana                            | Motivo da decisão                                                                                                                                         |
+| :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A. Cartões de Ação e Entidades**   | `ActionItem.tsx`, `UAdminItemCard.tsx`, réplica `/ui`                                                                           | **Desligar sombra e tornar borda superior transparente** | São superfícies de conteúdo no plano de trabalho; desligar o relevo atende ao estilo plano desejado.                                                      |
+| **B. Camadas Flutuantes (Overlays)** | `PrismDialog`, `PrismPopover`, `PrismDropdownMenu`, `PrismSelect`, `PrismCombobox`, `PrismSheet`, `AppBar`, Tiptap `BubbleMenu` | **CONSERVAR sombra (`shadow-lg`)**                       | Separação no eixo Z. Popovers e Diálogos precisam da sombra de projeção para se destacar do conteúdo da página, garantindo contraste e hierarquia visual. |
+| **C. Notificações Flutuantes**       | `PrismSonner` (Toaster)                                                                                                         | **CONSERVAR sombra**                                     | Toasts flutuam no canto da viewport e dependem da sombra para legibilidade imediata sobre qualquer cor de tela.                                           |
+| **D. Controles Micro-mecânicos**     | Thumbs de `PrismColorArea`, `PrismColorSlider`, `PrismSlider`                                                                   | **CONSERVAR sombra pontual**                             | Indicadores interativos arrastáveis que precisam de contraste pontual ao sobrepor gradientes de cores arbitrários.                                        |
 
 ---
 
@@ -178,14 +188,14 @@ Nem todas as sombras do sistema representam relevo de cartão; a maioria desempe
 
 ### 5. Comparação visual
 
-| Estado do Cartão | Modo com Relevo (Atual) | Modo Plano (Proposto pelo DS06) |
-| :--- | :--- | :--- |
-| **Repouso (Light)** | Borda superior branca nítida (`1px #FFF`) + Sombra suave inferior (`shadow-sm black/10`) | Borda superior transparente (`1px transparent`) + Sem sombra (`shadow-none`) |
-| **Repouso (Dark)** | Borda superior branca sutil (`1px rgba(255,255,255,0.1)`) + Sombra escura (`shadow-sm black/20`) | Borda superior transparente (`1px transparent`) + Sem sombra (`shadow-none`) |
-| **Hover** | Cartão se eleva (`hover:shadow-lg`) e clareia (`hover:bg-action-hover`) | Cartão permanece plano (`hover:shadow-none`) e sinaliza apenas por cor (`hover:bg-action-hover`) |
-| **Atrasado** | Borda superior translúcida (`border-t-white/50`) + fundo de erro | Borda superior transparente (`border-t-transparent`) + fundo de erro + anel de alerta |
-| **Arraste (DnD)** | Clone no `DragOverlay` flutua com sombra e borda branca | Clone no `DragOverlay` flutua plano sem sombra, acompanhado do cursor `grabbing` |
-| **Dimensões e alinhamento** | Altura do cartão: exatamente a mesma | Altura do cartão: **idêntica ao pixel** (1px preservado pela borda transparente) |
+| Estado do Cartão            | Modo com Relevo (Atual)                                                                          | Modo Plano (Proposto pelo DS06)                                                                  |
+| :-------------------------- | :----------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------- |
+| **Repouso (Light)**         | Borda superior branca nítida (`1px #FFF`) + Sombra suave inferior (`shadow-sm black/10`)         | Borda superior transparente (`1px transparent`) + Sem sombra (`shadow-none`)                     |
+| **Repouso (Dark)**          | Borda superior branca sutil (`1px rgba(255,255,255,0.1)`) + Sombra escura (`shadow-sm black/20`) | Borda superior transparente (`1px transparent`) + Sem sombra (`shadow-none`)                     |
+| **Hover**                   | Cartão se eleva (`hover:shadow-lg`) e clareia (`hover:bg-action-hover`)                          | Cartão permanece plano (`hover:shadow-none`) e sinaliza apenas por cor (`hover:bg-action-hover`) |
+| **Atrasado**                | Borda superior translúcida (`border-t-white/50`) + fundo de erro                                 | Borda superior transparente (`border-t-transparent`) + fundo de erro + anel de alerta            |
+| **Arraste (DnD)**           | Clone no `DragOverlay` flutua com sombra e borda branca                                          | Clone no `DragOverlay` flutua plano sem sombra, acompanhado do cursor `grabbing`                 |
+| **Dimensões e alinhamento** | Altura do cartão: exatamente a mesma                                                             | Altura do cartão: **idêntica ao pixel** (1px preservado pela borda transparente)                 |
 
 ---
 
@@ -205,6 +215,7 @@ Nem todas as sombras do sistema representam relevo de cartão; a maioria desempe
 ### 7. Execução — 08/11/2026
 
 **Arquivos alterados:**
+
 - `app/lib/palettes.ts`: adicionado `relief: true` em `default` (Ônix), `relief: false` em `carbon` (Carbono) e `blue` (Cobalto), e `shadowColor: "oklch(0.25 0.15 350)"` em `magenta` (Fúcsia).
 - `app/lib/palette-vars.ts`: tipagem `PaletteVars` e `PaletteModeVars` com `relief?: boolean`, `shadowColor?: string` e `topBorderColor?: string`. Aplicação das variáveis e sobrescritas em `applyPaletteVars`.
 - `app/tailwind.css`: criação dos tokens CSS e registro no `@theme`:
@@ -226,13 +237,15 @@ Nem todas as sombras do sistema representam relevo de cartão; a maioria desempe
 Para qualquer agente que precise consultar, criar paletas ou modificar o visual dos cartões no futuro:
 
 #### 1. Propriedades disponíveis no contrato da paleta (`app/lib/palettes.ts`):
+
 - **`relief?: boolean` (padrão: `true`)**:
   - `true` (ou omitido): Ativa o relevo clássico da UZZINA (linha de brilho superior no cartão + sombra suave embaixo).
-  - `false`: Ativa o modo plano (*flat* moderno, ex.: **Carbono** e **Cobalto**). A linha superior vira `1px transparent` (preservando rigorosamente a espessura física para evitar desalinhamento/layout shift) e as sombras usam `0 0 #0000`, o equivalente do Tailwind a sombra visualmente ausente, compatível com os anéis.
+  - `false`: Ativa o modo plano (_flat_ moderno, ex.: **Carbono** e **Cobalto**). A linha superior vira `1px transparent` (preservando rigorosamente a espessura física para evitar desalinhamento/layout shift) e as sombras usam `0 0 #0000`, o equivalente do Tailwind a sombra visualmente ausente, compatível com os anéis.
 - **`shadowColor?: string` (opcional, padrão: `#000000`)**:
-  - Define a **cor base** usada exclusivamente para gerar as **sombras** e o **anel de contorno** (`ring-action-ring`) do cartão.
+  - Define a **cor base** usada para gerar as **sombras** e o **anel de contorno** do tema.
+  - **Diretriz do proprietário (10/11/2026):** Esta cor de sombra não é exclusiva de ações (`action-shadow`), mas sim a **sombra do tema** (`--color-theme-shadow`). Ela deve ser adotada por qualquer elemento que tenha sombra (como containers flutuantes, popovers, diálogos e menus) e também pode servir de base com opacidade adaptativa (`theme-shadow/<porcentagem>`) para estados de hover e foco no modo claro.
   - Pode ser declarada na raiz da paleta (para claro e escuro) ou separada dentro de `light` e `dark`.
-  - Exemplo: na paleta **Fúcsia (`magenta`)**, `shadowColor: "oklch(0.25 0.15 350)"` gera uma atmosfera de sombras e contorno em magenta escuro profundo em vez de preto genérico.
+  - Exemplo: na paleta **Fúcsia (`magenta`)**, `shadowColor: "oklch(0.25 0.15 350)"` gera uma atmosfera de sombras, contornos e destaques em magenta escuro profundo em vez de preto genérico.
   - O CSS calcula as opacidades automaticamente via `color-mix(in srgb, var(--action-shadow-color) <X>%, transparent)`:
     - Modo claro: anel a `5%`, repouso a `14%`, hover a `18%`.
     - Modo escuro: anel a `20%`, repouso a `35%`, hover a `50%`.
@@ -242,7 +255,9 @@ Para qualquer agente que precise consultar, criar paletas ou modificar o visual 
   - Pode ser configurada se uma paleta futura precisar de um tom específico de brilho superior; caso contrário, não declarar para manter o padrão branco.
 
 #### 2. Classes de design tokens a usar em componentes de cartão de entidade:
+
 Em qualquer cartão similar a `ActionItem` ou `UAdminItemCard`:
+
 - Borda superior: `border-t border-action-top-border`
 - Sombra de repouso: `shadow-action`
 - Sombra ao passar o mouse: `hover:shadow-action-hover`
@@ -250,11 +265,13 @@ Em qualquer cartão similar a `ActionItem` ou `UAdminItemCard`:
 - Borda de ação atrasada: `border-t-late-top-border`
 
 #### 3. Regra de proteção de camadas flutuantes:
+
 - **NUNCA** aplicar `--shadow-action` ou remover sombras de `PrismDialog`, `PrismPopover`, `PrismDropdownMenu`, `PrismSelect`, `PrismCombobox`, `PrismSheet` ou `AppBar`. Esses elementos flutuam no eixo Z e exigem `shadow-lg` fixa para contraste de sobreposição.
 
 ---
 
 **Verificação da execução:**
+
 - `tsc --noEmit` limpo.
 - `bun test tests/palette-vars.test.ts` (4 pass).
 - `bun run test:serverless` (9 pass).

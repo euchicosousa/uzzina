@@ -68,11 +68,11 @@ function FocusFamily({
     <div className="flex flex-col gap-6 py-8 first:pt-0 last:pb-0" id={id}>
       <div className="flex flex-col gap-2">
         <h4 className="text-base font-semibold">{title}</h4>
-        <p className="text-sm text-muted-foreground">{rule}</p>
-        <code className="block text-xs break-words text-muted-foreground">
+        <p className="text-sm text-secondary-foreground">{rule}</p>
+        <code className="block text-xs break-words text-secondary-foreground">
           {classes}
         </code>
-        <ul className="list-disc pl-5 text-xs text-muted-foreground">
+        <ul className="list-disc pl-5 text-xs text-secondary-foreground">
           {usedBy.map((item) => (
             <li key={item}>{item}</li>
           ))}
@@ -98,11 +98,11 @@ function Example({
 }) {
   return (
     <div className="flex max-w-full min-w-0 flex-col gap-2">
-      <span className="text-xs font-semibold text-muted-foreground uppercase">
+      <span className="text-xs font-semibold text-secondary-foreground uppercase">
         {label} · {source}
       </span>
       {children}
-      <span className="text-xs text-muted-foreground">{hint}</span>
+      <span className="text-xs text-secondary-foreground">{hint}</span>
     </div>
   );
 }
@@ -134,16 +134,16 @@ export function TokensFocusSection() {
             id="focus-outer"
             title="Anel externo (padrão)"
             rule="Todo foco por anel: 3px, ring-ring a 30%, com borda border-ring a 60% quando o elemento tem borda. Destrutivo usa a mesma lógica toda em vermelho. É o padrão do PrismButton."
-            classes="outline-none focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 (também focus-within: e data-[focus-visible]:; destrutivo: focus-visible:border-destructive/60 focus-visible:ring-destructive/30)"
+            classes="outline-none focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 (também focus-within: e data-[focus-visible]:; destrutivo: focus-visible:border-error/60 focus-visible:ring-error/30)"
             usedBy={[
               "Prism: button, input, textarea, select, toggle, checkbox, radio-group, calendar (dia), color-field, time-field, date-range-picker, input-group, combobox, badge (borda border-ring/60 + anel)",
               "Prism: slider, color-area e color-slider (thumb: só anel ring-3 ring-ring/30 em data-[focus-visible])",
-              "Prism: button e badge destrutivos (border-destructive/60 + ring-destructive/30)",
+              "Prism: button e badge destrutivos (border-error/60 + ring-error/30)",
               "features/ComboboxTrigger.tsx (ghost icon-lg no rodapé da gaveta: anel padrão do PrismButton)",
               "features/action-drawer/ActionDatePicker.tsx (data da gaveta: ghost sm com anel padrão do PrismButton)",
               "features/PartnersCombobox.tsx e busca global (filtro de parceiros: foco padrão do Prism)",
               "features/media/ContentReorderDialog.tsx (alça e remover) e WorkFileThumbnail.tsx (remover e link da miniatura)",
-              "features/ActionItem.tsx (cartão: focus-within:outline-1 outline-ring/45 + ring-4 ring-ring/30, exceção aprovada)",
+              "features/ActionItem.tsx (cartão: focus-within:outline-2 outline-primary, exceção aprovada)",
               "routes/app/admin/partner/$slug.tsx (editores de texto: focus-within)",
             ]}
           >
@@ -246,7 +246,7 @@ export function TokensFocusSection() {
             >
               <button
                 aria-label="Réplica remover"
-                className="flex size-8 items-center justify-center rounded bg-destructive text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30"
+                className="flex size-8 items-center justify-center rounded bg-error text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30"
                 type="button"
               >
                 ×
@@ -279,7 +279,7 @@ export function TokensFocusSection() {
               label="Cartão de ação (focus-within)"
               source="Réplica de features/ActionItem.tsx"
             >
-              <div className="w-72 rounded-2xl border-t border-action-top-border bg-card p-3 text-sm shadow-action ring ring-action-ring transition-[color,background-color,border-color,box-shadow,padding] duration-500 focus-within:outline-3 focus-within:outline-ring/30 hover:shadow-action-hover motion-reduce:transition-none">
+              <div className="w-72 rounded-2xl border-t border-action-top-border bg-card p-3 text-sm shadow-action ring ring-action-ring transition-[color,background-color,border-color,box-shadow,padding] duration-500 focus-within:outline-2 focus-within:outline-primary hover:shadow-action-hover motion-reduce:transition-none">
                 <input
                   aria-label="Réplica do cartão de ação"
                   className="w-full bg-transparent outline-none"
@@ -288,12 +288,12 @@ export function TokensFocusSection() {
               </div>
             </Example>
 
-            <p className="w-full text-xs font-semibold text-muted-foreground uppercase">
+            <p className="w-full text-xs font-semibold text-secondary-foreground uppercase">
               Estados: destrutivo, sucesso e erro
             </p>
 
             <Example label="Botão destrutivo" source="Prism real">
-              <PrismButton variant="destructive">Excluir</PrismButton>
+              <PrismButton variant="error">Excluir</PrismButton>
             </Example>
             <Example label="Botão sucesso" source="Prism real">
               <PrismButton variant="success">Confirmar</PrismButton>
@@ -312,7 +312,7 @@ export function TokensFocusSection() {
             >
               <PrismInput
                 aria-label="Campo de cor inválido"
-                className="h-8 w-32 bg-destructive/5 font-mono tracking-wider text-destructive uppercase ring-destructive focus-visible:border-destructive focus-visible:ring-destructive/20"
+                className="h-8 w-32 bg-error-background font-mono tracking-wider text-error uppercase ring-error focus-visible:border-error focus-visible:ring-error-background"
                 defaultValue="#ZZZZZZ"
               />
             </Example>
@@ -327,6 +327,13 @@ export function TokensFocusSection() {
               >
                 <CalendarIcon />
               </UComboboxTrigger>
+            </Example>
+            <Example
+              hint="Alt+Shift+F10 ou Tab até a barra"
+              label="Barra do editor"
+              source="App real"
+            >
+              <RichTextEditorFocusExample />
             </Example>
           </FocusFamily>
 
@@ -358,16 +365,15 @@ export function TokensFocusSection() {
           <FocusFamily
             id="focus-background"
             title="Foco por fundo"
-            rule="Exceção aprovada: o foco muda a cor de fundo (e a barra/linha do item), sem anel. Vale para itens de lista/menu/select/command/combobox (bg-secondary/50), abas, barra do RichTextEditor e botão Fechar da gaveta (bg-input)."
-            classes="focus-visible:bg-secondary/50 | data-focused:bg-secondary/50 | data-[focus-visible]:bg-input | focus-visible:bg-input | focus:bg-destructive/10 | focus:bg-primary"
+            rule="Exceção aprovada: o foco muda a cor de fundo (e a barra/linha do item), sem anel. Vale para itens de lista/menu/select/command/combobox (bg-secondary), abas e botão Fechar da gaveta."
+            classes="focus-visible:bg-secondary | data-focused:bg-secondary | data-[focus-visible]:bg-secondary | focus:bg-error-background | focus:bg-primary"
             usedBy={[
-              "Prism: dropdown-menu, select, combobox, command (itens: secondary/50)",
-              "Prism: tabs (underline e drawer: bg-input; drawer selecionada com foco também bg-input)",
+              "Prism: dropdown-menu, select, combobox, command (itens: secondary com texto foreground)",
+              "Prism: tabs (underline e drawer: bg-secondary)",
               "Prism: time-field (segmento: bg-primary)",
-              "features/RichTextEditor.tsx (barra: bg-input)",
-              "features/action-drawer/ActionFormDrawer.tsx (botão Fechar: bg-input)",
-              "layout/Header.tsx (Sair: bg-destructive/10)",
-              "features/HelpPage.tsx e routes/app/notifications.tsx (linhas: bg-secondary/50)",
+              "features/action-drawer/ActionFormDrawer.tsx (botão Fechar: bg-secondary)",
+              "layout/Header.tsx (Sair: bg-error-background)",
+              "features/HelpPage.tsx e routes/app/notifications.tsx (linhas: bg-secondary)",
             ]}
           >
             <Example
@@ -381,7 +387,7 @@ export function TokensFocusSection() {
                   <PrismMenuItem id="item-1">Item comum</PrismMenuItem>
                   <PrismMenuItem id="item-2">Outro item</PrismMenuItem>
                   <PrismMenuItem
-                    className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+                    className="text-error focus:bg-error-background focus:text-error"
                     id="sair"
                   >
                     Sair
@@ -467,20 +473,12 @@ export function TokensFocusSection() {
             </Example>
 
             <Example
-              hint="Alt+Shift+F10 ou Tab até a barra"
-              label="Barra do editor"
-              source="App real"
-            >
-              <RichTextEditorFocusExample />
-            </Example>
-
-            <Example
-              label="Botão Fechar da gaveta (bg-input)"
+              label="Botão Fechar da gaveta (bg-secondary)"
               source="Réplica de features/action-drawer/ActionFormDrawer.tsx"
             >
               <button
                 aria-label="Réplica fechar"
-                className="flex cursor-pointer items-center justify-center border-b px-3 py-3 text-sm font-medium outline-none focus-visible:bg-input sm:p-5"
+                className="flex cursor-pointer items-center justify-center border-b px-3 py-3 text-sm font-medium outline-none focus-visible:bg-secondary sm:p-5"
                 type="button"
               >
                 Fechar
@@ -488,11 +486,11 @@ export function TokensFocusSection() {
             </Example>
 
             <Example
-              label="Linha de ajuda / notificação (secondary/50)"
+              label="Linha de ajuda / notificação (secondary)"
               source="Réplica de features/HelpPage.tsx"
             >
               <button
-                className="w-56 rounded-md px-2 py-1.5 text-left text-sm outline-none squircle hover:bg-secondary/50 focus-visible:bg-secondary/50"
+                className="w-56 rounded-md px-2 py-1.5 text-left text-sm outline-none squircle hover:bg-secondary focus-visible:bg-secondary"
                 type="button"
               >
                 Linha de lista
@@ -507,7 +505,7 @@ export function TokensFocusSection() {
             rule="Exceção aprovada: o próprio campo se apresenta como edição (fundo/cursor) ou o anel fica no contêiner. Foco discreto: sublinhado (links e gatilhos de texto), fundo ou nenhum."
             classes="ring-0 | focus:ring-0 focus:outline-none | outline-none hover:underline focus-visible:underline | sem classe de foco"
             usedBy={[
-              "features/ActionItemTitleInput.tsx (título inline: fundo muda para bg-muted)",
+              "features/ActionItemTitleInput.tsx (título inline: fundo muda para bg-secondary)",
               "features/ActionComments/CommentInput.tsx (comentário)",
               "features/home/HomeCalendarView.tsx e HomeTodayView.tsx (link do dia: sublinhado, sem anel)",
               "Prism: accordion (gatilho: hover:underline focus-visible:underline)",
@@ -520,7 +518,7 @@ export function TokensFocusSection() {
             >
               <input
                 aria-label="Réplica do título inline"
-                className="w-56 rounded-md border-0 bg-muted/80 px-1.5 py-0.5 text-sm text-foreground ring-0 transition-colors outline-none squircle focus:bg-muted focus:ring-0 focus:outline-none"
+                className="w-56 rounded-md border-0 bg-secondary px-1.5 py-0.5 text-sm text-foreground ring-0 transition-colors outline-none squircle focus:bg-secondary focus:ring-0 focus:outline-none"
                 defaultValue="Título da ação"
               />
             </Example>

@@ -39,20 +39,22 @@
           }
           document.documentElement.className = theme;
 
-          // Public surfaces start with the same neutral palette before React paints.
+          // Public surfaces start with the approved Onix palette before React paints.
           const path = window.location.pathname;
-          if (path === "/" || path === "/dash" || path.startsWith("/dash/")) {
+          const isPublicSurface =
+            path === "/" || path === "/dash" || path.startsWith("/dash/");
+          if (isPublicSurface) {
             const publicVars = {
               "--background-override": "oklch(0.96 0.002 200)",
               "--foreground-override": "oklch(0 0 0)",
               "--dark-background-override": "oklch(0.2 0.01 250)",
               "--dark-foreground-override": "oklch(1 0 0)",
-              "--accent-h": "0",
-              "--accent-c": "0",
-              "--accent-l": "0",
-              "--dark-accent-h": "0",
-              "--dark-accent-c": "0",
-              "--dark-accent-l": "1",
+              "--primary-h": "0",
+              "--primary-c": "0",
+              "--primary-l": "0",
+              "--dark-primary-h": "0",
+              "--dark-primary-c": "0",
+              "--dark-primary-l": "1",
               "--primary-foreground-override": "oklch(1 0 0)",
               "--dark-primary-foreground-override": "oklch(0 0 0)",
               "--border-l-delta": "-0.07",
@@ -69,8 +71,10 @@
             }
           }
 
-          // 2. Recupera o índice de cor (Acentuação OKLCH)
-          const idx = localStorage.getItem("uzzina-accent-color-index");
+          // 2. Recupera o índice de cor (Paleta de Tema OKLCH)
+          const idx =
+            localStorage.getItem("uzzina-theme-color-index") ||
+            localStorage.getItem("uzzina-accent-color-index");
           const n = idx !== null && idx !== "" ? parseInt(idx, 10) : 0;
 
           // Paleta de cores mapeada em OKLCH (12 opções)
@@ -100,9 +104,11 @@
             ["44.15%", "0.076", "233.15"], // Deep Indigo
           ];
           const c = palette[n] || palette[0];
-          document.documentElement.style.setProperty("--primary-l", c[0]);
-          document.documentElement.style.setProperty("--primary-c", c[1]);
-          document.documentElement.style.setProperty("--primary-h", c[2]);
+          if (!isPublicSurface) {
+            document.documentElement.style.setProperty("--primary-l", c[0]);
+            document.documentElement.style.setProperty("--primary-c", c[1]);
+            document.documentElement.style.setProperty("--primary-h", c[2]);
+          }
         } catch (e) {
           console.error("Theme preload error:", e);
         }

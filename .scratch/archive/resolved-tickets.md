@@ -5489,3 +5489,11 @@ Encerrado com aceite do proprietário em 07/11/2026: tabela por tarefa em Minha 
 ## IA-M07 — Modelos de IA declarados em um só lugar
 
 Encerrado com aceite do proprietário em 07/11/2026: registro público em `app/lib`, catálogo do servidor e tabela `ai_models` (migration aplicada em produção). [Ticket](../ai-models/issues/07-single-model-registry.md).
+
+## DS07 — Paleta Ônix na página inicial e no portal
+
+Encerrado com aceite do proprietário em 10/11/2026. A página inicial e o portal do cliente passaram a usar Ônix em vez da paleta pessoal da equipe. A implementação de `31de929` entrou no deploy de `ce36df0`, com sucesso reportado pela Vercel. [Ticket](../design-system-audit/issues/07-public-palette.md)
+
+## DS09 — Busca de paletas e tema personalizado
+
+Encerrado por confirmação do proprietário em 10/11/2026. A busca global passou a encontrar paletas pelo nome, o menu ganhou um atalho para Minha Conta → Aparência e o editor ganhou controles de relevo e cor. O deploy de `ce36df0` e a atualização das preferências no banco de produção já estavam registrados. [Ticket](../design-system-audit/issues/09-palette-search-and-custom-theme.md)

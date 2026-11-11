@@ -7,14 +7,14 @@ afterEach(() => {
   document.documentElement.removeAttribute("style");
 });
 
-it("writes accent variables and optional overrides on the document root", () => {
+it("writes primary variables and optional overrides on the document root", () => {
   const palette = PALLETE[0];
   applyPaletteVars(palette);
   const root = document.documentElement.style;
-  expect(root.getPropertyValue("--accent-l")).toBe(
+  expect(root.getPropertyValue("--primary-l")).toBe(
     String(palette.light.primary.l),
   );
-  expect(root.getPropertyValue("--dark-accent-h")).toBe(
+  expect(root.getPropertyValue("--dark-primary-h")).toBe(
     String(palette.dark.primary.h),
   );
 });
@@ -38,36 +38,34 @@ it("removes overrides that the next palette does not define", () => {
 
 it("applies transparent borders and zero shadows that compose with rings when relief is false, and cleans up when relief is restored", () => {
   const carbon = PALLETE.find((p) => p.id === "carbon");
-  expect(carbon).toBeDefined();
-  expect(carbon?.relief).toBe(false);
+  if (!carbon) throw new Error("Carbon palette is missing");
+  expect(carbon.relief).toBe(false);
 
-  applyPaletteVars(carbon!);
+  applyPaletteVars(carbon);
   const root = document.documentElement.style;
   expect(root.getPropertyValue("--action-top-border-override")).toBe(
     "transparent",
   );
-  expect(root.getPropertyValue("--late-top-border-override")).toBe(
-    "transparent",
-  );
   expect(root.getPropertyValue("--action-shadow-override")).toBe("0 0 #0000");
-  expect(root.getPropertyValue("--action-hover-shadow-override")).toBe("0 0 #0000");
+  expect(root.getPropertyValue("--action-hover-shadow-override")).toBe(
+    "0 0 #0000",
+  );
 
   const onix = PALLETE[0];
   expect(onix.relief).toBe(true);
   applyPaletteVars(onix);
 
   expect(root.getPropertyValue("--action-top-border-override")).toBe("");
-  expect(root.getPropertyValue("--late-top-border-override")).toBe("");
   expect(root.getPropertyValue("--action-shadow-override")).toBe("");
   expect(root.getPropertyValue("--action-hover-shadow-override")).toBe("");
 });
 
 it("applies shadowColor and topBorderColor and cleans up", () => {
   const magenta = PALLETE.find((p) => p.id === "magenta");
-  expect(magenta).toBeDefined();
-  expect(magenta?.shadowColor).toBe("oklch(0.25 0.15 350)");
+  if (!magenta) throw new Error("Magenta palette is missing");
+  expect(magenta.shadowColor).toBe("oklch(0.25 0.15 350)");
 
-  applyPaletteVars(magenta!);
+  applyPaletteVars(magenta);
   const root = document.documentElement.style;
   expect(root.getPropertyValue("--action-shadow-color-override")).toBe(
     "oklch(0.25 0.15 350)",
@@ -91,4 +89,26 @@ it("applies shadowColor and topBorderColor and cleans up", () => {
   expect(root.getPropertyValue("--action-shadow-color-override")).toBe("");
   expect(root.getPropertyValue("--dark-action-shadow-color-override")).toBe("");
   expect(root.getPropertyValue("--action-top-border-override")).toBe("");
+});
+
+it("applies light and dark ring overrides without overriding the derived accent, then cleans up", () => {
+  const rubi = PALLETE.find((p) => p.id === "red");
+  if (!rubi) throw new Error("Red palette is missing");
+  applyPaletteVars(rubi);
+  const root = document.documentElement.style;
+  expect(root.getPropertyValue("--ring-override")).toBe(
+    `oklch(${rubi.light.ring.l} ${rubi.light.ring.c} ${rubi.light.ring.h})`,
+  );
+  expect(root.getPropertyValue("--dark-ring-override")).toBe(
+    `oklch(${rubi.dark.ring.l} ${rubi.dark.ring.c} ${rubi.dark.ring.h})`,
+  );
+  expect(root.getPropertyValue("--accent-override")).toBe("");
+  expect(root.getPropertyValue("--dark-accent-override")).toBe("");
+
+  applyPaletteVars({
+    light: { primary: { h: 0, c: 0, l: 0 } },
+    dark: { primary: { h: 0, c: 0, l: 1 } },
+  });
+  expect(root.getPropertyValue("--ring-override")).toBe("");
+  expect(root.getPropertyValue("--dark-ring-override")).toBe("");
 });

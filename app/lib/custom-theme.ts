@@ -1,8 +1,8 @@
 import {
-  deriveAccentFg,
-  deriveDarkAccent,
   deriveDarkBg,
   deriveDarkFg,
+  deriveDarkPrimary,
+  derivePrimaryFg,
 } from "~/utils/color";
 import type { CustomTheme, CustomThemeColors } from "./preferences";
 
@@ -52,8 +52,8 @@ export function createCustomThemeDraft(saved: CustomTheme | null): CustomTheme {
 }
 
 /**
- * Applies one color edit. Light-mode accent, background and text also derive
- * their dark-mode counterparts; the dark accent derives its own foreground.
+ * Applies one color edit. Light-mode primary, background and text also derive
+ * their dark-mode counterparts; the dark primary derives its own foreground.
  */
 export function applyCustomThemeChange(
   draft: CustomTheme,
@@ -66,9 +66,9 @@ export function applyCustomThemeChange(
   if (mode === "light") {
     light[key] = value;
     if (key === "primaryHex") {
-      light.primaryFgHex = deriveAccentFg(value);
-      dark.primaryHex = deriveDarkAccent(value);
-      dark.primaryFgHex = deriveAccentFg(dark.primaryHex);
+      light.primaryFgHex = derivePrimaryFg(value);
+      dark.primaryHex = deriveDarkPrimary(value);
+      dark.primaryFgHex = derivePrimaryFg(dark.primaryHex);
     } else if (key === "bgHex") {
       dark.bgHex = deriveDarkBg(value);
     } else if (key === "fgHex") {
@@ -77,7 +77,7 @@ export function applyCustomThemeChange(
   } else {
     dark[key] = value;
     if (key === "primaryHex") {
-      dark.primaryFgHex = deriveAccentFg(value);
+      dark.primaryFgHex = derivePrimaryFg(value);
     }
   }
   return { ...draft, light, dark };

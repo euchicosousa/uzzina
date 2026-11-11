@@ -25,8 +25,8 @@ const BUTTON_VARIANTS = [
   "secondary",
   "outline",
   "ghost",
-  "ghost-destructive",
-  "destructive",
+  "ghost-error",
+  "error",
   "success",
   "link",
 ] as const;

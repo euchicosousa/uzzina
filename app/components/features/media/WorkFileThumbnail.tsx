@@ -45,14 +45,14 @@ export function WorkFileThumbnail({
             src={url}
           />
         ) : (
-          <div className="flex size-full items-center justify-center rounded-2xl border bg-muted text-[10px] font-bold tracking-wide uppercase opacity-70 squircle">
+          <div className="flex size-full items-center justify-center rounded-2xl border bg-secondary text-[10px] font-bold tracking-wide uppercase opacity-70 squircle">
             {ext.slice(0, 4)}
           </div>
         )}
       </a>
       {onRemove && (
         <button
-          className="absolute -top-1.5 -right-1.5 hidden size-4 items-center justify-center rounded-full bg-destructive text-white outline-none group-focus-within:flex group-hover:flex focus-visible:ring-3 focus-visible:ring-ring/30"
+          className="absolute -top-1.5 -right-1.5 hidden size-4 items-center justify-center rounded-full bg-error text-white outline-none group-focus-within:flex group-hover:flex focus-visible:ring-3 focus-visible:ring-ring/30"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();

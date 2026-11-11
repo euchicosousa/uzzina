@@ -149,7 +149,7 @@ function DashLayout() {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center gap-4 bg-background">
         <ULoader size="2xl" className="text-primary" />
-        <p className="animate-pulse text-sm font-medium text-muted-foreground">
+        <p className="animate-pulse text-sm font-medium text-secondary-foreground">
           Carregando portal...
         </p>
       </div>
@@ -161,11 +161,11 @@ function DashLayout() {
   if (hasError && !clientData) {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center gap-4 bg-background p-8 text-center">
-        <div className="rounded-full bg-destructive/10 p-3 text-destructive">
+        <div className="rounded-full bg-error-background p-3 text-error">
           <AlertCircleIcon className="size-8" />
         </div>
         <h2 className="text-lg font-semibold">Falha ao carregar o portal</h2>
-        <p className="max-w-sm text-sm text-muted-foreground">
+        <p className="max-w-sm text-sm text-secondary-foreground">
           Não foi possível sincronizar suas credenciais ou dados do parceiro.
         </p>
         {logoutError && <p role="alert">{logoutError}</p>}
@@ -205,7 +205,7 @@ function DashLayout() {
               fallback={clientData.name ?? "Cliente"}
               image={clientData.image ?? undefined}
             />
-            <span className="sr-only min-w-0 truncate text-sm text-muted-foreground sm:not-sr-only">
+            <span className="sr-only min-w-0 truncate text-sm text-secondary-foreground sm:not-sr-only">
               Olá,{" "}
               <span className="font-medium text-foreground">
                 {clientData.name ?? "Cliente"}

@@ -1,0 +1,35 @@
+# DS12 — Cores semânticas e superfícies do Prism
+
+**Status.** O proprietário aprovou a primeira entrega visual em 11/11/2026 e autorizou os ajustes desta rodada. A implementação está na `main` local e a publicação está pendente.
+
+## O que mudou no app
+
+| Onde conferir                                                                           | Antes                                                                                                    | Agora                                                                                                                                                                                                                                       |
+| --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Gaveta de ação → Essencial, Instagram, Observações e Fechar                             | Abas e controles usavam o fundo de campo para hover e foco.                                              | Abas e Fechar usam o fundo neutro. Os campos de digitação conservam o fundo de formulário.                                                                                                                                                  |
+| Cabeçalho → menu do usuário e grupo Admin. Galeria `/ui` → Prism → Button               | Havia fundos com cinzas e opacidades diferentes.                                                         | O fundo neutro deriva do texto principal a 5% no claro e 10% no escuro. Rótulos principais de controles preservam a cor integral.                                                                                                           |
+| Calendários em Hoje, no portal e no Planejamento. Avatares e miniaturas sem imagem      | Faixas, trilhos e espaços vazios usavam fundos antigos.                                                  | As superfícies neutras usam `bg-secondary`.                                                                                                                                                                                                 |
+| Metadados, legendas, subtítulos e atalhos                                               | A cor secundária variava por paleta.                                                                     | `text-secondary-foreground` deriva do texto principal a 65% nos dois modos.                                                                                                                                                                 |
+| Hoje → Atrasadas. Planejamento → Sugestões → Descartadas. Galeria `/ui` → Prism → Alert | Atraso tinha uma família de cores própria. Alertas escuros aplicavam uma redução de opacidade adicional. | Erro, sucesso, aviso e informação usam fundos semânticos nativos. Atraso usa `bg-error-background` e `ring-error`. Badges, recuperação de senha e o módulo de Planejamento foram migrados de classes manuais (`emerald`/`amber` e opacidades fracionadas) para os tokens semânticos nativos `bg-success-background`, `text-success`, `bg-success-strong`, `border-success` e `text-warning-foreground`. |
+| Galeria `/ui` → Tokens → Cores Semânticas                                               | O nome Accent era usado para variáveis que controlavam a Primária.                                       | A Primária controla a cor de marca. O novo Accent fica disponível para uso futuro e deriva da luminosidade da Primária em OKLCH: −0,15 no claro e +0,10 no escuro, com limite entre 0 e 1. O anel de foco continua configurável por paleta. |
+
+As variantes destrutivas do botão passam a ser `error` e `ghost-error`. Os nomes antigos foram retirados. Os alertas de erro reais aparecem no login da equipe e do portal, na recuperação e redefinição de senha e em Hoje quando o carregamento de ações falha.
+
+## Roteiro de conferência
+
+1. Na gaveta, passar o mouse e navegar por Tab em Essencial, Instagram quando disponível, Observações e Fechar. Conferir o fundo de Observações.
+2. Em `/ui` → Prism → Button, comparar Ghost, Outline, Secondary, Error e Ghost Error no claro e no escuro. No cabeçalho, abrir o menu do usuário e percorrer o grupo Admin pelo teclado.
+3. No calendário de Hoje e no portal, conferir a faixa dos dias e o hover da coluna em Hoje. Em `/app/planejamento`, conferir a faixa dos dias e o filtro Descartadas selecionado no escuro, quando a lista de sugestões estiver disponível.
+4. Conferir um avatar com iniciais, uma miniatura de mídia vazia e os trilhos de progresso em Hoje e IA.
+5. Em Hoje → Atrasadas, comparar repouso, hover e foco pelo teclado no cartão real. Em `/ui` → Prism → Alert, alternar entre as quatro variantes nos dois modos.
+6. Em `/ui` → Tokens → Cores Semânticas, trocar a paleta e o modo para conferir Primária, Accent, texto secundário e anel de foco.
+
+[Laboratório de cores e inventário](../estudo-cores-superficies.html).
+
+O foco por teclado dos cartões de ação permanece com contorno de 2 px na cor primária, conforme decisão de 11/11/2026.
+
+## Modelos sugeridos
+
+- Codex, GPT-6 Luna. Adequado para substituições localizadas, atualização de testes e conferência de referências.
+- Codex, GPT-6.1 Sol. Adequado para cruzar o contrato de cores com seus consumidores e verificar o carregamento de tema.
+- Codex, GPT-6 Astra. Adequado para uma revisão ampla de contrastes e estados que combinam vários tokens.

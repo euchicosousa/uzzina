@@ -33,7 +33,7 @@ export function ActionLineVariant({
       <div className="flex w-full items-center gap-2 overflow-hidden">
         <div className="flex items-center gap-2">
           {isLateAction(action) ? (
-            <AlertCircleIcon className="size-4 text-late-foreground" />
+            <AlertCircleIcon className="size-4 text-error-foreground" />
           ) : (
             <UPhaseIcon phase={currentPhase} size="dot" />
           )}

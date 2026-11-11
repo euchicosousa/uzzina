@@ -60,12 +60,12 @@ export function PlanningSuggestionsList({
           <h2 className="text-xl font-semibold text-foreground">
             Sugestões geradas ({stats.total})
           </h2>
-          <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-            <span className="font-medium text-emerald-600 dark:text-emerald-400">
+          <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-secondary-foreground">
+            <span className="font-medium text-success">
               {stats.approved} aprovadas
             </span>
             <span>•</span>
-            <span className="font-medium text-destructive">
+            <span className="font-medium text-error">
               {stats.rejected} descartadas
             </span>
             <span>•</span>
@@ -107,7 +107,7 @@ export function PlanningSuggestionsList({
           className={`rounded-lg px-3 py-1.5 font-medium transition-colors squircle ${
             filter === "all"
               ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground hover:text-foreground"
+              : "bg-secondary text-secondary-foreground hover:text-foreground"
           }`}
           onClick={() => setFilter("all")}
           type="button"
@@ -118,7 +118,7 @@ export function PlanningSuggestionsList({
           className={`rounded-lg px-3 py-1.5 font-medium transition-colors squircle ${
             filter === "pending"
               ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground hover:text-foreground"
+              : "bg-secondary text-secondary-foreground hover:text-foreground"
           }`}
           onClick={() => setFilter("pending")}
           type="button"
@@ -128,8 +128,8 @@ export function PlanningSuggestionsList({
         <button
           className={`rounded-lg px-3 py-1.5 font-medium transition-colors squircle ${
             filter === "approved"
-              ? "bg-emerald-600 text-white"
-              : "bg-muted text-muted-foreground hover:text-foreground"
+              ? "bg-success-strong text-success-strong-foreground"
+              : "bg-secondary text-secondary-foreground hover:text-foreground"
           }`}
           onClick={() => setFilter("approved")}
           type="button"
@@ -139,8 +139,8 @@ export function PlanningSuggestionsList({
         <button
           className={`rounded-lg px-3 py-1.5 font-medium transition-colors squircle ${
             filter === "rejected"
-              ? "text-destructive-foreground bg-destructive"
-              : "bg-muted text-muted-foreground hover:text-foreground"
+              ? "border-b-2 border-error bg-error-background text-error-foreground"
+              : "bg-secondary text-secondary-foreground hover:text-foreground"
           }`}
           onClick={() => setFilter("rejected")}
           type="button"
@@ -152,7 +152,7 @@ export function PlanningSuggestionsList({
       {/* Lista de cards */}
       <div className="grid gap-4">
         {filteredSuggestions.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground squircle">
+          <div className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-secondary-foreground squircle">
             Nenhuma sugestão encontrada para o filtro selecionado.
           </div>
         ) : (
@@ -192,7 +192,7 @@ export function PlanningSuggestionsList({
                   {/* Status Badge */}
                   <div>
                     {isRejected && (
-                      <PrismBadge variant="destructive">
+                      <PrismBadge variant="error">
                         <XCircleIcon className="mr-1 size-3" />
                         Descartada
                       </PrismBadge>
@@ -207,7 +207,7 @@ export function PlanningSuggestionsList({
                 <h3
                   className={`text-base font-semibold ${
                     isRejected
-                      ? "text-muted-foreground line-through"
+                      ? "text-secondary-foreground line-through"
                       : "text-foreground"
                   }`}
                 >
@@ -216,7 +216,7 @@ export function PlanningSuggestionsList({
 
                 {/* Racional / Objetivo */}
                 {suggestion.objective && (
-                  <p className="text-sm text-muted-foreground italic">
+                  <p className="text-sm text-secondary-foreground italic">
                     Objetivo: {suggestion.objective}
                   </p>
                 )}
@@ -242,7 +242,7 @@ export function PlanningSuggestionsList({
                   <div className="flex items-center gap-2">
                     <PrismButton
                       className={
-                        isRejected ? "bg-destructive/20 text-destructive" : ""
+                        isRejected ? "bg-error-background text-error" : ""
                       }
                       onClick={() =>
                         onUpdateSuggestion(suggestion.id, {

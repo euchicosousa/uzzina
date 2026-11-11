@@ -1,5 +1,7 @@
 # DS09 — Buscar paletas e acessar o tema personalizado
 
+**Status.** Encerrado por confirmação do proprietário em 10/11/2026. A busca por nome e o atalho do menu para Minha Conta → Aparência, com os controles de relevo e cor, estão no deploy de `ce36df0`. O SQL das preferências já estava aplicado em produção. A lista abaixo preserva o roteiro original de aceite.
+
 ## Modelos sugeridos
 
 - **OpenAI** — GPT-6.1 Terra, para integrar os comandos de paleta e conferir navegação e estados.
@@ -17,7 +19,7 @@
 - [ ] Inventariar as variáveis finais do DS06 e expor os controles de personalização correspondentes. Incluir o relevo dos cartões de ação, com sombra e realce superior tratados em conjunto e borda transparente no estilo plano. Usar controles de intenção visual para tokens derivados.
 - [ ] Conferir prévia, salvar, recarregar e abrir rascunhos personalizados existentes. Preservar valores legados por padrão e manter a escolha de paletas restrita à área interna.
 
-**Revisão posterior:** a função de produção foi atualizada em 08/11 para aceitar e validar as novas propriedades do tema, mantendo as permissões existentes. O corte da aba foi corrigido no código local. Falta conferir o visual e o salvamento completo no app; os testes abaixo não verificam uma gravação real.
+**Revisão de 08/11.** A função de produção foi atualizada para aceitar e validar as novas propriedades do tema, mantendo as permissões existentes. O corte da aba foi corrigido. Os testes registrados cobriram dados fictícios e a rolagem em Chromium. O encerramento em 10/11 registra a confirmação do proprietário.
 
 ## Relatório de Implementação (08/11/2026)
 

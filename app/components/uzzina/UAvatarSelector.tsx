@@ -77,7 +77,7 @@ export function UAvatarSelector({
                 {option.title}
               </div>
               {option.subtitle && (
-                <div className="truncate text-xs leading-tight text-muted-foreground">
+                <div className="truncate text-xs leading-tight text-secondary-foreground">
                   {option.subtitle}
                 </div>
               )}

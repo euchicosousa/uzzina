@@ -82,7 +82,7 @@ export function BulkSprintDialog({
         <PrismButton
           onClick={handleClearSprints}
           size="sm"
-          variant="destructive"
+          variant="error"
         >
           Remover das Sprints
         </PrismButton>

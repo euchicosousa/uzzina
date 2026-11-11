@@ -158,7 +158,6 @@ export function UAIProgressBar({
     );
   }
 
-  // Linha ultra fina (h-0.5, bg-input, sem rounded)
   return (
     <div
       aria-hidden={!visible}
@@ -167,7 +166,7 @@ export function UAIProgressBar({
       aria-valuemin={0}
       aria-valuenow={Math.round(progress)}
       className={cn(
-        "relative h-0.5 w-full overflow-hidden bg-input transition-opacity duration-300",
+        "relative h-0.5 w-full overflow-hidden bg-secondary transition-opacity duration-300",
         visible ? "opacity-100" : "pointer-events-none opacity-0",
         className,
       )}

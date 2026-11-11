@@ -129,7 +129,7 @@ export function PrismDateRangePicker({
               className={cn(
                 "truncate font-medium",
                 !currentStart || !currentEnd
-                  ? "text-muted-foreground"
+                  ? "text-secondary-foreground"
                   : "text-foreground",
               )}
             >

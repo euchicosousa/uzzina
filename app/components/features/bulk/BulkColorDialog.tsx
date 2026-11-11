@@ -112,7 +112,7 @@ export function BulkColorDialog({
             ))}
           </PrismToggleGroup>
         ) : (
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-center text-sm text-secondary-foreground">
             Nenhuma cor encontrada para os parceiros das ações selecionadas.
           </p>
         )}
@@ -125,7 +125,7 @@ export function BulkColorDialog({
 
       <div className="border-t px-5 py-4">
         <div className="flex items-center justify-between gap-3">
-          <span className="shrink-0 text-xs font-semibold text-muted-foreground uppercase">
+          <span className="shrink-0 text-xs font-semibold text-secondary-foreground uppercase">
             Nova cor
           </span>
           <PrismColorField

@@ -827,7 +827,7 @@ function IconGridItem({ icon: Icon, name, meaning }: IconItemDef) {
         <Icon className="size-5 opacity-60" />
       </div>
       <span className="font-mono text-xs">{name}</span>
-      <span className="text-xs text-muted-foreground">{meaning}</span>
+      <span className="text-xs text-secondary-foreground">{meaning}</span>
     </div>
   );
 }
@@ -840,7 +840,7 @@ function CustomIconGridItem({ slug, name, meaning }: CustomIconDef) {
         <UIcons className="size-5 opacity-60" slug={slug} />
       </div>
       <span className="font-mono text-xs">{name}</span>
-      <span className="text-xs text-muted-foreground">{meaning}</span>
+      <span className="text-xs text-secondary-foreground">{meaning}</span>
     </div>
   );
 }
@@ -939,7 +939,7 @@ export function TokensIconsSection() {
               <h4 className="text-sm font-medium">
                 6. Customizados (UIcons.tsx, função Icons)
               </h4>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-secondary-foreground">
                 Ícones por slug utilizados em categorias, fases do Kanban e
                 estações de fluxo.
               </p>
@@ -947,7 +947,7 @@ export function TokensIconsSection() {
 
             {/* Categorias */}
             <div className="flex flex-col gap-3">
-              <span className="text-xs font-semibold text-muted-foreground uppercase">
+              <span className="text-xs font-semibold text-secondary-foreground uppercase">
                 Categorias
               </span>
               <div className="grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-4">
@@ -964,7 +964,7 @@ export function TokensIconsSection() {
 
             {/* Fases */}
             <div className="flex flex-col gap-3">
-              <span className="text-xs font-semibold text-muted-foreground uppercase">
+              <span className="text-xs font-semibold text-secondary-foreground uppercase">
                 Fases (Kanban)
               </span>
               <div className="grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-4">
@@ -981,7 +981,7 @@ export function TokensIconsSection() {
 
             {/* Estações */}
             <div className="flex flex-col gap-3">
-              <span className="text-xs font-semibold text-muted-foreground uppercase">
+              <span className="text-xs font-semibold text-secondary-foreground uppercase">
                 Estações (Fluxo)
               </span>
               <div className="grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-4">
@@ -998,7 +998,7 @@ export function TokensIconsSection() {
 
             {/* Padrão */}
             <div className="flex flex-col gap-3">
-              <span className="text-xs font-semibold text-muted-foreground uppercase">
+              <span className="text-xs font-semibold text-secondary-foreground uppercase">
                 Padrão (sem slug reconhecido)
               </span>
               <div className="grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-4">

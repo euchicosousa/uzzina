@@ -130,7 +130,7 @@ function DashHome() {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-background">
         <ULoader size="2xl" className="text-primary" />
-        <p className="animate-pulse text-sm font-medium text-muted-foreground">
+        <p className="animate-pulse text-sm font-medium text-secondary-foreground">
           Carregando calendário...
         </p>
       </div>

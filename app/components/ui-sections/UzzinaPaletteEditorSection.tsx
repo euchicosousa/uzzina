@@ -101,7 +101,7 @@ export function UzzinaPaletteEditorSection() {
     <div id="uzzina-palette-editor">
       <GallerySection>
         <GallerySectionHeader
-          description="Editor de paleta de cores: seletor de cor compartilhado, validação com preservação de texto, reordenação por arraste e exclusão discreta ghost-destructive."
+          description="Editor de paleta de cores: seletor de cor compartilhado, validação com preservação de texto, reordenação por arraste e exclusão discreta ghost-error."
           title="UPaletteEditor"
         />
         <GallerySectionContent className="grid gap-12">

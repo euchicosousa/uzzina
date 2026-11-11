@@ -49,7 +49,7 @@ export function PropsPlayground({
           {preview}
         </div>
         {caption && (
-          <p className="text-center font-mono text-xs text-muted-foreground">
+          <p className="text-center font-mono text-xs text-secondary-foreground">
             {caption}
           </p>
         )}
@@ -77,7 +77,7 @@ function ControlLabel({
   return (
     <div className="flex items-baseline justify-between gap-2" id={id}>
       <span className="text-sm font-medium">{label}</span>
-      <span className="font-mono text-xs text-muted-foreground">{prop}</span>
+      <span className="font-mono text-xs text-secondary-foreground">{prop}</span>
     </div>
   );
 }
@@ -206,7 +206,7 @@ export function PlaygroundBoolean({
     >
       <span className="flex flex-1 items-baseline justify-between gap-2">
         <span className="text-sm font-medium">{label}</span>
-        <span className="font-mono text-xs font-normal text-muted-foreground">
+        <span className="font-mono text-xs font-normal text-secondary-foreground">
           {prop}
         </span>
       </span>

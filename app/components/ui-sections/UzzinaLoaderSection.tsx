@@ -28,24 +28,24 @@ const SIZE_PX: Record<ULoaderSize, number> = {
 };
 
 const COLOR_OPTIONS = [
-  "muted",
+  "secondary",
   "primary",
-  "destructive",
+  "error",
   "foreground",
 ] as const;
 type ColorOption = (typeof COLOR_OPTIONS)[number];
 
 const COLOR_CLASSES: Record<ColorOption, string> = {
-  muted: "text-muted-foreground",
+  secondary: "text-secondary-foreground",
   primary: "text-primary",
-  destructive: "text-destructive",
+  error: "text-error",
   foreground: "text-foreground",
 };
 
 export function LoaderPlayground() {
   const [size, setSize] = useState<(typeof LOADER_SIZES)[number]>("md");
   const [inheritColor, setInheritColor] = useState(false);
-  const [contextColor, setContextColor] = useState<ColorOption>("muted");
+  const [contextColor, setContextColor] = useState<ColorOption>("secondary");
   const [label, setLabel] = useState("");
 
   return (
@@ -126,7 +126,7 @@ export function UzzinaLoaderSection() {
                   <span className="text-xs font-semibold text-foreground">
                     {sz}
                   </span>
-                  <span className="text-2xs text-muted-foreground">
+                  <span className="text-2xs text-secondary-foreground">
                     {SIZE_PX[sz]}px
                   </span>
                 </div>
@@ -146,7 +146,7 @@ export function UzzinaLoaderSection() {
                 Atualizando...
               </PrismButton>
 
-              <PrismButton isDisabled size="sm" variant="destructive">
+              <PrismButton isDisabled size="sm" variant="error">
                 <ULoader inheritColor size="sm" />
                 Excluindo...
               </PrismButton>
@@ -165,31 +165,31 @@ export function UzzinaLoaderSection() {
           <GalleryItem label="Contextos de toast e carregamentos de página">
             <div className="grid w-full gap-6 md:grid-cols-3">
               <div className="flex flex-col gap-2 rounded-2xl border bg-card p-4 shadow-xs">
-                <span className="text-2xs font-semibold text-muted-foreground uppercase">
+                <span className="text-2xs font-semibold text-secondary-foreground uppercase">
                   Toast (Sonner)
                 </span>
-                <div className="flex items-center gap-2.5 text-sm font-medium text-card-foreground">
+                <div className="flex items-center gap-2.5 text-sm font-medium text-foreground">
                   <ULoader className="text-primary" size="default" />
                   <span>Enviando dados da ação...</span>
                 </div>
               </div>
 
               <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border bg-card/40 p-6 text-center">
-                <span className="text-2xs font-semibold text-muted-foreground uppercase">
+                <span className="text-2xs font-semibold text-secondary-foreground uppercase">
                   Página completa (48px)
                 </span>
                 <ULoader className="text-primary" size="2xl" />
-                <p className="animate-pulse text-xs font-medium text-muted-foreground">
+                <p className="animate-pulse text-xs font-medium text-secondary-foreground">
                   Carregando parceiros...
                 </p>
               </div>
 
               <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border bg-card/40 p-6 text-center">
-                <span className="text-2xs font-semibold text-muted-foreground uppercase">
+                <span className="text-2xs font-semibold text-secondary-foreground uppercase">
                   Revisão pública (40px)
                 </span>
                 <ULoader className="size-10 text-foreground" />
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-secondary-foreground">
                   Carregando revisão...
                 </p>
               </div>

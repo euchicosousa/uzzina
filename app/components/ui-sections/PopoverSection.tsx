@@ -66,7 +66,7 @@ function PopoverPlayground() {
                 </PrismPopoverDescription>
               </PrismPopoverHeader>
             )}
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-secondary-foreground">
               Este é o conteúdo demonstrativo do popover contextual.
             </p>
           </PrismPopover>

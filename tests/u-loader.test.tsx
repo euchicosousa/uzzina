@@ -3,13 +3,13 @@ import { render } from "@testing-library/react";
 import { ULoader } from "~/components/uzzina/ULoader";
 
 describe("ULoader", () => {
-  it("renders with default sm size and text-muted-foreground when no props provided", () => {
+  it("renders with default sm size and text-secondary-foreground when no props provided", () => {
     const { container } = render(<ULoader />);
     const svg = container.querySelector("svg");
     expect(svg).toBeTruthy();
     expect(svg?.classList.contains("size-4")).toBe(true);
     expect(svg?.classList.contains("animate-spin")).toBe(true);
-    expect(svg?.classList.contains("text-muted-foreground")).toBe(true);
+    expect(svg?.classList.contains("text-secondary-foreground")).toBe(true);
     expect(svg?.getAttribute("role")).toBe("presentation");
     expect(svg?.getAttribute("aria-hidden")).toBe("true");
   });
@@ -36,14 +36,16 @@ describe("ULoader", () => {
     const { container: inherited } = render(<ULoader inheritColor />);
     const svgInherited = inherited.querySelector("svg");
     expect(svgInherited?.classList.contains("text-current")).toBe(true);
-    expect(svgInherited?.classList.contains("text-muted-foreground")).toBe(
+    expect(svgInherited?.classList.contains("text-secondary-foreground")).toBe(
       false,
     );
 
-    const { container: muted } = render(<ULoader inheritColor={false} />);
-    const svgMuted = muted.querySelector("svg");
-    expect(svgMuted?.classList.contains("text-muted-foreground")).toBe(true);
-    expect(svgMuted?.classList.contains("text-current")).toBe(false);
+    const { container: secondary } = render(<ULoader inheritColor={false} />);
+    const svgSecondary = secondary.querySelector("svg");
+    expect(svgSecondary?.classList.contains("text-secondary-foreground")).toBe(
+      true,
+    );
+    expect(svgSecondary?.classList.contains("text-current")).toBe(false);
   });
 
   it("allows className overrides for custom geometry (e.g. 40px review page)", () => {

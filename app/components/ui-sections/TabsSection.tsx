@@ -79,7 +79,7 @@ function TabsPlayground() {
               <div className="border-x border-b border-border bg-popover p-4">
                 {currentTabs.map((tab) => (
                   <PrismTabPanel id={tab.id} key={tab.id} shouldForceMount>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-secondary-foreground">
                       {tab.content}
                     </p>
                   </PrismTabPanel>
@@ -93,7 +93,7 @@ function TabsPlayground() {
                   key={tab.id}
                   shouldForceMount
                 >
-                  <p className="text-sm text-muted-foreground">{tab.content}</p>
+                  <p className="text-sm text-secondary-foreground">{tab.content}</p>
                 </PrismTabPanel>
               ))
             )}

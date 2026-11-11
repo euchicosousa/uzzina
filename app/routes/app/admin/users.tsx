@@ -53,14 +53,14 @@ function AdminUsersPage() {
           }}
           to="/app/admin/user/$userId"
         >
-          Novo Usuário
           <UserPlusIcon />
+          Novo Usuário
         </Link>
       </div>
 
       {isLoading ? (
         <p
-          className="p-8 text-center text-sm text-muted-foreground"
+          className="p-8 text-center text-sm text-secondary-foreground"
           role="status"
         >
           Carregando usuários…
@@ -77,7 +77,7 @@ function AdminUsersPage() {
       ) : (
         isSuccess &&
         people.length === 0 && (
-          <p className="text-muted-foreground">Nenhum usuário cadastrado.</p>
+          <p className="text-secondary-foreground">Nenhum usuário cadastrado.</p>
         )
       )}
 

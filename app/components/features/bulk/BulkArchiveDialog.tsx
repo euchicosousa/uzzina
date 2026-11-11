@@ -44,7 +44,7 @@ export function BulkArchiveDialog({
         >
           Cancelar
         </PrismButton>
-        <PrismButton onClick={onConfirm} size="sm" variant="destructive">
+        <PrismButton onClick={onConfirm} size="sm" variant="error">
           Arquivar {actionText}
         </PrismButton>
       </PrismDialogFooter>

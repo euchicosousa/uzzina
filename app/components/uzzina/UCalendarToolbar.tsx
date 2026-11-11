@@ -71,12 +71,12 @@ export function UCalendarToolbar({
         >
           {showDate ? (
             <>
-              <span className="hidden capitalize md:block">
+              <span className="hidden capitalize md:block lg:hidden xl:block">
                 {format(currentDay, "MMMM/yy", {
                   locale: ptBR,
                 })}
               </span>
-              <span className="block capitalize md:hidden">
+              <span className="block capitalize md:hidden lg:block xl:hidden">
                 {format(currentDay, "MM/yy", {
                   locale: ptBR,
                 })}

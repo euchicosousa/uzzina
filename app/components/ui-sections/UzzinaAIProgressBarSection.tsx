@@ -25,8 +25,8 @@ export function AIProgressBarPlayground() {
       caption={`isGenerating={${String(isGenerating)}} · variant="${variant}" · durationMs={30000}${completedCount > 0 ? ` · concluído ${completedCount}x` : ""}`}
       preview={
         <div className="flex w-full max-w-md flex-col items-center justify-center gap-6 p-6">
-          <div className="flex w-full flex-col gap-2 rounded-xl border border-border/60 bg-muted/20 p-4">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex w-full flex-col gap-2 rounded-xl border border-border/60 bg-secondary p-4">
+            <div className="flex items-center justify-between text-xs text-secondary-foreground">
               <span>Simulação de Campo / Editor</span>
               <span>{isGenerating ? "Gerando..." : "Pronto"}</span>
             </div>
@@ -40,7 +40,7 @@ export function AIProgressBarPlayground() {
               />
             </div>
 
-            <div className="h-16 w-full rounded-md border border-border/40 bg-background/50 p-2 text-xs text-muted-foreground">
+            <div className="h-16 w-full rounded-md border border-border/40 bg-background/50 p-2 text-xs text-secondary-foreground">
               {isGenerating
                 ? "Aguardando retorno da IA... campo desabilitado."
                 : "Conteúdo pronto para edição."}
@@ -50,7 +50,7 @@ export function AIProgressBarPlayground() {
           <div className="flex gap-2">
             <PrismButton
               size="sm"
-              variant={isGenerating ? "destructive" : "default"}
+              variant={isGenerating ? "error" : "default"}
               onClick={() => setIsGenerating((prev) => !prev)}
             >
               {isGenerating ? "Parar (Sucesso IA)" : "Iniciar Geração (30s)"}
@@ -115,9 +115,9 @@ export function UzzinaAIProgressBarSection() {
                     isGenerating={demoLineGenerating}
                     variant="line"
                   />
-                  <div className="p-4 text-xs text-muted-foreground">
+                  <div className="p-4 text-xs text-secondary-foreground">
                     Linha contínua integrada na borda de corte, sem rounded,
-                    trilho em bg-input e avanço em bg-primary.
+                    trilho em bg-secondary e avanço em bg-primary.
                   </div>
                 </div>
               </div>
@@ -141,7 +141,7 @@ export function UzzinaAIProgressBarSection() {
                     isGenerating={demoCircleGenerating}
                     variant="circle"
                   />
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-secondary-foreground">
                     {demoCircleGenerating
                       ? "Gerando resposta no botão..."
                       : "Pronto para gerar"}

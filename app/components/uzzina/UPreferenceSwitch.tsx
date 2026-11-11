@@ -29,7 +29,7 @@ export function UPreferenceSwitch({
         >
           {label}
         </PrismLabel>
-        <span className="pr-4 text-xs text-muted-foreground">
+        <span className="pr-4 text-xs text-secondary-foreground">
           {description}
         </span>
       </div>

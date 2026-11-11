@@ -152,7 +152,7 @@ export function BulkDateTimeDialog({
         >
           <div className="min-h-0 overflow-hidden">
             <div className="flex items-center justify-between gap-3 p-4">
-              <span className="shrink-0 text-xs font-semibold text-muted-foreground uppercase">
+              <span className="shrink-0 text-xs font-semibold text-secondary-foreground uppercase">
                 Nova hora
               </span>
               <PrismTimeField

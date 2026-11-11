@@ -64,7 +64,7 @@ function ForgotPassword() {
         <div className="flex items-center justify-between">
           <UZZINALogo className="h-12" />
           <Link
-            className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground hover:underline"
+            className="flex items-center gap-1.5 text-sm text-secondary-foreground transition-colors hover:text-foreground hover:underline"
             to="/login"
           >
             <ArrowLeftIcon className="size-3" />
@@ -82,13 +82,13 @@ function ForgotPassword() {
 
         {success ? (
           <div className="flex animate-pop flex-col items-center justify-center py-6 text-center">
-            <div className="mb-4 flex size-12 items-center justify-center rounded-full border border-success/20 bg-success-background text-success">
+            <div className="mb-4 flex size-12 items-center justify-center rounded-full border border-success bg-success-background text-success">
               <MailOpenIcon className="size-6" />
             </div>
             <h3 className="mb-2 text-lg font-semibold text-foreground">
               E-mail enviado!
             </h3>
-            <p className="max-w-sm text-sm text-muted-foreground">
+            <p className="max-w-sm text-sm text-secondary-foreground">
               Enviamos um link de redefinição de senha para o e-mail informado.
               Por favor, verifique sua caixa de entrada e spam.
             </p>
@@ -97,7 +97,7 @@ function ForgotPassword() {
           <form onSubmit={handleSubmit}>
             <div className="mb-6 space-y-4">
               <h3>Recuperar Senha</h3>
-              <p className="text-muted-foreground">
+              <p className="text-secondary-foreground">
                 Digite seu e-mail cadastrado e enviaremos um link de
                 redefinição.
               </p>

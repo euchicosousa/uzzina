@@ -183,7 +183,7 @@ function AdminClientPage() {
 
           <div className="grid gap-1">
             <p className="font-medium">Foto de Perfil</p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-secondary-foreground">
               Clique para fazer upload e recortar
             </p>
             {imageUrl && (
@@ -286,7 +286,7 @@ function AdminClientPage() {
                   }
                 }}
                 type="button"
-                variant="destructive"
+                variant="error"
               >
                 Arquivar Cliente
               </PrismButton>

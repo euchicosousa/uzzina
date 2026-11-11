@@ -42,7 +42,7 @@ export function ULoader({
       aria-hidden={ariaHiddenProp ?? (isLabeled ? undefined : true)}
       className={cn(
         "animate-spin",
-        inheritColor ? "text-current" : "text-muted-foreground",
+        inheritColor ? "text-current" : "text-secondary-foreground",
         sizeClasses[size] ?? "size-4",
         className,
       )}

@@ -33,7 +33,7 @@ export function PartnersBoard({
           <PrismSkeletonGroup count={12} isWrapped={false} variant="profile" />
         )}
         {!isLoading && activePartners.length === 0 && (
-          <div className="col-span-full rounded-2xl border border-dashed border-border/50 bg-input/20 py-16 text-center text-sm text-muted-foreground squircle">
+          <div className="col-span-full rounded-2xl border border-dashed border-border/50 bg-secondary py-16 text-center text-sm text-secondary-foreground squircle">
             {isToday(currentDay)
               ? "Nenhuma ação para hoje."
               : "Nenhuma ação para este dia."}

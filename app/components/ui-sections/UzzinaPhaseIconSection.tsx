@@ -97,7 +97,7 @@ export function PhaseIconPlayground() {
         {PHASE_SLUGS.map((slug) => (
           <div className="flex flex-col items-center gap-1.5" key={slug}>
             <UPhaseIcon phase={PHASES[slug]} size="md" variant="progress" />
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-secondary-foreground">
               {PHASES[slug].title}
             </span>
           </div>

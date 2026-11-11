@@ -191,7 +191,7 @@ export function ConflictComparison({
   };
   if (fields.length === 0)
     return (
-      <p className="px-5 text-sm text-muted-foreground" role="status">
+      <p className="px-5 text-sm text-secondary-foreground" role="status">
         {opened &&
         compareActionVersions(latest.updated_at, opened.updated_at) === 1
           ? "Nenhum campo do conteúdo mudou. Somente o registro de versão no servidor é mais recente."
@@ -243,7 +243,7 @@ export function ConflictComparison({
                   /<\/?[a-z][^>]*>/i.test(value);
                 return (
                   <div className="py-3" key={field}>
-                    <dt className="mb-2 text-xs font-medium text-muted-foreground">
+                    <dt className="mb-2 text-xs font-medium text-secondary-foreground">
                       {FIELD_LABELS[field] || "Campo alterado"}
                       {opened && (
                         <span className="font-normal">

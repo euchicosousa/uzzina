@@ -48,7 +48,7 @@ function Command({
   return (
     <div
       className={cn(
-        "flex size-full flex-col overflow-hidden rounded-2xl bg-popover text-popover-foreground squircle",
+        "flex size-full flex-col overflow-hidden rounded-2xl bg-popover text-foreground squircle",
         className,
       )}
       data-slot="command"
@@ -154,7 +154,7 @@ function CommandInput({
       <Input
         {...props}
         className={cn(
-          "flex h-11 w-full bg-transparent text-sm outline-none placeholder:text-foreground/50 disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-search-cancel-button]:hidden",
+          "flex h-11 w-full bg-transparent text-sm outline-none placeholder:text-foreground/40 disabled:cursor-not-allowed disabled:opacity-50 [&::-webkit-search-cancel-button]:hidden",
           size === "sm" && "h-9",
           suffix && "min-w-0 truncate",
           className,
@@ -218,7 +218,7 @@ function CommandGroup<T extends object>({
   return (
     <MenuSection
       className={cn(
-        "space-y-1 overflow-hidden p-0 text-foreground **:[[cmdk-group-heading]]:px-3 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium **:[[cmdk-group-heading]]:text-muted-foreground",
+        "space-y-1 overflow-hidden p-0 text-foreground **:[[cmdk-group-heading]]:px-3 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium **:[[cmdk-group-heading]]:text-secondary-foreground",
         className,
       )}
       data-slot="command-group"
@@ -273,7 +273,7 @@ function CommandItem<T extends object>({
         onAction?.({ shiftKey });
       }}
       className={cn(
-        "group/command-item relative flex h-8 min-h-7 cursor-default items-center gap-2 rounded-xl px-3 outline-hidden select-none squircle data-focused:bg-secondary/50 data-focused:text-foreground data-[checked=true]:bg-secondary/50 data-[checked=true]:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary/50 data-[selected=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-[checked=true]:*:[svg]:text-foreground data-[selected=true]:*:[svg]:text-foreground",
+        "group/command-item relative flex h-8 min-h-7 cursor-default items-center gap-2 rounded-xl px-3 outline-hidden select-none squircle data-focused:bg-secondary data-focused:text-foreground data-[checked=true]:bg-secondary data-[checked=true]:text-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-secondary data-[selected=true]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5 data-focused:*:[svg]:text-foreground data-[checked=true]:*:[svg]:text-foreground data-[selected=true]:*:[svg]:text-foreground",
         className,
       )}
       data-checked={selected ? "true" : undefined}
@@ -299,7 +299,7 @@ function CommandShortcut({
   return (
     <span
       className={cn(
-        "ml-auto text-xs tracking-widest text-muted-foreground group-data-focused/command-item:text-foreground group-data-selected/command-item:text-foreground",
+        "ml-auto text-xs tracking-widest text-secondary-foreground group-data-focused/command-item:text-foreground group-data-selected/command-item:text-foreground",
         className,
       )}
       data-slot="command-shortcut"

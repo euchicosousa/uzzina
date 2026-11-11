@@ -189,7 +189,7 @@ export function ObservationsTab({
     deleteCommentMutation.isPending;
 
   return (
-    <div className="flex h-full w-full max-w-full flex-col overflow-hidden bg-muted/30">
+    <div className="flex h-full w-full max-w-full flex-col overflow-hidden bg-secondary">
       <div className="flex-1 overflow-y-auto p-6">
         <CommentList
           comments={comments}

@@ -105,7 +105,7 @@ function AdminCelebrationsPage() {
       <div className="flex w-full shrink-0 flex-col gap-4 p-8 md:h-full md:w-96 md:overflow-y-auto">
         <div>
           <h1 className="pb-2 text-3xl font-bold">Datas Comemorativas</h1>
-          <p className="text-muted-foreground">
+          <p className="text-secondary-foreground">
             Gerencie feriados e datas importantes que aparecerão no
             planejamento.
           </p>
@@ -167,7 +167,7 @@ function AdminCelebrationsPage() {
 
       {isLoading ? (
         <p
-          className="p-8 text-center text-sm text-muted-foreground"
+          className="p-8 text-center text-sm text-secondary-foreground"
           role="status"
         >
           Carregando datas comemorativas…
@@ -241,7 +241,7 @@ export function CelebrationsList({
       className="flex w-full shrink-0 flex-col gap-4 p-8 md:h-full md:shrink md:overflow-y-auto"
     >
       {celebrations.length === 0 ? (
-        <div className="rounded-2xl border border-dashed p-8 text-center text-muted-foreground squircle">
+        <div className="rounded-2xl border border-dashed p-8 text-center text-secondary-foreground squircle">
           Nenhuma data comemorativa cadastrada ainda.
         </div>
       ) : (
@@ -276,7 +276,7 @@ export function CelebrationsList({
                     className="group flex items-center justify-between gap-4 rounded-xl px-3 py-2 transition-colors squircle hover:bg-card"
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <span className="w-6 shrink-0 text-center text-sm font-medium text-muted-foreground">
+                      <span className="w-6 shrink-0 text-center text-sm font-medium text-secondary-foreground">
                         {format(new Date(`${celebration.date}T00:00:00`), "dd")}
                       </span>
                       <span className="truncate font-medium tracking-tight">
@@ -301,7 +301,7 @@ export function CelebrationsList({
                         isDisabled={isSubmitting}
                         onClick={() => onDelete(celebration.id)}
                         size="icon-xs"
-                        variant="destructive"
+                        variant="error"
                       >
                         <TrashIcon />
                       </PrismButton>

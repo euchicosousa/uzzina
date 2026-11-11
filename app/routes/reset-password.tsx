@@ -160,7 +160,7 @@ function ResetPassword() {
         {checkingSession ? (
           <div className="flex flex-col items-center justify-center py-6 text-center">
             <ULoader size="xl" className="text-primary" />
-            <p className="mt-4 text-sm text-muted-foreground">
+            <p className="mt-4 text-sm text-secondary-foreground">
               Validando link de recuperação...
             </p>
           </div>
@@ -168,7 +168,7 @@ function ResetPassword() {
           <form onSubmit={handleSubmit}>
             <div className="mb-6 space-y-4">
               <h3>Criar Nova Senha</h3>
-              <p className="text-muted-foreground">
+              <p className="text-secondary-foreground">
                 Insira sua nova senha de acesso segura para a sua conta.
               </p>
             </div>

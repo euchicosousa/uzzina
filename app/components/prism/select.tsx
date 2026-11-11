@@ -56,7 +56,7 @@ function SelectValue<T extends object>({
   return (
     <SelectValuePrimitive
       className={cn(
-        "flex flex-1 text-left data-placeholder:text-foreground/50",
+        "flex flex-1 text-left data-placeholder:text-foreground/40",
         className,
       )}
       data-slot="select-value"
@@ -81,7 +81,7 @@ function SelectTrigger({
   return (
     <ButtonPrimitive
       className={cn(
-        "flex w-full items-center justify-between gap-1.5 rounded-2xl border border-transparent bg-input px-3 py-2 text-sm whitespace-nowrap transition-[color,box-shadow] duration-200 outline-none squircle focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-placeholder:text-foreground/50 data-[size=default]:h-10 data-[size=lg]:h-12 data-[size=lg]:rounded-3xl data-[size=lg]:text-base data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "flex w-full items-center justify-between gap-1.5 rounded-2xl border border-transparent bg-input px-3 py-2 text-sm whitespace-nowrap transition-[color,box-shadow] duration-200 outline-none squircle focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:bg-error-background aria-invalid:text-error-foreground aria-invalid:border-error aria-invalid:ring-error-background data-placeholder:text-foreground/40 data-[size=default]:h-10 data-[size=lg]:h-12 data-[size=lg]:rounded-3xl data-[size=lg]:text-base data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       data-size={size}
@@ -136,7 +136,7 @@ function SelectPopover({
   return (
     <PopoverPrimitive
       className={cn(
-        "relative isolate z-50 w-(--trigger-width) min-w-36 origin-(--trigger-anchor-point) overflow-hidden rounded-2xl border border-foreground/5 bg-popover text-popover-foreground shadow-lg squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out motion-reduce:animate-none dark:border-foreground/10",
+        "relative isolate z-50 w-(--trigger-width) min-w-36 origin-(--trigger-anchor-point) overflow-hidden rounded-2xl border border-foreground/5 bg-popover text-foreground shadow-lg squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out motion-reduce:animate-none dark:border-foreground/10",
         className,
       )}
       crossOffset={crossOffset}
@@ -190,7 +190,7 @@ function SelectLabel({
 }: React.ComponentProps<typeof HeaderPrimitive>) {
   return (
     <HeaderPrimitive
-      className={cn("px-2 py-1 text-xs text-muted-foreground", className)}
+      className={cn("px-2 py-1 text-xs text-secondary-foreground", className)}
       data-slot="select-label"
       {...props}
     />
@@ -204,7 +204,7 @@ function SelectItem({
   return (
     <ListBoxItemPrimitive
       className={cn(
-        "relative flex min-h-7 w-full cursor-default items-center gap-2 rounded-xl py-1.5 pr-12 pl-2 text-sm outline-hidden select-none squircle focus:bg-secondary/50 focus:text-foreground data-disabled:pointer-events-none data-disabled:opacity-50 data-focused:bg-secondary/50 data-focused:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        "relative flex min-h-7 w-full cursor-default items-center gap-2 rounded-xl py-1.5 pr-12 pl-2 text-sm outline-hidden select-none squircle focus:bg-secondary data-disabled:pointer-events-none data-disabled:opacity-50 data-focused:bg-secondary [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className,
       )}
       data-slot="select-item"
@@ -242,7 +242,7 @@ function SelectEmpty({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "hidden w-full justify-center py-2 text-center text-sm text-muted-foreground group-data-empty/select-list:flex",
+        "hidden w-full justify-center py-2 text-center text-sm text-secondary-foreground group-data-empty/select-list:flex",
         className,
       )}
       data-slot="select-empty"

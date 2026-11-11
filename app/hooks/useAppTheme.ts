@@ -11,7 +11,8 @@ import { applyPaletteVars } from "~/lib/palette-vars";
 import { hexToOklch } from "~/utils/color";
 import type { CustomTheme } from "~/lib/preferences";
 
-const STORAGE_KEY = "uzzina-accent-color-index";
+const STORAGE_KEY = "uzzina-theme-color-index";
+const LEGACY_STORAGE_KEY = "uzzina-accent-color-index";
 const BACKGROUND_STORAGE_KEY = "uzzina-background-color";
 
 // Chaves para o tema personalizado
@@ -29,7 +30,9 @@ const CUSTOM_TOP_BORDER_COLOR_KEY = "uzzina-custom-top-border-color";
 
 function getStoredIndex(): number {
   if (typeof window === "undefined") return 0;
-  const saved = localStorage.getItem(STORAGE_KEY);
+  const saved =
+    localStorage.getItem(STORAGE_KEY) ??
+    localStorage.getItem(LEGACY_STORAGE_KEY);
   if (saved === null || saved === "") return 0;
   const n = Number(saved);
   return Number.isNaN(n) ? 0 : n;
@@ -150,7 +153,7 @@ export function useAppTheme(isPublic = false) {
       const { key, newValue } = event;
       if (key === THEME_KEY) {
         setThemePreferenceState(parseThemePreference(newValue));
-      } else if (key === STORAGE_KEY) {
+      } else if (key === STORAGE_KEY || key === LEGACY_STORAGE_KEY) {
         setPrimaryColorIndexState(
           newValue === null || newValue === "" ? 0 : Number(newValue),
         );
@@ -250,6 +253,7 @@ export function useAppTheme(isPublic = false) {
 
   const setPrimaryColorIndex = (index: number) => {
     localStorage.setItem(STORAGE_KEY, String(index));
+    localStorage.setItem(LEGACY_STORAGE_KEY, String(index));
     setPrimaryColorIndexState(index);
     window.dispatchEvent(new Event("uzzina-storage-update"));
   };
@@ -265,6 +269,7 @@ export function useAppTheme(isPublic = false) {
 
   const resetPrimaryColor = () => {
     localStorage.setItem(STORAGE_KEY, "0");
+    localStorage.setItem(LEGACY_STORAGE_KEY, "0");
     setPrimaryColorIndexState(0);
     window.dispatchEvent(new Event("uzzina-storage-update"));
   };

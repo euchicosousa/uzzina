@@ -28,7 +28,7 @@ export function CommentList({
   return (
     <div className="flex flex-col space-y-4">
       {comments.length === 0 ? (
-        <p className="py-10 text-center text-sm text-muted-foreground">
+        <p className="py-10 text-center text-sm text-secondary-foreground">
           {emptyMessage}
         </p>
       ) : (

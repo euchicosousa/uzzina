@@ -63,7 +63,7 @@ function ReviewPage() {
           <h2 className="mb-2 text-lg font-semibold text-foreground">
             Link Descontinuado
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-secondary-foreground">
             Este link de revisão utiliza um formato antigo que foi descontinuado
             por motivos de segurança. Por favor, solicite à equipe um novo link
             seguro de revisão.
@@ -80,7 +80,7 @@ function ReviewPage() {
           <h2 className="mb-2 text-lg font-semibold text-foreground">
             Link Inválido
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-secondary-foreground">
             Nenhuma chave de autorização foi fornecida para acessar esta
             revisão.
           </p>
@@ -94,7 +94,7 @@ function ReviewPage() {
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <ULoader className="size-10 text-foreground" />
-          <p className="text-sm text-muted-foreground">Carregando revisão...</p>
+          <p className="text-sm text-secondary-foreground">Carregando revisão...</p>
         </div>
       </div>
     );
@@ -108,7 +108,7 @@ function ReviewPage() {
           <h2 className="mb-2 text-lg font-semibold text-foreground">
             Acesso Não Disponível
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-secondary-foreground">
             {isNotFound
               ? "Este link de revisão expirou, foi revogado ou é inválido."
               : "Falha ao carregar a revisão. Tente novamente mais tarde."}
@@ -123,7 +123,7 @@ function ReviewPage() {
   if (validActions.length === 0) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <p className="text-muted-foreground">
+        <p className="text-secondary-foreground">
           Nenhum conteúdo deste parceiro encontrado para revisão.
         </p>
       </div>
@@ -147,7 +147,7 @@ function ReviewPage() {
             size="md"
           />
           <div>
-            <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+            <p className="text-xs font-medium tracking-widest text-secondary-foreground uppercase">
               Revisão de Conteúdo
             </p>
             <h1 className="text-2xl font-semibold tracking-tight">
@@ -157,7 +157,7 @@ function ReviewPage() {
         </div>
 
         <div className="border-b pb-6">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-secondary-foreground">
             {validActions.length}{" "}
             {validActions.length === 1
               ? "conteúdo compartilhado"
@@ -199,7 +199,7 @@ function ReviewPage() {
                 {/* Action header */}
                 <div className="mb-5 flex flex-wrap items-start gap-3">
                   {/* Index */}
-                  <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-foreground/8 text-xs font-semibold text-muted-foreground">
+                  <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-foreground/8 text-xs font-semibold text-secondary-foreground">
                     {index + 1}
                   </span>
 
@@ -218,7 +218,7 @@ function ReviewPage() {
                         </span>
                       )}
                       {publishDate && (
-                        <span className="text-xs text-muted-foreground capitalize">
+                        <span className="text-xs text-secondary-foreground capitalize">
                           {publishDate}
                         </span>
                       )}
@@ -234,7 +234,7 @@ function ReviewPage() {
                 {/* Content description (Tiptap HTML) */}
                 {hasContentDescription && (
                   <section className="mb-6">
-                    <h3 className="mb-2 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
+                    <h3 className="mb-2 text-xs font-semibold tracking-widest text-secondary-foreground uppercase">
                       Conteúdo
                     </h3>
                     <div
@@ -246,12 +246,12 @@ function ReviewPage() {
                         "[&_p]:mb-2 [&_p]:leading-relaxed",
                         "[&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5",
                         "[&_li]:mb-1",
-                        "[&_blockquote]:border-l-4 [&_blockquote]:border-border [&_blockquote]:pl-4 [&_blockquote]:text-muted-foreground",
+                        "[&_blockquote]:border-l-4 [&_blockquote]:border-border [&_blockquote]:pl-4 [&_blockquote]:text-secondary-foreground",
                         "[&_hr]:border-border",
                         "[&_strong]:font-semibold",
                         "[&_em]:italic",
                         "[&_table]:w-full [&_table]:border-collapse",
-                        "[&_th]:border [&_th]:border-border [&_th]:bg-muted [&_th]:px-3 [&_th]:py-2 [&_th]:text-left",
+                        "[&_th]:border [&_th]:border-border [&_th]:bg-secondary [&_th]:px-3 [&_th]:py-2 [&_th]:text-left",
                         "[&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:py-2",
                         "[&_mark]:bg-warning-background",
                         "[&_a]:text-primary [&_a]:underline",
@@ -267,7 +267,7 @@ function ReviewPage() {
                 {/* Instagram caption */}
                 {hasCaption && (
                   <section>
-                    <h3 className="mb-2 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
+                    <h3 className="mb-2 text-xs font-semibold tracking-widest text-secondary-foreground uppercase">
                       Legenda
                     </h3>
                     <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground/80">
@@ -278,7 +278,7 @@ function ReviewPage() {
 
                 {/* Empty state */}
                 {!hasContentDescription && !hasCaption && (
-                  <p className="text-sm text-muted-foreground italic">
+                  <p className="text-sm text-secondary-foreground italic">
                     Nenhum conteúdo preenchido para este item.
                   </p>
                 )}
@@ -289,7 +289,7 @@ function ReviewPage() {
 
         {/* Footer */}
         <div className="mt-12 border-t pt-8 text-center">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-secondary-foreground">
             Documento gerado pelo CNVT® · {partner.title}
           </p>
         </div>

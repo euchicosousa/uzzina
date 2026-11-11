@@ -252,7 +252,7 @@ export function EssentialsTab({
             {workFiles.length > 0 && (
               <span
                 aria-label="Com arquivos de trabalho"
-                className="flex size-8 shrink-0 items-center justify-center text-muted-foreground"
+                className="flex size-8 shrink-0 items-center justify-center text-secondary-foreground"
                 role="img"
               >
                 <FileIcon aria-hidden="true" className="size-4" />

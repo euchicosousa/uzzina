@@ -108,7 +108,7 @@ function Login() {
             <div className="mb-1.5 flex w-full items-center justify-between">
               <PrismLabel className="block cursor-pointer">Senha</PrismLabel>
               <Link
-                className="text-sm text-muted-foreground hover:text-foreground hover:underline"
+                className="text-sm text-secondary-foreground hover:text-foreground hover:underline"
                 to="/forgot-password"
               >
                 Esqueceu sua senha?

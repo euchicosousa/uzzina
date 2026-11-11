@@ -37,14 +37,14 @@ export function GallerySectionHeader({
         <span className="min-w-0 wrap-anywhere">{title}</span>
         {approved && (
           <span
-            className="inline-flex size-5 items-center justify-center rounded-full bg-approved text-approved-foreground shadow-xs ring-2 ring-approved/50"
+            className="inline-flex size-5 items-center justify-center rounded-full bg-success-strong text-success-strong-foreground shadow-xs ring-2 ring-success-strong/50"
             title="Aprovado"
           >
             <CheckIcon className="stroke3 size-3.5" />
           </span>
         )}
       </h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
+      <p className="text-sm text-secondary-foreground">{description}</p>
     </div>
   );
 }
@@ -88,7 +88,7 @@ export function GalleryItem({
       className={cn("flex max-w-full min-w-0 flex-col gap-4", className)}
       id={id}
     >
-      <span className="text-xs font-semibold text-muted-foreground uppercase">
+      <span className="text-xs font-semibold text-secondary-foreground uppercase">
         {label}
       </span>
       {children}
@@ -114,7 +114,7 @@ export function SidebarAnchorLink({
   return (
     <a
       className={cn(
-        "flex w-full max-w-full min-w-0 items-center justify-between overflow-hidden border-l py-2 pr-2 pl-4 text-muted-foreground transition-colors outline-none hover:bg-input/60 hover:text-foreground focus:ring-0 focus:outline-none focus-visible:bg-input focus-visible:ring-0 focus-visible:outline-none",
+        "flex w-full max-w-full min-w-0 items-center justify-between overflow-hidden border-l py-2 pr-2 pl-4 text-secondary-foreground transition-colors outline-none hover:bg-secondary hover:text-foreground focus:ring-0 focus:outline-none focus-visible:bg-secondary focus-visible:ring-0 focus-visible:outline-none",
         active
           ? "border-foreground font-medium text-foreground"
           : "border-border/40",
@@ -146,7 +146,7 @@ export function SidebarAnchorLink({
       </span>
       {approved && (
         <span
-          className="inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-approved text-approved-foreground shadow-2xs ring-1 ring-approved/60"
+          className="inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-success-strong text-success-strong-foreground shadow-2xs ring-1 ring-success-strong/60"
           title="Aprovado"
         >
           <CheckIcon className="size-2.5 stroke-3" />
@@ -172,10 +172,10 @@ export function SidebarSubsectionLink({
   return (
     <a
       className={cn(
-        "flex w-full max-w-full min-w-0 items-center overflow-hidden border-l py-1.5 pr-2 pl-7 text-xs font-normal transition-colors outline-none hover:bg-input/60 hover:text-foreground focus:ring-0 focus:outline-none focus-visible:bg-input focus-visible:ring-0 focus-visible:outline-none",
+        "flex w-full max-w-full min-w-0 items-center overflow-hidden border-l py-1.5 pr-2 pl-7 text-xs font-normal transition-colors outline-none hover:bg-secondary hover:text-foreground focus:ring-0 focus:outline-none focus-visible:bg-secondary focus-visible:ring-0 focus-visible:outline-none",
         active
-          ? "border-border/40 bg-input/30 text-foreground"
-          : "border-border/40 text-muted-foreground",
+          ? "border-border/40 bg-secondary text-foreground"
+          : "border-border/40 text-secondary-foreground",
       )}
       href={`#${targetId}`}
       onClick={(e) => {
@@ -223,7 +223,7 @@ export function SidebarTabButton({
 }: SidebarTabButtonProps) {
   return (
     <button
-      className={`flex shrink-0 cursor-pointer items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold tracking-tight transition-all hover:bg-card ${isActive ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground"} squircle`}
+      className={`flex shrink-0 cursor-pointer items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold tracking-tight transition-all hover:bg-card ${isActive ? "bg-secondary text-foreground" : "text-secondary-foreground hover:text-foreground"} squircle`}
       onClick={onClick}
       type="button"
     >

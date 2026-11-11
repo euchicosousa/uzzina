@@ -349,7 +349,7 @@ export function UColorPickerDropdown({
                   size="sm"
                   value={colorValue}
                 />
-                <span className="mt-0.5 font-mono text-[10px] text-muted-foreground">
+                <span className="mt-0.5 font-mono text-[10px] text-secondary-foreground">
                   R
                 </span>
               </div>
@@ -363,7 +363,7 @@ export function UColorPickerDropdown({
                   size="sm"
                   value={colorValue}
                 />
-                <span className="mt-0.5 font-mono text-[10px] text-muted-foreground">
+                <span className="mt-0.5 font-mono text-[10px] text-secondary-foreground">
                   G
                 </span>
               </div>
@@ -377,7 +377,7 @@ export function UColorPickerDropdown({
                   size="sm"
                   value={colorValue}
                 />
-                <span className="mt-0.5 font-mono text-[10px] text-muted-foreground">
+                <span className="mt-0.5 font-mono text-[10px] text-secondary-foreground">
                   B
                 </span>
               </div>
@@ -397,7 +397,7 @@ export function UColorPickerDropdown({
                   size="sm"
                   value={colorValue}
                 />
-                <span className="mt-0.5 font-mono text-[10px] text-muted-foreground">
+                <span className="mt-0.5 font-mono text-[10px] text-secondary-foreground">
                   H
                 </span>
               </div>
@@ -411,7 +411,7 @@ export function UColorPickerDropdown({
                   size="sm"
                   value={colorValue}
                 />
-                <span className="mt-0.5 font-mono text-[10px] text-muted-foreground">
+                <span className="mt-0.5 font-mono text-[10px] text-secondary-foreground">
                   S
                 </span>
               </div>
@@ -425,7 +425,7 @@ export function UColorPickerDropdown({
                   size="sm"
                   value={colorValue}
                 />
-                <span className="mt-0.5 font-mono text-[10px] text-muted-foreground">
+                <span className="mt-0.5 font-mono text-[10px] text-secondary-foreground">
                   L
                 </span>
               </div>
@@ -445,7 +445,7 @@ export function UColorPickerDropdown({
                   size="sm"
                   value={colorValue}
                 />
-                <span className="mt-0.5 font-mono text-[10px] text-muted-foreground">
+                <span className="mt-0.5 font-mono text-[10px] text-secondary-foreground">
                   H
                 </span>
               </div>
@@ -459,7 +459,7 @@ export function UColorPickerDropdown({
                   size="sm"
                   value={colorValue}
                 />
-                <span className="mt-0.5 font-mono text-[10px] text-muted-foreground">
+                <span className="mt-0.5 font-mono text-[10px] text-secondary-foreground">
                   S
                 </span>
               </div>
@@ -473,7 +473,7 @@ export function UColorPickerDropdown({
                   size="sm"
                   value={colorValue}
                 />
-                <span className="mt-0.5 font-mono text-[10px] text-muted-foreground">
+                <span className="mt-0.5 font-mono text-[10px] text-secondary-foreground">
                   B
                 </span>
               </div>

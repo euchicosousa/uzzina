@@ -928,7 +928,7 @@ function UIPage() {
         <div className="flex shrink-0 items-center gap-3">
           <div className="flex items-center gap-4">
             <div className="text-2xl font-medium">PRISM</div>
-            <p className="mb-0 hidden text-xs font-medium tracking-wider text-muted-foreground uppercase md:block">
+            <p className="mb-0 hidden text-xs font-medium tracking-wider text-secondary-foreground uppercase md:block">
               Uzzina Design System & UI Documentation
             </p>
           </div>
@@ -989,7 +989,7 @@ function UIPage() {
               sectionsWithMatches.length > 0 ? (
                 sectionsWithMatches.map((group) => (
                   <div className="flex flex-col gap-2" key={group.section}>
-                    <span className="hidden px-4 text-xs font-bold tracking-wider text-muted-foreground uppercase lg:block">
+                    <span className="hidden px-4 text-xs font-bold tracking-wider text-secondary-foreground uppercase lg:block">
                       {group.label} ({group.items.length})
                     </span>
                     <div className="flex overflow-x-auto text-sm whitespace-nowrap lg:ml-4 lg:flex-col lg:overflow-visible lg:whitespace-normal [&>a]:gap-2">
@@ -1042,13 +1042,13 @@ function UIPage() {
                   </div>
                 ))
               ) : (
-                <div className="px-4 py-3 text-sm text-muted-foreground">
+                <div className="px-4 py-3 text-sm text-secondary-foreground">
                   Nenhum item encontrado para &ldquo;{searchQuery}&rdquo;.
                 </div>
               )
             ) : (
               <div className="flex flex-col gap-2">
-                <span className="hidden px-4 text-xs font-bold tracking-wider text-muted-foreground uppercase lg:block">
+                <span className="hidden px-4 text-xs font-bold tracking-wider text-secondary-foreground uppercase lg:block">
                   {SECTION_LABELS[activeSection]}
                 </span>
                 <div className="flex overflow-x-auto text-sm whitespace-nowrap lg:ml-4 lg:flex-col lg:overflow-visible lg:whitespace-normal [&>a]:gap-2">

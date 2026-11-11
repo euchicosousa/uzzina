@@ -85,7 +85,7 @@ export function UPartnerCelebrationsSelector({
 
   if (isLoading) {
     return (
-      <p className="py-6 text-sm text-muted-foreground" role="status">
+      <p className="py-6 text-sm text-secondary-foreground" role="status">
         Carregando datas comemorativas...
       </p>
     );
@@ -93,7 +93,7 @@ export function UPartnerCelebrationsSelector({
 
   if (celebrations.length === 0) {
     return (
-      <p className="py-6 text-sm text-muted-foreground">
+      <p className="py-6 text-sm text-secondary-foreground">
         Nenhuma data comemorativa cadastrada no sistema ainda.
       </p>
     );
@@ -110,7 +110,7 @@ export function UPartnerCelebrationsSelector({
               : "datas selecionadas"}
           </span>
           {saving && (
-            <span className="text-xs text-muted-foreground" role="status">
+            <span className="text-xs text-secondary-foreground" role="status">
               Salvando...
             </span>
           )}
@@ -185,7 +185,7 @@ export function UPartnerCelebrationsSelector({
           id={activeMonth}
         >
           {visibleMonths.length === 0 ? (
-            <p className="py-6 text-sm text-muted-foreground" role="status">
+            <p className="py-6 text-sm text-secondary-foreground" role="status">
               {searchNormalized
                 ? `Nenhuma data encontrada para "${search}".`
                 : `Nenhuma data comemorativa cadastrada em ${MONTHS.find((month) => month.key === activeMonth)?.name}.`}
@@ -210,7 +210,7 @@ export function UPartnerCelebrationsSelector({
                         onToggle(celebration.id, isChecked)
                       }
                     >
-                      <span className="w-5 shrink-0 text-center text-sm text-muted-foreground">
+                      <span className="w-5 shrink-0 text-center text-sm text-secondary-foreground">
                         {celebration.date.slice(8, 10)}
                       </span>
                       <span

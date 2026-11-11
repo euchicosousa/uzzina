@@ -148,8 +148,8 @@ export function ActionItem({
     border-action-top-border
     z-0
     ring ring-action-ring
-    focus-within:outline-3
-    focus-within:outline-ring/30
+    focus-within:outline-2
+    focus-within:outline-primary
     hover:z-10
     hover:shadow-action-hover
     hover:bg-action-hover
@@ -159,7 +159,7 @@ export function ActionItem({
     if (showLate && isLate) {
       baseStyles = cn(
         baseStyles,
-        "bg-late text-late-foreground hover:bg-late-hover border-t-late-top-border ring ring-late-foreground",
+        "bg-error-background text-error-foreground hover:bg-error-background ring ring-error",
       );
     }
     if (showSprint && person && isSprint(action, person)) {

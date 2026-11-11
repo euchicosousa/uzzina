@@ -58,7 +58,7 @@ function SliderPlayground() {
               {showOutput && (
                 <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
                   <PrismSliderOutput />
-                  <span className="text-muted-foreground">por semana</span>
+                  <span className="text-secondary-foreground">por semana</span>
                 </div>
               )}
             </div>

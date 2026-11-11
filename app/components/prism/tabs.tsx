@@ -26,14 +26,14 @@ export type TabsVariant = "underline" | "drawer";
 const TabsVariantContext = createContext<TabsVariant>("underline");
 
 export const tabVariants = cva(
-  "relative flex min-w-0 flex-auto cursor-pointer items-center justify-center gap-1.5 px-4 text-center font-medium outline-none transition-colors data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 truncate h-full data-[focus-visible]:bg-input hover:bg-input",
+  "relative flex min-w-0 flex-auto cursor-pointer items-center justify-center gap-1.5 px-4 text-center font-medium outline-none transition-colors data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 truncate h-full data-[focus-visible]:bg-secondary hover:bg-secondary",
   {
     variants: {
       variant: {
         underline:
-          "-mb-px border-b text-muted-foreground transition-colors data-[hovered]:text-foreground data-[pressed]:text-foreground data-[selected]:border-b-primary data-[selected]:text-foreground",
+          "-mb-px border-b text-secondary-foreground transition-colors data-[hovered]:text-foreground data-[pressed]:text-foreground data-[selected]:border-b-primary data-[selected]:text-foreground",
         drawer:
-          "border-t-2 border-t-transparent border-x border-x-transparent border-b border-b-border bg-transparent text-muted-foreground transition-colors data-[hovered]:text-foreground data-[selected]:border-t-primary data-[selected]:border-x-border data-[selected]:border-b-transparent data-[selected]:bg-popover data-[selected]:text-foreground data-[focus-visible]:border-t-primary data-[selected]:data-[focus-visible]:bg-input",
+          "border-t-2 border-t-transparent border-x border-x-transparent border-b border-b-border bg-transparent text-secondary-foreground transition-colors data-[hovered]:text-foreground data-[selected]:border-t-primary data-[selected]:border-x-border data-[selected]:border-b-transparent data-[selected]:bg-popover data-[selected]:text-foreground data-[focus-visible]:border-t-primary data-[selected]:data-[focus-visible]:bg-secondary",
       },
     },
     defaultVariants: {

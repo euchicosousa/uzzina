@@ -183,7 +183,7 @@ export function UAIModelSelect({
                           {model.name}
                         </span>
                         {model.isDisabled && (
-                          <span className="shrink-0 text-xs text-muted-foreground">
+                          <span className="shrink-0 text-xs text-secondary-foreground">
                             Indisponível
                           </span>
                         )}

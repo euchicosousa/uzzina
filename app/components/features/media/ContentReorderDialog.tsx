@@ -74,7 +74,7 @@ function SortableThumbnail({
     <div
       ref={setNodeRef}
       style={style}
-      className="group relative aspect-square overflow-hidden rounded-xl border bg-muted squircle"
+      className="group relative aspect-square overflow-hidden rounded-xl border bg-secondary squircle"
     >
       <PrismButton
         {...attributes}
@@ -99,7 +99,7 @@ function SortableThumbnail({
         onClick={onRemove}
         className="absolute top-1 right-1 z-10 bg-background/80"
         size={"icon-xs"}
-        variant={"ghost-destructive"}
+        variant={"ghost-error"}
       >
         <XIcon />
       </PrismButton>
@@ -270,7 +270,7 @@ export function ContentReorderDialog({
       </PrismDialogHeader>
 
       {/* InfoIcon do tipo detectado */}
-      <div className="flex items-center justify-between px-5 pt-3 text-xs text-muted-foreground">
+      <div className="flex items-center justify-between px-5 pt-3 text-xs text-secondary-foreground">
         {!workFiles && (
           <span>
             Tipo detectado:{" "}
@@ -291,7 +291,7 @@ export function ContentReorderDialog({
       </div>
 
       {!workFiles && postType === "video" && (
-        <p className="rounded-xl bg-muted px-3 py-2 text-xs text-muted-foreground squircle">
+        <p className="rounded-xl bg-secondary px-3 py-2 text-xs text-secondary-foreground squircle">
           <strong>Vídeo:</strong> 1º arquivo = vídeo principal. 2º arquivo
           (opcional) = capa/thumbnail que aparece antes do play.
         </p>
@@ -299,7 +299,7 @@ export function ContentReorderDialog({
 
       {/* Grid DnD */}
       {items.length === 0 ? (
-        <div className="m-5 flex h-32 items-center justify-center rounded-xl border border-dashed bg-muted text-sm text-muted-foreground squircle">
+        <div className="m-5 flex h-32 items-center justify-center rounded-xl border border-dashed bg-secondary text-sm text-secondary-foreground squircle">
           Nenhum arquivo adicionado ainda
         </div>
       ) : (
@@ -351,7 +351,7 @@ export function ContentReorderDialog({
 
           {items.length > 0 && (
             <PrismButton
-              variant="destructive"
+              variant="error"
               size="xs"
               onClick={() => {
                 pendingFocus.current = "";

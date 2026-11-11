@@ -116,7 +116,10 @@ export function UCategoriesCombobox({
         >
           {currentCategories.length === 0 ||
           currentCategories[0].slug === "all" ? (
-            <UIcons slug="categories" />
+            <>
+              <UIcons slug="categories" />
+              <span>Categorias</span>
+            </>
           ) : (
             currentCategories.map((category) => (
               <UIcons

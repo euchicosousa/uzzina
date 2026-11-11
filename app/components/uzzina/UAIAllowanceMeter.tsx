@@ -16,14 +16,14 @@ export function UAIAllowanceMeter({
         </span>
         <span className="text-sm font-bold tracking-tight text-foreground">
           {percentage}%{" "}
-          <span className="text-xs font-normal text-muted-foreground">
+          <span className="text-xs font-normal text-secondary-foreground">
             utilizado
           </span>
         </span>
       </div>
 
       {/* Progress bar */}
-      <div className="h-2 w-full overflow-hidden rounded-full bg-input">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
         <div
           className={cn(
             "h-full rounded-full transition-all duration-500",

@@ -67,7 +67,7 @@ export function PlanningCalendarView({
           <h2 className="text-xl font-semibold text-foreground">
             Calendário do Planejamento
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-secondary-foreground">
             Visualize e ajuste a distribuição no tempo. Arraste sugestões entre
             os dias ou clique para editar.
           </p>
@@ -78,7 +78,7 @@ export function PlanningCalendarView({
       <div className="w-full shrink-0 overflow-x-auto">
         <div className="flex min-w-[700px] flex-col overflow-hidden rounded-xl border border-border bg-card shadow-xs squircle">
           {/* Cabeçalho dos dias da semana no padrão do app */}
-          <div className="grid grid-cols-7 border-b border-border bg-muted/40 text-center text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+          <div className="grid grid-cols-7 border-b border-border bg-secondary text-center text-xs font-semibold tracking-wider text-secondary-foreground uppercase">
             <div className="py-2.5">Dom</div>
             <div className="py-2.5">Seg</div>
             <div className="py-2.5">Ter</div>
@@ -106,7 +106,7 @@ export function PlanningCalendarView({
                       ? "rounded-2xl bg-primary text-primary-foreground squircle"
                       : isCurrentMonth
                         ? "bg-background"
-                        : "bg-muted/15 opacity-60"
+                        : "bg-secondary opacity-60"
                   }`}
                   key={dateStr}
                   onDragLeave={() => {
@@ -137,13 +137,13 @@ export function PlanningCalendarView({
                       className={`text-xs font-semibold ${
                         isCurrentMonth
                           ? "text-foreground"
-                          : "text-muted-foreground"
+                          : "text-secondary-foreground"
                       }`}
                     >
                       {format(day, "d", { locale: ptBR })}
                     </span>
                     {daySuggestions.length > 0 && (
-                      <span className="text-[10px] font-medium text-muted-foreground">
+                      <span className="text-[10px] font-medium text-secondary-foreground">
                         {daySuggestions.length}{" "}
                         {daySuggestions.length === 1 ? "item" : "itens"}
                       </span>
@@ -162,7 +162,7 @@ export function PlanningCalendarView({
                             isRejected
                               ? "line-through opacity-50"
                               : isApproved
-                                ? "border-emerald-600/30 bg-emerald-50/20 dark:bg-emerald-950/20"
+                                ? "border-success bg-success-background"
                                 : ""
                           }`}
                           draggable={true}
@@ -175,8 +175,8 @@ export function PlanningCalendarView({
                         >
                           <div className="flex items-center justify-between gap-1">
                             <div className="flex items-center gap-1">
-                              <GripVerticalIcon className="size-3 text-muted-foreground/60 opacity-0 group-hover:opacity-100" />
-                              <span className="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
+                              <GripVerticalIcon className="size-3 text-secondary-foreground/60 opacity-0 group-hover:opacity-100" />
+                              <span className="text-[10px] font-semibold tracking-wide text-secondary-foreground uppercase">
                                 {suggestion.format}
                               </span>
                             </div>
@@ -185,8 +185,8 @@ export function PlanningCalendarView({
                                 aria-label="Aprovar sugestão"
                                 className={`rounded p-0.5 transition-colors squircle ${
                                   isApproved
-                                    ? "bg-emerald-600 text-white"
-                                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                    ? "bg-success-strong text-success-strong-foreground"
+                                    : "text-secondary-foreground hover:bg-secondary hover:text-foreground"
                                 }`}
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -203,8 +203,8 @@ export function PlanningCalendarView({
                                 aria-label="Descartar sugestão"
                                 className={`rounded p-0.5 transition-colors squircle ${
                                   isRejected
-                                    ? "bg-destructive text-white"
-                                    : "text-muted-foreground hover:bg-muted hover:text-destructive"
+                                    ? "bg-error text-white"
+                                    : "text-secondary-foreground hover:bg-secondary hover:text-error"
                                 }`}
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -236,7 +236,7 @@ export function PlanningCalendarView({
                           </span>
 
                           {suggestion.is_commemorative && (
-                            <div className="flex items-center gap-1 text-[10px] text-amber-600 dark:text-amber-400">
+                            <div className="flex items-center gap-1 text-[10px] text-warning-foreground">
                               <SparklesIcon className="size-2.5 shrink-0" />
                               <span className="truncate">
                                 {suggestion.celebration_title ||
@@ -264,7 +264,7 @@ export function PlanningCalendarView({
               Sugestões sem data prevista ({unscheduledSuggestions.length})
             </h3>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-xs text-secondary-foreground">
             Clique em uma sugestão para definir sua data ou arraste-a para um
             dia do calendário.
           </p>

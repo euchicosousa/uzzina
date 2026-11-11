@@ -1343,12 +1343,12 @@ export function ActionFormDrawer({
         >
           <SmartphoneIcon
             aria-hidden="true"
-            className="size-8 text-muted-foreground"
+            className="size-8 text-secondary-foreground"
           />
           <p className="text-base font-medium text-foreground">
             Gire o telefone
           </p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-secondary-foreground">
             A edição da ação precisa da tela na vertical.
           </p>
           <PrismButton variant="outline" size="sm" onPress={handleSafeClose}>
@@ -1392,7 +1392,7 @@ export function ActionFormDrawer({
           </PrismButton>
           <PrismButton
             isDisabled={isResolvingConflict || isPending}
-            variant={coordinatorState.isDirty ? "destructive" : "default"}
+            variant={coordinatorState.isDirty ? "error" : "default"}
             onPress={acceptServerVersion}
           >
             Usar versão atual
@@ -1430,11 +1430,11 @@ export function ActionFormDrawer({
               conteúdo da ação.
             </PrismDialogDescription>
           ) : isInitialGenerating ? (
-            <PrismDialogDescription className="text-muted-foreground">
+            <PrismDialogDescription className="text-secondary-foreground">
               Aguarde a criação das opções para esta ação.
             </PrismDialogDescription>
           ) : isRecreating ? (
-            <PrismDialogDescription className="text-muted-foreground">
+            <PrismDialogDescription className="text-secondary-foreground">
               Uma nova geração de estratégias está em andamento.
             </PrismDialogDescription>
           ) : null}
@@ -1443,7 +1443,7 @@ export function ActionFormDrawer({
         <div className="flex flex-col gap-4 px-6 pb-6 sm:px-8 sm:pb-8">
           {isSavingSelection && (
             <div
-              className="flex items-center gap-2 py-2 text-sm text-muted-foreground"
+              className="flex items-center gap-2 py-2 text-sm text-secondary-foreground"
               role="status"
               aria-live="polite"
             >
@@ -1453,7 +1453,7 @@ export function ActionFormDrawer({
           )}
           {isGenerating && (
             <div
-              className="flex items-center justify-between gap-3 py-2 text-sm text-muted-foreground"
+              className="flex items-center justify-between gap-3 py-2 text-sm text-secondary-foreground"
               role="status"
               aria-live="polite"
             >
@@ -1468,7 +1468,7 @@ export function ActionFormDrawer({
                 </span>
               </div>
               {isRecreating && (
-                <PrismBadge variant="outline" className="text-muted-foreground">
+                <PrismBadge variant="outline" className="text-secondary-foreground">
                   Resultado anterior
                 </PrismBadge>
               )}
@@ -1476,7 +1476,7 @@ export function ActionFormDrawer({
           )}
           {strategyStatus === "saved" && (
             <p
-              className="py-2 text-sm text-muted-foreground"
+              className="py-2 text-sm text-secondary-foreground"
               role="status"
               aria-live="polite"
             >
@@ -1489,7 +1489,7 @@ export function ActionFormDrawer({
           )}
           {strategyStatus === "error" && (
             <div className="space-y-3 py-2">
-              <p role="alert" className="text-sm text-destructive">
+              <p role="alert" className="text-sm text-error">
                 {strategySelectionError ||
                   coordinatorState.errorMessage ||
                   durableStrategies.error ||
@@ -1525,7 +1525,7 @@ export function ActionFormDrawer({
           {(strategyStatus === "conflict" ||
             coordinatorState.status === "conflict") && (
             <div className="space-y-3 py-2" role="alert">
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-error">
                 Conflito ao salvar a seleção: a ação foi alterada em outra
                 sessão.
               </p>
@@ -1543,7 +1543,7 @@ export function ActionFormDrawer({
           )}
           {strategyStatus === "unsaved" && (
             <div className="space-y-3 py-2">
-              <p role="alert" className="text-sm text-destructive">
+              <p role="alert" className="text-sm text-error">
                 As estratégias ainda não foram salvas.{" "}
                 {durableStrategies.error ||
                   coordinatorState.errorMessage ||

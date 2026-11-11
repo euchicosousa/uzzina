@@ -1,4 +1,47 @@
-export const PALLETE = [
+// Paletas de cores OKLCH do UZZINA
+// Cada paleta define primary e ring
+
+export type OklchColor = { h: number; c: number; l: number };
+
+export type PaletteConfig = {
+  id: string;
+  label: string;
+  relief?: boolean;
+  shadowColor?: string;
+  topBorderColor?: string;
+  light: {
+    primary: OklchColor;
+    primaryFg?: OklchColor;
+    bg: OklchColor;
+    fg: OklchColor;
+    ring: OklchColor;
+    cardLDelta?: number;
+    borderLDelta?: number;
+    inputLDelta?: number;
+    actionLDelta?: number;
+    actionHoverLDelta?: number;
+    popoverLDelta?: number;
+    shadowColor?: string;
+    topBorderColor?: string;
+  };
+  dark: {
+    primary: OklchColor;
+    primaryFg?: OklchColor;
+    bg: OklchColor;
+    fg: OklchColor;
+    ring: OklchColor;
+    cardLDelta?: number;
+    borderLDelta?: number;
+    inputLDelta?: number;
+    actionLDelta?: number;
+    actionHoverLDelta?: number;
+    popoverLDelta?: number;
+    shadowColor?: string;
+    topBorderColor?: string;
+  };
+};
+
+export const PALLETE: PaletteConfig[] = [
   {
     id: "default",
     label: "Ônix",
@@ -25,13 +68,16 @@ export const PALLETE = [
         l: 0,
       },
       cardLDelta: -0.02,
-      secondaryLDelta: -0.04,
-      mutedLDelta: -0.02,
       borderLDelta: -0.07,
       inputLDelta: -0.04,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.1,
       popoverLDelta: 0.02,
+      ring: {
+        h: 0,
+        c: 0,
+        l: 0,
+      },
     },
     dark: {
       primary: {
@@ -55,13 +101,16 @@ export const PALLETE = [
         l: 1,
       },
       cardLDelta: 0.05,
-      secondaryLDelta: 0.06,
-      mutedLDelta: 0.03,
       borderLDelta: 0.1,
       inputLDelta: 0.02,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
       popoverLDelta: -0.03,
+      ring: {
+        h: 0,
+        c: 0,
+        l: 1,
+      },
     },
   },
   {
@@ -90,13 +139,16 @@ export const PALLETE = [
         l: 0,
       },
       cardLDelta: -0.04,
-      secondaryLDelta: -0.04,
-      mutedLDelta: -0.02,
       borderLDelta: -0.04,
       inputLDelta: -0.02,
       actionLDelta: -0.02,
       actionHoverLDelta: -0.005,
       popoverLDelta: 0.1,
+      ring: {
+        h: 240,
+        c: 0.02,
+        l: 0.3,
+      },
     },
     dark: {
       primary: {
@@ -120,13 +172,16 @@ export const PALLETE = [
         l: 1,
       },
       cardLDelta: 0.05,
-      secondaryLDelta: 0.08,
-      mutedLDelta: 0.03,
       borderLDelta: 0.1,
       inputLDelta: 0.04,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
       popoverLDelta: -0.03,
+      ring: {
+        h: 240,
+        c: 0.01,
+        l: 0.99,
+      },
     },
   },
   {
@@ -154,13 +209,16 @@ export const PALLETE = [
         l: 0,
       },
       cardLDelta: -0.02,
-      secondaryLDelta: -0.04,
-      mutedLDelta: -0.02,
       borderLDelta: -0.05,
       inputLDelta: -0.02,
       actionLDelta: 0.04,
       actionHoverLDelta: 0.06,
       popoverLDelta: 0.06,
+      ring: {
+        h: 20,
+        c: 0.25,
+        l: 0.62,
+      },
     },
     dark: {
       primary: {
@@ -184,13 +242,16 @@ export const PALLETE = [
         l: 1,
       },
       cardLDelta: 0.05,
-      secondaryLDelta: 0.06,
-      mutedLDelta: 0.03,
       borderLDelta: 0.2,
       inputLDelta: 0.02,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
       popoverLDelta: -0.03,
+      ring: {
+        h: 20,
+        c: 0.25,
+        l: 0.68,
+      },
     },
   },
   {
@@ -218,13 +279,16 @@ export const PALLETE = [
         l: 0,
       },
       cardLDelta: -0.02,
-      secondaryLDelta: -0.04,
-      mutedLDelta: -0.02,
       borderLDelta: -0.05,
       inputLDelta: -0.02,
       actionLDelta: 0.02,
       actionHoverLDelta: 1,
       popoverLDelta: 0.03,
+      ring: {
+        h: 25,
+        c: 0.18,
+        l: 0.65,
+      },
     },
     dark: {
       primary: {
@@ -248,13 +312,16 @@ export const PALLETE = [
         l: 0.95,
       },
       cardLDelta: 0.05,
-      secondaryLDelta: 0.06,
-      mutedLDelta: 0.03,
       borderLDelta: 0.1,
       inputLDelta: -0.02,
       actionLDelta: 0.07,
       actionHoverLDelta: 0.2,
       popoverLDelta: -0.03,
+      ring: {
+        h: 25,
+        c: 0.18,
+        l: 0.65,
+      },
     },
   },
   {
@@ -282,13 +349,16 @@ export const PALLETE = [
         l: 0,
       },
       cardLDelta: -0.02,
-      secondaryLDelta: -0.04,
-      mutedLDelta: -0.02,
       borderLDelta: -0.05,
       inputLDelta: -0.02,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
       popoverLDelta: 0,
+      ring: {
+        h: 100,
+        c: 0.5,
+        l: 0.8,
+      },
     },
     dark: {
       primary: {
@@ -312,13 +382,16 @@ export const PALLETE = [
         l: 1,
       },
       cardLDelta: 0.05,
-      secondaryLDelta: 0.06,
-      mutedLDelta: 0.03,
       borderLDelta: 0.2,
       inputLDelta: 0.02,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
       popoverLDelta: -0.03,
+      ring: {
+        h: 100,
+        c: 0.4,
+        l: 0.8,
+      },
     },
   },
   {
@@ -346,13 +419,16 @@ export const PALLETE = [
         l: 0,
       },
       cardLDelta: -0.03,
-      secondaryLDelta: -0.04,
-      mutedLDelta: -0.02,
       borderLDelta: -0.05,
       inputLDelta: -0.02,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
       popoverLDelta: 0,
+      ring: {
+        h: 120,
+        c: 0.15,
+        l: 0.94,
+      },
     },
     dark: {
       primary: {
@@ -376,13 +452,16 @@ export const PALLETE = [
         l: 1,
       },
       cardLDelta: 0.05,
-      secondaryLDelta: 0.06,
-      mutedLDelta: 0.03,
       borderLDelta: 0.2,
       inputLDelta: 0.02,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
       popoverLDelta: -0.03,
+      ring: {
+        h: 120,
+        c: 0.18,
+        l: 0.9,
+      },
     },
   },
   {
@@ -410,13 +489,16 @@ export const PALLETE = [
         l: 0,
       },
       cardLDelta: -0.02,
-      secondaryLDelta: -0.04,
-      mutedLDelta: -0.02,
       borderLDelta: -0.05,
       inputLDelta: -0.02,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
       popoverLDelta: 0,
+      ring: {
+        h: 130,
+        c: 0.2,
+        l: 0.7,
+      },
     },
     dark: {
       primary: {
@@ -440,13 +522,16 @@ export const PALLETE = [
         l: 1,
       },
       cardLDelta: 0.05,
-      secondaryLDelta: 0.06,
-      mutedLDelta: 0.03,
       borderLDelta: 0.2,
       inputLDelta: 0.02,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
       popoverLDelta: -0.03,
+      ring: {
+        h: 130,
+        c: 0.2,
+        l: 0.65,
+      },
     },
   },
   {
@@ -474,13 +559,16 @@ export const PALLETE = [
         l: 0,
       },
       cardLDelta: -0.02,
-      secondaryLDelta: -0.04,
-      mutedLDelta: -0.02,
       borderLDelta: -0.05,
       inputLDelta: -0.02,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
       popoverLDelta: 0,
+      ring: {
+        h: 200,
+        c: 0.2,
+        l: 0.7,
+      },
     },
     dark: {
       primary: {
@@ -504,13 +592,16 @@ export const PALLETE = [
         l: 1,
       },
       cardLDelta: 0.05,
-      secondaryLDelta: 0.06,
-      mutedLDelta: 0.03,
       borderLDelta: 0.2,
       inputLDelta: 0.02,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
       popoverLDelta: -0.03,
+      ring: {
+        h: 200,
+        c: 0.2,
+        l: 0.65,
+      },
     },
   },
   {
@@ -539,13 +630,16 @@ export const PALLETE = [
         l: 0,
       },
       cardLDelta: -0.02,
-      secondaryLDelta: -0.04,
-      mutedLDelta: -0.02,
       borderLDelta: -0.05,
       inputLDelta: -0.02,
       actionLDelta: -0.03,
       actionHoverLDelta: -0.015,
       popoverLDelta: 0.1,
+      ring: {
+        h: 264,
+        c: 0.31,
+        l: 0.45,
+      },
     },
     dark: {
       primary: {
@@ -569,13 +663,16 @@ export const PALLETE = [
         l: 1,
       },
       cardLDelta: 0.05,
-      secondaryLDelta: 0.06,
-      mutedLDelta: 0.03,
       borderLDelta: 0.2,
       inputLDelta: 0.02,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
       popoverLDelta: -0.03,
+      ring: {
+        h: 264,
+        c: 0.31,
+        l: 0.58,
+      },
     },
   },
   {
@@ -603,13 +700,16 @@ export const PALLETE = [
         l: 0,
       },
       cardLDelta: -0.02,
-      secondaryLDelta: -0.04,
-      mutedLDelta: -0.02,
       borderLDelta: -0.1,
       inputLDelta: -0.02,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
       popoverLDelta: 0,
+      ring: {
+        h: 290,
+        c: 0.28,
+        l: 0.54,
+      },
     },
     dark: {
       primary: {
@@ -633,13 +733,16 @@ export const PALLETE = [
         l: 1,
       },
       cardLDelta: 0.05,
-      secondaryLDelta: 0.06,
-      mutedLDelta: 0.03,
       borderLDelta: 0.2,
       inputLDelta: 0.02,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
       popoverLDelta: -0.03,
+      ring: {
+        h: 290,
+        c: 0.28,
+        l: 0.68,
+      },
     },
   },
   {
@@ -667,15 +770,17 @@ export const PALLETE = [
         c: 0,
         l: 0,
       },
-
       cardLDelta: -0.02,
-      secondaryLDelta: -0.04,
-      mutedLDelta: -0.02,
       borderLDelta: -0.05,
       inputLDelta: -0.02,
       actionLDelta: 0.02,
       actionHoverLDelta: 0.04,
       popoverLDelta: 0,
+      ring: {
+        h: 350,
+        c: 0.4,
+        l: 0.9,
+      },
     },
     dark: {
       primary: {
@@ -699,13 +804,16 @@ export const PALLETE = [
         l: 1,
       },
       cardLDelta: 0.05,
-      secondaryLDelta: 0.06,
-      mutedLDelta: 0.03,
       borderLDelta: 0.2,
       inputLDelta: 0.02,
       actionLDelta: 0.1,
       actionHoverLDelta: 0.2,
       popoverLDelta: -0.03,
+      ring: {
+        h: 350,
+        c: 0.4,
+        l: 0.8,
+      },
     },
   },
 ];

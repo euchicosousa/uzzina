@@ -20,24 +20,24 @@ const buttonSizeClasses = {
   "icon-lg": "size-12 rounded-3xl",
 } as const;
 const styledButtonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-2xl border bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-2xl border bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-error-background [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
   {
     variants: {
       variant: {
         default:
           "bg-primary border-primary text-primary-foreground hover:bg-primary/80",
         outline:
-          "bg-transparent hover:bg-secondary hover:text-foreground aria-expanded:bg-secondary aria-expanded:text-foreground dark:bg-transparent dark:hover:bg-input/30",
+          "bg-transparent hover:bg-secondary aria-expanded:bg-secondary dark:bg-transparent",
         secondary:
-          "bg-secondary text-secondary-foreground hover:border-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "bg-secondary text-foreground hover:border-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-foreground",
         ghost:
-          "hover:bg-secondary/50 border-transparent hover:text-foreground aria-expanded:bg-secondary/50 aria-expanded:text-foreground",
-        "ghost-destructive":
-          "bg-transparent border-transparent text-muted-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive/40 focus-visible:border-destructive/60 focus-visible:ring-destructive/30 focus-visible:text-destructive focus-visible:bg-destructive/10 dark:hover:bg-destructive/20 dark:focus-visible:bg-destructive/20",
-        destructive:
-          "bg-destructive/10 text-destructive hover:bg-destructive/20 border-destructive/40 focus-visible:border-destructive/60 focus-visible:ring-destructive/30 dark:bg-destructive/20 dark:hover:bg-destructive/30",
+          "hover:bg-secondary border-transparent aria-expanded:bg-secondary",
+        "ghost-error":
+          "bg-transparent border-transparent hover:bg-error-background hover:text-error-foreground hover:border-error focus-visible:border-error focus-visible:ring-error-background focus-visible:text-error-foreground focus-visible:bg-error-background dark:hover:bg-error-background dark:focus-visible:bg-error-background",
+        error:
+          "bg-error-background text-error-foreground hover:bg-error-background border-error focus-visible:border-error focus-visible:ring-error-background dark:bg-error-background dark:hover:bg-error-background",
         success:
-          "bg-success-strong border-success-strong text-success-strong-foreground hover:bg-success-strong-hover focus-visible:border-success-strong focus-visible:ring-success-accent/30",
+          "bg-success-strong border-success-strong text-success-strong-foreground hover:bg-success-strong-hover focus-visible:border-success-strong focus-visible:ring-success-strong/30",
         link: "text-foreground underline-offset-4 hover:underline border-transparent",
         unstyled: "",
       },

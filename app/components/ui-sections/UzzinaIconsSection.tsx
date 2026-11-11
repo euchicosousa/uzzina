@@ -140,7 +140,7 @@ export function UzzinaIconsSection() {
             <div className="space-y-6">
               {ICON_CATEGORIES.map((cat) => (
                 <div className="space-y-3" key={cat.name}>
-                  <span className="text-xs font-semibold text-muted-foreground uppercase">
+                  <span className="text-xs font-semibold text-secondary-foreground uppercase">
                     {cat.name}
                   </span>
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-7">
@@ -156,7 +156,7 @@ export function UzzinaIconsSection() {
                         <span className="text-xs font-medium text-foreground">
                           {item.name}
                         </span>
-                        <code className="font-mono text-[10px] text-muted-foreground">
+                        <code className="font-mono text-[10px] text-secondary-foreground">
                           {item.slug}
                         </code>
                       </div>

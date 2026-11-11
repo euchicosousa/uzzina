@@ -24,7 +24,7 @@ const PrismToaster = ({ ...props }: ToasterProps) => {
       style={
         {
           "--normal-bg": "var(--card)",
-          "--normal-text": "var(--card-foreground)",
+          "--normal-text": "var(--foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "16px",
           // Mapeamento exato das variáveis OKLCH no tailwind.css (--color-*)
@@ -46,7 +46,7 @@ const PrismToaster = ({ ...props }: ToasterProps) => {
         classNames: {
           toast: cn(
             "cn-toast squircle px-5! py-3.5! border!",
-            "data-[type=default]:bg-card! data-[type=default]:text-card-foreground! data-[type=default]:border-border!",
+            "data-[type=default]:bg-card! data-[type=default]:text-foreground! data-[type=default]:border-border!",
             "data-[type=success]:bg-success-background! data-[type=success]:text-success! data-[type=success]:border-success!",
             "data-[type=error]:bg-error-background! data-[type=error]:text-error! data-[type=error]:border-error!",
             "data-[type=warning]:bg-warning-background! data-[type=warning]:text-warning! data-[type=warning]:border-warning!",

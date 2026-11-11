@@ -19,11 +19,11 @@ export function AdminGuard({ children }: AdminGuardProps) {
   if (!person?.admin) {
     return (
       <div className="mx-auto flex h-[70vh] w-full max-w-md flex-col items-center justify-center gap-4 p-8 text-center">
-        <div className="flex size-14 items-center justify-center rounded-2xl bg-destructive/10 text-destructive squircle">
+        <div className="flex size-14 items-center justify-center rounded-2xl bg-error-background text-error squircle">
           <ShieldAlertIcon className="size-8" />
         </div>
         <h2 className="text-xl font-bold tracking-tight">Acesso Restrito</h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-secondary-foreground">
           Esta área é restrita a administradores da agência. Você não possui
           permissão para visualizar ou gerenciar estes recursos.
         </p>

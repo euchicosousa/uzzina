@@ -99,7 +99,7 @@ export function NotificationsPage() {
         ) : null}
         {isLoading ? (
           <p
-            className="p-8 text-center text-sm text-muted-foreground"
+            className="p-8 text-center text-sm text-secondary-foreground"
             role="status"
           >
             Carregando notificações…
@@ -114,7 +114,7 @@ export function NotificationsPage() {
             </PrismButton>
           </div>
         ) : notifications.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 p-8 text-muted-foreground">
+          <div className="flex flex-col items-center gap-2 p-8 text-secondary-foreground">
             <BellIcon className="size-6" />
             <p className="text-sm">Nenhuma notificação.</p>
           </div>
@@ -141,7 +141,7 @@ export function NotificationsPage() {
                     )}
                   />
                   <PrismButton
-                    className="flex min-w-0 flex-1 flex-col items-start gap-1.5 rounded-md text-left font-normal outline-none squircle focus-visible:bg-secondary/50"
+                    className="flex min-w-0 flex-1 flex-col items-start gap-1.5 rounded-md text-left font-normal outline-none squircle focus-visible:bg-secondary"
                     onPress={() => openAction(notification)}
                     variant="unstyled"
                   >
@@ -160,7 +160,7 @@ export function NotificationsPage() {
                         Você foi mencionado sem texto.
                       </span>
                     )}
-                    <span className="flex flex-wrap items-baseline gap-x-2 text-xs text-muted-foreground">
+                    <span className="flex flex-wrap items-baseline gap-x-2 text-xs text-secondary-foreground">
                       <span className="font-semibold text-foreground/80">
                         {notification.author_name}
                       </span>

@@ -5,15 +5,13 @@ type PaletteModeVars = {
   primaryFg?: OklchColor | null;
   bg?: OklchColor | null;
   fg?: OklchColor | null;
+  ring?: OklchColor | null;
   borderLDelta?: number;
   inputLDelta?: number;
   actionLDelta?: number;
   actionHoverLDelta?: number;
   popoverLDelta?: number;
-  secondaryLDelta?: number;
-  mutedLDelta?: number;
   cardLDelta?: number;
-  mutedForegroundLDelta?: number;
   shadowColor?: string;
   topBorderColor?: string;
 };
@@ -32,20 +30,18 @@ export function applyPaletteVars(palette: PaletteVars) {
   const { light, dark } = palette;
 
   // 1. Cor Primária e seu Foreground
-  root.style.setProperty("--accent-h", String(light.primary.h));
-  root.style.setProperty("--accent-c", String(light.primary.c));
-  root.style.setProperty("--accent-l", String(light.primary.l));
-  root.style.setProperty("--dark-accent-h", String(dark.primary.h));
-  root.style.setProperty("--dark-accent-c", String(dark.primary.c));
-  root.style.setProperty("--dark-accent-l", String(dark.primary.l));
+  root.style.setProperty("--primary-h", String(light.primary.h));
+  root.style.setProperty("--primary-c", String(light.primary.c));
+  root.style.setProperty("--primary-l", String(light.primary.l));
+  root.style.setProperty("--dark-primary-h", String(dark.primary.h));
+  root.style.setProperty("--dark-primary-c", String(dark.primary.c));
+  root.style.setProperty("--dark-primary-l", String(dark.primary.l));
 
   if (light.primaryFg) {
     const fgStr = `oklch(${light.primaryFg.l} ${light.primaryFg.c} ${light.primaryFg.h})`;
     root.style.setProperty("--primary-foreground-override", fgStr);
-    root.style.setProperty("--sidebar-primary-foreground-override", fgStr);
   } else {
     root.style.removeProperty("--primary-foreground-override");
-    root.style.removeProperty("--sidebar-primary-foreground-override");
   }
   if (dark.primaryFg) {
     const fgStr = `oklch(${dark.primaryFg.l} ${dark.primaryFg.c} ${dark.primaryFg.h})`;
@@ -72,7 +68,23 @@ export function applyPaletteVars(palette: PaletteVars) {
     root.style.setProperty("--dark-foreground-override", fgStr);
   }
 
-  // 3. Deltas de border, input, action, action-hover, popover, secondary, muted, card (Light e Dark)
+  // 2.1. Ring (anel de foco customizável por paleta)
+  if (light.ring) {
+    const ringStr = `oklch(${light.ring.l} ${light.ring.c} ${light.ring.h})`;
+    root.style.setProperty("--ring-override", ringStr);
+  } else {
+    root.style.removeProperty("--ring-override");
+  }
+  if (dark.ring) {
+    const ringStr = `oklch(${dark.ring.l} ${dark.ring.c} ${dark.ring.h})`;
+    root.style.setProperty("--dark-ring-override", ringStr);
+  } else {
+    root.style.removeProperty("--dark-ring-override");
+  }
+
+  // 2.2. Accent (cor de destaque do palette: 15% mais escuro no Light, 10% mais clara no Dark)
+
+  // 3. Deltas de border, input, action, action-hover, popover, card (Light e Dark)
   if (light.borderLDelta !== undefined) {
     root.style.setProperty("--border-l-delta", String(light.borderLDelta));
   } else {
@@ -101,31 +113,10 @@ export function applyPaletteVars(palette: PaletteVars) {
   } else {
     root.style.removeProperty("--popover-l-delta");
   }
-  if (light.secondaryLDelta !== undefined) {
-    root.style.setProperty(
-      "--secondary-l-delta",
-      String(light.secondaryLDelta),
-    );
-  } else {
-    root.style.removeProperty("--secondary-l-delta");
-  }
-  if (light.mutedLDelta !== undefined) {
-    root.style.setProperty("--muted-l-delta", String(light.mutedLDelta));
-  } else {
-    root.style.removeProperty("--muted-l-delta");
-  }
   if (light.cardLDelta !== undefined) {
     root.style.setProperty("--card-l-delta", String(light.cardLDelta));
   } else {
     root.style.removeProperty("--card-l-delta");
-  }
-  if (light.mutedForegroundLDelta !== undefined) {
-    root.style.setProperty(
-      "--muted-foreground-l-delta",
-      String(light.mutedForegroundLDelta),
-    );
-  } else {
-    root.style.removeProperty("--muted-foreground-l-delta");
   }
 
   if (dark.borderLDelta !== undefined) {
@@ -159,37 +150,15 @@ export function applyPaletteVars(palette: PaletteVars) {
   } else {
     root.style.removeProperty("--dark-popover-l-delta");
   }
-  if (dark.secondaryLDelta !== undefined) {
-    root.style.setProperty(
-      "--dark-secondary-l-delta",
-      String(dark.secondaryLDelta),
-    );
-  } else {
-    root.style.removeProperty("--dark-secondary-l-delta");
-  }
-  if (dark.mutedLDelta !== undefined) {
-    root.style.setProperty("--dark-muted-l-delta", String(dark.mutedLDelta));
-  } else {
-    root.style.removeProperty("--dark-muted-l-delta");
-  }
   if (dark.cardLDelta !== undefined) {
     root.style.setProperty("--dark-card-l-delta", String(dark.cardLDelta));
   } else {
     root.style.removeProperty("--dark-card-l-delta");
   }
-  if (dark.mutedForegroundLDelta !== undefined) {
-    root.style.setProperty(
-      "--dark-muted-foreground-l-delta",
-      String(dark.mutedForegroundLDelta),
-    );
-  } else {
-    root.style.removeProperty("--dark-muted-foreground-l-delta");
-  }
 
   // 4. Relevo de ações e cartões (border-t, ring e sombras)
   if (palette.relief === false) {
     root.style.setProperty("--action-top-border-override", "transparent");
-    root.style.setProperty("--late-top-border-override", "transparent");
     // Keep Tailwind's box-shadow list valid so state rings remain visible.
     root.style.setProperty("--action-shadow-override", "0 0 #0000");
     root.style.setProperty("--action-hover-shadow-override", "0 0 #0000");
@@ -197,7 +166,6 @@ export function applyPaletteVars(palette: PaletteVars) {
     root.style.removeProperty("--dark-action-shadow-color-override");
     root.style.removeProperty("--dark-action-top-border-override");
   } else {
-    root.style.removeProperty("--late-top-border-override");
     root.style.removeProperty("--action-shadow-override");
     root.style.removeProperty("--action-hover-shadow-override");
 

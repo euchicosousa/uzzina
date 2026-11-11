@@ -1,5 +1,7 @@
 # DS07 — Criar paleta padrão para o portal e a página inicial
 
+**Status.** Encerrado com aceite do proprietário em 10/11/2026. A página inicial e o portal do cliente usam a paleta Ônix, independente da preferência da equipe. Código em `31de929`, incluído no deploy de `ce36df0` com sucesso reportado pela Vercel. A lista abaixo preserva o roteiro original de aceite.
+
 ## Modelos sugeridos
 
 - **OpenAI** — GPT-6.1 Terra, para conferir o visual e isolar a aplicação da paleta por rota.

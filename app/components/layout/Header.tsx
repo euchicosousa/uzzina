@@ -456,7 +456,7 @@ export function Header({
             placement="bottom end"
             size="lg"
           >
-            <div className="flex items-center justify-between border-b bg-muted/20 px-4 py-3">
+            <div className="flex items-center justify-between border-b bg-secondary px-4 py-3">
               <h5 className="text-sm font-semibold">Notificações</h5>
               {unreadCount > 0 && (
                 <PrismButton
@@ -471,7 +471,7 @@ export function Header({
             </div>
             <div className="max-h-75 divide-y divide-border overflow-y-auto">
               {notifications.length === 0 ? (
-                <div className="p-8 text-center text-sm text-muted-foreground">
+                <div className="p-8 text-center text-sm text-secondary-foreground">
                   Nenhuma notificação nova.
                 </div>
               ) : (
@@ -484,7 +484,7 @@ export function Header({
                     <PrismButton
                       key={notif.id}
                       className={cn(
-                        "flex w-full flex-col items-start gap-1 px-4 py-2 text-left font-normal transition hover:bg-card focus-visible:bg-secondary/50",
+                        "flex w-full flex-col items-start gap-1 px-4 py-2 text-left font-normal transition hover:bg-card focus-visible:bg-secondary",
                         !notif.read_at && "bg-card",
                       )}
                       onPress={() => handleNotificationClick(notif)}
@@ -512,7 +512,7 @@ export function Header({
                 })
               )}
             </div>
-            <div className="border-t bg-muted/10 p-2 text-center">
+            <div className="border-t bg-secondary p-2 text-center">
               <Link
                 className="block w-full py-1 text-sm hover:underline"
                 onClick={guardLinkClick("/app/notifications")}
@@ -658,7 +658,7 @@ export const HeaderMenu = ({
                 "flex size-5 items-center justify-center rounded-[9px] border squircle",
                 primaryColorIndex === -1
                   ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-muted/60 text-muted-foreground",
+                  : "border-border bg-secondary text-secondary-foreground",
               )}
             >
               <PaletteIcon className="size-3" />
@@ -702,10 +702,10 @@ export const HeaderMenu = ({
           </PrismMenuItem>
 
           <PrismMenuItem
-            className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+            className="text-error focus:bg-error-background focus:text-error"
             onAction={onSignOut}
             textValue="Sair"
-            variant="destructive"
+            variant="error"
           >
             <LogOutIcon className="size-4" />
             Sair
@@ -715,7 +715,7 @@ export const HeaderMenu = ({
         {person.admin && (
           <>
             <PrismMenuSeparator />
-            <PrismMenuGroup className="relative -mt-2 bg-muted/50 p-1">
+            <PrismMenuGroup className="relative -mt-2 bg-secondary p-1">
               <PrismMenuLabel>Admin</PrismMenuLabel>
               <PrismMenuItem
                 onAction={() => onNavigate("/app/admin/partners")}

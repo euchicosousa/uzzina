@@ -110,7 +110,7 @@ function EditorDialogContent({
 
         <div className="grid gap-4 overflow-y-auto px-6 py-5">
           {error && (
-            <p className="rounded-md bg-destructive/10 p-2.5 text-xs font-medium text-destructive squircle">
+            <p className="rounded-md bg-error-background p-2.5 text-xs font-medium text-error squircle">
               {error}
             </p>
           )}

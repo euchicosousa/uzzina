@@ -122,7 +122,7 @@ function DialogFrame({
     >
       <ModalPrimitive
         className={cn(
-          "pointer-events-auto relative z-50 grid max-h-full w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-2xl border border-foreground/5 bg-popover text-sm text-popover-foreground shadow-lg outline-none squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out motion-reduce:animate-none sm:w-full dark:border-foreground/10",
+          "pointer-events-auto relative z-50 grid max-h-full w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-2xl border border-foreground/5 bg-popover text-sm text-foreground shadow-lg outline-none squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out motion-reduce:animate-none sm:w-full dark:border-foreground/10",
           dialogWidths[size],
           className,
         )}
@@ -233,7 +233,7 @@ function DialogDescription({
   return (
     <div
       className={cn(
-        "text-sm text-muted-foreground *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-foreground",
+        "text-sm text-secondary-foreground *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-foreground",
         className,
       )}
       data-slot="dialog-description"

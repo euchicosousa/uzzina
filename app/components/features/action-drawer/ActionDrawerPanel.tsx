@@ -139,7 +139,7 @@ export function ActionDrawerPanel({
                       {title}
                     </span>
                     {partner && (
-                      <span className="block truncate text-xs text-muted-foreground">
+                      <span className="block truncate text-xs text-secondary-foreground">
                         {partner.title}
                       </span>
                     )}

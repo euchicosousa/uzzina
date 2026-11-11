@@ -173,7 +173,7 @@ export function UPaletteEditor({
   return (
     <div className={cn("space-y-4", className)}>
       {items.length === 0 ? (
-        <p className="py-2 text-sm text-muted-foreground">
+        <p className="py-2 text-sm text-secondary-foreground">
           Nenhuma cor definida na paleta.
         </p>
       ) : (
@@ -298,7 +298,7 @@ function SortablePaletteItem({
           className={cn(
             "h-8 min-w-0 flex-1 font-mono text-xs uppercase",
             item.isInvalid &&
-              "border-destructive/60 bg-destructive/5 text-destructive ring-3 ring-destructive/20 focus-visible:border-destructive",
+              "border-error bg-error-background text-error ring-3 ring-error-background focus-visible:border-error",
           )}
           disabled={disabled}
           id={`hex_${id}`}
@@ -314,14 +314,14 @@ function SortablePaletteItem({
       {/* Input oculto para submissão de formulário padrão */}
       <input name="colors" type="hidden" value={item.value} />
 
-      {/* Botão de exclusão com variante ghost-destructive discreta */}
+      {/* Botão de exclusão com variante ghost-error discreta */}
       <PrismButton
         aria-label={`Remover cor ${index + 1}`}
         isDisabled={disabled}
         onClick={onRemove}
         size="icon-sm"
         type="button"
-        variant="ghost-destructive"
+        variant="ghost-error"
       >
         <Trash2Icon />
       </PrismButton>

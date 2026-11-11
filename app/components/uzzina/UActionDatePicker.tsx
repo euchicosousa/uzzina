@@ -49,7 +49,7 @@ export function UActionDatePicker({
     <PrismPopoverTrigger onOpenChange={handleOpenChange}>
       <PrismButton
         aria-label="Data e hora da ação"
-        className={cn(isLate && "text-destructive", className)}
+        className={cn(isLate && "text-error-foreground", className)}
         size={size}
         variant="link"
       >

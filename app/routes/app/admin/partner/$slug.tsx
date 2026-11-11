@@ -341,7 +341,7 @@ function AdminPartnerEditPage() {
     return (
       <div className="flex h-full w-full items-center justify-center gap-4 bg-background">
         <ULoader size="2xl" className="text-primary" />
-        <p className="animate-pulse text-sm font-medium text-muted-foreground">
+        <p className="animate-pulse text-sm font-medium text-secondary-foreground">
           Carregando parceiro...
         </p>
       </div>
@@ -402,7 +402,7 @@ function AdminPartnerEditPage() {
               <span>Logotipo da Marca</span>
               {savingFields.has("image") && <ULoader />}
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-secondary-foreground">
               Clique para fazer upload e recortar
             </div>
             {imageUrl && (
@@ -594,7 +594,7 @@ function AdminPartnerEditPage() {
             <div className="flex items-center justify-between gap-2 font-medium">
               <div>
                 <span>Datas Comemorativas da Marca</span>
-                <p className="text-xs font-normal text-muted-foreground">
+                <p className="text-xs font-normal text-secondary-foreground">
                   Selecione as datas comemorativas e feriados relevantes para
                   esta marca.
                 </p>

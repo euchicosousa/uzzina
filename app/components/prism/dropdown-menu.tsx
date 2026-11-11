@@ -43,7 +43,7 @@ function DropdownMenu({
   return (
     <PopoverPrimitive
       className={cn(
-        "z-50 w-(--trigger-width) min-w-48 origin-(--trigger-anchor-point) overflow-x-hidden overflow-y-auto rounded-2xl border border-foreground/5 bg-popover p-1 text-popover-foreground shadow-lg outline-none squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out data-exiting:overflow-hidden motion-reduce:animate-none dark:border-foreground/10",
+        "z-50 w-(--trigger-width) min-w-48 origin-(--trigger-anchor-point) overflow-x-hidden overflow-y-auto rounded-2xl border border-foreground/5 bg-popover p-1 text-foreground shadow-lg outline-none squircle data-entering:animate-overlay-pop-in data-exiting:animate-overlay-pop-out data-exiting:overflow-hidden motion-reduce:animate-none dark:border-foreground/10",
         className,
       )}
       crossOffset={crossOffset}
@@ -77,7 +77,7 @@ function DropdownMenuLabel({
   return (
     <HeaderPrimitive
       className={cn(
-        "truncate px-2 py-2 text-xs font-medium tracking-wide text-muted-foreground uppercase data-inset:pl-7",
+        "truncate px-2 py-2 text-xs font-medium tracking-wide text-secondary-foreground uppercase data-inset:pl-7",
         className,
       )}
       data-inset={inset}
@@ -91,11 +91,11 @@ const dropdownMenuItemVariants = cva(
   {
     variants: {
       selectionMode: {
-        none: "min-h-7 gap-2 rounded-xl px-3 py-1.5 text-sm squircle focus:bg-secondary/50 focus:text-secondary-foreground focus:**:text-secondary-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
+        none: "min-h-7 gap-2 rounded-xl px-3 py-1.5 text-sm squircle focus:bg-secondary focus:text-foreground focus:**:text-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
         single:
-          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-3 text-sm squircle focus:bg-secondary/50 focus:text-secondary-foreground focus:**:text-secondary-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
+          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-3 text-sm squircle focus:bg-secondary focus:text-foreground focus:**:text-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
         multiple:
-          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-3 text-sm squircle focus:bg-secondary/50 focus:text-secondary-foreground focus:**:text-secondary-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
+          "min-h-7 gap-2 rounded-xl py-1.5 pr-8 pl-3 text-sm squircle focus:bg-secondary focus:text-foreground focus:**:text-foreground data-inset:pl-7 [&_svg:not([class*='size-'])]:size-4 min-w-0",
       },
     },
   },
@@ -107,7 +107,7 @@ function DropdownMenuItem({
   ...props
 }: MenuItemPrimitiveProps<object> & {
   inset?: boolean;
-  variant?: "default" | "destructive";
+  variant?: "default" | "error";
 }) {
   return (
     <MenuItemPrimitive
@@ -160,7 +160,7 @@ function DropdownMenuSubTrigger({
   return (
     <MenuItemPrimitive
       className={cn(
-        "flex min-h-7 cursor-default items-center gap-2 rounded-xl px-3 py-1.5 text-sm outline-hidden select-none squircle focus:bg-secondary/50 focus:text-secondary-foreground not-data-[variant=destructive]:focus:**:text-secondary-foreground data-inset:pl-7 data-open:bg-secondary/50 data-open:text-secondary-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:opacity-50 [&_svg:not([class*='size-'])]:size-4",
+        "flex min-h-7 cursor-default items-center gap-2 rounded-xl px-3 py-1.5 text-sm outline-hidden select-none squircle focus:bg-secondary focus:text-foreground not-data-[variant=error]:focus:**:text-foreground data-inset:pl-7 data-open:bg-secondary data-open:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:opacity-50 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       data-inset={inset}
@@ -186,7 +186,7 @@ function DropdownMenuSubContent({
   return (
     <DropdownMenu
       className={cn(
-        "w-auto min-w-24 rounded-2xl border border-foreground/5 bg-popover p-1 text-popover-foreground shadow-lg duration-100 squircle dark:border-foreground/10",
+        "w-auto min-w-24 rounded-2xl border border-foreground/5 bg-popover p-1 text-foreground shadow-lg duration-100 squircle dark:border-foreground/10",
         className,
       )}
       crossOffset={crossOffset}
@@ -216,7 +216,7 @@ function DropdownMenuShortcut({
   return (
     <span
       className={cn(
-        "ml-auto text-xs tracking-widest text-muted-foreground group-focus/dropdown-menu-item:text-secondary-foreground",
+        "ml-auto text-xs tracking-widest text-secondary-foreground group-focus/dropdown-menu-item:text-secondary-foreground",
         className,
       )}
       data-slot="dropdown-menu-shortcut"

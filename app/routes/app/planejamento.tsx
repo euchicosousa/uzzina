@@ -525,7 +525,7 @@ function PlanningPage() {
       </header>
 
       <div className="min-h-0 flex-1">
-        <p className="m-4 text-sm text-muted-foreground lg:hidden">
+        <p className="m-4 text-sm text-secondary-foreground lg:hidden">
           O planejamento está disponível em telas amplas.
         </p>
         <div className="hidden h-full min-h-0 lg:grid lg:grid-cols-[minmax(21rem,0.85fr)_minmax(0,1.55fr)]">
@@ -568,7 +568,7 @@ function PlanningPage() {
                   </PrismSelectContent>
                 </PrismSelect>
                 {partnerSlug && !selectedPartner && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-secondary-foreground">
                     Esse parceiro não está disponível para sua conta. Escolha
                     outro parceiro autorizado.
                   </p>
@@ -673,7 +673,7 @@ function PlanningPage() {
                       </div>
                       {/* Resumo de slots calculados / validação (C02) */}
                       {periodValidation.isValid ? (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-secondary-foreground">
                           <strong className="font-semibold text-foreground">
                             {periodValidation.calculatedSlots.length}{" "}
                             {periodValidation.calculatedSlots.length === 1
@@ -683,7 +683,7 @@ function PlanningPage() {
                           no período selecionado.
                         </p>
                       ) : (
-                        <p className="text-xs font-medium text-destructive">
+                        <p className="text-xs font-medium text-error">
                           {periodValidation.error}
                         </p>
                       )}
@@ -795,7 +795,7 @@ function PlanningPage() {
                   </div>
                 )}
                 {formatMode === "manual" && !formatValidation.isValid && (
-                  <p className="text-xs font-medium text-destructive">
+                  <p className="text-xs font-medium text-error">
                     {formatValidation.error}
                   </p>
                 )}
@@ -817,13 +817,13 @@ function PlanningPage() {
                 {mode === "period" ? (
                   considerHolidays ? (
                     <div className="grid gap-3 pt-1">
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-secondary-foreground">
                         Selecione as datas comemorativas do mês que deseja
                         incluir:
                       </p>
                       {/* Resumo de regulares + extras (C03) */}
                       {selectedCelebrationIds.length > 0 && (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-secondary-foreground">
                           <strong className="font-medium text-foreground">
                             {periodValidation.calculatedSlots.length} regulares
                           </strong>{" "}
@@ -870,7 +870,7 @@ function PlanningPage() {
                                 <span className="text-sm font-medium text-foreground">
                                   {celebration.title}
                                 </span>
-                                <span className="text-sm text-muted-foreground">
+                                <span className="text-sm text-secondary-foreground">
                                   ({dayFormatted})
                                 </span>
                               </PrismCheckbox>
@@ -878,19 +878,19 @@ function PlanningPage() {
                           })}
                         </div>
                       ) : (
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-secondary-foreground">
                           Nenhuma data comemorativa cadastrada para este mês.
                         </p>
                       )}
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-secondary-foreground">
                       Marque para exibir e escolher as datas comemorativas do
                       mês.
                     </p>
                   )
                 ) : (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-secondary-foreground">
                     Disponível no modo por período.
                   </p>
                 )}
@@ -898,7 +898,7 @@ function PlanningPage() {
 
               {/* Referência ao contexto e tom */}
               <div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-secondary-foreground">
                   {selectedPartner
                     ? `Contexto e tom de voz definidos no perfil de ${selectedPartner.title} serão considerados na criação.`
                     : "Selecione um parceiro para carregar contexto e tom de voz personalizados."}
@@ -916,15 +916,15 @@ function PlanningPage() {
             {currentPlan && (
               <div className="flex shrink-0 items-center justify-between border-b border-border bg-card/60 px-6 py-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                  <span className="text-xs font-semibold tracking-wider text-secondary-foreground uppercase">
                     Visualização:
                   </span>
-                  <div className="flex items-center rounded-lg border border-border bg-muted/30 p-0.5 squircle">
+                  <div className="flex items-center rounded-lg border border-border bg-secondary p-0.5 squircle">
                     <button
                       className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors squircle ${
                         viewMode === "list"
                           ? "bg-primary text-primary-foreground shadow-xs"
-                          : "text-muted-foreground hover:text-foreground"
+                          : "text-secondary-foreground hover:text-foreground"
                       }`}
                       onClick={() => setViewMode("list")}
                       type="button"
@@ -936,7 +936,7 @@ function PlanningPage() {
                       className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors squircle ${
                         viewMode === "calendar"
                           ? "bg-primary text-primary-foreground shadow-xs"
-                          : "text-muted-foreground hover:text-foreground"
+                          : "text-secondary-foreground hover:text-foreground"
                       }`}
                       onClick={() => setViewMode("calendar")}
                       type="button"
@@ -947,7 +947,7 @@ function PlanningPage() {
                   </div>
                 </div>
 
-                <div className="text-xs text-muted-foreground">
+                <div className="text-xs text-secondary-foreground">
                   {currentPlan.suggestions.length}{" "}
                   {currentPlan.suggestions.length === 1
                     ? "sugestão"
@@ -958,8 +958,8 @@ function PlanningPage() {
 
             {/* Mensagem de feedback (ex: ações criadas) */}
             {feedbackMessage && (
-              <div className="flex items-center gap-2 border-b border-emerald-500/30 bg-emerald-500/10 px-6 py-2.5 text-xs font-medium text-emerald-800 dark:text-emerald-200">
-                <CheckCircle2Icon className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <div className="flex items-center gap-2 border-b border-success bg-success-background px-6 py-2.5 text-xs font-medium text-success">
+                <CheckCircle2Icon className="size-4 shrink-0 text-success" />
                 <span>{feedbackMessage}</span>
               </div>
             )}
@@ -990,7 +990,7 @@ function PlanningPage() {
                       <h2 className="text-base font-semibold text-foreground">
                         Mesa de Planejamento
                       </h2>
-                      <p className="mt-2 text-sm text-muted-foreground">
+                      <p className="mt-2 text-sm text-secondary-foreground">
                         Defina as configurações na coluna à esquerda e clique em{" "}
                         <strong className="text-foreground">
                           Gerar planejamento
@@ -1001,13 +1001,13 @@ function PlanningPage() {
                       {/* Lista de propostas salvas para reabertura (Ticket 01) */}
                       {savedPlans.length > 0 && (
                         <div className="mt-8 border-t border-border pt-6 text-left">
-                          <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                          <h3 className="text-xs font-semibold tracking-wider text-secondary-foreground uppercase">
                             Propostas anteriores salvas
                           </h3>
                           <div className="mt-3 grid gap-2">
                             {savedPlans.slice(0, 5).map((plan) => (
                               <button
-                                className="flex items-center justify-between rounded-lg border border-border bg-card p-3 text-left transition-colors squircle hover:border-primary/50 hover:bg-muted/30"
+                                className="flex items-center justify-between rounded-lg border border-border bg-card p-3 text-left transition-colors squircle hover:border-primary/50 hover:bg-secondary"
                                 key={plan.id}
                                 onClick={() => handleOpenPlan(plan)}
                                 type="button"
@@ -1025,7 +1025,7 @@ function PlanningPage() {
                                       </PrismBadge>
                                     )}
                                   </div>
-                                  <span className="text-xs text-muted-foreground">
+                                  <span className="text-xs text-secondary-foreground">
                                     {plan.suggestions.length} sugestões • Salvo
                                     em{" "}
                                     {format(

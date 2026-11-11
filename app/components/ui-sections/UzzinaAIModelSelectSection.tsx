@@ -91,7 +91,7 @@ export function UzzinaAIModelSelectSection() {
                       isDisabled={isDisabled}
                     />
                   </PrismButtonGroup>
-                  <p className="text-sm text-muted-foreground" role="status">
+                  <p className="text-sm text-secondary-foreground" role="status">
                     {simulation || selected?.name}
                   </p>
                 </div>

@@ -93,7 +93,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
         </div>
 
         {parsedAnswers.length === 0 ? (
-          <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground squircle">
+          <div className="rounded-xl border border-dashed p-8 text-center text-sm text-secondary-foreground squircle">
             Nenhuma resposta gravada para este lead.
           </div>
         ) : (
@@ -111,7 +111,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
                 </div>
                 <div className="pl-7 font-semibold [overflow-wrap:anywhere] text-foreground">
                   {item.answer || (
-                    <span className="font-normal text-muted-foreground italic">
+                    <span className="font-normal text-secondary-foreground italic">
                       Sem resposta
                     </span>
                   )}

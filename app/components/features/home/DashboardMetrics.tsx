@@ -218,7 +218,7 @@ const ProgressBar = ({
     }
   }
   return (
-    <div className="flex h-1.5 w-14 shrink-0 overflow-hidden rounded-full bg-muted/20">
+    <div className="flex h-1.5 w-14 shrink-0 overflow-hidden rounded-full bg-secondary">
       {Object.entries(PHASES).map(([key, phaseInfo]) => {
         const count = counts[key as keyof typeof counts] || 0;
         if (count === 0) return null;

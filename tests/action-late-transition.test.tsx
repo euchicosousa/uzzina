@@ -22,8 +22,12 @@ it("turns an action red when its date passes while it stays on screen", async ()
     </CalendarTestProviders>,
   );
   const item = () => container.querySelector(`[data-action-id="${action.id}"]`);
-  expect(item()?.className).not.toContain("bg-late");
-  await waitFor(() => expect(item()?.className).toContain("bg-late"), {
-    timeout: 3500,
-  });
+  expect(item()?.className).not.toContain("bg-error-background");
+  await waitFor(
+    () => expect(item()?.className).toContain("bg-error-background"),
+    {
+      timeout: 3500,
+    },
+  );
+  expect(item()?.className).toContain("hover:bg-error-background");
 });

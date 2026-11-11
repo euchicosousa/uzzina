@@ -14,8 +14,8 @@ const MODES: { mode: ThemeMode; title: string }[] = [
 ];
 
 const FIELDS: { key: ThemeColorKey; label: string }[] = [
-  { key: "primaryHex", label: "Destaque (Accent)" },
-  { key: "primaryFgHex", label: "Texto no Destaque (Accent Fg)" },
+  { key: "primaryHex", label: "Cor Primária (Primary)" },
+  { key: "primaryFgHex", label: "Texto na Cor Primária (Primary Fg)" },
   { key: "bgHex", label: "Fundo (Background)" },
   { key: "fgHex", label: "Texto (Foreground)" },
 ];
@@ -46,13 +46,13 @@ export function CustomThemePanel({
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {MODES.map(({ mode, title }) => (
           <div className="flex flex-col gap-3" key={mode}>
-            <span className="text-xs font-semibold text-muted-foreground">
+            <span className="text-xs font-semibold text-secondary-foreground">
               {title}
             </span>
             <div className="grid gap-3">
               {FIELDS.map(({ key, label }) => (
                 <div className="flex flex-col gap-1.5" key={key}>
-                  <PrismLabel className="text-xs text-muted-foreground">
+                  <PrismLabel className="text-xs text-secondary-foreground">
                     {label}
                   </PrismLabel>
                   <label className="group flex cursor-pointer items-center gap-2">
@@ -66,7 +66,7 @@ export function CustomThemePanel({
                       type="color"
                       value={theme[mode][key]}
                     />
-                    <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
+                    <span className="font-mono text-xs text-secondary-foreground select-none group-hover:text-foreground">
                       {theme[mode][key]}
                     </span>
                   </label>
@@ -106,7 +106,7 @@ export function CustomThemePanel({
                 {theme.shadowColor && (
                   <PrismButton
                     aria-label="Restaurar sombra padrão"
-                    className="h-auto p-0 text-[11px] text-muted-foreground hover:text-foreground"
+                    className="h-auto p-0 text-[11px] text-secondary-foreground hover:text-foreground"
                     onPress={() => onOptionChange("shadowColor", undefined)}
                     size="xs"
                     variant="ghost"
@@ -116,7 +116,7 @@ export function CustomThemePanel({
                   </PrismButton>
                 )}
               </div>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[11px] text-secondary-foreground">
                 Tonalidade para sombras e anel dos cartões (ideal em paletas
                 saturadas).
               </p>
@@ -139,7 +139,7 @@ export function CustomThemePanel({
                       : "#000000"
                   }
                 />
-                <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
+                <span className="font-mono text-xs text-secondary-foreground select-none group-hover:text-foreground">
                   {theme.shadowColor || "Automático (padrão)"}
                 </span>
               </label>
@@ -154,7 +154,7 @@ export function CustomThemePanel({
                 {theme.topBorderColor && (
                   <PrismButton
                     aria-label="Restaurar realce padrão"
-                    className="h-auto p-0 text-[11px] text-muted-foreground hover:text-foreground"
+                    className="h-auto p-0 text-[11px] text-secondary-foreground hover:text-foreground"
                     onPress={() => onOptionChange("topBorderColor", undefined)}
                     size="xs"
                     variant="ghost"
@@ -164,7 +164,7 @@ export function CustomThemePanel({
                   </PrismButton>
                 )}
               </div>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[11px] text-secondary-foreground">
                 Cor do fio de luz superior dos cartões (padrão branco).
               </p>
               <label className="group flex cursor-pointer items-center gap-2 pt-1">
@@ -186,7 +186,7 @@ export function CustomThemePanel({
                       : "#ffffff"
                   }
                 />
-                <span className="font-mono text-xs text-muted-foreground select-none group-hover:text-foreground">
+                <span className="font-mono text-xs text-secondary-foreground select-none group-hover:text-foreground">
                   {theme.topBorderColor || "#ffffff (padrão)"}
                 </span>
               </label>
@@ -197,20 +197,20 @@ export function CustomThemePanel({
 
       {/* Pré-visualização com cartão de ação e elementos derivados */}
       <div className="flex flex-col gap-3 border-t border-border/40 pt-4">
-        <span className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+        <span className="text-[11px] font-semibold tracking-wider text-secondary-foreground uppercase">
           Pré-visualização em Tempo Real
         </span>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {/* Cartão de ação simulando ActionItem */}
-          <div className="text-action-foreground flex flex-col justify-between rounded-2xl border-t border-action-top-border bg-action p-3.5 shadow-action ring ring-action-ring transition-all squircle">
+          <div className="flex flex-col justify-between rounded-2xl border-t border-action-top-border bg-action p-3.5 shadow-action ring ring-action-ring transition-all squircle">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold">Cartão de Ação</span>
               <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
                 {isRelief ? "Com Relevo" : "Estilo Plano"}
               </span>
             </div>
-            <p className="mt-2 text-xs text-muted-foreground">
+            <p className="mt-2 text-xs text-secondary-foreground">
               {isRelief
                 ? "Borda de brilho superior e sombra de profundidade ativas."
                 : "Borda de topo transparente e sombras de relevo desligadas."}
@@ -221,11 +221,11 @@ export function CustomThemePanel({
           <div className="grid grid-cols-2 gap-2">
             <div className="flex flex-col justify-between rounded-xl border bg-primary p-2.5 text-primary-foreground squircle">
               <span className="text-xs font-semibold">Botão Destaque</span>
-              <span className="text-[10px] opacity-80">Accent Fg</span>
+              <span className="text-[10px] opacity-80">Primary Fg</span>
             </div>
-            <div className="flex flex-col justify-between rounded-xl border bg-card p-2.5 text-card-foreground squircle">
+            <div className="flex flex-col justify-between rounded-xl border bg-card p-2.5 text-foreground squircle">
               <span className="text-xs font-semibold">Card & Popover</span>
-              <span className="text-[10px] text-muted-foreground">
+              <span className="text-[10px] text-secondary-foreground">
                 Fundo derivado
               </span>
             </div>

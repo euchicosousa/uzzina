@@ -86,7 +86,7 @@ export function CommentInput({
               className={cn(
                 "gap-1.5 px-2 text-xs",
                 isInternal
-                  ? "text-muted-foreground hover:text-foreground"
+                  ? "text-secondary-foreground hover:text-foreground"
                   : "border-primary/40 bg-primary/10 font-medium text-primary",
               )}
               onClick={() => setIsInternal(!isInternal)}
@@ -188,7 +188,7 @@ export function CommentInput({
 
         {/* Ações */}
         <div className="flex items-center gap-2">
-          <span className="mr-1 hidden text-[10px] font-medium tracking-wider text-muted-foreground uppercase sm:inline">
+          <span className="mr-1 hidden text-[10px] font-medium tracking-wider text-secondary-foreground uppercase sm:inline">
             Cmd + Enter para {submitLabel === "Salvar" ? "salvar" : "enviar"}
           </span>
           {onCancel && (

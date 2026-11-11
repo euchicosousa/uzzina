@@ -129,14 +129,14 @@ export function ClientCalendar<
         <div className="flex h-full min-w-375 flex-col overflow-hidden">
           {/* Cabeçalho dos dias da semana (apenas para Mês) */}
           {view === "month" && (
-            <div className="grid shrink-0 grid-cols-7 border-b bg-muted/20">
+            <div className="grid shrink-0 grid-cols-7 border-b bg-secondary">
               {Array.from({
                 length: 7,
               }).map((_, i) => (
                 <div
                   // biome-ignore lint/suspicious/noArrayIndexKey: Lista estática dos dias da semana
                   key={i}
-                  className="py-2 text-center text-xs font-semibold text-muted-foreground uppercase"
+                  className="py-2 text-center text-xs font-semibold text-secondary-foreground uppercase"
                 >
                   {format(addDays(weekStart, i), "EEE", {
                     locale: ptBR,
@@ -163,7 +163,7 @@ export function ClientCalendar<
                     )}
                   >
                     {view === "week" && (
-                      <div className="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
+                      <div className="text-[10px] font-semibold tracking-wide text-secondary-foreground uppercase">
                         {format(day, "EEE", {
                           locale: ptBR,
                         })}
@@ -174,7 +174,7 @@ export function ClientCalendar<
                         "flex size-6 items-center justify-center rounded-full text-xs font-medium",
                         isCurrentDay
                           ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground",
+                          : "text-secondary-foreground",
                         view === "week" && "mx-auto mt-0.5 size-7 text-sm",
                       )}
                     >
@@ -196,7 +196,7 @@ export function ClientCalendar<
                         <PrismButton
                           key={action.id}
                           className={cn(
-                            "w-full rounded-xl px-1.5 py-1 text-left font-normal transition-colors squircle hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/30",
+                            "w-full rounded-xl px-1.5 py-1 text-left font-normal transition-colors squircle hover:bg-secondary focus-visible:ring-3 focus-visible:ring-ring/30",
                             view === "week" && "px-2 py-1.5",
                           )}
                           onPress={() => onActionClick(action)}
@@ -218,7 +218,7 @@ export function ClientCalendar<
                               )}
                             </span>
 
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-xs text-secondary-foreground">
                               {getFormattedDateTime(
                                 actionTime,
                                 DATE_TIME_DISPLAY.TimeOnly,

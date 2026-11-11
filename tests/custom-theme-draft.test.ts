@@ -5,10 +5,10 @@ import {
   isCompleteCustomTheme,
 } from "~/lib/custom-theme";
 import {
-  deriveAccentFg,
-  deriveDarkAccent,
   deriveDarkBg,
   deriveDarkFg,
+  deriveDarkPrimary,
+  derivePrimaryFg,
 } from "~/utils/color";
 
 const base = createCustomThemeDraft(null);
@@ -38,13 +38,13 @@ describe("createCustomThemeDraft", () => {
 });
 
 describe("applyCustomThemeChange", () => {
-  test("light accent derives the dark accent and both foregrounds", () => {
+  test("light primary derives the dark primary and both foregrounds", () => {
     const next = applyCustomThemeChange(base, "light", "primaryHex", "#112233");
-    const darkAccent = deriveDarkAccent("#112233");
+    const darkPrimary = deriveDarkPrimary("#112233");
     expect(next.light.primaryHex).toBe("#112233");
-    expect(next.light.primaryFgHex).toBe(deriveAccentFg("#112233"));
-    expect(next.dark.primaryHex).toBe(darkAccent);
-    expect(next.dark.primaryFgHex).toBe(deriveAccentFg(darkAccent));
+    expect(next.light.primaryFgHex).toBe(derivePrimaryFg("#112233"));
+    expect(next.dark.primaryHex).toBe(darkPrimary);
+    expect(next.dark.primaryFgHex).toBe(derivePrimaryFg(darkPrimary));
     expect(next.light.bgHex).toBe(base.light.bgHex);
   });
   test("light background and text derive their dark counterparts", () => {
@@ -55,20 +55,20 @@ describe("applyCustomThemeChange", () => {
       applyCustomThemeChange(base, "light", "fgHex", "#101010").dark.fgHex,
     ).toBe(deriveDarkFg("#101010"));
   });
-  test("dark accent only derives the dark accent foreground", () => {
+  test("dark primary only derives the dark primary foreground", () => {
     const next = applyCustomThemeChange(base, "dark", "primaryHex", "#445566");
-    expect(next.dark.primaryFgHex).toBe(deriveAccentFg("#445566"));
+    expect(next.dark.primaryFgHex).toBe(derivePrimaryFg("#445566"));
     expect(next.light).toEqual(base.light);
   });
   test("remaining fields change only themselves", () => {
     expect(
       applyCustomThemeChange(base, "light", "primaryFgHex", "#010101"),
     ).toEqual({
+      ...base,
       light: { ...base.light, primaryFgHex: "#010101" },
-      dark: base.dark,
     });
     expect(applyCustomThemeChange(base, "dark", "bgHex", "#202020")).toEqual({
-      light: base.light,
+      ...base,
       dark: { ...base.dark, bgHex: "#202020" },
     });
   });

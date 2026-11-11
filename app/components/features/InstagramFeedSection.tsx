@@ -36,7 +36,7 @@ export function InstagramFeedSection<
       </div>
 
       {actions.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-secondary-foreground">
           Nenhuma publicação programada.
         </p>
       ) : (

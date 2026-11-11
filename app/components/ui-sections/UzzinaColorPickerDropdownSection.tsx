@@ -125,7 +125,7 @@ export function ColorPickerDropdownPlayground() {
             value={color}
             variant={variant}
           />
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-secondary-foreground">
             <span>Cor confirmada:</span>
             <span
               className="inline-block size-3.5 rounded-full border border-border"

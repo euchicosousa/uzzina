@@ -60,7 +60,6 @@ import {
   PrismToggleGroup,
   PrismToggleGroupItem,
 } from "~/components/prism";
-import { UPreferenceSwitch } from "~/components/uzzina/UPreferenceSwitch";
 import { UAvatarUpload } from "~/components/uzzina/UAvatarUpload";
 import { useAppContext } from "~/contexts/AppContext";
 import { PALLETE } from "~/lib/palettes";
@@ -114,7 +113,7 @@ const PROFILE_PANEL_CLASS_NAME =
   "relative grid min-h-0 flex-1 content-start gap-8 overflow-y-auto overscroll-y-contain p-4 md:px-2";
 
 /**
- * Decorative accent sample. Colors come from the same PALLETE data as the
+ * Decorative theme palette sample. Colors come from the same PALLETE data as the
  * header menu; without a color it renders the neutral custom-theme chip.
  */
 function PaletteSwatch({
@@ -174,7 +173,7 @@ function ProfileSetting({
             (isValidElement(badge) ? badge : <PrismBadge>{badge}</PrismBadge>)}
         </div>
         {description && (
-          <span className="text-sm text-muted-foreground">{description}</span>
+          <span className="text-sm text-secondary-foreground">{description}</span>
         )}
       </div>
       {children}
@@ -186,7 +185,7 @@ function PartnerPageMockup({ showSidebar }: { showSidebar: boolean }) {
   return (
     <div
       aria-hidden="true"
-      className="relative flex h-60 w-full flex-col overflow-hidden rounded-2xl border border-border bg-card/40 text-muted-foreground select-none"
+      className="relative flex h-60 w-full flex-col overflow-hidden rounded-2xl border border-border bg-card/40 text-secondary-foreground select-none"
     >
       {/* Top Header Bar */}
       <div className="flex h-7 w-full shrink-0 items-center justify-between border-b border-border/50 px-3">
@@ -202,7 +201,7 @@ function PartnerPageMockup({ showSidebar }: { showSidebar: boolean }) {
       </div>
 
       {/* Subheader / Partner & Filter Controls */}
-      <div className="flex h-7 w-full shrink-0 items-center justify-between border-b border-border/40 bg-muted/10 px-3">
+      <div className="flex h-7 w-full shrink-0 items-center justify-between border-b border-border/40 bg-secondary px-3">
         <div className="flex items-center gap-1.5">
           <div className="size-2.5 rounded-full border border-border/70" />
           <div className="h-1.5 w-14 rounded-full border border-border/60" />
@@ -585,6 +584,10 @@ function ProfilePage() {
       // Sync local preferences to storage / context
       if ("themeColorIndex" in newPreferences) {
         localStorage.setItem(
+          "uzzina-theme-color-index",
+          String(selectedThemeColor),
+        );
+        localStorage.setItem(
           "uzzina-accent-color-index",
           String(selectedThemeColor),
         );
@@ -793,7 +796,7 @@ function ProfilePage() {
 
               <div className="grid gap-1">
                 <h5>Foto de Perfil</h5>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-secondary-foreground">
                   Clique na imagem para enviar uma nova
                 </span>
                 {imageUrl && (
@@ -914,7 +917,7 @@ function ProfilePage() {
             </PrismToggleGroup>
           </ProfileSetting>
 
-          {/* Accent Theme Color Selection */}
+          {/* Theme Palette Color Selection */}
           <ProfileSetting
             title="Cor de Destaque"
             description="Selecione a paleta de cores primárias para a interface do
@@ -1112,10 +1115,10 @@ function ProfilePage() {
             >
               <div className="grid gap-3 pt-2">
                 {isLoadingAIUsage ? (
-                  <div className="h-20 w-full animate-pulse rounded-2xl bg-muted/40 squircle" />
+                  <div className="h-20 w-full animate-pulse rounded-2xl bg-secondary squircle" />
                 ) : isAIUsageError ? (
                   <div
-                    className="flex items-center justify-between gap-3 text-xs text-muted-foreground"
+                    className="flex items-center justify-between gap-3 text-xs text-secondary-foreground"
                     role="status"
                   >
                     <span>Não foi possível consultar o consumo de IA.</span>
@@ -1129,7 +1132,7 @@ function ProfilePage() {
                   </div>
                 ) : aiUsage ? (
                   <UAIAllowanceMeter percentage={aiUsage.percentage}>
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <div className="flex items-center justify-between text-xs text-secondary-foreground">
                       <span>
                         {aiUsage.total_generations}{" "}
                         {aiUsage.total_generations === 1
@@ -1140,7 +1143,7 @@ function ProfilePage() {
                     </div>
                     {aiUsage.has_pending && (
                       <p
-                        className="text-xs text-muted-foreground"
+                        className="text-xs text-secondary-foreground"
                         role="status"
                       >
                         Há gerações com saldo reservado aguardando conciliação.
@@ -1148,7 +1151,7 @@ function ProfilePage() {
                     )}
                     {aiUsage.incomplete_generations > 0 && (
                       <p
-                        className="text-xs text-muted-foreground"
+                        className="text-xs text-secondary-foreground"
                         role="status"
                       >
                         {aiUsage.incomplete_generations} geração(ões) sem dados
@@ -1157,7 +1160,7 @@ function ProfilePage() {
                     )}
                   </UAIAllowanceMeter>
                 ) : (
-                  <div className="rounded-2xl border border-border/40 bg-muted/10 p-4 text-xs text-muted-foreground squircle">
+                  <div className="rounded-2xl border border-border/40 bg-secondary p-4 text-xs text-secondary-foreground squircle">
                     Consumo de IA ainda não medido neste mês.
                   </div>
                 )}
@@ -1171,7 +1174,7 @@ function ProfilePage() {
               <div className="grid gap-4">
                 <div
                   aria-hidden="true"
-                  className="hidden text-xs font-medium text-muted-foreground lg:grid lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)] lg:gap-3"
+                  className="hidden text-xs font-medium text-secondary-foreground lg:grid lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)] lg:gap-3"
                 >
                   <span>Função</span>
                   <span>Modelos disponíveis</span>
@@ -1313,7 +1316,7 @@ function ProfilePage() {
                   );
                 })}
                 <div className="grid gap-2 lg:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:gap-3">
-                  <span className="text-sm font-medium text-muted-foreground">
+                  <span className="text-sm font-medium text-secondary-foreground">
                     Planejamento
                   </span>
                   <PrismSelect<(typeof actionAIModels)[number], "multiple">

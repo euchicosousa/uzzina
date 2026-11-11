@@ -61,7 +61,7 @@ export function AdminUserForm({
 
           <div className="grid gap-1">
             <p className="font-medium">Foto de Perfil</p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-secondary-foreground">
               Clique para fazer upload e recortar
             </p>
             {imageUrl && (
@@ -133,7 +133,7 @@ export function AdminUserForm({
             type="email"
           />
           {!isNew && (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-secondary-foreground">
               Nota: Alterar o email aqui não altera o login, apenas o perfil.
             </p>
           )}

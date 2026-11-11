@@ -112,14 +112,15 @@ function oklchToHex(h: number, c: number, l: number): string {
 }
 
 /**
- * Deriva cor de destaque (Accent) no dark mode.
+ * Deriva cor primária no dark mode.
  * Geralmente mantemos H e C, e aumentamos o L em 0.13 para contraste.
  */
-export function deriveDarkAccent(lightHex: string): string {
+export function deriveDarkPrimary(lightHex: string): string {
   const oklch = hexToOklch(lightHex);
   const darkL = Math.min(0.9, oklch.l + 0.13);
   return oklchToHex(oklch.h, oklch.c, darkL);
 }
+export const deriveDarkAccent = deriveDarkPrimary;
 
 /**
  * Deriva cor de Background no dark mode.
@@ -148,10 +149,11 @@ export function deriveDarkFg(lightHex: string): string {
 }
 
 /**
- * Deriva a cor de texto ideal (Foreground) para ficar sobre o fundo do Accent (Destaque).
- * Se o Accent for muito claro, retorna preto/escuro. Se for escuro, retorna branco/claro.
+ * Deriva a cor de texto ideal (Foreground) para ficar sobre o fundo da cor primária.
+ * Se a primária for muito clara, retorna preto/escuro. Se for escura, retorna branco/claro.
  */
-export function deriveAccentFg(accentHex: string): string {
-  const oklch = hexToOklch(accentHex);
+export function derivePrimaryFg(primaryHex: string): string {
+  const oklch = hexToOklch(primaryHex);
   return oklch.l > 0.62 ? "#000000" : "#FFFFFF";
 }
+export const deriveAccentFg = derivePrimaryFg;

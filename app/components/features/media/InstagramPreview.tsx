@@ -52,8 +52,8 @@ export function InstagramPreview({ files, compact }: InstagramPreviewProps) {
   // On a compact panel the height is fixed and the width follows the ratio, so
   // the preview leaves room for writing without cropping the post.
   const frameClass = compact
-    ? "relative mx-auto h-[min(18rem,45svh)] w-auto max-w-full overflow-hidden rounded-xl border bg-muted squircle"
-    : "relative w-full overflow-hidden rounded-xl border bg-muted squircle";
+    ? "relative mx-auto h-[min(18rem,45svh)] w-auto max-w-full overflow-hidden rounded-xl border bg-secondary squircle"
+    : "relative w-full overflow-hidden rounded-xl border bg-secondary squircle";
   const aspectClass = "aspect-[4/5]";
 
   if (!files || files.length === 0) {

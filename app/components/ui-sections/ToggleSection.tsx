@@ -316,7 +316,7 @@ function ToggleFormPlayground() {
             {text}
             {showIcon && <ArchiveIcon className="size-4" />}
           </PrismToggle>
-          <span className="font-mono text-xs text-muted-foreground">
+          <span className="font-mono text-xs text-secondary-foreground">
             {isSelected ? 'FormData: { archived: "on" }' : "FormData: {}"}
           </span>
         </form>

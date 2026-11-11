@@ -8,7 +8,7 @@
 
 **Entrega.** Transformar a rota `/` em uma apresentação institucional da UZZINA. A abertura apresenta o app de gestão da Agência CNVT. Depois entram duas seções, uma sobre o serviço de links e outra sobre a agência.
 
-**Bloqueado por.** DS07 para a integração visual e o aceite. O rascunho de conteúdo e a estrutura podem avançar em paralelo.
+**Dependência atendida.** A paleta pública Ônix foi aprovada no [ticket de paleta pública](07-public-palette.md) em 10/11/2026 e já está em produção.
 
 ## Aceite
 

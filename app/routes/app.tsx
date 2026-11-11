@@ -111,6 +111,10 @@ function Dashboard() {
       const prefs = getUserPreferences(person);
       localStorage.setItem("uzzina-theme", prefs.theme);
       localStorage.setItem(
+        "uzzina-theme-color-index",
+        String(prefs.themeColorIndex),
+      );
+      localStorage.setItem(
         "uzzina-accent-color-index",
         String(prefs.themeColorIndex),
       );
@@ -258,7 +262,7 @@ function Dashboard() {
       <div className="flex h-screen w-screen flex-col items-center justify-center gap-4 bg-background">
         <UZZINALogo className="h-24 scale-down opacity-20" model="logo" />
         {/* <div className="size-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-         <p className="text-muted-foreground text-xl animate-pulse">
+         <p className="text-secondary-foreground text-xl animate-pulse">
           Carregando UZZINA...
          </p> */}
       </div>

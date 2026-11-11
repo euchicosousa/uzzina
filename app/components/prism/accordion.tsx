@@ -32,7 +32,7 @@ function AccordionItem({ className, ...props }: DisclosureProps) {
     <AccordionItemPrimitive
       data-slot="accordion-item"
       className={cn(
-        "w-full min-w-0 not-last:border-b data-open:bg-muted/50",
+        "w-full min-w-0 not-last:border-b data-open:bg-secondary",
         className,
       )}
       {...props}
@@ -88,7 +88,7 @@ function AccordionContent({
     >
       <div
         className={cn(
-          "pt-0 pb-4 break-words [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4",
+          "pt-0 pb-4 break-words [&_a]:underline [&_a]:underline-offset-3 [&_p:not(:last-child)]:mb-4",
           className,
         )}
       >

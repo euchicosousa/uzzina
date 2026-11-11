@@ -43,7 +43,7 @@ function AdminPartnersPage() {
         role="status"
       >
         <ULoader size="2xl" className="text-primary" />
-        <p className="animate-pulse text-sm font-medium text-muted-foreground">
+        <p className="animate-pulse text-sm font-medium text-secondary-foreground">
           Carregando parceiros...
         </p>
       </div>
@@ -87,13 +87,13 @@ function AdminPartnersPage() {
           }}
           to="/app/admin/partner/$slug"
         >
-          Novo Parceiro
           <FolderPlusIcon />
+          Novo Parceiro
         </Link>
       </div>
 
       {isSuccess && partners.length === 0 && (
-        <p className="text-muted-foreground">Nenhum parceiro cadastrado.</p>
+        <p className="text-secondary-foreground">Nenhum parceiro cadastrado.</p>
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

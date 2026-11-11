@@ -59,7 +59,7 @@ export function Content({
           />
         ) : (
           <div
-            className="grid h-full place-content-center p-4 text-center text-xl leading-tight font-medium tracking-tighter text-secondary-foreground"
+            className="grid h-full place-content-center p-4 text-center text-xl leading-tight font-medium tracking-tighter text-foreground"
             style={{
               backgroundColor: backgroundColor.hex(),
               color: foregroundColor,

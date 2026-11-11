@@ -17,7 +17,7 @@ export function ActionTimeDisplay({
   return (
     <div
       className={cn(
-        "flex h-8 items-center text-sm text-muted-foreground",
+        "flex h-8 items-center text-sm text-secondary-foreground",
         className,
       )}
     >

@@ -31,7 +31,7 @@ function Keys({ keys }: { keys: string[] }) {
     <span className="inline-flex flex-wrap items-center gap-1">
       {keys.map((key, index) => (
         <span className="inline-flex items-center gap-1" key={key}>
-          {index > 0 && <span className="text-muted-foreground">+</span>}
+          {index > 0 && <span className="text-secondary-foreground">+</span>}
           <PrismKbd>{key}</PrismKbd>
         </span>
       ))}
@@ -49,7 +49,7 @@ function ShortcutTable({
   return (
     <table className="w-full text-left text-sm">
       <caption className="sr-only">{caption}</caption>
-      <thead className="text-xs text-muted-foreground">
+      <thead className="text-xs text-secondary-foreground">
         <tr>
           <th className="w-1/2 py-2 pr-4 font-medium" scope="col">
             Atalho
@@ -75,7 +75,7 @@ function ShortcutTable({
 
 function Steps({ items }: { items: ReactNode[] }) {
   return (
-    <ul className="flex list-disc flex-col gap-1.5 pl-5 marker:text-muted-foreground">
+    <ul className="flex list-disc flex-col gap-1.5 pl-5 marker:text-secondary-foreground">
       {Children.map(items, (item) => (
         <li>{item}</li>
       ))}
@@ -325,7 +325,7 @@ export function HelpPage() {
           aria-label="Nesta página"
           className="hidden w-60 shrink-0 flex-col gap-1 overflow-y-auto border-r px-4 py-6 lg:flex"
         >
-          <p className="px-2 pb-2 text-xs font-medium text-muted-foreground">
+          <p className="px-2 pb-2 text-xs font-medium text-secondary-foreground">
             Nesta página
           </p>
           {sections.map((section) => (
@@ -334,10 +334,10 @@ export function HelpPage() {
               href={`#${section.id}`}
               aria-current={active === section.id ? "location" : undefined}
               className={cn(
-                "rounded-xl px-2 py-1.5 text-sm outline-none squircle hover:bg-secondary/50 focus-visible:bg-secondary/50",
+                "rounded-xl px-2 py-1.5 text-sm outline-none squircle hover:bg-secondary focus-visible:bg-secondary",
                 active === section.id
-                  ? "bg-secondary/50 font-semibold"
-                  : "text-muted-foreground",
+                  ? "bg-secondary font-semibold"
+                  : "text-secondary-foreground",
               )}
               onClick={(event) => {
                 event.preventDefault();
