@@ -274,7 +274,7 @@ function DashActionDetail({ actionId }: { actionId: string }) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-background">
         <ULoader size="2xl" className="text-primary" />
-        <p className="animate-pulse text-sm font-medium text-muted-foreground">
+        <p className="animate-pulse text-sm font-medium text-secondary-foreground">
           Carregando detalhes...
         </p>
       </div>
@@ -284,11 +284,11 @@ function DashActionDetail({ actionId }: { actionId: string }) {
   if (isActionError) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-background p-8 text-center">
-        <div className="rounded-full bg-destructive/10 p-3 text-destructive">
+        <div className="rounded-full bg-error-background p-3 text-error">
           <AlertCircleIcon className="size-8" />
         </div>
         <h2 className="text-lg font-semibold">Falha ao carregar ação</h2>
-        <p className="max-w-sm text-sm text-muted-foreground">
+        <p className="max-w-sm text-sm text-secondary-foreground">
           Ocorreu um erro ao buscar os dados desta ação no servidor.
         </p>
         <div className="flex items-center gap-3">
@@ -309,7 +309,7 @@ function DashActionDetail({ actionId }: { actionId: string }) {
   if (!action) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-background p-8 text-center">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-secondary-foreground">
           Ação não encontrada ou você não possui permissão para acessá-la.
         </p>
         <Link
@@ -325,7 +325,7 @@ function DashActionDetail({ actionId }: { actionId: string }) {
     <div className="flex h-full w-full flex-col overflow-hidden">
       {/* Voltar */}
       <Link
-        className="flex items-center gap-2 p-4 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="flex items-center gap-2 p-4 text-sm text-secondary-foreground transition-colors hover:text-foreground"
         to="/dash"
       >
         <ArrowLeftIcon className="size-4" />
@@ -340,7 +340,7 @@ function DashActionDetail({ actionId }: { actionId: string }) {
           </div>
           <div className="flex justify-between gap-4 text-sm">
             <div className="flex flex-col gap-1">
-              <div className="mb-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <div className="mb-1 text-xs font-medium tracking-wide text-secondary-foreground uppercase">
                 Data de publicar
               </div>
               <div className="font-medium">
@@ -351,7 +351,7 @@ function DashActionDetail({ actionId }: { actionId: string }) {
             </div>
 
             <div className="flex flex-col gap-1">
-              <div className="mb-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <div className="mb-1 text-xs font-medium tracking-wide text-secondary-foreground uppercase">
                 Categoria
               </div>
               <div className="flex items-center gap-1 font-medium capitalize">
@@ -366,7 +366,7 @@ function DashActionDetail({ actionId }: { actionId: string }) {
               </div>
             </div>
             <div className="flex flex-col gap-1">
-              <div className="mb-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <div className="mb-1 text-xs font-medium tracking-wide text-secondary-foreground uppercase">
                 Fase
               </div>
               <div className="flex items-center gap-2">
@@ -385,7 +385,7 @@ function DashActionDetail({ actionId }: { actionId: string }) {
           </div>
           {action.description && (
             <div>
-              <div className="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <div className="mb-2 text-xs font-medium tracking-wide text-secondary-foreground uppercase">
                 Descrição
               </div>
               <div
@@ -400,7 +400,7 @@ function DashActionDetail({ actionId }: { actionId: string }) {
           {/* Legenda */}
 
           <div className="mb-8 space-y-3">
-            <div className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+            <div className="text-xs font-semibold tracking-wide text-secondary-foreground uppercase">
               Legenda
             </div>
             {action.instagram_caption ? (
@@ -408,7 +408,7 @@ function DashActionDetail({ actionId }: { actionId: string }) {
                 {action.instagram_caption}
               </div>
             ) : (
-              <div className="text-muted-foreground/50 italic">
+              <div className="text-secondary-foreground/50 italic">
                 Sem legenda criada
               </div>
             )}
@@ -416,7 +416,7 @@ function DashActionDetail({ actionId }: { actionId: string }) {
 
           {/* Anexos (Work Files) do Cliente */}
           <div className="mb-8 space-y-3">
-            <div className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+            <div className="text-xs font-semibold tracking-wide text-secondary-foreground uppercase">
               Seus Anexos e Materiais
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -477,7 +477,7 @@ function DashActionDetail({ actionId }: { actionId: string }) {
           {/* Comentários */}
 
           <div className="flex flex-col gap-4">
-            <div className="mb-4 text-sm font-semibold tracking-wide text-muted-foreground uppercase">
+            <div className="mb-4 text-sm font-semibold tracking-wide text-secondary-foreground uppercase">
               Observações ({comments.length})
             </div>
 

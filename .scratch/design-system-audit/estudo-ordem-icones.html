@@ -1,0 +1,1320 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DS05 — Taxonomia de Ícones: Contexto vs Ação (UZZINA / Prism CNVT)</title>
+<style>
+  :root {
+    --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-mono: ui-monospace, Menlo, Consolas, monospace;
+    --radius: 0.65rem;
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-xl: calc(var(--radius) * 1.3);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.5;
+    padding: 2rem 1.5rem 4rem;
+    font-size: 14px;
+    transition: background 0.2s, color 0.2s;
+  }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--secondary);
+    color: var(--fg);
+    padding: 0.12rem 0.4rem;
+    border-radius: 0.35rem;
+  }
+  .dim { color: var(--secondary-fg); }
+  
+  header, main, .sticky-bar, .taxonomy-banner, .audit-summary {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  header {
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+  .header-badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .header-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: color-mix(in srgb, var(--primary) 15%, transparent);
+    color: var(--primary);
+  }
+  .header-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: color-mix(in srgb, #22c55e 15%, transparent);
+    color: #16a34a;
+  }
+  h1 { font-size: 1.9rem; font-weight: 700; margin-bottom: 0.4rem; letter-spacing: -0.02em; }
+  h2 { font-size: 1.35rem; font-weight: 700; margin-bottom: 0.35rem; }
+  h3 { font-size: 1.05rem; font-weight: 650; }
+  
+  /* Banner da Taxonomia */
+  .taxonomy-banner {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 1.1rem;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+  .tax-box {
+    border-radius: 0.85rem;
+    padding: 1rem;
+    background: color-mix(in srgb, var(--bg) 60%, transparent);
+    border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  }
+  .tax-box-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+  .tax-box p {
+    font-size: 0.82rem;
+    color: var(--secondary-fg);
+    line-height: 1.45;
+  }
+  .badge-rule {
+    display: inline-block;
+    padding: 0.15rem 0.45rem;
+    border-radius: 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .rule-left { background: color-mix(in srgb, #3b82f6 20%, transparent); color: #3b82f6; }
+  .rule-right { background: color-mix(in srgb, #10b981 20%, transparent); color: #10b981; }
+  .rule-both { background: color-mix(in srgb, #8b5cf6 20%, transparent); color: #8b5cf6; }
+
+  /* Barra de Controles Sticky */
+  .sticky-bar {
+    position: sticky;
+    top: 1rem;
+    z-index: 50;
+    background: var(--popover);
+    border: 1px solid var(--border);
+    border-radius: 1.1rem;
+    padding: 0.85rem 1.25rem;
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 25px -8px rgba(0,0,0,0.18);
+  }
+  .bar-group { display: flex; align-items: center; gap: 0.5rem; }
+  .bar-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--secondary-fg); }
+  select, .btn-ctrl {
+    font: inherit;
+    padding: 0.4rem 0.85rem;
+    border-radius: 0.6rem;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--fg);
+    cursor: pointer;
+    font-size: 0.82rem;
+  }
+  .btn-ctrl:hover { background: var(--secondary); }
+  
+  /* Filtros por Pílulas */
+  .filters-row {
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .filter-pill {
+    padding: 0.35rem 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    color: var(--fg);
+    transition: all 0.15s;
+  }
+  .filter-pill:hover { background: var(--secondary); }
+  .filter-pill.active {
+    background: var(--primary);
+    color: var(--primary-fg);
+    border-color: var(--primary);
+  }
+
+  /* Seções de Categorias */
+  .category-section {
+    margin-bottom: 3.5rem;
+  }
+  .category-header {
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .category-header h2 { margin-bottom: 0.2rem; }
+  .category-desc { font-size: 0.85rem; color: var(--secondary-fg); }
+
+  /* Grid de Cards */
+  .component-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 1.25rem;
+  }
+  .comp-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .comp-card:hover {
+    border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+  }
+  .comp-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .comp-title { font-size: 0.95rem; font-weight: 700; color: var(--fg); }
+  .comp-role { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--secondary-fg); }
+  .comp-tag {
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .tag-canonical { background: color-mix(in srgb, #22c55e 15%, transparent); color: #16a34a; border: 1px solid color-mix(in srgb, #22c55e 30%, transparent); }
+
+  /* Render Area do Componente */
+  .render-box {
+    background: var(--bg);
+    border: 1px dashed var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* Explicação do Design */
+  .comp-explanation {
+    font-size: 0.8rem;
+    color: var(--secondary-fg);
+    line-height: 1.45;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Primitivos Prism e Botões Simulados */
+  .p-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1;
+    border-radius: 0.85rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    user-select: none;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .p-btn-sm { height: 32px; padding: 0 0.75rem; font-size: 0.82rem; }
+  .p-btn-default { height: 40px; padding: 0 1rem; font-size: 0.875rem; }
+  
+  .p-btn-primary { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
+  .p-btn-primary:hover { filter: brightness(0.95); }
+  
+  .p-btn-secondary { background: var(--secondary); color: var(--fg); border-color: var(--border); }
+  .p-btn-secondary:hover { background: color-mix(in srgb, var(--secondary) 80%, var(--fg)); }
+  
+  .p-btn-ghost { background: transparent; color: var(--fg); border-color: transparent; }
+  .p-btn-ghost:hover { background: var(--secondary); }
+  
+  .p-btn-error { background: var(--error-bg); color: var(--error-fg); border-color: var(--error-border); }
+  .p-btn-error:hover { filter: brightness(0.95); }
+  
+  .p-btn-ghost-error { background: transparent; color: var(--fg); border-color: transparent; }
+  .p-btn-ghost-error:hover { background: var(--error-bg); color: var(--error-fg); border-color: var(--error-border); }
+
+  .p-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .p-badge-ghost { background: var(--secondary); color: var(--fg); border: 1px solid var(--border); }
+  .p-badge-error { background: var(--error-bg); color: var(--error-fg); }
+  .p-badge-success { background: color-mix(in srgb, #22c55e 15%, transparent); color: #16a34a; }
+
+  .p-tabs {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem;
+    background: var(--secondary);
+    border-radius: 0.85rem;
+    gap: 0.2rem;
+  }
+  .p-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: 0.6rem;
+    background: transparent;
+    color: var(--secondary-fg);
+    border: none;
+    cursor: pointer;
+  }
+  .p-tab.active {
+    background: var(--bg);
+    color: var(--fg);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .menu-preview {
+    background: var(--popover);
+    border: 1px solid var(--border);
+    border-radius: 0.85rem;
+    padding: 0.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 170px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--fg);
+    cursor: pointer;
+  }
+  .menu-item:hover { background: var(--secondary); }
+  .menu-item.danger { color: var(--error-fg); }
+  .menu-item.danger:hover { background: var(--error-bg); }
+
+  /* Tabela de Auditoria e Implementação */
+  .audit-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.82rem;
+  }
+  .audit-table th, .audit-table td {
+    padding: 0.65rem 0.85rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .audit-table th {
+    background: var(--secondary);
+    color: var(--fg);
+    font-weight: 600;
+  }
+  .status-pill {
+    display: inline-block;
+    padding: 0.1rem 0.45rem;
+    border-radius: 0.3rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: color-mix(in srgb, #22c55e 20%, transparent);
+    color: #16a34a;
+  }
+
+  svg.icon {
+    width: 15px;
+    height: 15px;
+    stroke-width: 2;
+    stroke: currentColor;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+  svg.icon-sm { width: 13px; height: 13px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badges">
+    <div class="header-tag">
+      <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      DS05 — UZZINA / Prism CNVT
+    </div>
+    <div class="header-status">
+      ✓ Concluído & Aplicado na Aplicação
+    </div>
+  </div>
+  <h1>Taxonomia de Ícones: Contexto vs Ação</h1>
+  <p class="dim" style="font-size: 1.05rem; max-width: 850px;">
+    Catálogo oficial do Design System estruturado por <strong>função semântica</strong>. Elementos de identidade (substantivos) abrem à esquerda; elementos de disparo e direção (verbos e fluxo) fecham à direita.
+  </p>
+</header>
+
+<section class="taxonomy-banner">
+  <div class="tax-box">
+    <div class="tax-box-title">
+      <span class="badge-rule rule-left">À Esquerda</span>
+      Ícones de Contexto & Objeto
+    </div>
+    <p>Representam <strong>o substantivo, a entidade, a marca ou a perspectiva</strong> sobre a qual se opera. Ex: Tipo de Visualização (⊞), Ordenação (⑂), Exibição (👁), Cor (🎨), Novo Usuário (👤+), Novo Parceiro (📁+).</p>
+  </div>
+  <div class="tax-box">
+    <div class="tax-box-title">
+      <span class="badge-rule rule-right">À Direita</span>
+      Ícones de Ação & Disparo
+    </div>
+    <p>Representam <strong>o verbo, a execução imediata, o envio ou a conclusão</strong>. Ex: Nova Ação (+), Salvar (☁️), Publicar (✈️), Concluir (✓✓), Gerar IA (✨), WhatsApp (📞), Excluir (🗑), Chevrons (⌄).</p>
+  </div>
+  <div class="tax-box">
+    <div class="tax-box-title">
+      <span class="badge-rule rule-both">Composto / Direção</span>
+      Gatilhos Mistos & Espaço
+    </div>
+    <p>Menús combinam <strong>Contexto à Esquerda + Seta à Direita</strong> (<code>[⊞ Visualizar ⌄]</code>). Navegação direcional respeita o vetor físico: Voltar para trás (←) e Avançar para frente (→).</p>
+  </div>
+</section>
+
+<!-- Barra Sticky -->
+<div class="sticky-bar">
+  <div class="bar-group">
+    <span class="bar-label">Paleta UZZINA:</span>
+    <select id="themeSelect">
+      <option value="sky">Sky (Padrão)</option>
+      <option value="amber">Amber</option>
+      <option value="rose">Rose</option>
+      <option value="emerald">Emerald</option>
+      <option value="indigo">Indigo</option>
+      <option value="violet">Violet</option>
+      <option value="cyan">Cyan</option>
+      <option value="teal">Teal</option>
+      <option value="fuchsia">Fuchsia</option>
+      <option value="orange">Orange</option>
+      <option value="slate">Slate</option>
+    </select>
+  </div>
+  <div class="bar-group">
+    <span class="bar-label">Modo:</span>
+    <select id="modeSelect">
+      <option value="light">☀️ Claro</option>
+      <option value="dark">🌙 Escuro</option>
+    </select>
+  </div>
+  <div class="bar-group">
+    <button class="btn-ctrl" id="btnExpandAll">Ocultar Detalhes</button>
+  </div>
+</div>
+
+<!-- Filtros de Seção -->
+<div class="filters-row">
+  <button class="filter-pill active" data-filter="all">Todas as Funções</button>
+  <button class="filter-pill" data-filter="mixed">1. Mistos (Contexto + Seta)</button>
+  <button class="filter-pill" data-filter="action">2. Ação & Disparo (À Direita)</button>
+  <button class="filter-pill" data-filter="context">3. Contexto & Entidade (À Esquerda)</button>
+  <button class="filter-pill" data-filter="direction">4. Navegação Direcional</button>
+  <button class="filter-pill" data-filter="tabs">5. Abas (Tabs)</button>
+  <button class="filter-pill" data-filter="badges">6. Badges & Calendário</button>
+  <button class="filter-pill" data-filter="menus">7. Menus Suspensos</button>
+  <button class="filter-pill" data-filter="audit">8. Tabela de Implementação</button>
+</div>
+
+<main id="mainContainer">
+
+  <!-- ========================================== -->
+  <!-- 1. GATILHOS MISTOS (Contexto + Chevron) -->
+  <!-- ========================================== -->
+  <section class="category-section" data-cat="mixed">
+    <div class="category-header">
+      <div>
+        <h2>1. Gatilhos Mistos: Contexto à Esquerda + Seta à Direita</h2>
+        <p class="category-desc">Gatilhos de menu que têm um ícone temático de categoria E uma seta de expansão (dropdown). Elimina o erro do ícone emparedado no meio.</p>
+      </div>
+      <span class="badge-rule rule-both">Aplicado na Main</span>
+    </div>
+
+    <div class="component-grid">
+      
+      <!-- Visualizar -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Menu Visualizar</div>
+            <div class="comp-role">UViewOptions &bull; Barra de Ferramentas</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-sm p-btn-ghost">
+            <svg class="icon" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+            <span>Visualizar</span>
+            <svg class="icon icon-sm dim" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> Ícone de contexto (⊞ Grade) à esquerda identifica o tipo de visão. A seta (⌄) à direita indica o dropdown. O código de <code>UViewOptions.tsx</code> foi ajustado para renderizar o ícone antes do texto.
+        </div>
+      </div>
+
+      <!-- Ordenar -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Menu Ordenar</div>
+            <div class="comp-role">UViewOptions &bull; Barra de Ferramentas</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-sm p-btn-ghost">
+            <svg class="icon" viewBox="0 0 24 24"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/></svg>
+            <span>Ordenar</span>
+            <svg class="icon icon-sm dim" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> Ícone de ordenação (⑂) abre à esquerda. Chevron (⌄) fecha à direita.
+        </div>
+      </div>
+
+      <!-- Exibir -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Menu Exibir</div>
+            <div class="comp-role">UViewOptions &bull; Visibilidade de Colunas</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-sm p-btn-ghost">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>Exibir</span>
+            <svg class="icon icon-sm dim" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> O olho (👁) à esquerda comunica visibilidade. A seta (⌄) à direita comunica expansão.
+        </div>
+      </div>
+
+      <!-- Seletor de Modelo IA com Chevron -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Seletor de Modelo de IA</div>
+            <div class="comp-role">UAIModelSelect &bull; Gaveta & Planejamento</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-sm p-btn-secondary">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+            <span>Claude 3.5 Sonnet</span>
+            <svg class="icon icon-sm dim" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> Marca/logo do provedor de IA à esquerda (contexto da entidade) e chevron à direita (abrir seletor).
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 2. ÍCONES DE AÇÃO E DISPARO (À DIREITA) -->
+  <!-- ========================================== -->
+  <section class="category-section" data-cat="action">
+    <div class="category-header">
+      <div>
+        <h2>2. Ícones de Ação & Disparo: À DIREITA</h2>
+        <p class="category-desc">Botões onde o ícone representa o verbo, a execução imediata, o envio, a conclusão ou a exclusão. O texto anuncia a intenção e o ícone finaliza o impulso.</p>
+      </div>
+      <span class="badge-rule rule-right">Ícone à Direita</span>
+    </div>
+
+    <div class="component-grid">
+
+      <!-- Nova Ação -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Nova Ação</div>
+            <div class="comp-role">AppBar &bull; Criação Principal</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-default p-btn-primary">
+            <span>Nova ação</span>
+            <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> O <code>+</code> indica a ação pura de criar/adicionar, posicionando-se à direita como gatilho de execução em <code>AppBar.tsx</code>.
+        </div>
+      </div>
+
+      <!-- Salvar -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Salvar Alterações</div>
+            <div class="comp-role">ActionFormFooter &bull; Gaveta de Ação</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-default p-btn-primary">
+            <span>Salvar</span>
+            <svg class="icon" viewBox="0 0 24 24"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> A nuvem de upload indica a ação de persistir na nuvem; fica à direita como confirmação de envio em <code>ActionFormFooter.tsx</code>.
+        </div>
+      </div>
+
+      <!-- Publicar Agora -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Publicar Agora</div>
+            <div class="comp-role">Instagram &bull; Envio Imediato</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-default p-btn-primary">
+            <span>Publicar agora</span>
+            <svg class="icon" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> O aviãozinho representa a ação de disparo/disseminação para fora do sistema.
+        </div>
+      </div>
+
+      <!-- Concluir -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Concluir Ação</div>
+            <div class="comp-role">Rodapé da Gaveta &bull; Finalização</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-default p-btn-secondary">
+            <span>Concluir</span>
+            <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></svg>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> O duplo check indica a conclusão da tarefa inteira; posicionado no encerramento da leitura.
+        </div>
+      </div>
+
+      <!-- Gerar Proposta IA (Sparkles) -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Gerar Proposta IA (Ação com Sparkles)</div>
+            <div class="comp-role">Estratégias IA &bull; Geração de Conteúdo</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-default p-btn-primary">
+            <span>Gerar proposta</span>
+            <svg class="icon" viewBox="0 0 24 24"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> A estrelinha (Sparkles) é o símbolo da ação de processamento/geração de IA, posicionada à direita.
+        </div>
+      </div>
+
+      <!-- Conversar no WhatsApp -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Conversar no WhatsApp</div>
+            <div class="comp-role">LeadDetail &bull; Atendimento</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-default p-btn-secondary" style="background:#25D366;color:#fff;border-color:transparent;">
+            <span>Conversar no WhatsApp</span>
+            <svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> O ícone de telefone indica a ação direta de discar/chamar em <code>LeadDetail.tsx</code>.
+        </div>
+      </div>
+
+      <!-- Botão Excluir -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Botão Excluir (Ação Destrutiva)</div>
+            <div class="comp-role">Gaveta de Ações &bull; Exclusão de Entidades</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-sm p-btn-ghost-error">
+            <span>Excluir</span>
+            <svg class="icon" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+          </button>
+          <button class="p-btn p-btn-sm p-btn-error">
+            <span>Excluir permanentemente</span>
+            <svg class="icon" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> Trata a lixeira como o gatilho final de apagar (como no print da gaveta). O ícone à direita fecha a intenção do verbo excluir.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 3. ÍCONES DE CONTEXTO E ENTIDADE (À ESQUERDA) -->
+  <!-- ========================================== -->
+  <section class="category-section" data-cat="context">
+    <div class="category-header">
+      <div>
+        <h2>3. Ícones de Contexto & Entidade: À ESQUERDA</h2>
+        <p class="category-desc">Identificam a entidade ou a natureza do objeto antes do texto. Não são o verbo de disparo, mas o assunto sobre o qual o botão opera.</p>
+      </div>
+      <span class="badge-rule rule-left">Ícone à Esquerda</span>
+    </div>
+
+    <div class="component-grid">
+
+      <!-- Novo Usuário -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Novo Usuário</div>
+            <div class="comp-role">admin/users.tsx &bull; Gestão de Pessoas</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-default p-btn-ghost">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+            <span>Novo Usuário</span>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> O ícone <code>UserPlus</code> representa a entidade <em>Usuário</em> (contexto/substantivo). Atualizado em <code>users.tsx</code> para abrir à esquerda.
+        </div>
+      </div>
+
+      <!-- Novo Parceiro -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Novo Parceiro</div>
+            <div class="comp-role">admin/partners.tsx &bull; Cadastro de Contas</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-default p-btn-ghost">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/><line x1="12" x2="12" y1="10" y2="16"/><line x1="9" x2="15" y1="13" y2="13"/></svg>
+            <span>Novo Parceiro</span>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> O ícone <code>FolderPlus</code> representa a entidade <em>Parceiro</em> (contexto/substantivo). Atualizado em <code>partners.tsx</code> para abrir à esquerda.
+        </div>
+      </div>
+
+      <!-- Cor da Marca -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Cor da Marca / Paleta</div>
+            <div class="comp-role">Personalização &bull; UColorPickerDropdown</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-sm p-btn-secondary">
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+            <span>Cor da marca</span>
+            <svg class="icon icon-sm dim" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> A paleta/gotas à esquerda identifica a propriedade visual do tema.
+        </div>
+      </div>
+
+      <!-- Pessoas / Responsáveis -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Filtro de Pessoas</div>
+            <div class="comp-role">Barra de Ações &bull; Responsáveis</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-sm p-btn-ghost">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Pessoas</span>
+            <svg class="icon icon-sm dim" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> Ícone de grupo de pessoas à esquerda dá o contexto do filtro.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 4. NAVEGAÇÃO DIRECIONAL E FLUXO ESPACIAL -->
+  <!-- ========================================== -->
+  <section class="category-section" data-cat="direction">
+    <div class="category-header">
+      <div>
+        <h2>4. Navegação Direcional & Fluxo Espacial</h2>
+        <p class="category-desc">A direção física do ícone respeita a cognição humana: voltar aponta para o passado (esquerda) e avançar aponta para o futuro (direita).</p>
+      </div>
+      <span class="badge-rule rule-both">Direção Física</span>
+    </div>
+
+    <div class="component-grid">
+
+      <!-- Voltar para Leads -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Voltar para Leads</div>
+            <div class="comp-role">leads.tsx &bull; Painel de Atendimento</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-sm p-btn-ghost">
+            <svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+            <span>Voltar para leads</span>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> O chevron de voltar fica <strong>à esquerda</strong> porque aponta fisicamente para a tela anterior. Ajustado em <code>leads.tsx</code>.
+        </div>
+      </div>
+
+      <!-- Voltar ao Calendário -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Voltar ao Calendário / Painel</div>
+            <div class="comp-role">dash/action/$id.tsx &bull; Portal do Cliente</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-sm p-btn-ghost">
+            <svg class="icon" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            <span>Voltar ao calendário</span>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> A seta para a esquerda indica o retorno para a visão geral.
+        </div>
+      </div>
+
+      <!-- Avançar / Próximo Passo -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Avançar / Próximo Passo</div>
+            <div class="comp-role">Wizards &bull; Fluxos de Criação</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-default p-btn-primary">
+            <span>Próximo passo</span>
+            <svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> A seta para a direita indica progressão para a frente no fluxo.
+        </div>
+      </div>
+
+      <!-- Link Externo -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Abrir Link Externo</div>
+            <div class="comp-role">Feed &bull; Ver no Instagram</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <button class="p-btn p-btn-sm p-btn-ghost">
+            <span>Ver no Instagram</span>
+            <svg class="icon icon-sm dim" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+          </button>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> O ícone de link externo (↗) fica à direita apontando para fora do sistema.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 5. ABAS DE NAVEGAÇÃO (PrismTabs) -->
+  <!-- ========================================== -->
+  <section class="category-section" data-cat="tabs">
+    <div class="category-header">
+      <div>
+        <h2>5. Abas de Navegação (PrismTabs)</h2>
+        <p class="category-desc">Padrão oficial das abas da gaveta e páginas principais: visual limpo em texto puro.</p>
+      </div>
+      <span class="badge-rule rule-left">Texto Puro</span>
+    </div>
+
+    <div class="component-grid">
+
+      <!-- Abas Sem Ícone -->
+      <div class="comp-card" style="grid-column: 1 / -1;">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Abas da Gaveta de Ações: Padrão Oficial em Texto Puro</div>
+            <div class="comp-role">ActionDrawer &bull; Essencial, Instagram, Observações</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <div class="p-tabs">
+            <button class="p-tab active">Essencial</button>
+            <button class="p-tab">Instagram</button>
+            <button class="p-tab">Observações</button>
+          </div>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> As abas do app usam exclusivamente texto por padrão. Caso venham a ter ícone por exceção em algum caso especial, o ícone entra à esquerda.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 6. BADGES, TAGS & CÉLULAS DE CALENDÁRIO -->
+  <!-- ========================================== -->
+  <section class="category-section" data-cat="badges">
+    <div class="category-header">
+      <div>
+        <h2>6. Badges, Tags & Células de Calendário</h2>
+        <p class="category-desc">Marcações de feriados e status sem ruído visual dentro das células de data.</p>
+      </div>
+      <span class="badge-rule rule-left">Canônico</span>
+    </div>
+
+    <div class="component-grid">
+
+      <!-- Feriado / Data Comemorativa no Calendário -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Data Comemorativa: 'Dia de finados'</div>
+            <div class="comp-role">CalendarDayCell &bull; Célula do Calendário</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <div class="p-badge p-badge-ghost">
+            <span style="width:6px;height:6px;border-radius:999px;background:#22c55e;display:inline-block;"></span>
+            <span>Dia de finados</span>
+          </div>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra Vigente:</strong> Apenas o ponto colorido à esquerda indica a data comemorativa, sem ícone redundante à direita competindo com o título. Ajustado em <code>CalendarDayCell.tsx</code>.
+        </div>
+      </div>
+
+      <!-- Badge de Status: Atrasado -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Status: Atrasado</div>
+            <div class="comp-role">Gaveta de Ação &bull; Topo do Card</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <div class="p-badge p-badge-error">
+            <span>Atrasado</span>
+          </div>
+        </div>
+        <div class="comp-explanation">
+          O badge <code>Atrasado</code> usa apenas fundo pastel com cor semântica de erro, sem ícone, mantendo a leitura limpa.
+        </div>
+      </div>
+
+      <!-- Badge de Status: Aprovado -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Status: Aprovado</div>
+            <div class="comp-role">Portal do Cliente &bull; Revisão</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <div class="p-badge p-badge-success">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+            <span>Aprovado</span>
+          </div>
+        </div>
+        <div class="comp-explanation">
+          Quando o badge tem ícone de estado de sucesso, o check fica à esquerda como qualificador imediato.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 7. MENUS SUSPENSOS E ITENS DE AÇÃO -->
+  <!-- ========================================== -->
+  <section class="category-section" data-cat="menus">
+    <div class="category-header">
+      <div>
+        <h2>7. Menus Suspensos & Dropdown Items</h2>
+        <p class="category-desc">Dentro de menus popover e dropdowns de linha, o ícone fica sempre à esquerda para formar uma coluna visual de leitura escaneável.</p>
+      </div>
+      <span class="badge-rule rule-left">Ícone à Esquerda</span>
+    </div>
+
+    <div class="component-grid">
+
+      <!-- Menu de Ações da Linha -->
+      <div class="comp-card">
+        <div class="comp-card-top">
+          <div>
+            <div class="comp-title">Menu de Contexto da Ação</div>
+            <div class="comp-role">ActionItem &bull; Dropdown de 3 Pontinhos</div>
+          </div>
+          <span class="comp-tag tag-canonical">Canônico</span>
+        </div>
+        <div class="render-box">
+          <div class="menu-preview">
+            <div class="menu-item">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              <span>Editar</span>
+            </div>
+            <div class="menu-item">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              <span>Duplicar</span>
+            </div>
+            <div class="menu-item">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></svg>
+              <span>Arquivar</span>
+            </div>
+            <div class="menu-item danger">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+              <span>Excluir</span>
+            </div>
+          </div>
+        </div>
+        <div class="comp-explanation">
+          <strong>Regra de Menus:</strong> Todos os ícones de opções em listas verticais alinham-se à esquerda para permitir leitura em varredura rápida.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 8. TABELA DE IMPLEMENTAÇÃO E AUDITORIA -->
+  <!-- ========================================== -->
+  <section class="category-section" data-cat="audit">
+    <div class="category-header">
+      <div>
+        <h2>8. Tabela de Implementação & Auditoria na Aplicação</h2>
+        <p class="category-desc">Resumo de todos os arquivos ajustados no código real para cumprir a nova taxonomia do DS05.</p>
+      </div>
+      <span class="badge-rule rule-right">100% Concluído</span>
+    </div>
+
+    <table class="audit-table">
+      <thead>
+        <tr>
+          <th>Componente / Tela</th>
+          <th>Arquivo</th>
+          <th>Antes</th>
+          <th>Agora</th>
+          <th>Função Semântica</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Barra de Visualização</strong></td>
+          <td><code>UViewOptions.tsx</code></td>
+          <td><code>Visualizar ⊞ ⌄</code></td>
+          <td><code>[⊞ Visualizar ⌄]</code></td>
+          <td>Misto: Contexto à Esquerda + Seta à Direita</td>
+          <td><span class="status-pill">Aplicado</span></td>
+        </tr>
+        <tr>
+          <td><strong>Novo Usuário</strong></td>
+          <td><code>admin/users.tsx</code></td>
+          <td><code>Novo Usuário [UserPlus]</code></td>
+          <td><code>[UserPlus] Novo Usuário</code></td>
+          <td>Contexto / Entidade (à Esquerda)</td>
+          <td><span class="status-pill">Aplicado</span></td>
+        </tr>
+        <tr>
+          <td><strong>Novo Parceiro</strong></td>
+          <td><code>admin/partners.tsx</code></td>
+          <td><code>Novo Parceiro [FolderPlus]</code></td>
+          <td><code>[FolderPlus] Novo Parceiro</code></td>
+          <td>Contexto / Entidade (à Esquerda)</td>
+          <td><span class="status-pill">Aplicado</span></td>
+        </tr>
+        <tr>
+          <td><strong>Voltar para Leads</strong></td>
+          <td><code>app/routes/app/leads.tsx</code></td>
+          <td><code>Voltar para leads [ChevronLeft]</code></td>
+          <td><code>[ChevronLeft] Voltar para leads</code></td>
+          <td>Navegação Direcional (Sentido Físico ←)</td>
+          <td><span class="status-pill">Aplicado</span></td>
+        </tr>
+        <tr>
+          <td><strong>Voltar ao Calendário</strong></td>
+          <td><code>dash/action/$id.tsx</code></td>
+          <td><code>[ArrowLeft] Voltar</code></td>
+          <td><code>[ArrowLeft] Voltar ao calendário</code></td>
+          <td>Navegação Direcional (Sentido Físico ←)</td>
+          <td><span class="status-pill">Aplicado</span></td>
+        </tr>
+        <tr>
+          <td><strong>Feriado no Calendário</strong></td>
+          <td><code>CalendarDayCell.tsx</code></td>
+          <td><code>🟢 Dia de finados [LinkIcon]</code></td>
+          <td><code>[🟢 Dia de finados]</code></td>
+          <td>Badge Limpo (Dot de Status)</td>
+          <td><span class="status-pill">Aplicado</span></td>
+        </tr>
+        <tr>
+          <td><strong>Nova Ação</strong></td>
+          <td><code>layout/AppBar.tsx</code></td>
+          <td><code>[Nova ação +]</code></td>
+          <td><code>[Nova ação +]</code></td>
+          <td>Ação / Disparo (à Direita)</td>
+          <td><span class="status-pill">Aplicado</span></td>
+        </tr>
+        <tr>
+          <td><strong>Salvar</strong></td>
+          <td><code>ActionFormFooter.tsx</code></td>
+          <td><code>[Salvar ☁️]</code></td>
+          <td><code>[Salvar ☁️]</code></td>
+          <td>Ação / Disparo (à Direita)</td>
+          <td><span class="status-pill">Aplicado</span></td>
+        </tr>
+        <tr>
+          <td><strong>Excluir</strong></td>
+          <td><code>button.tsx</code> & Gaveta</td>
+          <td><code>[Excluir 🗑]</code></td>
+          <td><code>[Excluir 🗑]</code></td>
+          <td>Ação / Disparo (à Direita)</td>
+          <td><span class="status-pill">Aplicado</span></td>
+        </tr>
+        <tr>
+          <td><strong>WhatsApp</strong></td>
+          <td><code>LeadDetail.tsx</code></td>
+          <td><code>[Telefone 📞]</code></td>
+          <td><code>[Telefone 📞]</code></td>
+          <td>Ação / Disparo (à Direita)</td>
+          <td><span class="status-pill">Aplicado</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<script>
+  // Paletas OKLCH reais do UZZINA
+  const PALETTES = {
+    sky: {
+      light: { primary: "oklch(0.58 0.15 240)", primaryFg: "#ffffff", bg: "oklch(0.99 0.005 240)", fg: "oklch(0.18 0.02 240)", card: "oklch(0.97 0.008 240)", border: "oklch(0.90 0.01 240)", secondary: "oklch(0.93 0.01 240)", secondaryFg: "oklch(0.45 0.02 240)", popover: "oklch(0.99 0.005 240)", errorBg: "oklch(0.95 0.03 25)", errorFg: "oklch(0.55 0.22 25)", errorBorder: "oklch(0.90 0.05 25)" },
+      dark: { primary: "oklch(0.68 0.15 240)", primaryFg: "oklch(0.12 0.02 240)", bg: "oklch(0.14 0.02 240)", fg: "oklch(0.95 0.01 240)", card: "oklch(0.18 0.02 240)", border: "oklch(0.28 0.02 240)", secondary: "oklch(0.22 0.02 240)", secondaryFg: "oklch(0.70 0.02 240)", popover: "oklch(0.18 0.02 240)", errorBg: "oklch(0.25 0.08 25)", errorFg: "oklch(0.75 0.18 25)", errorBorder: "oklch(0.35 0.10 25)" }
+    },
+    amber: {
+      light: { primary: "oklch(0.65 0.16 75)", primaryFg: "#ffffff", bg: "oklch(0.99 0.005 75)", fg: "oklch(0.18 0.02 75)", card: "oklch(0.97 0.008 75)", border: "oklch(0.90 0.01 75)", secondary: "oklch(0.93 0.01 75)", secondaryFg: "oklch(0.45 0.02 75)", popover: "oklch(0.99 0.005 75)", errorBg: "oklch(0.95 0.03 25)", errorFg: "oklch(0.55 0.22 25)", errorBorder: "oklch(0.90 0.05 25)" },
+      dark: { primary: "oklch(0.72 0.16 75)", primaryFg: "oklch(0.12 0.02 75)", bg: "oklch(0.14 0.02 75)", fg: "oklch(0.95 0.01 75)", card: "oklch(0.18 0.02 75)", border: "oklch(0.28 0.02 75)", secondary: "oklch(0.22 0.02 75)", secondaryFg: "oklch(0.70 0.02 75)", popover: "oklch(0.18 0.02 75)", errorBg: "oklch(0.25 0.08 25)", errorFg: "oklch(0.75 0.18 25)", errorBorder: "oklch(0.35 0.10 25)" }
+    },
+    rose: {
+      light: { primary: "oklch(0.60 0.20 15)", primaryFg: "#ffffff", bg: "oklch(0.99 0.005 15)", fg: "oklch(0.18 0.02 15)", card: "oklch(0.97 0.008 15)", border: "oklch(0.90 0.01 15)", secondary: "oklch(0.93 0.01 15)", secondaryFg: "oklch(0.45 0.02 15)", popover: "oklch(0.99 0.005 15)", errorBg: "oklch(0.95 0.03 25)", errorFg: "oklch(0.55 0.22 25)", errorBorder: "oklch(0.90 0.05 25)" },
+      dark: { primary: "oklch(0.70 0.20 15)", primaryFg: "oklch(0.12 0.02 15)", bg: "oklch(0.14 0.02 15)", fg: "oklch(0.95 0.01 15)", card: "oklch(0.18 0.02 15)", border: "oklch(0.28 0.02 15)", secondary: "oklch(0.22 0.02 15)", secondaryFg: "oklch(0.70 0.02 15)", popover: "oklch(0.18 0.02 15)", errorBg: "oklch(0.25 0.08 25)", errorFg: "oklch(0.75 0.18 25)", errorBorder: "oklch(0.35 0.10 25)" }
+    },
+    emerald: {
+      light: { primary: "oklch(0.58 0.16 155)", primaryFg: "#ffffff", bg: "oklch(0.99 0.005 155)", fg: "oklch(0.18 0.02 155)", card: "oklch(0.97 0.008 155)", border: "oklch(0.90 0.01 155)", secondary: "oklch(0.93 0.01 155)", secondaryFg: "oklch(0.45 0.02 155)", popover: "oklch(0.99 0.005 155)", errorBg: "oklch(0.95 0.03 25)", errorFg: "oklch(0.55 0.22 25)", errorBorder: "oklch(0.90 0.05 25)" },
+      dark: { primary: "oklch(0.68 0.16 155)", primaryFg: "oklch(0.12 0.02 155)", bg: "oklch(0.14 0.02 155)", fg: "oklch(0.95 0.01 155)", card: "oklch(0.18 0.02 155)", border: "oklch(0.28 0.02 155)", secondary: "oklch(0.22 0.02 155)", secondaryFg: "oklch(0.70 0.02 155)", popover: "oklch(0.18 0.02 155)", errorBg: "oklch(0.25 0.08 25)", errorFg: "oklch(0.75 0.18 25)", errorBorder: "oklch(0.35 0.10 25)" }
+    },
+    indigo: {
+      light: { primary: "oklch(0.55 0.18 275)", primaryFg: "#ffffff", bg: "oklch(0.99 0.005 275)", fg: "oklch(0.18 0.02 275)", card: "oklch(0.97 0.008 275)", border: "oklch(0.90 0.01 275)", secondary: "oklch(0.93 0.01 275)", secondaryFg: "oklch(0.45 0.02 275)", popover: "oklch(0.99 0.005 275)", errorBg: "oklch(0.95 0.03 25)", errorFg: "oklch(0.55 0.22 25)", errorBorder: "oklch(0.90 0.05 25)" },
+      dark: { primary: "oklch(0.65 0.18 275)", primaryFg: "oklch(0.12 0.02 275)", bg: "oklch(0.14 0.02 275)", fg: "oklch(0.95 0.01 275)", card: "oklch(0.18 0.02 275)", border: "oklch(0.28 0.02 275)", secondary: "oklch(0.22 0.02 275)", secondaryFg: "oklch(0.70 0.02 275)", popover: "oklch(0.18 0.02 275)", errorBg: "oklch(0.25 0.08 25)", errorFg: "oklch(0.75 0.18 25)", errorBorder: "oklch(0.35 0.10 25)" }
+    },
+    violet: {
+      light: { primary: "oklch(0.58 0.19 295)", primaryFg: "#ffffff", bg: "oklch(0.99 0.005 295)", fg: "oklch(0.18 0.02 295)", card: "oklch(0.97 0.008 295)", border: "oklch(0.90 0.01 295)", secondary: "oklch(0.93 0.01 295)", secondaryFg: "oklch(0.45 0.02 295)", popover: "oklch(0.99 0.005 295)", errorBg: "oklch(0.95 0.03 25)", errorFg: "oklch(0.55 0.22 25)", errorBorder: "oklch(0.90 0.05 25)" },
+      dark: { primary: "oklch(0.68 0.19 295)", primaryFg: "oklch(0.12 0.02 295)", bg: "oklch(0.14 0.02 295)", fg: "oklch(0.95 0.01 295)", card: "oklch(0.18 0.02 295)", border: "oklch(0.28 0.02 295)", secondary: "oklch(0.22 0.02 295)", secondaryFg: "oklch(0.70 0.02 295)", popover: "oklch(0.18 0.02 295)", errorBg: "oklch(0.25 0.08 25)", errorFg: "oklch(0.75 0.18 25)", errorBorder: "oklch(0.35 0.10 25)" }
+    },
+    cyan: {
+      light: { primary: "oklch(0.60 0.14 215)", primaryFg: "#ffffff", bg: "oklch(0.99 0.005 215)", fg: "oklch(0.18 0.02 215)", card: "oklch(0.97 0.008 215)", border: "oklch(0.90 0.01 215)", secondary: "oklch(0.93 0.01 215)", secondaryFg: "oklch(0.45 0.02 215)", popover: "oklch(0.99 0.005 215)", errorBg: "oklch(0.95 0.03 25)", errorFg: "oklch(0.55 0.22 25)", errorBorder: "oklch(0.90 0.05 25)" },
+      dark: { primary: "oklch(0.70 0.14 215)", primaryFg: "oklch(0.12 0.02 215)", bg: "oklch(0.14 0.02 215)", fg: "oklch(0.95 0.01 215)", card: "oklch(0.18 0.02 215)", border: "oklch(0.28 0.02 215)", secondary: "oklch(0.22 0.02 215)", secondaryFg: "oklch(0.70 0.02 215)", popover: "oklch(0.18 0.02 215)", errorBg: "oklch(0.25 0.08 25)", errorFg: "oklch(0.75 0.18 25)", errorBorder: "oklch(0.35 0.10 25)" }
+    },
+    teal: {
+      light: { primary: "oklch(0.58 0.14 180)", primaryFg: "#ffffff", bg: "oklch(0.99 0.005 180)", fg: "oklch(0.18 0.02 180)", card: "oklch(0.97 0.008 180)", border: "oklch(0.90 0.01 180)", secondary: "oklch(0.93 0.01 180)", secondaryFg: "oklch(0.45 0.02 180)", popover: "oklch(0.99 0.005 180)", errorBg: "oklch(0.95 0.03 25)", errorFg: "oklch(0.55 0.22 25)", errorBorder: "oklch(0.90 0.05 25)" },
+      dark: { primary: "oklch(0.68 0.14 180)", primaryFg: "oklch(0.12 0.02 180)", bg: "oklch(0.14 0.02 180)", fg: "oklch(0.95 0.01 180)", card: "oklch(0.18 0.02 180)", border: "oklch(0.28 0.02 180)", secondary: "oklch(0.22 0.02 180)", secondaryFg: "oklch(0.70 0.02 180)", popover: "oklch(0.18 0.02 180)", errorBg: "oklch(0.25 0.08 25)", errorFg: "oklch(0.75 0.18 25)", errorBorder: "oklch(0.35 0.10 25)" }
+    },
+    fuchsia: {
+      light: { primary: "oklch(0.60 0.22 320)", primaryFg: "#ffffff", bg: "oklch(0.99 0.005 320)", fg: "oklch(0.18 0.02 320)", card: "oklch(0.97 0.008 320)", border: "oklch(0.90 0.01 320)", secondary: "oklch(0.93 0.01 320)", secondaryFg: "oklch(0.45 0.02 320)", popover: "oklch(0.99 0.005 320)", errorBg: "oklch(0.95 0.03 25)", errorFg: "oklch(0.55 0.22 25)", errorBorder: "oklch(0.90 0.05 25)" },
+      dark: { primary: "oklch(0.70 0.22 320)", primaryFg: "oklch(0.12 0.02 320)", bg: "oklch(0.14 0.02 320)", fg: "oklch(0.95 0.01 320)", card: "oklch(0.18 0.02 320)", border: "oklch(0.28 0.02 320)", secondary: "oklch(0.22 0.02 320)", secondaryFg: "oklch(0.70 0.02 320)", popover: "oklch(0.18 0.02 320)", errorBg: "oklch(0.25 0.08 25)", errorFg: "oklch(0.75 0.18 25)", errorBorder: "oklch(0.35 0.10 25)" }
+    },
+    orange: {
+      light: { primary: "oklch(0.62 0.19 50)", primaryFg: "#ffffff", bg: "oklch(0.99 0.005 50)", fg: "oklch(0.18 0.02 50)", card: "oklch(0.97 0.008 50)", border: "oklch(0.90 0.01 50)", secondary: "oklch(0.93 0.01 50)", secondaryFg: "oklch(0.45 0.02 50)", popover: "oklch(0.99 0.005 50)", errorBg: "oklch(0.95 0.03 25)", errorFg: "oklch(0.55 0.22 25)", errorBorder: "oklch(0.90 0.05 25)" },
+      dark: { primary: "oklch(0.70 0.19 50)", primaryFg: "oklch(0.12 0.02 50)", bg: "oklch(0.14 0.02 50)", fg: "oklch(0.95 0.01 50)", card: "oklch(0.18 0.02 50)", border: "oklch(0.28 0.02 50)", secondary: "oklch(0.22 0.02 50)", secondaryFg: "oklch(0.70 0.02 50)", popover: "oklch(0.18 0.02 50)", errorBg: "oklch(0.25 0.08 25)", errorFg: "oklch(0.75 0.18 25)", errorBorder: "oklch(0.35 0.10 25)" }
+    },
+    slate: {
+      light: { primary: "oklch(0.45 0.03 250)", primaryFg: "#ffffff", bg: "oklch(0.99 0.002 250)", fg: "oklch(0.18 0.01 250)", card: "oklch(0.97 0.005 250)", border: "oklch(0.88 0.005 250)", secondary: "oklch(0.92 0.005 250)", secondaryFg: "oklch(0.45 0.01 250)", popover: "oklch(0.99 0.002 250)", errorBg: "oklch(0.95 0.03 25)", errorFg: "oklch(0.55 0.22 25)", errorBorder: "oklch(0.90 0.05 25)" },
+      dark: { primary: "oklch(0.65 0.03 250)", primaryFg: "oklch(0.12 0.01 250)", bg: "oklch(0.14 0.01 250)", fg: "oklch(0.95 0.01 250)", card: "oklch(0.18 0.01 250)", border: "oklch(0.28 0.01 250)", secondary: "oklch(0.22 0.01 250)", secondaryFg: "oklch(0.70 0.01 250)", popover: "oklch(0.18 0.01 250)", errorBg: "oklch(0.25 0.08 25)", errorFg: "oklch(0.75 0.18 25)", errorBorder: "oklch(0.35 0.10 25)" }
+    }
+  };
+
+  function applyTheme() {
+    const theme = document.getElementById("themeSelect").value;
+    const mode = document.getElementById("modeSelect").value;
+    const pal = PALETTES[theme][mode];
+    const r = document.documentElement;
+    r.style.setProperty("--primary", pal.primary);
+    r.style.setProperty("--primary-fg", pal.primaryFg);
+    r.style.setProperty("--bg", pal.bg);
+    r.style.setProperty("--fg", pal.fg);
+    r.style.setProperty("--card", pal.card);
+    r.style.setProperty("--border", pal.border);
+    r.style.setProperty("--secondary", pal.secondary);
+    r.style.setProperty("--secondary-fg", pal.secondaryFg);
+    r.style.setProperty("--popover", pal.popover);
+    r.style.setProperty("--error-bg", pal.errorBg);
+    r.style.setProperty("--error-fg", pal.errorFg);
+    r.style.setProperty("--error-border", pal.errorBorder);
+  }
+
+  document.getElementById("themeSelect").addEventListener("change", applyTheme);
+  document.getElementById("modeSelect").addEventListener("change", applyTheme);
+  applyTheme();
+
+  // Filtros por Categoria
+  document.querySelectorAll(".filter-pill").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".filter-pill").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const f = btn.dataset.filter;
+      document.querySelectorAll(".category-section").forEach(sec => {
+        if (f === "all" || sec.dataset.cat === f) {
+          sec.style.display = "block";
+        } else {
+          sec.style.display = "none";
+        }
+      });
+    });
+  });
+
+  // Expandir / Recolher Detalhes
+  let expanded = true;
+  document.getElementById("btnExpandAll").addEventListener("click", () => {
+    expanded = !expanded;
+    document.querySelectorAll(".comp-explanation").forEach(e => {
+      e.style.display = expanded ? "block" : "none";
+    });
+    document.getElementById("btnExpandAll").textContent = expanded ? "Ocultar Detalhes" : "Expandir Detalhes";
+  });
+</script>
+
+</body>
+</html>

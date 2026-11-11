@@ -139,7 +139,7 @@ export function AppBar({
                 toggleSelectionMode();
               }}
               size={"icon"}
-              variant={"destructive"}
+              variant={"error"}
             >
               <XIcon />
             </PrismButton>

@@ -51,7 +51,7 @@ function DetailMessage({
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
       <div
-        className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center text-muted-foreground"
+        className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center text-secondary-foreground"
         role={role}
       >
         {icon}
@@ -243,7 +243,7 @@ function AppLeads() {
               <h1 className="text-2xl font-medium tracking-tight text-foreground">
                 Leads
               </h1>
-              <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+              <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">
                 {filteredLeads.length}
               </span>
             </div>
@@ -272,14 +272,14 @@ function AppLeads() {
           >
             {isLoading ? (
               <div
-                className="p-8 text-center text-sm text-muted-foreground"
+                className="p-8 text-center text-sm text-secondary-foreground"
                 role="status"
               >
                 Carregando leads...
               </div>
             ) : loadFailed ? (
               <div
-                className="flex flex-col items-center gap-3 p-8 text-center text-sm text-muted-foreground"
+                className="flex flex-col items-center gap-3 p-8 text-center text-sm text-secondary-foreground"
                 role="alert"
               >
                 <p>Não foi possível carregar os leads.</p>
@@ -288,7 +288,7 @@ function AppLeads() {
                 </PrismButton>
               </div>
             ) : filteredLeads.length === 0 ? (
-              <div className="p-8 text-center text-sm text-muted-foreground">
+              <div className="p-8 text-center text-sm text-secondary-foreground">
                 {leads?.length
                   ? "Nenhum lead encontrado."
                   : "Nenhum lead recebido ainda."}
@@ -319,8 +319,8 @@ function AppLeads() {
                 size="sm"
                 variant="ghost"
               >
-                Voltar para leads
                 <ChevronLeftIcon />
+                Voltar para leads
               </PrismButton>
             </div>
           )}

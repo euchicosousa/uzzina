@@ -4,13 +4,21 @@
 
 **Bloqueios:** Nenhum. Coordenar a cobertura com DS02.
 
-**Status:** encerrado com aceite do proprietário em 06/11/2026. Regra: todo ícone fica à direita do texto (botões só com ícone não contam). Implementado em 27 arquivos e conferido pelo proprietário no app. Ficaram como estavam, por decisão dele: gatilhos de seleção com o ícone do valor escolhido, o botão de notificar responsáveis e os links de texto "Voltar".
+**Status:** CONCLUÍDO e validado pelo proprietário em 11/11/2026. A taxonomia por função semântica foi implementada no código e registrada nos contratos:
+- **Gatilhos Mistos (`UViewOptions`):** Ícone de contexto à esquerda + Rótulo + Chevron à direita (`[⊞ Visualizar ⌄]`, `[⑂ Ordenar ⌄]`, `[👁 Exibir ⌄]`).
+- **Ação & Disparo:** Ícone à direita (`[Nova Ação +]`, `[Salvar ☁️]`, `[Publicar agora ✈️]`, `[Concluir ✓✓]`, `[Gerar proposta ✨]`, `[WhatsApp 📞]`, `[Excluir 🗑]`).
+- **Contexto & Entidade:** Ícone à esquerda (`[👤+ Novo Usuário]`, `[🏢 Novo Parceiro]`, `[🎨 Cor da marca]`, `[👥 Pessoas]`).
+- **Navegação Direcional:** Sentido físico do fluxo (`[← Voltar para leads]` à esquerda / `[Avançar →]` à direita / `[Link ↗]` à direita).
+- **Abas:** Padrão de texto puro mantido.
+- **Calendário:** Badge de datas comemorativas limpo com ponto colorido (`[🟢 Dia de finados]`), sem ícone redundante competindo na célula.
+
+Laboratório interativo: `.scratch/design-system-audit/estudo-ordem-icones.html`.
 
 ## Modelos sugeridos
 
-- **OpenAI (Codex)** — GPT-6.1 Sol, para cruzar documentação oficial e usos reais no código.
-- **Anthropic (Claude)** — Claude Haiku 5.5, para pesquisar diretrizes e inventariar controles. Disponibilidade conforme plano.
-- **Google (Gemini/Antigravity)** — Gemini 3.8 Flash, para mapear ocorrências e sintetizar exceções. Disponibilidade conforme plano.
+- **Anthropic (Claude)** — Claude Sonnet 5.5, para análise semântica de componentes e geração do laboratório visual interativo.
+- **Google (Gemini/Antigravity)** — Gemini 3.8 Flash, para varredura e catalogação de ocorrências de ícones.
+- **OpenAI (Codex)** — GPT-6.1 Sol, para cruzamento de diretrizes de design systems e acessibilidade.
 
 ## Critérios de aceite
 
@@ -66,3 +74,13 @@ Convenção aplicada: ícone antes do texto; sem `mr-*`/`ml-*` no ícone (o `gap
 ## Decisão do proprietário — 06/11
 
 Em botões e abas com ícone e texto, o ícone fica sempre à direita. Fazer Login já segue a ordem. Inventariar divergências, começando por Nova Ação, criação no Admin, Redefinir Senha, Salvar/Atualizar e abas. Controles só com ícone não têm ordem de rótulo. A proposta `proposal/ds05-save-icon-first` foi superada. Aplicação depende de autorização.
+
+---
+
+## Reabertura pelo Proprietário — 11/11/2026
+
+O proprietário identificou equívocos na aplicação da regra "ícone à direita" (ex.: gatilhos de menu `UViewOptions` onde o ícone de categoria ficou espremido entre o rótulo e o chevron, badges de datas comemorativas, etc.).
+
+**Ações em andamento:**
+1. Criação do laboratório interativo [`estudo-ordem-icones.html`](../estudo-ordem-icones.html) catalogando todos os componentes com ícones do sistema para comparação lado a lado (Ícone à Esquerda vs. Ícone à Direita vs. Casos Mistos).
+2. Validação interativa de cada grupo de componentes com o proprietário antes de qualquer alteração no código de produção.

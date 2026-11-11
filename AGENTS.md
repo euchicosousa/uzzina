@@ -102,21 +102,22 @@ Contratos de área (gaveta, busca, páginas, Prism em detalhe, IA, banco e impla
 
 Preserve o estilo próprio, temas e paletas OKLCH da UZZINA. Novos primitivos ficam em `app/components/prism/`, exportados por index.ts, com React Aria Components, CVA e `cn()` de `~/lib/utils`. Componentes de negócio reutilizam esses primitivos. Consulte implementação e `/ui` para props e variantes atuais.
 
-| Token                                   | Uso                          |
-| --------------------------------------- | ---------------------------- |
-| bg-background / bg-card / bg-input      | Página, painéis e campos     |
-| text-foreground / text-muted-foreground | Texto principal e secundário |
-| border-border / border-input            | Bordas                       |
-| bg-primary / text-primary-foreground    | Ação principal               |
-| border-ring / ring-ring/30              | Foco                         |
-| text-error / bg-error-background        | Erro                         |
-| text-success / bg-success-background    | Sucesso                      |
-| text-warning / bg-warning-background    | Aviso                        |
-| text-info / bg-info-background          | Informação                   |
+| Token                                       | Uso                                                                     |
+| ------------------------------------------- | ----------------------------------------------------------------------- |
+| bg-background / bg-card / bg-input          | Página, painéis e campos                                                |
+| bg-secondary                                | Superfícies neutras e fundos de hover/foco (5% no claro, 10% no escuro) |
+| text-foreground / text-secondary-foreground | Texto principal e secundário (65% nos dois modos)                       |
+| border-border / border-input                | Bordas                                                                  |
+| bg-primary / text-primary-foreground        | Ação principal                                                          |
+| border-ring / ring-ring/30                  | Foco                                                                    |
+| text-error / bg-error-background            | Erro                                                                    |
+| text-success / bg-success-background        | Sucesso                                                                 |
+| text-warning / bg-warning-background        | Aviso                                                                   |
+| text-info / bg-info-background              | Informação                                                              |
 
 Escala de controles `xs`/`sm`/`default`/`lg` = 24/32/40/48px, com ícone só `icon-xs`/`icon-sm`/`icon`/`icon-lg` nas mesmas medidas. Texto por tamanho: `xs` `text-xs` (único com 12px), `sm` e `default` `text-sm`, `lg` `text-base` em revisão. Raios: controles até `default` `rounded-2xl squircle`, `lg` `rounded-3xl squircle`; ButtonGroup/ToggleGroup seguem o raio dos itens do tamanho; containers (popover, dropdown, conteúdo de select/combobox, command dialog, dialog, alert, toaster) `rounded-2xl`; itens internos `rounded-xl squircle`; Badge/`PrismKbd` em pílula `rounded-full` sem squircle. Botão circular usa a prop `isRounded` do `PrismButton`/`LinkButton` (`rounded-full`, sem squircle; o `squircle` do botão só se aplica quando não é circular); não combine `rounded-full` com a classe `no-squircle`, que perde para o `squircle` e hoje não é usada. Dentro de `ButtonGroup` o raio vem do grupo e `isRounded` não se aplica. Exemplo: `UAvatarUpload` (avatar de foto/logotipo, `/ui`). Cores de estado usam tokens, sem `emerald`/`green` fixos. `PrismKbd` (atalhos) e `PrismDialogBody` (corpo `px-5 py-2`) existem em `prism/`. Estado vigente e pendências em [visual-controls-final-status](docs/plans/visual-controls-final-status.md); lista de componentes a ajustar em [visual-controls-where](docs/plans/visual-controls-where.md).
 
-Ordem ícone/texto (regra do proprietário, DS05): em botões, links com aparência de botão, abas e toggles que têm texto e ícone, o ícone fica sempre depois (à direita) do texto; botões só com ícone ficam isentos. O espaço vem do `gap` do botão, sem margens manuais.
+Ordem ícone/texto (regra do proprietário, DS05): a posição respeita a função semântica do controle. Ícones de contexto e entidade (substantivos: tipo de visualização, ordenação, pessoas, novo usuário, novo parceiro) ficam à esquerda. Ícones de ação direta e disparo (verbos: nova ação, salvar, publicar, concluir, gerar proposta com IA, whatsapp) ficam à direita. Menus com abertura combinam contexto à esquerda e seta/chevron à direita (`[⊞ Visualizar ⌄]`). Navegação direcional respeita a orientação física do fluxo: Voltar ← à esquerda e Avançar/Próximo → à direita. Abas usam texto puro por padrão (se houver ícone especial, fica à esquerda). O espaçamento vem do `gap` do botão, sem margens manuais.
 
 Use estados React Aria data-[hovered], data-[pressed], data-[focused] e data-[disabled]. Ícones Lucide novos seguem sufixo Icon; botões definem tamanho padrão e focus ring. PrismInput aplica foco/erro ao Group que inclui prefixo/sufixo. PrismAlert reúne ícone, título e descrição por variante. Componente composto precisa de verificação própria de foco/teclado, além das garantias dos primitivos.
 

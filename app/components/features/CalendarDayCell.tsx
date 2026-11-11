@@ -7,7 +7,7 @@ import { cn } from "cnfast";
 import type { UViewOptions } from "~/components/uzzina/UViewOptions";
 import { ActionContainer } from "./ActionContainer";
 import { getInstagramFeedActions } from "~/utils/validation";
-import { LinkIcon, PlusIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import {
   PrismBadge,
   PrismButton,
@@ -66,7 +66,7 @@ export function CalendarDayCell({
       key={format(day, "yyyy-MM-dd")}
       ref={setNodeRef}
       className={cn(
-        "group/column flex min-h-0 flex-col hover:bg-input",
+        "group/column flex min-h-0 flex-col hover:bg-secondary",
         showBorder && "border-b",
         viewOptions.limitHeight && "max-h-[min(24rem,60dvh)]",
       )}
@@ -224,10 +224,7 @@ function CelebrationList({
               </span>
               <span className="min-w-0 truncate wrap-anywhere">{title}</span>
               {linked && (
-                <>
-                  <LinkIcon aria-hidden="true" />
-                  <span className="sr-only">Vinculada ao parceiro.</span>
-                </>
+                <span className="sr-only">Vinculada ao parceiro.</span>
               )}
               {display && linked === undefined && (
                 <span className="sr-only">

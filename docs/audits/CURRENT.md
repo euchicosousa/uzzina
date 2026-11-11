@@ -1,16 +1,64 @@
 # UZZINA — estado atual
 
-Atualizado em 08/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
+Atualizado em 11/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, cinco de design system e um de arquitetura. Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
+O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, nove de design system e um de arquitetura (22 no total). Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
 
 ## Pendências reais
+
+### Revisão da proposta de sombra do tema — 11/11
+
+O ticket foi ajustado para encaminhamento. A primeira entrega é o inventário e a comparação visual em ambiente isolado. O escopo de elevação, as exceções, as intensidades e o efeito do controle de cor do tema Personalizado ficam para decisão do proprietário antes da implementação. Links e diff conferidos. [Ticket atualizado](../../.scratch/design-system-audit/issues/14-global-theme-shadow.md)
+
+O [ticket de sombra do tema](../../.scratch/design-system-audit/issues/14-global-theme-shadow.md) descreve como concluída uma implementação ausente da `main` local em `19c3585` e do diff do checkout. A revisão documental confirmou que menus, diálogos e outras superfícies listadas ainda usam as sombras atuais. A proposta é coerente como direção. Antes de executar, falta corrigir o status e a sequência de aprovação, delimitar elevações e exceções, separar a cor global da opção de relevo dos cartões e definir o comportamento do tema Personalizado. A bancada anuncia 11 paletas e define seis, com retorno para Ônix nas demais, e mantém sombras neutras nas amostras. O aceite precisa comparar sombras antes e depois em componentes reais, com as duas intensidades propostas e cobertura dos estados e temas relevantes. Referências e diff conferidos em revisão de código e documentação.
+
+### Revisão do complemento da retirada da cor do parceiro — 11/11
+
+O diff local sobre `19c3585` retira apenas os dois imports e a variável sem uso das páginas de parceiro e de Minha Conta. O lint focado nessas duas regras e o diff passaram. O [ticket da cor do parceiro](../../.scratch/design-system-audit/issues/16-remove-partner-color-preference.md) ainda descreve a implementação no futuro e o aceite como pendente, embora o aceite já esteja registrado abaixo. Falta alinhar o ticket ao estado de entrega, registrar a paleta pessoal nas páginas de parceiro no contrato de temas e atualizar o roteiro de navegador que ainda aciona o controle retirado. A implementação está na `main` local e a limpeza de lint segue sem commit. A revisão foi local e documental.
+
+### Retirada da cor do parceiro (DS16) — 10/11
+
+O proprietário conferiu visualmente no app e aprovou a remoção da cor do parceiro. O commit `19c3585` ("Remove partner color theme preference") foi conferido na íntegra na `main` local: cobre estritamente os 7 arquivos do app e os 2 testes de persistência/menu, eliminando 198 linhas de injeção de CSS em runtime e código legado. Os três itens residuais de lint apontados na revisão anterior (o import `useEffect` e a variável `partnerColors` em `$slug.tsx`, e o import `UPreferenceSwitch` em `profile.tsx`) foram removidos do código.
+
+Verificação completa aprovada:
+
+1. TypeScript estrito (`tsc --noEmit`): 0 erros.
+2. Testes de menu e preferências (`bun test`): 9/9 pass.
+3. Runtimes de APIs serverless (`node scripts/check-serverless-runtime.cjs`): 9/9 pass.
+4. Build de produção (`vite build`): concluído em 996ms com sucesso.
+
+O ticket [DS16](../../.scratch/design-system-audit/issues/16-remove-partner-color-preference.md) está concluído e aprovado. Publicação pendente de push pelo proprietário.
+
+### Aceite da paleta pública e do tema personalizado — 10/11
+
+O proprietário aprovou a paleta Ônix da página inicial e do portal e confirmou o encerramento da busca de paletas e do tema personalizado em Minha Conta → Aparência. As duas entregas já estavam no deploy de `ce36df0` e saíram da fila. A página institucional pode usar a paleta aprovada. Restam nove tickets abertos fora do Planejamento. Os índices, as referências e o diff foram conferidos. [Paleta pública](../../.scratch/design-system-audit/issues/07-public-palette.md) · [Tema personalizado](../../.scratch/design-system-audit/issues/09-palette-search-and-custom-theme.md)
+
+### Conferência da fila por blocos antes dos aceites — 10/11
+
+Os dois índices coincidem em 23 tickets e todos os arquivos existem. Fora do Planejamento, são 11 registros: três aguardam validação no app, dois aguardam decisão após estudo ou entrega de relatório, um é da página institucional e cinco compõem a série de harmonização visual. O comparativo dos cartões por fase foi entregue. Na série visual, o piloto do menu está aprovado localmente, a bancada ainda precisa ser construída e a remoção da cor do parceiro segue independente. Conferência documental e de Git, com base no último deploy registrado acima.
+
+### Cores e superfícies do Prism (DS12) — Complemento de 11/11
+
+O proprietário conferiu visualmente a primeira entrega e aprovou os ajustes de 11/11 para menus, gaveta, calendários, alertas e cartões atrasados. Na `main` local, o texto secundário agora deriva do texto principal a 65% no claro e no escuro. Os fundos de erro, sucesso, aviso e informação usam 10% nos dois modos, sem a redução extra em alertas. O filtro Descartadas em Planejamento conserva contraste no escuro. Atrasadas usa o fundo de erro e sobe a 15% sob o mouse. O contorno de foco dos cartões fica em 2 px na Primária por decisão do proprietário. O cabeçalho da página do parceiro conserva a mudança feita pelo proprietário.
+
+Padronização de campos de formulário e placeholders:
+- Placeholders de todos os inputs, textareas, selects, comboboxes, campos de cor e tempo unificados em `placeholder:text-foreground/40` (e `data-placeholder:text-foreground/40`), eliminando duplicidades de classes `dark:`.
+- Erros em controles (`aria-invalid`) consolidados no padrão de 4 partes: `aria-invalid:bg-error-background aria-invalid:text-error-foreground aria-invalid:border-error aria-invalid:ring-error-background`. Opacidades arbitrárias (`ring-error/20`, `/30`, `/40`) foram substituídas pelo token nativo `ring-error-background` em todos os componentes Prism (`Input`, `Textarea`, `ColorField`, `TimeField`, `Select`, `Combobox`, `InputGroup`, `Button`, `Badge`, `Toggle`).
+- Faxina de cores semânticas residuais: `PrismBadge` limpo de repetições `dark:bg-*-background` e opacidades de hover fracionadas; tela de recuperação de senha migrada para `border-success`; e módulo de Planejamento (`planejamento.tsx`, `PlanningSuggestionsList.tsx`, `PlanningCalendarView.tsx`) migrado de classes manuais do Tailwind (`emerald`/`amber` com frações de opacidade) para os tokens semânticos nativos `bg-success-background`, `text-success`, `bg-success-strong`, `border-success` e `text-warning-foreground`. Teste `action-late-transition.test.tsx` atualizado para validar `hover:bg-error-background`.
+
+A cor de marca usa Primária. O novo Accent é reservado para uso futuro e deriva dela em OKLCH: −0,15 no claro e +0,10 no escuro, com limite entre 0 e 1. A abertura de `/` e `/dash` usa Ônix e a chave legada de paleta segue aceita. As variantes destrutivas vigentes são `error` e `ghost-error`. Contratos, tracker, central, galeria e laboratório atualizados. [Ticket e roteiro de conferência](../../.scratch/design-system-audit/issues/12-interactive-item-surface-opacity.md).
+
+Verificação desta rodada: TypeScript estrito, 13 testes focados de atraso, carregador e variáveis de paleta e `git diff --check` aprovados. Os scripts do tema inicial e do laboratório foram conferidos em Node com DOM simulado. Sem conferência visual nesta rodada. Alterações locais ainda sem commit ou publicação.
 
 ### Espaço após o rodapé da Home — 10/11
 
 O vão após Atrasadas na Home (`/app`) foi reproduzido no Comet local. Num dia lotado do calendário semanal, o texto oculto da data comemorativa escapava da área rolável da célula e prolongava a rolagem da página. A lista passou a conter esses textos. A pedido do proprietário, a Home termina no rodapé, sem `AppBarSpacer`.
 
 O cenário com dados fictícios reproduziu 895 a 1071 px de rolagem indevida no Chromium. Chromium e WebKit confirmaram a contenção do texto e a rolagem interna da célula em três larguras na rodada anterior, que ainda incluía a reserva de 98 px. Após retirar a reserva, o build de produção, o lint focado e o diff passaram. Falta conferir o fim da Home no Comet do proprietário.
+
+### Plano de melhoria: lacunas das rodadas anteriores — 09/11
+
+Estudo entregue em [plano de melhoria](../plans/2026-11-09-improvement-plan.md), sem alteração de código, SQL ou configuração. Cobre o que as rodadas anteriores não olharam: ausência de tela de erro e de página não encontrada, Planejamento exposto no menu sem a tabela `social_plans` em produção (erro escondido como lista vazia), falta de aviso de falhas, login do portal sem limite de tentativas, cabeçalhos de proteção ausentes, peso do carregamento, índices da tabela de ações, consultas sem teto, 130 atrasadas antigas e o tamanho deste arquivo. Verificação: leitura de código, build local de 08/11 e consultas somente leitura ao banco de produção; nada visto no navegador nem testado. Pendente: o proprietário decidir quais itens viram ticket.
 
 ### Barra completa do editor de texto — 08/11
 
@@ -28,7 +76,7 @@ No calendário de `/dash`, o ícone laranja de play representava a fase Fazer e 
 
 Na aba Essencial, o botão “Adicionar arquivo” usa o estilo link e a linha de anexos tem 4 px de margem interna de cada lado para o anel de foco. O seletor de data mostra só o texto, e a inicial maiúscula vale nas telas que usam o formatador compartilhado, inclusive cartões, busca, conteúdo e calendário do portal. Alterações na main local. Falta conferir o foco dos botões e o visual na gaveta.
 
-### Aparência personalizada: corte e salvamento — 08/11
+### Histórico da aparência personalizada: corte e salvamento — 08/11
 
 No [DS09](../../.scratch/design-system-audit/issues/09-palette-search-and-custom-theme.md), a tela Minha Conta → Aparência cortava os campos inferiores porque as abas não tinham rolagem interna. As quatro abas passaram a rolar no código local; o atalho Personalizado usa o parâmetro de navegação e o tema acompanha as novas opções entre abas do navegador. Typecheck, 4 testes do perfil, 4 do menu e 5 do tema passaram. Falta conferir o corte e o atalho visualmente. A função `update_my_preferences` em produção foi atualizada para aceitar as opções de relevo e cores com validação restrita; opções antigas e valores inválidos foram conferidos com dados fictícios por consulta, e a leitura posterior confirmou a função e as permissões existentes (anon sem acesso, authenticated com acesso). SQL versionado em `supabase/migrations/20261109001014_custom_theme_relief_preferences.sql`. Não foi salva uma preferência real; falta validar o fluxo completo e o visual no app.
 
@@ -36,7 +84,7 @@ Após as capturas do proprietário, a aba passou a conter os campos de cor ocult
 
 Na busca global, “Usar paleta” agora mostra à esquerda a cor primária da própria paleta no modo ativo. Typecheck passou. O proprietário autorizou o envio à main em 08/11. Build de produção e verificação serverless (9/9) passaram. A Vercel reportou sucesso para `ce36df0`. O salvamento completo pelo app fica pendente.
 
-### Paleta pública da página inicial e do portal — 08/11
+### Histórico da paleta pública da página inicial e do portal — 08/11
 
 Implementação enviada ao GitHub em `31de929` do [DS07](../../.scratch/design-system-audit/issues/07-public-palette.md): `/` e `/dash` usam provisoriamente a paleta neutra Ônix em claro e escuro, sem mudar a preferência salva da equipe; ao voltar para as demais rotas, a paleta pessoal é reaplicada. A cor do parceiro deixou de substituir globalmente os controles do portal; elementos que recebem suas cores diretamente continuam com elas. A inicialização pública começa antes do React e a troca interna aplica a paleta antes da pintura. Typecheck e testes de variáveis de paleta (4/4) passaram; diff conferido. Falta conferir visual, contraste, acesso direto, recarga, transições, login e navegação do portal; escolha visual depende de aceite. A Vercel reportou sucesso para `ce36df0`, que inclui esse commit.
 
@@ -80,7 +128,7 @@ Ajustado o DS10 localmente para restaurar a transição da sombra no hover e sep
 
 Implementado no checkout local ([DS10](../../.scratch/design-system-audit/issues/10-action-item-focus-and-structure.md)), preservando a correção anterior do DS06 em `314c2a9` (`--action-shadow-override: 0 0 #0000` para manter a lista de `box-shadow` dos anéis válida em paletas planas) e o ajuste pessoal do proprietário em `app/lib/palettes.ts` (`carbon.dark.primary.l: 0.4`). Alterações aplicadas: (1) em `ActionItem.tsx`, substituído `transition-all duration-500` por `transition-colors duration-200` (evitando que o valor inicial CSS `outline-width: medium` de `3px` e o `box-shadow` do `ring` interpolassem espessura por 500ms ao focar/clicar), removidos o `transition-colors` redundante e o segundo `squircle` duplicado da variante Linha, e adicionada guarda `onFocus` no `<div role="button" tabIndex={0}>` para descartar foco de clique de mouse no corpo do cartão mantendo foco por teclado (`:focus-visible`) e edição de título (`<input>`); (2) em `ActionLineVariant.tsx`, removida a trava `isLateAction(action) &&` que ocultava `<ActionItemSprint>` nas ações em Sprint no prazo, e em `ActionBlockVariant.tsx`, incluído `<ActionItemSprint action={action} />` na barra de metadados; (3) em `ActionContainer.tsx` (quando `scrollable = true`), `KanbanPhasesBoard.tsx` e `HomeSprintView.tsx`, unificado o padding interno para `px-2 pt-1 pb-6` (`8px` laterais), eliminando o recorte lateral das sombras e anéis nas colunas com `overflow-y-auto` e mantendo `p-1 pb-6` nas células compactas do Calendário (`scrollable={false}`). Verificação: `tsc --noEmit` limpo e `tests/action-item-title-drag.test.tsx` (4/4 PASS). Falta validação visual do proprietário.
 
-### Busca de paletas e tema personalizado (DS09) — 08/11
+### Histórico da busca de paletas e do tema personalizado (DS09) — 08/11
 
 Enviado ao GitHub em `ce36df0` ([DS09](../../.scratch/design-system-audit/issues/09-palette-search-and-custom-theme.md)). Entregas concluídas: (1) busca global (`GlobalSearchCommand.tsx`) gera comandos a partir de todas as paletas registradas com `label: "Usar paleta " + palette.label`, busca por nome, teclado e persistência; (2) menu de usuário (`Header.tsx`) preenche a 12ª vaga na grade 2x6 de paletas com o atalho "Personalizado", abrindo `/app/profile?tab=appearance` com guardas de saída da gaveta respeitadas e sem alternar a paleta ao navegar; (3) tipos de tema personalizado (`preferences.ts`, `custom-theme.ts` e `useAppTheme.ts`) estendidos com `relief?: boolean`, `shadowColor?: string` e `topBorderColor?: string` do DS06, propagando as variáveis CSS na prévia em tempo real e na paleta ativa; (4) painel de tema personalizado (`CustomThemePanel.tsx`) remodelado conforme a regra de superfícies (sem card externo), com switch para relevo de cartões (sombra de profundidade e brilho de topo em conjunto vs estilo plano transparente), seletores para sombra base e realce superior com botões de restauração, e cartão de ação em tempo real com classes do design system. Verificação: `tsc --noEmit` limpo, `tests/custom-theme-ds09.test.tsx` (5/5 PASS), `tests/global-search-partners.test.tsx` (54/54 PASS), `tests/profile-palette-swatches.test.tsx` (4/4 PASS), `tests/header-menu.test.tsx` (4/4 PASS), `tests/palette-vars.test.ts` (4/4 PASS) e serverless (9 PASS). Falta validação visual do proprietário.
 
@@ -1338,3 +1386,22 @@ Limite da checagem geral desta rodada: typecheck encontrou import de UToggle nã
 - **V43 (`PrismToggle`)**: Migração do `UToggleInput` para `PrismToggle` com input hidden nativo no formulário administrativo de parceiros. `UToggle.tsx` excluído. Aprovado (100%).
 - **Navegação `/ui` (V35)**: Truncamento de rótulos longos com `min-w-0 truncate` impedindo sobreposição de badges; foco strictly por fundo (`focus-visible:bg-input`); linha indicadora ativa mantida no alinhamento da categoria pai; fonte do subitem alinhada (`font-normal`).
 - **Verificação**: `npx tsc --noEmit` aprovado (0 erros), Biome lint aprovado (0 erros), 49 testes unitários passando.
+
+## Reabertura e Reestruturação do Ticket DS05 — Taxonomia de Ícones por Função (11/11/2026)
+
+- **Motivo da Reabertura**: O proprietário identificou equívocos na aplicação rígida da regra "todo ícone à direita" (ex.: gatilhos de menu com chevron como `Visualizar ⊞ ⌄` em `UViewOptions`, badges de datas comemorativas no calendário `🟢 Dia de finados 🖼`, e perda da distinção entre ação e contexto).
+- **Nova Taxonomia Definida pelo Proprietário**:
+  - **Ícones de Contexto & Entidade (à ESQUERDA):** Representam substantivos, entidades ou perspectiva (`Visualizar`, `Ordenar`, `Exibir`, `Novo Usuário`, `Cor da marca`, `Pessoas`).
+  - **Ícones de Ação & Disparo (à DIREITA):** Representam verbos, envio ou acionamento imediato (`Nova ação +`, `Salvar ☁️`, `Publicar ✈️`, `Concluir ✓✓`, `Gerar proposta ✨`, `WhatsApp 📞`, Chevrons de menu `⌄`).
+  - **Gatilhos Mistos:** Contexto à esquerda + Seta à direita (`[⊞ Visualizar ⌄]`, `[⑂ Ordenar ⌄]`, `[👁 Exibir ⌄]`).
+  - **Navegação Direcional:** Respeita o vetor físico (`← Voltar` à esquerda / `Avançar →` à direita / `Link ↗` à direita).
+  - **Abas:** Padrão limpo sem ícones (texto puro); se houver ícone especial, fica à esquerda.
+  - **Badges de Calendário:** Apenas ponto colorido (`🟢 Dia de finados`), eliminando ícone redundante.
+- **Implementação e Conclusão (11/11/2026)**:
+  - `UViewOptions.tsx`: `{icon}` posicionado antes do `{label}` e antes do `ChevronDownIcon`, renderizando o formato canônico `[⊞ Visualizar ⌄]`.
+  - `admin/users.tsx`: `<UserPlusIcon />` posicionado à esquerda de `Novo Usuário` (contexto de entidade).
+  - `admin/partners.tsx`: `<FolderPlusIcon />` posicionado à esquerda de `Novo Parceiro` (contexto de entidade).
+  - `leads.tsx`: `<ChevronLeftIcon />` posicionado à esquerda de `Voltar para leads` (vetor direcional para o passado).
+  - `CalendarDayCell.tsx`: Removido o `<LinkIcon />` redundante à direita das datas comemorativas, mantendo o badge limpo com o ponto colorido de status à esquerda (`🟢 Dia de finados`).
+  - `AGENTS.md` e `docs/contracts/prism-details.md`: Regra oficial atualizada com a nova taxonomia semântica.
+  - Verificação: `tsc --noEmit` aprovado (0 erros), testes unitários e testes serverless 100% aprovados. Ticket DS05 concluído.
