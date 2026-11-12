@@ -5509,3 +5509,7 @@ Encerrados com aceite do proprietário em 11/11/2026. Texto secundário a 65%; f
 ## DS16 — Retirada da cor do parceiro
 
 Encerrado com aceite do proprietário em 11/11/2026. A opção "usar cor do parceiro" saiu do menu, de Minha Conta e do código; a página do parceiro usa sempre a paleta pessoal. [Ticket](../design-system-audit/issues/16-remove-partner-color-preference.md)
+
+## IA-M09 — Conta e pagamento únicos de IA (OpenRouter)
+
+Encerrado por decisão do proprietário em 12/11/2026. Estudo sem implementação: ficar só com a OpenAI; OpenRouter e AI Gateway da Vercel não adotados. Relatórios: [conta única](../../docs/audits/2026-11-12-single-ai-account-study.md) e [cache e gasto](../../docs/audits/2026-11-12-prompt-cache-and-spend-study.md). Limite: nenhuma chamada real a intermediários foi feita. [Ticket](../ai-models/issues/09-single-ai-account-and-billing-study.md).
