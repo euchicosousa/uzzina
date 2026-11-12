@@ -2,13 +2,12 @@
 
 Atualizado em 12/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, quatro de design system (DS08, DS10, DS11 e DS14) um de arquitetura e um de IA (IA-M08, estudo) (18 no total, conforme o tracker em `.scratch/README.md`). Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
+O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, quatro de design system (DS08, DS10, DS11 e DS14) um de arquitetura (17 no total, conforme o tracker em `.scratch/README.md`). Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
 
 ## Pendências reais
 
 - **Publicação (push) dos commits locais** na `main`: nada do DS05, DS12, DS13, DS15 e DS16 está publicado. Antes de qualquer push que toque `api/`, `server/` ou `package.json`, rodar `bun run test:serverless`. Depois do push, confirmar que a nova versão ficou Ready na Vercel.
 - **Sombra do tema (ticket 14, DS14)** segue aberta, aguardando decisão do proprietário (detalhe logo abaixo).
-- **IA-M08 (ler arquivos de trabalho com IA)** fase 1 (imagem e PDF) aceita pelo proprietário em 12/11 após teste real de transcrição e interpretação; a fase 2 (áudio e vídeo, limite de 20 minutos) está implementada localmente, sem commit e sem teste real: falta o teste com um áudio e um vídeo curtos (extração do MP3 pelo Cloudinary, `gpt-transcribe`, preço) e o aceite.
 - **Não verificado ainda:** aparência no navegador dos botões do Admin (Novo Usuário, Novo Cliente, Novo Parceiro) e comportamento dos menus Visualizar/Ordenar/Exibir com leitor de tela.
 
 ### Revisão da proposta de sombra do tema — 11/11
@@ -18,6 +17,10 @@ O ticket foi ajustado para encaminhamento. A primeira entrega é o inventário e
 O [ticket de sombra do tema](../../.scratch/design-system-audit/issues/14-global-theme-shadow.md) descreve como concluída uma implementação ausente da `main` local em `19c3585` e do diff do checkout. A revisão documental confirmou que menus, diálogos e outras superfícies listadas ainda usam as sombras atuais. A proposta é coerente como direção. Antes de executar, falta corrigir o status e a sequência de aprovação, delimitar elevações e exceções, separar a cor global da opção de relevo dos cartões e definir o comportamento do tema Personalizado. A bancada anuncia 11 paletas e define seis, com retorno para Ônix nas demais, e mantém sombras neutras nas amostras. O aceite precisa comparar sombras antes e depois em componentes reais, com as duas intensidades propostas e cobertura dos estados e temas relevantes. Referências e diff conferidos em revisão de código e documentação.
 
 ## Registro recente
+
+### IA-M08 encerrado — 12/11
+
+Aceito pelo proprietário em 12/11 (fases 1 e 2, testadas com chamadas reais; commits `1c1bfdd` e `7b593b1`, ainda sem push). Saiu da fila e está em [`.scratch/archive/resolved-tickets.md`](../../.scratch/archive/resolved-tickets.md). O texto abaixo é o histórico da fase 1.
 
 ### IA-M08 fase 1 implementada no checkout local — 12/11
 

@@ -5513,3 +5513,7 @@ Encerrado com aceite do proprietário em 11/11/2026. A opção "usar cor do parc
 ## IA-M09 — Conta e pagamento únicos de IA (OpenRouter)
 
 Encerrado por decisão do proprietário em 12/11/2026. Estudo sem implementação: ficar só com a OpenAI; OpenRouter e AI Gateway da Vercel não adotados. Relatórios: [conta única](../../docs/audits/2026-11-12-single-ai-account-study.md) e [cache e gasto](../../docs/audits/2026-11-12-prompt-cache-and-spend-study.md). Limite: nenhuma chamada real a intermediários foi feita. [Ticket](../ai-models/issues/09-single-ai-account-and-billing-study.md).
+
+## IA-M08 — Ler arquivos de trabalho com IA (transcrição e interpretação)
+
+Encerrado com aceite do proprietário em 12/11/2026. No "Gerenciar arquivos" da gaveta (aba Essencial), selecionar um ou vários arquivos e usar Transcrição (texto literal) e Interpretação (leitura geral do conjunto, com Leitura cuidadosa opcional), com resultado temporário e "Inserir na descrição". Cobre imagem, PDF, áudio e fala de vídeo (até 20 minutos). Transcrição sempre no GPT-6 Luna (áudio no `gpt-transcribe`); Interpretação no Luna, ou no Terra com a Leitura cuidadosa. Instagram ("Gerenciar conteúdo") só ganhou o visual limpo, sem leitura por IA. Limite de upload do plano do Cloudinary (cerca de 50 MB) fica fora deste ticket. [Ticket](../ai-models/issues/08-file-transcription-and-interpretation.md)
