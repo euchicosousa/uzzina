@@ -123,6 +123,8 @@ Use estados React Aria data-[hovered], data-[pressed], data-[focused] e data-[di
 
 - Superfícies e caixas de formulário (regra de design): nunca empacotar seções de formulários, seletores, listas ou blocos de campos em caixas/cartões externos com borda arredondada e fundo (padrão card/caixa com `rounded`, `border`, `bg-card` ou `bg-surface`). Os elementos, seletores e listas fluem diretamente sobre o fundo da página e da área rolável, mantendo a composição limpa e integrada, sem molduras de cartão ao redor de blocos de configuração.
 
+- Controles sobre imagem (regra do proprietário, 12/11/2026): alça, caixa de seleção e demais ícones sobrepostos a uma imagem ou miniatura não têm fundo; são brancos com uma sombra que acompanha o desenho do ícone (filtro `drop-shadow`, e não `shadow-*` de caixa). Uso restrito a espaços de imagem. A alternativa de cor invertida foi testada e descartada. A classe é `image-icon` (`app/tailwind.css`), criada no IA-M08 e usada no `ContentReorderDialog`.
+
 Containers flutuantes (Popover, Menu, Select, Combobox, Command, Dialog, AppBar, BubbleMenu): `rounded-2xl squircle`, `border border-foreground/5 dark:border-foreground/10` (ring só para foco), listas `p-1`, `shadow-lg`, largura por `size` (popover `w-56/72/80`, diálogo `max-w-sm/lg/xl/2xl`); Sheet sem raio. Todo elemento arredondado usa `squircle`, exceto `rounded-full` e `rounded-none`.
 
 Detalhes do Prism (foco, movimento, abas, nomes acessíveis, galeria `/ui`) estão em [docs/contracts/prism-details.md](docs/contracts/prism-details.md); leia-o ao mexer nesses pontos.

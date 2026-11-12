@@ -42,6 +42,7 @@ import {
   parseStrategies,
 } from "~/utils";
 import { cn } from "cnfast";
+import type { Editor } from "@tiptap/react";
 import type { Action, Partner } from "~/types";
 import { UActionDatePicker } from "~/components/uzzina/UActionDatePicker";
 import { ActionTimeDisplay } from "./ActionTimeDisplay";
@@ -122,7 +123,29 @@ export function EssentialsTab({
   onNeededHeightChange,
 }: EssentialsTabProps) {
   const [workFilesDialogOpen, setWorkFilesDialogOpen] = useState(false);
+  const descriptionEditorRef = useRef<Editor | null>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
+  // Inserts AI file-reading results at the end of the description through the
+  // open editor, so the drawer's own change tracking and saving apply.
+  const insertIntoDescription = async (html: string) => {
+    const editor = descriptionEditorRef.current;
+    if (!editor || isAIProcessing || !editor.isEditable) return false;
+    editor
+      .chain()
+      .insertContentAt(editor.state.doc.content.size, html, {
+        updateSelection: false,
+      })
+      .run();
+    const content = editor.getHTML();
+    onDescriptionChange?.(content);
+    setRawAction((prev) => ({ ...prev, description: content }));
+    try {
+      await updateAction({ description: content });
+    } catch {
+      // The text stays in the editor as a local edit; the drawer saves it later.
+    }
+    return true;
+  };
   const neededHeightCallback = useRef(onNeededHeightChange);
   neededHeightCallback.current = onNeededHeightChange;
   useLayoutEffect(() => {
@@ -424,6 +447,7 @@ export function EssentialsTab({
             )}
             content={RawAction.description || ""}
             disabled={isAIProcessing}
+            editorRef={descriptionEditorRef}
             handleBlur={async (content) => {
               if (content === RawAction.description) {
                 return;
@@ -449,6 +473,17 @@ export function EssentialsTab({
       </div>
 
       <ContentReorderDialog
+        ai={
+          RawAction.id
+            ? {
+                actionId: RawAction.id,
+                onInsert: insertIntoDescription,
+                getDescriptionLength: () =>
+                  descriptionEditorRef.current?.getHTML().length ??
+                  (RawAction.description ?? "").length,
+              }
+            : undefined
+        }
         cloudName={cloudName}
         files={workFiles}
         onChange={async (next) => {

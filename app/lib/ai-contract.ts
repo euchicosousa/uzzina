@@ -40,6 +40,44 @@ export const aiResultSchema = z.discriminatedUnion("intent", [
     output: z.object({ caption: text }),
   }),
 ]);
+
+// File reading (IA-M08). The browser never sends file addresses or model ids:
+// it names an action and positions in that action's work files, and the server
+// resolves the addresses and the model. `checks` carries the tail of each file
+// address only to detect that the saved list changed since the dialog loaded.
+export const maxFileReadFiles = 12;
+const filePositions = z
+  .array(z.number().int().min(0).max(99))
+  .min(1)
+  .max(maxFileReadFiles);
+const fileChecks = z.array(z.string().max(64)).min(1).max(maxFileReadFiles);
+export const fileReadInputSchema = z.discriminatedUnion("intent", [
+  z
+    .object({
+      intent: z.literal("ai-transcribe"),
+      action_id: z.string().uuid(),
+      positions: filePositions.length(1),
+      checks: fileChecks.length(1),
+    })
+    .strict(),
+  z
+    .object({
+      intent: z.literal("ai-interpret"),
+      action_id: z.string().uuid(),
+      positions: filePositions,
+      checks: fileChecks,
+      careful: z.boolean().default(false),
+    })
+    .strict(),
+]);
+export const fileReadResultSchema = z.object({
+  intent: z.enum(["ai-transcribe", "ai-interpret"]),
+  output: z.object({ text: z.string().trim().min(1).max(50000) }),
+  model: z.string().min(1).max(100),
+});
+export type FileReadPayload = z.input<typeof fileReadInputSchema>;
+export type FileReadResult = z.infer<typeof fileReadResultSchema>;
+
 export type AIPayload = z.input<typeof aiInputSchema>;
 export type AIResult = z.infer<typeof aiResultSchema>;
 

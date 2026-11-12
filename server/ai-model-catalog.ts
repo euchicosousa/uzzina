@@ -8,7 +8,12 @@ import {
 } from "../app/lib/ai-model-registry.js";
 
 export type { AIProvider } from "../app/lib/ai-model-registry.js";
-export type AIIntent = "ai-strategy" | "ai-content" | "ai-caption";
+export type AIIntent =
+  | "ai-strategy"
+  | "ai-content"
+  | "ai-caption"
+  | "ai-transcribe"
+  | "ai-interpret";
 
 export type AITariff = {
   readonly version: string;
@@ -35,8 +40,14 @@ export type AIModel = PublicAIModel & {
 
 export const lunaModel = {
   ...findPublicAIModel("gpt-6-luna"),
-  capabilities: ["chat-completions", "text", "json", "reasoning"],
-  intents: ["ai-strategy", "ai-content", "ai-caption"],
+  capabilities: ["chat-completions", "text", "json", "reasoning", "vision"],
+  intents: [
+    "ai-strategy",
+    "ai-content",
+    "ai-caption",
+    "ai-transcribe",
+    "ai-interpret",
+  ],
   reservationRates: { input: 250, output: 750 },
   tariffs: [
     {
@@ -64,8 +75,8 @@ export const lunaModel = {
 
 const terraModel = {
   ...findPublicAIModel("gpt-6.1-terra"),
-  capabilities: ["chat-completions", "text", "json", "reasoning"],
-  intents: ["ai-strategy", "ai-content", "ai-caption"],
+  capabilities: ["chat-completions", "text", "json", "reasoning", "vision"],
+  intents: ["ai-strategy", "ai-content", "ai-caption", "ai-interpret"],
   reservationRates: { input: 2500, output: 7500 },
   tariffs: [
     {
@@ -252,4 +263,14 @@ export const aiOutputLimits = {
   "ai-strategy": 8192,
   "ai-content": 8192,
   "ai-caption": 2048,
+  "ai-transcribe": 8192,
+  "ai-interpret": 4096,
+} as const;
+
+// File reading (IA-M08): the model pair lives here only. Transcription always
+// uses Luna; interpretation uses Luna, or Terra when careful reading is on.
+export const fileReadModels = {
+  transcribe: lunaModel.id,
+  interpret: lunaModel.id,
+  interpretCareful: terraModel.id,
 } as const;

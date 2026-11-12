@@ -142,7 +142,7 @@ export function TokensFocusSection() {
               "features/ComboboxTrigger.tsx (ghost icon-lg no rodapé da gaveta: anel padrão do PrismButton)",
               "features/action-drawer/ActionDatePicker.tsx (data da gaveta: ghost sm com anel padrão do PrismButton)",
               "features/PartnersCombobox.tsx e busca global (filtro de parceiros: foco padrão do Prism)",
-              "features/media/ContentReorderDialog.tsx (alça e remover) e WorkFileThumbnail.tsx (remover e link da miniatura)",
+              "features/media/ContentReorderDialog.tsx (alça e caixa de seleção, classe image-icon) e WorkFileThumbnail.tsx (remover e link da miniatura)",
               "features/ActionItem.tsx (cartão: focus-within:outline-2 outline-primary, exceção aprovada)",
               "routes/app/admin/partner/$slug.tsx (editores de texto: focus-within)",
             ]}
@@ -229,28 +229,55 @@ export function TokensFocusSection() {
               </PrismCombobox>
             </Example>
             <Example
-              label="Alça de reordenar"
+              label="Ícones sobre imagem (image-icon)"
               source="Réplica de features/media/ContentReorderDialog.tsx"
             >
-              <button
-                aria-label="Réplica da alça"
-                className="flex size-8 cursor-grab touch-none items-center justify-center rounded bg-black/70 text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30 active:cursor-grabbing"
-                type="button"
-              >
-                ⠿
-              </button>
-            </Example>
-            <Example
-              label="Remover anexo"
-              source="Réplica de features/media/ContentReorderDialog.tsx"
-            >
-              <button
-                aria-label="Réplica remover"
-                className="flex size-8 items-center justify-center rounded bg-error text-white outline-none squircle focus-visible:ring-3 focus-visible:ring-ring/30"
-                type="button"
-              >
-                ×
-              </button>
+              <div className="flex gap-2">
+                {["bg-white", "bg-black", "bg-neutral-500", "bg-amber-300"].map(
+                  (tone) => (
+                    <div
+                      key={tone}
+                      className={`relative size-20 rounded-xl squircle ${tone}`}
+                    >
+                      <button
+                        aria-label="Réplica da alça"
+                        className="absolute top-1 left-1 flex size-6 cursor-grab touch-none items-center justify-center rounded-lg image-icon outline-none focus-visible:ring-2 focus-visible:ring-white active:cursor-grabbing"
+                        type="button"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          className="size-4"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle cx="9" cy="5" r="1.7" />
+                          <circle cx="15" cy="5" r="1.7" />
+                          <circle cx="9" cy="12" r="1.7" />
+                          <circle cx="15" cy="12" r="1.7" />
+                          <circle cx="9" cy="19" r="1.7" />
+                          <circle cx="15" cy="19" r="1.7" />
+                        </svg>
+                      </button>
+                      <button
+                        aria-label="Réplica da caixa de seleção"
+                        className="absolute top-1 right-1 flex size-6 items-center justify-center rounded-lg image-icon outline-none focus-visible:ring-2 focus-visible:ring-white"
+                        type="button"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          className="size-5"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.2"
+                          viewBox="0 0 24 24"
+                        >
+                          <rect height="17" rx="5" width="17" x="3.5" y="3.5" />
+                        </svg>
+                      </button>
+                    </div>
+                  ),
+                )}
+              </div>
             </Example>
             <Example
               label="Miniatura de anexo"

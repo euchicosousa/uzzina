@@ -344,6 +344,7 @@ export function RichTextEditor({
   disabled,
   placeholder,
   isRounded,
+  editorRef,
 }: {
   id?: string;
   "aria-labelledby"?: string;
@@ -355,6 +356,8 @@ export function RichTextEditor({
   disabled?: boolean;
   placeholder?: string;
   isRounded?: boolean;
+  /** Lets the owner insert content programmatically (e.g. AI file reading). */
+  editorRef?: { current: Editor | null };
 }) {
   const editorRoot = useRef<HTMLDivElement>(null);
   const [extensions] = useState(() => {
@@ -430,6 +433,8 @@ export function RichTextEditor({
       handleBlur?.(reportedHtml(props.editor.getHTML()));
     },
   });
+
+  if (editorRef) editorRef.current = editor;
 
   // Update editable state when disabled prop changes
   if (editor && editor.isEditable !== !disabled) {

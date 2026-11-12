@@ -1,6 +1,8 @@
 import {
   aiInputSchema,
   aiResultSchema,
+  fileReadInputSchema,
+  fileReadResultSchema,
   stripCaptionSection,
 } from "../app/lib/ai-contract.js";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
@@ -13,8 +15,17 @@ import { randomUUID } from "node:crypto";
 import {
   aiOutputLimits,
   defaultAIModelId,
+  fileReadModels,
   findAIModel,
 } from "../server/ai-model-catalog.js";
+import {
+  buildInterpretMessages,
+  buildTranscribeMessages,
+  classifyWorkFile,
+  IMAGE_RESERVATION_BYTES,
+  PDF_RESERVATION_BYTES,
+  type WorkFile,
+} from "../server/file-read.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   let failureStatus = 503;
@@ -94,27 +105,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } catch {
       return res.status(400).json({ error: "JSON inválido." });
     }
-    const parsed = aiInputSchema.safeParse(body);
-    if (!parsed.success)
+    // File reading has its own contract: the browser names an action and file
+    // positions, never addresses or a model id.
+    const fileParsed = fileReadInputSchema.safeParse(body);
+    const textParsed = fileParsed.success
+      ? undefined
+      : aiInputSchema.safeParse(body);
+    const fileInput = fileParsed.success ? fileParsed.data : undefined;
+    const textInput = textParsed?.success ? textParsed.data : undefined;
+    if (!fileInput && !textInput)
       return res.status(400).json({
         error: "Dados de IA inválidos. Confira os campos e seus limites.",
       });
-    const {
-      intent,
-      title,
-      description,
-      partner_name,
-      partner_context,
-      category,
-      racional,
-      headline,
-      direcionamento,
-    } = parsed.data;
+    const requestIntent = fileInput ? fileInput.intent : textInput?.intent;
+    if (!requestIntent)
+      return res.status(400).json({ error: "Intent inválido." });
     // Resolve provider and model before any quota is reserved. An unknown or
     // unvalidated model never falls back silently to another one.
-    const model = parsed.data.model ?? defaultAIModelId;
+    const model = fileInput
+      ? fileInput.intent === "ai-interpret" && fileInput.careful
+        ? fileReadModels.interpretCareful
+        : fileInput.intent === "ai-interpret"
+          ? fileReadModels.interpret
+          : fileReadModels.transcribe
+      : (textInput?.model ?? defaultAIModelId);
     const modelEntry = findAIModel(model);
-    if (!modelEntry || !modelEntry.intents.includes(intent))
+    if (!modelEntry?.intents.includes(requestIntent))
       return res.status(400).json({
         code: "AI_MODEL_UNAVAILABLE",
         error: "O modelo escolhido não está disponível para este comando.",
@@ -124,7 +140,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         code: "AI_CONFIGURATION_MISSING",
         error: "O modelo escolhido não está configurado neste ambiente.",
       });
-    const publisherIdentity = `A marca que publica este conteúdo é ${JSON.stringify(partner_name)}. Escreva na voz dessa marca, como autora da publicação. A agência operadora não é a autora por padrão. Preserve menções legítimas a outras marcas quando solicitadas nos insumos; não substitua nem apague essas menções.`;
 
     const clientKey = localCompatibility
       ? (publicKey as string)
@@ -168,6 +183,74 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         error: "Seu acesso à IA está desativado. Fale com o administrador.",
       });
 
+    // File reading: the user's own session (row-level security) decides whether
+    // the action is visible, and the addresses come from the action itself.
+    let readableFiles: WorkFile[] = [];
+    const cloudName =
+      process.env.CLOUDINARY_CLOUD_NAME ||
+      process.env.VITE_CLOUDINARY_CLOUD_NAME ||
+      "";
+    if (fileInput) {
+      if (!cloudName)
+        return res.status(503).json({
+          code: "AI_CONFIGURATION_MISSING",
+          error: "A leitura de arquivos não está configurada neste ambiente.",
+        });
+      const reader = localCompatibility
+        ? supabase
+        : publicKey
+          ? createClient<Database>(supabaseUrl, publicKey, {
+              auth: { persistSession: false, autoRefreshToken: false },
+              global: { headers: { Authorization: `Bearer ${token}` } },
+            })
+          : undefined;
+      if (!reader)
+        return res.status(503).json({
+          code: "AI_CONFIGURATION_MISSING",
+          error: "A IA não está configurada neste ambiente.",
+        });
+      const { data: action, error: actionError } = await reader
+        .from("actions")
+        .select("work_files")
+        .eq("id", fileInput.action_id)
+        .maybeSingle();
+      if (actionError)
+        return res.status(503).json({
+          error: "Não foi possível verificar a ação. Tente novamente.",
+        });
+      if (!action)
+        return res.status(404).json({
+          code: "AI_ACTION_UNAVAILABLE",
+          error: "Ação não encontrada ou sem acesso.",
+        });
+      const stored = action.work_files ?? [];
+      const changed = fileInput.positions.some((position, index) => {
+        const value = stored[position];
+        return (
+          value === undefined ||
+          !value.endsWith(fileInput.checks[index] ?? "\0")
+        );
+      });
+      if (changed)
+        return res.status(409).json({
+          code: "AI_FILES_CHANGED",
+          error:
+            "A lista de arquivos mudou. Feche e reabra o diálogo e tente de novo.",
+        });
+      const classified = fileInput.positions.map((position) =>
+        classifyWorkFile(position, stored[position] ?? "", cloudName),
+      );
+      readableFiles = classified.filter(
+        (file): file is WorkFile => file !== undefined,
+      );
+      if (readableFiles.length === 0)
+        return res.status(422).json({
+          code: "AI_FILES_UNSUPPORTED",
+          error:
+            "Nenhum dos arquivos selecionados pode ser lido (só imagem e PDF).",
+        });
+    }
+
     if (!localCompatibility) {
       const { data: allowed, error: usageError } = await supabase.rpc(
         "consume_ai_usage",
@@ -197,16 +280,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
     const reservationId = randomUUID();
     if (!localCompatibility) {
-      const inputBytes = Buffer.byteLength(JSON.stringify(parsed.data), "utf8");
-      if (inputBytes > 65536)
+      const bodyBytes = Buffer.byteLength(JSON.stringify(body), "utf8");
+      if (bodyBytes > 65536)
         return res.status(413).json({ error: "A solicitação excede 64 KB." });
+      // Images and PDFs are priced by token, not by body size: add a stand-in.
+      const fileBytes = readableFiles.reduce(
+        (total, file) =>
+          total +
+          (file.kind === "pdf"
+            ? PDF_RESERVATION_BYTES
+            : IMAGE_RESERVATION_BYTES),
+        0,
+      );
+      const inputBytes = Math.min(65536, bodyBytes + fileBytes);
       const { data: allowed, error: reservationError } = await supabase.rpc(
         "reserve_ai_monthly",
         {
           p_user_id: user.id,
           p_id: reservationId,
           p_input_bytes: inputBytes,
-          p_output_limit: aiOutputLimits[intent],
+          p_output_limit: aiOutputLimits[requestIntent],
           // The default model keeps the original call shape, so an API deploy
           // does not depend on the model-aware reservation migration.
           ...(model === defaultAIModelId ? {} : { p_model: model }),
@@ -236,10 +329,43 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       );
     };
 
+    if (fileInput) {
+      const messages =
+        fileInput.intent === "ai-transcribe"
+          ? await buildTranscribeMessages(readableFiles[0], cloudName)
+          : await buildInterpretMessages(readableFiles, cloudName);
+      const response = await generateAI(messages, {
+        intent: fileInput.intent,
+        model,
+        timeout: 110000,
+      });
+      await logUsage(response, fileInput.intent);
+      return res.status(200).json(
+        fileReadResultSchema.parse({
+          intent: fileInput.intent,
+          output: { text: response.text },
+          model,
+        }),
+      );
+    }
+    if (!textInput) return res.status(400).json({ error: "Intent inválido." });
+    const {
+      intent,
+      title,
+      description,
+      partner_name,
+      partner_context,
+      category,
+      racional,
+      headline,
+      direcionamento,
+    } = textInput;
+    const publisherIdentity = `A marca que publica este conteúdo é ${JSON.stringify(partner_name)}. Escreva na voz dessa marca, como autora da publicação. A agência operadora não é a autora por padrão. Preserve menções legítimas a outras marcas quando solicitadas nos insumos; não substitua nem apague essas menções.`;
+
     // Vamos mapear os intents conforme definidos no app/lib/CONSTANTS.ts e no ai.ts original
     if (intent === "ai-strategy") {
       const strategies = await generateStrategies(
-        parsed.data,
+        textInput,
         async (response) => {
           await logUsage(response, intent);
         },

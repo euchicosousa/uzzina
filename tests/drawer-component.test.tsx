@@ -2226,11 +2226,13 @@ describe("phone-width action panel", () => {
     const dialog = await screen.findByRole("dialog", {
       name: /Gerenciar conteúdo/,
     });
-    await user.click(
-      within(dialog).getByRole("button", { name: "Remover arquivo 2" }),
-    );
-    expect(document.activeElement).toBe(
-      within(dialog).getByRole("button", { name: "Remover arquivo 2" }),
+    // The two files with the same address are told apart by position.
+    await user.click(within(dialog).getAllByRole("checkbox")[1]);
+    await user.click(within(dialog).getByRole("button", { name: "Excluir" }));
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        within(dialog).getByRole("button", { name: /^Adicionar$/ }),
+      ),
     );
     await user.click(within(dialog).getByRole("button", { name: "Concluir" }));
     await waitFor(() =>
@@ -2240,19 +2242,18 @@ describe("phone-width action panel", () => {
     const reopened = await screen.findByRole("dialog", {
       name: /Gerenciar conteúdo/,
     });
-    expect(
-      within(reopened).getAllByRole("button", { name: /^Remover arquivo/ }),
-    ).toHaveLength(2);
+    expect(within(reopened).getAllByRole("checkbox")).toHaveLength(2);
     await user.click(
-      within(reopened).getByRole("button", { name: "Remover arquivo 2" }),
+      within(reopened).getByRole("button", { name: "Selecionar" }),
     );
     await user.click(
-      within(reopened).getByRole("button", { name: "Remover arquivo 1" }),
+      within(reopened).getByRole("button", { name: "Selecionar todos" }),
     );
-    expect(document.activeElement).toBe(
-      within(reopened).getByRole("button", { name: /^Adicionar$/ }),
-    );
+    await user.click(within(reopened).getByRole("button", { name: "Excluir" }));
     await waitFor(() => expect(writes.at(-1)?.content_files).toEqual([]));
+    expect(
+      within(reopened).getByRole("button", { name: "Desfazer" }),
+    ).toBeTruthy();
   });
 
   it("the upload control stays the same mounted widget while files arrive", async () => {
