@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/ai.ts": { "maxDuration": 120 },
+    "api/ai.ts": { "maxDuration": 180 },
     "api/strategy-worker.ts": { "maxDuration": 180 }
   },
   "rewrites": [

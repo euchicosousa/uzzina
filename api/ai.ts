@@ -22,8 +22,13 @@ import {
   buildInterpretMessages,
   buildTranscribeMessages,
   classifyWorkFile,
+  FileReadError,
   IMAGE_RESERVATION_BYTES,
+  isSpeechFile,
   PDF_RESERVATION_BYTES,
+  SPEECH_RESERVATION_BYTES,
+  TRANSCRIBE_MODEL,
+  transcribeSpeech,
   type WorkFile,
 } from "../server/file-read.js";
 
@@ -247,7 +252,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(422).json({
           code: "AI_FILES_UNSUPPORTED",
           error:
-            "Nenhum dos arquivos selecionados pode ser lido (só imagem e PDF).",
+            "Nenhum dos arquivos selecionados pode ser lido (imagem, PDF, áudio ou vídeo).",
         });
     }
 
@@ -287,9 +292,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const fileBytes = readableFiles.reduce(
         (total, file) =>
           total +
-          (file.kind === "pdf"
-            ? PDF_RESERVATION_BYTES
-            : IMAGE_RESERVATION_BYTES),
+          (isSpeechFile(file)
+            ? SPEECH_RESERVATION_BYTES
+            : file.kind === "pdf"
+              ? PDF_RESERVATION_BYTES
+              : IMAGE_RESERVATION_BYTES),
         0,
       );
       const inputBytes = Math.min(65536, bodyBytes + fileBytes);
@@ -317,29 +324,65 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
     }
     failureStatus = 502;
-    const logUsage = async (response: AIGeneration, intentName: string) => {
+    const logUsage = async (
+      response: AIGeneration,
+      intentName: string,
+      usageModel = model,
+      extraCostNanos = 0,
+    ) => {
       // Development compatibility has no service role and must not write measurements.
       if (localCompatibility) return;
       await recordAIUsage(
         supabase,
         { userId: user.id, intent: intentName, reservationId },
         response.usage,
-        model,
+        usageModel,
         response,
+        extraCostNanos,
       );
     };
 
     if (fileInput) {
+      // Speech (audio, or the sound of a video) goes to speech-to-text first.
+      const speechFiles = readableFiles.filter(isSpeechFile);
+      const speech = await Promise.all(
+        speechFiles.map((file) => transcribeSpeech(file, cloudName)),
+      );
+      const speechCost = speech.reduce((sum, item) => sum + item.costNanos, 0);
+      if (fileInput.intent === "ai-transcribe" && speechFiles.length === 1) {
+        await logUsage(
+          { text: speech[0].text, usage: undefined, model: TRANSCRIBE_MODEL },
+          fileInput.intent,
+          TRANSCRIBE_MODEL,
+          speechCost,
+        );
+        return res.status(200).json(
+          fileReadResultSchema.parse({
+            intent: fileInput.intent,
+            output: { text: speech[0].text },
+            model: TRANSCRIBE_MODEL,
+          }),
+        );
+      }
       const messages =
         fileInput.intent === "ai-transcribe"
           ? await buildTranscribeMessages(readableFiles[0], cloudName)
-          : await buildInterpretMessages(readableFiles, cloudName);
+          : await buildInterpretMessages(
+              readableFiles,
+              cloudName,
+              new Map(
+                speechFiles.map((file, index) => [
+                  file.position,
+                  speech[index].text,
+                ]),
+              ),
+            );
       const response = await generateAI(messages, {
         intent: fileInput.intent,
         model,
         timeout: 110000,
       });
-      await logUsage(response, fileInput.intent);
+      await logUsage(response, fileInput.intent, model, speechCost);
       return res.status(200).json(
         fileReadResultSchema.parse({
           intent: fileInput.intent,
@@ -488,6 +531,10 @@ Gere o conteúdo completo formatado exclusivamente no HTML simples solicitado.`;
       error: "Intent inválido ou não suportado.",
     });
   } catch (error: unknown) {
+    if (error instanceof FileReadError)
+      return res
+        .status(error.status)
+        .json({ code: error.code, error: error.message });
     console.error(
       "AI request failed",
       error instanceof Error ? error.name : "UnknownError",

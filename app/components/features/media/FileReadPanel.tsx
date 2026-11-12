@@ -4,7 +4,7 @@ import { PrismButton } from "~/components/prism";
 import { publicAIModels } from "~/lib/ai-model-registry";
 import { readWorkFiles } from "~/services/file-read-client";
 
-// Reading of work files with AI (IA-M08, phase 1: images and PDF). Results are
+// Reading of work files with AI (IA-M08, images, PDF, audio and video speech). Results are
 // temporary: nothing is stored until the user inserts a block in the description.
 
 /** Largest description the AI commands accept (see aiInputSchema). */
@@ -30,7 +30,8 @@ type Interpretation = {
   error?: string;
 };
 
-const SUPPORTED = /\.(jpg|jpeg|png|webp|heic|heif|pdf)(\?|#|$)/i;
+const SUPPORTED =
+  /\.(jpg|jpeg|png|webp|heic|heif|pdf|mp3|m4a|wav|ogg|aac|opus|mp4|mov|m4v|webm)(\?|#|$)/i;
 
 export function isReadableWorkFile(url: string): boolean {
   return SUPPORTED.test(url);
@@ -46,6 +47,7 @@ export function fileNameFromUrl(url: string): string {
 }
 
 function modelName(id: string): string {
+  if (id === "gpt-transcribe") return "GPT Transcribe";
   return publicAIModels.find((model) => model.id === id)?.name ?? id;
 }
 

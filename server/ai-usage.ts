@@ -22,6 +22,8 @@ export async function recordAIUsage(
   usage: unknown,
   model: string,
   response?: { id?: string; model?: string; service_tier?: string | null },
+  // Cost of per-second billed work (speech-to-text) done for the same request.
+  extraCostNanos = 0,
 ): Promise<boolean> {
   const values =
     typeof usage === "object" && usage !== null
@@ -80,6 +82,8 @@ export async function recordAIUsage(
         cacheWriteTokens * tariff.cacheWrite +
         completionTokens * tariff.output
       : null;
+  const totalCostNanos =
+    extraCostNanos > 0 ? (costNanos ?? 0) + extraCostNanos : costNanos;
   const eventId =
     "leaseId" in context
       ? context.leaseId
@@ -97,7 +101,7 @@ export async function recordAIUsage(
         cacheWriteValue === undefined ? null : cacheWriteTokens,
       reasoning_tokens: reasoningTokens,
       tariff: costNanos === null ? null : tariff,
-      cost_nanos: costNanos,
+      cost_nanos: totalCostNanos,
     },
     p_prompt_tokens: promptTokens,
     p_completion_tokens: completionTokens,

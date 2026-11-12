@@ -8,7 +8,7 @@ O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso pa
 
 - **Publicação (push) dos commits locais** na `main`: nada do DS05, DS12, DS13, DS15 e DS16 está publicado. Antes de qualquer push que toque `api/`, `server/` ou `package.json`, rodar `bun run test:serverless`. Depois do push, confirmar que a nova versão ficou Ready na Vercel.
 - **Sombra do tema (ticket 14, DS14)** segue aberta, aguardando decisão do proprietário (detalhe logo abaixo).
-- **IA-M08 (ler arquivos de trabalho com IA)** fase 1 (imagem e PDF) aceita pelo proprietário em 12/11 após teste real de transcrição e interpretação; falta a fase 2 (áudio e vídeo).
+- **IA-M08 (ler arquivos de trabalho com IA)** fase 1 (imagem e PDF) aceita pelo proprietário em 12/11 após teste real de transcrição e interpretação; a fase 2 (áudio e vídeo, limite de 20 minutos) está implementada localmente, sem commit e sem teste real: falta o teste com um áudio e um vídeo curtos (extração do MP3 pelo Cloudinary, `gpt-transcribe`, preço) e o aceite.
 - **Não verificado ainda:** aparência no navegador dos botões do Admin (Novo Usuário, Novo Cliente, Novo Parceiro) e comportamento dos menus Visualizar/Ordenar/Exibir com leitor de tela.
 
 ### Revisão da proposta de sombra do tema — 11/11

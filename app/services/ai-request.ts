@@ -22,7 +22,11 @@ export class AIRequestError extends Error {
       AI_FILES_CHANGED:
         "A lista de arquivos mudou desde que o diálogo foi aberto. Feche e reabra o diálogo e tente de novo.",
       AI_FILES_UNSUPPORTED:
-        "Nenhum dos arquivos selecionados pode ser lido (só imagem e PDF).",
+        "Nenhum dos arquivos selecionados pode ser lido (imagem, PDF, áudio ou vídeo).",
+      AI_FILE_TOO_LONG:
+        "O áudio ou vídeo passa de 20 minutos. Corte o arquivo e tente de novo.",
+      AI_FILE_UNREADABLE:
+        "Não foi possível extrair o áudio deste arquivo. Ele pode ser grande demais ou não ter som.",
       AI_QUOTA_UNAVAILABLE:
         "Não foi possível verificar o limite de uso da IA. Peça ao administrador para conferir o serviço; seu texto foi mantido.",
     };

@@ -33,3 +33,5 @@ Leia antes de mexer em `app/lib/ai-contract.ts`, nas APIs de IA, no catálogo de
 ## Compatibilidade local de IA
 
 - Compatibilidade local só ocorre com NODE_ENV development, `UZZINA_LOCAL_AI_COMPAT=true` e sem VERCEL. O adaptador ativa a flag apenas no modo development; usa chave pública/Bearer e membro ativo, sem `consume_ai_usage`.
+
+- Leitura de áudio/vídeo (IA-M08 fase 2): `server/file-read.ts` pede ao Cloudinary um MP3 de 64 kbps (limite de 20 minutos, medido pelo tamanho) e chama `gpt-transcribe` direto na OpenAI, fora do catálogo de modelos; o custo por segundo entra no registro de uso como `cost_nanos` extra.
