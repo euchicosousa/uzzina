@@ -1,0 +1,34 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Bolinha do seletor de cor</title>
+<style>
+body{font-family:system-ui;margin:0;padding:18px;background:#f4f4f5;color:#111}
+h1{font-size:18px;margin:0 0 4px}p{opacity:.7;margin:0 0 14px;max-width:800px;line-height:1.45}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.card{border-radius:16px;padding:14px}
+.card.dark{color:#eee}
+.card h2{font-size:12px;margin:0 0 10px;font-weight:600}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lbl{font-size:11px;opacity:.75;margin-bottom:6px}
+.bar{position:relative;height:16px;border-radius:8px;margin-top:14px;background:linear-gradient(to right,hsl(0 100% 50%),hsl(60 100% 50%),hsl(120 100% 50%),hsl(180 100% 50%),hsl(240 100% 50%),hsl(300 100% 50%),hsl(360 100% 50%))}
+.bth{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;border:2px solid #fff;box-sizing:border-box;transform:translate(-50%,-50%) scale(1.6)}
+.area{position:relative;height:110px;border-radius:12px;overflow:hidden}
+.th{position:absolute;width:16px;height:16px;border-radius:50%;border:2px solid #fff;box-sizing:border-box;transform:translate(-50%,-50%) scale(3);}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+</style></head><body>
+<h1>Bolinha do seletor de cor: atual × sombra da paleta</h1>
+<p>Duas bolinhas do seletor de cor: a do quadrado (ampliada 3×) e a da barra de matiz, o slider (ampliada 1,6×). À esquerda, a sombra de hoje (preto a 40%). À direita, a sombra padrão da paleta (shadow-md, cor e opacidade aprovadas para cada modo).</p>
+<div class="grid" id="g"></div>
+<script>
+const R=[{"label":"Ônix","hue":0,"light":["oklch(0.25 0.01 200)",10,{"h":200,"c":0.002,"l":0.96},{"h":0,"c":0,"l":0}],"dark":["oklch(0.1 0.01 200)",50,{"h":250,"c":0.01,"l":0.2},{"h":0,"c":0,"l":1}]},{"label":"Rubi","hue":20,"light":["oklch(0.25 0.04 20)",10,{"h":0,"c":0,"l":0.98},{"h":20,"c":0.25,"l":0.62}],"dark":["oklch(0.03 0 0)",70,{"h":285,"c":0.005,"l":0.141},{"h":20,"c":0.25,"l":0.68}]},{"label":"Cobalto","hue":264,"light":["oklch(0.25 0.04 264)",10,{"h":0,"c":0,"l":1},{"h":264,"c":0.31,"l":0.45}],"dark":["oklch(0.1 0.03 264)",50,{"h":285,"c":0.005,"l":0.141},{"h":264,"c":0.31,"l":0.58}]},{"label":"Fúcsia","hue":350,"light":["oklch(0.25 0.15 350)",10,{"h":320,"c":0.02,"l":0.98},{"h":350,"c":0.4,"l":0.9}],"dark":["oklch(0.1 0.1 340)",25,{"h":340,"c":0.1,"l":0.3},{"h":350,"c":0.4,"l":0.8}]}];
+const o=c=>"oklch("+c.l+" "+c.c+" "+c.h+")";
+const mix=(c,p)=>"color-mix(in srgb,"+c+" "+p+"%,transparent)";
+const md=(c,p)=>"0 4px 6px -1px "+mix(c,p)+",0 2px 4px -2px "+mix(c,p);
+let h="";
+for(const r of R)for(const m of ["light","dark"]){
+  const [sc,op,bg,pr]=r[m];
+  const area="linear-gradient(to top,#000,transparent),linear-gradient(to right,#fff,hsl("+r.hue+" 100% 50%))";
+  h+='<div class="card '+(m==="dark"?"dark":"")+'" style="background:'+o(bg)+'"><h2>'+r.label+" — "+(m==="dark"?"escuro":"claro")+" · sombra "+sc+" "+op+"%</h2><div class='pair'>"+
+  '<div><div class="lbl">Hoje: preto 40%</div><div class="area" style="background:'+area+'"><span class="th" style="left:70%;top:40%;box-shadow:0 4px 6px -1px rgb(0 0 0/.4),0 2px 4px -2px rgb(0 0 0/.4)"></span></div><div class="lbl" style="margin-top:12px">Barra de matiz (slider)</div><div class="bar"><span class="bth" style="left:'+(r.hue/360*100)+'%;background:hsl('+r.hue+' 100% 50%);box-shadow:0 4px 6px -1px rgb(0 0 0/.4),0 2px 4px -2px rgb(0 0 0/.4)"></span></div></div>'+
+  '<div><div class="lbl">Proposta: cor da paleta</div><div class="area" style="background:'+area+'"><span class="th" style="left:70%;top:40%;box-shadow:'+md(sc,op)+'"></span></div><div class="lbl" style="margin-top:12px">Barra de matiz (slider)</div><div class="bar"><span class="bth" style="left:'+(r.hue/360*100)+'%;background:hsl('+r.hue+' 100% 50%);box-shadow:'+md(sc,op)+'"></span></div></div></div></div>';
+}
+document.getElementById("g").innerHTML=h;
+</script></body></html>

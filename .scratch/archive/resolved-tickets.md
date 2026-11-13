@@ -5517,3 +5517,7 @@ Encerrado por decisão do proprietário em 12/11/2026. Estudo sem implementaçã
 ## IA-M08 — Ler arquivos de trabalho com IA (transcrição e interpretação)
 
 Encerrado com aceite do proprietário em 12/11/2026. No "Gerenciar arquivos" da gaveta (aba Essencial), selecionar um ou vários arquivos e usar Transcrição (texto literal) e Interpretação (leitura geral do conjunto, com Leitura cuidadosa opcional), com resultado temporário e "Inserir na descrição". Cobre imagem, PDF, áudio e fala de vídeo (até 20 minutos). Transcrição sempre no GPT-6 Luna (áudio no `gpt-transcribe`); Interpretação no Luna, ou no Terra com a Leitura cuidadosa. Instagram ("Gerenciar conteúdo") só ganhou o visual limpo, sem leitura por IA. Limite de upload do plano do Cloudinary (cerca de 50 MB) fica fora deste ticket. [Ticket](../ai-models/issues/08-file-transcription-and-interpretation.md)
+
+## DS14 — Sombra colorida da paleta
+
+Encerrado com aceite do proprietário em 12/11/2026. Toda sombra de elevação (menus, diálogos, busca, popovers, seletores, barra flutuante, aviso padrão e bolinhas do seletor de cor) e o fundo escurecido atrás de diálogos usam a cor de sombra da paleta; cada paleta tem cor e opacidade próprias no claro e no escuro. Os avisos de sucesso, erro, aviso e informação mantêm a sombra colorida de hoje. O tema Personalizado ganhou cor e opacidade de sombra por modo, e a migração correspondente está aplicada em produção. [Ticket](../design-system-audit/issues/14-global-theme-shadow.md)

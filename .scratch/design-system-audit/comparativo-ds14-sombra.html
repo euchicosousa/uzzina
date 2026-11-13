@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DS14 — Sombra colorida: aprovação por paleta</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px;--acc:#c0267a}
+*{box-sizing:border-box;margin:0}
+body{background:#f4f4f5;color:#111;padding:20px 16px 60px;max-width:1300px;margin:0 auto}
+@media (prefers-color-scheme:dark){body{background:#18181b;color:#eee}}
+h1{font-size:20px;margin-bottom:4px}p.sub{opacity:.7;max-width:880px;margin-bottom:14px;line-height:1.45}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.tab{display:flex;gap:8px;align-items:center;padding:6px 10px;border:1px solid #8884;border-radius:12px;font-size:12px;cursor:pointer;background:transparent;color:inherit;font:inherit;font-size:12px}
+.tab.on{outline:2px solid var(--acc)}.tab i{width:18px;height:18px;border-radius:6px;border:1px solid #8886;display:block}
+.tab .st{font-size:11px;opacity:.7}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:900px){.cols{grid-template-columns:1fr}}
+.panel{border:1px solid #8884;border-radius:18px;overflow:hidden}
+.ctl{padding:14px;display:grid;gap:8px;background:color-mix(in srgb,Canvas 94%,CanvasText 3%)}
+.ctl h2{font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.ctl label{display:grid;grid-template-columns:110px 1fr 70px;gap:8px;align-items:center;font-size:12px}
+.ctl input[type=range]{accent-color:var(--acc);width:100%}
+.ctl output{font-family:ui-monospace,Menlo,monospace;font-size:12px;text-align:right}
+.hue{height:8px;border-radius:4px;background:linear-gradient(90deg,oklch(.7 .15 0),oklch(.7 .15 60),oklch(.7 .15 120),oklch(.7 .15 180),oklch(.7 .15 240),oklch(.7 .15 300),oklch(.7 .15 360))}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns button{padding:6px 12px;border-radius:10px;border:1px solid #8886;background:transparent;color:inherit;cursor:pointer;font:inherit;font-size:12px}
+.btns button.ap{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+.btns button.hold.on{background:#8883;font-weight:600}
+.locked{opacity:.55}
+.stage{padding:18px;background:var(--bg);color:var(--fg);display:grid;gap:18px;align-content:start;min-height:520px}
+.row{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+.menu,.dialog,.pop,.appbar,.avatar,.toast,.card,.chip{background:var(--pop);color:var(--fg);border:1px solid color-mix(in srgb,var(--fg) 8%,transparent)}
+.menu{width:180px;border-radius:16px;padding:4px;box-shadow:var(--sh-lg)}
+.menu div{padding:7px 10px;border-radius:10px}.menu div.hl{background:color-mix(in srgb,var(--fg) 8%,transparent)}
+.dialog{width:270px;border-radius:16px;box-shadow:var(--sh-lg);overflow:hidden}
+.dialog .in{padding:12px 14px;border-bottom:1px solid color-mix(in srgb,var(--fg) 8%,transparent);opacity:.6}.dialog .it{padding:9px 14px}
+.pop{width:190px;padding:12px;border-radius:16px;box-shadow:var(--sh-lg);font-size:13px}
+.appbar{display:flex;gap:10px;align-items:center;padding:8px 12px;border-radius:16px;box-shadow:var(--sh-lg)}
+.appbar b{padding:6px 12px;border-radius:10px;background:var(--pr);color:var(--prfg)}
+.avatar{display:flex;gap:8px;padding:8px;border-radius:16px;box-shadow:var(--sh-lg),var(--sh-xs)}
+.avatar i{width:30px;height:30px;border-radius:50%;background:var(--pr);display:block}
+.toast{padding:11px 14px;border-radius:16px;font-size:12.5px}
+.toast.df{background:var(--card);box-shadow:var(--sh-toast)}
+.toast.ok{background:color-mix(in srgb,oklch(.6 .15 163) var(--tint),var(--card));box-shadow:0 12px 24px -6px oklch(.6 .15 163 / 30%)}
+.toast.er{background:color-mix(in srgb,oklch(.6 .2 25) var(--tint),var(--card));box-shadow:0 12px 24px -6px oklch(.6 .2 25 / 30%)}
+.small{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.thumb{width:20px;height:20px;border-radius:50%;background:var(--bg);border:2px solid var(--pr);box-shadow:var(--sh-sm)}
+.dot{width:16px;height:16px;border-radius:50%;border:2px solid #fff;background:var(--pr);box-shadow:var(--sh-md)}
+.card{width:190px;padding:12px;border-radius:16px;background:var(--card);box-shadow:var(--sh-action);font-size:13px}
+.chip{padding:6px 12px;border-radius:12px;background:var(--card);box-shadow:var(--sh-xs);font-size:12px}
+.tag{font-size:11px;opacity:.65;font-family:ui-monospace,Menlo,monospace}
+.final{margin-top:18px;border:1px solid #8884;border-radius:18px;padding:14px;display:grid;gap:8px}
+.final textarea{width:100%;min-height:230px;font-family:ui-monospace,Menlo,monospace;font-size:12px;padding:10px;border-radius:10px;border:1px solid #8886;background:transparent;color:inherit}
+.note{opacity:.7;font-size:12.5px;line-height:1.5;max-width:900px}
+</style></head><body>
+<h1>DS14 — Sombra colorida da paleta</h1>
+<p class="sub">Cada paleta tem dois conjuntos independentes, <b>claro</b> e <b>escuro</b>, com cor (matiz H, luminosidade L, croma C) e opacidade. Os valores ficam fixos enquanto você não os mexer e ficam guardados neste navegador. Clique em <b>Aprovar</b> quando fechar um conjunto; aprovado trava os controles. No fim, copie o texto gerado e me envie.</p>
+<div class="tabs" id="tabs"></div>
+<div class="cols" id="cols"></div>
+<div class="final">
+  <b>Texto para enviar</b>
+  <textarea id="out" readonly></textarea>
+  <div class="btns"><button id="copy" class="ap">Copiar texto</button><button id="reset">Voltar tudo aos valores iniciais</button></div>
+  <p class="note">Avisos de sucesso, erro, aviso e informação mantêm a sombra colorida de hoje. O aviso padrão, o menu, o diálogo, o popover, a barra flutuante, o seletor de avatar, as bolinhas, o chip e o cartão seguem a cor escolhida. As sombras ficam com as mesmas geometrias de hoje (xs 0,6×, sm 0,8×, md e lg 1×, aviso padrão 1× no desenho dele).</p>
+</div>
+<script>
+const P=[{"id":"default","label":"Ônix","shadowColor":null,"light":{"primary":{"h":0,"c":0,"l":0},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":200,"c":0.002,"l":0.96},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.07,"inputLDelta":-0.04,"actionLDelta":0.02,"actionHoverLDelta":0.1,"popoverLDelta":0.02,"ring":{"h":0,"c":0,"l":0}},"dark":{"primary":{"h":0,"c":0,"l":1},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":250,"c":0.01,"l":0.2},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.1,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":0,"c":0,"l":1}}},{"id":"carbon","label":"Carbono","shadowColor":null,"light":{"primary":{"h":240,"c":0.02,"l":0.3},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":1},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.04,"borderLDelta":-0.04,"inputLDelta":-0.02,"actionLDelta":-0.02,"actionHoverLDelta":-0.005,"popoverLDelta":0.1,"ring":{"h":240,"c":0.02,"l":0.3}},"dark":{"primary":{"h":240,"c":0.01,"l":0.99},"primaryFg":{"h":240,"c":0.02,"l":0.3},"bg":{"h":240,"c":0.015,"l":0.25},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.1,"inputLDelta":0.04,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":240,"c":0.01,"l":0.99}}},{"id":"red","label":"Rubi","shadowColor":null,"light":{"primary":{"h":20,"c":0.25,"l":0.62},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":0.98},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.04,"actionHoverLDelta":0.06,"popoverLDelta":0.06,"ring":{"h":20,"c":0.25,"l":0.62}},"dark":{"primary":{"h":20,"c":0.25,"l":0.68},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":20,"c":0.25,"l":0.68}}},{"id":"orange","label":"Coral","shadowColor":null,"light":{"primary":{"h":25,"c":0.18,"l":0.65},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":130,"c":0.01,"l":0.95},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":1,"popoverLDelta":0.03,"ring":{"h":25,"c":0.18,"l":0.65}},"dark":{"primary":{"h":25,"c":0.18,"l":0.65},"primaryFg":{"h":130,"c":0.02,"l":0.9},"bg":{"h":190,"c":0.01,"l":0.25},"fg":{"h":130,"c":0.01,"l":0.95},"cardLDelta":0.05,"borderLDelta":0.1,"inputLDelta":-0.02,"actionLDelta":0.07,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":25,"c":0.18,"l":0.65}}},{"id":"yellow","label":"Damasco","shadowColor":null,"light":{"primary":{"h":100,"c":0.5,"l":0.8},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":0,"c":0,"l":0.98},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":100,"c":0.5,"l":0.8}},"dark":{"primary":{"h":100,"c":0.4,"l":0.8},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":100,"c":0.4,"l":0.8}}},{"id":"energy","label":"Elétrico","shadowColor":null,"light":{"primary":{"h":120,"c":0.15,"l":0.94},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":240,"c":0.004,"l":0.96},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.03,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":120,"c":0.15,"l":0.94}},"dark":{"primary":{"h":120,"c":0.18,"l":0.9},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":250,"c":0.01,"l":0.2},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":120,"c":0.18,"l":0.9}}},{"id":"green","label":"Folha","shadowColor":null,"light":{"primary":{"h":130,"c":0.2,"l":0.7},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":0.98},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":130,"c":0.2,"l":0.7}},"dark":{"primary":{"h":130,"c":0.2,"l":0.65},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":130,"c":0.2,"l":0.65}}},{"id":"cyan","label":"Turquesa","shadowColor":null,"light":{"primary":{"h":200,"c":0.2,"l":0.7},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":0.96},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":200,"c":0.2,"l":0.7}},"dark":{"primary":{"h":200,"c":0.2,"l":0.65},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":200,"c":0.2,"l":0.65}}},{"id":"blue","label":"Cobalto","shadowColor":null,"light":{"primary":{"h":264,"c":0.31,"l":0.45},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":1},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":-0.03,"actionHoverLDelta":-0.015,"popoverLDelta":0.1,"ring":{"h":264,"c":0.31,"l":0.45}},"dark":{"primary":{"h":264,"c":0.31,"l":0.58},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":264,"c":0.31,"l":0.58}}},{"id":"purple","label":"Violeta","shadowColor":null,"light":{"primary":{"h":290,"c":0.28,"l":0.54},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":1},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.1,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":290,"c":0.28,"l":0.54}},"dark":{"primary":{"h":290,"c":0.28,"l":0.68},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":290,"c":0.28,"l":0.68}}},{"id":"magenta","label":"Fúcsia","shadowColor":"oklch(0.25 0.15 350)","light":{"primary":{"h":350,"c":0.4,"l":0.9},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":320,"c":0.02,"l":0.98},"fg":{"h":0,"c":0,"l":0},"cardLDelta":-0.02,"borderLDelta":-0.05,"inputLDelta":-0.02,"actionLDelta":0.02,"actionHoverLDelta":0.04,"popoverLDelta":0,"ring":{"h":350,"c":0.4,"l":0.9}},"dark":{"primary":{"h":350,"c":0.4,"l":0.8},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":340,"c":0.1,"l":0.3},"fg":{"h":0,"c":0,"l":1},"cardLDelta":0.05,"borderLDelta":0.2,"inputLDelta":0.02,"actionLDelta":0.1,"actionHoverLDelta":0.2,"popoverLDelta":-0.03,"ring":{"h":350,"c":0.4,"l":0.8}}}];
+const $=s=>document.querySelector(s);
+const NEUTRAL=["default","carbon"];
+function initial(p){
+  const mk=(m)=>{
+    const dk=m==="dark";
+    let h,l=dk?10:25,c=dk?3:4,op=dk?25:10;
+    if(p.id==="magenta"){h=dk?340:350;c=dk?10:15}
+    else if(NEUTRAL.includes(p.id)){h=p[m].bg.h;c=1}
+    else{h=p[m].primary.h}
+    return{h:Math.round(h),l,c,op,ok:false};
+  };
+  return{light:mk("light"),dark:mk("dark")};
+}
+const KEY="ds14-sombra-v2";
+let S={};
+try{S=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){S={}}
+P.forEach(p=>{if(!S[p.id])S[p.id]=initial(p)});
+let cur=P[0].id;
+const hold={light:false,dark:false};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function col(v){return "oklch("+(v.l/100).toFixed(2)+" "+(v.c/100).toFixed(3)+" "+v.h+")"}
+function o(c){return "oklch("+c.l+" "+c.c+" "+c.h+")"}
+function vars(p,m,proposal){
+  const pm=p[m],dk=m==="dark",v=S[p.id][m];
+  const bg=o(pm.bg),fg=o(pm.fg);
+  const sc=col(v),pct=v.op;
+  const mix=f=>"color-mix(in srgb,"+sc+" "+(pct*f).toFixed(1)+"%,transparent)";
+  const ds=f=>proposal?mix(f):"rgba(0,0,0,"+(0.1*f)+")";
+  const t=(c,f)=>"color-mix(in srgb,"+c+" "+f+"%,transparent)";
+  return{
+    "--bg":bg,"--fg":fg,"--pr":o(pm.primary),"--prfg":pm.primaryFg?o(pm.primaryFg):(dk?"#000":"#fff"),
+    "--pop":"oklch(from "+bg+" calc(l + "+(pm.popoverLDelta||0)+") c h)",
+    "--card":"oklch(from "+bg+" calc(l + "+(pm.cardLDelta||0)+") c h)",
+    "--tint":dk?"14%":"7%",
+    "--sh-xs":"0 1px 2px 0 "+ds(.6),
+    "--sh-sm":"0 1px 3px 0 "+ds(.8)+",0 1px 2px -1px "+ds(.8),
+    "--sh-md":"0 4px 6px -1px "+ds(1)+",0 2px 4px -2px "+ds(1),
+    "--sh-lg":"0 10px 15px -3px "+ds(1)+",0 4px 6px -4px "+ds(1),
+    "--sh-action":"0 1px 2px 0 "+(proposal?t(sc,dk?35:14):(dk?"rgba(0,0,0,.35)":"rgba(0,0,0,.14)")),
+    "--sh-toast":"0 12px 24px -6px "+(proposal?mix(1):"rgba(0,0,0,.1)")
+  };
+}
+function stageHTML(){return '<div class="row"><div class="menu"><div>Meu perfil</div><div class="hl">Tema e cores</div><div>Admin</div><div>Sair</div></div><div class="dialog"><div class="in">Buscar ações, parceiros…</div><div class="it">Criar ação</div><div class="it">Abrir calendário</div></div></div>'+
+'<div class="row"><div class="pop">Popover / seletor<br><small style="opacity:.6">shadow-lg</small></div><div class="avatar"><i></i><i style="opacity:.6"></i><i style="opacity:.4"></i></div><div class="appbar"><span>Barra</span><b>Nova Ação +</b></div></div>'+
+'<div class="row"><div class="toast df">Aviso padrão (segue a paleta)</div><div class="toast ok">✓ Sucesso (verde, como hoje)</div><div class="toast er">✕ Erro (vermelho, como hoje)</div></div>'+
+'<div class="small"><span class="thumb"></span><span class="dot"></span><span class="chip">chip</span><div class="card">Cartão de ação<br><small style="opacity:.6">já usa a cor da paleta</small></div></div>'}
+function slider(m,k,label,min,max,fmt){
+  const v=S[cur][m];
+  return '<label><span>'+label+'</span><input type="range" data-m="'+m+'" data-k="'+k+'" min="'+min+'" max="'+max+'" value="'+v[k]+'"'+(v.ok?' disabled':'')+'><output>'+fmt(v[k])+'</output></label>';
+}
+function panel(m){
+  const p=P.find(x=>x.id===cur),v=S[cur][m],dk=m==="dark";
+  const f2=x=>(x/100).toFixed(2).replace(".",",");
+  const el=document.createElement("div");el.className="panel";
+  el.innerHTML='<div class="ctl '+(v.ok?'locked':'')+'"><h2><span>'+p.label+' — modo '+(dk?"escuro":"claro")+(v.ok?" ✓ aprovado":"")+'</span><span class="tag">'+col(v)+' · '+v.op+'%</span></h2>'+
+   '<div class="hue"></div>'+slider(m,"h","H matiz",0,360,x=>x+"°")+slider(m,"l","L luminosidade",3,60,f2)+slider(m,"c","C croma",0,30,f2)+slider(m,"op","Opacidade",5,dk?80:50,x=>x+"%")+
+   '<div class="btns"><button class="ap" data-ap="'+m+'">'+(v.ok?"Reabrir":"Aprovar")+'</button><button class="hold" data-hold="'+m+'">Ver sombra de hoje</button><button data-rs="'+m+'">Valores iniciais</button></div></div>'+
+   '<div class="stage" id="st-'+m+'">'+stageHTML()+'</div>';
+  const st=el.querySelector(".stage"),vv=vars(p,m,!hold[m]);for(const k in vv)st.style.setProperty(k,vv[k]);st.style.colorScheme=m;
+  const hb=el.querySelector("[data-hold]");if(hold[m])hb.classList.add("on");
+  el.querySelectorAll("input[type=range]").forEach(r=>r.addEventListener("input",()=>{S[cur][m][r.dataset.k]=+r.value;save();updateLive(m)}));
+  el.querySelector("[data-ap]").onclick=()=>{S[cur][m].ok=!S[cur][m].ok;save();render()};
+  hb.onclick=()=>{hold[m]=!hold[m];render()};
+  el.querySelector("[data-rs]").onclick=()=>{S[cur][m]=initial(p)[m];save();render()};
+  return el;
+}
+function updateLive(m){
+  const p=P.find(x=>x.id===cur),v=S[cur][m];
+  const st=$("#st-"+m),vv=vars(p,m,!hold[m]);for(const k in vv)st.style.setProperty(k,vv[k]);
+  const ctl=st.parentElement.querySelector(".ctl");
+  ctl.querySelectorAll("output").forEach((out,i)=>{const k=["h","l","c","op"][i];out.textContent=k==="h"?v.h+"°":k==="op"?v.op+"%":(v[k]/100).toFixed(2).replace(".",",")});
+  ctl.querySelector(".tag").textContent=col(v)+" · "+v.op+"%";
+  tabs();text();
+}
+function tabs(){
+  $("#tabs").innerHTML=P.map(p=>{const s=S[p.id],n=(s.light.ok?1:0)+(s.dark.ok?1:0);return '<button class="tab'+(p.id===cur?' on':'')+'" data-id="'+p.id+'"><i style="background:'+col(s.light)+'"></i><i style="background:'+col(s.dark)+'"></i><span><b>'+p.label+'</b><br><span class="st">'+n+'/2 aprovados</span></span></button>'}).join("");
+  document.querySelectorAll(".tab").forEach(e=>e.onclick=()=>{cur=e.dataset.id;render()});
+}
+function text(){
+  const L=["DS14 — sombra colorida. Valores fechados (oklch L C H, opacidade), por paleta.",""];
+  P.forEach(p=>{const s=S[p.id];const f=(v)=>"oklch("+(v.l/100).toFixed(2)+" "+(v.c/100).toFixed(3)+" "+v.h+") opacidade "+v.op+"% "+(v.ok?"[APROVADO]":"[pendente]");
+    L.push(p.label+" ("+p.id+")","  claro:  "+f(s.light),"  escuro: "+f(s.dark))});
+  const ap=P.reduce((a,p)=>a+(S[p.id].light.ok?1:0)+(S[p.id].dark.ok?1:0),0);
+  L.push("","Aprovados: "+ap+" de "+(P.length*2)+". Regras: avisos semânticos (sucesso, erro, aviso, informação) mantêm a sombra de hoje; shadowColor obrigatório em todas as paletas; relevo dos cartões e tema Personalizado sem mudança.");
+  $("#out").value=L.join("\n");
+}
+function render(){
+  tabs();const c=$("#cols");c.innerHTML="";c.appendChild(panel("light"));c.appendChild(panel("dark"));text();
+}
+$("#copy").onclick=async()=>{try{await navigator.clipboard.writeText($("#out").value);$("#copy").textContent="Copiado ✓"}catch(e){$("#out").select();$("#copy").textContent="Selecione e copie (Cmd+C)"}setTimeout(()=>$("#copy").textContent="Copiar texto",2000)};
+$("#reset").onclick=()=>{if(confirm("Voltar todas as paletas aos valores iniciais e desfazer as aprovações?")){P.forEach(p=>S[p.id]=initial(p));save();render()}};
+render();
+</script></body></html>

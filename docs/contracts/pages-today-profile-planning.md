@@ -45,3 +45,5 @@ Datas comemorativas (`/app/admin/celebrations`): abaixo de `md` (768px), formul�
 - A página do parceiro (`/app/partner/$slug`) usa sempre a paleta pessoal do usuário. A opção "usar cor do parceiro" (`followPartnerColor`, "Origem das cores" no menu do cabeçalho, "Usar Cores dos Clientes" em Minha Conta) foi retirada (DS16, aprovado em 11/11/2026); não reintroduzir. O campo antigo pode continuar em `people.preferences` salvas e é ignorado.
 
 - Cloudinary usa cloud name/upload preset no widget. Mantenha o widget montado durante uploads múltiplos; close pode preceder os últimos eventos success. API secret não pertence a variáveis VITE_.
+
+- Minha Conta → Aparência → Personalizado (DS14, 12/11/2026): cada modo é exibido em um bloco com o fundo e o texto escolhidos (exceção de design registrada no `AGENTS.md`); cores abrem o seletor `UColorPickerDropdown`; cada modo tem cor e opacidade de sombra (`shadowColor`/`shadowOpacity`, `darkShadowColor`/`darkShadowOpacity`), sem depender do relevo. Detalhe da sombra em [prism-details](prism-details.md).
