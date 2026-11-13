@@ -2,11 +2,11 @@
 
 Atualizado em 12/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, três de design system (DS08, DS10 e DS11) e um de arquitetura (16 no total, conforme o tracker em `.scratch/README.md`). Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
+O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, dois de design system (DS08 e DS10) e um de arquitetura (15 no total, conforme o tracker em `.scratch/README.md`). Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
 
 ## Pendências reais
 
-- **Publicação (push) dos commits locais** na `main`: nada do DS05, DS12, DS13, DS15 e DS16 está publicado. Antes de qualquer push que toque `api/`, `server/` ou `package.json`, rodar `bun run test:serverless`. Depois do push, confirmar que a nova versão ficou Ready na Vercel.
+- **Publicação (push) dos commits locais** na `main`: nada do DS05, DS11, DS12, DS13, DS14, DS15 e DS16 está publicado. Antes de qualquer push que toque `api/`, `server/` ou `package.json`, rodar `bun run test:serverless`. Depois do push, confirmar que a nova versão ficou Ready na Vercel.
 - **Sombra colorida da paleta (DS14):** encerrada com aceite do proprietário em 12/11; falta só publicar (a migração `20261112120000` já está aplicada em produção).
 - **Não verificado ainda:** aparência no navegador dos botões do Admin (Novo Usuário, Novo Cliente, Novo Parceiro) e comportamento dos menus Visualizar/Ordenar/Exibir com leitor de tela.
 
@@ -14,9 +14,9 @@ O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso pa
 
 O proprietário aprovou os 22 valores (11 paletas, claro e escuro). `shadowColor` e `shadowOpacity` agora são obrigatórios por modo em `app/lib/palettes.ts`; toda sombra de elevação e o aviso padrão usam a cor da paleta, independentemente do relevo dos cartões. Avisos semânticos, `image-icon` e o texto sobre mídia ficam como estavam; as bolinhas do seletor de cor passaram a usar a sombra da paleta. Typecheck, build e testes focados de paleta, tema e Personalizado passaram. O tema Personalizado ganhou o bloco "Sombras do app" (cor e opacidade em cada modo, sem depender do relevo). A migração `20261112120000_custom_theme_shadow_preferences.sql` foi aplicada em produção em 12/11 e verificada (chaves novas, validação de opacidade, atributos e permissões); o teste de salvar um tema pelo app não foi feito. Falta o aceite visual no app (menu, busca, diálogo, avisos, painel Personalizado, claro e escuro) e a publicação; código e documentação sem commit. [Ticket](../../.scratch/design-system-audit/issues/14-global-theme-shadow.md)
 
-### Cor da fase nos cartões de ação (DS11) — plano de 12/11
+### Cor da fase nos cartões de ação (DS11) — encerrado em 12/11
 
-O proprietário escolheu a versão C da [maquete v2](../../.scratch/design-system-audit/comparativo-ds11-v2.html): fundo com a cor da fase (7% claro, 14% escuro) e sombra com o matiz da fase, com os valores de claro e escuro aprovados na maquete. A opção vira um item "Cor da fase" no menu Visualizar, desligado por padrão, na página do parceiro e na Home (Sprint, Hoje em Parceiros e Categorias, Semana/Mês). Sai a preferência em Minha Conta e na busca; sem mudança de banco. Plano com arquivos, precedência e roteiro na seção 7 do [ticket](../../.scratch/design-system-audit/issues/11-action-background-by-phase.md). Pendente: quatro confirmações do proprietário (atraso, lembrar a escolha, página Hoje dedicada, nome) e o commit do DS14, que edita o mesmo `tailwind.css`. Sem código do app alterado.
+Encerrado com aceite do proprietário. Item "Cor da fase" (menu Visualizar no parceiro, Sprint e Semana/Mês; botão liga/desliga no Hoje): fundo, borda e texto derivados da fase, borda ausente nas paletas planas, sombra do app em repouso. Na mesma entrega, `PrismTooltip` nos controles de visualização e atraso vermelho também em Sprint. Typecheck e testes focados passaram. Falta publicar (push). [Histórico](../../.scratch/archive/resolved-tickets.md)
 
 ### Revisão da proposta de sombra do tema — 11/11
 

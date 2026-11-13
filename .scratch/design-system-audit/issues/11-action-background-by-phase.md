@@ -1,8 +1,8 @@
 # DS11 — Estudar a cor de fundo das ações por fase
 
-**Status.** Estudo concluído em 08/11/2026. Relatório, maquete comparativa ([`comparativo-ds11.html`](../comparativo-ds11.html)) e proposta prontos para decisão do proprietário. Nenhuma alteração no código da aplicação foi realizada.
+**Status.** Encerrado com aceite do proprietário em 12/11/2026. Implementado conforme a [seção 7](#7-plano-de-implementação-12112026) e os ajustes da seção 7.8. Falta só publicar (push).
 
-**Bloqueado por.** Nenhum ticket para iniciar o estudo. A implementação depende de autorização explícita após a revisão do relatório.
+**Bloqueado por.** Nada. As confirmações de 7.6 foram aprovadas em 12/11 e o repouso usa a sombra do app. O DS14 foi commitado em `8892b0d` e encerrado em `e1605e9`; o impacto dele no plano está em 7.7.
 
 ## O que a pessoa vê
 
@@ -27,9 +27,13 @@ O pedido mantém o `relief` como está. A configuração de relevo da paleta, as
 
 ## Modelos sugeridos
 
-- **Codex — GPT-6 Luna.** Rastrear os cartões e os dois caminhos de preferência quando a matriz de comparação estiver definida.
-- **Codex — GPT-6.1 Sol.** Conduzir o estudo completo, cruzando contraste, estados do cartão e persistência da escolha.
-- **Codex — GPT-6 Astra.** Avaliar divergências entre variantes ou combinações de estados caso a comparação aponte conflitos difíceis de conciliar.
+Para a implementação da seção 7 (atualizado em 12/11/2026):
+
+- **Claude Code — Sonnet 5.5.** Escopo bem delimitado (uma classe CSS, uma nova opção no menu e repasse da opção em seis telas). É o mais leve que cobre o trabalho.
+- **Codex — GPT-6 Luna.** Alternativa leve para o mesmo repasse mecânico, desde que siga a lista de arquivos da seção 7.3 à risca.
+- **Claude Code — Opus 5.5.** Se a conferência visual mostrar conflito entre sombra da fase, atraso, Sprint e seleção que exija redesenhar a precedência no `ActionItem`.
+
+Plano anterior do estudo (histórico): Codex GPT-6 Luna para rastrear cartões, GPT-6.1 Sol para o estudo completo, GPT-6 Astra para conflitos entre estados.
 
 ---
 
@@ -239,3 +243,85 @@ Exemplo crítico verificado na maquete ([`comparativo-ds11.html`](../comparativo
    - **D3 — Precedência com atraso:** Confirmar se **Atraso continua ganhando o fundo (`bg-late`)** quando `showLate` está ativo, mantendo o ponto colorido da fase visível ao lado do ícone de alerta na variante Linha (ou se prefere que a fase ganhe o fundo mesmo nas atrasadas).
    - **D4 — Alcance:** Confirmar que todos os `ActionItem` (Hoje, Home, Kanban, Calendário e Popover de atrasadas) entram no modo, enquanto a grade 3×3 de perfil do Instagram (`InstagramFeedSection`) e os itens de lista da Busca Global mantêm seu fundo atual.
    - **D5 — Nomes na interface:** Confirmar os rótulos **"Padrão da paleta"** e **"Por fase"** (sob o título **"Cor de fundo das ações"** em Minha Conta → Aparência e na Busca Global).
+
+---
+
+## 7. Plano de implementação (12/11/2026)
+
+### 7.1. O que foi decidido
+
+- **Versão escolhida:** C da [maquete v2](../comparativo-ds11-v2.html). O fundo do cartão recebe a cor da fase misturada sobre a superfície da ação, com a mesma regra dos fundos semânticos do app (erro, aviso, sucesso, info), e a sombra e o anel ganham o matiz da fase. Isso substitui o fundo tonal calculado à parte e o hover H1 do estudo (D1 e D2).
+- **Onde se liga:** um toggle nas opções de visualização de cada tela, e não mais em Minha Conta nem na busca global. A seção 5 do estudo (preferência gravada no banco, `update_my_preferences`) fica sem efeito: não há mudança de banco.
+- **Telas:** página do parceiro (`/app/partner/$slug`) e três blocos da Home: **Sprint**, **Hoje** (visões Parceiros e Categorias) e **Semana/Mês**.
+- **Valores aprovados pelo proprietário na maquete v2:**
+
+| Camada | Claro | Escuro |
+| --- | --- | --- |
+| Fundo em repouso | cor da fase a 7% sobre `--action` | 14% sobre `--action` |
+| Fundo no hover | 12% sobre `--action-hover` | 22% sobre `--action-hover` |
+| Sombra em repouso | **a mesma do app** (`shadow-action`, com a cor de sombra da paleta do DS14), sem cor da fase (decisão de 12/11) | igual: `shadow-action` do app |
+| Sombra de contato no hover (cor) | `oklch(from fase 0.60 0.15 h)` | `oklch(from fase 0.33 0.10 h)` |
+| Sombra de contato no hover (opacidade e geometria) | 25%, `0 10px 15px -3px` e `0 4px 6px -4px` (geometria do hover atual) | 20%, mesma geometria |
+| Anel do cartão | cor de contato a 8% | cor de contato a 6% |
+| Sombra difusa | desligada | só no hover: `oklch(from fase 0.20 0.15 h)` a 63%, `0 14px 30px -4px` |
+
+Em repouso, só o fundo e o anel mostram a fase; a sombra é a do app. A cor da fase na sombra aparece no hover. Paletas planas (Carbono, Cobalto) seguem sem sombra também no hover: só o fundo e o anel mudam de cor.
+
+### 7.2. Como fica para a pessoa
+
+- No menu **Visualizar** aparece uma opção marcável, **"Cor da fase"** (nome a confirmar, 7.6). Desligada por padrão: a aparência atual não muda para ninguém.
+- Ligada, os cartões daquela tela passam a ter o fundo e a sombra da fase. Desligar volta ao padrão na hora.
+- A escolha vale para a tela e some ao recarregar, como as demais opções de visualização hoje (variante, ordem, colunas). Gravar a escolha é a pergunta 7.6-b.
+- No **Hoje** da Home não existe o menu Visualizar (só a escolha Kanban/Categorias/Feed/Parceiros). Nele, a opção é um botão liga/desliga com ícone de paleta ao lado dos ícones de visão (decisão de 12/11: única opção, então sem menu), e só aparece nas visões Parceiros e Categorias. Kanban já separa por fase em colunas, e Feed mostra capas.
+
+### 7.3. Arquivos e passos
+
+1. **`app/tailwind.css`** — classe `phase-surface`, que lê `--phase-color` do próprio cartão e aplica fundo, anel e a sombra de hover da tabela 7.1, em claro e escuro. Em repouso, a classe não troca a sombra: o cartão mantém `shadow-action`. Para as paletas planas, a sombra de hover da fase entra como valor reserva de `var(--action-hover-shadow-override, …)`: o `palette-vars.ts` já grava `0 0 #0000` nessa variável quando `relief: false` e a remove nas paletas com relevo. Assim a sombra some sozinha nas planas, sem mexer em `palette-vars.ts` e mantendo a lista de `box-shadow` válida (nunca `none`).
+2. **`app/components/features/ActionItem.tsx`** — nova flag `showPhaseColor` em `ActionDisplayFlags`. Ligada e com fase conhecida, o cartão recebe `phase-surface` e `style={{ "--phase-color": currentPhase.color }}`. Fase desconhecida mantém o padrão.
+3. **`app/components/uzzina/UViewOptions.tsx`** — novo campo `phaseColor` (valor e `showOptions`), padrão `false`, e o item no menu Visualizar, no mesmo formato de "Limitar altura dos dias". `getVisualizeGroups` passa a contar esse grupo, para o menu aparecer quando for a única opção.
+4. **Sprint** (`app/components/features/home/HomeSprintView.tsx`) — ligar `showOptions.phaseColor` e repassar a flag aos cartões e à prévia de arraste (`DragOverlay`).
+5. **Semana/Mês da Home e página do parceiro** — as duas usam o mesmo calendário (`CalendarWithDnd` → `Calendar` → `CalendarDayCell`). Repassar `viewOptions.phaseColor` nas três chamadas de `ActionContainer` de `CalendarDayCell.tsx` e na prévia de arraste de `CalendarWithDnd.tsx`. Ligar `showOptions.phaseColor` em `HomeCalendarView.tsx` e em `app/routes/app/partner/$slug.tsx`.
+6. **Hoje da Home** (`HomeTodayView.tsx`, `TodayViewParts.tsx`, `PartnersBoard.tsx`, `CategoriesBoard.tsx`) — estado da opção em `HomeTodayView`, `UViewOptions` só com essa opção ao lado da escolha de visão (visível em Parceiros e Categorias), `TodayBoard` repassa a flag para `PartnersBoard` e `CategoriesBoard`, que hoje fixam as flags. A página Hoje dedicada (`/app/today`) usa o mesmo `TodayBoard`: pergunta 7.6-c.
+7. **Galeria `/ui`** (`app/components/ui-sections/UzzinaViewOptionsSection.tsx`) — mostrar a nova opção.
+8. **Documentação** — contrato da área em `docs/contracts/pages-today-profile-planning.md` (nova opção de visualização e onde existe) e status em CURRENT.
+
+Fica fora: Kanban e Feed do Hoje, Atrasadas e Parceiros da Home, popover de atrasadas do parceiro, grade do Instagram, busca global, gaveta, portal e revisão pública.
+
+### 7.4. Como os sinais convivem
+
+- **Atraso ganha o fundo** (hoje `bg-error-background` + `ring-error`, quando `showLate`). Nessa ação, a classe da fase não entra. Era o que a maquete mostrava na seção 3; confirmar em 7.6-a.
+- **Sprint e seleção** mantêm o `ring-2 ring-primary` por cima do anel da fase.
+- **Foco por teclado** continua no `outline` (separado do `box-shadow` desde o DS10).
+- Mudança de fase (menu, atalho, arraste no calendário) troca a cor na hora, porque `currentPhase` já vem da versão atual da ação.
+
+### 7.5. Roteiro curto para o proprietário validar
+
+1. Home → **Sprint** → Visualizar → marcar "Cor da fase". Ver fundo e sombra em Bloco e Linha, passar o mouse, arrastar um cartão.
+2. Home → **Semana** e **Mês** → mesma opção. Arrastar uma ação de dia.
+3. Home → **Hoje** → visões Parceiros e Categorias → ligar a opção. Em Kanban e Feed ela não aparece.
+4. Abrir um **parceiro** → Visualizar → ligar. Conferir uma ação atrasada e uma em Sprint.
+5. Repetir 1 e 4 no **escuro** e numa paleta **plana** (Carbono). Desligar a opção e ver tudo voltar ao padrão.
+
+Não há mudança de banco nem de API: publicar é build + push, e conferir o deploy Ready.
+
+### 7.6. Confirmações do proprietário (aprovadas em 12/11: todas as recomendadas)
+
+- **a) Atraso:** a ação atrasada mantém o fundo vermelho de atraso, e a cor da fase não entra nela (recomendado). Ou a fase ganha o fundo e o atraso fica só no anel e no ícone.
+- **b) Lembrar a escolha:** como as outras opções de visualização, a escolha some ao recarregar (recomendado, sem banco). Ou fica gravada por pessoa, o que volta a exigir mudança em `update_my_preferences` antes de publicar.
+- **c) Página Hoje dedicada** (`/app/today`, aberta pelo título "Hoje" da Home): recebe a mesma opção, já que usa os mesmos quadros (recomendado), ou fica fora.
+- **d) Nome no menu:** "Cor da fase".
+
+### 7.7. O que o DS14 mudou e o efeito aqui (conferido em 12/11, `8892b0d` e `e1605e9`)
+
+- **Sombras de elevação** (`shadow-xs` a `shadow-2xl`, aviso, fundo atrás de diálogos) passaram a usar a cor e a opacidade de sombra de cada paleta (`--shadow-tint`, `--shadow-alpha`). Os cartões de ação usam `shadow-action`, que já lê a mesma cor de sombra da paleta (`shadowColor`). Por decisão de 12/11, o repouso do cartão com a cor da fase usa essa sombra do app sem mudança.
+- **Relevo dos cartões** continua separado da sombra global: `palette-vars.ts` ainda zera `--action-shadow-override` nas paletas planas. O passo 1 de 7.3 aproveita isso para desligar a sombra da fase nas planas.
+- **`app/tailwind.css` livre:** o DS14 está commitado, e o checkout só tem as mudanças deste ticket e a maquete v2. O bloqueio de executor acabou.
+- **Ponto de atenção, sem decisão pendente:** a sombra de hover da fase usa valores fixos aprovados na maquete e não acompanha a opacidade de sombra de cada paleta (`shadowOpacity`) nem o tema Personalizado. Na conferência visual, passar o mouse em paletas com sombra forte (Rubi escuro).
+- **Nada do DS14 toca** `ActionItem.tsx`, `UViewOptions.tsx`, os blocos da Home ou a página do parceiro. A lista de arquivos de 7.3 continua a mesma.
+
+### 7.8. Ajustes pedidos depois da primeira conferência (12/11/2026)
+
+- **Hoje:** como a "Cor da fase" era a única opção do menu ali, virou um botão liga/desliga com ícone de paleta (`PrismToggle`) ao lado dos ícones de visão. Nas outras telas a opção segue no menu Visualizar, que tem outras escolhas.
+- **Dicas ao passar o mouse:** novo primitivo `PrismTooltip` (`app/components/prism/tooltip.tsx`, React Aria). Aplicado nos menus Visualizar/Ordenar/Exibir (`UViewOptions`), nos quatro ícones de visão e no botão Cor da fase do Hoje, e no botão de Feed da página do parceiro. Exemplo na `/ui` (Toggle & ToggleGroup → Tooltip).
+- **Atraso em Sprint:** antes, o anel preto da Sprint cobria o anel vermelho do atraso, e o cartão atrasado não tinha sombra própria. Agora a ação atrasada tem sombra vermelha (`late-surface`) e, em Sprint, anel de 2px vermelho. Paletas planas seguem sem sombra.
+- **Borda e texto da fase (decisão de 12/11, escolhida na maquete v2 refeita com a marcação e o CSS reais):** o anel do cartão usa a própria cor da fase a 30% no claro e 55% no escuro; o texto do cartão deriva da fase (claro `oklch(from fase 0.35 0.07 h)`, escuro `oklch(from fase 0.92 0.06 h)`). Nas paletas planas o anel some, como no cartão comum: `palette-vars.ts` grava `--action-relief: 0` quando `relief: false` e o anel da fase é multiplicado por esse valor. A classe `phase-surface` foi reorganizada: cada tema define só os parâmetros, e as fórmulas ficam num lugar só.
