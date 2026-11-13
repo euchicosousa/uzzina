@@ -6,6 +6,8 @@
 - **Anthropic** — Claude Sonnet 5.5, para avaliar a organização do componente e a precedência dos indicadores de Sprint.
 - **Google** — Gemini 4 Argon, para comparar a renderização nos consumidores reais. Disponibilidade depende do plano.
 
+**Status.** Encerrado com aceite do proprietário em 12/11/2026, absorvido pelo DS11: a conferência visual do DS11 passou pelo mesmo cartão (foco, Sprint, atraso, sombra no hover e arraste), construído sobre as mudanças deste ticket (`9e08ac0`, já no GitHub).
+
 **Entrega.** Relatório com reprodução, causa, inventário estrutural e proposta de correção. Escopo de investigação. Nenhuma alteração no código do app nesta etapa.
 
 **Bloqueado por.** Nenhum ticket para começar. Registrar o estado do DS06 usado na reprodução, pois seus tokens de relevo podem afetar a aparência.
