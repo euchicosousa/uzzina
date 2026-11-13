@@ -26,6 +26,10 @@ O [ticket de sombra do tema](../../.scratch/design-system-audit/issues/14-global
 
 ## Registro recente
 
+### DS17: migração das preferências aplicada — 13/11
+
+A migração `20261113120000_vivid_phase_preferences.sql` foi **aplicada em produção em 13/11/2026** (projeto `dfepmjcozszswocwvdpq`, `CREATE OR REPLACE` pela ferramenta de SQL, sem registro no histórico de migrations), com autorização do proprietário. Antes, a função vigente foi comparada com `20261112120000` (mesmas chaves, atributos e permissões). Depois: chaves `vividDarkTone` e `vividTextTone` presentes, DS14 preservado, `SECURITY DEFINER`, `search_path` vazio, EXECUTE só para `authenticated`, `service_role` e `postgres` (anon sem acesso). Validação testada com usuário fictício dentro de transação desfeita: valores válidos passam para a checagem de membro; `bright`, `black` e booleano são recusados. Salvar pelo app não foi testado. Código em `2581cc9` e documentação em `8027742`, sem push. Falta o aceite visual no app e a publicação.
+
 ### DS17: cor viva da fase implementada, aguardando aceite — 13/11
 
 "Cor da fase" agora tem Desligada / Suave / Viva (menu Visualizar e menu do Hoje, estado de tela) e a Viva usa a nova utility `phase-vivid`; Minha Conta → Aparência ganhou "Cor viva no escuro" e "Texto na cor viva" (`vividDarkTone`, `vividTextTone`). Nada commitado. Migração `supabase/migrations/20261113120000_vivid_phase_preferences.sql` escrita e **não aplicada**: sem ela salvar as duas preferências falha no banco. Verificado: tsc, os cinco testes ajustados por arquivo e a utility em `/ui` com cartões de teste (claro, escuro, atenuada, texto claro, paleta plana); Hoje e Minha Conta não foram vistos no navegador (sessão sem login). Pendente: aceite visual do proprietário, aplicar a migração em produção com autorização, push. Detalhe no ticket [DS17](../../.scratch/design-system-audit/issues/17-vivid-phase-color-cards.md).
