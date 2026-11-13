@@ -538,10 +538,13 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
       "formulario",
       "formdata",
       "arquivado",
+      "tooltip",
+      "dica",
     ],
     subsections: [
       { id: "prism-toggle-single", label: "Toggle" },
       { id: "prism-toggle-group", label: "ToggleGroup" },
+      { id: "prism-toggle-tooltip", label: "Tooltip" },
       { id: "prism-toggle-form", label: "Formulário (FormData)" },
     ],
   },

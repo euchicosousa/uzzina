@@ -156,7 +156,7 @@ describe("ViewOptionsComponent", () => {
 describe("Visualizar groups for each screen that uses it", () => {
   // showOptions copied from each screen's useViewOptions call.
   const screens: Record<string, ViewOptions["showOptions"]> = {
-    sprint: { variant: true, columns: true },
+    sprint: { variant: true, columns: true, phaseColor: true },
     late: {
       ascending: true,
       order: true,
@@ -165,10 +165,16 @@ describe("Visualizar groups for each screen that uses it", () => {
       responsibles: true,
       variant: true,
     },
-    calendar: { ascending: true, order: true, limitHeight: true },
+    calendar: {
+      ascending: true,
+      order: true,
+      limitHeight: true,
+      phaseColor: true,
+    },
     partner: {
       variant: true,
       limitHeight: true,
+      phaseColor: true,
       responsibles: true,
       priority: true,
       category: true,
@@ -187,31 +193,37 @@ describe("Visualizar groups for each screen that uses it", () => {
     expect(groups("sprint", "block")).toEqual({
       variant: true,
       limitHeight: false,
+      phaseColor: true,
       columns: false,
     });
     expect(groups("sprint", "content")).toEqual({
       variant: true,
       limitHeight: false,
+      phaseColor: true,
       columns: true,
     });
     expect(groups("late", "block")).toEqual({
       variant: true,
       limitHeight: false,
+      phaseColor: false,
       columns: false,
     });
     expect(groups("calendar", "line")).toEqual({
       variant: false,
       limitHeight: true,
+      phaseColor: true,
       columns: false,
     });
     expect(groups("partner", "line")).toEqual({
       variant: true,
       limitHeight: true,
+      phaseColor: true,
       columns: false,
     });
     expect(groups("partner", "content")).toEqual({
       variant: true,
       limitHeight: true,
+      phaseColor: true,
       columns: false,
     });
   });

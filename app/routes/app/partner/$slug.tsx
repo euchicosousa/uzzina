@@ -38,6 +38,7 @@ import {
   PrismPopover,
   PrismPopoverTrigger,
   PrismToggle,
+  PrismTooltip,
 } from "~/components/prism";
 import { UAvatar } from "~/components/uzzina/UAvatar";
 import { PHASES, SIZE } from "~/lib/CONSTANTS";
@@ -131,6 +132,7 @@ function PartnerPage() {
     showOptions: {
       variant: true,
       limitHeight: true,
+      phaseColor: true,
       responsibles: true,
       priority: true,
       category: true,
@@ -257,17 +259,19 @@ function PartnerPage() {
           <UViewOptions
             className="lg:contents"
             endComponents={
-              <PrismToggle
-                aria-label="Alternar Visão Feed"
-                isSelected={view === "feed"}
-                onChange={() => {
-                  const v = view === "calendar" ? "feed" : "calendar";
-                  setView(v);
-                }}
-                size="sm"
-              >
-                <Grid3X3Icon />
-              </PrismToggle>
+              <PrismTooltip label="Feed do Instagram">
+                <PrismToggle
+                  aria-label="Alternar Visão Feed"
+                  isSelected={view === "feed"}
+                  onChange={() => {
+                    const v = view === "calendar" ? "feed" : "calendar";
+                    setView(v);
+                  }}
+                  size="sm"
+                >
+                  <Grid3X3Icon />
+                </PrismToggle>
+              </PrismTooltip>
             }
             setViewOptions={setViewOptions}
             viewOptions={viewOptions}

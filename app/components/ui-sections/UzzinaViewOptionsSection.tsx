@@ -27,6 +27,7 @@ export function UViewOptionsPlayground() {
       variant: true,
       columns: true,
       limitHeight: true,
+      phaseColor: true,
       responsibles: true,
       priority: true,
       category: true,
@@ -83,6 +84,12 @@ export function UViewOptionsPlayground() {
         onChange={(v) => updateShowOption("limitHeight", v)}
         prop="showOptions.limitHeight"
         value={show.limitHeight ?? true}
+      />
+      <PlaygroundBoolean
+        label="Cor da fase"
+        onChange={(v) => updateShowOption("phaseColor", v)}
+        prop="showOptions.phaseColor"
+        value={show.phaseColor ?? true}
       />
       <PlaygroundBoolean
         label="Critério de ordenação"

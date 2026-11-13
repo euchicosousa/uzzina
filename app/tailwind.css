@@ -52,6 +52,9 @@
   --action-hover: oklch(
     from var(--background) calc(l + var(--action-hover-l-delta)) c h
   );
+  /* Palette surfaces kept apart so phase-surface can tint them (DS11). */
+  --action-base: var(--action);
+  --action-hover-base: var(--action-hover);
   --shadow-tint: var(--shadow-color-override, #000000);
   --shadow-alpha: var(--shadow-opacity-override, 10%);
   --action-shadow-color: var(--action-shadow-color-override, #000000);
@@ -236,6 +239,8 @@
   --action-hover: oklch(
     from var(--background) calc(l + var(--dark-action-hover-l-delta)) c h
   );
+  --action-base: var(--action);
+  --action-hover-base: var(--action-hover);
   --shadow-tint: var(
     --dark-shadow-color-override,
     var(--shadow-color-override, #000000)
@@ -637,6 +642,95 @@ html {
     color: white;
     filter: drop-shadow(0 0 1px rgb(0 0 0 / 0.7))
       drop-shadow(0 1px 2px rgb(0 0 0 / 0.55));
+  }
+}
+
+/* Action card tinted by its phase (DS11). The card sets --phase-color inline.
+   Each mode sets only the knobs; the formulas below are shared. Resting shadow
+   stays the app's shadow-action. Flat palettes (--action-relief: 0, set by
+   palette-vars) drop the phase ring and, through the override, the hover
+   shadow, like a regular flat card. */
+@utility phase-surface {
+  --phase-mix: 7%;
+  --phase-mix-hover: 12%;
+  --phase-ring-alpha: 30%;
+  --phase-fg: oklch(from var(--phase-color) 0.35 0.07 h);
+  --phase-shadow: oklch(from var(--phase-color) 0.6 0.15 h);
+  --phase-shadow-alpha: 25%;
+  --phase-diffuse: transparent;
+  &:is(.dark *) {
+    --phase-mix: 14%;
+    --phase-mix-hover: 22%;
+    --phase-ring-alpha: 55%;
+    --phase-fg: oklch(from var(--phase-color) 0.92 0.06 h);
+    --phase-shadow: oklch(from var(--phase-color) 0.33 0.1 h);
+    --phase-shadow-alpha: 20%;
+    --phase-diffuse: color-mix(
+      in srgb,
+      oklch(from var(--phase-color) 0.2 0.15 h) 63%,
+      transparent
+    );
+  }
+
+  --foreground: var(--phase-fg);
+  --action: color-mix(
+    in srgb,
+    var(--phase-color) var(--phase-mix),
+    var(--action-base)
+  );
+  --action-hover: color-mix(
+    in srgb,
+    var(--phase-color) var(--phase-mix-hover),
+    var(--action-hover-base)
+  );
+  --action-ring: color-mix(
+    in srgb,
+    var(--phase-color) calc(var(--phase-ring-alpha) * var(--action-relief, 1)),
+    transparent
+  );
+  --action-hover-shadow: var(
+    --action-hover-shadow-override,
+    0 10px 15px -3px
+      color-mix(
+        in srgb,
+        var(--phase-shadow) var(--phase-shadow-alpha),
+        transparent
+      ),
+    0 4px 6px -4px
+      color-mix(
+        in srgb,
+        var(--phase-shadow) var(--phase-shadow-alpha),
+        transparent
+      ),
+    0 14px 30px -4px var(--phase-diffuse)
+  );
+}
+
+/* Late action card: red resting and hover shadow. Flat palettes keep none
+   through the same overrides as the regular card. */
+@utility late-surface {
+  --action-shadow: var(
+    --action-shadow-override,
+    0 1px 2px 0 color-mix(in srgb, var(--error-foreground) 25%, transparent)
+  );
+  --action-hover-shadow: var(
+    --action-hover-shadow-override,
+    0 10px 15px -3px
+      color-mix(in srgb, var(--error-foreground) 30%, transparent),
+    0 4px 6px -4px color-mix(in srgb, var(--error-foreground) 30%, transparent)
+  );
+  &:is(.dark *) {
+    /* A deep red: the dark error tone is too light to read as a shadow. */
+    --late-shadow: oklch(from var(--color-error) 0.45 0.18 h);
+    --action-shadow: var(
+      --action-shadow-override,
+      0 1px 2px 0 color-mix(in srgb, var(--late-shadow) 50%, transparent)
+    );
+    --action-hover-shadow: var(
+      --action-hover-shadow-override,
+      0 10px 15px -3px color-mix(in srgb, var(--late-shadow) 60%, transparent),
+      0 4px 6px -4px color-mix(in srgb, var(--late-shadow) 60%, transparent)
+    );
   }
 }
 

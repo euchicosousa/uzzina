@@ -176,6 +176,8 @@ export function applyPaletteVars(palette: PaletteVars) {
 
   // 5. Relevo de ações e cartões (border-t, ring e sombras)
   if (palette.relief === false) {
+    // Flat cards: lets tinted rings (phase-surface) fade out like the base ring.
+    root.style.setProperty("--action-relief", "0");
     root.style.setProperty("--action-top-border-override", "transparent");
     // Keep Tailwind's box-shadow list valid so state rings remain visible.
     root.style.setProperty("--action-shadow-override", "0 0 #0000");
@@ -184,6 +186,7 @@ export function applyPaletteVars(palette: PaletteVars) {
     root.style.removeProperty("--dark-action-shadow-color-override");
     root.style.removeProperty("--dark-action-top-border-override");
   } else {
+    root.style.removeProperty("--action-relief");
     root.style.removeProperty("--action-shadow-override");
     root.style.removeProperty("--action-hover-shadow-override");
 

@@ -9,6 +9,7 @@ import {
   TodayViewToggle,
   useTodayActions,
   useTodayPageHeading,
+  useTodayPhaseColor,
   type TodayViewMode,
 } from "~/components/features/home/TodayViewParts";
 import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
@@ -33,6 +34,7 @@ export function TodayPageView({
     () => getUserPreferences(person).defaultTodayView,
   );
   const filteredActions = useTodayActions(actions, view, currentDay);
+  const { showPhaseColor, phaseColorToggle } = useTodayPhaseColor(view);
   useSelectionContext(JSON.stringify([currentDay, view]));
   const heading = useTodayPageHeading(currentDay);
 
@@ -65,6 +67,7 @@ export function TodayPageView({
             currentDay={currentDay}
             setCurrentDay={onCurrentDayChange}
           />
+          {phaseColorToggle}
           <TodayViewToggle view={view} onViewChange={setView} />
         </div>
       </div>
@@ -100,6 +103,7 @@ export function TodayPageView({
             isLoading={isLoading}
             currentDay={currentDay}
             showFeedTitle={false}
+            showPhaseColor={showPhaseColor}
           />
           <AppBarSpacer />
         </div>

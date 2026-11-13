@@ -50,6 +50,7 @@ export function HomeSprintView({ actions }: { actions: Action[] }) {
     showOptions: {
       variant: true,
       columns: true,
+      phaseColor: true,
     },
   });
   const sensors = useSensors(
@@ -85,6 +86,7 @@ export function HomeSprintView({ actions }: { actions: Action[] }) {
     showPartner: true,
     showSprint: false,
     showResponsibles: true,
+    showPhaseColor: viewOptions.phaseColor,
   } as ActionDisplayFlags;
   return (
     <HomeViewWrapper

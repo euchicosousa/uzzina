@@ -103,6 +103,7 @@ export function CalendarWithDnd({
                 showCategory: viewOptions.category,
                 showResponsibles: viewOptions.responsibles,
                 showPriority: viewOptions.priority,
+                showPhaseColor: viewOptions.phaseColor,
               }}
               isDragging
               variant={viewOptions.variant}

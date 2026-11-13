@@ -6,13 +6,19 @@ import {
   Grid3x3Icon,
   HeartHandshakeIcon,
   KanbanIcon,
+  PaletteIcon,
 } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import { CategoriesBoard } from "~/components/layout/CategoriesBoard";
 import KanbanPhasesBoard from "~/components/layout/KanbanPhasesBoard";
 import { PartnersBoard } from "~/components/layout/PartnersBoard";
-import { PrismToggleGroup, PrismToggleGroupItem } from "~/components/prism";
+import {
+  PrismToggle,
+  PrismToggleGroup,
+  PrismToggleGroupItem,
+  PrismTooltip,
+} from "~/components/prism";
 import { VARIANT } from "~/lib/CONSTANTS";
 import type { Action } from "~/types";
 import { isInstagramFeed } from "~/utils";
@@ -96,20 +102,54 @@ export function TodayViewToggle({
       }}
       size="sm"
     >
-      <PrismToggleGroupItem aria-label="Visão por Kanban" id="kanban">
-        <KanbanIcon />
-      </PrismToggleGroupItem>
-      <PrismToggleGroupItem aria-label="Visão por Categorias" id="categories">
-        <Grid3x3Icon />
-      </PrismToggleGroupItem>
-      <PrismToggleGroupItem aria-label="Visão por Feed" id="feed">
-        <BlocksIcon />
-      </PrismToggleGroupItem>
-      <PrismToggleGroupItem aria-label="Visão por Parceiros" id="partners">
-        <HeartHandshakeIcon />
-      </PrismToggleGroupItem>
+      <PrismTooltip label={TODAY_VIEW_LABELS.kanban}>
+        <PrismToggleGroupItem aria-label="Visão por Kanban" id="kanban">
+          <KanbanIcon />
+        </PrismToggleGroupItem>
+      </PrismTooltip>
+      <PrismTooltip label={TODAY_VIEW_LABELS.categories}>
+        <PrismToggleGroupItem aria-label="Visão por Categorias" id="categories">
+          <Grid3x3Icon />
+        </PrismToggleGroupItem>
+      </PrismTooltip>
+      <PrismTooltip label={TODAY_VIEW_LABELS.feed}>
+        <PrismToggleGroupItem aria-label="Visão por Feed" id="feed">
+          <BlocksIcon />
+        </PrismToggleGroupItem>
+      </PrismTooltip>
+      <PrismTooltip label={TODAY_VIEW_LABELS.partners}>
+        <PrismToggleGroupItem aria-label="Visão por Parceiros" id="partners">
+          <HeartHandshakeIcon />
+        </PrismToggleGroupItem>
+      </PrismTooltip>
     </PrismToggleGroup>
   );
+}
+
+/** Only Partners and Categories offer the phase color; Kanban already groups by phase. */
+function viewHasPhaseColor(view: TodayViewMode) {
+  return view === "partners" || view === "categories";
+}
+
+/** Today block's only display option, so a toggle instead of a menu. */
+export function useTodayPhaseColor(view: TodayViewMode) {
+  const [isOn, setIsOn] = useState(false);
+  const isAvailable = viewHasPhaseColor(view);
+  return {
+    showPhaseColor: isAvailable && isOn,
+    phaseColorToggle: isAvailable ? (
+      <PrismTooltip label="Cor da fase">
+        <PrismToggle
+          aria-label="Cor da fase"
+          isSelected={isOn}
+          onChange={setIsOn}
+          size="sm"
+        >
+          <PaletteIcon />
+        </PrismToggle>
+      </PrismTooltip>
+    ) : null,
+  };
 }
 
 export function TodayBoard({
@@ -119,6 +159,7 @@ export function TodayBoard({
   currentDay,
   fillHeight = false,
   showFeedTitle = true,
+  showPhaseColor = false,
 }: {
   view: TodayViewMode;
   actions: Action[];
@@ -126,6 +167,8 @@ export function TodayBoard({
   currentDay: Date;
   fillHeight?: boolean;
   showFeedTitle?: boolean;
+  /** Tints Partners and Categories cards by phase; Kanban and Feed ignore it. */
+  showPhaseColor?: boolean;
 }) {
   if (view === "kanban")
     return <KanbanPhasesBoard actions={actions} fillHeight={fillHeight} />;
@@ -143,12 +186,16 @@ export function TodayBoard({
         </div>
       </div>
     );
-  if (view === "categories") return <CategoriesBoard actions={actions} />;
+  if (view === "categories")
+    return (
+      <CategoriesBoard actions={actions} showPhaseColor={showPhaseColor} />
+    );
   return (
     <PartnersBoard
       actions={actions}
       isLoading={isLoading}
       currentDay={currentDay}
+      showPhaseColor={showPhaseColor}
     />
   );
 }

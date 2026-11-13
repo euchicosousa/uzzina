@@ -124,6 +124,7 @@ export { PrismSkeleton, PrismSkeletonGroup } from "./skeleton";
 export { PrismTimeField } from "./time-field";
 export { PrismToggle, toggleVariants } from "./toggle";
 export { PrismToggleGroup, PrismToggleGroupItem } from "./toggle-group";
+export { PrismTooltip } from "./tooltip";
 export {
   PrismRadio,
   PrismRadioGroup,

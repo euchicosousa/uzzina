@@ -12,6 +12,7 @@ import {
   Rows2Icon,
   EyeIcon,
   LayoutListIcon,
+  PaletteIcon,
   ListOrderedIcon,
   Rows3Icon,
   SignalIcon,
@@ -31,6 +32,7 @@ import {
   PrismMenuLabel,
   PrismMenuSeparator,
   PrismMenuTrigger,
+  PrismTooltip,
 } from "~/components/prism";
 import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
@@ -39,6 +41,8 @@ export type UViewOptions = {
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
   columns?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   limitHeight?: boolean;
+  /** Tints each action card by its phase (DS11). */
+  phaseColor?: boolean;
   responsibles?: boolean;
   priority?: boolean;
   category?: boolean;
@@ -54,6 +58,7 @@ export type UViewOptions = {
     variant?: boolean;
     columns?: boolean;
     limitHeight?: boolean;
+    phaseColor?: boolean;
     responsibles?: boolean;
     priority?: boolean;
     category?: boolean;
@@ -72,6 +77,7 @@ const DEFAULT_VIEW_OPTIONS = {
   variant: VARIANT.line,
   columns: 4,
   limitHeight: false,
+  phaseColor: false,
   ascending: true,
   order: ORDER_BY.date,
   category: true,
@@ -124,11 +130,13 @@ function ViewMenuTrigger({
   accessibleName: string;
 }) {
   return (
-    <PrismButton aria-label={accessibleName} size="sm" variant="ghost">
-      {icon}
-      <span className="hidden md:block lg:hidden xl:block">{label}</span>
-      <ChevronDownIcon className="hidden md:block lg:hidden xl:block" />
-    </PrismButton>
+    <PrismTooltip label={label}>
+      <PrismButton aria-label={accessibleName} size="sm" variant="ghost">
+        {icon}
+        <span className="hidden md:block lg:hidden xl:block">{label}</span>
+        <ChevronDownIcon className="hidden md:block lg:hidden xl:block" />
+      </PrismButton>
+    </PrismTooltip>
   );
 }
 
@@ -142,6 +150,7 @@ export function getVisualizeGroups(viewOptions: UViewOptions) {
   return {
     variant: !!showOptions.variant,
     limitHeight: !!showOptions.limitHeight,
+    phaseColor: !!showOptions.phaseColor,
     columns: !!showOptions.columns && isContent,
   };
 }
@@ -208,6 +217,28 @@ function VisualizeMenu({
                 textValue="Limitar altura dos dias"
               >
                 <ChevronsUpDownIcon /> Limitar altura dos dias
+              </PrismMenuItem>
+            </PrismMenuGroup>
+          </>
+        )}
+        {groups.phaseColor && (
+          <>
+            {(groups.variant || groups.limitHeight) && <PrismMenuSeparator />}
+            <PrismMenuGroup
+              aria-label="Cor"
+              onSelectionChange={(keys) =>
+                setViewOptions({
+                  ...viewOptions,
+                  phaseColor: new Set(keys).has("phaseColor"),
+                })
+              }
+              selectedKeys={
+                new Set(viewOptions.phaseColor ? ["phaseColor"] : [])
+              }
+              selectionMode="multiple"
+            >
+              <PrismMenuItem id="phaseColor" textValue="Cor da fase">
+                <PaletteIcon /> Cor da fase
               </PrismMenuItem>
             </PrismMenuGroup>
           </>

@@ -50,6 +50,8 @@ export type ActionDisplayFlags = {
   showResponsibles?: boolean;
   /** Whether to show the priority icon indicator */
   showPriority?: boolean;
+  /** Whether to tint the card background, ring and hover shadow by its phase */
+  showPhaseColor?: boolean;
 };
 
 /**
@@ -98,6 +100,7 @@ export function ActionItem({
     showCategory = false,
     showResponsibles = false,
     showPriority = false,
+    showPhaseColor = false,
   } = displayFlags;
   const { person, setPrimaryAction } = useAppContext();
   const {
@@ -156,14 +159,19 @@ export function ActionItem({
     `;
 
     // 1. Determine base background/text colors based on priority states
-    if (showLate && isLate) {
+    const isLateShown = showLate && isLate;
+    if (isLateShown) {
       baseStyles = cn(
         baseStyles,
-        "bg-error-background text-error-foreground hover:bg-error-background ring ring-error",
+        "late-surface bg-error-background text-error-foreground hover:bg-error-background ring ring-error",
       );
     }
+    // Sprint keeps its thicker ring; a late action keeps it red.
     if (showSprint && person && isSprint(action, person)) {
-      baseStyles = cn(baseStyles, "ring-2 ring-primary");
+      baseStyles = cn(
+        baseStyles,
+        isLateShown ? "ring-2 ring-error" : "ring-2 ring-primary",
+      );
     }
 
     // 2. Editing raises the card; focus styling comes from focus-within above
@@ -172,18 +180,27 @@ export function ActionItem({
     }
     return baseStyles;
   }, [isEditing, showLate, isLate, action, person, showSprint]);
+  // Late keeps its own background; an unknown legacy phase keeps the default.
+  const phaseColor =
+    showPhaseColor && !(showLate && isLate) ? currentPhase?.color : undefined;
   const content = (
     <div
       className={cn(
         "group/action @container relative shrink-0 cursor-pointer overflow-hidden rounded-2xl squircle",
         variantClasses,
         bgClasses,
+        phaseColor && "phase-surface",
         className,
         isDragging && "cursor-grabbing",
         isSelectionMode && variant !== VARIANT.content && "pl-8",
         isSelectionMode && isSelected && "ring-2 ring-primary",
       )}
       data-action-id={action.id}
+      style={
+        phaseColor
+          ? ({ "--phase-color": phaseColor } as React.CSSProperties)
+          : undefined
+      }
       onClick={(e) => {
         if (isSelectionMode) {
           e.preventDefault();

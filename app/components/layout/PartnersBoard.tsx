@@ -14,10 +14,12 @@ export function PartnersBoard({
   actions,
   isLoading,
   currentDay,
+  showPhaseColor = false,
 }: {
   actions: Action[];
   isLoading?: boolean;
   currentDay: Date;
+  showPhaseColor?: boolean;
 }) {
   const { partners } = useAppContext();
 
@@ -49,6 +51,7 @@ export function PartnersBoard({
               actions={partnerActions}
               partner={partner}
               currentDay={currentDay}
+              showPhaseColor={showPhaseColor}
             />
           );
         })}
@@ -60,10 +63,12 @@ function PartnerColumn({
   partner,
   actions,
   currentDay,
+  showPhaseColor,
 }: {
   partner: Partner;
   actions: Action[];
   currentDay: Date;
+  showPhaseColor: boolean;
 }) {
   const { person, setPrimaryAction } = useAppContext();
   return (
@@ -118,6 +123,7 @@ function PartnerColumn({
         displayFlags={{
           showLate: true,
           showCategory: true,
+          showPhaseColor,
         }}
         orderBy="date"
       />

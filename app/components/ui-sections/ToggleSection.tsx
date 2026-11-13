@@ -11,6 +11,7 @@ import {
   PrismToggle,
   PrismToggleGroup,
   PrismToggleGroupItem,
+  PrismTooltip,
 } from "~/components/prism";
 import {
   GalleryItem,
@@ -374,7 +375,27 @@ export function ToggleSection() {
           <GalleryItem id="prism-toggle-group" label="ToggleGroup">
             <ToggleGroupPlayground />
           </GalleryItem>
-          <GalleryItem id="prism-toggle-form" label="Integração com Formulário (FormData)">
+          <GalleryItem
+            id="prism-toggle-tooltip"
+            label="Dica ao passar o mouse (PrismTooltip)"
+          >
+            <div className="flex items-center gap-2">
+              <PrismTooltip label="Arquivar">
+                <PrismToggle aria-label="Arquivar" size="icon-sm">
+                  <ArchiveIcon />
+                </PrismToggle>
+              </PrismTooltip>
+              <PrismTooltip label="Negrito">
+                <PrismToggle aria-label="Negrito" size="icon-sm">
+                  <BoldIcon />
+                </PrismToggle>
+              </PrismTooltip>
+            </div>
+          </GalleryItem>
+          <GalleryItem
+            id="prism-toggle-form"
+            label="Integração com Formulário (FormData)"
+          >
             <ToggleFormPlayground />
           </GalleryItem>
         </GallerySectionContent>

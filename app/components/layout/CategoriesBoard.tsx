@@ -15,10 +15,12 @@ export function CategoriesBoard({
   actions,
   orderBy,
   ascending: _ascending,
+  showPhaseColor = false,
 }: {
   actions: Action[];
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending?: boolean;
+  showPhaseColor?: boolean;
 }) {
   // Filtra apenas as categorias que estão presentes nas ações atuais
   const activeCategories = useMemo(() => {
@@ -38,6 +40,7 @@ export function CategoriesBoard({
               actions={categoryActions}
               category={category}
               orderBy={orderBy}
+              showPhaseColor={showPhaseColor}
             />
           );
         })}
@@ -50,11 +53,13 @@ function CategoryColumn({
   actions,
   orderBy,
   ascending,
+  showPhaseColor,
 }: {
   category: CATEGORY_TYPE;
   actions: Action[];
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending?: boolean;
+  showPhaseColor: boolean;
 }) {
   const { person, setPrimaryAction } = useAppContext();
   return (
@@ -101,6 +106,7 @@ function CategoryColumn({
         displayFlags={{
           showPartner: true,
           showLate: true,
+          showPhaseColor,
         }}
         orderBy={orderBy}
       />
