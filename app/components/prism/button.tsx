@@ -25,13 +25,13 @@ const styledButtonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary border-primary text-primary-foreground hover:bg-primary/80",
+          "bg-primary border-primary text-primary-foreground hover:border-[color-mix(in_oklab,var(--primary),var(--background)_20%)] hover:bg-[color-mix(in_oklab,var(--primary),var(--background)_20%)]",
         outline:
           "bg-transparent hover:bg-secondary aria-expanded:bg-secondary dark:bg-transparent",
         secondary:
           "bg-secondary text-foreground border-secondary hover:border-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-foreground",
         ghost:
-          "hover:bg-secondary border-transparent aria-expanded:bg-secondary",
+          "bg-clip-border hover:bg-secondary border-transparent aria-expanded:bg-secondary",
         "ghost-error":
           "bg-transparent border-transparent hover:bg-error-background hover:text-error-foreground hover:border-error focus-visible:border-error focus-visible:ring-error-background focus-visible:text-error-foreground focus-visible:bg-error-background dark:hover:bg-error-background dark:focus-visible:bg-error-background",
         error:
