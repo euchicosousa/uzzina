@@ -1,6 +1,10 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cnfast";
 import { Separator } from "~/components/prism/separator";
+// Square inner corners and the group radius only at the ends. The 1px pull
+// only applies to default and outline (opaque borders); secondary and ghost
+// sit side by side so translucent fills never overlap. attached={false}
+// adds a 1px gap after default and secondary items only (DS18).
 const buttonGroupVariants = cva(
   "inline-flex w-fit items-stretch group/button-group *:focus-visible:relative *:focus-visible:z-20 *:hover:z-10",
   {
@@ -13,14 +17,45 @@ const buttonGroupVariants = cva(
       },
       orientation: {
         horizontal:
-          "flex-row [&>*]:rounded-none! [&>*:not(:first-child)]:-ml-px [&>*:first-child]:rounded-l-(--group-radius)! [&>*:last-child]:rounded-r-(--group-radius)!",
+          "flex-row [&>*]:rounded-none! [&>*:first-child]:rounded-l-(--group-radius)! [&>*:last-child]:rounded-r-(--group-radius)!",
         vertical:
-          "flex-col [&>*]:rounded-none! [&>*:not(:first-child)]:-mt-px [&>*:first-child]:rounded-t-(--group-radius)! [&>*:last-child]:rounded-b-(--group-radius)!",
+          "flex-col [&>*]:rounded-none! [&>*:first-child]:rounded-t-(--group-radius)! [&>*:last-child]:rounded-b-(--group-radius)!",
+      },
+      attached: {
+        true: "",
+        false: "",
       },
     },
+    compoundVariants: [
+      {
+        orientation: "horizontal",
+        attached: true,
+        className:
+          "[&>[data-variant=default]:not(:first-child)]:-ml-px [&>[data-variant=outline]:not(:first-child)]:-ml-px",
+      },
+      {
+        orientation: "vertical",
+        attached: true,
+        className:
+          "[&>[data-variant=default]:not(:first-child)]:-mt-px [&>[data-variant=outline]:not(:first-child)]:-mt-px",
+      },
+      {
+        orientation: "horizontal",
+        attached: false,
+        className:
+          "[&>[data-variant=default]:not(:first-child)]:ml-px [&>[data-variant=secondary]:not(:first-child)]:ml-px",
+      },
+      {
+        orientation: "vertical",
+        attached: false,
+        className:
+          "[&>[data-variant=default]:not(:first-child)]:mt-px [&>[data-variant=secondary]:not(:first-child)]:mt-px",
+      },
+    ],
     defaultVariants: {
       orientation: "horizontal",
       size: "default",
+      attached: true,
     },
   },
 );
@@ -28,6 +63,7 @@ function ButtonGroup({
   className,
   orientation,
   size,
+  attached = true,
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof buttonGroupVariants>) {
   return (
@@ -36,9 +72,11 @@ function ButtonGroup({
         buttonGroupVariants({
           orientation,
           size,
+          attached,
         }),
         className,
       )}
+      data-attached={attached ? "true" : undefined}
       data-orientation={orientation || "horizontal"}
       data-size={size || "default"}
       data-slot="button-group"
@@ -47,6 +85,8 @@ function ButtonGroup({
     />
   );
 }
+const buttonGroupTextClasses =
+  "flex items-center gap-2 rounded-2xl squircle border bg-secondary px-3 text-sm font-medium text-secondary-foreground group-data-[size=lg]/button-group:text-base [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5";
 function ButtonGroupText({
   className,
   render,
@@ -57,20 +97,14 @@ function ButtonGroupText({
   if (render) {
     const renderProps = {
       "data-slot": "button-group-text",
-      className: cn(
-        "flex items-center gap-2 rounded-2xl squircle border bg-secondary px-3 text-sm font-medium text-secondary-foreground group-data-[size=lg]/button-group:text-base [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5",
-        className,
-      ),
+      className: cn(buttonGroupTextClasses, className),
       ...props,
     };
     return render(renderProps);
   }
   return (
     <div
-      className={cn(
-        "flex items-center gap-2 rounded-2xl border bg-secondary px-3 text-sm font-medium text-secondary-foreground squircle group-data-[size=lg]/button-group:text-base [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg:not([class*='size-'])]:size-5",
-        className,
-      )}
+      className={cn(buttonGroupTextClasses, className)}
       data-slot="button-group-text"
       {...props}
     />

@@ -999,7 +999,6 @@ function ProfilePage() {
           <ProfileSetting title="Tema do App">
             <PrismToggleGroup
               fullWidth
-              attached
               aria-label="Tema do App"
               selectedKeys={[selectedTheme]}
               variant={"outline"}
@@ -1088,7 +1087,6 @@ function ProfilePage() {
             <div className="flex flex-col gap-4">
               <PrismToggleGroup
                 fullWidth
-                attached
                 aria-label="Cor viva no escuro"
                 selectedKeys={[vividDarkTone]}
                 variant="outline"
@@ -1125,7 +1123,6 @@ function ProfilePage() {
             <div className="flex flex-col gap-4">
               <PrismToggleGroup
                 fullWidth
-                attached
                 aria-label="Texto na cor viva"
                 selectedKeys={[vividTextTone]}
                 variant="outline"
@@ -1179,7 +1176,6 @@ function ProfilePage() {
           >
             <PrismToggleGroup
               fullWidth
-              attached
               variant={"outline"}
               aria-label="Layout padrão"
               selectedKeys={[selectedVariant]}
@@ -1219,7 +1215,6 @@ function ProfilePage() {
             <PrismToggleGroup
               aria-label="Visualização inicial do Hoje"
               fullWidth
-              attached
               variant={"outline"}
               selectedKeys={[selectedTodayView]}
               onSelectionChange={(keys) => {
@@ -1267,7 +1262,6 @@ function ProfilePage() {
               <PrismToggleGroup
                 aria-label="Sidebar do Instagram por padrão"
                 fullWidth
-                attached
                 variant="outline"
                 selectedKeys={[showInstagramSidebar ? "show" : "hide"]}
                 onSelectionChange={(keys) => {

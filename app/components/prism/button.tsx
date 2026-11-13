@@ -19,28 +19,39 @@ const buttonSizeClasses = {
   "icon-sm": "size-8 [&_svg:not([class*='size-'])]:size-4",
   "icon-lg": "size-12 rounded-3xl",
 } as const;
+// Single source of truth for variant looks (also used by Toggle).
+const buttonVariantClasses = {
+  default:
+    "bg-primary border-primary text-primary-foreground hover:border-[color-mix(in_oklab,var(--primary),var(--background)_20%)] hover:bg-[color-mix(in_oklab,var(--primary),var(--background)_20%)]",
+  outline:
+    "bg-transparent hover:bg-secondary aria-expanded:bg-secondary dark:bg-transparent",
+  secondary:
+    "bg-secondary text-foreground border-secondary hover:border-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-foreground",
+  ghost:
+    "bg-clip-border hover:bg-secondary border-transparent aria-expanded:bg-secondary",
+  "ghost-error":
+    "bg-transparent border-transparent hover:bg-error-background hover:text-error-foreground hover:border-error focus-visible:border-error focus-visible:ring-error-background focus-visible:text-error-foreground focus-visible:bg-error-background dark:hover:bg-error-background dark:focus-visible:bg-error-background",
+  error:
+    "bg-error-background text-error-foreground hover:bg-error-background border-error focus-visible:border-error focus-visible:ring-error-background dark:bg-error-background dark:hover:bg-error-background",
+  success:
+    "bg-success-strong border-success-strong text-success-strong-foreground hover:bg-success-strong-hover focus-visible:border-success-strong focus-visible:ring-success-strong/30",
+  link: "text-foreground underline-offset-4 hover:underline border-transparent",
+  unstyled: "",
+} as const;
+// Selected layer for toggles built on these variants (React Aria sets
+// data-selected). A selected secondary looks like the default (primary)
+// button, hover included.
+const buttonSelectedClasses = {
+  ghost: "data-selected:bg-secondary",
+  outline: "data-selected:bg-secondary",
+  secondary:
+    "data-selected:border-primary data-selected:bg-primary data-selected:text-primary-foreground data-selected:hover:border-[color-mix(in_oklab,var(--primary),var(--background)_20%)] data-selected:hover:bg-[color-mix(in_oklab,var(--primary),var(--background)_20%)]",
+} as const;
 const styledButtonVariants = cva(
   "group/button inline-flex shrink-0 items-center justify-center rounded-2xl border bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring/60 focus-visible:ring-3 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-error aria-invalid:ring-error-background [&_svg]:pointer-events-none [&_svg:not([class*='opacity-'])]:opacity-60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",
   {
     variants: {
-      variant: {
-        default:
-          "bg-primary border-primary text-primary-foreground hover:border-[color-mix(in_oklab,var(--primary),var(--background)_20%)] hover:bg-[color-mix(in_oklab,var(--primary),var(--background)_20%)]",
-        outline:
-          "bg-transparent hover:bg-secondary aria-expanded:bg-secondary dark:bg-transparent",
-        secondary:
-          "bg-secondary text-foreground border-secondary hover:border-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-foreground",
-        ghost:
-          "bg-clip-border hover:bg-secondary border-transparent aria-expanded:bg-secondary",
-        "ghost-error":
-          "bg-transparent border-transparent hover:bg-error-background hover:text-error-foreground hover:border-error focus-visible:border-error focus-visible:ring-error-background focus-visible:text-error-foreground focus-visible:bg-error-background dark:hover:bg-error-background dark:focus-visible:bg-error-background",
-        error:
-          "bg-error-background text-error-foreground hover:bg-error-background border-error focus-visible:border-error focus-visible:ring-error-background dark:bg-error-background dark:hover:bg-error-background",
-        success:
-          "bg-success-strong border-success-strong text-success-strong-foreground hover:bg-success-strong-hover focus-visible:border-success-strong focus-visible:ring-success-strong/30",
-        link: "text-foreground underline-offset-4 hover:underline border-transparent",
-        unstyled: "",
-      },
+      variant: buttonVariantClasses,
       size: buttonSizeClasses,
       // Declared after size so a circle wins over the size radius; the
       // squircle corner shape is applied only when the button is not round.
@@ -121,4 +132,11 @@ function LinkButton({
   );
 }
 export type PrismButtonVariantProps = VariantProps<typeof buttonVariants>;
-export { Button, LinkButton, buttonSizeClasses, buttonVariants };
+export {
+  Button,
+  LinkButton,
+  buttonSelectedClasses,
+  buttonSizeClasses,
+  buttonVariantClasses,
+  buttonVariants,
+};

@@ -65,7 +65,6 @@ export function UCalendarToolbar({
       <PrismPopoverTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
         <PrismButton
           aria-label={`Escolher data, ${format(currentDay, showDate ? "MMMM/yy" : "dd/MM/yyyy", { locale: ptBR })}`}
-          className="max-md:ml-0! max-md:rounded-(--group-radius)!"
           size={showDate ? size : sideButtonSize}
           variant={variant}
         >

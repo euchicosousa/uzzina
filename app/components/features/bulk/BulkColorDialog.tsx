@@ -80,7 +80,6 @@ export function BulkColorDialog({
           <PrismToggleGroup
             aria-label="Seleção de Cor dos Parceiros"
             className="w-full flex-wrap"
-            spacing={0}
             onSelectionChange={(keys) => {
               const selected = Array.from(keys)[0] as string | undefined;
               if (selected) {

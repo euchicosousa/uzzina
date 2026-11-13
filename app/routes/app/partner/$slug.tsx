@@ -242,7 +242,7 @@ function PartnerPage() {
             showDate
           />
 
-          <PrismInputGroup className="w-auto bg-input" size="sm">
+          <PrismInputGroup className="w-auto" size="sm">
             <PrismInputGroupAddon>
               <SearchIcon />
             </PrismInputGroupAddon>

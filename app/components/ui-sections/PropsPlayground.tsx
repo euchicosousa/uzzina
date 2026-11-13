@@ -77,7 +77,9 @@ function ControlLabel({
   return (
     <div className="flex items-baseline justify-between gap-2" id={id}>
       <span className="text-sm font-medium">{label}</span>
-      <span className="font-mono text-xs text-secondary-foreground">{prop}</span>
+      <span className="font-mono text-xs text-secondary-foreground">
+        {prop}
+      </span>
     </div>
   );
 }
@@ -151,7 +153,6 @@ export function PlaygroundRadio<O extends string>({
       <ControlLabel id={labelId} label={label} prop={prop} />
       <PrismToggleGroup
         aria-labelledby={labelId}
-        attached
         disallowEmptySelection
         isDisabled={isDisabled}
         onSelectionChange={(keys) => {

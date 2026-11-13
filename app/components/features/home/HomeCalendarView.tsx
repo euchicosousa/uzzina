@@ -67,7 +67,6 @@ export function HomeCalendarView({
       OptionsComponent={
         <div className="flex items-center gap-8">
           <PrismToggleGroup
-            attached
             variant={"secondary"}
             aria-label="Alternar Período"
             onSelectionChange={(keys) => {

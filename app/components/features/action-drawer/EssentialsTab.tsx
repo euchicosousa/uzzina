@@ -29,7 +29,6 @@ const Tiptap = lazy(() =>
 import {
   PrismButton,
   PrismButtonGroup,
-  PrismButtonGroupSeparator,
   PrismSkeleton,
 } from "~/components/prism";
 import { CloudinaryUpload } from "~/components/features/media/CloudinaryUpload";
@@ -344,27 +343,24 @@ export function EssentialsTab({
                         ? "Recriar estratégias"
                         : "Criar estratégia";
                 return (
-                  <PrismButtonGroup className="min-w-0 shrink">
+                  <PrismButtonGroup attached={false} className="min-w-0 shrink">
                     {(hasStrategies || hasStrategyActivity) &&
                       onOpenStrategyModal && (
-                        <>
-                          <PrismButton
-                            aria-label={
-                              hasStrategies &&
-                              !["generating", "saving"].includes(
-                                strategyStatus || "",
-                              )
-                                ? "Ver estratégias geradas"
-                                : "Ver progresso das estratégias"
-                            }
-                            onClick={onOpenStrategyModal}
-                            size="sm"
-                            variant="secondary"
-                          >
-                            <ListIcon />
-                          </PrismButton>
-                          <PrismButtonGroupSeparator className="bg-background" />
-                        </>
+                        <PrismButton
+                          aria-label={
+                            hasStrategies &&
+                            !["generating", "saving"].includes(
+                              strategyStatus || "",
+                            )
+                              ? "Ver estratégias geradas"
+                              : "Ver progresso das estratégias"
+                          }
+                          onClick={onOpenStrategyModal}
+                          size="sm"
+                          variant="secondary"
+                        >
+                          <ListIcon />
+                        </PrismButton>
                       )}
 
                     <PrismButton
@@ -383,7 +379,6 @@ export function EssentialsTab({
                         <ULoader size="sm" inheritColor />
                       ) : null}
                     </PrismButton>
-                    <PrismButtonGroupSeparator className="bg-background" />
                     <UAIModelSelect
                       models={strategyModels ?? actionAIModels}
                       value={strategyModel}

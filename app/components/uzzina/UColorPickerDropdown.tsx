@@ -249,7 +249,6 @@ export function UColorPickerDropdown({
             selectedKeys={matchingSelectedKeys}
             selectionMode="single"
             size="icon-sm"
-            spacing={1}
           >
             {validGroups.map((group, groupIdx) => (
               <Fragment key={group.id}>

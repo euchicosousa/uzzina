@@ -192,7 +192,8 @@ function ButtonGroupPlayground() {
   const [orientation, setOrientation] =
     useState<ButtonGroupOrientation>("horizontal");
   const [variant, setVariant] = useState<ButtonGroupChildVariant>("outline");
-  const [showSeparator, setShowSeparator] = useState(true);
+  const [attached, setAttached] = useState(true);
+  const [showSeparator, setShowSeparator] = useState(false);
   const [hasMenuButton, setHasMenuButton] = useState(false);
 
   const separatorOrientation =
@@ -201,9 +202,13 @@ function ButtonGroupPlayground() {
 
   return (
     <PropsPlayground
-      caption={`size="${size}" · orientation="${orientation}" · variant="${variant}"`}
+      caption={`size="${size}" · orientation="${orientation}" · variant="${variant}" · attached={${attached}}`}
       preview={
-        <PrismButtonGroup orientation={orientation} size={size}>
+        <PrismButtonGroup
+          attached={attached}
+          orientation={orientation}
+          size={size}
+        >
           <PrismButton size={size} variant={variant}>
             Salvar
           </PrismButton>
@@ -247,6 +252,13 @@ function ButtonGroupPlayground() {
         options={BUTTON_GROUP_CHILD_VARIANTS}
         prop="variant"
         value={variant}
+      />
+      <PlaygroundBoolean
+        isDisabled={variant === "outline" || variant === "ghost"}
+        label="Junto (respiro de 1px só em default e secondary)"
+        onChange={setAttached}
+        prop="attached"
+        value={attached}
       />
       <PlaygroundBoolean
         label="Separador"

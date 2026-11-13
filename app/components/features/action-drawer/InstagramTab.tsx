@@ -17,7 +17,6 @@ import {
   PrismTabPanel,
   PrismButton,
   PrismButtonGroup,
-  PrismButtonGroupSeparator,
 } from "~/components/prism";
 import { INTENT } from "~/lib/CONSTANTS";
 import {
@@ -236,7 +235,10 @@ export function InstagramTab({
                 return (
                   strategies.length > 0 &&
                   onOpenStrategyModal && (
-                    <PrismButtonGroup className="max-w-70 min-w-0 shrink @[40rem]/action:max-w-xs @[47rem]/action:max-w-sm">
+                    <PrismButtonGroup
+                      attached={false}
+                      className="max-w-70 min-w-0 shrink @[40rem]/action:max-w-xs @[47rem]/action:max-w-sm"
+                    >
                       <PrismButton
                         aria-label="Ver estratégias"
                         onClick={onOpenStrategyModal}
@@ -245,8 +247,6 @@ export function InstagramTab({
                       >
                         <ListIcon />
                       </PrismButton>
-
-                      <PrismButtonGroupSeparator className="bg-background" />
 
                       <PrismButton
                         className="min-w-0 flex-1 shrink truncate"
@@ -280,7 +280,6 @@ export function InstagramTab({
                           <ULoader size="sm" inheritColor />
                         ) : null}
                       </PrismButton>
-                      <PrismButtonGroupSeparator className="bg-background" />
                       <UAIModelSelect
                         models={contentModels ?? actionAIModels}
                         value={contentModel}
@@ -349,6 +348,7 @@ export function InstagramTab({
                 </div>
               </div>
               <PrismButtonGroup
+                attached={false}
                 aria-label="Geração de legenda"
                 className="min-w-0 shrink"
               >
@@ -373,7 +373,6 @@ export function InstagramTab({
                     <ULoader size="xs" inheritColor />
                   )}
                 </PrismButton>
-                <PrismButtonGroupSeparator className="bg-background" />
                 <UAIModelSelect
                   models={captionModels ?? actionAIModels}
                   value={captionModel}

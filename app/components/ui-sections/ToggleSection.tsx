@@ -155,7 +155,6 @@ function ToggleGroupPlayground() {
   const [content, setContent] = useState<ToggleContent>("icon-text");
   const [attached, setAttached] = useState(true);
   const [isDisabled, setIsDisabled] = useState(false);
-  const [spacing, setSpacing] = useState(2);
   const [count, setCount] = useState(3);
   const [selectedKeys, setSelectedKeys] = useState<string[]>(["left"]);
 
@@ -185,7 +184,6 @@ function ToggleGroupPlayground() {
           selectedKeys={selectedKeys}
           selectionMode={selectionMode}
           size={size}
-          spacing={spacing}
           variant={variant}
         >
           {currentItems.map((item) => {
@@ -256,7 +254,8 @@ function ToggleGroupPlayground() {
         value={content}
       />
       <PlaygroundBoolean
-        label="Conectado"
+        isDisabled={variant === "default" || variant === "ghost"}
+        label="Conectado (outline e secondary)"
         onChange={setAttached}
         prop="attached"
         value={attached}
@@ -266,16 +265,6 @@ function ToggleGroupPlayground() {
         onChange={setIsDisabled}
         prop="isDisabled"
         value={isDisabled}
-      />
-      <PlaygroundNumber
-        isDisabled={attached}
-        label="Espaçamento"
-        max={4}
-        min={0}
-        onChange={setSpacing}
-        prop="spacing"
-        step={1}
-        value={spacing}
       />
       <PlaygroundNumber
         label="Quantidade de itens"
@@ -365,7 +354,7 @@ export function ToggleSection() {
       <GallerySection>
         <GallerySectionHeader
           approved
-          description="Botões de alternância individual (Toggle) e grupos de seleção (ToggleGroup) com alinhamento visual rigoroso aos botões. Suporta modelo separado (botões individuais com gap) e modelo conectado (attached com cantos squircle proporcionais)."
+          description="Botões de alternância individual (Toggle) e grupos de seleção (ToggleGroup) com alinhamento visual rigoroso aos botões. As variantes vêm do botão. Outline e secondary ficam conectados por padrão (attached; o puxão de 1px só no outline) e separados por 4px com attached={false}; ghost fica sempre separado por 4px."
           title="Toggle & ToggleGroup"
         />
         <GallerySectionContent className="grid gap-12">

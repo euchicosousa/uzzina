@@ -118,7 +118,7 @@ function DashLogin() {
             <div className="mb-1.5 flex w-full items-center justify-between">
               <PrismLabel className="block cursor-pointer">Senha</PrismLabel>
             </div>
-            <PrismInputGroup className="squircle">
+            <PrismInputGroup>
               <PrismInputGroupAddon
                 align="inline-start"
                 className="pr-1 pl-4 [&_svg]:text-foreground/40"

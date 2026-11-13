@@ -1,5 +1,3 @@
-"use client";
-
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 import { Group, type GroupProps } from "react-aria-components";
@@ -190,27 +188,16 @@ function InputGroupButton({
         ? "icon"
         : "icon-sm");
 
-  const sizeClasses = {
-    sm: "size-6 [&_svg:not([class*='size-'])]:size-4",
-    default: "size-8 [&_svg:not([class*='size-'])]:size-5",
-    lg: "size-10 [&_svg:not([class*='size-'])]:size-6",
+  // The icon size follows the group; the button box comes from its icon size.
+  const iconClass = {
+    sm: "[&_svg:not([class*='size-'])]:size-4",
+    default: "[&_svg:not([class*='size-'])]:size-5",
+    lg: "[&_svg:not([class*='size-'])]:size-6",
   }[effectiveGroupSize];
 
   return (
     <PrismButton
-      className={cn(
-        !size && sizeClasses,
-        size &&
-          effectiveGroupSize === "lg" &&
-          "[&_svg:not([class*='size-'])]:size-6",
-        size &&
-          effectiveGroupSize === "default" &&
-          "[&_svg:not([class*='size-'])]:size-5",
-        size &&
-          effectiveGroupSize === "sm" &&
-          "[&_svg:not([class*='size-'])]:size-4",
-        className,
-      )}
+      className={cn(iconClass, className)}
       data-slot="input-group-button"
       size={resolvedSize}
       type={type}

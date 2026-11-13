@@ -8,29 +8,40 @@ import {
 import { PrismToggle, type toggleVariants } from "~/components/prism";
 import { cn } from "cnfast";
 
+type ToggleVariant = NonNullable<
+  VariantProps<typeof toggleVariants>["variant"]
+>;
+
 interface ToggleGroupContextValue extends VariantProps<typeof toggleVariants> {
-  spacing?: number;
-  orientation?: "horizontal" | "vertical";
-  attached?: boolean;
   fullWidth?: boolean;
 }
 
 const ToggleGroupContext = createContext<ToggleGroupContextValue>({
   size: undefined,
   variant: undefined,
-  spacing: 2,
-  orientation: "horizontal",
-  attached: false,
   fullWidth: false,
 });
+
+// Attached groups: square inner corners, group radius only at the ends. The
+// 1px pull only applies to outline, whose opaque borders merge into one line;
+// other variants sit side by side so translucent fills never overlap (DS18).
+const ATTACHED_CLASSES = {
+  horizontal:
+    "*:relative *:hover:z-10 *:data-selected:z-10 *:focus-visible:z-20 [&>*]:rounded-none! [&>*:first-child]:rounded-l-(--group-radius)! [&>*:last-child]:rounded-r-(--group-radius)! [&>[data-variant=outline]:not(:first-child)]:-ml-px",
+  vertical:
+    "*:relative *:hover:z-10 *:data-selected:z-10 *:focus-visible:z-20 [&>*]:rounded-none! [&>*:first-child]:rounded-t-(--group-radius)! [&>*:last-child]:rounded-b-(--group-radius)! [&>[data-variant=outline]:not(:first-child)]:-mt-px",
+} as const;
+
+// Ghost toggles are never attached: they read as separate options.
+const SEPARATED_ONLY: readonly ToggleVariant[] = ["default", "ghost"];
 
 export interface ToggleGroupProps
   extends
     Omit<ToggleButtonGroupProps, "children">,
     VariantProps<typeof toggleVariants> {
-  spacing?: number;
   orientation?: "horizontal" | "vertical";
   fullWidth?: boolean;
+  /** Outline and secondary only; ghost groups are always separated by 4px. */
   attached?: boolean;
   children?: React.ReactNode;
 }
@@ -39,104 +50,59 @@ function ToggleGroup({
   className,
   variant,
   size,
-  spacing = 2,
   orientation = "horizontal",
-  attached = false,
+  attached = true,
   children,
   fullWidth = false,
   ...props
 }: ToggleGroupProps) {
+  const effectiveVariant = variant ?? "default";
+  const isAttached = attached && !SEPARATED_ONLY.includes(effectiveVariant);
+  const isLarge = size === "lg" || size === "icon-lg";
+
   return (
     <ToggleGroupPrimitive
       className={cn(
         "group/toggle-group flex max-w-full",
+        isLarge
+          ? "[--group-radius:var(--radius-3xl)]"
+          : "[--group-radius:var(--radius-2xl)]",
         fullWidth && "w-full",
         orientation === "vertical"
-          ? "flex-col items-stretch data-vertical:flex-col data-vertical:items-stretch"
+          ? "flex-col items-stretch"
           : "flex-row items-center",
-        attached ? "gap-0" : "gap-(--gap)",
+        isAttached ? ATTACHED_CLASSES[orientation] : "gap-1",
         className,
       )}
-      data-attached={attached ? "true" : undefined}
+      data-attached={isAttached ? "true" : undefined}
       data-orientation={orientation}
       data-size={size}
       data-slot="toggle-group"
-      data-spacing={attached ? 0 : spacing}
-      data-variant={variant}
+      data-variant={effectiveVariant}
       orientation={orientation}
-      style={
-        attached
-          ? undefined
-          : ({
-              "--gap": `calc(var(--spacing) * ${spacing})`,
-            } as React.CSSProperties)
-      }
       {...props}
     >
-      <ToggleGroupContext.Provider
-        value={{
-          variant,
-          size,
-          spacing: attached ? 0 : spacing,
-          orientation,
-          attached,
-          fullWidth,
-        }}
-      >
+      <ToggleGroupContext.Provider value={{ variant, size, fullWidth }}>
         {children}
       </ToggleGroupContext.Provider>
     </ToggleGroupPrimitive>
   );
 }
 
-export interface ToggleGroupItemProps
-  extends ToggleButtonProps, VariantProps<typeof toggleVariants> {
-  attached?: boolean;
-  fullWidth?: boolean;
-}
+export type ToggleGroupItemProps = ToggleButtonProps &
+  VariantProps<typeof toggleVariants>;
 
 function ToggleGroupItem({
   className,
   children,
   variant,
   size,
-  attached,
-  fullWidth,
   ...props
 }: ToggleGroupItemProps) {
   const context = useContext(ToggleGroupContext);
   const effectiveVariant = variant ?? context.variant ?? "default";
   const effectiveSize = size ?? context.size ?? "default";
-  const isAttached = attached ?? context.attached ?? false;
-  const isFullWidth = fullWidth ?? context.fullWidth ?? false;
-  const isVertical = context.orientation === "vertical";
-
-  const isSm =
-    effectiveSize === "sm" ||
-    effectiveSize === "xs" ||
-    effectiveSize === "icon-xs" ||
-    effectiveSize === "icon-sm";
-  const isLg = effectiveSize === "lg" || effectiveSize === "icon-lg";
-
-  const attachedClasses = isAttached
-    ? cn(
-        "relative hover:z-10 data-[selected=true]:z-10 data-selected:z-10 focus-visible:z-20 rounded-none",
-        isVertical
-          ? "[&:not(:first-child)]:-mt-px"
-          : "[&:not(:first-child)]:-ml-px",
-        isVertical
-          ? isSm
-            ? "first:rounded-t-2xl first:rounded-b-none first:squircle last:rounded-b-2xl last:rounded-t-none last:squircle only:rounded-2xl only:squircle"
-            : isLg
-              ? "first:rounded-t-3xl first:rounded-b-none first:squircle last:rounded-b-3xl last:rounded-t-none last:squircle only:rounded-3xl only:squircle"
-              : "first:rounded-t-2xl first:rounded-b-none first:squircle last:rounded-b-2xl last:rounded-t-none last:squircle only:rounded-2xl only:squircle"
-          : isSm
-            ? "first:rounded-l-2xl first:rounded-r-none first:squircle last:rounded-r-2xl last:rounded-l-none last:squircle only:rounded-2xl only:squircle"
-            : isLg
-              ? "first:rounded-l-3xl first:rounded-r-none first:squircle last:rounded-r-3xl last:rounded-l-none last:squircle only:rounded-3xl only:squircle"
-              : "first:rounded-l-2xl first:rounded-r-none first:squircle last:rounded-r-2xl last:rounded-l-none last:squircle only:rounded-2xl only:squircle",
-      )
-    : "";
+  const isFullWidth = context.fullWidth ?? false;
 
   const hasCustomFlex =
     typeof className === "string" &&
@@ -150,14 +116,11 @@ function ToggleGroupItem({
         !hasCustomFlex && (isFullWidth ? "flex-1" : "shrink-0"),
         isFullWidth && "w-full",
         "min-w-0",
-        attachedClasses,
         className,
       )}
-      data-attached={isAttached ? "true" : undefined}
       data-full-width={isFullWidth ? "true" : undefined}
       data-size={effectiveSize}
       data-slot="toggle-group-item"
-      data-spacing={isAttached ? 0 : context.spacing}
       data-variant={effectiveVariant}
       size={effectiveSize}
       variant={effectiveVariant}
