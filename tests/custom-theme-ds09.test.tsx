@@ -161,4 +161,64 @@ describe("DS09 - Custom Theme & DS06 properties integration", () => {
       root.style.getPropertyValue("--dark-action-shadow-color-override"),
     ).toBe("#1a0033");
   });
+  it("keeps per-mode shadow color and opacity and ignores invalid opacity", () => {
+    const colors = {
+      primaryFgHex: "#ffffff",
+      bgHex: "#ffffff",
+      fgHex: "#000000",
+    };
+    const parse = (extra: Record<string, unknown>) =>
+      getUserPreferences({
+        preferences: {
+          customTheme: {
+            light: { primaryHex: "#123456", ...colors },
+            dark: { primaryHex: "#654321", ...colors },
+            ...extra,
+          },
+        },
+      }).customTheme;
+
+    const valid = parse({
+      shadowColor: "#112233",
+      darkShadowColor: "#000011",
+      shadowOpacity: 12,
+      darkShadowOpacity: 60,
+    });
+    expect(valid?.darkShadowColor).toBe("#000011");
+    expect(valid?.shadowOpacity).toBe(12);
+    expect(valid?.darkShadowOpacity).toBe(60);
+
+    const invalid = parse({ shadowOpacity: 0, darkShadowOpacity: "50" });
+    expect(invalid?.shadowOpacity).toBeUndefined();
+    expect(invalid?.darkShadowOpacity).toBeUndefined();
+  });
+
+  it("applies custom shadow per mode even with relief off", () => {
+    const root = document.documentElement;
+    applyPaletteVars({
+      relief: false,
+      light: {
+        primary: { h: 200, c: 0.1, l: 0.5 },
+        shadowColor: "#112233",
+        shadowOpacity: 12,
+      },
+      dark: {
+        primary: { h: 200, c: 0.1, l: 0.5 },
+        shadowColor: "#000011",
+        shadowOpacity: 60,
+      },
+    });
+    expect(root.style.getPropertyValue("--shadow-color-override")).toBe(
+      "#112233",
+    );
+    expect(root.style.getPropertyValue("--dark-shadow-color-override")).toBe(
+      "#000011",
+    );
+    expect(root.style.getPropertyValue("--shadow-opacity-override")).toBe(
+      "12%",
+    );
+    expect(root.style.getPropertyValue("--dark-shadow-opacity-override")).toBe(
+      "60%",
+    );
+  });
 });

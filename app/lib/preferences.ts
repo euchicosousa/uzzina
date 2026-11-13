@@ -27,7 +27,12 @@ export type CustomTheme = {
   light: CustomThemeColors;
   dark: CustomThemeColors;
   relief?: boolean;
+  /** Light-mode shadow color; also used in dark mode when no dark color is set. */
   shadowColor?: string;
+  darkShadowColor?: string;
+  /** Shadow opacity in percent (1–100) per mode. */
+  shadowOpacity?: number;
+  darkShadowOpacity?: number;
   topBorderColor?: string;
 };
 
@@ -113,9 +118,21 @@ export type SerializedPreferences = {
     };
     relief?: boolean;
     shadowColor?: string;
+    darkShadowColor?: string;
+    shadowOpacity?: number;
+    darkShadowOpacity?: number;
     topBorderColor?: string;
   } | null;
 };
+
+function parseShadowOpacity(value: unknown): number | undefined {
+  return typeof value === "number" &&
+    Number.isFinite(value) &&
+    value >= 1 &&
+    value <= 100
+    ? value
+    : undefined;
+}
 
 export function getUserPreferences(person?: {
   preferences?: unknown;
@@ -165,6 +182,15 @@ export function getUserPreferences(person?: {
           prefs.customTheme.shadowColor.trim().length > 0
             ? prefs.customTheme.shadowColor
             : undefined,
+        darkShadowColor:
+          typeof prefs.customTheme.darkShadowColor === "string" &&
+          prefs.customTheme.darkShadowColor.trim().length > 0
+            ? prefs.customTheme.darkShadowColor
+            : undefined,
+        shadowOpacity: parseShadowOpacity(prefs.customTheme.shadowOpacity),
+        darkShadowOpacity: parseShadowOpacity(
+          prefs.customTheme.darkShadowOpacity,
+        ),
         topBorderColor:
           typeof prefs.customTheme.topBorderColor === "string" &&
           prefs.customTheme.topBorderColor.trim().length > 0

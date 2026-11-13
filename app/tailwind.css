@@ -52,6 +52,8 @@
   --action-hover: oklch(
     from var(--background) calc(l + var(--action-hover-l-delta)) c h
   );
+  --shadow-tint: var(--shadow-color-override, #000000);
+  --shadow-alpha: var(--shadow-opacity-override, 10%);
   --action-shadow-color: var(--action-shadow-color-override, #000000);
   --action-ring: color-mix(in srgb, var(--action-shadow-color) 5%, transparent);
   --action-top-border: var(--action-top-border-override, #ffffff);
@@ -234,6 +236,11 @@
   --action-hover: oklch(
     from var(--background) calc(l + var(--dark-action-hover-l-delta)) c h
   );
+  --shadow-tint: var(
+    --dark-shadow-color-override,
+    var(--shadow-color-override, #000000)
+  );
+  --shadow-alpha: var(--dark-shadow-opacity-override, 25%);
   --action-shadow-color: var(
     --dark-action-shadow-color-override,
     var(--action-shadow-color-override, #000000)
@@ -306,6 +313,87 @@
     /* "PP Object Sans", */
     ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
     "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* Elevation shadows tinted by the palette (color + opacity per mode). */
+  --shadow-2xs: 0 1px
+    color-mix(
+      in srgb,
+      var(--shadow-tint) calc(var(--shadow-alpha) * 0.5),
+      transparent
+    );
+  --shadow-xs: 0 1px 2px 0
+    color-mix(
+      in srgb,
+      var(--shadow-tint) calc(var(--shadow-alpha) * 0.6),
+      transparent
+    );
+  --shadow-sm:
+    0 1px 3px 0
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 0.8),
+        transparent
+      ),
+    0 1px 2px -1px
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 0.8),
+        transparent
+      );
+  --shadow-md:
+    0 4px 6px -1px
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        transparent
+      ),
+    0 2px 4px -2px
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        transparent
+      );
+  --shadow-lg:
+    0 10px 15px -3px
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        transparent
+      ),
+    0 4px 6px -4px
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        transparent
+      );
+  --shadow-xl:
+    0 20px 25px -5px
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        transparent
+      ),
+    0 8px 10px -6px
+      color-mix(
+        in srgb,
+        var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+        transparent
+      );
+  --shadow-2xl: 0 25px 50px -12px
+    color-mix(
+      in srgb,
+      var(--shadow-tint) min(100%, calc(var(--shadow-alpha) * 2.5)),
+      transparent
+    );
+  --shadow-toast: 0 12px 24px -6px
+    color-mix(
+      in srgb,
+      var(--shadow-tint) calc(var(--shadow-alpha) * 1),
+      transparent
+    );
+
+  /* Backdrop of dialogs and sheets: the palette shadow tint at 30%. */
+  --color-overlay: color-mix(in srgb, var(--shadow-tint) 30%, transparent);
 
   --color-action: var(--action);
   --color-action-hover: var(--action-hover);

@@ -26,6 +26,9 @@ const CUSTOM_DARK_BG_KEY = "uzzina-custom-dark-bg";
 const CUSTOM_DARK_FG_KEY = "uzzina-custom-dark-fg";
 const CUSTOM_RELIEF_KEY = "uzzina-custom-relief";
 const CUSTOM_SHADOW_COLOR_KEY = "uzzina-custom-shadow-color";
+const CUSTOM_DARK_SHADOW_COLOR_KEY = "uzzina-custom-dark-shadow-color";
+const CUSTOM_SHADOW_OPACITY_KEY = "uzzina-custom-shadow-opacity";
+const CUSTOM_DARK_SHADOW_OPACITY_KEY = "uzzina-custom-dark-shadow-opacity";
 const CUSTOM_TOP_BORDER_COLOR_KEY = "uzzina-custom-top-border-color";
 
 function getStoredIndex(): number {
@@ -57,6 +60,10 @@ function getStoredCustomTheme(): CustomTheme | null {
   const relief = reliefStr === null ? true : reliefStr !== "false";
   const shadowColor =
     localStorage.getItem(CUSTOM_SHADOW_COLOR_KEY) || undefined;
+  const darkShadowColor =
+    localStorage.getItem(CUSTOM_DARK_SHADOW_COLOR_KEY) || undefined;
+  const shadowOpacity = readStoredOpacity(CUSTOM_SHADOW_OPACITY_KEY);
+  const darkShadowOpacity = readStoredOpacity(CUSTOM_DARK_SHADOW_OPACITY_KEY);
   const topBorderColor =
     localStorage.getItem(CUSTOM_TOP_BORDER_COLOR_KEY) || undefined;
 
@@ -66,10 +73,30 @@ function getStoredCustomTheme(): CustomTheme | null {
       dark: { primaryHex: dp, primaryFgHex: dpfg, bgHex: dbg, fgHex: dfg },
       relief,
       shadowColor,
+      darkShadowColor,
+      shadowOpacity,
+      darkShadowOpacity,
       topBorderColor,
     };
   }
   return null;
+}
+
+function readStoredOpacity(key: string): number | undefined {
+  const raw = localStorage.getItem(key);
+  if (raw === null) return undefined;
+  const value = Number(raw);
+  return Number.isFinite(value) && value >= 1 && value <= 100
+    ? value
+    : undefined;
+}
+
+function storeOptional(key: string, value: string | number | undefined) {
+  if (value === undefined || value === "") {
+    localStorage.removeItem(key);
+  } else {
+    localStorage.setItem(key, String(value));
+  }
 }
 
 export enum Theme {
@@ -170,6 +197,9 @@ export function useAppTheme(isPublic = false) {
         key === CUSTOM_DARK_FG_KEY ||
         key === CUSTOM_RELIEF_KEY ||
         key === CUSTOM_SHADOW_COLOR_KEY ||
+        key === CUSTOM_DARK_SHADOW_COLOR_KEY ||
+        key === CUSTOM_SHADOW_OPACITY_KEY ||
+        key === CUSTOM_DARK_SHADOW_OPACITY_KEY ||
         key === CUSTOM_TOP_BORDER_COLOR_KEY
       ) {
         setCustomThemeState(getStoredCustomTheme());
@@ -225,12 +255,16 @@ export function useAppTheme(isPublic = false) {
           primaryFg: lightPfg,
           bg: lightBg,
           fg: lightFg,
+          shadowColor: customTheme.shadowColor,
+          shadowOpacity: customTheme.shadowOpacity,
         },
         dark: {
           primary: darkP,
           primaryFg: darkPfg,
           bg: darkBg,
           fg: darkFg,
+          shadowColor: customTheme.darkShadowColor,
+          shadowOpacity: customTheme.darkShadowOpacity,
         },
       };
     }
@@ -295,11 +329,10 @@ export function useAppTheme(isPublic = false) {
     } else {
       localStorage.removeItem(CUSTOM_RELIEF_KEY);
     }
-    if (theme.shadowColor) {
-      localStorage.setItem(CUSTOM_SHADOW_COLOR_KEY, theme.shadowColor);
-    } else {
-      localStorage.removeItem(CUSTOM_SHADOW_COLOR_KEY);
-    }
+    storeOptional(CUSTOM_SHADOW_COLOR_KEY, theme.shadowColor);
+    storeOptional(CUSTOM_DARK_SHADOW_COLOR_KEY, theme.darkShadowColor);
+    storeOptional(CUSTOM_SHADOW_OPACITY_KEY, theme.shadowOpacity);
+    storeOptional(CUSTOM_DARK_SHADOW_OPACITY_KEY, theme.darkShadowOpacity);
     if (theme.topBorderColor) {
       localStorage.setItem(CUSTOM_TOP_BORDER_COLOR_KEY, theme.topBorderColor);
     } else {
@@ -367,8 +400,22 @@ export function useAppTheme(isPublic = false) {
       relief: theme.relief,
       shadowColor: theme.shadowColor,
       topBorderColor: theme.topBorderColor,
-      light: { primary: lightP, primaryFg: lightPfg, bg: lightBg, fg: lightFg },
-      dark: { primary: darkP, primaryFg: darkPfg, bg: darkBg, fg: darkFg },
+      light: {
+        primary: lightP,
+        primaryFg: lightPfg,
+        bg: lightBg,
+        fg: lightFg,
+        shadowColor: theme.shadowColor,
+        shadowOpacity: theme.shadowOpacity,
+      },
+      dark: {
+        primary: darkP,
+        primaryFg: darkPfg,
+        bg: darkBg,
+        fg: darkFg,
+        shadowColor: theme.darkShadowColor,
+        shadowOpacity: theme.darkShadowOpacity,
+      },
     });
   };
 

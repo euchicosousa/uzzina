@@ -63,7 +63,8 @@ it("applies transparent borders and zero shadows that compose with rings when re
 it("applies shadowColor and topBorderColor and cleans up", () => {
   const magenta = PALLETE.find((p) => p.id === "magenta");
   if (!magenta) throw new Error("Magenta palette is missing");
-  expect(magenta.shadowColor).toBe("oklch(0.25 0.15 350)");
+  expect(magenta.light.shadowColor).toBe("oklch(0.25 0.15 350)");
+  expect(magenta.dark.shadowColor).toBe("oklch(0.1 0.1 340)");
 
   applyPaletteVars(magenta);
   const root = document.documentElement.style;
@@ -71,8 +72,16 @@ it("applies shadowColor and topBorderColor and cleans up", () => {
     "oklch(0.25 0.15 350)",
   );
   expect(root.getPropertyValue("--dark-action-shadow-color-override")).toBe(
+    "oklch(0.1 0.1 340)",
+  );
+  expect(root.getPropertyValue("--shadow-color-override")).toBe(
     "oklch(0.25 0.15 350)",
   );
+  expect(root.getPropertyValue("--dark-shadow-color-override")).toBe(
+    "oklch(0.1 0.1 340)",
+  );
+  expect(root.getPropertyValue("--shadow-opacity-override")).toBe("10%");
+  expect(root.getPropertyValue("--dark-shadow-opacity-override")).toBe("25%");
   // A borda superior da action em magenta permanece no padrão branco (sem override)
   expect(root.getPropertyValue("--action-top-border-override")).toBe("");
 
@@ -86,9 +95,33 @@ it("applies shadowColor and topBorderColor and cleans up", () => {
   const onix = PALLETE[0];
   applyPaletteVars(onix);
 
-  expect(root.getPropertyValue("--action-shadow-color-override")).toBe("");
-  expect(root.getPropertyValue("--dark-action-shadow-color-override")).toBe("");
+  expect(root.getPropertyValue("--action-shadow-color-override")).toBe(
+    "oklch(0.25 0.01 200)",
+  );
+  expect(root.getPropertyValue("--dark-shadow-opacity-override")).toBe("50%");
   expect(root.getPropertyValue("--action-top-border-override")).toBe("");
+});
+
+it("keeps the global shadow color when the card relief is off", () => {
+  const carbon = PALLETE.find((p) => p.id === "carbon");
+  if (!carbon) throw new Error("Carbon palette is missing");
+  expect(carbon.relief).toBe(false);
+  applyPaletteVars(carbon);
+  const root = document.documentElement.style;
+  expect(root.getPropertyValue("--shadow-color-override")).toBe(
+    "oklch(0.25 0 0)",
+  );
+  expect(root.getPropertyValue("--dark-shadow-opacity-override")).toBe("40%");
+  expect(root.getPropertyValue("--action-shadow-color-override")).toBe("");
+});
+
+it("gives every palette a tinted shadow for both modes", () => {
+  for (const palette of PALLETE) {
+    for (const mode of [palette.light, palette.dark]) {
+      expect(mode.shadowColor).toMatch(/^oklch\(/);
+      expect(mode.shadowOpacity).toBeGreaterThan(0);
+    }
+  }
 });
 
 it("applies light and dark ring overrides without overriding the derived accent, then cleans up", () => {

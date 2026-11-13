@@ -51,7 +51,7 @@ const PrismToaster = ({ ...props }: ToasterProps) => {
             "data-[type=error]:bg-error-background! data-[type=error]:text-error! data-[type=error]:border-error!",
             "data-[type=warning]:bg-warning-background! data-[type=warning]:text-warning! data-[type=warning]:border-warning!",
             "data-[type=info]:bg-info-background! data-[type=info]:text-info! data-[type=info]:border-info!",
-            "shadow-[0_12px_24px_-6px_rgba(0,0,0,0.1)]!",
+            "shadow-toast!",
             "data-[type=success]:shadow-[0_12px_24px_-6px_oklch(from_var(--color-success)_l_c_h_/_30%)]!",
             "data-[type=error]:shadow-[0_12px_24px_-6px_oklch(from_var(--color-error)_l_c_h_/_30%)]!",
             "data-[type=warning]:shadow-[0_12px_24px_-6px_oklch(from_var(--color-warning)_l_c_h_/_30%)]!",

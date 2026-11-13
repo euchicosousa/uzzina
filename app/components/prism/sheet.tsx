@@ -45,7 +45,7 @@ function SheetOverlay({
   return (
     <ModalOverlayPrimitive
       className={cn(
-        "fixed inset-0 z-50 bg-black/30 transition-opacity duration-150 data-entering:opacity-0 data-exiting:opacity-0 supports-backdrop-filter:backdrop-blur-sm",
+        "fixed inset-0 z-50 bg-overlay transition-opacity duration-150 data-entering:opacity-0 data-exiting:opacity-0 supports-backdrop-filter:backdrop-blur-sm",
         className,
       )}
       data-slot="sheet-overlay"

@@ -1,5 +1,11 @@
 import { LayersIcon, PipetteIcon, RotateCcwIcon } from "lucide-react";
-import { PrismButton, PrismLabel } from "~/components/prism";
+import {
+  PrismButton,
+  PrismLabel,
+  PrismSlider,
+  PrismSliderTrack,
+} from "~/components/prism";
+import { UColorPickerDropdown } from "~/components/uzzina/UColorPickerDropdown";
 import { UPreferenceSwitch } from "~/components/uzzina/UPreferenceSwitch";
 import type {
   CustomThemeOptionKey,
@@ -9,16 +15,55 @@ import type {
 import type { CustomTheme } from "~/lib/preferences";
 
 const MODES: { mode: ThemeMode; title: string }[] = [
-  { mode: "light", title: "Modo Claro" },
-  { mode: "dark", title: "Modo Escuro" },
+  { mode: "light", title: "Modo claro" },
+  { mode: "dark", title: "Modo escuro" },
 ];
 
 const FIELDS: { key: ThemeColorKey; label: string }[] = [
-  { key: "primaryHex", label: "Cor Primária (Primary)" },
-  { key: "primaryFgHex", label: "Texto na Cor Primária (Primary Fg)" },
-  { key: "bgHex", label: "Fundo (Background)" },
-  { key: "fgHex", label: "Texto (Foreground)" },
+  { key: "primaryHex", label: "Cor principal" },
+  { key: "primaryFgHex", label: "Texto sobre a cor principal" },
+  { key: "bgHex", label: "Fundo" },
+  { key: "fgHex", label: "Texto" },
 ];
+
+const SHADOW_FIELDS = {
+  light: {
+    color: "shadowColor",
+    opacity: "shadowOpacity",
+    defaultOpacity: 10,
+  },
+  dark: {
+    color: "darkShadowColor",
+    opacity: "darkShadowOpacity",
+    defaultOpacity: 25,
+  },
+} as const;
+
+/** Swatch + value button that opens the color picker. */
+function ColorTrigger({
+  ariaLabel,
+  color,
+  label,
+}: {
+  ariaLabel: string;
+  color: string;
+  label: string;
+}) {
+  return (
+    <PrismButton
+      aria-label={ariaLabel}
+      className="h-auto justify-start gap-3 px-0 text-sm font-normal text-inherit hover:bg-transparent"
+      variant="ghost"
+    >
+      <span
+        aria-hidden="true"
+        className="size-8 shrink-0 rounded-lg border border-current/20 squircle"
+        style={{ backgroundColor: color }}
+      />
+      <span className="font-mono uppercase">{label}</span>
+    </PrismButton>
+  );
+}
 
 export function CustomThemePanel({
   theme,
@@ -42,39 +87,107 @@ export function CustomThemePanel({
         <span className="text-sm font-semibold">Editar Cores do Tema</span>
       </div>
 
-      {/* Grade de cores modo claro / escuro */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        {MODES.map(({ mode, title }) => (
-          <div className="flex flex-col gap-3" key={mode}>
-            <span className="text-xs font-semibold text-secondary-foreground">
-              {title}
-            </span>
-            <div className="grid gap-3">
-              {FIELDS.map(({ key, label }) => (
-                <div className="flex flex-col gap-1.5" key={key}>
-                  <PrismLabel className="text-xs text-secondary-foreground">
-                    {label}
-                  </PrismLabel>
-                  <label className="group flex cursor-pointer items-center gap-2">
-                    <div
-                      className="size-8 rounded-lg border border-border shadow-sm transition duration-200 squircle group-hover:scale-105"
-                      style={{ backgroundColor: theme[mode][key] }}
-                    />
-                    <input
-                      className="sr-only"
-                      onChange={(e) => onChange(mode, key, e.target.value)}
-                      type="color"
+      <p className="-mt-3 text-sm text-secondary-foreground">
+        Cada lado mostra o modo com as cores escolhidas. A sombra vale para
+        menus, diálogos, avisos e cartões, mesmo com o relevo desligado.
+      </p>
+
+      {/* Cada modo é exibido com o próprio fundo e texto escolhidos */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {MODES.map(({ mode, title }) => {
+          const fields = SHADOW_FIELDS[mode];
+          const ownColor = theme[fields.color];
+          // Dark mode without its own shadow color falls back to the light one.
+          const shadowColor =
+            ownColor || (mode === "dark" ? theme.shadowColor : undefined);
+          const opacity = theme[fields.opacity] ?? fields.defaultOpacity;
+          const hasShadowChange =
+            Boolean(ownColor) || theme[fields.opacity] !== undefined;
+
+          return (
+            <div
+              className="flex flex-col gap-5 rounded-2xl border border-foreground/10 p-5 squircle"
+              key={mode}
+              style={{
+                backgroundColor: theme[mode].bgHex,
+                color: theme[mode].fgHex,
+              }}
+            >
+              <span className="text-base font-semibold">{title}</span>
+
+              <div className="grid gap-4">
+                {FIELDS.map(({ key, label }) => (
+                  <div className="flex flex-col gap-1.5" key={key}>
+                    <span className="text-sm opacity-70">{label}</span>
+                    <UColorPickerDropdown
+                      aria-label={`${label}, ${title.toLowerCase()}`}
+                      onChange={(value) => onChange(mode, key, value)}
+                      trigger={
+                        <ColorTrigger
+                          ariaLabel={`${label}, ${title.toLowerCase()}: ${theme[mode][key]}`}
+                          color={theme[mode][key]}
+                          label={theme[mode][key]}
+                        />
+                      }
                       value={theme[mode][key]}
                     />
-                    <span className="font-mono text-xs text-secondary-foreground select-none group-hover:text-foreground">
-                      {theme[mode][key]}
-                    </span>
-                  </label>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-col gap-4 border-t border-current/15 pt-5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-semibold">Sombra</span>
+                  {hasShadowChange && (
+                    <PrismButton
+                      aria-label={`Restaurar sombra do ${title.toLowerCase()}`}
+                      className="h-auto p-0 text-sm text-inherit opacity-70 hover:bg-transparent hover:opacity-100"
+                      onPress={() => {
+                        onOptionChange(fields.color, undefined);
+                        onOptionChange(fields.opacity, undefined);
+                      }}
+                      size="xs"
+                      variant="ghost"
+                    >
+                      Restaurar
+                      <RotateCcwIcon className="size-3.5" />
+                    </PrismButton>
+                  )}
                 </div>
-              ))}
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-sm opacity-70">Cor da sombra</span>
+                  <UColorPickerDropdown
+                    aria-label={`Cor da sombra, ${title.toLowerCase()}`}
+                    onChange={(value) => onOptionChange(fields.color, value)}
+                    trigger={
+                      <ColorTrigger
+                        ariaLabel={`Cor da sombra, ${title.toLowerCase()}`}
+                        color={shadowColor || "#000000"}
+                        label={shadowColor || "Neutra (padrão)"}
+                      />
+                    }
+                    value={shadowColor || "#000000"}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="opacity-70">Opacidade da sombra</span>
+                    <span className="font-mono">{opacity}%</span>
+                  </div>
+                  <PrismSlider
+                    aria-label={`Opacidade da sombra, ${title.toLowerCase()}`}
+                    maxValue={100}
+                    minValue={1}
+                    onChange={(value) => onOptionChange(fields.opacity, value)}
+                    value={opacity}
+                  >
+                    <PrismSliderTrack className="bg-current/20" />
+                  </PrismSlider>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Controles de Relevo e Acabamento dos Cartões (DS06) */}
@@ -97,64 +210,16 @@ export function CustomThemePanel({
         {/* Cores de intenção visual para tokens derivados de acabamento */}
         {isRelief && (
           <div className="grid grid-cols-1 gap-4 pt-1 sm:grid-cols-2">
-            {/* Cor de sombra e borda */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between">
-                <PrismLabel className="text-xs font-medium">
-                  Sombra e contorno base
-                </PrismLabel>
-                {theme.shadowColor && (
-                  <PrismButton
-                    aria-label="Restaurar sombra padrão"
-                    className="h-auto p-0 text-[11px] text-secondary-foreground hover:text-foreground"
-                    onPress={() => onOptionChange("shadowColor", undefined)}
-                    size="xs"
-                    variant="ghost"
-                  >
-                    Restaurar
-                    <RotateCcwIcon className="size-3" />
-                  </PrismButton>
-                )}
-              </div>
-              <p className="text-[11px] text-secondary-foreground">
-                Tonalidade para sombras e anel dos cartões (ideal em paletas
-                saturadas).
-              </p>
-              <label className="group flex cursor-pointer items-center gap-2 pt-1">
-                <div
-                  className="size-8 rounded-lg border border-border shadow-sm transition duration-200 squircle group-hover:scale-105"
-                  style={{
-                    backgroundColor: theme.shadowColor || "rgba(0, 0, 0, 0.4)",
-                  }}
-                />
-                <input
-                  className="sr-only"
-                  onChange={(e) =>
-                    onOptionChange("shadowColor", e.target.value)
-                  }
-                  type="color"
-                  value={
-                    theme.shadowColor?.startsWith("#")
-                      ? theme.shadowColor
-                      : "#000000"
-                  }
-                />
-                <span className="font-mono text-xs text-secondary-foreground select-none group-hover:text-foreground">
-                  {theme.shadowColor || "Automático (padrão)"}
-                </span>
-              </label>
-            </div>
-
             {/* Cor do realce superior */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <PrismLabel className="text-xs font-medium">
+                <PrismLabel className="text-sm font-medium">
                   Realce superior (borda de topo)
                 </PrismLabel>
                 {theme.topBorderColor && (
                   <PrismButton
                     aria-label="Restaurar realce padrão"
-                    className="h-auto p-0 text-[11px] text-secondary-foreground hover:text-foreground"
+                    className="h-auto p-0 text-sm text-secondary-foreground hover:text-foreground"
                     onPress={() => onOptionChange("topBorderColor", undefined)}
                     size="xs"
                     variant="ghost"
@@ -164,32 +229,21 @@ export function CustomThemePanel({
                   </PrismButton>
                 )}
               </div>
-              <p className="text-[11px] text-secondary-foreground">
+              <p className="text-sm text-secondary-foreground">
                 Cor do fio de luz superior dos cartões (padrão branco).
               </p>
-              <label className="group flex cursor-pointer items-center gap-2 pt-1">
-                <div
-                  className="size-8 rounded-lg border border-border shadow-sm transition duration-200 squircle group-hover:scale-105"
-                  style={{
-                    backgroundColor: theme.topBorderColor || "#ffffff",
-                  }}
-                />
-                <input
-                  className="sr-only"
-                  onChange={(e) =>
-                    onOptionChange("topBorderColor", e.target.value)
-                  }
-                  type="color"
-                  value={
-                    theme.topBorderColor?.startsWith("#")
-                      ? theme.topBorderColor
-                      : "#ffffff"
-                  }
-                />
-                <span className="font-mono text-xs text-secondary-foreground select-none group-hover:text-foreground">
-                  {theme.topBorderColor || "#ffffff (padrão)"}
-                </span>
-              </label>
+              <UColorPickerDropdown
+                aria-label="Cor do realce superior"
+                onChange={(value) => onOptionChange("topBorderColor", value)}
+                trigger={
+                  <ColorTrigger
+                    ariaLabel="Cor do realce superior"
+                    color={theme.topBorderColor || "#ffffff"}
+                    label={theme.topBorderColor || "#FFFFFF (padrão)"}
+                  />
+                }
+                value={theme.topBorderColor || "#ffffff"}
+              />
             </div>
           </div>
         )}
@@ -197,20 +251,20 @@ export function CustomThemePanel({
 
       {/* Pré-visualização com cartão de ação e elementos derivados */}
       <div className="flex flex-col gap-3 border-t border-border/40 pt-4">
-        <span className="text-[11px] font-semibold tracking-wider text-secondary-foreground uppercase">
-          Pré-visualização em Tempo Real
+        <span className="text-sm font-semibold text-secondary-foreground">
+          Pré-visualização
         </span>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {/* Cartão de ação simulando ActionItem */}
           <div className="flex flex-col justify-between rounded-2xl border-t border-action-top-border bg-action p-3.5 shadow-action ring ring-action-ring transition-all squircle">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold">Cartão de Ação</span>
-              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+              <span className="text-sm font-semibold">Cartão de ação</span>
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                 {isRelief ? "Com Relevo" : "Estilo Plano"}
               </span>
             </div>
-            <p className="mt-2 text-xs text-secondary-foreground">
+            <p className="mt-2 text-sm text-secondary-foreground">
               {isRelief
                 ? "Borda de brilho superior e sombra de profundidade ativas."
                 : "Borda de topo transparente e sombras de relevo desligadas."}
@@ -220,12 +274,14 @@ export function CustomThemePanel({
           {/* Cards derivados menores */}
           <div className="grid grid-cols-2 gap-2">
             <div className="flex flex-col justify-between rounded-xl border bg-primary p-2.5 text-primary-foreground squircle">
-              <span className="text-xs font-semibold">Botão Destaque</span>
-              <span className="text-[10px] opacity-80">Primary Fg</span>
+              <span className="text-sm font-semibold">Botão de destaque</span>
+              <span className="text-xs opacity-80">
+                Texto sobre a cor principal
+              </span>
             </div>
             <div className="flex flex-col justify-between rounded-xl border bg-card p-2.5 text-foreground squircle">
-              <span className="text-xs font-semibold">Card & Popover</span>
-              <span className="text-[10px] text-secondary-foreground">
+              <span className="text-sm font-semibold">Cartão e menu</span>
+              <span className="text-xs text-secondary-foreground">
                 Fundo derivado
               </span>
             </div>

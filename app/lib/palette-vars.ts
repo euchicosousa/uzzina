@@ -13,6 +13,8 @@ type PaletteModeVars = {
   popoverLDelta?: number;
   cardLDelta?: number;
   shadowColor?: string;
+  /** Shadow opacity in percent for the largest shadow size. */
+  shadowOpacity?: number;
   topBorderColor?: string;
 };
 
@@ -156,7 +158,23 @@ export function applyPaletteVars(palette: PaletteVars) {
     root.style.removeProperty("--dark-card-l-delta");
   }
 
-  // 4. Relevo de ações e cartões (border-t, ring e sombras)
+  // 4. Sombra das superfícies elevadas: não depende do relevo dos cartões.
+  const lightShadowColor = light.shadowColor || palette.shadowColor;
+  const darkShadowColor = dark.shadowColor || palette.shadowColor;
+  setOrRemove(root.style, "--shadow-color-override", lightShadowColor);
+  setOrRemove(root.style, "--dark-shadow-color-override", darkShadowColor);
+  setOrRemove(
+    root.style,
+    "--shadow-opacity-override",
+    light.shadowOpacity === undefined ? undefined : `${light.shadowOpacity}%`,
+  );
+  setOrRemove(
+    root.style,
+    "--dark-shadow-opacity-override",
+    dark.shadowOpacity === undefined ? undefined : `${dark.shadowOpacity}%`,
+  );
+
+  // 5. Relevo de ações e cartões (border-t, ring e sombras)
   if (palette.relief === false) {
     root.style.setProperty("--action-top-border-override", "transparent");
     // Keep Tailwind's box-shadow list valid so state rings remain visible.
@@ -170,7 +188,6 @@ export function applyPaletteVars(palette: PaletteVars) {
     root.style.removeProperty("--action-hover-shadow-override");
 
     // Sombra e ring/borda
-    const lightShadowColor = light.shadowColor || palette.shadowColor;
     if (lightShadowColor) {
       root.style.setProperty(
         "--action-shadow-color-override",
@@ -180,7 +197,6 @@ export function applyPaletteVars(palette: PaletteVars) {
       root.style.removeProperty("--action-shadow-color-override");
     }
 
-    const darkShadowColor = dark.shadowColor || palette.shadowColor;
     if (darkShadowColor) {
       root.style.setProperty(
         "--dark-action-shadow-color-override",
@@ -207,5 +223,17 @@ export function applyPaletteVars(palette: PaletteVars) {
     } else {
       root.style.removeProperty("--dark-action-top-border-override");
     }
+  }
+}
+
+function setOrRemove(
+  root: CSSStyleDeclaration,
+  name: string,
+  value: string | undefined,
+) {
+  if (value) {
+    root.setProperty(name, value);
+  } else {
+    root.removeProperty(name);
   }
 }

@@ -7,7 +7,6 @@ export type PaletteConfig = {
   id: string;
   label: string;
   relief?: boolean;
-  shadowColor?: string;
   topBorderColor?: string;
   light: {
     primary: OklchColor;
@@ -21,7 +20,10 @@ export type PaletteConfig = {
     actionLDelta?: number;
     actionHoverLDelta?: number;
     popoverLDelta?: number;
-    shadowColor?: string;
+    /** Tinted shadow color of the elevated surfaces (OKLCH string). */
+    shadowColor: string;
+    /** Shadow opacity in percent (1–100) for the largest shadow size. */
+    shadowOpacity: number;
     topBorderColor?: string;
   };
   dark: {
@@ -36,7 +38,10 @@ export type PaletteConfig = {
     actionLDelta?: number;
     actionHoverLDelta?: number;
     popoverLDelta?: number;
-    shadowColor?: string;
+    /** Tinted shadow color of the elevated surfaces (OKLCH string). */
+    shadowColor: string;
+    /** Shadow opacity in percent (1–100) for the largest shadow size. */
+    shadowOpacity: number;
     topBorderColor?: string;
   };
 };
@@ -47,6 +52,8 @@ export const PALLETE: PaletteConfig[] = [
     label: "Ônix",
     relief: true,
     light: {
+      shadowColor: "oklch(0.25 0.01 200)",
+      shadowOpacity: 10,
       primary: {
         h: 0,
         c: 0,
@@ -80,6 +87,8 @@ export const PALLETE: PaletteConfig[] = [
       },
     },
     dark: {
+      shadowColor: "oklch(0.1 0.01 200)",
+      shadowOpacity: 50,
       primary: {
         h: 0,
         c: 0,
@@ -118,6 +127,8 @@ export const PALLETE: PaletteConfig[] = [
     label: "Carbono",
     relief: false,
     light: {
+      shadowColor: "oklch(0.25 0 0)",
+      shadowOpacity: 10,
       primary: {
         h: 240,
         c: 0.02,
@@ -151,6 +162,8 @@ export const PALLETE: PaletteConfig[] = [
       },
     },
     dark: {
+      shadowColor: "oklch(0.1 0 0)",
+      shadowOpacity: 40,
       primary: {
         h: 240,
         c: 0.01,
@@ -188,6 +201,8 @@ export const PALLETE: PaletteConfig[] = [
     id: "red",
     label: "Rubi",
     light: {
+      shadowColor: "oklch(0.25 0.04 20)",
+      shadowOpacity: 10,
       primary: {
         h: 20,
         c: 0.25,
@@ -221,6 +236,8 @@ export const PALLETE: PaletteConfig[] = [
       },
     },
     dark: {
+      shadowColor: "oklch(0.03 0 0)",
+      shadowOpacity: 70,
       primary: {
         h: 20,
         c: 0.25,
@@ -258,6 +275,8 @@ export const PALLETE: PaletteConfig[] = [
     id: "orange",
     label: "Coral",
     light: {
+      shadowColor: "oklch(0.25 0.05 140)",
+      shadowOpacity: 10,
       primary: {
         h: 25,
         c: 0.18,
@@ -291,6 +310,8 @@ export const PALLETE: PaletteConfig[] = [
       },
     },
     dark: {
+      shadowColor: "oklch(0.1 0.03 140)",
+      shadowOpacity: 25,
       primary: {
         h: 25,
         c: 0.18,
@@ -328,6 +349,8 @@ export const PALLETE: PaletteConfig[] = [
     id: "yellow",
     label: "Damasco",
     light: {
+      shadowColor: "oklch(0.25 0.04 100)",
+      shadowOpacity: 10,
       primary: {
         h: 100,
         c: 0.5,
@@ -361,6 +384,8 @@ export const PALLETE: PaletteConfig[] = [
       },
     },
     dark: {
+      shadowColor: "oklch(0.03 0 100)",
+      shadowOpacity: 70,
       primary: {
         h: 100,
         c: 0.4,
@@ -398,6 +423,8 @@ export const PALLETE: PaletteConfig[] = [
     id: "energy",
     label: "Elétrico",
     light: {
+      shadowColor: "oklch(0.25 0.04 120)",
+      shadowOpacity: 10,
       primary: {
         h: 120,
         c: 0.15,
@@ -431,6 +458,8 @@ export const PALLETE: PaletteConfig[] = [
       },
     },
     dark: {
+      shadowColor: "oklch(0.1 0.03 120)",
+      shadowOpacity: 60,
       primary: {
         h: 120,
         c: 0.18,
@@ -468,6 +497,8 @@ export const PALLETE: PaletteConfig[] = [
     id: "green",
     label: "Folha",
     light: {
+      shadowColor: "oklch(0.25 0.04 130)",
+      shadowOpacity: 10,
       primary: {
         h: 130,
         c: 0.2,
@@ -501,6 +532,8 @@ export const PALLETE: PaletteConfig[] = [
       },
     },
     dark: {
+      shadowColor: "oklch(0.1 0.03 130)",
+      shadowOpacity: 50,
       primary: {
         h: 130,
         c: 0.2,
@@ -538,6 +571,8 @@ export const PALLETE: PaletteConfig[] = [
     id: "cyan",
     label: "Turquesa",
     light: {
+      shadowColor: "oklch(0.25 0.04 200)",
+      shadowOpacity: 10,
       primary: {
         h: 200,
         c: 0.2,
@@ -571,6 +606,8 @@ export const PALLETE: PaletteConfig[] = [
       },
     },
     dark: {
+      shadowColor: "oklch(0.1 0.03 200)",
+      shadowOpacity: 50,
       primary: {
         h: 200,
         c: 0.2,
@@ -609,6 +646,8 @@ export const PALLETE: PaletteConfig[] = [
     label: "Cobalto",
     relief: false,
     light: {
+      shadowColor: "oklch(0.25 0.04 264)",
+      shadowOpacity: 10,
       primary: {
         h: 264,
         c: 0.31,
@@ -642,6 +681,8 @@ export const PALLETE: PaletteConfig[] = [
       },
     },
     dark: {
+      shadowColor: "oklch(0.1 0.03 264)",
+      shadowOpacity: 50,
       primary: {
         h: 264,
         c: 0.31,
@@ -679,6 +720,8 @@ export const PALLETE: PaletteConfig[] = [
     id: "purple",
     label: "Violeta",
     light: {
+      shadowColor: "oklch(0.25 0.04 290)",
+      shadowOpacity: 10,
       primary: {
         h: 290,
         c: 0.28,
@@ -712,6 +755,8 @@ export const PALLETE: PaletteConfig[] = [
       },
     },
     dark: {
+      shadowColor: "oklch(0.1 0.03 290)",
+      shadowOpacity: 50,
       primary: {
         h: 290,
         c: 0.28,
@@ -748,8 +793,9 @@ export const PALLETE: PaletteConfig[] = [
   {
     id: "magenta",
     label: "Fúcsia",
-    shadowColor: "oklch(0.25 0.15 350)",
     light: {
+      shadowColor: "oklch(0.25 0.15 350)",
+      shadowOpacity: 10,
       primary: {
         h: 350,
         c: 0.4,
@@ -783,6 +829,8 @@ export const PALLETE: PaletteConfig[] = [
       },
     },
     dark: {
+      shadowColor: "oklch(0.1 0.1 340)",
+      shadowOpacity: 25,
       primary: {
         h: 350,
         c: 0.4,

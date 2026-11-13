@@ -8,7 +8,13 @@ import type { CustomTheme, CustomThemeColors } from "./preferences";
 
 export type ThemeMode = "light" | "dark";
 export type ThemeColorKey = keyof CustomThemeColors;
-export type CustomThemeOptionKey = "relief" | "shadowColor" | "topBorderColor";
+export type CustomThemeOptionKey =
+  | "relief"
+  | "shadowColor"
+  | "darkShadowColor"
+  | "shadowOpacity"
+  | "darkShadowOpacity"
+  | "topBorderColor";
 
 const DEFAULT_CUSTOM_THEME: CustomTheme = {
   light: {
@@ -47,6 +53,9 @@ export function createCustomThemeDraft(saved: CustomTheme | null): CustomTheme {
     },
     relief: saved?.relief ?? DEFAULT_CUSTOM_THEME.relief ?? true,
     shadowColor: saved?.shadowColor,
+    darkShadowColor: saved?.darkShadowColor,
+    shadowOpacity: saved?.shadowOpacity,
+    darkShadowOpacity: saved?.darkShadowOpacity,
     topBorderColor: saved?.topBorderColor,
   };
 }
