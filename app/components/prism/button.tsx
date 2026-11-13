@@ -29,7 +29,7 @@ const styledButtonVariants = cva(
         outline:
           "bg-transparent hover:bg-secondary aria-expanded:bg-secondary dark:bg-transparent",
         secondary:
-          "bg-secondary text-foreground hover:border-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-foreground",
+          "bg-secondary text-foreground border-secondary hover:border-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-foreground",
         ghost:
           "hover:bg-secondary border-transparent aria-expanded:bg-secondary",
         "ghost-error":
