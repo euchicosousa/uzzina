@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DS18 Grupos Prism</title>
+<style>
+  :root {
+    --input: oklch(from var(--background) calc(l - 0.05) c h);
+    --error: oklch(0.55 0.2 27);
+    --error-bg: oklch(0.95 0.04 27);
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.141 0.005 285.823);
+    --secondary: color-mix(in srgb, var(--foreground) 5%, transparent);
+    --secondary-fg: color-mix(in srgb, var(--foreground) 65%, transparent);
+    --border: oklch(from var(--background) calc(l - 0.05) c h);
+    --primary: oklch(0.45 0.18 265);
+    --primary-fg: oklch(0.97 0 265);
+    --ring: var(--primary);
+    --r2: calc(0.65rem * 1.8);
+    --r3: calc(0.65rem * 2.2);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --background: oklch(0.4 0.01 285.823);
+      --foreground: oklch(0.985 0 0);
+      --secondary: color-mix(in srgb, var(--foreground) 10%, transparent);
+      --border: oklch(from var(--background) calc(l + 0.2) c h);
+      --primary: oklch(0.6 0.16 265);
+      --input: oklch(from var(--background) calc(l + 0.05) c h);
+      --error-bg: oklch(0.35 0.08 27);
+      --error: oklch(0.7 0.17 27);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --background: oklch(0.4 0.01 285.823);
+    --foreground: oklch(0.985 0 0);
+    --secondary: color-mix(in srgb, var(--foreground) 10%, transparent);
+    --border: oklch(from var(--background) calc(l + 0.2) c h);
+    --primary: oklch(0.6 0.16 265);
+    --input: oklch(from var(--background) calc(l + 0.05) c h);
+    --error-bg: oklch(0.35 0.08 27);
+    --error: oklch(0.7 0.17 27);
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--background); color: var(--foreground); font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1120px; margin: 0 auto; padding: 24px 16px 80px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 17px; margin: 40px 0 6px; }
+  h3 { font-size: 14px; margin: 24px 0 4px; }
+  .note { border-left: 3px solid var(--primary); padding: 2px 0 2px 12px; margin: 14px 0; max-width: 80ch; }
+  p { margin: 4px 0 10px; max-width: 74ch; }
+  .muted { color: var(--secondary-fg); }
+  small { font-size: 11px; color: var(--secondary-fg); }
+  code { font-size: 12.5px; background: var(--secondary); padding: 1px 5px; border-radius: 6px; }
+  .bar { position: sticky; top: 0; z-index: 50; background: var(--background); display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .bar label { display: flex; gap: 6px; align-items: center; }
+  .bar select { font: inherit; }
+  .scroll { overflow-x: auto; padding: 6px 0; }
+  .grid { display: grid; grid-template-columns: 130px repeat(3, max-content); gap: 16px 48px; align-items: center; }
+  .head { font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--secondary-fg); }
+  .lbl { font-size: 13px; color: var(--secondary-fg); }
+  table.rule { border-collapse: collapse; margin: 8px 0 4px; }
+  table.rule th, table.rule td { text-align: left; padding: 6px 14px 6px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.rule th { font-size: 12px; color: var(--secondary-fg); font-weight: 600; }
+
+  /* ---------- PrismButton (committed in a00ef0e) ---------- */
+  .b {
+    --h: 40px; --px: 20px; --r: var(--r2);
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    height: var(--h); padding: 0 var(--px); border: 1px solid transparent; border-radius: var(--r);
+    corner-shape: superellipse(1.5); background-clip: padding-box;
+    font: 500 14px/1 inherit; font-family: inherit; color: var(--foreground); background-color: transparent;
+    white-space: nowrap; cursor: pointer; outline: none; position: relative;
+  }
+  .b svg { width: 18px; height: 18px; opacity: .6; flex-shrink: 0; }
+  .b.icon { width: var(--h); padding: 0; }
+  .s-xs .b { --h: 24px; --px: 12px; font-size: 12px; } .s-xs .b svg { width: 12px; height: 12px; }
+  .s-sm .b { --h: 32px; --px: 16px; } .s-sm .b svg { width: 16px; height: 16px; }
+  .s-lg .b { --h: 48px; --r: var(--r3); font-size: 16px; }
+  .g { --r: var(--r2); } .s-lg .g { --r: var(--r3); }
+  .mix { --hov: color-mix(in oklab, var(--primary), var(--background) 20%); }
+
+  .v-default .b { background-color: var(--primary); border-color: var(--primary); color: var(--primary-fg); }
+  .v-default .b:hover, .fh .v-default .g > .b:nth-child(2) { background-color: color-mix(in oklab, var(--primary), var(--background) 20%); border-color: color-mix(in oklab, var(--primary), var(--background) 20%); }
+  .v-outline .b { border-color: var(--border); }
+  .v-outline .b:hover, .fh .v-outline .g > .b:nth-child(2) { background-color: var(--secondary); }
+  .v-secondary .b { background-color: var(--secondary); border-color: var(--secondary); }
+  .v-secondary .b:hover, .fh .v-secondary .g > .b:nth-child(2) { background-color: color-mix(in oklch, var(--secondary), var(--foreground) 5%); border-color: color-mix(in oklch, var(--secondary), var(--foreground) 5%); }
+  .v-ghost .b { background-clip: border-box; }
+  .v-ghost .b:hover, .fh .v-ghost .g > .b:nth-child(2) { background-color: var(--secondary); }
+  .b:focus-visible, .ff .g > .b:nth-child(2) { border-color: color-mix(in oklch, var(--ring) 60%, transparent); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent); z-index: 20; }
+
+  /* ---------- PrismToggle = PrismButton variant + selected layer only ---------- */
+  .t .b[aria-pressed="true"] { background-color: var(--secondary); }
+  .t.v-secondary .b[aria-pressed="true"], .fh .t.v-secondary .g > .b[aria-pressed="true"]:nth-child(2) { background-color: var(--primary); border-color: var(--primary); color: var(--primary-fg); }
+  .t.v-secondary .b[aria-pressed="true"]:hover { background-color: color-mix(in oklab, var(--primary), var(--background) 20%); border-color: color-mix(in oklab, var(--primary), var(--background) 20%); }
+
+  /* ---------- Groups ---------- */
+  .g { display: inline-flex; align-items: stretch; }
+  .g > * { position: relative; }
+  .g > *:hover, .g > [aria-pressed="true"] { z-index: 10; }
+  .g > *:focus-visible { z-index: 20; }
+  .g.now > *, .g.att > *, .g.sep > * { border-radius: 0; }
+  .g.now > *:first-child, .g.att > *:first-child, .g.sep > *:first-child { border-start-start-radius: var(--r); border-end-start-radius: var(--r); }
+  .g.now > *:last-child, .g.att > *:last-child, .g.sep > *:last-child { border-start-end-radius: var(--r); border-end-end-radius: var(--r); }
+  /* Today: 1px pull on every variant */
+  .g.now > *:not(:first-child) { margin-left: -1px; }
+  .g.now > .sep { width: 1px; align-self: stretch; z-index: 20; background: var(--background); }
+  /* Approved for buttons: pull only on default and outline (opaque borders). Toggles: only outline. */
+  .v-default .g.att > *:not(:first-child), .v-outline .g.att > *:not(:first-child) { margin-left: -1px; }
+  /* attached={false}: 1px breathing gap (only offered where it makes sense) */
+  .g.sep { gap: 1px; }
+  /* Spaced (today's ToggleGroup default, 8px) */
+  .g.sp4 { gap: 4px; flex-wrap: wrap; }
+  .na { font-size: 12px; color: var(--secondary-fg); }
+
+  /* ---------- InputGroup ---------- */
+  .ig { --r: var(--r2); display: flex; align-items: center; width: 320px; height: 40px; background: var(--input); border: 1px solid transparent; border-radius: var(--r); corner-shape: superellipse(1.5); }
+  .ig.sm { height: 32px; } .ig.lg { height: 48px; --r: var(--r3); }
+  .ig:focus-within, .ig.f { border-color: color-mix(in oklch, var(--ring) 60%, transparent); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent); }
+  .ig.err { background: var(--error-bg); border-color: var(--error); color: var(--error-fg); }
+  .ig input { flex: 1; min-width: 0; height: 100%; border: 0; background: transparent; outline: none; font: inherit; color: inherit; padding: 0 8px 0 20px; }
+  .ig .ad + input { padding-left: 8px; }
+  .ig .ad { display: flex; align-items: center; padding-left: 14px; opacity: .6; }
+  .ig .ad svg { width: 18px; height: 18px; }
+  .ig .ib { width: 32px; height: 32px; margin-right: 4px; border-radius: var(--r2); corner-shape: superellipse(1.5); border: 1px solid transparent; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; outline: none; }
+  .ig.sm .ib { width: 24px; height: 24px; }
+  .ig .ib:hover { background: var(--secondary); }
+  .ig .ib:focus-visible { border-color: color-mix(in oklch, var(--ring) 60%, transparent); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent); }
+  .ig .ib svg { width: 18px; height: 18px; opacity: .6; }
+  .ig .kbd { margin-right: 10px; font-size: 12px; background: var(--secondary); border-radius: 999px; padding: 1px 7px; color: var(--secondary-fg); }
+  .stack { display: grid; gap: 12px; }
+
+  ol li { margin: 4px 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>DS18 — grupos do Prism</h1>
+  <p class="muted">Prévia estática, versão 6 (13/11), modelo final aprovado. Cores reais do app: escolha o Tema e a Cor de destaque, como em Minha Conta. O botão já está com o hover do primário e o fundo do ghost corrigidos (commit <code>a00ef0e</code>).</p>
+
+  <div class="bar">
+    <label>Tema <select id="theme"><option value="">Sistema</option><option value="light">Claro</option><option value="dark">Escuro</option></select></label>
+    <label>Cor de destaque <select id="palette"></select></label>
+    <label>Tamanho <select id="size"><option>xs</option><option selected>sm</option><option>default</option><option>lg</option></select></label>
+    <label><input type="checkbox" id="fh" /> Hover no item do meio</label>
+    <label><input type="checkbox" id="ff" /> Foco no item do meio</label>
+  </div>
+
+  <h2>1. Grupo de botões — aprovado</h2>
+  <p>Junto por padrão: puxão de 1px só no default e no outline. <code>attached={false}</code> dá respiro de 1px, só no default e no secondary.</p>
+  <div class="scroll"><div class="grid" id="bg" style="grid-template-columns: 130px repeat(2, max-content)"></div></div>
+
+  <h2>2. Grupo de toggles — aprovado</h2>
+  <div class="note"><b>Fonte única de verdade: o botão.</b> Hoje o toggle tem uma cópia própria de cada variante (borda, fundo, hover), escrita à parte do botão. Foi assim que o secondary do toggle ficou diferente do botão. Proposta: o toggle passa a usar exatamente as classes de variante do <code>PrismButton</code> (ghost, outline, secondary) e acrescenta só o estado <b>selecionado</b>:
+    <ul>
+      <li>ghost e outline selecionados: fundo <code>secondary</code>, o mesmo de um menu aberto no botão;</li>
+      <li>secondary selecionado: o visual do botão <b>default</b> (primário), inclusive o hover novo.</li>
+    </ul>
+    O toggle <code>default</code> de hoje já é um ghost e vira apelido de ghost. Toda correção feita no botão passa a valer no toggle automaticamente.</div>
+  <p>Outline e secondary: junto por padrão (puxão só no outline); <code>attached={false}</code> separa por 4px. Ghost: sempre separado por 4px, nunca junto. "Mês" começa selecionado; clique para trocar.</p>
+  <div class="scroll"><div class="grid" id="tg" style="grid-template-columns: 130px repeat(2, max-content)"></div></div>
+  <p class="muted">As grades de opções (Cor de destaque, ações em lote, seletor de cor, Áreas, plano) usam <code>attached={false}</code> e passam de 8px para 4px, ou mantêm o espaço da própria grade onde ele já é definido pela tela.</p>
+
+  <h2>3. Grupo de campo — aprovado sem mudança visual</h2>
+  <p>Fica como está; entra só a limpeza de código (diretiva sem efeito, medidas repetidas do botão interno, <code>squircle</code> e <code>bg-input</code> repetidos nas telas).</p>
+  <div class="scroll"><div class="grid" id="ig" style="grid-template-columns: 90px repeat(3, max-content)"></div></div>
+
+  <h2>Roteiro para conferir</h2>
+  <ol>
+    <li>Troque Tema e Cor de destaque e compare o toggle secondary com o botão secondary: mesmo fundo, sem borda própria.</li>
+    <li>Selecione itens no toggle secondary e passe o mouse: o selecionado se comporta como o botão primário.</li>
+    <li>Compare "Junto" e "Separado 4px" nos toggles.</li>
+  </ol>
+</main>
+
+<script>
+  const I = {
+    left: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>',
+    right: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>',
+    kanban: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 5v11M12 5v6M18 5v14"/></svg>',
+    list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',
+    grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
+    mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
+    eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
+    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',
+  };
+  const b = (txt, extra = "") => `<button class="b ${extra}">${txt}</button>`;
+  const t = (txt, on, multi, extra = "") => `<button class="b ${extra}" aria-pressed="${on ? "true" : "false"}" onclick="press(this, ${multi ? 1 : 0})">${txt}</button>`;
+  window.press = (el, multi) => {
+    if (multi) { el.setAttribute("aria-pressed", el.getAttribute("aria-pressed") === "true" ? "false" : "true"); return; }
+    [...el.parentElement.children].forEach((c) => c.setAttribute("aria-pressed", "false"));
+    el.setAttribute("aria-pressed", "true");
+  };
+  const headRow = (cols) => `<div></div>` + cols.map((l) => `<div class="head">${l}</div>`).join("");
+  const cell = (wrapCls, gCls, inner) => `<div class="${wrapCls}"><div class="g ${gCls}">${inner}</div></div>`;
+  const na = (txt) => `<div class="na">${txt}</div>`;
+
+  function render() {
+    const sz = `s-${document.getElementById("size").value}`;
+    const isz = { xs: "sm", sm: "sm", default: "", lg: "lg" }[document.getElementById("size").value];
+
+    let h = headRow(["Junto (padrão)", "Respiro 1px"]);
+    for (const v of ["default", "outline", "secondary", "ghost"]) {
+      const inner = `${b(I.left, "icon")}${b("Hoje")}${b(I.right, "icon")}`;
+      h += `<div class="lbl">${v}</div>` + cell(`v-${v} ${sz}`, "att", inner)
+        + (v === "default" || v === "secondary" ? cell(`v-${v} ${sz}`, "sep", inner) : na("não existe"));
+    }
+    document.getElementById("bg").innerHTML = h;
+
+    let tg = headRow(["Junto (padrão)", "Separado 4px"]);
+    for (const [v, label] of [["ghost", "ghost<br><small>(hoje: default)</small>"], ["outline", "outline"], ["secondary", "secondary"]]) {
+      const inner = `${t("Semana")}${t("Mês", true)}${t("Ano")}`;
+      tg += `<div class="lbl">${label}</div>` + (v === "ghost" ? na("não existe: sempre separado") : cell(`t v-${v} ${sz}`, "att", inner)) + cell(`t v-${v} ${sz}`, "sp4", inner);
+    }
+    const icons3 = `${t(I.kanban, true, 0, "icon")}${t(I.list, false, 0, "icon")}${t(I.grid, false, 0, "icon")}`;
+    tg += `<div class="lbl">ícones do Hoje</div>` + na("não existe") + cell(`t v-ghost ${sz}`, "sp4", icons3);
+    const multi = `${t("Seg", true, 1)}${t("Ter", true, 1)}${t("Qua", false, 1)}`;
+    tg += `<div class="lbl">ghost, múltipla</div>` + na("não existe") + cell(`t v-ghost ${sz}`, "sp4", multi);
+    document.getElementById("tg").innerHTML = tg;
+
+    const ig = (cls, inner) => `<div class="ig ${isz} ${cls}">${inner}</div>`;
+    let g = headRow(["Repouso", "Foco", "Erro"]);
+    const kinds = [
+      ["Ícone", `<span class="ad">${I.mail}</span><input placeholder="E-mail" aria-label="E-mail" />`],
+      ["Botão", `<input placeholder="Senha" aria-label="Senha" type="password" /><button class="ib" aria-label="Mostrar senha">${I.eye}</button>`],
+      ["Atalho", `<span class="ad">${I.search}</span><input placeholder="Buscar" aria-label="Buscar" /><span class="kbd">⌘K</span>`],
+    ];
+    for (const [label, inner] of kinds) g += `<div class="lbl">${label}</div>` + ig("", inner) + ig("f", inner) + ig("err", inner);
+    document.getElementById("ig").innerHTML = g;
+  }
+  const flag = (id) => document.getElementById(id).addEventListener("change", (e) => document.body.classList.toggle(id, e.target.checked));
+  flag("fh"); flag("ff");
+  document.getElementById("size").addEventListener("change", render);
+  // Real palettes from app/lib/palettes.ts (exported 13/11/2026).
+  const PALETTES = [{"id":"default","label":"Ônix","light":{"primary":{"h":0,"c":0,"l":0},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":200,"c":0.002,"l":0.96},"fg":{"h":0,"c":0,"l":0},"ring":{"h":0,"c":0,"l":0},"borderLDelta":-0.07,"inputLDelta":-0.04},"dark":{"primary":{"h":0,"c":0,"l":1},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":250,"c":0.01,"l":0.2},"fg":{"h":0,"c":0,"l":1},"ring":{"h":0,"c":0,"l":1},"borderLDelta":0.1,"inputLDelta":0.02}},{"id":"carbon","label":"Carbono","light":{"primary":{"h":240,"c":0.02,"l":0.3},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":1},"fg":{"h":0,"c":0,"l":0},"ring":{"h":240,"c":0.02,"l":0.3},"borderLDelta":-0.04,"inputLDelta":-0.02},"dark":{"primary":{"h":240,"c":0.01,"l":0.99},"primaryFg":{"h":240,"c":0.02,"l":0.3},"bg":{"h":240,"c":0.015,"l":0.25},"fg":{"h":0,"c":0,"l":1},"ring":{"h":240,"c":0.01,"l":0.99},"borderLDelta":0.1,"inputLDelta":0.04}},{"id":"red","label":"Rubi","light":{"primary":{"h":20,"c":0.25,"l":0.62},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":0.98},"fg":{"h":0,"c":0,"l":0},"ring":{"h":20,"c":0.25,"l":0.62},"borderLDelta":-0.05,"inputLDelta":-0.02},"dark":{"primary":{"h":20,"c":0.25,"l":0.68},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"ring":{"h":20,"c":0.25,"l":0.68},"borderLDelta":0.2,"inputLDelta":0.02}},{"id":"orange","label":"Coral","light":{"primary":{"h":25,"c":0.18,"l":0.65},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":130,"c":0.01,"l":0.95},"fg":{"h":0,"c":0,"l":0},"ring":{"h":25,"c":0.18,"l":0.65},"borderLDelta":-0.05,"inputLDelta":-0.02},"dark":{"primary":{"h":25,"c":0.18,"l":0.65},"primaryFg":{"h":130,"c":0.02,"l":0.9},"bg":{"h":190,"c":0.01,"l":0.25},"fg":{"h":130,"c":0.01,"l":0.95},"ring":{"h":25,"c":0.18,"l":0.65},"borderLDelta":0.1,"inputLDelta":-0.02}},{"id":"yellow","label":"Damasco","light":{"primary":{"h":100,"c":0.5,"l":0.8},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":0,"c":0,"l":0.98},"fg":{"h":0,"c":0,"l":0},"ring":{"h":100,"c":0.5,"l":0.8},"borderLDelta":-0.05,"inputLDelta":-0.02},"dark":{"primary":{"h":100,"c":0.4,"l":0.8},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"ring":{"h":100,"c":0.4,"l":0.8},"borderLDelta":0.2,"inputLDelta":0.02}},{"id":"energy","label":"Elétrico","light":{"primary":{"h":120,"c":0.15,"l":0.94},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":240,"c":0.004,"l":0.96},"fg":{"h":0,"c":0,"l":0},"ring":{"h":120,"c":0.15,"l":0.94},"borderLDelta":-0.05,"inputLDelta":-0.02},"dark":{"primary":{"h":120,"c":0.18,"l":0.9},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":250,"c":0.01,"l":0.2},"fg":{"h":0,"c":0,"l":1},"ring":{"h":120,"c":0.18,"l":0.9},"borderLDelta":0.2,"inputLDelta":0.02}},{"id":"green","label":"Folha","light":{"primary":{"h":130,"c":0.2,"l":0.7},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":0.98},"fg":{"h":0,"c":0,"l":0},"ring":{"h":130,"c":0.2,"l":0.7},"borderLDelta":-0.05,"inputLDelta":-0.02},"dark":{"primary":{"h":130,"c":0.2,"l":0.65},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"ring":{"h":130,"c":0.2,"l":0.65},"borderLDelta":0.2,"inputLDelta":0.02}},{"id":"cyan","label":"Turquesa","light":{"primary":{"h":200,"c":0.2,"l":0.7},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":0.96},"fg":{"h":0,"c":0,"l":0},"ring":{"h":200,"c":0.2,"l":0.7},"borderLDelta":-0.05,"inputLDelta":-0.02},"dark":{"primary":{"h":200,"c":0.2,"l":0.65},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"ring":{"h":200,"c":0.2,"l":0.65},"borderLDelta":0.2,"inputLDelta":0.02}},{"id":"blue","label":"Cobalto","light":{"primary":{"h":264,"c":0.31,"l":0.45},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":1},"fg":{"h":0,"c":0,"l":0},"ring":{"h":264,"c":0.31,"l":0.45},"borderLDelta":-0.05,"inputLDelta":-0.02},"dark":{"primary":{"h":264,"c":0.31,"l":0.58},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"ring":{"h":264,"c":0.31,"l":0.58},"borderLDelta":0.2,"inputLDelta":0.02}},{"id":"purple","label":"Violeta","light":{"primary":{"h":290,"c":0.28,"l":0.54},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":0,"c":0,"l":1},"fg":{"h":0,"c":0,"l":0},"ring":{"h":290,"c":0.28,"l":0.54},"borderLDelta":-0.1,"inputLDelta":-0.02},"dark":{"primary":{"h":290,"c":0.28,"l":0.68},"primaryFg":{"h":0,"c":0,"l":1},"bg":{"h":285,"c":0.005,"l":0.141},"fg":{"h":0,"c":0,"l":1},"ring":{"h":290,"c":0.28,"l":0.68},"borderLDelta":0.2,"inputLDelta":0.02}},{"id":"magenta","label":"Fúcsia","light":{"primary":{"h":350,"c":0.4,"l":0.9},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":320,"c":0.02,"l":0.98},"fg":{"h":0,"c":0,"l":0},"ring":{"h":350,"c":0.4,"l":0.9},"borderLDelta":-0.05,"inputLDelta":-0.02},"dark":{"primary":{"h":350,"c":0.4,"l":0.8},"primaryFg":{"h":0,"c":0,"l":0},"bg":{"h":340,"c":0.1,"l":0.3},"fg":{"h":0,"c":0,"l":1},"ring":{"h":350,"c":0.4,"l":0.8},"borderLDelta":0.2,"inputLDelta":0.02}}];
+  const ok = (c) => `oklch(${c.l} ${c.c} ${c.h})`;
+  const themeSel = document.getElementById("theme");
+  const palSel = document.getElementById("palette");
+  palSel.innerHTML = PALETTES.map((p) => `<option value="${p.id}">${p.label}</option>`).join("");
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  function applyPalette() {
+    const dark = themeSel.value ? themeSel.value === "dark" : mq.matches;
+    const p = PALETTES.find((x) => x.id === palSel.value) || PALETTES[0];
+    const m = dark ? p.dark : p.light;
+    const bg = ok(m.bg), fg = ok(m.fg);
+    const rel = (d) => `oklch(from ${bg} calc(l + ${d}) c h)`;
+    const card = rel(dark ? 0.05 : -0.02);
+    const err = dark ? "oklch(0.86135 0.2 16.339)" : "oklch(0.8 0.22 16.339)";
+    const v = {
+      "--background": bg,
+      "--foreground": fg,
+      "--primary": ok(m.primary),
+      "--primary-fg": m.primaryFg ? ok(m.primaryFg) : dark ? `oklch(0.97 0.014 ${m.primary.h})` : `oklch(0.97 0 ${m.primary.h})`,
+      "--ring": ok(m.ring || m.primary),
+      "--border": rel(m.borderLDelta ?? (dark ? 0.2 : -0.05)),
+      "--input": rel(m.inputLDelta ?? (dark ? 0.05 : -0.05)),
+      "--secondary": `color-mix(in srgb, ${fg} ${dark ? 10 : 5}%, transparent)`,
+      "--secondary-fg": `color-mix(in srgb, ${fg} 65%, transparent)`,
+      "--error": err,
+      "--error-fg": dark ? err : "oklch(0.6 0.22 16.339)",
+      "--error-bg": `color-mix(in srgb, ${err} ${dark ? 14 : 7}%, ${card})`,
+    };
+    const root = document.documentElement;
+    for (const [k, val] of Object.entries(v)) root.style.setProperty(k, val);
+    root.style.colorScheme = dark ? "dark" : "light";
+  }
+  themeSel.addEventListener("change", applyPalette);
+  palSel.addEventListener("change", applyPalette);
+  mq.addEventListener("change", applyPalette);
+  applyPalette();
+  render();
+</script>
+</body>
+</html>

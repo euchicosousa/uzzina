@@ -6,7 +6,7 @@ O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso pa
 
 ## Pendências reais
 
-- **Publicação (push) dos commits locais** na `main`: nada do DS05, DS11, DS12, DS13, DS14, DS15 e DS16 está publicado. Antes de qualquer push que toque `api/`, `server/` ou `package.json`, rodar `bun run test:serverless`. Depois do push, confirmar que a nova versão ficou Ready na Vercel.
+- **Publicação (push) dos commits locais** na `main`: nada do DS05, DS11, DS12, DS13, DS14, DS15, DS16 e do ajuste de botão do DS18 (`a00ef0e`) está publicado. Antes de qualquer push que toque `api/`, `server/` ou `package.json`, rodar `bun run test:serverless`. Depois do push, confirmar que a nova versão ficou Ready na Vercel.
 - **Sombra colorida da paleta (DS14):** encerrada com aceite do proprietário em 12/11; falta só publicar (a migração `20261112120000` já está aplicada em produção).
 - **Não verificado ainda:** aparência no navegador dos botões do Admin (Novo Usuário, Novo Cliente, Novo Parceiro) e comportamento dos menus Visualizar/Ordenar/Exibir com leitor de tela.
 
@@ -29,6 +29,10 @@ O [ticket de sombra do tema](../../.scratch/design-system-audit/issues/14-global
 ### DS17: cor viva da fase implementada, aguardando aceite — 13/11
 
 "Cor da fase" agora tem Desligada / Suave / Viva (menu Visualizar e menu do Hoje, estado de tela) e a Viva usa a nova utility `phase-vivid`; Minha Conta → Aparência ganhou "Cor viva no escuro" e "Texto na cor viva" (`vividDarkTone`, `vividTextTone`). Nada commitado. Migração `supabase/migrations/20261113120000_vivid_phase_preferences.sql` escrita e **não aplicada**: sem ela salvar as duas preferências falha no banco. Verificado: tsc, os cinco testes ajustados por arquivo e a utility em `/ui` com cartões de teste (claro, escuro, atenuada, texto claro, paleta plana); Hoje e Minha Conta não foram vistos no navegador (sessão sem login). Pendente: aceite visual do proprietário, aplicar a migração em produção com autorização, push. Detalhe no ticket [DS17](../../.scratch/design-system-audit/issues/17-vivid-phase-color-cards.md).
+
+### DS18: estudo dos grupos entregue — 13/11
+
+[Relatório](2026-11-13-ds18-groups-study.md) e [prévia antes/depois](../../.scratch/design-system-audit/comparativo-ds18-grupos.html), sem alteração no app. Origem da borda: no grupo, cada botão fica 1px por cima do vizinho; com o secundário translúcido (fundo e borda a 5%/10%), a sobreposição soma e vira uma linha escura. A gaveta escondia isso com separadores `bg-background`, mas a janela "Ver estratégias" e o período do calendário da Home mostram a linha. O InputGroup não tem sobreposição e serve de base para Select e Combobox. Os três grupos aprovados e implementados em 13/11, commit `4cf3dea` (sem push): variantes do toggle vêm do `PrismButton` (fonte única; secondary selecionado = botão primário); puxão de 1px só onde a borda é opaca (default e outline no grupo de botões, outline no de toggles); `attached={false}` dá 1px de respiro no default/secondary do grupo de botões e 4px no grupo de toggles; toggle ghost sempre separado por 4px; `spacing` removido; InputGroup só limpo. Gaveta usa `attached={false}` sem separadores. Ajuste de botão anterior em `a00ef0e`. Typecheck ok, lint ok nos arquivos tocados (restam 3 avisos antigos do DS17 em `profile.tsx`), build ok com as regras no CSS. Não conferido no navegador: o painel recusou o servidor local; proprietário autorizou o commit após conferir. Durante a verificação, um `git stash` acidental foi desfeito na hora com `git stash pop`, sem perda. [Relatório](2026-11-13-ds18-groups-study.md)
 
 ### DS18 aberto e commit do botão secundário — 13/11
 
