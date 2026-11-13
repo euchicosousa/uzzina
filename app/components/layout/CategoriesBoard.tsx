@@ -2,7 +2,12 @@ import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
 import type { Action } from "~/types";
 import { useAppContext } from "~/contexts/AppContext";
-import { CATEGORIES, type CATEGORY_TYPE, type ORDER_BY } from "~/lib/CONSTANTS";
+import {
+  CATEGORIES,
+  type CATEGORY_TYPE,
+  type ORDER_BY,
+  type PhaseColorMode,
+} from "~/lib/CONSTANTS";
 import { createActionDraft, UIcons } from "~/utils";
 import { ActionContainer } from "../features/ActionContainer";
 import { PrismBadge, PrismButton } from "../prism";
@@ -15,12 +20,12 @@ export function CategoriesBoard({
   actions,
   orderBy,
   ascending: _ascending,
-  showPhaseColor = false,
+  showPhaseColor = "off",
 }: {
   actions: Action[];
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending?: boolean;
-  showPhaseColor?: boolean;
+  showPhaseColor?: PhaseColorMode;
 }) {
   // Filtra apenas as categorias que estão presentes nas ações atuais
   const activeCategories = useMemo(() => {
@@ -59,7 +64,7 @@ function CategoryColumn({
   actions: Action[];
   orderBy?: (typeof ORDER_BY)[keyof typeof ORDER_BY];
   ascending?: boolean;
-  showPhaseColor: boolean;
+  showPhaseColor: PhaseColorMode;
 }) {
   const { person, setPrimaryAction } = useAppContext();
   return (

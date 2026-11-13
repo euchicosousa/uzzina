@@ -41,7 +41,7 @@ export function UPhaseIcon({
     return (
       <div
         key={phase.color}
-        className="size-2 shrink-0 animate-pop rounded-full"
+        className="phase-dot size-2 shrink-0 animate-pop rounded-full"
         style={{
           backgroundColor: phase.color,
         }}
@@ -52,7 +52,7 @@ export function UPhaseIcon({
     return (
       <div
         className={cn(
-          "grid aspect-square shrink-0 place-content-center rounded-full",
+          "phase-check grid aspect-square shrink-0 place-content-center rounded-full",
           sizeClasses,
           "animate-pop",
         )}
@@ -61,7 +61,10 @@ export function UPhaseIcon({
         }}
       >
         <CheckIcon
-          className={cn(sizeClasses, "shrink-0 scale-70 text-white")}
+          className={cn(
+            sizeClasses,
+            "phase-check-icon shrink-0 scale-70 text-white",
+          )}
         />
       </div>
     );
@@ -79,7 +82,7 @@ export function UPhaseIcon({
       </svg>
       {/* Progress circle */}
       <svg
-        className="size-full -rotate-90 stroke-2 transition-all duration-500"
+        className="phase-ring size-full -rotate-90 stroke-2 transition-all duration-500"
         style={{
           color: phase.color,
         }}

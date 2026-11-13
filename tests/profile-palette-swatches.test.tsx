@@ -181,7 +181,10 @@ it("shows an unsaved changes indicator on modified tabs and explains the shared 
 
   // Navigate to Appearance and change theme -> appearance tab becomes dirty
   await user.click(appearance);
-  const darkRadio = screen.getByRole("radio", { name: "Escuro" });
+  // "Escuro" also names a choice of "Texto na cor viva", so scope to the theme group.
+  const darkRadio = within(
+    screen.getByRole("radiogroup", { name: "Tema do App" }),
+  ).getByRole("radio", { name: "Escuro" });
   await user.click(darkRadio);
   expect(appearance.getAttribute("data-dirty")).toBe("true");
   expect(

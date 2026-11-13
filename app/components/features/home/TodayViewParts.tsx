@@ -14,12 +14,18 @@ import { CategoriesBoard } from "~/components/layout/CategoriesBoard";
 import KanbanPhasesBoard from "~/components/layout/KanbanPhasesBoard";
 import { PartnersBoard } from "~/components/layout/PartnersBoard";
 import {
-  PrismToggle,
+  PrismButton,
+  PrismMenu,
+  PrismMenuContent,
+  PrismMenuGroup,
+  PrismMenuItem,
+  PrismMenuLabel,
+  PrismMenuTrigger,
   PrismToggleGroup,
   PrismToggleGroupItem,
   PrismTooltip,
 } from "~/components/prism";
-import { VARIANT } from "~/lib/CONSTANTS";
+import { VARIANT, type PhaseColorMode } from "~/lib/CONSTANTS";
 import type { Action } from "~/types";
 import { isInstagramFeed } from "~/utils";
 import { parseU } from "~/utils/date";
@@ -131,23 +137,62 @@ function viewHasPhaseColor(view: TodayViewMode) {
   return view === "partners" || view === "categories";
 }
 
-/** Today block's only display option, so a toggle instead of a menu. */
+const PHASE_COLOR_LABELS: Record<PhaseColorMode, string> = {
+  off: "Desligada",
+  soft: "Suave",
+  vivid: "Viva",
+};
+
+function isPhaseColorMode(value: unknown): value is PhaseColorMode {
+  return value === "off" || value === "soft" || value === "vivid";
+}
+
+/**
+ * Today block's only display option: a small menu with the three phase color
+ * choices (screen state, not saved). The trigger name carries the current
+ * choice, since an icon-only button cannot show it.
+ */
 export function useTodayPhaseColor(view: TodayViewMode) {
-  const [isOn, setIsOn] = useState(false);
+  const [mode, setMode] = useState<PhaseColorMode>("off");
   const isAvailable = viewHasPhaseColor(view);
   return {
-    showPhaseColor: isAvailable && isOn,
+    showPhaseColor: isAvailable ? mode : "off",
     phaseColorToggle: isAvailable ? (
-      <PrismTooltip label="Cor da fase">
-        <PrismToggle
-          aria-label="Cor da fase"
-          isSelected={isOn}
-          onChange={setIsOn}
-          size="sm"
-        >
-          <PaletteIcon />
-        </PrismToggle>
-      </PrismTooltip>
+      <PrismMenu>
+        <PrismMenuTrigger>
+          <PrismTooltip label="Cor da fase">
+            <PrismButton
+              aria-label={`Cor da fase: ${PHASE_COLOR_LABELS[mode]}`}
+              size="icon-sm"
+              variant={mode === "off" ? "ghost" : "secondary"}
+            >
+              <PaletteIcon />
+            </PrismButton>
+          </PrismTooltip>
+        </PrismMenuTrigger>
+        <PrismMenuContent className="w-48">
+          <PrismMenuGroup
+            aria-label="Cor da fase"
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0];
+              if (isPhaseColorMode(selected)) setMode(selected);
+            }}
+            selectedKeys={new Set([mode])}
+            selectionMode="single"
+          >
+            <PrismMenuLabel>Cor da fase</PrismMenuLabel>
+            <PrismMenuItem id="off" textValue="Desligada">
+              Desligada
+            </PrismMenuItem>
+            <PrismMenuItem id="soft" textValue="Suave">
+              Suave
+            </PrismMenuItem>
+            <PrismMenuItem id="vivid" textValue="Viva">
+              Viva
+            </PrismMenuItem>
+          </PrismMenuGroup>
+        </PrismMenuContent>
+      </PrismMenu>
     ) : null,
   };
 }
@@ -159,7 +204,7 @@ export function TodayBoard({
   currentDay,
   fillHeight = false,
   showFeedTitle = true,
-  showPhaseColor = false,
+  showPhaseColor = "off",
 }: {
   view: TodayViewMode;
   actions: Action[];
@@ -167,8 +212,8 @@ export function TodayBoard({
   currentDay: Date;
   fillHeight?: boolean;
   showFeedTitle?: boolean;
-  /** Tints Partners and Categories cards by phase; Kanban and Feed ignore it. */
-  showPhaseColor?: boolean;
+  /** Phase color of Partners and Categories cards; Kanban and Feed ignore it. */
+  showPhaseColor?: PhaseColorMode;
 }) {
   if (view === "kanban")
     return <KanbanPhasesBoard actions={actions} fillHeight={fillHeight} />;

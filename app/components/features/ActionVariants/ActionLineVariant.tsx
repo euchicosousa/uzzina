@@ -78,7 +78,7 @@ export function ActionLineVariant({
         )}
         {showCategory && (
           <UIcons
-            className="size-4"
+            className="vivid-ink size-4"
             color={currentCategory.color}
             slug={currentCategory.slug}
           />

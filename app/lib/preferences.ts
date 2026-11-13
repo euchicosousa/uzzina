@@ -16,6 +16,26 @@ export function isTodayViewMode(value: unknown): value is TodayViewMode {
   );
 }
 
+export type VividDarkTone = "pure" | "dim";
+export type VividTextTone = "dark" | "light";
+
+export function isVividDarkTone(value: unknown): value is VividDarkTone {
+  return value === "pure" || value === "dim";
+}
+
+export function isVividTextTone(value: unknown): value is VividTextTone {
+  return value === "dark" || value === "light";
+}
+
+/** Mirrors the vivid phase color preferences on <html> for the CSS to read. */
+export function applyVividPreferences(
+  root: HTMLElement,
+  tones: { vividDarkTone: VividDarkTone; vividTextTone: VividTextTone },
+) {
+  root.dataset.vividDark = tones.vividDarkTone;
+  root.dataset.vividText = tones.vividTextTone;
+}
+
 export type CustomThemeColors = {
   primaryHex: string;
   primaryFgHex: string;
@@ -67,6 +87,10 @@ export type UserPreferences = {
   defaultViewVariant: "line" | "block" | "content";
   defaultTodayView: TodayViewMode;
   showInstagramSidebar: boolean;
+  /** Dark mode fill of the "Viva" phase color: full phase color or dimmed. */
+  vividDarkTone: VividDarkTone;
+  /** Text tone on the "Viva" phase color. */
+  vividTextTone: VividTextTone;
   customTheme: CustomTheme | null;
   defaultStrategyModel?: ActionAIModelId;
   defaultContentModel?: ActionAIModelId;
@@ -82,6 +106,8 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   defaultViewVariant: "line",
   defaultTodayView: "partners",
   showInstagramSidebar: true,
+  vividDarkTone: "pure",
+  vividTextTone: "dark",
   customTheme: null,
   strategyModels: [...DEFAULT_TASK_AI_MODELS],
   contentModels: [...DEFAULT_TASK_AI_MODELS],
@@ -97,6 +123,8 @@ export type SerializedPreferences = {
   defaultViewVariant?: string;
   defaultTodayView?: unknown;
   showInstagramSidebar?: boolean;
+  vividDarkTone?: unknown;
+  vividTextTone?: unknown;
   defaultStrategyModel?: unknown;
   defaultContentModel?: unknown;
   defaultCaptionModel?: unknown;
@@ -228,6 +256,12 @@ export function getUserPreferences(person?: {
       typeof prefs.showInstagramSidebar === "boolean"
         ? prefs.showInstagramSidebar
         : DEFAULT_PREFERENCES.showInstagramSidebar,
+    vividDarkTone: isVividDarkTone(prefs.vividDarkTone)
+      ? prefs.vividDarkTone
+      : DEFAULT_PREFERENCES.vividDarkTone,
+    vividTextTone: isVividTextTone(prefs.vividTextTone)
+      ? prefs.vividTextTone
+      : DEFAULT_PREFERENCES.vividTextTone,
     strategyModels,
     contentModels,
     captionModels,

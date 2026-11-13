@@ -3,7 +3,7 @@ import { isToday } from "date-fns";
 import { PlusIcon } from "lucide-react";
 import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
-import { DATE_TIME_DISPLAY, SIZE } from "~/lib/CONSTANTS";
+import { DATE_TIME_DISPLAY, SIZE, type PhaseColorMode } from "~/lib/CONSTANTS";
 import { createActionDraft } from "~/utils";
 import { useAppContext } from "~/contexts/AppContext";
 import { ActionContainer } from "../features/ActionContainer";
@@ -14,12 +14,12 @@ export function PartnersBoard({
   actions,
   isLoading,
   currentDay,
-  showPhaseColor = false,
+  showPhaseColor = "off",
 }: {
   actions: Action[];
   isLoading?: boolean;
   currentDay: Date;
-  showPhaseColor?: boolean;
+  showPhaseColor?: PhaseColorMode;
 }) {
   const { partners } = useAppContext();
 
@@ -68,7 +68,7 @@ function PartnerColumn({
   partner: Partner;
   actions: Action[];
   currentDay: Date;
-  showPhaseColor: boolean;
+  showPhaseColor: PhaseColorMode;
 }) {
   const { person, setPrimaryAction } = useAppContext();
   return (

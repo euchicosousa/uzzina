@@ -144,6 +144,24 @@ describe("ViewOptionsComponent", () => {
     expect(screen.queryAllByRole("separator")).toHaveLength(1);
   });
 
+  it("offers the phase color as three single choices", async () => {
+    const calls = mount({
+      phaseColor: "soft",
+      showOptions: { phaseColor: true },
+    });
+    await openMenu("Visualizar");
+    for (const name of ["Desligada", "Suave", "Viva"]) {
+      expect(await screen.findByRole("menuitemradio", { name })).toBeTruthy();
+    }
+    expect(
+      screen
+        .getByRole("menuitemradio", { name: "Suave" })
+        .getAttribute("aria-checked"),
+    ).toBe("true");
+    await user.click(screen.getByRole("menuitemradio", { name: "Viva" }));
+    expect(calls.at(-1)?.phaseColor).toBe("vivid");
+  });
+
   it("offers columns only in the content variant", async () => {
     mount({ variant: "content" });
     await openMenu("Visualizar");

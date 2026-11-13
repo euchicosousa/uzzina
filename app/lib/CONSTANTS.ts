@@ -232,6 +232,8 @@ export const VARIANT = {
   block: "block",
   content: "content",
 } as const;
+/** "Cor da fase" on action cards: off, soft tint (DS11) or full fill (DS17). */
+export type PhaseColorMode = "off" | "soft" | "vivid";
 export const INTENT = {
   create_action: "create-action",
   update_action: "update-action",

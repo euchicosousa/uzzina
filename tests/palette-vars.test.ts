@@ -42,6 +42,10 @@ it("applies transparent borders and zero shadows that compose with rings when re
   expect(carbon.relief).toBe(false);
 
   applyPaletteVars(carbon);
+  // The vivid phase card reads this to drop its top highlight (DS17).
+  expect(
+    document.documentElement.style.getPropertyValue("--action-relief"),
+  ).toBe("0");
   const root = document.documentElement.style;
   expect(root.getPropertyValue("--action-top-border-override")).toBe(
     "transparent",

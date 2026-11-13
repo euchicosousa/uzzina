@@ -25,6 +25,7 @@ import { useIsLateAction } from "~/hooks/useIsLateAction";
 import {
   PRIORITIES,
   SIZE,
+  type PhaseColorMode,
   VARIANT,
   type DATE_TIME_DISPLAY,
   type PRIORITY,
@@ -50,8 +51,8 @@ export type ActionDisplayFlags = {
   showResponsibles?: boolean;
   /** Whether to show the priority icon indicator */
   showPriority?: boolean;
-  /** Whether to tint the card background, ring and hover shadow by its phase */
-  showPhaseColor?: boolean;
+  /** Phase color of the card: off, soft tint (DS11) or vivid fill (DS17) */
+  showPhaseColor?: PhaseColorMode;
 };
 
 /**
@@ -100,7 +101,7 @@ export function ActionItem({
     showCategory = false,
     showResponsibles = false,
     showPriority = false,
-    showPhaseColor = false,
+    showPhaseColor = "off",
   } = displayFlags;
   const { person, setPrimaryAction } = useAppContext();
   const {
@@ -182,14 +183,17 @@ export function ActionItem({
   }, [isEditing, showLate, isLate, action, person, showSprint]);
   // Late keeps its own background; an unknown legacy phase keeps the default.
   const phaseColor =
-    showPhaseColor && !(showLate && isLate) ? currentPhase?.color : undefined;
+    showPhaseColor !== "off" && !(showLate && isLate)
+      ? currentPhase?.color
+      : undefined;
   const content = (
     <div
       className={cn(
         "group/action @container relative shrink-0 cursor-pointer overflow-hidden rounded-2xl squircle",
         variantClasses,
         bgClasses,
-        phaseColor && "phase-surface",
+        phaseColor &&
+          (showPhaseColor === "vivid" ? "phase-vivid" : "phase-surface"),
         className,
         isDragging && "cursor-grabbing",
         isSelectionMode && variant !== VARIANT.content && "pl-8",
@@ -321,7 +325,7 @@ export function ActionItemDateTimeDisplay({
   dateTimeDisplay?: (typeof DATE_TIME_DISPLAY)[keyof typeof DATE_TIME_DISPLAY];
 }) {
   return (
-    <div className="text-xs whitespace-nowrap opacity-50">
+    <div className="action-date text-xs whitespace-nowrap opacity-50">
       {getFormattedDateTime(action.date, dateTimeDisplay)}
     </div>
   );
@@ -404,11 +408,11 @@ export function ActionItemResponsibles({
 export function ActionItemPriority({ priority }: { priority: PRIORITY }) {
   switch (priority) {
     case PRIORITIES.low.slug:
-      return <SignalIcon className="size-4 text-info" />;
+      return <SignalIcon className="vivid-ink size-4 text-info" />;
     case PRIORITIES.high.slug:
-      return <SignalIcon className="size-4 text-error" />;
+      return <SignalIcon className="vivid-ink size-4 text-error" />;
     default:
-      return <SignalIcon className="size-4 text-success" />;
+      return <SignalIcon className="vivid-ink size-4 text-success" />;
   }
 }
 

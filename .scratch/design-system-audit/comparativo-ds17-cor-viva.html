@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DS17 Cor viva</title>
+<style>
+  :root {
+    --page: #f4f4f5;
+    --ink: #18181b;
+    --muted: #71717a;
+    --line: #e4e4e7;
+    --primary: oklch(0.62 0.2 265);
+    --error: oklch(0.8 0.22 16.339);
+    --error-fg: oklch(0.6 0.22 16.339);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font-size: 14px; line-height: 1.45; }
+  main { max-width: 1280px; margin: 0 auto; padding: 24px 16px 80px; }
+  h1 { font-size: 28px; margin: 0 0 4px; letter-spacing: -0.02em; }
+  h2 { font-size: 19px; margin: 40px 0 6px; letter-spacing: -0.01em; }
+  h3 { font-size: 13px; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+  p.lead { color: var(--muted); max-width: 760px; margin: 0 0 12px; }
+  .controls { position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; padding: 10px 0; background: var(--page); border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+  .seg { display: inline-flex; gap: 2px; padding: 2px; border-radius: 14px; background: #e4e4e7; }
+  .seg button { border: 0; background: transparent; padding: 6px 12px; border-radius: 12px; font: inherit; font-size: 13px; cursor: pointer; color: var(--ink); }
+  .seg button[aria-pressed="true"] { background: #fff; box-shadow: 0 1px 2px #0002; font-weight: 600; }
+  .ctl-label { font-size: 12px; color: var(--muted); margin-right: 6px; }
+
+  /* Two theme panes, the app's light and dark backgrounds. */
+  .panes { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-radius: 20px; overflow: hidden; border: 1px solid var(--line); }
+  @media (max-width: 900px) { .panes { grid-template-columns: 1fr; } }
+  .pane { padding: 18px; }
+  .pane.light { --bg: oklch(0.985 0 0); --fg: oklch(0.2 0 0); --card: oklch(1 0 0); --card-h: oklch(1 0 0); --err-bg: color-mix(in srgb, var(--error) 7%, var(--card)); --err-fg: var(--error-fg); background: var(--bg); color: var(--fg); }
+  .pane.dark { --bg: oklch(0.17 0 0); --fg: oklch(0.96 0 0); --card: oklch(0.21 0 0); --card-h: oklch(0.25 0 0); --err-bg: color-mix(in srgb, oklch(0.86 0.2 16.339) 14%, var(--card)); --err-fg: oklch(0.86 0.2 16.339); background: var(--bg); color: var(--fg); }
+  .pane > .ttl { font-size: 12px; font-weight: 600; opacity: 0.6; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .col > .ttl { font-size: 12px; font-weight: 600; margin-bottom: 8px; opacity: 0.75; }
+  .stack { display: flex; flex-direction: column; gap: 6px; }
+
+  /* ---------- the action card ---------- */
+  .card {
+    --c: #888;
+    --fg-card: var(--fg);
+    --sec: color-mix(in srgb, var(--fg-card) 65%, transparent);
+    --date-op: 0.5;
+    position: relative; overflow: hidden; cursor: pointer; container-type: inline-size;
+    border-radius: 16px; corner-shape: squircle;
+    background: var(--card); color: var(--fg-card);
+    border-top: 1px solid #ffffff;
+    box-shadow: 0 0 0 1px color-mix(in srgb, #000 5%, transparent), 0 1px 2px 0 color-mix(in srgb, #000 14%, transparent);
+    transition: background-color .3s, box-shadow .3s, border-top-color .3s;
+  }
+  .dark .card { border-top-color: oklch(0.3 0 0); }
+  .card:hover, .card.f-hover { background: var(--card-h); box-shadow: 0 0 0 1px color-mix(in srgb, #000 5%, transparent), 0 10px 15px -3px #0000002e, 0 4px 6px -4px #0000002e; z-index: 2; }
+  .card.line { padding: 4px 12px; }
+  .card.block { padding: 12px 16px; }
+  .card.content { padding: 0; }
+
+  /* Soft = DS11 phase-surface */
+  .card.soft { --mix: 7%; --mix-h: 12%; --fg-card: oklch(from var(--c) 0.35 0.07 h); background: color-mix(in srgb, var(--c) var(--mix), var(--card)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--c) 30%, transparent), 0 1px 2px 0 #00000024; }
+  .dark .card.soft { --mix: 14%; --mix-h: 22%; --fg-card: oklch(from var(--c) 0.92 0.06 h); box-shadow: 0 0 0 1px color-mix(in srgb, var(--c) 55%, transparent), 0 1px 2px 0 #00000024; }
+  .card.soft:hover, .card.soft.f-hover { background: color-mix(in srgb, var(--c) var(--mix-h), var(--card-h)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--c) 30%, transparent), 0 10px 15px -3px color-mix(in srgb, oklch(from var(--c) 0.6 0.15 h) 25%, transparent), 0 4px 6px -4px color-mix(in srgb, oklch(from var(--c) 0.6 0.15 h) 25%, transparent); }
+
+  /* Vivid = full phase fill, black text */
+  /* Edge: a slightly deeper tone of the phase instead of a gray ring (owner, 13/11). */
+  /* --ink: text on the vivid fill. Owner (13/11): the dark phase-tinted ink used by Suave in light mode, not pure black. */
+  .card.vivid { --fill: var(--c); --bgc: var(--fill); --ink: oklch(from var(--c) 0.35 0.07 h); --hover-dl: 0.04; --fg-card: var(--ink); --edge: oklch(from var(--fill) calc(l - 0.06) c h); --top-light: 45%; background: var(--bgc); border-top-color: color-mix(in srgb, #fff var(--top-light), var(--bgc)); box-shadow: 0 0 0 1px var(--edge), 0 1px 2px 0 #00000024; }
+  /* Preference "Texto na cor viva: Claro" (owner, 13/11): almost-white phase tint; hover then darkens instead of lightening. */
+  body.ink-light .card.vivid { --ink: oklch(from var(--c) 0.98 0.025 h); --hover-dl: -0.04; }
+  /* Dark: deeper edge; top highlight halfway between soft (10%) and strong (45%), tunable by the slider. */
+  .dark .card.vivid { --edge: oklch(from var(--fill) calc(l - 0.14) c h); --top-light: var(--dark-top, 25%); }
+  /* Flat palettes (Carbono, Cobalto): no top highlight, transparent so it never lags behind the hover. */
+  body.flat .card { border-top-color: transparent !important; }
+  .card.vivid:hover, .card.vivid.f-hover { --bgc: oklch(from var(--fill) calc(l + var(--hover-dl)) c h); background: var(--bgc); box-shadow: 0 0 0 1px var(--edge), 0 10px 15px -3px color-mix(in srgb, oklch(from var(--c) 0.55 0.16 h) 40%, transparent), 0 4px 6px -4px color-mix(in srgb, oklch(from var(--c) 0.55 0.16 h) 40%, transparent); }
+  body.dim-dark .dark .card.vivid { --fill: oklch(from var(--c) 0.72 calc(c * 0.8) h); }
+  /* Adjusted vivid: secondary text and date at 85% black, icons go monochrome. */
+  body.adjust .card.vivid { --sec: color-mix(in srgb, var(--ink) 85%, transparent); --date-op: 0.85; }
+  body.adjust .card.vivid .mono-able { color: var(--ink) !important; }
+  body.adjust .card.vivid .dot { background: transparent !important; box-shadow: inset 0 0 0 2px var(--ink); }
+  body.adjust .card.vivid .ring-ico circle.prog { stroke: var(--ink); }
+  body.adjust .card.vivid .ring-ico circle.bgc { stroke: var(--ink); opacity: .25; }
+  body.adjust .card.vivid .check-ico { background: var(--ink) !important; }
+
+  /* Late wins over any phase color, as today */
+  .card.late { background: var(--err-bg) !important; color: var(--err-fg) !important; --fg-card: var(--err-fg); --sec: color-mix(in srgb, var(--err-fg) 65%, transparent); box-shadow: 0 0 0 1px var(--error-fg), 0 1px 2px 0 color-mix(in srgb, var(--error-fg) 25%, transparent) !important; border-top-color: transparent; }
+  .card.sprint { box-shadow: 0 0 0 2px var(--primary), 0 1px 2px 0 #00000024 !important; }
+  .card.late.sprint { box-shadow: 0 0 0 2px var(--error-fg) !important; }
+  .card.selected { box-shadow: 0 0 0 2px var(--primary) !important; }
+  .card.f-focus, .card:focus-visible { outline: 2px solid var(--primary); outline-offset: 0; }
+  .card.selmode { padding-left: 32px; }
+  .selbox { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 5px; border: 1.5px solid color-mix(in srgb, var(--fg-card) 50%, transparent); background: var(--bg); display: grid; place-items: center; }
+  .selected .selbox { background: var(--primary); border-color: var(--primary); }
+  .selected .selbox::after { content: ""; width: 8px; height: 4px; border: 2px solid #fff; border-top: 0; border-right: 0; transform: rotate(-45deg) translate(1px,-1px); }
+  .dragging { transform: rotate(2deg) scale(1.02); box-shadow: 0 20px 30px -8px #0005 !important; cursor: grabbing; }
+
+  .row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .title { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; padding: 4px 0; }
+  .block .title { white-space: normal; font-size: 22px; line-height: 1.15; font-weight: 500; padding: 0 0 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 99px; flex: none; }
+  .ico { width: 16px; height: 16px; flex: none; }
+  .avs { display: flex; }
+  .av { width: 20px; height: 20px; border-radius: 99px; display: grid; place-items: center; font-size: 8px; font-weight: 700; box-shadow: 0 0 0 1.5px var(--card); margin-left: -4px; }
+  .av:first-child { margin-left: 0; }
+  .date { font-size: 12px; white-space: nowrap; opacity: var(--date-op); display: flex; gap: 6px; align-items: center; }
+  .meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .sec { color: var(--sec); font-size: 12px; }
+  .ring-ico circle { fill: none; stroke-width: 2; }
+  .check-ico { width: 16px; height: 16px; border-radius: 99px; display: grid; place-items: center; flex: none; }
+  .cover { aspect-ratio: 4/5; display: grid; place-items: center; text-align: center; padding: 16px; font-weight: 700; font-size: 15px; line-height: 1.1; border-radius: 16px; }
+  .content .head { padding: 8px; display: flex; gap: 8px; align-items: center; font-size: 12px; font-weight: 500; }
+
+  /* calendar density */
+  .month { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0; border-radius: 16px; overflow: hidden; }
+  .day { min-height: 128px; padding: 6px; border-right: 1px solid color-mix(in srgb, var(--fg) 8%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--fg) 8%, transparent); display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .day .n { font-size: 11px; opacity: .5; padding: 0 2px; }
+  .day .card.line { padding: 1px 8px; }
+  .day .title { font-size: 12px; padding: 2px 0; }
+  .day .av, .day .avs, .day .prio, .day .cat { display: none; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 13px; background: #fff; border-radius: 14px; overflow: hidden; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .ok { color: oklch(0.5 0.15 150); font-weight: 600; }
+  .bad { color: oklch(0.55 0.2 25); font-weight: 600; }
+  .sw { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 6px; }
+  .note { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; max-width: 900px; }
+  .note li { margin: 4px 0; }
+  .scroll { overflow-x: auto; }
+</style>
+</head>
+<body class="adjust">
+<main>
+  <h1>DS17: cor viva da fase nos cartões</h1>
+  <p class="lead">Bancada de estudo com dados fictícios. Nada do app foi alterado. Os cartões reproduzem o desenho real da ação (Linha, Bloco e Conteúdo) em três aparências: <b>Padrão</b> (sem cor), <b>Suave</b> (a cor da fase de hoje, DS11) e <b>Viva</b> (fundo cheio da fase com texto escuro no tom da fase, a mesma cor do texto da Suave no claro). O painel da esquerda é o tema claro e o da direita, o escuro. Passe o mouse sobre os cartões para ver o hover.</p>
+
+  <div class="controls">
+    <span class="prefs"><span class="ctl-label"><b>Minha Conta → Aparência</b> (simulação)</span></span>
+    <span><span class="ctl-label">Cor viva no escuro</span><span class="seg" id="seg-dim">
+      <button data-v="pure" aria-pressed="true">Pura</button>
+      <button data-v="dim" aria-pressed="false">Atenuada</button>
+    </span></span>
+    <span><span class="ctl-label">Texto na cor viva</span><span class="seg" id="seg-ink">
+      <button data-v="dark" aria-pressed="true">Escuro</button>
+      <button data-v="light" aria-pressed="false">Claro</button>
+    </span></span>
+    <span><span class="ctl-label">Paleta</span><span class="seg" id="seg-flat">
+      <button data-v="relief" aria-pressed="true">Com relevo (Ônix e outras 8)</button>
+      <button data-v="flat" aria-pressed="false">Sem relevo (Carbono, Cobalto)</button>
+    </span></span>
+    <span><label class="ctl-label" for="dark-top">Brilho de cima no escuro: <b id="dark-top-v">25%</b> (claro fixo em 45%)</label>
+      <input id="dark-top" type="range" min="10" max="45" step="1" value="25" /></span>
+  </div>
+
+  <h2>1. As seis fases nas três aparências (Linha)</h2>
+  <p class="lead">Com ajustes, a bolinha da fase vira um anel, a prioridade e a categoria ficam na cor escura da fase, e a data e o texto secundário sobem de 50% e 65% para 85% dessa cor. Esse ajuste de leitura agora é fixo na cor viva. Com "Texto na cor viva: Claro", tudo isso passa para o tom claro da fase.</p>
+  <div class="panes" id="sec-line"></div>
+
+  <h2>2. Bloco e Conteúdo</h2>
+  <p class="lead">No Conteúdo, a capa mantém a cor própria da ação; só a moldura e o cabeçalho recebem a cor da fase.</p>
+  <div class="panes" id="sec-block"></div>
+
+  <h2>3. Sinais sobre a cor viva</h2>
+  <p class="lead">Atrasada (o vermelho continua vencendo a cor da fase), Sprint (anel de 2px na cor primária), seleção (caixa à esquerda e anel primário), foco por teclado (contorno primário), hover forçado e arraste. Compare com as mesmas situações na aparência Suave.</p>
+  <div class="panes" id="sec-signals"></div>
+
+  <h2>4. Densidade: um mês cheio</h2>
+  <p class="lead">Calendário do parceiro no modo Linha, cerca de 40 ações. Troque a aparência para sentir o peso da tela.</p>
+  <div class="controls" style="position: static; border: 0; padding: 0 0 10px;">
+    <span><span class="ctl-label">Aparência do mês</span><span class="seg" id="seg-month">
+      <button data-v="plain" aria-pressed="false">Padrão</button>
+      <button data-v="soft" aria-pressed="false">Suave</button>
+      <button data-v="vivid" aria-pressed="true">Viva</button>
+    </span></span>
+  </div>
+  <div class="panes" id="sec-month"></div>
+
+  <h2>5. Contraste medido (WCAG)</h2>
+  <p class="lead">Contraste sobre o fundo cheio de cada fase. Título pede 4,5:1 (texto normal). O texto secundário do app usa 65% da cor do texto e a data usa 50% de opacidade; a coluna "85%" é o ajuste proposto. A última coluna mostra o alfa mínimo de preto para atingir 4,5:1.</p>
+  <div class="scroll"><table id="contrast"></table></div>
+
+  <h2>6. Leitura do estudo</h2>
+  <div class="note">
+    <ul>
+      <li><b>Texto preto passa nas seis cores</b> para o título (o menor é Análise, roxo, com 5,3:1). Texto branco reprova em todas.</li>
+      <li><b>Texto secundário e data não passam</b> como estão hoje (65% e 50%). Precisam de 85% de preto na cor viva (Análise exige no mínimo 81%).</li>
+      <li><b>Bolinha e ícone da fase somem</b> no próprio fundo (contraste 1:1). Na cor viva eles passam a ser desenhados em preto, ou saem, já que o fundo já diz a fase.</li>
+      <li><b>Ícones coloridos</b> (prioridade em azul/vermelho/verde e categoria na cor dela) brigam com o fundo: categoria magenta sobre Fazendo e prioridade verde sobre Concluído quase desaparecem. Na cor viva, ficam pretos.</li>
+      <li><b>Atrasada</b> continua com o fundo vermelho claro e o anel vermelho. Num mar de cartões vivos ela fica mais clara que os vizinhos, o que destaca, mas pode parecer "desligada"; vale olhar no mês.</li>
+      <li><b>Sprint e seleção</b> usam o mesmo anel primário de hoje; sobre fundo cheio o anel aparece bem nas seis cores.</li>
+      <li><b>Escuro:</b> a cor pura sobre o fundo escuro do app brilha bastante. A opção "Atenuada" baixa a luminosidade (contraste do preto continua acima de 6:1).</li>
+    </ul>
+  </div>
+</main>
+
+<script>
+const PHASES = [
+  { slug: "idea", title: "Ideia", color: "#fbbf24", order: 1 },
+  { slug: "do", title: "Fazer", color: "#f97316", order: 2 },
+  { slug: "doing", title: "Fazendo", color: "#ec4899", order: 3 },
+  { slug: "review", title: "Análise", color: "#a855f7", order: 4 },
+  { slug: "done", title: "Feito", color: "#38bdf8", order: 5 },
+  { slug: "finished", title: "Concluído", color: "#4ade80", order: 6 },
+];
+const CATS = [
+  { title: "Carrossel", color: "#ff0071", glyph: "▦" },
+  { title: "Tráfego Pago", color: "#0099ff", glyph: "◎" },
+  { title: "Gravação", color: "#00ffc4", glyph: "●" },
+  { title: "Design", color: "#ff0080", glyph: "◆" },
+  { title: "Reels", color: "#aa00ff", glyph: "▶" },
+  { title: "Post", color: "#46b95d", glyph: "■" },
+];
+const PRIO = [ { c: "var(--info, #3b82f6)", t: "baixa" }, { c: "#22c55e", t: "média" }, { c: "#ef4444", t: "alta" } ];
+const TITLES = ["Carrossel do lançamento de verão", "Reels bastidores da gravação", "Campanha de tráfego Black Friday", "Post depoimento de cliente", "Arte para stories da semana", "Roteiro do vídeo institucional"];
+const PARTNERS = [ ["#1e3a8a", "#fff", "LU"], ["#fde047", "#000", "DG"], ["#065f46", "#fff", "EX"] ];
+const MODES = [ ["plain", "Padrão"], ["soft", "Suave"], ["vivid", "Viva"] ];
+
+const phaseIcon = (p, size = 16) => {
+  if (p.slug === "finished") return `<span class="check-ico" style="background:${p.color}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><path d="M5 12l5 5 9-10"/></svg></span>`;
+  return `<svg class="ring-ico" width="${size}" height="${size}" viewBox="0 0 20 20" style="transform:rotate(-90deg)"><circle class="bgc" cx="10" cy="10" r="8" stroke="currentColor" opacity=".1"/><circle class="prog" cx="10" cy="10" r="8" stroke="${p.color}" stroke-dasharray="${Math.floor(p.order * 8.37)},51"/></svg>`;
+};
+const prioIcon = (i) => `<svg class="ico prio mono-able" style="color:${PRIO[i].c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M2 20h.01M7 20v-4M12 20v-8M17 20V8M22 4v16"/></svg>`;
+const catIcon = (c) => `<span class="ico cat mono-able" style="color:${c.color};font-size:13px;line-height:16px;text-align:center" title="${c.title}">${c.glyph}</span>`;
+const sprintIcon = () => `<svg class="ico mono-able" style="color:currentColor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>`;
+const lateIcon = () => `<svg class="ico" style="color:var(--err-fg)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>`;
+const avatars = (n = 2) => `<span class="avs">${PARTNERS.slice(0, n).map(([b, f, t]) => `<span class="av" style="background:${b};color:${f}">${t}</span>`).join("")}</span>`;
+
+function card({ mode, variant = "line", p, i = 0, cls = "", late = false, sprint = false, sel = null }) {
+  const c = CATS[i % CATS.length];
+  const t = TITLES[i % TITLES.length];
+  const m = late ? "" : mode === "plain" ? "" : mode;
+  const classes = ["card", variant, m, late && "late", sprint && "sprint", sel !== null && "selmode", sel && "selected", cls].filter(Boolean).join(" ");
+  const style = `--c:${p.color}`;
+  const selbox = sel !== null && variant !== "content" ? `<span class="selbox"></span>` : "";
+  if (variant === "line") {
+    const lead = late ? lateIcon() : `<span class="dot" style="background:${p.color}"></span>`;
+    return `<div class="${classes}" style="${style}" tabindex="0">${selbox}<div class="row">${lead}${sprint ? sprintIcon() : ""}<span class="title">${t}</span>${avatars(1)}${prioIcon(i % 3)}${catIcon(c)}</div></div>`;
+  }
+  if (variant === "block") {
+    return `<div class="${classes}" style="${style}" tabindex="0">${selbox}<div class="title">${t}</div><div class="meta"><div class="row">${sprint ? sprintIcon() : ""}${avatars(2)}${catIcon(c)}<span class="mono-able" style="display:contents">${phaseIcon(p)}</span>${prioIcon(i % 3)}</div><div class="date"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><b style="font-weight:500">14 nov, 10h</b></div></div><div class="sec" style="margin-top:6px">${c.title} · ${p.title}</div></div>`;
+  }
+  const coverColors = ["#111827", "#fef3c7", "#7c3aed", "#0ea5e9"];
+  const cc = coverColors[i % coverColors.length];
+  const fc = cc === "#fef3c7" ? "#111" : "#fff";
+  return `<div class="${classes}" style="${style}" tabindex="0"><div class="head">${avatars(1)}<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Luma Estética</span>${phaseIcon(p)}</div><div class="cover" style="background:${cc};color:${fc}">${t}</div></div>`;
+}
+
+function panes(render) {
+  return ["light", "dark"].map((th) => `<div class="pane ${th}"><div class="ttl">${th === "light" ? "Claro" : "Escuro"}</div>${render(th)}</div>`).join("");
+}
+
+function renderLine() {
+  document.getElementById("sec-line").innerHTML = panes(() => `<div class="grid3">${MODES.map(([m, label]) => `<div class="col"><div class="ttl">${label}</div><div class="stack">${PHASES.map((p, i) => card({ mode: m, p, i })).join("")}</div></div>`).join("")}</div>`);
+}
+function renderBlock() {
+  document.getElementById("sec-block").innerHTML = panes(() => `<div class="grid3">${MODES.map(([m, label]) => `<div class="col"><div class="ttl">${label}</div><div class="stack">${card({ mode: m, variant: "block", p: PHASES[1], i: 0 })}${card({ mode: m, variant: "block", p: PHASES[3], i: 3 })}${card({ mode: m, variant: "content", p: PHASES[4], i: 2 })}</div></div>`).join("")}</div>`);
+}
+function renderSignals() {
+  const rows = [
+    ["Normal", {}],
+    ["Atrasada", { late: true }],
+    ["Sprint", { sprint: true }],
+    ["Atrasada + Sprint", { late: true, sprint: true }],
+    ["Seleção: não marcada", { sel: false }],
+    ["Seleção: marcada", { sel: true }],
+    ["Foco por teclado", { cls: "f-focus" }],
+    ["Hover", { cls: "f-hover" }],
+    ["Arrastando", { cls: "dragging" }],
+  ];
+  document.getElementById("sec-signals").innerHTML = panes(() => `<div class="grid3">${MODES.slice(1).concat([["vivid2", "Viva (outra fase)"]]).map(([m, label], k) => `<div class="col"><div class="ttl">${label}</div><div class="stack">${rows.map(([lbl, o]) => `<div><div class="sec" style="color:inherit;opacity:.55;margin:4px 2px 2px">${lbl}</div>${card({ mode: m === "vivid2" ? "vivid" : m, p: m === "vivid2" ? PHASES[3] : PHASES[2], i: k + 1, ...o })}</div>`).join("")}</div></div>`).join("")}</div>`);
+}
+let monthMode = "vivid";
+function renderMonth() {
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+  document.getElementById("sec-month").innerHTML = panes(() => {
+    seed = 7;
+    let html = `<div class="month">`;
+    for (let d = 1; d <= 28; d++) {
+      const n = Math.floor(rnd() * 3.2);
+      let cards = "";
+      for (let k = 0; k < n; k++) {
+        const p = PHASES[d < 10 ? 5 - Math.floor(rnd() * 2) : d < 18 ? Math.floor(rnd() * 6) : Math.floor(rnd() * 3)];
+        cards += card({ mode: monthMode, p, i: Math.floor(rnd() * 6), late: d < 10 && rnd() < 0.15, sprint: rnd() < 0.08 });
+      }
+      html += `<div class="day"><span class="n">${d}</span>${cards}</div>`;
+    }
+    return html + `</div>`;
+  });
+}
+
+// contrast table
+const hex2rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+const lin = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+const lum = (c) => { const [r, g, b] = c.map(lin); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+const mix = (f, b, a) => f.map((v, i) => v * a + b[i] * (1 - a));
+function toRgb(css) {
+  const el = document.createElement("div"); el.style.color = css; document.body.appendChild(el);
+  const v = getComputedStyle(el).color; el.remove();
+  const ctx = document.createElement("canvas").getContext("2d"); ctx.fillStyle = v; ctx.fillRect(0, 0, 1, 1);
+  const d = ctx.getImageData(0, 0, 1, 1).data; return [d[0] / 255, d[1] / 255, d[2] / 255];
+}
+function renderContrast() {
+  const K = [0, 0, 0], W = [1, 1, 1];
+  const cell = (r, min = 4.5) => `<td class="${r >= min ? "ok" : "bad"}">${r.toFixed(2).replace(".", ",")}:1</td>`;
+  let h = `<tr><th>Fase</th><th>Título preto</th><th>Secundário 65%</th><th>Data 50%</th><th>Ajuste 85%</th><th>Título branco</th><th>Texto escuro da fase</th><th>Escuro da fase 85%</th><th>Texto claro da fase</th><th>Ícone da fase (mesma cor)</th><th>Escuro atenuado, preto</th><th>Alfa mínimo do preto</th></tr>`;
+  for (const p of PHASES) {
+    const c = hex2rgb(p.color);
+    const dim = toRgb(`oklch(from ${p.color} 0.72 calc(c * 0.8) h)`);
+    let a = 1; for (let x = 1; x <= 100; x++) if (ratio(mix(K, c, x / 100), c) >= 4.5) { a = x; break; }
+    h += `<tr><td><span class="sw" style="background:${p.color}"></span>${p.title} <span style="color:var(--muted)">${p.color}</span></td>${cell(ratio(K, c))}${cell(ratio(mix(K, c, 0.65), c))}${cell(ratio(mix(K, c, 0.5), c))}${cell(ratio(mix(K, c, 0.85), c))}${cell(ratio(W, c))}${(() => { const ink = toRgb(`oklch(from ${p.color} 0.35 0.07 h)`); return cell(ratio(ink, c)) + cell(ratio(mix(ink, c, 0.85), c)); })()}${cell(ratio(toRgb(`oklch(from ${p.color} 0.98 0.025 h)`), c))}${cell(1, 3)}${cell(ratio(K, dim))}<td>${a}%</td></tr>`;
+  }
+  document.getElementById("contrast").innerHTML = h;
+}
+
+function bindSeg(id, fn) {
+  const seg = document.getElementById(id);
+  seg.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    fn(b.dataset.v);
+  });
+}
+bindSeg("seg-dim", (v) => document.body.classList.toggle("dim-dark", v === "dim"));
+bindSeg("seg-ink", (v) => document.body.classList.toggle("ink-light", v === "light"));
+bindSeg("seg-flat", (v) => document.body.classList.toggle("flat", v === "flat"));
+const darkTop = document.getElementById("dark-top");
+darkTop.addEventListener("input", () => { document.body.style.setProperty("--dark-top", darkTop.value + "%"); document.getElementById("dark-top-v").textContent = darkTop.value + "%"; });
+bindSeg("seg-month", (v) => { monthMode = v; renderMonth(); });
+
+renderLine(); renderBlock(); renderSignals(); renderMonth(); renderContrast();
+</script>
+</body>
+</html>

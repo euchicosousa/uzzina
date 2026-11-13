@@ -64,14 +64,20 @@ import { UAvatarUpload } from "~/components/uzzina/UAvatarUpload";
 import { useAppContext } from "~/contexts/AppContext";
 import { PALLETE } from "~/lib/palettes";
 import {
+  applyVividPreferences,
   getUserPreferences,
   isTodayViewMode,
+  isVividDarkTone,
+  isVividTextTone,
   type CustomTheme,
   type TodayViewMode,
+  type VividDarkTone,
+  type VividTextTone,
 } from "~/lib/preferences";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { updateMyPreferences, updateOwnProfile } from "~/models/people";
-import { CloudIcon } from "lucide-react";
+import { CloudCheckIcon, CloudIcon } from "lucide-react";
+import { PHASES } from "~/lib/CONSTANTS";
 import { CustomThemePanel } from "~/components/features/profile/CustomThemePanel";
 import {
   applyCustomThemeChange,
@@ -116,6 +122,63 @@ const PROFILE_PANEL_CLASS_NAME =
  * Decorative theme palette sample. Colors come from the same PALLETE data as the
  * header menu; without a color it renders the neutral custom-theme chip.
  */
+const VIVID_PREVIEW_PHASES = Object.values(PHASES);
+
+/**
+ * Example row of the six phases with the vivid color, shown under the vivid
+ * preference choices. Mirrors the phase-vivid formulas in tailwind.css and
+ * animates when the choice changes.
+ */
+function VividPhasePreview({
+  mode,
+  darkTone,
+  textTone,
+  sample = "name",
+}: {
+  mode: "light" | "dark";
+  /** "name" writes each phase; "type" shows "Aa", which fits narrow chips. */
+  sample?: "name" | "type";
+  darkTone: VividDarkTone;
+  textTone: VividTextTone;
+}) {
+  const isDark = mode === "dark";
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(
+        "flex flex-col gap-3 rounded-2xl border border-foreground/10 p-4 squircle",
+        isDark
+          ? "bg-[oklch(0.17_0_0)] text-[oklch(0.96_0_0)]"
+          : "bg-[oklch(0.985_0_0)] text-[oklch(0.2_0_0)]",
+      )}
+    >
+      <span className="text-sm font-semibold">
+        {isDark ? "Modo escuro" : "Modo claro"}
+      </span>
+      <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-6">
+        {VIVID_PREVIEW_PHASES.map((phase) => (
+          <span
+            key={phase.slug}
+            className="grid h-9 place-items-center truncate rounded-xl px-1 text-xs font-semibold transition-colors duration-500 squircle motion-reduce:transition-none"
+            style={{
+              backgroundColor:
+                isDark && darkTone === "dim"
+                  ? `oklch(from ${phase.color} 0.72 calc(c * 0.8) h)`
+                  : phase.color,
+              color:
+                textTone === "light"
+                  ? `oklch(from ${phase.color} 0.98 0.025 h)`
+                  : `oklch(from ${phase.color} 0.35 0.07 h)`,
+            }}
+          >
+            {sample === "type" ? "Aa" : phase.title}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function PaletteSwatch({
   color,
   isDark,
@@ -173,7 +236,9 @@ function ProfileSetting({
             (isValidElement(badge) ? badge : <PrismBadge>{badge}</PrismBadge>)}
         </div>
         {description && (
-          <span className="text-sm text-secondary-foreground">{description}</span>
+          <span className="text-sm text-secondary-foreground">
+            {description}
+          </span>
         )}
       </div>
       {children}
@@ -349,6 +414,12 @@ function ProfilePage() {
   const [showInstagramSidebar, setShowInstagramSidebar] = useState<boolean>(
     preferences.showInstagramSidebar,
   );
+  const [vividDarkTone, setVividDarkTone] = useState<VividDarkTone>(
+    preferences.vividDarkTone,
+  );
+  const [vividTextTone, setVividTextTone] = useState<VividTextTone>(
+    preferences.vividTextTone,
+  );
 
   // Values loaded at mount; the submit sends only fields changed from these.
   const initialRef = useRef({
@@ -377,6 +448,8 @@ function ProfilePage() {
   const isAppearanceDirty =
     selectedTheme !== initialRef.current.theme ||
     selectedThemeColor !== initialRef.current.themeColorIndex ||
+    vividDarkTone !== initialRef.current.vividDarkTone ||
+    vividTextTone !== initialRef.current.vividTextTone ||
     (selectedThemeColor === -1 &&
       JSON.stringify(customThemeDraft) !== initialRef.current.customThemeKey);
 
@@ -411,6 +484,7 @@ function ProfilePage() {
     behavior: isBehaviorDirty,
     ai: isAIDirty,
   };
+  const hasUnsavedChanges = Object.values(dirtyMap).some(Boolean);
 
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [authEmail, setAuthEmail] = useState<string | null>(null);
@@ -453,6 +527,33 @@ function ProfilePage() {
       previewColorIndex(idx);
     }
   };
+  // Previews the vivid phase color tones on the page; saved on submit.
+  const handleVividDarkToneChange = (value: VividDarkTone) => {
+    setVividDarkTone(value);
+    applyVividPreferences(document.documentElement, {
+      vividDarkTone: value,
+      vividTextTone,
+    });
+  };
+  const handleVividTextToneChange = (value: VividTextTone) => {
+    setVividTextTone(value);
+    applyVividPreferences(document.documentElement, {
+      vividDarkTone,
+      vividTextTone: value,
+    });
+  };
+  // Leaving the page without saving drops the preview.
+  const personRef = useRef(person);
+  personRef.current = person;
+  useEffect(
+    () => () => {
+      applyVividPreferences(
+        document.documentElement,
+        getUserPreferences(personRef.current),
+      );
+    },
+    [],
+  );
   const handleCustomThemeChange = (
     mode: ThemeMode,
     key: ThemeColorKey,
@@ -499,6 +600,8 @@ function ProfilePage() {
         ...(showInstagramSidebar !== initial.showInstagramSidebar
           ? { showInstagramSidebar }
           : {}),
+        ...(vividDarkTone !== initial.vividDarkTone ? { vividDarkTone } : {}),
+        ...(vividTextTone !== initial.vividTextTone ? { vividTextTone } : {}),
         ...(strategyModelsDraft !== undefined &&
         JSON.stringify(strategyModelsDraft) !==
           JSON.stringify(initial.strategyModels)
@@ -716,15 +819,27 @@ function ProfilePage() {
         <h1 className="p-0 text-2xl font-bold tracking-tight text-foreground">
           Minha Conta
         </h1>
+        {/* Idle and disabled while everything is saved; primary with the
+            label "Salvar alterações" once any tab has a change (the tabs keep the dot). */}
         <PrismButton
+          data-dirty={hasUnsavedChanges ? "true" : undefined}
           form="profile-form"
-          isDisabled={isSubmitting}
+          isDisabled={isSubmitting || !hasUnsavedChanges}
           type="submit"
+          variant={hasUnsavedChanges || isSubmitting ? "default" : "ghost"}
         >
           <span className="min-w-0 whitespace-normal">
-            {isSubmitting ? "Salvando..." : "Salvar Alterações"}
+            {isSubmitting
+              ? "Salvando..."
+              : hasUnsavedChanges
+                ? "Salvar alterações"
+                : "Tudo salvo"}
           </span>
-          <CloudIcon />
+          {hasUnsavedChanges || isSubmitting ? (
+            <CloudIcon />
+          ) : (
+            <CloudCheckIcon />
+          )}
         </PrismButton>
       </div>
 
@@ -964,6 +1079,89 @@ function ProfilePage() {
                 theme={customThemeDraft}
               />
             )}
+          </ProfileSetting>
+
+          <ProfileSetting
+            title="Cor viva no escuro"
+            description="Como a opção Viva de Cor da fase aparece no tema escuro: a cor da fase pura ou atenuada."
+          >
+            <div className="flex flex-col gap-4">
+              <PrismToggleGroup
+                fullWidth
+                attached
+                aria-label="Cor viva no escuro"
+                selectedKeys={[vividDarkTone]}
+                variant="outline"
+                onSelectionChange={(keys) => {
+                  const val = Array.from(keys)[0];
+                  if (isVividDarkTone(val)) handleVividDarkToneChange(val);
+                }}
+              >
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_CLASS_NAME}
+                  id="pure"
+                >
+                  Pura
+                </PrismToggleGroupItem>
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_CLASS_NAME}
+                  id="dim"
+                >
+                  Atenuada
+                </PrismToggleGroupItem>
+              </PrismToggleGroup>
+              <VividPhasePreview
+                darkTone={vividDarkTone}
+                mode="dark"
+                textTone={vividTextTone}
+              />
+            </div>
+          </ProfileSetting>
+
+          <ProfileSetting
+            title="Texto na cor viva"
+            description="Tom do texto e dos ícones sobre a cor viva da fase."
+          >
+            <div className="flex flex-col gap-4">
+              <PrismToggleGroup
+                fullWidth
+                attached
+                aria-label="Texto na cor viva"
+                selectedKeys={[vividTextTone]}
+                variant="outline"
+                onSelectionChange={(keys) => {
+                  const val = Array.from(keys)[0];
+                  if (isVividTextTone(val)) handleVividTextToneChange(val);
+                }}
+              >
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_CLASS_NAME}
+                  id="dark"
+                >
+                  Escuro
+                </PrismToggleGroupItem>
+                <PrismToggleGroupItem
+                  className={PROFILE_CHOICE_CLASS_NAME}
+                  id="light"
+                >
+                  Claro
+                </PrismToggleGroupItem>
+              </PrismToggleGroup>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <VividPhasePreview
+                  darkTone={vividDarkTone}
+                  mode="light"
+                  textTone={vividTextTone}
+                  sample="type"
+                />
+                <VividPhasePreview
+                  darkTone={vividDarkTone}
+                  mode="dark"
+                  textTone={vividTextTone}
+                  sample="type"
+                />
+              </div>
+            </div>
           </ProfileSetting>
           <AppBarSpacer />
         </PrismTabPanel>

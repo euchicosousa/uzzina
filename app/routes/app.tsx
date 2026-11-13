@@ -24,7 +24,7 @@ import { Header } from "~/components/layout/Header";
 import { ActionShortcutProvider } from "~/hooks/useActionShortcut";
 import { MultiSelectionProvider } from "~/hooks/useMultiSelection";
 import { createActionDraft, resolveDraftPartners } from "~/utils";
-import { getUserPreferences } from "~/lib/preferences";
+import { applyVividPreferences, getUserPreferences } from "~/lib/preferences";
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "~/lib/query-keys";
@@ -119,6 +119,7 @@ function Dashboard() {
         String(prefs.themeColorIndex),
       );
       localStorage.removeItem("uzzina-follow-partner-color");
+      applyVividPreferences(document.documentElement, prefs);
       window.dispatchEvent(new Event("uzzina-storage-update"));
     }
   }, [person]);

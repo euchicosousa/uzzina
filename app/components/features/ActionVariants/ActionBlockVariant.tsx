@@ -54,7 +54,7 @@ export function ActionBlockVariant({
 
           {showCategory && (
             <UIcons
-              className="size-4 shrink-0"
+              className="vivid-ink size-4 shrink-0"
               color={currentCategory.color}
               slug={currentCategory.slug}
             />
@@ -71,7 +71,7 @@ export function ActionBlockVariant({
           )}
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 text-xs opacity-50">
+        <div className="action-date flex shrink-0 items-center gap-2 text-xs opacity-50">
           <CalendarDaysIcon className="size-3" />
           <div className="font-medium">
             {getFormattedDateTime(action.date, dateTimeDisplay)}

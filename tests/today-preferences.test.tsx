@@ -104,6 +104,22 @@ for (const value of [undefined, null, "wrong", 42, [], {}, true]) {
     ).toBe(true);
   });
 }
+it("reads the vivid phase tones with safe defaults and rejects unknown values", () => {
+  expect(getUserPreferences({ preferences: {} })).toMatchObject({
+    vividDarkTone: "pure",
+    vividTextTone: "dark",
+  });
+  expect(
+    getUserPreferences({
+      preferences: { vividDarkTone: "dim", vividTextTone: "light" },
+    }),
+  ).toMatchObject({ vividDarkTone: "dim", vividTextTone: "light" });
+  expect(
+    getUserPreferences({
+      preferences: { vividDarkTone: "bright", vividTextTone: 3 },
+    }),
+  ).toMatchObject({ vividDarkTone: "pure", vividTextTone: "dark" });
+});
 it("keeps manual modes local across date/data/preferences updates and uses the new default only on remount", async () => {
   const person: Person = {
     ...calendarPerson,

@@ -56,7 +56,7 @@ export function UViewOptionsPlayground() {
 
   return (
     <PropsPlayground
-      caption={`variant: ${viewOptions.variant} · columns: ${viewOptions.columns} · order: ${viewOptions.order} · ascending: ${viewOptions.ascending}`}
+      caption={`variant: ${viewOptions.variant} · columns: ${viewOptions.columns} · order: ${viewOptions.order} · ascending: ${viewOptions.ascending} · phaseColor: ${viewOptions.phaseColor ?? "off"}`}
       preview={
         <div className="w-full">
           <UViewOptions
@@ -86,7 +86,7 @@ export function UViewOptionsPlayground() {
         value={show.limitHeight ?? true}
       />
       <PlaygroundBoolean
-        label="Cor da fase"
+        label="Cor da fase (Desligada / Suave / Viva)"
         onChange={(v) => updateShowOption("phaseColor", v)}
         prop="showOptions.phaseColor"
         value={show.phaseColor ?? true}
