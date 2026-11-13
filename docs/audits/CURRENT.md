@@ -26,6 +26,18 @@ O [ticket de sombra do tema](../../.scratch/design-system-audit/issues/14-global
 
 ## Registro recente
 
+### DS17: cor viva da fase implementada, aguardando aceite — 13/11
+
+"Cor da fase" agora tem Desligada / Suave / Viva (menu Visualizar e menu do Hoje, estado de tela) e a Viva usa a nova utility `phase-vivid`; Minha Conta → Aparência ganhou "Cor viva no escuro" e "Texto na cor viva" (`vividDarkTone`, `vividTextTone`). Nada commitado. Migração `supabase/migrations/20261113120000_vivid_phase_preferences.sql` escrita e **não aplicada**: sem ela salvar as duas preferências falha no banco. Verificado: tsc, os cinco testes ajustados por arquivo e a utility em `/ui` com cartões de teste (claro, escuro, atenuada, texto claro, paleta plana); Hoje e Minha Conta não foram vistos no navegador (sessão sem login). Pendente: aceite visual do proprietário, aplicar a migração em produção com autorização, push. Detalhe no ticket [DS17](../../.scratch/design-system-audit/issues/17-vivid-phase-color-cards.md).
+
+### DS18 aberto e commit do botão secundário — 13/11
+
+Aberto o [DS18](../../.scratch/design-system-audit/issues/18-group-borders-review.md): revisão completa de `PrismButtonGroup`, `PrismToggleGroup` e `PrismInputGroup` para tirar a borda que o proprietário não quer, dar aos três a opção colado/com espaço (hoje só o ToggleGroup tem `attached`/`spacing`) e limpar classes; entrega primeiro relatório e prévia antes/depois. Tracker e central com 15 tickets. Commit `e304288` (sem push): o botão secundário passou a ter borda da cor do fundo (`border-secondary`), mudança feita pelo proprietário. Estudo do DS17 entregue por um agente (Sonnet 5.5): [bancada](../../.scratch/design-system-audit/comparativo-ds17-cor-viva.html) e relatório no [ticket](../../.scratch/design-system-audit/issues/17-vivid-phase-color-cards.md). Texto preto passa em todas as fases; a data a 50% falha no fundo cheio (precisa de ~85%); atraso vira anel e selo vermelhos; recomendação: "Cor da fase" com Desligada/Suave/Viva, sem mudança de banco. Bancada aberta no painel do navegador sem erros. Aguarda o proprietário comparar.
+
+### DS08 encerrado e DS17 aberto — 13/11
+
+O proprietário encerrou o DS08 (página inicial institucional) sem implementação: não é uma necessidade agora e os rascunhos não comunicaram bem o app. A rota `/` continua como estava; os três rascunhos, feitos só na branch `proposal/ds08-landing` sem commit, foram descartados e a branch apagada. Ficam o [estudo de levantamento](2026-11-13-ds08-landing-study.md) (`cnvt.link` abre o mesmo site da agência) e o registro no [histórico](../../.scratch/archive/resolved-tickets.md). Do rascunho nasceu o [DS17](../../.scratch/design-system-audit/issues/17-vivid-phase-color-cards.md), aberto para testar o fundo cheio da fase nos cartões reais como alternativa ao tom suave do DS11. Tracker e central com 14 tickets.
+
 ### IA-M08 encerrado — 12/11
 
 Aceito pelo proprietário em 12/11 (fases 1 e 2, testadas com chamadas reais; commits `1c1bfdd` e `7b593b1`, ainda sem push). Saiu da fila e está em [`.scratch/archive/resolved-tickets.md`](../../.scratch/archive/resolved-tickets.md). O texto abaixo é o histórico da fase 1.

@@ -5529,3 +5529,7 @@ Encerrado com aceite do proprietário em 12/11/2026. Item "Cor da fase", desliga
 ## DS10 — Foco, Sprint e sombras do cartão de ação
 
 Encerrado com aceite do proprietário em 12/11/2026, absorvido pelo DS11. O cartão de ação ganhou contorno de foco imediato de 3 px separado do anel de estado (sem a espessura que afinava ao focar), sombra animada no hover, ícone de Sprint também nas ações no prazo (Linha e Bloco) e padding lateral de 8 px nas colunas roláveis (Hoje → Parceiros, Kanban, Sprint da Home) para a sombra não ser cortada. Implementado em `9e08ac0` (08/11), já no GitHub. Verificado: typecheck, build e 31 testes focados; a conferência visual ocorreu dentro do roteiro do DS11, que cobriu foco, Sprint, atraso, hover e arraste no mesmo cartão. [Ticket](../design-system-audit/issues/10-action-item-focus-and-structure.md)
+
+## DS08 — Página inicial institucional da UZZINA
+
+Encerrado pelo proprietário em 13/11/2026 sem implementação: não é uma necessidade agora e as três versões de rascunho não comunicaram bem o app. A rota `/` volta e permanece como estava (três acessos: UZZINA, LINK, CNVT). Os rascunhos ficaram só na branch `proposal/ds08-landing`, sem commit, e foram descartados. Do trabalho ficam o [estudo de levantamento](../../docs/audits/2026-11-13-ds08-landing-study.md) (inclui o achado de que `cnvt.link` abre o site da agência) e o [DS17](../design-system-audit/issues/17-vivid-phase-color-cards.md), aberto para testar o fundo cheio da fase nos cartões. [Ticket](../design-system-audit/issues/08-uzzina-landing-page.md)

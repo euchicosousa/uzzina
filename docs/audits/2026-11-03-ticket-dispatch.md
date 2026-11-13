@@ -1,6 +1,6 @@
 # Central de tickets da UZZINA
 
-Atualizado em 12/11/2026. **14 tickets acompanhados.** A fila abaixo espelha o tracker principal. Último deploy com sucesso reportado pela Vercel em `ce36df0`. Encerramentos com aceite e a revisão por rota do DS02 estão no histórico.
+Atualizado em 13/11/2026. **15 tickets acompanhados.** A fila abaixo espelha o tracker principal. Último deploy com sucesso reportado pela Vercel em `ce36df0`. Encerramentos com aceite e a revisão por rota do DS02 estão no histórico.
 
 **IA-M02 encerrado.** Abas de Minha Conta publicadas conforme confirmação do proprietário e integradas à main local em 06/11.
 
@@ -18,7 +18,8 @@ Atualizado em 12/11/2026. **14 tickets acompanhados.** A fila abaixo espelha o t
 | 10  | Recuperação do Planejamento | [T10: Confirmar, reconciliar e atualizar a Mesa após finalização](../../.scratch/social-planning-recovery/issues/10-finalization-ui.md)          | Conferir confirmação/reconciliação e atualização da Mesa após T04/T09/T05.                                                   |
 | 11  | Recuperação do Planejamento | [T11: Auditar a série por evidências e impedir conclusão falsa](../../.scratch/social-planning-recovery/issues/11-independent-acceptance.md)     | Revisão independente final com evidências, depois de T02–T10.                                                                |
 | 12  | Planejamento                | [T12 — Redistribuir formatos de posts automaticamente](../../.scratch/social-planning-recovery/issues/12-auto-balance-post-formats.md)           | Em espera com o Planejamento.                                                                                                |
-| 13  | Design system               | [DS08 — Página inicial institucional da UZZINA](../../.scratch/design-system-audit/issues/08-uzzina-landing-page.md)                             | Apresentar UZZINA, serviço de links e agência. Aplicar a paleta pública Ônix já aprovada e revisar a página.                 |
-| 14  | Arquitetura                 | [ARQ-01 — Auditar a estrutura da UZZINA e propor simplificações](../../.scratch/structural-audit/issues/01-app-structure-and-simplification.md)  | Mapear o app inteiro, verificar candidatos sem uso e priorizar simplificações em relatório para decisão do proprietário.     |
+| 13  | Design system               | [DS17 — Testar a cor viva da fase nos cartões de ação](../../.scratch/design-system-audit/issues/17-vivid-phase-color-cards.md)                  | Comparar fundo cheio da fase com Padrão e o tom suave do DS11; decidir se vira opção.                                        |
+| 14  | Design system               | [DS18 — Revisar e limpar os grupos do Prism (botões, toggles e campos)](../../.scratch/design-system-audit/issues/18-group-borders-review.md)    | Leitura completa dos três grupos, origem da borda indesejada e proposta antes/depois.                                        |
+| 15  | Arquitetura                 | [ARQ-01 — Auditar a estrutura da UZZINA e propor simplificações](../../.scratch/structural-audit/issues/01-app-structure-and-simplification.md)  | Mapear o app inteiro, verificar candidatos sem uso e priorizar simplificações em relatório para decisão do proprietário.     |
 
 [Tracker principal](../../.scratch/README.md) · [Histórico consolidado](../../.scratch/archive/resolved-tickets.md). A numeração é posicional. Use o ID da série ao disparar agentes.
