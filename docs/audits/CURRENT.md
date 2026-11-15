@@ -1,12 +1,13 @@
 # UZZINA — estado atual
 
-Atualizado em 12/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
+Atualizado em 15/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, um de design system (DS08; DS10 encerrado em 12/11, absorvido pelo DS11) e um de arquitetura (14 no total, conforme o tracker em `.scratch/README.md`). Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
+O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, dois de design system aguardando aceite visual (DS17 e DS18; DS08 encerrado em 13/11 sem implementação) e um de arquitetura (15 no total, conforme o tracker em `.scratch/README.md`). Em 15/11 a `main` está igual a `origin/main` (até `1531a1d`); o deploy Ready desses commits na Vercel não foi conferido. Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
 
 ## Pendências reais
 
-- **Publicação (push) dos commits locais** na `main`: nada do DS05, DS11, DS12, DS13, DS14, DS15, DS16 e do ajuste de botão do DS18 (`a00ef0e`) está publicado. Antes de qualquer push que toque `api/`, `server/` ou `package.json`, rodar `bun run test:serverless`. Depois do push, confirmar que a nova versão ficou Ready na Vercel.
+- **Deploy na Vercel:** DS05, DS11–DS18 já estão no GitHub (`main` = `origin/main` em 15/11); falta confirmar que a versão de `1531a1d` ficou Ready.
+- **Aceite visual do DS17 e do DS18** no app, claro e escuro; no DS17, testar também salvar "Cor viva no escuro" e "Texto na cor viva" em Minha Conta.
 - **Sombra colorida da paleta (DS14):** encerrada com aceite do proprietário em 12/11; falta só publicar (a migração `20261112120000` já está aplicada em produção).
 - **Não verificado ainda:** aparência no navegador dos botões do Admin (Novo Usuário, Novo Cliente, Novo Parceiro) e comportamento dos menus Visualizar/Ordenar/Exibir com leitor de tela.
 
