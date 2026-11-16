@@ -95,3 +95,13 @@ Como este é o passo de estudo antes da implementação, a primeira entrega é u
 - **Claude Code — Sonnet 5.5.** Equilíbrio ideal para mapear todas as variáveis OKLCH e fórmulas de `app/tailwind.css` e `app/lib/palettes.ts`, montar a maquete interativa com estados lado a lado e depois implementar a rota `/app/admin/themes` reutilizando os componentes Prism.
 - **Gemini — Gemini 4 Argon (Medium).** Ótima capacidade de análise para cruzar os tokens do DS20 com os controles de `UColorPickerDropdown` e `PrismSlider` e estruturar o estudo completo de variáveis editáveis x calculadas.
 - **Claude Code — Opus 5.5.** Recomendado se o proprietário decidir que todas as fórmulas hoje fixas no CSS (misturas de fase, opacidades de hover de botões e feedbacks semânticos) devem virar variáveis dinâmicas salvas no banco e carregadas no bootstrap do app. Disponibilidade depende do plano.
+
+## Decisões do proprietário (16/11/2026, após a revisão e o protótipo v2)
+
+- **Protótipo v2 aprovado como modelo** ([revisão](../../../docs/audits/2026-11-16-ds21-review.md), [protótipo](../prototipo-ds21-v2.html)), com ajustes feitos no mesmo dia: só desktop/tablet (sem modo celular), cabeçalho em uma linha, página sem rolagem (só as duas colunas rolam), +8px entre os itens principais da lista.
+- **Claro e escuro lado a lado** como padrão.
+- **Regras fixas das fórmulas continuam travadas** (sem edição).
+- **Editável:** tudo o que aparece no protótipo (paleta, fases, avisos, prioridades). Cor que faltar entra depois, se aparecer.
+- **Proposta nova a avaliar:** prioridades derivadas das cores semânticas (Baixa ← sucesso, Média ← atenção, Alta ← erro), como o atraso já deriva do erro. Hoje são valores próprios em `app/tailwind.css` (`--priority-low/medium/high`, matizes 150/90/25), próximos mas não iguais aos semânticos.
+- **Salvar = baixar um arquivo de instruções** (decidido em 16/11). O editor não grava nada no código nem no banco. "Salvar" baixa um arquivo (Markdown com bloco JSON) que o proprietário entrega a uma IA (Claude, GPT etc.) para aplicar. O arquivo precisa ser autoexplicativo: paleta e modo alterados, cada token com valor antigo e novo, onde cada valor mora (`app/lib/palettes.ts`, `app/tailwind.css` ou banco, se algum dia houver) e os passos de aplicação e verificação (typecheck, `/ui`, aceite visual). "Copiar código" pode continuar como atalho. Sem tabela nova e sem escrita em arquivo pelo app.
+- **Prioridades derivadas das semânticas:** aceita como direção (Baixa ← sucesso, Média ← atenção, Alta ← erro); corrigir antes o amarelo de atenção no escuro, que sai quase branco.

@@ -1,0 +1,2671 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cores dos temas</title>
+    <script>
+      // Chrome theme before first paint: follows the system unless data-theme is set.
+      (function () {
+        var dark = false;
+        try {
+          dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        } catch (e) {}
+        document.documentElement.classList.add(dark ? "chrome-d" : "chrome-l");
+      })();
+    </script>
+    <style>
+      /* ------------------------------------------------------------------
+         Real UZZINA token derivation (copied from app/tailwind.css).
+         .tl / .td = edited palette (preview panes and swatches).
+         .chrome-l / .chrome-d = the editor's own interface (fixed Ônix),
+         so editing a palette never breaks the editor itself.
+         ------------------------------------------------------------------ */
+      :root {
+        --radius: 0.65rem;
+        --r-xl: calc(var(--radius) + 4px);
+        --r-2xl: calc(var(--radius) * 1.8);
+        --r-3xl: calc(var(--radius) * 2.2);
+        --font-sans:
+          ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+          "Segoe UI Emoji";
+        --font-mono:
+          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      }
+
+      .tl,
+      .chrome-l {
+        --card: oklch(from var(--background) calc(l + var(--card-l-delta)) c h);
+        --popover: oklch(
+          from var(--background) calc(l + var(--popover-l-delta)) c h
+        );
+        --border: oklch(
+          from var(--background) calc(l + var(--border-l-delta)) c h
+        );
+        --input: oklch(
+          from var(--background) calc(l + var(--input-l-delta)) c h
+        );
+        --action: oklch(
+          from var(--background) calc(l + var(--action-l-delta)) c h
+        );
+        --action-hover: oklch(
+          from var(--background) calc(l + var(--action-hover-l-delta)) c h
+        );
+        --secondary: color-mix(in srgb, var(--foreground) 5%, transparent);
+        --secondary-foreground: color-mix(
+          in srgb,
+          var(--foreground) 65%,
+          transparent
+        );
+        --popover-edge: color-mix(in srgb, var(--foreground) 5%, transparent);
+        --action-base: var(--action);
+        --action-hover-base: var(--action-hover);
+        --action-ring: color-mix(
+          in srgb,
+          var(--action-shadow-color) 5%,
+          transparent
+        );
+        --action-shadow: var(
+          --action-shadow-override,
+          0 1px 2px 0
+            color-mix(in srgb, var(--action-shadow-color) 14%, transparent)
+        );
+        --action-hover-shadow: var(
+          --action-hover-shadow-override,
+          0 10px 15px -3px
+            color-mix(in srgb, var(--action-shadow-color) 18%, transparent),
+          0 4px 6px -4px
+            color-mix(in srgb, var(--action-shadow-color) 18%, transparent)
+        );
+        --error-hue: 16.339;
+        --warning-hue: 70;
+        --info-hue: 250;
+        --luminosity: 0.7;
+        --chroma: 0.2;
+        --color-error: oklch(0.8 calc(var(--chroma) * 1.1) var(--error-hue));
+        --error-foreground: oklch(
+          0.6 calc(var(--chroma) * 1.1) var(--error-hue)
+        );
+        --color-error-background: color-mix(
+          in oklab,
+          var(--color-error) 13%,
+          var(--card)
+        );
+        --color-warning: oklch(
+          calc(var(--luminosity) * 1.56) var(--chroma) var(--warning-hue)
+        );
+        --warning-foreground: oklch(0.5 var(--chroma) var(--warning-hue));
+        --color-warning-background: color-mix(
+          in oklab,
+          var(--color-warning) 7%,
+          var(--card)
+        );
+        --color-success: oklch(0.508 0.14 163);
+        --success-foreground: oklch(0.42 0.14 163);
+        --color-success-background: color-mix(
+          in oklab,
+          var(--color-success) 7%,
+          var(--card)
+        );
+        --color-info: oklch(
+          calc(var(--luminosity) * 1.2) var(--chroma) var(--info-hue)
+        );
+        --info-foreground: oklch(0.5 var(--chroma) var(--info-hue));
+        --color-info-background: color-mix(
+          in oklab,
+          var(--color-info) 7%,
+          var(--card)
+        );
+        --success-strong: oklch(0.596 0.145 163.225);
+        --success-strong-hover: oklch(0.508 0.118 165.612);
+        --late-rest: 0 1px 2px 0
+          color-mix(in srgb, var(--error-foreground) 25%, transparent);
+        --late-hover:
+          0 10px 15px -3px
+            color-mix(in srgb, var(--error-foreground) 30%, transparent),
+          0 4px 6px -4px
+            color-mix(in srgb, var(--error-foreground) 30%, transparent);
+        /* phase-surface / phase-vivid knobs (light) */
+        --ps-mix: 7%;
+        --ps-mix-h: 12%;
+        --ps-ring: 30%;
+        --ps-fg-l: 0.35;
+        --ps-fg-c: 0.07;
+        --ps-sh-l: 0.6;
+        --ps-sh-c: 0.15;
+        --ps-sh-a: 25%;
+        --ps-diffuse-a: 0%;
+        --pv-edge: 0.06;
+        --pv-top: 45%;
+      }
+
+      .td,
+      .chrome-d {
+        --card: oklch(from var(--background) calc(l + var(--card-l-delta)) c h);
+        --popover: oklch(
+          from var(--background) calc(l + var(--popover-l-delta)) c h
+        );
+        --border: oklch(
+          from var(--background) calc(l + var(--border-l-delta)) c h
+        );
+        --input: oklch(
+          from var(--background) calc(l + var(--input-l-delta)) c h
+        );
+        --action: oklch(
+          from var(--background) calc(l + var(--action-l-delta)) c h
+        );
+        --action-hover: oklch(
+          from var(--background) calc(l + var(--action-hover-l-delta)) c h
+        );
+        --secondary: color-mix(in oklch, var(--foreground) 10%, transparent);
+        --secondary-foreground: color-mix(
+          in srgb,
+          var(--foreground) 65%,
+          transparent
+        );
+        --popover-edge: color-mix(in srgb, var(--foreground) 10%, transparent);
+        --action-base: var(--action);
+        --action-hover-base: var(--action-hover);
+        --action-ring: color-mix(
+          in srgb,
+          var(--action-shadow-color) 20%,
+          transparent
+        );
+        --action-shadow: var(
+          --action-shadow-override,
+          0 1px 2px 0
+            color-mix(in srgb, var(--action-shadow-color) 35%, transparent)
+        );
+        --action-hover-shadow: var(
+          --action-hover-shadow-override,
+          0 10px 15px -3px
+            color-mix(in srgb, var(--action-shadow-color) 50%, transparent),
+          0 4px 6px -4px
+            color-mix(in srgb, var(--action-shadow-color) 50%, transparent)
+        );
+        --error-hue: 16.339;
+        --warning-hue: 90;
+        --info-hue: 250;
+        --luminosity: 0.7;
+        --chroma: 0.2;
+        --color-error: oklch(
+          calc(var(--luminosity) * 1.2305) var(--chroma) var(--error-hue)
+        );
+        --error-foreground: var(--color-error);
+        --color-error-background: color-mix(
+          in oklab,
+          var(--color-error) 14%,
+          var(--card)
+        );
+        --color-warning: oklch(
+          calc(var(--luminosity) * 1.56) var(--chroma) var(--warning-hue)
+        );
+        --warning-foreground: var(--color-warning);
+        --color-warning-background: color-mix(
+          in oklab,
+          var(--color-warning) 14%,
+          var(--card)
+        );
+        --color-success: oklch(0.65 0.16 163);
+        --success-foreground: var(--color-success);
+        --color-success-background: color-mix(
+          in oklab,
+          var(--color-success) 14%,
+          var(--card)
+        );
+        --color-info: oklch(
+          calc(var(--luminosity) * 1.2) var(--chroma) var(--info-hue)
+        );
+        --info-foreground: var(--color-info);
+        --color-info-background: color-mix(
+          in oklab,
+          var(--color-info) 14%,
+          var(--card)
+        );
+        --success-strong: oklch(0.596 0.145 163.225);
+        --success-strong-hover: oklch(0.508 0.118 165.612);
+        --late-shadow: oklch(from var(--color-error) 0.45 0.18 h);
+        --late-rest: 0 1px 2px 0
+          color-mix(in srgb, var(--late-shadow) 50%, transparent);
+        --late-hover:
+          0 10px 15px -3px
+            color-mix(in srgb, var(--late-shadow) 60%, transparent),
+          0 4px 6px -4px color-mix(in srgb, var(--late-shadow) 60%, transparent);
+        --ps-mix: 14%;
+        --ps-mix-h: 22%;
+        --ps-ring: 55%;
+        --ps-fg-l: 0.92;
+        --ps-fg-c: 0.06;
+        --ps-sh-l: 0.33;
+        --ps-sh-c: 0.1;
+        --ps-sh-a: 20%;
+        --ps-diffuse-a: 63%;
+        --pv-edge: 0.14;
+        --pv-top: 25%;
+      }
+
+      /* Editor chrome: Ônix palette, fixed. */
+      .chrome-l {
+        --background: oklch(0.96 0.002 200);
+        --foreground: oklch(0 0 0);
+        --primary: oklch(0 0 0);
+        --primary-foreground: oklch(1 0 0);
+        --ring: oklch(0 0 0);
+        --card-l-delta: -0.02;
+        --popover-l-delta: 0.02;
+        --input-l-delta: -0.04;
+        --border-l-delta: -0.07;
+        --action-l-delta: 0.02;
+        --action-hover-l-delta: 0.1;
+        --shadow-tint: oklch(0.25 0.01 200);
+        --shadow-alpha: 10%;
+        --action-shadow-color: oklch(0.25 0.01 200);
+        --action-top-border: #ffffff;
+        color-scheme: light;
+      }
+      .chrome-d {
+        --background: oklch(0.2 0.01 250);
+        --foreground: oklch(1 0 0);
+        --primary: oklch(1 0 0);
+        --primary-foreground: oklch(0 0 0);
+        --ring: oklch(1 0 0);
+        --card-l-delta: 0.05;
+        --popover-l-delta: -0.03;
+        --input-l-delta: 0.02;
+        --border-l-delta: 0.1;
+        --action-l-delta: 0.1;
+        --action-hover-l-delta: 0.2;
+        --shadow-tint: oklch(0.1 0.01 200);
+        --shadow-alpha: 50%;
+        --action-shadow-color: oklch(0.1 0.01 200);
+        --action-top-border: rgba(255, 255, 255, 0.1);
+        color-scheme: dark;
+      }
+      .tl,
+      .td,
+      .chrome-l,
+      .chrome-d {
+        --shadow-lg:
+          0 10px 15px -3px
+            color-mix(
+              in srgb,
+              var(--shadow-tint) var(--shadow-alpha),
+              transparent
+            ),
+          0 4px 6px -4px
+            color-mix(
+              in srgb,
+              var(--shadow-tint) var(--shadow-alpha),
+              transparent
+            );
+        --focus-ring: 0 0 0 3px
+          color-mix(in oklab, var(--ring) 30%, transparent);
+        --focus-border: color-mix(in oklab, var(--ring) 60%, transparent);
+      }
+
+      /* Phase utilities (app/tailwind.css, DS11 and DS17), mode knobs above. */
+      .phase-surface {
+        --phase-fg: oklch(
+          from var(--phase-color) var(--ps-fg-l) var(--ps-fg-c) h
+        );
+        --phase-shadow: oklch(
+          from var(--phase-color) var(--ps-sh-l) var(--ps-sh-c) h
+        );
+        --phase-diffuse: color-mix(
+          in srgb,
+          oklch(from var(--phase-color) 0.2 0.15 h) var(--ps-diffuse-a),
+          transparent
+        );
+        --foreground: var(--phase-fg);
+        --action: color-mix(
+          in oklab,
+          var(--phase-color) var(--ps-mix),
+          var(--action-base)
+        );
+        --action-hover: color-mix(
+          in oklab,
+          var(--phase-color) var(--ps-mix-h),
+          var(--action-hover-base)
+        );
+        --action-ring: color-mix(
+          in srgb,
+          var(--phase-color) calc(var(--ps-ring) * var(--action-relief, 1)),
+          transparent
+        );
+        --action-hover-shadow: var(
+          --action-hover-shadow-override,
+          0 10px 15px -3px
+            color-mix(in srgb, var(--phase-shadow) var(--ps-sh-a), transparent),
+          0 4px 6px -4px
+            color-mix(in srgb, var(--phase-shadow) var(--ps-sh-a), transparent),
+          0 14px 30px -4px var(--phase-diffuse)
+        );
+      }
+      .phase-vivid {
+        --vivid-fill: var(--phase-color);
+        --vivid-ink: oklch(from var(--phase-color) 0.35 0.07 h);
+        --vivid-shadow: oklch(from var(--phase-color) 0.55 0.16 h);
+        --foreground: var(--vivid-ink);
+        --action: var(--vivid-fill);
+        --action-hover: oklch(from var(--vivid-fill) calc(l + 0.04) c h);
+        --action-ring: oklch(
+          from var(--vivid-fill) calc(l - var(--pv-edge)) c h
+        );
+        --action-top-border: color-mix(
+          in srgb,
+          color-mix(in oklab, white var(--pv-top), var(--action))
+            calc(var(--action-relief, 1) * 100%),
+          transparent
+        );
+        --action-hover-shadow: var(
+          --action-hover-shadow-override,
+          0 10px 15px -3px
+            color-mix(in srgb, var(--vivid-shadow) 40%, transparent),
+          0 4px 6px -4px
+            color-mix(in srgb, var(--vivid-shadow) 40%, transparent)
+        );
+      }
+      .phase-vivid.st-hover {
+        --action-top-border: color-mix(
+          in srgb,
+          color-mix(in oklab, white var(--pv-top), var(--action-hover))
+            calc(var(--action-relief, 1) * 100%),
+          transparent
+        );
+      }
+
+      /* ------------------------------ Base ------------------------------ */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+      }
+      body {
+        background: var(--background);
+        color: var(--foreground);
+        font-family: var(--font-sans);
+        font-size: 14px;
+        line-height: 1.45;
+        -webkit-font-smoothing: antialiased;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+        color: inherit;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .muted {
+        color: var(--secondary-foreground);
+      }
+      .mono {
+        font-family: var(--font-mono);
+      }
+      svg.i {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* ---------------------- Prism-like primitives --------------------- */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        height: 40px;
+        padding: 0 20px;
+        border-radius: var(--r-2xl);
+        corner-shape: superellipse(1.5);
+        border: 1px solid var(--border);
+        background: transparent;
+        font-size: 14px;
+        font-weight: 500;
+        white-space: nowrap;
+        cursor: pointer;
+        transition:
+          background-color 0.15s,
+          border-color 0.15s,
+          box-shadow 0.15s;
+        outline: none;
+      }
+      .btn svg.i {
+        opacity: 0.6;
+      }
+      .btn.sm {
+        height: 32px;
+        padding: 0 16px;
+      }
+      .btn.xs {
+        height: 24px;
+        padding: 0 12px;
+        font-size: 12px;
+      }
+      .btn.has-end {
+        padding-right: 12px;
+      }
+      .btn.sm.has-end {
+        padding-right: 8px;
+      }
+      .btn.has-start {
+        padding-left: 12px;
+      }
+      .btn.sm.has-start {
+        padding-left: 8px;
+      }
+      .btn.icon-sm {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+      .btn:focus-visible,
+      .btn.st-focus {
+        border-color: var(--focus-border);
+        box-shadow: var(--focus-ring);
+      }
+      .v-default {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: var(--primary-foreground);
+      }
+      .v-default:hover,
+      .v-default.st-hover {
+        background: color-mix(in oklab, var(--primary), var(--background) 20%);
+        border-color: color-mix(
+          in oklab,
+          var(--primary),
+          var(--background) 20%
+        );
+      }
+      .v-outline:hover,
+      .v-outline.st-hover,
+      .v-ghost:hover,
+      .v-ghost.st-hover {
+        background: var(--secondary);
+      }
+      .v-secondary {
+        background: var(--secondary);
+        border-color: var(--secondary);
+      }
+      .v-secondary:hover,
+      .v-secondary.st-hover {
+        background: color-mix(in oklch, var(--secondary), var(--foreground) 5%);
+        border-color: color-mix(
+          in oklch,
+          var(--secondary),
+          var(--foreground) 5%
+        );
+      }
+      .v-ghost,
+      .v-ghost-error {
+        border-color: transparent;
+      }
+      .v-ghost-error.st-hover,
+      .v-ghost-error:hover {
+        background: var(--color-error-background);
+        color: var(--error-foreground);
+        border-color: var(--color-error);
+      }
+      .v-error {
+        background: var(--color-error-background);
+        color: var(--error-foreground);
+        border-color: var(--color-error);
+      }
+      .v-error.st-focus,
+      .v-ghost-error.st-focus {
+        border-color: var(--color-error);
+        box-shadow: 0 0 0 3px var(--color-error-background);
+        background: var(--color-error-background);
+        color: var(--error-foreground);
+      }
+      .v-success {
+        background: var(--success-strong);
+        border-color: var(--success-strong);
+        color: #fff;
+      }
+      .v-success.st-hover,
+      .v-success:hover {
+        background: var(--success-strong-hover);
+      }
+      .v-success.st-focus {
+        border-color: var(--success-strong);
+        box-shadow: 0 0 0 3px
+          color-mix(in oklab, var(--success-strong) 30%, transparent);
+      }
+
+      .field {
+        width: 100%;
+        min-width: 0;
+        height: 40px;
+        padding: 0 20px;
+        border-radius: var(--r-2xl);
+        corner-shape: superellipse(1.5);
+        border: 1px solid transparent;
+        background: var(--input);
+        font-size: 14px;
+        outline: none;
+        display: flex;
+        align-items: center;
+      }
+      .field.sm {
+        height: 32px;
+        padding: 0 16px;
+      }
+      .field .ph {
+        color: color-mix(in srgb, var(--foreground) 40%, transparent);
+      }
+      .field:focus-visible,
+      .field.st-focus {
+        border-color: var(--focus-border);
+        box-shadow: var(--focus-ring);
+      }
+      .field.st-invalid {
+        background: var(--color-error-background);
+        color: var(--error-foreground);
+        border-color: var(--color-error);
+        box-shadow: 0 0 0 3px var(--color-error-background);
+      }
+      select.field {
+        appearance: none;
+        cursor: pointer;
+        padding-right: 40px;
+        background-image: none;
+      }
+      .select-wrap {
+        position: relative;
+        display: inline-flex;
+        width: 200px;
+      }
+      .select-wrap svg.i {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0.6;
+        pointer-events: none;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        height: 20px;
+        padding: 0 8px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      /* Joined toggle group, outline variant (DS18 rules). */
+      .tgroup {
+        display: inline-flex;
+      }
+      .tgroup .btn {
+        border-radius: 0;
+      }
+      .tgroup .btn:first-child {
+        border-radius: var(--r-2xl) 0 0 var(--r-2xl);
+      }
+      .tgroup .btn:last-child {
+        border-radius: 0 var(--r-2xl) var(--r-2xl) 0;
+      }
+      .tgroup .btn:not(:first-child) {
+        margin-left: -1px;
+      }
+      .tgroup .btn[aria-pressed="true"] {
+        background: var(--secondary);
+        position: relative;
+        z-index: 1;
+      }
+
+      .switch {
+        position: relative;
+        width: 36px;
+        height: 20px;
+        border-radius: 999px;
+        background: var(--secondary);
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      .switch::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        background: var(--background);
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+        transition: transform 0.15s;
+      }
+      .switch[aria-checked="true"] {
+        background: var(--primary);
+      }
+      .switch[aria-checked="true"]::after {
+        transform: translateX(16px);
+        background: var(--primary-foreground);
+      }
+      .switch:focus-visible {
+        outline: none;
+        box-shadow: var(--focus-ring);
+      }
+
+      /* Prism color slider: 8px gradient track, 16px white-ringed thumb. */
+      .cslider {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--track, var(--secondary));
+        margin: 0;
+        cursor: pointer;
+        outline: none;
+      }
+      .cslider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        border: 2px solid #fff;
+        background: var(--thumb, var(--background));
+        box-shadow:
+          0 4px 6px -1px rgb(0 0 0 / 0.2),
+          0 2px 4px -2px rgb(0 0 0 / 0.2);
+      }
+      .cslider::-moz-range-thumb {
+        width: 12px;
+        height: 12px;
+        border-radius: 999px;
+        border: 2px solid #fff;
+        background: var(--thumb, var(--background));
+        box-shadow: 0 2px 4px rgb(0 0 0 / 0.3);
+      }
+      .cslider:focus-visible::-webkit-slider-thumb {
+        box-shadow: var(--focus-ring);
+      }
+      .cslider.plain {
+        --track: var(--secondary);
+      }
+      .cslider.plain::-webkit-slider-thumb {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--primary);
+        background: var(--background);
+      }
+
+      /* ------------------------------ Page ------------------------------ */
+      /* The page never scrolls: the app fills the viewport and only the
+         preview column and the color list scroll on their own. */
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+      .page {
+        max-width: 1640px;
+        height: 100vh;
+        height: 100dvh;
+        margin: 0 auto;
+        padding: 16px 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .head {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 12px 16px;
+        min-width: 0;
+      }
+      .head h1 {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.2;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        white-space: nowrap;
+      }
+      .head .grow {
+        flex: 1;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 8px;
+      }
+      .dirty {
+        font-size: 12px;
+        margin-right: 4px;
+        white-space: nowrap;
+      }
+      .layout {
+        flex: 1;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 400px;
+        grid-template-rows: minmax(0, 1fr);
+        gap: 40px;
+        align-items: stretch;
+      }
+
+      /* ---------------------------- Preview ----------------------------- */
+      .panes {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+      .panes[data-view="light"],
+      .panes[data-view="dark"] {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .panes[data-view="light"] .pane.td,
+      .panes[data-view="dark"] .pane.tl {
+        display: none;
+      }
+      .pane-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 0 4px 8px;
+      }
+      /* Owner exception (12/11/2026): each mode shown in a block with its own
+         background, to show the colors applied. */
+      .pane {
+        background: var(--background);
+        color: var(--foreground);
+        border-radius: var(--r-3xl);
+        corner-shape: superellipse(1.5);
+        border: 1px solid var(--popover-edge);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        min-width: 0;
+      }
+      .sec h3 {
+        margin: 0 0 12px;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0;
+        line-height: 1.2;
+      }
+      .sec h3 span {
+        font-weight: 400;
+        color: var(--secondary-foreground);
+      }
+      .colhead {
+        font-size: 12px;
+        color: var(--secondary-foreground);
+      }
+      .pair {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 16px 12px;
+      }
+      .act {
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--r-2xl);
+        corner-shape: superellipse(1.5);
+        color: var(--foreground);
+        background: var(--action);
+        border-top: 1px solid var(--action-top-border);
+        box-shadow:
+          0 0 0 1px var(--action-ring),
+          var(--action-shadow);
+        min-width: 0;
+      }
+      .act.st-hover {
+        background: var(--action-hover);
+        box-shadow:
+          0 0 0 1px var(--action-ring),
+          var(--action-hover-shadow);
+      }
+      .act.block {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px 16px;
+      }
+      .act.line {
+        border-radius: var(--r-xl);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        min-height: 36px;
+      }
+      .act .t {
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+        flex: 1;
+      }
+      .act .meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--secondary-foreground);
+      }
+      .phase-vivid .meta,
+      .phase-surface .meta {
+        color: color-mix(in srgb, var(--foreground) 70%, transparent);
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--phase-color, var(--foreground));
+        flex-shrink: 0;
+      }
+      .phase-vivid .dot {
+        background: transparent;
+        box-shadow: inset 0 0 0 2px var(--vivid-ink);
+      }
+      .act.late {
+        background: color-mix(
+          in oklab,
+          var(--color-error-background) 70%,
+          transparent
+        );
+        color: var(--error-foreground);
+        box-shadow:
+          0 0 0 1px var(--color-error),
+          var(--action-shadow-override, var(--late-rest));
+      }
+      .act.late.st-hover {
+        background: var(--color-error-background);
+        box-shadow:
+          0 0 0 1px var(--color-error),
+          var(--action-hover-shadow-override, var(--late-hover));
+      }
+      .act.late .meta {
+        color: inherit;
+        opacity: 0.8;
+      }
+      .phase-grid {
+        display: grid;
+        grid-template-columns: 76px repeat(4, minmax(0, 1fr));
+        gap: 10px 8px;
+        align-items: center;
+      }
+      .phase-grid .act.line {
+        padding: 6px 10px;
+        font-size: 13px;
+      }
+      .phase-name {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        min-width: 0;
+      }
+      .btn-grid {
+        display: grid;
+        grid-template-columns: 92px repeat(3, minmax(0, 1fr));
+        gap: 10px 8px;
+        align-items: center;
+      }
+      .btn-grid .btn {
+        width: 100%;
+        min-width: 0;
+      }
+      .btn-grid .vname {
+        font-size: 13px;
+        color: var(--secondary-foreground);
+      }
+      .surf {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+      }
+      .card-demo {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--r-2xl);
+        corner-shape: superellipse(1.5);
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .pop {
+        background: var(--popover);
+        border: 1px solid var(--popover-edge);
+        border-radius: var(--r-2xl);
+        corner-shape: superellipse(1.5);
+        box-shadow: var(--shadow-lg);
+        padding: 4px;
+        display: flex;
+        flex-direction: column;
+      }
+      .mitem {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 32px;
+        padding: 0 10px;
+        border-radius: var(--r-xl);
+        corner-shape: superellipse(1.5);
+        font-size: 14px;
+      }
+      .mitem.st-hover {
+        background: var(--secondary);
+      }
+      .mitem svg.i {
+        opacity: 0.6;
+      }
+      .stack {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .row-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .alert {
+        border-radius: var(--r-2xl);
+        corner-shape: superellipse(1.5);
+        border: 1px solid;
+        padding: 12px 16px;
+        font-size: 14px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .alert b {
+        font-weight: 500;
+        display: block;
+      }
+      .alert span {
+        opacity: 0.6;
+      }
+      .prio {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+      }
+      .prio i {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        display: inline-block;
+      }
+      .hl {
+        outline: 2px dashed var(--chrome-hl, #888) !important;
+        outline-offset: 3px;
+      }
+
+      /* ---------------------------- Inspector --------------------------- */
+      .preview {
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 2px 4px 24px 2px;
+        scrollbar-width: thin;
+      }
+      .inspector {
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 0 4px 24px 0;
+        scrollbar-width: thin;
+      }
+      .grp {
+        padding: 20px 0 8px;
+        border-top: 1px solid var(--border);
+      }
+      .grp:first-of-type {
+        border-top: 0;
+        padding-top: 0;
+      }
+      .grp-h {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 48px 48px;
+        gap: 8px;
+        align-items: end;
+        padding-bottom: 6px;
+      }
+      .grp-h h2 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0;
+        line-height: 1.3;
+      }
+      .grp-h p {
+        margin: 2px 0 0;
+        font-size: 12px;
+      }
+      .grp-h .mcol {
+        display: flex;
+        justify-content: center;
+        color: var(--secondary-foreground);
+      }
+      .tok {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 48px 48px;
+        gap: 8px;
+        align-items: center;
+        width: 100%;
+        padding: 6px 8px;
+        margin: 0 -8px;
+        width: calc(100% + 16px);
+        border: 0;
+        background: transparent;
+        text-align: left;
+        border-radius: var(--r-xl);
+        corner-shape: superellipse(1.5);
+        cursor: pointer;
+      }
+      .tok:hover,
+      .tok[aria-expanded="true"] {
+        background: var(--secondary);
+      }
+      .tok:focus-visible {
+        outline: none;
+        box-shadow: var(--focus-ring);
+      }
+      .tok.locked {
+        cursor: default;
+      }
+      .tok.locked:hover {
+        background: transparent;
+      }
+      .tok .lbl {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .tok .lbl b {
+        font-weight: 500;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .tok .lbl b svg.i {
+        width: 12px;
+        height: 12px;
+        opacity: 0.5;
+      }
+      .tok .lbl small {
+        font-size: 12px;
+        color: var(--secondary-foreground);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      /* 8px between top-level token rows; derived children stay tight. */
+      .tok:not(.child) {
+        margin-top: 8px;
+      }
+      .tok.child {
+        padding-left: 28px;
+        position: relative;
+      }
+      .tok.child::before {
+        content: "";
+        position: absolute;
+        left: 14px;
+        top: -6px;
+        bottom: 50%;
+        width: 8px;
+        border-left: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        border-bottom-left-radius: 6px;
+      }
+      .tok.child .lbl b {
+        font-weight: 400;
+      }
+      .cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+      }
+      .cell em {
+        font-style: normal;
+        font-size: 11px;
+        font-family: var(--font-mono);
+        color: var(--secondary-foreground);
+        white-space: nowrap;
+      }
+      .sw {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--r-xl);
+        corner-shape: superellipse(1.5);
+        box-shadow:
+          inset 0 0 0 1px color-mix(in srgb, currentColor 0%, transparent),
+          0 0 0 1px var(--chrome-edge);
+        display: grid;
+        place-items: center;
+        font-size: 13px;
+        font-weight: 600;
+        overflow: hidden;
+      }
+      .sw.derived {
+        width: 24px;
+        height: 24px;
+        border-radius: 8px;
+      }
+      .sw .mini {
+        width: 14px;
+        height: 14px;
+        border-radius: 5px;
+        background: var(--popover);
+        box-shadow: var(--shadow-lg);
+      }
+      .mdot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        flex-shrink: 0;
+        box-shadow: 0 0 0 1px var(--chrome-edge);
+      }
+      .spanboth {
+        grid-column: 2 / 4;
+        display: flex;
+        justify-content: center;
+      }
+      .editor {
+        padding: 8px 0 16px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .ed-mode {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .ed-top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .ed-top .field {
+        flex: 1;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        height: 32px;
+        padding: 0 12px;
+      }
+      .ch {
+        display: grid;
+        grid-template-columns: 52px minmax(0, 1fr) 48px;
+        gap: 10px;
+        align-items: center;
+        font-size: 12px;
+      }
+      .ch output {
+        font-family: var(--font-mono);
+        text-align: right;
+        color: var(--secondary-foreground);
+      }
+      .ed-note {
+        font-size: 12px;
+        color: var(--secondary-foreground);
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .ed-note.warn {
+        color: var(--warning-foreground);
+      }
+      .rule {
+        font-size: 12px;
+        color: var(--secondary-foreground);
+        padding: 4px 0 8px;
+        display: flex;
+        gap: 6px;
+      }
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 24px;
+        transform: translateX(-50%) translateY(20px);
+        opacity: 0;
+        pointer-events: none;
+        background: var(--popover);
+        border: 1px solid var(--popover-edge);
+        box-shadow: var(--shadow-lg);
+        border-radius: var(--r-2xl);
+        corner-shape: superellipse(1.5);
+        padding: 12px 16px;
+        font-size: 14px;
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
+        max-width: calc(100vw - 32px);
+        z-index: 20;
+      }
+      .toast.on {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .chrome-l {
+        --chrome-edge: color-mix(in srgb, #000 10%, transparent);
+        --chrome-hl: oklch(0.55 0.2 264);
+      }
+      .chrome-d {
+        --chrome-edge: color-mix(in srgb, #fff 15%, transparent);
+        --chrome-hl: oklch(0.75 0.15 264);
+      }
+
+      /* ---------------------------- Responsive -------------------------- */
+      @media (max-width: 1279px) {
+        .layout {
+          grid-template-columns: minmax(0, 1fr) 360px;
+          gap: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="head">
+        <h1 title="Ajuste as cores de uma paleta e veja o claro e o escuro ao mesmo tempo. Cores com recuo são calculadas a partir da cor de cima.">
+          Cores dos temas
+        </h1>
+        <label class="select-wrap">
+          <select
+            class="field sm"
+            id="palette"
+            aria-label="Paleta em edição"
+          ></select>
+          <svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
+        </label>
+        <div class="tgroup" role="group" aria-label="Modo da prévia">
+          <button class="btn sm v-outline has-start" data-view="light">
+            <svg class="i" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2" />
+              <path d="M12 20v2" />
+              <path d="m4.93 4.93 1.41 1.41" />
+              <path d="m17.66 17.66 1.41 1.41" />
+              <path d="M2 12h2" />
+              <path d="M20 12h2" />
+              <path d="m6.34 17.66-1.41 1.41" />
+              <path d="m19.07 4.93-1.41 1.41" />
+            </svg>
+            Claro
+          </button>
+          <button class="btn sm v-outline has-start" data-view="dark">
+            <svg class="i" viewBox="0 0 24 24">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+            </svg>
+            Escuro
+          </button>
+          <button class="btn sm v-outline" data-view="both">Lado a lado</button>
+        </div>
+        <button
+          class="btn sm icon-sm v-ghost"
+          id="chrome-theme"
+          aria-label="Alternar tema desta tela"
+          title="Tema desta tela (não altera a paleta)"
+        >
+          <svg class="i" viewBox="0 0 24 24">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+          </svg>
+        </button>
+        <span class="grow"></span>
+        <div class="actions">
+          <span class="dirty muted" id="dirty">Nenhuma alteração</span>
+          <button class="btn sm v-ghost" id="discard" disabled>Descartar</button>
+          <button class="btn sm v-outline has-end" id="copy">
+            Copiar código
+            <svg class="i" viewBox="0 0 24 24">
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+              <path
+                d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+              />
+            </svg>
+          </button>
+          <button class="btn sm v-default has-end" id="save">
+            Salvar
+            <svg class="i" viewBox="0 0 24 24">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <section class="preview" aria-label="Prévia">
+          <div class="panes" id="panes"></div>
+        </section>
+        <aside class="inspector" id="inspector" aria-label="Cores"></aside>
+      </div>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      /* ===================== Data (app/lib/palettes.ts) ===================== */
+      const o = (l, c, h) => ({ l, c, h });
+      const P = (id, label, relief, light, dark) => ({
+        id,
+        label,
+        relief,
+        light,
+        dark,
+      });
+      const M = (shadow, op, primary, primaryFg, bg, fg, d, ring) => ({
+        shadow,
+        shadowOpacity: op,
+        primary,
+        primaryFg,
+        bg,
+        fg,
+        cardLDelta: d[0],
+        borderLDelta: d[1],
+        inputLDelta: d[2],
+        actionLDelta: d[3],
+        actionHoverLDelta: d[4],
+        popoverLDelta: d[5],
+        ring,
+      });
+      const DARK_D = [0.05, 0.2, 0.02, 0.1, 0.2, -0.03];
+      const SRC = [
+        P(
+          "default",
+          "Ônix",
+          true,
+          M(
+            o(0.25, 0.01, 200),
+            10,
+            o(0, 0, 0),
+            o(1, 0, 0),
+            o(0.96, 0.002, 200),
+            o(0, 0, 0),
+            [-0.02, -0.07, -0.04, 0.02, 0.1, 0.02],
+            o(0, 0, 0),
+          ),
+          M(
+            o(0.1, 0.01, 200),
+            50,
+            o(1, 0, 0),
+            o(0, 0, 0),
+            o(0.2, 0.01, 250),
+            o(1, 0, 0),
+            [0.05, 0.1, 0.02, 0.1, 0.2, -0.03],
+            o(1, 0, 0),
+          ),
+        ),
+        P(
+          "carbon",
+          "Carbono",
+          false,
+          M(
+            o(0.25, 0, 0),
+            10,
+            o(0.3, 0.02, 240),
+            o(1, 0, 0),
+            o(1, 0, 0),
+            o(0, 0, 0),
+            [-0.04, -0.04, -0.02, -0.02, -0.005, 0.1],
+            o(0.3, 0.02, 240),
+          ),
+          M(
+            o(0.1, 0, 0),
+            40,
+            o(0.99, 0.01, 240),
+            o(0.3, 0.02, 240),
+            o(0.25, 0.015, 240),
+            o(1, 0, 0),
+            [0.05, 0.1, 0.04, 0.1, 0.2, -0.03],
+            o(0.99, 0.01, 240),
+          ),
+        ),
+        P(
+          "red",
+          "Rubi",
+          true,
+          M(
+            o(0.25, 0.04, 20),
+            10,
+            o(0.62, 0.25, 20),
+            o(1, 0, 0),
+            o(0.98, 0, 0),
+            o(0, 0, 0),
+            [-0.02, -0.05, -0.02, 0.04, 0.06, 0.06],
+            o(0.62, 0.25, 20),
+          ),
+          M(
+            o(0.03, 0, 0),
+            70,
+            o(0.68, 0.25, 20),
+            o(1, 0, 0),
+            o(0.141, 0.005, 285),
+            o(1, 0, 0),
+            DARK_D,
+            o(0.68, 0.25, 20),
+          ),
+        ),
+        P(
+          "orange",
+          "Coral",
+          true,
+          M(
+            o(0.25, 0.05, 140),
+            10,
+            o(0.65, 0.18, 25),
+            o(1, 0, 0),
+            o(0.95, 0.01, 130),
+            o(0, 0, 0),
+            [-0.02, -0.05, -0.02, 0.02, 1, 0.03],
+            o(0.65, 0.18, 25),
+          ),
+          M(
+            o(0.1, 0.03, 140),
+            25,
+            o(0.65, 0.18, 25),
+            o(0.9, 0.02, 130),
+            o(0.25, 0.01, 190),
+            o(0.95, 0.01, 130),
+            [0.05, 0.1, -0.02, 0.07, 0.2, -0.03],
+            o(0.65, 0.18, 25),
+          ),
+        ),
+        P(
+          "yellow",
+          "Damasco",
+          true,
+          M(
+            o(0.25, 0.04, 100),
+            10,
+            o(0.8, 0.5, 100),
+            o(0, 0, 0),
+            o(0.98, 0, 0),
+            o(0, 0, 0),
+            [-0.02, -0.05, -0.02, 0.02, 0.04, 0],
+            o(0.8, 0.5, 100),
+          ),
+          M(
+            o(0.03, 0, 100),
+            70,
+            o(0.8, 0.4, 100),
+            o(0, 0, 0),
+            o(0.141, 0.005, 285),
+            o(1, 0, 0),
+            DARK_D,
+            o(0.8, 0.4, 100),
+          ),
+        ),
+        P(
+          "energy",
+          "Elétrico",
+          true,
+          M(
+            o(0.25, 0.04, 120),
+            10,
+            o(0.94, 0.15, 120),
+            o(0, 0, 0),
+            o(0.96, 0.004, 240),
+            o(0, 0, 0),
+            [-0.03, -0.05, -0.02, 0.02, 0.04, 0],
+            o(0.94, 0.15, 120),
+          ),
+          M(
+            o(0.1, 0.03, 120),
+            60,
+            o(0.9, 0.18, 120),
+            o(0, 0, 0),
+            o(0.2, 0.01, 250),
+            o(1, 0, 0),
+            DARK_D,
+            o(0.9, 0.18, 120),
+          ),
+        ),
+        P(
+          "green",
+          "Folha",
+          true,
+          M(
+            o(0.25, 0.04, 130),
+            10,
+            o(0.7, 0.2, 130),
+            o(1, 0, 0),
+            o(0.98, 0, 0),
+            o(0, 0, 0),
+            [-0.02, -0.05, -0.02, 0.02, 0.04, 0],
+            o(0.7, 0.2, 130),
+          ),
+          M(
+            o(0.1, 0.03, 130),
+            50,
+            o(0.65, 0.2, 130),
+            o(0, 0, 0),
+            o(0.141, 0.005, 285),
+            o(1, 0, 0),
+            DARK_D,
+            o(0.65, 0.2, 130),
+          ),
+        ),
+        P(
+          "cyan",
+          "Turquesa",
+          true,
+          M(
+            o(0.25, 0.04, 200),
+            10,
+            o(0.7, 0.2, 200),
+            o(1, 0, 0),
+            o(0.96, 0, 0),
+            o(0, 0, 0),
+            [-0.02, -0.05, -0.02, 0.02, 0.04, 0],
+            o(0.7, 0.2, 200),
+          ),
+          M(
+            o(0.1, 0.03, 200),
+            50,
+            o(0.65, 0.2, 200),
+            o(0, 0, 0),
+            o(0.141, 0.005, 285),
+            o(1, 0, 0),
+            DARK_D,
+            o(0.65, 0.2, 200),
+          ),
+        ),
+        P(
+          "blue",
+          "Cobalto",
+          false,
+          M(
+            o(0.25, 0.04, 264),
+            10,
+            o(0.45, 0.31, 264),
+            o(1, 0, 0),
+            o(1, 0, 0),
+            o(0, 0, 0),
+            [-0.02, -0.05, -0.02, -0.03, -0.015, 0.1],
+            o(0.45, 0.31, 264),
+          ),
+          M(
+            o(0.1, 0.03, 264),
+            50,
+            o(0.58, 0.31, 264),
+            o(1, 0, 0),
+            o(0.141, 0.005, 285),
+            o(1, 0, 0),
+            [0.05, 0.2, 0.1, 0.1, 0.2, 0.05],
+            o(0.58, 0.31, 264),
+          ),
+        ),
+        P(
+          "purple",
+          "Violeta",
+          true,
+          M(
+            o(0.25, 0.04, 290),
+            10,
+            o(0.54, 0.28, 290),
+            o(1, 0, 0),
+            o(1, 0, 0),
+            o(0, 0, 0),
+            [-0.02, -0.1, -0.02, 0.02, 0.04, 0],
+            o(0.54, 0.28, 290),
+          ),
+          M(
+            o(0.1, 0.03, 290),
+            50,
+            o(0.68, 0.28, 290),
+            o(1, 0, 0),
+            o(0.141, 0.005, 285),
+            o(1, 0, 0),
+            DARK_D,
+            o(0.68, 0.28, 290),
+          ),
+        ),
+        P(
+          "magenta",
+          "Fúcsia",
+          true,
+          M(
+            o(0.25, 0.15, 350),
+            10,
+            o(0.9, 0.4, 350),
+            o(0, 0, 0),
+            o(0.98, 0.02, 320),
+            o(0, 0, 0),
+            [-0.02, -0.05, -0.02, 0.02, 0.04, 0],
+            o(0.9, 0.4, 350),
+          ),
+          M(
+            o(0.1, 0.1, 340),
+            25,
+            o(0.8, 0.4, 350),
+            o(0, 0, 0),
+            o(0.3, 0.1, 340),
+            o(1, 0, 0),
+            DARK_D,
+            o(0.8, 0.4, 350),
+          ),
+        ),
+      ];
+      // Phases (app/lib/CONSTANTS.ts) and priorities (app/tailwind.css).
+      const PHASES_SRC = [
+        ["idea", "Ideia", "#fbbf24"],
+        ["do", "Fazer", "#f97316"],
+        ["doing", "Fazendo", "#ec4899"],
+        ["review", "Análise", "#a855f7"],
+        ["done", "Feito", "#38bdf8"],
+        ["finished", "Concluído", "#4ade80"],
+      ];
+      const PRIO_SRC = {
+        light: {
+          low: o(0.7, 0.17, 150),
+          medium: o(0.82, 0.16, 90),
+          high: o(0.65, 0.22, 25),
+        },
+        dark: {
+          low: o(0.75, 0.16, 150),
+          medium: o(0.85, 0.15, 95),
+          high: o(0.7, 0.2, 25),
+        },
+      };
+
+      /* ========================= Color math (OKLCH) ========================= */
+      const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+      function oklchToLinear({ l, c, h }) {
+        const hr = (h * Math.PI) / 180;
+        const a = c * Math.cos(hr),
+          b = c * Math.sin(hr);
+        const L = clamp(l, 0, 1);
+        const l_ = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
+        const m_ = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
+        const s_ = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
+        return [
+          4.0767416621 * l_ - 3.3077115913 * m_ + 0.2309699292 * s_,
+          -1.2684380046 * l_ + 2.6097574011 * m_ - 0.3413193965 * s_,
+          -0.0041960863 * l_ - 0.7034186147 * m_ + 1.707614701 * s_,
+        ];
+      }
+      const inGamut = (rgb) => rgb.every((v) => v >= -0.0005 && v <= 1.0005);
+      function toGamut(col) {
+        if (inGamut(oklchToLinear(col))) return col;
+        let lo = 0,
+          hi = col.c;
+        for (let i = 0; i < 20; i++) {
+          const mid = (lo + hi) / 2;
+          if (inGamut(oklchToLinear({ ...col, c: mid }))) lo = mid;
+          else hi = mid;
+        }
+        return { ...col, c: lo };
+      }
+      const enc = (v) => {
+        v = clamp(v, 0, 1);
+        return v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055;
+      };
+      const dec = (v) =>
+        v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+      function oklchToHex(col) {
+        return (
+          "#" +
+          oklchToLinear(toGamut(col))
+            .map((v) =>
+              Math.round(enc(v) * 255)
+                .toString(16)
+                .padStart(2, "0"),
+            )
+            .join("")
+        );
+      }
+      function hexToOklch(hex) {
+        hex = hex.replace("#", "");
+        const [r, g, b] = [0, 2, 4].map((i) =>
+          dec(parseInt(hex.slice(i, i + 2), 16) / 255),
+        );
+        const l = Math.cbrt(
+          0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b,
+        );
+        const m = Math.cbrt(
+          0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b,
+        );
+        const s = Math.cbrt(
+          0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b,
+        );
+        const L = 0.2104542553 * l + 0.793617785 * m - 0.0040720453 * s;
+        const A = 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s;
+        const B = 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s;
+        const C = Math.hypot(A, B);
+        let H = (Math.atan2(B, A) * 180) / Math.PI;
+        if (H < 0) H += 360;
+        return {
+          l: +L.toFixed(3),
+          c: +C.toFixed(3),
+          h: C < 0.002 ? 0 : +H.toFixed(1),
+        };
+      }
+      const css = (c) =>
+        `oklch(${+c.l.toFixed(3)} ${+c.c.toFixed(3)} ${+(+c.h).toFixed(1)})`;
+      function lum(col) {
+        const [r, g, b] = oklchToLinear(toGamut(col)).map((v) =>
+          clamp(v, 0, 1),
+        );
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      }
+      function contrast(a, b) {
+        const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
+        return (x + 0.05) / (y + 0.05);
+      }
+      const nf = (v, d = 2) =>
+        (v > 0 ? "+" : v < 0 ? "−" : "") +
+        Math.abs(v).toLocaleString("pt-BR", {
+          minimumFractionDigits: d,
+          maximumFractionDigits: 3,
+        });
+      const n1 = (v) =>
+        v.toLocaleString("pt-BR", {
+          maximumFractionDigits: 1,
+          minimumFractionDigits: 1,
+        });
+
+      /* ============================== State ============================== */
+      const clone = (x) => JSON.parse(JSON.stringify(x));
+      const phasesSrc = PHASES_SRC.map(([slug, title, hex]) => ({
+        slug,
+        title,
+        color: hexToOklch(hex),
+        hex,
+      }));
+      const original = {
+        pal: clone(SRC),
+        phases: clone(phasesSrc),
+        prio: clone(PRIO_SRC),
+      };
+      const draft = clone(original);
+      let cur = 0;
+      let openRow = null;
+      let view = "both";
+
+      /* ========================= Token rows (model) ======================== */
+      const pal = () => draft.pal[cur];
+      const PAL_DEFAULTS = {
+        light: {
+          cardLDelta: -0.02,
+          popoverLDelta: 0,
+          inputLDelta: -0.05,
+          borderLDelta: -0.05,
+          actionLDelta: 0.02,
+          actionHoverLDelta: 0.04,
+        },
+        dark: {
+          cardLDelta: 0.05,
+          popoverLDelta: -0.03,
+          inputLDelta: 0.05,
+          borderLDelta: 0.2,
+          actionLDelta: 0.1,
+          actionHoverLDelta: 0.2,
+        },
+      };
+      const colorRow = (id, label, hint, key, uses, extra = {}) => ({
+        id,
+        label,
+        hint,
+        kind: "color",
+        uses,
+        get: (m) => pal()[m][key],
+        set: (m, v) => (pal()[m][key] = v),
+        sw: extra.sw || (() => `background:var(--${uses.split(" ")[0]})`),
+        ...extra,
+      });
+      const deltaRow = (id, label, key, token, uses) => ({
+        id,
+        label,
+        hint: "Fundo com ajuste de luz",
+        kind: "delta",
+        child: true,
+        uses,
+        get: (m) => pal()[m][key] ?? PAL_DEFAULTS[m][key],
+        set: (m, v) => (pal()[m][key] = v),
+        sw: () => `background:var(${token})`,
+        val: (m) => nf(pal()[m][key] ?? PAL_DEFAULTS[m][key]),
+      });
+      const ruleRow = (id, label, hint, sw, val, uses) => ({
+        id,
+        label,
+        hint,
+        kind: "rule",
+        child: true,
+        sw: () => sw,
+        val,
+        uses,
+      });
+      const textSw = (bg, fg) => `background:var(${bg});color:var(${fg})`;
+
+      const GROUPS = [
+        {
+          title: "Base",
+          note: () => `Só da paleta ${pal().label}`,
+          rows: [
+            colorRow("bg", "Fundo", "Fundo da página", "bg", "background"),
+            deltaRow("card", "Cartão", "cardLDelta", "--card", "card"),
+            deltaRow(
+              "popover",
+              "Menus e diálogos",
+              "popoverLDelta",
+              "--popover",
+              "popover",
+            ),
+            deltaRow("input", "Campos", "inputLDelta", "--input", "input"),
+            deltaRow("border", "Bordas", "borderLDelta", "--border", "border"),
+            deltaRow(
+              "action",
+              "Cartão de ação",
+              "actionLDelta",
+              "--action",
+              "action",
+            ),
+            deltaRow(
+              "actionHover",
+              "Cartão de ação · mouse",
+              "actionHoverLDelta",
+              "--action-hover",
+              "action-hover",
+            ),
+            colorRow("fg", "Texto", "", "fg", "foreground", {
+              sw: () => textSw("--background", "--foreground"),
+              text: true,
+              hintFn: () =>
+                "Contraste " +
+                ["light", "dark"]
+                  .map((m) => n1(contrast(pal()[m].fg, pal()[m].bg)))
+                  .join(" · "),
+            }),
+            ruleRow(
+              "secondary",
+              "Fundo neutro",
+              "Texto em transparência (hover, botão secundário)",
+              "background:linear-gradient(var(--secondary),var(--secondary)),var(--background)",
+              (m) => (m === "light" ? "5%" : "10%"),
+              "secondary",
+            ),
+            ruleRow(
+              "secondaryFg",
+              "Texto secundário",
+              "Texto a 65%",
+              textSw("--background", "--secondary-foreground"),
+              () => "65%",
+              "secondary-foreground",
+            ),
+            colorRow(
+              "primary",
+              "Principal",
+              "Botão principal, seleção",
+              "primary",
+              "primary",
+            ),
+            ruleRow(
+              "primaryHover",
+              "Principal · mouse",
+              "Principal com 20% do fundo",
+              "background:color-mix(in oklab,var(--primary),var(--background) 20%)",
+              () => "20%",
+              "primary",
+            ),
+            colorRow(
+              "primaryFg",
+              "Texto sobre a principal",
+              "",
+              "primaryFg",
+              "primary",
+              {
+                sw: () => textSw("--primary", "--primary-foreground"),
+                text: true,
+                hintFn: () =>
+                  "Contraste " +
+                  ["light", "dark"]
+                    .map((m) =>
+                      n1(contrast(pal()[m].primaryFg, pal()[m].primary)),
+                    )
+                    .join(" · "),
+              },
+            ),
+            colorRow(
+              "ring",
+              "Anel de foco",
+              "Contorno de teclado",
+              "ring",
+              "ring",
+              { sw: () => "background:var(--ring)" },
+            ),
+            ruleRow(
+              "ringHalo",
+              "Halo de foco",
+              "Anel a 30%",
+              "background:linear-gradient(color-mix(in oklab,var(--ring) 30%,transparent),color-mix(in oklab,var(--ring) 30%,transparent)),var(--background)",
+              () => "30%",
+              "ring",
+            ),
+          ],
+        },
+        {
+          title: "Sombra e relevo",
+          note: () => `Só da paleta ${pal().label}`,
+          rows: [
+            colorRow(
+              "shadow",
+              "Cor da sombra",
+              "Menus, diálogos e cartões",
+              "shadow",
+              "shadow",
+              { sw: () => "background:var(--shadow-tint)" },
+            ),
+            {
+              id: "shadowOpacity",
+              label: "Força da sombra",
+              hint: "Opacidade da maior sombra",
+              kind: "number",
+              child: true,
+              min: 1,
+              max: 100,
+              uses: "shadow",
+              get: (m) => pal()[m].shadowOpacity,
+              set: (m, v) => (pal()[m].shadowOpacity = v),
+              sw: () => "background:var(--background)",
+              inner: '<span class="mini"></span>',
+              val: (m) => pal()[m].shadowOpacity + "%",
+            },
+            {
+              id: "relief",
+              label: "Relevo dos cartões",
+              hint: "Sombra e brilho no topo",
+              kind: "toggle",
+              uses: "action",
+            },
+          ],
+        },
+        {
+          title: "Fases",
+          note: () => "Valem para todas as paletas",
+          rule: "Suave: 7% da cor da fase no claro, 14% no escuro. Viva: a cor cheia.",
+          rows: draft.phases.map((ph, i) => ({
+            id: "ph-" + ph.slug,
+            label: ph.title,
+            kind: "color",
+            single: true,
+            phase: i,
+            uses: "ph-" + ph.slug,
+            hintFn: () => draft.phases[i].hex.toUpperCase(),
+            get: () => draft.phases[i].color,
+            set: (_m, v) => {
+              draft.phases[i].color = v;
+              draft.phases[i].hex = oklchToHex(v);
+            },
+            sw: () => "",
+            cls: "phase-surface",
+            text: true,
+            styleExtra: () =>
+              `--phase-color:var(--ph-${ph.slug});background:var(--action);color:var(--foreground)`,
+          })),
+        },
+        {
+          title: "Avisos",
+          note: () => "Valem para todas as paletas",
+          rule: "Hoje são fórmulas fixas no código. Editar aqui depende da decisão 3.",
+          rows: [
+            ["error", "Erro", "--color-error-background", "--error-foreground"],
+            [
+              "warning",
+              "Atenção",
+              "--color-warning-background",
+              "--warning-foreground",
+            ],
+            [
+              "success",
+              "Sucesso",
+              "--color-success-background",
+              "--success-foreground",
+            ],
+            [
+              "info",
+              "Informação",
+              "--color-info-background",
+              "--info-foreground",
+            ],
+          ].map(([id, label, bg, fg]) => ({
+            id,
+            label,
+            hint: "Fundo e texto do aviso",
+            kind: "rule",
+            locked: true,
+            sw: () => textSw(bg, fg),
+            text: true,
+            uses: id,
+          })),
+        },
+        {
+          title: "Prioridades",
+          note: () => "Valem para todas as paletas",
+          rows: [
+            ["low", "Baixa"],
+            ["medium", "Média"],
+            ["high", "Alta"],
+          ].map(([k, label]) => ({
+            id: "prio-" + k,
+            label,
+            hint: "Quadro de Hoje",
+            kind: "color",
+            uses: "prio-" + k,
+            get: (m) => draft.prio[m][k],
+            set: (m, v) => (draft.prio[m][k] = v),
+            sw: () => `background:var(--priority-${k})`,
+          })),
+        },
+      ];
+      const ALL_ROWS = GROUPS.flatMap((g) => g.rows);
+
+      /* ===================== Dynamic CSS for the palette ==================== */
+      function modeVars(m) {
+        const p = pal(),
+          d = p[m],
+          dd = PAL_DEFAULTS[m];
+        const fgFallback =
+          m === "light" ? o(0.97, 0, d.primary.h) : o(0.97, 0.014, d.primary.h);
+        const v = {
+          "--background": css(d.bg),
+          "--foreground": css(d.fg),
+          "--primary": css(d.primary),
+          "--primary-foreground": css(d.primaryFg || fgFallback),
+          "--ring": css(d.ring || d.primary),
+          "--card-l-delta": d.cardLDelta ?? dd.cardLDelta,
+          "--popover-l-delta": d.popoverLDelta ?? dd.popoverLDelta,
+          "--input-l-delta": d.inputLDelta ?? dd.inputLDelta,
+          "--border-l-delta": d.borderLDelta ?? dd.borderLDelta,
+          "--action-l-delta": d.actionLDelta ?? dd.actionLDelta,
+          "--action-hover-l-delta": d.actionHoverLDelta ?? dd.actionHoverLDelta,
+          "--shadow-tint": css(d.shadow),
+          "--shadow-alpha": d.shadowOpacity + "%",
+          "--action-shadow-color": p.relief ? css(d.shadow) : "#000000",
+          "--action-top-border": p.relief
+            ? m === "light"
+              ? "#ffffff"
+              : "rgba(255,255,255,0.1)"
+            : "transparent",
+        };
+        if (!p.relief) {
+          v["--action-relief"] = "0";
+          v["--action-shadow-override"] = "0 0 #0000";
+          v["--action-hover-shadow-override"] = "0 0 #0000";
+        }
+        for (const k of ["low", "medium", "high"])
+          v["--priority-" + k] = css(draft.prio[m][k]);
+        return Object.entries(v)
+          .map(([k, x]) => `${k}:${x};`)
+          .join("");
+      }
+      const dyn = document.createElement("style");
+      document.head.appendChild(dyn);
+      function renderDyn() {
+        const phases = draft.phases
+          .map((p) => `--ph-${p.slug}:${p.hex};`)
+          .join("");
+        dyn.textContent = `:root{${phases}} .tl{${modeVars("light")}} .td{${modeVars("dark")}}`;
+      }
+
+      /* ============================== Icons ============================== */
+      const I = {
+        cal: '<svg class="i" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>',
+        copy: '<svg class="i" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
+        plus: '<svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+        lock: '<svg class="i" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+        warn: '<svg class="i" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+        sun: '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>',
+        moon: '<svg class="i" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>',
+        trash:
+          '<svg class="i" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>',
+        reset:
+          '<svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>',
+        info: '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>',
+      };
+
+      /* ============================== Preview ============================== */
+      function paneHTML(m) {
+        const st = ["Repouso", "Mouse", "Foco"];
+        const btns = [
+          ["default", "Principal", "Salvar"],
+          ["secondary", "Secundário", "Filtrar"],
+          ["outline", "Contorno", "Duplicar"],
+          ["ghost", "Discreto", "Cancelar"],
+          ["error", "Erro", "Excluir"],
+          ["ghost-error", "Erro discreto", "Remover"],
+          ["success", "Sucesso", "Concluir"],
+        ];
+        const btnRows = btns
+          .map(([v, name, txt]) => {
+            const uses = {
+              default: "primary",
+              secondary: "secondary",
+              outline: "border secondary",
+              ghost: "secondary",
+              error: "error",
+              "ghost-error": "error",
+              success: "success",
+            }[v];
+            return (
+              `<span class="vname">${name}</span>` +
+              ["", "st-hover", "st-focus"]
+                .map(
+                  (s) =>
+                    `<button class="btn sm v-${v} ${s}" tabindex="-1" data-uses="${uses}${s === "st-focus" ? " ring" : ""}">${txt}</button>`,
+                )
+                .join("")
+            );
+          })
+          .join("");
+        const phases = draft.phases
+          .map((p) => {
+            const card = (cls, hov) =>
+              `<div class="act line ${cls} ${hov ? "st-hover" : ""}" style="--phase-color:var(--ph-${p.slug})" data-uses="ph-${p.slug} action${hov ? "-hover" : ""}"><span class="dot"></span><span class="t">Reels</span></div>`;
+            return `<span class="phase-name"><span class="dot" style="--phase-color:var(--ph-${p.slug})"></span>${p.title}</span>${card("phase-surface")}${card("phase-surface", 1)}${card("phase-vivid")}${card("phase-vivid", 1)}`;
+          })
+          .join("");
+        const block = (hov, late) => `
+          <div class="act block ${hov ? "st-hover" : ""} ${late ? "late" : ""}" data-uses="${late ? "error" : hov ? "action-hover shadow" : "action shadow"}">
+            <span class="t">${late ? "Carrossel de outono" : "Campanha Dia dos Pais"}</span>
+            <span class="meta"><span>${late ? "Beta Clinic" : "Studio Alpha"}</span><span>${late ? "há 2 dias" : "amanhã, 14:00"}</span></span>
+          </div>`;
+        return `
+        <div class="pane-col">
+          <div class="pane-label">${m === "light" ? I.sun + "Claro" : I.moon + "Escuro"}</div>
+          <div class="pane ${m === "light" ? "tl" : "td"}" data-uses="background">
+            <div class="sec">
+              <h3>Superfícies <span>· texto, cartão, menu e campos</span></h3>
+              <div class="surf">
+                <div class="stack">
+                  <div data-uses="foreground"><b style="font-weight:600">Texto principal</b><div class="muted" data-uses="secondary-foreground" style="font-size:13px">Texto secundário a 65%</div></div>
+                  <div class="card-demo" data-uses="card border"><b style="font-weight:500">Cartão</b><span class="muted" style="font-size:13px">Fundo do cartão com borda</span></div>
+                  <div class="field sm" data-uses="input"><span class="ph">Buscar ação</span></div>
+                  <div class="field sm st-focus" data-uses="input ring">Campo em foco</div>
+                  <div class="field sm st-invalid" data-uses="input error">Campo com erro</div>
+                </div>
+                <div class="pop" data-uses="popover shadow">
+                  <div class="mitem">${I.copy}Duplicar</div>
+                  <div class="mitem st-hover" data-uses="secondary">${I.cal}Mudar data</div>
+                  <div class="mitem">${I.plus}Nova ação</div>
+                  <div class="mitem" style="color:var(--error-foreground)" data-uses="error">${I.trash}Excluir</div>
+                </div>
+              </div>
+            </div>
+            <div class="sec">
+              <h3>Cartão de ação <span>· repouso e com o mouse</span></h3>
+              <div class="pair">
+                <span class="colhead">Repouso</span><span class="colhead">Com o mouse</span>
+                ${block(0, 0)}${block(1, 0)}
+                <div class="act line" data-uses="action shadow"><span class="dot" style="background:var(--foreground)"></span><span class="t">Roteiro institucional</span><span class="meta">15:30</span></div>
+                <div class="act line st-hover" data-uses="action-hover shadow"><span class="dot" style="background:var(--foreground)"></span><span class="t">Roteiro institucional</span><span class="meta">15:30</span></div>
+                ${block(0, 1)}${block(1, 1)}
+              </div>
+            </div>
+            <div class="sec">
+              <h3>Fases <span>· suave e viva, repouso e mouse</span></h3>
+              <div class="phase-grid">
+                <span class="colhead"></span><span class="colhead">Suave</span><span class="colhead">Suave · mouse</span><span class="colhead">Viva</span><span class="colhead">Viva · mouse</span>
+                ${phases}
+              </div>
+            </div>
+            <div class="sec">
+              <h3>Botões <span>· tamanho pequeno</span></h3>
+              <div class="btn-grid">
+                <span></span>${st.map((s) => `<span class="colhead">${s}</span>`).join("")}
+                ${btnRows}
+              </div>
+            </div>
+            <div class="sec">
+              <h3>Avisos e prioridades</h3>
+              <div class="stack">
+                <div class="row-wrap">
+                  <span class="badge" style="background:var(--color-info-background);color:var(--info-foreground)" data-uses="info">Informação</span>
+                  <span class="badge" style="background:var(--color-success-background);color:var(--color-success)" data-uses="success">Sucesso</span>
+                  <span class="badge" style="background:var(--color-warning-background);color:var(--warning-foreground)" data-uses="warning">Atenção</span>
+                  <span class="badge" style="background:var(--color-error-background);color:var(--error-foreground)" data-uses="error">Erro</span>
+                </div>
+                <div class="alert" style="background:var(--color-warning-background);color:var(--warning-foreground);border-color:var(--color-warning)" data-uses="warning">
+                  ${I.warn}<div><b>Atenção necessária</b><span>Revise os prazos antes de aprovar.</span></div>
+                </div>
+                <div class="alert" style="background:var(--color-info-background);color:var(--info-foreground);border-color:var(--color-info)" data-uses="info">
+                  ${I.info}<div><b>Atualização disponível</b><span>Há uma nova versão da estratégia.</span></div>
+                </div>
+                <div class="row-wrap" style="gap:16px">
+                  <span class="prio" data-uses="prio-high"><i style="background:var(--priority-high)"></i>Alta</span>
+                  <span class="prio" data-uses="prio-medium"><i style="background:var(--priority-medium)"></i>Média</span>
+                  <span class="prio" data-uses="prio-low"><i style="background:var(--priority-low)"></i>Baixa</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      }
+      function renderPanes() {
+        const el = document.getElementById("panes");
+        el.innerHTML = paneHTML("light") + paneHTML("dark");
+        el.dataset.view = view;
+        el.querySelectorAll(".pane-col").forEach((col, i) => {
+          col.hidden =
+            (view === "light" && i === 1) || (view === "dark" && i === 0);
+        });
+        document.querySelectorAll("[data-view]").forEach((b) => {
+          if (b.tagName === "BUTTON")
+            b.setAttribute("aria-pressed", String(b.dataset.view === view));
+        });
+      }
+
+      /* ============================= Inspector ============================= */
+      function swatch(row, m) {
+        const scope = m === "light" ? "tl" : "td";
+        const style = row.styleExtra ? row.styleExtra() : row.sw();
+        const small = row.child ? " derived" : "";
+        const inner = row.inner || (row.text ? "Aa" : "");
+        return `<span class="sw ${scope} ${row.cls || ""}${small}" style="${style}">${inner}</span>`;
+      }
+      function rowHTML(row) {
+        if (row.kind === "toggle") {
+          return `<div class="tok locked" data-row="${row.id}" data-uses="${row.uses}">
+            <span class="lbl"><b>${row.label}</b><small>${row.hint}</small></span>
+            <span class="spanboth"><button class="switch" role="switch" aria-checked="${pal().relief}" aria-label="${row.label}" id="relief"></button></span></div>`;
+        }
+        const locked = row.kind === "rule";
+        const cell = (m) =>
+          `<span class="cell">${swatch(row, m)}${row.val ? `<em data-val="${row.id}:${m}">${row.val(m)}</em>` : ""}</span>`;
+        const hint = row.hintFn ? row.hintFn() : row.hint;
+        const dot =
+          row.phase !== undefined
+            ? `<span class="mdot" style="background:var(--ph-${draft.phases[row.phase].slug})"></span>`
+            : "";
+        const tag = locked ? "div" : "button";
+        return `<${tag} class="tok ${row.child ? "child" : ""} ${locked ? "locked" : ""}" data-row="${row.id}" data-uses="${row.uses || ""}"
+            ${locked ? "" : `aria-expanded="${openRow === row.id}" type="button"`}>
+            <span class="lbl"><b>${dot}${row.label}${locked ? I.lock : ""}</b><small data-hint="${row.id}">${hint}</small></span>
+            ${cell("light")}${cell("dark")}
+          </${tag}>
+          ${openRow === row.id ? editorHTML(row) : ""}`;
+      }
+      function renderInspector() {
+        const ins = document.getElementById("inspector");
+        const scrollTop = ins.scrollTop;
+        ins.innerHTML = GROUPS.map(
+          (g) => `
+          <section class="grp">
+            <div class="grp-h">
+              <div><h2>${g.title}</h2><p class="muted">${g.note()}</p></div>
+              <span class="mcol" title="Claro">${I.sun}</span><span class="mcol" title="Escuro">${I.moon}</span>
+            </div>
+            ${g.rule ? `<div class="rule">${g.rule}</div>` : ""}
+            ${g.rows.map(rowHTML).join("")}
+          </section>`,
+        ).join("");
+        ins.scrollTop = scrollTop;
+        bindInspector();
+      }
+
+      /* =============================== Editor ============================== */
+      const RANGES = { l: [0, 1, 0.005], c: [0, 0.37, 0.002], h: [0, 360, 1] };
+      const NAMES = { l: "Luz", c: "Saturação", h: "Matiz" };
+      function trackFor(ch, col) {
+        const stops = [];
+        const n = ch === "h" ? 12 : 6;
+        for (let i = 0; i <= n; i++) {
+          const t = i / n;
+          const x = { ...col };
+          x[ch] = RANGES[ch][0] + (RANGES[ch][1] - RANGES[ch][0]) * t;
+          stops.push(css(x));
+        }
+        return `linear-gradient(to right, ${stops.join(",")})`;
+      }
+      function colorBlock(row, m) {
+        const col = row.get(m) || o(0.97, 0, 0);
+        const title = row.single
+          ? "Cor da fase"
+          : m === "light"
+            ? "Claro"
+            : "Escuro";
+        const outOfGamut = !inGamut(oklchToLinear(col));
+        return `<div class="ed-mode" data-mode="${m}">
+          <div class="ed-top">${title}
+            <input class="field" data-text="${m}" value="${css(col)}" aria-label="${row.label}, ${title}, valor" spellcheck="false" />
+          </div>
+          ${["l", "c", "h"]
+            .map(
+              (ch) => `
+            <label class="ch"><span>${NAMES[ch]}</span>
+              <input type="range" class="cslider" data-ch="${ch}" data-m="${m}" min="${RANGES[ch][0]}" max="${RANGES[ch][1]}" step="${RANGES[ch][2]}" value="${col[ch]}"
+                style="--track:${trackFor(ch, col)};--thumb:${css(col)}" aria-label="${NAMES[ch]}, ${title}" />
+              <output data-out="${m}-${ch}">${ch === "h" ? Math.round(col.h) + "°" : (+col[ch]).toFixed(3)}</output>
+            </label>`,
+            )
+            .join("")}
+          <span class="ed-note warn" data-gamut="${m}" ${outOfGamut ? "" : "hidden"}>${I.warn}Fora do que a tela mostra; o navegador ajusta a cor.</span>
+        </div>`;
+      }
+      function editorHTML(row) {
+        if (row.kind === "color") {
+          const modes = row.single ? ["light"] : ["light", "dark"];
+          return `<div class="editor" data-editor="${row.id}">${modes.map((m) => colorBlock(row, m)).join("")}
+            <div><button class="btn xs v-ghost has-end" data-reset="${row.id}" type="button">Restaurar original ${I.reset}</button></div></div>`;
+        }
+        const isNum = row.kind === "number";
+        const min = isNum ? row.min : -0.3,
+          max = isNum ? row.max : 0.3,
+          step = isNum ? 1 : 0.005;
+        return `<div class="editor" data-editor="${row.id}">
+          ${["light", "dark"]
+            .map(
+              (m) => `
+            <label class="ch"><span>${m === "light" ? "Claro" : "Escuro"}</span>
+              <input type="range" class="cslider plain" data-num="${m}" min="${min}" max="${max}" step="${step}" value="${row.get(m)}" aria-label="${row.label}, ${m === "light" ? "claro" : "escuro"}" />
+              <output data-out="${m}-n">${isNum ? row.get(m) + "%" : nf(row.get(m))}</output>
+            </label>`,
+            )
+            .join("")}
+          ${isNum ? "" : `<span class="ed-note">${I.info}Quanto a luz do fundo sobe (+) ou desce (−). A cor e a saturação vêm do Fundo.</span>`}
+          <div><button class="btn xs v-ghost has-end" data-reset="${row.id}" type="button">Restaurar original ${I.reset}</button></div>
+        </div>`;
+      }
+      function refreshEditor(row) {
+        const ed = document.querySelector(`[data-editor="${row.id}"]`);
+        if (!ed) return;
+        ed.querySelectorAll(".ed-mode").forEach((blk) => {
+          const m = blk.dataset.mode,
+            col = row.get(m);
+          blk.querySelectorAll("input[data-ch]").forEach((inp) => {
+            const ch = inp.dataset.ch;
+            inp.style.setProperty("--track", trackFor(ch, col));
+            inp.style.setProperty("--thumb", css(col));
+            if (document.activeElement !== inp) inp.value = col[ch];
+            blk.querySelector(`[data-out="${m}-${ch}"]`).textContent =
+              ch === "h" ? Math.round(col.h) + "°" : (+col[ch]).toFixed(3);
+          });
+          const t = blk.querySelector("[data-text]");
+          if (document.activeElement !== t) t.value = css(col);
+          blk.querySelector("[data-gamut]").hidden = inGamut(
+            oklchToLinear(col),
+          );
+        });
+      }
+      function parseColor(str) {
+        str = str.trim();
+        if (/^#?[0-9a-f]{6}$/i.test(str)) return hexToOklch(str);
+        const mt = str.match(/oklch\(\s*([\d.]+)%?\s+([\d.]+)\s+([\d.]+)/i);
+        if (mt) {
+          let l = +mt[1];
+          if (str.includes("%") && l > 1) l = l / 100;
+          return o(clamp(l, 0, 1), clamp(+mt[2], 0, 0.5), +mt[3] % 360);
+        }
+        return null;
+      }
+
+      /* ============================== Updates ============================== */
+      function changed() {
+        let n = 0;
+        draft.pal.forEach((p, i) => {
+          const a = JSON.stringify(p),
+            b = JSON.stringify(original.pal[i]);
+          if (a !== b) n++;
+        });
+        if (JSON.stringify(draft.phases) !== JSON.stringify(original.phases))
+          n++;
+        if (JSON.stringify(draft.prio) !== JSON.stringify(original.prio)) n++;
+        return n;
+      }
+      function afterEdit(row) {
+        renderDyn();
+        ALL_ROWS.forEach((r) => {
+          if (r.val)
+            ["light", "dark"].forEach((m) => {
+              const el = document.querySelector(`[data-val="${r.id}:${m}"]`);
+              if (el) el.textContent = r.val(m);
+            });
+          if (r.hintFn) {
+            const el = document.querySelector(`[data-hint="${r.id}"]`);
+            if (el) el.textContent = r.hintFn();
+          }
+        });
+        if (row) refreshEditor(row);
+        const n = changed();
+        document.getElementById("dirty").textContent = n
+          ? n === 1
+            ? "1 grupo alterado"
+            : n + " grupos alterados"
+          : "Nenhuma alteração";
+        document.getElementById("discard").disabled = !n;
+      }
+      function highlight(uses, on) {
+        document
+          .querySelectorAll(".hl")
+          .forEach((e) => e.classList.remove("hl"));
+        if (!on || !uses) return;
+        const keys = uses.split(" ");
+        document.querySelectorAll("#panes [data-uses]").forEach((el) => {
+          const own = el.dataset.uses.split(" ");
+          if (
+            keys.some((k) => own.includes(k)) &&
+            !el.classList.contains("pane")
+          )
+            el.classList.add("hl");
+        });
+      }
+      function bindInspector() {
+        const ins = document.getElementById("inspector");
+        ins.querySelectorAll(".tok").forEach((t) => {
+          t.addEventListener("mouseenter", () =>
+            highlight(t.dataset.uses, true),
+          );
+          t.addEventListener("mouseleave", () => highlight(null, false));
+          t.addEventListener("focus", () => highlight(t.dataset.uses, true));
+          t.addEventListener("blur", () => highlight(null, false));
+          if (t.tagName === "BUTTON")
+            t.addEventListener("click", () => {
+              openRow = openRow === t.dataset.row ? null : t.dataset.row;
+              renderInspector();
+              const again = document.querySelector(
+                `[data-row="${t.dataset.row}"]`,
+              );
+              if (again) again.focus({ preventScroll: true });
+            });
+        });
+        const rel = document.getElementById("relief");
+        if (rel)
+          rel.addEventListener("click", () => {
+            pal().relief = !pal().relief;
+            rel.setAttribute("aria-checked", String(pal().relief));
+            afterEdit();
+          });
+        const row = ALL_ROWS.find((r) => r.id === openRow);
+        if (!row) return;
+        const ed = ins.querySelector(`[data-editor="${row.id}"]`);
+        ed.querySelectorAll("input[data-ch]").forEach((inp) =>
+          inp.addEventListener("input", () => {
+            const m = inp.dataset.m;
+            const col = { ...(row.get(m) || o(0.97, 0, 0)) };
+            col[inp.dataset.ch] = +inp.value;
+            row.set(m, col);
+            afterEdit(row);
+          }),
+        );
+        ed.querySelectorAll("input[data-text]").forEach((inp) => {
+          const commit = () => {
+            const col = parseColor(inp.value);
+            if (col) {
+              row.set(inp.dataset.text, col);
+              afterEdit(row);
+            } else inp.value = css(row.get(inp.dataset.text));
+          };
+          inp.addEventListener("change", commit);
+          inp.addEventListener("keydown", (e) => e.key === "Enter" && commit());
+        });
+        ed.querySelectorAll("input[data-num]").forEach((inp) =>
+          inp.addEventListener("input", () => {
+            const m = inp.dataset.num;
+            row.set(m, +(+inp.value).toFixed(3));
+            ed.querySelector(`[data-out="${m}-n"]`).textContent =
+              row.kind === "number" ? inp.value + "%" : nf(+inp.value);
+            afterEdit();
+          }),
+        );
+        ed.querySelector("[data-reset]").addEventListener("click", () => {
+          const fresh = clone(original);
+          if (row.phase !== undefined)
+            draft.phases[row.phase] = fresh.phases[row.phase];
+          else if (row.id.startsWith("prio-")) {
+            const k = row.id.slice(5);
+            draft.prio.light[k] = fresh.prio.light[k];
+            draft.prio.dark[k] = fresh.prio.dark[k];
+          } else
+            ["light", "dark"].forEach((m) =>
+              row.set(m, fresh.pal[cur][m][keyOf(row)]),
+            );
+          renderInspector();
+          afterEdit();
+        });
+      }
+      const keyOf = (row) =>
+        ({
+          bg: "bg",
+          fg: "fg",
+          primary: "primary",
+          primaryFg: "primaryFg",
+          ring: "ring",
+          shadow: "shadow",
+          shadowOpacity: "shadowOpacity",
+          card: "cardLDelta",
+          popover: "popoverLDelta",
+          input: "inputLDelta",
+          border: "borderLDelta",
+          action: "actionLDelta",
+          actionHover: "actionHoverLDelta",
+        })[row.id];
+
+      /* =============================== Export ============================== */
+      function exportCode() {
+        const p = pal();
+        const c = (x) =>
+          `{ h: ${+(+x.h).toFixed(1)}, c: ${+x.c.toFixed(3)}, l: ${+x.l.toFixed(3)} }`;
+        const mode = (d) => `{
+    shadowColor: "${css(d.shadow)}",
+    shadowOpacity: ${d.shadowOpacity},
+    primary: ${c(d.primary)},
+    primaryFg: ${c(d.primaryFg)},
+    bg: ${c(d.bg)},
+    fg: ${c(d.fg)},
+    cardLDelta: ${d.cardLDelta},
+    borderLDelta: ${d.borderLDelta},
+    inputLDelta: ${d.inputLDelta},
+    actionLDelta: ${d.actionLDelta},
+    actionHoverLDelta: ${d.actionHoverLDelta},
+    popoverLDelta: ${d.popoverLDelta},
+    ring: ${c(d.ring)},
+  }`;
+        let out = `{
+  id: "${p.id}",
+  label: "${p.label}",
+  relief: ${p.relief},
+  light: ${mode(p.light)},
+  dark: ${mode(p.dark)},
+},`;
+        if (JSON.stringify(draft.phases) !== JSON.stringify(original.phases)) {
+          out +=
+            "\n\n// PHASES (app/lib/CONSTANTS.ts)\n" +
+            draft.phases.map((ph) => `${ph.slug}: "${ph.hex}",`).join("\n");
+        }
+        return out;
+      }
+      let toastTimer;
+      function toast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("on");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove("on"), 2600);
+      }
+
+      /* =============================== Wiring ============================== */
+      const sel = document.getElementById("palette");
+      sel.innerHTML = draft.pal
+        .map((p, i) => `<option value="${i}">${p.label}</option>`)
+        .join("");
+      sel.addEventListener("change", () => {
+        cur = +sel.value;
+        openRow = null;
+        renderInspector();
+        afterEdit();
+      });
+      document.querySelectorAll("button[data-view]").forEach((b) =>
+        b.addEventListener("click", () => {
+          view = b.dataset.view;
+          renderPanes();
+        }),
+      );
+      document.getElementById("discard").addEventListener("click", () => {
+        Object.assign(draft, clone(original));
+        openRow = null;
+        renderPanes();
+        renderInspector();
+        afterEdit();
+        toast("Alterações descartadas.");
+      });
+      document.getElementById("copy").addEventListener("click", async () => {
+        const code = exportCode();
+        try {
+          await navigator.clipboard.writeText(code);
+          toast(`Código da paleta ${pal().label} copiado.`);
+        } catch (e) {
+          console.log(code);
+          toast("Não foi possível copiar; o código está no console.");
+        }
+      });
+      document
+        .getElementById("save")
+        .addEventListener("click", () =>
+          toast("Protótipo: nada é salvo. O destino depende da decisão 1."),
+        );
+      document.getElementById("chrome-theme").addEventListener("click", () => {
+        const root = document.documentElement;
+        const dark = root.classList.contains("chrome-d");
+        root.classList.toggle("chrome-d", !dark);
+        root.classList.toggle("chrome-l", dark);
+        root.dataset.theme = dark ? "light" : "dark";
+      });
+
+      renderDyn();
+      renderPanes();
+      renderInspector();
+      afterEdit();
+    </script>
+  </body>
+</html>
