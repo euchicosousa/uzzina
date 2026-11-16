@@ -2,13 +2,13 @@
 
 Atualizado em 16/11/2026. Contratos: [AGENTS](../../AGENTS.md). Operação: [README](../../README.md). Ideias futuras: [TODO](../../TODO.md), sem implementação automática.
 
-O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, dois de design system aguardando aceite visual (DS17 e DS18; DS08 encerrado em 13/11 sem implementação), um aberto em 16/11 pronto para execução (DS19; WA01 aberto e encerrado no mesmo dia, sem implementação) e um de arquitetura (16 no total, conforme o tracker em `.scratch/README.md`). Em 15/11 a `main` está igual a `origin/main` (até `1531a1d`); o deploy Ready desses commits na Vercel não foi conferido. Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
+O GitHub recebeu `ce36df0` na `main` em 08/11/2026. A Vercel reportou sucesso para esse commit. Fila atual: 12 tickets do Planejamento em espera, dois de design system aguardando aceite visual (DS17 e DS18; DS08 encerrado em 13/11 sem implementação), um aberto em 16/11 pronto para execução (DS19; WA01 aberto e encerrado no mesmo dia, sem implementação) e um de arquitetura (16 no total, conforme o tracker em `.scratch/README.md`). Em 16/11 a `main` está igual a `origin/main` (até o commit de documentação seguinte a `8d9353e`); o deploy Ready desses commits na Vercel não foi conferido. Commits locais ainda não enviados: `git log origin/main..main`. Estratégias09 permanecem permanentes e ativas. Verificações anteriores ficam no histórico.
 
 ## Pendências reais
 
-- **Deploy na Vercel:** DS05, DS11–DS18 já estão no GitHub (`main` = `origin/main` em 15/11); falta confirmar que a versão de `1531a1d` ficou Ready.
+- **Deploy na Vercel:** DS05, DS11–DS18 já estão no GitHub (`main` = `origin/main` em 15/11); falta confirmar que a versão mais recente (DS19, `8d9353e`) ficou Ready.
 - **Aceite visual do DS17 e do DS18** no app, claro e escuro; no DS17, testar também salvar "Cor viva no escuro" e "Texto na cor viva" em Minha Conta.
-- **DS19 implementado, sem commit** (16/11): migração `20261116120000_phase_color_preference.sql` **aplicada em produção em 16/11**. Falta testar salvar "Cor da fase" em Minha Conta, o aceite visual (claro e escuro), o commit e a publicação.
+- **DS19 enviado ao GitHub** (16/11, `8d9353e`): migração `20261116120000_phase_color_preference.sql` aplicada em produção em 16/11, build ok. Falta confirmar o deploy Ready na Vercel, testar salvar "Cor da fase" em Minha Conta e o aceite visual (claro e escuro).
 - **Sombra colorida da paleta (DS14):** encerrada com aceite do proprietário em 12/11; falta só publicar (a migração `20261112120000` já está aplicada em produção).
 - **Não verificado ainda:** aparência no navegador dos botões do Admin (Novo Usuário, Novo Cliente, Novo Parceiro) e comportamento dos menus Visualizar/Ordenar/Exibir com leitor de tela.
 
@@ -30,7 +30,7 @@ O [ticket de sombra do tema](../../.scratch/design-system-audit/issues/14-global
 
 ### DS19: migração da preferência aplicada — 16/11
 
-A migração `20261116120000_phase_color_preference.sql` foi **aplicada em produção em 16/11/2026** (projeto `dfepmjcozszswocwvdpq`, `CREATE OR REPLACE` pela ferramenta de SQL, sem registro no histórico de migrations), com autorização do proprietário. Antes, o corpo da função vigente foi comparado com `20261113120000` e era idêntico. Depois: chave `phaseColor` presente, chaves do DS17 e do DS14 preservadas, `SECURITY DEFINER`, `search_path` vazio, EXECUTE só para `authenticated`, `service_role` e `postgres`, uma única versão da função. A validação dos valores não foi exercitada no banco e salvar pelo app não foi testado. O código do DS19 continua sem commit.
+A migração `20261116120000_phase_color_preference.sql` foi **aplicada em produção em 16/11/2026** (projeto `dfepmjcozszswocwvdpq`, `CREATE OR REPLACE` pela ferramenta de SQL, sem registro no histórico de migrations), com autorização do proprietário. Antes, o corpo da função vigente foi comparado com `20261113120000` e era idêntico. Depois: chave `phaseColor` presente, chaves do DS17 e do DS14 preservadas, `SECURITY DEFINER`, `search_path` vazio, EXECUTE só para `authenticated`, `service_role` e `postgres`, uma única versão da função. A validação dos valores não foi exercitada no banco e salvar pelo app não foi testado. O código do DS19 foi commitado em `8d9353e` e enviado ao GitHub em 16/11, com build ok; o deploy Ready na Vercel não foi conferido.
 
 ### DS19 implementado na árvore de trabalho — 16/11
 
