@@ -1,20 +1,17 @@
 import {
   ArrowDownAZIcon,
   ArrowUpAZIcon,
-  BanIcon,
   ChevronDownIcon,
   ChevronsUpDownIcon,
   ClockIcon,
   Columns2Icon,
   Columns3Icon,
   Columns4Icon,
-  DropletIcon,
   HeartHandshakeIcon,
   ImageIcon,
   Rows2Icon,
   EyeIcon,
   LayoutListIcon,
-  PaletteIcon,
   ListOrderedIcon,
   Rows3Icon,
   SignalIcon,
@@ -36,15 +33,13 @@ import {
   PrismMenuTrigger,
   PrismTooltip,
 } from "~/components/prism";
-import { ORDER_BY, VARIANT, type PhaseColorMode } from "~/lib/CONSTANTS";
+import { ORDER_BY, VARIANT } from "~/lib/CONSTANTS";
 import { cn } from "~/lib/utils";
 
 export type UViewOptions = {
   variant?: (typeof VARIANT)[keyof typeof VARIANT];
   columns?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   limitHeight?: boolean;
-  /** Phase color of each action card: off, soft tint (DS11) or vivid (DS17). */
-  phaseColor?: PhaseColorMode;
   responsibles?: boolean;
   priority?: boolean;
   category?: boolean;
@@ -60,7 +55,6 @@ export type UViewOptions = {
     variant?: boolean;
     columns?: boolean;
     limitHeight?: boolean;
-    phaseColor?: boolean;
     responsibles?: boolean;
     priority?: boolean;
     category?: boolean;
@@ -74,16 +68,11 @@ export type UViewOptions = {
   };
 };
 
-function isPhaseColorMode(value: unknown): value is PhaseColorMode {
-  return value === "off" || value === "soft" || value === "vivid";
-}
-
 /** Defaults internos — não expostos fora deste módulo */
 const DEFAULT_VIEW_OPTIONS = {
   variant: VARIANT.line,
   columns: 4,
   limitHeight: false,
-  phaseColor: "off",
   ascending: true,
   order: ORDER_BY.date,
   category: true,
@@ -156,7 +145,6 @@ export function getVisualizeGroups(viewOptions: UViewOptions) {
   return {
     variant: !!showOptions.variant,
     limitHeight: !!showOptions.limitHeight,
-    phaseColor: !!showOptions.phaseColor,
     columns: !!showOptions.columns && isContent,
   };
 }
@@ -223,32 +211,6 @@ function VisualizeMenu({
                 textValue="Limitar altura dos dias"
               >
                 <ChevronsUpDownIcon /> Limitar altura dos dias
-              </PrismMenuItem>
-            </PrismMenuGroup>
-          </>
-        )}
-        {groups.phaseColor && (
-          <>
-            {(groups.variant || groups.limitHeight) && <PrismMenuSeparator />}
-            <PrismMenuGroup
-              aria-label="Cor da fase"
-              onSelectionChange={(keys) => {
-                const selected = Array.from(keys)[0];
-                if (isPhaseColorMode(selected))
-                  setViewOptions({ ...viewOptions, phaseColor: selected });
-              }}
-              selectedKeys={new Set([viewOptions.phaseColor ?? "off"])}
-              selectionMode="single"
-            >
-              <PrismMenuLabel>Cor da fase</PrismMenuLabel>
-              <PrismMenuItem id="off" textValue="Desligada">
-                <BanIcon /> Desligada
-              </PrismMenuItem>
-              <PrismMenuItem id="soft" textValue="Suave">
-                <DropletIcon /> Suave
-              </PrismMenuItem>
-              <PrismMenuItem id="vivid" textValue="Viva">
-                <PaletteIcon /> Viva
               </PrismMenuItem>
             </PrismMenuGroup>
           </>

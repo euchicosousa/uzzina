@@ -132,7 +132,6 @@ export function CalendarDayCell({
                     showResponsibles: viewOptions.responsibles,
                     showLate: viewOptions.late,
                     showPriority: viewOptions.priority,
-                    showPhaseColor: viewOptions.phaseColor,
                   }}
                   scrollable={false}
                   isDraggable
@@ -151,7 +150,6 @@ export function CalendarDayCell({
                     showResponsibles: viewOptions.responsibles,
                     showLate: viewOptions.late,
                     showPriority: viewOptions.priority,
-                    showPhaseColor: viewOptions.phaseColor,
                   }}
                   scrollable={false}
                   isDraggable
@@ -171,7 +169,6 @@ export function CalendarDayCell({
                 showResponsibles: viewOptions.responsibles,
                 showLate: viewOptions.late,
                 showPriority: viewOptions.priority,
-                showPhaseColor: viewOptions.phaseColor,
               }}
               scrollable={false}
               isDraggable

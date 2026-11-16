@@ -6,26 +6,18 @@ import {
   Grid3x3Icon,
   HeartHandshakeIcon,
   KanbanIcon,
-  PaletteIcon,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { ActionContainer } from "~/components/features/ActionContainer";
 import { CategoriesBoard } from "~/components/layout/CategoriesBoard";
 import KanbanPhasesBoard from "~/components/layout/KanbanPhasesBoard";
 import { PartnersBoard } from "~/components/layout/PartnersBoard";
 import {
-  PrismButton,
-  PrismMenu,
-  PrismMenuContent,
-  PrismMenuGroup,
-  PrismMenuItem,
-  PrismMenuLabel,
-  PrismMenuTrigger,
   PrismToggleGroup,
   PrismToggleGroupItem,
   PrismTooltip,
 } from "~/components/prism";
-import { VARIANT, type PhaseColorMode } from "~/lib/CONSTANTS";
+import { VARIANT } from "~/lib/CONSTANTS";
 import type { Action } from "~/types";
 import { isInstagramFeed } from "~/utils";
 import { parseU } from "~/utils/date";
@@ -132,71 +124,6 @@ export function TodayViewToggle({
   );
 }
 
-/** Only Partners and Categories offer the phase color; Kanban already groups by phase. */
-function viewHasPhaseColor(view: TodayViewMode) {
-  return view === "partners" || view === "categories";
-}
-
-const PHASE_COLOR_LABELS: Record<PhaseColorMode, string> = {
-  off: "Desligada",
-  soft: "Suave",
-  vivid: "Viva",
-};
-
-function isPhaseColorMode(value: unknown): value is PhaseColorMode {
-  return value === "off" || value === "soft" || value === "vivid";
-}
-
-/**
- * Today block's only display option: a small menu with the three phase color
- * choices (screen state, not saved). The trigger name carries the current
- * choice, since an icon-only button cannot show it.
- */
-export function useTodayPhaseColor(view: TodayViewMode) {
-  const [mode, setMode] = useState<PhaseColorMode>("off");
-  const isAvailable = viewHasPhaseColor(view);
-  return {
-    showPhaseColor: isAvailable ? mode : "off",
-    phaseColorToggle: isAvailable ? (
-      <PrismMenu>
-        <PrismMenuTrigger>
-          <PrismTooltip label="Cor da fase">
-            <PrismButton
-              aria-label={`Cor da fase: ${PHASE_COLOR_LABELS[mode]}`}
-              size="icon-sm"
-              variant={mode === "off" ? "ghost" : "secondary"}
-            >
-              <PaletteIcon />
-            </PrismButton>
-          </PrismTooltip>
-        </PrismMenuTrigger>
-        <PrismMenuContent className="w-48">
-          <PrismMenuGroup
-            aria-label="Cor da fase"
-            onSelectionChange={(keys) => {
-              const selected = Array.from(keys)[0];
-              if (isPhaseColorMode(selected)) setMode(selected);
-            }}
-            selectedKeys={new Set([mode])}
-            selectionMode="single"
-          >
-            <PrismMenuLabel>Cor da fase</PrismMenuLabel>
-            <PrismMenuItem id="off" textValue="Desligada">
-              Desligada
-            </PrismMenuItem>
-            <PrismMenuItem id="soft" textValue="Suave">
-              Suave
-            </PrismMenuItem>
-            <PrismMenuItem id="vivid" textValue="Viva">
-              Viva
-            </PrismMenuItem>
-          </PrismMenuGroup>
-        </PrismMenuContent>
-      </PrismMenu>
-    ) : null,
-  };
-}
-
 export function TodayBoard({
   view,
   actions,
@@ -204,7 +131,6 @@ export function TodayBoard({
   currentDay,
   fillHeight = false,
   showFeedTitle = true,
-  showPhaseColor = "off",
 }: {
   view: TodayViewMode;
   actions: Action[];
@@ -212,8 +138,6 @@ export function TodayBoard({
   currentDay: Date;
   fillHeight?: boolean;
   showFeedTitle?: boolean;
-  /** Phase color of Partners and Categories cards; Kanban and Feed ignore it. */
-  showPhaseColor?: PhaseColorMode;
 }) {
   if (view === "kanban")
     return <KanbanPhasesBoard actions={actions} fillHeight={fillHeight} />;
@@ -231,16 +155,12 @@ export function TodayBoard({
         </div>
       </div>
     );
-  if (view === "categories")
-    return (
-      <CategoriesBoard actions={actions} showPhaseColor={showPhaseColor} />
-    );
+  if (view === "categories") return <CategoriesBoard actions={actions} />;
   return (
     <PartnersBoard
       actions={actions}
       isLoading={isLoading}
       currentDay={currentDay}
-      showPhaseColor={showPhaseColor}
     />
   );
 }

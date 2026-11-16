@@ -4,6 +4,7 @@ import {
   type ActionAIModelId,
 } from "./action-ai-models";
 import { publicAIModels } from "./ai-model-registry";
+import type { PhaseColorMode } from "./CONSTANTS";
 
 export type TodayViewMode = "kanban" | "feed" | "categories" | "partners";
 
@@ -14,6 +15,10 @@ export function isTodayViewMode(value: unknown): value is TodayViewMode {
     value === "categories" ||
     value === "partners"
   );
+}
+
+export function isPhaseColorMode(value: unknown): value is PhaseColorMode {
+  return value === "off" || value === "soft" || value === "vivid";
 }
 
 export type VividDarkTone = "pure" | "dim";
@@ -87,6 +92,8 @@ export type UserPreferences = {
   defaultViewVariant: "line" | "block" | "content";
   defaultTodayView: TodayViewMode;
   showInstagramSidebar: boolean;
+  /** Phase color of every action card in the app: off, soft tint or vivid fill. */
+  phaseColor: PhaseColorMode;
   /** Dark mode fill of the "Viva" phase color: full phase color or dimmed. */
   vividDarkTone: VividDarkTone;
   /** Text tone on the "Viva" phase color. */
@@ -106,6 +113,7 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   defaultViewVariant: "line",
   defaultTodayView: "partners",
   showInstagramSidebar: true,
+  phaseColor: "off",
   vividDarkTone: "pure",
   vividTextTone: "dark",
   customTheme: null,
@@ -123,6 +131,7 @@ export type SerializedPreferences = {
   defaultViewVariant?: string;
   defaultTodayView?: unknown;
   showInstagramSidebar?: boolean;
+  phaseColor?: unknown;
   vividDarkTone?: unknown;
   vividTextTone?: unknown;
   defaultStrategyModel?: unknown;
@@ -256,6 +265,9 @@ export function getUserPreferences(person?: {
       typeof prefs.showInstagramSidebar === "boolean"
         ? prefs.showInstagramSidebar
         : DEFAULT_PREFERENCES.showInstagramSidebar,
+    phaseColor: isPhaseColorMode(prefs.phaseColor)
+      ? prefs.phaseColor
+      : DEFAULT_PREFERENCES.phaseColor,
     vividDarkTone: isVividDarkTone(prefs.vividDarkTone)
       ? prefs.vividDarkTone
       : DEFAULT_PREFERENCES.vividDarkTone,

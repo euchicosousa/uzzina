@@ -20,12 +20,12 @@ import { useMultiSelection } from "~/hooks/useMultiSelection";
 
 // Constants & Helpers
 import { cn } from "cnfast";
+import { getUserPreferences } from "~/lib/preferences";
 import { useActionMutations } from "~/hooks/useActionMutations";
 import { useIsLateAction } from "~/hooks/useIsLateAction";
 import {
   PRIORITIES,
   SIZE,
-  type PhaseColorMode,
   VARIANT,
   type DATE_TIME_DISPLAY,
   type PRIORITY,
@@ -51,8 +51,6 @@ export type ActionDisplayFlags = {
   showResponsibles?: boolean;
   /** Whether to show the priority icon indicator */
   showPriority?: boolean;
-  /** Phase color of the card: off, soft tint (DS11) or vivid fill (DS17) */
-  showPhaseColor?: PhaseColorMode;
 };
 
 /**
@@ -101,9 +99,14 @@ export function ActionItem({
     showCategory = false,
     showResponsibles = false,
     showPriority = false,
-    showPhaseColor = "off",
   } = displayFlags;
   const { person, setPrimaryAction } = useAppContext();
+  // Phase color is one account-wide preference (DS19): off, soft tint or vivid fill
+  const rawPreferences = person?.preferences;
+  const showPhaseColor = useMemo(
+    () => getUserPreferences({ preferences: rawPreferences }).phaseColor,
+    [rawPreferences],
+  );
   const {
     currentPhase,
     currentPartners,

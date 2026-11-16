@@ -132,7 +132,6 @@ function PartnerPage() {
     showOptions: {
       variant: true,
       limitHeight: true,
-      phaseColor: true,
       responsibles: true,
       priority: true,
       category: true,

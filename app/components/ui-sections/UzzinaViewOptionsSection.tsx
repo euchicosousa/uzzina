@@ -27,7 +27,6 @@ export function UViewOptionsPlayground() {
       variant: true,
       columns: true,
       limitHeight: true,
-      phaseColor: true,
       responsibles: true,
       priority: true,
       category: true,
@@ -56,7 +55,7 @@ export function UViewOptionsPlayground() {
 
   return (
     <PropsPlayground
-      caption={`variant: ${viewOptions.variant} · columns: ${viewOptions.columns} · order: ${viewOptions.order} · ascending: ${viewOptions.ascending} · phaseColor: ${viewOptions.phaseColor ?? "off"}`}
+      caption={`variant: ${viewOptions.variant} · columns: ${viewOptions.columns} · order: ${viewOptions.order} · ascending: ${viewOptions.ascending}`}
       preview={
         <div className="w-full">
           <UViewOptions
@@ -84,12 +83,6 @@ export function UViewOptionsPlayground() {
         onChange={(v) => updateShowOption("limitHeight", v)}
         prop="showOptions.limitHeight"
         value={show.limitHeight ?? true}
-      />
-      <PlaygroundBoolean
-        label="Cor da fase (Desligada / Suave / Viva)"
-        onChange={(v) => updateShowOption("phaseColor", v)}
-        prop="showOptions.phaseColor"
-        value={show.phaseColor ?? true}
       />
       <PlaygroundBoolean
         label="Critério de ordenação"

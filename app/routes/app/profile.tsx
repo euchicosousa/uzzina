@@ -66,6 +66,7 @@ import { PALLETE } from "~/lib/palettes";
 import {
   applyVividPreferences,
   getUserPreferences,
+  isPhaseColorMode,
   isTodayViewMode,
   isVividDarkTone,
   isVividTextTone,
@@ -77,7 +78,7 @@ import {
 import { createSupabaseBrowserClient } from "~/lib/supabase.client";
 import { updateMyPreferences, updateOwnProfile } from "~/models/people";
 import { CloudCheckIcon, CloudIcon } from "lucide-react";
-import { PHASES } from "~/lib/CONSTANTS";
+import { PHASES, type PhaseColorMode } from "~/lib/CONSTANTS";
 import { CustomThemePanel } from "~/components/features/profile/CustomThemePanel";
 import {
   applyCustomThemeChange,
@@ -414,6 +415,9 @@ function ProfilePage() {
   const [showInstagramSidebar, setShowInstagramSidebar] = useState<boolean>(
     preferences.showInstagramSidebar,
   );
+  const [phaseColor, setPhaseColor] = useState<PhaseColorMode>(
+    preferences.phaseColor,
+  );
   const [vividDarkTone, setVividDarkTone] = useState<VividDarkTone>(
     preferences.vividDarkTone,
   );
@@ -448,6 +452,7 @@ function ProfilePage() {
   const isAppearanceDirty =
     selectedTheme !== initialRef.current.theme ||
     selectedThemeColor !== initialRef.current.themeColorIndex ||
+    phaseColor !== initialRef.current.phaseColor ||
     vividDarkTone !== initialRef.current.vividDarkTone ||
     vividTextTone !== initialRef.current.vividTextTone ||
     (selectedThemeColor === -1 &&
@@ -600,6 +605,7 @@ function ProfilePage() {
         ...(showInstagramSidebar !== initial.showInstagramSidebar
           ? { showInstagramSidebar }
           : {}),
+        ...(phaseColor !== initial.phaseColor ? { phaseColor } : {}),
         ...(vividDarkTone !== initial.vividDarkTone ? { vividDarkTone } : {}),
         ...(vividTextTone !== initial.vividTextTone ? { vividTextTone } : {}),
         ...(strategyModelsDraft !== undefined &&
@@ -1081,85 +1087,125 @@ function ProfilePage() {
           </ProfileSetting>
 
           <ProfileSetting
-            title="Cor viva no escuro"
-            description="Como a opção Viva de Cor da fase aparece no tema escuro: a cor da fase pura ou atenuada."
+            title="Cor da fase"
+            description="Pinta cada cartão de ação com a cor da fase em que ele está, em todas as telas. Suave usa um tom leve; Viva usa a cor cheia."
           >
-            <div className="flex flex-col gap-4">
-              <PrismToggleGroup
-                fullWidth
-                aria-label="Cor viva no escuro"
-                selectedKeys={[vividDarkTone]}
-                variant="outline"
-                onSelectionChange={(keys) => {
-                  const val = Array.from(keys)[0];
-                  if (isVividDarkTone(val)) handleVividDarkToneChange(val);
-                }}
+            <PrismToggleGroup
+              fullWidth
+              aria-label="Cor da fase"
+              selectedKeys={[phaseColor]}
+              variant="outline"
+              onSelectionChange={(keys) => {
+                const val = Array.from(keys)[0];
+                if (isPhaseColorMode(val)) setPhaseColor(val);
+              }}
+            >
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="off"
               >
-                <PrismToggleGroupItem
-                  className={PROFILE_CHOICE_CLASS_NAME}
-                  id="pure"
-                >
-                  Pura
-                </PrismToggleGroupItem>
-                <PrismToggleGroupItem
-                  className={PROFILE_CHOICE_CLASS_NAME}
-                  id="dim"
-                >
-                  Atenuada
-                </PrismToggleGroupItem>
-              </PrismToggleGroup>
-              <VividPhasePreview
-                darkTone={vividDarkTone}
-                mode="dark"
-                textTone={vividTextTone}
-              />
-            </div>
+                Desligada
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="soft"
+              >
+                Suave
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="vivid"
+              >
+                Viva
+              </PrismToggleGroupItem>
+            </PrismToggleGroup>
           </ProfileSetting>
 
-          <ProfileSetting
-            title="Texto na cor viva"
-            description="Tom do texto e dos ícones sobre a cor viva da fase."
-          >
-            <div className="flex flex-col gap-4">
-              <PrismToggleGroup
-                fullWidth
-                aria-label="Texto na cor viva"
-                selectedKeys={[vividTextTone]}
-                variant="outline"
-                onSelectionChange={(keys) => {
-                  const val = Array.from(keys)[0];
-                  if (isVividTextTone(val)) handleVividTextToneChange(val);
-                }}
+          {/* The two vivid tones keep their saved values while hidden. */}
+          {phaseColor === "vivid" && (
+            <>
+              <ProfileSetting
+                title="Cor viva no escuro"
+                description="Como a opção Viva de Cor da fase aparece no tema escuro: a cor da fase pura ou atenuada."
               >
-                <PrismToggleGroupItem
-                  className={PROFILE_CHOICE_CLASS_NAME}
-                  id="dark"
-                >
-                  Escuro
-                </PrismToggleGroupItem>
-                <PrismToggleGroupItem
-                  className={PROFILE_CHOICE_CLASS_NAME}
-                  id="light"
-                >
-                  Claro
-                </PrismToggleGroupItem>
-              </PrismToggleGroup>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <VividPhasePreview
-                  darkTone={vividDarkTone}
-                  mode="light"
-                  textTone={vividTextTone}
-                  sample="type"
-                />
-                <VividPhasePreview
-                  darkTone={vividDarkTone}
-                  mode="dark"
-                  textTone={vividTextTone}
-                  sample="type"
-                />
-              </div>
-            </div>
-          </ProfileSetting>
+                <div className="flex flex-col gap-4">
+                  <PrismToggleGroup
+                    fullWidth
+                    aria-label="Cor viva no escuro"
+                    selectedKeys={[vividDarkTone]}
+                    variant="outline"
+                    onSelectionChange={(keys) => {
+                      const val = Array.from(keys)[0];
+                      if (isVividDarkTone(val)) handleVividDarkToneChange(val);
+                    }}
+                  >
+                    <PrismToggleGroupItem
+                      className={PROFILE_CHOICE_CLASS_NAME}
+                      id="pure"
+                    >
+                      Pura
+                    </PrismToggleGroupItem>
+                    <PrismToggleGroupItem
+                      className={PROFILE_CHOICE_CLASS_NAME}
+                      id="dim"
+                    >
+                      Atenuada
+                    </PrismToggleGroupItem>
+                  </PrismToggleGroup>
+                  <VividPhasePreview
+                    darkTone={vividDarkTone}
+                    mode="dark"
+                    textTone={vividTextTone}
+                  />
+                </div>
+              </ProfileSetting>
+
+              <ProfileSetting
+                title="Texto na cor viva"
+                description="Tom do texto e dos ícones sobre a cor viva da fase."
+              >
+                <div className="flex flex-col gap-4">
+                  <PrismToggleGroup
+                    fullWidth
+                    aria-label="Texto na cor viva"
+                    selectedKeys={[vividTextTone]}
+                    variant="outline"
+                    onSelectionChange={(keys) => {
+                      const val = Array.from(keys)[0];
+                      if (isVividTextTone(val)) handleVividTextToneChange(val);
+                    }}
+                  >
+                    <PrismToggleGroupItem
+                      className={PROFILE_CHOICE_CLASS_NAME}
+                      id="dark"
+                    >
+                      Escuro
+                    </PrismToggleGroupItem>
+                    <PrismToggleGroupItem
+                      className={PROFILE_CHOICE_CLASS_NAME}
+                      id="light"
+                    >
+                      Claro
+                    </PrismToggleGroupItem>
+                  </PrismToggleGroup>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <VividPhasePreview
+                      darkTone={vividDarkTone}
+                      mode="light"
+                      textTone={vividTextTone}
+                      sample="type"
+                    />
+                    <VividPhasePreview
+                      darkTone={vividDarkTone}
+                      mode="dark"
+                      textTone={vividTextTone}
+                      sample="type"
+                    />
+                  </div>
+                </div>
+              </ProfileSetting>
+            </>
+          )}
           <AppBarSpacer />
         </PrismTabPanel>
 

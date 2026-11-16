@@ -144,24 +144,6 @@ describe("ViewOptionsComponent", () => {
     expect(screen.queryAllByRole("separator")).toHaveLength(1);
   });
 
-  it("offers the phase color as three single choices", async () => {
-    const calls = mount({
-      phaseColor: "soft",
-      showOptions: { phaseColor: true },
-    });
-    await openMenu("Visualizar");
-    for (const name of ["Desligada", "Suave", "Viva"]) {
-      expect(await screen.findByRole("menuitemradio", { name })).toBeTruthy();
-    }
-    expect(
-      screen
-        .getByRole("menuitemradio", { name: "Suave" })
-        .getAttribute("aria-checked"),
-    ).toBe("true");
-    await user.click(screen.getByRole("menuitemradio", { name: "Viva" }));
-    expect(calls.at(-1)?.phaseColor).toBe("vivid");
-  });
-
   it("offers columns only in the content variant", async () => {
     mount({ variant: "content" });
     await openMenu("Visualizar");
@@ -174,7 +156,7 @@ describe("ViewOptionsComponent", () => {
 describe("Visualizar groups for each screen that uses it", () => {
   // showOptions copied from each screen's useViewOptions call.
   const screens: Record<string, ViewOptions["showOptions"]> = {
-    sprint: { variant: true, columns: true, phaseColor: true },
+    sprint: { variant: true, columns: true },
     late: {
       ascending: true,
       order: true,
@@ -187,12 +169,10 @@ describe("Visualizar groups for each screen that uses it", () => {
       ascending: true,
       order: true,
       limitHeight: true,
-      phaseColor: true,
     },
     partner: {
       variant: true,
       limitHeight: true,
-      phaseColor: true,
       responsibles: true,
       priority: true,
       category: true,
@@ -211,37 +191,31 @@ describe("Visualizar groups for each screen that uses it", () => {
     expect(groups("sprint", "block")).toEqual({
       variant: true,
       limitHeight: false,
-      phaseColor: true,
       columns: false,
     });
     expect(groups("sprint", "content")).toEqual({
       variant: true,
       limitHeight: false,
-      phaseColor: true,
       columns: true,
     });
     expect(groups("late", "block")).toEqual({
       variant: true,
       limitHeight: false,
-      phaseColor: false,
       columns: false,
     });
     expect(groups("calendar", "line")).toEqual({
       variant: false,
       limitHeight: true,
-      phaseColor: true,
       columns: false,
     });
     expect(groups("partner", "line")).toEqual({
       variant: true,
       limitHeight: true,
-      phaseColor: true,
       columns: false,
     });
     expect(groups("partner", "content")).toEqual({
       variant: true,
       limitHeight: true,
-      phaseColor: true,
       columns: false,
     });
   });

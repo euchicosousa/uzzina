@@ -56,7 +56,6 @@ export function HomeCalendarView({
     partner: true,
     showOptions: {
       limitHeight: true,
-      phaseColor: true,
       ascending: true,
       order: true,
     },

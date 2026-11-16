@@ -11,7 +11,6 @@ import {
   TodayBoard,
   TodayViewToggle,
   useTodayActions,
-  useTodayPhaseColor,
   useTodayTitle,
   type TodayViewMode,
 } from "./TodayViewParts";
@@ -39,7 +38,6 @@ export function HomeTodayView({
   const setCurrentDay = onCurrentDayChange ?? setUncontrolledDay;
 
   const filteredActions = useTodayActions(actions, view, currentDay);
-  const { showPhaseColor, phaseColorToggle } = useTodayPhaseColor(view);
 
   useSelectionContext(JSON.stringify([currentDay, view]));
   const title = useTodayTitle(currentDay);
@@ -66,7 +64,6 @@ export function HomeTodayView({
             currentDay={currentDay}
             setCurrentDay={setCurrentDay}
           />
-          {phaseColorToggle}
           <TodayViewToggle view={view} onViewChange={setView} />
         </div>
       }
@@ -77,7 +74,6 @@ export function HomeTodayView({
           actions={filteredActions}
           isLoading={isLoading}
           currentDay={currentDay}
-          showPhaseColor={showPhaseColor}
         />
       </div>
     </HomeViewWrapper>
