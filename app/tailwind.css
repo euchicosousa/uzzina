@@ -82,7 +82,7 @@
   --error-foreground: oklch(0.6 calc(var(--chroma) * 1.1) var(--error-hue));
   --color-error-background: color-mix(
     in srgb,
-    var(--color-error) 7%,
+    var(--color-error) 13%,
     var(--card)
   );
 

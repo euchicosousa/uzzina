@@ -167,7 +167,7 @@ export function ActionItem({
     if (isLateShown) {
       baseStyles = cn(
         baseStyles,
-        "late-surface bg-error-background text-error-foreground hover:bg-error-background ring ring-error",
+        "late-surface bg-error-background/70 text-error-foreground hover:bg-error-background ring ring-error",
       );
     }
     // Sprint keeps its thicker ring; a late action keeps it red.
