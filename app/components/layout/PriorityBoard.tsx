@@ -8,6 +8,8 @@ import { useSelectionActions } from "~/hooks/useMultiSelection";
 import {
   DATE_TIME_DISPLAY,
   INTENT,
+  type PHASE,
+  PHASES,
   PRIORITIES,
   type PRIORITY,
   type PRIORITY_TYPE,
@@ -34,6 +36,14 @@ const PRIORITY_BORDER: Record<PRIORITY, string> = {
 
 function isPriority(value: unknown): value is PRIORITY {
   return typeof value === "string" && value in PRIORITIES;
+}
+
+function isPhase(value: unknown): value is PHASE {
+  return typeof value === "string" && Object.hasOwn(PHASES, value);
+}
+
+function getPhaseOrder(phase: unknown): number {
+  return isPhase(phase) ? PHASES[phase].order : Number.MAX_SAFE_INTEGER;
 }
 
 // Invalid legacy values (such as the string "null") are shown as medium
@@ -78,6 +88,9 @@ export function PriorityBoard({
     const map: Record<PRIORITY, Action[]> = { low: [], medium: [], high: [] };
     for (const action of actionsWithOverrides) {
       map[getColumnPriority(action)].push(action);
+    }
+    for (const column of Object.values(map)) {
+      column.sort((a, b) => getPhaseOrder(a.phase) - getPhaseOrder(b.phase));
     }
     return map;
   }, [actionsWithOverrides]);

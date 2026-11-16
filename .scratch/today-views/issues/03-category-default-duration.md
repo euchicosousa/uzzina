@@ -19,23 +19,23 @@ Cada categoria tem uma duração padrão. A ação nasce com a duração da sua 
 - **Não existe essa relação no app.** A lista de categorias (`app/lib/CONSTANTS.ts`) não tem duração, e a criação (`app/utils/factory.ts`) usa 10 fixo.
 - **Os dados mostram que ela já existiu** (duração mais comum por categoria no banco, em 16/11), e serviram de ponto de partida para a tabela abaixo, ajustada pelo proprietário.
 
-## Tabela aprovada pelo proprietário em 16/11/2026
+## Tabela aplicada em `CATEGORIES` (`app/lib/CONSTANTS.ts`, atualizada em 16/11/2026)
 
-| Categoria     | Duração padrão | Hoje no banco (mais comum) |
-| ------------- | -------------- | -------------------------- |
-| Post Estático | 10 min         | 10 min                     |
-| Carrossel     | 20 min         | 10 min                     |
-| Reels         | 30 min         | 20 min                     |
-| Stories       | 5 min          | 5 min                      |
-| Tarefa        | 5 min          | 5 min                      |
-| Financeiro    | 5 min          | 5 min                      |
-| Gravação      | 120 min        | 60 min                     |
-| Reunião       | 60 min         | 60 min                     |
-| Design        | 30 min         | 30 min                     |
-| Tech/Coding   | 30 min         | 30 min                     |
-| Social Media  | 15 min         | 15 min                     |
-| Tráfego Pago  | 15 min         | 15 min                     |
-| Impresso      | 30 min         | 5 min (1 ação)             |
+| Categoria     | Duração padrão (`defaultTime`) | Hoje no banco (mais comum) |
+| ------------- | ------------------------------ | -------------------------- |
+| Post Estático | 30 min                         | 10 min                     |
+| Carrossel     | 50 min                         | 10 min                     |
+| Reels         | 40 min                         | 20 min                     |
+| Stories       | 20 min                         | 5 min                      |
+| Tarefa        | 10 min                         | 5 min                      |
+| Financeiro    | 10 min                         | 5 min                      |
+| Gravação      | 120 min                        | 60 min                     |
+| Reunião       | 60 min                         | 60 min                     |
+| Design        | 70 min                         | 30 min                     |
+| Tech/Coding   | 90 min                         | 30 min                     |
+| Social Media  | 40 min                         | 15 min                     |
+| Tráfego Pago  | 30 min                         | 15 min                     |
+| Impresso      | 30 min                         | 5 min (1 ação)             |
 
 Impresso fica com 30 porque costuma envolver trabalho de design.
 
@@ -61,8 +61,7 @@ Impresso fica com 30 porque costuma envolver trabalho de design.
 4. **Sem atalhos de teclado para trocar categoria.** Nenhum foi criado.
 5. **Menu em lote** (`BulkActionMenu.tsx`): também troca a categoria (esquecido na decisão inicial, confirmado pelo proprietário em 16/11). Mantido exatamente como implementado, aplicando a mesma regra de duração; o item não foi removido.
 
-**Caminhos que trocam a categoria:** (a) gaveta, ao criar e ao editar; (b) menu em lote. O quadro Categorias não troca categoria.
-6. **Duração visível no seletor (`showTime`) e limpeza do rodapé (decisão final em 16/11/2026):** `UCategoriesCombobox` mantém a prop opcional `showTime` (padrão `false`), usada no rodapé da gaveta e na galeria `/ui`. Cada categoria mostra a duração padrão logo ao lado do nome (`text-xs text-secondary-foreground tabular-nums`), oculta por padrão (`opacity-0`) e visível instantaneamente em hover, foco ou quando selecionada. No rodapé da gaveta (`ActionFormFooter.tsx`), o antigo botão `ID` (e seu diálogo) foi removido a pedido do proprietário.
+**Caminhos que trocam a categoria:** (a) gaveta, ao criar e ao editar; (b) menu em lote. O quadro Categorias não troca categoria. 6. **Duração visível no seletor (`showTime`) e limpeza do rodapé (decisão final em 16/11/2026):** `UCategoriesCombobox` mantém a prop opcional `showTime` (padrão `false`), usada no rodapé da gaveta e na galeria `/ui`. Cada categoria mostra a duração padrão logo ao lado do nome (`text-xs text-secondary-foreground tabular-nums`), oculta por padrão (`opacity-0`) e visível instantaneamente em hover, foco ou quando selecionada. No rodapé da gaveta (`ActionFormFooter.tsx`), o antigo botão `ID` (e seu diálogo) foi removido a pedido do proprietário.
 
 **Estado:** implementado localmente, não commitado; ajustado e conferido pelo proprietário no app (16/11/2026).
 

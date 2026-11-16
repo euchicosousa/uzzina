@@ -59,7 +59,7 @@ export const CATEGORIES = {
     area: "account",
     tag: "ADS",
     tag_min: "ad",
-    defaultTime: 15,
+    defaultTime: 30,
   },
   capture: {
     slug: "capture",
@@ -79,7 +79,7 @@ export const CATEGORIES = {
     area: "creative",
     tag: "CRSL",
     tag_min: "cr",
-    defaultTime: 20,
+    defaultTime: 50,
   },
   design: {
     slug: "design",
@@ -89,7 +89,7 @@ export const CATEGORIES = {
     area: "creative",
     tag: "DSGN",
     tag_min: "dg",
-    defaultTime: 30,
+    defaultTime: 70,
   },
   dev: {
     slug: "dev",
@@ -99,7 +99,7 @@ export const CATEGORIES = {
     area: "creative",
     tag: "TECH",
     tag_min: "tc",
-    defaultTime: 30,
+    defaultTime: 90,
   },
   finance: {
     slug: "finance",
@@ -109,7 +109,7 @@ export const CATEGORIES = {
     area: "adm",
     tag: "FINC",
     tag_min: "fn",
-    defaultTime: 5,
+    defaultTime: 10,
   },
   meeting: {
     slug: "meeting",
@@ -129,7 +129,7 @@ export const CATEGORIES = {
     area: "creative",
     tag: "POST",
     tag_min: "pt",
-    defaultTime: 10,
+    defaultTime: 30,
   },
   print: {
     slug: "print",
@@ -149,7 +149,7 @@ export const CATEGORIES = {
     area: "creative",
     tag: "REEL",
     tag_min: "rl",
-    defaultTime: 30,
+    defaultTime: 40,
   },
   sm: {
     slug: "sm",
@@ -159,7 +159,7 @@ export const CATEGORIES = {
     area: "account",
     tag: "SOCI",
     tag_min: "sm",
-    defaultTime: 15,
+    defaultTime: 40,
   },
   stories: {
     slug: "stories",
@@ -169,7 +169,7 @@ export const CATEGORIES = {
     area: "creative",
     tag: "STOR",
     tag_min: "st",
-    defaultTime: 5,
+    defaultTime: 20,
   },
   todo: {
     slug: "todo",
@@ -179,7 +179,7 @@ export const CATEGORIES = {
     area: "account",
     tag: "TASK",
     tag_min: "ta",
-    defaultTime: 5,
+    defaultTime: 10,
   },
 } as const;
 export type CATEGORY = keyof typeof CATEGORIES;
@@ -244,6 +244,7 @@ export const VARIANT = {
   line: "line",
   block: "block",
   content: "content",
+  timeline: "timeline",
 } as const;
 /** "Cor da fase" on action cards: off, soft tint (DS11) or full fill (DS17). */
 export type PhaseColorMode = "off" | "soft" | "vivid";
