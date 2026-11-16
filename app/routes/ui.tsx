@@ -59,6 +59,7 @@ import {
   UzzinaAIModelSelectSection,
   UzzinaAIAllowanceMeterSection,
   UzzinaPreferenceSwitchSection,
+  UzzinaTimelinePreviewSection,
   SelectSection,
   CalendarSection,
   AccordionSection,
@@ -328,6 +329,12 @@ const SIDEBAR_ITEMS: GallerySidebarItem[] = [
     label: "UPreferenceSwitch",
     section: "uzzina",
     keywords: ["preferencia", "switch", "alternar", "ativo", "inativo"],
+  },
+  {
+    id: "uzzina-timeline-preview",
+    label: "Linha do tempo (Prévia HOJE-02)",
+    section: "uzzina",
+    keywords: ["linha do tempo", "timeline", "gantt", "hoje", "hora", "previa"],
   },
   {
     id: "uzzina-view-options",
@@ -1142,6 +1149,7 @@ function UIPage() {
               <UzzinaLoaderSection />
               <UzzinaPaletteEditorSection />
               <UzzinaPreferenceSwitchSection />
+              <UzzinaTimelinePreviewSection />
               <UzzinaViewOptionsSection />
             </div>
           ) : (

@@ -1,6 +1,6 @@
 # HOJE-02 — Nova visualização do Hoje "Linha do tempo" (o dia por hora, estilo Gantt)
 
-**Status.** Aberto em 16/11/2026 a pedido do proprietário. Levantamento feito na abertura (código e contagem no banco de produção, só leitura). Nenhum arquivo do app foi alterado. Decisões fechadas pelo proprietário em 16/11/2026 (seção "Decisões fechadas"). **Pronto para execução;** falta só o proprietário mandar executar. Pelo risco de desenho, a execução começa por uma **prévia** para o proprietário aprovar antes do código definitivo.
+**Status.** Implementado localmente na `main` em 16/11/2026 (Etapas 1–5 concluídas, ainda sem commit), aguardando validação visual/interação final do proprietário em dev/produção e commit. Decisões ajustadas durante a execução em 16/11/2026 (ver seção "Decisões fechadas").
 
 **Independência.** Este ticket e o [HOJE-01](01-priority-view.md) (visualização por prioridade) são separados e um não depende do outro. Os dois acrescentam um botão ao mesmo seletor de visualização do Hoje, então são executados um de cada vez no checkout.
 
@@ -52,14 +52,64 @@ No **Hoje**, as ações do dia aparecem em quadros (por fase, categoria, feed ou
 6. Acrescentar "Linha do tempo" às opções de "Visualização inicial do Hoje" em `app/routes/app/profile.tsx`, mantendo "Parceiros" como padrão, conferindo antes a regra descrita em "Banco".
 7. Atualizar `docs/contracts/pages-today-profile-planning.md`, `docs/contracts/database-and-deploy.md` (se houver migration), a galeria `/ui` se nascer componente reutilizável e `CURRENT.md`.
 
+## Etapas de execução (subdivisão para subagentes)
+
+Cada etapa abaixo pode ser executada por um subagente por vez, em ordem, com validação entre elas:
+
+### Etapa 1 — Prévia visual isolada (gate de aprovação)
+
+- **Objetivo:** validar o desenho antes de mexer no Hoje real.
+- **Escopo:** criar uma prévia isolada (na `/ui` ou rota de prévia) com dados fictícios mostrando:
+  - Eixo horizontal 8h–22h, checkbox `"24 horas"` e linha vertical do `"agora"`.
+  - Ações de 5, 10, 30 e 60 minutos (barra proporcional + título continuando para fora à direita nas curtas).
+  - Sobreposição de ações no mesmo horário empilhadas em faixas dentro da linha da pessoa.
+  - Duas pessoas, modos claro e escuro, e comportamento no celular.
+- **Critério de passagem:** aprovação explícita do proprietário antes de iniciar a Etapa 2.
+
+### Etapa 2 — Núcleo puro de cálculos e regras (sem UI)
+
+- **Objetivo:** isolar a lógica de tempo, faixas e agrupamento, garantindo previsibilidade com testes unitários.
+- **Escopo:**
+  - Conversão horário ↔ posição/largura para as janelas 8h–22h e 24h.
+  - Algoritmo de empilhamento em faixas (lanes) para ações sobrepostas.
+  - Encaixe em passos de 5 minutos e duração mínima de 5 minutos (mover início, puxar alça esquerda mantendo fim, puxar alça direita mantendo início, sem trocar o dia).
+  - Agrupamento por responsável (não-admin vê só a própria linha; admin vê todas com a própria primeiro e filtra por responsáveis; ação sem responsável cai na linha de quem criou).
+  - Testes unitários focados desses helpers (`bun test`).
+- **Critério de passagem:** helpers tipados sem `any` e suíte unitária verde.
+
+### Etapa 3 — Integração no Hoje e Minha Conta (somente leitura + clique na gaveta)
+
+- **Objetivo:** colocar a visualização real no app sem risco de alterações acidentais enquanto o layout estabiliza.
+- **Escopo:**
+  - Incluir `"timeline"` em `TodayViewMode` (`app/lib/preferences.ts`).
+  - Adicionar botão e renderização em `app/components/features/home/TodayViewParts.tsx` (Home e Hoje).
+  - Adicionar `"Linha do tempo"` em Minha Conta (`app/routes/app/profile.tsx`), mantendo `"Parceiros"` como padrão, após conferir se `20261116130000_today_view_priority_timeline.sql` já está ativa em produção.
+  - Criar `TimelineBoard` em `app/components/layout/` com filtro `UPeopleCombobox`, checkbox `"24 horas"`, linha do `"agora"`, respeito à "Cor da fase" e sinal de concluído, área rolável fora da ordem de foco e clique abrindo a gaveta.
+- **Critério de passagem:** visual idêntico ao aprovado na Etapa 1 com dados reais (somente leitura) e `tsc --noEmit` limpo.
+
+### Etapa 4 — Arrastar, alças de duração, teclado e gravação concorrente
+
+- **Objetivo:** habilitar edição direta de horário e duração na linha do tempo.
+- **Escopo:**
+  - Arrastar o cartão para mudar o horário de início (passo de 5 min), exibindo o novo horário durante o gesto.
+  - Alça esquerda (muda início mantendo fim) e alça direita (muda fim/duração), mínimo de 5 min, funcionando com mouse e toque.
+  - Navegação e edição por teclado (setas movem 1 passo; `Shift + setas` ajustam duração) e `aria-label` nas alças.
+  - Gravação otimista com `useActionMutations` (`INTENT.update_action`, `expectedUpdatedAt`) e rollback em caso de conflito/erro (padrão `useKanbanDnd`).
+- **Critério de passagem:** typecheck limpo + roteiro de validação manual para o proprietário testar em ações reais.
+
+### Etapa 5 — Documentação e fechamento
+
+- **Objetivo:** consolidar contratos e status do ticket.
+- **Escopo:** atualizar `docs/contracts/pages-today-profile-planning.md`, galeria `/ui` (se aplicável) e `docs/audits/CURRENT.md`; conferência final de formatação e build.
+
 ## Decisões fechadas em 16/11/2026
 
-1. **Passo do arrastar e duração mínima:** 5 minutos.
+1. **Passo do arrastar e duração mínima:** passo de 5 minutos; duração mínima exibida e editável de 10 minutos (ajustado na execução). Escala final de `6px/min`, eixo contínuo `00h–24h` (sem checkbox "24 horas") com rolagem automática inicial para a linha "Agora" no dia atual.
 2. **Nome:** "Linha do tempo" (no código, `timeline`). "Agenda" foi recusado.
-3. **Pessoas:** quem não é administrador vê só a própria linha; o administrador vê todas e filtra por um seletor de responsáveis que começa com todos.
-   - **Ação sem responsável:** o proprietário achava que não existia. Conferido em produção em 16/11: o banco não impede lista vazia e o seletor da gaveta deixa desmarcar todos. São 5 ações em 7.389; 3 ativas, todas marcadas para 19/11/2026. Decisão: **sem linha "Sem responsável"**; a ação sem responsável aparece na linha de **quem a criou** (campo sempre preenchido). Impedir ação sem responsável na gaveta fica fora deste ticket.
-4. **Faixa de horário:** 8h às 22h, com uma caixa de seleção "24 horas" para ver o dia inteiro.
-5. **Ações concluídas:** aparecem normalmente, sem esmaecer, com o sinal de concluído que o cartão já tem. A "Cor da fase" de Minha Conta (Desligada, Suave, Viva) vale aqui como em qualquer cartão.
+3. **Pessoas:** quem não é administrador vê só a própria linha; o administrador inicia com apenas o próprio usuário selecionado no `UPeopleCombobox` e pode incluir outros responsáveis (ajustado na execução).
+   - **Ação sem responsável:** sem linha "Sem responsável"; a ação sem responsável aparece na linha de **quem a criou** (`user_id`). Impedir ação sem responsável na gaveta fica fora deste ticket.
+4. **Barras e títulos:** barras com altura automática (`min-h-9`) e título em até 2 linhas (`line-clamp-2`, sem título externo para barras curtas).
+5. **Ações concluídas e cor da fase:** aparecem normalmente, sem esmaecer, com o sinal de concluído que o cartão já tem. Em `VARIANT.timeline`, `ActionItem` força cor da fase (`vivid` quando a conta está em `vivid`, caso contrário `soft`; atrasadas mantêm o fundo de atraso).
 6. **Duração só muda nesta visualização.** A gaveta não ganha campo de duração. A duração inicial vem da categoria ([HOJE-03](03-category-default-duration.md), executado antes deste).
 7. **Entra em "Visualização inicial do Hoje" em Minha Conta,** como opção. O padrão não muda agora: continua "Parceiros". A visualização fica em teste.
 
@@ -75,16 +125,16 @@ Para ver antes de aprovar: a prévia do passo 1 é o que mostra a visualização
 
 ## Critérios de conclusão
 
-- [ ] Prévia aprovada pelo proprietário, incluindo ações curtas, sobreposição e celular.
-- [ ] Novo botão no seletor do Hoje, na Home e na página Hoje.
-- [ ] Linha do tempo com uma linha por pessoa e filtro de responsáveis para o administrador; ação sem responsável na linha de quem criou.
-- [ ] Faixa 8h–22h e caixa de seleção "24 horas".
-- [ ] "Linha do tempo" disponível em Minha Conta → Visualização inicial do Hoje; padrão continua "Parceiros".
-- [ ] Banco aceitando `timeline` conferido (migration do HOJE-01 aplicada).
-- [ ] Arrastar e as duas alças funcionando no passo decidido, com mouse, toque e teclado.
-- [ ] Sem checagem de conflito de horário; ações sobrepostas visíveis.
-- [ ] Gravação com proteção de conflito e desfazer em caso de falha.
-- [ ] Roteiro curto de validação. `bun run dev` usa o banco de produção: arrastar altera ações reais; o executor só lê, e o teste de arrastar fica com o proprietário.
+- [x] Prévia aprovada pelo proprietário (`6px/min`, altura automática `min-h-9` + `line-clamp-2`, sem título externo).
+- [x] Novo botão no seletor do Hoje, na Home e na página Hoje.
+- [x] Linha do tempo com uma linha por pessoa e filtro de responsáveis (`UPeopleCombobox`, admin inicia com o próprio usuário); ação sem responsável na linha de quem criou.
+- [x] Faixa contínua `00h–24h` com rolagem automática inicial para "Agora" no dia atual.
+- [x] "Linha do tempo" disponível em Minha Conta → Visualização inicial do Hoje; padrão continua "Parceiros".
+- [x] Banco aceitando `timeline` conferido (migration do HOJE-01 aplicada).
+- [x] Arrastar e as duas alças funcionando no passo de 5 min (mínimo 10 min), com mouse, toque e teclado.
+- [x] Sem checagem de conflito de horário; ações sobrepostas visíveis em faixas empilhadas.
+- [x] Gravação com proteção de conflito (`expectedUpdatedAt`) e rollback em caso de falha.
+- [ ] Validação visual/interação final do proprietário em dev/produção (`bun run dev` usa o banco de produção) e commit.
 
 ## Modelos sugeridos
 

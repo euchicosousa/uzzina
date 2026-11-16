@@ -9,6 +9,7 @@ import { UAvatarGroup } from "../uzzina/UAvatar";
 import { ActionBlockVariant } from "./ActionVariants/ActionBlockVariant";
 import { ActionContentVariant } from "./ActionVariants/ActionContentVariant";
 import { ActionLineVariant } from "./ActionVariants/ActionLineVariant";
+import { ActionTimelineVariant } from "./ActionVariants/ActionTimelineVariant";
 import type { ActionVariantRendererProps } from "./ActionVariants/types";
 import { Draggable } from "./DnD";
 import { UPhaseIcon } from "~/components/uzzina/UPhaseIcon";
@@ -78,7 +79,7 @@ type ActionItemProps = {
 /**
  * ActionItem Component
  *
- * Renders a single Action card/item in various layouts (line, block, content).
+ * Renders a single Action card/item in various layouts (line, block, content, timeline).
  * Integrates drag-and-drop capability, selection mode, inline title editing, and action shortcuts.
  */
 const DEFAULT_DISPLAY_FLAGS: ActionDisplayFlags = {};
@@ -138,6 +139,8 @@ export function ActionItem({
         return "flex-col gap-2";
       case VARIANT.block:
         return "flex-col gap-2 px-4 py-3";
+      case VARIANT.timeline:
+        return "flex min-h-9 items-center rounded-xl px-2 py-1.5";
       // case VARIANT.line:
       default:
         return "rounded-xl px-3 py-1 @xs:p-1";
@@ -184,9 +187,15 @@ export function ActionItem({
     }
     return baseStyles;
   }, [isEditing, showLate, isLate, action, person, showSprint]);
+  const effectivePhaseColor =
+    variant === VARIANT.timeline
+      ? showPhaseColor === "vivid"
+        ? "vivid"
+        : "soft"
+      : showPhaseColor;
   // Late keeps its own background; an unknown legacy phase keeps the default.
   const phaseColor =
-    showPhaseColor !== "off" && !(showLate && isLate)
+    effectivePhaseColor !== "off" && !(showLate && isLate)
       ? currentPhase?.color
       : undefined;
   const content = (
@@ -196,7 +205,7 @@ export function ActionItem({
         variantClasses,
         bgClasses,
         phaseColor &&
-          (showPhaseColor === "vivid" ? "phase-vivid" : "phase-surface"),
+          (effectivePhaseColor === "vivid" ? "phase-vivid" : "phase-surface"),
         className,
         isDragging && "cursor-grabbing",
         isSelectionMode && variant !== VARIANT.content && "pl-8",
@@ -442,6 +451,8 @@ function ActionVariantRenderer(props: ActionVariantRendererProps) {
       return <ActionContentVariant {...props} />;
     case VARIANT.block:
       return <ActionBlockVariant {...props} />;
+    case VARIANT.timeline:
+      return <ActionTimelineVariant {...props} />;
     default:
       return <ActionLineVariant {...props} />;
   }

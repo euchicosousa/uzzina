@@ -7,7 +7,7 @@ import { publicAIModels } from "./ai-model-registry";
 import type { PhaseColorMode } from "./CONSTANTS";
 
 export type TodayViewMode =
-  "kanban" | "feed" | "categories" | "partners" | "priority";
+  "kanban" | "feed" | "categories" | "partners" | "priority" | "timeline";
 
 export function isTodayViewMode(value: unknown): value is TodayViewMode {
   return (
@@ -15,7 +15,8 @@ export function isTodayViewMode(value: unknown): value is TodayViewMode {
     value === "feed" ||
     value === "categories" ||
     value === "partners" ||
-    value === "priority"
+    value === "priority" ||
+    value === "timeline"
   );
 }
 

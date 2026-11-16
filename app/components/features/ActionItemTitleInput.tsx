@@ -8,6 +8,7 @@ export function ActionItemTitleInput({
   setIsEditing,
   className,
   InputButtonClassName,
+  multiline = false,
   onBlur,
 }: {
   title: string;
@@ -16,6 +17,7 @@ export function ActionItemTitleInput({
   setIsEditing: (value: boolean) => void;
   className?: string;
   InputButtonClassName?: string;
+  multiline?: boolean;
   onBlur?: (title: string) => void;
 }) {
   const [overrideTitle, setOverrideTitle] = useState<string | null>(null);
@@ -77,7 +79,10 @@ export function ActionItemTitleInput({
         // the click, so the card (which toggles selection) never received it.
         <span
           className={cn(
-            "block w-full truncate text-left leading-[inherit]",
+            "block w-full text-left leading-[inherit]",
+            multiline
+              ? "line-clamp-2 wrap-break-word whitespace-normal"
+              : "truncate",
             InputButtonClassName,
           )}
         >
@@ -90,7 +95,10 @@ export function ActionItemTitleInput({
         <button
           type="button"
           className={cn(
-            "w-full cursor-text truncate text-left leading-[inherit] focus-visible:underline",
+            "w-full cursor-text text-left leading-[inherit] focus-visible:underline",
+            multiline
+              ? "line-clamp-2 wrap-break-word whitespace-normal"
+              : "truncate",
             isDragging ? "cursor-grabbing" : "",
             InputButtonClassName,
           )}

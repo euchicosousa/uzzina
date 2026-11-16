@@ -4,6 +4,7 @@ import { ptBR } from "date-fns/locale/pt-BR";
 import {
   BlocksIcon,
   FlagIcon,
+  GanttChartIcon,
   Grid3x3Icon,
   HeartHandshakeIcon,
   KanbanIcon,
@@ -14,6 +15,7 @@ import { CategoriesBoard } from "~/components/layout/CategoriesBoard";
 import KanbanPhasesBoard from "~/components/layout/KanbanPhasesBoard";
 import { PartnersBoard } from "~/components/layout/PartnersBoard";
 import { PriorityBoard } from "~/components/layout/PriorityBoard";
+import { TimelineBoard } from "~/components/layout/TimelineBoard";
 import {
   PrismToggleGroup,
   PrismToggleGroupItem,
@@ -33,6 +35,7 @@ export const TODAY_VIEW_LABELS: Record<TodayViewMode, string> = {
   feed: "Feed do Instagram",
   partners: "Parceiros",
   priority: "Prioridade",
+  timeline: "Linha do tempo",
 };
 
 export function useTodayActions(
@@ -128,6 +131,14 @@ export function TodayViewToggle({
           <FlagIcon />
         </PrismToggleGroupItem>
       </PrismTooltip>
+      <PrismTooltip label={TODAY_VIEW_LABELS.timeline}>
+        <PrismToggleGroupItem
+          aria-label="Visão por Linha do tempo"
+          id="timeline"
+        >
+          <GanttChartIcon />
+        </PrismToggleGroupItem>
+      </PrismTooltip>
     </PrismToggleGroup>
   );
 }
@@ -151,6 +162,14 @@ export function TodayBoard({
     return <KanbanPhasesBoard actions={actions} fillHeight={fillHeight} />;
   if (view === "priority")
     return <PriorityBoard actions={actions} fillHeight={fillHeight} />;
+  if (view === "timeline")
+    return (
+      <TimelineBoard
+        actions={actions}
+        currentDay={currentDay}
+        fillHeight={fillHeight}
+      />
+    );
   if (view === "feed")
     return (
       <div className="w-full max-w-full overflow-hidden">

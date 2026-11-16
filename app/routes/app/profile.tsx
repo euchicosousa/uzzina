@@ -14,6 +14,7 @@ import { AppBarSpacer } from "~/components/layout/AppBarSpacer";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   BlocksIcon,
+  GanttChartIcon,
   Grid3x3Icon,
   HeartHandshakeIcon,
   KanbanIcon,
@@ -252,36 +253,36 @@ function PartnerPageMockup({ showSidebar }: { showSidebar: boolean }) {
   return (
     <div
       aria-hidden="true"
-      className="relative flex h-60 w-full flex-col overflow-hidden rounded-2xl border border-border bg-card/40 text-secondary-foreground select-none"
+      className="relative flex h-60 w-full flex-col overflow-hidden rounded-2xl border border-border text-secondary-foreground select-none"
     >
       {/* Top Header Bar */}
-      <div className="flex h-7 w-full shrink-0 items-center justify-between border-b border-border/50 px-3">
+      <div className="flex h-7 w-full shrink-0 items-center justify-between border-b px-3">
         <div className="flex items-center gap-2">
-          <div className="size-2.5 rounded-xs border border-border/80" />
-          <div className="h-1.5 w-10 rounded-full border border-border/60" />
+          <div className="size-2.5 rounded-xs border" />
+          <div className="h-1.5 w-10 rounded-full border" />
         </div>
         <div className="flex items-center gap-3">
-          <div className="h-1 w-8 rounded-full border border-border/40" />
-          <div className="h-1 w-8 rounded-full border border-border/40" />
+          <div className="h-1 w-8 rounded-full border" />
+          <div className="h-1 w-8 rounded-full border" />
         </div>
-        <div className="size-3 rounded-full border border-border/70" />
+        <div className="size-3 rounded-full border" />
       </div>
 
       {/* Subheader / Partner & Filter Controls */}
-      <div className="flex h-7 w-full shrink-0 items-center justify-between border-b border-border/40 bg-secondary px-3">
+      <div className="bo40 flex h-7 w-full shrink-0 items-center justify-between border-b bg-secondary px-3">
         <div className="flex items-center gap-1.5">
-          <div className="size-2.5 rounded-full border border-border/70" />
-          <div className="h-1.5 w-14 rounded-full border border-border/60" />
+          <div className="size-2.5 rounded-full border" />
+          <div className="h-1.5 w-14 rounded-full border" />
         </div>
-        <div className="flex items-center gap-1 rounded-sm border border-border/40 px-1.5 py-0.5">
-          <div className="h-1 w-10 rounded-full border border-border/50" />
+        <div className="flex items-center gap-1 rounded-sm border px-1.5 py-0.5">
+          <div className="h-1 w-10 rounded-full border" />
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="h-1.5 w-12 rounded-full border border-border/40" />
+          <div className="h-1.5 w-12 rounded-full border" />
           <div
             className={cn(
               "size-3 rounded-xs border transition-colors",
-              showSidebar ? "border-primary bg-primary/20" : "border-border/60",
+              showSidebar ? "border-primary bg-primary/20" : "",
             )}
           />
         </div>
@@ -292,13 +293,13 @@ function PartnerPageMockup({ showSidebar }: { showSidebar: boolean }) {
         {/* Calendar Grid */}
         <div className="flex min-w-0 flex-1 flex-col">
           {/* Days of Week Row */}
-          <div className="grid h-4 w-full grid-cols-7 border-b border-border/40">
+          <div className="grid h-4 w-full grid-cols-7 border-b">
             {Array.from({ length: 7 }).map((_, i) => (
               <div
                 key={i}
-                className="flex items-center justify-center border-r border-border/20 last:border-r-0"
+                className="flex items-center justify-center border-r last:border-r-0"
               >
-                <div className="h-1 w-3 rounded-full border border-border/40" />
+                <div className="h-1 w-3 rounded-full border" />
               </div>
             ))}
           </div>
@@ -306,12 +307,9 @@ function PartnerPageMockup({ showSidebar }: { showSidebar: boolean }) {
           {/* Calendar Grid Cells */}
           <div className="grid flex-1 grid-cols-7 grid-rows-4">
             {Array.from({ length: 28 }).map((_, i) => (
-              <div
-                key={i}
-                className="border-r border-b border-border/20 p-1 last:border-r-0"
-              >
+              <div key={i} className="border-r border-b p-1 last:border-r-0">
                 {(i === 2 || i === 8 || i === 11 || i === 19 || i === 24) && (
-                  <div className="h-1.5 w-full rounded-xs border border-border/50" />
+                  <div className="h-1.5 w-full rounded-xs border" />
                 )}
               </div>
             ))}
@@ -1274,35 +1272,42 @@ function ProfilePage() {
                 id="kanban"
               >
                 <KanbanIcon />
-                Kanban
+                {/* Kanban */}
               </PrismToggleGroupItem>
               <PrismToggleGroupItem
                 className={PROFILE_CHOICE_CLASS_NAME}
                 id="categories"
               >
                 <Grid3x3Icon />
-                <div className="truncate">Categorias</div>
+                {/* <div className="truncate">Categorias</div> */}
               </PrismToggleGroupItem>
               <PrismToggleGroupItem
                 className={PROFILE_CHOICE_CLASS_NAME}
                 id="feed"
               >
                 <BlocksIcon />
-                Feed
+                {/* Feed */}
               </PrismToggleGroupItem>
               <PrismToggleGroupItem
                 className={PROFILE_CHOICE_CLASS_NAME}
                 id="partners"
               >
                 <HeartHandshakeIcon />
-                <div className="truncate">Parceiros</div>
+                {/* <div className="truncate">Parceiros</div> */}
               </PrismToggleGroupItem>
               <PrismToggleGroupItem
                 className={PROFILE_CHOICE_CLASS_NAME}
                 id="priority"
               >
                 <FlagIcon />
-                <div className="truncate">Prioridade</div>
+                {/* <div className="truncate">Prioridade</div> */}
+              </PrismToggleGroupItem>
+              <PrismToggleGroupItem
+                className={PROFILE_CHOICE_CLASS_NAME}
+                id="timeline"
+              >
+                <GanttChartIcon />
+                {/* <div className="truncate">Linha do tempo</div> */}
               </PrismToggleGroupItem>
             </PrismToggleGroup>
           </ProfileSetting>
