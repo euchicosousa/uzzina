@@ -424,6 +424,7 @@
   --color-warning-foreground: var(--warning-foreground);
   --color-warning-background: var(--color-warning-background);
   --color-success: var(--color-success);
+  --color-success-foreground: var(--color-success-foreground);
   --color-success-background: var(--color-success-background);
   --color-priority-low: var(--priority-low);
   --color-priority-medium: var(--priority-medium);
